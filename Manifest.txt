@@ -1,0 +1,7 @@
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+bin/marionette
+lib/marionette.rb
+test/test_marionette.rb
