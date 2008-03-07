@@ -65,6 +65,22 @@ subscribe:
 tag: 
 DESC
     @resource.to_yaml.should eql(yaml_output)
-  end
+  end  
   
+  it "should find a resource by symbol and name, or array of names" do
+  #  %w{monkey dog cat}.each do |name|
+  #    @recipe.zen_master name do
+  #      peace = true
+  #    end
+  #  end
+  #  doggie = @recipe.resource(:zen_master => "dog")
+  #  doggie.name.should eql("dog") # clever, I know
+  #  multi_zen = [ "dog", "monkey" ]
+  #  zen_array = @recipe.resource(:zen_master => multi_zen)
+  #  zen_array.length.should eql(2)
+  #  zen_array.each_index do |i|
+  #    zen_array[i].name.should eql(multi_zen[i])
+  #    zen_array[i].resource_name.should eql(:zen_master)
+  #  end
+  end
 end

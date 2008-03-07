@@ -21,24 +21,26 @@ require 'yaml'
 
 class Marionette
   class Resource
-          
-    attr_accessor :before, :require, :notify, :subscribe, :tag
     
-    def initialize(name)
+    include Marionette::Mixin::GraphResources
+    
+    attr_accessor :before, :requires, :notifies, :subscribes, :tag
+    attr_reader :name, :alias, :noop, :tag, :resource_name, :dg
+    
+    def initialize(name, dg=nil)
       @name = name
+      if dg
+        @dg = dg
+      else
+        @dg = RGL::DirectedAdjacencyGraph.new()
+        @dg.add_vertex(:top)
+      end
       @tag = Array.new
       @alias = nil
       @noop = nil
       @tag = nil
       @before = nil
-      @require = nil
-      @notify = nil
-      @subscribe = nil
       @tag = nil
-    end
-    
-    def name
-      @name
     end
     
     def name=(name)
@@ -46,26 +48,14 @@ class Marionette
       @name = name
     end
     
-    def alias
-      @alias
-    end
-    
     def alias=(alias_name)
       raise ArgumentError, "alias must be a string!" unless alias_name.kind_of?(String)
       @alias = alias_name
     end
     
-    def noop
-      @noop
-    end
-    
     def noop=(tf)      
       raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
       @noop = tf
-    end
-    
-    def tag
-      @tag
     end
     
     def tag=(args)
@@ -79,6 +69,10 @@ class Marionette
       @tag
     end
     
+    def run(ourblock)
+      ourblock.call
+    end
+  
     def valid?()
       return false unless self.name
       true

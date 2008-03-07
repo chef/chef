@@ -55,4 +55,37 @@ describe Marionette::Resource::File do
     lambda { @resource.checksum = "blues" }.should raise_error(ArgumentError)
   end
   
+  it "should accept absent or present for ensure" do
+    lambda { @resource.ensure = "absent" }.should_not raise_error(ArgumentError)
+    lambda { @resource.ensure = "present" }.should_not raise_error(ArgumentError)
+    lambda { @resource.ensure = "blues" }.should raise_error(ArgumentError)
+  end
+  
+  it "should accept a group name or id for group" do
+    lambda { @resource.group = "root" }.should_not raise_error(ArgumentError)
+    lambda { @resource.group = 123 }.should_not raise_error(ArgumentError)
+    lambda { @resource.group = "root*goo" }.should raise_error(ArgumentError)
+  end
+  
+  it "should accept a valid unix file mode" do
+    lambda { @resource.mode = 0444 }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode = 444 }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode = 4 }.should raise_error(ArgumentError)
+  end
+  
+  it "should accept a user name or id for owner" do
+    lambda { @resource.owner = "root" }.should_not raise_error(ArgumentError)
+    lambda { @resource.owner = 123 }.should_not raise_error(ArgumentError)
+    lambda { @resource.owner = "root*goo" }.should raise_error(ArgumentError)
+  end
+  
+  it "should use the object name as the path by default" do
+    @resource.path.should eql("fakey_fakerton")
+  end
+  
+  it "should accept a string as the path" do
+    lambda { @resource.path = "/tmp" }.should_not raise_error(ArgumentError)
+    lambda { @resource.path = Hash.new }.should raise_error(ArgumentError)
+  end
+  
 end
