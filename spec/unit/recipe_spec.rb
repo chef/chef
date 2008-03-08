@@ -19,24 +19,6 @@
 
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
-class Marionette
-  class Resource
-    class ZenMaster < Marionette::Resource
-      attr_reader :peace
-      
-      def initialize(name, dg)
-        @resource_name = :zen_master
-        super(name, dg)
-      end
-      
-      def peace=(tf)
-        @peace = tf
-      end
-    end
-  end
-end
-
-
 describe Marionette::Recipe do
   before(:each) do
     @recipe = Marionette::Recipe.new("hjk", "test", "node")
@@ -89,7 +71,7 @@ zen_master "gnome" do
 end
 CODE
     lambda { @recipe.instance_eval(code) }.should_not raise_error
-    @recipe.resource(:zen_master => "gnome").name.should eql("gnome")
+    @recipe.resources(:zen_master => "gnome").name.should eql("gnome")
   end
 
 end

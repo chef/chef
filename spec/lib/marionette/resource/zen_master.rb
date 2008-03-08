@@ -18,7 +18,27 @@
 # 
 
 class Marionette
-  module Helper
-    
+  class Resource
+    class ZenMaster < Marionette::Resource
+      attr_reader :peace
+      
+      def initialize(name, dg=nil, deps=nil)
+        @resource_name = :zen_master
+        super(name, dg)
+      end
+      
+      def peace(tf)
+        @peace = tf
+      end
+      
+      def something(arg=nil)
+        set_if_args(@something, arg) do
+          case arg
+          when true, false
+            @something = arg
+          end
+        end
+      end
+    end
   end
 end

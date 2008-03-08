@@ -33,54 +33,93 @@ describe Marionette::Resource do
   end
   
   it "should not be valid without a name" do
-    lambda { @resource.name = nil }.should raise_error(ArgumentError)
+    lambda { @resource.name false }.should raise_error(ArgumentError)
   end
   
   it "should always have a string for name" do
-    lambda { @resource.name = Hash.new }.should raise_error(ArgumentError)
-  end
-  
-  it "should have a string for alias" do
-    lambda { @resource.alias = nil }.should raise_error(ArgumentError)
-    lambda { @resource.alias = 'foo' }.should_not raise_error(ArgumentError)
-    @resource.alias.should eql("foo")
+    lambda { @resource.name Hash.new }.should raise_error(ArgumentError)
   end
   
   it "should accept true or false for noop" do
-    lambda { @resource.noop = true }.should_not raise_error(ArgumentError)
-    lambda { @resource.noop = false }.should_not raise_error(ArgumentError)
-    lambda { @resource.noop = "eat it" }.should raise_error(ArgumentError)
+    lambda { @resource.noop true }.should_not raise_error(ArgumentError)
+    lambda { @resource.noop false }.should_not raise_error(ArgumentError)
+    lambda { @resource.noop "eat it" }.should raise_error(ArgumentError)
   end
   
-  it "should serialize to yaml" do
-    yaml_output = <<-DESC
---- !ruby/object:Marionette::Resource 
-alias: 
-before: 
-name: funk
-noop: 
-notify: 
-require: 
-subscribe: 
-tag: 
-DESC
-    @resource.to_yaml.should eql(yaml_output)
-  end  
-  
-  it "should find a resource by symbol and name, or array of names" do
-  #  %w{monkey dog cat}.each do |name|
-  #    @recipe.zen_master name do
-  #      peace = true
-  #    end
-  #  end
-  #  doggie = @recipe.resource(:zen_master => "dog")
-  #  doggie.name.should eql("dog") # clever, I know
-  #  multi_zen = [ "dog", "monkey" ]
-  #  zen_array = @recipe.resource(:zen_master => multi_zen)
-  #  zen_array.length.should eql(2)
-  #  zen_array.each_index do |i|
-  #    zen_array[i].name.should eql(multi_zen[i])
-  #    zen_array[i].resource_name.should eql(:zen_master)
-  #  end
+  it "should make itself dependent on required resources" do
+    lambda { 
+      @resource.dg.add_vertex(Marionette::Resource::ZenMaster.new("coffee")) 
+    }.should_not raise_error
+    lambda { 
+      @resource.requires @resource.resources(:zen_master => "coffee")
+    }.should_not raise_error
+    
+    @resource.deps.topsort_iterator.to_a[0].name.should eql("coffee")
+    @resource.deps.topsort_iterator.to_a[1].name.should eql("funk")
   end
+  
+  it "should make before resources appear later in the graph" do
+    lambda { 
+      @resource.dg.add_vertex(Marionette::Resource::ZenMaster.new("coffee")) 
+    }.should_not raise_error
+    lambda { 
+      @resource.before @resource.resources(:zen_master => "coffee")
+    }.should_not raise_error
+    
+    @resource.deps.topsort_iterator.to_a[0].name.should eql("funk")
+    @resource.deps.topsort_iterator.to_a[1].name.should eql("coffee")    
+  end
+  
+  it "should make notified resources appear in the actions hash" do
+    @resource.dg.add_vertex(Marionette::Resource::ZenMaster.new("coffee"))
+    @resource.notifies :reload, @resource.resources(:zen_master => "coffee")
+    @resource.actions[:reload][0].name.should eql("coffee")
+  end
+  
+  it "should make notified resources happen later in the graph" do
+    @resource.dg.add_vertex(Marionette::Resource::ZenMaster.new("coffee"))
+    @resource.notifies :reload, @resource.resources(:zen_master => "coffee")
+    @resource.deps.topsort_iterator.to_a[0].name.should eql("funk")
+    @resource.deps.topsort_iterator.to_a[1].name.should eql("coffee")
+  end
+  
+  it "should make subscribed resources appear in the actions hash" do
+    @resource.dg.add_vertex(Marionette::Resource::ZenMaster.new("coffee"))
+    zr = @resource.resources(:zen_master => "coffee")
+    @resource.subscribes :reload, zr
+    zr.actions[:reload][0].name.should eql("funk")
+  end
+
+  it "should make subscribed resources happen earlier in the graph" do
+    @resource.dg.add_vertex(Marionette::Resource::ZenMaster.new("coffee"))
+    zr = @resource.resources(:zen_master => "coffee")
+    @resource.subscribes :reload, zr
+    @resource.deps.topsort_iterator.to_a[1].name.should eql("funk")
+    @resource.deps.topsort_iterator.to_a[0].name.should eql("coffee")
+  end
+  
+  it "should return a value if not defined" do
+    zm = Marionette::Resource::ZenMaster.new("coffee")
+    zm.something(true).should eql(true)
+    zm.something.should eql(true)
+    zm.something(false).should eql(false)
+    zm.something.should eql(false)
+  end
+  
+#  it "should serialize to yaml" do
+#    yaml_output = <<-DESC
+#--- !ruby/object:Marionette::Resource 
+#alias: 
+#before: 
+#name: funk
+#noop: 
+#notify: 
+#require: 
+#subscribe: 
+#tag: 
+#DESC
+#    @resource.to_yaml.should eql(yaml_output)
+#  end  
+  
+
 end

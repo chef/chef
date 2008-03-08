@@ -15,8 +15,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# 
+#
 
-require File.join(File.dirname(__FILE__), "..", "lib", "marionette")
-Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
-
+class Marionette
+  module Mixin
+    module CheckArguments      
+      def check_symbol_or_string(to_check, field_name)
+        case to_check
+        when Symbol, String
+          true
+        else
+          raise ArgumentError, "you must pass a symbol or string to #{field_name}!"
+        end
+      end
+    end
+  end
+end

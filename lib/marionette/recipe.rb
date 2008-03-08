@@ -18,18 +18,14 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # 
 
-require 'rubygems'
-require 'rgl/adjacency'
-require 'rgl/topsort'
-
 class Marionette
   class Recipe
     
     include Marionette::Mixin::GraphResources
     
-    attr_accessor :module_name, :recipe_name, :recipe, :node, :dg
+    attr_accessor :module_name, :recipe_name, :recipe, :node, :dg, :deps
     
-    def initialize(module_name, recipe_name, node, dg=nil)
+    def initialize(module_name, recipe_name, node, dg=nil, deps=nil)
       @module_name = module_name
       @recipe_name = recipe_name
       @node = node
@@ -39,7 +35,13 @@ class Marionette
         @dg = RGL::DirectedAdjacencyGraph.new()
         @dg.add_vertex(:top)
       end
+      if deps
+        @deps = deps
+      else
+        @deps = RGL::DirectedAdjacencyGraph.new()
+      end
       @last_resource = :top
+      @in_order = Array.new
     end
         
     def method_missing(method_symbol, *args, &block)
@@ -54,25 +56,19 @@ class Marionette
       end
       begin
         args << @dg
+        args << @deps
         resource = eval(rname).new(*args)
-        resource.run(block) if Kernel.block_given?
+        resource.instance_eval(&block)
       rescue Exception => e
-        raise NameError, "Cannot find #{rname} for #{method_name}\nOriginal: #{e.to_s}" if e.kind_of?(NameError)
-        raise e
+        if e.kind_of?(NameError) && e.to_s =~ /Marionette::Resource/
+          raise NameError, "Cannot find #{rname} for #{method_name}\nOriginal: #{e.to_s}"
+        else
+          raise e
+        end
       end
       @dg.add_vertex(resource)
       @dg.add_edge(@last_resource, resource)
       @last_resource = resource
     end
-      
-    private
-      def check_symbol_or_string(to_check, field_name)
-        case to_check
-        when Symbol, String
-          true
-        else
-          raise ArgumentError, "you must pass a symbol or string to #{field_name}!"
-        end
-      end
   end
 end

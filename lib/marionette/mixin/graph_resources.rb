@@ -17,6 +17,11 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
+require 'rubygems'
+require 'rgl/adjacency'
+require 'rgl/topsort'
+require 'rgl/dot'
+
 class Marionette
   module Mixin
     module GraphResources
@@ -26,7 +31,7 @@ class Marionette
       # Returns one or an Array of matching resources. 
       #
       # Raises a Runtime Error if it can't find the resources you are looking for.
-      def resource(args)
+      def resources(args)
         unless args.kind_of?(Hash)
           raise ArgumentError, "resource requires a hash of :resources => names"
         end
@@ -73,7 +78,6 @@ class Marionette
           end
           raise RuntimeError, msg
         end
-
         results.length == 1 ? results[0][:object] : results.collect { |r| r[:object] }
       end
     end

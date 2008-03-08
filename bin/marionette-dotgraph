@@ -1,3 +1,5 @@
+#!/usr/bin/ruby
+#
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
 # License:: GNU General Public License version 2 or later
@@ -15,8 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# 
+#
 
 require File.join(File.dirname(__FILE__), "..", "lib", "marionette")
-Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
+require 'rgl/dot'
+
+mr = Marionette::Recipe.new("test", "default", "node")
+raise ArgumentError, "#{ARGV[0]} is not a file!" unless File.exists?(ARGV[0])
+mr.instance_eval(IO.read(ARGV[0]), ARGV[0], 1)
+puts mr.inspect
+puts mr.dg.directed?
+puts mr.dg.acyclic?
+tree = Array.new
+mr.dg.depth_first_visit(:top) do |v|
+  tree << v
+end
+maybe = mr.dg.bfs_search_tree_from(:top)
+puts maybe.acyclic?
+puts maybe.directed?
+puts maybe.topsort_iterator.to_a.join("\n")
+maybe.write_to_graphic_file
 

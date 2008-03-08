@@ -5,22 +5,57 @@ include_recipe 'openldap::client'
 include_recipe 'openssh'
 include_recipe 'nscd'
 
-remote_file "nsswitch.conf" do 
-  path   "/etc/nsswitch.conf"
-  source "nsswitch.conf"
-  module "openldap"
-  mode   0644
-  owner  "root"
-  group  "root"
-  requires :file => "nsswitch-ldap-file", :exec => [ "one", "two" ]
-  requires = resource(:file => "nsswitch-ldap-file")
-  notifies = resource(:service => "nscd", :exec => [ "nscd-clear-passwd", "nscd-clear-group" ] )
-  subscribes = 
-  provider = 'File::Rsync'
+file "/etc/nsswitch.conf" {
+  insure = "present"
+  owner  = "root"
+  group  = "root" 
+  mode   = 0644
+}
+
+file "/etc/ldap.conf" {
+  insure   = "present"
+  owner    = "root"
+  group    = "root"
+  mode     = 0644
+  requires = resources(:file => "/etc/nsswitch.conf")
+}
+
+file "/etc/ldap.conf" do
+  insure   = "present"
+  owner    = "root"
+  group    = "root"
+  mode     = 0644
+  requires = resources(:file => "/etc/nsswitch.conf")
 end
 
+remote_file "nsswitch.conf" {
+  path     "/etc/nsswitch.conf"
+  source   "nsswitch.conf"
+  module   "openldap"
+  mode     0644
+  owner    "root"
+  group    "root"
+  requires :file => "nsswitch-ldap-file", :exec => [ "one", "two" ]
+  notifies :service => "nscd", :exec => [ "nscd-clear-passwd", "nscd-clear-group" ]
+  provider 'File::Rsync'
+}
+
+remote_file "nsswitch.conf" {
+  path     = "/etc/nsswitch.conf"
+  source   = "nsswitch.conf"
+  module   = "openldap"
+  mode     = 0644
+  owner    = "root"
+  group    = "root"
+  requires = resources :file => "nsswitch-ldap-file", 
+                       :exec => [ "one", "two" ]
+  notifies = resources :service => "nscd",
+                       :exec => [ "nscd-clear-passwd", "nscd-clear-group" ]
+  provider = 'File::Rsync'
+}
+
 service "nscd" do |s|
-  s.ensure = "running"
+  s.insure = "running"
 end
 
 case node[:lsbdistid]
@@ -36,7 +71,7 @@ when "CentOS"
     f.require = resource(:package => "nss_ldap")
   end
   package "nss_ldap" do |p|
-    p.ensure = "latest"
+    p.insure = "latest"
   end
 end
     

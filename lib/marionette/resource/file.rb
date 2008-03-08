@@ -20,9 +20,9 @@
 class Marionette
   class Resource
     class File < Marionette::Resource
-      attr_reader :backup, :checksum, :ensure, :group, :mode, :owner, :path
+      attr_reader :backup, :checksum, :insure, :group, :mode, :owner, :path
       
-      def initialize(name, dg=nil)
+      def initialize(name, dg=nil, deps=nil)
         @resource_name = :file
         super(name, dg)
         @path = name
@@ -30,66 +30,80 @@ class Marionette
         @checksum = "md5sum"
       end
 
-      def backup=(arg)
-        case arg
-        when true, false, Integer
-          @backup = arg 
-        else
-          raise ArgumentError, "backup must be true, false, or a number!"
+      def backup(arg=nil)
+        set_if_args(@backup, arg) do
+          case arg
+          when true, false, Integer
+            @backup = arg 
+          else
+            raise ArgumentError, "backup must be true, false, or a number!"
+          end
         end
       end
       
-      def checksum=(arg)
-        case arg
-        when "md5sum", "mtime"
-          @checksum = arg
-        else
-          raise ArgumentError, "checksum must be md5sum or mtime!"
+      def checksum(arg=nil)
+        set_if_args(@checksum, arg) do
+          case arg
+          when "md5sum", "mtime"
+            @checksum = arg
+          else
+            raise ArgumentError, "checksum must be md5sum or mtime!"
+          end
         end
       end
       
-      def ensure=(arg)
-        case arg
-        when "absent", "present"
-          @ensure = arg
-        else
-          raise ArgumentError, "ensure must be absent or present!"
+      def insure(arg=nil)
+        set_if_args(@insure, arg) do 
+          case arg
+          when "absent", "present"
+            @insure = arg
+          else
+            raise ArgumentError, "insure must be absent or present!"
+          end
         end
       end
       
-      def group=(arg)
-        case arg
-        when /^([a-z]|[A-Z]|[0-9]|_|-)+$/, Integer
-          @group = arg
-        else
-          raise ArgumentError, "group must match /^([a-z]|[A-Z]|[0-9]|_|-)$/, Integer!"
+      def group(arg=nil)
+        set_if_args(@group, arg) do
+          case arg
+          when /^([a-z]|[A-Z]|[0-9]|_|-)+$/, Integer
+            @group = arg
+          else
+            raise ArgumentError, "group must match /^([a-z]|[A-Z]|[0-9]|_|-)$/, Integer!"
+          end
         end
       end
       
-      def mode=(arg)
-        case "#{arg.to_s}"
-        when /^\d{3,4}$/
-          @mode = arg
-        else
-          raise ArgumentError, "mode must be a valid unix file mode - 3 or 4 digets!"
+      def mode(arg=nil)
+        set_if_args(@mode, arg) do
+          case "#{arg.to_s}"
+          when /^\d{3,4}$/
+            @mode = arg
+          else
+            raise ArgumentError, "mode must be a valid unix file mode - 3 or 4 digets!"
+          end
         end
       end
       
-      def owner=(arg)
-        case arg
-        when /^([a-z]|[A-Z]|[0-9]|_|-)+$/, Integer
-          @group = arg
-        else
-          raise ArgumentError, "group must match /^([a-z]|[A-Z]|[0-9]|_|-)$/, Integer!"
+      def owner(arg=nil)
+        set_if_args(@owner, arg) do
+          case arg
+          when /^([a-z]|[A-Z]|[0-9]|_|-)+$/, Integer
+            @owner = arg
+          else
+            raise ArgumentError, "group must match /^([a-z]|[A-Z]|[0-9]|_|-)$/, Integer!"
+          end
         end
       end
       
-      def path=(arg)
-        case arg
-        when String
-          @path = arg
-        else
-          raise ArgumentError, "path must be a string!"
+      def path(arg=nil)
+        set_if_args(@path, arg) do
+          case arg
+          when String
+            @path = arg
+          else
+            raise ArgumentError, "path must be a string!"
+          end
         end
       end
       
