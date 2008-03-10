@@ -18,24 +18,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-require File.join(File.dirname(__FILE__), "..", "..", "spec_helper")
+require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
-describe Marionette::Mixin::GraphResources do
-  it "should find a resource by symbol and name, or array of names" do
-    @recipe = Marionette::Recipe.new("one", "two", "three")
-    %w{monkey dog cat}.each do |name|
-      @recipe.zen_master name do
-        peace = true
-      end
-    end
-    doggie = @recipe.resources(:zen_master => "dog")
-    doggie.name.should eql("dog") # clever, I know
-    multi_zen = [ "dog", "monkey" ]
-    zen_array = @recipe.resources(:zen_master => multi_zen)
-    zen_array.length.should eql(2)
-    zen_array.each_index do |i|
-      zen_array[i].name.should eql(multi_zen[i])
-      zen_array[i].resource_name.should eql(:zen_master)
-    end
+describe Chef do
+  it "should have a version defined" do
+    Chef::VERSION.should match(/(\d+)\.(\d+)\.(\d+)/)
   end
 end

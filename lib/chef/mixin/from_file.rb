@@ -1,4 +1,3 @@
-#
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
 # License:: GNU General Public License version 2 or later
@@ -18,10 +17,16 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-require File.join(File.dirname(__FILE__), "..", "spec_helper")
-
-describe Marionette do
-  it "should have a version defined" do
-    Marionette::VERSION.should match(/(\d+)\.(\d+)\.(\d+)/)
+class Chef
+  module Mixin
+    module FromFile      
+      def from_file(filename)
+        if File.exists?(filename) && File.readable?(filename)
+          self.instance_eval(IO.read(filename), filename, 1)
+        else
+          raise IOError, "Cannot open or read #{filename}!"
+        end
+      end
+    end
   end
 end

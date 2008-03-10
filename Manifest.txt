@@ -2,6 +2,6 @@ History.txt
 Manifest.txt
 README.txt
 Rakefile
-bin/marionette
-lib/marionette.rb
-test/test_marionette.rb
+bin/chef
+lib/chef.rb
+test/test_chef.rb

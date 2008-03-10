@@ -1,3 +1,4 @@
+#
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
 # License:: GNU General Public License version 2 or later
@@ -15,30 +16,30 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# 
+#
 
-class Marionette
-  class Resource
-    class ZenMaster < Marionette::Resource
-      attr_reader :peace
-      
-      def initialize(name, dg=nil, deps=nil)
-        @resource_name = :zen_master
-        super(name, dg)
-      end
-      
-      def peace(tf)
-        @peace = tf
-      end
-      
-      def something(arg=nil)
-        set_if_args(@something, arg) do
-          case arg
-          when true, false
-            @something = arg
-          end
-        end
-      end
-    end
-  end
-end
+require File.join(File.dirname(__FILE__), "..", "spec_helper")
+
+# describe Chef::Compile do
+#   before(:each) do
+#     config = Chef::Config.new
+#     config.cookbook_path = [ File.join(File.dirname(__FILE__), "..", "cookbooks") ]
+#     @compile = Chef::Compile.new(config)
+#   end
+#   
+#   it "should require a node object to compile" do
+#     
+#   end
+#   
+#   it "should load up all variables" do
+#     
+#   end
+#   
+#   it "should load up all definitions" do
+#     
+#   end
+#   
+#   it "should load up all recipes" do
+#     
+#   end
+# end

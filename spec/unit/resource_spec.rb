@@ -1,3 +1,4 @@
+#
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
 # License:: GNU General Public License version 2 or later
@@ -19,17 +20,22 @@
 
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
-describe Marionette::Resource do
+describe Chef::Resource do
   before(:each) do
-    @resource = Marionette::Resource.new("funk")
+    @resource = Chef::Resource.new("funk")
   end
   
+  it "should create a new Chef::Resource" do
+    @resource.should be_a_kind_of(Chef::Resource)
+  end
+
   it "should have a name" do
     @resource.name.should eql("funk")
   end
   
-  it "should create a new Marionette::Resource" do
-    @resource.should be_a_kind_of(Marionette::Resource)
+  it "should let you set a new name" do
+    @resource.name "monkey"
+    @resource.name.should eql("monkey")
   end
   
   it "should not be valid without a name" do
@@ -46,69 +52,87 @@ describe Marionette::Resource do
     lambda { @resource.noop "eat it" }.should raise_error(ArgumentError)
   end
   
-  it "should make itself dependent on required resources" do
-    lambda { 
-      @resource.dg.add_vertex(Marionette::Resource::ZenMaster.new("coffee")) 
-    }.should_not raise_error
-    lambda { 
-      @resource.requires @resource.resources(:zen_master => "coffee")
-    }.should_not raise_error
-    
-    @resource.deps.topsort_iterator.to_a[0].name.should eql("coffee")
-    @resource.deps.topsort_iterator.to_a[1].name.should eql("funk")
-  end
-  
-  it "should make before resources appear later in the graph" do
-    lambda { 
-      @resource.dg.add_vertex(Marionette::Resource::ZenMaster.new("coffee")) 
-    }.should_not raise_error
-    lambda { 
-      @resource.before @resource.resources(:zen_master => "coffee")
-    }.should_not raise_error
-    
-    @resource.deps.topsort_iterator.to_a[0].name.should eql("funk")
-    @resource.deps.topsort_iterator.to_a[1].name.should eql("coffee")    
-  end
-  
   it "should make notified resources appear in the actions hash" do
-    @resource.dg.add_vertex(Marionette::Resource::ZenMaster.new("coffee"))
+    @resource.collection << Chef::Resource::ZenMaster.new("coffee")
     @resource.notifies :reload, @resource.resources(:zen_master => "coffee")
-    @resource.actions[:reload][0].name.should eql("coffee")
+    @resource.actions[:reload][:delayed][0].name.should eql("coffee")
   end
   
-  it "should make notified resources happen later in the graph" do
-    @resource.dg.add_vertex(Marionette::Resource::ZenMaster.new("coffee"))
-    @resource.notifies :reload, @resource.resources(:zen_master => "coffee")
-    @resource.deps.topsort_iterator.to_a[0].name.should eql("funk")
-    @resource.deps.topsort_iterator.to_a[1].name.should eql("coffee")
+  it "should make notified resources be capable of acting immediately" do
+    @resource.collection << Chef::Resource::ZenMaster.new("coffee")
+    @resource.notifies :reload, @resource.resources(:zen_master => "coffee"), :immediate
+    @resource.actions[:reload][:immediate][0].name.should eql("coffee")
   end
   
-  it "should make subscribed resources appear in the actions hash" do
-    @resource.dg.add_vertex(Marionette::Resource::ZenMaster.new("coffee"))
-    zr = @resource.resources(:zen_master => "coffee")
-    @resource.subscribes :reload, zr
-    zr.actions[:reload][0].name.should eql("funk")
+  it "should raise an exception if told to act in other than :delay or :immediate(ly)" do
+    @resource.collection << Chef::Resource::ZenMaster.new("coffee")
+    lambda { 
+      @resource.notifies :reload, @resource.resources(:zen_master => "coffee"), :someday
+    }.should raise_error(ArgumentError)
   end
-
-  it "should make subscribed resources happen earlier in the graph" do
-    @resource.dg.add_vertex(Marionette::Resource::ZenMaster.new("coffee"))
+  
+  it "should allow multiple notified resources appear in the actions hash" do
+    @resource.collection << Chef::Resource::ZenMaster.new("coffee")
+    @resource.notifies :reload, @resource.resources(:zen_master => "coffee")
+    @resource.actions[:reload][:delayed][0].name.should eql("coffee")
+    @resource.collection << Chef::Resource::ZenMaster.new("beans")
+    @resource.notifies :reload, @resource.resources(:zen_master => "beans")
+    @resource.actions[:reload][:delayed][1].name.should eql("beans")
+  end
+  
+  it "should make resources appear in the actions hash of subscribed nodes" do
+    @resource.collection << Chef::Resource::ZenMaster.new("coffee")
     zr = @resource.resources(:zen_master => "coffee")
     @resource.subscribes :reload, zr
-    @resource.deps.topsort_iterator.to_a[1].name.should eql("funk")
-    @resource.deps.topsort_iterator.to_a[0].name.should eql("coffee")
+    zr.actions[:reload][:delayed][0].name.should eql("funk")
+  end
+  
+  it "should make resources appear in the actions hash of subscribed nodes" do
+    @resource.collection << Chef::Resource::ZenMaster.new("coffee")
+    zr = @resource.resources(:zen_master => "coffee")
+    @resource.subscribes :reload, zr
+    zr.actions[:reload][:delayed][0].name.should eql("funk")
+    
+    @resource.collection << Chef::Resource::ZenMaster.new("bean")
+    zrb = @resource.resources(:zen_master => "bean")
+    zrb.subscribes :reload, zr
+    zr.actions[:reload][:delayed][1].name.should eql("bean")
+  end
+  
+  it "should make subscribed resources be capable of acting immediately" do
+    @resource.collection << Chef::Resource::ZenMaster.new("coffee")
+    zr = @resource.resources(:zen_master => "coffee")
+    @resource.subscribes :reload, zr, :immediately
+    zr.actions[:reload][:immediate][0].name.should eql("funk")
   end
   
   it "should return a value if not defined" do
-    zm = Marionette::Resource::ZenMaster.new("coffee")
+    zm = Chef::Resource::ZenMaster.new("coffee")
     zm.something(true).should eql(true)
     zm.something.should eql(true)
     zm.something(false).should eql(false)
     zm.something.should eql(false)
   end
   
+  it "should become a string like resource_name[name]" do
+    zm = Chef::Resource::ZenMaster.new("coffee")
+    zm.to_s.should eql("zen_master[coffee]")
+  end
+  
+  it "should return the arguments passed with 'is'" do
+    zm = Chef::Resource::ZenMaster.new("coffee")
+    res = zm.is("one", "two", "three")
+    res.should eql([ "one", "two", "three" ])
+  end
+  
+  it "should allow arguments preceeded by is to methods" do
+    @resource.noop(@resource.is(true))
+    @resource.noop.should eql(true)
+  end
+  
 #  it "should serialize to yaml" do
 #    yaml_output = <<-DESC
-#--- !ruby/object:Marionette::Resource 
+#--- !ruby/object:Chef::Resource 
 #alias: 
 #before: 
 #name: funk

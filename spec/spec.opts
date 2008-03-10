@@ -1,5 +1,5 @@
 --color
 --format
-progress
+specdoc
 --loadby
 mtime

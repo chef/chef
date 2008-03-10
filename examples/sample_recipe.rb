@@ -1,8 +1,8 @@
-include_recipe "openldap"
-include_recipe "openldap::client"
-include_recipe "openldap::server"
-include_recipe "resolver"
-include_recipe "base"
+require_recipe "openldap"
+require_recipe "openldap::client"
+require_recipe "openldap::server"
+require_recipe "resolver"
+require_recipe "base"
 
 service "apache2" do
   insure "running"
@@ -14,7 +14,7 @@ file "/etc/nsswitch.conf" do
   owner  "root"
   group  "root" 
   mode   0644
-  notify :restart, resources(:service => "openldap"), :immediately
+  notify :restart, resources(:service => "openldap"), :now
 end
 
 file "/etc/ldap.conf" do
@@ -22,7 +22,6 @@ file "/etc/ldap.conf" do
   owner    "root"
   group    "root"
   mode     0644
-  requires resources(:file => "/etc/nsswitch.conf")
 end
 
 file "/srv/monkey" do

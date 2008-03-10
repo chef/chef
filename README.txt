@@ -1,10 +1,12 @@
-= marionette
+= chef
 
-* http://oss.hjksolutions.com/marionette
+* http://oss.hjksolutions.com/chef
 
 == DESCRIPTION:
 
-Marionette is a configuration management tool inspired by Puppet.
+Chef is a configuration management tool inspired by Puppet. 
+
+I'm in ur netwerk, cookin up yer servers. :)
 
 == FEATURES/PROBLEMS:
 
@@ -25,7 +27,7 @@ Marionette is a configuration management tool inspired by Puppet.
 
 == LICENSE:
 
-Marionette - A configuration management system
+Chef - A configuration management system
 
 Copyright 2008 HJK Solutions
 

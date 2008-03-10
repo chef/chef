@@ -1,0 +1,2 @@
+--exclude
+spec,bin,/Library/Ruby/Gems/1.8/gems/rcov-0.8.1.2.0/lib/rcov.rb

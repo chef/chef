@@ -1,3 +1,4 @@
+#
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
 # License:: GNU General Public License version 2 or later
@@ -17,14 +18,14 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # 
 
-class Marionette
+class Chef
   class Resource
-    class File < Marionette::Resource
+    class File < Chef::Resource
       attr_reader :backup, :checksum, :insure, :group, :mode, :owner, :path
       
-      def initialize(name, dg=nil, deps=nil)
+      def initialize(name, collection=nil, config=nil)
         @resource_name = :file
-        super(name, dg)
+        super(name, collection, config)
         @path = name
         @backup = true
         @checksum = "md5sum"

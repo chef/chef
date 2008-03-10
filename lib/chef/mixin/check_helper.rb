@@ -15,12 +15,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# 
+#
 
-require 'rubygems'
-
-Dir[File.join(File.dirname(__FILE__), 'marionette/**/*.rb')].sort.each { |lib| require lib }
-
-class Marionette
-  VERSION = '0.0.1'
+class Chef
+  module Mixin
+    module CheckHelper      
+      def set_if_args(thing, arguments)
+        raise ArgumentError, "Must call set_if_args with a block!" unless Kernel.block_given?
+        if arguments != nil
+          yield(arguments)
+        else
+          thing
+        end
+      end
+    end
+  end
 end

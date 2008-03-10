@@ -1,3 +1,4 @@
+#
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
 # License:: GNU General Public License version 2 or later
@@ -19,49 +20,68 @@
 
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
-describe Marionette::Recipe do
+describe Chef::Recipe do
   before(:each) do
-    @recipe = Marionette::Recipe.new("hjk", "test", "node")
+    @recipe = Chef::Recipe.new("hjk", "test", "node")
   end
  
-  it "should load our zen_master resource" do
+  it "should load a two word (zen_master) resource" do
     lambda do
       @recipe.zen_master "monkey" do
-        peace = true
+        peace true
       end
     end.should_not raise_error(ArgumentError)
   end
   
-  it "should add our zen_master as a vertex" do
+  it "should load a one word (cat) resource" do
+    lambda do
+      @recipe.cat "loulou" do
+        pretty_kitty true
+      end
+    end.should_not raise_error(ArgumentError)
+  end
+  
+  it "should throw an error if you access a resource that we can't find" do
+    lambda { @recipe.not_home { || } }.should raise_error(NameError)
+  end
+  
+  it "should allow regular errors (not NameErrors) to pass unchanged" do
+    lambda { 
+      @recipe.cat { || raise ArgumentError, "You Suck" } 
+    }.should raise_error(ArgumentError)
+  end
+  
+  it "should add our zen_master to the collection" do
     @recipe.zen_master "monkey" do
-      peace = true
+      peace true
     end
-    @recipe.dg.each_vertex do |v|
-      next if v == :top
-      v.should be_kind_of(Marionette::Resource::ZenMaster)
+    @recipe.collection.lookup("zen_master[monkey]").name.should eql("monkey")
+  end
+  
+  it "should add our zen masters to the collection in the order they appear" do
+    %w{monkey dog cat}.each do |name|
+      @recipe.zen_master name do
+        peace true
+      end
+    end
+    @recipe.collection.each_index do |i|
+      case i
+      when 0
+        @recipe.collection[i].name.should eql("monkey")
+      when 1
+        @recipe.collection[i].name.should eql("dog")
+      when 2
+        @recipe.collection[i].name.should eql("cat")
+      end
     end
   end
   
-  it "should graph our zen masters in the order they appear" do
-    %w{monkey dog cat}.each do |name|
-      @recipe.zen_master name do
-        peace = true
-      end
+  it "should return the new resource after creating it" do
+    res = @recipe.zen_master "makoto" do
+      peace true
     end
-    index = 0
-    @recipe.dg.topsort_iterator do |v|
-      case v
-      when :top
-        index.should eql(0)
-      when v.name == "monkey"
-        index.should eql(1)
-      when v.name == "dog"
-        index.should eql(2)
-      when v.name == "cat"
-        index.should eql(3)
-      end
-      index += 1
-    end
+    res.resource_name.should eql(:zen_master)
+    res.name.should eql("makoto")
   end
     
   it "should handle an instance_eval properly" do
@@ -72,6 +92,36 @@ end
 CODE
     lambda { @recipe.instance_eval(code) }.should_not raise_error
     @recipe.resources(:zen_master => "gnome").name.should eql("gnome")
+  end
+  
+  it "should execute defined resources" do
+    crow_define = Chef::ResourceDefinition.new
+    crow_define.define :crow, :peace => false, :something => true do
+      zen_master "lao tzu" do
+        peace params[:peace]
+        something params[:something]
+      end
+    end
+    @recipe.definitions[:crow] = crow_define
+    @recipe.crow "mine" do
+      peace true
+    end
+    @recipe.resources(:zen_master => "lao tzu").name.should eql("lao tzu")
+    @recipe.resources(:zen_master => "lao tzu").something.should eql(true)
+  end
+
+  it "should load a node from a ruby file" do
+    @recipe.from_file(File.join(File.dirname(__FILE__), "..", "data", "recipes", "test.rb"))
+    res = @recipe.resources(:file => "/etc/nsswitch.conf")
+    res.name.should eql("/etc/nsswitch.conf")
+    res.insure.should eql("present")
+    res.owner.should eql("root")
+    res.group.should eql("root")
+    res.mode.should eql(0644)
+  end
+  
+  it "should raise an exception if the file cannot be found or read" do
+    lambda { @recipe.from_file("/tmp/monkeydiving") }.should raise_error(IOError)
   end
 
 end

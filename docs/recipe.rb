@@ -25,7 +25,7 @@ file "/etc/ldap.conf" do
   owner    = "root"
   group    = "root"
   mode     = 0644
-  requires = resources(:file => "/etc/nsswitch.conf")
+  requires = resources()
 end
 
 remote_file "nsswitch.conf" {

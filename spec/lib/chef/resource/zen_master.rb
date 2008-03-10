@@ -15,29 +15,30 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#
+# 
 
-require File.join(File.dirname(__FILE__), "..", "spec_helper")
-
-describe Marionette::Node do
-  before(:each) do
-    @node = Marionette::Node.new("latte")
+class Chef
+  class Resource
+    class ZenMaster < Chef::Resource
+      attr_reader :peace
+      
+      def initialize(name, collection=nil, config=nil)
+        @resource_name = :zen_master
+        super(name, collection, config)
+      end
+      
+      def peace(tf)
+        @peace = tf
+      end
+      
+      def something(arg=nil)
+        set_if_args(@something, arg) do
+          case arg
+          when true, false
+            @something = arg
+          end
+        end
+      end
+    end
   end
-  
-  it "should have a name" do
-    @resource.name.should eql("latte")
-  end
-  
-  it "should create a new Marionette::Node" do
-    @resource.should be_a_kind_of(Marionette::Node)
-  end
-  
-  it "should not be valid without a name" do
-    lambda { @resource.name = nil }.should raise_error(ArgumentError)
-  end
-  
-  it "should always have a string for name" do
-    lambda { @resource.name = Hash.new }.should raise_error(ArgumentError)
-  end
-
 end

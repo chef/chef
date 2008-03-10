@@ -19,15 +19,15 @@
 
 require File.join(File.dirname(__FILE__), "..", "..", "spec_helper")
 
-describe Marionette::Resource::File do
+describe Chef::Resource::File do
 
   before(:each) do
-    @resource = Marionette::Resource::File.new("fakey_fakerton")
+    @resource = Chef::Resource::File.new("fakey_fakerton")
   end  
 
-  it "should create a new Marionette::Resource::File" do
-    @resource.should be_a_kind_of(Marionette::Resource)
-    @resource.should be_a_kind_of(Marionette::Resource::File)
+  it "should create a new Chef::Resource::File" do
+    @resource.should be_a_kind_of(Chef::Resource)
+    @resource.should be_a_kind_of(Chef::Resource::File)
   end
   
   it "should have a name" do
