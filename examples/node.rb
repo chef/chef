@@ -14,3 +14,4 @@ that "is a cool ass trick"
 # Nodes should have recipes
 ##
 recipes "operations-master", "operations-monitoring"
+
