@@ -14,7 +14,7 @@ file "/etc/nsswitch.conf" do
   owner  "root"
   group  "root" 
   mode   0644
-  notify :restart, resources(:service => "openldap"), :now
+  notifies :restart, resources("service[openldap]"), :immediately
 end
 
 file "/etc/ldap.conf" do
