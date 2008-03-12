@@ -553,7 +553,7 @@ span.run100 {
 </style>
     </head>
   <body><h3>C0 code coverage information</h3>
-    <p>Generated on Mon Mar 10 14:15:47 -0700 2008 with <a href='http://eigenclass.org/hiki/rcov'>rcov 0.8.1.2</a>
+    <p>Generated on Wed Mar 12 09:52:36 -0700 2008 with <a href='http://eigenclass.org/hiki/rcov'>rcov 0.8.1.2</a>
       </p>
     <hr/>
     <pre><span class='marked0'>Code reported as executed by Ruby looks like this...
@@ -679,7 +679,7 @@ span.run100 {
 </span><span class="marked1"><a name="line79"></a>79       if args.length != 0
 </span><span class="marked0"><a name="line80"></a>80         @attribute[symbol] = args.length == 1 ? args[0] : args
 </span><span class="inferred1"><a name="line81"></a>81       else
-</span><span class="marked0"><a name="line82"></a>82         if self[symbol]
+</span><span class="marked0"><a name="line82"></a>82         if @attribute.has_key?(symbol)
 </span><span class="marked1"><a name="line83"></a>83           @attribute[symbol]
 </span><span class="inferred0"><a name="line84"></a>84         else
 </span><span class="marked1"><a name="line85"></a>85           raise ArgumentError, &quot;Attribute #{symbol.to_s} is not defined!&quot;

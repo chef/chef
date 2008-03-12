@@ -553,7 +553,7 @@ span.run100 {
 </style>
     </head>
   <body><h3>C0 code coverage information</h3>
-    <p>Generated on Mon Mar 10 14:15:48 -0700 2008 with <a href='http://eigenclass.org/hiki/rcov'>rcov 0.8.1.2</a>
+    <p>Generated on Wed Mar 12 09:52:36 -0700 2008 with <a href='http://eigenclass.org/hiki/rcov'>rcov 0.8.1.2</a>
       </p>
     <hr/>
     <pre><span class='marked0'>Code reported as executed by Ruby looks like this...
@@ -625,11 +625,11 @@ span.run100 {
 </span><span class="inferred0"><a name="line25"></a>25     
 </span><span class="marked1"><a name="line26"></a>26     include Chef::Mixin::FromFile
 </span><span class="inferred0"><a name="line27"></a>27         
-</span><span class="marked1"><a name="line28"></a>28     attr_accessor :module_name, :recipe_name, :recipe, :node, :collection, 
+</span><span class="marked1"><a name="line28"></a>28     attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :collection, 
 </span><span class="inferred0"><a name="line29"></a>29                   :definitions, :config, :params
 </span><span class="inferred1"><a name="line30"></a>30     
-</span><span class="marked0"><a name="line31"></a>31     def initialize(module_name, recipe_name, node, collection=nil, definitions=nil, config=nil)
-</span><span class="marked1"><a name="line32"></a>32       @module_name = module_name
+</span><span class="marked0"><a name="line31"></a>31     def initialize(cookbook_name, recipe_name, node, collection=nil, definitions=nil, config=nil)
+</span><span class="marked1"><a name="line32"></a>32       @cookbook_name = cookbook_name
 </span><span class="marked0"><a name="line33"></a>33       @recipe_name = recipe_name
 </span><span class="marked1"><a name="line34"></a>34       @node = node
 </span><span class="marked0"><a name="line35"></a>35       if collection
@@ -662,7 +662,7 @@ span.run100 {
 </span><span class="marked1"><a name="line62"></a>62       if @definitions.has_key?(method_symbol)
 </span><span class="marked0"><a name="line63"></a>63         new_def = @definitions[method_symbol].dup
 </span><span class="marked1"><a name="line64"></a>64         new_def.instance_eval(&amp;block)
-</span><span class="marked0"><a name="line65"></a>65         new_recipe = Chef::Recipe.new(@module_name, @recipe_name, @node, @collection, @definitions, @config)
+</span><span class="marked0"><a name="line65"></a>65         new_recipe = Chef::Recipe.new(@cookbook_name, @recipe_name, @node, @collection, @definitions, @config)
 </span><span class="marked1"><a name="line66"></a>66         new_recipe.params = new_def.params
 </span><span class="marked0"><a name="line67"></a>67         new_recipe.instance_eval(&amp;new_def.recipe)
 </span><span class="inferred1"><a name="line68"></a>68       else

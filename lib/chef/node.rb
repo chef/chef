@@ -79,7 +79,7 @@ class Chef
       if args.length != 0
         @attribute[symbol] = args.length == 1 ? args[0] : args
       else
-        if self[symbol]
+        if @attribute.has_key?(symbol)
           @attribute[symbol]
         else
           raise ArgumentError, "Attribute #{symbol.to_s} is not defined!"

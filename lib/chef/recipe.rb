@@ -25,11 +25,11 @@ class Chef
     
     include Chef::Mixin::FromFile
         
-    attr_accessor :module_name, :recipe_name, :recipe, :node, :collection, 
+    attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :collection, 
                   :definitions, :config, :params
     
-    def initialize(module_name, recipe_name, node, collection=nil, definitions=nil, config=nil)
-      @module_name = module_name
+    def initialize(cookbook_name, recipe_name, node, collection=nil, definitions=nil, config=nil)
+      @cookbook_name = cookbook_name
       @recipe_name = recipe_name
       @node = node
       if collection
@@ -62,7 +62,7 @@ class Chef
       if @definitions.has_key?(method_symbol)
         new_def = @definitions[method_symbol].dup
         new_def.instance_eval(&block)
-        new_recipe = Chef::Recipe.new(@module_name, @recipe_name, @node, @collection, @definitions, @config)
+        new_recipe = Chef::Recipe.new(@cookbook_name, @recipe_name, @node, @collection, @definitions, @config)
         new_recipe.params = new_def.params
         new_recipe.instance_eval(&new_def.recipe)
       else

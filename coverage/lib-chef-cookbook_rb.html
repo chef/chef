@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang='en' xml:lang='en' xmlns='http://www.w3.org/1999/xhtml'><head><title>lib/chef/resource.rb - C0 code coverage information</title>
+<html lang='en' xml:lang='en' xmlns='http://www.w3.org/1999/xhtml'><head><title>lib/chef/cookbook.rb - C0 code coverage information</title>
     <style type='text/css'>body { background-color: rgb(240, 240, 245); }</style>
     <style type='text/css'>span.cross-ref-title {
  font-size: 140%;
@@ -569,11 +569,11 @@ span.run100 {
       <td class='heading'>Code coverage</td>
       </tr>
     </thead>
-  <tbody><tr class='light'><td><a href='lib-chef-resource_rb.html'>lib/chef/resource.rb</a>
+  <tbody><tr class='light'><td><a href='lib-chef-cookbook_rb.html'>lib/chef/cookbook.rb</a>
         </td>
-      <td class='lines_total'><tt>123</tt>
+      <td class='lines_total'><tt>108</tt>
         </td>
-      <td class='lines_code'><tt>90</tt>
+      <td class='lines_code'><tt>79</tt>
         </td>
       <td><table cellspacing='0' cellpadding='0' align='right'><tr><td><tt class='coverage_total'>100.0%</tt>
               &nbsp;</td>
@@ -618,109 +618,94 @@ span.run100 {
 </span><span class="inferred1"><a name="line18"></a> 18 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 </span><span class="inferred0"><a name="line19"></a> 19 # 
 </span><span class="inferred1"><a name="line20"></a> 20 
-</span><span class="marked0"><a name="line21"></a> 21 require File.join(File.dirname(__FILE__), &quot;mixin&quot;, &quot;check_helper&quot;)
-</span><span class="marked1"><a name="line22"></a> 22 require 'yaml'
-</span><span class="inferred0"><a name="line23"></a> 23 
-</span><span class="marked1"><a name="line24"></a> 24 class Chef
-</span><span class="marked0"><a name="line25"></a> 25   class Resource
+</span><span class="marked0"><a name="line21"></a> 21 class Chef
+</span><span class="marked1"><a name="line22"></a> 22   class Cookbook
+</span><span class="inferred0"><a name="line23"></a> 23     
+</span><span class="marked1"><a name="line24"></a> 24     attr_accessor :attribute_files, :definition_files, :name
+</span><span class="marked0"><a name="line25"></a> 25     attr_reader :recipe_files
 </span><span class="inferred1"><a name="line26"></a> 26     
-</span><span class="marked0"><a name="line27"></a> 27     include Chef::Mixin::CheckHelper
-</span><span class="inferred1"><a name="line28"></a> 28     
-</span><span class="marked0"><a name="line29"></a> 29     attr_accessor :tag, :actions, :config, :params
-</span><span class="marked1"><a name="line30"></a> 30     attr_reader :name, :noop, :resource_name, :collection, :notifies, :subscribes
-</span><span class="inferred0"><a name="line31"></a> 31     
-</span><span class="marked1"><a name="line32"></a> 32     def initialize(name, collection=nil, config=nil)
-</span><span class="marked0"><a name="line33"></a> 33       @name = name
-</span><span class="marked1"><a name="line34"></a> 34       if collection
-</span><span class="marked0"><a name="line35"></a> 35         @collection = collection
-</span><span class="inferred1"><a name="line36"></a> 36       else
-</span><span class="marked0"><a name="line37"></a> 37         @collection = Chef::ResourceCollection.new()
+</span><span class="marked0"><a name="line27"></a> 27     def initialize(name)
+</span><span class="marked1"><a name="line28"></a> 28       @name = name
+</span><span class="marked0"><a name="line29"></a> 29       @attribute_files = Array.new
+</span><span class="marked1"><a name="line30"></a> 30       @definition_files = Array.new
+</span><span class="marked0"><a name="line31"></a> 31       @recipe_files = Array.new
+</span><span class="marked1"><a name="line32"></a> 32       @recipe_names = Hash.new
+</span><span class="inferred0"><a name="line33"></a> 33     end
+</span><span class="inferred1"><a name="line34"></a> 34     
+</span><span class="marked0"><a name="line35"></a> 35     def load_attributes(node)
+</span><span class="marked1"><a name="line36"></a> 36       unless node.kind_of?(Chef::Node)
+</span><span class="marked0"><a name="line37"></a> 37         raise ArgumentError, &quot;You must pass a Chef::Node to load_attributes!&quot;
 </span><span class="inferred1"><a name="line38"></a> 38       end
-</span><span class="marked0"><a name="line39"></a> 39       if config
-</span><span class="marked1"><a name="line40"></a> 40         @config = config
-</span><span class="inferred0"><a name="line41"></a> 41       else
-</span><span class="marked1"><a name="line42"></a> 42         @config = Chef::Config.new()
-</span><span class="inferred0"><a name="line43"></a> 43       end
-</span><span class="marked1"><a name="line44"></a> 44       @tag = [ name.to_s ]
-</span><span class="marked0"><a name="line45"></a> 45       @noop = nil
-</span><span class="marked1"><a name="line46"></a> 46       @before = nil
-</span><span class="marked0"><a name="line47"></a> 47       @actions = Hash.new
-</span><span class="marked1"><a name="line48"></a> 48       @params = Hash.new
-</span><span class="inferred0"><a name="line49"></a> 49     end
-</span><span class="inferred1"><a name="line50"></a> 50     
-</span><span class="marked0"><a name="line51"></a> 51     def name(name=nil)
-</span><span class="marked1"><a name="line52"></a> 52       set_if_args(@name, name) do
-</span><span class="marked0"><a name="line53"></a> 53         raise ArgumentError, &quot;name must be a string!&quot; unless name.kind_of?(String)
-</span><span class="marked1"><a name="line54"></a> 54         @name = name
-</span><span class="inferred0"><a name="line55"></a> 55       end
-</span><span class="marked1"><a name="line56"></a> 56     end
-</span><span class="inferred0"><a name="line57"></a> 57     
-</span><span class="marked1"><a name="line58"></a> 58     def noop(tf=nil)
-</span><span class="marked0"><a name="line59"></a> 59       set_if_args(@noop, tf) do 
-</span><span class="marked1"><a name="line60"></a> 60         raise ArgumentError, &quot;noop must be true or false!&quot; unless tf == true || tf == false
-</span><span class="marked0"><a name="line61"></a> 61         @noop = tf
-</span><span class="inferred1"><a name="line62"></a> 62       end
-</span><span class="marked0"><a name="line63"></a> 63     end
-</span><span class="inferred1"><a name="line64"></a> 64     
-</span><span class="marked0"><a name="line65"></a> 65     def notifies(action, resources, timing=:delayed)
-</span><span class="marked1"><a name="line66"></a> 66       timing = check_timing(timing)
-</span><span class="marked0"><a name="line67"></a> 67       rarray = resources.kind_of?(Array) ? resources : [ resources ]
-</span><span class="marked1"><a name="line68"></a> 68       rarray.each do |resource|
-</span><span class="marked0"><a name="line69"></a> 69         action_sym = action.to_sym
-</span><span class="marked1"><a name="line70"></a> 70         if @actions.has_key?(action_sym)
-</span><span class="marked0"><a name="line71"></a> 71           @actions[action_sym][timing] &lt;&lt; resource
-</span><span class="inferred1"><a name="line72"></a> 72         else
-</span><span class="marked0"><a name="line73"></a> 73           @actions[action_sym] = Hash.new
-</span><span class="marked1"><a name="line74"></a> 74           @actions[action_sym][:delayed] = Array.new
-</span><span class="marked0"><a name="line75"></a> 75           @actions[action_sym][:immediate] = Array.new   
-</span><span class="marked1"><a name="line76"></a> 76           @actions[action_sym][timing] &lt;&lt; resource
-</span><span class="inferred0"><a name="line77"></a> 77         end
-</span><span class="inferred1"><a name="line78"></a> 78       end
-</span><span class="marked0"><a name="line79"></a> 79       true
-</span><span class="inferred1"><a name="line80"></a> 80     end
-</span><span class="inferred0"><a name="line81"></a> 81     
-</span><span class="marked1"><a name="line82"></a> 82     def resources(*args)
-</span><span class="marked0"><a name="line83"></a> 83       @collection.resources(*args)
-</span><span class="marked1"><a name="line84"></a> 84     end
-</span><span class="inferred0"><a name="line85"></a> 85     
-</span><span class="marked1"><a name="line86"></a> 86     def subscribes(action, resources, timing=:delayed)
-</span><span class="marked0"><a name="line87"></a> 87       timing = check_timing(timing)
-</span><span class="marked1"><a name="line88"></a> 88       rarray = resources.kind_of?(Array) ? resources : [ resources ]
-</span><span class="marked0"><a name="line89"></a> 89       rarray.each do |resource|
-</span><span class="marked1"><a name="line90"></a> 90         action_sym = action.to_sym
-</span><span class="marked0"><a name="line91"></a> 91         if resource.actions.has_key?(action_sym)
-</span><span class="marked1"><a name="line92"></a> 92           resource.actions[action_sym][timing] &lt;&lt; self
-</span><span class="inferred0"><a name="line93"></a> 93         else       
-</span><span class="marked1"><a name="line94"></a> 94           resource.actions[action_sym] = Hash.new
-</span><span class="marked0"><a name="line95"></a> 95           resource.actions[action_sym][:delayed] = Array.new
-</span><span class="marked1"><a name="line96"></a> 96           resource.actions[action_sym][:immediate] = Array.new   
-</span><span class="marked0"><a name="line97"></a> 97           resource.actions[action_sym][timing] &lt;&lt; self
-</span><span class="inferred1"><a name="line98"></a> 98         end
-</span><span class="inferred0"><a name="line99"></a> 99       end
-</span><span class="marked1"><a name="line100"></a>100       true
-</span><span class="inferred0"><a name="line101"></a>101     end
-</span><span class="inferred1"><a name="line102"></a>102     
-</span><span class="marked0"><a name="line103"></a>103     def is(*args)
-</span><span class="marked1"><a name="line104"></a>104       return *args
-</span><span class="marked0"><a name="line105"></a>105     end
+</span><span class="marked0"><a name="line39"></a> 39       @attribute_files.each do |file|
+</span><span class="marked1"><a name="line40"></a> 40         node.from_file(file)
+</span><span class="inferred0"><a name="line41"></a> 41       end
+</span><span class="marked1"><a name="line42"></a> 42       node
+</span><span class="inferred0"><a name="line43"></a> 43     end
+</span><span class="inferred1"><a name="line44"></a> 44     
+</span><span class="marked0"><a name="line45"></a> 45     def load_definitions
+</span><span class="marked1"><a name="line46"></a> 46       results = Hash.new
+</span><span class="marked0"><a name="line47"></a> 47       @definition_files.each do |file|
+</span><span class="marked1"><a name="line48"></a> 48         resourcedef = Chef::ResourceDefinition.new
+</span><span class="marked0"><a name="line49"></a> 49         resourcedef.from_file(file)
+</span><span class="marked1"><a name="line50"></a> 50         results[resourcedef.name] = resourcedef
+</span><span class="inferred0"><a name="line51"></a> 51       end
+</span><span class="marked1"><a name="line52"></a> 52       results
+</span><span class="inferred0"><a name="line53"></a> 53     end
+</span><span class="inferred1"><a name="line54"></a> 54     
+</span><span class="marked0"><a name="line55"></a> 55     def recipe_files=(*args)
+</span><span class="marked1"><a name="line56"></a> 56       @recipe_files = args.flatten
+</span><span class="marked0"><a name="line57"></a> 57       @recipe_files.each_index do |i|
+</span><span class="marked1"><a name="line58"></a> 58         file = @recipe_files[i]
+</span><span class="marked0"><a name="line59"></a> 59         case file
+</span><span class="marked1"><a name="line60"></a> 60         when /(.+\/)(.+).rb$/
+</span><span class="marked0"><a name="line61"></a> 61           @recipe_names[$2] = i
+</span><span class="marked1"><a name="line62"></a> 62         when /(.+).rb$/
+</span><span class="marked0"><a name="line63"></a> 63           @recipe_names[$1] = i
+</span><span class="inferred1"><a name="line64"></a> 64         else  
+</span><span class="marked0"><a name="line65"></a> 65           @recipe_names[file] = i
+</span><span class="inferred1"><a name="line66"></a> 66         end
+</span><span class="inferred0"><a name="line67"></a> 67       end
+</span><span class="marked1"><a name="line68"></a> 68       @recipe_files
+</span><span class="inferred0"><a name="line69"></a> 69     end
+</span><span class="inferred1"><a name="line70"></a> 70     
+</span><span class="marked0"><a name="line71"></a> 71     def recipe?(name)
+</span><span class="marked1"><a name="line72"></a> 72       lookup_name = name
+</span><span class="marked0"><a name="line73"></a> 73       if name =~ /(.+)::(.+)/
+</span><span class="marked1"><a name="line74"></a> 74         cookbook_name = $1
+</span><span class="marked0"><a name="line75"></a> 75         lookup_name = $2
+</span><span class="marked1"><a name="line76"></a> 76         return false unless cookbook_name == @name
+</span><span class="inferred0"><a name="line77"></a> 77       end
+</span><span class="marked1"><a name="line78"></a> 78       @recipe_names.has_key?(lookup_name)
+</span><span class="inferred0"><a name="line79"></a> 79     end
+</span><span class="inferred1"><a name="line80"></a> 80     
+</span><span class="marked0"><a name="line81"></a> 81     def recipes
+</span><span class="marked1"><a name="line82"></a> 82       results = Array.new
+</span><span class="marked0"><a name="line83"></a> 83       @recipe_names.each_key do |rname|
+</span><span class="marked1"><a name="line84"></a> 84         results &lt;&lt; &quot;#{@name}::#{rname}&quot;
+</span><span class="inferred0"><a name="line85"></a> 85       end
+</span><span class="marked1"><a name="line86"></a> 86       results
+</span><span class="inferred0"><a name="line87"></a> 87     end
+</span><span class="inferred1"><a name="line88"></a> 88     
+</span><span class="marked0"><a name="line89"></a> 89     def load_recipe(name, node, collection=nil, definitions=nil, config=nil)
+</span><span class="marked1"><a name="line90"></a> 90       cookbook_name = @name
+</span><span class="marked0"><a name="line91"></a> 91       recipe_name = nil
+</span><span class="marked1"><a name="line92"></a> 92       case name
+</span><span class="marked0"><a name="line93"></a> 93       when /^(.+)::(.+)$/
+</span><span class="marked1"><a name="line94"></a> 94         recipe_name = $2
+</span><span class="inferred0"><a name="line95"></a> 95       else
+</span><span class="marked1"><a name="line96"></a> 96         recipe_name = name
+</span><span class="inferred0"><a name="line97"></a> 97       end
+</span><span class="marked1"><a name="line98"></a> 98       unless @recipe_names.has_key?(recipe_name)
+</span><span class="marked0"><a name="line99"></a> 99         raise ArgumentError, &quot;Cannot find a recipe matching #{recipe_name} in cookbook #{@name}&quot;
+</span><span class="inferred1"><a name="line100"></a>100       end
+</span><span class="marked0"><a name="line101"></a>101       recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, 
+</span><span class="inferred1"><a name="line102"></a>102                                 collection, definitions, config)
+</span><span class="marked0"><a name="line103"></a>103       recipe.from_file(@recipe_files[@recipe_names[recipe_name]])
+</span><span class="marked1"><a name="line104"></a>104       recipe
+</span><span class="inferred0"><a name="line105"></a>105     end
 </span><span class="inferred1"><a name="line106"></a>106     
-</span><span class="marked0"><a name="line107"></a>107     def to_s
-</span><span class="marked1"><a name="line108"></a>108       &quot;#{@resource_name}[#{@name}]&quot;
-</span><span class="marked0"><a name="line109"></a>109     end
-</span><span class="inferred1"><a name="line110"></a>110     
-</span><span class="marked0"><a name="line111"></a>111     private
-</span><span class="inferred1"><a name="line112"></a>112       
-</span><span class="marked0"><a name="line113"></a>113       def check_timing(timing)
-</span><span class="marked1"><a name="line114"></a>114         unless timing == :delayed || timing == :immediate || timing == :immediately
-</span><span class="marked0"><a name="line115"></a>115           raise ArgumentError, &quot;Timing must be :delayed or :immediate(ly), you said #{timing}&quot;
-</span><span class="inferred1"><a name="line116"></a>116         end
-</span><span class="marked0"><a name="line117"></a>117         if timing == :immediately
-</span><span class="marked1"><a name="line118"></a>118           timing = :immediate
-</span><span class="inferred0"><a name="line119"></a>119         end
-</span><span class="marked1"><a name="line120"></a>120         timing
-</span><span class="inferred0"><a name="line121"></a>121       end
-</span><span class="inferred1"><a name="line122"></a>122   end
-</span><span class="inferred0"><a name="line123"></a>123 end
+</span><span class="inferred0"><a name="line107"></a>107   end
+</span><span class="inferred1"><a name="line108"></a>108 end
 </span></pre><hr/>
     <p>Generated using the <a href='http://eigenclass.org/hiki.rb?rcov'>rcov code coverage analysis tool for Ruby</a>
    version 0.8.1.2.</p>
