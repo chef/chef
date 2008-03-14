@@ -1,3 +1,4 @@
+
 case chef_env
 when "prod"
   ldap_server "ops1prod"
