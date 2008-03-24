@@ -21,14 +21,13 @@
 class Chef
   class Resource
     class File < Chef::Resource
-      attr_reader :backup, :checksum, :insure, :group, :mode, :owner, :path
-      
+        
       def initialize(name, collection=nil, config=nil)
         @resource_name = :file
         super(name, collection, config)
         @path = name
         @backup = true
-        @checksum = "md5sum"
+        @action = "create"
       end
 
       def backup(arg=nil)
@@ -45,21 +44,21 @@ class Chef
       def checksum(arg=nil)
         set_if_args(@checksum, arg) do
           case arg
-          when "md5sum", "mtime"
+          when /^[a-zA-Z0-9]{32}$/ # md5sum
             @checksum = arg
           else
-            raise ArgumentError, "checksum must be md5sum or mtime!"
+            raise ArgumentError, "checksum must be an md5sum!"
           end
         end
       end
       
-      def insure(arg=nil)
-        set_if_args(@insure, arg) do 
+      def action(arg=nil)
+        set_if_args(@action, arg) do 
           case arg
-          when "absent", "present"
-            @insure = arg
+          when "create", "delete"
+            @action = arg
           else
-            raise ArgumentError, "insure must be absent or present!"
+            raise ArgumentError, "action must be create or delete!"
           end
         end
       end

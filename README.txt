@@ -10,7 +10,7 @@ I'm in ur netwerk, cookin up yer servers. :)
 
 == FEATURES/PROBLEMS:
 
-* Uses a Ruby DSL in place of the puppet language
+* Uses a Ruby pidgin language in place of the puppet language
 * Drastically simpler implementation
 
 == SYNOPSIS:

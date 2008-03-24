@@ -1,6 +1,6 @@
 
 file "/etc/nsswitch.conf" do 
-  insure "present"
+  action "create"
   owner  "root"
   group  "root" 
   mode   0644

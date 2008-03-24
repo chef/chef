@@ -34,6 +34,10 @@ describe Chef::Resource::File do
     @resource.name.should eql("fakey_fakerton")
   end
   
+  it "should have a default action of 'create'" do
+    @resource.action.should eql("create")
+  end
+  
   it "should be set to back up files by default" do
     @resource.backup.should eql(true)
   end
@@ -45,20 +49,15 @@ describe Chef::Resource::File do
     lambda { @resource.backup "blues" }.should raise_error(ArgumentError)
   end
   
-  it "should use the md5sum for checking changes by default" do
-    @resource.checksum.should eql("md5sum")
+  it "should accept an md5sum for checksum" do
+    lambda { @resource.checksum "bfda9e7a13afb123433667c2c7801d11" }.should_not raise_error(ArgumentError)
+    lambda { @resource.checksum "monkey!" }.should raise_error(ArgumentError)
   end
   
-  it "should accept md5sum or mtime for checksum" do
-    lambda { @resource.checksum "md5sum" }.should_not raise_error(ArgumentError)
-    lambda { @resource.checksum "mtime" }.should_not raise_error(ArgumentError)
-    lambda { @resource.checksum "blues" }.should raise_error(ArgumentError)
-  end
-  
-  it "should accept absent or present for insure" do
-    lambda { @resource.insure "absent" }.should_not raise_error(ArgumentError)
-    lambda { @resource.insure "present" }.should_not raise_error(ArgumentError)
-    lambda { @resource.insure "blues" }.should raise_error(ArgumentError)
+  it "should accept create or delete for action" do
+    lambda { @resource.action "create" }.should_not raise_error(ArgumentError)
+    lambda { @resource.action "delete" }.should_not raise_error(ArgumentError)
+    lambda { @resource.action "blues" }.should raise_error(ArgumentError)
   end
   
   it "should accept a group name or id for group" do
