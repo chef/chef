@@ -32,6 +32,7 @@ class Chef
           @current_resource.owner(cstats.uid)
           @current_resource.group(cstats.gid)
           @current_resource.mode("%o" % (cstats.mode & 007777))
+          checksum
         end
         @current_resource
       end
@@ -72,7 +73,7 @@ class Chef
           @set_group_id = @new_resource.group.to_i
           @set_group_id == @current_resource.group
         else
-          group_info = Etc.getpwnam(@new_resource.group)
+          group_info = Etc.getgrnam(@new_resource.group)
           @set_group_id = group_info.gid
           @set_group_id == @current_resource.group
         end

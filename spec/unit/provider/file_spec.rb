@@ -127,6 +127,30 @@ describe Chef::Provider::File do
     end
   end
   
+  it "should compare the current group with the requested group" do
+    @provider.load_current_resource
+    @provider.new_resource.stub!(:group).and_return("adam")
+    Etc.stub!(:getgrnam).and_return(
+      OpenStruct.new(
+        :name => "adam",
+        :gid => 501
+      )
+    )
+    @provider.current_resource.group(501)
+    @provider.compare_group.should eql(true)
+    
+    @provider.current_resource.group(777)
+    @provider.compare_group.should eql(false)
+    
+    @provider.new_resource.stub!(:group).and_return(501)
+    @provider.current_resource.group(501)
+    @provider.compare_group.should eql(true)
+    
+    @provider.new_resource.stub!(:group).and_return("501")
+    @provider.current_resource.group(501)
+    @provider.compare_group.should eql(true)
+  end
+  
   it "should set the group on the file to the requested group" do
     @provider.load_current_resource
     @provider.new_resource.stub!(:group).and_return(9982398)
@@ -135,7 +159,7 @@ describe Chef::Provider::File do
     lambda { @provider.set_group }.should_not raise_error
   end
   
-  it "should raise an exception if you are not root and try to change ownership" do
+  it "should raise an exception if you are not root and try to change the group" do
     @provider.load_current_resource
     @provider.new_resource.stub!(:group).and_return(0)
     if Process.uid != 0
