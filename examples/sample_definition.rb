@@ -12,6 +12,15 @@ end
 define :runit_service, :directory => "/etc/sv", :downif => "/bin/false", :templatedir => nil do  
   require_recipe "runit"
   
+  validate(
+    params,
+    {
+      :directory => { :required => true },
+      :downif    => { :required => true },
+      :templatedir => { :required => false },
+    }
+  )
+  
   file "#{param[:directory]}-#{param[:name]}" do
     path    "#{param[:directory]}/#{param[:name]}"
     insure  "directory"

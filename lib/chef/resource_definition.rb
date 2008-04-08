@@ -19,11 +19,14 @@
 #
 
 require File.join(File.dirname(__FILE__), "mixin", "from_file")
+require File.join(File.dirname(__FILE__), "mixin", "params_validate")
+
 
 class Chef
   class ResourceDefinition
     
     include Chef::Mixin::FromFile
+    include Chef::Mixin::ParamsValidate
     
     attr_accessor :name, :params, :recipe
     
