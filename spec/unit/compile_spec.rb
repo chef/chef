@@ -57,9 +57,7 @@ describe Chef::Compile do
   it "should load all the recipes specified for this node" do
     @compile.load_node("compile")
     @compile.load_definitions
-    lambda { @compile.load_recipes }.should_not raise_error
-    puts @compile.resource_collection.inspect
-    
+    lambda { @compile.load_recipes }.should_not raise_error    
     @compile.resource_collection[0].to_s.should == "cat[loulou]"
     @compile.resource_collection[1].to_s.should == "cat[birthday]"
     @compile.resource_collection[2].to_s.should == "cat[peanut]"
