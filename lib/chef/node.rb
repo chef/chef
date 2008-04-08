@@ -1,7 +1,6 @@
 #
 # Chef::Node
 #
-#
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
 # License:: GNU General Public License version 2 or later
@@ -24,6 +23,9 @@
 require File.join(File.dirname(__FILE__), "mixin", "check_helper")
 require File.join(File.dirname(__FILE__), "mixin", "from_file")
 
+require 'rubygems'
+require 'json'
+
 class Chef
   class Node
     
@@ -37,6 +39,42 @@ class Chef
       @name = nil
       @attribute = Hash.new
       @recipe_list = Array.new
+    end
+    
+    # Find a Chef::Node by fqdn.  Will search first for Chef::Config["node_path"]/fqdn.rb, then
+    # hostname.rb, then default.rb.
+    # 
+    # Returns a new Chef::Node object.
+    #
+    # Raises an ArgumentError if it cannot find the node. 
+    def self.find(fqdn)
+      node_file = nil
+      host_parts = fqdn.split(".")
+      hostname = host_parts[0]
+
+      if File.exists?(File.join(Chef::Config[:node_path], "#{fqdn}.rb"))
+        node_file = File.join(Chef::Config[:node_path], "#{fqdn}.rb")
+      elsif File.exists?(File.join(Chef::Config[:node_path], "#{hostname}.rb"))
+        node_file = File.join(Chef::Config[:node_path], "#{hostname}.rb")
+      elsif File.exists?(File.join(Chef::Config[:node_path], "default.rb"))
+        node_file = File.join(Chef::Config[:node_path], "default.rb")
+      else
+        raise ArgumentError, "Cannot find a node matching #{fqdn}, not even with default.rb!"
+      end
+      chef_node = Chef::Node.new()
+      chef_node.from_file(node_file)
+      chef_node
+    end
+
+    # Returns an array of nodes available, based on the list of files present.
+    def self.list
+      results = Array.new
+      Dir[File.join(Chef::Config[:node_path], "*.rb")].sort.each do |file|
+        mr = file.match(/^.+\/(.+)\.rb$/)
+        node_name = mr[1]
+        results << node_name
+      end
+      results
     end
     
     # Set the name of this Node, or return the current name.
@@ -60,6 +98,11 @@ class Chef
       else
         nil
       end
+    end
+    
+    # Set an attribute of this node
+    def []=(attrib, value)
+      @attribute[attrib] = value
     end
     
     # Iterates over each attribute, passing the attribute and value to the block.
@@ -106,6 +149,23 @@ class Chef
           raise ArgumentError, "Attribute #{symbol.to_s} is not defined!"
         end
       end
+    end
+    
+    # Serialize this Node as json
+    def to_json()
+      result_object = {
+        "name" => @name,
+        "type" => "Chef::Node",
+        "attributes" => Hash.new,
+        "recipes" => Array.new
+      }
+      each_attribute do |a,v|
+        result_object["attributes"][a] = v
+      end
+      recipes.each do |r|
+        result_object["recipes"] << r
+      end
+      result_object.to_json
     end
     
   end

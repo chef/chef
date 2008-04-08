@@ -30,6 +30,7 @@ class Chef
       @definition_files = Array.new
       @recipe_files = Array.new
       @recipe_names = Hash.new
+      @loaded_attributes = false
     end
     
     def load_attributes(node)
@@ -39,6 +40,7 @@ class Chef
       @attribute_files.each do |file|
         node.from_file(file)
       end
+      @loaded_atributes = true
       node
     end
     
@@ -94,6 +96,10 @@ class Chef
       
       unless @recipe_names.has_key?(recipe_name)
         raise ArgumentError, "Cannot find a recipe matching #{recipe_name} in cookbook #{@name}"
+      end
+      Chef::Log.debug("Found recipe #{recipe_name} in cookbook #{cookbook_name}") if Chef::Log.debug?
+      unless @loaded_attributes
+        load_attributes(node)
       end
       recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, 
                                 collection, definitions, cookbook_loader)

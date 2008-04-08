@@ -1,5 +1,5 @@
 define :openldap_server, :mothra => "a big monster" do
-  cat "#{param[:name]}" do
+  cat "#{params[:name]}" do
      pretty_kitty true
   end
 end

@@ -1,15 +1,14 @@
 ##
 # Nodes should have a unique name
 ##
-name "test.example.com short"
+name "latte"
 
 ##
 # Nodes can set arbitrary arguments
 ##
-sunshine "in"
-something "else"
+owner "Adam Jacob"
 
 ##
 # Nodes should have recipes
 ##
-recipes "operations-master", "operations-monitoring"
+recipes "tempfile", "fakefile"

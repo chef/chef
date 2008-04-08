@@ -37,7 +37,10 @@ class Chef
     include Chef::Mixin::CheckHelper
   
     @configuration = {
-      :cookbook_path => [ "/etc/chef/site-cookbook", "/etc/chef/cookbook" ]
+      :cookbook_path => [ "/etc/chef/site-cookbook", "/etc/chef/cookbook" ],
+      :node_path => "/etc/chef/node",
+      :log_level => :info,
+      :log_location => STDOUT
     }
     
     class << self

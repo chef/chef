@@ -81,6 +81,7 @@ class Chef
         new_def.instance_eval(&block)
         new_recipe = Chef::Recipe.new(@cookbook_name, @recipe_name, @node, @collection, @definitions, @cookbook_loader)
         new_recipe.params = new_def.params
+        new_recipe.params[:name] = args[0]
         new_recipe.instance_eval(&new_def.recipe)
       else
         method_name = method_symbol.to_s

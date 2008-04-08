@@ -30,14 +30,24 @@ describe Chef::ResourceCollection do
     @rc.should be_kind_of(Chef::ResourceCollection)
   end
   
-  it "should accept Chef::Resources" do
+  it "should accept Chef::Resources through [index]" do
     lambda { @rc[0] = @resource }.should_not raise_error
     lambda { @rc[0] = "string" }.should raise_error
+  end
+  
+  it "should not accept duplicate resources [index]=" do
+    @rc[0] = @resource
+    lambda { @rc[1] = @resource }.should raise_error(ArgumentError)
   end
   
   it "should accept Chef::Resources through pushing" do
     lambda { @rc.push(@resource) }.should_not raise_error
     lambda { @rc.push("string") }.should raise_error
+  end
+  
+  it "should not accept duplicate resources through pushing" do
+    lambda { @rc.push(@resource) }.should_not raise_error
+    lambda { @rc.push(@resource) }.should raise_error(ArgumentError)
   end
   
   it "should allow you to fetch Chef::Resources by position" do
@@ -47,6 +57,11 @@ describe Chef::ResourceCollection do
   
   it "should accept the << operator" do
     lambda { @rc << @resource }.should_not raise_error
+  end
+  
+  it "should not accept duplicate resources through the << operator" do
+    lambda { @rc << @resource }.should_not raise_error
+    lambda { @rc << @resource }.should raise_error(ArgumentError)
   end
   
   it "should allow you to iterate over every resource in the collection" do

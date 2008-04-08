@@ -22,7 +22,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Recipe do
   before(:each) do
-    @recipe = Chef::Recipe.new("hjk", "test", "node")
+    @recipe = Chef::Recipe.new("hjk", "test", Chef::Node.new)
   end
  
   it "should load a two word (zen_master) resource" do

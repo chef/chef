@@ -1,7 +1,7 @@
 ##
 # Nodes should have a unique name
 ##
-name "test.example.com short"
+name "test.example.com default"
 
 ##
 # Nodes can set arbitrary arguments

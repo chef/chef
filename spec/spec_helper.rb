@@ -20,3 +20,4 @@
 require File.join(File.dirname(__FILE__), "..", "lib", "chef")
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
 
+Chef::Config.log_level(:fatal)
