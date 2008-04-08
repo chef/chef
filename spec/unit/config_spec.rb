@@ -18,55 +18,70 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-require File.join(File.dirname(__FILE__), "..", "spec_helper")
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Config do
-  before(:each) do
-    @config = Chef::Config.new
-  end
   
   it "should load a .rb file in context" do    
     lambda { 
-      Chef::Config.load_file(File.join(File.dirname(__FILE__), "..", "data", "config.rb"))
+      Chef::Config.from_file(File.join(File.dirname(__FILE__), "..", "data", "config.rb"))
     }.should_not raise_error    
   end
   
-  it "should raise a NoMethodError with an explanation if you have a bad config file" do
+  it "should raise an ArgumentError with an explanation if you try and set a non-existent variable" do
     lambda { 
-      Chef::Config.load_file(File.join(File.dirname(__FILE__), "..", "data", "bad-config.rb")) 
-    }.should raise_error(NoMethodError)
+      Chef::Config.from_file(File.join(File.dirname(__FILE__), "..", "data", "bad-config.rb")) 
+    }.should raise_error(ArgumentError)
   end
   
   it "should raise an IOError if it can't find the file" do
     lambda { 
-      Chef::Config.load_file("/tmp/timmytimmytimmy")
+      Chef::Config.from_file("/tmp/timmytimmytimmy")
     }.should raise_error(IOError)
   end
   
   it "should have a default cookbook_path" do
-    @config.cookbook_path.should be_kind_of(Array)
+    Chef::Config.cookbook_path.should be_kind_of(Array)
   end
   
   it "should allow you to set a cookbook_path with a string" do
-    @config.cookbook_path("/etc/chef/cookbook")
-    @config.cookbook_path.should eql(["/etc/chef/cookbook"])
+    Chef::Config.cookbook_path("/etc/chef/cookbook")
+    Chef::Config.cookbook_path.should eql("/etc/chef/cookbook")
   end
   
   it "should allow you to set a cookbook_path with multiple strings" do
-    @config.cookbook_path("/etc/chef/cookbook", "/etc/chef/upstream-cookbooks")
-    @config.cookbook_path.should eql([ 
+    Chef::Config.cookbook_path("/etc/chef/cookbook", "/etc/chef/upstream-cookbooks")
+    Chef::Config.cookbook_path.should eql([ 
       "/etc/chef/cookbook", 
       "/etc/chef/upstream-cookbooks" 
     ])
   end
   
   it "should allow you to set a cookbook_path with an array" do
-    @config.cookbook_path ["one", "two"]
-    @config.cookbook_path.should eql(["one", "two"])
+    Chef::Config.cookbook_path ["one", "two"]
+    Chef::Config.cookbook_path.should eql(["one", "two"])
   end
   
-  it "should not allow you to set a cookbook_path with anything else" do
-    lambda { @config.cookbook_path :symbol }.should raise_error(ArgumentError)
+  it "should allow you to reference a value by index" do
+    Chef::Config[:cookbook_path].should be_kind_of(Array)
+  end
+  
+  it "should allow you to set a value by index" do
+    Chef::Config[:cookbook_path] = "one"
+    Chef::Config[:cookbook_path].should == "one"
+  end
+  
+  it "should allow you to set config values with a block" do
+    Chef::Config.configure do |c|
+      c[:cookbook_path] = "monkey_rabbit"
+      c[:otherthing] = "boo"
+    end
+    Chef::Config.cookbook_path.should == "monkey_rabbit"
+    Chef::Config.otherthing.should == "boo"
+  end
+  
+  it "should raise an ArgumentError if you access a config option that does not exist" do
+    lambda { Chef::Config[:snob_hobbery] }.should raise_error(ArgumentError)
   end
   
 end

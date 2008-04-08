@@ -1,3 +1,8 @@
+#
+# Chef::Mixin::FromFile 
+#
+# A mixin that adds instance_eval support to a given object.
+# 
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
 # License:: GNU General Public License version 2 or later
@@ -19,7 +24,12 @@
 
 class Chef
   module Mixin
-    module FromFile      
+    module FromFile
+    
+      # Loads a given ruby file, and runs instance_eval against it in the context of the current 
+      # object.  
+      #
+      # Raises an IOError if the file cannot be found, or is not readable.
       def from_file(filename)
         if File.exists?(filename) && File.readable?(filename)
           self.instance_eval(IO.read(filename), filename, 1)

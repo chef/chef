@@ -19,51 +19,59 @@
 #
 
 require File.join(File.dirname(__FILE__), "mixin", "check_helper")
+require File.join(File.dirname(__FILE__), "mixin", "from_file")
+
+# Chef::Config[:variable]
+# @config = Chef::Config.new()
+#
+# Chef::ConfigFast << Chef::Config
+#
+# Chef::Config.from_file(foo)
+# Chef::Resource.from_file (NoMethodError)
+# Chef::Config[:cookbook_path]
+# Chef::Config.cookbook_path
+# Chef::Config.cookbook_path "one", "two"
 
 class Chef
   class Config
-    
     include Chef::Mixin::CheckHelper
+  
+    @configuration = {
+      :cookbook_path => [ "/etc/chef/site-cookbook", "/etc/chef/cookbook" ]
+    }
     
-    def initialize
-      set_defaults
-    end
-    
-    def self.load_file(file)
-      config = Chef::Config.new
-      if File.exists?(file) && File.readable?(file)
-        begin
-          config.instance_eval(IO.read(file), file, 1)
-        rescue NoMethodError => e
-          new_message = "You probably tried to use a config variable that doesn't exist!\n"
-          new_message += e.message
-          raise e.exception(new_message)
-        end
-      else
-        raise IOError, "Cannot find or read #{file}!"
+    class << self
+      include Chef::Mixin::FromFile
+      
+      def configure(&block)
+        yield @configuration
       end
-      config
-    end
+      
+      def [](config_option)
+        if @configuration.has_key?(config_option.to_sym)
+          @configuration[config_option.to_sym]
+        else
+          raise ArgumentError, "Cannot find configuration option #{config_option.to_s}"
+        end
+      end
+      
+      def []=(config_option, value)
+        @configuration[config_option.to_sym] = value
+      end
     
-    def cookbook_path(*args)
-      if args.length == 0
-        @cookbook_path
-      else
-        flat_args = args.flatten
-        flat_args.each do |a|
-          unless a.kind_of?(String)
-            raise ArgumentError, "You must pass strings to cookbook_path!"
+      def method_missing(method_symbol, *args)
+        if @configuration.has_key?(method_symbol)
+          if args.length == 1
+            @configuration[method_symbol] = args[0]
+          elsif args.length > 1
+            @configuration[method_symbol] = args
           end
+          return @configuration[method_symbol]
+        else
+          raise ArgumentError, "Cannot find configuration option #{method_symbol.to_s}"
         end
-        @cookbook_path = flat_args
       end
-    end
-    
-    def set_defaults
-      @cookbook_path = [ 
-        "/etc/chef/site-cookbook",
-        "/etc/chef/cookbook",
-      ]
-    end
+      
+    end # class << self
   end
 end

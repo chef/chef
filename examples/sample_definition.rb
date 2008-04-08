@@ -3,6 +3,12 @@ web_server "monchichi" do
   two "something else"
 end
 
+runit_service "bobo" do
+  directory "monkey"
+  downif "/bin/false is true"
+  templatedir "something"
+end
+
 define :runit_service, :directory => "/etc/sv", :downif => "/bin/false", :templatedir => nil do  
   require_recipe "runit"
   

@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-require File.join(File.dirname(__FILE__), "..", "spec_helper")
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Cookbook do
   COOKBOOK_PATH = File.join(File.dirname(__FILE__), "..", "data", "cookbooks", "openldap")

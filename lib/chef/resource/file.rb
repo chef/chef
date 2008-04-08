@@ -22,9 +22,9 @@ class Chef
   class Resource
     class File < Chef::Resource
         
-      def initialize(name, collection=nil, config=nil)
+      def initialize(name, collection=nil)
         @resource_name = :file
-        super(name, collection, config)
+        super(name, collection)
         @path = name
         @backup = true
         @action = "create"

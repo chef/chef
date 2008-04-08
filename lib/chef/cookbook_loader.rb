@@ -21,19 +21,18 @@
 class Chef
   class CookbookLoader
     
-    attr_accessor :cookbook, :config
+    attr_accessor :cookbook
     
     include Enumerable
     
-    def initialize(config)
-      @config = config
+    def initialize()
       @cookbook = Hash.new
       load_cookbooks
     end
     
     def load_cookbooks
       cookbook_settings = Hash.new
-      @config.cookbook_path.each do |cb_path|
+      Chef::Config.cookbook_path.each do |cb_path|
         Dir[File.join(cb_path, "*")].each do |cookbook|
           next unless File.directory?(cookbook)          
           cookbook_name = File.basename(cookbook).to_sym

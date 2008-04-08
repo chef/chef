@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-require File.join(File.dirname(__FILE__), "..", "spec_helper")
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Recipe do
   before(:each) do
@@ -110,7 +110,7 @@ CODE
     @recipe.resources(:zen_master => "lao tzu").something.should eql(true)
   end
 
-  it "should load a node from a ruby file" do
+  it "should load a resource from a ruby file" do
     @recipe.from_file(File.join(File.dirname(__FILE__), "..", "data", "recipes", "test.rb"))
     res = @recipe.resources(:file => "/etc/nsswitch.conf")
     res.name.should eql("/etc/nsswitch.conf")
@@ -122,6 +122,24 @@ CODE
   
   it "should raise an exception if the file cannot be found or read" do
     lambda { @recipe.from_file("/tmp/monkeydiving") }.should raise_error(IOError)
+  end
+  
+  it "should evaluate another recipe with recipe_require" do
+    Chef::Config.cookbook_path File.join(File.dirname(__FILE__), "..", "data", "cookbooks")
+    @recipe.cookbook_loader.load_cookbooks
+    @recipe.require_recipe "openldap::gigantor"
+    res = @recipe.resources(:cat => "blanket")
+    res.name.should eql("blanket")
+    res.pretty_kitty.should eql(false)
+  end
+  
+  it "should load the default recipe for a cookbook if require_recipe is called without a ::" do
+    Chef::Config.cookbook_path File.join(File.dirname(__FILE__), "..", "data", "cookbooks")
+    @recipe.cookbook_loader.load_cookbooks
+    @recipe.require_recipe "openldap"
+    res = @recipe.resources(:cat => "blanket")
+    res.name.should eql("blanket")
+    res.pretty_kitty.should eql(true)
   end
 
 end

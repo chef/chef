@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-require File.join(File.dirname(__FILE__), "..", "spec_helper")
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Node do
   before(:each) do
@@ -104,5 +104,17 @@ describe Chef::Node do
     lambda { @node.from_file("/tmp/monkeydiving") }.should raise_error(IOError)
   end
   
+  it "should allow you to iterate over attributes with each_attribute" do
+    @node.sunshine "is bright"
+    @node.canada "is a nice place"
+    seen_attributes = Hash.new
+    @node.each_attribute do |a,v|
+      seen_attributes[a] = v
+    end
+    seen_attributes.should have_key(:sunshine)
+    seen_attributes.should have_key(:canada)
+    seen_attributes[:sunshine].should == "is bright"
+    seen_attributes[:canada].should == "is a nice place"
+  end
 
 end

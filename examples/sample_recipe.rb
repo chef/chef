@@ -10,7 +10,6 @@ service "apache2" do
 end
 
 file "/etc/nsswitch.conf" do 
-  insure "present"
   owner  "root"
   group  "root" 
   mode   0644
@@ -18,7 +17,6 @@ file "/etc/nsswitch.conf" do
 end
 
 file "/etc/ldap.conf" do
-  insure   "present"
   owner    "root"
   group    "root"
   mode     0644

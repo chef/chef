@@ -21,9 +21,9 @@ class Chef
   class Resource
     class Cat < Chef::Resource
       
-      def initialize(name, collection=nil, config=nil)
+      def initialize(name, collection=nil)
         @resource_name = :cat
-        super(name, collection, config)
+        super(name, collection)
       end
       
       def pretty_kitty(arg=nil)

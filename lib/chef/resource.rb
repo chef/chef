@@ -26,20 +26,15 @@ class Chef
     
     include Chef::Mixin::CheckHelper
     
-    attr_accessor :tag, :actions, :config, :params
+    attr_accessor :tag, :actions, :params
     attr_reader :name, :noop, :resource_name, :collection, :notifies, :subscribes
     
-    def initialize(name, collection=nil, config=nil)
+    def initialize(name, collection=nil)
       @name = name
       if collection
         @collection = collection
       else
         @collection = Chef::ResourceCollection.new()
-      end
-      if config
-        @config = config
-      else
-        @config = Chef::Config.new()
       end
       @tag = [ name.to_s ]
       @noop = nil

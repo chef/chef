@@ -86,20 +86,17 @@ class Chef
       results
     end
     
-    def load_recipe(name, node, collection=nil, definitions=nil, config=nil)
+    def load_recipe(name, node, collection=nil, definitions=nil, cookbook_loader=nil)
       cookbook_name = @name
       recipe_name = nil
-      case name
-      when /^(.+)::(.+)$/
-        recipe_name = $2
-      else
-        recipe_name = name
-      end
+      nmatch = name.match(/^(.+)::(.+)$/)
+      recipe_name = nmatch ? nmatch[2] : name
+      
       unless @recipe_names.has_key?(recipe_name)
         raise ArgumentError, "Cannot find a recipe matching #{recipe_name} in cookbook #{@name}"
       end
       recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, 
-                                collection, definitions, config)
+                                collection, definitions, cookbook_loader)
       recipe.from_file(@recipe_files[@recipe_names[recipe_name]])
       recipe
     end
