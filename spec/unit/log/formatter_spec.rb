@@ -44,4 +44,9 @@ describe Chef::Log::Formatter do
     @formatter.call("monkey", Time.new, "test", "mos def").should == "[#{time.rfc2822}] monkey: mos def\n"
   end
   
+  it "should allow you to turn the time on and off in the output" do
+    Chef::Log::Formatter.show_time = false
+    @formatter.call("monkey", Time.new, "test", "mos def").should == "monkey: mos def\n"
+  end
+  
 end

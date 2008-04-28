@@ -129,6 +129,7 @@ describe Chef::Resource do
     @resource.noop(@resource.is(true))
     @resource.noop.should eql(true)
   end
+
   
 #  it "should serialize to yaml" do
 #    yaml_output = <<-DESC

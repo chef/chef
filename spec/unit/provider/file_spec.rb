@@ -171,12 +171,14 @@ describe Chef::Provider::File do
     @provider.load_current_resource
     @provider.new_resource.stub!(:owner).and_return(9982398)
     @provider.new_resource.stub!(:group).and_return(9982398)
+    @provider.new_resource.stub!(:mode).and_return(0755)
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
     File.stub!(:chown).and_return(1)
     File.should_receive(:chown).with(nil, 9982398, @provider.new_resource.path)
     File.stub!(:chown).and_return(1)
     File.should_receive(:chown).with(9982398, nil, @provider.new_resource.path)
     File.stub!(:open).and_return(1)
+    File.should_receive(:chmod).with(0755, @provider.new_resource.path).and_return(1)
     File.should_receive(:open).with(@provider.new_resource.path, "w+")
     @provider.action_create
   end
@@ -188,6 +190,23 @@ describe Chef::Provider::File do
     File.should_receive("writable?").with(@provider.new_resource.path).and_return(true)
     File.should_receive(:delete).with(@provider.new_resource.path).and_return(true)
     @provider.action_delete
+  end
+  
+  it "should raise an error if it cannot delete the file" do
+    @provider.load_current_resource
+    @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
+    File.should_receive("exists?").with(@provider.new_resource.path).and_return(false)
+    lambda { @provider.action_delete }.should raise_error()    
+  end
+  
+  it "should update the atime/mtime on action_touch" do
+    @provider.load_current_resource
+    @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
+    File.should_receive(:utime).once.and_return(1)
+    File.stub!(:open).and_return(1)
+    File.stub!(:chown).and_return(1)
+    File.stub!(:chmod).and_return(1)
+    @provider.action_touch
   end
   
 end

@@ -21,9 +21,12 @@ class Chef
   class Resource
     class Cat < Chef::Resource
       
+      attr_accessor :action
+      
       def initialize(name, collection=nil)
         @resource_name = :cat
         super(name, collection)
+        @action = "sell"
       end
       
       def pretty_kitty(arg=nil)

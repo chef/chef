@@ -35,7 +35,7 @@ describe Chef::Compile do
   end
   
   it "should have a Chef::ResourceCollection" do
-    @compile.resource_collection.should be_a_kind_of(Chef::ResourceCollection)
+    @compile.collection.should be_a_kind_of(Chef::ResourceCollection)
   end
   
   it "should have a hash of Definitions" do
@@ -58,11 +58,11 @@ describe Chef::Compile do
     @compile.load_node("compile")
     @compile.load_definitions
     lambda { @compile.load_recipes }.should_not raise_error
-    @compile.resource_collection[0].to_s.should == "cat[einstein]"  
-    @compile.resource_collection[1].to_s.should == "cat[loulou]"
-    @compile.resource_collection[2].to_s.should == "cat[birthday]"
-    @compile.resource_collection[3].to_s.should == "cat[peanut]"
-    @compile.resource_collection[4].to_s.should == "cat[fat peanut]"
+    @compile.collection[0].to_s.should == "cat[einstein]"  
+    @compile.collection[1].to_s.should == "cat[loulou]"
+    @compile.collection[2].to_s.should == "cat[birthday]"
+    @compile.collection[3].to_s.should == "cat[peanut]"
+    @compile.collection[4].to_s.should == "cat[fat peanut]"
   end
 
 end

@@ -43,4 +43,8 @@ describe Chef::Provider do
   it "should have nil for current_resource by default" do
     @provider.current_resource.should eql(nil)
   end    
+  
+  it "should return true for action_nothing" do
+    @provider.action_nothing.should eql(true)
+  end
 end

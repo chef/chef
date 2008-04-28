@@ -295,4 +295,37 @@ describe Chef::Mixin::ParamsValidate do
       @vo.validate({ "one" => "two" }, { :one => { :regex => /^two$/ }}) 
     }.should_not raise_error(ArgumentError)
   end
+  
+  it "should allow an array to kind_of" do
+    lambda { 
+      @vo.validate(
+        {:one => "string"}, 
+        {
+          :one => {
+            :kind_of => [ String, Array ]
+          }
+        }
+      ) 
+    }.should_not raise_error(ArgumentError)
+    lambda { 
+      @vo.validate(
+        {:one => ["string"]}, 
+        {
+          :one => {
+            :kind_of => [ String, Array ]
+          }
+        }
+      ) 
+    }.should_not raise_error(ArgumentError)
+    lambda { 
+      @vo.validate(
+        {:one => Hash.new}, 
+        {
+          :one => {
+            :kind_of => [ String, Array ]
+          }
+        }
+      ) 
+    }.should raise_error(ArgumentError)
+  end
 end

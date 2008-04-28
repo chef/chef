@@ -1,5 +1,5 @@
-file "glen" do
-  owner  "glen"
-  mode   644
+file "/tmp/glen" do
+  owner  "adam"
+  mode   0755
   action "create"
 end

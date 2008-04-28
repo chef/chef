@@ -20,19 +20,18 @@
 
 class Chef
   class Provider
-    
-    attr_accessor :node, :new_resource, :current_resource
-    
-    def initialize(node, new_resource)
-      @node = node
-      @new_resource = new_resource
-      @current_resource = nil
+    class SnakeOil < Chef::Provider
+      def load_current_resource
+        true
+      end
+  
+      def action_sell
+        true
+      end
+      
+      def action_buy
+        true
+      end
     end
-    
-    def action_nothing
-      Chef::Log.debug("Doing nothing for #{self.to_s}")
-      true
-    end
-    
   end
 end

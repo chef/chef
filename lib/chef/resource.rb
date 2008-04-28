@@ -18,16 +18,18 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # 
 
+require File.join(File.dirname(__FILE__), "mixin", "params_validate")
 require File.join(File.dirname(__FILE__), "mixin", "check_helper")
 require 'yaml'
 
 class Chef
   class Resource
-    
+        
     include Chef::Mixin::CheckHelper
+    include Chef::Mixin::ParamsValidate
     
-    attr_accessor :tag, :actions, :params
-    attr_reader :name, :noop, :resource_name, :collection, :notifies, :subscribes
+    attr_accessor :tag, :actions, :params, :provider, :updated, :allowed_actions
+    attr_reader :resource_name, :collection
     
     def initialize(name, collection=nil)
       @name = name
@@ -41,6 +43,28 @@ class Chef
       @before = nil
       @actions = Hash.new
       @params = Hash.new
+      @provider = nil
+      @allowed_actions = [ :nothing ]
+      @action = :nothing
+      @updated = false
+    end
+    
+    def action(arg=nil)
+      if arg != nil
+        arg = arg.to_sym
+      end
+      set_or_return(
+        @action,
+        arg,
+        {
+          :action => arg,
+        },
+        {
+          :action => {
+            :equal_to => @allowed_actions,
+          }
+        }
+      )
     end
     
     def name(name=nil)

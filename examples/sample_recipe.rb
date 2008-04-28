@@ -16,6 +16,11 @@ file "/etc/nsswitch.conf" do
   notifies :restart, resources("service[openldap]"), :immediately
 end
 
+service "apache2" do
+  action "enabled"
+  subscribes :restart, resources("/etc/nsswitch.conf"), :immediately
+end
+
 file "/etc/ldap.conf" do
   owner    "root"
   group    "root"

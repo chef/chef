@@ -171,4 +171,9 @@ describe Chef::Node do
     list[2].should == "test"
   end
 
+  it "should turn into a string like node[name]" do
+    @node.name("airplane")
+    @node.to_s.should eql("node[airplane]")
+  end
+
 end

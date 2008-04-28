@@ -2,7 +2,7 @@
 # Chef::Mixin::ParamsValidate
 #
 # Because I can't deal with not having named params.  Strongly based on Dave Rolsky's excellent
-# Params::Validate module for Perl.  Please don't blame him, though, if you hate this. :)
+# Params::Validate module for Perl.  Please don't blame him, though, this is full of bugs. :)
 #
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
@@ -42,12 +42,15 @@ class Chef
       # :callbacks:: Takes a hash of Procs, which should return true if the argument is valid.  
       #              The key will be inserted into the error message if the Proc does not return true:
       #                 "Option #{key}'s value #{value} #{message}!"
-      # :kind_of:: Ensure that the value is a kind_of?(Whatever)
-      # :respond_to:: Esnure that the value has a given method.  Takes one method name or an array of
+      # :kind_of:: Ensure that the value is a kind_of?(Whatever).  If passed an array, it will ensure 
+      #            that the value is one of those types.
+      # :respond_to:: Ensure that the value has a given method.  Takes one method name or an array of
       #               method names.
       # :required:: Raise an exception if this parameter is missing. Valid values are true or false, 
       #             by default, options are not required.
       # :regex:: Match the value of the paramater against a regular expression.
+      # :equal_to:: Match the value of the paramater with ==.  An array means it can be equal to any
+      #             of the values.
       def validate(opts, map)
         #--
         # validate works by taking the keys in the validation map, assuming it's a hash, and
@@ -80,7 +83,18 @@ class Chef
         opts
       end
       
+      def set_or_return(instance, new_value, opts, map)
+        if new_value != nil
+          validate(opts, map)
+          instance = new_value
+        else
+          instance
+        end
+      end
+      
       private
+      
+    
       
         # Return the value of a parameter, or nil if it doesn't exist.
         def _pv_opts_lookup(opts, key)
@@ -104,12 +118,33 @@ class Chef
           end
         end
         
+        def _pv_equal_to(opts, key, to_be)
+          value = _pv_opts_lookup(opts, key)
+          if value != nil
+            passes = false
+            [ to_be ].flatten.each do |tb|
+              if value == tb
+                passes = true
+              end
+            end
+            unless passes
+              raise ArgumentError, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
+            end
+          end
+        end
+        
         # Raise an exception if the parameter is not a kind_of?(to_be)
         def _pv_kind_of(opts, key, to_be)
           value = _pv_opts_lookup(opts, key)
           if value != nil
-            unless value.kind_of?(to_be)
-              raise ArgumentError, "Option #{key} must be a kind of #{to_be}!  You passed #{to_be.inspect}."
+            passes = false
+            [ to_be ].flatten.each do |tb|
+              if value.kind_of?(tb)
+                passes = true
+              end
+            end
+            unless passes
+              raise ArgumentError, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}."
             end
           end
         end
@@ -137,10 +172,16 @@ class Chef
         # Check a parameter against a regular expression.
         def _pv_regex(opts, key, regex)
           value = _pv_opts_lookup(opts, key)
-          if value != nil
-            if regex.match(value) == nil
-              raise ArgumentError, "Option #{key}'s value #{value} does not match regular expression #{regex.to_s}"
+          passes = false
+          [ regex ].flatten.each do |r|
+            if value != nil
+              if r.match(value.to_s)
+                passes = true
+              end
             end
+          end
+          unless passes
+            raise ArgumentError, "Option #{key}'s value #{value} does not match regular expression #{regex.to_s}"
           end
         end
         

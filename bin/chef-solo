@@ -60,6 +60,9 @@ end
 
 # Load our config file
 Chef::Config.from_file(config[:config_file])
+if config[:log_level]
+  Chef::Log.level(config[:log_level].to_sym)
+end
 
 # Find out our own hostname.
 node_name = Facter["fqdn"].value
@@ -73,13 +76,7 @@ compile.load_node(node_name)
 Facter.each do |field, value|
   compile.node[field.to_sym] = value
 end
-
-puts compile.node.to_yaml
-
 compile.load_definitions
-puts compile.definitions.to_yaml
-
 compile.load_recipes
-puts compile.resource_collection.to_yaml
-
-puts compile.to_yaml
+cr = Chef::Runner.new(compile.node, compile.collection)
+cr.converge

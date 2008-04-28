@@ -4,9 +4,6 @@ Manifest.txt
 README.txt
 Rakefile
 bin/chef-solo
-docs/chef-head.txt
-docs/design/HighLevel.graffle
-docs/recipe.rb
 examples/config.rb
 examples/config/chef-solo.rb
 examples/config/cookbooks/fakefile/recipes/default.rb

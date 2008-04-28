@@ -21,6 +21,7 @@
 #
 
 require File.join(File.dirname(__FILE__), "mixin", "check_helper")
+require File.join(File.dirname(__FILE__), "mixin", "params_validate")
 require File.join(File.dirname(__FILE__), "mixin", "from_file")
 
 require 'rubygems'
@@ -33,6 +34,7 @@ class Chef
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
+    include Chef::Mixin::ParamsValidate
     
     # Create a new Chef::Node object.
     def initialize()
@@ -79,13 +81,18 @@ class Chef
     
     # Set the name of this Node, or return the current name.
     def name(arg=nil)
-      set_if_args(@name, arg) do |a|
-        case a
-        when String
-          @name = a
-        else
-          raise ArgumentError, "The nodes name must be a string"
-        end
+      if arg != nil
+        validate(
+          { :name => arg }, 
+          {
+            :name => {
+              :kind_of => String
+            }
+          }
+        )
+        @name = arg
+      else
+        @name
       end
     end
     
@@ -166,6 +173,11 @@ class Chef
         result_object["recipes"] << r
       end
       result_object.to_json
+    end
+    
+    # As a string
+    def to_s
+      "node[#{@name}]"
     end
     
   end
