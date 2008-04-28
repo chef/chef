@@ -34,94 +34,52 @@ class Chef
 
       def backup(arg=nil)
         set_or_return(
-          @backup,
+          :backup,
           arg,
-          {
-            :backup => arg,
-          },
-          {
-            :backup => {
-              :kind_of => [ Integer, TrueClass, FalseClass ],
-            }
-          }
+          :kind_of => [ Integer, TrueClass, FalseClass ]
         )
       end
             
       def checksum(arg=nil)
         set_or_return(
-          @checksum,
+          :checksum,
           arg,
-          { 
-            :checksum => arg,
-          },
-          {
-            :checksum => {
-              :regex => /^[a-zA-Z0-9]{32}$/,
-            },
-          }
+          :regex => /^[a-zA-Z0-9]{32}$/
         )
       end
           
       def group(arg=nil)
         set_or_return(
-          @group,
+          :group,
           arg,
-          {
-            :group => arg
-          },
-          {
-            :group => {
-              :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
-            }
-          }
+          :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
         )
       end
       
       def mode(arg=nil)
         set_or_return(
-          @mode,
+          :mode,
           arg,
-          {
-            :mode => arg
-          },
-          {
-            :mode => {
-              :regex => /^\d{3,4}$/
-            }
-          }
+          :regex => /^\d{3,4}$/
         )
       end
       
       def owner(arg=nil)
         set_or_return(
-          @owner,
+          :owner,
           arg,
-          {
-            :owner => arg,
-          },
-          {
-            :owner => {
-              :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
-            }
-          }
+          :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
         )
       end
       
       def path(arg=nil)
         set_or_return(
-          @path,
+          :path,
           arg,
-          {
-            :path => arg,
-          },
-          {
-            :path => {
-              :kind_of => String,
-            },
-          }
+          :kind_of => String
         )
       end
-      
+
     end
   end
 end

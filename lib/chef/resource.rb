@@ -50,20 +50,11 @@ class Chef
     end
     
     def action(arg=nil)
-      if arg != nil
-        arg = arg.to_sym
-      end
+      arg = arg.to_sym if arg
       set_or_return(
-        @action,
+        :action,
         arg,
-        {
-          :action => arg,
-        },
-        {
-          :action => {
-            :equal_to => @allowed_actions,
-          }
-        }
+        :equal_to => @allowed_actions
       )
     end
     

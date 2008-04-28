@@ -54,9 +54,10 @@ describe Chef::Resource::File do
     lambda { @resource.checksum "monkey!" }.should raise_error(ArgumentError)
   end
   
-  it "should accept create or delete for action" do
+  it "should accept create, delete or touch for action" do
     lambda { @resource.action "create" }.should_not raise_error(ArgumentError)
     lambda { @resource.action "delete" }.should_not raise_error(ArgumentError)
+    lambda { @resource.action "touch" }.should_not raise_error(ArgumentError)
     lambda { @resource.action "blues" }.should raise_error(ArgumentError)
   end
   
@@ -68,6 +69,7 @@ describe Chef::Resource::File do
   
   it "should accept a valid unix file mode" do
     lambda { @resource.mode 0444 }.should_not raise_error(ArgumentError)
+    @resource.mode.should eql(0444)
     lambda { @resource.mode 444 }.should_not raise_error(ArgumentError)
     lambda { @resource.mode 4 }.should raise_error(ArgumentError)
   end
@@ -84,6 +86,7 @@ describe Chef::Resource::File do
   
   it "should accept a string as the path" do
     lambda { @resource.path "/tmp" }.should_not raise_error(ArgumentError)
+    @resource.path.should eql("/tmp")
     lambda { @resource.path Hash.new }.should raise_error(ArgumentError)
   end
   

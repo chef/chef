@@ -20,68 +20,54 @@
 
 class Chef
   class Resource
-    class Directory < Chef::Resource::File
+    class Directory < Chef::Resource
             
       def initialize(name, collection=nil)
-        @resource_name = :file
+        @resource_name = :directory
         super(name, collection)
         @path = name
-        @action = "create"
+        @action = :create
+        @allowed_actions.push(:create, :delete)
       end
       
-      def action(arg=nil)
-        set_if_args(@action, arg) do 
-          case arg
-          when "create", "delete", "touch", "nothing"
-            @action = arg
-          else
-            raise ArgumentError, "action must be create, delete, or touch!"
-          end
-        end
+      def recursive(arg=nil)
+        set_or_return(
+          :recursive,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
       end
       
       def group(arg=nil)
-        set_if_args(@group, arg) do
-          case arg
-          when /^([a-z]|[A-Z]|[0-9]|_|-)+$/, Integer
-            @group = arg
-          else
-            raise ArgumentError, "group must match /^([a-z]|[A-Z]|[0-9]|_|-)$/, Integer!"
-          end
-        end
+        set_or_return(
+          :group,
+          arg,
+          :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
+        )
       end
       
       def mode(arg=nil)
-        set_if_args(@mode, arg) do
-          case "#{arg.to_s}"
-          when /^\d{3,4}$/
-            @mode = arg
-          else
-            raise ArgumentError, "mode must be a valid unix file mode - 3 or 4 digets!"
-          end
-        end
+        set_or_return(
+          :mode,
+          arg,
+          :regex => /^\d{3,4}$/
+        )
       end
       
       def owner(arg=nil)
-        set_if_args(@owner, arg) do
-          case arg
-          when /^([a-z]|[A-Z]|[0-9]|_|-)+$/, Integer
-            @owner = arg
-          else
-            raise ArgumentError, "group must match /^([a-z]|[A-Z]|[0-9]|_|-)$/, Integer!"
-          end
-        end
+        set_or_return(
+          :owner,
+          arg,
+          :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
+        )
       end
       
       def path(arg=nil)
-        set_if_args(@path, arg) do
-          case arg
-          when String
-            @path = arg
-          else
-            raise ArgumentError, "path must be a string!"
-          end
-        end
+        set_or_return(
+          :path,
+          arg,
+          :kind_of => String
+        )
       end
       
     end

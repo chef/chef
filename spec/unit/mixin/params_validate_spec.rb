@@ -328,4 +328,5 @@ describe Chef::Mixin::ParamsValidate do
       ) 
     }.should raise_error(ArgumentError)
   end
+  
 end

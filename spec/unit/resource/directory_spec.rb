@@ -27,7 +27,6 @@ describe Chef::Resource::Directory do
 
   it "should create a new Chef::Resource::Directory" do
     @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::File)
     @resource.should be_a_kind_of(Chef::Resource::Directory)
   end
   
@@ -36,7 +35,7 @@ describe Chef::Resource::Directory do
   end
   
   it "should have a default action of 'create'" do
-    @resource.action.should eql("create")
+    @resource.action.should eql(:create)
   end
   
   it "should accept create or delete for action" do

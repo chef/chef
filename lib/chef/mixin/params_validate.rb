@@ -83,18 +83,20 @@ class Chef
         opts
       end
       
-      def set_or_return(instance, new_value, opts, map)
-        if new_value != nil
-          validate(opts, map)
-          instance = new_value
+      def set_or_return(symbol, arg, validation)
+        iv_symbol = "@#{symbol.to_s}".to_sym
+        map = {
+          symbol => validation
+        }
+        if arg == nil
+          self.instance_variable_get(iv_symbol)
         else
-          instance
+          validate({ symbol => arg }, { symbol => validation })
+          self.instance_variable_set(iv_symbol, arg)
         end
       end
       
       private
-      
-    
       
         # Return the value of a parameter, or nil if it doesn't exist.
         def _pv_opts_lookup(opts, key)
