@@ -30,7 +30,7 @@ class Chef
     end
     
     def action_nothing
-      Chef::Log.debug("Doing nothing for #{self.to_s}")
+      Chef::Log.debug("Doing nothing for #{@new_resource.to_s}")
       true
     end
     

@@ -32,7 +32,8 @@ class Chef
       :gentoo   => {},
       :solaris  => {},
       :default  => {
-        :file => Chef::Provider::File
+        :file => Chef::Provider::File,
+        :directory => Chef::Provider::Directory
       }
     }
 
