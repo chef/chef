@@ -4,3 +4,8 @@ file "/tmp/foo" do
   action :create
   notifies :delete, resources(:file => "/tmp/glen"), :delayed
 end
+
+link "/tmp/foo" do
+  link_type :symbolic
+  target_file "/tmp/xmen"
+end

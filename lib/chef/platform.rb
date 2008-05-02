@@ -33,7 +33,8 @@ class Chef
       :solaris  => {},
       :default  => {
         :file => Chef::Provider::File,
-        :directory => Chef::Provider::Directory
+        :directory => Chef::Provider::Directory,
+        :link => Chef::Provider::Link,
       }
     }
 

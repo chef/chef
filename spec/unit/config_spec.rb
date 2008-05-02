@@ -22,7 +22,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Config do
   
-  it "should load a .rb file in context" do    
+  it "should load a .rb file in context" do
     lambda { 
       Chef::Config.from_file(File.join(File.dirname(__FILE__), "..", "data", "config.rb"))
     }.should_not raise_error    

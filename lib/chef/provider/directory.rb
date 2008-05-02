@@ -18,8 +18,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # 
 
-require 'digest/md5'
-require 'etc'
 require File.join(File.dirname(__FILE__), "file")
 
 class Chef
