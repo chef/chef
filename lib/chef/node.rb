@@ -50,18 +50,9 @@ class Chef
     #
     # Raises an ArgumentError if it cannot find the node. 
     def self.find(fqdn)
-      node_file = nil
-      host_parts = fqdn.split(".")
-      hostname = host_parts[0]
-
-      if File.exists?(File.join(Chef::Config[:node_path], "#{fqdn}.rb"))
-        node_file = File.join(Chef::Config[:node_path], "#{fqdn}.rb")
-      elsif File.exists?(File.join(Chef::Config[:node_path], "#{hostname}.rb"))
-        node_file = File.join(Chef::Config[:node_path], "#{hostname}.rb")
-      elsif File.exists?(File.join(Chef::Config[:node_path], "default.rb"))
-        node_file = File.join(Chef::Config[:node_path], "default.rb")
-      else
-        raise ArgumentError, "Cannot find a node matching #{fqdn}, not even with default.rb!"
+      node_file = self.find_file(fqdn)
+      unless node_file
+        raise ArgumentError, "Cannot find a node matching #{fqdn}, not even with default.rb!" 
       end
       chef_node = Chef::Node.new()
       chef_node.from_file(node_file)
@@ -77,6 +68,22 @@ class Chef
         results << node_name
       end
       results
+    end
+    
+    # Returns the file name we would use to build a node.  Returns nil if it cannot find
+    # a file for this node.
+    def self.find_file(fqdn)
+      node_file = nil
+      host_parts = fqdn.split(".")
+      hostname = host_parts[0]
+
+      if File.exists?(File.join(Chef::Config[:node_path], "#{fqdn}.rb"))
+        node_file = File.join(Chef::Config[:node_path], "#{fqdn}.rb")
+      elsif File.exists?(File.join(Chef::Config[:node_path], "#{hostname}.rb"))
+        node_file = File.join(Chef::Config[:node_path], "#{hostname}.rb")
+      elsif File.exists?(File.join(Chef::Config[:node_path], "default.rb"))
+        node_file = File.join(Chef::Config[:node_path], "default.rb")
+      end
     end
     
     # Set the name of this Node, or return the current name.
