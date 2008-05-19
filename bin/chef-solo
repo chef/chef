@@ -27,7 +27,6 @@ require 'optparse'
 require 'chef'
 require 'rubygems'
 require 'facter'
-require 'yaml'
 
 config = {
   :config_file => "/etc/chef/config.rb",

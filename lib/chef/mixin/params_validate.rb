@@ -155,7 +155,7 @@ class Chef
         def _pv_respond_to(opts, key, method_name_list)
           value = _pv_opts_lookup(opts, key)
           if value != nil
-            method_name_list.to_a.each do |method_name|
+            [ method_name_list ].flatten.each do |method_name|
               unless value.respond_to?(method_name)
                 raise ArgumentError, "Option #{key} must have a #{method_name} method!"
               end

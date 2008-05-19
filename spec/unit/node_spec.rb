@@ -153,14 +153,23 @@ describe Chef::Node do
 
   it "should serialize itself as json" do
     node = Chef::Node.find("test.example.com")
-    json = node.to_json
-    result = JSON.load(json)
-    result["name"].should == "test.example.com"
-    result["type"].should == "Chef::Node"
-    result["attributes"]["something"].should == "else"
-    result["attributes"]["sunshine"].should == "in"
-    result["recipes"].detect { |r| r == "operations-master" }.should == "operations-master"
-    result["recipes"].detect { |r| r == "operations-monitoring" }.should == "operations-monitoring"
+    json = node.to_json()
+    json.should =~ /json_class/
+    json.should =~ /name/
+    json.should =~ /attributes/
+    json.should =~ /recipes/
+  end
+  
+  it "should deserialize itself from json" do
+    original_node = Chef::Node.find("test.example.com")
+    json = original_node.to_json
+    serialized_node = JSON.parse(json)
+    serialized_node.should be_a_kind_of(Chef::Node)
+    serialized_node.name.should eql(original_node.name)
+    original_node.each_attribute do |k,v|
+      serialized_node[k].should eql(v)
+    end
+    serialized_node.recipes.should eql(original_node.recipes)
   end
   
   it "should return a list of node names based on which files are in the node_path" do

@@ -19,7 +19,7 @@
 
 require 'rubygems'
 
-Dir[File.join(File.dirname(__FILE__), 'chef/**/*.rb')].sort.each { |lib| require lib }
+Dir[File.join(File.dirname(__FILE__), 'chef/**/*.rb')].sort.each { |lib| require lib unless lib =~ /server/ }
 
 class Chef
   VERSION = '0.0.1'

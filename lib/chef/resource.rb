@@ -28,8 +28,8 @@ class Chef
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
     
-    attr_accessor :tag, :actions, :params, :provider, :updated, :allowed_actions
-    attr_reader :resource_name, :collection
+    attr_accessor :actions, :params, :provider, :updated, :allowed_actions
+    attr_reader :resource_name, :collection, :source_line
     
     def initialize(name, collection=nil)
       @name = name
@@ -38,7 +38,6 @@ class Chef
       else
         @collection = Chef::ResourceCollection.new()
       end
-      @tag = [ name.to_s ]
       @noop = nil
       @before = nil
       @actions = Hash.new
@@ -47,6 +46,7 @@ class Chef
       @allowed_actions = [ :nothing ]
       @action = :nothing
       @updated = false
+      @source_line = caller(4).shift.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
     end
     
     def action(arg=nil)
@@ -116,6 +116,26 @@ class Chef
     
     def to_s
       "#{@resource_name}[#{@name}]"
+    end
+    
+    # Serialize this object as a hash 
+    def to_json(*a)
+      instance_vars = Hash.new
+      self.instance_variables.each do |iv|
+        instance_vars[iv] = self.instance_variable_get(iv) unless iv == "@collection"
+      end
+      {
+        'json_class' => self.class.name,
+        'instance_vars' => instance_vars
+      }.to_json(*a)
+    end
+    
+    def self.json_create(o)
+      resource = self.new(o["instance_vars"]["@name"])
+      o["instance_vars"].each do |k,v|
+        resource.instance_variable_set(k.to_sym, v)
+      end
+      resource
     end
     
     private

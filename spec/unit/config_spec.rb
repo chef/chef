@@ -84,4 +84,10 @@ describe Chef::Config do
     lambda { Chef::Config[:snob_hobbery] }.should raise_error(ArgumentError)
   end
   
+  it "should return true or false with has_key?" do
+    Chef::Config.has_key?(:monkey).should eql(false)
+    Chef::Config[:monkey] = "gotcha"
+    Chef::Config.has_key?(:monkey).should eql(true)
+  end
+  
 end

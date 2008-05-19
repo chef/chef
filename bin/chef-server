@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+require "merb-core"
+
+if ARGV[0] && ARGV[0] =~ /^[^-]/
+  ARGV.push "-H"
+end 
+
+unless %w[-a --adapter -i --irb-console -r --script-runner].any? { |o| ARGV.index(o) }
+  ARGV.push *%w[-a mongrel]
+end
+
+Merb.start

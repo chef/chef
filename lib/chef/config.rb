@@ -39,6 +39,8 @@ class Chef
     @configuration = {
       :cookbook_path => [ "/etc/chef/site-cookbook", "/etc/chef/cookbook" ],
       :node_path => "/etc/chef/node",
+      :file_store_path => "/var/lib/chef/store",
+      :search_index_path => "/var/lib/chef/search_index",
       :log_level => :info,
       :log_location => STDOUT
     }
@@ -60,6 +62,10 @@ class Chef
       
       def []=(config_option, value)
         @configuration[config_option.to_sym] = value
+      end
+      
+      def has_key?(key)
+        @configuration.has_key?(key.to_sym)
       end
     
       def method_missing(method_symbol, *args)

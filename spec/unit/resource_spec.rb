@@ -130,6 +130,18 @@ describe Chef::Resource do
     @resource.noop.should eql(true)
   end
 
+  it "should serialize to json" do
+    json = @resource.to_json
+    json.should =~ /json_class/
+    json.should =~ /instance_vars/
+  end
+  
+  it "should deserialize itself from json" do
+    json = @resource.to_json
+    serialized_node = JSON.parse(json)
+    serialized_node.should be_a_kind_of(Chef::Resource)
+    serialized_node.name.should eql(@resource.name)
+  end
   
 #  it "should serialize to yaml" do
 #    yaml_output = <<-DESC

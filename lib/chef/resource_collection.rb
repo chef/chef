@@ -111,6 +111,26 @@ class Chef
       flat_results = results.flatten
       flat_results.length == 1 ? flat_results[0] : flat_results
     end
+    
+    # Serialize this object as a hash 
+    def to_json(*a)
+      instance_vars = Hash.new
+      self.instance_variables.each do |iv|
+        instance_vars[iv] = self.instance_variable_get(iv)
+      end
+      {
+        'json_class' => self.class.name,
+        'instance_vars' => instance_vars
+      }.to_json(*a)
+    end
+    
+    def self.json_create(o)
+      collection = self.new()
+      o["instance_vars"].each do |k,v|
+        collection.instance_variable_set(k.to_sym, v)
+      end
+      collection
+    end
 
     private
     

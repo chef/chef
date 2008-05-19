@@ -1,0 +1,87 @@
+#!/usr/bin/ruby
+#
+# ./chef-indexer - Build indexes from Chef Queues!
+#
+# Author:: Adam Jacob (<adam@hjksolutions.com>)
+# Copyright:: Copyright (c) 2008 HJK Solutions, LLC
+# License:: GNU General Public License version 2 or later
+# 
+# This program and entire repository is free software; you can
+# redistribute it and/or modify it under the terms of the GNU 
+# General Public License as published by the Free Software 
+# Foundation; either version 2 of the License, or any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+#
+
+$: << File.join(File.dirname(__FILE__), "..", "lib")
+
+require 'optparse'
+require 'chef'
+require 'rubygems'
+require 'facter'
+
+config = {
+  :config_file => "/etc/chef/config.rb",
+  :log_level => :info
+}
+opts = OptionParser.new do |opts|
+  opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
+  opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
+    config[:config_file] = c
+  end
+  opts.on_tail("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
+    config[:log_level] = l.to_sym
+  end
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+end
+opts.parse!(ARGV)
+
+unless File.exists?(config[:config_file]) && File.readable?(config[:config_file])
+  puts "I cannot find or read the config file: #{config[:config_file]}"
+  puts opts
+  exit
+end
+
+# Load our config file
+Chef::Config.from_file(config[:config_file])
+if config[:log_level]
+  Chef::Log.level(config[:log_level].to_sym)
+end
+
+# Get a Chef::SearchIndex object
+indexer = Chef::SearchIndex.new
+Chef::Queue.connect
+Chef::Queue.subscribe(:queue, "node_index")
+Chef::Queue.subscribe(:queue, "node_remove")
+while 1
+  begin
+    object, headers = Chef::Queue.receive_msg
+    if headers["destination"] =~ /index$/
+      start_timer = Time.new
+      indexer.add(object)
+      final_timer = Time.new
+      Chef::Log.info("Indexed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
+    elsif headers["destination"] =~ /remove$/
+      start_timer = Time.new
+      indexer.delete(object)
+      final_timer = Time.new
+      Chef::Log.info("Removed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
+    end
+  rescue Exception => e
+    if e.kind_of?(Interrupt)
+      raise e
+    end
+    Chef::Log.error("Received Exception: #{e.to_str} continuing")
+  end
+end

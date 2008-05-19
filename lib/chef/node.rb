@@ -165,21 +165,29 @@ class Chef
       end
     end
     
-    # Serialize this Node as json
-    def to_json()
-      result_object = {
+    # Serialize this object as a hash 
+    def to_json(*a)
+      attributes = Hash.new
+      recipes = Array.new
+      {
         "name" => @name,
-        "type" => "Chef::Node",
-        "attributes" => Hash.new,
-        "recipes" => Array.new
-      }
-      each_attribute do |a,v|
-        result_object["attributes"][a] = v
+        'json_class' => self.class.name,
+        "attributes" => @attribute,
+        "recipes" => @recipe_list,
+      }.to_json(*a)
+    end
+    
+    def self.json_create(o)
+      node = new
+      node.name(o["name"])
+      o["attributes"].each do |k,v|
+        node[k] = v
       end
-      recipes.each do |r|
-        result_object["recipes"] << r
+      o["recipes"].each do |r|
+        node.recipes << r
       end
-      result_object.to_json
+      
+      node
     end
     
     # As a string

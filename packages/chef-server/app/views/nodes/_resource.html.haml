@@ -1,0 +1,23 @@
+.resource
+  %h3= "#{h resource.to_s} (#{resource.class})"
+  %table
+    - resource.instance_variables.sort.each do |v|
+      - attr_name = v.gsub(/\@/, "")
+      - unless attr_name == "collection"
+        %tr.attr_group
+          %td.attr_name
+            = "#{h attr_name}"
+          - value = resource.instance_variable_get(v)
+          - if value.kind_of?(String)
+            %td.attr_value
+              = "#{h value}"
+          - elsif value.kind_of?(Array)
+            %td.attr_value
+              = "#{h value.join(", ")}"
+          - elsif value.kind_of?(Symbol)
+            %td.attr_value
+              = "#{h value.to_s}"
+          - else
+            %td.attr_value
+              = "#{h value.inspect}"
+      

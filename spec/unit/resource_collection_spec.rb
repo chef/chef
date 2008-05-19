@@ -171,6 +171,20 @@ describe Chef::ResourceCollection do
   it "should raise an exception if you pass something other than a string or hash to resource" do
     lambda { @rc.resources([Array.new]) }.should raise_error(ArgumentError)
   end
+  
+  it "should serialize to json" do
+    json = @rc.to_json
+    json.should =~ /json_class/
+    json.should =~ /instance_vars/
+  end
+  
+  it "should deserialize itself from json" do
+    @rc << @resource
+    json = @rc.to_json
+    s_rc = JSON.parse(json)
+    s_rc.should be_a_kind_of(Chef::ResourceCollection)
+    s_rc[0].name.should eql(@resource.name)
+  end
 
   def check_by_names(results, *names)
     names.each do |res_name|

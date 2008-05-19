@@ -47,6 +47,7 @@ class Chef
     def load_definitions
       results = Hash.new
       @definition_files.each do |file|
+        Chef::Log.debug("Loading cookbook #{name}'s definitions from #{file}")
         resourcedef = Chef::ResourceDefinition.new
         resourcedef.from_file(file)
         results[resourcedef.name] = resourcedef

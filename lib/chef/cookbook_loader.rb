@@ -72,7 +72,11 @@ class Chef
     end
     
     def [](cookbook)
-      @cookbook[cookbook.to_sym]
+      if @cookbook.has_key?(cookbook.to_sym)
+        @cookbook[cookbook.to_sym]
+      else
+        raise ArgumentError, "Cannot find a cookbook named #{cookbook.to_s}"
+      end
     end
     
     def each

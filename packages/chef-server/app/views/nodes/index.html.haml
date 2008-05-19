@@ -1,0 +1,5 @@
+%h1 Node List
+- @node_list.each do |node|
+  .node
+    %a{ :href => url(:node, { :id => node.gsub(/\./, "_") }) }
+      = node

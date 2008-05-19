@@ -35,6 +35,7 @@ class Chef
     end
     
     def load_node(name)
+      Chef::Log.debug("Loading Chef Node #{name}")
       @node = Chef::Node.find(name)
     end
     
