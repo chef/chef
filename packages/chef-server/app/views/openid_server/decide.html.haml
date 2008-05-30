@@ -1,0 +1,21 @@
+%form{:method => "post", :action => url(:openid_server_decision)}
+  %table
+    %tr
+      %td Site:
+      %td= @oidreq.trust_root
+    - if @oidreq.id_select
+      %tr
+        %td{:colspan => "2"}
+          You entered the server identifier at the relying party. 
+          You will need to send an identifier of your choosing.  
+          Enter a username below.
+      %tr
+        %td Identity to send:
+        %td
+          %input{:type => "text", :name => "id_to_send", :size => "25"}
+    - else
+      %tr
+        %td Identity:
+        %td= @oidreq.identity
+  %input{:type => "submit", :name => "yes", :value => "yes"}
+  %input{:type => "submit", :name => "no", :value => "no"}

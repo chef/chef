@@ -3857,3 +3857,809 @@ undefined method `connect' for #<Merb::Router::Behavior:0x1830e7c> - (NoMethodEr
  ~ {:after_filters_time=>6.0e-06, :action_time=>0.000325, :before_filters_time=>7.7e-05}
  ~ {:after_filters_time=>5.0e-06, :action_time=>0.000327, :before_filters_time=>7.5e-05}
  ~ {:after_filters_time=>5.0e-06, :action_time=>0.000348, :before_filters_time=>7.8e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.001767, :before_filters_time=>0.0001}
+ ~ {:after_filters_time=>8.0e-06, :action_time=>0.000325, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000404, :before_filters_time=>0.000133}
+ ~ {:after_filters_time=>8.0e-06, :action_time=>0.000318, :before_filters_time=>0.00011}
+ ~ {:after_filters_time=>8.0e-06, :action_time=>0.000328, :before_filters_time=>5.0e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000282, :before_filters_time=>4.0e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000306, :before_filters_time=>0.0001}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000265, :before_filters_time=>8.1e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000281, :before_filters_time=>8.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000279, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000263, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000358, :before_filters_time=>8.4e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000359, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000327, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000328, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000333, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000335, :before_filters_time=>7.8e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001247, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000234, :before_filters_time=>6.3e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000279, :before_filters_time=>9.9e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.00023, :before_filters_time=>8.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000238, :before_filters_time=>3.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000275, :before_filters_time=>4.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000277, :before_filters_time=>8.9e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000247, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.00026, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000261, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000246, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000368, :before_filters_time=>8.4e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000361, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000354, :before_filters_time=>8.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000384, :before_filters_time=>9.0e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000376, :before_filters_time=>9.1e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000351, :before_filters_time=>8.1e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001175, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000243, :before_filters_time=>7.0e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000267, :before_filters_time=>9.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000216, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000251, :before_filters_time=>3.6e-05}
+ ~ {:after_filters_time=>2.7e-05, :action_time=>0.000257, :before_filters_time=>3.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.00034, :before_filters_time=>0.000118}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000322, :before_filters_time=>9.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000269, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000302, :before_filters_time=>0.00011}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000254, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000396, :before_filters_time=>9.3e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.00038, :before_filters_time=>8.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000345, :before_filters_time=>8.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000332, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000329, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000353, :before_filters_time=>8.3e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001155, :before_filters_time=>7.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.0002, :before_filters_time=>5.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000288, :before_filters_time=>0.000112}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000215, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000247, :before_filters_time=>3.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000245, :before_filters_time=>3.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000264, :before_filters_time=>8.4e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000268, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000262, :before_filters_time=>7.4e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000259, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000244, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000365, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000358, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000392, :before_filters_time=>8.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000345, :before_filters_time=>8.1e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000335, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000346, :before_filters_time=>8.0e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.001156, :before_filters_time=>7.1e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000207, :before_filters_time=>5.7e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000264, :before_filters_time=>9.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000227, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000235, :before_filters_time=>3.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000269, :before_filters_time=>3.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000285, :before_filters_time=>8.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000305, :before_filters_time=>0.000121}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.00058, :before_filters_time=>0.000338}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000262, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000308, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000372, :before_filters_time=>8.7e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000364, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000337, :before_filters_time=>8.0e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000341, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000331, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000337, :before_filters_time=>7.9e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.001132, :before_filters_time=>7.0e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000202, :before_filters_time=>5.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000265, :before_filters_time=>9.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000235, :before_filters_time=>8.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000246, :before_filters_time=>3.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000235, :before_filters_time=>3.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000282, :before_filters_time=>8.8e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000247, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000273, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000259, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000243, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000369, :before_filters_time=>8.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000361, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000334, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000328, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000347, :before_filters_time=>8.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000381, :before_filters_time=>9.0e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001131, :before_filters_time=>7.3e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000211, :before_filters_time=>5.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000291, :before_filters_time=>9.8e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000215, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000288, :before_filters_time=>4.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000285, :before_filters_time=>4.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.00034, :before_filters_time=>0.000106}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000288, :before_filters_time=>8.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000305, :before_filters_time=>8.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.00027, :before_filters_time=>8.0e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000246, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000398, :before_filters_time=>9.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000373, :before_filters_time=>8.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000341, :before_filters_time=>8.1e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000327, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000339, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000328, :before_filters_time=>7.6e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.001415, :before_filters_time=>8.8e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.00024, :before_filters_time=>6.6e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.00032, :before_filters_time=>0.000107}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.00026, :before_filters_time=>9.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000263, :before_filters_time=>3.8e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000244, :before_filters_time=>3.4e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000265, :before_filters_time=>8.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000246, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.00026, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.00028, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000244, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000372, :before_filters_time=>8.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000373, :before_filters_time=>8.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000328, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000335, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000344, :before_filters_time=>8.0e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000326, :before_filters_time=>7.7e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001192, :before_filters_time=>8.0e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000268, :before_filters_time=>8.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000279, :before_filters_time=>9.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000218, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000238, :before_filters_time=>3.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000245, :before_filters_time=>3.4e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000269, :before_filters_time=>8.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000247, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000261, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000259, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000242, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000371, :before_filters_time=>8.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000448, :before_filters_time=>9.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000347, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000329, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000336, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000336, :before_filters_time=>7.8e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001128, :before_filters_time=>7.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000368, :before_filters_time=>5.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000278, :before_filters_time=>9.8e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000224, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000266, :before_filters_time=>3.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000253, :before_filters_time=>3.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000264, :before_filters_time=>8.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000254, :before_filters_time=>8.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000268, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000261, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000242, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000373, :before_filters_time=>8.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.00036, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000329, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000325, :before_filters_time=>7.4e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000333, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.00033, :before_filters_time=>7.6e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.001236, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.0002, :before_filters_time=>5.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000295, :before_filters_time=>0.0001}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000217, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000307, :before_filters_time=>4.8e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000273, :before_filters_time=>3.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000267, :before_filters_time=>8.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000277, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000313, :before_filters_time=>9.1e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000297, :before_filters_time=>8.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000276, :before_filters_time=>8.4e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000437, :before_filters_time=>0.000102}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000364, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000376, :before_filters_time=>8.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000347, :before_filters_time=>8.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.00033, :before_filters_time=>7.4e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000392, :before_filters_time=>7.4e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001106, :before_filters_time=>7.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000407, :before_filters_time=>5.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000264, :before_filters_time=>9.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000253, :before_filters_time=>9.7e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000248, :before_filters_time=>3.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000233, :before_filters_time=>3.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000261, :before_filters_time=>8.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000471, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000278, :before_filters_time=>8.4e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000279, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000264, :before_filters_time=>8.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000366, :before_filters_time=>8.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000378, :before_filters_time=>8.0e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000346, :before_filters_time=>8.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000328, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000331, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000334, :before_filters_time=>7.7e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001271, :before_filters_time=>8.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000423, :before_filters_time=>5.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000297, :before_filters_time=>0.000105}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000257, :before_filters_time=>8.8e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000288, :before_filters_time=>4.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000279, :before_filters_time=>4.1e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000321, :before_filters_time=>0.000103}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000304, :before_filters_time=>9.4e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000283, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000282, :before_filters_time=>8.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000257, :before_filters_time=>8.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000409, :before_filters_time=>9.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000397, :before_filters_time=>8.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.00036, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000339, :before_filters_time=>8.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000354, :before_filters_time=>8.0e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.002329, :before_filters_time=>8.8e-05}
+ ~ Compiling routes...
+ ~ Compiling routes...
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001102, :before_filters_time=>7.1e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000202, :before_filters_time=>5.4e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000263, :before_filters_time=>9.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000223, :before_filters_time=>8.0e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000237, :before_filters_time=>3.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000243, :before_filters_time=>3.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000265, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000264, :before_filters_time=>8.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000272, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000284, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000244, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000364, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000366, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000393, :before_filters_time=>9.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.00033, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000334, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000351, :before_filters_time=>8.1e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.001126, :before_filters_time=>7.1e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000185, :before_filters_time=>5.1e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000256, :before_filters_time=>8.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000215, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000231, :before_filters_time=>3.0e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000297, :before_filters_time=>4.5e-05}
+ ~ {:after_filters_time=>1.0e-05, :action_time=>0.00108, :before_filters_time=>0.000704}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000436, :before_filters_time=>0.00014}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000414, :before_filters_time=>0.00012}
+ ~ {:after_filters_time=>8.0e-06, :action_time=>0.000394, :before_filters_time=>0.000114}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000265, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>8.0e-06, :action_time=>0.002102, :before_filters_time=>8.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000693, :before_filters_time=>9.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000643, :before_filters_time=>8.8e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000572, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000597, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000948, :before_filters_time=>9.4e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001129, :before_filters_time=>7.4e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000211, :before_filters_time=>5.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000265, :before_filters_time=>9.3e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000219, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000236, :before_filters_time=>3.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000238, :before_filters_time=>3.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000261, :before_filters_time=>8.4e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000244, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000261, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000259, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000268, :before_filters_time=>8.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000433, :before_filters_time=>0.000118}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000417, :before_filters_time=>8.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000385, :before_filters_time=>8.7e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000401, :before_filters_time=>8.1e-05}
+ ~ {:after_filters_time=>8.0e-06, :action_time=>0.001825, :before_filters_time=>8.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000446, :before_filters_time=>8.8e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>1.2e-05, :action_time=>0.023814, :before_filters_time=>0.000147}
+ ~ {:after_filters_time=>1.6e-05, :action_time=>0.000572, :before_filters_time=>0.000151}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000443, :before_filters_time=>0.000151}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000388, :before_filters_time=>0.00014}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000466, :before_filters_time=>5.9e-05}
+ ~ {:after_filters_time=>8.0e-06, :action_time=>0.000352, :before_filters_time=>4.9e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000346, :before_filters_time=>0.00011}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000294, :before_filters_time=>8.9e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.00031, :before_filters_time=>8.9e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000257, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000243, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000431, :before_filters_time=>8.9e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000388, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000359, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000355, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>1.0e-05, :action_time=>0.001889, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000411, :before_filters_time=>9.1e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001137, :before_filters_time=>7.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000214, :before_filters_time=>5.7e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000273, :before_filters_time=>9.4e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000218, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000241, :before_filters_time=>3.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000233, :before_filters_time=>3.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000263, :before_filters_time=>8.4e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000241, :before_filters_time=>7.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.00027, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000261, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000243, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.0004, :before_filters_time=>8.7e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000387, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000392, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000359, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.00178, :before_filters_time=>7.8e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000442, :before_filters_time=>0.000138}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.001771, :before_filters_time=>0.000106}
+ ~ {:after_filters_time=>1.0e-05, :action_time=>0.000332, :before_filters_time=>9.1e-05}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000448, :before_filters_time=>0.000153}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000367, :before_filters_time=>0.000129}
+ ~ {:after_filters_time=>1.0e-05, :action_time=>0.000517, :before_filters_time=>5.6e-05}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000393, :before_filters_time=>5.3e-05}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000459, :before_filters_time=>0.000145}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000433, :before_filters_time=>0.000134}
+ ~ {:after_filters_time=>1.0e-05, :action_time=>0.000444, :before_filters_time=>0.000129}
+ ~ {:after_filters_time=>1.0e-05, :action_time=>0.000442, :before_filters_time=>0.00013}
+ ~ {:after_filters_time=>8.0e-06, :action_time=>0.000362, :before_filters_time=>0.000113}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000525, :before_filters_time=>0.000113}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000456, :before_filters_time=>9.1e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000356, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000352, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>8.0e-06, :action_time=>0.001721, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000374, :before_filters_time=>8.5e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001082, :before_filters_time=>6.8e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.00021, :before_filters_time=>5.4e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000273, :before_filters_time=>9.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000216, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000236, :before_filters_time=>3.3e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000243, :before_filters_time=>3.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000264, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000251, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000261, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000596, :before_filters_time=>0.000381}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000253, :before_filters_time=>8.0e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.00042, :before_filters_time=>8.9e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000398, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000353, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000357, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.00175, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000385, :before_filters_time=>8.7e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>7.0e-05, :after_filters_time=>6.0e-06, :action_time=>0.001103}
+ ~ {:before_filters_time=>5.5e-05, :after_filters_time=>6.0e-06, :action_time=>0.000201}
+ ~ {:before_filters_time=>9.0e-05, :after_filters_time=>5.0e-06, :action_time=>0.000258}
+ ~ {:before_filters_time=>7.5e-05, :after_filters_time=>5.0e-06, :action_time=>0.000215}
+ ~ {:before_filters_time=>3.1e-05, :after_filters_time=>6.0e-06, :action_time=>0.000237}
+ ~ {:before_filters_time=>3.3e-05, :after_filters_time=>5.0e-06, :action_time=>0.000244}
+ ~ {:before_filters_time=>8.5e-05, :after_filters_time=>6.0e-06, :action_time=>0.000268}
+ ~ {:before_filters_time=>8.4e-05, :after_filters_time=>5.0e-06, :action_time=>0.000267}
+ ~ {:before_filters_time=>7.6e-05, :after_filters_time=>5.0e-06, :action_time=>0.000261}
+ ~ {:before_filters_time=>7.4e-05, :after_filters_time=>5.0e-06, :action_time=>0.000257}
+ ~ {:before_filters_time=>7.4e-05, :after_filters_time=>5.0e-06, :action_time=>0.000242}
+ ~ {:before_filters_time=>8.8e-05, :after_filters_time=>5.0e-06, :action_time=>0.000405}
+ ~ {:before_filters_time=>8.4e-05, :after_filters_time=>5.0e-06, :action_time=>0.000394}
+ ~ {:before_filters_time=>7.6e-05, :after_filters_time=>5.0e-06, :action_time=>0.000356}
+ ~ {:before_filters_time=>0.0001, :after_filters_time=>5.0e-06, :action_time=>0.000393}
+ ~ {:before_filters_time=>7.6e-05, :after_filters_time=>8.0e-06, :action_time=>0.001782}
+ ~ {:before_filters_time=>8.6e-05, :after_filters_time=>5.0e-06, :action_time=>0.000374}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>7.0e-05, :after_filters_time=>6.0e-06, :action_time=>0.001082}
+ ~ {:before_filters_time=>8.2e-05, :after_filters_time=>6.0e-06, :action_time=>0.000229}
+ ~ {:before_filters_time=>9.2e-05, :after_filters_time=>5.0e-06, :action_time=>0.000271}
+ ~ {:before_filters_time=>7.8e-05, :after_filters_time=>5.0e-06, :action_time=>0.000224}
+ ~ {:before_filters_time=>3.1e-05, :after_filters_time=>6.0e-06, :action_time=>0.000235}
+ ~ {:before_filters_time=>3.0e-05, :after_filters_time=>5.0e-06, :action_time=>0.000235}
+ ~ {:before_filters_time=>8.9e-05, :after_filters_time=>8.0e-06, :action_time=>0.000283}
+ ~ {:before_filters_time=>7.5e-05, :after_filters_time=>6.0e-06, :action_time=>0.00025}
+ ~ {:before_filters_time=>7.9e-05, :after_filters_time=>5.0e-06, :action_time=>0.000274}
+ ~ {:before_filters_time=>7.7e-05, :after_filters_time=>6.0e-06, :action_time=>0.000265}
+ ~ {:before_filters_time=>8.0e-05, :after_filters_time=>5.0e-06, :action_time=>0.000262}
+ ~ {:before_filters_time=>8.8e-05, :after_filters_time=>6.0e-06, :action_time=>0.000408}
+ ~ {:before_filters_time=>7.5e-05, :after_filters_time=>5.0e-06, :action_time=>0.00038}
+ ~ {:before_filters_time=>7.9e-05, :after_filters_time=>6.0e-06, :action_time=>0.000369}
+ ~ {:before_filters_time=>7.7e-05, :after_filters_time=>5.0e-06, :action_time=>0.000362}
+ ~ {:before_filters_time=>8.4e-05, :after_filters_time=>1.9e-05, :action_time=>0.093813}
+ ~ {:before_filters_time=>0.000278, :after_filters_time=>1.0e-05, :action_time=>0.000793}
+ ~ Compiling routes...
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>1.1e-05, :action_time=>0.018998, :before_filters_time=>0.000118}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000337, :before_filters_time=>9.1e-05}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000543, :before_filters_time=>0.000152}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000368, :before_filters_time=>0.000127}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000331, :before_filters_time=>4.1e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000309, :before_filters_time=>4.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000265, :before_filters_time=>8.2e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000264, :before_filters_time=>7.9e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000264, :before_filters_time=>7.6e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000255, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000243, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.00043, :before_filters_time=>8.3e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000388, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000374, :before_filters_time=>8.2e-05}
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000357, :before_filters_time=>7.7e-05}
+ ~ {:after_filters_time=>1.4e-05, :action_time=>0.011019, :before_filters_time=>7.5e-05}
+ ~ {:after_filters_time=>1.0e-05, :action_time=>0.000678, :before_filters_time=>0.000157}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001096, :before_filters_time=>7.0e-05, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001103, :before_filters_time=>6.9e-05, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001071, :before_filters_time=>6.8e-05, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001121, :before_filters_time=>6.8e-05, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001196, :before_filters_time=>7.3e-05, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001087, :before_filters_time=>6.8e-05, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001087, :before_filters_time=>6.8e-05, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.0011, :before_filters_time=>6.8e-05, :after_filters_time=>8.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.00112, :before_filters_time=>7.7e-05, :after_filters_time=>8.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001218, :before_filters_time=>7.5e-05, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001219, :before_filters_time=>7.0e-05, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001112, :before_filters_time=>6.8e-05, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001286, :before_filters_time=>7.2e-05, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001077, :before_filters_time=>7.0e-05, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001078, :before_filters_time=>6.8e-05, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001124, :before_filters_time=>7.3e-05, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001176, :before_filters_time=>7.2e-05, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001078, :before_filters_time=>6.9e-05, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001078, :before_filters_time=>6.8e-05, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.000428, :before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.001178, :before_filters_time=>8.1e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001267, :before_filters_time=>7.3e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000439, :before_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.001688, :before_filters_time=>9.9e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000473, :before_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.001556, :before_filters_time=>0.000127}
+ ~ {:after_filters_time=>9.0e-06, :action_time=>0.000524, :before_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.001082, :before_filters_time=>7.1e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000442, :before_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.00044, :before_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.0011, :before_filters_time=>8.0e-06, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.000436, :before_filters_time=>6.0e-06, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Compiling routes...
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001106, :before_filters_time=>8.0e-06, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.000432, :before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.00111, :before_filters_time=>8.0e-06, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.000551, :before_filters_time=>6.0e-06, :after_filters_time=>9.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001126, :before_filters_time=>8.0e-06, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.00044, :before_filters_time=>6.0e-06, :after_filters_time=>8.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001264, :before_filters_time=>8.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.000459, :before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001127, :before_filters_time=>8.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.000428, :before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001495, :before_filters_time=>9.0e-06, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.00045, :before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001143, :before_filters_time=>9.0e-06, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.000421, :before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001445, :before_filters_time=>1.1e-05, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.000521, :before_filters_time=>7.0e-06, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.00117, :before_filters_time=>8.0e-06, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.00043, :before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001098, :before_filters_time=>8.0e-06, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.000426, :before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001114, :before_filters_time=>8.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.000433, :before_filters_time=>6.0e-06, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001599, :before_filters_time=>1.2e-05, :after_filters_time=>8.0e-06}
+ ~ {:action_time=>0.000498, :before_filters_time=>8.0e-06, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001155, :before_filters_time=>1.0e-05, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.000423, :before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001107, :before_filters_time=>8.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.000464, :before_filters_time=>7.0e-06, :after_filters_time=>5.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001109, :before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.00046, :before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001118, :before_filters_time=>8.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.000425, :before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001099, :before_filters_time=>8.0e-06, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.000421, :before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.00113, :before_filters_time=>8.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.000433, :before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001459, :before_filters_time=>1.0e-05, :after_filters_time=>8.0e-06}
+ ~ {:action_time=>0.000527, :before_filters_time=>8.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.001208, :before_filters_time=>8.0e-06}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000485, :before_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>8.0e-06, :action_time=>0.001511, :before_filters_time=>1.0e-05}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.00043, :before_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001232, :before_filters_time=>8.0e-06}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000426, :before_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001143, :before_filters_time=>8.0e-06}
+ ~ {:after_filters_time=>7.0e-06, :action_time=>0.000428, :before_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.001344, :before_filters_time=>1.0e-05}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000432, :before_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.00115, :before_filters_time=>9.0e-06}
+ ~ {:after_filters_time=>6.0e-06, :action_time=>0.000437, :before_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>9.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.001157}
+ ~ {:before_filters_time=>9.0e-06, :after_filters_time=>9.0e-06, :action_time=>0.000538}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>1.0e-05, :after_filters_time=>7.0e-06, :action_time=>0.001235}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.000898}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>1.2e-05, :after_filters_time=>9.0e-06, :action_time=>0.00151}
+ ~ {:before_filters_time=>6.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.000435}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>9.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.001131}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.000456}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>1.0e-05, :after_filters_time=>7.0e-06, :action_time=>0.001146}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.000436}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000193}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>9.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.001138}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000423}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000242}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>8.0e-06, :after_filters_time=>8.0e-06, :action_time=>0.001145}
+ ~ {:before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000426}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000234}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>1.1e-05, :after_filters_time=>6.0e-06, :action_time=>0.001343}
+ ~ {:before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000433}
+ ~ {:before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000297}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>1.1e-05, :after_filters_time=>7.0e-06, :action_time=>0.00119}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000437}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000225}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>1.0e-05, :after_filters_time=>6.0e-06, :action_time=>0.001123}
+ ~ {:before_filters_time=>1.0e-05, :after_filters_time=>1.0e-05, :action_time=>0.001585}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000378}
+ ~ {:before_filters_time=>6.0e-06, :after_filters_time=>8.0e-06, :action_time=>0.000266}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>9.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.001215}
+ ~ {:before_filters_time=>9.0e-06, :after_filters_time=>9.0e-06, :action_time=>0.001497}
+ ~ {:before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000378}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.000254}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>1.2e-05, :after_filters_time=>8.0e-06, :action_time=>0.001513}
+ ~ {:before_filters_time=>1.4e-05, :after_filters_time=>1.2e-05, :action_time=>0.001781}
+ ~ {:before_filters_time=>8.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.000447}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.000279}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>9.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.001134}
+ ~ {:before_filters_time=>1.0e-05, :after_filters_time=>1.1e-05, :action_time=>0.001625}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.000402}
+ ~ {:before_filters_time=>6.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.00023}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>1.2e-05, :after_filters_time=>1.0e-05, :action_time=>0.001618}
+ ~ {:before_filters_time=>8.0e-06, :after_filters_time=>2.0e-05, :action_time=>0.000471}
+ ~ {:before_filters_time=>8.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.000271}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:before_filters_time=>9.0e-06, :after_filters_time=>7.0e-06, :action_time=>0.001246}
+ ~ {:before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000458}
+ ~ {:before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06, :action_time=>0.000255}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001124, :before_filters_time=>8.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.000426, :before_filters_time=>7.0e-06, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.000224, :before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.023019, :before_filters_time=>1.9e-05, :after_filters_time=>1.3e-05}
+ ~ {:action_time=>0.000733, :before_filters_time=>1.1e-05, :after_filters_time=>1.1e-05}
+ ~ {:action_time=>0.000404, :before_filters_time=>1.1e-05, :after_filters_time=>1.2e-05}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001142, :before_filters_time=>9.0e-06, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.000427, :before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.000225, :before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.00115, :before_filters_time=>8.0e-06, :after_filters_time=>7.0e-06}
+ ~ {:action_time=>0.000427, :before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.000231, :before_filters_time=>6.0e-06, :after_filters_time=>7.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.001186, :before_filters_time=>9.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.000203, :before_filters_time=>7.0e-06, :after_filters_time=>5.0e-06}
+ ~ {:action_time=>0.000427, :before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.000225, :before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06}
+ ~ Compiling routes...
+ ~ Using 'share-nothing' cookie sessions (4kb limit per client)
+ ~ {:action_time=>0.0016, :before_filters_time=>1.0e-05, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.000213, :before_filters_time=>6.0e-06, :after_filters_time=>6.0e-06}
+ ~ {:action_time=>0.00045, :before_filters_time=>7.0e-06, :after_filters_time=>5.0e-06}
+ ~ {:action_time=>0.000228, :before_filters_time=>7.0e-06, :after_filters_time=>6.0e-06}

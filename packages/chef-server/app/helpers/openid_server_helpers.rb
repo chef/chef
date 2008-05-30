@@ -2,7 +2,7 @@ module Merb
   module OpenidServerHelper
 
     def url_for_user
-      url :controller => 'user', :action => session[:username]
+      url(:openid_user, :username => session[:username])
     end
 
   end

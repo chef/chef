@@ -31,20 +31,29 @@ Merb::Router.prepare do |r|
   
   r.resources :nodes
   r.resources :nodes, :member => { :compile => :get }
+  
+  r.resources :openid do |res|
+    res.resources :register, :controller => "openid_register"
+  end
 
-  r.match("/openid_server").to(:controller => "openid_server", :action => "index")
-  r.match("/openid_server/server/xrds").
-    to(:controller => "openid_server", :action => 'idp_xrds')
-  r.match("/openid_server/user/:username").
-    to(:controller => "openid_server", :action => 'user_page')
-  r.match('/openid_server/user/:username/xrds').
-    to(:controller => 'openid_server', :action => 'user_xrds')
-  r.match('/openid_login').to(:controller => 'openid_login', :action => 'index')
-  r.match('/openid_login/submit').to(:controller => 'openid_login', :action => 'submit')
-  r.match('/openid_login/logout').to(:controller => 'openid_login', :action => 'logout')
+  r.match("/openid/server").to(:controller => "openid_server", :action => "index").name(:openid_server)
+  r.match("/openid/server/server/xrds").
+    to(:controller => "openid_server", :action => 'idp_xrds').name(:openid_server_xrds)
+  r.match("/openid/server/user/:username").
+    to(:controller => "openid_server", :action => 'user_page').name(:openid_user)
+  r.match('/openid/server/user/:username/xrds').
+    to(:controller => 'openid_server', :action => 'user_xrds').name(:openid_user_xrds)
+  r.match('/openid/server/decision').to(:controller => "openid_server", :action => "decision").name(:openid_server_decision)
+  r.match('/openid/login').to(:controller => 'openid_login', :action => 'index').name(:openid_login)
+  r.match('/openid/login/submit').to(:controller => 'openid_login', :action => 'submit').name(:openid_login_submit)
+  r.match('/openid/login/logout').to(:controller => 'openid_login', :action => 'logout').name(:openid_logout)
+  r.match('/openid/consumer').to(:controller => 'openid_consumer', :action => 'index').name(:openid_consumer)
+  r.match('/openid/consumer/start').to(:controller => 'openid_consumer', :action => 'start').name(:openid_consumer_start)
+  r.match('/openid/consumer/complete').to(:controller => 'openid_consumer', :action => 'complete').name(:openid_consumer_complete)
   
   #r.default_routes
   
   # Change this for your home page to be available at /
   # r.match('/').to(:controller => 'whatever', :action =>'index')
 end
+

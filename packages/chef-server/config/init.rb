@@ -150,3 +150,8 @@ end
 # And the result is:
 # irb> "wife".plural
 # => wives
+
+begin 
+  require File.join(File.dirname(__FILE__), '..', 'lib', 'authenticated_system/authenticated_dependencies') 
+rescue LoadError
+end

@@ -67,6 +67,7 @@ class Nodes < Application
     stored_node.recipes.each do |r|
       compile.node.recipes << r unless compile.node.recipes.detect { |h| r == h }
     end
+    Chef::FileStore.store("node", params[:id], compile.node)
     compile.load_definitions
     compile.load_recipes
     @output = {

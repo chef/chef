@@ -150,6 +150,7 @@ describe Nodes, "compile action" do
   end
   
   def do_compile
+    Chef::FileStore.stub!(:store).and_return(true)
     Chef::FileStore.stub!(:load).and_return(@stored_node)
     Chef::Compile.stub!(:new).and_return(@compile)
     dispatch_to(Nodes, :compile, { :id => "one" }) do |c|

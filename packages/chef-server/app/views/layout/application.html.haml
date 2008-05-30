@@ -9,7 +9,7 @@
     = catch_content :for_layout
     .footer
       - if session[:username]
-        %a{:href => url(:controller => "openid_login", :action => "logout")}= "Log Out #{session[:username]}"
+        %a{:href => url(:openid_logout)}= "Log Out #{session[:username]}"
         %br/
-        = url(:controller => "openid_server", :action => "user_page", :username => session[:username])
+        = absolute_url(:openid_user, :username => session[:username])
  

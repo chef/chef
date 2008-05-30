@@ -7,17 +7,16 @@
         %tr.attr_group
           %td.attr_name
             = "#{h attr_name}"
-          - value = resource.instance_variable_get(v)
-          - if value.kind_of?(String)
-            %td.attr_value
+          %td.attr_value
+            - value = resource.instance_variable_get(v)
+            - if value.kind_of?(String)
               = "#{h value}"
-          - elsif value.kind_of?(Array)
-            %td.attr_value
+            - elsif value.kind_of?(Array)
               = "#{h value.join(", ")}"
-          - elsif value.kind_of?(Symbol)
-            %td.attr_value
+            - elsif value.kind_of?(Symbol)
               = "#{h value.to_s}"
-          - else
-            %td.attr_value
+            - elsif attr_name == "actions"
+              = partial(:action, :actions => value)
+            - else
               = "#{h value.inspect}"
       

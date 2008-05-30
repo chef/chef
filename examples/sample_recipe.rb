@@ -4,6 +4,12 @@ require_recipe "openldap::server"
 require_recipe "resolver"
 require_recipe "base"
 
+exec "restart-apache" do
+  path "/usr/bin:/usr/local/bin"
+  command "/etc/init.d/apache2 restart"
+  action :nothing
+end
+
 service "apache2" do
   insure "running"
   has_restart true

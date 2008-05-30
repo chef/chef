@@ -77,6 +77,25 @@ class Chef
         keys
       end
       
+      def has_key?(obj_type, name)
+        validate(
+          {
+            :obj_type => obj_type,
+            :name => name,
+          },
+          {
+            :obj_type => { :kind_of => String },
+            :name => { :kind_of => String },
+          }
+        )
+        Dir[File.join(Chef::Config[:file_store_path], obj_type, '**', '*')].each do |f|
+          if File.file?(f)
+            return true if File.basename(f) == name
+          end
+        end
+        return false
+      end
+      
       def create_store_path(obj_type, key)
         shadigest = Digest::SHA2.hexdigest("#{obj_type}#{key}")
         

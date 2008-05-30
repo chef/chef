@@ -14,15 +14,16 @@ class OpenidServer < Application
 
   include Merb::OpenidServerHelper
   include OpenID::Server
+  
   layout nil
 
   def index
+    
     oidreq = server.decode_request(params)
     
     # no openid.mode was given
     unless oidreq
-      render :text => "This is an OpenID server endpoint."
-      return
+      return "This is the Chef OpenID server endpoint."
     end
 
     oidresp = nil
@@ -36,8 +37,7 @@ class OpenidServer < Application
           oidresp = oidreq.answer(false)
         elsif session[:username].nil?
           # The user hasn't logged in.
-          show_decision_page(oidreq)
-          return
+          return show_decision_page(oidreq)
         else
           # Else, set the identity to the one the user is using.
           identity = url_for_user
@@ -49,11 +49,10 @@ class OpenidServer < Application
       elsif self.is_authorized(identity, oidreq.trust_root)
         oidresp = oidreq.answer(true, nil, identity)
       elsif oidreq.immediate
-        server_url = url_for :action => 'index'
+        server_url = url :openid_server
         oidresp = oidreq.answer(false, server_url)
       else
-        show_decision_page(oidreq)
-        return
+        return show_decision_page(oidreq)
       end
 
     else
@@ -68,10 +67,10 @@ class OpenidServer < Application
     @oidreq = oidreq
 
     if message
-      flash[:notice] = message
+      session[:notice] = message
     end
 
-    render :template => 'server/decide', :layout => 'server'
+    render :template => 'openid_server/decide'
   end
 
   def user_page
@@ -82,24 +81,23 @@ class OpenidServer < Application
     # to do real Accept header parsing and logic.  Though I expect it will work
     # 99% of the time.
     if accept and accept.include?('application/xrds+xml')
-      user_xrds
-      return
+      return user_xrds
     end
 
     # content negotiation failed, so just render the user page
-    xrds_url = url_for(:controller=>'user',:action=>params[:username])+'/xrds'
+    xrds_url = url(:openid_user_xrds, :username => params[:username])
     identity_page = <<EOS
 <html><head>
 <meta http-equiv="X-XRDS-Location" content="#{xrds_url}" />
-<link rel="openid.server" href="#{url_for :action => 'index'}" />
+<link rel="openid.server" href="#{absolute_url :openid_user, :username}" />
 </head><body><p>OpenID identity page for #{params[:username]}</p>
 </body></html>
 EOS
 
     # Also add the Yadis location header, so that they don't have
     # to parse the html unless absolutely necessary.
-    response.headers['X-XRDS-Location'] = xrds_url
-    render :text => identity_page
+    @headers['X-XRDS-Location'] = xrds_url
+    render identity_page
   end
 
   def user_xrds
@@ -125,7 +123,7 @@ EOS
     session[:last_oidreq] = nil
 
     if params[:yes].nil?
-      redirect_to oidreq.cancel_url
+      redirect oidreq.cancel_url
       return
     else
       id_to_send = params[:id_to_send]
@@ -139,8 +137,7 @@ EOS
         else
           msg = "You must enter a username to in order to send " +
             "an identifier to the Relying Party."
-          show_decision_page(oidreq, msg)
-          return
+          return show_decision_page(oidreq, msg)
         end
       end
 
@@ -150,8 +147,6 @@ EOS
         session[:approvals] = [oidreq.trust_root]
       end
       oidresp = oidreq.answer(true, nil, identity)
-      add_sreg(oidreq, oidresp)
-      add_pape(oidreq, oidresp)
       return self.render_response(oidresp)
     end
   end
@@ -160,8 +155,8 @@ EOS
 
   def server
     if @server.nil?
-      server_url = url_for :action => 'index', :only_path => false
-      dir = Pathname.new(RAILS_ROOT).join('db').join('openid-store')
+      server_url = absolute_url(:openid_server)
+      dir = Pathname.new(Merb.root).join('db').join('openid-store')
       store = OpenID::Store::Filesystem.new(dir)
       @server = Server.new(store, server_url)
     end
@@ -192,14 +187,14 @@ EOS
   <XRD>
     <Service priority="0">
       #{type_str}
-      <URI>#{url_for(:controller => 'server', :only_path => false)}</URI>
+      <URI>#{absolute_url(:openid_server)}</URI>
     </Service>
   </XRD>
 </xrds:XRDS>
 EOS
 
-    response.headers['content-type'] = 'application/xrds+xml'
-    render :text => yadis
+    @headers['content-type'] = 'application/xrds+xml'
+    render yadis
   end
 
   def render_response(oidresp)
@@ -210,13 +205,13 @@ EOS
 
     case web_response.code
     when HTTP_OK
-      render :text => web_response.body, :status => 200
-
+      @status = 200
+      render web_response.body
     when HTTP_REDIRECT
-      redirect_to web_response.headers['location']
-
+      redirect web_response.headers['location']
     else
-      render :text => web_response.body, :status => 400
+      @status = 400
+      render web_response.body
     end
   end
 
