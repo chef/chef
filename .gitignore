@@ -2,3 +2,5 @@ coverage
 doc
 .DS_Store
 packages/chef-server/db
+examples/search_index
+examples/store
