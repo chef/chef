@@ -6,4 +6,6 @@ node_path     File.join(File.dirname(__FILE__), "..", "..", "..", "examples", "c
 file_store_path File.join(File.dirname(__FILE__), "..", "..", "..", "examples", "store")
 log_level     :debug
 
+openid_providers [ "localhost:4001", "openid.hjksolutions.com" ]
+
 Chef::Log::Formatter.show_time = false

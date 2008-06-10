@@ -39,10 +39,16 @@ class Chef
     @configuration = {
       :cookbook_path => [ "/etc/chef/site-cookbook", "/etc/chef/cookbook" ],
       :node_path => "/etc/chef/node",
-      :file_store_path => "/var/lib/chef/store",
-      :search_index_path => "/var/lib/chef/search_index",
+      :file_store_path => "/var/chef/store",
+      :search_index_path => "/var/chef/search_index",
       :log_level => :info,
-      :log_location => STDOUT
+      :log_location => STDOUT,
+      :openid_providers => nil,
+      :ssl_verify_mode => :verify_none,
+      :rest_timeout => 60,
+      :couchdb_url => "http://localhost:5984",
+      :registration_url => "http://localhost:4000",
+      :openid_url => "http://localhost:4001",
     }
     
     class << self

@@ -92,10 +92,11 @@ describe Chef::FileStore do
     Chef::FileStore.list("node").should eql(["pool"])
   end
   
-  it "should let you test whether a key exists for an object type with has_key?" do
-    Dir.should_receive(:[]).with("/tmp/chef-test/node/**/*").and_return(["pool"])
-    File.should_receive(:file?).with("pool").and_return(true)
-    Chef::FileStore.has_key?("node", "pool").should eql(true)
+  it "should return all the documents of a particular type with list and inflate" do
+    Dir.stub!(:[]).and_return(["/foo/pool"])
+    File.stub!(:file?).and_return(true)
+    Chef::FileStore.should_receive(:load).with("node", "pool").and_return("monkey")
+    Chef::FileStore.list("node", true).should eql(["monkey"])
   end
 
   it "should let you test whether a key doesnt exist for an object type with has_key?" do

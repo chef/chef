@@ -37,6 +37,10 @@ describe Chef::CookbookLoader do
     @cl[:openldap].should be_a_kind_of(Chef::Cookbook)
   end
   
+  it "should raise an exception if it cannot find a cookbook with []" do
+    lambda { @cl[:monkeypoop] }.should raise_error(ArgumentError)
+  end
+  
   it "should allow you to look up available cookbooks with [] and a symbol" do
     @cl[:openldap].name.should eql(:openldap)
   end

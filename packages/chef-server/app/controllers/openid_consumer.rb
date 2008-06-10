@@ -5,16 +5,18 @@ require 'openid/store/filesystem'
 
 class OpenidConsumer < Application
 
+  provides :html, :json
+
   def index
     render
   end
 
   def start
+    check_valid_openid_provider(params[:openid_identifier])
     begin
       oidreq = consumer.begin(params[:openid_identifier])
     rescue OpenID::OpenIDError => e
-      session[:error] = "Discovery failed for #{params[:openid_identifier]}: #{e}"
-      return redirect(url(:openid_consumer))
+      raise BadRequest, "Discovery failed for #{params[:openid_identifier]}: #{e}"
     end
     return_to = absolute_url(:openid_consumer_complete)
     realm = absolute_url(:openid_consumer)
@@ -33,26 +35,58 @@ class OpenidConsumer < Application
     parameters = params.reject{|k,v| k == "controller" || k == "action"}
     oidresp = consumer.complete(parameters, current_url)
     case oidresp.status
-    when OpenID::Consumer::FAILURE
-      if oidresp.display_identifier
-        session[:error] = ("Verification of #{oidresp.display_identifier}"\
-                         " failed: #{oidresp.message}")
+      when OpenID::Consumer::FAILURE
+        if oidresp.display_identifier
+          raise BadRequest, "Verification of #{oidresp.display_identifier} failed: #{oidresp.message}"
+        else
+          raise BadRequest, "Verification failed: #{oidresp.message}"
+        end
+      when OpenID::Consumer::SUCCESS
+        session[:openid] = oidresp.identity_url
+        if oidresp.display_identifier =~ /openid\/server\/node\/(.+)$/
+          session[:level] = :node
+          session[:node_name] = $1
+        else
+          session[:level] = :admin
+        end
+        redirect_back_or_default(absolute_url(:nodes))
+        return "Verification of #{oidresp.display_identifier} succeeded."
+      when OpenID::Consumer::SETUP_NEEDED
+        return "Immediate request failed - Setup Needed"
+      when OpenID::Consumer::CANCEL
+        return "OpenID transaction cancelled."
       else
-        session[:error] = "Verification failed: #{oidresp.message}"
-      end
-    when OpenID::Consumer::SUCCESS
-      session[:success] = ("Verification of #{oidresp.display_identifier}"\
-                         " succeeded.")
-    when OpenID::Consumer::SETUP_NEEDED
-      session[:alert] = "Immediate request failed - Setup Needed"
-    when OpenID::Consumer::CANCEL
-      session[:alert] = "OpenID transaction cancelled."
-    else
     end
-    redirect url(:openid_consumer)
+    redirect absolute_url(:openid_consumer)
+  end
+  
+  def logout
+    session[:openid] = nil    if session.has_key?(:openid)
+    session[:level] = nil     if session.has_key?(:level)
+    session[:node_name] = nil if session.has_key?(:node_name)
+    redirect url(:top)
   end
 
   private
+  
+  # Returns true if the openid is at a valid provider, based on whether :openid_providers is 
+  # defined.  Raises an exception if it is not an allowed provider.
+  def check_valid_openid_provider(openid)
+    if Chef::Config[:openid_providers]
+      fp = Chef::Config[:openid_providers].detect do |p|
+        case openid
+        when /^http:\/\/#{p}/, /^#{p}/
+          true
+        else
+          false
+        end
+      end
+      unless fp 
+        raise Unauthorized, "Sorry, #{openid} is not an allowed OpenID Provider."
+      end
+    end
+    true
+  end
 
   def consumer
     if @consumer.nil?

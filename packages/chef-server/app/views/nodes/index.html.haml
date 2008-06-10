@@ -3,3 +3,7 @@
   .node
     %a{ :href => url(:node, { :id => node.gsub(/\./, "_") }) }
       = node
+      %form{ :method => "post", :action => url(:node, { :id => node.gsub(/\./, "_") })}
+        %input{ :type => "hidden", :name => "_method", :value => "delete" }
+        %input{ :type => "submit", :name => "Delete", :value => "Delete" }
+      

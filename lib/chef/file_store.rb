@@ -38,7 +38,6 @@ class Chef
         )
         store_path = create_store_path(obj_type, name)
         raise "Cannot find #{store_path} for #{obj_type} #{name}!" unless File.exists?(store_path)
-      
         object = JSON.parse(IO.read(store_path))
       end
       
@@ -59,7 +58,7 @@ class Chef
         end
       end
       
-      def list(obj_type)
+      def list(obj_type, inflate=false)
         validate(
           { 
             :obj_type => obj_type,
@@ -71,7 +70,11 @@ class Chef
         keys = Array.new
         Dir[File.join(Chef::Config[:file_store_path], obj_type, '**', '*')].each do |f|
           if File.file?(f)
-            keys << File.basename(f)
+            if inflate
+              keys << load(obj_type, File.basename(f))
+            else
+              keys << File.basename(f)
+            end
           end
         end
         keys

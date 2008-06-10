@@ -73,11 +73,12 @@ class Chef
         pmap = Chef::Platform.find(platform, version)
         rtkey = resource_type
         if resource_type.kind_of?(Chef::Resource)
-          rtkey = resource_type.resource_name
+          rtkey = resource_type.resource_name.to_sym
         end
         if pmap.has_key?(rtkey)
           pmap[rtkey]
         else
+          Chef::Log.error("#{rtkey.inspect} #{pmap.inspect}")
           raise(
             ArgumentError, 
             "Cannot find a provider for #{resource_type} on #{platform} version #{version}"

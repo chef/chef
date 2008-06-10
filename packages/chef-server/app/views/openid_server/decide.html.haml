@@ -8,7 +8,7 @@
         %td{:colspan => "2"}
           You entered the server identifier at the relying party. 
           You will need to send an identifier of your choosing.  
-          Enter a username below.
+          Enter a username and password below.
       %tr
         %td Identity to send:
         %td
@@ -17,5 +17,11 @@
       %tr
         %td Identity:
         %td= @oidreq.identity
-  %input{:type => "submit", :name => "yes", :value => "yes"}
-  %input{:type => "submit", :name => "no", :value => "no"}
+      %tr
+        %td
+          %label{:for => "password"} Password:
+        %td
+          %input{:type => "password", :name => "password"}
+  %input{:type => "submit", :name => "submit", :value => "Authenticate"}
+  %input{:type => "submit", :name => "cancel", :value => "Cancel"}
+  

@@ -35,8 +35,11 @@ class Chef
     end
     
     def load_node(name)
-      Chef::Log.debug("Loading Chef Node #{name}")
-      @node = Chef::Node.find(name)
+      Chef::Log.debug("Loading Chef Node #{name} from CouchDB")
+      @node = Chef::Node.load(name)
+      Chef::Log.debug("Loading Recipe for Chef Node #{name}")
+      @node.find_file(name)
+      @node
     end
     
     def load_definitions()

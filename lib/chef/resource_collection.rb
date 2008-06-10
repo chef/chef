@@ -118,10 +118,11 @@ class Chef
       self.instance_variables.each do |iv|
         instance_vars[iv] = self.instance_variable_get(iv)
       end
-      {
+      results = {
         'json_class' => self.class.name,
         'instance_vars' => instance_vars
-      }.to_json(*a)
+      }
+      results.to_json(*a)
     end
     
     def self.json_create(o)

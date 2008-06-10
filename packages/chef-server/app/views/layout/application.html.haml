@@ -6,10 +6,17 @@
     %meta{"http-equiv" => "content-type", :content => "text/html; charset=utf-8" }
     %link{:rel => "stylesheet", :href => "/stylesheets/master.css", :type => "text/css", :media => "screen", :charset => "utf-8" }
   %body
+    .header
+      %a{:href => url(:nodes) } Nodes
+      |
+      %a{:href => url(:registrations)} Registrations
+      - if session[:openid]
+        |
+        %a{:href => url(:openid_consumer_logout)}= "Logout #{h session[:openid]}"
+        = "(#{session[:level].to_s})"
+      - else
+        |
+        %a{:href => url(:openid_consumer)} Login
     = catch_content :for_layout
-    .footer
-      - if session[:username]
-        %a{:href => url(:openid_logout)}= "Log Out #{session[:username]}"
-        %br/
-        = absolute_url(:openid_user, :username => session[:username])
+
  

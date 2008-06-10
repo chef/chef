@@ -20,7 +20,7 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
-describe Chef::Node do
+describe Chef::Node, "new method" do
   before(:each) do
     Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
     @node = Chef::Node.new()
@@ -29,7 +29,14 @@ describe Chef::Node do
   it "should create a new Chef::Node" do
      @node.should be_a_kind_of(Chef::Node)
   end
+end
 
+describe Chef::Node, "name" do
+  before(:each) do
+    Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    @node = Chef::Node.new()
+  end
+  
   it "should allow you to set a name with name(something)" do
     lambda { @node.name("latte") }.should_not raise_error
   end
@@ -41,6 +48,14 @@ describe Chef::Node do
   
   it "should always have a string for name" do
     lambda { @node.name(Hash.new) }.should raise_error(ArgumentError)
+  end
+  
+end
+
+describe Chef::Node, "attributes" do
+  before(:each) do
+    Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    @node = Chef::Node.new()
   end
   
   it "should have attributes" do
@@ -67,6 +82,41 @@ describe Chef::Node do
     @node.attribute?("locust").should eql(true)
     @node.attribute?("no dice").should eql(false)
   end
+
+  it "should allow you to set an attribute via method_missing" do
+    @node.sunshine "is bright"
+    @node.attribute[:sunshine].should eql("is bright")
+  end
+  
+  it "should allow you get get an attribute via method_missing" do
+    @node.sunshine "is bright"
+    @node.sunshine.should eql("is bright")
+  end
+  
+  it "should raise an ArgumentError if you ask for an attribute that doesn't exist via method_missing" do
+    lambda { @node.sunshine }.should raise_error(ArgumentError)
+  end
+
+  it "should allow you to iterate over attributes with each_attribute" do
+    @node.sunshine "is bright"
+    @node.canada "is a nice place"
+    seen_attributes = Hash.new
+    @node.each_attribute do |a,v|
+      seen_attributes[a] = v
+    end
+    seen_attributes.should have_key(:sunshine)
+    seen_attributes.should have_key(:canada)
+    seen_attributes[:sunshine].should == "is bright"
+    seen_attributes[:canada].should == "is a nice place"
+  end
+
+end
+
+describe Chef::Node, "recipes" do
+  before(:each) do
+    Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    @node = Chef::Node.new()
+  end
   
   it "should have an array of recipes that should be applied" do
     @node.recipes.should be_a_kind_of(Array)
@@ -84,18 +134,12 @@ describe Chef::Node do
     @node.recipe?("two").should eql(true)
   end
   
-  it "should allow you to set an attribute via method_missing" do
-    @node.sunshine "is bright"
-    @node.attribute[:sunshine].should eql("is bright")
-  end
-  
-  it "should allow you get get an attribute via method_missing" do
-    @node.sunshine "is bright"
-    @node.sunshine.should eql("is bright")
-  end
-  
-  it "should raise an ArgumentError if you ask for an attribute that doesn't exist via method_missing" do
-    lambda { @node.sunshine }.should raise_error(ArgumentError)
+end
+
+describe Chef::Node, "from file" do
+  before(:each) do
+    Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    @node = Chef::Node.new()
   end
   
   it "should load a node from a ruby file" do
@@ -109,38 +153,32 @@ describe Chef::Node do
   it "should raise an exception if the file cannot be found or read" do
     lambda { @node.from_file("/tmp/monkeydiving") }.should raise_error(IOError)
   end
-  
-  it "should allow you to iterate over attributes with each_attribute" do
-    @node.sunshine "is bright"
-    @node.canada "is a nice place"
-    seen_attributes = Hash.new
-    @node.each_attribute do |a,v|
-      seen_attributes[a] = v
-    end
-    seen_attributes.should have_key(:sunshine)
-    seen_attributes.should have_key(:canada)
-    seen_attributes[:sunshine].should == "is bright"
-    seen_attributes[:canada].should == "is a nice place"
+end
+
+describe Chef::Node, "find_file" do
+  before(:each) do
+    Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    @node = Chef::Node.new()
   end
-  
+    
   it "should load a node from a file by fqdn" do
-    node = Chef::Node.find("test.example.com")
-    node.name.should == "test.example.com"
+    @node.find_file("test.example.com")
+    @node.name.should == "test.example.com"
   end
   
   it "should load a node from a file by hostname" do
     File.stub!(:exists?).and_return(true)
     File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
-    node = Chef::Node.find("test.example.com")
-    node.name.should == "test.example.com short"
+    @node.find_file("test.example.com")
+    @node.name.should == "test.example.com short"
   end
   
   it "should load a node from the default file" do
     File.stub!(:exists?).and_return(true)
     File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
     File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.rb")).and_return(false)
-    node = Chef::Node.find("test.example.com")
-    node.name.should == "test.example.com default"
+    @node.find_file("test.example.com")
+    @node.name.should == "test.example.com default"
   end
   
   it "should raise an ArgumentError if it cannot find any node file at all" do
@@ -148,12 +186,19 @@ describe Chef::Node do
     File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
     File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.rb")).and_return(false)
     File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "default.rb")).and_return(false)
-    lambda { Chef::Node.find("test.example.com") }.should raise_error(ArgumentError)
+    lambda { @node.find_file("test.example.com") }.should raise_error(ArgumentError)
   end
+end
 
+describe Chef::Node, "json" do
+  before(:each) do
+    Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    @node = Chef::Node.new()
+  end
+  
   it "should serialize itself as json" do
-    node = Chef::Node.find("test.example.com")
-    json = node.to_json()
+    @node.find_file("test.example.com")
+    json = @node.to_json()
     json.should =~ /json_class/
     json.should =~ /name/
     json.should =~ /attributes/
@@ -161,28 +206,110 @@ describe Chef::Node do
   end
   
   it "should deserialize itself from json" do
-    original_node = Chef::Node.find("test.example.com")
-    json = original_node.to_json
+    @node.find_file("test.example.com")
+    json = @node.to_json
     serialized_node = JSON.parse(json)
     serialized_node.should be_a_kind_of(Chef::Node)
-    serialized_node.name.should eql(original_node.name)
-    original_node.each_attribute do |k,v|
+    serialized_node.name.should eql(@node.name)
+    @node.each_attribute do |k,v|
       serialized_node[k].should eql(v)
     end
-    serialized_node.recipes.should eql(original_node.recipes)
+    serialized_node.recipes.should eql(@node.recipes)
+  end
+end
+
+
+describe Chef::Node, "to_s" do
+  before(:each) do
+    Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    @node = Chef::Node.new()
   end
   
-  it "should return a list of node names based on which files are in the node_path" do
-    list = Chef::Node.list
-    list.should be_a_kind_of(Array)
-    list[0].should == "default"
-    list[1].should == "test.example.com"
-    list[2].should == "test"
-  end
-
   it "should turn into a string like node[name]" do
     @node.name("airplane")
     @node.to_s.should eql("node[airplane]")
   end
+end
 
+describe Chef::Node, "list" do  
+  before(:each) do
+    mock_couch = mock("Chef::CouchDB")
+    mock_couch.stub!(:list).and_return(
+    {
+      "rows" => [
+        {
+          "value" => "a",
+          "key"   => "avenue"
+        }
+      ]
+    }
+    )
+    Chef::CouchDB.stub!(:new).and_return(mock_couch)    
+  end
+  
+  it "should retrieve a list of nodes from CouchDB" do
+    Chef::Node.list.should eql(["avenue"])
+  end
+  
+  it "should return just the ids if inflate is false" do
+    Chef::Node.list(false).should eql(["avenue"])
+  end
+  
+  it "should return the full objects if inflate is true" do
+    Chef::Node.list(true).should eql(["a"])
+  end
+end
+
+describe Chef::Node, "load" do
+  it "should load a node from couchdb by name" do
+    mock_couch = mock("Chef::CouchDB")
+    mock_couch.should_receive(:load).with("node", "coffee").and_return(true)
+    Chef::CouchDB.stub!(:new).and_return(mock_couch)
+    Chef::Node.load("coffee")
+  end
+end
+
+describe Chef::Node, "destroy" do
+  it "should delete this node from couchdb" do
+    mock_couch = mock("Chef::CouchDB")
+    mock_couch.should_receive(:delete).with("node", "bob", 1).and_return(true)
+    Chef::CouchDB.stub!(:new).and_return(mock_couch)
+    node = Chef::Node.new
+    node.name "bob"
+    node.couchdb_rev = 1
+    Chef::Queue.should_receive(:send_msg).with(:queue, :node_remove, node)
+    node.destroy
+  end
+end
+
+describe Chef::Node, "save" do
+  before(:each) do
+    @mock_couch = mock("Chef::CouchDB")
+    @mock_couch.stub!(:store).and_return({ "rev" => 33 })
+    Chef::CouchDB.stub!(:new).and_return(@mock_couch)
+    Chef::Queue.stub!(:send_msg).and_return(true)
+    @node = Chef::Node.new
+    @node.name "bob"
+    @node.couchdb_rev = 1
+  end
+  
+  it "should save the node to couchdb" do
+    Chef::Queue.should_receive(:send_msg).with(:queue, :node_index, @node)
+    @mock_couch.should_receive(:store).with("node", "bob", @node).and_return({ "rev" => 33 }) 
+    @node.save
+  end
+  
+  it "should store the new couchdb_rev" do
+    @node.save
+    @node.couchdb_rev.should eql(33)
+  end
+end
+
+describe Chef::Node, "create_design_document" do
+  it "should create our design document" do
+    mock_couch = mock("Chef::CouchDB")
+    mock_couch.should_receive(:create_design_document).with("nodes", Chef::Node::DESIGN_DOCUMENT)
+    Chef::CouchDB.stub!(:new).and_return(mock_couch)
+    Chef::Node.create_design_document
+  end
 end

@@ -1,7 +1,7 @@
 ##
 # Nodes should have a unique name
 ##
-name "latte"
+name "latte.local"
 
 ##
 # Nodes can set arbitrary arguments

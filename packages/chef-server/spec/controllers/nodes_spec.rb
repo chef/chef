@@ -2,14 +2,14 @@ require File.join(File.dirname(__FILE__), "..", 'spec_helper.rb')
 
 describe Nodes, "index action" do  
   it "should get a list of all the nodes" do
-    Chef::FileStore.should_receive(:list).with("node").and_return(["one"])
+    Chef::Node.should_receive(:list).and_return(["one"])
     dispatch_to(Nodes, :index) do |c|
       c.stub!(:display)
     end
   end
   
   it "should send a list of nodes to display" do
-    Chef::FileStore.stub!(:list).and_return(["one"])
+    Chef::Node.stub!(:list).and_return(["one"])
     dispatch_to(Nodes, :index) do |c|
       c.should_receive(:display).with(["one"])
     end
@@ -19,7 +19,7 @@ end
 describe Nodes, "show action" do  
   it "should load a node from the filestore based on the id" do
     node = stub("Node", :null_object => true)
-    Chef::FileStore.should_receive(:load).with("node", "bond").once.and_return(node)
+    Chef::Node.should_receive(:load).with("bond").once.and_return(node)
     dispatch_to(Nodes, :show, { :id => "bond" }) do |c|
       c.should_receive(:display).with(node).once.and_return(true)
     end
@@ -27,7 +27,7 @@ describe Nodes, "show action" do
   
   it "should return 200 on a well formed request" do
     node = stub("Node", :null_object => true)
-     Chef::FileStore.should_receive(:load).with("node", "bond").once.and_return(node)
+     Chef::Node.should_receive(:load).with("bond").once.and_return(node)
      controller = dispatch_to(Nodes, :show, { :id => "bond" }) do |c|
        c.stub!(:display)
      end
@@ -35,7 +35,7 @@ describe Nodes, "show action" do
   end
   
   it "should raise a BadRequest if the id is not found" do
-    Chef::FileStore.should_receive(:load).with("node", "bond").once.and_raise(RuntimeError)
+    Chef::Node.should_receive(:load).with("bond").once.and_raise(RuntimeError)
     lambda { 
       dispatch_to(Nodes, :show, { :id => "bond" }) 
     }.should raise_error(Merb::ControllerExceptions::BadRequest)
@@ -45,18 +45,26 @@ end
 describe Nodes, "create action" do
   it "should create a node from an inflated object" do
     mnode = mock("Node", :null_object => true)
-    mnode.stub!(:name).and_return("one")
-    Chef::FileStore.should_receive(:store).with("node", "one", mnode).once.and_return(true)
-    Chef::Queue.should_receive(:send_msg).with(:queue, :node_index, mnode).once.and_return(true)
+    mnode.stub!(:name).and_return("bond")
+    mnode.should_receive(:save).once.and_return(true)
     controller = dispatch_to(Nodes, :create) do |c|
-        c.stub!(:params).and_return({ "inflated_object" => mnode })
-        c.stub!(:display)
+      c.stub!(:params).and_return({ "inflated_object" => mnode })
+      c.stub!(:session).and_return({
+        :openid => 'http://localhost/openid/server/node/bond',
+        :level => :node,
+        :node_name => "bond",
+      })
+      c.stub!(:display)
     end
     controller.status.should eql(202)
   end
   
   it "should raise an exception if it cannot inflate an object" do
-    lambda { dispatch_to(Nodes, :create) }.should raise_error(Merb::Controller::BadRequest)
+    lambda { 
+      dispatch_to(Nodes, :create) do |c|
+        c.stub!(:params).and_return({ })
+      end
+    }.should raise_error(Merb::Controller::BadRequest)
   end
 end
 
@@ -65,10 +73,14 @@ describe Nodes, "update action" do
     mnode = mock("Node", :null_object => true)
     mnode.stub!(:name).and_return("one")
     Chef::FileStore.should_receive(:store).with("node", "one", mnode).once.and_return(true)
-    Chef::Queue.should_receive(:send_msg).with(:queue, :node_index, mnode).once.and_return(true)
-    controller = dispatch_to(Nodes, :update) do |c|
-        c.stub!(:params).and_return({ "inflated_object" => mnode })
-        c.stub!(:display)
+    controller = dispatch_to(Nodes, :update, { :id => "one" }) do |c|
+      c.stub!(:session).and_return({
+        :openid => 'http://localhost/openid/server/node/one',
+        :level => :node,
+        :node_name => "one",
+      })
+      c.stub!(:params).and_return({ "inflated_object" => mnode })
+      c.stub!(:display)
     end
     controller.status.should eql(202)
   end
@@ -89,7 +101,6 @@ describe Nodes, "destroy action" do
     mnode = stub("Node", :null_object => true)
     Chef::FileStore.should_receive(:load).with("node", "one").once.and_return(mnode)
     Chef::FileStore.stub!(:delete)
-    Chef::Queue.stub!(:send_msg)
     do_destroy
   end
   
@@ -102,7 +113,6 @@ describe Nodes, "destroy action" do
     mnode = stub("Node", :null_object => true)
     Chef::FileStore.stub!(:load).with("node", "one").and_return(mnode)
     Chef::FileStore.should_receive(:delete).with("node", "one")
-    Chef::Queue.stub!(:send_msg)
     do_destroy
   end
   
@@ -110,7 +120,6 @@ describe Nodes, "destroy action" do
     mnode = stub("Node", :null_object => true)
     Chef::FileStore.stub!(:load).with("node", "one").and_return(mnode)
     Chef::FileStore.stub!(:delete)
-    Chef::Queue.should_receive(:send_msg).with(:queue, :node_remove, mnode)
     do_destroy
   end
   
@@ -118,7 +127,6 @@ describe Nodes, "destroy action" do
     mnode = stub("Node", :null_object => true)
     Chef::FileStore.stub!(:load).with("node", "one").and_return(mnode)
     Chef::FileStore.stub!(:delete)
-    Chef::Queue.stub!(:send_msg)
     dispatch_to(Nodes, :destroy, { :id => "one" }) do |c|
        c.should_receive(:display).once.with(mnode)
     end
@@ -128,7 +136,6 @@ describe Nodes, "destroy action" do
     mnode = stub("Node", :null_object => true)
     Chef::FileStore.stub!(:load).with("node", "one").and_return(mnode)
     Chef::FileStore.stub!(:delete)
-    Chef::Queue.stub!(:send_msg)
     controller = do_destroy
     controller.status.should eql(202)
   end

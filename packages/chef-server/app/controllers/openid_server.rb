@@ -8,18 +8,23 @@ require 'pathname'
 require "openid"
 require "openid/consumer/discovery"
 require 'openid/store/filesystem'
+require 'json'
 #end
 
 class OpenidServer < Application
+
+  provides :html, :json
 
   include Merb::OpenidServerHelper
   include OpenID::Server
   
   layout nil
+  
+  before :fix_up_node_id
 
   def index
-    
-    oidreq = server.decode_request(params)
+        
+    oidreq = server.decode_request(params.reject{|k,v| k == "controller" || k == "action"})
     
     # no openid.mode was given
     unless oidreq
@@ -29,20 +34,7 @@ class OpenidServer < Application
     oidresp = nil
 
     if oidreq.kind_of?(CheckIDRequest)
-
       identity = oidreq.identity
-
-      if oidreq.id_select
-        if oidreq.immediate
-          oidresp = oidreq.answer(false)
-        elsif session[:username].nil?
-          # The user hasn't logged in.
-          return show_decision_page(oidreq)
-        else
-          # Else, set the identity to the one the user is using.
-          identity = url_for_user
-        end
-      end
 
       if oidresp
         nil
@@ -52,9 +44,14 @@ class OpenidServer < Application
         server_url = url :openid_server
         oidresp = oidreq.answer(false, server_url)
       else
-        return show_decision_page(oidreq)
+        if content_type != 'application/json'
+          session[:last_oidreq] = oidreq
+          response = { :action => url(:openid_server_decision) }
+          return response.to_json
+        else
+          return show_decision_page(oidreq)
+        end
       end
-
     else
       oidresp = server.handle_request(oidreq)
     end
@@ -73,7 +70,11 @@ class OpenidServer < Application
     render :template => 'openid_server/decide'
   end
 
-  def user_page
+  def node_page
+    unless Chef::OpenIDRegistration.has_key?(params[:id])
+      raise NotFound, "Cannot find registration for #{params[:id]}"
+    end
+    
     # Yadis content-negotiation: we want to return the xrds if asked for.
     accept = request.env['HTTP_ACCEPT']
 
@@ -81,16 +82,16 @@ class OpenidServer < Application
     # to do real Accept header parsing and logic.  Though I expect it will work
     # 99% of the time.
     if accept and accept.include?('application/xrds+xml')
-      return user_xrds
+      return node_xrds
     end
 
     # content negotiation failed, so just render the user page
-    xrds_url = url(:openid_user_xrds, :username => params[:username])
+    xrds_url = absolute_url(:openid_node_xrds, :id => params[:id])
     identity_page = <<EOS
 <html><head>
 <meta http-equiv="X-XRDS-Location" content="#{xrds_url}" />
-<link rel="openid.server" href="#{absolute_url :openid_user, :username}" />
-</head><body><p>OpenID identity page for #{params[:username]}</p>
+<link rel="openid.server" href="#{absolute_url(:openid_node, :id => params[:id])}" />
+</head><body><p>OpenID identity page for registration #{params[:id]}</p>
 </body></html>
 EOS
 
@@ -100,11 +101,10 @@ EOS
     render identity_page
   end
 
-  def user_xrds
+  def node_xrds
     types = [
              OpenID::OPENID_2_0_TYPE,
-             OpenID::OPENID_1_0_TYPE,
-             OpenID::SREG_URI,
+             OpenID::OPENID_1_0_TYPE
             ]
 
     render_xrds(types)
@@ -122,36 +122,35 @@ EOS
     oidreq = session[:last_oidreq]
     session[:last_oidreq] = nil
 
-    if params[:yes].nil?
-      redirect oidreq.cancel_url
-      return
-    else
-      id_to_send = params[:id_to_send]
-
+    if params.has_key?(:cancel)
+      Merb.logger.info("Cancelling OpenID Authentication")
+      return(redirect(oidreq.cancel_url))
+    else      
       identity = oidreq.identity
-      if oidreq.id_select
-        if id_to_send and id_to_send != ""
-          session[:username] = id_to_send
-          session[:approvals] = []
-          identity = url_for_user
+      identity =~ /node\/(.+)$/
+      openid_node = Chef::OpenIDRegistration.load($1)
+      unless openid_node.validated
+        raise Unauthorized, "This nodes registration has not been validated"
+      end
+      if openid_node.password == encrypt_password(openid_node.salt, params[:password])     
+        if session[:approvals]
+          session[:approvals] << oidreq.trust_root
         else
-          msg = "You must enter a username to in order to send " +
-            "an identifier to the Relying Party."
-          return show_decision_page(oidreq, msg)
+          session[:approvals] = [oidreq.trust_root]
         end
-      end
-
-      if session[:approvals]
-        session[:approvals] << oidreq.trust_root
+        oidresp = oidreq.answer(true, nil, identity)
+        return self.render_response(oidresp)
       else
-        session[:approvals] = [oidreq.trust_root]
+        raise Unauthorized, "Invalid credentials"
       end
-      oidresp = oidreq.answer(true, nil, identity)
-      return self.render_response(oidresp)
     end
   end
 
   protected
+
+  def encrypt_password(salt, password)
+    Digest::SHA1.hexdigest("--#{salt}--#{password}--")
+  end
 
   def server
     if @server.nil?

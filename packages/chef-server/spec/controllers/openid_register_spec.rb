@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), "..", 'spec_helper.rb')
 
 describe OpenidRegister, "index action" do  
   it "should get a list of all registered nodes" do
-    Chef::FileStore.should_receive(:list).with("openid_node").and_return(["one"])
+    Chef::OpenIDRegistration.should_receive(:list).with(true).and_return(["one"])
     dispatch_to(OpenidRegister, :index) do |c|
       c.stub!(:display)
     end
@@ -11,14 +11,14 @@ end
 
 describe OpenidRegister, "show action" do  
   it "should raise a 404 if the nodes registration is not found" do
-    Chef::FileStore.should_receive(:load).with("openid_node", "foo").and_raise(RuntimeError)
+    Chef::OpenIDRegistration.should_receive(:load).with("foo").and_raise(RuntimeError)
     lambda { 
       dispatch_to(OpenidRegister, :show, { :id => "foo" }) 
     }.should raise_error(Merb::ControllerExceptions::NotFound)
   end
   
   it "should call display on the node registration" do
-    Chef::FileStore.stub!(:load).and_return(true)
+    Chef::OpenIDRegistration.stub!(:load).and_return(true)
     dispatch_to(OpenidRegister, :show, { :id => "foo" }) do |c|
       c.should_receive(:display).with(true)
     end
@@ -45,15 +45,19 @@ describe OpenidRegister, "create action" do
   end
   
   it "should return 400 if a node is already registered" do
-    Chef::FileStore.should_receive(:has_key?).with("openid_node", "foo").and_return(true)
+    Chef::OpenIDRegistration.should_receive(:has_key?).with("foo").and_return(true)
     lambda { 
       dispatch_to(OpenidRegister, :create, { :id => "foo", :password => "beck" }) 
     }.should raise_error(Merb::ControllerExceptions::BadRequest)
   end
   
-  it "should store the registered node in the file store" do
-    Chef::FileStore.stub!(:has_key?).and_return(false)
-    Chef::FileStore.should_receive(:store).and_return(true)
+  it "should store the registration in a new Chef::OpenIDRegistration" do
+    mock_reg = mock("Chef::OpenIDRegistration", :null_object => true)
+    mock_reg.should_receive(:name=).with("foo").and_return(true)
+    mock_reg.should_receive(:set_password).with("beck").and_return(true)
+    mock_reg.should_receive(:save).and_return(true)
+    Chef::OpenIDRegistration.stub!(:has_key?).and_return(false)
+    Chef::OpenIDRegistration.should_receive(:new).and_return(mock_reg)
     do_create
   end
 end
@@ -74,15 +78,16 @@ describe OpenidRegister, "destroy action" do
   end
   
   it "should return 400 if it cannot find the registration" do
-    Chef::FileStore.should_receive(:has_key?).with("openid_node", "foo").and_return(false)
+    Chef::OpenIDRegistration.should_receive(:load).and_raise(ArgumentError)
     lambda { 
       do_destroy
     }.should raise_error(Merb::ControllerExceptions::BadRequest)
   end
   
   it "should delete the registration from the store" do
-    Chef::FileStore.stub!(:has_key?).and_return(true)
-    Chef::FileStore.should_receive(:delete).with("openid_node", "foo").and_return(true)
+    mock_reg = mock("OpenIDRegistration")
+    mock_reg.should_receive(:destroy).and_return(true)
+    Chef::OpenIDRegistration.should_receive(:load).with("foo").and_return(mock_reg)
     do_destroy
   end
 end

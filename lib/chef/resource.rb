@@ -28,8 +28,8 @@ class Chef
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
     
-    attr_accessor :actions, :params, :provider, :updated, :allowed_actions
-    attr_reader :resource_name, :collection, :source_line
+    attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection
+    attr_reader :resource_name, :source_line
     
     def initialize(name, collection=nil)
       @name = name
@@ -124,10 +124,11 @@ class Chef
       self.instance_variables.each do |iv|
         instance_vars[iv] = self.instance_variable_get(iv) unless iv == "@collection"
       end
-      {
+      results = {
         'json_class' => self.class.name,
         'instance_vars' => instance_vars
-      }.to_json(*a)
+      }
+      results.to_json(*a)
     end
     
     def self.json_create(o)

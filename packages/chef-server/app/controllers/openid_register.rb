@@ -6,39 +6,40 @@ require 'openid'
 class OpenidRegister < Application
 
   provides :html, :json
+  
+  before :fix_up_node_id
 
   def index
-    @headers['X-XRDS-Location'] = absolute_url(:controller => "server", :action => "idp_xrds")
-    @registered_nodes = Chef::FileStore.list("openid_node")
+    @headers['X-XRDS-Location'] = absolute_url(:controller => "openid_server", :action => "idp_xrds")
+    @registered_nodes = Chef::OpenIDRegistration.list(true)
+    Chef::Log.debug(@registered_nodes.inspect)
     display @registered_nodes
   end
   
   def show
     begin
-       @registered_node = Chef::FileStore.load("openid_node", params[:id])
-     rescue RuntimeError => e
-       raise NotFound, "Cannot load node registration for #{params[:id]}"
-     end
+      @registered_node = Chef::OpenIDRegistration.load(params[:id])
+    rescue Net::HTTPServerException => e
+      if e.message =~ /^404/
+        raise NotFound, "Cannot load node registration for #{params[:id]}"
+      else
+        raise e
+      end
+    end
+     Merb.logger.debug(@registered_node.inspect)
      display @registered_node
   end
   
   def create
     params.has_key?(:id) or raise BadRequest, "You must provide an id to register"
     params.has_key?(:password) or raise BadRequest, "You must provide a password to register"
-    if Chef::FileStore.has_key?("openid_node", params[:id])
+    if Chef::OpenIDRegistration.has_key?(params[:id])
       raise BadRequest, "You cannot re-register #{params[:id]}!"
     end
-    salt = generate_salt
-    @registered_node = {
-      :id => params[:id],
-      :salt => salt,
-      :password => encrypt_password(salt, params[:password])
-    }
-    Chef::FileStore.store(
-      "openid_node", 
-      params[:id],
-      @registered_node
-    )
+    @registered_node = Chef::OpenIDRegistration.new
+    @registered_node.name = params[:id]
+    @registered_node.set_password(params[:password])
+    @registered_node.save
     display @registered_node
   end
   
@@ -47,47 +48,27 @@ class OpenidRegister < Application
   end
   
   def destroy
-    unless Chef::FileStore.has_key?("openid_node", params[:id])
+    begin
+      r = Chef::OpenIDRegistration.load(params[:id])
+    rescue Exception => e
       raise BadRequest, "Cannot find the registration for #{params[:id]}"
     end
-    Chef::FileStore.delete("openid_node", params[:id])
-    display({ :message => "Deleted registration for #{params[:id]}"})
-  end
-
-  def submit
-    user = params[:username]
-
-    # if we get a user, log them in by putting their username in
-    # the session hash.
-    unless user.nil?
-      session[:username] = user unless user.nil?
-      session[:approvals] = []
-      session[:notice] = "Your OpenID URL is <b>
-        #{url(:controller => "openid_server", :action => "user_page", :username => params[:username])}
-        </b><br/><br/>Proceed to step 2 below."
+    r.destroy
+    if content_type == :html
+      redirect url(:registrations)
     else
-      session[:error] = "Sorry, couldn't log you in. Try again."
+      display({ :message => "Deleted registration for #{params[:id]}"})
     end
-    
-    redirect url(:openid_login)
   end
-
-  def logout
-    # delete the username from the session hash
-    session[:username] = nil
-    session[:approvals] = nil
-    redirect url(:openid_login)
+  
+  def validate
+    begin
+      r = Chef::OpenIDRegistration.load(params[:id])
+    rescue Exception => e
+      raise BadRequest, "Cannot find the registration for #{params[:id]}"
+    end
+    r.validated = r.validated ? false : true
+    r.save
+    redirect url(:registrations)
   end
-
-  private
-    def generate_salt
-      salt = Time.now.to_s
-      chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
-      1.upto(30) { |i| salt << chars[rand(chars.size-1)] }
-      salt
-    end
-    
-    def encrypt_password(salt, password)
-      Digest::SHA1.hexdigest("--#{salt}--#{password}--")
-    end
 end

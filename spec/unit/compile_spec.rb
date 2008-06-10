@@ -43,6 +43,8 @@ describe Chef::Compile do
   end
 
   it "should load a node by name" do
+    node = Chef::Node.new
+    Chef::Node.stub!(:load).and_return(node)
     lambda { 
       @compile.load_node("compile")
     }.should_not raise_error
@@ -55,6 +57,8 @@ describe Chef::Compile do
   end
   
   it "should load all the recipes specified for this node" do
+    node = Chef::Node.new
+    Chef::Node.stub!(:load).and_return(node)
     @compile.load_node("compile")
     @compile.load_definitions
     lambda { @compile.load_recipes }.should_not raise_error

@@ -30,49 +30,53 @@ require 'json'
 class Chef
   class Node
     
-    attr_accessor :attribute, :recipe_list
+    attr_accessor :attribute, :recipe_list, :couchdb_rev
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
+    
+    DESIGN_DOCUMENT = {
+      "version" => 3,
+      "language" => "javascript",
+      "views" => {
+        "all" => {
+          "map" => <<-EOJS
+          function(doc) { 
+            if (doc.chef_type == "node") {
+              emit(doc.name, doc);
+            }
+          }
+          EOJS
+        },
+        "all_id" => {
+          "map" => <<-EOJS
+          function(doc) { 
+            if (doc.chef_type == "node") {
+              emit(doc.name, doc.name);
+            }
+          }
+          EOJS
+        },
+      },
+    }
     
     # Create a new Chef::Node object.
     def initialize()
       @name = nil
       @attribute = Hash.new
       @recipe_list = Array.new
+      @couchdb_rev = nil
+      @couchdb = Chef::CouchDB.new
     end
     
-    # Find a Chef::Node by fqdn.  Will search first for Chef::Config["node_path"]/fqdn.rb, then
-    # hostname.rb, then default.rb.
+    # Find a recipe for this Chef::Node by fqdn.  Will search first for 
+    # Chef::Config["node_path"]/fqdn.rb, then hostname.rb, then default.rb.
     # 
     # Returns a new Chef::Node object.
     #
     # Raises an ArgumentError if it cannot find the node. 
-    def self.find(fqdn)
-      node_file = self.find_file(fqdn)
-      unless node_file
-        raise ArgumentError, "Cannot find a node matching #{fqdn}, not even with default.rb!" 
-      end
-      chef_node = Chef::Node.new()
-      chef_node.from_file(node_file)
-      chef_node
-    end
-
-    # Returns an array of nodes available, based on the list of files present.
-    def self.list
-      results = Array.new
-      Dir[File.join(Chef::Config[:node_path], "*.rb")].sort.each do |file|
-        mr = file.match(/^.+\/(.+)\.rb$/)
-        node_name = mr[1]
-        results << node_name
-      end
-      results
-    end
-    
-    # Returns the file name we would use to build a node.  Returns nil if it cannot find
-    # a file for this node.
-    def self.find_file(fqdn)
+    def find_file(fqdn)
       node_file = nil
       host_parts = fqdn.split(".")
       hostname = host_parts[0]
@@ -84,6 +88,10 @@ class Chef
       elsif File.exists?(File.join(Chef::Config[:node_path], "default.rb"))
         node_file = File.join(Chef::Config[:node_path], "default.rb")
       end
+      unless node_file
+        raise ArgumentError, "Cannot find a node matching #{fqdn}, not even with default.rb!" 
+      end
+      self.from_file(node_file)
     end
     
     # Set the name of this Node, or return the current name.
@@ -169,14 +177,18 @@ class Chef
     def to_json(*a)
       attributes = Hash.new
       recipes = Array.new
-      {
+      result = {
         "name" => @name,
         'json_class' => self.class.name,
         "attributes" => @attribute,
+        "chef_type" => "node",
         "recipes" => @recipe_list,
-      }.to_json(*a)
+      }
+      result["_rev"] = @couchdb_rev if @couchdb_rev
+      result.to_json(*a)
     end
     
+    # Create a Chef::Node from JSON
     def self.json_create(o)
       node = new
       node.name(o["name"])
@@ -186,8 +198,47 @@ class Chef
       o["recipes"].each do |r|
         node.recipes << r
       end
-      
+      node.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       node
+    end
+    
+    # List all the Chef::Node objects in the CouchDB.  If inflate is set to true, you will get
+    # the full list of all Nodes, fully inflated.
+    def self.list(inflate=false)
+      rs = Chef::CouchDB.new.list("nodes", inflate)
+      if inflate
+        rs["rows"].collect { |r| r["value"] }
+      else
+        rs["rows"].collect { |r| r["key"] }
+      end
+    end
+    
+    # Load a node by name from CouchDB
+    def self.load(name)
+      Chef::CouchDB.new.load("node", name)
+    end
+    
+    # Remove this node from the CouchDB
+    def destroy
+      Chef::Queue.send_msg(:queue, :node_remove, self)
+      @couchdb.delete("node", @name, @couchdb_rev)
+    end
+    
+    # Save this node to the CouchDB
+    def save
+      Chef::Queue.send_msg(:queue, :node_index, self)
+      results = @couchdb.store("node", @name, self)
+      @couchdb_rev = results["rev"]
+    end
+    
+    # Whether or not there is an OpenID Registration with this key.
+    def self.has_key?(name)
+      Chef::CouchDB.new.has_key?("node", name)
+    end
+    
+    # Set up our CouchDB design document
+    def self.create_design_document
+      Chef::CouchDB.new.create_design_document("nodes", DESIGN_DOCUMENT)
     end
     
     # As a string
