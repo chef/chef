@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 #
 # ./chef-solo - Build a meal with chef, sans-server!
 #
