@@ -92,7 +92,7 @@ class Chef
     def load_recipe(name, node, collection=nil, definitions=nil, cookbook_loader=nil)
       cookbook_name = @name
       recipe_name = nil
-      nmatch = name.match(/^(.+)::(.+)$/)
+      nmatch = name.match(/^(.+?)::(.+)$/)
       recipe_name = nmatch ? nmatch[2] : name
       
       unless @recipe_names.has_key?(recipe_name)

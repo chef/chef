@@ -26,7 +26,7 @@ require 'facter'
 class Chef
   class Client
     
-    attr_accessor :node, :registration
+    attr_accessor :node, :registration, :safe_name
     
     def initialize()
       @node = nil
@@ -43,8 +43,8 @@ class Chef
       converge
     end
     
-    def build_node
-      node_name = Facter["fqdn"].value ? Facter["fqdn"].value : Facter["hostname"].value
+    def build_node(node_name=nil)
+      node_name ||= Facter["fqdn"].value ? Facter["fqdn"].value : Facter["hostname"].value
       @safe_name = node_name.gsub(/\./, '_')
       begin
         @node = @rest.get_rest("nodes/#{@safe_name}")

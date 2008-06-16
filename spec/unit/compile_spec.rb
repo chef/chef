@@ -19,6 +19,7 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
+
 describe Chef::Compile do
   before(:each) do
     Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "compile", "nodes"))

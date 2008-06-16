@@ -1,0 +1,6 @@
+%h1 Login
+#login-form
+  %form{ :method => "get", :action => url(:openid_login_submit) }
+    %input{ :type => "text", :name => "username" }/
+    %input{ :type => "submit", :value => "Log In"}/
+    

@@ -18,13 +18,16 @@
 # 
 
 require 'rubygems'
+require 'spec/story'
 
-Dir[
-  File.join(
-    File.dirname(__FILE__), 
-    'chef/**/*.rb'
-  )].sort.each { |lib| require lib unless lib =~ /server/ }
+require File.join(File.dirname(__FILE__), "..", "lib", "chef")
+Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
 
-class Chef
-  VERSION = '0.0.1'
+Chef::Config.log_level(:fatal)
+Chef::Config[:couchdb_database] = "chef_test"
+
+def create_couchdb_database
+  c = Chef::CouchDB.new
+  c.create_db
 end
+

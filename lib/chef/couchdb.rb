@@ -13,16 +13,16 @@ class Chef
     
     def create_db
       @database_list = @rest.get_rest("_all_dbs")
-      unless @database_list.detect { |db| db == "chef" }
-        response = @rest.put_rest("chef", Hash.new)
+      unless @database_list.detect { |db| db == Chef::Config[:couchdb_database] }
+        response = @rest.put_rest(Chef::Config[:couchdb_database], Hash.new)
       end
-      "chef"
+      Chef::Config[:couchdb_database]
     end
     
     def create_design_document(name, data)
       to_update = true
       begin
-        old_doc = @rest.get_rest("chef/_design%2F#{name}")
+        old_doc = @rest.get_rest("#{Chef::Config[:couchdb_database]}/_design%2F#{name}")
         if data["version"] != old_doc["version"]
           data["_rev"] = old_doc["_rev"]
           Chef::Log.debug("Updating #{name} views")
@@ -33,7 +33,7 @@ class Chef
         Chef::Log.debug("Creating #{name} views for the first time")
       end
       if to_update
-        @rest.put_rest("chef/_design%2F#{name}", data)
+        @rest.put_rest("#{Chef::Config[:couchdb_database]}/_design%2F#{name}", data)
       end
       true
     end
@@ -49,7 +49,7 @@ class Chef
           :object => { :respond_to => :to_json },
         }
       )
-      @rest.put_rest("chef/#{obj_type}_#{safe_name(name)}", object)
+      @rest.put_rest("#{Chef::Config[:couchdb_database]}/#{obj_type}_#{safe_name(name)}", object)
     end
 
     def load(obj_type, name)
@@ -63,7 +63,7 @@ class Chef
           :name => { :kind_of => String },
         }
       )
-      @rest.get_rest("chef/#{obj_type}_#{safe_name(name)}")
+      @rest.get_rest("#{Chef::Config[:couchdb_database]}/#{obj_type}_#{safe_name(name)}")
     end
   
     def delete(obj_type, name, rev=nil)
@@ -78,14 +78,14 @@ class Chef
         }
       )
       unless rev
-        last_obj = @rest.get_rest("chef/#{obj_type}_#{safe_name(name)}")
+        last_obj = @rest.get_rest("#{Chef::Config[:couchdb_database]}/#{obj_type}_#{safe_name(name)}")
         if last_obj.respond_to?(:couchdb_rev)
           rev = last_obj.couchdb_rev
         else
           rev = last_obj['_rev']
         end
       end
-      @rest.delete_rest("chef/#{obj_type}_#{safe_name(name)}?rev=#{rev}")
+      @rest.delete_rest("#{Chef::Config[:couchdb_database]}/#{obj_type}_#{safe_name(name)}?rev=#{rev}")
     end
   
     def list(view, inflate=false)
@@ -98,9 +98,9 @@ class Chef
         }
       )
       if inflate
-        @rest.get_rest("chef/_view/#{view}/all")
+        @rest.get_rest("#{Chef::Config[:couchdb_database]}/_view/#{view}/all")
       else
-        @rest.get_rest("chef/_view/#{view}/all_id")
+        @rest.get_rest("#{Chef::Config[:couchdb_database]}/_view/#{view}/all_id")
       end
     end
   
@@ -116,7 +116,7 @@ class Chef
         }
       )
       begin
-        @rest.get_rest("chef/#{obj_type}_#{safe_name(name)}")
+        @rest.get_rest("#{Chef::Config[:couchdb_database]}/#{obj_type}_#{safe_name(name)}")
         true
       rescue
         false

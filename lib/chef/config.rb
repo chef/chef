@@ -49,6 +49,7 @@ class Chef
       :couchdb_url => "http://localhost:5984",
       :registration_url => "http://localhost:4000",
       :openid_url => "http://localhost:4001",
+      :couchdb_database => "chef",
     }
     
     class << self
