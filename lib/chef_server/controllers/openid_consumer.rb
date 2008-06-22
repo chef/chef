@@ -90,7 +90,7 @@ class OpenidConsumer < Application
 
   def consumer
     if @consumer.nil?
-      dir = Pathname.new(Merb.root).join('db').join('cstore')
+      dir = Chef::Config[:openid_cstore_path]
       store = OpenID::Store::Filesystem.new(dir)
       @consumer = OpenID::Consumer.new(session, store)
     end

@@ -43,6 +43,7 @@ class Chef
       :search_index_path => "/var/chef/search_index",
       :log_level => :info,
       :log_location => STDOUT,
+      :merb_log_path => "/var/log/chef/merb.log",
       :openid_providers => nil,
       :ssl_verify_mode => :verify_none,
       :rest_timeout => 60,
@@ -50,6 +51,8 @@ class Chef
       :registration_url => "http://localhost:4000",
       :openid_url => "http://localhost:4001",
       :couchdb_database => "chef",
+      :openid_store_path => "/var/chef/openid/db",
+      :openid_cstore_path => "/var/chef/openid/cstore",
     }
     
     class << self

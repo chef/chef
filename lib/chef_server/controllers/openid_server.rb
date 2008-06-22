@@ -155,7 +155,7 @@ EOS
   def server
     if @server.nil?
       server_url = absolute_url(:openid_server)
-      dir = Pathname.new(Merb.root).join('db').join('openid-store')
+      dir = Chef::Config[:openid_store_path]
       store = OpenID::Store::Filesystem.new(dir)
       @server = Server.new(store, server_url)
     end

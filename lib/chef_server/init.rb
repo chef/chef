@@ -62,7 +62,6 @@ Merb::BootLoader.after_app_loads do
   # Add dependencies here that must load after the application loads:
   Chef::Config.from_file(File.join(File.dirname(__FILE__), "..", "..", "config", "chef-server.rb"))
   Chef::Queue.connect
-
   # dependency "magic_admin" # this gem uses the app's model classes
 end
 
@@ -88,7 +87,7 @@ Merb.push_path(:controller, File.join(File.dirname(__FILE__), "controllers"))
 Merb.push_path(:model, File.join(File.dirname(__FILE__), "models"))
 Merb.push_path(:view, File.join(File.dirname(__FILE__), "views"))
 Merb.push_path(:helper, File.join(File.dirname(__FILE__), "helpers"))
-Merb.push_path(:public,       Merb.root_path("public"), nil)
+Merb.push_path(:public, File.join(File.dirname(__FILE__), "public"))
 
 require 'merb-haml'
 
@@ -121,7 +120,7 @@ Merb::Config.use do |c|
   c[:exception_details] = true
   c[:reload_classes] = true
   c[:log_level] = :debug
-  c[:log_file] = Merb.log_path + "/chef-server.log"
+  c[:log_file] = STDOUT
 end
 
 Merb.logger.info("Compiling routes...")
