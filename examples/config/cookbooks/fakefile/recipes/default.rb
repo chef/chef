@@ -1,3 +1,4 @@
+
 file "/tmp/foo" do
   owner    "adam"
   mode     0644
@@ -18,3 +19,12 @@ end
   end
 end
 
+search(:nodes, "operatingsystem:Darwin") do |server|
+  hyperic_node "#{server.name}" do
+    server...
+    
+  end
+end
+
+search(:users, "department:hr") do |people|
+end
