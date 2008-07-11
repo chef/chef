@@ -62,19 +62,22 @@ end
 # Get a Chef::SearchIndex object
 indexer = Chef::SearchIndex.new
 Chef::Queue.connect
-Chef::Queue.subscribe(:queue, "node_index")
-Chef::Queue.subscribe(:queue, "node_remove")
+Chef::Queue.subscribe(:queue, "index")
+Chef::Queue.subscribe(:queue, "remove")
 while 1
   begin
     object, headers = Chef::Queue.receive_msg
-    if headers["destination"] =~ /index$/
+    Chef::Log.info("Headers #{headers.inspect}")
+    if headers["destination"] == "/queue/chef/index"
       start_timer = Time.new
       indexer.add(object)
+      indexer.commit
       final_timer = Time.new
       Chef::Log.info("Indexed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
-    elsif headers["destination"] =~ /remove$/
+    elsif headers["destination"] == "/queue/chef/remove"
       start_timer = Time.new
       indexer.delete(object)
+      indexer.commit
       final_timer = Time.new
       Chef::Log.info("Removed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
     end
@@ -82,6 +85,6 @@ while 1
     if e.kind_of?(Interrupt)
       raise e
     end
-    Chef::Log.error("Received Exception: #{e.to_str} continuing")
+    Chef::Log.error("Received Exception: #{e}\n#{e.backtrace.join("\n")} continuing")
   end
 end

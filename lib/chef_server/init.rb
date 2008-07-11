@@ -135,6 +135,9 @@ Merb::Router.prepare do |r|
   
   r.resources :nodes
   r.resources :nodes, :member => { :compile => :get }
+  r.resources :search do |res|
+    res.resources :entries, :controller => "search_entries"
+  end  
   
   #r.resources :openid do |res|
   #  res.resources :register, :controller => "openid_register"

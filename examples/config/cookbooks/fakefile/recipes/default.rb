@@ -19,12 +19,20 @@ end
   end
 end
 
-search(:nodes, "operatingsystem:Darwin") do |server|
-  hyperic_node "#{server.name}" do
-    server...
-    
-  end
+directory "/tmp/home" do
+  owner "root"
+  mode 0755
+  action :create
 end
 
-search(:users, "department:hr") do |people|
+search(:user, "*") do |u|
+  directory "/tmp/home/#{u[:name]}" do
+    if u[:name] == "nobody" && @node[:operatingsystem] == "Darwin"
+      owner "root"
+    else
+      owner "#{u[:name]}"
+    end
+    mode 0755
+    action :create
+  end
 end

@@ -106,6 +106,7 @@ class Chef
       else
         raise ArgumentError, "You must provide :GET, :PUT, :POST or :DELETE as the method"
       end
+      Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
       res = http.request(req)
       if res.kind_of?(Net::HTTPSuccess)
         if res['set-cookie']

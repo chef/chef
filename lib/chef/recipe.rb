@@ -70,6 +70,11 @@ class Chef
     def resources(*args)
       @collection.resources(*args)
     end
+    
+    def search(type, query, &block)
+      s = Chef::Search.new
+      s.search(type, query, &block)
+    end
         
     def method_missing(method_symbol, *args, &block)
       resource = nil
@@ -98,6 +103,7 @@ class Chef
         end
         begin
           args << @collection
+          args << @node
           resource = eval(rname).new(*args)
           resource.params = @params
           resource.instance_eval(&block)

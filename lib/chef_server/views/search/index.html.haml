@@ -1,0 +1,9 @@
+%h1 Search Indexes
+- @search_indexes.each do |index|
+  .index
+    %table
+      %tr
+        %td
+          %a{ :href => url(:search, { :id => index }) }= index
+        %td
+          = partial(:search_form, :index_name => index)

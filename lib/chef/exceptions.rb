@@ -16,47 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# 
+#
 
 class Chef
-  class Resource
-    class Link < Chef::Resource
-            
-      def initialize(name, collection=nil, node=nil)
-        @resource_name = :link
-        super(name, collection, node)
-        @source_file = name
-        @action = :create
-        @link_type = :symbolic
-        @target_file = nil
-        @allowed_actions.push(:create, :delete)
-      end
-      
-      def source_file(arg=nil)
-        set_or_return(
-          :source_file,
-          arg,
-          :kind_of => String
-        )
-      end
-      
-      def target_file(arg=nil)
-        set_or_return(
-          :target_file,
-          arg,
-          :kind_of => String
-        )
-      end
-      
-      def link_type(arg=nil)
-        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
-        set_or_return(
-          :link_type,
-          real_arg,
-          :equal_to => [ :symbolic, :hard ]
-        )
-      end
-      
-    end
+  class Exception
+    class SearchIndex < RuntimeError; end    
   end
 end

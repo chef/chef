@@ -20,38 +20,96 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
-describe Chef::SearchIndex do
+describe Chef::SearchIndex, "initialize method" do
+  it "should create a new Chef::SearchIndex object" do
+    mf = mock("Ferret::Index::Index", :null_object => true)
+    Ferret::Index::Index.stub!(:new).and_return(mf)
+    Chef::SearchIndex.new.should be_kind_of(Chef::SearchIndex)
+  end
+  
+  it "should create a Ferret Indexer" do
+    mf = mock("Ferret::Index::Index", :null_object => true)
+    Ferret::Index::Index.should_receive(:new).and_return(mf)
+    Chef::SearchIndex.new
+  end
+end
+
+describe Chef::SearchIndex, "create_index_object method" do
   before(:each) do
-    @fake_indexer = stub("Indexer", :null_object => true)
-    Ferret::Index::Index.stub!(:new).and_return(@fake_indexer)
-    @sindex = Chef::SearchIndex.new()
-    @node = Chef::Node.new
-    @node.name "adam.foo.com"
-    @node.fqdn "adam.foo.com"
-    @node.mars "volta"
-    @node.recipes "one", "two"
+    @mf = mock("Ferret::Index::Index", :null_object => true)
+    @fakeobj = mock("ToIndex", :null_object => true)
+    @the_pigeon = { :index_name => "bird", :id => "pigeon" }
+    @fakeobj.stub!(:responds_to?).with(:to_index).and_return(true)
+    @fakeobj.stub!(:to_index).and_return(@the_pigeon)
+    Ferret::Index::Index.stub!(:new).and_return(@mf)
+  end
+  
+  def do_create_index_object
+    index = Chef::SearchIndex.new
+    index.create_index_object(@fakeobj)
+  end
+  
+  it "should call to_index if the passed object responds to it" do
+    @fakeobj.should_receive(:responds_to?).with(:to_index).and_return(true)
+    @fakeobj.should_receive(:to_index).and_return(@the_pigeon)
+    do_create_index_object
+  end
+  
+  it "should use a hash if the passed argument does not have to_index (but is a hash)" do
+    @fakeobj.stub!(:responds_to?).with(:to_index).and_return(false)
+    @fakeobj.should_receive(:kind_of?).with(Hash).and_return(true)
+    do_create_index_object
+  end
+  
+  it "should raise SearchIndex exception if the hash does not contain an :id field" do
+    @the_pigeon.delete(:id)
+    lambda { do_create_index_object }.should raise_error(Chef::Exception::SearchIndex)
+  end
+  
+  it "should raise SearchIndex exception if the hash does not contain an :index_name field" do
+    @the_pigeon.delete(:index_name)
+    lambda { do_create_index_object }.should raise_error(Chef::Exception::SearchIndex)
+  end
+end
+
+describe Chef::SearchIndex, "add method" do
+  before(:each) do
+    @mf = mock("Ferret::Index::Index", :null_object => true)
+    @fakeobj = mock("ToIndex", :null_object => true)
+    @the_pigeon = { :index_name => "bird", :id => "pigeon" }
+    @fakeobj.stub!(:responds_to?).with(:to_index).and_return(true)
+    @fakeobj.stub!(:to_index).and_return(@the_pigeon)
+    Ferret::Index::Index.stub!(:new).and_return(@mf)
+  end
+  
+  def do_add
+    index = Chef::SearchIndex.new
+    index.add(@fakeobj)
   end
 
-  it "should index a node object with add" do
-    @sindex.should_receive(:_prepare_node).with(@node).and_return("my value")
-    @fake_indexer.should_receive(:add_document).with("my value")
-    @sindex.add(@node)
+  it "should send the resulting hash to the index" do
+    @mf.should_receive(:add_document).with(@the_pigeon)
+    do_add
+  end
+end
+
+describe Chef::SearchIndex, "delete method" do
+  before(:each) do
+    @mf = mock("Ferret::Index::Index", :null_object => true)
+    @fakeobj = mock("ToIndex", :null_object => true)
+    @the_pigeon = { :index_name => "bird", :id => "pigeon" }
+    @fakeobj.stub!(:responds_to?).with(:to_index).and_return(true)
+    @fakeobj.stub!(:to_index).and_return(@the_pigeon)
+    Ferret::Index::Index.stub!(:new).and_return(@mf)
   end
   
-  it "should remove a node from the index with delete" do
-    @sindex.should_receive(:_prepare_node).with(@node).and_return({ :id => "node-my value" })
-    @fake_indexer.should_receive(:delete).with(:id => "node-my value")
-    @sindex.delete(@node)
+  def do_delete(object)
+    index = Chef::SearchIndex.new
+    index.delete(object)
   end
   
-  it "should prepare a node by creating a proper hash" do
-    node_hash = @sindex.send(:_prepare_node, @node)
-    node_hash[:id].should eql("node-adam.foo.com")
-    node_hash[:type].should eql("node")
-    node_hash[:name].should eql("adam.foo.com")
-    node_hash[:fqdn].should eql("adam.foo.com")
-    node_hash[:mars].should eql("volta")
-    node_hash[:recipe].should eql(["one", "two"])
+  it "should delete the resulting hash to the index" do
+    @mf.should_receive(:delete).with({ :id => @the_pigeon[:id] })
+    do_delete(@fakeobj)
   end
-  
 end

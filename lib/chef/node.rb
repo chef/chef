@@ -173,10 +173,21 @@ class Chef
       end
     end
     
+    def to_index
+      index_hash = {
+        :index_name => "node",
+        :id => "node_#{@name}",
+        :name => @name,
+      }
+      @attribute.each do |key, value|
+        index_hash[key] = value
+      end
+      index_hash[:recipe] = @recipe_list if @recipe_list.length > 0
+      index_hash
+    end
+    
     # Serialize this object as a hash 
     def to_json(*a)
-      attributes = Hash.new
-      recipes = Array.new
       result = {
         "name" => @name,
         'json_class' => self.class.name,
@@ -220,13 +231,13 @@ class Chef
     
     # Remove this node from the CouchDB
     def destroy
-      Chef::Queue.send_msg(:queue, :node_remove, self)
+      Chef::Queue.send_msg(:queue, :remove, self)
       @couchdb.delete("node", @name, @couchdb_rev)
     end
     
     # Save this node to the CouchDB
     def save
-      Chef::Queue.send_msg(:queue, :node_index, self)
+      Chef::Queue.send_msg(:queue, :index, self)
       results = @couchdb.store("node", @name, self)
       @couchdb_rev = results["rev"]
     end

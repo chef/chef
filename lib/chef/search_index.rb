@@ -24,6 +24,8 @@ require 'ferret'
 class Chef
   class SearchIndex
     
+    attr_reader :index
+    
     def initialize
       @index = Ferret::Index::Index.new(
         :path => Chef::Config[:search_index_path],
@@ -31,40 +33,50 @@ class Chef
       )
     end
     
-    def add(to_index)
-      type = check_type(to_index)
-      result = self.send("_prepare_#{type}", to_index)
-      Chef::Log.debug("Indexing #{type} with #{result.inspect}")
-      @index.add_document(result)
+    def add(new_object)
+      index_hash = create_index_object(new_object)
+      Chef::Log.debug("Indexing #{index_hash[:index_name]} with #{index_hash.inspect}")
+      @index.add_document(index_hash)
     end
     
+    def create_index_object(new_object)
+      index_hash = nil
+      
+      if new_object.respond_to?(:to_index)
+        index_hash = new_object.to_index
+      elsif new_object.kind_of?(Hash)
+        index_hash = new_object
+      else
+        raise Chef::Exception::SearchIndex, "Cannot transform argument to a Hash!" 
+      end
+      
+      unless index_hash.has_key?(:index_name) || index_hash.has_key?("index_name")
+        raise Chef::Exception::SearchIndex, "Cannot index without an index_name key: #{index_hash.inspect}"
+      end
+      
+      unless index_hash.has_key?(:id) || index_hash.has_key?("id")
+        raise Chef::Exception::SearchIndex, "Cannot index without an id key: #{index_hash.inspect}"
+      end
+      
+      index_hash.each do |k,v|
+        unless k.kind_of?(Symbol)
+          index_hash[k.to_sym] = v
+          index_hash.delete(k)
+        end
+      end
+      
+      index_hash
+    end
+        
     def delete(index_obj)
-      type = check_type(index_obj)
-      to_index = self.send("_prepare_#{type}", index_obj)
-      Chef::Log.debug("Removing #{type} with #{to_index.inspect}")
-      @index.delete(:id => "#{to_index[:id]}")
+      to_delete = create_index_object(index_obj)
+      Chef::Log.debug("Removing #{to_delete.inspect} from the #{to_delete[:index_name]} index")
+      @index.delete(to_delete[:id])
     end
     
-    private
+    def commit
+      @index.commit
+    end
     
-      def check_type(to_check)
-        type = nil
-        case to_check
-        when Chef::Node
-          type = "node"
-        end
-      end
-    
-      def _prepare_node(node)
-        result = Hash.new
-        result[:id] = "node-#{node.name}"
-        result[:type] = "node"
-        result[:name] = node.name
-        node.each_attribute do |k,v|
-          result[k.to_sym] = v
-        end
-        result[:recipe] = node.recipes
-        result
-      end
   end
 end

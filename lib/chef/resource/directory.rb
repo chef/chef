@@ -22,9 +22,9 @@ class Chef
   class Resource
     class Directory < Chef::Resource
             
-      def initialize(name, collection=nil)
+      def initialize(name, collection=nil, node=nil)
         @resource_name = :directory
-        super(name, collection)
+        super(name, collection, node)
         @path = name
         @action = :create
         @allowed_actions.push(:create, :delete)

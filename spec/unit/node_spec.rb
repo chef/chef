@@ -218,6 +218,18 @@ describe Chef::Node, "json" do
   end
 end
 
+describe Chef::Node, "to_index" do
+  before(:each) do
+    Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    @node = Chef::Node.new()
+  end
+  
+  it "should return a hash with :index attributes" do
+    @node.name("airplane")
+    @node.to_index.should == { :index_name => "node", :id => "node_airplane", :name => "airplane" }
+  end
+end
+
 
 describe Chef::Node, "to_s" do
   before(:each) do
@@ -277,7 +289,7 @@ describe Chef::Node, "destroy" do
     node = Chef::Node.new
     node.name "bob"
     node.couchdb_rev = 1
-    Chef::Queue.should_receive(:send_msg).with(:queue, :node_remove, node)
+    Chef::Queue.should_receive(:send_msg).with(:queue, :remove, node)
     node.destroy
   end
 end
@@ -294,8 +306,8 @@ describe Chef::Node, "save" do
   end
   
   it "should save the node to couchdb" do
-    Chef::Queue.should_receive(:send_msg).with(:queue, :node_index, @node)
-    @mock_couch.should_receive(:store).with("node", "bob", @node).and_return({ "rev" => 33 }) 
+    Chef::Queue.should_receive(:send_msg).with(:queue, :index, @node)
+    @mock_couch.should_receive(:store).with("node", "bob", @node).and_return({ "rev" => 33 })
     @node.save
   end
   
