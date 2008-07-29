@@ -26,9 +26,32 @@ RubyGems:
 * ruby-openid
 * json
 
+External Servers:
+
+* stompserver (for easy stomp mq testing)
+* CouchDB
+
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+Install all of the above.  To fire up a develpment environment, do the following:
+
+  * Start CouchDB with 'couchdb'
+  * Start stompserver with 'stompserver' 
+  * Start chef-indexer with:
+
+		./bin/chef-indexer -l debug -c ./config/chef-server.rb
+
+  * Start chef-server on port 4000 with:
+
+    ./bin/chef-server
+
+  * Start chef-server on port 4001 with:
+
+    ./bin/chef-server -p 4001
+
+  * Test run chef with:
+
+    sudo ./bin/chef-client -l debug -c ./examples/config/chef-solo.rb
 
 == LICENSE:
 
