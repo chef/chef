@@ -143,20 +143,4 @@ describe Chef::Resource do
     serialized_node.name.should eql(@resource.name)
   end
   
-#  it "should serialize to yaml" do
-#    yaml_output = <<-DESC
-#--- !ruby/object:Chef::Resource 
-#alias: 
-#before: 
-#name: funk
-#noop: 
-#notify: 
-#require: 
-#subscribe: 
-#tag: 
-#DESC
-#    @resource.to_yaml.should eql(yaml_output)
-#  end  
-  
-
 end

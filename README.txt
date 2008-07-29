@@ -10,16 +10,21 @@ I'm in ur netwerk, cookin up yer servers. :)
 
 == FEATURES/PROBLEMS:
 
-* Uses a Ruby pidgin language in place of the puppet language
-* Drastically simpler implementation
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+RubyGems:
+
+* stomp
+* facter
+* ferret
+* merb-core
+* haml
+* ruby-openid
+* json
 
 == INSTALL:
 

@@ -20,7 +20,6 @@
 
 require File.join(File.dirname(__FILE__), "mixin", "params_validate")
 require File.join(File.dirname(__FILE__), "mixin", "check_helper")
-require 'yaml'
 
 class Chef
   class Resource
