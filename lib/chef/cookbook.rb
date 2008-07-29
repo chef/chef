@@ -21,13 +21,15 @@
 class Chef
   class Cookbook
     
-    attr_accessor :attribute_files, :definition_files, :name
+    attr_accessor :attribute_files, :definition_files, :template_files, :remote_files, :name
     attr_reader :recipe_files
     
     def initialize(name)
       @name = name
       @attribute_files = Array.new
       @definition_files = Array.new
+      @template_files = Array.new
+      @remote_files = Array.new
       @recipe_files = Array.new
       @recipe_names = Hash.new
       @loaded_attributes = false

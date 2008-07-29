@@ -1,3 +1,4 @@
+#
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
 # License:: GNU General Public License version 2 or later
@@ -17,28 +18,35 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # 
 
+
 class Chef
   class Resource
-    class ZenMaster < Chef::Resource
-      attr_reader :peace
-      
+    class Template < Chef::Resource::File
+        
       def initialize(name, collection=nil, node=nil)
-        @resource_name = :zen_master
+        @resource_name = :template
         super(name, collection, node)
+        @action = "create"
+        @template = nil
+        @variables = Hash.new
       end
-      
-      def peace(tf)
-        @peace = tf
+
+      def template(file=nil)
+        set_or_return(
+          :template,
+          file,
+          :kind_of => [ String ]
+        )
       end
-      
-      def something(arg=nil)
-        set_if_args(@something, arg) do
-          case arg
-          when true, false
-            @something = arg
-          end
-        end
+
+      def variables(args=nil)
+        set_or_return(
+          :vars,
+          args,
+          :kind_of => [ Hash ]
+        )
       end
+
     end
   end
 end

@@ -27,6 +27,8 @@ class Chef
       
     attr_accessor :node, :cookbook_loader, :collection, :definitions
     
+    # Creates a new Chef::Compile object.  This object gets used by the Chef Server to generate
+    # a fully compiled recipe list for a node.
     def initialize()
       @node = nil
       @cookbook_loader = Chef::CookbookLoader.new
@@ -34,6 +36,10 @@ class Chef
       @definitions = Hash.new
     end
     
+    # Looks up the node via the "name" argument, first from CouchDB, then by calling
+    # Chef::Node.find_file(name)
+    #
+    # The first step in compiling the catalog. Results available via the node accessor.
     def load_node(name)
       Chef::Log.debug("Loading Chef Node #{name} from CouchDB")
       @node = Chef::Node.load(name)
@@ -42,6 +48,10 @@ class Chef
       @node
     end
     
+    # Load all the definitions, from every cookbook, so they are available when we process
+    # the recipes.
+    #
+    # Results available via the definitions accessor.
     def load_definitions()
       @cookbook_loader.each do |cookbook|
         hash = cookbook.load_definitions
@@ -49,6 +59,10 @@ class Chef
       end
     end
     
+    # Load all the recipes specified in the node data (loaded via load_node, above.)
+    # 
+    # The results are available via the collection accessor (which returns a Chef::ResourceCollection 
+    # object)
     def load_recipes
       @node.recipes.each do |recipe|
         rmatch = recipe.match(/(.+?)::(.+)/)

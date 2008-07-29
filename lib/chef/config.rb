@@ -50,6 +50,8 @@ class Chef
       :couchdb_url => "http://localhost:5984",
       :registration_url => "http://localhost:4000",
       :openid_url => "http://localhost:4001",
+      :template_url => "http://localhost:4000",
+      :remotefile_url => "http://localhost:4000",
       :couchdb_database => "chef",
       :openid_store_path => "/var/chef/openid/db",
       :openid_cstore_path => "/var/chef/openid/cstore",

@@ -105,6 +105,8 @@ class Chef
           args << @collection
           args << @node
           resource = eval(rname).new(*args)
+          resource.cookbook_name = @cookbook_name
+          resource.recipe_name = @recipe_name
           resource.params = @params
           resource.instance_eval(&block)
         rescue Exception => e

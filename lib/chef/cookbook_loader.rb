@@ -42,6 +42,8 @@ class Chef
               :attribute_files => Array.new,
               :definition_files => Array.new,
               :recipe_files => Array.new,
+              :template_files => Array.new,
+              :remote_files => Array.new,
             }
           end
           ignore_regexes = load_ignore_file(File.join(cookbook, "ignore"))
@@ -61,6 +63,16 @@ class Chef
             cookbook_settings[cookbook_name][:recipe_files],
             cookbook_settings[cookbook_name][:ignore_regexes]
           )
+          load_files_unless_basename(
+            File.join(cookbook, "templates", "*.erb"), 
+            cookbook_settings[cookbook_name][:template_files],
+            cookbook_settings[cookbook_name][:ignore_regexes]
+          )
+          load_files_unless_basename(
+             File.join(cookbook, "files", "*"), 
+             cookbook_settings[cookbook_name][:remote_files],
+             cookbook_settings[cookbook_name][:ignore_regexes]
+           )
         end
       end
       cookbook_settings.each_key do |cookbook|
@@ -68,6 +80,8 @@ class Chef
         @cookbook[cookbook].attribute_files = cookbook_settings[cookbook][:attribute_files]
         @cookbook[cookbook].definition_files = cookbook_settings[cookbook][:definition_files]
         @cookbook[cookbook].recipe_files = cookbook_settings[cookbook][:recipe_files]
+        @cookbook[cookbook].template_files = cookbook_settings[cookbook][:template_files]
+        @cookbook[cookbook].remote_files = cookbook_settings[cookbook][:remote_files]
       end
     end
     

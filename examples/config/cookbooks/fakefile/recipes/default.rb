@@ -1,4 +1,5 @@
 
+
 file "/tmp/foo" do
   owner    "adam"
   mode     0644
@@ -6,10 +7,20 @@ file "/tmp/foo" do
   notifies :delete, resources(:file => "/tmp/glen"), :delayed
 end
 
+template "/tmp/foo-template" do
+  owner    "adam"
+  mode     0644
+  template "template"
+  variables({
+    :one => 'two',
+    :el_che => 'rhymefest'
+  })
+end
+
 link "/tmp/foo" do
   link_type   :symbolic
   target_file "/tmp/xmen"
-end
+end 
 
 0.upto(1000) do |n|
   file "/tmp/somefile#{n}" do

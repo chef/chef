@@ -23,9 +23,9 @@ class Chef
       
       attr_accessor :action
       
-      def initialize(name, collection=nil)
+      def initialize(name, collection=nil, node=nil)
         @resource_name = :cat
-        super(name, collection)
+        super(name, collection, node)
         @action = "sell"
       end
       

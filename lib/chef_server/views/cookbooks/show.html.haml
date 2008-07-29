@@ -1,0 +1,18 @@
+%h1= "Cookbook #{h @cookbook.name}"
+.cookbook
+- if @cookbook.attribute_files.length > 0
+  - @cookbook.attribute_files.each do |af|
+    = partial(:attribute_file, :name => File.basename(af), :contents => File.read(af))
+
+- if @cookbook.definition_files.length > 0
+  - @cookbook.definition_files.each do |df|
+    %h2 Definition Files
+    %h3= File.basename(df)
+    = Uv.parse(File.read(df), "xhtml", "ruby", true, "twilight") 
+        
+- if @cookbook.recipe_files.length > 0
+  - @cookbook.recipe_files.each do |rf|
+    %h2 Recipe Files
+    %h3= File.basename(rf)
+    = Uv.parse(File.read(rf), "xhtml", "ruby", true, "twilight") 
+    

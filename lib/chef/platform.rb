@@ -35,6 +35,7 @@ class Chef
         :file => Chef::Provider::File,
         :directory => Chef::Provider::Directory,
         :link => Chef::Provider::Link,
+        :template => Chef::Provider::Template,
       }
     }
 

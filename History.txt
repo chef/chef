@@ -8,3 +8,6 @@ Sun Apr 27 20:30:43 PDT 2008
   
 Mon Jun  9 01:57:58 PDT 2008
   * Compiled first full recipes over a network, with registration and authorization.
+  
+Thu Jul 10 19:59:46 PDT 2008
+  * Search support functional!

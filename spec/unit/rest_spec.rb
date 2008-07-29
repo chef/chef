@@ -112,6 +112,8 @@ describe Chef::REST, "run_request method" do
     @data_mock.stub!(:to_json).and_return('{ "one": "two" }')
     @request_mock = mock("Request", :null_object => true)
     @request_mock.stub!(:body=).and_return(true)
+    @request_mock.stub!(:method).and_return(true)
+    @request_mock.stub!(:path).and_return(true)
     @http_mock.stub!(:request).and_return(@http_response_mock)
   end
   
@@ -143,8 +145,8 @@ describe Chef::REST, "run_request method" do
   
   it "should build a new HTTP GET request" do
     Net::HTTP::Get.should_receive(:new).with("/?foo=bar", 
-      { 'Accept' => 'application/json', "Content-Type" => 'application/json' }
-    ).and_return(true)
+      { 'Accept' => 'application/json' }
+    ).and_return(@request_mock)
     do_run_request
   end
   
@@ -164,8 +166,8 @@ describe Chef::REST, "run_request method" do
   
   it "should build a new HTTP DELETE request" do
     Net::HTTP::Delete.should_receive(:new).with("/?foo=bar", 
-      { 'Accept' => 'application/json', "Content-Type" => 'application/json' }
-    ).and_return(true)
+      { 'Accept' => 'application/json' }
+    ).and_return(@request_mock)
     do_run_request(:DELETE)
   end
   
@@ -191,7 +193,7 @@ describe Chef::REST, "run_request method" do
   it "should call run_request again on a Redirect response" do
     @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
     @http_response_mock.stub!(:kind_of?).with(Net::HTTPRedirection).and_return(true)
-    @http_response_mock.stub!(:[]).with('location').and_return(@url_mock)
+    @http_response_mock.stub!(:[]).with('location').and_return(@url_mock.path)
     lambda { do_run_request(method=:GET, data=false, limit=1) }.should raise_error(ArgumentError)
   end
   

@@ -1,4 +1,3 @@
-#
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
 # License:: GNU General Public License version 2 or later
@@ -18,35 +17,28 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # 
 
-require 'time'
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-describe Chef::Log::Formatter do
+describe Chef::Resource::Template do
+
   before(:each) do
-    @formatter = Chef::Log::Formatter.new
+    @resource = Chef::Resource::Template.new("fakey_fakerton")
+  end  
+
+  it "should create a new Chef::Resource::Template" do
+    @resource.should be_a_kind_of(Chef::Resource)
+    @resource.should be_a_kind_of(Chef::Resource::File)
+    @resource.should be_a_kind_of(Chef::Resource::Template)
+  end
+
+  it "should accept a string for the template name" do
+    @resource.template "something"
+    @resource.template.should eql("something")
   end
   
-  it "should print raw strings with msg2str(string)" do
-    @formatter.msg2str("nuthin new").should == "nuthin new"
-  end
-  
-  it "should format exceptions properly with msg2str(e)" do
-    e = IOError.new("legendary roots crew")
-    @formatter.msg2str(e).should == "legendary roots crew (IOError)\n"
-  end
-  
-  it "should format random objects via inspect with msg2str(Object)" do
-    @formatter.msg2str([ "black thought", "?uestlove" ]).should == '["black thought", "?uestlove"]'
-  end
-  
-  it "should return a formatted string with call" do
-    time = Time.new
-    @formatter.call("monkey", time, "test", "mos def").should == "[#{time.rfc2822}] monkey: mos def\n"
-  end
-  
-  it "should allow you to turn the time on and off in the output" do
-    Chef::Log::Formatter.show_time = false
-    @formatter.call("monkey", Time.new, "test", "mos def").should == "monkey: mos def\n"
+  it "should accept a hash for the variable list" do
+    @resource.variables({ :reluctance => :awkward })
+    @resource.variables.should == { :reluctance => :awkward }
   end
   
 end

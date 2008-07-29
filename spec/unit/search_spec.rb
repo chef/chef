@@ -58,19 +58,19 @@ describe Chef::Search, "search method" do
     cs.search(:node, "tag:monkey")
   end
   
-  it "should call search_each if a block is given" do
-    cp = lambda { |n| "noting to do here" }
-    @mf.should_receive(:search_each).with("index_name:node AND (tag:monkey)", &cp)
+  it "should call search_each with the custom block if a block is given" do
+    cp = lambda { |n,u| "noting to do here" }
+    @mf.should_receive(:search_each).with("index_name:node AND (tag:monkey)", { :limit => :all }, &cp)
     do_search(:node, "tag:monkey", &cp)
   end
   
-  it "should call search if a block is not given" do
-    @mf.should_receive(:search).with("index_name:node AND (tag:monkey)")
+  it "should call search_each if a block is not given" do
+    @mf.should_receive(:search_each).with("index_name:node AND (tag:monkey)", {:limit => :all})
     do_search(:node, "tag:monkey")
   end
   
   it "should return the search results" do
-    @mf.should_receive(:search).with("index_name:node AND (tag:monkey)").and_return(true)
-    do_search(:node, "tag:monkey").should eql(true)
+    @mf.should_receive(:search_each).with("index_name:node AND (tag:monkey)", :limit => :all).and_return(true)
+    do_search(:node, "tag:monkey").should eql([])
   end
 end

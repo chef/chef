@@ -39,7 +39,7 @@ describe Chef::SearchIndex, "create_index_object method" do
     @mf = mock("Ferret::Index::Index", :null_object => true)
     @fakeobj = mock("ToIndex", :null_object => true)
     @the_pigeon = { :index_name => "bird", :id => "pigeon" }
-    @fakeobj.stub!(:responds_to?).with(:to_index).and_return(true)
+    @fakeobj.stub!(:respond_to?).with(:to_index).and_return(true)
     @fakeobj.stub!(:to_index).and_return(@the_pigeon)
     Ferret::Index::Index.stub!(:new).and_return(@mf)
   end
@@ -50,13 +50,13 @@ describe Chef::SearchIndex, "create_index_object method" do
   end
   
   it "should call to_index if the passed object responds to it" do
-    @fakeobj.should_receive(:responds_to?).with(:to_index).and_return(true)
+    @fakeobj.should_receive(:respond_to?).with(:to_index).and_return(true)
     @fakeobj.should_receive(:to_index).and_return(@the_pigeon)
     do_create_index_object
   end
   
   it "should use a hash if the passed argument does not have to_index (but is a hash)" do
-    @fakeobj.stub!(:responds_to?).with(:to_index).and_return(false)
+    @fakeobj.stub!(:respond_to?).with(:to_index).and_return(false)
     @fakeobj.should_receive(:kind_of?).with(Hash).and_return(true)
     do_create_index_object
   end
@@ -77,7 +77,7 @@ describe Chef::SearchIndex, "add method" do
     @mf = mock("Ferret::Index::Index", :null_object => true)
     @fakeobj = mock("ToIndex", :null_object => true)
     @the_pigeon = { :index_name => "bird", :id => "pigeon" }
-    @fakeobj.stub!(:responds_to?).with(:to_index).and_return(true)
+    @fakeobj.stub!(:respond_to?).with(:to_index).and_return(true)
     @fakeobj.stub!(:to_index).and_return(@the_pigeon)
     Ferret::Index::Index.stub!(:new).and_return(@mf)
   end
@@ -98,7 +98,7 @@ describe Chef::SearchIndex, "delete method" do
     @mf = mock("Ferret::Index::Index", :null_object => true)
     @fakeobj = mock("ToIndex", :null_object => true)
     @the_pigeon = { :index_name => "bird", :id => "pigeon" }
-    @fakeobj.stub!(:responds_to?).with(:to_index).and_return(true)
+    @fakeobj.stub!(:respond_to?).with(:to_index).and_return(true)
     @fakeobj.stub!(:to_index).and_return(@the_pigeon)
     Ferret::Index::Index.stub!(:new).and_return(@mf)
   end
@@ -109,7 +109,7 @@ describe Chef::SearchIndex, "delete method" do
   end
   
   it "should delete the resulting hash to the index" do
-    @mf.should_receive(:delete).with({ :id => @the_pigeon[:id] })
+    @mf.should_receive(:delete).with(@the_pigeon[:id])
     do_delete(@fakeobj)
   end
 end

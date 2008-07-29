@@ -90,6 +90,7 @@ Merb.push_path(:helper, File.join(File.dirname(__FILE__), "helpers"))
 Merb.push_path(:public, File.join(File.dirname(__FILE__), "public"))
 
 require 'merb-haml'
+require 'uv'
 
 
 #
@@ -137,7 +138,12 @@ Merb::Router.prepare do |r|
   r.resources :nodes, :member => { :compile => :get }
   r.resources :search do |res|
     res.resources :entries, :controller => "search_entries"
-  end  
+  end 
+  
+  r.match("/cookbooks/_attribute_files").to(:controller => "cookbooks", :action => "attribute_files")
+  r.resources :cookbooks do |cookbooks|
+    cookbooks.resources :templates, :controller => "cookbook_templates"
+  end
   
   #r.resources :openid do |res|
   #  res.resources :register, :controller => "openid_register"

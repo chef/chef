@@ -1,0 +1,7 @@
+%h1 Cookbooks
+- @cl.each do |cookbook|
+  .index
+    %table
+      %tr
+        %td
+          %a{ :href => url(:cookbook, { :id => cookbook.name }) }= cookbook.name
