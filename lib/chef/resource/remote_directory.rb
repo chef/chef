@@ -18,54 +18,59 @@
 
 class Chef
   class Resource
-    class Directory < Chef::Resource
+    class RemoteDirectory < Chef::Resource::Directory
             
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)
-        @resource_name = :directory
+        @resource_name = :remote_directory
         @path = name
+        @delete = false
         @action = :create
-        @recursive = false
+        @recursive = true
+        @files_backup = 5
+        @files_owner = nil
+        @files_group = nil
+        @files_mode = 0644
         @allowed_actions.push(:create, :delete)
       end
       
-      def recursive(arg=nil)
+      def source(args=nil)
         set_or_return(
-          :recursive,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
+          :source,
+          args,
+          :kind_of => String
         )
       end
       
-      def group(arg=nil)
+      def files_backup(arg=nil)
         set_or_return(
-          :group,
+          :files_backup,
+          arg,
+          :kind_of => [ Integer, FalseClass ]
+        )
+      end
+      
+      def files_group(arg=nil)
+        set_or_return(
+          :files_group,
           arg,
           :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
         )
       end
       
-      def mode(arg=nil)
+      def files_mode(arg=nil)
         set_or_return(
-          :mode,
+          :files_mode,
           arg,
           :regex => /^\d{3,4}$/
         )
       end
       
-      def owner(arg=nil)
+      def files_owner(arg=nil)
         set_or_return(
-          :owner,
+          :files_owner,
           arg,
           :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
-        )
-      end
-      
-      def path(arg=nil)
-        set_or_return(
-          :path,
-          arg,
-          :kind_of => String
         )
       end
       

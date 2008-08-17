@@ -28,13 +28,13 @@ class Chef
       def action_create
         r = Chef::REST.new(Chef::Config[:template_url])
 
-        template_url = generate_url(@new_resource.template)
+        template_url = generate_url(@new_resource.source, "templates")
         raw_template_file = r.get_rest(template_url, true)
-        
+      
         template_file = render_template(raw_template_file.path)
-  
+
         update = false
-        
+      
         if ::File.exists?(@new_resource.path)
           @new_resource.checksum(self.checksum(template_file.path))
           if @new_resource.checksum != @current_resource.checksum
@@ -46,41 +46,31 @@ class Chef
           Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
           update = true
         end
-        
+      
         if update
           backup
           FileUtils.cp(template_file.path, @new_resource.path)
+          @new_resource.updated = true
+        else
+          Chef::Log.debug("#{@new_resource} is unchanged")
         end
-        
+      
         set_owner if @new_resource.owner != nil
         set_group if @new_resource.group != nil
         set_mode if @new_resource.mode != nil
       end
-    end
     
-    def render_template(file)
-      eruby = Erubis::Eruby.new(::File.read(file))
-      context = @new_resource.variables
-      context[:node] = @node
-      output = eruby.evaluate(context)
-      final_tempfile = Tempfile.new("chef-rendered-template")
-      final_tempfile.puts(output)
-      final_tempfile.close
-      final_tempfile
-    end
-    
-    def generate_url(url)
-      template_url = nil
-      if url =~ /^http/
-        template_url = url
-      else
-        template_url = "cookbooks/#{@new_resource.cookbook_name}/templates?"
-        template_url += "id=#{url}"
-        platform, version = Chef::Platform.find_platform_and_version(@node)
-        template_url += "&platform=#{platform}&version=#{version}"
+      def render_template(file)
+        eruby = Erubis::Eruby.new(::File.read(file))
+        context = @new_resource.variables
+        context[:node] = @node
+        output = eruby.evaluate(context)
+        final_tempfile = Tempfile.new("chef-rendered-template")
+        final_tempfile.print(output)
+        final_tempfile.close
+        final_tempfile
       end
       
-      return template_url
     end
   end
 end

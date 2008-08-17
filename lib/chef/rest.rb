@@ -119,14 +119,14 @@ class Chef
         else
           if raw
             tf = Tempfile.new("chef-rest")
-            tf.puts(res.body)
+            tf.print(res.body)
             tf.close
             tf
           else
             res.body
           end
         end
-      elsif res.kind_of?(Net::HTTPRedirection)
+      elsif res.kind_of?(Net::HTTPFound)
         if res['set-cookie']
           @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
         end

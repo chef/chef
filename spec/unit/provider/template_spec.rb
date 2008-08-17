@@ -40,7 +40,8 @@ describe Chef::Provider::Template, "action_create" do
   
   it "should copy the tempfile to the real file if the checksums do not match" do
     @provider.stub!(:checksum).and_return("dad86c61eea237932f201009e5431607")
-    FileUtils.should_receive(:cp).with(@tempfile.path, @resource.path)
+    FileUtils.should_receive(:cp).once
+    @provider.stub!(:backup).and_return(true)
     do_action_create
   end
   
@@ -75,11 +76,12 @@ describe Chef::Provider::Template, "generate_url" do
   end
   
   it "should return a raw url if it starts with http" do
-    @provider.generate_url('http://foobar').should eql("http://foobar")
+    @provider.generate_url('http://foobar', "templates").should eql("http://foobar")
   end
   
   it "should return a composed url if it does not start with http" do
     Chef::Platform.stub!(:find_platform_and_version).and_return(["monkey", "1.0"])
-    @provider.generate_url('default/something').should eql("cookbooks/daft/templates?id=default/something&platform=monkey&version=1.0")
+    @node.fqdn("monkeynode")
+    @provider.generate_url('default/something', "templates").should eql("cookbooks/daft/templates?id=default/something&platform=monkey&version=1.0&fqdn=monkeynode")
   end
 end

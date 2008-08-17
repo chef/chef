@@ -163,6 +163,7 @@ Merb::Router.prepare do |r|
  
   r.resources :cookbooks do |cookbooks|
     cookbooks.resources :templates, :controller => "cookbook_templates"
+    cookbooks.resources :files, :controller => "cookbook_files"
   end
     
   #r.resources :openid do |res|

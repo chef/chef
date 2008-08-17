@@ -16,34 +16,21 @@
 # limitations under the License.
 #
 
+require 'digest/md5'
+
 class Chef
-  class Resource
-    class Template < Chef::Resource::File
-        
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
-        @resource_name = :template
-        @action = "create"
-        @source = nil
-        @variables = Hash.new
-      end
+  module Mixin
+    module Checksum
 
-      def source(file=nil)
-        set_or_return(
-          :source,
-          file,
-          :kind_of => [ String ]
-        )
+      def checksum(file)
+        digest = Digest::MD5.new
+        fh = ::File.open(file)
+        fh.each do |line|
+          digest.update(line)
+        end
+        digest.hexdigest
       end
-
-      def variables(args=nil)
-        set_or_return(
-          :variables,
-          args,
-          :kind_of => [ Hash ]
-        )
-      end
-
+      
     end
   end
 end

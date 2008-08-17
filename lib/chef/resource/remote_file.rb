@@ -18,29 +18,21 @@
 
 class Chef
   class Resource
-    class Template < Chef::Resource::File
+    class RemoteFile < Chef::Resource::File
         
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)
-        @resource_name = :template
+        @resource_name = :remote_file
         @action = "create"
         @source = nil
         @variables = Hash.new
       end
-
-      def source(file=nil)
+      
+      def source(args=nil)
         set_or_return(
           :source,
-          file,
-          :kind_of => [ String ]
-        )
-      end
-
-      def variables(args=nil)
-        set_or_return(
-          :variables,
           args,
-          :kind_of => [ Hash ]
+          :kind_of => String
         )
       end
 

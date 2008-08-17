@@ -17,6 +17,7 @@
 #
 
 require File.join(File.dirname(__FILE__), "file")
+require "fileutils"
 
 class Chef
   class Provider
@@ -36,7 +37,11 @@ class Chef
       def action_create
         unless ::File.exists?(@new_resource.path)
           Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
-          ::Dir.mkdir(@new_resource.path)
+          if @new_resource.recursive == true
+            ::FileUtils.mkdir_p(@new_resource.path)
+          else
+            ::Dir.mkdir(@new_resource.path)
+          end
           @new_resource.updated = true
         end
         set_owner if @new_resource.owner != nil
@@ -46,8 +51,13 @@ class Chef
       
       def action_delete
         if ::File.exists?(@new_resource.path) && ::File.writable?(@new_resource.path)
-          Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.path}")
-          ::Dir.delete(@new_resource.path)
+          if @new_resource.recursive == true
+            Chef::Log.info("Deleting #{@new_resource} recursively at #{@new_resource.path}")
+            FileUtils.rm_rf(@new_resource.path)
+          else
+            Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.path}")
+            ::Dir.delete(@new_resource.path)
+          end
           @new_resource.updated = true
         else
           raise RuntimeError, "Cannot delete #{@new_resource} at #{@new_resource_path}!" if ::File.exists?(@new_resource.path)
