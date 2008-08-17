@@ -34,6 +34,7 @@ class Chef
         template_file = render_template(raw_template_file.path)
   
         update = false
+        
         if ::File.exists?(@new_resource.path)
           @new_resource.checksum(self.checksum(template_file.path))
           if @new_resource.checksum != @current_resource.checksum
@@ -47,6 +48,7 @@ class Chef
         end
         
         if update
+          backup
           FileUtils.cp(template_file.path, @new_resource.path)
         end
         
