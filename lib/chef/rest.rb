@@ -1,27 +1,26 @@
 #
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
-# License:: GNU General Public License version 2 or later
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 # 
-# This program and entire repository is free software; you can
-# redistribute it and/or modify it under the terms of the GNU 
-# General Public License as published by the Free Software 
-# Foundation; either version 2 of the License, or any later version.
+#     http://www.apache.org/licenses/LICENSE-2.0
 # 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 require File.join(File.dirname(__FILE__), "mixin", "params_validate")
 require 'net/https'
 require 'uri'
 require 'json'
+require 'tempfile'
 
 class Chef
   class REST
@@ -32,8 +31,8 @@ class Chef
     end
     
     # Send an HTTP GET request to the path
-    def get_rest(path)
-      run_request(:GET, create_url(path))    
+    def get_rest(path, raw=false)
+      run_request(:GET, create_url(path), false, 10, raw)    
     end                               
                           
     # Send an HTTP DELETE request to the path
@@ -68,7 +67,7 @@ class Chef
     # the helper methods (get_rest, post_rest, etc.)
     #
     # Will return the body of the response on success.
-    def run_request(method, url, data=false, limit=10)
+    def run_request(method, url, data=false, limit=10, raw=false)
       raise ArgumentError, 'HTTP redirect too deep' if limit == 0
       
       http = Net::HTTP.new(url.host, url.port)
@@ -79,9 +78,12 @@ class Chef
         end
       end
       http.read_timeout = Chef::Config[:rest_timeout]
-      headers = { 
-        'Accept' => "application/json",
-      }
+      headers = Hash.new
+      unless raw
+        headers = { 
+          'Accept' => "application/json",
+        }
+      end
       if @cookies["#{url.host}:#{url.port}"]
         headers['Cookie'] = @cookies["#{url.host}:#{url.port}"]
       end
@@ -115,13 +117,20 @@ class Chef
         if res['content-type'] == "application/json"
           JSON.parse(res.body)
         else
-          res.body
+          if raw
+            tf = Tempfile.new("chef-rest")
+            tf.puts(res.body)
+            tf.close
+            tf
+          else
+            res.body
+          end
         end
       elsif res.kind_of?(Net::HTTPRedirection)
         if res['set-cookie']
           @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
         end
-        run_request(:GET, create_url(res['location']), false, limit - 1)
+        run_request(:GET, create_url(res['location']), false, limit - 1, raw)
       else
         res.error!
       end

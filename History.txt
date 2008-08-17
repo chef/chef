@@ -11,3 +11,6 @@ Mon Jun  9 01:57:58 PDT 2008
   
 Thu Jul 10 19:59:46 PDT 2008
   * Search support functional!
+
+Sat Aug 16 17:46:34 PDT 2008
+	* Compiled a template!

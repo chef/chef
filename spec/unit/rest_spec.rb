@@ -39,7 +39,7 @@ describe Chef::REST, "get_rest method" do
   it "should call run_request :GET with the composed url object" do
     URI.stub!(:parse).and_return(true)
     r = Chef::REST.new("url")
-    r.should_receive(:run_request).with(:GET, true).and_return(true)
+    r.should_receive(:run_request).with(:GET, true, false, 10, false).and_return(true)
     r.get_rest("monkey")
   end
 end
@@ -115,11 +115,13 @@ describe Chef::REST, "run_request method" do
     @request_mock.stub!(:method).and_return(true)
     @request_mock.stub!(:path).and_return(true)
     @http_mock.stub!(:request).and_return(@http_response_mock)
+    @tf_mock = mock(Tempfile, { :puts => true, :close => true })
+    Tempfile.stub!(:new).with("chef-rest").and_return(@tf_mock)
   end
   
-  def do_run_request(method=:GET, data=false, limit=10)
+  def do_run_request(method=:GET, data=false, limit=10, raw=false)
     Net::HTTP.stub!(:new).and_return(@http_mock)
-    @r.run_request(method, @url_mock, data, limit)
+    @r.run_request(method, @url_mock, data, limit, raw)
   end
   
   it "should raise an exception if the redirect limit is 0" do
@@ -203,4 +205,25 @@ describe Chef::REST, "run_request method" do
     @http_response_mock.should_receive(:error!)
     do_run_request
   end
+  
+  it "should build a new HTTP GET request without the application/json accept header for raw reqs" do
+    Net::HTTP::Get.should_receive(:new).with("/?foo=bar", {}).and_return(@request_mock)
+    do_run_request(:GET, false, 10, true)
+  end
+  
+  it "should create a tempfile for the output of a raw request" do
+    Tempfile.should_receive(:new).with("chef-rest").and_return(@tf_mock)
+    do_run_request(:GET, false, 10, true).should eql(@tf_mock)    
+  end
+  
+  it "should populate the tempfile with the value of the raw request" do
+    @tf_mock.should_receive(:puts, "ninja").once.and_return(true)
+    do_run_request(:GET, false, 10, true)
+  end
+  
+  it "should close the tempfile if we're doing a raw request" do
+    @tf_mock.should_receive(:close).once.and_return(true)
+    do_run_request(:GET, false, 10, true)
+  end
+
 end

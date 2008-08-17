@@ -186,6 +186,7 @@ describe Chef::Provider::File do
   it "should delete the file if it exists and is writable on action_delete" do
     @provider.load_current_resource
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
+    @provider.stub!(:backup).and_return(true)
     File.should_receive("exists?").with(@provider.new_resource.path).and_return(true)
     File.should_receive("writable?").with(@provider.new_resource.path).and_return(true)
     File.should_receive(:delete).with(@provider.new_resource.path).and_return(true)
@@ -194,6 +195,7 @@ describe Chef::Provider::File do
   
   it "should raise an error if it cannot delete the file" do
     @provider.load_current_resource
+    @provider.stub!(:backup).and_return(true)
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
     File.should_receive("exists?").with(@provider.new_resource.path).and_return(false)
     lambda { @provider.action_delete }.should raise_error()    
@@ -207,6 +209,17 @@ describe Chef::Provider::File do
     File.stub!(:chown).and_return(1)
     File.stub!(:chmod).and_return(1)
     @provider.action_touch
+  end
+  
+  it "should backup a file no more than :backup times" do
+    @provider.load_current_resource
+    @provider.new_resource.stub!(:path).and_return("/tmp/s-20080705111233")
+    @provider.new_resource.stub!(:backup).and_return(2)
+    Dir.stub!(:[]).and_return([ "/tmp/s-20080705111233", "/tmp/s-20080705111232", "/tmp/s-20080705111223"])
+    FileUtils.should_receive(:rm).with("/tmp/s-20080705111232").once.and_return(true)
+    FileUtils.should_receive(:rm).with("/tmp/s-20080705111223").once.and_return(true)
+    FileUtils.stub!(:cp).and_return(true)
+    @provider.backup
   end
   
 end

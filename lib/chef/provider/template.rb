@@ -1,25 +1,25 @@
 #
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
-# License:: GNU General Public License version 2 or later
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 # 
-# This program and entire repository is free software; you can
-# redistribute it and/or modify it under the terms of the GNU 
-# General Public License as published by the Free Software 
-# Foundation; either version 2 of the License, or any later version.
+#     http://www.apache.org/licenses/LICENSE-2.0
 # 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 require File.join(File.dirname(__FILE__), "file")
 require 'uri'
+require 'erubis'
+require 'tempfile'
 
 class Chef
   class Provider
@@ -27,43 +27,58 @@ class Chef
       
       def action_create
         r = Chef::REST.new(Chef::Config[:template_url])
-        template_url = nil
-        if @new_resource.template =~ /^http/          
-          template_url = @new_resource.template
+
+        template_url = generate_url(@new_resource.template)
+        raw_template_file = r.get_rest(template_url, true)
+        
+        template_file = render_template(raw_template_file.path)
+  
+        update = false
+        if ::File.exists?(@new_resource.path)
+          @new_resource.checksum(self.checksum(template_file.path))
+          if @new_resource.checksum != @current_resource.checksum
+            Chef::Log.debug("#{@new_resource} changed from #{@current_resource.checksum} to #{@new_resource.checksum}")
+            Chef::Log.info("Updating #{@new_resource} at #{@new_resource.path}")
+            update = true
+          end
         else
-          template_url = "cookbooks/#{@new_resource.cookbook_name}/templates/#{@new_resource.template}"
-        end
-        template = r.get_rest(template_url)
-        
-        
-        unless ::File.exists?(@new_resource.path)
           Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
-          ::File.open(@new_resource.path, "w+") { |f| }
-          @new_resource.updated = true
+          update = true
         end
+        
+        if update
+          FileUtils.cp(template_file.path, @new_resource.path)
+        end
+        
         set_owner if @new_resource.owner != nil
         set_group if @new_resource.group != nil
         set_mode if @new_resource.mode != nil
       end
-      
-      def action_delete
-        if ::File.exists?(@new_resource.path) && ::File.writable?(@new_resource.path)
-          Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.path}")
-          ::File.delete(@new_resource.path)
-          @new_resource.updated = true
-        else
-          raise "Cannot delete #{@new_resource} at #{@new_resource_path}!"
-        end
+    end
+    
+    def render_template(file)
+      eruby = Erubis::Eruby.new(::File.read(file))
+      context = @new_resource.variables
+      context[:node] = @node
+      output = eruby.evaluate(context)
+      final_tempfile = Tempfile.new("chef-rendered-template")
+      final_tempfile.puts(output)
+      final_tempfile.close
+      final_tempfile
+    end
+    
+    def generate_url(url)
+      template_url = nil
+      if url =~ /^http/
+        template_url = url
+      else
+        template_url = "cookbooks/#{@new_resource.cookbook_name}/templates?"
+        template_url += "id=#{url}"
+        platform, version = Chef::Platform.find_platform_and_version(@node)
+        template_url += "&platform=#{platform}&version=#{version}"
       end
       
-      def action_touch
-        action_create
-        time = Time.now
-        Chef::Log.info("Updating #{@new_resource} with new atime/mtime of #{time}")
-        ::File.utime(time, time, @new_resource.path)
-        @new_resource.updated = true
-      end
-
+      return template_url
     end
   end
 end

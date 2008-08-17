@@ -1,22 +1,19 @@
 #
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
-# License:: GNU General Public License version 2 or later
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 # 
-# This program and entire repository is free software; you can
-# redistribute it and/or modify it under the terms of the GNU 
-# General Public License as published by the Free Software 
-# Foundation; either version 2 of the License, or any later version.
+#     http://www.apache.org/licenses/LICENSE-2.0
 # 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 class Chef
   class CookbookLoader
@@ -63,16 +60,18 @@ class Chef
             cookbook_settings[cookbook_name][:recipe_files],
             cookbook_settings[cookbook_name][:ignore_regexes]
           )
-          load_files_unless_basename(
-            File.join(cookbook, "templates", "*.erb"), 
+          load_cascading_files(
+            File.join(cookbook, "templates", "**", "*.erb"),
+            File.join(cookbook, "templates"),
             cookbook_settings[cookbook_name][:template_files],
             cookbook_settings[cookbook_name][:ignore_regexes]
           )
-          load_files_unless_basename(
-             File.join(cookbook, "files", "*"), 
-             cookbook_settings[cookbook_name][:remote_files],
-             cookbook_settings[cookbook_name][:ignore_regexes]
-           )
+          load_cascading_files(
+            File.join(cookbook, "files", "**", "*"),
+            File.join(cookbook, "files"),
+            cookbook_settings[cookbook_name][:remote_files],
+            cookbook_settings[cookbook_name][:ignore_regexes]
+          )
         end
       end
       cookbook_settings.each_key do |cookbook|
@@ -113,20 +112,35 @@ class Chef
         end
         results
       end
-    
+      
+      def load_cascading_files(file_glob, base_path, result_array, ignore_regexes)
+        Dir[file_glob].each do |file|
+          next if skip_file(file, ignore_regexes)
+          file =~ /^#{base_path}\/(.+)$/
+          singlecopy = $1
+          unless result_array.detect { |f| f =~ /#{singlecopy}$/ }
+            result_array << file
+          end
+        end
+      end
+      
       def load_files_unless_basename(file_glob, result_array, ignore_regexes)
         Dir[file_glob].each do |file|
-          skip = false
-          ignore_regexes.each do |exp|
-            skip = true if exp.match(file)
-          end
-          next if skip
+          next if skip_file(file, ignore_regexes)
           file_basename = File.basename(file)
           # If we've seen a file with this basename before, skip it.
           unless result_array.detect { |f| File.basename(f) == file_basename }  
             result_array << file
           end
         end
+      end
+      
+      def skip_file(file, ignore_regexes)
+        skip = false
+        ignore_regexes.each do |exp|
+          skip = true if exp.match(file)
+        end
+        skip
       end
       
   end

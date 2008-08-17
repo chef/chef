@@ -1,5 +1,4 @@
 
-
 file "/tmp/foo" do
   owner    "adam"
   mode     0644
@@ -10,10 +9,14 @@ end
 template "/tmp/foo-template" do
   owner    "adam"
   mode     0644
-  template "template"
+  template "monkey.erb"
   variables({
     :one => 'two',
-    :el_che => 'rhymefest'
+    :el_che => 'rhymefest',
+    :white => {
+      :stripes => "are the best",
+      :at => "the sleazy rock thing"
+    }
   })
 end
 

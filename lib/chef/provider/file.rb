@@ -1,25 +1,24 @@
 #
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
-# License:: GNU General Public License version 2 or later
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 # 
-# This program and entire repository is free software; you can
-# redistribute it and/or modify it under the terms of the GNU 
-# General Public License as published by the Free Software 
-# Foundation; either version 2 of the License, or any later version.
+#     http://www.apache.org/licenses/LICENSE-2.0
 # 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 require 'digest/md5'
 require 'etc'
+require 'fileutils'
 
 class Chef
   class Provider
@@ -32,17 +31,18 @@ class Chef
           @current_resource.owner(cstats.uid)
           @current_resource.group(cstats.gid)
           @current_resource.mode("%o" % (cstats.mode & 007777))
-          checksum
+          @current_resource.checksum(checksum(@current_resource.path))
         end
         @current_resource
       end
       
-      def checksum
+      def checksum(file)
         digest = Digest::MD5.new
-        IO.foreach(@current_resource.path) do |line|
-          digest << line
+        fh = ::File.open(file)
+        fh.each do |line|
+          digest.update(line)
         end
-        @current_resource.checksum(digest.hexdigest)
+        digest.hexdigest
       end
       
       # Compare the ownership of a file.  Returns true if they are the same, false if they are not.
@@ -125,6 +125,7 @@ class Chef
       
       def action_delete
         if ::File.exists?(@new_resource.path) && ::File.writable?(@new_resource.path)
+          backup
           Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.path}")
           ::File.delete(@new_resource.path)
           @new_resource.updated = true
@@ -139,6 +140,28 @@ class Chef
         Chef::Log.info("Updating #{@new_resource} with new atime/mtime of #{time}")
         ::File.utime(time, time, @new_resource.path)
         @new_resource.updated = true
+      end
+      
+      def backup        
+        if @new_resource.backup
+          time = Time.now
+          savetime = time.strftime("%Y%m%d%H%M%S")
+          backup_filename = "#{@new_resource.path}.chef-#{savetime}"
+          Chef::Log.info("Backing up #{@new_resource} to #{backup_filename}")
+          FileUtils.cp(@new_resource.path, backup_filename)
+          
+          # Clean up after the number of backups
+          slice_number = @new_resource.backup - 1
+          backup_files = Dir["#{@new_resource.path}.chef-*"].sort { |a,b| b <=> a }
+          if backup_files.length >= @new_resource.backup
+            remainder = backup_files.slice(slice_number..-1)
+            remainder.each do |backup_to_delete|
+              Chef::Log.info("Removing backup of #{@new_resource} at #{backup_to_delete}")
+              FileUtils.rm(backup_to_delete)
+            end
+          end
+
+        end
       end
       
     end
