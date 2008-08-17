@@ -14,3 +14,4 @@ Thu Jul 10 19:59:46 PDT 2008
 
 Sat Aug 16 17:46:34 PDT 2008
 	* Compiled a template!
+	* Remote files and directories

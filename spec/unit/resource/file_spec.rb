@@ -38,12 +38,12 @@ describe Chef::Resource::File do
     @resource.action.should eql("create")
   end
   
-  it "should be set to back up files by default" do
-    @resource.backup.should eql(true)
+  it "should be set to back up 5 files by default" do
+    @resource.backup.should eql(5)
   end
   
-  it "should only accept true, false, or a number for backup" do
-    lambda { @resource.backup true }.should_not raise_error(ArgumentError)
+  it "should only accept false or a number for backup" do
+    lambda { @resource.backup true }.should raise_error(ArgumentError)
     lambda { @resource.backup false }.should_not raise_error(ArgumentError)
     lambda { @resource.backup 10 }.should_not raise_error(ArgumentError)
     lambda { @resource.backup "blues" }.should raise_error(ArgumentError)

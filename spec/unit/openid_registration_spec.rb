@@ -54,7 +54,8 @@ end
 
 describe Chef::OpenIDRegistration, "from_json" do
   it "should serialize itself as json" do
-    oreg = Chef::OpenIDRegistration.new
+    oreg = Chef::OpenIDRegistration.new()
+    oreg.name = "foobar"
     oreg.set_password("monkey")
     oreg_json = oreg.to_json
     nreg = JSON.parse(oreg_json)

@@ -101,6 +101,7 @@ describe Chef::REST, "run_request method" do
     @url_mock.stub!(:path).and_return("/")
     @url_mock.stub!(:query).and_return("foo=bar")
     @url_mock.stub!(:scheme).and_return("https")
+    @url_mock.stub!(:to_s).and_return("https://one:80/?foo=bar")
     @http_response_mock = mock("Net::HTTPSuccess", :null_object => true)
     @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(true)
     @http_response_mock.stub!(:body).and_return("ninja")
@@ -115,7 +116,7 @@ describe Chef::REST, "run_request method" do
     @request_mock.stub!(:method).and_return(true)
     @request_mock.stub!(:path).and_return(true)
     @http_mock.stub!(:request).and_return(@http_response_mock)
-    @tf_mock = mock(Tempfile, { :puts => true, :close => true })
+    @tf_mock = mock(Tempfile, { :print => true, :close => true })
     Tempfile.stub!(:new).with("chef-rest").and_return(@tf_mock)
   end
   
@@ -194,14 +195,14 @@ describe Chef::REST, "run_request method" do
   
   it "should call run_request again on a Redirect response" do
     @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
-    @http_response_mock.stub!(:kind_of?).with(Net::HTTPRedirection).and_return(true)
+    @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(true)
     @http_response_mock.stub!(:[]).with('location').and_return(@url_mock.path)
     lambda { do_run_request(method=:GET, data=false, limit=1) }.should raise_error(ArgumentError)
   end
   
   it "should raise an exception on an unsuccessful request" do
     @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
-    @http_response_mock.stub!(:kind_of?).with(Net::HTTPRedirection).and_return(false)
+    @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
     @http_response_mock.should_receive(:error!)
     do_run_request
   end
@@ -217,7 +218,7 @@ describe Chef::REST, "run_request method" do
   end
   
   it "should populate the tempfile with the value of the raw request" do
-    @tf_mock.should_receive(:puts, "ninja").once.and_return(true)
+    @tf_mock.should_receive(:print, "ninja").once.and_return(true)
     do_run_request(:GET, false, 10, true)
   end
   

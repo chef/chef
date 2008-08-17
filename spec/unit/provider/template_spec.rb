@@ -7,7 +7,7 @@ describe Chef::Provider::Template, "action_create" do
     @rest.stub!(:get_rest).and_return(@tempfile)
     @resource = Chef::Resource::Template.new("seattle")
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
-    @resource.template("http://foo")
+    @resource.source("http://foo")
     @node = Chef::Node.new
     @node.name "latte"
     @provider = Chef::Provider::Template.new(@node, @resource)
@@ -22,8 +22,8 @@ describe Chef::Provider::Template, "action_create" do
     @provider.action_create
   end
   
-  it "should get the template based on the resources template value" do
-    @rest.should_receive(:get_rest).with(@resource.template, true).and_return(@tempfile)
+  it "should get the template based on the resources source value" do
+    @rest.should_receive(:get_rest).with(@resource.source, true).and_return(@tempfile)
     do_action_create
   end
   
