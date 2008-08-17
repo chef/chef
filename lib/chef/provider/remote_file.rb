@@ -48,37 +48,31 @@ class Chef
         begin
           raw_file = r.get_rest(url, true)
         rescue Net::HTTPRetriableError => e
-          if e.to_s =~ /304 "Not Modified"/ 
+          if e.response.kind_of?(Net::HTTPNotModified)
             Chef::Log.debug("File #{path} is unchanged")
-            return
+            return false
           else
             raise e
           end
         end
-      
-        update = false
-        if ::File.exists?(path)
-          raw_file_checksum = self.checksum(raw_file.path)
         
-          if raw_file_checksum != current_checksum
-            Chef::Log.debug("#{path} changed from #{current_checksum} to #{raw_file_checksum}")
-            Chef::Log.info("Updating file for #{@new_resource} at #{path}")          
-            update = true
-          end
+        raw_file_checksum = self.checksum(raw_file.path)
+        
+        if ::File.exists?(path)
+          Chef::Log.debug("#{path} changed from #{current_checksum} to #{raw_file_checksum}")
+          Chef::Log.info("Updating file for #{@new_resource} at #{path}")
         else
           Chef::Log.info("Creating file for #{@new_resource} at #{path}")
-          update = true
         end
-
-        if update
-          backup(path)
-          FileUtils.cp(raw_file.path, path)
-          @new_resource.updated = true
-        end
+    
+        backup(path)
+        FileUtils.cp(raw_file.path, path)
+        @new_resource.updated = true
 
         set_owner if @new_resource.owner != nil
         set_group if @new_resource.group != nil
         set_mode if @new_resource.mode != nil
+        return true
       end
       
     end
