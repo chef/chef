@@ -74,7 +74,7 @@ class Chef
         end
         opts
       end
-      
+          
       def set_or_return(symbol, arg, validation)
         iv_symbol = "@#{symbol.to_s}".to_sym
         map = {
@@ -87,7 +87,7 @@ class Chef
           self.instance_variable_set(iv_symbol, arg)
         end
       end
-      
+            
       private
       
         # Return the value of a parameter, or nil if it doesn't exist.
