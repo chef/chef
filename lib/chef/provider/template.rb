@@ -17,21 +17,25 @@
 #
 
 require File.join(File.dirname(__FILE__), "file")
+require File.join(File.dirname(__FILE__), "..", "mixin", "template")
 require 'uri'
-require 'erubis'
 require 'tempfile'
 
 class Chef
   class Provider
     class Template < Chef::Provider::File
       
+      include Chef::Mixin::Template
+      
       def action_create
         r = Chef::REST.new(Chef::Config[:template_url])
 
         template_url = generate_url(@new_resource.source, "templates")
         raw_template_file = r.get_rest(template_url, true)
-      
-        template_file = render_template(raw_template_file.path)
+        
+        context = @new_resource.variables
+        context[:node] = @node
+        template_file = render_template(::File.read(raw_template_file.path), context)
 
         update = false
       
@@ -58,17 +62,6 @@ class Chef
         set_owner if @new_resource.owner != nil
         set_group if @new_resource.group != nil
         set_mode if @new_resource.mode != nil
-      end
-    
-      def render_template(file)
-        eruby = Erubis::Eruby.new(::File.read(file))
-        context = @new_resource.variables
-        context[:node] = @node
-        output = eruby.evaluate(context)
-        final_tempfile = Tempfile.new("chef-rendered-template")
-        final_tempfile.print(output)
-        final_tempfile.close
-        final_tempfile
       end
       
     end
