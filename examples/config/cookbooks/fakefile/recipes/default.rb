@@ -1,3 +1,9 @@
+execute "write-foolio" do
+  command <<-EOH
+    echo 'monkeypants #{node[:ipaddress]} #{node[:friends]}' > /tmp/foolio
+  EOH
+  user "daemon"
+end
 
 file "/tmp/foo" do
   owner    "adam"
@@ -33,7 +39,7 @@ template "/tmp/foo-template" do
     :white => {
       :stripes => "are the best",
       :at => "the sleazy rock thing"
-    }
+    },
   })
 end
 
