@@ -17,6 +17,7 @@
 
 class Chef
   class Exception
-    class SearchIndex < RuntimeError; end    
+    class SearchIndex < RuntimeError; end  
+    class Exec < RuntimeError; end  
   end
 end

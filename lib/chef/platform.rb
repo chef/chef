@@ -36,6 +36,8 @@ class Chef
         :template => Chef::Provider::Template,
         :remote_file => Chef::Provider::RemoteFile,
         :remote_directory => Chef::Provider::RemoteDirectory,
+        :sysctl => Chef::Provider::Sysctl,
+        :execute => Chef::Provider::Execute
       }
     }
 
