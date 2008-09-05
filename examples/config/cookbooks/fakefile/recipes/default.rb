@@ -5,6 +5,22 @@ execute "write-foolio" do
   user "daemon"
 end
 
+script "monkeylikesit" do
+  code %q{
+print "Woot!\n";
+open(FILE, ">", "/tmp/monkeylikesit") or die "Cannot open monkeylikesit";
+print FILE "You have some interesting hobbies #{node[:ipaddress]}";
+close(FILE);
+}
+  interpreter "perl"
+end
+
+perl "foobar" do
+  code %q{
+print "Woot!\n";    
+  }
+end
+
 file "/tmp/foo" do
   owner    "adam"
   mode     0644

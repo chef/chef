@@ -14,11 +14,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+
+require 'tempfile'
 
 class Chef
-  class Exception
-    class SearchIndex < RuntimeError; end  
-    class Exec < RuntimeError; end
-    class FileNotFound < RuntimeError; end  
+  class Provider
+    class Script < Chef::Provider::Execute
+      
+      def action_run  
+        tf = Tempfile.new("chef-script")
+        tf.puts(@new_resource.code)
+        tf.close
+        @new_resource.command("#{@new_resource.interpreter} #{tf.path}") 
+        super
+      end
+      
+    end
   end
 end

@@ -14,11 +14,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+
+require File.join(File.dirname(__FILE__), "script")
 
 class Chef
-  class Exception
-    class SearchIndex < RuntimeError; end  
-    class Exec < RuntimeError; end
-    class FileNotFound < RuntimeError; end  
+  class Resource
+    class Perl < Chef::Resource::Script
+        
+      def initialize(name, collection=nil, node=nil)
+        super(name, collection, node)
+        @resource_name = :perl
+        @interpreter = "perl"
+      end
+
+    end
   end
 end

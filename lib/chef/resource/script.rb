@@ -14,11 +14,36 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
 class Chef
-  class Exception
-    class SearchIndex < RuntimeError; end  
-    class Exec < RuntimeError; end
-    class FileNotFound < RuntimeError; end  
+  class Resource
+    class Script < Chef::Resource::Execute
+        
+      def initialize(name, collection=nil, node=nil)
+        super(name, collection, node)
+        @resource_name = :script
+        @command = name
+        @code = nil
+        @interpreter = nil
+      end
+      
+      def code(arg=nil)
+        set_or_return(
+          :code,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+      
+      def interpreter(arg=nil)
+        set_or_return(
+          :interpreter,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+    end
   end
 end

@@ -37,7 +37,13 @@ class Chef
         :remote_file => Chef::Provider::RemoteFile,
         :remote_directory => Chef::Provider::RemoteDirectory,
         :sysctl => Chef::Provider::Sysctl,
-        :execute => Chef::Provider::Execute
+        :execute => Chef::Provider::Execute,
+        :script => Chef::Provider::Script,
+        :perl => Chef::Provider::Script,
+        :python => Chef::Provider::Script,
+        :ruby => Chef::Provider::Script,
+        :bash => Chef::Provider::Script,
+        :csh => Chef::Provider::Script
       }
     }
 

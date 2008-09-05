@@ -15,13 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# This is taken directly from Ara T Howard's Open4 library, and then 
-# modified to suit the needs of Chef.  Any bugs here are most likely
-# my own, and not Ara.
-#
-# The original appears in external/open4.rb in it's unmodified form. 
-#
-# Thanks, Ara. 
+
 
 require 'tmpdir'
 require 'fcntl'
@@ -30,6 +24,24 @@ require 'etc'
 class Chef
   module Mixin
     module Command
+      
+      def whereis(command, path=nil)
+        raise ArgumentError "Path must be an array!" unless path.kind_of?(Array)
+        
+        search_path = Chef::Config[:executable_path]
+        if path
+          search_path.unshift(*path)
+        end
+        
+        search_path.each do |sp|
+          potential_file = File.join(sp, command)
+          if File.exists?(potential_file) && File.executable?(potential_file)
+            return potential_file
+          end
+        end
+        
+        raise Chef::Exception::FileNotFound, "Cannot find #{command} in #{search_path.join(File::PATH_SEPARATOR)}"
+      end
       
       def run_command(args={})         
         if args.has_key?(:creates)
@@ -95,14 +107,21 @@ class Chef
           if status.exitstatus != args[:returns]
             raise Chef::Exception::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}"
           else
-            Chef::Log.debug("Ran #{args[:command_string]} returned #{status.exitstatus}")
+            Chef::Log.debug("Ran #{args[:command_string]} (#{args[:command]}) returned #{status.exitstatus}")
           end
         end
         status
       end
       
       module_function :run_command
-            
+           
+      # This is taken directly from Ara T Howard's Open4 library, and then 
+      # modified to suit the needs of Chef.  Any bugs here are most likely
+      # my own, and not Ara.
+      #
+      # The original appears in external/open4.rb in it's unmodified form. 
+      #
+      # Thanks, Ara. 
       def popen4(cmd, args={}, &b)
         
         args[:user] ||= nil
