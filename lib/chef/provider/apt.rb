@@ -99,6 +99,8 @@ class Chef
               "DEBIAN_FRONTEND" => "noninteractive"
             }
           )
+          @new_resource.updated = true
+          Chef::Log.info("Removed #{@new_resource} successfully")
         end
       end
       

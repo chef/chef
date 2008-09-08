@@ -21,6 +21,11 @@ print "Woot!\n";
   }
 end
 
+package "emacs" do
+  version '22.1-0ubuntu10'
+  action :install
+end
+
 file "/tmp/foo" do
   owner    "adam"
   mode     0644
