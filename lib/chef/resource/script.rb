@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require File.join(File.dirname(__FILE__), "execute")
+
 class Chef
   class Resource
     class Script < Chef::Resource::Execute

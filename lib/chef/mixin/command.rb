@@ -25,24 +25,6 @@ class Chef
   module Mixin
     module Command
       
-      def whereis(command, path=nil)
-        raise ArgumentError "Path must be an array!" unless path.kind_of?(Array)
-        
-        search_path = Chef::Config[:executable_path]
-        if path
-          search_path.unshift(*path)
-        end
-        
-        search_path.each do |sp|
-          potential_file = File.join(sp, command)
-          if File.exists?(potential_file) && File.executable?(potential_file)
-            return potential_file
-          end
-        end
-        
-        raise Chef::Exception::FileNotFound, "Cannot find #{command} in #{search_path.join(File::PATH_SEPARATOR)}"
-      end
-      
       def run_command(args={})         
         if args.has_key?(:creates)
           if File.exists?(args[:creates])
