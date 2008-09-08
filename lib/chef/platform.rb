@@ -25,7 +25,9 @@ class Chef
     @platforms = {
       :mac_os_x => {},
       :ubuntu   => {
-        :package => Chef::Provider::Apt,
+        :default => {
+          :package => Chef::Provider::Apt,
+        }
       },
       :centos   => {},
       :redhat   => {},
