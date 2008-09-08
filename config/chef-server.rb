@@ -12,6 +12,6 @@ merb_log_path File.join(File.dirname(__FILE__), "..", "examples", "logs")
 search_index_path File.join(File.dirname(__FILE__), "..", "examples", "search_index")
 
 
-openid_providers [ "localhost:4001", "openid.hjksolutions.com" ]
+# openid_providers [ "localhost:4001", "openid.hjksolutions.com" ]
 
 Chef::Log::Formatter.show_time = false
