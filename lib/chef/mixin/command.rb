@@ -86,6 +86,7 @@ class Chef
             status = popen4(args[:command], args, &exec_processing_block)
           end
         
+          args[:returns] ||= 0
           if status.exitstatus != args[:returns]
             raise Chef::Exception::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}"
           else
