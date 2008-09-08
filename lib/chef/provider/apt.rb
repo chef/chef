@@ -31,9 +31,9 @@ class Chef
       
       def load_current_resource
         @current_resource = Chef::Resource::Package.new(@new_resource.name)
-        @current_resource.package_name = @new_resource.package_name
+        @current_resource.package_name(@new_resource.package_name)
         
-        popen4("apt-cache policy #{@new_resource.package_name}").each do |pid, stdin, stdout, stderr|
+        status = popen4("apt-cache policy #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
           stdin.close
           stdout.each do |line|
             case line
@@ -43,6 +43,10 @@ class Chef
               @candidate_version = $1
             end
           end
+        end
+
+        unless status.exitstatus == 0
+          raise Chef::Exception::Package, "apt-cache failed - #{status.inspect}!"
         end
         
         @current_resource
