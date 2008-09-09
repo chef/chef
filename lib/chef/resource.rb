@@ -44,7 +44,7 @@ class Chef
       @allowed_actions = [ :nothing ]
       @action = :nothing
       @updated = false
-      @source_line = caller(4).shift.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
+      @source_line = ::File.expand_path(caller(4).shift.gsub!(/^(.+):(.+):.+$/, '\1 line \2'))
     end
     
     def action(arg=nil)
