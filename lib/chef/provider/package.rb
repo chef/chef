@@ -78,7 +78,7 @@ class Chef
       
       def action_purge
         if @current_resource.version != nil
-          purge_package(name, @new_resource.version)
+          purge_package(@new_resource.package_name, @new_resource.version)
           @new_resource.updated = true
           Chef::Log.info("Purged #{@new_resource} successfully")
         end
