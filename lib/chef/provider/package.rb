@@ -70,7 +70,7 @@ class Chef
       
       def action_remove
         if @current_resource.version != nil
-          remove_package(name, @new_resource.version)
+          remove_package(@new_resource.package_name, @new_resource.version)
           @new_resource.updated = true
           Chef::Log.info("Removed #{@new_resource} successfully")
         end
