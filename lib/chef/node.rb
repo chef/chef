@@ -238,11 +238,6 @@ class Chef
       @couchdb_rev = results["rev"]
     end
     
-    # Whether or not there is an OpenID Registration with this key.
-    def self.has_key?(name)
-      Chef::CouchDB.new.has_key?("node", name)
-    end
-    
     # Set up our CouchDB design document
     def self.create_design_document
       Chef::CouchDB.new.create_design_document("nodes", DESIGN_DOCUMENT)

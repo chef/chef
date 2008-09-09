@@ -94,4 +94,9 @@ describe Chef::Resource::Execute do
     @resource.user.should eql(1)
   end  
   
+  it "should accept a string for creates" do
+    @resource.creates "something"
+    @resource.creates.should eql("something")
+  end
+  
 end

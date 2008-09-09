@@ -39,6 +39,7 @@ describe Chef::Log::Formatter do
   
   it "should return a formatted string with call" do
     time = Time.new
+    Chef::Log::Formatter.show_time = true
     @formatter.call("monkey", time, "test", "mos def").should == "[#{time.rfc2822}] monkey: mos def\n"
   end
   

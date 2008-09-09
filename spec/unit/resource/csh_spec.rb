@@ -16,24 +16,25 @@
 # limitations under the License.
 #
 
-require 'tempfile'
-require 'erubis'
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-class Chef
-  module Mixin
-    module Template
-    
-      # Render a template with Erubis.  Takes a template as a string, and a 
-      # context hash.  
-      def render_template(template, context)
-        eruby = Erubis::Eruby.new(template)
-        output = eruby.evaluate(context)
-        final_tempfile = Tempfile.new("chef-rendered-template")
-        final_tempfile.print(output)
-        final_tempfile.close
-        final_tempfile
-      end
-      
-    end
+describe Chef::Resource::Csh do
+
+  before(:each) do
+    @resource = Chef::Resource::Csh.new("fakey_fakerton")
+  end  
+
+  it "should create a new Chef::Resource::Csh" do
+    @resource.should be_a_kind_of(Chef::Resource)
+    @resource.should be_a_kind_of(Chef::Resource::Csh)
   end
+  
+  it "should have a resource name of :csh" do
+    @resource.resource_name.should eql(:csh)
+  end
+  
+  it "should have an interpreter of csh" do
+    @resource.interpreter.should eql("csh")
+  end
+
 end

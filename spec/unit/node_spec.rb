@@ -220,11 +220,12 @@ describe Chef::Node, "to_index" do
   before(:each) do
     Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
     @node = Chef::Node.new()
+    @node.foo("bar")
   end
   
   it "should return a hash with :index attributes" do
     @node.name("airplane")
-    @node.to_index.should == { :index_name => "node", :id => "node_airplane", :name => "airplane" }
+    @node.to_index.should == { :foo => "bar", :index_name => "node", :id => "node_airplane", :name => "airplane" }
   end
 end
 

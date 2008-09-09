@@ -48,14 +48,6 @@ class Chef
         )
       end
       
-      def candidate_version(arg=nil)
-        set_or_return(
-          :candidate_version,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-      
       def response_file(arg=nil)
         set_or_return(
           :response_file,

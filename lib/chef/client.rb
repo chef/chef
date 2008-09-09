@@ -99,7 +99,7 @@ class Chef
     # Generates a random secret, stores it in the Chef::Filestore with the "registration" key,
     # and posts our nodes registration information to the server.
     def create_registration
-      @secret = random_password(40)
+      @secret = random_password(500)
       Chef::FileStore.store("registration", @safe_name, { "secret" => @secret })
       @rest.post_rest("registrations", { :id => @safe_name, :password => @secret })
     end
