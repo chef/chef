@@ -112,6 +112,8 @@ class Chef
               "DEBIAN_FRONTEND" => "noninteractive"
             }
           )
+          @new_resource.updated = true
+          Chef::Log.info("Purged #{@new_resource} successfully")
         end
       end
       
