@@ -16,18 +16,12 @@
 # limitations under the License.
 #
 
+require File.join(File.dirname(__FILE__), "package")
 require File.join(File.dirname(__FILE__), "..", "mixin", "command")
 
 class Chef
   class Provider
-    class Apt < Chef::Provider
-      
-      include Chef::Mixin::Command
-      
-      def initialize(node, new_resource)
-        super(node, new_resource)
-        @candidate_version = nil
-      end
+    class Apt < Chef::Provider::Package  
       
       def load_current_resource
         @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -38,7 +32,12 @@ class Chef
           stdout.each do |line|
             case line
             when /^\s{2}Installed: (.+)$/
-              @current_resource.version($1)
+              installed_version = $1
+              if installed_version == '(none)'
+                @current_resource.version(nil)
+              else
+                @current_resource.version(installed_version)
+              end
             when /^\s{2}Candidate: (.+)$/
               @candidate_version = $1
             end
@@ -52,74 +51,31 @@ class Chef
         @current_resource
       end
       
-      def action_install  
-        # First, select what version we should be using
-        install_version = @new_resource.version
-        install_version ||= @candidate_version
-        
-        unless install_version
-          raise(Chef::Exception::Package, "No version specified, and no candidate version available!")
-        end
-        
-        do_package = false
-        # If it's not installed at all, install it
-        if @current_resource.version == '(none)'
-          do_package = true
-        # If we specified a version, and it's not the current version, move to the current version
-        elsif @new_resource.version != nil
-          if @new_resource.version != @current_resource.version
-            do_package = true
-          end
-        end
-        
-        if do_package
-          status = install_package(@new_resource.package_name, install_version)
-          if status
-            @new_resource.updated = true
-            Chef::Log.info("Installed #{@new_resource} version #{install_version} successfully")
-          end
-        end
-      end
-      
-      def action_upgrade
-        if @current_resource.version != @candidate_version
-          status = install_package(@new_resource.package_name, @candidate_version)
-          if status
-            @new_resource.updated = true
-            Chef::Log.info("Upgraded #{@new_resource} version from #{@current_resource.version} to #{@candidate_version} successfully")
-          end
-        end
-      end
-      
-      def action_remove
-        if @current_resource.version != '(none)'
-          run_command(
-            :command => "apt-get -q -y remove #{@new_resource.package_name}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
-          )
-          @new_resource.updated = true
-          Chef::Log.info("Removed #{@new_resource} successfully")
-        end
-      end
-      
-      def action_purge
-        if @current_resource.version != '(none)'
-          run_command(
-            :command => "apt-get -q -y purge #{@new_resource.package_name}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
-          )
-          @new_resource.updated = true
-          Chef::Log.info("Purged #{@new_resource} successfully")
-        end
-      end
-      
       def install_package(name, version)
         run_command(
           :command => "apt-get -q -y install #{name}=#{version}",
+          :environment => {
+            "DEBIAN_FRONTEND" => "noninteractive"
+          }
+        )
+      end
+      
+      def upgrade_package(name, version)
+        install_package(name, version)
+      end
+      
+      def remove_package(name, version)
+        run_command(
+          :command => "apt-get -q -y remove #{@new_resource.package_name}",
+          :environment => {
+            "DEBIAN_FRONTEND" => "noninteractive"
+          }
+        )
+      end
+      
+      def purge_package(name, version)
+        run_command(
+          :command => "apt-get -q -y purge #{@new_resource.package_name}",
           :environment => {
             "DEBIAN_FRONTEND" => "noninteractive"
           }

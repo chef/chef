@@ -21,9 +21,27 @@ print "Woot!\n";
   }
 end
 
-package "emacs" do
-  version '22.1-0ubuntu10'
+package "emacs"
+
+package "remove-emacs" do
+  package_name "emacs"
+  action :remove
+end
+
+package "install-old-emacs" do
+  package_name "emacs"
+  version "22.1-0ubuntu10"
   action :install
+end
+
+package "upgrade-emacs" do
+  package_name "emacs"
+  action :upgrade
+end
+
+package "purge-emacs" do
+  package_name "emacs"
+  action :purge
 end
 
 file "/tmp/foo" do

@@ -21,6 +21,7 @@ class Chef
     class FileNotFound < RuntimeError; end  
     class Package < RuntimeError; end
     class SearchIndex < RuntimeError; end  
-    
+    class Override < RuntimeError; end
+    class UnsupportedAction < RuntimeError; end
   end
 end

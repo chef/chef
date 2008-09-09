@@ -27,6 +27,10 @@ class Chef
       @current_resource = nil
     end
     
+    def load_current_resource
+      raise Chef::Exception::Override, "You must override load_current_resource"
+    end
+    
     def action_nothing
       Chef::Log.debug("Doing nothing for #{@new_resource.to_s}")
       true

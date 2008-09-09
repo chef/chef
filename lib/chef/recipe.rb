@@ -106,7 +106,7 @@ class Chef
           resource.cookbook_name = @cookbook_name
           resource.recipe_name = @recipe_name
           resource.params = @params
-          resource.instance_eval(&block)
+          resource.instance_eval(&block) if block
         rescue Exception => e
           if e.kind_of?(NameError) && e.to_s =~ /Chef::Resource/
             raise NameError, "Cannot find #{rname} for #{method_name}\nOriginal: #{e.to_s}"
