@@ -80,6 +80,11 @@ Merb::BootLoader.after_app_loads do
   # Add dependencies here that must load after the application loads:
   Chef::Config.from_file(File.join(File.dirname(__FILE__), "..", "..", "config", "chef-server.rb"))
   Chef::Queue.connect
+
+  # create the couch design docs for nodes and openid registrations
+  Chef::Node.create_design_document
+  Chef::OpenIDRegistration.create_design_document
+
   # dependency "magic_admin" # this gem uses the app's model classes
 end
 
