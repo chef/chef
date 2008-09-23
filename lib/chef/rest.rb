@@ -110,11 +110,18 @@ class Chef
       end
       Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
       res = http.request(req)
+      
+      Chef::Log.debug("HTTP request headers: ")
+      req.each_header { |k,v| Chef::Log.debug("#{k}: #{v}") }
+
+      Chef::Log.debug("HTTP response headers: ")
+      res.each_header { |k,v| Chef::Log.debug("#{k}: #{v}") }
+
       if res.kind_of?(Net::HTTPSuccess)
         if res['set-cookie']
           @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
         end
-        if res['content-type'] == "application/json"
+        if res['content-type'] =~ /json/
           JSON.parse(res.body)
         else
           if raw
