@@ -23,7 +23,9 @@ class CookbookFiles < Application
   provides :html, :json
   
   include Chef::Mixin::Checksum
-  
+
+  layout nil
+
   def load_cookbook_files()
     @cl = Chef::CookbookLoader.new
     @cookbook = @cl[params[:cookbook_id]]
@@ -58,13 +60,13 @@ class CookbookFiles < Application
   end
 
   def show
+    only_provides :json
     to_send = find_preferred_file
     raise NotFound, "Cannot find a suitable file!" unless to_send
     current_checksum = checksum(to_send)
-     
+    Chef::Log.debug("old sum: #{params[:checksum]}, new sum: #{current_checksum}") 
     if current_checksum == params[:checksum]
-      @status = 304
-      render "File #{to_send} has not changed"
+      display "File #{to_send} has not changed", :status => 304
     else
       send_file(to_send)
     end
