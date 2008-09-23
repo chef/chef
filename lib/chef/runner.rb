@@ -82,7 +82,7 @@ class Chef
           end
         rescue 
           Chef::Log.error("#{resource} (#{resource.source_line}) had an error:")
-          raise e
+          raise 
         end
       end
       
