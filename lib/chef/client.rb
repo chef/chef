@@ -43,6 +43,9 @@ class Chef
     #   * converge
     #
     # In that order.  
+    #
+    # === Returns
+    # true:: Always returns true.
     def run
       build_node
       register
@@ -50,10 +53,14 @@ class Chef
       do_attribute_files
       save_node
       converge
+      true
     end
     
     # Builds a new node object for this client.  Starts with querying for the FQDN of the current
-    # host, then merges in the facts from Facter.  
+    # host (unless it is supplied), then merges in the facts from Facter.
+    #
+    # === Parameters
+    # node_name<String>:: The name of the node to build - defaults to nil
     def build_node(node_name=nil)
       node_name ||= Facter["fqdn"].value ? Facter["fqdn"].value : Facter["hostname"].value
       @safe_name = node_name.gsub(/\./, '_')
@@ -139,6 +146,7 @@ class Chef
       end
       cr = Chef::Runner.new(results["node"], results["collection"])
       cr.converge
+      true
     end
     
     protected

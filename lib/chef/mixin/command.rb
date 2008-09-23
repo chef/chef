@@ -100,7 +100,7 @@ class Chef
            
       # This is taken directly from Ara T Howard's Open4 library, and then 
       # modified to suit the needs of Chef.  Any bugs here are most likely
-      # my own, and not Ara.
+      # my own, and not Ara's.
       #
       # The original appears in external/open4.rb in it's unmodified form. 
       #

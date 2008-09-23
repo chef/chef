@@ -68,6 +68,17 @@ describe Chef::SearchIndex, "create_index_object method" do
     @the_pigeon.delete(:index_name)
     lambda { do_create_index_object }.should raise_error(Chef::Exception::SearchIndex)
   end
+  
+  it "should raise SearchIndex exception if the hash new_object cannot be indexed" do
+    @fakeobj.stub!(:respond_to?).and_return(false)
+    @fakeobj.stub!(:kind_of?).and_return(false)
+    lambda { do_create_index_object }.should raise_error(Chef::Exception::SearchIndex)
+  end
+  
+  it "should turn index hash keys in to symbols if it has strings" do
+    @the_pigeon["john"] = "and_yoko"
+    do_create_index_object.should have_key(:john)
+  end
 end
 
 describe Chef::SearchIndex, "add method" do
@@ -109,5 +120,17 @@ describe Chef::SearchIndex, "delete method" do
   it "should delete the resulting hash to the index" do
     @mf.should_receive(:delete).with(@the_pigeon[:id])
     do_delete(@fakeobj)
+  end
+end
+
+describe Chef::SearchIndex, "commit method" do
+  before(:each) do
+    @mf = mock("Ferret::Index::Index", :null_object => true)
+    Ferret::Index::Index.stub!(:new).and_return(@mf)
+  end
+  
+  it "should commit index to disk" do
+    @mf.should_receive(:commit)
+    Chef::SearchIndex.new.commit
   end
 end
