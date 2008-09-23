@@ -11,4 +11,4 @@ owner "AJ Christensen"
 ##
 # Nodes should have recipes
 ##
-recipes "tempfile", "fakefile"
+recipes "tempfile"
