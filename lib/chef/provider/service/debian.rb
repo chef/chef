@@ -15,3 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require File.join(File.dirname(__FILE__), "..", "service")
+require File.join(File.dirname(__FILE__), "..", "..", "mixin", "command")
+
+class Chef
+  class Provider
+      class Debian < Chef::Provider::Sackage
+      
+        include Chef::Mixin::Command
+      
+      end
+  end
+end
