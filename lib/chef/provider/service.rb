@@ -24,6 +24,54 @@ class Chef
 
       include Chef::Mixin::Command
 
+      def initialize(node, new_resource)
+        super(node, new_resource)
+        @enabled = nil
+      end
+
+      def action_enable
+        do_service = false
+        if @current_resource.enabled == nil
+          do_service = true
+        elsif @new_resource.enabled != nil
+          if @new_resource.enabled != @current_resource.enabled
+            do_service = true
+          end
+        end
+
+        if do_package
+          status = enable_service(@new_resource.service_name)
+          if status
+            @new_resource.enabled = true
+            Chef::Log.info("Enabled service #{@new_resource} successfully")
+          end
+        end
+      end
+
+      def action_disable
+        if @current_resource.enabled == true
+          disable_service(@new_resource.service_name)
+          @new_resource.enabled = false
+          Chef::Log.info("Disabled service #{@new_resource} succesfully")
+        end
+      end
+
+      def action_start
+        if @current_resource.running == false
+          start_service(@new_resource.service_name)
+          @new_resource.running = true
+          Chef::Log.info("Started service #{@new_resource} succesfully")
+        end 
+      end
+
+      def action_stop
+        if @current_resource.running == true
+          start_service(@new_resource.service_name)
+          @new_resource.running = false
+          Chef::Log.info("Stopped service #{@new_resource} succesfully")
+        end 
+      end
+  
     end
   end
 end
