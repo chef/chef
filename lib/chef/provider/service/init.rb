@@ -21,22 +21,20 @@ require File.join(File.dirname(__FILE__), "..", "..", "mixin", "command")
 
 class Chef
   class Provider
-    class Service
-      class Init < Chef::Provider::Service::Base
-      
-        def load_current_resource
-          @current_resource        
-        end
-        
-        def start_service
-          run_command(:command => "/etc/init.d/#{name} start")
-        end
-          
-        def stop_service
-          run_command(:command => "/etc/init.d/#{name} stop")
-        end
+    class Init < Chef::Provider::Service
 
+      def load_current_resource
+        true
       end
+
+      def start_service
+        run_command(:command => "/etc/init.d/#{name} start")
+      end
+
+      def stop_service
+        run_command(:command => "/etc/init.d/#{name} stop")
+      end
+
     end
   end
 end
