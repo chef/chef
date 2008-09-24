@@ -31,10 +31,101 @@ class Chef
         @start = nil
         @stop = nil
         @status = nil
-        @action = "enable"
+        @restart = nil
+        @action = "none"
         @allowed_actions.push(:enable, :disable, :start, :stop)
       end
-     
+      
+      def service_name(arg=nil)
+        set_or_return(
+          :service_name,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+      
+      # bool, init script has a status action
+      def hasstatus(arg=nil)
+        set_or_return(
+          :hasstatus,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      # bool, init script has a restart action
+      def hasrestart(arg=nil)
+        set_or_return(
+          :hasrestart,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      # regex for match against ps -ef when hasstatus => false and status = nil
+      def pattern(arg=nil)
+        set_or_return(
+          :pattern,
+          arg,
+          :kind_of => [ Regex ]
+        )
+      end
+
+      # command to call to start service
+      def start(arg=nil)
+        set_or_return(
+          :start,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      # command to call to stop service
+      def stop(arg=nil)
+        set_or_return(
+          :stop,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      # command to call to get status of service
+      def status(arg=nil)
+        set_or_return(
+          :status,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      # command to call to restart service
+      def restart(arg=nil)
+        set_or_return(
+          :restart,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      # if the service is enabled or not
+      def enabled(arg=nil)
+        set_or_return(
+          :enabled,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      # if the service is running or not
+      def running(arg=nil)
+        set_or_return(
+          :running,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+  
     end
   end
 end

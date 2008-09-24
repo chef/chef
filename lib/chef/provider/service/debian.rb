@@ -21,38 +21,36 @@ require File.join(File.dirname(__FILE__), "..", "..", "mixin", "command")
 
 class Chef
   class Provider
-    class Service
-      class Debian < Chef::Provider::Service::Init
-        
-        def load_current_resource
-          @current_resource = Chef::Resource::Service.new(@new_resource.name)
-          @current_resource.service_name(@new_resource.service_name)
-          
-          status = popen4("update-rc.d -n -f #{@new_resource.service_name}") do |pid, stdin, stdout, stderr|
-            stdin.close
-            if stdout.gets(nil) =~ /etc\/rc[\dS].d\/S|not installed/
-              @current_resource.enabled(true)
-            else
-              @current_resource.enabled(false)
-            end
-          end  
-          
-          unless status.exitstatus = 0
-            raise Chef::Exception::Service, "update-rc.d -n -f #{@new_resource.service_name} failed - #{status.inspect}"
-          end
+    class Debian < Chef::Provider::Service
+      def load_current_resource
+        @current_resource = Chef::Resource::Service.new(@new_resource.name)
+        @current_resource.service_name(@new_resource.service_name)
 
-          @current_resource        
+        status = popen4("update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
+          stdin.close
+          if stdout.gets(nil) =~ /etc\/rc[\dS].d\/S|not installed/
+            Chef::Log.debug("#{@current_resource} is currently enabled")
+            @current_resource.enabled(true)
+          else
+            Chef::Log.debug("#{@current_resource} is currently disabled")
+            @current_resource.enabled(false)
+          end
+        end  
+
+        unless status.exitstatus == 0
+          raise Chef::Exception::Service, "update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
         end
-        
-        def enable_service(name)
-          run_command(:command => "update-rc.d #{name} defaults")
-        end
-          
-        def disable_service(name)
-          run_command(:command => "update-rc.d -f #{name} remove")
-          run_command(:command => "update-rc.d #{name} stop 00 1 2 3 4 5 6 .")
-        end
-          
+
+        @current_resource        
+      end
+
+      def enable_service(name)
+        run_command(:command => "update-rc.d #{name} defaults")
+      end
+
+      def disable_service(name)
+        run_command(:command => "update-rc.d -f #{name} remove")
+        #run_command(:command => "update-rc.d #{name} stop 00 1 2 3 4 5 6 .")
       end
     end
   end
