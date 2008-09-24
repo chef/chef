@@ -1,5 +1,5 @@
 #
-# Author:: Adam Jacob (<adam@hjksolutions.com>)
+# Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
 # License:: Apache License, Version 2.0
 #
