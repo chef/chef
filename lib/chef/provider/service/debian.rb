@@ -21,7 +21,7 @@ require File.join(File.dirname(__FILE__), "..", "..", "mixin", "command")
 
 class Chef
   class Provider
-      class Debian < Chef::Provider::Sackage
+      class Debian < Chef::Provider::Service
       
         include Chef::Mixin::Command
       
