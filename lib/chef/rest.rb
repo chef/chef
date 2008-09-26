@@ -108,14 +108,24 @@ class Chef
       else
         raise ArgumentError, "You must provide :GET, :PUT, :POST or :DELETE as the method"
       end
-      Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
-      res = http.request(req)
-      
+
+      begin
+        Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
+        res = http.request(req)
+      rescue Errno::ECONNREFUSED
+        Chef::Log.debug("Connection refused connecting to database")
+        exit(1)
+      rescue Timeout::Error
+        Chef::Log.debug("Timeout connecting to database")
+        exit(1)
+      end
+
       Chef::Log.debug("HTTP request headers: ")
       req.each_header { |k,v| Chef::Log.debug("#{k}: #{v}") }
 
       Chef::Log.debug("HTTP response headers: ")
       res.each_header { |k,v| Chef::Log.debug("#{k}: #{v}") }
+
 
       if res.kind_of?(Net::HTTPSuccess)
         if res['set-cookie']
