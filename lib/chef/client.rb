@@ -51,7 +51,9 @@ class Chef
       register
       authenticate
       do_attribute_files
+     # do_recipe_files
       save_node
+    #  compile
       converge
       true
     end
@@ -61,6 +63,9 @@ class Chef
     #
     # === Parameters
     # node_name<String>:: The name of the node to build - defaults to nil
+    #
+    # === Returns
+    # node:: Returns the created node object, also stored in @node
     def build_node(node_name=nil)
       node_name ||= Facter["fqdn"].value ? Facter["fqdn"].value : Facter["hostname"].value
       @safe_name = node_name.gsub(/\./, '_')
@@ -85,6 +90,9 @@ class Chef
     # data.
     #
     # If it has not, we register it by calling create_registration.
+    #
+    # === Returns
+    # true:: Always returns true
     def register 
       @registration = nil
       begin
@@ -101,17 +109,25 @@ class Chef
       else
         create_registration
       end
+      true
     end
     
     # Generates a random secret, stores it in the Chef::Filestore with the "registration" key,
     # and posts our nodes registration information to the server.
+    #
+    # === Returns
+    # true:: Always returns true
     def create_registration
       @secret = random_password(500)
       Chef::FileStore.store("registration", @safe_name, { "secret" => @secret })
       @rest.post_rest("registrations", { :id => @safe_name, :password => @secret })
+      true
     end
     
     # Authenticates the node via OpenID.
+    #
+    # === Returns
+    # true:: Always returns true
     def authenticate
       response = @rest.post_rest('openid/consumer/start', { 
         "openid_identifier" => "#{Chef::Config[:openid_url]}/openid/server/node/#{@safe_name}",
@@ -121,24 +137,36 @@ class Chef
         "#{Chef::Config[:openid_url]}#{response["action"]}",
         { "password" => @secret }
       )
+      true
     end
     
     # Gets all the attribute files included in all the cookbooks available on the server,
     # and executes them.
+    #
+    # === Returns
+    # true:: Always returns true
     def do_attribute_files
       af_list = @rest.get_rest('cookbooks/_attribute_files')
       af_list.each do |af|
         @node.instance_eval(af["contents"], "#{af['cookbook']}/#{af['name']}", 1)
       end
+      true
     end
     
     # Updates the current node configuration on the server.
+    #
+    # === Returns
+    # true:: Always returns true
     def save_node
       @rest.put_rest("nodes/#{@safe_name}", @node)
+      true
     end
     
     # Compiles the full list of recipes for the server, and passes it to an instance of
     # Chef::Runner.converge.
+    #
+    # === Returns
+    # true:: Always returns true
     def converge
       results = @rest.get_rest("nodes/#{@safe_name}/compile")
       results["collection"].resources.each do |r|
