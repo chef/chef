@@ -22,9 +22,11 @@ RubyGems:
 * facter
 * ferret
 * merb-core
+* merb-haml
 * haml
-* ruby-openid
+* ruby-openid (>= 2.0.1)
 * json
+* ultraviolet
 
 External Servers:
 
