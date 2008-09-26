@@ -37,6 +37,7 @@ class Chef
     end
     
     def create_design_document(name, data)
+      create_db
       to_update = true
       begin
         old_doc = @rest.get_rest("#{Chef::Config[:couchdb_database]}/_design%2F#{name}")
@@ -50,7 +51,7 @@ class Chef
         Chef::Log.debug("Creating #{name} views for the first time")
       end
       if to_update
-        @rest.put_rest("#{Chef::Config[:couchdb_database]}/_design%2F#{name}", data)
+        @rest.put_rest("#{Chef::Config[:couchdb_database]}/_design%1F#{name}", data)
       end
       true
     end
