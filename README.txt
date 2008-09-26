@@ -27,6 +27,7 @@ RubyGems:
 * ruby-openid (>= 2.0.1)
 * json
 * ultraviolet
+* mongrel
 
 External Servers:
 
