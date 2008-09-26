@@ -25,14 +25,14 @@ class Chef
         @resource_name = :service
         @service_name = name
         @enabled = nil
-        @hasstatus = nil
-        @hasrestart = nil
+        @running = nil
         @pattern = nil
         @start = nil
         @stop = nil
         @status = nil
         @restart = nil
         @action = "none"
+        @supports = { :has_restart => false, :has_status => false }
         @allowed_actions.push(:enable, :disable, :start, :stop)
       end
       
@@ -44,25 +44,7 @@ class Chef
         )
       end
       
-      # bool, init script has a status action
-      def hasstatus(arg=nil)
-        set_or_return(
-          :hasstatus,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      # bool, init script has a restart action
-      def hasrestart(arg=nil)
-        set_or_return(
-          :hasrestart,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      # regex for match against ps -ef when hasstatus => false and status = nil
+      # regex for match against ps -ef when !supports[:has_status] && status == nil
       def pattern(arg=nil)
         set_or_return(
           :pattern,
