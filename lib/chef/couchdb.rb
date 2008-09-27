@@ -51,7 +51,7 @@ class Chef
         Chef::Log.debug("Creating #{name} views for the first time")
       end
       if to_update
-        @rest.put_rest("#{Chef::Config[:couchdb_database]}/_design%1F#{name}", data)
+        @rest.put_rest("#{Chef::Config[:couchdb_database]}/_design%2F#{name}", data)
       end
       true
     end
