@@ -113,10 +113,10 @@ class Chef
         Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
         res = http.request(req)
       rescue Errno::ECONNREFUSED
-        Chef::Log.debug("Connection refused connecting to database")
+        Chef::Log.error("Connection refused connecting to CouchDB")
         exit(1)
       rescue Timeout::Error
-        Chef::Log.debug("Timeout connecting to database")
+        Chef::Log.error("Timeout connecting to CouchDB")
         exit(1)
       end
 
