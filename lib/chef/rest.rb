@@ -148,6 +148,9 @@ class Chef
           @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
         end
         run_request(:GET, create_url(res['location']), false, limit - 1, raw)
+      elsif res.kind_of?(Net::HTTPUnauthorized)
+        Chef::Log.error("Node openid registration is not validated")
+        exit(1)
       else
         res.error!
       end
