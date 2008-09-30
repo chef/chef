@@ -53,9 +53,7 @@ class Cookbooks < Application
       cookbook.attribute_files.each do |af|
         @attribute_files << { 
           :cookbook => cookbook.name, 
-          :name => File.basename(af), 
-          :path => af,
-          :contents => File.read(af) 
+          :name => File.basename(af) 
         }
       end
     end
