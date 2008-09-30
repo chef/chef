@@ -52,6 +52,16 @@ Install all of the above.  To fire up a develpment environment, do the following
 
     ./bin/chef-server -p 4001
 
+  * Test run chef to begin node registration:
+
+    sudo ./bin/chef-client -l debug -c ./examples/config/chef-solo.rb
+
+  * Validate the node registration:
+
+    Visit http://localhost:4000
+      Login, enter an openid URL (see http://openid.net/get/)
+      Registrations, click Validate
+
   * Test run chef with:
 
     sudo ./bin/chef-client -l debug -c ./examples/config/chef-solo.rb
