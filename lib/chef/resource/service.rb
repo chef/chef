@@ -27,12 +27,12 @@ class Chef
         @enabled = nil
         @running = nil
         @pattern = nil
-        @start = nil
-        @stop = nil
-        @status = nil
-        @restart = nil
+        @start_command = nil
+        @stop_command = nil
+        @status_command = nil
+        @restart_command = nil
         @action = "none"
-        @supports = { :has_restart => false, :has_status => false }
+        @supports = { :restart => false, :status => false }
         @allowed_actions.push(:enable, :disable, :start, :stop)
       end
       
@@ -49,41 +49,41 @@ class Chef
         set_or_return(
           :pattern,
           arg,
-          :kind_of => [ Regex ]
+          :kind_of => [ Regexp ]
         )
       end
 
       # command to call to start service
-      def start(arg=nil)
+      def start_command(arg=nil)
         set_or_return(
-          :start,
+          :start_command,
           arg,
           :kind_of => [ String ]
         )
       end
 
       # command to call to stop service
-      def stop(arg=nil)
+      def stop_command(arg=nil)
         set_or_return(
-          :stop,
+          :stop_command,
           arg,
           :kind_of => [ String ]
         )
       end
 
       # command to call to get status of service
-      def status(arg=nil)
+      def status_command(arg=nil)
         set_or_return(
-          :status,
+          :status_command,
           arg,
           :kind_of => [ String ]
         )
       end
 
       # command to call to restart service
-      def restart(arg=nil)
+      def restart_command(arg=nil)
         set_or_return(
-          :restart,
+          :restart_command,
           arg,
           :kind_of => [ String ]
         )
