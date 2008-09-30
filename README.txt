@@ -48,7 +48,7 @@ Install all of the above.  To fire up a develpment environment, do the following
 
     ./bin/chef-server
 
-  * Start chef-server on port 4001 with:
+  * Start chef-server on port 4001 to validate node openid with:
 
     ./bin/chef-server -p 4001
 
