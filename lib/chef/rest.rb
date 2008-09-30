@@ -111,11 +111,9 @@ class Chef
       Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
       res = http.request(req)
       
-      Chef::Log.debug("HTTP request headers: ")
-      req.each_header { |k,v| Chef::Log.debug("#{k}: #{v}") }
+      Chef::Log.debug("HTTP request headers: #{req.to_hash.inspect} ")
 
-      Chef::Log.debug("HTTP response headers: ")
-      res.each_header { |k,v| Chef::Log.debug("#{k}: #{v}") }
+      Chef::Log.debug("HTTP response headers: #{res.to_hash.inspect} ")
 
       if res.kind_of?(Net::HTTPSuccess)
         if res['set-cookie']

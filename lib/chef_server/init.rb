@@ -164,11 +164,15 @@ Merb::Router.prepare do |r|
   end 
   
   r.match("/cookbooks/_attribute_files").to(:controller => "cookbooks", :action => "attribute_files")
+  r.match("/cookbooks/_recipe_files").to(:controller => "cookbooks", :action => "recipe_files")
+  
 #  r.match("/cookbooks/:cookbook_id/templates").to(:controller => "cookbook_templates", :action => "index")
  
   r.resources :cookbooks do |cookbooks|
     cookbooks.resources :templates, :controller => "cookbook_templates"
     cookbooks.resources :files, :controller => "cookbook_files"
+    cookbooks.resources :recipes, :controller => "cookbook_recipes"
+    cookbooks.resources :attributes, :controller => "cookbook_attributes"
   end
     
   #r.resources :openid do |res|

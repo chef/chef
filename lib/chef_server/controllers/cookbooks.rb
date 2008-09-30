@@ -31,6 +31,20 @@ class Cookbooks < Application
     raise NotFound unless @cookbook
     display @cookbook
   end
+  
+  def recipe_files
+    cl = Chef::CookbookLoader.new
+    @recipe_files = Array.new
+    cl.each do |cookbook|
+      cookbook.recipe_files.each do |rf|
+        @recipe_files << { 
+          :cookbook => cookbook.name, 
+          :name => File.basename(rf)
+        }
+      end
+    end
+    display @recipe_files
+  end
 
   def attribute_files
     cl = Chef::CookbookLoader.new
