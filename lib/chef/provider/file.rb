@@ -19,12 +19,13 @@
 require 'etc'
 require 'fileutils'
 require File.join(File.dirname(__FILE__), "..", "mixin", "checksum")
-
+require File.join(File.dirname(__FILE__), "..", "mixin", "generate_url")
 
 class Chef
   class Provider
     class File < Chef::Provider
       include Chef::Mixin::Checksum
+      include Chef::Mixin::GenerateURL
       
       def load_current_resource
         @current_resource = Chef::Resource::File.new(@new_resource.name)
@@ -160,22 +161,7 @@ class Chef
       end
       
       def generate_url(url, type, args=nil)
-        new_url = nil
-        if url =~ /^http/
-          new_url = url
-        else
-          new_url = "cookbooks/#{@new_resource.cookbook_name}/#{type}?"
-          new_url += "id=#{url}"
-          platform, version = Chef::Platform.find_platform_and_version(@node)
-          new_url += "&platform=#{platform}&version=#{version}&fqdn=#{@node[:fqdn]}"
-          if args
-            args.each do |key, value|
-              new_url += "&#{key}=#{value}"
-            end
-          end
-        end
-
-        return new_url
+        generate_cookbook_url(url, @new_resource.cookbook_name, type, @node, args)
       end
       
     end
