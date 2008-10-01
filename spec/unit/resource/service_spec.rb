@@ -29,8 +29,12 @@ describe Chef::Resource::Service do
     @resource.should be_a_kind_of(Chef::Resource::Service)
   end
 
-  it "should set the package_name to the first argument to new" do
+  it "should set the service_name to the first argument to new" do
     @resource.service_name.should eql("chef")
+  end
+
+  it "should set the pattern to be the service name by default" do
+    @resource.pattern.should eql("chef")
   end
 
   it "should accept a string for the service name" do

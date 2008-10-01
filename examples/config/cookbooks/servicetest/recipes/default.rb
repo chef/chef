@@ -1,7 +1,7 @@
 service "puppet-client" do
   service_name "puppet"
   pattern "puppetd"
-  action :enable
+  action :start
 end
 
 file "/tmp/foo" do
