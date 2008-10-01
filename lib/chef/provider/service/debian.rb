@@ -25,7 +25,7 @@ class Chef
     class Debian < Chef::Provider::Init
       def load_current_resource
         super
-        Chef::Log.debug("#{@current_resource} supered! running: #{@current_resource.running}")
+        Chef::Log.debug("#{@current_resource}: currently running: #{@current_resource.running}")
         status = popen4("update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
           stdin.close
           if stdout.gets(nil) =~ /etc\/rc[\dS].d\/S|not installed/
