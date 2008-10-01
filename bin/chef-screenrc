@@ -1,0 +1,9 @@
+screen -t stompserver
+!ruby /var/lib/gems/1.8/gems/stompserver-0.9.9/bin/stompserver
+screen -t chefindexer
+!bin/chef-indexer -l debug -c ./config/chef-server.rb
+screen -t chef
+!bin/chef-server
+screen -t chefopenid
+!bin/chef-server -p 4001
+
