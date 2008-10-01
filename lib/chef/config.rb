@@ -52,6 +52,7 @@ class Chef
       :couchdb_database => "chef",
       :openid_store_path => "/var/chef/openid/db",
       :openid_cstore_path => "/var/chef/openid/cstore",
+      :file_cache_path => "/var/chef/cache",
       :executable_path => ENV['PATH'] ? ENV['PATH'].split(File::PATH_SEPARATOR) : []
     }
     
