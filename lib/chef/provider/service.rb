@@ -29,12 +29,6 @@ class Chef
         @enabled = nil
       end
 
-      def load_current_resource
-        # Service should be inherited by the Service providers and then super this load_current_resource to get @current_resource.
-        @current_resource = Chef::Resource::Service.new(@new_resource.name)
-        @current_resource.service_name(@new_resource.service_name)
-      end
-
       def action_enable
         if @current_resource.enabled == false
           Chef::Log.debug("Trying to enable #{@new_resource}")

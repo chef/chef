@@ -48,7 +48,6 @@ class Chef
 
       def disable_service(name)
         run_command(:command => "update-rc.d -f #{name} remove")
-        #run_command(:command => "update-rc.d #{name} stop 00 1 2 3 4 5 6 .")
       end
     end
   end
