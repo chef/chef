@@ -16,12 +16,17 @@
 # limitations under the License.
 
 require File.join(File.dirname(__FILE__), "mixin", "params_validate")
+require File.join(File.dirname(__FILE__), "mixin", "generate_url")
+require File.join(File.dirname(__FILE__), "mixin", "checksum")
 
 require 'rubygems'
 require 'facter'
 
 class Chef
   class Client
+    
+    include Chef::Mixin::GenerateURL
+    include Chef::Mixin::Checksum
     
     attr_accessor :node, :registration, :safe_name
     
@@ -127,9 +132,59 @@ class Chef
     # and executes them.
     def do_attribute_files
       af_list = @rest.get_rest('cookbooks/_attribute_files')
+      
+      # We need the list of known good attribute files, so we can delete any that are
+      # just laying about.
+      attribute_file_canonical = Hash.new
+      
       af_list.each do |af|
-        @node.instance_eval(af["contents"], "#{af['cookbook']}/#{af['name']}", 1)
+        cache_file = File.join("cookbooks", af['cookbook'], "attributes", af['name'])
+        attribute_file_canonical[cache_file] = true
+        
+        attribute_checksum = nil
+        if Chef::FileCache.has_key?(cache_file)
+          attribute_checksum = checksum(Chef::FileCache.load(cache_file, false))
+        end
+        
+        attribute_url = generate_cookbook_url(
+          af['name'], 
+          af['cookbook'], 
+          'attributes', 
+          @node, 
+          attribute_checksum ? { 'checksum' => attribute_checksum } : nil
+        )
+        Chef::Log.debug(attribute_url)
+        
+        changed = true
+        begin
+          raw_file = @rest.get_rest(attribute_url, true)
+        rescue Net::HTTPRetriableError => e
+          if e.response.kind_of?(Net::HTTPNotModified)
+            changed = false
+            Chef::Log.debug("Cookbook #{af['cookbook']}, attribute file #{af['name']} is unchanged")
+          else
+            raise e
+          end
+        end
+        
+        if changed
+          Chef::Log.debug("Storing updated #{cache_file}")
+          Chef::FileCache.move_to(raw_file.path, cache_file)
+        end
+                
+        Chef::Log.debug("Executing #{cache_file}")
+        @node.from_file(Chef::FileCache.load(cache_file, false))
       end
+      
+      Chef::FileCache.list.each do |cache_file|
+        if cache_file.match("cookbooks/.+?/attributes")
+          unless attribute_file_canonical[cache_file]
+            Chef::Log.info("Removing #{cache_file}, as it is no longer a valid attribute file.")
+            Chef::FileCache.delete(cache_file)
+          end
+        end
+      end
+      
     end
     
     # Updates the current node configuration on the server.
