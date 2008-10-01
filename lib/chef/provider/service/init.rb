@@ -63,7 +63,7 @@ class Chef
         @current_resource
       end
 
-      def start_service
+      def start_service(name)
         if @new_resource.start_command
           run_command(:command => @new_resource.start_command)
         else
@@ -71,7 +71,7 @@ class Chef
         end
       end
 
-      def stop_service
+      def stop_service(name)
         if @new_resource.stop_command
           run_command(:command => @new_resource.stop_command)
         else
@@ -79,7 +79,7 @@ class Chef
         end
       end
 
-      def restart_service
+      def restart_service(name)
         if @new_resource.supports[:restart]
           run_command(:command => "/etc/init.d/#{name} restart")
         elsif @new_resource.restart_command
