@@ -32,13 +32,11 @@ class Chef
         elsif @new_resource.status_command
           run_command(:command => @new_resource.status_command) == 0 ? process_running = true : process_running = false
         else
-          Chef::Log.debug("service #{@new_resource.service_name} does not support status and you have not specified a status command, falling back to process table inspection")
-          unless @new_resource.pattern
-            raise Chef::Exception::Service, "#{@new_resource.service_name} does not support status (#{@new_resource.supports[:status]}) and no pattern specified"
-          end  
-
-          unless Facter["ps"].value != ""
-            raise Chef::Exception::Service, "Facter could not determine how to call `ps` on your system (#{Facter["ps"].value})"
+          Chef::Log.debug("#{@new_resource} does not support status and you have not specified a status command, falling back to process table inspection")
+          if @new_resource.pattern == @new_resource.service_name
+            Chef::Log.debug("#{@new_resource} defaulting pattern to #{Regex.new(@new_resource.pattern)}") 
+          elsif Facter["ps"].value == ""
+            raise Chef::Exception::Service, "#{@new_resource}: Facter could not determine how to call `ps` on your system (#{Facter["ps"].value})"
           end
 
           process_pid = nil
