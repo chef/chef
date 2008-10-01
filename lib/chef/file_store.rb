@@ -16,6 +16,7 @@
 # limitations under the License.
 
 require File.join(File.dirname(__FILE__), "mixin", "params_validate")
+require File.join(File.dirname(__FILE__), "mixin", "create_path")
 require 'digest/sha2'
 require 'json'
 
@@ -23,6 +24,7 @@ class Chef
   class FileStore
     class << self
       include Chef::Mixin::ParamsValidate
+      include Chef::Mixin::CreatePath
   
       def store(obj_type, name, object)
         validate(
@@ -125,12 +127,7 @@ class Chef
           shadigest[0,1],
           shadigest[1,3]
         ]
-        file_path.each_index do |i|
-          create_path = File.join(file_path[0, i + 1])
-          Dir.mkdir(create_path) unless File.directory?(create_path) 
-        end
-        file_path << key
-        File.join(*file_path)
+        File.join(create_path(file_path), key)
       end
   
     end
