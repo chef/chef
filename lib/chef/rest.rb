@@ -31,6 +31,11 @@ class Chef
     end
     
     # Send an HTTP GET request to the path
+    #
+    # === Parameters
+    # path:: The path to GET
+    # raw:: Whether you want the raw body returned, or JSON inflated.  Defaults 
+    #   to JSON inflated.
     def get_rest(path, raw=false)
       run_request(:GET, create_url(path), false, 10, raw)    
     end                               
