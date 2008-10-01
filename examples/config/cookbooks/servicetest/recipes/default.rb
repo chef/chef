@@ -1,4 +1,12 @@
 service "puppet-client" do
   service_name "puppet"
-  action :disable
+  pattern "puppetd"
+  action :enable
+end
+
+file "/tmp/foo" do
+  owner    "aj"
+  mode     0644
+  action   :create
+  notifies :start, resources(:service => "puppet-client"), :immediate
 end

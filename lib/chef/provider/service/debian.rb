@@ -17,13 +17,15 @@
 #
 
 require File.join(File.dirname(__FILE__), "..", "service")
+require File.join(File.dirname(__FILE__), "init")
 require File.join(File.dirname(__FILE__), "..", "..", "mixin", "command")
 
 class Chef
   class Provider
-    class Debian < Chef::Provider::Service
+    class Debian < Chef::Provider::Init
       def load_current_resource
         super
+        Chef::Log.debug("#{@current_resource} supered! running: #{@current_resource.running}")
         status = popen4("update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
           stdin.close
           if stdout.gets(nil) =~ /etc\/rc[\dS].d\/S|not installed/
@@ -48,6 +50,18 @@ class Chef
 
       def disable_service(name)
         run_command(:command => "update-rc.d -f #{name} remove")
+      end
+
+      def start_service(name)
+        super
+      end
+
+      def stop_service(name)
+        super
+      end
+
+      def restart_service(name)
+        super
       end
     end
   end

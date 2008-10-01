@@ -52,6 +52,7 @@ class Chef
       end
 
       def action_start
+        Chef::Log.debug("Trying to start #{@new_resource}")
         if @current_resource.running == false
           status = start_service(@new_resource.service_name)
           if status
@@ -62,6 +63,7 @@ class Chef
       end
 
       def action_stop
+        Chef::Log.debug("Trying to start #{@new_resource}")
         if @current_resource.running == true
           status = stop_service(@new_resource.service_name)
           if status

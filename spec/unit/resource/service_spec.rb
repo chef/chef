@@ -38,14 +38,14 @@ describe Chef::Resource::Service do
     @resource.service_name.should eql("something")
   end
  
-  it "should accept a regex for the service pattern" do
-    @resource.pattern /.*/
-    @resource.pattern.should eql(/.*/)
+  it "should accept a string for the service pattern" do
+    @resource.pattern ".*"
+    @resource.pattern.should eql(".*")
   end
 
-  it "should not accept a string for the service pattern" do
+  it "should not accept a regexp for the service pattern" do
     lambda {
-      @resource.pattern ".*"
+      @resource.pattern /.*/
     }.should raise_error(ArgumentError)
   end
   

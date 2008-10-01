@@ -26,7 +26,7 @@ class Chef
         @service_name = name
         @enabled = nil
         @running = nil
-        @pattern = nil
+        @pattern = name 
         @start_command = nil
         @stop_command = nil
         @status_command = nil
@@ -49,7 +49,7 @@ class Chef
         set_or_return(
           :pattern,
           arg,
-          :kind_of => [ Regexp ]
+          :kind_of => [ String ]
         )
       end
 

@@ -26,12 +26,13 @@ class Chef
       def load_current_resource
         @current_resource = Chef::Resource::Service.new(@new_resource.name)
         @current_resource.service_name(@new_resource.service_name)
-        running = false
+        process_running = false
         if @new_resource.supports[:status]
-          run_command(:command => "/etc/init.d/#{@current_resource.service_name} status") == 0 ? running = true
+          run_command(:command => "/etc/init.d/#{@current_resource.service_name} status") == 0 ? process_running = true : process_running = false
         elsif @new_resource.status_command
-          run_command(:command => @new_resource.status_command) == 0 ? running = true
+          run_command(:command => @new_resource.status_command) == 0 ? process_running = true : process_running = false
         else
+          Chef::Log.debug("service #{@new_resource.service_name} does not support status and you have not specified a status command, falling back to process table inspection")
           unless @new_resource.pattern
             raise Chef::Exception::Service, "#{@new_resource.service_name} does not support status (#{@new_resource.supports[:status]}) and no pattern specified"
           end  
@@ -40,21 +41,25 @@ class Chef
             raise Chef::Exception::Service, "Facter could not determine how to call `ps` on your system (#{Facter["ps"].value})"
           end
 
+          process_pid = nil
           status = popen4(Facter["ps"].value) do |pid, stdin, stdout, stderr|
             stdin.close
+            r = Regexp.new(@new_resource.pattern)
+            Chef::Log.debug("Attempting to match #{@new_resource.pattern} (#{r})")
             stdout.each_line do |line|
-              if @new_resource.pattern.match(line)
-                pid = line.sub(/^\s+/, '').split(/\s+/)[1]
+              if r.match(line)
+                process_pid = line.sub(/^\s+/, '').split(/\s+/)[1]
               end
             end
           end
-          unless status.exitcode == 0
+          unless status.exitstatus == 0
             raise Chef::Exception::Service, "Command #{Facter["ps"].value} failed"
           else
-            pid ? running = true
+            process_pid ? process_running = true : process_running = false
+            Chef::Log.debug("#{@new_resource}: #{Facter["ps"].value} exited succesfully, process_running: #{process_running}")
           end
         end
-        @current_resource.running = running
+        @current_resource.running process_running
         @current_resource
       end
 
