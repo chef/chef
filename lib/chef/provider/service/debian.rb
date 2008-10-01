@@ -25,16 +25,10 @@ class Chef
     class Debian < Chef::Provider::Init
       def load_current_resource
         super
-        Chef::Log.debug("#{@current_resource}: currently running: #{@current_resource.running}")
+
         status = popen4("update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
           stdin.close
-          if stdout.gets(nil) =~ /etc\/rc[\dS].d\/S|not installed/
-            Chef::Log.debug("#{@current_resource} is currently enabled")
-            @current_resource.enabled(true)
-          else
-            Chef::Log.debug("#{@current_resource} is currently disabled")
-            @current_resource.enabled(false)
-          end
+          stdout.gets(nil) =~ /etc\/rc[\dS].d\/S|not installed/i ? @current_resource.enabled(true) : @current_resource.enabled(false)
         end  
 
         unless status.exitstatus == 0

@@ -43,7 +43,7 @@ class Chef
           status = popen4(Facter["ps"].value) do |pid, stdin, stdout, stderr|
             stdin.close
             r = Regexp.new(@new_resource.pattern)
-            Chef::Log.debug("Attempting to match #{@new_resource.pattern} (#{r})")
+            Chef::Log.debug("#{@new_resource}: attempting to match #{@new_resource.pattern} (#{r}) against process table")
             stdout.each_line do |line|
               if r.match(line)
                 process_pid = line.sub(/^\s+/, '').split(/\s+/)[1]
