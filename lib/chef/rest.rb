@@ -110,13 +110,13 @@ class Chef
       end
 
       begin
-        Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
+        Chef::Log.debug("Sending HTTP Request to #{url.host}:#{url.port} via #{req.method} to #{req.path}")
         res = http.request(req)
       rescue Errno::ECONNREFUSED
-        Chef::Log.error("Connection refused connecting to CouchDB")
+        Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path}")
         exit(1)
       rescue Timeout::Error
-        Chef::Log.error("Timeout connecting to CouchDB")
+        Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}")
         exit(1)
       end
 
