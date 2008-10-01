@@ -20,6 +20,7 @@ class Chef
     class Exec < RuntimeError; end
     class FileNotFound < RuntimeError; end  
     class Package < RuntimeError; end
+    class Service < RuntimeError; end
     class SearchIndex < RuntimeError; end  
     class Override < RuntimeError; end
     class UnsupportedAction < RuntimeError; end
