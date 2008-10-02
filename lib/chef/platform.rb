@@ -26,7 +26,7 @@ class Chef
       :mac_os_x => {},
       :ubuntu   => {
         :default => {
-          :package => Chef::Provider::Apt,
+          :package => Chef::Provider::Package::Apt,
           :service => Chef::Provider::Debian,
         }
       },
