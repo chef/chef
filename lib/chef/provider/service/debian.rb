@@ -22,40 +22,42 @@ require File.join(File.dirname(__FILE__), "..", "..", "mixin", "command")
 
 class Chef
   class Provider
-    class Debian < Chef::Provider::Init
-      def load_current_resource
-        super
+    class Service
+      class Debian < Chef::Provider::Service::Init
+        def load_current_resource
+          super
 
-        status = popen4("update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
-          stdin.close
-          stdout.gets(nil) =~ /etc\/rc[\dS].d\/S|not installed/i ? @current_resource.enabled(true) : @current_resource.enabled(false)
-        end  
+          status = popen4("update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
+            stdin.close
+            stdout.gets(nil) =~ /etc\/rc[\dS].d\/S|not installed/i ? @current_resource.enabled(true) : @current_resource.enabled(false)
+          end  
 
-        unless status.exitstatus == 0
-          raise Chef::Exception::Service, "update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
+          unless status.exitstatus == 0
+            raise Chef::Exception::Service, "update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
+          end
+
+          @current_resource        
         end
 
-        @current_resource        
-      end
+        def enable_service(name)
+          run_command(:command => "update-rc.d #{name} defaults")
+        end
 
-      def enable_service(name)
-        run_command(:command => "update-rc.d #{name} defaults")
-      end
+        def disable_service(name)
+          run_command(:command => "update-rc.d -f #{name} remove")
+        end
 
-      def disable_service(name)
-        run_command(:command => "update-rc.d -f #{name} remove")
-      end
+        def start_service(name)
+          super
+        end
 
-      def start_service(name)
-        super
-      end
+        def stop_service(name)
+          super
+        end
 
-      def stop_service(name)
-        super
-      end
-
-      def restart_service(name)
-        super
+        def restart_service(name)
+          super
+        end
       end
     end
   end

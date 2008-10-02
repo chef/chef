@@ -27,7 +27,7 @@ class Chef
       :ubuntu   => {
         :default => {
           :package => Chef::Provider::Apt,
-          :service => Chef::Provider::Debian,
+          :service => Chef::Provider::Service::Debian,
         }
       },
       :centos   => {},
@@ -44,7 +44,7 @@ class Chef
         :sysctl => Chef::Provider::Sysctl,
         :execute => Chef::Provider::Execute,
         :script => Chef::Provider::Script,
-        :service => Chef::Provider::Init,
+        :service => Chef::Provider::Service::Init,
         :perl => Chef::Provider::Script,
         :python => Chef::Provider::Script,
         :ruby => Chef::Provider::Script,
