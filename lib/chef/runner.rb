@@ -49,6 +49,8 @@ class Chef
       end
       Chef::Log.debug("#{resource} using #{provider_klass.to_s}")
       provider = provider_klass.new(@node, resource)
+      provider.load_current_resource
+      provider
     end
     
     def converge
@@ -60,7 +62,6 @@ class Chef
         begin
           Chef::Log.debug("Processing #{resource}")
           provider = build_provider(resource)
-          provider.load_current_resource
           action_list = resource.action.kind_of?(Array) ? resource.action : [ resource.action ]
           action_list.each do |ra|
             provider.send("action_#{ra}")
