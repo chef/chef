@@ -214,7 +214,7 @@ class Chef
     
     # Updates the current node configuration on the server.
     def save_node
-      @rest.put_rest("nodes/#{@safe_name}", @node)
+      @node = @rest.put_rest("nodes/#{@safe_name}", @node)
     end
     
     # Compiles the full list of recipes for the node from the local cache, and 
