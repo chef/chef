@@ -75,18 +75,4 @@ class Nodes < Application
     end
   end
   
-  def compile
-    # Grab a Chef::Compile object
-    compile = Chef::Compile.new()
-    compile.load_node(params[:id])
-    compile.node.save
-    compile.load_definitions
-    compile.load_recipes
-    @output = {
-      :node => compile.node,
-      :collection => compile.collection,
-    }
-    display @output
-  end
-  
 end

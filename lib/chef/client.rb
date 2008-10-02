@@ -40,14 +40,15 @@ class Chef
     
     # Do a full run for this Chef::Client.  Calls:
     # 
-    #   * build_node
-    #   * register
-    #   * authenticate
-    #   * do_attribute_files
-    #   * save_node
-    #   * converge
-    #
-    # In that order.  
+    #  * build_node - Get the last known state, merge with local changes
+    #  * register - Make sure we have an openid
+    #  * authenticate - Authenticate with our openid
+    #  * sync_definitions - Populate the local cache with all the definitions
+    #  * sync_recipes - Populate the local cache with all the recipes
+    #  * do_attribute_files - Populate the local cache with all attributes, and execute them
+    #  * save_node - Store the new node configuration
+    #  * converge - Bring this system up to date, based on the local cache
+    #  * save_node - Store the node again, in case convergence altered future state
     #
     # === Returns
     # true:: Always returns true.

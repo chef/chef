@@ -1,8 +1,6 @@
 .node
   %h1 
     = "Node #{h node.name}" 
-  %h2 Actions
-  %a{ :href => url(:compile_node, { :id => node_escape(node.name) }) } Compile Node
   %h2 Recipes
   %ol
     = recipe_list(node)
