@@ -81,6 +81,7 @@ template "/tmp/foo-template" do
       :stripes => "are the best",
       :at => "the sleazy rock thing"
     },
+    :all_servers => search(:nodes, "*")
   })
 end
 

@@ -68,14 +68,14 @@ class Chef
               resource.actions.each_key do |action|
                 if resource.actions[action].has_key?(:immediate)
                   resource.actions[action][:immediate].each do |r|
-                    Chef::Log.info("#{resource} sending action #{action} to #{r} (immediate)")
+                    Chef::Log.info("#{resource} sending #{action} action to #{r} (immediate)")
                     build_provider(r).send("action_#{action}")
                   end
                 end
                 if resource.actions[action].has_key?(:delayed)
                   resource.actions[action][:delayed].each do |r|
                     delayed_actions << lambda {
-                      Chef::Log.info("#{resource} sending action #{action} to #{r} (delayed)")
+                      Chef::Log.info("#{resource} sending #{action} action to #{r} (delayed)")
                       build_provider(r).send("action_#{action}") 
                     }
                   end

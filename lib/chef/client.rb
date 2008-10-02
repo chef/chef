@@ -175,7 +175,7 @@ class Chef
         end
       
         if changed
-          Chef::Log.debug("Storing updated #{cache_file}")
+          Chef::Log.info("Storing updated #{cache_file} in the cache.")
           Chef::FileCache.move_to(raw_file.path, cache_file)
         end
       end
@@ -183,7 +183,7 @@ class Chef
       Chef::FileCache.list.each do |cache_file|
         if cache_file.match("cookbooks/.+?/#{segment}")
           unless file_canonical[cache_file]
-            Chef::Log.info("Removing #{cache_file}, as it is no longer a valid.")
+            Chef::Log.info("Removing #{cache_file} from the cache; it is no longer on the server.")
             Chef::FileCache.delete(cache_file)
           end
         end
