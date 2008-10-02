@@ -46,18 +46,7 @@ class Chef
         def disable_service(name)
           run_command(:command => "update-rc.d -f #{name} remove")
         end
-
-        def start_service(name)
-          super
-        end
-
-        def stop_service(name)
-          super
-        end
-
-        def restart_service(name)
-          super
-        end
+        
       end
     end
   end
