@@ -158,7 +158,6 @@ Merb::Router.prepare do |r|
   # clients from calling your create or destroy actions with a GET
   
   r.resources :nodes
-  r.resources :nodes, :member => { :compile => :get }
   r.resources :search do |res|
     res.resources :entries, :controller => "search_entries"
   end 
