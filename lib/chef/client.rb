@@ -55,9 +55,12 @@ class Chef
       build_node
       register
       authenticate
+      sync_definitions
+      sync_recipes
       do_attribute_files
       save_node
       converge
+      save_node
       true
     end
     
@@ -128,58 +131,58 @@ class Chef
       )
     end
     
-    # Gets all the attribute files included in all the cookbooks available on the server,
-    # and executes them.
-    def do_attribute_files
-      af_list = @rest.get_rest('cookbooks/_attribute_files')
-      
+    # Update the file caches for a given cache segment.  Takes a segment name
+    # and a hash that matches one of the cookbooks/_attribute_files style
+    # remote file listings.
+    #
+    # === Parameters
+    # segment<String>:: The cache segment to update
+    # remote_list<Hash>:: A cookbooks/_attribute_files style remote file listing
+    def update_file_cache(segment, remote_list)  
       # We need the list of known good attribute files, so we can delete any that are
       # just laying about.
-      attribute_file_canonical = Hash.new
+      file_canonical = Hash.new
       
-      af_list.each do |af|
-        cache_file = File.join("cookbooks", af['cookbook'], "attributes", af['name'])
-        attribute_file_canonical[cache_file] = true
-        
-        attribute_checksum = nil
+      remote_list.each do |rf|
+        cache_file = File.join("cookbooks", rf['cookbook'], segment, rf['name'])
+        file_canonical[cache_file] = true
+      
+        current_checksum = nil
         if Chef::FileCache.has_key?(cache_file)
-          attribute_checksum = checksum(Chef::FileCache.load(cache_file, false))
+          current_checksum = checksum(Chef::FileCache.load(cache_file, false))
         end
-        
-        attribute_url = generate_cookbook_url(
-          af['name'], 
-          af['cookbook'], 
-          'attributes', 
+      
+        rf_url = generate_cookbook_url(
+          rf['name'], 
+          rf['cookbook'], 
+          segment, 
           @node, 
-          attribute_checksum ? { 'checksum' => attribute_checksum } : nil
+          current_checksum ? { 'checksum' => current_checksum } : nil
         )
-        Chef::Log.debug(attribute_url)
-        
+        Chef::Log.debug(rf_url)
+      
         changed = true
         begin
-          raw_file = @rest.get_rest(attribute_url, true)
+          raw_file = @rest.get_rest(rf_url, true)
         rescue Net::HTTPRetriableError => e
           if e.response.kind_of?(Net::HTTPNotModified)
             changed = false
-            Chef::Log.debug("Cookbook #{af['cookbook']}, attribute file #{af['name']} is unchanged")
+            Chef::Log.debug("Cache file #{cache_file} is unchanged")
           else
             raise e
           end
         end
-        
+      
         if changed
           Chef::Log.debug("Storing updated #{cache_file}")
           Chef::FileCache.move_to(raw_file.path, cache_file)
         end
-                
-        Chef::Log.debug("Executing #{cache_file}")
-        @node.from_file(Chef::FileCache.load(cache_file, false))
       end
       
       Chef::FileCache.list.each do |cache_file|
-        if cache_file.match("cookbooks/.+?/attributes")
-          unless attribute_file_canonical[cache_file]
-            Chef::Log.info("Removing #{cache_file}, as it is no longer a valid attribute file.")
+        if cache_file.match("cookbooks/.+?/#{segment}")
+          unless file_canonical[cache_file]
+            Chef::Log.info("Removing #{cache_file}, as it is no longer a valid.")
             Chef::FileCache.delete(cache_file)
           end
         end
@@ -187,19 +190,42 @@ class Chef
       
     end
     
+    # Gets all the attribute files included in all the cookbooks available on the server,
+    # and executes them.
+    def do_attribute_files
+      update_file_cache("attributes", @rest.get_rest('cookbooks/_attribute_files'))
+      Chef::FileCache.list.each do |cache_file|
+        if cache_file.match("cookbooks/.+?/attributes")
+          Chef::Log.debug("Executing #{cache_file}")
+          @node.from_file(Chef::FileCache.load(cache_file, false))
+        end
+      end
+      true
+    end
+    
+    def sync_definitions
+      update_file_cache("definitions", @rest.get_rest('cookbooks/_definition_files'))
+    end
+    
+    def sync_recipes
+      update_file_cache("recipes", @rest.get_rest('cookbooks/_recipe_files'))
+    end
+    
     # Updates the current node configuration on the server.
     def save_node
       @rest.put_rest("nodes/#{@safe_name}", @node)
     end
     
-    # Compiles the full list of recipes for the server, and passes it to an instance of
-    # Chef::Runner.converge.
+    # Compiles the full list of recipes for the node from the local cache, and 
+    # passes it to an instance of Chef::Runner.converge.
     def converge
-      results = @rest.get_rest("nodes/#{@safe_name}/compile")
-      results["collection"].resources.each do |r|
-        r.collection = results["collection"]
-      end
-      cr = Chef::Runner.new(results["node"], results["collection"])
+      Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+      compile = Chef::Compile.new()
+      compile.node = @node
+      compile.load_definitions
+      compile.load_recipes
+
+      cr = Chef::Runner.new(@node, compile.collection)
       cr.converge
       true
     end

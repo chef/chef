@@ -18,32 +18,33 @@
 
 require File.join(File.dirname(__FILE__), "..", "..", "chef", "mixin", "checksum")
 
-class CookbookAttributes < Application
+class CookbookDefinitions < Application
   
   provides :html, :json
   
   include Chef::Mixin::Checksum
   
-  def load_cookbook_attributes()
-    @attribute_files = load_cookbook_segment(params[:cookbook_id], :attributes)
+  def load_cookbook_definitions()
+    @definition_files = load_cookbook_segment(params[:cookbook_id], :definitions)
   end
   
   def index
     if params[:id]
       show
     else
-      load_cookbook_attributes()
-      display @attribute_files
+      load_cookbook_definitions()
+      display @definition_files
     end
   end
 
   def show
     only_provides :json
-    load_cookbook_attributes
-    raise NotFound, "Cannot find a suitable attribute file!" unless @attribute_files.has_key?(params[:id])
-    to_send = @attribute_files[params[:id]][:file]
+    load_cookbook_recipes
+    raise NotFound, "Cannot find a suitable definition file!" unless @definition_files.has_key?(params[:id])
+    
+    to_send = @definition_files[params[:id]][:file]
     current_checksum = checksum(to_send)
-    Chef::Log.debug("old sum: #{params[:checksum]}, new sum: #{current_checksum}") 
+    Chef::Log.debug("Old sum: #{params[:checksum]}, New sum: #{current_checksum}") 
     if current_checksum == params[:checksum]
       display "File #{to_send} has not changed", :status => 304
     else

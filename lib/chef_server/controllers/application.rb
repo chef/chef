@@ -83,5 +83,65 @@ class Application < Merb::Controller
       raise Unauthorized, "You must authenticate first!"
     end
   end
+  
+  # Load a cookbook and return a hash with a list of all the files of a 
+  # given segment (attributes, recipes, definitions, libraries)
+  #
+  # === Parameters
+  # cookbook_id<String>:: The cookbook to load
+  # segment<Symbol>:: :attributes, :recipes, :definitions, :libraries
+  #
+  # === Returns
+  # <Hash>:: A hash consisting of the short name of the file in :name, and the full path
+  #   to the file in :file.
+  def load_cookbook_segment(cookbook_id, segment)
+    cl = Chef::CookbookLoader.new
+    cookbook = cl[cookbook_id]
+    raise NotFound unless cookbook
+    
+    files_list = segment_files(segment, cookbook)
+    
+    files = Hash.new
+    files_list.each do |f|
+      full = File.expand_path(f)
+      name = File.basename(full)
+      files[name] = {
+        :name => name,
+        :file => full,
+      }
+    end
+    files
+  end
+  
+  def segment_files(segment, cookbook)
+    files_list = nil
+    case segment
+    when :attributes
+      files_list = cookbook.attribute_files
+    when :recipes
+      files_list = cookbook.recipe_files
+    when :definitions
+      files_list = cookbook.definition_files
+    when :libraries
+      files_list = cookbook.library_files
+    else
+      raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions or :libraries"
+    end
+    files_list
+  end
+  
+  def load_all_files(segment)
+    cl = Chef::CookbookLoader.new
+    files = Array.new
+    cl.each do |cookbook|
+      segment_files(segment, cookbook).each do |sf|
+        files << { 
+          :cookbook => cookbook.name, 
+          :name => File.basename(sf) 
+        }
+      end
+    end
+    files
+  end
 
 end

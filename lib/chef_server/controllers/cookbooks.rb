@@ -33,31 +33,18 @@ class Cookbooks < Application
   end
   
   def recipe_files
-    cl = Chef::CookbookLoader.new
-    @recipe_files = Array.new
-    cl.each do |cookbook|
-      cookbook.recipe_files.each do |rf|
-        @recipe_files << { 
-          :cookbook => cookbook.name, 
-          :name => File.basename(rf)
-        }
-      end
-    end
+    @recipe_files = load_all_files(:recipes)
     display @recipe_files
   end
 
   def attribute_files
-    cl = Chef::CookbookLoader.new
-    @attribute_files = Array.new
-    cl.each do |cookbook|
-      cookbook.attribute_files.each do |af|
-        @attribute_files << { 
-          :cookbook => cookbook.name, 
-          :name => File.basename(af) 
-        }
-      end
-    end
+    @attribute_files = load_all_files(:attributes)
     display @attribute_files
+  end
+  
+  def definition_files
+    @definition_files = load_all_files(:definitions)
+    display @definition_files
   end
   
 end

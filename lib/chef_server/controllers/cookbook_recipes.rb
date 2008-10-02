@@ -25,20 +25,7 @@ class CookbookRecipes < Application
   include Chef::Mixin::Checksum
   
   def load_cookbook_recipes()
-    @cl = Chef::CookbookLoader.new
-    @cookbook = @cl[params[:cookbook_id]]
-    raise NotFound unless @cookbook
-    
-    @recipe_files = Hash.new
-    @cookbook.recipe_files.each do |f|
-      full = File.expand_path(f)
-      name = File.basename(full)
-      @recipe_files[name] = {
-        :name => name,
-        :file => full,
-      }
-    end
-    @recipe_files
+    @recipe_files = load_cookbook_segment(params[:cookbook_id], :recipes)
   end
   
   def index
