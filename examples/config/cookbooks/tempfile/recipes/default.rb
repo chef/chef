@@ -4,6 +4,10 @@ file "/tmp/glen" do
   action "create"
 end
 
+file "/tmp/metallica" do
+  action [ :create, :touch, :delete ]
+end
+
 directory "/tmp/marginal" do
   owner "adam"
   mode 0755
