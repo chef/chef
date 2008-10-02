@@ -49,12 +49,22 @@ class Chef
     end
     
     def action(arg=nil)
-      arg = arg.to_sym if arg
-      set_or_return(
-        :action,
-        arg,
-        :equal_to => @allowed_actions
-      )
+      if arg
+        action_list = arg.kind_of?(Array) ? arg : [ arg ]
+        action_list.each do |action|
+          validate(
+            {
+              :action => action,
+            },
+            {
+              :object => { :equal_to => @allowed_actions },
+            }
+          )
+        end
+        @action = action_list
+      else
+        @action
+      end
     end
     
     def name(name=nil)

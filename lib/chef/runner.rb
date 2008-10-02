@@ -61,21 +61,24 @@ class Chef
           Chef::Log.debug("Processing #{resource}")
           provider = build_provider(resource)
           provider.load_current_resource
-          provider.send("action_#{resource.action}")
-          if resource.updated
-            resource.actions.each_key do |action|
-              if resource.actions[action].has_key?(:immediate)
-                resource.actions[action][:immediate].each do |r|
-                  Chef::Log.info("#{resource} sending action #{action} to #{r} (immediate)")
-                  build_provider(r).send("action_#{action}")
+          action_list = resource.action.kind_of?(Array) ? resource.action : [ resource.action ]
+          action_list.each do |ra|
+            provider.send("action_#{ra}")
+            if resource.updated
+              resource.actions.each_key do |action|
+                if resource.actions[action].has_key?(:immediate)
+                  resource.actions[action][:immediate].each do |r|
+                    Chef::Log.info("#{resource} sending action #{action} to #{r} (immediate)")
+                    build_provider(r).send("action_#{action}")
+                  end
                 end
-              end
-              if resource.actions[action].has_key?(:delayed)
-                resource.actions[action][:delayed].each do |r|
-                  delayed_actions << lambda {
-                    Chef::Log.info("#{resource} sending action #{action} to #{r} (delayed)")
-                    build_provider(r).send("action_#{action}") 
-                  }
+                if resource.actions[action].has_key?(:delayed)
+                  resource.actions[action][:delayed].each do |r|
+                    delayed_actions << lambda {
+                      Chef::Log.info("#{resource} sending action #{action} to #{r} (delayed)")
+                      build_provider(r).send("action_#{action}") 
+                    }
+                  end
                 end
               end
             end
