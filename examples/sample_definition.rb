@@ -56,8 +56,7 @@ define :runit_service, :directory => "/etc/sv", :downif => "/bin/false", :templa
   end
   
   service "#{param[:name]}" do
-    has_restart  true
-    has_status   true
+    supports :status => true, :restart => true 
   end
 
   template_file "#{param[:directory]}/#{param[:name]}/log/run" do
