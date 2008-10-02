@@ -63,6 +63,10 @@ Gem.path.unshift(Merb.root / "gems")
 
 # Merb.push_path(:lib, Merb.root / "lib") # uses **/*.rb as path glob.
 
+
+# disable the ActiveSupport json annoying stuff, as it breaks our to_json
+Merb.disable :json
+
 # ==== Dependencies
 
 # These are some examples of how you might specify dependencies.
