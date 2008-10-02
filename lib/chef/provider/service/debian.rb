@@ -17,24 +17,18 @@
 #
 
 require File.join(File.dirname(__FILE__), "..", "service")
+require File.join(File.dirname(__FILE__), "init")
 require File.join(File.dirname(__FILE__), "..", "..", "mixin", "command")
 
 class Chef
   class Provider
-    class Debian < Chef::Provider::Service
+    class Debian < Chef::Provider::Init
       def load_current_resource
-        @current_resource = Chef::Resource::Service.new(@new_resource.name)
-        @current_resource.service_name(@new_resource.service_name)
+        super
 
         status = popen4("update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
           stdin.close
-          if stdout.gets(nil) =~ /etc\/rc[\dS].d\/S|not installed/
-            Chef::Log.debug("#{@current_resource} is currently enabled")
-            @current_resource.enabled(true)
-          else
-            Chef::Log.debug("#{@current_resource} is currently disabled")
-            @current_resource.enabled(false)
-          end
+          stdout.gets(nil) =~ /etc\/rc[\dS].d\/S|not installed/i ? @current_resource.enabled(true) : @current_resource.enabled(false)
         end  
 
         unless status.exitstatus == 0
@@ -50,7 +44,18 @@ class Chef
 
       def disable_service(name)
         run_command(:command => "update-rc.d -f #{name} remove")
-        #run_command(:command => "update-rc.d #{name} stop 00 1 2 3 4 5 6 .")
+      end
+
+      def start_service(name)
+        super
+      end
+
+      def stop_service(name)
+        super
+      end
+
+      def restart_service(name)
+        super
       end
     end
   end

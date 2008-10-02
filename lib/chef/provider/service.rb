@@ -31,43 +31,53 @@ class Chef
 
       def action_enable
         if @current_resource.enabled == false
-          Chef::Log.debug("Trying to enable #{@new_resource}")
+          Chef::Log.debug("#{@new_resource}: attempting to enable")
           status = enable_service(@new_resource.service_name)
           if status
             @new_resource.enabled == true
-            Chef::Log.info("Enabled service #{@new_resource} successfully")
+            Chef::Log.info("#{@new_resource}: enabled succesfully")
           end
+        else
+          Chef::Log.debug("#{@new_resource}: not enabling, already enabled")
         end
       end
 
       def action_disable
         if @current_resource.enabled == true
-          Chef::Log.debug("Trying to disable #{@new_resource}")
+          Chef::Log.debug("#{@new_resource}: attempting to disable")
           status = disable_service(@new_resource.service_name)
           if status
             @new_resource.enabled == false
-            Chef::Log.info("Disabled service #{@new_resource} succesfully")
+            Chef::Log.info("#{@new_resource}: disabled succesfully")
           end
+        else
+          Chef::Log.debug("#{@new_resource}: not disabling, already disabled")
         end
       end
 
       def action_start
         if @current_resource.running == false
+          Chef::Log.debug("#{@new_resource}: attempting to start")
           status = start_service(@new_resource.service_name)
           if status
             @new_resource.running == true
             Chef::Log.info("Started service #{@new_resource} succesfully")
           end
+        else
+          Chef::Log.debug("#{@new_resource}: not starting, already running")
         end 
       end
 
       def action_stop
         if @current_resource.running == true
+          Chef::Log.debug("#{@new_resource}: attempting to stop")
           status = stop_service(@new_resource.service_name)
           if status
             @new_resource.running == false
-            Chef::Log.info("Stopped service #{@new_resource} succesfully")
+            Chef::Log.info("#{@new_resource}: stopped succesfully")
           end
+        else
+          Chef::Log.debug("#{@new_resource}: not stopping, already stopped")
         end 
       end
   

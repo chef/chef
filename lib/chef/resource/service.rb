@@ -25,14 +25,14 @@ class Chef
         @resource_name = :service
         @service_name = name
         @enabled = nil
-        @hasstatus = nil
-        @hasrestart = nil
-        @pattern = nil
-        @start = nil
-        @stop = nil
-        @status = nil
-        @restart = nil
+        @running = nil
+        @pattern = service_name 
+        @start_command = nil
+        @stop_command = nil
+        @status_command = nil
+        @restart_command = nil
         @action = "none"
+        @supports = { :restart => false, :status => false }
         @allowed_actions.push(:enable, :disable, :start, :stop)
       end
       
@@ -44,64 +44,46 @@ class Chef
         )
       end
       
-      # bool, init script has a status action
-      def hasstatus(arg=nil)
+      # regex for match against ps -ef when !supports[:has_status] && status == nil
+      def pattern(arg=nil)
         set_or_return(
-          :hasstatus,
+          :pattern,
           arg,
           :kind_of => [ String ]
         )
       end
 
-      # bool, init script has a restart action
-      def hasrestart(arg=nil)
-        set_or_return(
-          :hasrestart,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      # regex for match against ps -ef when hasstatus => false and status = nil
-      def pattern(arg=nil)
-        set_or_return(
-          :pattern,
-          arg,
-          :kind_of => [ Regex ]
-        )
-      end
-
       # command to call to start service
-      def start(arg=nil)
+      def start_command(arg=nil)
         set_or_return(
-          :start,
+          :start_command,
           arg,
           :kind_of => [ String ]
         )
       end
 
       # command to call to stop service
-      def stop(arg=nil)
+      def stop_command(arg=nil)
         set_or_return(
-          :stop,
+          :stop_command,
           arg,
           :kind_of => [ String ]
         )
       end
 
       # command to call to get status of service
-      def status(arg=nil)
+      def status_command(arg=nil)
         set_or_return(
-          :status,
+          :status_command,
           arg,
           :kind_of => [ String ]
         )
       end
 
       # command to call to restart service
-      def restart(arg=nil)
+      def restart_command(arg=nil)
         set_or_return(
-          :restart,
+          :restart_command,
           arg,
           :kind_of => [ String ]
         )
