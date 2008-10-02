@@ -59,9 +59,7 @@ class Chef
       sync_definitions
       sync_recipes
       do_attribute_files
-     # do_recipe_files
       save_node
-    #  compile
       converge
       save_node
       true
