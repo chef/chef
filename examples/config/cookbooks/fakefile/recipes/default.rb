@@ -24,24 +24,20 @@ end
 unless @node[:operatingsystem] == "Darwin"
   package "emacs"
 
-  package "remove-emacs" do
-    package_name "emacs"
+  package "emacs" do
     action :remove
   end
 
-  package "install-old-emacs" do
-    package_name "emacs"
+  package "emacs" do
     version "22.1-0ubuntu10"
     action :install
   end
 
-  package "upgrade-emacs" do
-    package_name "emacs"
+  package "emacs" do
     action :upgrade
   end
 
-  package "purge-emacs" do
-    package_name "emacs"
+  package "emacs" do
     action :purge
   end
 end
@@ -80,8 +76,7 @@ template "/tmp/foo-template" do
     :white => {
       :stripes => "are the best",
       :at => "the sleazy rock thing"
-    },
-    :all_servers => search(:nodes, "*")
+    }
   })
 end
 
@@ -115,3 +110,9 @@ search(:user, "*") do |u|
     action :create
   end
 end
+
+monkey "snoopy" do
+  eats "vegetables"
+end
+
+monkey "snack"

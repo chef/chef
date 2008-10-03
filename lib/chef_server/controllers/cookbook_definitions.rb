@@ -39,7 +39,7 @@ class CookbookDefinitions < Application
 
   def show
     only_provides :json
-    load_cookbook_recipes
+    load_cookbook_definitions
     raise NotFound, "Cannot find a suitable definition file!" unless @definition_files.has_key?(params[:id])
     
     to_send = @definition_files[params[:id]][:file]
