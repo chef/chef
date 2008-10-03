@@ -17,7 +17,7 @@
 #
 
 require File.join(File.dirname(__FILE__), "..", "package")
-require File.join(File.dirname(__FILE__), "..", "mixin", "command")
+require File.join(File.dirname(__FILE__), "..", "..", "mixin", "command")
 
 class Chef
   class Provider
