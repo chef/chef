@@ -36,12 +36,12 @@ class Chef
             Chef::Log.debug("#{@new_resource} does not support status and you have not specified a status command, falling back to process table inspection")
             if @new_resource.pattern == @new_resource.service_name
               Chef::Log.debug("#{@new_resource} defaulting pattern to #{Regex.new(@new_resource.pattern)}") 
-            elsif Facter["ps"].value == ""
+            elsif @node[:ps] == ""
               raise Chef::Exception::Service, "#{@new_resource}: Facter could not determine how to call `ps` on your system (#{Facter["ps"].value})"
             end
 
             process_pid = nil
-            status = popen4(Facter["ps"].value) do |pid, stdin, stdout, stderr|
+            status = popen4(@node[:ps]) do |pid, stdin, stdout, stderr|
               stdin.close
               r = Regexp.new(@new_resource.pattern)
               Chef::Log.debug("#{@new_resource}: attempting to match #{@new_resource.pattern} (#{r}) against process table")
@@ -52,10 +52,10 @@ class Chef
               end
             end
             unless status.exitstatus == 0
-              raise Chef::Exception::Service, "Command #{Facter["ps"].value} failed"
+              raise Chef::Exception::Service, "Command #{@node[:ps]} failed"
             else
               process_pid ? process_running = true : process_running = false
-              Chef::Log.debug("#{@new_resource}: #{Facter["ps"].value} exited succesfully, process_running: #{process_running}")
+              Chef::Log.debug("#{@new_resource}: #{@node[:ps]} exited succesfully, process_running: #{process_running}")
             end
           end
           @current_resource.running process_running
