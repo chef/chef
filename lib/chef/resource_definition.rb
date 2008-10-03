@@ -60,5 +60,8 @@ class Chef
       @params[symbol] = args.length == 1 ? args[0] : args
     end
     
+    def to_s
+      "#{name.to_s}"
+    end
   end
 end
