@@ -81,7 +81,7 @@ class Chef
       # to. 
       if @definitions.has_key?(method_symbol)
         new_def = @definitions[method_symbol].dup
-        new_def.instance_eval(&block)
+        new_def.instance_eval(&block) if block
         new_recipe = Chef::Recipe.new(@cookbook_name, @recipe_name, @node, @collection, @definitions, @cookbook_loader)
         new_recipe.params = new_def.params
         new_recipe.params[:name] = args[0]
