@@ -9,16 +9,16 @@
   - @cookbook.definition_files.each do |df|
     %h2 Definition Files
     %h3= File.basename(df)
-    = Uv.parse(File.read(df), "xhtml", "ruby", true, "twilight") 
+    = ::Uv.parse(File.read(df), "xhtml", "ruby", true, "twilight") 
         
 - if @cookbook.recipe_files.length > 0
   - @cookbook.recipe_files.each do |rf|
     %h2 Recipe Files
     %h3= File.basename(rf)
-    = Uv.parse(File.read(rf), "xhtml", "ruby", true, "twilight") 
+    = ::Uv.parse(File.read(rf), "xhtml", "ruby", true, "twilight") 
     
 - if @cookbook.template_files.length > 0
   - @cookbook.template_files.each do |tf|
     %h2 Template Files
     %h3= File.basename(tf)
-    = Uv.parse(File.read(tf), "xhtml", "html_rails", true, "twilight")
+    = ::Uv.parse(File.read(tf), "xhtml", "html_rails", true, "twilight")
