@@ -19,6 +19,9 @@ I'm in ur netwerk, cookin up yer servers. :)
 RubyGems:
 
 * stomp
+* stompserver
+* ultraviolet
+* 
 * facter
 * ferret
 * merb-core

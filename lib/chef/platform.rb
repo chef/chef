@@ -32,7 +32,11 @@ class Chef
       },
       :centos   => {},
       :redhat   => {},
-      :gentoo   => {},
+      :gentoo   => {
+        :default => {
+          :package => Chef::Provider::Package::Portage
+        }
+      },
       :solaris  => {},
       :default  => {
         :file => Chef::Provider::File,
