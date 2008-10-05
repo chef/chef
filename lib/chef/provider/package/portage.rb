@@ -69,7 +69,7 @@ class Chef
         
         def install_package(name, version)
           run_command(
-            :command => "emerge -g --color n --nospinner --quiet #{name}-#{version}",
+            :command => "emerge -g --color n --nospinner --quiet #{name}-#{version}"
           )
         end
       
@@ -79,7 +79,7 @@ class Chef
       
         def remove_package(name, version)
           run_command(
-            :command => "emerge --unmerge --color n --nospinner --quiet #{@new_resource.package_name}",
+            :command => "emerge --unmerge --color n --nospinner --quiet #{@new_resource.package_name}"
           )
         end
       
