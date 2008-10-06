@@ -33,8 +33,8 @@ class Chef
   
       def load_current_resource
         @current_resource = Chef::Resource::User.new(@new_resource.name)
-        @current_resource.username = @new_resource.username
-        
+        @current_resource.username(@new_resource.username)
+      
         user_info = nil
         begin
           user_info = Etc.getpwnam(@new_resource.username)
@@ -81,12 +81,12 @@ class Chef
         when false
           create_user
           Chef::Log.info("Created #{@new_resource}")
-          @new_resource.updated(true)
+          @new_resource.updated = true
         else 
           if compare_user
             manage_user
             Chef::Log.info("Altered #{@new_resource}")
-            @new_resource.updated(true)
+            @new_resource.updated = true
           end
         end
       end
@@ -94,7 +94,7 @@ class Chef
       def action_remove
         if @user_exists
           remove_user
-          @new_resource.updated(true)
+          @new_resource.updated = true
           Chef::Log.info("Removed #{@new_resource}")
         end
       end
@@ -102,7 +102,7 @@ class Chef
       def action_manage
         if @user_exists && compare_user
           manage_user 
-          @new_resource.updated(true)
+          @new_resource.updated = true
           Chef::Log.info("Managed #{@new_resource}")
         end
       end
@@ -110,7 +110,7 @@ class Chef
       def action_modify
         if @user_exists && compare_user
           manage_user
-          @new_resource.updated(true)
+          @new_resource.updated = true
           Chef::Log.info("Modified #{@new_resource}")
         else
           raise Chef::Exception::User, "Cannot modify #{@new_resource} - user does not exist!"
@@ -139,20 +139,28 @@ class Chef
       end
       
       def action_lock
-        if @user_exists && check_lock == false
-          lock_user
-          @new_resource.updated(true)
-          Chef::Log.info("Locked #{@new_resource}")
+        if @user_exists
+          if check_lock() == false
+            lock_user
+            @new_resource.updated = true
+            Chef::Log.info("Locked #{@new_resource}")
+          else
+            Chef::Log.debug("No need to lock #{@new_resource}")
+          end
         else
           raise Chef::Exception::User, "Cannot lock #{@new_resource} - user does not exist!"
         end
       end
       
       def action_unlock
-        if @user_exists && check_lock = true
-          unlock_user
-          @new_resource.updated(true)
-          Chef::Log.info("Unlocked #{@new_resource}")
+        if @user_exists
+          if check_lock() == true
+            unlock_user
+            @new_resource.updated = true
+            Chef::Log.info("Unlocked #{@new_resource}")
+          else
+            Chef::Log.debug("No need to unlock #{@new_resource}")
+          end
         else
           raise Chef::Exception::User, "Cannot unlock #{@new_resource} - user does not exist!"
         end

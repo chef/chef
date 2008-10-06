@@ -16,9 +16,6 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "..", "mixin", "command")
-require 'etc'
-
 class Chef
   class Provider
     class User 
@@ -26,37 +23,52 @@ class Chef
         def create_user
           command = "useradd"
           command << set_options
-          run_command(command)
+          run_command(:command => command)
         end
         
         def manage_user
           command = "usermod"
           command << set_options
-          run_command(command)
+          run_command(:command => command)
         end
         
         def remove_user
           command = "userdel"
           command << " -r" if @new_resource.supports[:manage_home]
           command << " #{@new_resource.username}"
+          run_command(:command => command)
         end
         
         def lock_user
-          run_command("usermod -L #{@new_resource.username}")
+          run_command(:command => "usermod -L #{@new_resource.username}")
         end
         
         def unlock_user
-          run_command("usermod -U #{@new_resource.username}")
+          run_command(:command => "usermod -U #{@new_resource.username}")
         end
         
         def set_options
-          opts << " -c '#{@new_resource.comment}'" if @new_resource.comment
-          opts << " -d '#{@new_resource.home}'" if @new_resource.home
-          opts << " -g '#{@new_resource.gid}'" if @new_resource.gid
-          opts << " -u '#{@new_resource.uid}'" if @new_resource.uid
-          opts << " -s '#{@new_resource.shell}'" if @new_resource.shell
-          opts << " -p '#{@new_resource.password}'" if @new_resource.password
+          opts = ''
+          
+          field_list = {
+            'comment' => "-c",
+            'home' => "-d",
+            'gid' => "-g",
+            'uid' => "-u",
+            'shell' => "-s",
+            'password' => "-p"
+          }
+          field_list.each do |field, option|
+            field_symbol = field.to_sym
+            if @current_resource.send(field_symbol) != @new_resource.send(field_symbol)
+              if @new_resource.send(field_symbol)
+                Chef::Log.debug("Setting #{@new_resource} #{field} to #{@new_resource.send(field_symbol)}")
+                opts << " #{option} '#{@new_resource.send(field_symbol)}'"
+              end
+            end
+          end
           if @new_resource.supports[:manage_home]
+            Chef::Log.debug("Managing the home directory for #{@new_resource}")
             case @node[:operatingsystem]
             when "Fedora","RedHat","CentOS"
               opts << " -M"

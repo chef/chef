@@ -116,3 +116,26 @@ monkey "snoopy" do
 end
 
 monkey "snack"
+
+user "katie" do
+  uid 9999
+  gid 100
+  home "/tmp/home/katie"
+  shell "/bin/bash"
+  comment "Katie Bethell"
+  action :create
+end
+
+user "katie" do
+  gid 101
+  action :modify
+end
+
+user "katie" do
+  shell "/home/katie"
+  action :manage
+end
+
+user "katie" do
+  action [ :lock, :unlock, :remove ]
+end
