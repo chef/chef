@@ -53,7 +53,8 @@ class Chef
         :python => Chef::Provider::Script,
         :ruby => Chef::Provider::Script,
         :bash => Chef::Provider::Script,
-        :csh => Chef::Provider::Script
+        :csh => Chef::Provider::Script,
+        :user => Chef::Provider::User::Useradd,
       }
     }
 

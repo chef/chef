@@ -24,5 +24,7 @@ class Chef
     class SearchIndex < RuntimeError; end  
     class Override < RuntimeError; end
     class UnsupportedAction < RuntimeError; end
+    class MissingLibrary < RuntimeError; end
+    class User < RuntimeError; end
   end
 end
