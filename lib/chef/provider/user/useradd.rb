@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require File.join(File.dirname(__FILE__), "..", "user")
+
 class Chef
   class Provider
     class User 
