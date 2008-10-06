@@ -70,8 +70,13 @@ class Chef
     end
     
     def search(type, query, &block)
-      s = Chef::Search.new
-      s.search(type, query, &block)
+      Chef::Log.debug("Searching #{type} index with #{query}")
+      r = Chef::REST.new(Chef::Config[:search_url])
+      results = r.get_rest("search/#{type}?q=#{query}")
+      Chef::Log.debug("Searching #{type} index with #{query} returned #{results.length} entries")
+      results.each do |sr|
+        block.call(sr)
+      end
     end
         
     def method_missing(method_symbol, *args, &block)

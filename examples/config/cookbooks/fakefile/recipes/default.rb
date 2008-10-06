@@ -100,11 +100,11 @@ directory "/tmp/home" do
 end
 
 search(:user, "*") do |u|
-  directory "/tmp/home/#{u[:name]}" do
-    if u[:name] == "nobody" && @node[:operatingsystem] == "Darwin"
+  directory "/tmp/home/#{u['name']}" do
+    if u['name'] == "nobody" && @node[:operatingsystem] == "Darwin"
       owner "root"
     else
-      owner "#{u[:name]}"
+      owner "#{u['name']}"
     end
     mode 0755
     action :create
@@ -117,25 +117,25 @@ end
 
 monkey "snack"
 
-user "katie" do
-  uid 9999
-  gid 100
-  home "/tmp/home/katie"
-  shell "/bin/bash"
-  comment "Katie Bethell"
-  action :create
-end
-
-user "katie" do
-  gid 101
-  action :modify
-end
-
-user "katie" do
-  shell "/home/katie"
-  action :manage
-end
-
-user "katie" do
-  action [ :lock, :unlock, :remove ]
-end
+# user "katie" do
+#   uid 9999
+#   gid 100
+#   home "/tmp/home/katie"
+#   shell "/bin/bash"
+#   comment "Katie Bethell"
+#   action :create
+# end
+# 
+# user "katie" do
+#   gid 101
+#   action :modify
+# end
+# 
+# user "katie" do
+#   shell "/home/katie"
+#   action :manage
+# end
+# 
+# user "katie" do
+#   action [ :lock, :unlock, :remove ]
+# end

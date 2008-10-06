@@ -49,6 +49,7 @@ class Chef
       :openid_url => "http://localhost:4001",
       :template_url => "http://localhost:4000",
       :remotefile_url => "http://localhost:4000",
+      :search_url => "http://localhost:4000",
       :couchdb_database => "chef",
       :openid_store_path => "/var/chef/openid/db",
       :openid_cstore_path => "/var/chef/openid/cstore",

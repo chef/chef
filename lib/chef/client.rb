@@ -76,6 +76,7 @@ class Chef
     def build_node(node_name=nil)
       node_name ||= Facter["fqdn"].value ? Facter["fqdn"].value : Facter["hostname"].value
       @safe_name = node_name.gsub(/\./, '_')
+      Chef::Log.debug("Building node object for #{@safe_name}")
       begin
         @node = @rest.get_rest("nodes/#{@safe_name}")
       rescue Net::HTTPServerException => e
@@ -100,7 +101,8 @@ class Chef
     #
     # === Returns
     # true:: Always returns true
-    def register 
+    def register
+      Chef::Log.debug("Registering #{@safe_name} for an openid") 
       @registration = nil
       begin
         @registration = @rest.get_rest("registrations/#{@safe_name}")
@@ -136,6 +138,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def authenticate
+      Chef::Log.debug("Authenticating #{@safe_name} via openid") 
       response = @rest.post_rest('openid/consumer/start', { 
         "openid_identifier" => "#{Chef::Config[:openid_url]}/openid/server/node/#{@safe_name}",
         "submit" => "Verify"
@@ -211,6 +214,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def do_attribute_files
+      Chef::Log.debug("Synchronizing attributes")
       update_file_cache("attributes", @rest.get_rest('cookbooks/_attribute_files'))
       Chef::FileCache.list.each do |cache_file|
         if cache_file.match("cookbooks/.+?/attributes")
@@ -222,10 +226,12 @@ class Chef
     end
     
     def sync_definitions
+      Chef::Log.debug("Synchronizing definitions") 
       update_file_cache("definitions", @rest.get_rest('cookbooks/_definition_files'))
     end
     
     def sync_recipes
+      Chef::Log.debug("Synchronizing attributes") 
       update_file_cache("recipes", @rest.get_rest('cookbooks/_recipe_files'))
     end
     
@@ -234,6 +240,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def save_node
+      Chef::Log.debug("Saving the current state of node #{@safe_name}")
       @node = @rest.put_rest("nodes/#{@safe_name}", @node)
       true
     end
@@ -244,12 +251,14 @@ class Chef
     # === Returns
     # true:: Always returns true
     def converge
+      Chef::Log.debug("Compiling recipes for node #{@safe_name}")
       Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
       compile = Chef::Compile.new()
       compile.node = @node
       compile.load_definitions
       compile.load_recipes
 
+      Chef::Log.debug("Executing recipes for node #{@safe_name}")
       cr = Chef::Runner.new(@node, compile.collection)
       cr.converge
       true
