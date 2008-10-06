@@ -31,7 +31,6 @@ class Chef
     
     def []=(index, arg)
       is_chef_resource(arg)
-      raise ArgumentError, "Already have a resource named #{arg.to_s}" if @resources_by_name.has_key?(arg.to_s)
       @resources[index] = arg 
       @resources_by_name[arg.to_s] = index
     end
@@ -39,7 +38,6 @@ class Chef
     def <<(*args)
       args.flatten.each do |a|
         is_chef_resource(a)
-        raise ArgumentError, "Already have a resource named #{a.to_s}" if @resources_by_name.has_key?(a.to_s)
         @resources << a
         @resources_by_name[a.to_s] = @resources.length - 1
       end
@@ -48,7 +46,6 @@ class Chef
     def push(*args)
       args.flatten.each do |a|
         is_chef_resource(a)
-        raise ArgumentError, "Already have a resource named #{a.to_s}" if @resources_by_name.has_key?(a.to_s)
         @resources.push(a)
         @resources_by_name[a.to_s] = @resources.length - 1 
       end
