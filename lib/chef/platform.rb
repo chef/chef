@@ -124,6 +124,8 @@ class Chef
           version = node[:macosx_productversion]
         elsif node.attribute?("operatingsystemversion")
           version = node[:operatingsystemversion]
+        elsif node.attribute?("operatingsystemrelease")
+          version = node[:operatingsystemrelease]
         end
         raise ArgumentError, "Cannot find a version for #{node}" unless version
         
