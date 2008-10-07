@@ -122,6 +122,13 @@ class Chef
     def []=(attrib, value)
       @attribute[attrib] = value
     end
+  
+    # Yield each key to the block
+    def each(&block)
+      @attribute.each_key do |k|
+        yield(k)
+      end
+    end
     
     # Iterates over each attribute, passing the attribute and value to the block.
     def each_attribute(&block)

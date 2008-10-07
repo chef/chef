@@ -27,7 +27,7 @@ require 'rubygems'
 require 'facter'
 
 config = {
-  :config_file => "/etc/chef/config.rb",
+  :config_file => "/etc/chef/client.rb",
   :log_level => :info,
   :noop => false
 }

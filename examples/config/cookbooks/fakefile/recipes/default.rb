@@ -75,7 +75,7 @@ template "/tmp/foo-template" do
     :el_che => 'rhymefest',
     :white => {
       :stripes => "are the best",
-      :at => "the sleazy rock thing"
+      :at => "the sleazy rock thing",
     }
   })
 end
