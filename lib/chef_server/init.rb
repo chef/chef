@@ -169,23 +169,23 @@ Merb::Router.prepare do |r|
   # routes, you may want to comment/remove this line to prevent
   # clients from calling your create or destroy actions with a GET
   
-  r.resources :nodes
-  r.resources :search do |res|
-    res.resources :entries, :controller => "search_entries"
+  resources :nodes
+  resources :searches, :path => "search", :controller => "search" do
+    resources :entries, :controller => "search_entries"
   end 
   
-  r.match("/cookbooks/_attribute_files").to(:controller => "cookbooks", :action => "attribute_files")
-  r.match("/cookbooks/_recipe_files").to(:controller => "cookbooks", :action => "recipe_files")
-  r.match("/cookbooks/_definition_files").to(:controller => "cookbooks", :action => "definition_files")
+  match("/cookbooks/_attribute_files").to(:controller => "cookbooks", :action => "attribute_files")
+  match("/cookbooks/_recipe_files").to(:controller => "cookbooks", :action => "recipe_files")
+  match("/cookbooks/_definition_files").to(:controller => "cookbooks", :action => "definition_files")
   
 #  r.match("/cookbooks/:cookbook_id/templates").to(:controller => "cookbook_templates", :action => "index")
  
-  r.resources :cookbooks do |cookbooks|
-    cookbooks.resources :templates, :controller => "cookbook_templates"
-    cookbooks.resources :files, :controller => "cookbook_files"
-    cookbooks.resources :recipes, :controller => "cookbook_recipes"
-    cookbooks.resources :attributes, :controller => "cookbook_attributes"
-    cookbooks.resources :definitions, :controller => "cookbook_definitions"
+  resources :cookbooks do
+    resources :templates, :controller => "cookbook_templates"
+    resources :files, :controller => "cookbook_files"
+    resources :recipes, :controller => "cookbook_recipes"
+    resources :attributes, :controller => "cookbook_attributes"
+    resources :definitions, :controller => "cookbook_definitions"
   end
     
   #r.resources :openid do |res|
@@ -193,24 +193,24 @@ Merb::Router.prepare do |r|
   #  res.resources :server, :controller => "openid_server"
   #end
   
-  r.resources :registrations, :controller => "openid_register" 
-  r.resources :registrations, :controller => "openid_register", :member => { :validate => :post }
-  r.match("/openid/server").to(:controller => "openid_server", :action => "index").name(:openid_server)
-  r.match("/openid/server/server/xrds").
+  resources :registrations, :controller => "openid_register" 
+  resources :registrations, :controller => "openid_register", :member => { :validate => :post }
+  match("/openid/server").to(:controller => "openid_server", :action => "index").name(:openid_server)
+  match("/openid/server/server/xrds").
     to(:controller => "openid_server", :action => 'idp_xrds').name(:openid_server_xrds)
-  r.match("/openid/server/node/:id").
+  match("/openid/server/node/:id").
     to(:controller => "openid_server", :action => 'node_page').name(:openid_node)
-  r.match('/openid/server/node/:id/xrds').
+  match('/openid/server/node/:id/xrds').
     to(:controller => 'openid_server', :action => 'node_xrds').name(:openid_node_xrds)
-  r.match('/openid/server/decision').to(:controller => "openid_server", :action => "decision").name(:openid_server_decision)
-  r.match('/openid/consumer').to(:controller => 'openid_consumer', :action => 'index').name(:openid_consumer)
-  r.match('/openid/consumer/start').to(:controller => 'openid_consumer', :action => 'start').name(:openid_consumer_start)
-  r.match('/openid/consumer/complete').to(:controller => 'openid_consumer', :action => 'complete').name(:openid_consumer_complete)
-  r.match('/openid/consumer/logout').to(:controller => 'openid_consumer', :action => 'logout').name(:openid_consumer_logout)
+  match('/openid/server/decision').to(:controller => "openid_server", :action => "decision").name(:openid_server_decision)
+  match('/openid/consumer').to(:controller => 'openid_consumer', :action => 'index').name(:openid_consumer)
+  match('/openid/consumer/start').to(:controller => 'openid_consumer', :action => 'start').name(:openid_consumer_start)
+  match('/openid/consumer/complete').to(:controller => 'openid_consumer', :action => 'complete').name(:openid_consumer_complete)
+  match('/openid/consumer/logout').to(:controller => 'openid_consumer', :action => 'logout').name(:openid_consumer_logout)
   
   #r.default_routes
   
   # Change this for your home page to be available at /
-  r.match('/').to(:controller => 'nodes', :action =>'index').name(:top)
+  match('/').to(:controller => 'nodes', :action =>'index').name(:top)
 end
 
