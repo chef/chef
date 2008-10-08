@@ -49,6 +49,14 @@ class Chef
       @source_line = ::File.expand_path(@source_line) if @source_line
     end
     
+    def provider(arg=nil)
+      set_or_return(
+        :provider,
+        arg,
+        :kind_of => [ Class ]
+      )
+    end
+    
     def action(arg=nil)
       if arg
         action_list = arg.kind_of?(Array) ? arg : [ arg ]
