@@ -50,7 +50,7 @@ class Chef
         end
         
         if do_package
-          Chef::Log.info("Installing #{@new_resource} version #{install_version} successfully")
+          Chef::Log.info("Installing #{@new_resource} version #{install_version}")
           status = install_package(@new_resource.package_name, install_version)
           if status
             @new_resource.updated = true
@@ -60,7 +60,7 @@ class Chef
       
       def action_upgrade
         if @current_resource.version != @candidate_version
-          Chef::Log.info("Upgrading #{@new_resource} version from #{@current_resource.version} to #{@candidate_version} successfully")
+          Chef::Log.info("Upgrading #{@new_resource} version from #{@current_resource.version} to #{@candidate_version}")
           status = install_package(@new_resource.package_name, @candidate_version)
           if status
             @new_resource.updated = true
@@ -70,7 +70,7 @@ class Chef
       
       def action_remove
         if @current_resource.version != nil
-          Chef::Log.info("Removing #{@new_resource} successfully")
+          Chef::Log.info("Removing #{@new_resource}")
           remove_package(@new_resource.package_name, @new_resource.version)
           @new_resource.updated = true
         end
@@ -78,7 +78,7 @@ class Chef
       
       def action_purge
         if @current_resource.version != nil
-          Chef::Log.info("Purging #{@new_resource} successfully")
+          Chef::Log.info("Purging #{@new_resource}")
           purge_package(@new_resource.package_name, @new_resource.version)
           @new_resource.updated = true
         end
