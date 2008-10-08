@@ -25,7 +25,7 @@ class OpenidRegister < Application
   before :fix_up_node_id
 
   def index
-    @headers['X-XRDS-Location'] = absolute_url(:protocol => "http", :controller => "openid_server", :action => "idp_xrds")
+    @headers['X-XRDS-Location'] = Chef::Config[:openid_url] + "/openid/server/server/xrds"
     @registered_nodes = Chef::OpenIDRegistration.list(true)
     Chef::Log.debug(@registered_nodes.inspect)
     display @registered_nodes
