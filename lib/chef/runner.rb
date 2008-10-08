@@ -61,9 +61,9 @@ class Chef
       @collection.each do |resource|
         begin
           Chef::Log.debug("Processing #{resource}")
-          provider = build_provider(resource)
           action_list = resource.action.kind_of?(Array) ? resource.action : [ resource.action ]
           action_list.each do |ra|
+            provider = build_provider(resource)
             provider.send("action_#{ra}")
             if resource.updated
               resource.actions.each_key do |action|
