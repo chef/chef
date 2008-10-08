@@ -121,6 +121,7 @@ class Chef
         if raw
           tf = Tempfile.new("chef-rest") 
           # Stolen from http://www.ruby-forum.com/topic/166423
+          # Kudos to _why!
           size, total = 0, response.header['Content-Length'].to_i
           response.read_body do |chunk|
             tf.write(chunk) 
