@@ -88,7 +88,7 @@ Merb::BootLoader.after_app_loads do
     )
   else
     Chef::Config.from_file(
-      File.join("/etc", "config", "server.rb")
+      File.join("/etc", "chef", "server.rb")
     )
   end
   Chef::Queue.connect
