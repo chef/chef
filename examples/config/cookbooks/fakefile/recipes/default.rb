@@ -1,4 +1,4 @@
-Testit.bork
+bork
 
 execute "write-foolio" do
   command <<-EOH

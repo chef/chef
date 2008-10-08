@@ -1,7 +1,7 @@
-class Testit
-  class << self
+class Chef
+  class Recipe
     def bork
-      Chef::Log.error("Bork bork bork")
+      Chef::Log.debug("Bork bork bork")
     end
   end
 end
