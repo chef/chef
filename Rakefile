@@ -7,7 +7,7 @@ task :build_gems do
   end
 end
  
-desc "Install the merb-more sub-gems"
+desc "Install the chef gems"
 task :install do
   gems.each do |dir|
     Dir.chdir(dir) { sh "rake install" }
