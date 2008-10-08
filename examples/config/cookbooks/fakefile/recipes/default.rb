@@ -42,6 +42,16 @@ unless @node[:operatingsystem] == "Darwin"
   end
 end
 
+package "ruby-djbdns" do
+  action [ :install, :remove, :upgrade, :purge ]
+  provider Chef::Provider::Package::Rubygems
+end
+
+gem_package "ruby-djbdns" do
+  action [ :install, :remove, :upgrade, :purge ]
+  provider Chef::Provider::Package::Rubygems
+end
+
 file "/tmp/foo" do
   owner    "adam"
   mode     0644
