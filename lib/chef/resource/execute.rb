@@ -35,7 +35,7 @@ class Chef
         @notify_only = false
         @returns = 0
         @timeout = nil
-        @unless = nil
+        @not_if = nil
         @user = nil
         @allowed_actions.push(:run)
       end
@@ -112,9 +112,9 @@ class Chef
         )
       end
 
-      def unless(arg=nil)
+      def not_if(arg=nil)
         set_or_return(
-          :unless,
+          :not_if,
           arg,
           :kind_of => [ String ]
         )

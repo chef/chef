@@ -41,10 +41,10 @@ class Chef
           end
         end
         
-        if args.has_key?(:unless)
-          status = popen4(args[:unless]) { |p, i, o, e| }
+        if args.has_key?(:not_if)
+          status = popen4(args[:not_if]) { |p, i, o, e| }
           if status.exitstatus == 0
-            Chef::Log.debug("Skipping #{args[:command_string]} - unless #{args[:unless]} returned #{status.exitstatus}")
+            Chef::Log.debug("Skipping #{args[:command_string]} - unless #{args[:not_if]} returned #{status.exitstatus}")
             return false
           end
         end
