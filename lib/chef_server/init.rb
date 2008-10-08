@@ -156,7 +156,7 @@ Merb::Config.use do |c|
   c[:exception_details] = true
   c[:reload_classes] = true
   c[:log_level] = :debug
-  c[:log_file] = STDOUT
+  c[:log_file] = "/var/log/chef-server.log"
 end
 
 Merb.logger.info("Compiling routes...")
