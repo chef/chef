@@ -123,7 +123,7 @@ class Application < Merb::Controller
     when :definitions
       files_list = cookbook.definition_files
     when :libraries
-      files_list = cookbook.library_files
+      files_list = cookbook.lib_files
     else
       raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions or :libraries"
     end
@@ -135,9 +135,11 @@ class Application < Merb::Controller
     files = Array.new
     cl.each do |cookbook|
       segment_files(segment, cookbook).each do |sf|
+        mo = sf.match("cookbooks/#{cookbook.name}/#{segment}/(.+)")
+        file_name = mo[1]
         files << { 
           :cookbook => cookbook.name, 
-          :name => File.basename(sf) 
+          :name => file_name
         }
       end
     end

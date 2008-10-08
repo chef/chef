@@ -156,7 +156,6 @@ Merb::Config.use do |c|
   c[:exception_details] = true
   c[:reload_classes] = true
   c[:log_level] = :debug
-  c[:log_file] = "/var/log/chef-server.log"
 end
 
 Merb.logger.info("Compiling routes...")
@@ -177,6 +176,8 @@ Merb::Router.prepare do |r|
   match("/cookbooks/_attribute_files").to(:controller => "cookbooks", :action => "attribute_files")
   match("/cookbooks/_recipe_files").to(:controller => "cookbooks", :action => "recipe_files")
   match("/cookbooks/_definition_files").to(:controller => "cookbooks", :action => "definition_files")
+  Merb.logger.info("Seriously, what the fuck")
+  match("/cookbooks/_library_files").to(:controller => "cookbooks", :action => "library_files")
   
 #  r.match("/cookbooks/:cookbook_id/templates").to(:controller => "cookbook_templates", :action => "index")
  
@@ -186,6 +187,7 @@ Merb::Router.prepare do |r|
     resources :recipes, :controller => "cookbook_recipes"
     resources :attributes, :controller => "cookbook_attributes"
     resources :definitions, :controller => "cookbook_definitions"
+    resources :libraries, :controller => "cookbook_libraries"
   end
     
   #r.resources :openid do |res|

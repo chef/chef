@@ -18,7 +18,8 @@
 class Chef
   class Cookbook
     
-    attr_accessor :attribute_files, :definition_files, :template_files, :remote_files, :name
+    attr_accessor :attribute_files, :definition_files, :template_files, :remote_files, 
+                  :lib_files, :name
     attr_reader :recipe_files
     
     def initialize(name)
@@ -29,7 +30,15 @@ class Chef
       @remote_files = Array.new
       @recipe_files = Array.new
       @recipe_names = Hash.new
+      @lib_files = Array.new
       @loaded_attributes = false
+    end
+    
+    def load_libs
+      @lib_files.each do |file|
+        Chef::Log.debug("Loading cookbook #{name} library file: #{file}")
+        require file
+      end
     end
     
     def load_attributes(node)

@@ -126,7 +126,7 @@ class Chef
           response.read_body do |chunk|
             tf.write(chunk) 
             size += chunk.size
-            Chef::Log.debug ("#{req.path} %d%% done (%d of %d)" % [(size * 100) / total, size, total])
+            Chef::Log.debug("#{req.path} %d%% done (%d of %d)" % [(size * 100) / total, size, total])
           end
           tf.close 
           tf

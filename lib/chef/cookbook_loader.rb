@@ -41,6 +41,7 @@ class Chef
               :recipe_files => Array.new,
               :template_files => Array.new,
               :remote_files => Array.new,
+              :lib_files => Array.new
             }
           end
           ignore_regexes = load_ignore_file(File.join(cookbook, "ignore"))
@@ -72,6 +73,12 @@ class Chef
             cookbook_settings[cookbook_name][:remote_files],
             cookbook_settings[cookbook_name][:ignore_regexes]
           )
+          load_cascading_files(
+            File.join(cookbook, "libraries", "**", "*.rb"),
+            File.join(cookbook, "libraries"),
+            cookbook_settings[cookbook_name][:lib_files],
+            cookbook_settings[cookbook_name][:ignore_regexes]
+          )
         end
       end
       cookbook_settings.each_key do |cookbook|
@@ -81,6 +88,7 @@ class Chef
         @cookbook[cookbook].recipe_files = cookbook_settings[cookbook][:recipe_files]
         @cookbook[cookbook].template_files = cookbook_settings[cookbook][:template_files]
         @cookbook[cookbook].remote_files = cookbook_settings[cookbook][:remote_files]
+        @cookbook[cookbook].lib_files = cookbook_settings[cookbook][:lib_files]
       end
     end
     

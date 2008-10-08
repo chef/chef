@@ -47,4 +47,9 @@ class Cookbooks < Application
     display @definition_files
   end
   
+  def library_files
+    @lib_files = load_all_files(:libraries)
+    display @lib_files
+  end
+  
 end

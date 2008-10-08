@@ -58,6 +58,7 @@ class Chef
       authenticate
       sync_definitions
       sync_recipes
+      do_library_files
       do_attribute_files
       save_node
       converge
@@ -220,6 +221,23 @@ class Chef
         if cache_file.match("cookbooks/.+?/attributes")
           Chef::Log.debug("Executing #{cache_file}")
           @node.from_file(Chef::FileCache.load(cache_file, false))
+        end
+      end
+      true
+    end
+    
+    # Gets all the library files included in all the cookbooks available on the server,
+    # and loads them.
+    #
+    # === Returns
+    # true:: Always returns true
+    def do_library_files
+      Chef::Log.debug("Synchronizing libraries")
+      update_file_cache("libraries", @rest.get_rest('cookbooks/_library_files'))
+      Chef::FileCache.list.each do |cache_file|
+        if cache_file.match("cookbooks/.+?/libraries")
+          Chef::Log.debug("Requiring #{cache_file}")
+          require Chef::FileCache.load(cache_file, false)
         end
       end
       true

@@ -1,3 +1,5 @@
+Testit.bork
+
 execute "write-foolio" do
   command <<-EOH
     echo 'monkeypants #{node[:ipaddress]} #{node[:friends]}' > /tmp/foolio
@@ -49,7 +51,6 @@ end
 
 gem_package "ruby-djbdns" do
   action [ :install, :remove, :upgrade, :purge ]
-  provider Chef::Provider::Package::Rubygems
 end
 
 file "/tmp/foo" do
