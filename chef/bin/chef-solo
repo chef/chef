@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# ./chef-solo - Build a meal with chef, sans-server!
+# ./chef-client - Build a meal with chef
 #
 # Author:: Adam Jacob (<adam@hjksolutions.com>)
 # Copyright:: Copyright (c) 2008 HJK Solutions, LLC
@@ -18,6 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 $: << File.join(File.dirname(__FILE__), "..", "lib")
 
 require 'optparse'
@@ -26,7 +27,7 @@ require 'rubygems'
 require 'facter'
 
 config = {
-  :config_file => "/etc/chef/config.rb",
+  :config_file => "/etc/chef/client.rb",
   :log_level => :info,
   :noop => false
 }
@@ -60,19 +61,5 @@ if config[:log_level]
   Chef::Log.level(config[:log_level].to_sym)
 end
 
-# Find out our own hostname.
-node_name = Facter["fqdn"].value
-node_name ||= Facter["hostname"].value
-
-# Grab a Chef::Compile object
-compile = Chef::Compile.new()
-
-# Load our Node, and then add all the Facter facts as attributes
-compile.load_node(node_name)
-Facter.each do |field, value|
-  compile.node[field.to_sym] = value
-end
-compile.load_definitions
-compile.load_recipes
-cr = Chef::Runner.new(compile.node, compile.collection)
-cr.converge
+c = Chef::Client.new
+c.run_solo
