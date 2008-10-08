@@ -69,7 +69,7 @@ class Chef
         
         def install_package(name, version)
           run_command(
-            :command => "emerge -g --color n --nospinner --quiet #{name}-#{version}"
+            :command => "emerge -g --color n --nospinner --quiet =#{name}-#{version}"
           )
         end
       
