@@ -66,6 +66,13 @@ class Chef
       true
     end
     
+    def run_solo
+      build_node
+      do_attribute_files
+      converge
+      true
+    end
+    
     # Builds a new node object for this client.  Starts with querying for the FQDN of the current
     # host (unless it is supplied), then merges in the facts from Facter.
     #
