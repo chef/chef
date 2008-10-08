@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "..", "..", "chef", "mixin", "checksum")
-
 class CookbookLibraries < Application
   
   provides :html, :json
