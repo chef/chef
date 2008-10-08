@@ -113,8 +113,27 @@ class Chef
       else
         raise ArgumentError, "You must provide :GET, :PUT, :POST or :DELETE as the method"
       end
+      
       Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
-      res = http.request(req)
+      res = nil
+      tf = nil
+      http.request(req) do |response|
+        if raw
+          tf = Tempfile.new("chef-rest") 
+          # Stolen from http://www.ruby-forum.com/topic/166423
+          size, total = 0, response.header['Content-Length'].to_i
+          response.read_body do |chunk|
+            tf.write(chunk) 
+            size += chunk.size
+            Chef::Log.debug ("#{req.path} %d%% done (%d of %d)" % [(size * 100) / total, size, total])
+          end
+          tf.close 
+          tf
+        else
+          response.read_body
+        end
+        res = response
+      end
       
       Chef::Log.debug("HTTP request headers: #{req.to_hash.inspect} ")
 
@@ -128,9 +147,6 @@ class Chef
           JSON.parse(res.body)
         else
           if raw
-            tf = Tempfile.new("chef-rest")
-            tf.print(res.body)
-            tf.close
             tf
           else
             res.body
