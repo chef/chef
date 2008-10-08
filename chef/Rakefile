@@ -24,17 +24,14 @@ spec = Gem::Specification.new do |s|
   s.homepage = HOMEPAGE
   
   # Uncomment this to add a dependency
-  s.add_dependency "stomp"
-  s.add_dependency "stompserver"
-  s.add_dependency "ferret"
   s.add_dependency "facter"
-  s.add_dependency "merb-core"
-  s.add_dependency "haml"
   s.add_dependency "ruby-openid"
   s.add_dependency "json"
+  s.add_dependency "erubis"  
+  s.add_dependency "extlib"
   
   s.bindir       = "bin"
-  s.executables  = %w( chef-client chef-indexer chef-server chef-solo )
+  s.executables  = %w( chef-client  chef-solo )
   
   s.require_path = 'lib'
   s.files = %w(LICENSE README.txt Rakefile) + Dir.glob("{lib,specs,config,examples}/**/*")
