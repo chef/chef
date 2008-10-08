@@ -33,20 +33,36 @@ class Chef
           end
         end
         
-        if args.has_key?(:onlyif)
-          status = popen4(args[:onlyif]) { |p, i, o, e| }
-          if status.exitstatus != 0
-            Chef::Log.debug("Skipping #{args[:command_string]} - onlyif #{args[:onlyif]} returned #{status.exitstatus}")
-            return false
-          end
+        if args.has_key?(:only_if)
+          if Proc === args[:only_if]
+            res = args[:only_if].call
+            unless res
+              Chef::Log.debug("Skipping #{args[:command_string]} - onlyif #{args[:only_if]}")
+              return false
+            end    
+          else  
+            status = popen4(args[:only_if]) { |p, i, o, e| }
+            if status.exitstatus != 0
+              Chef::Log.debug("Skipping #{args[:command_string]} - onlyif #{args[:only_if]} returned #{status.exitstatus}")
+              return false
+            end
+          end  
         end
         
-        if args.has_key?(:not_if)
-          status = popen4(args[:not_if]) { |p, i, o, e| }
-          if status.exitstatus == 0
-            Chef::Log.debug("Skipping #{args[:command_string]} - unless #{args[:not_if]} returned #{status.exitstatus}")
-            return false
-          end
+        if args.has_key?(uest)
+          if Proc === args[uest]
+            res = args[uest].call
+            unless res
+              Chef::Log.debug("Skipping #{args[:command_string]} - onlyif #{args[uest]}")
+              return false
+            end    
+          else
+            status = popen4(args[uest]) { |p, i, o, e| }
+            if status.exitstatus == 0
+              Chef::Log.debug("Skipping #{args[:command_string]} - unless #{args[uest]} returned #{status.exitstatus}")
+              return false
+            end
+          end  
         end
         
         exec_processing_block = lambda do |pid, stdin, stdout, stderr|

@@ -80,12 +80,8 @@ class Chef
         )
       end
       
-      def onlyif(arg=nil)
-        set_or_return(
-          :onlyif,
-          arg,
-          :kind_of => [ String ]
-        )
+      def only_if(arg=nil, &blk)
+        @only_if = blk ? blk : arg
       end
 
       def path(arg=nil)
@@ -112,12 +108,8 @@ class Chef
         )
       end
 
-      def not_if(arg=nil)
-        set_or_return(
-          :not_if,
-          arg,
-          :kind_of => [ String ]
-        )
+      def not_if(arg=nil, &blk)
+        @not_if = blk ? blk : arg
       end
       
       def user(arg=nil)
