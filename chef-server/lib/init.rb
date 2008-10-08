@@ -81,16 +81,6 @@ Merb.disable :json
 # OR
 # dependencies "RedCloth" => "> 3.0", "ruby-aes-cext" => "= 1.0"
 Merb::BootLoader.after_app_loads do
-  # Add dependencies here that must load after the application loads:
-  if File.exists?(File.join(File.dirname(__FILE__), "..", "..", "config", "server.rb")) 
-    Chef::Config.from_file(
-      File.join(File.dirname(__FILE__), "..", "..", "config", "server.rb")
-    )
-  else
-    Chef::Config.from_file(
-      File.join("/etc", "chef", "server.rb")
-    )
-  end
   Chef::Queue.connect
 
   # create the couch design docs for nodes and openid registrations
@@ -125,7 +115,7 @@ Merb.push_path(:helper, File.join(File.dirname(__FILE__), "helpers"))
 Merb.push_path(:public, File.join(File.dirname(__FILE__), "public"))
 
 require 'merb-haml'
-require 'uv'
+#require 'uv'
 
 
 #
