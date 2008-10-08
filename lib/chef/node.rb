@@ -20,6 +20,7 @@ require File.join(File.dirname(__FILE__), "mixin", "check_helper")
 require File.join(File.dirname(__FILE__), "mixin", "params_validate")
 require File.join(File.dirname(__FILE__), "mixin", "from_file")
 
+require 'extlib'
 require 'rubygems'
 require 'json'
 
@@ -60,7 +61,7 @@ class Chef
     # Create a new Chef::Node object.
     def initialize()
       @name = nil
-      @attribute = Hash.new
+      @attribute = Mash.new
       @recipe_list = Array.new
       @couchdb_rev = nil
       @couchdb = Chef::CouchDB.new
