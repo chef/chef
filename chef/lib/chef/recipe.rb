@@ -51,7 +51,7 @@ class Chef
       
       @params = Hash.new
       
-      @@seen_recipes = Hash.new
+      @@seen_recipes ||= Hash.new
     end
     
     def require_recipe(*args)
