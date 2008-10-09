@@ -49,17 +49,17 @@ class Chef
           end  
         end
         
-        if args.has_key?(uest)
-          if Proc === args[uest]
-            res = args[uest].call
+        if args.has_key?(:not_if)
+          if Proc === args[:not_if]
+            res = args[:not_if].call
             unless res
-              Chef::Log.debug("Skipping #{args[:command_string]} - onlyif #{args[uest]}")
+              Chef::Log.debug("Skipping #{args[:command_string]} - onlyif #{args[:not_if]}")
               return false
             end    
           else
-            status = popen4(args[uest]) { |p, i, o, e| }
+            status = popen4(args[:not_if]) { |p, i, o, e| }
             if status.exitstatus == 0
-              Chef::Log.debug("Skipping #{args[:command_string]} - unless #{args[uest]} returned #{status.exitstatus}")
+              Chef::Log.debug("Skipping #{args[:command_string]} - unless #{args[:not_if]} returned #{status.exitstatus}")
               return false
             end
           end  
