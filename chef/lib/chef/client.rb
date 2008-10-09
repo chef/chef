@@ -224,7 +224,7 @@ class Chef
     def do_attribute_files
       Chef::Log.debug("Synchronizing attributes")
       update_file_cache("attributes", @rest.get_rest('cookbooks/_attribute_files'))
-      Chef::FileCache.list.each do |cache_file|
+      Chef::FileCache.list.sort.each do |cache_file|
         if cache_file.match("cookbooks/.+?/attributes")
           Chef::Log.debug("Executing #{cache_file}")
           @node.from_file(Chef::FileCache.load(cache_file, false))
