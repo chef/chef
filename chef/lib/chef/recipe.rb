@@ -50,10 +50,17 @@ class Chef
       end
       
       @params = Hash.new
+      
+      @@seen_recipes = Hash.new
     end
     
     def require_recipe(*args)
       args.flatten.each do |recipe|
+        if @@seen_recipes.has_key?(recipe)
+          return true
+        end
+        @@seen_recipes[recipe] = true
+        
         rmatch = recipe.match(/(.+?)::(.+)/)
         if rmatch
           cookbook = @cookbook_loader[rmatch[1]]
