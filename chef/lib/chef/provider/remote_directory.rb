@@ -32,6 +32,10 @@ class Chef
         do_recursive
       end
     
+      def action_create_if_missing
+        raise Chef::Exception::UnsupportedAction, "Remote Directories do not support create_if_missing."
+      end
+    
       def do_recursive
         Chef::Log.debug("Doing a recursive directory transfer for #{@new_resource}")
       

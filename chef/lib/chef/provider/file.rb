@@ -118,6 +118,10 @@ class Chef
         set_mode if @new_resource.mode != nil
       end
       
+      def action_create_if_missing
+        action_create
+      end
+      
       def action_delete
         if ::File.exists?(@new_resource.path) && ::File.writable?(@new_resource.path)
           backup

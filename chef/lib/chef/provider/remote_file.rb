@@ -29,6 +29,14 @@ class Chef
         Chef::Log.debug("Checking #{@new_resource} for changes")
         do_remote_file(@new_resource.source, @current_resource.path)
       end
+      
+      def action_create_if_missing
+        if ::File.exists?(@new_resource.path)
+          Chef::Log.debug("File #{@new_resource.path} exists, taking no action.")
+        else
+          action_create
+        end
+      end
     
       def do_remote_file(source, path)
         r = Chef::REST.new(Chef::Config[:remotefile_url])

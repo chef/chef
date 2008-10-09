@@ -64,6 +64,14 @@ class Chef
         set_mode if @new_resource.mode != nil
       end
       
+      def action_create_if_missing
+        if ::File.exists?(@new_resource.path)
+          Chef::Log.debug("File #{@new_resource.path} exists, taking no action.")
+        else
+          action_create
+        end
+      end
+      
     end
   end
 end

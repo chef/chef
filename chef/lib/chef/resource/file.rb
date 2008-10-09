@@ -26,7 +26,7 @@ class Chef
         @path = name
         @backup = 5
         @action = "create"
-        @allowed_actions.push(:create, :delete, :touch)
+        @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
       end
 
       def backup(arg=nil)
