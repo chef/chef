@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef'
+
 Merb.root = Chef::Config[:merb_root]
 
 #
@@ -138,6 +140,7 @@ use_test :rspec
 # ==== Set up your basic configuration
 #
 Merb::Config.use do |c|
+  c[:fork_for_class_load] = false
   # Sets up a custom session id key, if you want to piggyback sessions of other applications
   # with the cookie session store. If not specified, defaults to '_session_id'.
   c[:session_id_key] = '_chef_server_session_id'
@@ -207,3 +210,4 @@ Merb::Router.prepare do |r|
   match('/').to(:controller => 'nodes', :action =>'index').name(:top)
 end
 
+puts "I have loaded my app?"
