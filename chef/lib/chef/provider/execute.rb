@@ -35,7 +35,7 @@ class Chef
         }
         command_args[:creates] = @new_resource.creates if @new_resource.creates
         command_args[:only_if] = @new_resource.only_if if @new_resource.only_if
-        command_args[uest] = @new_resource.not_if if @new_resource.not_if
+        command_args[:not_if] = @new_resource.not_if if @new_resource.not_if
         command_args[:timeout] = @new_resource.timeout if @new_resource.timeout
         command_args[:returns] = @new_resource.returns if @new_resource.returns
         command_args[:environment] = @new_resource.environment if @new_resource.environment
