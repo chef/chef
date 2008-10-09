@@ -19,19 +19,24 @@
 # limitations under the License.
 
 require 'optparse'
-require 'chef'
 require 'rubygems'
+require 'chef'
 require 'facter'
+require 'json'
 
 config = {
   :config_file => "/etc/chef/client.rb",
   :log_level => :info,
+  :json_attribs => nil,
   :noop => false
 }
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
   opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
     config[:config_file] = c
+  end
+  opts.on("-j JSON_ATTRIBS", "--json-attributes JSON_ATTRIBS", "Load attributes from a JSON file") do |j|
+    config[:json_attribs] = j
   end
   opts.on("-n", "--noop", "Print what you would do, but don't actually do it.") do
     config[:noop] = true
@@ -49,7 +54,15 @@ opts.parse!(ARGV)
 unless File.exists?(config[:config_file]) && File.readable?(config[:config_file])
   puts "I cannot find or read the config file: #{config[:config_file]}"
   puts opts
-  exit
+  exit 1
+end
+
+if config[:json_attribs]
+  unless File.exists?(config[:json_attribs])
+    puts "I cannot find #{config[:json_attribs]}"
+    exit 2
+  end
+  config[:json_attribs] = JSON.parse(IO.read(config[:json_attribs]))
 end
 
 # Load our config file
@@ -59,4 +72,5 @@ if config[:log_level]
 end
 
 c = Chef::Client.new
+c.json_attribs = config[:json_attribs]
 c.run

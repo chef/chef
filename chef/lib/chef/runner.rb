@@ -54,8 +54,7 @@ class Chef
     end
     
     def converge
-      start_time = Time.now
-      Chef::Log.info("Starting Chef Run")
+
       delayed_actions = Array.new
       
       @collection.each do |resource|
@@ -92,8 +91,7 @@ class Chef
       
       # Run all our :delayed actions
       delayed_actions.each { |da| da.call }
-      end_time = Time.now
-      Chef::Log.info("Chef Run complete in #{end_time - start_time} seconds")
+
       true
     end
   end

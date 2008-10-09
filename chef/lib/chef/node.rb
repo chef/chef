@@ -133,7 +133,7 @@ class Chef
     
     # Iterates over each attribute, passing the attribute and value to the block.
     def each_attribute(&block)
-      @attribute.each do |k,v|
+      @attribute.sort {|a,b| a[0] <=> b[0] }.each do |k,v|
         yield(k, v)
       end
     end
