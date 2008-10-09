@@ -28,12 +28,13 @@ class Chef
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
     
-    attr_accessor :node, :registration, :safe_name, :json_attribs
+    attr_accessor :node, :registration, :safe_name, :json_attribs, :validation_token
     
     # Creates a new Chef::Client.
     def initialize()
       @node = nil
       @safe_name = nil
+      @validation_token = nil
       @registration = nil
       @json_attribs = nil
       @rest = Chef::REST.new(Chef::Config[:registration_url])
@@ -161,7 +162,7 @@ class Chef
     def create_registration
       @secret = random_password(500)
       Chef::FileStore.store("registration", @safe_name, { "secret" => @secret })
-      @rest.post_rest("registrations", { :id => @safe_name, :password => @secret })
+      @rest.post_rest("registrations", { :id => @safe_name, :password => @secret, :validation_token => @validation_token })
       true
     end
     

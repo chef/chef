@@ -28,7 +28,8 @@ config = {
   :config_file => "/etc/chef/client.rb",
   :log_level => :info,
   :json_attribs => nil,
-  :noop => false
+  :noop => false,
+  :validation_token=> nil
 }
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
@@ -43,6 +44,10 @@ opts = OptionParser.new do |opts|
   end
   opts.on_tail("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
     config[:log_level] = l.to_sym
+  end
+  
+  opts.on_tail("-t TOKEN", "--token TOKEN", "Set the openid validation token") do |t|
+    config[:validation_token] = t
   end
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
@@ -65,6 +70,8 @@ if config[:json_attribs]
   config[:json_attribs] = JSON.parse(IO.read(config[:json_attribs]))
 end
 
+
+
 # Load our config file
 Chef::Config.from_file(config[:config_file])
 if config[:log_level]
@@ -73,4 +80,5 @@ end
 
 c = Chef::Client.new
 c.json_attribs = config[:json_attribs]
+c.validation_token = config[:validation_token]
 c.run
