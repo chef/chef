@@ -57,6 +57,7 @@ class Chef
               return false
             end    
           else
+            Chef::Log.debug("I should be running '#{args[:not_if]}'")
             status = popen4(args[:not_if]) { |p, i, o, e| }
             if status.exitstatus == 0
               Chef::Log.debug("Skipping #{args[:command_string]} - unless #{args[:not_if]} returned #{status.exitstatus}")
