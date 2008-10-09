@@ -35,6 +35,7 @@ class Chef
   
     @configuration = {
       :cookbook_path => [ "/etc/chef/site-cookbook", "/etc/chef/cookbook" ],
+      :merb_root => "/var/chef/merb",
       :node_path => "/etc/chef/node",
       :file_store_path => "/var/chef/store",
       :search_index_path => "/var/chef/search_index",

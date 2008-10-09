@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-Merb.root = File.join(File.dirname(__FILE__))
+Merb.root = Chef::Config[:merb_root]
 
 #
 # ==== Structure of Merb initializer
@@ -146,6 +146,7 @@ Merb::Config.use do |c|
   c[:exception_details] = true
   c[:reload_classes] = true
   c[:log_level] = :debug
+  c[:log_stream] = STDOUT
 end
 
 Merb.logger.info("Compiling routes...")

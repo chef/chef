@@ -13,3 +13,13 @@ task :install do
     Dir.chdir(dir) { sh "rake install" }
   end
 end
+
+namespace :dev do
+  desc "Install a Devel instance of Chef with the example-repository"
+  task :install do
+    gems.each do |dir|
+      Dir.chdir(dir) { sh "rake install" }
+    end
+    Dir.chdir("example-repository") { sh("rake install") }
+  end
+end
