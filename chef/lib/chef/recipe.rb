@@ -57,8 +57,10 @@ class Chef
     def require_recipe(*args)
       args.flatten.each do |recipe|
         if @@seen_recipes.has_key?(recipe)
-          return true
+          Chef::Log.debug("I am not loading #{recipe}, because I have already seen it.")
+          next
         end
+        Chef::Log.debug("#{@@seen_recipes.inspect}")
         @@seen_recipes[recipe] = true
         
         rmatch = recipe.match(/(.+?)::(.+)/)
