@@ -28,13 +28,14 @@ class Chef
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
     
-    attr_accessor :node, :registration, :safe_name
+    attr_accessor :node, :registration, :safe_name, :json_attribs
     
     # Creates a new Chef::Client.
     def initialize()
       @node = nil
       @safe_name = nil
       @registration = nil
+      @json_attribs = nil
       @rest = Chef::REST.new(Chef::Config[:registration_url])
     end
     
@@ -53,6 +54,9 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def run
+      start_time = Time.now
+      Chef::Log.info("Starting Chef Run")
+      
       build_node
       register
       authenticate
@@ -63,6 +67,9 @@ class Chef
       save_node
       converge
       save_node
+      
+      end_time = Time.now
+      Chef::Log.info("Chef Run complete in #{end_time - start_time} seconds")
       true
     end
     
@@ -96,7 +103,24 @@ class Chef
         @node ||= Chef::Node.new
         @node.name(node_name)
       end
+      if @json_attribs
+        Chef::Log.debug("Adding JSON Attributes")
+        @json_attribs.each do |key, value|
+          if key == "recipes"
+            value.each do |recipe|
+              unless @node.recipes.detect { |r| r == recipe }
+                Chef::Log.debug("Adding recipe #{recipe}")
+                @node.recipes << recipe
+              end
+            end
+          else
+            Chef::Log.debug("JSON Attribute: #{key} - #{value.inspect}")
+            @node[key] = value
+          end
+        end
+      end
       Facter.each do |field, value|
+        Chef::Log.debug("Facter Attribute: #{field} - #{value.inspect}")
         @node[field] = value
       end
       @node
@@ -288,7 +312,7 @@ class Chef
       cr.converge
       true
     end
-    
+        
     protected
       # Generates a random password of "len" length.
       def random_password(len)

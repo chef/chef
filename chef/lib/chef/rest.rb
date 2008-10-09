@@ -136,10 +136,6 @@ class Chef
         res = response
       end
       
-      Chef::Log.debug("HTTP request headers: #{req.to_hash.inspect} ")
-
-      Chef::Log.debug("HTTP response headers: #{res.to_hash.inspect} ")
-
       if res.kind_of?(Net::HTTPSuccess)
         if res['set-cookie']
           @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
