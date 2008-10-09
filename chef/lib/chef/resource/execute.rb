@@ -30,7 +30,7 @@ class Chef
         @cwd = nil
         @environment = nil
         @group = nil
-        @onlyif = nil
+        @only_if = nil
         @path = nil
         @notify_only = false
         @returns = 0
@@ -109,7 +109,12 @@ class Chef
       end
 
       def not_if(arg=nil, &blk)
-        @not_if = blk ? blk : arg
+        if Kernel.block_given?
+          @not_if = blk
+        else
+          @not_if = arg if arg
+        end
+        @not_if
       end
       
       def user(arg=nil)
