@@ -25,7 +25,7 @@ class Chef
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
     
-    attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name, :supports
+    attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name
     attr_reader :resource_name, :source_line, :node
     
     def initialize(name, collection=nil, node=nil)
@@ -47,6 +47,10 @@ class Chef
       @supports = {}
       @source_line = caller(4).shift.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
       @source_line = ::File.expand_path(@source_line) if @source_line
+    end
+    
+    def supports(args={})
+      @supports = args
     end
     
     def provider(arg=nil)
