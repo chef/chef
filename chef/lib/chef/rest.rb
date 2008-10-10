@@ -117,6 +117,8 @@ class Chef
       Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
       res = nil
       tf = nil
+      # TODO - Figure out how to test this block - I really have no idea how 
+      # to do it wouthout actually calling http.request... 
       res = http.request(req) do |response|
         if raw
           tf = Tempfile.new("chef-rest") 

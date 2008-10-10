@@ -18,7 +18,6 @@
 
 require "chef" / "mixin" / "checksum"
 
-
 class Application < Merb::Controller
 
   def fix_up_node_id

@@ -131,12 +131,4 @@ describe Chef::Cookbook do
     lambda { @cookbook.load_recipe("smackdown", node) }.should raise_error(ArgumentError)
   end
   
-  it "should load the attributes if it has not already when a recipe is loaded" do
-    @cookbook.attribute_files = Dir[File.join(COOKBOOK_PATH, "attributes", "smokey.rb")]
-    @cookbook.recipe_files = Dir[File.join(COOKBOOK_PATH, "recipes", "**", "*.rb")]
-    node = Chef::Node.new
-    node.name "Julia Child"
-    recipe = @cookbook.load_recipe("openldap::gigantor", node)
-    node.smokey.should == "robinson"
-  end
 end

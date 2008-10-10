@@ -31,12 +31,13 @@ describe Chef::Client, "run" do
       :build_node,
       :register,
       :authenticate,
+      :sync_library_files,
+      :sync_attribute_files,
       :sync_definitions,
       :sync_recipes,
-      :do_library_files,
-      :do_attribute_files,
       :save_node,
-      :converge
+      :converge,
+      :save_node
     ]
     to_stub.each do |method|
       @client.stub!(method).and_return(true)
@@ -77,12 +78,12 @@ describe Chef::Client, "run" do
   end
   
   it "should synchronize and load library files from the server" do
-    @client.should_receive(:do_library_files).and_return(true)
+    @client.should_receive(:sync_library_files).and_return(true)
     @client.run
   end
   
   it "should synchronize and load attribute files from the server" do
-    @client.should_receive(:do_attribute_files).and_return(true)
+    @client.should_receive(:sync_attribute_files).and_return(true)
     @client.run
   end
   
@@ -120,16 +121,4 @@ describe Chef::Client, "build_node" do
     @client.build_node
     @client.node.name.should eql("foo")
   end
-end
-
-describe Chef::Client, "register" do
-  before(:each) do
-    @client = Chef::Client.new
-  end
-  
-  it "should check to see if it's already registered"
-  
-  it "should create a new passphrase if not registered"
-  
-  it "should create a new registration if it has not registered"
 end
