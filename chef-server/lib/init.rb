@@ -117,7 +117,6 @@ Merb.push_path(:helper, File.join(File.dirname(__FILE__), "helpers"))
 Merb.push_path(:public, File.join(File.dirname(__FILE__), "public"))
 
 require 'merb-haml'
-require 'uv'
 
 
 #
