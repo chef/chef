@@ -42,6 +42,7 @@ class CookbookFiles < Application
         :file => full,
       }
     end
+    Chef::Log.debug("Remote files found: #{@remote_files.inspect}")
     @remote_files
   end
   
@@ -72,7 +73,6 @@ class CookbookFiles < Application
   end
   
   def show_directory
-    Chef::Log.info("totally rocking hte show_directory")
     dir_to_send = find_preferred_file
     unless (dir_to_send && File.directory?(dir_to_send))
       raise NotFound, "Cannot find a suitable directory"

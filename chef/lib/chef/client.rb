@@ -61,10 +61,10 @@ class Chef
       build_node
       register
       authenticate
+      sync_library_files
+      sync_attribute_files
       sync_definitions
       sync_recipes
-      do_library_files
-      do_attribute_files
       save_node
       converge
       save_node
@@ -75,9 +75,15 @@ class Chef
     end
     
     def run_solo
+      start_time = Time.now
+      Chef::Log.info("Starting Chef Solo Run")
+      
       build_node
       do_attribute_files
       converge
+      
+      end_time = Time.now
+      Chef::Log.info("Chef Run complete in #{end_time - start_time} seconds")
       true
     end
     
@@ -246,15 +252,9 @@ class Chef
     #
     # === Returns
     # true:: Always returns true
-    def do_attribute_files
+    def sync_attribute_files
       Chef::Log.debug("Synchronizing attributes")
       update_file_cache("attributes", @rest.get_rest('cookbooks/_attribute_files'))
-      Chef::FileCache.list.sort.each do |cache_file|
-        if cache_file.match("cookbooks/.+?/attributes")
-          Chef::Log.debug("Executing #{cache_file}")
-          @node.from_file(Chef::FileCache.load(cache_file, false))
-        end
-      end
       true
     end
     
@@ -263,15 +263,9 @@ class Chef
     #
     # === Returns
     # true:: Always returns true
-    def do_library_files
+    def sync_library_files
       Chef::Log.debug("Synchronizing libraries")
       update_file_cache("libraries", @rest.get_rest('cookbooks/_library_files'))
-      Chef::FileCache.list.each do |cache_file|
-        if cache_file.match("cookbooks/.+?/libraries")
-          Chef::Log.debug("Requiring #{cache_file}")
-          require Chef::FileCache.load(cache_file, false)
-        end
-      end
       true
     end
     
@@ -305,10 +299,12 @@ class Chef
       Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
       compile = Chef::Compile.new()
       compile.node = @node
+      compile.load_libraries
+      compile.load_attributes
       compile.load_definitions
       compile.load_recipes
 
-      Chef::Log.debug("Executing recipes for node #{@safe_name}")
+      Chef::Log.debug("Converging node #{@safe_name}")
       cr = Chef::Runner.new(@node, compile.collection)
       cr.converge
       true

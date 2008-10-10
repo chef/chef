@@ -59,9 +59,9 @@ describe Chef::Resource::Execute do
     @resource.group.should eql(1)
   end
   
-  it "should accept a string for onlyif" do
-    @resource.onlyif "woot"
-    @resource.onlyif.should eql("woot")
+  it "should accept a string for only_if" do
+    @resource.only_if "woot"
+    @resource.only_if.should eql("woot")
   end
   
   it "should accept an array for the execution path" do
@@ -79,9 +79,9 @@ describe Chef::Resource::Execute do
     @resource.timeout.should eql(1)
   end
   
-  it "should accept a string for unless" do
-    @resource.unless "woot"
-    @resource.unless.should eql("woot")
+  it "should accept a string for not_if" do
+    @resource.not_if "woot"
+    @resource.not_if.should eql("woot")
   end
   
   it "should accept a string for the user" do

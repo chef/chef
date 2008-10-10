@@ -41,6 +41,14 @@ class Chef
       @node
     end
     
+    # Load all the attributes, from every cookbook
+    def load_attributes()
+      @cookbook_loader.each do |cookbook|
+        cookbook.load_attributes(@node)
+      end
+      true
+    end
+    
     # Load all the definitions, from every cookbook, so they are available when we process
     # the recipes.
     #
@@ -52,12 +60,23 @@ class Chef
       end
     end
     
+    # Load all the libraries, from every cookbook, so they are available when we process
+    # the recipes.
+    #
+    def load_libraries()
+      @cookbook_loader.each do |cookbook|
+        cookbook.load_libraries
+      end
+      true
+    end
+    
     # Load all the recipes specified in the node data (loaded via load_node, above.)
     # 
     # The results are available via the collection accessor (which returns a Chef::ResourceCollection 
     # object)
     def load_recipes
       @node.recipes.each do |recipe|
+        Chef::Log.debug("Loading Recipe #{recipe}")
         rmatch = recipe.match(/(.+?)::(.+)/)
         if rmatch
          cookbook = @cookbook_loader[rmatch[1]]

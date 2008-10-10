@@ -141,7 +141,7 @@ EOS
     session[:last_oidreq] = nil
 
     if params.has_key?(:cancel)
-      Merb.logger.info("Cancelling OpenID Authentication")
+      Chef::Log.info("Cancelling OpenID Authentication")
       return(redirect(oidreq.cancel_url))
     else      
       identity = oidreq.identity

@@ -38,9 +38,9 @@ describe Chef::Resource::Directory do
   end
   
   it "should accept create or delete for action" do
-    lambda { @resource.action "create" }.should_not raise_error(ArgumentError)
-    lambda { @resource.action "delete" }.should_not raise_error(ArgumentError)
-    lambda { @resource.action "blues" }.should raise_error(ArgumentError)
+    lambda { @resource.action :create }.should_not raise_error(ArgumentError)
+    lambda { @resource.action :delete }.should_not raise_error(ArgumentError)
+    lambda { @resource.action :blues }.should raise_error(ArgumentError)
   end
   
   it "should accept a group name or id for group" do

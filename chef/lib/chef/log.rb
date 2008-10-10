@@ -23,7 +23,7 @@ class Chef
     @logger = nil
     
     class << self
-      attr_reader :logger #:nodoc
+      attr_accessor :logger #:nodoc
       
       # Use Chef::Logger.init when you want to set up the logger manually.  Arguments to this method
       # get passed directly to Logger.new, so check out the documentation for the standard Logger class

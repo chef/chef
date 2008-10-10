@@ -41,7 +41,7 @@ class OpenidRegister < Application
         raise e
       end
     end
-     Merb.logger.debug(@registered_node.inspect)
+     Chef::Log.debug(@registered_node.inspect)
      display @registered_node
   end
   

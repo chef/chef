@@ -24,6 +24,80 @@ describe Chef::Client, "initialize" do
   end
 end
 
+describe Chef::Client, "run" do
+  before(:each) do
+    @client = Chef::Client.new
+    to_stub = [
+      :build_node,
+      :register,
+      :authenticate,
+      :sync_definitions,
+      :sync_recipes,
+      :do_library_files,
+      :do_attribute_files,
+      :save_node,
+      :converge
+    ]
+    to_stub.each do |method|
+      @client.stub!(method).and_return(true)
+    end
+    time = Time.now
+    Time.stub!(:now).and_return(time)
+  end
+  
+  it "should start the run clock timer" do
+    time = Time.now
+    Time.should_receive(:now).twice.and_return(time)
+    @client.run
+  end
+  
+  it "should build the node" do
+    @client.should_receive(:build_node).and_return(true)
+    @client.run
+  end
+  
+  it "should register for an openid" do
+    @client.should_receive(:register).and_return(true)
+    @client.run
+  end
+  
+  it "should authenticate with the server" do
+    @client.should_receive(:authenticate).and_return(true)
+    @client.run
+  end
+  
+  it "should synchronize definitions from the server" do
+    @client.should_receive(:sync_definitions).and_return(true)
+    @client.run
+  end
+  
+  it "should synchronize recipes from the server" do
+    @client.should_receive(:sync_recipes).and_return(true)
+    @client.run
+  end
+  
+  it "should synchronize and load library files from the server" do
+    @client.should_receive(:do_library_files).and_return(true)
+    @client.run
+  end
+  
+  it "should synchronize and load attribute files from the server" do
+    @client.should_receive(:do_attribute_files).and_return(true)
+    @client.run
+  end
+  
+  it "should save the nodes state on the server (twice!)" do
+    @client.should_receive(:save_node).twice.and_return(true)
+    @client.run
+  end
+  
+  it "should converge the node to the proper state" do
+    @client.should_receive(:converge).and_return(true)
+    @client.run
+  end
+  
+end
+
 describe Chef::Client, "build_node" do
   before(:each) do
     @mock_facter_fqdn = mock("Facter FQDN")

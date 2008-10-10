@@ -72,7 +72,7 @@ describe Chef::Provider::Directory do
   
   it "should delete the directory if it exists, and is writable with action_delete" do
     load_mock_provider
-    File.should_receive(:exists?).once.and_return(true)
+    File.should_receive(:directory?).once.and_return(true)
     File.should_receive(:writable?).once.and_return(true)
     Dir.should_receive(:delete).with(@new_resource.path).once.and_return(true)
     @directory.action_delete

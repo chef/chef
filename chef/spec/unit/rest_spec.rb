@@ -103,6 +103,7 @@ describe Chef::REST, "run_request method" do
     @http_response_mock = mock("Net::HTTPSuccess", :null_object => true)
     @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(true)
     @http_response_mock.stub!(:body).and_return("ninja")
+    @http_response_mock.stub!(:error!).and_return(true)
     @http_mock = mock("Net::HTTP", :null_object => true)
     @http_mock.stub!(:verify_mode=).and_return(true)
     @http_mock.stub!(:read_timeout=).and_return(true)
