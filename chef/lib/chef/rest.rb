@@ -117,7 +117,7 @@ class Chef
       Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
       res = nil
       tf = nil
-      http.request(req) do |response|
+      res = http.request(req) do |response|
         if raw
           tf = Tempfile.new("chef-rest") 
           # Stolen from http://www.ruby-forum.com/topic/166423
@@ -133,7 +133,7 @@ class Chef
         else
           response.read_body
         end
-        res = response
+        response
       end
       
       if res.kind_of?(Net::HTTPSuccess)
