@@ -38,9 +38,9 @@ describe Chef::Resource::Link do
   end
   
   it "should accept create or delete for action" do
-    lambda { @resource.action "create" }.should_not raise_error(ArgumentError)
-    lambda { @resource.action "delete" }.should_not raise_error(ArgumentError)
-    lambda { @resource.action "blues" }.should raise_error(ArgumentError)
+    lambda { @resource.action :create }.should_not raise_error(ArgumentError)
+    lambda { @resource.action :delete }.should_not raise_error(ArgumentError)
+    lambda { @resource.action :blues }.should raise_error(ArgumentError)
   end
     
   it "should use the object name as the source_file by default" do

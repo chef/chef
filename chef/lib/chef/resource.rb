@@ -64,13 +64,14 @@ class Chef
     def action(arg=nil)
       if arg
         action_list = arg.kind_of?(Array) ? arg : [ arg ]
+        action_list = action_list.collect { |a| a.to_sym }
         action_list.each do |action|
           validate(
             {
               :action => action,
             },
             {
-              :object => { :equal_to => @allowed_actions },
+              :action => { :kind_of => Symbol, :equal_to => @allowed_actions },
             }
           )
         end

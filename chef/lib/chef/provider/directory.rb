@@ -50,7 +50,7 @@ class Chef
       end
       
       def action_delete
-        if ::File.exists?(@new_resource.path) && ::File.writable?(@new_resource.path)
+        if ::File.directory?(@new_resource.path) && ::File.writable?(@new_resource.path)
           if @new_resource.recursive == true
             Chef::Log.info("Deleting #{@new_resource} recursively at #{@new_resource.path}")
             FileUtils.rm_rf(@new_resource.path)

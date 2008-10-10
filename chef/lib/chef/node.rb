@@ -179,14 +179,14 @@ class Chef
     
     def to_index
       index_hash = {
-        :index_name => "node",
-        :id => "node_#{@name}",
-        :name => @name,
+        "index_name" => "node",
+        "id" => "node_#{@name}",
+        "name" => @name,
       }
       @attribute.each do |key, value|
         index_hash[key] = value
       end
-      index_hash[:recipe] = @recipe_list if @recipe_list.length > 0
+      index_hash["recipe"] = @recipe_list if @recipe_list.length > 0
       index_hash
     end
     

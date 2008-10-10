@@ -31,10 +31,9 @@ class Chef
       @recipe_files = Array.new
       @recipe_names = Hash.new
       @lib_files = Array.new
-      @loaded_attributes = false
     end
     
-    def load_libs
+    def load_libraries
       @lib_files.each do |file|
         Chef::Log.debug("Loading cookbook #{name} library file: #{file}")
         require file
@@ -46,9 +45,9 @@ class Chef
         raise ArgumentError, "You must pass a Chef::Node to load_attributes!"
       end
       @attribute_files.each do |file|
+        Chef::Log.debug("Loading attributes from #{file}")
         node.from_file(file)
       end
-      @loaded_atributes = true
       node
     end
     
@@ -107,9 +106,6 @@ class Chef
         raise ArgumentError, "Cannot find a recipe matching #{recipe_name} in cookbook #{@name}"
       end
       Chef::Log.debug("Found recipe #{recipe_name} in cookbook #{cookbook_name}") if Chef::Log.debug?
-      unless @loaded_attributes
-        load_attributes(node)
-      end
       recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, 
                                 collection, definitions, cookbook_loader)
       recipe.from_file(@recipe_files[@recipe_names[recipe_name]])

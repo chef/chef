@@ -112,7 +112,7 @@ CODE
     @recipe.from_file(File.join(File.dirname(__FILE__), "..", "data", "recipes", "test.rb"))
     res = @recipe.resources(:file => "/etc/nsswitch.conf")
     res.name.should eql("/etc/nsswitch.conf")
-    res.action.should eql(:create)
+    res.action.should eql([:create])
     res.owner.should eql("root")
     res.group.should eql("root")
     res.mode.should eql(0644)

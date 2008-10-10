@@ -102,10 +102,10 @@ describe Chef::Node, "attributes" do
     @node.each_attribute do |a,v|
       seen_attributes[a] = v
     end
-    seen_attributes.should have_key(:sunshine)
-    seen_attributes.should have_key(:canada)
-    seen_attributes[:sunshine].should == "is bright"
-    seen_attributes[:canada].should == "is a nice place"
+    seen_attributes.should have_key("sunshine")
+    seen_attributes.should have_key("canada")
+    seen_attributes["sunshine"].should == "is bright"
+    seen_attributes["canada"].should == "is a nice place"
   end
 
 end
@@ -225,7 +225,7 @@ describe Chef::Node, "to_index" do
   
   it "should return a hash with :index attributes" do
     @node.name("airplane")
-    @node.to_index.should == { :foo => "bar", :index_name => "node", :id => "node_airplane", :name => "airplane" }
+    @node.to_index.should == { "foo" => "bar", "index_name" => "node", "id" => "node_airplane", "name" => "airplane" }
   end
 end
 
