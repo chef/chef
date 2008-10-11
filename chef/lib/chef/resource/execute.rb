@@ -82,11 +82,11 @@ class Chef
       
       def only_if(arg=nil, &blk)
         if Kernel.block_given?
-          @not_if = blk
+          @only_if = blk
         else
-          @not_if = arg if arg
+          @only_if = arg if arg
         end
-        @not_if
+        @only_if
       end
 
       def path(arg=nil)
