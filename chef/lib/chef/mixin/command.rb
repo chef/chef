@@ -37,13 +37,13 @@ class Chef
           if Proc === args[:only_if]
             res = args[:only_if].call
             unless res
-              Chef::Log.debug("Skipping #{args[:command_string]} - onlyif #{args[:only_if]}")
+              Chef::Log.debug("Skipping #{args[:command_string]} - only_if #{args[:only_if]}")
               return false
             end    
           else  
             status = popen4(args[:only_if]) { |p, i, o, e| }
             if status.exitstatus != 0
-              Chef::Log.debug("Skipping #{args[:command_string]} - onlyif #{args[:only_if]} returned #{status.exitstatus}")
+              Chef::Log.debug("Skipping #{args[:command_string]} - only_if #{args[:only_if]} returned #{status.exitstatus}")
               return false
             end
           end  
@@ -53,14 +53,14 @@ class Chef
           if Proc === args[:not_if]
             res = args[:not_if].call
             unless res
-              Chef::Log.debug("Skipping #{args[:command_string]} - onlyif #{args[:not_if]}")
+              Chef::Log.debug("Skipping #{args[:command_string]} - not_if #{args[:not_if]}")
               return false
             end    
           else
             Chef::Log.debug("I should be running '#{args[:not_if]}'")
             status = popen4(args[:not_if]) { |p, i, o, e| }
             if status.exitstatus == 0
-              Chef::Log.debug("Skipping #{args[:command_string]} - unless #{args[:not_if]} returned #{status.exitstatus}")
+              Chef::Log.debug("Skipping #{args[:command_string]} - not_if #{args[:not_if]} returned #{status.exitstatus}")
               return false
             end
           end  
