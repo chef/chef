@@ -79,7 +79,6 @@ class Chef
       Chef::Log.info("Starting Chef Solo Run")
       
       build_node
-      do_attribute_files
       converge
       
       end_time = Time.now

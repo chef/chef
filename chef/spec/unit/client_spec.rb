@@ -96,7 +96,30 @@ describe Chef::Client, "run" do
     @client.should_receive(:converge).and_return(true)
     @client.run
   end
+end
+
+describe Chef::Client, "run_solo" do
+  before(:each) do
+    @client = Chef::Client.new
+    @client.stub!(:build_node).and_return(true)
+    @client.stub!(:converge).and_return(true)
+  end
   
+  it "should start/top the run timer" do
+    time = Time.now
+    Time.should_receive(:now).twice.and_return(time)
+    @client.run_solo
+  end
+  
+  it "should build the node" do
+    @client.should_receive(:build_node).and_return(true)
+    @client.run_solo
+  end
+  
+  it "should converge the node to the proper state" do
+    @client.should_receive(:converge).and_return(true)
+    @client.run_solo
+  end
 end
 
 describe Chef::Client, "build_node" do
@@ -108,17 +131,49 @@ describe Chef::Client, "build_node" do
     Facter.stub!(:[]).with("fqdn").and_return(@mock_facter_fqdn)
     Facter.stub!(:[]).with("hostname").and_return(@mock_facter_hostname)
     Facter.stub!(:each).and_return(true)
+    @node = Chef::Node.new
+    @mock_rest.stub!(:get_rest).and_return(@node)
+    Chef::REST.stub!(:new).and_return(@mock_rest)
     @client = Chef::Client.new
   end
   
   it "should set the name equal to the FQDN" do
+    @mock_rest.stub!(:get_rest).and_return(nil)
     @client.build_node
     @client.node.name.should eql("foo.bar.com")
   end
   
   it "should set the name equal to the hostname if FQDN is not available" do
     @mock_facter_fqdn.stub!(:value).and_return(nil)
+    @mock_rest.stub!(:get_rest).and_return(nil)
     @client.build_node
     @client.node.name.should eql("foo")
+  end
+  
+  it "should add any json attributes to the node" do
+    @client.json_attribs = { "one" => "two", "three" => "four" }
+    @client.build_node
+    @client.node.one.should eql("two")
+    @client.node.three.should eql("four")
+  end
+  
+  it "should allow you to set recipes from the json attributes" do
+    @client.json_attribs = { "recipes" => [ "one", "two", "three" ]}
+    @client.build_node
+    @client.node.recipes.should eql([ "one", "two", "three" ])
+  end
+  
+  it "should not add duplicate recipes from the json attributes" do
+    @client.node = Chef::Node.new
+    @client.node.recipes << "one"
+    @client.json_attribs = { "recipes" => [ "one", "two", "three" ]}
+    @client.build_node
+    @client.node.recipes.should eql([ "one", "two", "three" ])
+  end
+end
+
+describe Chef::Client, "register" do
+  before(:each) do
+    @mock_rest = mock("Chef::REST", :new => true)
   end
 end
