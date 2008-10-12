@@ -24,6 +24,8 @@ class Chef
       
       include Chef::Mixin::Command
       
+      attr_accessor :candidate_version
+      
       def initialize(node, new_resource)
         super(node, new_resource)
         @candidate_version = nil
@@ -48,7 +50,6 @@ class Chef
             do_package = true
           end
         end
-        
         if do_package
           Chef::Log.info("Installing #{@new_resource} version #{install_version}")
           status = install_package(@new_resource.package_name, install_version)
@@ -68,16 +69,30 @@ class Chef
         end
       end
       
-      def action_remove
-        if @current_resource.version != nil
+      def action_remove        
+        if should_remove_package(@current_resource.version, @new_resource.version)
           Chef::Log.info("Removing #{@new_resource}")
           remove_package(@new_resource.package_name, @new_resource.version)
           @new_resource.updated = true
         end
       end
       
+      def should_remove_package(current_version, new_version)
+        to_remove_package = false
+        if current_version != nil
+          if new_version != nil 
+            if new_version == current_version
+              to_remove_package = true
+            end
+          else
+            to_remove_package = true
+          end
+        end
+        to_remove_package
+      end
+      
       def action_purge
-        if @current_resource.version != nil
+        if should_remove_package(@current_resource.version, @new_resource.version)
           Chef::Log.info("Purging #{@new_resource}")
           purge_package(@new_resource.package_name, @new_resource.version)
           @new_resource.updated = true
