@@ -222,3 +222,18 @@ describe Chef::Provider::File do
   end
   
 end
+
+describe Chef::Provider::File, "action_create_if_missing" do
+  before(:each) do
+    @resource = Chef::Resource::File.new("seattle")
+    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
+    @node = Chef::Node.new
+    @node.name "latte"
+    @provider = Chef::Provider::File.new(@node, @resource)
+  end
+  
+  it "should call action create, since File can only touch" do
+    @provider.should_receive(:action_create).and_return(true)
+    @provider.action_create_if_missing
+  end
+end
