@@ -43,6 +43,4 @@ else
   )
 end
 
-Chef::Config.from_file(File.join("/etc/", "chef", "server.rb"))
-
 Merb.start

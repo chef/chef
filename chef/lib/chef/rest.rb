@@ -130,6 +130,8 @@ class Chef
             size += chunk.size
             if size == 0
               Chef::Log.debug("#{req.path} done (0 length file)")
+            elsif total == 0
+              Chef::Log.debug("#{req.path} (zero content length)")
             else
               Chef::Log.debug("#{req.path} %d%% done (%d of %d)" % [(size * 100) / total, size, total])
             end
