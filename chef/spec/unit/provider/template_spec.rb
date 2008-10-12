@@ -21,7 +21,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::Template, "action_create" do
   before(:each) do
     @rest = mock(Chef::REST, { :get_rest => "/tmp/foobar" })
-    @tempfile = mock(Tempfile, { :path => "/tmp/foo", })
+    @tempfile = mock(Tempfile, { :path => "/tmp/foo", :print => true, :close => true })
+    Tempfile.stub!(:new).and_return(@tempfile)
+    File.stub!(:read).and_return("monkeypoop")
     @rest.stub!(:get_rest).and_return(@tempfile)
     @resource = Chef::Resource::Template.new("seattle")
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
