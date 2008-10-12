@@ -29,7 +29,7 @@ config = {
   :log_level => :info,
   :json_attribs => nil,
   :noop => false,
-  :validation_token=> nil
+  :validation_token => nil
 }
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
