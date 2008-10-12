@@ -29,6 +29,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "haml"
   s.add_dependency "ruby-openid"
   s.add_dependency "json"
+  s.add_dependency "syntax"
   
   s.bindir       = "bin"
   s.executables  = %w( chef-indexer chef-server  )

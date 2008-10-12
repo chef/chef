@@ -1,24 +1,29 @@
 %h1= "Cookbook #{h @cookbook.name}"
 .cookbook
+- if @cookbook.lib_files.length > 0
+  %h2 Library Files
+  - @cookbook.lib_files.each do |f|
+    = partial(:syntax_highlight, :name => File.basename(f), :contents => f)
+    
 - if @cookbook.attribute_files.length > 0
   %h2 Attribute Files
-  - @cookbook.attribute_files.each do |af|
-    = partial(:attribute_file, :name => File.basename(af), :contents => File.read(af))
+  - @cookbook.attribute_files.each do |f|
+    = partial(:syntax_highlight, :name => File.basename(f), :contents => f)
 
 - if @cookbook.definition_files.length > 0
-  - @cookbook.definition_files.each do |df|
-    %h2 Definition Files
-    %h3= File.basename(df)
-    = ::Uv.parse(File.read(df), "xhtml", "ruby", true, "twilight") 
+  %h2 Definition Files
+  - @cookbook.definition_files.each do |f|
+    = partial(:syntax_highlight, :name => File.basename(f), :contents => f)
         
 - if @cookbook.recipe_files.length > 0
-  - @cookbook.recipe_files.each do |rf|
-    %h2 Recipe Files
-    %h3= File.basename(rf)
-    = ::Uv.parse(File.read(rf), "xhtml", "ruby", true, "twilight") 
+  %h2 Recipe Files
+  - @cookbook.recipe_files.each do |f|
+    = partial(:syntax_highlight, :name => File.basename(f), :contents => f)
     
 - if @cookbook.template_files.length > 0
-  - @cookbook.template_files.each do |tf|
-    %h2 Template Files
-    %h3= File.basename(tf)
-    = ::Uv.parse(File.read(tf), "xhtml", "html_rails", true, "twilight")
+  %h2 Template Files
+  - @cookbook.template_files.each do |f|
+    %h3= name
+    %div= syntax_highlight(contents)
+    = partial(:syntax_highlight, :name => File.basename(f), :contents => f)
+  
