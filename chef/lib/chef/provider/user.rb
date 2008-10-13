@@ -26,6 +26,8 @@ class Chef
       
       include Chef::Mixin::Command
       
+      attr_accessor :user_exists, :locked
+      
       def initialize(node, new_resource)
         super(node, new_resource)
         @user_exists = true
@@ -65,7 +67,12 @@ class Chef
         
         @current_resource
       end
-      
+
+      # Check to see if the user needs any changes
+      #
+      # === Returns
+      # <true>:: If a change is required
+      # <false>:: If the users are identical
       def compare_user
         change_required = false
         change_required = true if @new_resource.uid != @current_resource.uid
