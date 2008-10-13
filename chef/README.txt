@@ -4,7 +4,7 @@
 
 == DESCRIPTION:
 
-Chef is a configuration management tool.
+Chef is a configuration management tool inspired by Puppet. 
 
 I'm in ur netwerk, cookin up yer servers. :)
 
@@ -21,15 +21,13 @@ RubyGems:
 * stomp
 * stompserver
 * ultraviolet
+* 
 * facter
 * ferret
 * merb-core
-* merb-haml
 * haml
-* ruby-openid (>= 2.0.1)
+* ruby-openid
 * json
-* ultraviolet
-* mongrel
 
 External Servers:
 
@@ -44,25 +42,19 @@ Install all of the above.  To fire up a develpment environment, do the following
   * Start stompserver with 'stompserver' 
   * Start chef-indexer with:
 
-		chef-indexer -l debug 
+		./bin/chef-indexer -l debug -c ./config/chef-server.rb
 
-  * Start chef-server:
+  * Start chef-server on port 4000 with:
 
-    chef-server -N -c 2
+    ./bin/chef-server
 
-  * Test run chef to begin node registration:
+  * Start chef-server on port 4001 with:
 
-    sudo ./bin/chef-client -l debug -c ./examples/config/chef-solo.rb
-
-  * Validate the node registration:
-
-    Visit http://localhost:4000
-      Login, enter an openid URL (see http://openid.net/get/)
-      Registrations, click Validate
+    ./bin/chef-server -p 4001
 
   * Test run chef with:
 
-    chef-client -l debug
+    sudo ./bin/chef-client -l debug -c ./examples/config/chef-solo.rb
 
 == LICENSE:
 

@@ -1,0 +1,48 @@
+# -*- ruby -*-
+require 'rubygems'
+require 'rake/gempackagetask'
+
+GEM = "chef-server"
+VERSION = "0.0.1"
+AUTHOR = "Adam Jacob"
+EMAIL = "adam@hjksolutions.com"
+HOMEPAGE = "http://hjksolutions.com"
+SUMMARY = "A configuration management system server."
+
+spec = Gem::Specification.new do |s|
+  s.name = GEM
+  s.version = VERSION
+  s.platform = Gem::Platform::RUBY
+  s.has_rdoc = true
+  s.extra_rdoc_files = ["README.txt", "LICENSE", 'NOTICE']
+  s.summary = SUMMARY
+  s.description = s.summary
+  s.author = AUTHOR
+  s.email = EMAIL
+  s.homepage = HOMEPAGE
+  
+  # Uncomment this to add a dependency
+  s.add_dependency "stomp"
+  s.add_dependency "stompserver"
+  s.add_dependency "ferret"
+  s.add_dependency "merb-core"
+  s.add_dependency "haml"
+  s.add_dependency "ruby-openid"
+  s.add_dependency "json"
+  s.add_dependency "syntax"
+  
+  s.bindir       = "bin"
+  s.executables  = %w( chef-indexer chef-server  )
+  
+  s.files = %w(LICENSE README.txt Rakefile) + Dir.glob("{lib}/**/*")
+end
+
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.gem_spec = spec
+end
+
+task :install => [:package] do
+  sh %{sudo gem install pkg/#{GEM}-#{VERSION} --no-rdoc --no-ri}
+end
+
+# vim: syntax=Ruby

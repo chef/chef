@@ -1,0 +1,29 @@
+%h1= "Cookbook #{h @cookbook.name}"
+.cookbook
+- if @cookbook.lib_files.length > 0
+  %h2 Library Files
+  - @cookbook.lib_files.each do |f|
+    = partial(:syntax_highlight, :name => File.basename(f), :contents => f)
+    
+- if @cookbook.attribute_files.length > 0
+  %h2 Attribute Files
+  - @cookbook.attribute_files.each do |f|
+    = partial(:syntax_highlight, :name => File.basename(f), :contents => f)
+
+- if @cookbook.definition_files.length > 0
+  %h2 Definition Files
+  - @cookbook.definition_files.each do |f|
+    = partial(:syntax_highlight, :name => File.basename(f), :contents => f)
+        
+- if @cookbook.recipe_files.length > 0
+  %h2 Recipe Files
+  - @cookbook.recipe_files.each do |f|
+    = partial(:syntax_highlight, :name => File.basename(f), :contents => f)
+    
+- if @cookbook.template_files.length > 0
+  %h2 Template Files
+  - @cookbook.template_files.each do |f|
+    %h3= name
+    %div= syntax_highlight(contents)
+    = partial(:syntax_highlight, :name => File.basename(f), :contents => f)
+  

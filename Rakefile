@@ -1,21 +1,25 @@
-# -*- ruby -*-
+gems = %w[chef chef-server]
 
-require 'rubygems'
-require 'hoe'
-require './lib/chef.rb'
-require './tasks/rspec.rb'
-# require Dir[File.join(File.dirname(__FILE__), 'tasks/**/*.rb')].sort.each do |lib|
-#   require lib
-# end
-
-Hoe.new('chef', Chef::VERSION) do |p|
-  p.rubyforge_name = 'chef'
-  p.author = 'Adam Jacob'
-  p.email = 'adam@hjksolutions.com'
-  p.summary = 'A configuration management system.'
-  p.description = p.paragraphs_of('README.txt', 2..5).join("\n\n")
-  p.url = p.paragraphs_of('README.txt', 0).first.split(/\n/)[1..-1]
-  p.changes = p.paragraphs_of('History.txt', 0..1).join("\n\n") 
+desc "Build the chef gems"
+task :build_gems do
+  gems.each do |dir|
+    Dir.chdir(dir) { sh "rake package" }
+  end
+end
+ 
+desc "Install the chef gems"
+task :install do
+  gems.each do |dir|
+    Dir.chdir(dir) { sh "rake install" }
+  end
 end
 
-# vim: syntax=Ruby
+namespace :dev do
+  desc "Install a Devel instance of Chef with the example-repository"
+  task :install do
+    gems.each do |dir|
+      Dir.chdir(dir) { sh "rake install" }
+    end
+    Dir.chdir("example-repository") { sh("rake install") }
+  end
+end

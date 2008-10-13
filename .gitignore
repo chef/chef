@@ -6,4 +6,8 @@ examples/search_index
 examples/store
 examples/openid-cstore
 examples/openid-db
+chef/pkg
+chef-server/pkg
+chef/log
+chef-server/log
 *.swp
