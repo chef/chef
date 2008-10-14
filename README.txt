@@ -43,7 +43,7 @@ Install all of the above.  To fire up a develpment environment, do the following
   * Start stompserver with 'stompserver' 
   * Start chef-indexer with:
 
-		chef-indexer -l debug 
+    chef-indexer -l debug 
 
   * Start chef-server:
 
@@ -51,7 +51,7 @@ Install all of the above.  To fire up a develpment environment, do the following
 
   * Test run chef to begin node registration:
 
-    sudo ./bin/chef-client -l debug -c ./examples/config/chef-solo.rb
+    sudo ./bin/chef-client 
 
   * Validate the node registration:
 
@@ -61,7 +61,7 @@ Install all of the above.  To fire up a develpment environment, do the following
 
   * Test run chef with:
 
-    chef-client -l debug
+    chef-client 
 
 == LICENSE:
 
