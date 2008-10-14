@@ -91,11 +91,17 @@ describe Chef::CouchDB, "create_design_document" do
     @mock_rest.stub!(:get_rest).and_return(@mock_design)
     @mock_rest.stub!(:put_rest).and_return(true)
     Chef::REST.stub!(:new).and_return(@mock_rest)
+    @couchdb = Chef::CouchDB.new
+    @couchdb.stub!(:create_db).and_return(true)
   end
   
   def do_create_design_document
-    couchdb = Chef::CouchDB.new
-    couchdb.create_design_document("bob", @mock_data)
+    @couchdb.create_design_document("bob", @mock_data)
+  end
+  
+  it "should create the database if it does not exist" do
+    @couchdb.should_receive(:create_db).and_return(true)
+    do_create_design_document
   end
   
   it "should fetch the existing design document" do
