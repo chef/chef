@@ -22,7 +22,6 @@ require File.join(File.dirname(__FILE__), 'config', 'rake')
 
 require 'tempfile'
 
-$vcs = :svn
 if File.directory?(File.join(TOPDIR, ".svn"))
   $vcs = :svn
 elsif File.directory?(File.join(TOPDIR, ".git"))
@@ -47,6 +46,8 @@ task :update do
     else
       puts "* Skipping git pull, no origin specified"
     end
+  else
+    puts "* No SCM configured, skipping update"
   end
 end
 

@@ -20,13 +20,15 @@ RubyGems:
 
 * stomp
 * stompserver
-* ultraviolet
 * facter
 * ferret
 * merb-core
+* merb-haml
 * haml
-* ruby-openid
+* ruby-openid (>= 2.0.1)
 * json
+* mongrel
+* rspec
 
 External Servers:
 
@@ -46,6 +48,16 @@ Install all of the above.  To fire up a develpment environment, do the following
   * Start chef-server:
 
     chef-server -N -c 2
+
+  * Test run chef to begin node registration:
+
+    sudo ./bin/chef-client -l debug -c ./examples/config/chef-solo.rb
+
+  * Validate the node registration:
+
+    Visit http://localhost:4000
+      Login, enter an openid URL (see http://openid.net/get/)
+      Registrations, click Validate
 
   * Test run chef with:
 

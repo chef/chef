@@ -37,6 +37,7 @@ class Chef
     end
     
     def create_design_document(name, data)
+      create_db
       to_update = true
       begin
         old_doc = @rest.get_rest("#{Chef::Config[:couchdb_database]}/_design%2F#{name}")
