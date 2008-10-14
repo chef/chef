@@ -80,7 +80,23 @@ class Chef
           Chef::Log.debug("#{@new_resource}: not stopping, already stopped")
         end 
       end
-  
+
+      def enable_service(name)
+        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :enable"
+      end
+
+      def disable_service(name)
+        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :disable"
+      end
+
+      def start_service(name)
+        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :start"
+      end
+
+      def stop_service(name)
+        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :stop"
+      end 
+ 
     end
   end
 end

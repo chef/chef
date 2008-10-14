@@ -18,7 +18,7 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-describe Chef::Provider::Package, "initialize" do
+describe Chef::Provider::Service, "initialize" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource", :null_object => true)
@@ -28,6 +28,7 @@ describe Chef::Provider::Package, "initialize" do
     provider = Chef::Provider::Service.new(@node, @new_resource)
     provider.should be_a_kind_of(Chef::Provider::Service)
   end  
+  
 end
 
 describe Chef::Provider::Service, "action_enable" do
@@ -48,16 +49,134 @@ describe Chef::Provider::Service, "action_enable" do
     @provider.stub!(:enable_service).and_return(true)
   end
 
+  it "should enable the service if disabled" do
+    @current_resource.stub!(:enabled).and_return(false)
+    @provider.should_receive(:enable_service).with(@new_resource.name).and_return(true)
+    @provider.action_enable
+  end
+
+  it "should not enable the service if already enabled" do
+    @current_resource.stub!(:enabled).and_return(true)
+    @provider.should_not_receive(:enable_service).with(@new_resource.name).and_return(true)
+    @provider.action_enable
+  end
 end
 
 describe Chef::Provider::Service, "action_disable" do
+  before(:each) do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Service",
+      :null_object => true,
+      :name => "chef",
+      :service_name => "chef"
+    )
+    @current_resource = mock("Chef::Resource::Service",
+      :null_object => true,
+      :name => "chef",
+      :service_name => "chef"
+    )
+    @provider = Chef::Provider::Service.new(@node, @new_resource)
+    @provider.current_resource = @current_resource
+    @provider.stub!(:disable_service).and_return(true)
+  end
 
+  it "should disable the service if enabled" do
+    @current_resource.stub!(:enabled).and_return(true)
+    @provider.should_receive(:disable_service).with(@new_resource.name).and_return(true)
+    @provider.action_disable
+  end
+
+  it "should not disable the service if already disabled" do
+    @current_resource.stub!(:enabled).and_return(false)
+    @provider.should_not_receive(:disable_service).with(@new_resource.name).and_return(true)
+    @provider.action_disable
+  end
 end
 
 describe Chef::Provider::Service, "action_start" do
+before(:each) do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Service",
+      :null_object => true,
+      :name => "chef",
+      :service_name => "chef"
+    )
+    @current_resource = mock("Chef::Resource::Service",
+      :null_object => true,
+      :name => "chef",
+      :service_name => "chef"
+    )
+    @provider = Chef::Provider::Service.new(@node, @new_resource)
+    @provider.current_resource = @current_resource
+    @provider.stub!(:start_service).and_return(true)
+  end
 
+  it "should start the service if it isn't running" do
+    @current_resource.stub!(:running).and_return(false)
+    @provider.should_receive(:start_service).with(@new_resource.name).and_return(true)
+    @provider.action_start
+  end
+
+  it "should not start the service if already running" do
+    @current_resource.stub!(:running).and_return(true)
+    @provider.should_not_receive(:start_service).with(@new_resource.name).and_return(true)
+    @provider.action_enable
+  end
 end
 
 describe Chef::Provider::Service, "action_stop" do
+before(:each) do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Service",
+      :null_object => true,
+      :name => "chef",
+      :service_name => "chef"
+    )
+    @current_resource = mock("Chef::Resource::Service",
+      :null_object => true,
+      :name => "chef",
+      :service_name => "chef"
+    )
+    @provider = Chef::Provider::Service.new(@node, @new_resource)
+    @provider.current_resource = @current_resource
+    @provider.stub!(:stop_service).and_return(true)
+  end
 
+  it "should stop the service if it is running" do
+    @current_resource.stub!(:running).and_return(true)
+    @provider.should_receive(:stop_service).with(@new_resource.name).and_return(true)
+    @provider.action_stop
+  end
+
+  it "should not stop the service if not running" do
+    @current_resource.stub!(:enabled).and_return(false)
+    @provider.should_not_receive(:stop_service).with(@new_resource.name).and_return(true)
+    @provider.action_stop
+  end
+end
+
+%w{enable disable start stop}.each do |act|
+  act_string = "#{act}_service"
+
+  describe Chef::Provider::Service, act_string do
+    before(:each) do
+      @node = mock("Chef::Node", :null_object => true)
+      @new_resource = mock("Chef::Resource::Service",
+        :null_object => true,
+        :name => "chef",
+        :service_name => "chef"
+      )
+      @current_resource = mock("Chef::Resource::Service",
+        :null_object => true,
+        :name => "chef",
+        :service_name => "chef"
+      )
+      @provider = Chef::Provider::Service.new(@node, @new_resource)
+      @provider.current_resource = @current_resource
+    end
+
+    it "should raise Chef::Exception::UnsupportedAction on an unsupported action" do
+      lambda { @provider.send(act_string, @new_resource.name) }.should raise_error(Chef::Exception::UnsupportedAction)
+    end
+  end
 end
