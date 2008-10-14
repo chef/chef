@@ -20,7 +20,6 @@ RubyGems:
 
 * stomp
 * stompserver
-* ultraviolet
 * facter
 * ferret
 * merb-core
@@ -28,8 +27,8 @@ RubyGems:
 * haml
 * ruby-openid (>= 2.0.1)
 * json
-* ultraviolet
 * mongrel
+* rspec
 
 External Servers:
 
