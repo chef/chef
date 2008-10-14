@@ -1,7 +1,6 @@
 # -*- ruby -*-
 require 'rubygems'
 require 'rake/gempackagetask'
-require './lib/chef.rb'
 require './tasks/rspec.rb'
 
 GEM = "chef"
