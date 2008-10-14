@@ -35,6 +35,7 @@ class Nodes < Application
     rescue Net::HTTPServerException => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
+
     display @node
   end
 
