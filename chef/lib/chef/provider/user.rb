@@ -116,10 +116,12 @@ class Chef
       end
       
       def action_modify
-        if @user_exists && compare_user
-          manage_user
-          @new_resource.updated = true
-          Chef::Log.info("Modified #{@new_resource}")
+        if @user_exists 
+          if compare_user
+            manage_user
+            @new_resource.updated = true
+            Chef::Log.info("Modified #{@new_resource}")
+          end
         else
           raise Chef::Exception::User, "Cannot modify #{@new_resource} - user does not exist!"
         end
