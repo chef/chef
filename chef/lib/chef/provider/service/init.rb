@@ -27,14 +27,14 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
-          @current_resource.running = false
+          @current_resource.running false
           if @new_resource.supports[:status]
             if run_command(:command => "/etc/init.d/#{@current_resource.service_name} status") == 0
-              @current_resource.running = true 
+              @current_resource.running true 
             end
           elsif @new_resource.status_command
             if run_command(:command => @new_resource.status_command) == 0
-              @current_resource.running = true
+              @current_resource.running true
             end
           else
             Chef::Log.debug("#{@new_resource} does not support status and you have not specified a status command, falling back to process table inspection")
@@ -52,7 +52,7 @@ class Chef
               stdout.each_line do |line|
                 if r.match(line)
                   process_pid = line.sub(/^\s+/, '').split(/\s+/)[1]
-                  @current_resource.running = true
+                  @current_resource.running true
                 end
               end
             end
