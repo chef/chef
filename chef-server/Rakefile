@@ -28,6 +28,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "ferret"
   s.add_dependency "merb-core"
   s.add_dependency "merb-haml"
+  s.add_dependency "mongrel"
   s.add_dependency "haml"
   s.add_dependency "ruby-openid"
   s.add_dependency "json"
