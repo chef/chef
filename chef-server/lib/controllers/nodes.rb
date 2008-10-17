@@ -35,8 +35,11 @@ class Nodes < Application
     rescue Net::HTTPServerException => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
-
-    display @node
+    if params[:ajax] == "true"
+      render JSON.pretty_generate(@node)
+    else
+      display @node
+    end
   end
 
   def create
@@ -51,11 +54,20 @@ class Nodes < Application
   end
 
   def update
-    @node = params.has_key?("inflated_object") ? params["inflated_object"] : nil
+    if params[:ajax]
+      @node = JSON.parse(params[:value])
+    else      
+      @node = params.has_key?("inflated_object") ? params["inflated_object"] : nil
+    end
+    
     if @node
       @status = 202
       @node.save
-      display @node
+      if params[:ajax]
+        render partial("nodes/node", :node => @node)
+      else
+        display @node
+      end
     else
       raise NotFound, "You must provide a Node to update"
     end

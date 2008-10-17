@@ -62,10 +62,24 @@ class Chef
     class << self
       include Chef::Mixin::FromFile
       
+      # Pass Chef::Config.configure() a block, and it will yield @configuration.
+      #
+      # === Parameters
+      # <block>:: A block that takes @configure as it's argument
       def configure(&block)
         yield @configuration
       end
       
+      # Get the value of a configuration option
+      #
+      # === Parameters
+      # config_option<Symbol>:: The configuration option to return
+      #
+      # === Returns
+      # value:: The value of the configuration option
+      #
+      # === Raises
+      # <ArgumentError>:: If the configuration option does not exist
       def [](config_option)
         if @configuration.has_key?(config_option.to_sym)
           @configuration[config_option.to_sym]
@@ -74,14 +88,43 @@ class Chef
         end
       end
       
+      # Set the value of a configuration option
+      #
+      # === Parameters
+      # config_option<Symbol>:: The configuration option to set (within the [])
+      # value:: The value for the configuration option
+      #
+      # === Returns
+      # value:: The new value of the configuration option
       def []=(config_option, value)
         @configuration[config_option.to_sym] = value
       end
       
+      # Check if Chef::Config has a configuration option.
+      #
+      # === Parameters
+      # key<Symbol>:: The configuration option to check for
+      #
+      # === Returns
+      # <True>:: If the configuration option exists
+      # <False>:: If the configuration option does not exist
       def has_key?(key)
         @configuration.has_key?(key.to_sym)
       end
-    
+      
+      # Allows for simple lookups and setting of configuration options via method calls
+      # on Chef::Config.  If there any arguments to the method, they are used to set
+      # the value of the configuration option.  Otherwise, it's a simple get operation.
+      #
+      # === Parameters
+      # method_symbol<Symbol>:: The method called.  Must match a configuration option.
+      # *args:: Any arguments passed to the method
+      #
+      # === Returns
+      # value:: The value of the configuration option.
+      #
+      # === Raises
+      # <ArgumentError>:: If the method_symbol does not match a configuration option.
       def method_missing(method_symbol, *args)
         if @configuration.has_key?(method_symbol)
           if args.length == 1
