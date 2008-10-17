@@ -16,15 +16,16 @@
 // limitations under the License.
 //
 
-// $(document).ready(function() {
-//   $(".edit_area").editable(location.href + ".json", { 
-//       type      : 'textarea',
-//       cancel    : 'Cancel',
-//       submit    : 'Save',
-//       indicator : "<img src='/images/indicator.gif'>",
-//       target    : location.href + ".json",
-//       loadtype  : "GET",
-//       loadurl   : location.href + ".json?pretty=true",
-//       tooltip   : 'Click to edit...'
-//   });
-// });
+$(document).ready(function() {
+  $(".edit_area").editable(location.href + ".json", { 
+      type      : 'textarea',
+      cancel    : 'Cancel',
+      submit    : 'Save',
+      indicator : "<img src='/images/indicator.gif'>",
+      target    : location.href + ".json?ajax=true",
+      loadtype  : "GET",
+      loadurl   : location.href + ".json?ajax=true",
+      tooltip   : 'Click to edit...',
+      method : "PUT"
+  });
+});

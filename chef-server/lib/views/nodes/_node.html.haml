@@ -1,7 +1,7 @@
 .node
   %h1 
     = "Node #{h node.name}" 
-  %div.edit_area#node{:to_update => node.name}
+  .edit_area#node{:to_update => node.name}
     %h2 Recipes
     %ol
       = recipe_list(node)

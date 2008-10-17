@@ -1,6 +1,7 @@
 # -*- ruby -*-
 require 'rubygems'
 require 'rake/gempackagetask'
+require 'rake/rdoctask'
 require './tasks/rspec.rb'
 
 GEM = "chef"
@@ -38,6 +39,10 @@ end
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
+end
+
+Rake::RDocTask.new do |rd|
+  rd.rdoc_files.include("lib/**/*.rb")
 end
 
 task :install => [:package] do

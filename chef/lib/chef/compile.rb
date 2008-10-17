@@ -33,6 +33,9 @@ class Chef
     # Chef::Node.find_file(name)
     #
     # The first step in compiling the catalog. Results available via the node accessor.
+    #
+    # === Returns
+    # <Chef::Node>:: The loaded Chef Node
     def load_node(name)
       Chef::Log.debug("Loading Chef Node #{name} from CouchDB")
       @node = Chef::Node.load(name)
@@ -42,6 +45,9 @@ class Chef
     end
     
     # Load all the attributes, from every cookbook
+    #
+    # === Returns
+    # true:: Always returns true
     def load_attributes()
       @cookbook_loader.each do |cookbook|
         cookbook.load_attributes(@node)
@@ -53,16 +59,22 @@ class Chef
     # the recipes.
     #
     # Results available via the definitions accessor.
+    #
+    # === Returns
+    # true:: Always returns true
     def load_definitions()
       @cookbook_loader.each do |cookbook|
         hash = cookbook.load_definitions
         @definitions.merge!(hash)
       end
+      true
     end
     
     # Load all the libraries, from every cookbook, so they are available when we process
     # the recipes.
     #
+    # === Returns
+    # true:: Always returns true
     def load_libraries()
       @cookbook_loader.each do |cookbook|
         cookbook.load_libraries
@@ -74,6 +86,9 @@ class Chef
     # 
     # The results are available via the collection accessor (which returns a Chef::ResourceCollection 
     # object)
+    #
+    # === Returns
+    # true:: Always returns true
     def load_recipes
       @node.recipes.each do |recipe|
         Chef::Log.debug("Loading Recipe #{recipe}")
@@ -86,6 +101,7 @@ class Chef
          cookbook.load_recipe("default", @node, @collection, @definitions, @cookbook_loader)
         end
       end
+      true
     end
     
   end
