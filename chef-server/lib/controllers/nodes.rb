@@ -64,7 +64,7 @@ class Nodes < Application
       @status = 202
       @node.save
       if params[:ajax]
-        render partial("nodes/node", :node => @node)
+        partial("nodes/node", :node => @node)
       else
         display @node
       end
