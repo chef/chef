@@ -1,10 +1,7 @@
-.node
-  %h1 
-    = "Node #{h node.name}" 
-  .edit_area#node{:to_update => node.name}
-    %h2 Recipes
-    %ol
-      = recipe_list(node)
-    %h2 Attributes
-    %ol
-      = attribute_list(node)
+.edit_area#node{:to_update => node.name}
+  %h2 Recipes
+  %ol
+    = recipe_list(node)
+  %h2 Attributes
+  %ol
+    = attribute_list(node)

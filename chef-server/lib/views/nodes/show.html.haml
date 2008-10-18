@@ -1,1 +1,3 @@
-= partial(:node, :node => @node)
+.node
+  %h1= "Node #{h @node.name}"
+  = partial(:node, :node => @node)

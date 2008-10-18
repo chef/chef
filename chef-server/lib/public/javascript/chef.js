@@ -22,7 +22,7 @@ $(document).ready(function() {
       cancel    : 'Cancel',
       submit    : 'Save',
       indicator : "<img src='/images/indicator.gif'>",
-      target    : location.href + ".json?ajax=true",
+      target    : location.href + "?ajax=true",
       loadtype  : "GET",
       loadurl   : location.href + ".json?ajax=true",
       tooltip   : 'Click to edit...',
