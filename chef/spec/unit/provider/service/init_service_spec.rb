@@ -88,9 +88,12 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
     @provider.load_current_resource
   end
 
-  it "should set the pattern to the services name if a pattern hasn't been specified"
-
-  it "should raise an exception if the node doesn't have a 'ps' / :ps attribute"
+  it "should raise an exception if the node doesn't have a 'ps' / :ps attribute" do
+    @new_resource.stub!(:supports).and_return({:status => false})
+    @new_resource.stub!(:status_command).and_return(false)
+    @node.stub!(:[]).with(:ps).and_return("")
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+  end
 
   it "should run the node's ps command"
 

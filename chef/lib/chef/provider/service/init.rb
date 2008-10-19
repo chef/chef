@@ -40,9 +40,8 @@ class Chef
             end
           else
             Chef::Log.debug("#{@new_resource} does not support status and you have not specified a status command, falling back to process table inspection")
-            if @new_resource.pattern == @new_resource.service_name
-              Chef::Log.debug("#{@new_resource} defaulting pattern to #{Regex.new(@new_resource.pattern)}") 
-            elsif @node[:ps] == ""
+
+            if @node[:ps] == ""
               raise Chef::Exception::Service, "#{@new_resource}: Facter could not determine how to call `ps` on your system (#{@node[:ps]})"
             end
 
