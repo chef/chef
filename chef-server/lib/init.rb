@@ -170,7 +170,6 @@ Merb::Router.prepare do |r|
   match("/cookbooks/_attribute_files").to(:controller => "cookbooks", :action => "attribute_files")
   match("/cookbooks/_recipe_files").to(:controller => "cookbooks", :action => "recipe_files")
   match("/cookbooks/_definition_files").to(:controller => "cookbooks", :action => "definition_files")
-  Chef::Log.info("Seriously, what the fuck")
   match("/cookbooks/_library_files").to(:controller => "cookbooks", :action => "library_files")
   
 #  r.match("/cookbooks/:cookbook_id/templates").to(:controller => "cookbook_templates", :action => "index")
