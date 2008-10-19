@@ -29,10 +29,12 @@ class Chef
           @current_resource.service_name(@new_resource.service_name)
           @current_resource.running false
           if @new_resource.supports[:status]
+            Chef::Log.debug("#{@new_resource} supports status, running")
             if run_command(:command => "/etc/init.d/#{@current_resource.service_name} status") == 0
               @current_resource.running true 
             end
           elsif @new_resource.status_command
+            Chef::Log.debug("#{@new_resource} doesn't support status but you have specified a status command, running..")
             if run_command(:command => @new_resource.status_command) == 0
               @current_resource.running true
             end

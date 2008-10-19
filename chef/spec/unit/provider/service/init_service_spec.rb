@@ -61,27 +61,28 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
   end
 
   it "should run /etc/init.d/service_name status if the service supports it" do
-    @new_resource.stub!(:supports).with(:status).and_return(true)
+    @new_resource.stub!(:supports).and_return({:status => true})
     @provider.should_receive(:run_command).with({:command => "/etc/init.d/#{@current_resource.service_name} status"})
     @provider.load_current_resource
   end
   
   it "should set running to true if the the status command returns 0" do
-    @new_resource.stub!(:supports).with(:status).and_return(true)
+    @new_resource.stub!(:supports).and_return({:status => true})
     @provider.stub!(:run_command).with({:command => "/etc/init.d/#{@current_resource.service_name} status"}).and_return(0)
     @current_resource.should_recieve(:running).with(true)
     @provider.load_current_resource
   end
 
   it "should run the services status command if one has been specified" do
-    @new_resource.stub!(:supports).with(:status).and_return(false)
+    @new_resource.stub!(:supports).and_return({:status => false})
     @new_resource.stub!(:status_command).and_return("/etc/init.d/chefhasmonkeypants status")
     @provider.should_receive(:run_command).with({:command => "/etc/init.d/chefhasmonkeypants status"})
     @provider.load_current_resource
   end
   
   it "should set running to true if the services status command returns 0" do
-    @new_resource.stub(!:status_command).and_return("/etc/init.d/chefhasmonkeypants status")
+    @new_resource.stub!(:supports).and_return({:status => false})
+    @new_resource.stub!(:status_command).and_return("/etc/init.d/chefhasmonkeypants status")
     @provider.stub!(:run_command).with({:command => "/etc/init.d/chefhasmonkeypants status"}).and_return(0)
     @current_resource.should_receive(:running).with(true)
     @provider.load_current_resource
