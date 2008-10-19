@@ -45,8 +45,11 @@ class Chef
       @action = :nothing
       @updated = false
       @supports = {}
-      @source_line = caller(4).shift.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
-      @source_line = ::File.expand_path(@source_line) if @source_line
+      sline = caller(4).shift
+      if sline
+        @source_line = sline.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
+        @source_line = ::File.expand_path(@source_line) if @source_line
+      end
     end
     
     def supports(args={})
