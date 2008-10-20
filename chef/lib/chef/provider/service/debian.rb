@@ -29,10 +29,13 @@ class Chef
 
           status = popen4("update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
             stdin.close
-            if stdout.gets(nil) =~ /etc\/rc[\dS].d\/S|not installed/i
-              @current_resource.enabled true
-            else
-              @current_resource.enabled false
+            r = /etc\/rc[\dS].d\/S|not installed/i
+            stdout.each_line do |line|
+              if r.match(line)
+                @current_resource.enabled true
+              else
+                @current_resource.enabled false
+              end
             end
           end  
 

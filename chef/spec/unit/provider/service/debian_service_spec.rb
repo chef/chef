@@ -25,13 +25,15 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :enabled => false
     )
 
     @current_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :enabled => false
     )
 
     @provider = Chef::Provider::Service::Debian.new(@node, @new_resource)
@@ -57,28 +59,36 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
     @provider.load_current_resource
   end
 
-  it "should get the stdout from update-rc.d" do
-    @stdout.stub!(:gets).and_return(" Removing any system startup links for /etc/init.d/chef ...")
-    @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @stdout.should_receive(:gets).with(nil).and_return(" Removing any system startup links for /etc/init.d/chef ...")
+  it "should read the stdout of the update-rc.d command" do
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    @stdout.should_receive(:each_line).and_return(true)
     @provider.load_current_resource
   end
 
   it "should set enabled to true if the regex matches" do
-    @stdout.stub!(:gets).and_return(" Removing any system startup links for /etc/init.d/chef ...\n/etc/rc0.d/K20chef\n/etc/rc1.d/K20chef\n/etc/rc2.d/S20chef\n/etc/rc3.d/S20chef\n/etc/rc4.d/S20chef\n/etc/rc5.d/S20chef\n/etc/rc6.d/K20chef")
-    @current_resource.should_recieve(:running).with(true)
+    @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/puppet ...").
+                              and_yield("   /etc/rc0.d/K20puppet").
+                              and_yield("   /etc/rc1.d/K20puppet").
+                              and_yield("   /etc/rc2.d/S20puppet").
+                              and_yield("   /etc/rc3.d/S20puppet").
+                              and_yield("   /etc/rc4.d/S20puppet").
+                              and_yield("   /etc/rc5.d/S20puppet").
+                              and_yield("   /etc/rc6.d/K20puppet")
+    @current_resource.should_recieve(:enabled).with(true)
     @provider.load_current_resource
   end
 
   it "should set enabled to false if the regex does not match" do
-    @current_resource.should_recieve(:running).with(false)
+    @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/puppet ...")
+    @current_resource.should_recieve(:enabled).with(false)
     @provider.load_current_resource
   end
 
   it "should raise an error if update-rc.d fails" do
-    @status.stub!(:exitstatus).and_return(-1)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Exec)
-  end
+    @status.stub!(:exitstatus).and_return(42)
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+  end 
 end
 
 describe Chef::Provider::Service::Debian, "enable_service" do
