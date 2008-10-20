@@ -89,8 +89,9 @@ class Chef
           elsif @new_resource.restart_command
             run_command(:command => @new_resource.restart_command)
           else
-            stop_service
-            start_service
+            stop_service(name)
+            sleep 1
+            start_service(name)
           end
         end
 
