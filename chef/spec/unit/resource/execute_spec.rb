@@ -64,6 +64,11 @@ describe Chef::Resource::Execute do
     @resource.only_if.should eql("woot")
   end
   
+  it "should accept a block for only_if" do
+    @resource.only_if() { "woot" }
+    @resource.only_if.should be_a_kind_of(Proc)
+  end
+  
   it "should accept an array for the execution path" do
     @resource.path ["woot"]
     @resource.path.should eql(["woot"])
@@ -82,6 +87,11 @@ describe Chef::Resource::Execute do
   it "should accept a string for not_if" do
     @resource.not_if "woot"
     @resource.not_if.should eql("woot")
+  end
+  
+  it "should accept a block for not_if" do
+    @resource.not_if() { "woot" }
+    @resource.not_if.should be_a_kind_of(Proc)
   end
   
   it "should accept a string for the user" do

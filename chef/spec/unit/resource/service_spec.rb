@@ -97,4 +97,19 @@ describe Chef::Resource::Service do
     }.should raise_error(ArgumentError)
   end
   
+  %w{enabled running}.each do |attrib|
+    it "should accept true for #{attrib}" do
+      @resource.send(attrib, true) 
+      @resource.send(attrib).should eql(true)
+    end
+  
+    it "should accept false for #{attrib}" do
+      @resource.send(attrib, false)
+      @resource.send(attrib).should eql(false)
+    end
+  
+    it "should not accept a string for #{attrib}" do
+      lambda { @resource.send(attrib, "poop") }.should raise_error(ArgumentError)
+    end
+  end
 end
