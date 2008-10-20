@@ -1,5 +1,22 @@
 bork
 
+list_of_users = []
+list_of_users << { :user => "aj", :uid => 2000, :gid => 110, :home => "/tmp/home/aj", :comment => "AJ Christensen", :shell => "/bin/bash" }.to_mash
+list_of_users << { :user => "adam", :uid => 2001, :gid => 110, :home => "/tmp/home/adam", :comment => "Adam Jacobs", :shell => "/bin/zsh" }.to_mash
+
+list_of_users.each do |u|
+  u.each { |k,v| Chef::Log.info("#{k}: #{v}") }
+  user "#{u['user']}-test" do
+    uid u['uid']
+    gid u['gid']
+    home u['home']
+    shell u['shell']
+    comment u['comment']
+    shell u['shell']
+    action [ :create, :lock ]
+  end
+end
+
 execute "write-foolio" do
   command <<-EOH
     echo 'monkeypants #{node[:ipaddress]} #{node[:friends]}' > /tmp/foolio
@@ -23,7 +40,7 @@ print "Woot!\n";
   }
 end
 
-unless @node[:operatingsystem] == "Darwin"
+unless @node[:operatingsystem] == "Ubuntu" or @node['operatingsystem'] == "Darwin"
   package "emacs"
 
   package "emacs" do
@@ -44,41 +61,47 @@ unless @node[:operatingsystem] == "Darwin"
   end
 end
 
-package "ruby-djbdns" do
-  action [ :install, :remove, :upgrade, :purge ]
-  provider Chef::Provider::Package::Rubygems
-end
+#package "ruby-djbdns" do
+#  action [ :install, :remove, :upgrade, :purge ]
+#  provider Chef::Provider::Package::Rubygems
+#end
 
-gem_package "ruby-djbdns" do
-  action [ :install, :remove, :upgrade, :purge ]
+#gem_package "ruby-djbdns" do
+#  action [ :install, :remove, :upgrade, :purge ]
+#end
+
+file "/tmp/glen" do
+  owner "aj-test"
+  mode 0644
+  action :create
 end
 
 file "/tmp/foo" do
-  owner    "adam"
+  owner    "adam-test"
   mode     0644
   action   :create
   notifies :delete, resources(:file => "/tmp/glen"), :delayed
 end
 
 remote_file "/tmp/the_park.txt" do
-  owner "adam"
+  owner "adam-test"
   mode 0644
   source "the_park.txt"
   action :create
 end
 
 remote_directory "/tmp/remote_test" do
-  owner "adam"
+  owner "adam-test"
   mode 0755
   source "remote_test"
   files_owner "root"
-  files_group(node[:operatingsystem] == "Debian" ? "root" : "wheel")
+  files_group(@node['operatingsystem'] == "Ubuntu" ? "admin" : "wheel")
   files_mode 0644
   files_backup false
 end
 
 template "/tmp/foo-template" do
-  owner    "adam"
+  owner    "adam-test"
   mode     0644
   source "monkey.erb"
   variables({
@@ -96,13 +119,19 @@ link "/tmp/foo" do
   target_file "/tmp/xmen"
 end 
 
-# 0.upto(1000) do |n|
-#   file "/tmp/somefile#{n}" do
-#     owner  "adam"
-#     mode   0644
-#     action :create
-#   end
-# end
+directory "/tmp/lots_of_files/" do
+  owner "adam-test"
+  mode 0755
+  action :create
+end
+
+1000.times do |n|
+  file "/tmp/lots_of_files/somefile#{n}" do
+    owner  "adam-test"
+    mode   0644
+    action :create
+  end
+end
 
 directory "/tmp/home" do
   owner "root"
@@ -128,25 +157,26 @@ end
 
 monkey "snack"
 
-# user "katie" do
-#   uid 9999
-#   gid 100
-#   home "/tmp/home/katie"
-#   shell "/bin/bash"
-#   comment "Katie Bethell"
-#   action :create
-# end
-# 
-# user "katie" do
-#   gid 101
-#   action :modify
-# end
-# 
-# user "katie" do
-#   shell "/home/katie"
-#   action :manage
-# end
-# 
-# user "katie" do
-#   action [ :lock, :unlock, :remove ]
-# end
+user "katie" do
+  uid 9999
+  gid 100
+  home "/tmp/home/katie"
+  shell "/bin/bash"
+  comment "Katie Bethell"
+  action :create
+end
+ 
+user "katie" do
+  gid 101
+  action :modify
+end
+
+user "katie" do
+  shell "/home/katie"
+  action :manage
+end
+
+user "katie" do
+  action [ :lock, :unlock, :remove ]
+end
+
