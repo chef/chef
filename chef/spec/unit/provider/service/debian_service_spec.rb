@@ -48,8 +48,8 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
     @pid = mock("PID", :null_object => true)
   end
 
-  it "should popen4 'update-rc.d -n -f service_name'" do
-    @provider.should_receive(:popen4).with("update-rc.d -n -f #{@current_resource.service_name} remove").and_return(@status)
+  it "should popen4 '/usr/sbin/update-rc.d -n -f service_name'" do
+    @provider.should_receive(:popen4).with("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove").and_return(@status)
     @provider.load_current_resource
   end
   
@@ -114,7 +114,7 @@ describe Chef::Provider::Service::Debian, "enable_service" do
   end
 
   it "should call update-rc.d 'service_name' defaults" do
-    @provider.should_receive(:run_command).with({:command => "update-rc.d #{@new_resource.service_name} defaults"})
+    @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults"})
     @provider.enable_service(@new_resource.service_name)
   end
 end
@@ -133,7 +133,7 @@ describe Chef::Provider::Service::Debian, "disable_service" do
   end
 
   it "should call update-rc.d -f 'service_name' remove" do
-    @provider.should_receive(:run_command).with({:command => "update-rc.d -f #{@new_resource.service_name} remove"})
+    @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove"})
     @provider.disable_service(@new_resource.service_name)
   end
 end

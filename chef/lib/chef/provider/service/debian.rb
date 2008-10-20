@@ -26,8 +26,12 @@ class Chef
       class Debian < Chef::Provider::Service::Init
         def load_current_resource
           super
+          
+          unless ::File.exists? "/usr/sbin/update-rc.d"
+            raise Chef::Exception::Service, "/usr/sbin/update-rc.d does not exist!"
+          end
 
-          status = popen4("update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
+          status = popen4("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
             stdin.close
             r = /etc\/rc[\dS].d\/S|not installed/i
             stdout.each_line do |line|
@@ -41,18 +45,18 @@ class Chef
           end  
 
           unless status.exitstatus == 0
-            raise Chef::Exception::Service, "update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
+            raise Chef::Exception::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
           end
 
           @current_resource        
         end
 
         def enable_service(name)
-          run_command(:command => "update-rc.d #{name} defaults")
+          run_command(:command => "/usr/sbin/update-rc.d #{name} defaults")
         end
 
         def disable_service(name)
-          run_command(:command => "update-rc.d -f #{name} remove")
+          run_command(:command => "/usr/sbin/update-rc.d -f #{name} remove")
         end
         
       end
