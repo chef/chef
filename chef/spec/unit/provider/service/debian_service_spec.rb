@@ -86,9 +86,17 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
     @provider.load_current_resource
   end
 
+=begin
   it "should raise an error if update-rc.d fails" do
     @status.stub!(:exitstatus).and_return(-1)
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+  end
+=end
+
+  it "should raise an error if update-rc.d fails"
+
+  it "should return the current resource" do
+    @provider.load_current_resource.should eql(@current_resource)
   end
 end
 
