@@ -21,24 +21,30 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 describe Chef::Provider::Service::Init, "load_current_resource" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
+    @node.stub!(:[]).with(:ps).and_return("ps -ef")
+
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
       :service_name => "chef",
       :running => false
     )
+    @new_resource.stub!(:pattern).and_return("chef")
+    @new_resource.stub!(:supports).and_return({:status => false})
+    @new_resource.stub!(:status_command).and_return(false)
+
     @current_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
       :service_name => "chef",
       :running => false
     )
+
     @provider = Chef::Provider::Service::Init.new(@node, @new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
 
     @status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
-
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)
     @stdout.stub!(:each).and_yield("aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb").
@@ -46,8 +52,6 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
                          and_yield("aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb")
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
-    
-    @node = mock("Node", :null_object => true)
   end
   
   it "should create a current resource with the name of the new resource" do
@@ -74,14 +78,12 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
   end
 
   it "should run the services status command if one has been specified" do
-    @new_resource.stub!(:supports).and_return({:status => false})
     @new_resource.stub!(:status_command).and_return("/etc/init.d/chefhasmonkeypants status")
     @provider.should_receive(:run_command).with({:command => "/etc/init.d/chefhasmonkeypants status"})
     @provider.load_current_resource
   end
   
   it "should set running to true if the services status command returns 0" do
-    @new_resource.stub!(:supports).and_return({:status => false})
     @new_resource.stub!(:status_command).and_return("/etc/init.d/chefhasmonkeypants status")
     @provider.stub!(:run_command).with({:command => "/etc/init.d/chefhasmonkeypants status"}).and_return(0)
     @current_resource.should_receive(:running).with(true)
@@ -89,20 +91,42 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
   end
 
   it "should raise an exception if the node doesn't have a 'ps' / :ps attribute" do
-    @new_resource.stub!(:supports).and_return({:status => false})
-    @new_resource.stub!(:status_command).and_return(false)
     @node.stub!(:[]).with(:ps).and_return("")
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
   end
 
-  it "should run the node's ps command"
+  it "should popen4 the node's ps command" do
+    @provider.should_receive(:popen4).with(@node[:ps]).and_return(@status)
+    @provider.load_current_resource
+  end
 
-  it "should close stdin on the ps command"
+  it "should close stdin on the ps command" do
+    @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    @stdin.should_receive(:close).and_return(true)
+    @provider.load_current_resource
+  end
 
-  it "should read stdout on the ps command"
+  it "should read stdout on the ps command" do
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    @stdout.should_receive(:each_line).and_return(true)
+    @provider.load_current_resource
+  end
 
-  it "should raise an exception if ps fails"
+  it "should set running to true if the regex matches the output" do
+    @stdout.stub!(:each_line).and_yield("aj        7842  5057  0 21:26 pts/2    00:00:06 chef").
+                              and_yield("aj        7842  5057  0 21:26 pts/2    00:00:06 poos")
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    @current_resource.should_receive(:running).with(true)
+    @provider.load_current_resource 
+  end
 
-  it "should return the current resource"
+  it "should raise an exception if ps fails" do
+    @status.stub!(:exitstatus).and_return(-1)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+  end
+
+  it "should return the current resource" do
+    @provider.load_current_resource.should eql(@current_resource)
+  end
 
 end
