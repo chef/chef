@@ -43,7 +43,7 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
     @provider.stub!(:popen4).and_return(@status)
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)
-    @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/puppet ...").
+    @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/puppet ...")
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
   end
