@@ -53,7 +53,11 @@ class Chef
     end
     
     def supports(args={})
-      @supports = args
+      if args.any?
+        @supports = args
+      else
+        @supports
+      end
     end
     
     def provider(arg=nil)
