@@ -33,6 +33,7 @@ class Chef
             stdout.each_line do |line|
               if r.match(line)
                 @current_resource.enabled true
+                break
               else
                 @current_resource.enabled false
               end

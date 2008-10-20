@@ -43,7 +43,7 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
     @provider.stub!(:popen4).and_return(@status)
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)
-    @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/puppet ...")
+    @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/chef ...")
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
   end
@@ -66,29 +66,30 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
   end
 
   it "should set enabled to true if the regex matches" do
-    @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/puppet ...").
-                              and_yield("   /etc/rc0.d/K20puppet").
-                              and_yield("   /etc/rc1.d/K20puppet").
-                              and_yield("   /etc/rc2.d/S20puppet").
-                              and_yield("   /etc/rc3.d/S20puppet").
-                              and_yield("   /etc/rc4.d/S20puppet").
-                              and_yield("   /etc/rc5.d/S20puppet").
-                              and_yield("   /etc/rc6.d/K20puppet")
+    @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/chef ...").
+                              and_yield("   /etc/rc0.d/K20chef").
+                              and_yield("   /etc/rc1.d/K20chef").
+                              and_yield("   /etc/rc2.d/S20chef").
+                              and_yield("   /etc/rc3.d/S20chef").
+                              and_yield("   /etc/rc4.d/S20chef").
+                              and_yield("   /etc/rc5.d/S20chef").
+                              and_yield("   /etc/rc6.d/K20chef")
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     @current_resource.should_recieve(:enabled).with(true)
     @provider.load_current_resource
   end
 
   it "should set enabled to false if the regex does not match" do
-    @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/puppet ...")
+    @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/chef ...")
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     @current_resource.should_recieve(:enabled).with(false)
     @provider.load_current_resource
   end
 
   it "should raise an error if update-rc.d fails" do
-    @status.stub!(:exitstatus).and_return(42)
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    @status.stub!(:exitstatus).and_return(-1)
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
-  end 
+  end
 end
 
 describe Chef::Provider::Service::Debian, "enable_service" do
