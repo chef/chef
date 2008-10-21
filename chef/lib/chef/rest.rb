@@ -25,6 +25,8 @@ require 'tempfile'
 class Chef
   class REST
     
+    attr_accessor :url, :cookies
+    
     def initialize(url)
       @url = url
       @cookies = Hash.new
@@ -89,7 +91,7 @@ class Chef
           'Accept' => "application/json",
         }
       end
-      if @cookies["#{url.host}:#{url.port}"]
+      if @cookies.has_key?("#{url.host}:#{url.port}")
         headers['Cookie'] = @cookies["#{url.host}:#{url.port}"]
       end
       req = nil
@@ -124,7 +126,8 @@ class Chef
           tf = Tempfile.new("chef-rest") 
           # Stolen from http://www.ruby-forum.com/topic/166423
           # Kudos to _why!
-          size, total = 0, response.header['Content-Length'].to_i
+          size = 0
+          total = response.header['Content-Length'].to_i
           response.read_body do |chunk|
             tf.write(chunk) 
             size += chunk.size

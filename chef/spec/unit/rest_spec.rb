@@ -104,6 +104,7 @@ describe Chef::REST, "run_request method" do
     @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(true)
     @http_response_mock.stub!(:body).and_return("ninja")
     @http_response_mock.stub!(:error!).and_return(true)
+    @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "5" })
     @http_mock = mock("Net::HTTP", :null_object => true)
     @http_mock.stub!(:verify_mode=).and_return(true)
     @http_mock.stub!(:read_timeout=).and_return(true)
@@ -115,7 +116,7 @@ describe Chef::REST, "run_request method" do
     @request_mock.stub!(:method).and_return(true)
     @request_mock.stub!(:path).and_return(true)
     @http_mock.stub!(:request).and_return(@http_response_mock)
-    @tf_mock = mock(Tempfile, { :print => true, :close => true })
+    @tf_mock = mock(Tempfile, { :print => true, :close => true, :write => true })
     Tempfile.stub!(:new).with("chef-rest").and_return(@tf_mock)
   end
   
@@ -142,6 +143,14 @@ describe Chef::REST, "run_request method" do
   it "should set a read timeout based on the rest_timeout config option" do
     Chef::Config[:rest_timeout] = 10
     @http_mock.should_receive(:read_timeout=).with(10).and_return(true)
+    do_run_request
+  end
+  
+  it "should set the cookie for this request if one exists for the given host:port" do
+    @r.cookies = { "#{@url_mock.host}:#{@url_mock.port}" => "cookie monster" }
+    Net::HTTP::Get.should_receive(:new).with("/?foo=bar", 
+      { 'Accept' => 'application/json', 'Cookie' => 'cookie monster' }
+    ).and_return(@request_mock)
     do_run_request
   end
   
@@ -211,31 +220,49 @@ describe Chef::REST, "run_request method" do
     do_run_request(:GET, false, 10, true)
   end
   
-  ###
-  # TODO - Figure out how to test the http.request(foo) do |response| block
-  ###
-  # it "should create a tempfile for the output of a raw request" do
-  #   fake_http = FakeHTTP.new
-  #   fake_http.response_object = @http_response_mock
-  #   Net::HTTP.stub!(:new).and_return(fake_http)
-  #   Tempfile.should_receive(:new).with("chef-rest").and_return(@tf_mock)
-  #   do_run_request(:GET, false, 10, true).should eql(@tf_mock)    
-  # end
-  # 
-  # it "should populate the tempfile with the value of the raw request" do
-  #   fake_http = FakeHTTP.new
-  #   fake_http.response_object = @http_response_mock
-  #   Net::HTTP.stub!(:new).and_return(fake_http)
-  #   @tf_mock.should_receive(:write, "ninja").once.and_return(true)
-  #   do_run_request(:GET, false, 10, true)
-  # end
-  # 
-  # it "should close the tempfile if we're doing a raw request" do
-  #   fake_http = FakeHTTP.new
-  #   fake_http.response_object = @http_response_mock
-  #   Net::HTTP.stub!(:new).and_return(fake_http)
-  #   @tf_mock.should_receive(:close).once.and_return(true)
-  #   do_run_request(:GET, false, 10, true)
-  # end
+  it "should create a tempfile for the output of a raw request" do
+    @http_mock.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
+    Tempfile.should_receive(:new).with("chef-rest").and_return(@tf_mock)
+    do_run_request(:GET, false, 10, true).should eql(@tf_mock)    
+  end
+  
+  it "should read the body of the response in chunks on a raw request" do
+    @http_mock.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
+    @http_response_mock.should_receive(:read_body).and_return(true)
+    do_run_request(:GET, false, 10, true)
+  end
+  
+  it "should populate the tempfile with the value of the raw request" do
+    @http_mock.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
+    @http_response_mock.stub!(:read_body).and_yield("ninja")
+    @tf_mock.should_receive(:write, "ninja").once.and_return(true)
+    do_run_request(:GET, false, 10, true)
+  end
+  
+  it "should close the tempfile if we're doing a raw request" do
+    @http_mock.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
+    @tf_mock.should_receive(:close).once.and_return(true)
+    do_run_request(:GET, false, 10, true)
+  end
+  
+  it "should not raise a divide by zero exception if the size is 0" do
+    @http_mock.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
+    @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "5" })
+    @http_response_mock.stub!(:read_body).and_yield('')
+    lambda { do_run_request(:GET, false, 10, true) }.should_not raise_error(ZeroDivisionError)
+  end
+  
+  it "should not raise a divide by zero exception if the Content-Length is 0" do
+    @http_mock.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
+    @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "0" })
+    @http_response_mock.stub!(:read_body).and_yield("ninja")
+    lambda { do_run_request(:GET, false, 10, true) }.should_not raise_error(ZeroDivisionError)
+  end
+  
+  it "should call read_body without a block if the request is not raw" do
+    @http_mock.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
+    @http_response_mock.should_receive(:read_body)
+    do_run_request(:GET, false, 10, false)
+  end
 
 end
