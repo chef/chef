@@ -43,8 +43,7 @@ describe Chef::ResourceDefinition do
   end
   
   it "should expose the prototype hash params in the params hash" do
-    @def.define :smoke, :cigar => "cuban", :cigarette => "marlboro" do
-    end
+    @def.define :smoke, :cigar => "cuban", :cigarette => "marlboro" do; end
     @def.params[:cigar].should eql("cuban")
     @def.params[:cigarette].should eql("marlboro")
   end
@@ -80,4 +79,9 @@ describe Chef::ResourceDefinition do
     @def.name.should eql(:rico_suave)
     @def.params[:rich].should eql("smooth")
   end  
+  
+  it "should turn itself into a string based on the name with to_s" do
+    @def.name = :woot
+    @def.to_s.should eql("woot")
+  end
 end
