@@ -49,7 +49,9 @@ class Chef
         if @current_resource.source_file != @new_resource.source_file
           Chef::Log.info("Creating a #{@new_resource.link_type} link from #{@new_resource.source_file} -> #{@new_resource.target_file} for #{@new_resource}")
           if @new_resource.link_type == :symbolic
-            ::File.symlink(@new_resource.source_file, @new_resource.target_file)
+            run_command(
+              :command => "ln -nfs #{@new_resource.source_file} #{@new_resource.target_file}"
+            )
           elsif @new_resource.link_type == :hard
             ::File.link(@new_resource.source_file, @new_resource.target_file)
           end
