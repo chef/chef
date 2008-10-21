@@ -15,10 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+require File.join(File.dirname(__FILE__), "..", "mixin", "command")
 class Chef
   class Provider
     class Link < Chef::Provider
+      include Chef::Mixin::Command
+      
       def load_current_resource
         @current_resource = Chef::Resource::Link.new(@new_resource.name)
         @current_resource.target_file(@new_resource.target_file)
