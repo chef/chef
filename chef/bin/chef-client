@@ -79,6 +79,7 @@ Chef::Config.from_file(config[:config_file])
 if config[:log_level]
   Chef::Log.level(config[:log_level].to_sym)
 end
+config[:node_name] ||= Chef::Config[:node_name]
 
 c = Chef::Client.new
 c.json_attribs = config[:json_attribs]
