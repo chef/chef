@@ -5,7 +5,7 @@ require 'rake/gempackagetask'
 GEM = "chef-server"
 VERSION = "0.0.1"
 AUTHOR = "Adam Jacob"
-EMAIL = "adam@hjksolutions.com"
+EMAIL = "adam@opscode.com"
 HOMEPAGE = "http://hjksolutions.com"
 SUMMARY = "A configuration management system server."
 

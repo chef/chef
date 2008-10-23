@@ -71,27 +71,27 @@ end
 #end
 
 file "/tmp/glen" do
-  owner "aj-test"
+#  owner "aj-test"
   mode 0644
   action :create
 end
 
 file "/tmp/foo" do
-  owner    "adam-test"
+#  owner    "adam-test"
   mode     0644
   action   :create
   notifies :delete, resources(:file => "/tmp/glen"), :delayed
 end
 
 remote_file "/tmp/the_park.txt" do
-  owner "adam-test"
+#  owner "adam-test"
   mode 0644
   source "the_park.txt"
   action :create
 end
 
 remote_directory "/tmp/remote_test" do
-  owner "adam-test"
+#  owner "adam-test"
   mode 0755
   source "remote_test"
   files_owner "root"
@@ -101,7 +101,7 @@ remote_directory "/tmp/remote_test" do
 end
 
 template "/tmp/foo-template" do
-  owner    "adam-test"
+#  owner    "adam-test"
   mode     0644
   source "monkey.erb"
   variables({
@@ -120,14 +120,14 @@ link "/tmp/foo" do
 end 
 
 directory "/tmp/lots_of_files/" do
-  owner "adam-test"
+#  owner "adam-test"
   mode 0755
   action :create
 end
 
 1000.times do |n|
   file "/tmp/lots_of_files/somefile#{n}" do
-    owner  "adam-test"
+#    owner  "adam-test"
     mode   0644
     action :create
   end

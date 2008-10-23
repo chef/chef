@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 HJK Solutions, LLC
+# Author:: Adam Jacob (<adam@opscode.com>)
+# Copyright:: Copyright (c) 2008 OpsCode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,8 @@
 class CookbookTemplates < Application
   
   provides :html, :json
+  
+  include Chef::Mixin::Checksum
   
   def load_cookbook_templates()
     @cl = Chef::CookbookLoader.new
@@ -71,7 +73,13 @@ class CookbookTemplates < Application
       break if to_send
     end
     raise NotFound, "Cannot find a suitable template!" unless to_send
-    send_file(to_send)
+    current_checksum = checksum(to_send)
+    Chef::Log.debug("old sum: #{params[:checksum]}, new sum: #{current_checksum}") 
+    if current_checksum == params[:checksum]
+      display "Template #{to_send} has not changed", :status => 304
+    else
+      send_file(to_send)
+    end
   end
   
 end
