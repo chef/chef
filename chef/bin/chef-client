@@ -29,7 +29,8 @@ config = {
   :log_level => :info,
   :json_attribs => nil,
   :noop => false,
-  :validation_token => nil
+  :validation_token => nil,
+  :node_name => nil
 }
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
@@ -38,6 +39,9 @@ opts = OptionParser.new do |opts|
   end
   opts.on("-j JSON_ATTRIBS", "--json-attributes JSON_ATTRIBS", "Load attributes from a JSON file") do |j|
     config[:json_attribs] = j
+  end
+  opts.on("-N NODE_NAME", "--node-name NODE_NAME", "The node name for this client") do |n|
+    config[:node_name] = n
   end
   opts.on("-n", "--noop", "Print what you would do, but don't actually do it.") do
     config[:noop] = true
@@ -70,8 +74,6 @@ if config[:json_attribs]
   config[:json_attribs] = JSON.parse(IO.read(config[:json_attribs]))
 end
 
-
-
 # Load our config file
 Chef::Config.from_file(config[:config_file])
 if config[:log_level]
@@ -81,4 +83,5 @@ end
 c = Chef::Client.new
 c.json_attribs = config[:json_attribs]
 c.validation_token = config[:validation_token]
+c.node_name = config[:node_name]
 c.run

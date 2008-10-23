@@ -133,7 +133,6 @@ describe Chef::Provider::Template, "action_create_if_missing" do
 end
 
 describe Chef::Provider::Template, "generate_url" do
-  
   before(:each) do
     @resource = Chef::Resource::Template.new("seattle")
     @resource.cookbook_name = "daft"

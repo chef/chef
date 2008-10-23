@@ -54,9 +54,15 @@ class OpenidRegister < Application
     @registered_node = Chef::OpenIDRegistration.new
     @registered_node.name = params[:id]
     @registered_node.set_password(params[:password])
-    if params[:validation_token] == Chef::Config[:validation_token]
-      @registered_node.validated = true
-    end  
+    if Chef::Config[:validation_token]
+      if params[:validation_token] == Chef::Config[:validation_token]
+        @registered_node.validated = true
+      else
+        @registered_node.validated = false
+      end
+    else
+      @registered_node.validated = false
+    end
     @registered_node.save
     display @registered_node
   end
