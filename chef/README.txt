@@ -21,7 +21,6 @@ RubyGems:
 * stomp
 * stompserver
 * ultraviolet
-* 
 * facter
 * ferret
 * merb-core
