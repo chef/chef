@@ -1,7 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 HJK Solutions, LLC
-# License:: Apache License, Version 2.0
+# Cookbook Name:: template-test
+# Recipe:: default
+#
+# Copyright 2008, OpsCode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,17 +17,9 @@
 # limitations under the License.
 #
 
-require 'rubygems'
-require 'spec/story'
-
-require File.join(File.dirname(__FILE__), "..", "lib", "chef")
-Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
-
-Chef::Config.log_level(:fatal)
-Chef::Config[:couchdb_database] = "chef_test"
-
-def create_couchdb_database
-  c = Chef::CouchDB.new
-  c.create_db
+template "/tmp/whazzit" do
+  variables({
+    :whosa => "whazzit"
+  })
+  source "whazzit.erb"
 end
-

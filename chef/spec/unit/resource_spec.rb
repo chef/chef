@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 HJK Solutions, LLC
+# Author:: Adam Jacob (<adam@opscode.com>)
+# Copyright:: Copyright (c) 2008 OpsCode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -141,4 +141,13 @@ describe Chef::Resource do
     serialized_node.name.should eql(@resource.name)
   end
   
+  it "should allow you to set what features this resource supports" do
+    support_hash = { :one => :two }
+    @resource.supports(support_hash)
+    @resource.supports.should eql(support_hash)
+  end
+  
+  it "should return the current value of supports" do
+    @resource.supports.should == {}
+  end
 end

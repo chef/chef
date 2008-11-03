@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 HJK Solutions, LLC
+# Author:: Adam Jacob (<adam@opscode.com>)
+# Copyright:: Copyright (c) 2008 OpsCode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,6 +56,7 @@ class Chef
       :openid_store_path => "/var/chef/openid/db",
       :openid_cstore_path => "/var/chef/openid/cstore",
       :file_cache_path => "/var/chef/cache",
+      :node_name => nil,
       :executable_path => ENV['PATH'] ? ENV['PATH'].split(File::PATH_SEPARATOR) : []
     }
     

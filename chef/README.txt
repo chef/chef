@@ -21,7 +21,6 @@ RubyGems:
 * stomp
 * stompserver
 * ultraviolet
-* 
 * facter
 * ferret
 * merb-core
@@ -60,8 +59,8 @@ Install all of the above.  To fire up a develpment environment, do the following
 
 Chef - A configuration management system
 
-Author:: Adam Jacob (<adam@hjksolutions.com>)
-Copyright:: Copyright (c) 2008 HJK Solutions, LLC
+Author:: Adam Jacob (<adam@opscode.com>)
+Copyright:: Copyright (c) 2008 OpsCode, Inc.
 License:: Apache License, Version 2.0
 
 Licensed under the Apache License, Version 2.0 (the "License");

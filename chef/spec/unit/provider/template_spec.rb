@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 HJK Solutions, LLC
+# Author:: Adam Jacob (<adam@opscode.com>)
+# Copyright:: Copyright (c) 2008 OpsCode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,7 @@ describe Chef::Provider::Template, "action_create" do
     File.stub!(:read).and_return("monkeypoop")
     @rest.stub!(:get_rest).and_return(@tempfile)
     @resource = Chef::Resource::Template.new("seattle")
+    @resource.cookbook_name = "foo"
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
     @resource.source("http://foo")
     @node = Chef::Node.new
@@ -35,6 +36,9 @@ describe Chef::Provider::Template, "action_create" do
     @provider.current_resource = @resource.clone
     @provider.current_resource.checksum("dad86c61eea237932f201009e5431609")
     FileUtils.stub!(:cp).and_return(true)
+    Chef::FileCache.stub!(:has_key).and_return(false)
+    Chef::FileCache.stub!(:move_to).and_return(true)
+    Chef::FileCache.stub!(:load).and_return("monkeypoop")
   end
   
   def do_action_create
@@ -82,10 +86,53 @@ describe Chef::Provider::Template, "action_create" do
     @provider.should_receive(:set_mode).and_return(true)
     do_action_create
   end
+  
+  it "should build a checksum of the file in the cache (assuming it exists)" do
+    Chef::FileCache.stub!(:has_key?).and_return(true)
+    Chef::FileCache.stub!(:load).and_return("/some/path")
+    @provider.should_receive(:checksum).with("/some/path")
+    do_action_create
+  end
+  
+  it "should not update the filecache if the template has not been modified on the server" do
+    error_response = mock("Net::HTTPNotModified", { :kind_of? => true })
+    @rest.stub!(:get_rest).and_raise(Net::HTTPRetriableError.new("foo", error_response))
+    Chef::FileCache.should_not_receive(:move_to)
+    do_action_create
+  end
+  
+  it "should raise an exception if we get a Net::HTTPRetriableError that is not from a NotModified response" do
+    error_response = mock("Net::HTTPNotModified", { :kind_of? => false })
+    @rest.stub!(:get_rest).and_raise(Net::HTTPRetriableError.new("foo", error_response))
+    lambda { do_action_create }.should raise_error(Net::HTTPRetriableError)
+  end
+  
+end
+
+describe Chef::Provider::Template, "action_create_if_missing" do
+  before(:each) do
+    @resource = Chef::Resource::Template.new("seattle")
+    @resource.cookbook_name = "daft"
+    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
+    @node = Chef::Node.new
+    @node.name "latte"
+    @provider = Chef::Provider::Template.new(@node, @resource)
+  end
+  
+  it "should not call action_create if the new resources path exists" do
+    File.stub!(:exists?).and_return(true)
+    @provider.should_not_receive(:action_create)
+    @provider.action_create_if_missing
+  end
+  
+  it "should call action create if the new resource path does not exist" do
+    File.stub!(:exists?).and_return(false)
+    @provider.should_receive(:action_create).and_return(true)
+    @provider.action_create_if_missing
+  end
 end
 
 describe Chef::Provider::Template, "generate_url" do
-  
   before(:each) do
     @resource = Chef::Resource::Template.new("seattle")
     @resource.cookbook_name = "daft"

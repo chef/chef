@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@hjksolutions.com>)
-# Copyright:: Copyright (c) 2008 HJK Solutions, LLC
+# Author:: Adam Jacob (<adam@opscode.com>)
+# Copyright:: Copyright (c) 2008 OpsCode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ class Chef
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
     
-    attr_accessor :node, :registration, :safe_name, :json_attribs, :validation_token
+    attr_accessor :node, :registration, :safe_name, :json_attribs, :validation_token, :node_name
     
     # Creates a new Chef::Client.
     def initialize()
@@ -37,6 +37,7 @@ class Chef
       @validation_token = nil
       @registration = nil
       @json_attribs = nil
+      @node_name = nil
       @rest = Chef::REST.new(Chef::Config[:registration_url])
     end
     
@@ -58,7 +59,7 @@ class Chef
       start_time = Time.now
       Chef::Log.info("Starting Chef Run")
       
-      build_node
+      build_node(@node_name)
       register
       authenticate
       sync_library_files
