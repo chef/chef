@@ -85,7 +85,7 @@ class Chef
           end
         rescue => e
           Chef::Log.error("#{resource} (#{resource.source_line}) had an error:")
-          raise 
+          raise e unless resource.ignore_failure
         end
       end
       

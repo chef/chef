@@ -65,6 +65,23 @@ describe Chef::Runner do
     @runner.converge
   end
   
+  it "should raise exceptions as thrown by a provider" do
+    Chef::Platform.stub!(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
+    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
+    Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
+    provider.stub!(:action_sell).once.and_raise(ArgumentError)
+    lambda { @runner.converge }.should raise_error(ArgumentError)
+  end
+  
+  it "should not raise exceptions thrown by providers if the resource has ignore_failure set to true" do
+    Chef::Platform.stub!(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
+    @collection[0].stub!(:ignore_failure).and_return(true)
+    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
+    Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
+    provider.stub!(:action_sell).once.and_raise(ArgumentError)
+    lambda { @runner.converge }.should_not raise_error(ArgumentError)
+  end
+  
   it "should execute immediate actions on changed resources" do
     Chef::Platform.should_receive(:find_provider_for_node).exactly(3).times.and_return(Chef::Provider::SnakeOil)
     provider = Chef::Provider::SnakeOil.new(@node, @collection[0])

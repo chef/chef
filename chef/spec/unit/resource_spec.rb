@@ -150,4 +150,19 @@ describe Chef::Resource do
   it "should return the current value of supports" do
     @resource.supports.should == {}
   end
+  
+  it "should default to throwing an error if a provider fails for a resource" do
+    @resource.ignore_failure.should == false
+  end
+  
+  it "should allow you to set whether a provider should throw exceptions with ignore_failure" do
+    @resource.ignore_failure(true)
+    @resource.ignore_failure.should == true
+  end
+  
+  it "should allow you to epic_fail" do
+    @resource.epic_fail(true)
+    @resource.epic_fail.should == true
+  end
+  
 end
