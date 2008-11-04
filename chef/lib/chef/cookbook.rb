@@ -22,6 +22,10 @@ class Chef
                   :lib_files, :name
     attr_reader :recipe_files
     
+    # Creates a new Chef::Cookbook object.  
+    #
+    # === Returns
+    # object<Chef::Cookbook>:: Duh. :)
     def initialize(name)
       @name = name
       @attribute_files = Array.new
@@ -33,13 +37,28 @@ class Chef
       @lib_files = Array.new
     end
     
+    # Loads all the library files in this cookbook via require.
+    #
+    # === Returns
+    # true:: Always returns true
     def load_libraries
       @lib_files.each do |file|
         Chef::Log.debug("Loading cookbook #{name} library file: #{file}")
         require file
       end
+      true
     end
     
+    # Loads all the attribute files in this cookbook within a particular <Chef::Node>.
+    #
+    # === Parameters
+    # node<Chef::Node>:: The Chef::Node to apply the attributes to
+    #
+    # === Returns
+    # node<Chef::Node>:: The updated Chef::Node object
+    #
+    # === Raises
+    # <ArgumentError>:: If the argument is not a kind_of? <Chef::Node>
     def load_attributes(node)
       unless node.kind_of?(Chef::Node)
         raise ArgumentError, "You must pass a Chef::Node to load_attributes!"
@@ -51,6 +70,10 @@ class Chef
       node
     end
     
+    # Loads all the resource definitions in this cookbook.
+    #
+    # === Returns
+    # definitions<Hash>: A hash of <Chef::ResourceDefinition> objects, keyed by name.
     def load_definitions
       results = Hash.new
       @definition_files.each do |file|

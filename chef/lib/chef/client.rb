@@ -94,7 +94,7 @@ class Chef
     # node_name<String>:: The name of the node to build - defaults to nil
     #
     # === Returns
-    # node:: Returns the created node object, also stored in @node
+    # node<Chef::Node>:: Returns the created node object, also stored in @node
     def build_node(node_name=nil)
       node_name ||= Facter["fqdn"].value ? Facter["fqdn"].value : Facter["hostname"].value
       @safe_name = node_name.gsub(/\./, '_')

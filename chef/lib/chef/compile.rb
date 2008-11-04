@@ -22,6 +22,9 @@ class Chef
     
     # Creates a new Chef::Compile object.  This object gets used by the Chef Server to generate
     # a fully compiled recipe list for a node.
+    #
+    # === Returns
+    # object<Chef::Compile>:: Duh. :)
     def initialize()
       @node = nil
       @cookbook_loader = Chef::CookbookLoader.new
@@ -35,7 +38,7 @@ class Chef
     # The first step in compiling the catalog. Results available via the node accessor.
     #
     # === Returns
-    # <Chef::Node>:: The loaded Chef Node
+    # node<Chef::Node>:: The loaded Chef Node
     def load_node(name)
       Chef::Log.debug("Loading Chef Node #{name} from CouchDB")
       @node = Chef::Node.load(name)
