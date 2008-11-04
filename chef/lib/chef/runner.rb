@@ -60,6 +60,24 @@ class Chef
       @collection.each do |resource|
         begin
           Chef::Log.debug("Processing #{resource}")
+          
+          # Check if this resource has an only_if block - if it does, skip it.
+          if resource.only_if
+            unless Chef::Mixin::Command.only_if(resource.only_if)
+              Chef::Log.debug("Skipping #{resource} due to only_if")
+              next
+            end
+          end
+          
+          # Check if this resource has a not_if block - if it does, skip it.
+          if resource.not_if
+            unless Chef::Mixin::Command.not_if(resource.not_if)
+              Chef::Log.debug("Skipping #{resource} due to not_if")
+              next
+            end
+          end
+          
+          # Walk the actions for this resource, building the provider and running each.
           action_list = resource.action.kind_of?(Array) ? resource.action : [ resource.action ]
           action_list.each do |ra|
             provider = build_provider(resource)

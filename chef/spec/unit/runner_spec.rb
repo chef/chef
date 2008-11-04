@@ -65,6 +65,28 @@ describe Chef::Runner do
     @runner.converge
   end
   
+  it "should check a resources only_if, if it is provided" do
+    @collection[0].should_receive(:only_if).and_return(nil)
+    @runner.converge
+  end
+  
+  it "should send a resources only_if to Chef::Mixin::Command.only_if" do
+    @collection[0].should_receive(:only_if).twice.and_return(true)
+    Chef::Mixin::Command.should_receive(:only_if).with(true).and_return(false)
+    @runner.converge
+  end
+  
+  it "should send a resources not_if to Chef::Mixin::Command.not_if" do
+    @collection[0].should_receive(:not_if).twice.and_return(true)
+    Chef::Mixin::Command.should_receive(:not_if).with(true).and_return(false)
+    @runner.converge
+  end
+  
+  it "should check a resources not_if, if it is provided" do
+    @collection[0].should_receive(:not_if).and_return(nil)
+    @runner.converge
+  end
+  
   it "should raise exceptions as thrown by a provider" do
     Chef::Platform.stub!(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
     provider = Chef::Provider::SnakeOil.new(@node, @collection[0])

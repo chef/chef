@@ -25,45 +25,70 @@ class Chef
   module Mixin
     module Command
       
+      # If command is a block, returns true if the block returns true, false if it returns false.
+      # ("Only run this resource if the block is true")
+      #
+      # If the command is not a block, executes the command.  If it returns any status other than
+      # 0, it returns false (clearly, a 0 status code is true)
+      #
+      # === Parameters
+      # command<Block>, <String>:: A block to check, or a string to execute
+      #
+      # === Returns
+      # true:: Returns true if the block is true, or if the command returns 0
+      # false:: Returns false if the block is false, or if the command returns a non-zero exit code.
+      def only_if(command)
+        if Proc === command
+          res = command.call
+          unless res
+            return false
+          end
+        else  
+          status = popen4(command) { |p, i, o, e| i.close }
+          if status.exitstatus != 0
+            return false
+          end
+        end
+        true
+      end
+      
+      module_function :only_if
+      
+      # If command is a block, returns false if the block returns true, true if it returns false.
+      # ("Do not run this resource if the block is true")
+      #
+      # If the command is not a block, executes the command.  If it returns a 0 exitstatus, returns false.
+      # ("Do not run this resource if the command returns 0")
+      #
+      # === Parameters
+      # command<Block>, <String>:: A block to check, or a string to execute
+      #
+      # === Returns
+      # true:: Returns true if the block is false, or if the command returns a non-zero exit status.
+      # false:: Returns false if the block is true, or if the command returns a 0 exit status.
+      def not_if(command)
+        if Proc === command
+          res = command.call
+          if res
+            return false
+          end
+        else  
+          status = popen4(command) { |p, i, o, e| i.close }
+          if status.exitstatus == 0
+            return false
+          end
+        end
+        true
+      end
+      
+      module_function :not_if
+      
       def run_command(args={})         
         if args.has_key?(:creates)
           if File.exists?(args[:creates])
             Chef::Log.debug("Skipping #{args[:command_string]} - creates #{args[:creates]} exists.")
             return false
           end
-        end
-        
-        if args.has_key?(:only_if)
-          if Proc === args[:only_if]
-            res = args[:only_if].call
-            unless res
-              Chef::Log.debug("Skipping #{args[:command_string]} - only_if #{args[:only_if]}")
-              return false
-            end    
-          else  
-            status = popen4(args[:only_if]) { |p, i, o, e| }
-            if status.exitstatus != 0
-              Chef::Log.debug("Skipping #{args[:command_string]} - only_if #{args[:only_if]} returned #{status.exitstatus}")
-              return false
-            end
-          end  
-        end
-        
-        if args.has_key?(:not_if)
-          if Proc === args[:not_if]
-            res = args[:not_if].call
-            unless res
-              Chef::Log.debug("Skipping #{args[:command_string]} - not_if #{args[:not_if]}")
-              return false
-            end    
-          else
-            Chef::Log.debug("I should be running '#{args[:not_if]}'")
-            status = popen4(args[:not_if]) { |p, i, o, e| }
-            if status.exitstatus == 0
-              Chef::Log.debug("Skipping #{args[:command_string]} - not_if #{args[:not_if]} returned #{status.exitstatus}")
-              return false
-            end
-          end  
         end
         
         exec_processing_block = lambda do |pid, stdin, stdout, stderr|
