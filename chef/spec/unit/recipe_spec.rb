@@ -125,16 +125,16 @@ CODE
   it "should evaluate another recipe with recipe_require" do
     Chef::Config.cookbook_path File.join(File.dirname(__FILE__), "..", "data", "cookbooks")
     @recipe.cookbook_loader.load_cookbooks
-    @recipe.require_recipe "openldap::gigantor"
+    @recipe.include_recipe "openldap::gigantor"
     res = @recipe.resources(:cat => "blanket")
     res.name.should eql("blanket")
     res.pretty_kitty.should eql(false)
   end
   
-  it "should load the default recipe for a cookbook if require_recipe is called without a ::" do
+  it "should load the default recipe for a cookbook if include_recipe is called without a ::" do
     Chef::Config.cookbook_path File.join(File.dirname(__FILE__), "..", "data", "cookbooks")
     @recipe.cookbook_loader.load_cookbooks
-    @recipe.require_recipe "openldap"
+    @recipe.include_recipe "openldap"
     res = @recipe.resources(:cat => "blanket")
     res.name.should eql("blanket")
     res.pretty_kitty.should eql(true)

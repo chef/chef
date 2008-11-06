@@ -1,8 +1,8 @@
-require_recipe "openldap"
-require_recipe "openldap::client"
-require_recipe "openldap::server"
-require_recipe "resolver"
-require_recipe "base"
+include_recipe "openldap"
+include_recipe "openldap::client"
+include_recipe "openldap::server"
+include_recipe "resolver"
+include_recipe "base"
 
 exec "restart-apache" do
   path "/usr/bin:/usr/local/bin"
