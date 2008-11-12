@@ -23,7 +23,6 @@
 - if @cookbook.template_files.length > 0
   %h2 Template Files
   - @cookbook.template_files.each do |f|
-    %h3= f
+    %h3= File.basename(f)
     %div= syntax_highlight(contents)
-    = partial(:syntax_highlight, :name => File.basename(f), :contents => f)
   
