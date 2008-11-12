@@ -86,7 +86,7 @@ class Chef
       def run_command(args={})         
         if args.has_key?(:creates)
           if File.exists?(args[:creates])
-            Chef::Log.debug("Skipping #{args[:command_string]} - creates #{args[:creates]} exists.")
+            Chef::Log.debug("Skipping #{args[:command]} - creates #{args[:creates]} exists.")
             return false
           end
         end
@@ -96,15 +96,15 @@ class Chef
 
           stdout_string = stdout.gets(nil)
           if stdout_string
-            Chef::Log.debug("---- Begin #{args[:command_string]} STDOUT ----")
+            Chef::Log.debug("---- Begin #{args[:command]} STDOUT ----")
             Chef::Log.debug(stdout_string.strip)
-            Chef::Log.debug("---- End #{args[:command_string]} STDOUT ----")
+            Chef::Log.debug("---- End #{args[:command]} STDOUT ----")
           end
           stderr_string = stderr.gets(nil)
           if stderr_string
-            Chef::Log.debug("---- Begin #{args[:command_string]} STDERR ----")
+            Chef::Log.debug("---- Begin #{args[:command]} STDERR ----")
             Chef::Log.debug(stderr_string.strip)
-            Chef::Log.debug("---- End #{args[:command_string]} STDERR ----")
+            Chef::Log.debug("---- End #{args[:command]} STDERR ----")
           end
         end
         
