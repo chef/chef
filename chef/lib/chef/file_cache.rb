@@ -75,12 +75,13 @@ class Chef
         file_path_array = File.split(path)
         file_name = file_path_array.pop
         if File.exists?(file) && File.writable?(file)
-          File.rename(
+          File.copy(
             file, 
             File.join(create_cache_path(File.join(file_path_array), true), file_name)
           )
+          File.unlink(file)
         else
-          raise RuntimeError, "Cannot move #{file} to #{path}!"
+          raise RuntimeError, "Canno`t move #{file} to #{path}!"
         end
       end
     
