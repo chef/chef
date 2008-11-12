@@ -18,6 +18,7 @@
 require File.join(File.dirname(__FILE__), "mixin", "params_validate")
 require File.join(File.dirname(__FILE__), "mixin", "create_path")
 require 'json'
+require 'fileutils'
 
 class Chef
   class FileCache
@@ -75,13 +76,12 @@ class Chef
         file_path_array = File.split(path)
         file_name = file_path_array.pop
         if File.exists?(file) && File.writable?(file)
-          File.copy(
+          FileUtils.mv(
             file, 
             File.join(create_cache_path(File.join(file_path_array), true), file_name)
           )
-          File.unlink(file)
         else
-          raise RuntimeError, "Canno`t move #{file} to #{path}!"
+          raise RuntimeError, "Cannot move #{file} to #{path}!"
         end
       end
     
