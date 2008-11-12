@@ -130,6 +130,10 @@ class Chef
         Chef::Log.debug("Facter Attribute: #{field} - #{value.inspect}")
         @node[field] = value
       end
+      platform, version = Chef::Platform.find_platform_and_version(@node)
+      Chef::Log.debug("Platform is #{platform} version #{version}")
+      @node[:platform] = platform
+      @node[:platform_version] = version
       @node
     end
     
