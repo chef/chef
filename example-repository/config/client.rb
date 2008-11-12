@@ -1,10 +1,7 @@
 #
-# Cookbook Name:: chef
-# Attribute File:: client.rb
+# Chef Client Config File
 #
-# Copyright 2008, Engine Yard, Inc.
-#
-# All rights reserved - Do Not Redistribute
+# Will be overwritten
 #
 
 log_level        :info
@@ -17,5 +14,6 @@ openid_url       "http://127.0.0.1:4001"
 template_url     "http://127.0.0.1:4000"
 remotefile_url   "http://127.0.0.1:4000"
 search_url       "http://127.0.0.1:4000"
+
 
 

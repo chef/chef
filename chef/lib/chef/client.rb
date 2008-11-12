@@ -94,7 +94,7 @@ class Chef
     # node_name<String>:: The name of the node to build - defaults to nil
     #
     # === Returns
-    # node:: Returns the created node object, also stored in @node
+    # node<Chef::Node>:: Returns the created node object, also stored in @node
     def build_node(node_name=nil)
       node_name ||= Facter["fqdn"].value ? Facter["fqdn"].value : Facter["hostname"].value
       @safe_name = node_name.gsub(/\./, '_')
@@ -130,6 +130,10 @@ class Chef
         Chef::Log.debug("Facter Attribute: #{field} - #{value.inspect}")
         @node[field] = value
       end
+      platform, version = Chef::Platform.find_platform_and_version(@node)
+      Chef::Log.debug("Platform is #{platform} version #{version}")
+      @node[:platform] = platform
+      @node[:platform_version] = version
       @node
     end
     

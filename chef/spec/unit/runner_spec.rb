@@ -65,6 +65,45 @@ describe Chef::Runner do
     @runner.converge
   end
   
+  it "should check a resources only_if, if it is provided" do
+    @collection[0].should_receive(:only_if).and_return(nil)
+    @runner.converge
+  end
+  
+  it "should send a resources only_if to Chef::Mixin::Command.only_if" do
+    @collection[0].should_receive(:only_if).twice.and_return(true)
+    Chef::Mixin::Command.should_receive(:only_if).with(true).and_return(false)
+    @runner.converge
+  end
+  
+  it "should send a resources not_if to Chef::Mixin::Command.not_if" do
+    @collection[0].should_receive(:not_if).twice.and_return(true)
+    Chef::Mixin::Command.should_receive(:not_if).with(true).and_return(false)
+    @runner.converge
+  end
+  
+  it "should check a resources not_if, if it is provided" do
+    @collection[0].should_receive(:not_if).and_return(nil)
+    @runner.converge
+  end
+  
+  it "should raise exceptions as thrown by a provider" do
+    Chef::Platform.stub!(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
+    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
+    Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
+    provider.stub!(:action_sell).once.and_raise(ArgumentError)
+    lambda { @runner.converge }.should raise_error(ArgumentError)
+  end
+  
+  it "should not raise exceptions thrown by providers if the resource has ignore_failure set to true" do
+    Chef::Platform.stub!(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
+    @collection[0].stub!(:ignore_failure).and_return(true)
+    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
+    Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
+    provider.stub!(:action_sell).once.and_raise(ArgumentError)
+    lambda { @runner.converge }.should_not raise_error(ArgumentError)
+  end
+  
   it "should execute immediate actions on changed resources" do
     Chef::Platform.should_receive(:find_provider_for_node).exactly(3).times.and_return(Chef::Provider::SnakeOil)
     provider = Chef::Provider::SnakeOil.new(@node, @collection[0])

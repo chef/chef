@@ -54,7 +54,7 @@ class Chef
       @@seen_recipes ||= Hash.new
     end
     
-    def require_recipe(*args)
+    def include_recipe(*args)
       args.flatten.each do |recipe|
         if @@seen_recipes.has_key?(recipe)
           Chef::Log.debug("I am not loading #{recipe}, because I have already seen it.")
@@ -72,6 +72,10 @@ class Chef
           cookbook.load_recipe("default", @node, @collection, @definitions, @cookbook_loader)
         end
       end
+    end
+    
+    def require_recipe(*args)
+      include_recipe(*args)
     end
     
     def resources(*args)

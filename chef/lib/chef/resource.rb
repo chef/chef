@@ -45,6 +45,9 @@ class Chef
       @action = :nothing
       @updated = false
       @supports = {}
+      @ignore_failure = false
+      @not_if = nil
+      @only_if = nil
       sline = caller(4).shift
       if sline
         @source_line = sline.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
@@ -100,6 +103,18 @@ class Chef
         raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
         @noop = tf
       end
+    end
+    
+    def ignore_failure(arg=nil)
+      set_or_return(
+        :ignore_failure,
+        arg,
+        :kind_of => [ TrueClass, FalseClass ]
+      )
+    end
+    
+    def epic_fail(arg=nil)
+      ignore_failure(arg)
     end
     
     def notifies(action, resources, timing=:delayed)
@@ -167,6 +182,24 @@ class Chef
         resource.instance_variable_set(k.to_sym, v)
       end
       resource
+    end
+    
+    def only_if(arg=nil, &blk)
+      if Kernel.block_given?
+        @only_if = blk
+      else
+        @only_if = arg if arg
+      end
+      @only_if
+    end
+    
+    def not_if(arg=nil, &blk)
+      if Kernel.block_given?
+        @not_if = blk
+      else
+        @not_if = arg if arg
+      end
+      @not_if
     end
     
     private

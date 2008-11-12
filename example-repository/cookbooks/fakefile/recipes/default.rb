@@ -1,22 +1,5 @@
 bork
 
-list_of_users = []
-list_of_users << { :user => "aj", :uid => 2000, :gid => 110, :home => "/tmp/home/aj", :comment => "AJ Christensen", :shell => "/bin/bash" }.to_mash
-list_of_users << { :user => "adam", :uid => 2001, :gid => 110, :home => "/tmp/home/adam", :comment => "Adam Jacobs", :shell => "/bin/zsh" }.to_mash
-
-list_of_users.each do |u|
-  u.each { |k,v| Chef::Log.info("#{k}: #{v}") }
-  user "#{u['user']}-test" do
-    uid u['uid']
-    gid u['gid']
-    home u['home']
-    shell u['shell']
-    comment u['comment']
-    shell u['shell']
-    action [ :create, :lock ]
-  end
-end
-
 execute "write-foolio" do
   command <<-EOH
     echo 'monkeypants #{node[:ipaddress]} #{node[:friends]}' > /tmp/foolio
@@ -157,26 +140,4 @@ end
 
 monkey "snack"
 
-user "katie" do
-  uid 9999
-  gid 100
-  home "/tmp/home/katie"
-  shell "/bin/bash"
-  comment "Katie Bethell"
-  action :create
-end
- 
-user "katie" do
-  gid 101
-  action :modify
-end
-
-user "katie" do
-  shell "/home/katie"
-  action :manage
-end
-
-user "katie" do
-  action [ :lock, :unlock, :remove ]
-end
 

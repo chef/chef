@@ -30,12 +30,10 @@ class Chef
         @cwd = nil
         @environment = nil
         @group = nil
-        @only_if = nil
         @path = nil
         @notify_only = false
         @returns = 0
         @timeout = nil
-        @not_if = nil
         @user = nil
         @allowed_actions.push(:run)
       end
@@ -79,15 +77,6 @@ class Chef
           :kind_of => [ String, Integer ]
         )
       end
-      
-      def only_if(arg=nil, &blk)
-        if Kernel.block_given?
-          @only_if = blk
-        else
-          @only_if = arg if arg
-        end
-        @only_if
-      end
 
       def path(arg=nil)
         set_or_return(
@@ -111,15 +100,6 @@ class Chef
           arg,
           :kind_of => [ Integer ]
         )
-      end
-
-      def not_if(arg=nil, &blk)
-        if Kernel.block_given?
-          @not_if = blk
-        else
-          @not_if = arg if arg
-        end
-        @not_if
       end
       
       def user(arg=nil)

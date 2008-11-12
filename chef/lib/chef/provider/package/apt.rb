@@ -48,6 +48,10 @@ class Chef
           unless status.exitstatus == 0
             raise Chef::Exception::Package, "apt-cache failed - #{status.inspect}!"
           end
+          
+          if @candidate_version == "(none)"
+            raise Chef::Exception::Package, "apt does not have a version of package #{@new_resource.package_name}"
+          end
         
           @current_resource
         end

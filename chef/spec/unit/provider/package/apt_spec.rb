@@ -43,7 +43,7 @@ describe Chef::Provider::Package::Apt, "load_current_resource" do
     @stdout = mock("STDOUT", :null_object => true)    
     @stdout.stub!(:each).and_yield("emacs:").
                          and_yield("  Installed: (none)").
-                         and_yield("  Candidate: (none)").
+                         and_yield("  Candidate: 0.1.1").
                          and_yield("  Version Table:")
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
@@ -85,7 +85,7 @@ describe Chef::Provider::Package::Apt, "load_current_resource" do
   it "should set the installed version if apt-cache policy has one" do
     @stdout.stub!(:each).and_yield("emacs:").
                          and_yield("  Installed: 0.1.1").
-                         and_yield("  Candidate: (none)").
+                         and_yield("  Candidate: 0.1.1").
                          and_yield("  Version Table:")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     @current_resource.should_receive(:version).with("0.1.1").and_return(true)
@@ -110,6 +110,15 @@ describe Chef::Provider::Package::Apt, "load_current_resource" do
   it "should not raise an exception if apt-cache policy succeeds" do
     @status.should_receive(:exitstatus).and_return(0)
     lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exception::Package)
+  end
+  
+  it "should raise an exception if apt-cache policy does not return a candidate version" do
+    @stdout.stub!(:each).and_yield("emacs:").
+                         and_yield("  Installed: 0.1.1").
+                         and_yield("  Candidate: (none)").
+                         and_yield("  Version Table:")
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)                     
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Package)
   end
   
   it "should return the current resouce" do

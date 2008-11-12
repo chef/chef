@@ -10,7 +10,7 @@ runit_service "bobo" do
 end
 
 define :runit_service, :directory => "/etc/sv", :downif => "/bin/false", :templatedir => nil do  
-  require_recipe "runit"
+  include_recipe "runit"
   
   validate(
     params,
