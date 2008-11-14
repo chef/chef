@@ -90,7 +90,7 @@ class Chef
     #
     # === Returns
     # value:: Whatever the most specific value of the hash is.
-    def platform_value_for(platform_hash)
+    def value_for_platform(platform_hash)
       result = nil
       if platform_hash.has_key?(@node[:platform])
         if platform_hash[@node[:platform]].has_key?(@node[:platform_version])
@@ -107,6 +107,25 @@ class Chef
       end  
       
       result
+    end
+    
+    # Given a list of platforms, returns true if the current recipe is being run on a node with
+    # that platform, false otherwise.
+    #
+    # === Parameters
+    # args:: A list of platforms
+    #
+    # === Returns
+    # true:: If the current platform is in the list
+    # false:: If the current platform is not in the list
+    def platform?(*args)
+      has_platform = false
+      
+      args.flatten.each do |platform|
+        has_platform = true if platform == @node[:platform]
+      end
+      
+      has_platform
     end
     
     def search(type, query, &block)
