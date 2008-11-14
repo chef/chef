@@ -94,7 +94,7 @@ class Chef
       #   Defaults to true.
       #
       # === Returns
-      # String:: A string with the file contents.
+      # String:: A string with the file contents, or the path to the file.
       #
       # === Raises
       # Chef::Exception::FileNotFound:: If it cannot find the file in the cache

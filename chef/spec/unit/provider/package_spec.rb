@@ -38,7 +38,8 @@ describe Chef::Provider::Package, "action_install" do
       :name => "emacs",
       :version => nil,
       :package_name => "emacs",
-      :updated => nil
+      :updated => nil,
+      :response_file => nil
     )
     @current_resource = mock("Chef::Resource::Package", 
       :null_object => true,
@@ -55,6 +56,20 @@ describe Chef::Provider::Package, "action_install" do
   it "should raise a Chef::Exception::Package if no version is specified, and no candidate is available" do
     @provider.candidate_version = nil
     lambda { @provider.action_install }.should raise_error(Chef::Exception::Package)
+  end
+  
+  it "should call preseed_package if a response_file is given" do
+    @new_resource.stub!(:response_file).and_return("foo")
+    @provider.should_receive(:preseed_package).with(
+      @new_resource.name, 
+      @provider.candidate_version
+    ).and_return(true)
+    @provider.action_install
+  end
+  
+  it "should not call preseed_package if a response_file is not given" do
+    @provider.should_not_receive(:preseed_package)
+    @provider.action_install
   end
   
   it "should install the package at the candidate_version if it is not already installed" do
@@ -238,5 +253,127 @@ end
     it "should raise Chef::Exception::UnsupportedAction" do
       lambda { @provider.send(act_string, @new_resource.name, @new_resource.version) }.should raise_error(Chef::Exception::UnsupportedAction)      
     end
+  end
+end
+
+describe Chef::Provider::Package, "preseed_package" do
+  before(:each) do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Package", 
+      :null_object => true,
+      :name => "emacs",
+      :version => nil,
+      :package_name => "emacs"
+    )
+    @current_resource = mock("Chef::Resource::Package", 
+      :null_object => true,
+      :name => "emacs",
+      :version => "0.99",
+      :package_name => "emacs"
+    )
+    @provider = Chef::Provider::Package.new(@node, @new_resource)
+    @provider.candidate_version = "1.0"
+    @provider.current_resource = @current_resource
+  end
+  
+  it "should raise Chef::Exception::UnsupportedAction" do
+    lambda { @provider.preseed_package(@new_resource.name, @new_resource.version, "response_file") }.should raise_error(Chef::Exception::UnsupportedAction)      
+  end
+end
+
+describe Chef::Provider::Package, "get_preseed_file" do
+  before(:each) do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Package", 
+      :null_object => true,
+      :name => "java",
+      :version => nil,
+      :package_name => "java",
+      :cookbook_name => "java"
+    )
+    @provider = Chef::Provider::Package.new(@node, @new_resource)
+    @provider.candidate_version = "1.0"
+    @provider.current_resource = @current_resource
+    
+    @remote_file = mock("Chef::Resource::RemoteFile", 
+      :null_object => true,
+      :cookbook_name => "java",
+      :source => "java-6.seed",
+      :backup => false,
+      :updated => false
+    )
+    @rf_provider = mock("Chef::Provider::RemoteFile",
+      :null_object => true,
+      :load_current_resource => true,
+      :action_create => true
+    )
+    Chef::Resource::RemoteFile.stub!(:new).and_return(@remote_file)
+    Chef::Platform.stub!(:find_provider_for_node).and_return(Chef::Provider::RemoteFile)
+    Chef::Provider::RemoteFile.stub!(:new).and_return(@rf_provider)
+    Chef::FileCache.stub!(:create_cache_path).and_return("/tmp/java-6.seed")
+    Chef::FileCache.stub!(:load).and_return("/tmp/java-6.seed")
+  end
+  
+  it "should find the full cache path" do
+    Chef::FileCache.should_receive(:create_cache_path).with("preseed/java/java-6.seed")
+    @provider.get_preseed_file("java", "6")
+  end
+  
+  it "should create a new RemoteFile for the response file" do
+    Chef::Resource::RemoteFile.should_receive(:new).with(
+      "/tmp/java-6.seed",
+      nil,
+      @node
+    ).and_return(@remote_file)
+    @provider.get_preseed_file("java", "6")
+  end
+  
+  it "should set the cookbook name of the remote file to the new resources cookbook name" do
+    @remote_file.should_receive(:cookbook_name=).with(@new_resource.cookbook_name).and_return(true)
+    @provider.get_preseed_file("java", "6")
+  end
+  
+  it "should set remote files source to the new resources response file" do
+    @remote_file.should_receive(:source).with(@new_resource.response_file).and_return(true)
+    @provider.get_preseed_file("java", "6")
+  end
+  
+  it "should never back up the cached response file" do
+    @remote_file.should_receive(:backup).with(false).and_return(true)
+    @provider.get_preseed_file("java", "6")
+  end
+  
+  it "should find the provider for the remote file" do
+    Chef::Platform.should_receive(:find_provider_for_node).and_return(Chef::Provider::RemoteFile)
+    @provider.get_preseed_file("java", "6")
+  end
+  
+  it "should create a new provider for the remote file" do
+    Chef::Provider::RemoteFile.should_receive(:new).with(@node, @remote_file).and_return(@rf_provider)
+    @provider.get_preseed_file("java", "6")
+  end
+  
+  it "should load the current resource state for the remote file" do
+    @rf_provider.should_receive(:load_current_resource)
+    @provider.get_preseed_file("java", "6")
+  end
+   
+  it "should run the create action for the remote file" do
+    @rf_provider.should_receive(:action_create)
+    @provider.get_preseed_file("java", "6")
+  end
+  
+  it "should check to see if the response file has been updated" do
+    @remote_file.should_receive(:updated).and_return(false)
+    @provider.get_preseed_file("java", "6")
+  end
+  
+  it "should return false if the response file has not been updated" do
+    @provider.get_preseed_file("java", "6").should be(false)
+  end
+  
+  it "should return the full path to the cached response file if the response file has been updated" do
+    @remote_file.should_receive(:updated).and_return(true)
+    @provider.get_preseed_file("java", "6").should == "/tmp/java-6.seed"
   end
 end
