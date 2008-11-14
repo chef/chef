@@ -82,6 +82,33 @@ class Chef
       @collection.resources(*args)
     end
     
+    # Given a hash similar to the one we use for Platforms, select a value from the hash.  Supports
+    # per platform defaults, along with a single base default.
+    #
+    # === Parameters
+    # platform_hash:: A platform-style hash.
+    #
+    # === Returns
+    # value:: Whatever the most specific value of the hash is.
+    def platform_value_for(platform_hash)
+      result = nil
+      if platform_hash.has_key?(@node[:platform])
+        if platform_hash[@node[:platform]].has_key?(@node[:platform_version])
+          result = platform_hash[@node[:platform]][@node[:platform_version]]
+        elsif platform_hash[@node[:platform]].has_key?("default")
+          result = platform_hash[@node[:platform]]["default"]
+        end
+      end
+      
+      unless result
+        if platform_hash.has_key?("default")
+          result = platform_hash["default"]
+        end
+      end  
+      
+      result
+    end
+    
     def search(type, query, &block)
       Chef::Log.debug("Searching #{type} index with #{query}")
       r = Chef::REST.new(Chef::Config[:search_url])
