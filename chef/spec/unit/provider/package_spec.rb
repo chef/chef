@@ -310,12 +310,12 @@ describe Chef::Provider::Package, "get_preseed_file" do
     Chef::Resource::RemoteFile.stub!(:new).and_return(@remote_file)
     Chef::Platform.stub!(:find_provider_for_node).and_return(Chef::Provider::RemoteFile)
     Chef::Provider::RemoteFile.stub!(:new).and_return(@rf_provider)
-    Chef::FileCache.stub!(:create_cache_path).and_return("/tmp/java-6.seed")
+    Chef::FileCache.stub!(:create_cache_path).and_return("/tmp")
     Chef::FileCache.stub!(:load).and_return("/tmp/java-6.seed")
   end
   
   it "should find the full cache path" do
-    Chef::FileCache.should_receive(:create_cache_path).with("preseed/java/java-6.seed")
+    Chef::FileCache.should_receive(:create_cache_path).with("preseed/java")
     @provider.get_preseed_file("java", "6")
   end
   
