@@ -36,8 +36,10 @@ describe Chef::Resource::Group, "initialize" do
     @resource.groupname.should eql("admin")
   end
 
-  it "should set gid to nil" do
-    @resource.gid.should eql(nil)
+  %w{members gid}.each do |attrib|
+    it "should set #{attrib} to nil" do
+      @resource.send(attrib).should eql(nil)
+    end
   end
   
   it "should set action to :create" do
