@@ -23,16 +23,16 @@ class Chef
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)
         @resource_name = :group
-        @groupname = name
+        @group_name = name
         @gid = nil
         @members = nil
         @action = :create
         @allowed_actions.push(:create, :remove, :modify, :manage)
       end
       
-      def groupname(arg=nil)
+      def group_name(arg=nil)
         set_or_return(
-          :groupname,
+          :group_name,
           arg,
           :kind_of => [ String ]
         )
@@ -50,7 +50,7 @@ class Chef
         set_or_return(
           :members,
           arg,
-          :kind_of => [ Array ]
+          :kind_of => [ String, Array ]
         )
       end
       
