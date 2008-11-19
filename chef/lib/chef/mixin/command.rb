@@ -38,7 +38,7 @@ class Chef
       # true:: Returns true if the block is true, or if the command returns 0
       # false:: Returns false if the block is false, or if the command returns a non-zero exit code.
       def only_if(command)
-        if Proc === command
+        if command.kind_of?(Proc)
           res = command.call
           unless res
             return false
@@ -67,7 +67,7 @@ class Chef
       # true:: Returns true if the block is false, or if the command returns a non-zero exit status.
       # false:: Returns false if the block is true, or if the command returns a 0 exit status.
       def not_if(command)
-        if Proc === command
+        if command.kind_of?(Proc)
           res = command.call
           if res
             return false
