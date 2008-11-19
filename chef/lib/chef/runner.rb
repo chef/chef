@@ -71,7 +71,7 @@ class Chef
           
           # Check if this resource has a not_if block - if it does, skip it.
           if resource.not_if
-            unless Chef::Mixin::Command.not_if(resource.not_if)
+            if Chef::Mixin::Command.not_if(resource.not_if)
               Chef::Log.debug("Skipping #{resource} due to not_if")
               next
             end
