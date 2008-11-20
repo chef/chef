@@ -218,3 +218,41 @@ describe Chef::Provider::Package::Apt, "purge_package" do
     @provider.purge_package("emacs", "1.0")
   end
 end
+
+describe Chef::Provider::Package::Apt, "preseed_package" do
+  before(:each) do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Package", 
+      :null_object => true,
+      :name => "emacs",
+      :version => nil,
+      :package_name => "emacs",
+      :updated => nil,
+      :response_file => "emacs-10.seed"
+    )
+    @provider = Chef::Provider::Package::Apt.new(@node, @new_resource)
+    @provider.stub!(:get_preseed_file).and_return("/tmp/emacs-10.seed")
+    @provider.stub!(:run_command).and_return(true)
+  end
+  
+  it "should get the full path to the preseed response file" do
+    @provider.should_receive(:get_preseed_file).with("emacs", "10").and_return("/tmp/emacs-10.seed")
+    @provider.preseed_package("emacs", "10")
+  end
+  
+  it "should run debconf-set-selections on the preseed file if it has changed" do
+    @provider.should_receive(:run_command).with({
+      :command => "debconf-set-selections /tmp/emacs-10.seed",
+      :environment => {
+        "DEBIAN_FRONTEND" => "noninteractive"
+      }
+    }).and_return(true)
+    @provider.preseed_package("emacs", "10")
+  end
+  
+  it "should not run debconf-set-selections if the preseed file has not changed" do
+    @provider.stub!(:get_preseed_file).and_return(false)
+    @provider.should_not_receive(:run_command)
+    @provider.preseed_package("emacs", "10")
+  end
+end

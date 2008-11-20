@@ -83,6 +83,6 @@ config[:node_name] ||= Chef::Config[:node_name]
 
 c = Chef::Client.new
 c.json_attribs = config[:json_attribs]
-c.validation_token = config[:validation_token]
+c.validation_token = config[:validation_token] if config[:validation_token]
 c.node_name = config[:node_name]
 c.run

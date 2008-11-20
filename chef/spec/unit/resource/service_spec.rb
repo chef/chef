@@ -96,6 +96,17 @@ describe Chef::Resource::Service do
       @resource.restart_command /.*/
     }.should raise_error(ArgumentError)
   end
+
+  it "should accept a string for the service reload command" do
+    @resource.reload_command "/etc/init.d/chef reload"
+    @resource.reload_command.should eql("/etc/init.d/chef reload")
+  end
+  
+  it "should not accept a regexp for the service reload command" do
+    lambda {
+      @resource.reload_command /.*/
+    }.should raise_error(ArgumentError)
+  end
   
   %w{enabled running}.each do |attrib|
     it "should accept true for #{attrib}" do

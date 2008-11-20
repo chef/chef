@@ -17,11 +17,13 @@
 #
 
 require File.join(File.dirname(__FILE__), "mixin", "from_file")
+require File.join(File.dirname(__FILE__), "mixin", "language")
 
 class Chef
   class Recipe
     
     include Chef::Mixin::FromFile
+    include Chef::Mixin::Language
         
     attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :collection, 
                   :definitions, :params, :cookbook_loader
@@ -98,7 +100,10 @@ class Chef
       # let you do some really crazy over-riding of "native" types, if you really want
       # to. 
       if @definitions.has_key?(method_symbol)
+        # This dupes the high level object, but we still need to dup the params
         new_def = @definitions[method_symbol].dup
+        new_def.params = new_def.params.dup
+        # This sets up the parameter overrides
         new_def.instance_eval(&block) if block
         new_recipe = Chef::Recipe.new(@cookbook_name, @recipe_name, @node, @collection, @definitions, @cookbook_loader)
         new_recipe.params = new_def.params

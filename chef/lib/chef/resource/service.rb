@@ -31,9 +31,10 @@ class Chef
         @stop_command = nil
         @status_command = nil
         @restart_command = nil
+        @reload_command = nil
         @action = "none"
         @supports = { :restart => false, :status => false }
-        @allowed_actions.push(:enable, :disable, :start, :stop)
+        @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
       end
       
       def service_name(arg=nil)
@@ -84,6 +85,14 @@ class Chef
       def restart_command(arg=nil)
         set_or_return(
           :restart_command,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def reload_command(arg=nil)
+        set_or_return(
+          :reload_command,
           arg,
           :kind_of => [ String ]
         )

@@ -18,12 +18,14 @@
 
 require File.join(File.dirname(__FILE__), "mixin", "params_validate")
 require File.join(File.dirname(__FILE__), "mixin", "check_helper")
+require File.join(File.dirname(__FILE__), "mixin", "language")
 
 class Chef
   class Resource
         
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
+    include Chef::Mixin::Language
     
     attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name
     attr_reader :resource_name, :source_line, :node

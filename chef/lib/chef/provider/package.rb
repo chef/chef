@@ -52,6 +52,12 @@ class Chef
         end
         if do_package
           Chef::Log.info("Installing #{@new_resource} version #{install_version}")
+          
+          # We need to make sure we handle the preseed file
+          if @new_resource.response_file
+            preseed_package(@new_resource.package_name, install_version)
+          end
+          
           status = install_package(@new_resource.package_name, install_version)
           if status
             @new_resource.updated = true
@@ -113,6 +119,38 @@ class Chef
       
       def purge_package(name, version)
         raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :purge" 
+      end
+      
+      def preseed_package(name, version, preseed)
+        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support pre-seeding package install/upgrade instructions - don't ask it to!" 
+      end
+      
+      def get_preseed_file(name, version)        
+        full_cache_dir = Chef::FileCache.create_cache_path("preseed/#{@new_resource.cookbook_name}")
+        full_cache_file = "#{full_cache_dir}/#{name}-#{version}.seed"
+        cache_path = "preseed/#{@new_resource.cookbook_name}/#{name}-#{version}.seed"
+              
+        Chef::Log.debug("Fetching preseed file to #{cache_path}")
+        
+        remote_file = Chef::Resource::RemoteFile.new(
+          full_cache_file,
+          nil,
+          @node
+        )
+        remote_file.cookbook_name = @new_resource.cookbook_name
+        remote_file.source(@new_resource.response_file)
+        remote_file.backup(false)
+        
+        rf_provider_class = Chef::Platform.find_provider_for_node(@node, remote_file)
+        rf_provider = rf_provider_class.new(@node, remote_file)          
+        rf_provider.load_current_resource
+        rf_provider.action_create
+        
+        if remote_file.updated
+          Chef::FileCache.load(cache_path, false)
+        else
+          false
+        end
       end
       
     end
