@@ -30,6 +30,7 @@ class Chef
       # value:: Whatever the most specific value of the hash is.
       def value_for_platform(platform_hash)
         result = nil
+        
         if platform_hash.has_key?(@node[:platform])
           if platform_hash[@node[:platform]].has_key?(@node[:platform_version])
             result = platform_hash[@node[:platform]][@node[:platform_version]]
