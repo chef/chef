@@ -148,14 +148,91 @@ before(:each) do
     @provider.action_stop
   end
 
-  it "should not stop the service if not running" do
-    @current_resource.stub!(:enabled).and_return(false)
+  it "should not stop the service if it's already stopped" do
+    @current_resource.stub!(:running).and_return(false)
     @provider.should_not_receive(:stop_service).with(@new_resource.name).and_return(true)
     @provider.action_stop
   end
 end
 
-%w{enable disable start stop}.each do |act|
+describe Chef::Provider::Service, "action_restart" do
+before(:each) do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Service",
+      :null_object => true,
+      :name => "chef",
+      :service_name => "chef"
+    )
+    @current_resource = mock("Chef::Resource::Service",
+      :null_object => true,
+      :name => "chef",
+      :service_name => "chef",
+      :supports => { :restart => false }
+    )
+    @provider = Chef::Provider::Service.new(@node, @new_resource)
+    @provider.current_resource = @current_resource
+    @provider.stub!(:restart_service).and_return(true)
+    @current_resource.stub!(:supports).and_return({:restart => true})
+  end
+
+  it "should raise an exception when restarting the service if it is not supported" do
+    @current_resource.stub!(:running).and_return(true)
+    @current_resource.stub!(:supports).and_return({:restart => false})
+    lambda { @provider.action_restart }.should raise_error(Chef::Exception::UnsupportedAction)
+  end    
+
+  it "should restart the service if it's supported and running" do
+    @current_resource.stub!(:running).and_return(true)
+    @provider.should_receive(:restart_service).with(@new_resource.name).and_return(true)
+    @provider.action_restart
+  end
+
+  it "should not restart the service if it is not running" do
+    @current_resource.stub!(:running).and_return(false)
+    @provider.should_not_receive(:restart_service).with(@new_resource.name).and_return(true)
+    @provider.action_restart
+  end
+end
+
+describe Chef::Provider::Service, "action_reload" do
+before(:each) do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Service",
+      :null_object => true,
+      :name => "chef",
+      :service_name => "chef"
+    )
+    @current_resource = mock("Chef::Resource::Service",
+      :null_object => true,
+      :name => "chef",
+      :service_name => "chef",
+      :supports => { :reload => false}
+    )
+    @provider = Chef::Provider::Service.new(@node, @new_resource)
+    @provider.current_resource = @current_resource
+    @provider.stub!(:reload_service).and_return(true)
+    @current_resource.stub!(:supports).and_return({:reload => true})
+  end
+
+  it "should raise an exception if reload isn't supported" do
+    @current_resource.stub!(:supports).and_return({:reload => false})
+    lambda { @provider.action_reload }.should raise_error(Chef::Exception::UnsupportedAction)
+  end
+
+  it "should reload the service if it is running" do
+    @current_resource.stub!(:running).and_return(true)
+    @provider.should_receive(:reload_service).with(@new_resource.name).and_return(true)
+    @provider.action_reload
+  end
+
+  it "should not reload the service if it's stopped" do
+    @current_resource.stub!(:running).and_return(false)
+    @provider.should_not_receive(:stop_service).with(@new_resource.name).and_return(true)
+    @provider.action_stop
+  end
+end
+
+%w{enable disable start stop restart reload}.each do |act|
   act_string = "#{act}_service"
 
   describe Chef::Provider::Service, act_string do
