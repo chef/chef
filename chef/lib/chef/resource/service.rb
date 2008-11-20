@@ -34,7 +34,7 @@ class Chef
         @reload_command = nil
         @action = "none"
         @supports = { :restart => false, :status => false }
-        @allowed_actions.push(:enable, :disable, :start, :stop)
+        @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
       end
       
       def service_name(arg=nil)
