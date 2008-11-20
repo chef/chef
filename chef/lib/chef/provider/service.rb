@@ -82,7 +82,7 @@ class Chef
       end
       
       def action_restart
-        unless @current_resource.supports[:restart]
+        unless @current_resource.supports[:restart] or @current_resource.restart_command
           raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :restart"
         else
           if @current_resource.running
@@ -97,7 +97,7 @@ class Chef
       end
 
       def action_reload
-        unless @current_resource.supports[:reload]
+        unless @current_resource.supports[:reload] or @current_resource.reload_command
           raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :reload"
         else
           if @current_resource.running
