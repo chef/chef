@@ -95,6 +95,14 @@ class Chef
           end
         end
 
+        def reload_service(name)
+          if @new_resource.supports[:reload]
+            run_command(:command => "/etc/init.d/#{name} reload")
+          elsif @new_resource.reload_command
+            run_command(:command => @new_resource.reload_command)
+          end
+        end
+
       end
     end
   end

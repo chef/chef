@@ -217,3 +217,31 @@ describe Chef::Provider::Service::Init, "restart_service" do
     @provider.restart_service(@new_resource.service_name)
   end
 end
+
+describe Chef::Provider::Service::Init, "reload_service" do
+  before(:each) do
+    @new_resource = mock("Chef::Resource::Service",
+      :null_object => true,
+      :name => "chef",
+      :service_name => "chef",
+      :running => false
+    )
+    @new_resource.stub!(:reload_command).and_return(false)
+    @new_resource.stub!(:supports).and_return({:reload => false})
+
+    @provider = Chef::Provider::Service::Init.new(@node, @new_resource)
+    Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+  end
+
+  it "should call 'reload' on the service if it supports it" do
+    @new_resource.stub!(:supports).and_return({:reload => true})
+    @provider.should_receive(:run_command).with({:command => "/etc/init.d/#{@new_resource.service_name} reload"}).and_return(0)
+    @provider.reload_service(@new_resource.service_name)
+  end
+
+  it "should should run the user specified reload command if one is specified and the service doesn't support reload" do
+    @new_resource.stub!(:reload_command).and_return("/etc/init.d/chef lollerpants")
+    @provider.should_receive(:run_command).with({:command => "/etc/init.d/#{@new_resource.service_name} lollerpants"}).and_return(0)
+    @provider.reload_service(@new_resource.service_name)
+  end
+end
