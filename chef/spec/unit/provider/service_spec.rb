@@ -178,6 +178,7 @@ before(:each) do
   it "should raise an exception when restarting the service if it is not supported" do
     @current_resource.stub!(:running).and_return(true)
     @current_resource.stub!(:supports).and_return({:restart => false})
+    @current_resource.stub!(:restart_command).and_return(false)
     lambda { @provider.action_restart }.should raise_error(Chef::Exception::UnsupportedAction)
   end    
 
@@ -216,6 +217,7 @@ before(:each) do
 
   it "should raise an exception if reload isn't supported" do
     @current_resource.stub!(:supports).and_return({:reload => false})
+    @current_resource.stub!(:reload_command).and_return(false)
     lambda { @provider.action_reload }.should raise_error(Chef::Exception::UnsupportedAction)
   end
 

@@ -27,6 +27,7 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
+          @current_resource.supports(@new_resource.supports)
           @current_resource.running false
           if @new_resource.supports[:status]
             Chef::Log.debug("#{@new_resource} supports status, running")

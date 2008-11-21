@@ -64,6 +64,11 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
     @provider.load_current_resource
   end
 
+  it "should set the current resources support hash to the new resources support hash" do
+    @current_resource.should_receive(:supports).with(@new_resource.supports)
+    @provider.load_current_resource
+  end
+
   it "should run '/etc/init.d/service_name status' if the service supports it" do
     @new_resource.stub!(:supports).and_return({:status => true})
     @provider.should_receive(:run_command).with({:command => "/etc/init.d/#{@current_resource.service_name} status"})

@@ -34,7 +34,6 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to enable")
           status = enable_service(@new_resource.service_name)
           if status
-            @new_resource.enabled == true
             Chef::Log.info("#{@new_resource}: enabled succesfully")
           end
         else
@@ -47,7 +46,6 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to disable")
           status = disable_service(@new_resource.service_name)
           if status
-            @new_resource.enabled == false
             Chef::Log.info("#{@new_resource}: disabled succesfully")
           end
         else
@@ -60,7 +58,6 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to start")
           status = start_service(@new_resource.service_name)
           if status
-            @new_resource.running == true
             Chef::Log.info("Started service #{@new_resource} succesfully")
           end
         else
@@ -73,7 +70,6 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to stop")
           status = stop_service(@new_resource.service_name)
           if status
-            @new_resource.running == false
             Chef::Log.info("#{@new_resource}: stopped succesfully")
           end
         else
@@ -86,12 +82,12 @@ class Chef
           raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :restart"
         else
           if @current_resource.running
-          Chef::Log.debug("#{@new_resource}: attempting to restart")
-          status = restart_service(@new_resource.service_name)
-          if status
-            @new_resource.running == true
-            Chef::Log.info("#{@new_resource}: restarted succesfully")
-          end
+            Chef::Log.debug("#{@new_resource}: attempting to restart")
+            status = restart_service(@new_resource.service_name)
+            if status
+              @new_resource.running == true
+              Chef::Log.info("#{@new_resource}: restarted succesfully")
+            end
           end
         end
       end
@@ -101,12 +97,11 @@ class Chef
           raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :reload"
         else
           if @current_resource.running
-          Chef::Log.debug("#{@new_resource}: attempting to reload")
-          status = reload_service(@new_resource.service_name)
-          if status
-            @new_resource.running == true
-            Chef::Log.info("#{@new_resource}: reloaded succesfully")
-          end
+            Chef::Log.debug("#{@new_resource}: attempting to reload")
+            status = reload_service(@new_resource.service_name)
+            if status
+              Chef::Log.info("#{@new_resource}: reloaded succesfully")
+            end
           end
         end
       end
