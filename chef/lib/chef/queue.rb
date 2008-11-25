@@ -28,13 +28,22 @@ class Chef
       include Chef::Mixin::ParamsValidate
       
       def connect
-        @client = Stomp::Connection.open(
-          Chef::Config.has_key?(:queue_user) ? Chef::Config[:queue_user] : "", 
-          Chef::Config.has_key?(:queue_password) ? Chef::Config[:queue_password] : "",
-          Chef::Config.has_key?(:queue_host) ? Chef::Config[:queue_host] : "localhost",
-          Chef::Config.has_key?(:queue_port) ? Chef::Config[:queue_port] : 61613,
-          false
-        )
+        queue_user = Chef::Config.has_key?(:queue_user) ? Chef::Config[:queue_user] : ""
+        queue_password = Chef::Config.has_key?(:queue_password) ? Chef::Config[:queue_password] : ""
+        queue_host = Chef::Config.has_key?(:queue_host) ? Chef::Config[:queue_host] : "localhost"
+        queue_port = Chef::Config.has_key?(:queue_port) ? Chef::Config[:queue_port] : 61613
+
+        # Connection.open(login = "", passcode = "", host='localhost', port=61613, reliable=FALSE, reconnectDelay=5)
+        @client = Stomp::Connection.open(queue_user, queue_password, queue_host, queue_port, true)
+
+      rescue Errno::ECONNREFUSED
+        Chef::Log.error("Connection refused connecting to stomp queue at #{queue_host}:#{queue_port}, retrying")
+        sleep(4)
+        retry
+      rescue Timeout::Error
+        Chef::Log.error("Timeout connecting to stomp queue at #{queue_host}:#{queue_port}, retrying")
+        sleep(4)
+        retry
       end
 
       def make_url(type, name)
@@ -82,8 +91,13 @@ class Chef
 
       def receive_msg
         connect if @client == nil
-        raw_msg = @client.receive()
-        Chef::Log.debug("Received Message from #{raw_msg.headers["destination"]} containing: #{raw_msg.body}")
+        begin
+          raw_msg = @client.receive()
+          Chef::Log.debug("Received Message from #{raw_msg.headers["destination"]} containing: #{raw_msg.body}")
+        rescue
+          Chef::Log.debug("Recieved nil message from stomp, retrying")
+          retry
+        end
         msg = JSON.parse(raw_msg.body)
         return msg, raw_msg.headers
       end

@@ -21,7 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::Queue do
  
   it "should connect to a stomp server on localhost and 61613" do
-    Stomp::Connection.should_receive(:open).with("", "", "localhost", 61613, false).once
+    Stomp::Connection.should_receive(:open).with("", "", "localhost", 61613, true).once
     Chef::Queue.connect
   end
  
@@ -30,7 +30,7 @@ describe Chef::Queue do
     Chef::Config[:queue_password] = "password"
     Chef::Config[:queue_host] = "10.10.10.10"
     Chef::Config[:queue_port] = 61614
-    Stomp::Connection.should_receive(:open).with("monkey", "password", "10.10.10.10", 61614, false).once
+    Stomp::Connection.should_receive(:open).with("monkey", "password", "10.10.10.10", 61614, true).once
     Chef::Queue.connect
   end
   
