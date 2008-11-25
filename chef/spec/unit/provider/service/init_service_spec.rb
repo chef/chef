@@ -97,17 +97,6 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
       @provider.load_current_resource
     end
     
-    it "should set running to true if the services status command returns 0" do
-      @provider.stub!(:run_command).with({:command => "/etc/init.d/chefhasmonkeypants status"}).and_return(0)
-      @current_resource.should_receive(:running).with(true)
-      @provider.load_current_resource
-    end
-
-    it "should set running to false if the services status command returns anything except 0" do
-      @provider.stub!(:run_command).with({:command => "/etc/init.d/chefhasmonkeypants status"}).and_return(1)
-      @current_resource.should_receive(:running).with(false)
-      @provider.load_current_resource
-    end
   end
 
   it "should set running to false if the node has a nil ps attribute" do
