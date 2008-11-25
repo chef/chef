@@ -27,36 +27,49 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
-          @current_resource.supports(@new_resource.supports)
-          @current_resource.running false
           if @new_resource.supports[:status]
             Chef::Log.debug("#{@new_resource} supports status, running")
-            if run_command(:command => "/etc/init.d/#{@current_resource.service_name} status") == 0
-              @current_resource.running true 
+
+            begin
+              if run_command(:command => "/etc/init.d/#{@current_resource.service_name} status") == 0
+                @current_resource.running true
+              end
+            rescue Chef::Exception::Exec
+              nil
+            ensure
+              @current_resource.running false
             end
+
           elsif @new_resource.status_command
             Chef::Log.debug("#{@new_resource} doesn't support status but you have specified a status command, running..")
-            if run_command(:command => @new_resource.status_command) == 0
-              @current_resource.running true
+
+            begin
+              if run_command(:command => @new_resource.status_command) == 0
+                @current_resource.running true
+              end
+            rescue Chef::Exception::Exec
+              nil
+            ensure
+              @current_resource.running false
             end
+
           else
             Chef::Log.debug("#{@new_resource} does not support status and you have not specified a status command, falling back to process table inspection")
 
-            if @node[:ps] == ""
-              raise Chef::Exception::Service, "#{@new_resource}: Facter could not determine how to call `ps` on your system (#{@node[:ps]})"
+            if @node[:ps].nil? or @node[:ps].empty?
+              raise Chef::Exception::Service, "#{@new_resource}: could not determine how to inspect the process table, please set this nodes 'ps' attribute"
             end
 
-            process_pid = nil
             status = popen4(@node[:ps]) do |pid, stdin, stdout, stderr|
               stdin.close
               r = Regexp.new(@new_resource.pattern)
               Chef::Log.debug("#{@new_resource}: attempting to match #{@new_resource.pattern} (#{r}) against process table")
               stdout.each_line do |line|
                 if r.match(line)
-                  process_pid = line.sub(/^\s+/, '').split(/\s+/)[1]
                   @current_resource.running true
                 end
               end
+              @current_resource.running false unless @current_resource.running
             end
             unless status.exitstatus == 0
               raise Chef::Exception::Service, "Command #{@node[:ps]} failed"

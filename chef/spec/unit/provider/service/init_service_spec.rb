@@ -64,70 +64,102 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
     @provider.load_current_resource
   end
 
-  it "should set the current resources support hash to the new resources support hash" do
-    @current_resource.should_receive(:supports).with(@new_resource.supports)
-    @provider.load_current_resource
-  end
+  describe "when the service supports status" do
+    before do
+      @new_resource.stub!(:supports).and_return({:status => true})
+    end
 
-  it "should run '/etc/init.d/service_name status' if the service supports it" do
-    @new_resource.stub!(:supports).and_return({:status => true})
-    @provider.should_receive(:run_command).with({:command => "/etc/init.d/#{@current_resource.service_name} status"})
-    @provider.load_current_resource
-  end
+    it "should run '/etc/init.d/service_name status'" do
+      @provider.should_receive(:run_command).with({:command => "/etc/init.d/#{@current_resource.service_name} status"})
+      @provider.load_current_resource
+    end
   
-  it "should set running to true if the the status command returns 0" do
-    @new_resource.stub!(:supports).and_return({:status => true})
-    @provider.stub!(:run_command).with({:command => "/etc/init.d/#{@current_resource.service_name} status"}).and_return(0)
-    @current_resource.should_recieve(:running).with(true)
-    @provider.load_current_resource
+    it "should set running to true if the the status command returns 0" do
+      @provider.stub!(:run_command).with({:command => "/etc/init.d/#{@current_resource.service_name} status"}).and_return(0)
+      @current_resource.should_recieve(:running).with(true)
+      @provider.load_current_resource
+    end
+
+    it "should set running to false if the status command returns anything except 0" do
+      @provider.stub!(:run_command).with({:command => "/etc/init.d/#{@current_resource.service_name} status"}).and_return(1)
+      @current_resource.should_recieve(:running).with(true)
+      @provider.load_current_resource
+    end
   end
 
-  it "should run the services status command if one has been specified" do
-    @new_resource.stub!(:status_command).and_return("/etc/init.d/chefhasmonkeypants status")
-    @provider.should_receive(:run_command).with({:command => "/etc/init.d/chefhasmonkeypants status"})
-    @provider.load_current_resource
-  end
-  
-  it "should set running to true if the services status command returns 0" do
-    @new_resource.stub!(:status_command).and_return("/etc/init.d/chefhasmonkeypants status")
-    @provider.stub!(:run_command).with({:command => "/etc/init.d/chefhasmonkeypants status"}).and_return(0)
-    @current_resource.should_receive(:running).with(true)
-    @provider.load_current_resource
+  describe "when a status command has been specified" do
+    before do
+      @new_resource.stub!(:status_command).and_return("/etc/init.d/chefhasmonkeypants status")
+    end
+
+    it "should run the services status command if one has been specified" do
+      @provider.should_receive(:run_command).with({:command => "/etc/init.d/chefhasmonkeypants status"})
+      @provider.load_current_resource
+    end
+    
+    it "should set running to true if the services status command returns 0" do
+      @provider.stub!(:run_command).with({:command => "/etc/init.d/chefhasmonkeypants status"}).and_return(0)
+      @current_resource.should_receive(:running).with(true)
+      @provider.load_current_resource
+    end
+
+    it "should set running to false if the services status command returns anything except 0" do
+      @provider.stub!(:run_command).with({:command => "/etc/init.d/chefhasmonkeypants status"}).and_return(1)
+      @current_resource.should_receive(:running).with(false)
+      @provider.load_current_resource
+    end
   end
 
-  it "should raise an exception if the node doesn't have a 'ps' / :ps attribute" do
+  it "should set running to false if the node has a nil ps attribute" do
+    @node.stub!(:[]).with(:ps).and_return(nil)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+  end
+
+  it "should set running to false if the node has an empty ps attribute" do
     @node.stub!(:[]).with(:ps).and_return("")
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
   end
 
-  it "should popen4 the node's ps command" do
-    @provider.should_receive(:popen4).with(@node[:ps]).and_return(@status)
-    @provider.load_current_resource
-  end
+  describe "when we have a 'ps' attribute" do
+    before do
+      @node.stub!(:[]).with(:ps).and_return("ps -ef")
+    end
 
-  it "should close stdin on the ps command" do
-    @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @stdin.should_receive(:close).and_return(true)
-    @provider.load_current_resource
-  end
+    it "should popen4 the node's ps command" do
+      @provider.should_receive(:popen4).with(@node[:ps]).and_return(@status)
+      @provider.load_current_resource
+    end
 
-  it "should read stdout on the ps command" do
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @stdout.should_receive(:each_line).and_return(true)
-    @provider.load_current_resource
-  end
+    it "should close stdin inside popen" do
+      @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @stdin.should_receive(:close).and_return(true)
+      @provider.load_current_resource
+    end
 
-  it "should set running to true if the regex matches the output" do
-    @stdout.stub!(:each_line).and_yield("aj        7842  5057  0 21:26 pts/2    00:00:06 chef").
-                              and_yield("aj        7842  5057  0 21:26 pts/2    00:00:06 poos")
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @current_resource.should_receive(:running).with(true)
-    @provider.load_current_resource 
-  end
+    it "should read stdout of the ps command" do
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @stdout.should_receive(:each_line).and_return(true)
+      @provider.load_current_resource
+    end
 
-  it "should raise an exception if ps fails" do
-    @status.stub!(:exitstatus).and_return(-1)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+    it "should set running to true if the regex matches the output" do
+      @stdout.stub!(:each_line).and_yield("aj        7842  5057  0 21:26 pts/2    00:00:06 chef").
+                                and_yield("aj        7842  5057  0 21:26 pts/2    00:00:06 poos")
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @current_resource.should_receive(:running).with(true)
+      @provider.load_current_resource 
+    end
+
+    it "should set running to false if the regex doesn't match" do
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @current_resource.should_receive(:running).with(false)
+      @provider.load_current_resource
+    end
+
+    it "should raise an exception if ps fails" do
+      @status.stub!(:exitstatus).and_return(-1)
+      lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+    end
   end
 
   it "should return the current resource" do
