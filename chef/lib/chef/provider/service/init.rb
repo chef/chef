@@ -35,9 +35,8 @@ class Chef
                 @current_resource.running true
               end
             rescue Chef::Exception::Exec
-              nil
-            ensure
               @current_resource.running false
+              nil
             end
 
           elsif @new_resource.status_command
@@ -48,9 +47,8 @@ class Chef
                 @current_resource.running true
               end
             rescue Chef::Exception::Exec
-              nil
-            ensure
               @current_resource.running false
+              nil
             end
 
           else
