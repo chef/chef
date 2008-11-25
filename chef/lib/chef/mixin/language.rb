@@ -21,7 +21,8 @@ class Chef
     module Language
 
       # Given a hash similar to the one we use for Platforms, select a value from the hash.  Supports
-      # per platform defaults, along with a single base default.
+      # per platform defaults, along with a single base default. Arrays may be passed as hash keys and
+      # will be expanded.
       #
       # === Parameters
       # platform_hash:: A platform-style hash.
@@ -31,6 +32,12 @@ class Chef
       def value_for_platform(platform_hash)
         result = nil
         
+        platform_hash.each_pair do |key, value|
+          if key.is_a?(Array)
+            key.each { |array_key| platform_hash[array_key] = value }
+            platform_hash.delete(key)
+          end
+        end
         if platform_hash.has_key?(@node[:platform])
           if platform_hash[@node[:platform]].has_key?(@node[:platform_version])
             result = platform_hash[@node[:platform]][@node[:platform_version]]
