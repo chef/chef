@@ -67,6 +67,7 @@ class Chef
               stdout.each_line do |line|
                 if r.match(line)
                   @current_resource.running true
+                  break
                 end
               end
               @current_resource.running false unless @current_resource.running
