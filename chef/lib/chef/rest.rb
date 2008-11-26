@@ -75,11 +75,11 @@ class Chef
     #
     # Will return the body of the response on success.
     def run_request(method, url, data=false, limit=10, raw=false)
-      http_retry_delay = Chef::Config.has_key?(:http_retry_delay) ? Chef::Config[:http_retry_delay] : 5
-      http_retry_count = Chef::Config.has_key?(:http_retry_count) ? Chef::Config[:http_retry_count] : 5
+      http_retry_delay = Chef::Config[:http_retry_delay] 
+      http_retry_count = Chef::Config[:http_retry_count]
 
-      raise ArgumentError, 'HTTP redirect too deep' if limit == 0
-      
+      raise ArgumentError, 'HTTP redirect too deep' if limit == 0 
+
       http = Net::HTTP.new(url.host, url.port)
       if url.scheme == "https"
         http.use_ssl = true 
