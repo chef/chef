@@ -75,6 +75,9 @@ class Chef
     #
     # Will return the body of the response on success.
     def run_request(method, url, data=false, limit=10, raw=false)
+      http_retry_delay = Chef::Config.has_key?(:http_retry_delay) ? Chef::Config[:http_retry_delay] : 5
+      http_retry_count = Chef::Config.has_key?(:http_retry_count) ? Chef::Config[:http_retry_count] : 5
+
       raise ArgumentError, 'HTTP redirect too deep' if limit == 0
       
       http = Net::HTTP.new(url.host, url.port)
@@ -119,32 +122,45 @@ class Chef
       Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
       res = nil
       tf = nil
+      http_retries = 1
+
       # TODO - Figure out how to test this block - I really have no idea how 
       # to do it wouthout actually calling http.request... 
-      res = http.request(req) do |response|
-        if raw
-          tf = Tempfile.new("chef-rest") 
-          # Stolen from http://www.ruby-forum.com/topic/166423
-          # Kudos to _why!
-          size = 0
-          total = response.header['Content-Length'].to_i
-          response.read_body do |chunk|
-            tf.write(chunk) 
-            size += chunk.size
-            if size == 0
-              Chef::Log.debug("#{req.path} done (0 length file)")
-            elsif total == 0
-              Chef::Log.debug("#{req.path} (zero content length)")
-            else
-              Chef::Log.debug("#{req.path} %d%% done (%d of %d)" % [(size * 100) / total, size, total])
+      begin
+        res = http.request(req) do |response|
+          if raw
+            tf = Tempfile.new("chef-rest") 
+            # Stolen from http://www.ruby-forum.com/topic/166423
+            # Kudos to _why!
+            size, total = 0, response.header['Content-Length'].to_i
+            response.read_body do |chunk|
+              tf.write(chunk) 
+              size += chunk.size
+              if size == 0
+                Chef::Log.debug("#{req.path} done (0 length file)")
+              elsif total == 0
+                Chef::Log.debug("#{req.path} (zero content length)")
+              else
+                Chef::Log.debug("#{req.path} %d%% done (%d of %d)" % [(size * 100) / total, size, total])
+              end
             end
+            tf.close 
+            tf
+          else
+            response.read_body
           end
-          tf.close 
-          tf
-        else
-          response.read_body
+          response
         end
-        response
+      rescue Errno::ECONNREFUSED
+        Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path} #{http_retries}/#{http_retry_count}")
+        sleep(http_retry_delay)
+        retry if (http_retries+=1) < http_retry_count
+        raise Errno::ECONNREFUSED, "Connection refused connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
+      rescue Timeout::Error
+        Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
+        sleep(http_retry_delay)
+        retry if (http_retries+=1) < http_retry_count
+        raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       end
       
       if res.kind_of?(Net::HTTPSuccess)
