@@ -154,12 +154,12 @@ class Chef
       rescue Errno::ECONNREFUSED
         Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path} #{http_retries}/#{http_retry_count}")
         sleep(http_retry_delay)
-        retry if (http_retries+=1) < http_retry_count
+        retry if (http_retries += 1) < http_retry_count
         raise Errno::ECONNREFUSED, "Connection refused connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       rescue Timeout::Error
         Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
         sleep(http_retry_delay)
-        retry if (http_retries+=1) < http_retry_count
+        retry if (http_retries += 1) < http_retry_count
         raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       end
       
