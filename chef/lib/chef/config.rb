@@ -57,7 +57,11 @@ class Chef
       :openid_cstore_path => "/var/chef/openid/cstore",
       :file_cache_path => "/var/chef/cache",
       :node_name => nil,
-      :executable_path => ENV['PATH'] ? ENV['PATH'].split(File::PATH_SEPARATOR) : []
+      :executable_path => ENV['PATH'] ? ENV['PATH'].split(File::PATH_SEPARATOR) : [],
+      :http_retry_delay => 5,
+      :http_retry_count => 5,
+      :stomp_retry_delay => 5,
+      :stomp_retry_cound => 5
     }
     
     class << self
