@@ -75,6 +75,9 @@ class Chef
     #
     # Will return the body of the response on success.
     def run_request(method, url, data=false, limit=10, raw=false)
+      http_retry_delay = Chef::Config.has_key?(:http_retry_delay) ? Chef::Config[:http_retry_delay] : 5
+      http_retry_count = Chef::Config.has_key?(:http_retry_count) ? Chef::Config[:http_retry_count] : 5
+
       raise ArgumentError, 'HTTP redirect too deep' if limit == 0
       
       http = Net::HTTP.new(url.host, url.port)
@@ -119,6 +122,8 @@ class Chef
       Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
       res = nil
       tf = nil
+      http_retries = 1
+
       # TODO - Figure out how to test this block - I really have no idea how 
       # to do it wouthout actually calling http.request... 
       begin
@@ -147,13 +152,15 @@ class Chef
           response
         end
       rescue Errno::ECONNREFUSED
-        Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path}")
-        sleep(4)
-        retry
+        Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path} #{http_retries}/#{http_retry_count}")
+        sleep(http_retry_delay)
+        retry if (http_retries+=1) < http_retry_count
+        raise Errno::ECONNREFUSED, "Connection refused connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       rescue Timeout::Error
-        Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}")
-        sleep(4)
-        retry
+        Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
+        sleep(http_retry_delay)
+        retry if (http_retries+=1) < http_retry_count
+        raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       end
       
       if res.kind_of?(Net::HTTPSuccess)
