@@ -23,6 +23,8 @@ class Chef
     require 'stomp'
     
     @client = nil
+    @@queue_retry_delay = Chef::Config.has_key?(:queue_retry_delay) ? Chef::Config[:queue_retry_delay] : 5
+    @@queue_retry_count = Chef::Config.has_key?(:queue_retry_count) ? Chef::Config[:queue_retry_count] : 5
     
     class << self
       include Chef::Mixin::ParamsValidate
@@ -32,18 +34,23 @@ class Chef
         queue_password = Chef::Config.has_key?(:queue_password) ? Chef::Config[:queue_password] : ""
         queue_host = Chef::Config.has_key?(:queue_host) ? Chef::Config[:queue_host] : "localhost"
         queue_port = Chef::Config.has_key?(:queue_port) ? Chef::Config[:queue_port] : 61613
+        queue_retries = 1 unless queue_retries
 
         # Connection.open(login = "", passcode = "", host='localhost', port=61613, reliable=FALSE, reconnectDelay=5)
-        @client = Stomp::Connection.open(queue_user, queue_password, queue_host, queue_port, true)
+        @client = Stomp::Connection.open(queue_user, queue_password, queue_host, queue_port, false)
 
       rescue Errno::ECONNREFUSED
-        Chef::Log.error("Connection refused connecting to stomp queue at #{queue_host}:#{queue_port}, retrying")
-        sleep(4)
-        retry
+        Chef::Log.error("Connection refused connecting to stomp queue at #{queue_host}:#{queue_port}, retry #{queue_retries}/#{@@queue_retry_count}")
+        sleep(@@queue_retry_delay)
+        retry if (queue_retries+=1) < @@queue_retry_count
+        raise Errno::ECONNREFUSED, "Connection refused connecting to stomp queue at #{queue_host}:#{queue_port}, giving up"
       rescue Timeout::Error
-        Chef::Log.error("Timeout connecting to stomp queue at #{queue_host}:#{queue_port}, retrying")
-        sleep(4)
-        retry
+        Chef::Log.error("Timeout connecting to stomp queue at #{queue_host}:#{queue_port}, retry #{queue_retries}/#{@@queue_retry_count}")
+        sleep(@@queue_retry_delay)
+        retry if (queue_retries+=1) < @@queue_retry_count
+        raise Timeout::Error, "Timeout connecting to stomp queue at #{queue_host}:#{queue_port}, giving up"
+      else
+        queue_retries = 1 # reset the number of retries on success
       end
 
       def make_url(type, name)
@@ -72,6 +79,7 @@ class Chef
       end
 
       def send_msg(type, name, msg)
+        queue_retries = 1 unless queue_retries
         validate(
           {
             :message => msg,
@@ -86,7 +94,16 @@ class Chef
         json = msg.to_json
         connect if @client == nil
         Chef::Log.debug("Sending to #{queue_url}: #{json}")
-        @client.send(queue_url, json)
+        begin
+          @client.send(queue_url, json)
+        rescue Errno::EPIPE
+          Chef::Log.debug("Lost connection to stomp queue, reconnecting")
+          connect
+          retry if (queue_retries+=1) < @@queue_retry_count
+          raise Errno::EPIPE, "Lost connection to stomp queue, giving up"
+        else
+          queue_retries = 1 # reset the number of retries on success
+        end
       end
 
       def receive_msg
