@@ -135,6 +135,7 @@ describe Chef::Client, "build_node" do
     @mock_rest.stub!(:get_rest).and_return(@node)
     Chef::REST.stub!(:new).and_return(@mock_rest)
     @client = Chef::Client.new
+    Chef::Platform.stub!(:find_platform_and_version).and_return(["FooOS", "1.3.3.7"])
   end
   
   it "should set the name equal to the FQDN" do
