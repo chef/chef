@@ -60,8 +60,14 @@ class Chef
       :executable_path => ENV['PATH'] ? ENV['PATH'].split(File::PATH_SEPARATOR) : [],
       :http_retry_delay => 5,
       :http_retry_count => 5,
-      :stomp_retry_delay => 5,
-      :stomp_retry_cound => 5
+      :queue_retry_delay => 5,
+      :queue_retry_count => 5,
+      :queue_retry_delay => 5,
+      :queue_retry_count => 5,
+      :queue_user => "",
+      :queue_password => "",
+      :queue_host => "localhost",
+      :queue_port => 61613
     }
     
     class << self
