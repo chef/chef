@@ -175,13 +175,6 @@ before(:each) do
     @current_resource.stub!(:supports).and_return({:restart => true})
   end
 
-  it "should raise an exception when restarting the service if it is not supported" do
-    @current_resource.stub!(:running).and_return(true)
-    @new_resource.stub!(:supports).and_return({:restart => false})
-    @new_resource.stub!(:restart_command).and_return(false)
-    lambda { @provider.action_restart }.should raise_error(Chef::Exception::UnsupportedAction)
-  end    
-
   it "should restart the service if it's supported and running" do
     @current_resource.stub!(:running).and_return(true)
     @provider.should_receive(:restart_service).with(@new_resource.name).and_return(true)
