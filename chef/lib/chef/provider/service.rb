@@ -78,12 +78,11 @@ class Chef
       end
       
       def action_restart
-          if @current_resource.running
-            Chef::Log.debug("#{@new_resource}: attempting to restart")
-            status = restart_service(@new_resource.service_name)
-            if status
-              Chef::Log.info("#{@new_resource}: restarted succesfully")
-            end
+        if @current_resource.running
+          Chef::Log.debug("#{@new_resource}: attempting to restart")
+          status = restart_service(@new_resource.service_name)
+          if status
+            Chef::Log.info("#{@new_resource}: restarted succesfully")
           end
         end
       end
