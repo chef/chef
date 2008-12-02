@@ -28,6 +28,7 @@ class Chef
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
         
+          Chef::Log.debug("Checking apt-cache policy for #{@new_resource.package_name}")
           status = popen4("apt-cache policy #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdin.close
             stdout.each do |line|
@@ -35,11 +36,14 @@ class Chef
               when /^\s{2}Installed: (.+)$/
                 installed_version = $1
                 if installed_version == '(none)'
+                  Chef::Log.debug("Current version is nil")
                   @current_resource.version(nil)
                 else
+                  Chef::Log.debug("Current version is #{installed_version}")
                   @current_resource.version(installed_version)
                 end
               when /^\s{2}Candidate: (.+)$/
+                Chef::Log.debug("Current version is #{$1}")                
                 @candidate_version = $1
               end
             end
