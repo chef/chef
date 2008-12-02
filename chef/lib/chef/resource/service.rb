@@ -33,7 +33,7 @@ class Chef
         @restart_command = nil
         @reload_command = nil
         @action = "none"
-        @supports = { :restart => false, :status => false }
+        @supports = { :restart => false, :reload => false, :status => false }
         @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
       end
       

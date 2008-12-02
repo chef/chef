@@ -93,7 +93,7 @@ class OpenidConsumer < Application
     if Chef::Config[:openid_providers]
       fp = Chef::Config[:openid_providers].detect do |p|
         case openid
-        when /^http:\/\/#{p}/, /^#{p}/
+        when /^https?:\/\/#{p}/, /^#{p}/
           true
         else
           false
