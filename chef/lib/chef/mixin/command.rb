@@ -98,8 +98,8 @@ class Chef
       # === Returns
       # Returns the exit status of args[:command]
       def run_command(args={})         
-        @command_stdout = nil
-        @command_stderr = nil
+        command_stdout = nil
+        command_stderr = nil
 
         if args.has_key?(:creates)
           if File.exists?(args[:creates])
@@ -113,14 +113,14 @@ class Chef
 
           stdout_string = stdout.gets(nil)
           if stdout_string
-            @command_stdout = stdout_string
+            command_stdout = stdout_string
             Chef::Log.debug("---- Begin #{args[:command]} STDOUT ----")
             Chef::Log.debug(stdout_string.strip)
             Chef::Log.debug("---- End #{args[:command]} STDOUT ----")
           end
           stderr_string = stderr.gets(nil)
           if stderr_string
-            @command_stderr = stderr_string
+            command_stderr = stderr_string
             Chef::Log.debug("---- Begin #{args[:command]} STDERR ----")
             Chef::Log.debug(stderr_string.strip)
             Chef::Log.debug("---- End #{args[:command]} STDERR ----")
@@ -152,10 +152,10 @@ class Chef
             # if the log level is not debug, through output of command when we fail
             if Chef::Log.logger.level > 0
               Chef::Log.fatal("---- Begin #{args[:command]} STDOUT ----")
-              Chef::Log.fatal(@command_stdout)
+              Chef::Log.fatal(command_stdout)
               Chef::Log.fatal("---- End #{args[:command]} STDOUT ----")
               Chef::Log.fatal("---- Begin #{args[:command]} STDERR ----")
-              Chef::Log.fatal(@command_stderr)
+              Chef::Log.fatal(command_stderr)
               Chef::Log.fatal("---- End #{args[:command]} STDERR ----")
             end
             raise Chef::Exception::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}"
