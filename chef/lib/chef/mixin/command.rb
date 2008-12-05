@@ -82,8 +82,25 @@ class Chef
       end
       
       module_function :not_if
-      
+     
+      # === Parameters
+      # args<Hash>: A number of required and optional arguments
+      #   command<String>, <Array>: A complete command with options to execute or a command and options as an Array 
+      #   creates<String>: The absolute path to a file that prevents the command from running if it exists
+      #   cwd<String>: Working directory to execute command in, defaults to Dir.tmpdir
+      #   timeout<String>: How many seconds to wait for the command to execute before timing out
+      #   returns<String>: The single exit value command is expected to return, otherwise causes an exception
+      #
+      #   user<String>: The UID or user name of the user to execute the command as
+      #   group<String>: The GID or group name of the group to execute the command as
+      #   environment<Hash>: Pairs of environment variable names and their values to set before execution
+      #
+      # === Returns
+      # Returns the exit status of args[:command]
       def run_command(args={})         
+        command_stdout = nil
+        command_stderr = nil
+
         if args.has_key?(:creates)
           if File.exists?(args[:creates])
             Chef::Log.debug("Skipping #{args[:command]} - creates #{args[:creates]} exists.")
@@ -96,12 +113,14 @@ class Chef
 
           stdout_string = stdout.gets(nil)
           if stdout_string
+            command_stdout = stdout_string
             Chef::Log.debug("---- Begin #{args[:command]} STDOUT ----")
             Chef::Log.debug(stdout_string.strip)
             Chef::Log.debug("---- End #{args[:command]} STDOUT ----")
           end
           stderr_string = stderr.gets(nil)
           if stderr_string
+            command_stderr = stderr_string
             Chef::Log.debug("---- Begin #{args[:command]} STDERR ----")
             Chef::Log.debug(stderr_string.strip)
             Chef::Log.debug("---- End #{args[:command]} STDERR ----")
@@ -130,6 +149,15 @@ class Chef
         
           args[:returns] ||= 0
           if status.exitstatus != args[:returns]
+            # if the log level is not debug, through output of command when we fail
+            if Chef::Log.logger.level > 0
+              Chef::Log.fatal("---- Begin #{args[:command]} STDOUT ----")
+              Chef::Log.fatal(command_stdout)
+              Chef::Log.fatal("---- End #{args[:command]} STDOUT ----")
+              Chef::Log.fatal("---- Begin #{args[:command]} STDERR ----")
+              Chef::Log.fatal(command_stderr)
+              Chef::Log.fatal("---- End #{args[:command]} STDERR ----")
+            end
             raise Chef::Exception::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}"
           else
             Chef::Log.debug("Ran #{args[:command_string]} (#{args[:command]}) returned #{status.exitstatus}")
