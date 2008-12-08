@@ -122,10 +122,17 @@ class Chef
             rname = "Chef::Resource::#{short_match[1].capitalize}"
           end
         end
+        
+        # Every class gets a constant, so we can do const_get
+        resource_klass = Kernel.const_get(rname)
+        unless resource_klass
+          raise NameError, "Cannot find a resource (#{rname}) for #{method_name}"
+        end
+        
         begin
           args << @collection
           args << @node
-          resource = eval(rname).new(*args)
+          resource = resource_klass.new(*args)
           resource.cookbook_name = @cookbook_name
           resource.recipe_name = @recipe_name
           resource.params = @params
