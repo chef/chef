@@ -124,8 +124,9 @@ class Chef
         end
         
         # Every class gets a constant, so we can do const_get
-        resource_klass = Kernel.const_get(rname)
-        unless resource_klass
+        begin
+          resource_klass = Kernel.const_get(rname)
+        rescue NameError
           raise NameError, "Cannot find a resource (#{rname}) for #{method_name}"
         end
         
