@@ -19,18 +19,24 @@
 # limitations under the License.
 
 require 'rubygems'
+require 'daemons'
 require 'optparse'
 require 'chef'
 require 'facter'
 
+trap("INT") { Chef::Log.info("SIGINT received, stopping"); exit }
+
 config = {
   :config_file => "/etc/chef/server.rb",
-  :log_level => :info
+  :log_level => :info,
 }
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
   opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
     config[:config_file] = c
+  end
+  opts.on_tail("-d", "--daemonize", "Daemonize the process") do
+    config[:daemonize] = true
   end
   opts.on_tail("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
     config[:log_level] = l.to_sym
@@ -54,32 +60,28 @@ if config[:log_level]
   Chef::Log.level(config[:log_level].to_sym)
 end
 
+# daemonotron!
+Daemons.daemonize(:ontop => !config[:daemonize])
+
 # Get a Chef::SearchIndex object
 indexer = Chef::SearchIndex.new
 Chef::Queue.connect
 Chef::Queue.subscribe(:queue, "index")
 Chef::Queue.subscribe(:queue, "remove")
-while 1
-  begin
-    object, headers = Chef::Queue.receive_msg
-    Chef::Log.info("Headers #{headers.inspect}")
-    if headers["destination"] == "/queue/chef/index"
-      start_timer = Time.new
-      indexer.add(object)
-      indexer.commit
-      final_timer = Time.new
-      Chef::Log.info("Indexed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
-    elsif headers["destination"] == "/queue/chef/remove"
-      start_timer = Time.new
-      indexer.delete(object)
-      indexer.commit
-      final_timer = Time.new
-      Chef::Log.info("Removed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
-    end
-  rescue Exception => e
-    if e.kind_of?(Interrupt)
-      raise e
-    end
-    Chef::Log.error("Received Exception: #{e}\n#{e.backtrace.join("\n")} continuing")
+loop do
+  object, headers = Chef::Queue.receive_msg
+  Chef::Log.info("Headers #{headers.inspect}")
+  if headers["destination"] == "/queue/chef/index"
+    start_timer = Time.new
+    indexer.add(object)
+    indexer.commit
+    final_timer = Time.new
+    Chef::Log.info("Indexed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
+  elsif headers["destination"] == "/queue/chef/remove"
+    start_timer = Time.new
+    indexer.delete(object)
+    indexer.commit
+    final_timer = Time.new
+    Chef::Log.info("Removed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
   end
 end
