@@ -63,7 +63,7 @@ class Chef
             raise Chef::Exception::Package, "gem list --local failed - #{status.inspect}!"
           end
           
-          status = popen4("gem list --remote #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("gem list --remote #{@new_resource.package_name}#{' --source=' + @new_resource.source if @new_resource.source}") do |pid, stdin, stdout, stderr|
             stdin.close
             stdout.each do |line|
               installed_versions = gem_list_parse(line)
@@ -86,7 +86,7 @@ class Chef
       
         def install_package(name, version)
           run_command(
-            :command => "gem install #{name} -q --no-rdoc --no-ri -v #{version}"
+            :command => "gem install #{name} -q --no-rdoc --no-ri -v #{version}#{' --source=' + @new_resource.source if @new_resource.source}"
           )
         end
       
