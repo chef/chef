@@ -39,28 +39,34 @@ class Chef
       end
     
       def do_remote_file(source, path)
-        r = Chef::REST.new(Chef::Config[:remotefile_url])
-      
+        raw_file = nil
         current_checksum = nil
         current_checksum = self.checksum(path) if ::File.exists?(path)
-
-        url = generate_url(
-          source, 
-          "files", 
-          { 
-            :checksum => current_checksum
-          }
-        )
-
-        raw_file = nil
-        begin
-          raw_file = r.get_rest(url, true)
-        rescue Net::HTTPRetriableError => e
-          if e.response.kind_of?(Net::HTTPNotModified)
-            Chef::Log.debug("File #{path} is unchanged")
-            return false
-          else
-            raise e
+        if Chef::Config[:solo]
+          filename = ::File.join(Chef::Config[:cookbook_path], @new_resource.cookbook_name.to_s, "files/default/#{source}")
+          Chef::Log.debug("using local file for  remote_file:#{filename}")
+          raw_file = ::File.open(filename)
+        else
+          r = Chef::REST.new(Chef::Config[:remotefile_url])
+          
+          url = generate_url(
+            source, 
+            "files", 
+            { 
+              :checksum => current_checksum
+            }
+          )
+          
+          
+          begin
+            raw_file = r.get_rest(url, true)
+          rescue Net::HTTPRetriableError => e
+            if e.response.kind_of?(Net::HTTPNotModified)
+              Chef::Log.debug("File #{path} is unchanged")
+              return false
+            else
+              raise e
+            end
           end
         end
         
@@ -72,10 +78,31 @@ class Chef
         else
           Chef::Log.info("Creating file for #{@new_resource} at #{path}")
         end
-    
-        backup(path)
-        FileUtils.cp(raw_file.path, path)
-        @new_resource.updated = true
+        
+        
+        update = false
+      
+        if ::File.exists?(@new_resource.path)
+          @new_resource.checksum(self.checksum(raw_file.path))
+          if @new_resource.checksum != @current_resource.checksum
+            Chef::Log.debug("#{@new_resource} changed from #{@current_resource.checksum} to #{@new_resource.checksum}")
+            Chef::Log.info("Updating #{@new_resource} at #{@new_resource.path}")
+            update = true
+          end
+        else
+          Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
+          update = true
+        end
+      
+        
+        if update
+          backup(path)
+          FileUtils.cp(raw_file.path, path)
+          @new_resource.updated = true
+        else
+          Chef::Log.debug("#{@new_resource} is unchanged")
+        end
+        
 
         set_owner if @new_resource.owner != nil
         set_group if @new_resource.group != nil

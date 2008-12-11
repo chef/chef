@@ -31,6 +31,9 @@ config = {
   :log_level => :info,
   :noop => false
 }
+
+Chef::Config[:solo] = true
+
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
   opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
@@ -38,6 +41,9 @@ opts = OptionParser.new do |opts|
   end
   opts.on("-n", "--noop", "Print what you would do, but don't actually do it.") do
     config[:noop] = true
+  end
+  opts.on("-j JSON_ATTRIBS", "--json-attributes JSON_ATTRIBS", "Load attributes from a JSON file") do |j|
+    config[:json_attribs] = j
   end
   opts.on_tail("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
     config[:log_level] = l.to_sym
@@ -52,7 +58,15 @@ opts.parse!(ARGV)
 unless File.exists?(config[:config_file]) && File.readable?(config[:config_file])
   puts "I cannot find or read the config file: #{config[:config_file]}"
   puts opts
-  exit
+  exit 1
+end
+
+if config[:json_attribs]
+  unless File.exists?(config[:json_attribs])
+    puts "I cannot find #{config[:json_attribs]}"
+    exit 2
+  end
+  config[:json_attribs] = JSON.parse(IO.read(config[:json_attribs]))
 end
 
 # Load our config file
@@ -62,4 +76,6 @@ if config[:log_level]
 end
 
 c = Chef::Client.new
+c.json_attribs = config[:json_attribs]
+c.node_name = config[:node_name]
 c.run_solo

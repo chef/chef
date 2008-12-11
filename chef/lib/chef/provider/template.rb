@@ -29,45 +29,54 @@ class Chef
       include Chef::Mixin::Template
       
       def action_create
-        r = Chef::REST.new(Chef::Config[:template_url])
-        
-        cache_file_name = "cookbooks/#{@new_resource.cookbook_name}/templates/#{@new_resource.source}"
-        current_checksum = nil
-        
-        if Chef::FileCache.has_key?(cache_file_name)
-          current_checksum = self.checksum(Chef::FileCache.load(cache_file_name, false))
+        raw_template_file = nil
+        cache_file_name = "cookbooks/#{@new_resource.cookbook_name}/templates/default/#{@new_resource.source}"
+        if Chef::Config[:solo]
+          filename = ::File.join(Chef::Config[:cookbook_path], "#{@new_resource.cookbook_name}/templates/default/#{@new_resource.source}")
+          Chef::Log.debug("using local file for  template:#{filename}")
+          raw_template_file = ::File.open(filename)
         else
-          Chef::Log.debug("Template #{@new_resource} is not in the template cache")
-        end
-
-        template_url = generate_url(
-          @new_resource.source, 
-          "templates",
-          {
-            :checksum => current_checksum
-          }
-        )
-        
-        template_updated = true
-        begin
-          raw_template_file = r.get_rest(template_url, true)
-        rescue Net::HTTPRetriableError => e
-          if e.response.kind_of?(Net::HTTPNotModified)
-            template_updated = false
-            Chef::Log.debug("Cached template for #{@new_resource} is unchanged")
+          r = Chef::REST.new(Chef::Config[:template_url])
+          
+          current_checksum = nil
+          
+          if Chef::FileCache.has_key?(cache_file_name)
+            current_checksum = self.checksum(Chef::FileCache.load(cache_file_name, false))
           else
-            raise e
+            Chef::Log.debug("Template #{@new_resource} is not in the template cache")
           end
-        end
+          
+          template_url = generate_url(
+            @new_resource.source, 
+            "templates",
+            {
+              :checksum => current_checksum
+            }
+          )
+          
+          template_updated = true
+          begin
+            raw_template_file = r.get_rest(template_url, true)
+          rescue Net::HTTPRetriableError => e
+            if e.response.kind_of?(Net::HTTPNotModified)
+              template_updated = false
+              Chef::Log.debug("Cached template for #{@new_resource} is unchanged")
+            else
+              raise e
+            end
+          end
+          
+        end  
+        
+        context = @new_resource.variables
+        context[:node] = @node
+        template_file = render_template(Chef::FileCache.load(cache_file_name), context)
+        
         
         if template_updated
           Chef::Log.debug("Updating template for #{@new_resource} in the cache")
           Chef::FileCache.move_to(raw_template_file.path, cache_file_name)
         end
-        
-        context = @new_resource.variables
-        context[:node] = @node
-        template_file = render_template(Chef::FileCache.load(cache_file_name), context)
 
         update = false
       
@@ -83,6 +92,7 @@ class Chef
           update = true
         end
       
+        
         if update
           backup
           FileUtils.cp(template_file.path, @new_resource.path)

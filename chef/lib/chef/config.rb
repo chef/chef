@@ -34,6 +34,7 @@ class Chef
     include Chef::Mixin::CheckHelper
   
     @configuration = {
+      :solo  => false,
       :cookbook_path => [ "/etc/chef/site-cookbook", "/etc/chef/cookbook" ],
       :validation_token => nil,
       :merb_root => "/var/chef/merb",

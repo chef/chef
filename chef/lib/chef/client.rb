@@ -79,7 +79,7 @@ class Chef
       start_time = Time.now
       Chef::Log.info("Starting Chef Solo Run")
       
-      build_node
+      build_node(@node_name, solo = true)
       converge
       
       end_time = Time.now
@@ -95,15 +95,17 @@ class Chef
     #
     # === Returns
     # node<Chef::Node>:: Returns the created node object, also stored in @node
-    def build_node(node_name=nil)
+    def build_node(node_name=nil, solo=false)
       node_name ||= Facter["fqdn"].value ? Facter["fqdn"].value : Facter["hostname"].value
       @safe_name = node_name.gsub(/\./, '_')
       Chef::Log.debug("Building node object for #{@safe_name}")
-      begin
-        @node = @rest.get_rest("nodes/#{@safe_name}")
-      rescue Net::HTTPServerException => e
-        unless e.message =~ /^404/
-          raise e
+      unless solo
+        begin
+          @node = @rest.get_rest("nodes/#{@safe_name}")
+        rescue Net::HTTPServerException => e
+          unless e.message =~ /^404/
+            raise e
+          end
         end
       end
       unless @node
