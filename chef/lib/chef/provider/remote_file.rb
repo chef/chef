@@ -39,14 +39,21 @@ class Chef
       end
     
       def do_remote_file(source, path)
+        # The remote filehandle
         raw_file = nil
+        
+        # The current files checksum
         current_checksum = nil
         current_checksum = self.checksum(path) if ::File.exists?(path)
+        
+        # If we are solo, try and find the file in a local cookbook
+        #  assuming we find it, we open it up and set it to raw_file.
         if Chef::Config[:solo]
           filename = ::File.join(Chef::Config[:cookbook_path], @new_resource.cookbook_name.to_s, "files/default/#{source}")
-          Chef::Log.debug("using local file for  remote_file:#{filename}")
+          Chef::Log.debug("using local file for remote_file:#{filename}")
           raw_file = ::File.open(filename)
         else
+        # Otherwise, we need to go get it from the chef server
           r = Chef::REST.new(Chef::Config[:remotefile_url])
           
           url = generate_url(
@@ -56,7 +63,6 @@ class Chef
               :checksum => current_checksum
             }
           )
-          
           
           begin
             raw_file = r.get_rest(url, true)

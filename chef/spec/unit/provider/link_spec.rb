@@ -88,7 +88,7 @@ describe Chef::Provider::Link do
   it "should create a new symlink on create, setting updated to true" do
     load_mock_symlink_provider
     @provider.current_resource.source_file("nil")
-    File.should_receive(:symlink).with(@new_resource.source_file, @new_resource.target_file).once.and_return(true)
+    File.stub!(:symlink).and_return(true)
     @provider.new_resource.should_receive(:updated=).with(true)
     @provider.action_create
   end
