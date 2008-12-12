@@ -28,7 +28,7 @@ class Chef
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
         
-          status = popen4("emerge --color n --nospinner  --search #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("emerge --color n --nospinner --search #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdin.close
             
             available, installed = parse_emerge(@new_resource.package_name, stdout.read)
@@ -63,6 +63,7 @@ class Chef
               end  
             end
           end  
+          available = installed unless available
           [available, installed]
         end
         
