@@ -88,8 +88,8 @@ if config[:recipes]
   path = File.join(recipes_path, 'recipes.tgz')
   File.open(path, 'wb') do |f|
     f.write open(config[:recipes]).read
-  end  
-  `cd #{recipes_path} && tar xzvf #{path}`  
+  end
+  Chef::Mixin::Command.run_command(:command => "cd #{recipes_path} && tar xzvf #{path}")
 end
 
 c = Chef::Client.new
