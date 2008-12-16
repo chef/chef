@@ -54,6 +54,7 @@ class Chef
           raw_file = ::File.open(filename)
         else
         # Otherwise, we need to go get it from the chef server
+        # This results in a tmpfile as raw_file
           r = Chef::REST.new(Chef::Config[:remotefile_url])
           
           url = generate_url(
@@ -75,41 +76,36 @@ class Chef
             end
           end
         end
-        
-        raw_file_checksum = self.checksum(raw_file.path)
-        
-        if ::File.exists?(path)
-          Chef::Log.debug("#{path} changed from #{current_checksum} to #{raw_file_checksum}")
-          Chef::Log.info("Updating file for #{@new_resource} at #{path}")
-        else
-          Chef::Log.info("Creating file for #{@new_resource} at #{path}")
-        end
-        
-        
+      
+        # If we need to update this resource, we're going to flip this to
+        # true
         update = false
       
+        # If the file exists
         if ::File.exists?(@new_resource.path)
+          # And it matches the checsum of the raw file
           @new_resource.checksum(self.checksum(raw_file.path))
           if @new_resource.checksum != @current_resource.checksum
+            # Then we're going to update it
             Chef::Log.debug("#{@new_resource} changed from #{@current_resource.checksum} to #{@new_resource.checksum}")
             Chef::Log.info("Updating #{@new_resource} at #{@new_resource.path}")
             update = true
           end
         else
+        # We're creating a new file
           Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
           update = true
         end
       
-        
+        # If we are updating, back up the file and copy it over
         if update
-          backup(path)
-          FileUtils.cp(raw_file.path, path)
+          backup(@new_resource.path)
+          FileUtils.cp(raw_file.path, @new_resource.path)
           @new_resource.updated = true
         else
           Chef::Log.debug("#{@new_resource} is unchanged")
         end
-        
-
+      
         set_owner if @new_resource.owner != nil
         set_group if @new_resource.group != nil
         set_mode if @new_resource.mode != nil
