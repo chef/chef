@@ -108,24 +108,23 @@ class Chef
       def find_platform_and_version(node)
         platform = nil
         version = nil
-        if node.attribute?("lsbdistid")
-          platform = node[:lsbdistid]
-        elsif node.attribute?("macosx_productname")
-          platform = node[:macosx_productname]
+        
+        if node[:platform]
+          platform = node[:platform]
         elsif node.attribute?("operatingsystem")
           platform = node[:operatingsystem]
         end
+        
         raise ArgumentError, "Cannot find a platform for #{node}" unless platform
         
-        if node.attribute?("lsbdistrelease")
-          version = node[:lsbdistrelease]
-        elsif node.attribute?("macosx_productversion")
-          version = node[:macosx_productversion]
+        if node[:platform_version]
+          version = platform_version
         elsif node.attribute?("operatingsystemversion")
           version = node[:operatingsystemversion]
         elsif node.attribute?("operatingsystemrelease")
           version = node[:operatingsystemrelease]
         end
+        
         raise ArgumentError, "Cannot find a version for #{node}" unless version
         
         return platform, version

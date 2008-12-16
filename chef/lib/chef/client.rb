@@ -20,7 +20,7 @@ require File.join(File.dirname(__FILE__), "mixin", "generate_url")
 require File.join(File.dirname(__FILE__), "mixin", "checksum")
 
 require 'rubygems'
-require 'facter'
+require 'ohai'
 
 class Chef
   class Client
@@ -88,7 +88,7 @@ class Chef
     end
     
     # Builds a new node object for this client.  Starts with querying for the FQDN of the current
-    # host (unless it is supplied), then merges in the facts from Facter.
+    # host (unless it is supplied), then merges in the facts from Ohai.
     #
     # === Parameters
     # node_name<String>:: The name of the node to build - defaults to nil
@@ -96,7 +96,11 @@ class Chef
     # === Returns
     # node<Chef::Node>:: Returns the created node object, also stored in @node
     def build_node(node_name=nil, solo=false)
-      node_name ||= Facter["fqdn"].value ? Facter["fqdn"].value : Facter["hostname"].value
+      Ohai::Log.logger = Chef::Log.logger
+      ohai = Ohai::System.new
+      ohai.all_plugins
+      
+      node_name ||= ohai[:fqdn] ? ohai[:fqdn] : ohai[:hostname]      
       @safe_name = node_name.gsub(/\./, '_')
       Chef::Log.debug("Building node object for #{@safe_name}")
       unless solo
@@ -128,8 +132,8 @@ class Chef
           end
         end
       end
-      Facter.each do |field, value|
-        Chef::Log.debug("Facter Attribute: #{field} - #{value.inspect}")
+      ohai.each do |field, value|
+        Chef::Log.debug("Ohai Attribute: #{field} - #{value.inspect}")
         @node[field] = value
       end
       platform, version = Chef::Platform.find_platform_and_version(@node)

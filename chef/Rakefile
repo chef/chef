@@ -24,12 +24,12 @@ spec = Gem::Specification.new do |s|
   s.homepage = HOMEPAGE
   
   # Uncomment this to add a dependency
-  s.add_dependency "facter"
   s.add_dependency "ruby-openid"
   s.add_dependency "json"
   s.add_dependency "erubis"  
   s.add_dependency "extlib"
   s.add_dependency "stomp"
+  s.add_dependency "ohai"
   
   s.bindir       = "bin"
   s.executables  = %w( chef-client  chef-solo )
