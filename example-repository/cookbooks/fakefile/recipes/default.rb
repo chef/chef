@@ -124,7 +124,7 @@ end
 
 search(:user, "*") do |u|
   directory "/tmp/home/#{u['name']}" do
-    if u['name'] == "nobody" && @node[:operatingsystem] == "Darwin"
+    if u['name'] == "nobody" && @node[:platform] == "mac_os_x"
       owner "root"
     else
       owner "#{u['name']}"
