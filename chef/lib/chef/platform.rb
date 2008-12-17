@@ -118,11 +118,11 @@ class Chef
         raise ArgumentError, "Cannot find a platform for #{node}" unless platform
         
         if node[:platform_version]
-          version = platform_version
-        elsif node.attribute?("operatingsystemversion")
-          version = node[:operatingsystemversion]
-        elsif node.attribute?("operatingsystemrelease")
-          version = node[:operatingsystemrelease]
+          version = node[:platform_version]
+        elsif node[:os_version]
+          version = node[:os_version]
+        elsif node[:os_release]
+          version = node[:os_release]
         end
         
         raise ArgumentError, "Cannot find a version for #{node}" unless version
