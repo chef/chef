@@ -23,7 +23,7 @@ print "Woot!\n";
   }
 end
 
-unless @node[:operatingsystem] == "Ubuntu" or @node['operatingsystem'] == "Darwin"
+unless @node[:platform] == "ubuntu" or @node[:platform] == "mac_os_x"
   package "emacs"
 
   package "emacs" do
