@@ -1,10 +1,8 @@
-# -*- ruby -*-
 require 'rubygems'
 require 'rake/gempackagetask'
-require 'rake/rdoctask'
 
 GEM = "chef-server"
-VERSION = "0.0.1"
+CHEF_SERVER_VERSION = "0.0.1"
 AUTHOR = "Adam Jacob"
 EMAIL = "adam@opscode.com"
 HOMEPAGE = "http://hjksolutions.com"
@@ -12,7 +10,7 @@ SUMMARY = "A configuration management system server."
 
 spec = Gem::Specification.new do |s|
   s.name = GEM
-  s.version = VERSION
+  s.version = CHEF_SERVER_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README.txt", "LICENSE", 'NOTICE']
@@ -22,7 +20,6 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
   
-  # Uncomment this to add a dependency
   s.add_dependency "stomp"
   s.add_dependency "stompserver"
   s.add_dependency "ferret"
@@ -44,14 +41,6 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-task :install => [:package] do
-  sh %{sudo gem install pkg/#{GEM}-#{VERSION} --no-rdoc --no-ri}
+task :install => :package do
+  sh %{sudo gem install pkg/#{GEM}-#{CHEF_SERVER_VERSION} --no-rdoc --no-ri}
 end
-
-require 'spec/rake/spectask'
-#require 'merb-core/test/tasks/spectasks'
-desc 'Default: run spec examples'
-task :default => 'spec'
-
-
-# vim: syntax=Ruby

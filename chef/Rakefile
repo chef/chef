@@ -1,11 +1,10 @@
-# -*- ruby -*-
 require 'rubygems'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require './tasks/rspec.rb'
 
 GEM = "chef"
-VERSION = "0.0.1"
+CHEF_VERSION = "0.0.1"
 AUTHOR = "Adam Jacob"
 EMAIL = "adam@opscode.com"
 HOMEPAGE = "http://hjksolutions.com"
@@ -13,7 +12,7 @@ SUMMARY = "A configuration management system."
 
 spec = Gem::Specification.new do |s|
   s.name = GEM
-  s.version = VERSION
+  s.version = CHEF_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README.txt", "LICENSE", 'NOTICE']
@@ -46,8 +45,6 @@ Rake::RDocTask.new do |rd|
   rd.rdoc_files.include("lib/**/*.rb")
 end
 
-task :install => [:package] do
-  sh %{sudo gem install pkg/#{GEM}-#{VERSION} --no-rdoc --no-ri}
+task :install => :package do
+  sh %{sudo gem install pkg/#{GEM}-#{CHEF_VERSION} --no-rdoc --no-ri}
 end
-
-# vim: syntax=Ruby
