@@ -78,7 +78,7 @@ remote_directory "/tmp/remote_test" do
   mode 0755
   source "remote_test"
   files_owner "root"
-  files_group(@node['operatingsystem'] == "Ubuntu" ? "admin" : "wheel")
+  files_group(@node['platform'] == "ubuntu" ? "admin" : "wheel")
   files_mode 0644
   files_backup false
 end

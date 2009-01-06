@@ -128,9 +128,12 @@ describe Chef::Client, "build_node" do
     @mock_facter_fqdn.stub!(:value).and_return("foo.bar.com")
     @mock_facter_hostname = mock("Facter Hostname")
     @mock_facter_hostname.stub!(:value).and_return("foo")
-    Facter.stub!(:[]).with("fqdn").and_return(@mock_facter_fqdn)
-    Facter.stub!(:[]).with("hostname").and_return(@mock_facter_hostname)
-    Facter.stub!(:each).and_return(true)
+    @mock_ohai = {
+      :fqdn => "foo.bar.com",
+      :hostname => "foo"
+    }
+    @mock_ohai.stub!(:all_plugins).and_return(true)
+    Ohai::System.stub!(:new).and_return(@mock_ohai)
     @node = Chef::Node.new
     @mock_rest.stub!(:get_rest).and_return(@node)
     Chef::REST.stub!(:new).and_return(@mock_rest)
@@ -145,7 +148,7 @@ describe Chef::Client, "build_node" do
   end
   
   it "should set the name equal to the hostname if FQDN is not available" do
-    @mock_facter_fqdn.stub!(:value).and_return(nil)
+    @mock_ohai[:fqdn] = nil
     @mock_rest.stub!(:get_rest).and_return(nil)
     @client.build_node
     @client.node.name.should eql("foo")

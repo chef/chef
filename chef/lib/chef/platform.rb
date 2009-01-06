@@ -111,8 +111,8 @@ class Chef
         
         if node[:platform]
           platform = node[:platform]
-        elsif node.attribute?("operatingsystem")
-          platform = node[:operatingsystem]
+        elsif node.attribute?("os")
+          platform = node[:os]
         end
         
         raise ArgumentError, "Cannot find a platform for #{node}" unless platform

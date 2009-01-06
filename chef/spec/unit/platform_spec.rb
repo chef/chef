@@ -94,71 +94,9 @@ describe Chef::Platform do
     kitty = Chef::Resource::Cat.new("loulou")    
     node = Chef::Node.new
     node.name("Intel")
-    node.operatingsystem("Darwin")
-    node.operatingsystemversion("9.2.2")
+    node.platform("mac_os_x")
+    node.platform_version("9.2.2")
     Chef::Platform.find_provider_for_node(node, kitty).should eql("nice")
-  end
-  
-  it "should prefer lsbdistid over operatingsystem when looking up via node" do
-    kitty = Chef::Resource::Cat.new("loulou")    
-    node = Chef::Node.new
-    node.name("Intel")
-    node.operatingsystem("Darwin")
-    node.operatingsystemversion("9.2.2")
-    node.lsbdistid("Not Linux")
-    Chef::Platform.set(
-      :platform => :not_linux,
-      :resource => :cat,
-      :provider => "bourbon"
-    )
-    Chef::Platform.find_provider_for_node(node, kitty).should eql("bourbon")
-  end
-  
-  it "should prefer macosx_productnmae over operatingsystem when looking up via node" do
-    kitty = Chef::Resource::Cat.new("loulou")    
-    node = Chef::Node.new
-    node.name("Intel")
-    node.operatingsystem("Darwin")
-    node.operatingsystemversion("9.2.2")
-    node.macosx_productname("Mac OS X")
-    Chef::Platform.set(
-      :platform => :mac_os_x,
-      :resource => :cat,
-      :provider => "bourbon"
-    )
-    Chef::Platform.find_provider_for_node(node, kitty).should eql("bourbon")
-  end
-  
-  it "should prefer lsbdistrelease over operatingsystem when looking up via node" do
-    kitty = Chef::Resource::Cat.new("loulou")    
-    node = Chef::Node.new
-    node.name("Intel")
-    node.operatingsystem("Darwin")
-    node.operatingsystemversion("9.2.2")
-    node.lsbdistrelease("10")
-    Chef::Platform.set(
-      :platform => :darwin,
-      :version => "10",
-      :resource => :cat,
-      :provider => "bourbon"
-    )
-    Chef::Platform.find_provider_for_node(node, kitty).should eql("bourbon")
-  end
-  
-  it "should prefer macosx_productversion over operatingsystem when looking up via node" do
-    kitty = Chef::Resource::Cat.new("loulou")    
-    node = Chef::Node.new
-    node.name("Intel")
-    node.operatingsystem("Darwin")
-    node.operatingsystemversion("9.2.2")
-    node.macosx_productversion("10")
-    Chef::Platform.set(
-      :platform => :darwin,
-      :version => "10",
-      :resource => :cat,
-      :provider => "bourbon"
-    )
-    Chef::Platform.find_provider_for_node(node, kitty).should eql("bourbon")
   end
   
   it "should update the provider map with map" do  
