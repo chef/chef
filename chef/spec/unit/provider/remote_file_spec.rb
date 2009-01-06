@@ -114,9 +114,22 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     do_remote_file
   end
   
-  it "should backup the original file" do
-    @provider.should_receive(:backup).with(@resource.path).and_return(true)
-    do_remote_file
+  describe "when the target file already exists" do
+    before do
+      ::File.stub!(:exists?).and_return(true)
+    end
+
+    it "should backup the original file if it is different" do
+      @provider.current_resource.checksum("qnq86p61rrn237932s201009r5431609")
+      @provider.should_receive(:backup).with(@resource.path).and_return(true)
+      do_remote_file
+    end
+
+    it "shouldn't backup the original file when it's the same" do
+      @provider.should_not_receive(:backup).with(@resource.path).and_return(true)
+      do_remote_file
+    end
+
   end
   
   it "should set the new resource to updated" do
