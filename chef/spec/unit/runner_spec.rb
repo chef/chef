@@ -19,6 +19,20 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Runner do
+  def new_runner
+    @node = Chef::Node.new
+    @node.name "latte"
+    @node.platform "mac_os_x"
+    @node.platform_version "10.5.1"
+    @collection = Chef::ResourceCollection.new()
+    @collection << Chef::Resource::Cat.new("loulou", @collection)
+    Chef::Platform.set(
+      :resource => :cat,
+      :provider => Chef::Provider::SnakeOil
+    )
+    @runner = Chef::Runner.new(@node, @collection)
+  end
+  
   before(:each) do
     @mock_node = mock("Node", :null_object => true)
     @mock_collection = mock("Resource Collection", :null_object => true)
@@ -65,7 +79,7 @@ describe Chef::Runner do
     @runner.converge
   end
   
-  it "should check a resources only_if, if it is provided" do
+  it "should not check a resources only_if if it is not provided" do
     @collection[0].should_receive(:only_if).and_return(nil)
     @runner.converge
   end
@@ -126,17 +140,5 @@ describe Chef::Runner do
     @runner.converge
   end
   
-  def new_runner
-    @node = Chef::Node.new
-    @node.name "latte"
-    @node.operatingsystem "mac_os_x"
-    @node.operatingsystemversion "10.5.1"
-    @collection = Chef::ResourceCollection.new()
-    @collection << Chef::Resource::Cat.new("loulou", @collection)
-    Chef::Platform.set(
-      :resource => :cat,
-      :provider => Chef::Provider::SnakeOil
-    )
-    @runner = Chef::Runner.new(@node, @collection)
-  end
+
 end
