@@ -163,8 +163,7 @@ class Chef
       end
       
       if @registration
-        reg = Chef::FileStore.load("registration", @safe_name)
-        @secret = reg["secret"]
+        @secret = Chef::FileCache.load(File.join("registration", @safe_name))
       else
         create_registration
       end
@@ -178,7 +177,7 @@ class Chef
     # true:: Always returns true
     def create_registration
       @secret = random_password(500)
-      Chef::FileStore.store("registration", @safe_name, { "secret" => @secret })
+      Chef::FileCache.store(File.join("registration", @safe_name), @secret)
       @rest.post_rest("registrations", { :id => @safe_name, :password => @secret, :validation_token => @validation_token })
       true
     end
