@@ -34,7 +34,7 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
     
-    DESIGN_DOCUMENT = {
+    NODE_DESIGN_DOCUMENT = {
       "version" => 3,
       "language" => "javascript",
       "views" => {
@@ -249,7 +249,7 @@ class Chef
     
     # Set up our CouchDB design document
     def self.create_design_document
-      Chef::CouchDB.new.create_design_document("nodes", DESIGN_DOCUMENT)
+      Chef::CouchDB.new.create_design_document("nodes", NODE_DESIGN_DOCUMENT)
     end
     
     # As a string
