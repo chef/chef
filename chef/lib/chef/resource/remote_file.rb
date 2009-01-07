@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/resource/file'
+
 class Chef
   class Resource
     class RemoteFile < Chef::Resource::File

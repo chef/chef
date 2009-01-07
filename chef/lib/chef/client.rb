@@ -15,11 +15,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require File.join(File.dirname(__FILE__), "mixin", "params_validate")
-require File.join(File.dirname(__FILE__), "mixin", "generate_url")
-require File.join(File.dirname(__FILE__), "mixin", "checksum")
-
-require 'rubygems'
+require 'chef/config'
+require 'chef/mixin/params_validate'
+require 'chef/mixin/generate_url'
+require 'chef/mixin/checksum'
+require 'chef/log'
+require 'chef/rest'
+require 'chef/platform'
+require 'chef/node'
+require 'chef/file_cache'
+require 'chef/compile'
+require 'chef/runner'
 require 'ohai'
 
 class Chef

@@ -16,11 +16,12 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "mixin", "params_validate")
+require 'chef/mixin/params_validate'
+require 'json'
+require 'stomp'
 
 class Chef
   class Queue
-    require 'stomp'
     
     @client = nil
     @queue_retry_delay = Chef::Config[:queue_retry_delay]

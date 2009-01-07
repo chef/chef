@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "execute")
+require 'chef/resource/execute'
 
 class Chef
   class Resource

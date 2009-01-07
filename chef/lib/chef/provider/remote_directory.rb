@@ -16,7 +16,12 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "file")
+require 'chef/provider/file'
+require 'chef/provider/directory'
+require 'chef/rest'
+require 'chef/resource/directory'
+require 'chef/resource/remote_file'
+require 'chef/platform'
 require 'uri'
 require 'tempfile'
 require 'net/https'

@@ -16,7 +16,11 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "..", "mixin", "command")
+require 'chef/mixin/command'
+require 'chef/log'
+require 'chef/file_cache'
+require 'chef/resource/remote_file'
+require 'chef/platform'
 
 class Chef
   class Provider

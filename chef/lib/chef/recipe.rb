@@ -16,8 +16,13 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "mixin", "from_file")
-require File.join(File.dirname(__FILE__), "mixin", "language")
+require 'chef/resource'
+Dir[File.join(File.dirname(__FILE__), 'resource/**/*.rb')].sort.each { |lib| require lib }
+require 'chef/mixin/from_file'
+require 'chef/mixin/language'
+require 'chef/resource_collection'
+require 'chef/cookbook_loader'
+require 'chef/rest'
 
 class Chef
   class Recipe

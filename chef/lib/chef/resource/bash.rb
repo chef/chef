@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "script")
+require 'chef/resource/script'
 
 class Chef
   class Resource

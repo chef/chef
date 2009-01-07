@@ -17,6 +17,7 @@
 #
 
 require "chef" / "mixin" / "checksum"
+require "chef" / "cookbook_loader"
 
 class Application < Merb::Controller
 

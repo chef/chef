@@ -16,8 +16,11 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "file")
-require File.join(File.dirname(__FILE__), "..", "mixin", "template")
+require 'chef/provider/file'
+require 'chef/mixin/template'
+require 'chef/mixin/checksum'
+require 'chef/rest'
+require 'chef/file_cache'
 require 'uri'
 require 'tempfile'
 

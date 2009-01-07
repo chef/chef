@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "mixin", "params_validate")
 require 'ferret'
 
 class Chef

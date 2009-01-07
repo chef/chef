@@ -27,6 +27,7 @@ require "openid"
 require "openid/consumer/discovery"
 require 'openid/store/filesystem'
 require 'json'
+require 'chef' / 'openid_registration'
 #end
 
 class OpenidServer < Application

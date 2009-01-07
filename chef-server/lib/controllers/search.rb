@@ -16,6 +16,9 @@
 # limitations under the License.
 #
 
+require 'chef' / 'search'
+require 'chef' / 'queue'
+
 class Search < Application
   
   provides :html, :json

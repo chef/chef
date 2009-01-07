@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "package")
+require 'chef/resource/package'
 
 class Chef
   class Resource

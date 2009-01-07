@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef' / 'node'
+
 class Nodes < Application
   
   provides :html, :json

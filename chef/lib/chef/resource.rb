@@ -16,9 +16,11 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "mixin", "params_validate")
-require File.join(File.dirname(__FILE__), "mixin", "check_helper")
-require File.join(File.dirname(__FILE__), "mixin", "language")
+require 'chef/mixin/params_validate'
+require 'chef/mixin/check_helper'
+require 'chef/mixin/language'
+require 'chef/resource_collection'
+require 'chef/node'
 
 class Chef
   class Resource

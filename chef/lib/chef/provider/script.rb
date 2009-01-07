@@ -17,6 +17,7 @@
 #
 
 require 'tempfile'
+require 'chef/provider/execute'
 
 class Chef
   class Provider

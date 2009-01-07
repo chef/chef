@@ -16,6 +16,9 @@
 # limitations under the License.
 #
 
+require 'chef' / 'mixin' / 'checksum'
+require 'chef' / 'cookbook_loader'
+
 class CookbookLibraries < Application
   
   provides :html, :json

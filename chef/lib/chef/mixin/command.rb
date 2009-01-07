@@ -16,7 +16,8 @@
 # limitations under the License.
 #
 
-
+require 'chef/log'
+require 'chef/exceptions'
 require 'tmpdir'
 require 'fcntl'
 require 'etc'

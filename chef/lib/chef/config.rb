@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require File.join(File.dirname(__FILE__), "mixin", "check_helper")
-require File.join(File.dirname(__FILE__), "mixin", "from_file")
+require 'chef/mixin/check_helper'
+require 'chef/mixin/from_file'
 
 # Chef::Config[:variable]
 # @config = Chef::Config.new()

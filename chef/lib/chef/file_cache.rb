@@ -15,8 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require File.join(File.dirname(__FILE__), "mixin", "params_validate")
-require File.join(File.dirname(__FILE__), "mixin", "create_path")
+require 'chef/mixin/params_validate'
+require 'chef/mixin/create_path'
+require 'chef/exceptions'
 require 'json'
 require 'fileutils'
 

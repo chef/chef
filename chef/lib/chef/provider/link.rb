@@ -15,7 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require File.join(File.dirname(__FILE__), "..", "mixin", "command")
+
+require 'chef/config'
+require 'chef/log'
+require 'chef/mixin/command'
+require 'chef/resource/link'
+require 'chef/provider'
+
 class Chef
   class Provider
     class Link < Chef::Provider

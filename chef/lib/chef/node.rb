@@ -16,12 +16,13 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "mixin", "check_helper")
-require File.join(File.dirname(__FILE__), "mixin", "params_validate")
-require File.join(File.dirname(__FILE__), "mixin", "from_file")
-
+require 'chef/config'
+require 'chef/mixin/check_helper'
+require 'chef/mixin/params_validate'
+require 'chef/mixin/from_file'
+require 'chef/couchdb'
+require 'chef/queue'
 require 'extlib'
-require 'rubygems'
 require 'json'
 
 class Chef

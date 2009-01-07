@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef' / 'mixin' / 'checksum'
 
 class CookbookDefinitions < Application
   

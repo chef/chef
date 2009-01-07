@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef' / 'mixin' / 'checksum'
+require 'chef' / 'cookbook_loader'
 
 class CookbookFiles < Application
   

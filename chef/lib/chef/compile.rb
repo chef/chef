@@ -15,6 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'chef/cookbook_loader'
+require 'chef/resource_collection'
+require 'chef/node'
+require 'chef/log'
+
 class Chef
   class Compile
       

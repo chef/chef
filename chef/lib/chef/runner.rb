@@ -16,7 +16,10 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "mixin", "params_validate")
+require 'chef/mixin/params_validate'
+require 'chef/node'
+require 'chef/resource_collection'
+require 'chef/platform'
 
 class Chef
   class Runner

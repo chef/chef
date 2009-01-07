@@ -17,6 +17,7 @@
 #
 
 require 'openid'
+require 'chef' / 'openid_registration'
 
 class OpenidRegister < Application
 

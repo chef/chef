@@ -16,7 +16,10 @@
 # limitations under the License.
 #
 
-
+require 'chef/config'
+require 'chef/mixin/params_validate'
+require 'chef/couchdb'
+require 'digest/sha1'
 require 'rubygems'
 require 'json'
 

@@ -16,10 +16,14 @@
 # limitations under the License.
 #
 
+require 'chef/config'
+require 'chef/log'
+require 'chef/resource/file'
+require 'chef/mixin/checksum'
+require 'chef/mixin/generate_url'
+require 'chef/provider'
 require 'etc'
 require 'fileutils'
-require File.join(File.dirname(__FILE__), "..", "mixin", "checksum")
-require File.join(File.dirname(__FILE__), "..", "mixin", "generate_url")
 
 class Chef
   class Provider

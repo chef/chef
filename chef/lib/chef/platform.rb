@@ -16,8 +16,12 @@
 # limitations under the License.
 #
 
+require 'chef/config'
+require 'chef/log'
+require 'chef/mixin/params_validate'
+require 'chef/platform'
+require 'chef/resource'
 Dir[File.join(File.dirname(__FILE__), 'provider/**/*.rb')].sort.each { |lib| require lib }
-require File.join(File.dirname(__FILE__), 'mixin', 'params_validate')
 
 class Chef
   class Platform

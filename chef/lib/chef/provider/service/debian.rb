@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), "..", "service")
-require File.join(File.dirname(__FILE__), "init")
-require File.join(File.dirname(__FILE__), "..", "..", "mixin", "command")
+require 'chef/provider/service'
+require 'chef/provider/service/init'
+require 'chef/mixin/command'
 
 class Chef
   class Provider

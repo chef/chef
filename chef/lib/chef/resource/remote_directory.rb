@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/resource/directory'
+
 class Chef
   class Resource
     class RemoteDirectory < Chef::Resource::Directory
