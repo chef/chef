@@ -24,6 +24,7 @@ require 'chef'
 require 'chef/client'
 require 'json'
 require 'daemons'
+require 'tmpdir'
 
 config = {
   :config_file => "/etc/chef/client.rb",
@@ -94,8 +95,6 @@ config[:daemonize] ||= Chef::Config[:daemonize]
 
 Chef::Config[:interval] = config[:interval] if config[:interval]
 Chef::Config[:splay]    = config[:splay]    if config[:splay]
-
-Daemons.daemonize(:ontop => !config[:daemonize])
 
 Kernel.trap("INT") { Chef::Log.fatal("Recieved SIGINT - exiting!"); exit 2 }
 

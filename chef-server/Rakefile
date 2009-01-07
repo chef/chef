@@ -5,7 +5,7 @@ GEM = "chef-server"
 CHEF_SERVER_VERSION = "0.0.1"
 AUTHOR = "Adam Jacob"
 EMAIL = "adam@opscode.com"
-HOMEPAGE = "http://hjksolutions.com"
+HOMEPAGE = "http://www.opscode.com/chef"
 SUMMARY = "A configuration management system server."
 
 spec = Gem::Specification.new do |s|
@@ -32,7 +32,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "syntax"
   
   s.bindir       = "bin"
-  s.executables  = %w( chef-indexer chef-server  )
+  s.executables  = %w( chef-indexer chef-server )
   
   s.files = %w(LICENSE README.txt Rakefile) + Dir.glob("{lib}/**/*")
 end
