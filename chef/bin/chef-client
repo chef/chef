@@ -22,7 +22,6 @@ require 'optparse'
 require 'rubygems'
 require 'chef'
 require 'chef/client'
-require 'facter'
 require 'json'
 
 config = {

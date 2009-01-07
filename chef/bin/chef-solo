@@ -25,7 +25,6 @@ require 'optparse'
 require 'chef'
 require 'chef/client'
 require 'rubygems'
-require 'facter'
 
 config = {
   :config_file => "/etc/chef/solo.rb",
