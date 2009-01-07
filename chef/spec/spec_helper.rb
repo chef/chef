@@ -17,8 +17,21 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # 
 
-require File.join(File.dirname(__FILE__), "..", "lib", "chef")
-Dir[File.join(File.dirname(__FILE__), '..', 'lib', 'chef', '**', '*.rb')].sort.each { |lib| require lib }
+$:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
+
+require 'chef'
+
+chef_lib_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
+Dir[
+  File.expand_path(
+    File.join(
+      chef_lib_path, 'chef', '**', '*.rb'
+    )
+  )
+].sort.each do |lib|
+  lib_short_path = lib.match("^#{chef_lib_path}#{File::SEPARATOR}(.+)$")[1]
+  require lib_short_path
+end
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
 
 Chef::Config.log_level(:error)
