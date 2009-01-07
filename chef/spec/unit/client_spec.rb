@@ -174,6 +174,18 @@ describe Chef::Client, "build_node" do
     @client.build_node
     @client.node.recipes.should eql([ "one", "two", "three" ])
   end
+  
+  it "should set the tags attribute to an empty array if it is not already defined" do
+    @client.build_node
+    @client.node.tags.should eql([])
+  end
+  
+  it "should not set the tags attribute to an empty array if it is already defined" do
+    @client.node = @node
+    @client.node[:tags] = [ "radiohead" ]
+    @client.build_node
+    @client.node.tags.should eql([ "radiohead" ])
+  end
 end
 
 describe Chef::Client, "register" do

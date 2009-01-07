@@ -93,6 +93,55 @@ class Chef
         block.call(sr)
       end
     end
+    
+    # Sets a tag, or list of tags, for this node.  Syntactic sugar for
+    # @node[:tags].  
+    #
+    # With no arguments, returns the list of tags.
+    #
+    # === Parameters
+    # tags<Array>:: A list of tags to add - can be a single string
+    #
+    # === Returns
+    # tags<Array>:: The contents of @node[:tags]
+    def tag(*args)
+      if args.length > 0
+        args.each do |tag|
+          @node[:tags] << tag unless @node[:tags].include?(tag)
+        end
+        @node[:tags]
+      else
+        @node[:tags]
+      end
+    end
+    
+    # Returns true if the node is tagged with the supplied list of tags.
+    #
+    # === Parameters
+    # tags<Array>:: A list of tags
+    #
+    # === Returns
+    # true<TrueClass>:: If all the parameters are present
+    # false<FalseClass>:: If any of the parameters are missing
+    def tagged?(*args)
+      args.each do |tag|
+        return false unless @node[:tags].include?(tag)
+      end
+      true
+    end
+    
+    # Removes the list of tags from the node.
+    #
+    # === Parameters
+    # tags<Array>:: A list of tags
+    #
+    # === Returns
+    # tags<Array>:: The current list of @node[:tags]
+    def untag(*args)
+      args.each do |tag|
+        @node[:tags].delete(tag)
+      end
+    end
         
     def method_missing(method_symbol, *args, &block)
       resource = nil

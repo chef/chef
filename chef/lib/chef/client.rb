@@ -140,6 +140,7 @@ class Chef
       Chef::Log.debug("Platform is #{platform} version #{version}")
       @node[:platform] = platform
       @node[:platform_version] = version
+      @node[:tags] = Array.new unless @node.attribute?(:tags)
       @node
     end
     

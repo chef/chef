@@ -21,6 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::Recipe do
   before(:each) do
     @recipe = Chef::Recipe.new("hjk", "test", Chef::Node.new)
+    @recipe.node[:tags] = Array.new
   end
  
   it "should load a two word (zen_master) resource" do
@@ -140,4 +141,50 @@ CODE
     res.pretty_kitty.should eql(true)
   end
 
+  it "should set tags via tag" do
+    @recipe.tag "foo"
+    @recipe.node[:tags].should include("foo")
+  end
+  
+  it "should set multiple tags via tag" do
+    @recipe.tag "foo", "bar"
+    @recipe.node[:tags].should include("foo")
+    @recipe.node[:tags].should include("bar")
+  end
+  
+  it "should not set the same tag twice via tag" do
+    @recipe.tag "foo"
+    @recipe.tag "foo"
+    @recipe.node[:tags].should eql([ "foo" ])
+  end
+  
+  it "should return the current list of tags from tag with no arguments" do
+    @recipe.tag "foo"
+    @recipe.tag.should eql([ "foo" ])
+  end
+  
+  it "should return true from tagged? if node is tagged" do
+    @recipe.tag "foo"
+    @recipe.tagged?("foo").should be(true)
+  end
+  
+  it "should return false from tagged? if node is not tagged" do
+    @recipe.tagged?("foo").should be(false)
+  end
+  
+  it "should return false from tagged? if node is not tagged" do
+    @recipe.tagged?("foo").should be(false)
+  end
+  
+  it "should remove a tag from the tag list via untag" do
+    @recipe.tag "foo"
+    @recipe.untag "foo"
+    @recipe.node[:tags].should eql([])
+  end
+  
+  it "should remove multiple tags from the tag list via untag" do
+    @recipe.tag "foo", "bar"
+    @recipe.untag "bar", "foo"
+    @recipe.node[:tags].should eql([])
+  end
 end
