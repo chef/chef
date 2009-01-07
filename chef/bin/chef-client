@@ -23,6 +23,7 @@ require 'rubygems'
 require 'chef'
 require 'chef/client'
 require 'json'
+require 'daemons'
 
 config = {
   :config_file => "/etc/chef/client.rb",
@@ -30,12 +31,21 @@ config = {
   :json_attribs => nil,
   :noop => false,
   :validation_token => nil,
-  :node_name => nil
+  :node_name => nil,
+  :daemonize => false,
+  :splay => nil,
+  :interval => nil
 }
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
   opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
     config[:config_file] = c
+  end
+  opts.on("-d", "--daemonize", "Daemonize the process") do |d|
+    config[:daemonize] = true
+  end
+  opts.on("-i SECONDS", "--interval SECONDS", "Run chef-client peridoically, in seconds") do |i|
+    config[:interval] = i
   end
   opts.on("-j JSON_ATTRIBS", "--json-attributes JSON_ATTRIBS", "Load attributes from a JSON file") do |j|
     config[:json_attribs] = j
@@ -43,8 +53,8 @@ opts = OptionParser.new do |opts|
   opts.on("-N NODE_NAME", "--node-name NODE_NAME", "The node name for this client") do |n|
     config[:node_name] = n
   end
-  opts.on("-n", "--noop", "Print what you would do, but don't actually do it.") do
-    config[:noop] = true
+  opts.on("-s SECONDS", "--splay SECONDS", "The splay time for running at intervals, in seconds") do |s|
+    config[:splay] = s
   end
   opts.on_tail("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
     config[:log_level] = l.to_sym
@@ -80,9 +90,45 @@ if config[:log_level]
   Chef::Log.level(config[:log_level].to_sym)
 end
 config[:node_name] ||= Chef::Config[:node_name]
+config[:daemonize] ||= Chef::Config[:daemonize]
 
-c = Chef::Client.new
-c.json_attribs = config[:json_attribs]
-c.validation_token = config[:validation_token] if config[:validation_token]
-c.node_name = config[:node_name]
-c.run
+Chef::Config[:interval] = config[:interval] if config[:interval]
+Chef::Config[:splay]    = config[:splay]    if config[:splay]
+
+Daemons.daemonize(:ontop => !config[:daemonize])
+
+Kernel.trap("INT") { Chef::Log.fatal("Recieved SIGINT - exiting!"); exit 2 }
+
+sleepy_time = 0
+run_forever = false
+
+if Chef::Config[:interval]
+  sleepy_time = Chef::Config[:interval].to_i + rand(Chef::Config[:splay])
+  Chef::Log.debug("Setting sleep interval to #{sleepy_time}")
+  run_forever = true
+end
+
+while true
+  begin
+    c = Chef::Client.new
+    c.json_attribs = config[:json_attribs]
+    c.validation_token = config[:validation_token] if config[:validation_token]
+    c.node_name = config[:node_name]
+    c.run
+    exit 0 unless run_forever
+    Chef::Log.debug("Sleeping for #{sleepy_time} seconds")
+    sleep sleepy_time
+  rescue SystemExit => e
+    raise
+  rescue Exception => e
+    if run_forever
+      Chef::Log.error("#{e.class}")
+      Chef::Log.fatal("#{e}\n#{e.backtrace.join("\n")}")
+      Chef::Log.fatal("Sleeping for #{sleepy_time} seconds before trying again")
+      sleep sleepy_time
+      retry
+    else
+      raise
+    end
+  end
+end
