@@ -23,6 +23,7 @@ $: << File.join(File.dirname(__FILE__), "..", "lib")
 
 require 'optparse'
 require 'chef'
+require 'chef/client'
 require 'rubygems'
 require 'facter'
 

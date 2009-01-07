@@ -17,6 +17,7 @@
 #
 
 require 'chef/mixin/params_validate'
+require 'chef/openid_registration'
 require 'net/https'
 require 'uri'
 require 'json'

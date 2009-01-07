@@ -22,6 +22,8 @@ require 'rubygems'
 require 'daemons'
 require 'optparse'
 require 'chef'
+require 'chef/queue'
+require 'chef/search_index'
 require 'facter'
 
 trap("INT") { Chef::Log.info("SIGINT received, stopping"); exit }
