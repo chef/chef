@@ -28,4 +28,11 @@ Dir[File.join(File.dirname(__FILE__), 'chef/mixin/**/*.rb')].sort.each { |lib| r
 
 class Chef
   VERSION = '0.0.1'
+  
+  class << self
+    def fatal!(msg, err = -1)
+      Chef::Log.fatal(msg)
+      exit err
+    end
+  end
 end
