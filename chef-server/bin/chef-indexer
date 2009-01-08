@@ -19,28 +19,36 @@
 # limitations under the License.
 
 require 'rubygems'
-require 'daemons'
 require 'optparse'
 require 'chef'
 require 'chef/queue'
 require 'chef/search_index'
+require 'chef/daemon'
 
-trap("INT") { Chef::Log.info("SIGINT received, stopping"); exit }
+trap("INT") { Chef.fatal!("SIGINT received, stopping", 2) }
 
 config = {
   :config_file => "/etc/chef/server.rb",
-  :log_level => :info,
 }
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
   opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
     config[:config_file] = c
   end
-  opts.on_tail("-d", "--daemonize", "Daemonize the process") do
+  opts.on("-u USER", "--user USER", "User to change uid to before daemonizing") do |u|
+    config[:user] = u
+  end
+  opts.on("-g GROUP", "--group GROUP", "Group to change gid to before daemonizing") do |g|
+    config[:group] = g
+  end
+  opts.on("-d", "--daemonize", "Daemonize the process") do
     config[:daemonize] = true
   end
-  opts.on_tail("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
+  opts.on("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
     config[:log_level] = l.to_sym
+  end
+  opts.on("-L LOGLOCATION", "--logfile LOGLOCATION", "Set the log file location, defaults to STDOUT - recommended for daemonizing") do |lf|
+    config[:log_location] = lf
   end
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
@@ -49,20 +57,22 @@ opts = OptionParser.new do |opts|
 end
 opts.parse!(ARGV)
 
-unless File.exists?(config[:config_file]) && File.readable?(config[:config_file])
-  puts "I cannot find or read the config file: #{config[:config_file]}"
-  puts opts
-  exit
+unless File.exists?(config[:config_file]) and File.readable?(config[:config_file])
+  Chef.fatal!("I cannot find or read the config file: #{config[:config_file]}", 1)
 end
 
-# Load our config file
 Chef::Config.from_file(config[:config_file])
-if config[:log_level]
-  Chef::Log.level(config[:log_level].to_sym)
-end
+Chef::Config.configure { |c| c.merge!(config) }
 
-# daemonotron!
-Daemons.daemonize(:ontop => !config[:daemonize])
+if Chef::Config[:daemonize]
+  unless Chef::Config[:log_location].is_a? IO
+    Chef::Log.init(Chef::Config[:log_location])
+  end
+  Chef::Log.level(Chef::Config[:log_level])
+  Chef::Daemon.daemonize("chef-indexer")
+else
+  Chef::Log.level(Chef::Config[:log_level])
+end
 
 # Get a Chef::SearchIndex object
 indexer = Chef::SearchIndex.new
