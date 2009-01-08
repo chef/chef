@@ -75,7 +75,6 @@ class Chef
         context[:node] = @node
         template_file = render_template(Chef::FileCache.load(cache_file_name), context)
         
-        
         if template_updated
           Chef::Log.debug("Updating template for #{@new_resource} in the cache")
           Chef::FileCache.move_to(raw_template_file.path, cache_file_name)
@@ -95,7 +94,6 @@ class Chef
           update = true
         end
       
-        
         if update
           backup
           FileUtils.cp(template_file.path, @new_resource.path)

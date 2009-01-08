@@ -31,7 +31,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "ohai"
   
   s.bindir       = "bin"
-  s.executables  = %w( chef-client  chef-solo )
+  s.executables  = %w( chef-client chef-solo )
   
   s.require_path = 'lib'
   s.files = %w(LICENSE README.txt Rakefile) + Dir.glob("{lib,specs,config,examples}/**/*")

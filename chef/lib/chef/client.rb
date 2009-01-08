@@ -81,6 +81,13 @@ class Chef
       true
     end
     
+    # Similar to Chef::Client#run, but instead of talking to the Chef server,
+    # simply runs in a standalone ("solo") mode.
+    #
+    # Someday, we'll have chef_chewbacca.
+    #
+    # === Returns
+    # true:: Always returns true.
     def run_solo
       start_time = Time.now
       Chef::Log.info("Starting Chef Solo Run")
@@ -285,13 +292,23 @@ class Chef
       true
     end
     
+    # Gets all the definition files included in all the cookbooks available on the server,
+    # and loads them.
+    #
+    # === Returns
+    # true:: Always returns true
     def sync_definitions
       Chef::Log.debug("Synchronizing definitions") 
       update_file_cache("definitions", @rest.get_rest('cookbooks/_definition_files'))
     end
     
+    # Gets all the recipe files included in all the cookbooks available on the server,
+    # and loads them.
+    #
+    # === Returns
+    # true:: Always returns true
     def sync_recipes
-      Chef::Log.debug("Synchronizing attributes") 
+      Chef::Log.debug("Synchronizing recipes") 
       update_file_cache("recipes", @rest.get_rest('cookbooks/_recipe_files'))
     end
     

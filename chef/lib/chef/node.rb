@@ -178,6 +178,12 @@ class Chef
       end
     end
     
+    # Turns the node into an object that we can index.  I apologize up front for the
+    # super confusion that is the recursive index_flatten hash, which comes up next.
+    # Faith, young one, faith.
+    #
+    # === Returns
+    # index_hash<Hash>:: A flattened hash of all the nodes attributes, suitable for indexing.
     def to_index
       index_hash = {
         "index_name" => "node",
@@ -185,10 +191,36 @@ class Chef
         "name" => @name,
       }
       @attribute.each do |key, value|
-        index_hash[key] = value
+        if value.kind_of?(Hash) || value.kind_of?(Mash)
+          index_flatten_hash(key, value).each do |to_index|
+            to_index.each do |nk, nv|
+              index_hash[nk] = nv
+            end
+          end
+        else
+          index_hash[key] = value
+        end
       end
       index_hash["recipe"] = @recipe_list if @recipe_list.length > 0
       index_hash
+    end
+    
+    # Ah, song of my heart, index_flatten_hash.  This method flattens a hash in preparation
+    # for indexing, by appending the name of it's parent to a current key with an _.  Hence,
+    # node[:bar][:baz] = 'monkey' becomes bar_baz:monkey.
+    #
+    # === Returns
+    # results<Array>:: An array of hashes with one element.
+    def index_flatten_hash(parent_name, hash)
+      results = Array.new
+      hash.each do |k, v|
+        if v.kind_of?(Hash) || v.kind_of?(Mash)
+          results << index_flatten_hash("#{parent_name}_#{k}", v)
+        else
+          results << { "#{parent_name}_#{k}", v }
+        end
+      end
+      results.flatten
     end
     
     # Serialize this object as a hash 
