@@ -34,10 +34,16 @@ class Chef
     include Chef::Mixin::CheckHelper
   
     @configuration = {
-      :daemonize => false,
+      :daemonize => nil,
+      :user => nil,
+      :group => nil,
+      :pid_file => nil,
       :interval => nil,
       :splay => nil,
       :solo  => false,
+      :user => nil,
+      :group => nil,
+      :json_attribs => nil,
       :cookbook_path => [ "/etc/chef/site-cookbook", "/etc/chef/cookbook" ],
       :validation_token => nil,
       :merb_root => "/var/chef/merb",

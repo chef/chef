@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# ./chef-client - Build a meal with chef
+# ./chef-client-new - Build a meal with chef
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2008 OpsCode, Inc.
@@ -22,25 +22,22 @@ require 'optparse'
 require 'rubygems'
 require 'chef'
 require 'chef/client'
+require 'chef/daemon'
 require 'json'
-require 'daemons'
-require 'tmpdir'
 
 config = {
-  :config_file => "/etc/chef/client.rb",
-  :log_level => :info,
-  :json_attribs => nil,
-  :noop => false,
-  :validation_token => nil,
-  :node_name => nil,
-  :daemonize => false,
-  :splay => nil,
-  :interval => nil
+  :config_file => "/etc/chef/client.rb"
 }
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
   opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
     config[:config_file] = c
+  end
+  opts.on("-u USER", "--user USER", "User to change uid to before daemonizing") do |u|
+    config[:user] = u
+  end
+  opts.on("-g GROUP", "--group GROUP", "Group to change gid to before daemonizing") do |g|
+    config[:group] = g
   end
   opts.on("-d", "--daemonize", "Daemonize the process") do |d|
     config[:daemonize] = true
@@ -57,74 +54,79 @@ opts = OptionParser.new do |opts|
   opts.on("-s SECONDS", "--splay SECONDS", "The splay time for running at intervals, in seconds") do |s|
     config[:splay] = s
   end
-  opts.on_tail("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
+  opts.on("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
     config[:log_level] = l.to_sym
   end
-  
-  opts.on_tail("-t TOKEN", "--token TOKEN", "Set the openid validation token") do |t|
+  opts.on("-L LOGLOCATION", "--logfile LOGLOCATION", "Set the log file location, defaults to STDOUT - recommended for daemonizing") do |lf|
+    config[:log_location] = lf
+  end
+  opts.on("-t TOKEN", "--token TOKEN", "Set the openid validation token") do |t|
     config[:validation_token] = t
   end
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
-    exit
+    exit 0
   end
 end
 opts.parse!(ARGV)
 
-unless File.exists?(config[:config_file]) && File.readable?(config[:config_file])
-  puts "I cannot find or read the config file: #{config[:config_file]}"
-  puts opts
-  exit 1
+unless File.exists?(config[:config_file]) and File.readable?(config[:config_file])
+  Chef.fatal!("I cannot find or read the config file: #{config[:config_file]}", 1)
 end
 
 if config[:json_attribs]
-  unless File.exists?(config[:json_attribs])
-    puts "I cannot find #{config[:json_attribs]}"
-    exit 2
+  if File.exists?(config[:json_attribs]) and File.readable?(config[:json_attribs])
+    config[:json_attribs] = JSON.parse(IO.read(config[:json_attribs]))
+  else
+    Chef.fatal!("I cannot find or read #{config[:json_attribs]}", 2)
   end
-  config[:json_attribs] = JSON.parse(IO.read(config[:json_attribs]))
 end
 
-# Load our config file
+
 Chef::Config.from_file(config[:config_file])
-if config[:log_level]
-  Chef::Log.level(config[:log_level].to_sym)
+Chef::Config.configure { |c| c.merge!(config) }
+
+if Chef::Config[:daemonize]
+  unless Chef::Config[:log_location].is_a? IO
+    Chef::Log.init(Chef::Config[:log_location])
+  end
+  Chef::Log.level(Chef::Config[:log_level])
+  Chef::Daemon.daemonize("chef-client")
+else
+  Chef::Log.level(Chef::Config[:log_level])
 end
-config[:node_name] ||= Chef::Config[:node_name]
-config[:daemonize] ||= Chef::Config[:daemonize]
-
-Chef::Config[:interval] = config[:interval] if config[:interval]
-Chef::Config[:splay]    = config[:splay]    if config[:splay]
-
-Kernel.trap("INT") { Chef::Log.fatal("Recieved SIGINT - exiting!"); exit 2 }
-
-sleepy_time = 0
-run_forever = false
 
 if Chef::Config[:interval]
-  sleepy_time = Chef::Config[:interval].to_i + rand(Chef::Config[:splay])
-  Chef::Log.debug("Setting sleep interval to #{sleepy_time}")
-  run_forever = true
+  if Chef::Config[:splay]
+    delay = Chef::Config[:interval].to_i + rand(Chef::Config[:splay])
+  else
+    delay = Chef::Config[:interval].to_i
+  end
+else
+  delay = 0
 end
 
-while true
+loop do
   begin
     c = Chef::Client.new
-    c.json_attribs = config[:json_attribs]
-    c.validation_token = config[:validation_token] if config[:validation_token]
-    c.node_name = config[:node_name]
+    c.json_attribs = Chef::Config[:json_attribs]
+    c.validation_token = Chef::Config[:validation_token]
+    c.node_name = Chef::Config[:node_name]
     c.run
-    exit 0 unless run_forever
-    Chef::Log.debug("Sleeping for #{sleepy_time} seconds")
-    sleep sleepy_time
+    if Chef::Config[:daemonize]
+      Chef::Log.debug("Sleeping for #{delay} seconds")
+      sleep delay
+    else
+      exit 0
+    end
   rescue SystemExit => e
     raise
   rescue Exception => e
-    if run_forever
+    if Chef::Config[:daemonize]
       Chef::Log.error("#{e.class}")
       Chef::Log.fatal("#{e}\n#{e.backtrace.join("\n")}")
-      Chef::Log.fatal("Sleeping for #{sleepy_time} seconds before trying again")
-      sleep sleepy_time
+      Chef::Log.fatal("Sleeping for #{delay} seconds before trying again")
+      sleep delay
       retry
     else
       raise
