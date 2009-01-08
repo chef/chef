@@ -24,16 +24,6 @@ class Chef
   class Daemon
     class << self
       attr_accessor :name
-=begin
-def daemonize(name)
-  exit if fork
-  Process.setsid
-  exit if fork
-  $stdin.reopen("/dev/null")
-  $stdout.reopen("/tmp/log", "a")
-  $stderr.reopen($stdout)
-end
-=end
 
       def daemonize(name)
         @name = name
