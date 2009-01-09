@@ -54,11 +54,11 @@ class Chef
           else
             Chef::Log.debug("#{@new_resource} does not support status and you have not specified a status command, falling back to process table inspection")
 
-            if @node[:ps].nil? or @node[:ps].empty?
+            if @node[:command][:ps].nil? or @node[:command][:ps].empty?
               raise Chef::Exception::Service, "#{@new_resource}: could not determine how to inspect the process table, please set this nodes 'ps' attribute"
             end
 
-            status = popen4(@node[:ps]) do |pid, stdin, stdout, stderr|
+            status = popen4(@node[:command][:ps]) do |pid, stdin, stdout, stderr|
               stdin.close
               r = Regexp.new(@new_resource.pattern)
               Chef::Log.debug("#{@new_resource}: attempting to match #{@new_resource.pattern} (#{r}) against process table")
@@ -71,9 +71,9 @@ class Chef
               @current_resource.running false unless @current_resource.running
             end
             unless status.exitstatus == 0
-              raise Chef::Exception::Service, "Command #{@node[:ps]} failed"
+              raise Chef::Exception::Service, "Command #{@node[:command][:ps]} failed"
             else
-              Chef::Log.debug("#{@new_resource}: #{@node[:ps]} exited and parsed succesfully, process running: #{@current_resource.running}")
+              Chef::Log.debug("#{@new_resource}: #{@node[:command][:ps]} exited and parsed succesfully, process running: #{@current_resource.running}")
             end
           end
 
