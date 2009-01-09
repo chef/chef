@@ -82,7 +82,6 @@ if config[:json_attribs]
   end
 end
 
-
 Chef::Config.from_file(config[:config_file])
 Chef::Config.configure { |c| c.merge!(config) }
 
