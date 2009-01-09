@@ -21,7 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 describe Chef::Provider::Service::Init, "load_current_resource" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
-    @node.stub!(:[]).with(:ps).and_return("ps -ef")
+    @node.stub!(:[]).with(:command).and_return({:ps => "ps -ef"})
 
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
@@ -100,22 +100,22 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
   end
 
   it "should set running to false if the node has a nil ps attribute" do
-    @node.stub!(:[]).with(:ps).and_return(nil)
+    @node.stub!(:[]).with(:command).and_return({:ps => nil})
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
   end
 
   it "should set running to false if the node has an empty ps attribute" do
-    @node.stub!(:[]).with(:ps).and_return("")
+    @node.stub!(:[]).with(:command).and_return(:ps => "")
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
   end
 
   describe "when we have a 'ps' attribute" do
     before do
-      @node.stub!(:[]).with(:ps).and_return("ps -ef")
+      @node.stub!(:[]).with(:command).and_return({:ps => "ps -ef"})
     end
 
     it "should popen4 the node's ps command" do
-      @provider.should_receive(:popen4).with(@node[:ps]).and_return(@status)
+      @provider.should_receive(:popen4).with(@node[:command][:ps]).and_return(@status)
       @provider.load_current_resource
     end
 
