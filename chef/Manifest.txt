@@ -73,6 +73,7 @@ lib/chef/provider/remote_file.rb
 lib/chef/provider/script.rb
 lib/chef/provider/sysctl.rb
 lib/chef/provider/template.rb
+lib/chef/provider/http_request.rb
 lib/chef/queue.rb
 lib/chef/recipe.rb
 lib/chef/resource.rb
@@ -91,6 +92,7 @@ lib/chef/resource/ruby.rb
 lib/chef/resource/script.rb
 lib/chef/resource/sysctl.rb
 lib/chef/resource/template.rb
+lib/chef/resource/http_request.rb
 lib/chef/resource_collection.rb
 lib/chef/resource_definition.rb
 lib/chef/rest.rb
