@@ -203,6 +203,8 @@ describe Chef::Daemon do
       @pw_user = mock("Struct::Passwd", :null_object => true, :uid => 501)
       @pw_group = mock("Struct::Group", :null_object => true, :gid => 20)
       
+      Process.stub!(:initgroups).and_return(true)
+            
       Etc.stub!(:getpwnam).and_return(@pw_user)
       Etc.stub!(:getgrnam).and_return(@pw_group)
     end
@@ -218,11 +220,6 @@ describe Chef::Daemon do
         Chef::Daemon._change_privilege("aj")
       end
    
-      it "should attempt to change the process GID"
-      it "should attempt to change the process UID"
-
-# I'm not sure how we can test these - requires root privileges?..
-=begin
       it "should attempt to change the process GID" do
         Process::GID.should_receive(:change_privilege).with(20).and_return(20)
         Chef::Daemon._change_privilege("aj")
@@ -232,7 +229,6 @@ describe Chef::Daemon do
         Process::UID.should_receive(:change_privilege).with(501).and_return(501)
         Chef::Daemon._change_privilege("aj")
       end
-=end
     end
     
     describe "with insufficient privileges" do
@@ -242,6 +238,7 @@ describe Chef::Daemon do
       end
       
       it "should log an appropriate error message and fail miserably" do
+        Process.stub!(:initgroups).and_raise(Errno::EPERM)
         Chef.should_receive(:fatal!).with("Permission denied when trying to change 999:999 to 501:20. Operation not permitted")
         Chef::Daemon._change_privilege("aj")
       end
