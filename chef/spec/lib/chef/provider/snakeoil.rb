@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 OpsCode, Inc.
+# Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: GNU General Public License version 2 or later
 # 
 # This program and entire repository is free software; you can
