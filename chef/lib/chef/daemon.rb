@@ -25,6 +25,11 @@ class Chef
     class << self
       attr_accessor :name
 
+      # Daemonize the current process, managing pidfiles and process uid/gid
+      #
+      # === Parameters
+      # name<String>:: The name to be used for the pid file
+      #
       def daemonize(name)
         @name = name
         pid = pid_from_file
@@ -48,7 +53,13 @@ class Chef
           Chef.fatal!("Chef is already running pid #{pid}")
         end
       end
-      
+  
+      # Check if Chef is running based on the pid_file
+      # ==== Returns
+      # Boolean::
+      # True if Chef is running
+      # False if Chef is not running
+      #
       def running?
         if pid_from_file.nil?
           false
@@ -61,17 +72,29 @@ class Chef
       #rescue Errno::EACCESS => e
       #  Chef.fatal!("You don't have access to the PID file at #{pid_file}: #{e.message}")
       end
-    
+      
+      # Gets the pid file for @name
+      # ==== Returns
+      # String::
+      #   Location of the pid file for @name
       def pid_file
          Chef::Config[:pid_file] or "/tmp/#{@name}.pid"
       end
       
+      # Suck the pid out of pid_file
+      # ==== Returns
+      # Integer::
+      #   The PID from pid_file
+      #
       def pid_from_file
         File.read(pid_file).chomp.to_i
       rescue Errno::ENOENT => e
         nil
       end
     
+      # Store the PID on the filesystem
+      # This uses the Chef::Config[:pid_file] option, or "/tmp/name.pid" otherwise
+      #
       def save_pid_file
         file = pid_file
         begin
@@ -87,10 +110,13 @@ class Chef
         end
       end
     
+      # Delete the PID from the filesystem
       def remove_pid_file
         FileUtils.rm(pid_file) if File.exists?(pid_file)
       end
            
+      # Change process user/group to those specified in Chef::Config
+      #
       def change_privilege
         if Chef::Config[:user] and Chef::Config[:group]
           Chef::Log.info("About to change privilege to #{Chef::Config[:user]}:#{Chef::Config[:group]}")
@@ -101,6 +127,15 @@ class Chef
         end
       end
     
+      # Change privileges of the process to be the specified user and group
+      #
+      # ==== Parameters
+      # user<String>:: The user to change the process to.
+      # group<String>:: The group to change the process to.
+      #
+      # ==== Alternatives
+      # If group is left out, the user will be used (changing to user:user)
+      #
       def _change_privilege(user, group=user)
         uid, gid = Process.euid, Process.egid
 
