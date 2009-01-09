@@ -41,7 +41,7 @@ class Chef
             Process.setsid
             exit if fork
             change_privilege
-            Chef::Log.info("Forked, in #{Process.pid}")
+            Chef::Log.info("Forked, in #{Process.pid}. Priveleges: #{Process.euid} #{Process.egid}")
             File.umask 0000
             $stdin.reopen("/dev/null")
             $stdout.reopen("/dev/null", "a")
@@ -151,7 +151,7 @@ class Chef
    
         begin
           target_gid = Etc.getgrnam(group).gid
-        rescue ArgumentERror => e
+        rescue ArgumentError => e
           Chef.fatal!("Failed to get GID for group #{group}, does it exist? #{e.message}")
           return false
         end
@@ -163,7 +163,7 @@ class Chef
         end
         true
       rescue Errno::EPERM => e
-        Chef.fatal!("Permission denied when trying to change #{uid}:#{gid} to #{user}:#{group}. #{e.message}")
+        Chef.fatal!("Permission denied when trying to change #{uid}:#{gid} to #{target_uid}:#{target_gid}. #{e.message}")
       end
     end
   end
