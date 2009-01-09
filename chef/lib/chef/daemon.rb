@@ -40,6 +40,7 @@ class Chef
             exit if fork
             Process.setsid
             exit if fork
+            change_privilege
             Chef::Log.info("Forked, in #{Process.pid}")
             File.umask 0000
             $stdin.reopen("/dev/null")
@@ -69,8 +70,8 @@ class Chef
         end
       rescue Errno::ESRCH, Errno::ENOENT
         false
-      #rescue Errno::EACCESS => e
-      #  Chef.fatal!("You don't have access to the PID file at #{pid_file}: #{e.message}")
+      rescue Errno::EACCES => e
+        Chef.fatal!("You don't have access to the PID file at #{pid_file}: #{e.message}")
       end
       
       # Gets the pid file for @name
@@ -85,10 +86,12 @@ class Chef
       # ==== Returns
       # Integer::
       #   The PID from pid_file
+      # nil::
+      #   Returned if the pid_file does not exist.
       #
       def pid_from_file
         File.read(pid_file).chomp.to_i
-      rescue Errno::ENOENT => e
+      rescue Errno::ENOENT, Errno::EACCES
         nil
       end
     
@@ -99,13 +102,13 @@ class Chef
         file = pid_file
         begin
           FileUtils.mkdir_p(File.dirname(file))
-        rescue Errno::EACCESS => e
+        rescue Errno::EACCES => e
           Chef.fatal!("Failed store pid in #{File.dirname(file)}, permission denied: #{e.message}")
         end
       
         begin
           File.open(file, "w") { |f| f.write(Process.pid.to_s) }
-        rescue Errno::EACCESS => e
+        rescue Errno::EACCES => e
           Chef.fatal!("Couldn't write to pidfile #{file}, permission denied: #{e.message}")
         end
       end
