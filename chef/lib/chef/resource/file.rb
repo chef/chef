@@ -43,7 +43,7 @@ class Chef
         set_or_return(
           :checksum,
           arg,
-          :regex => /^[a-zA-Z0-9]{32}$/
+          :regex => /^[a-zA-Z0-9]{64}$/
         )
       end
           

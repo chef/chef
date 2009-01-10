@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'digest/md5'
+require 'digest/sha2'
 
 class Chef
   module Mixin
     module Checksum
 
       def checksum(file)
-        digest = Digest::MD5.new
+        digest = Digest::SHA2.new
         fh = ::File.open(file)
         fh.each do |line|
           digest.update(line)
