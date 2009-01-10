@@ -180,6 +180,8 @@ class Chef
           args << @collection
           args << @node
           resource = eval(rname).new(*args)
+          # If we have a resource like this one, we want to steal it's state
+          resource.load_prior_resource
           resource.cookbook_name = @cookbook_name
           resource.recipe_name = @recipe_name
           resource.params = @params

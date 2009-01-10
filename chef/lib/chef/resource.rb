@@ -38,7 +38,7 @@ class Chef
         @collection = collection
       else
         @collection = Chef::ResourceCollection.new()
-      end
+      end      
       @node = node ? node : Chef::Node.new
       @noop = nil
       @before = nil
@@ -56,6 +56,21 @@ class Chef
       if sline
         @source_line = sline.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
         @source_line = ::File.expand_path(@source_line) if @source_line
+      end
+    end
+    
+    def load_prior_resource
+      begin
+        prior_resource = @collection.lookup(self.to_s)
+        Chef::Log.debug("Setting #{self.to_s} to the state of the prior #{self.to_s}")
+        prior_resource.instance_variables.each do |iv|
+          unless iv == "@source_line"
+            self.instance_variable_set(iv, prior_resource.instance_variable_get(iv))
+          end
+        end
+        true
+      rescue ArgumentError => e
+        true
       end
     end
     
