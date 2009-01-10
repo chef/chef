@@ -105,7 +105,7 @@ class Chef
             end
           end
         rescue => e
-          Chef::Log.error("#{resource} (#{resource.source_line}) had an error:")
+          Chef::Log.error("#{resource} (#{resource.source_line}) had an error:\n#{e}\n#{e.backtrace}")
           raise e unless resource.ignore_failure
         end
       end
