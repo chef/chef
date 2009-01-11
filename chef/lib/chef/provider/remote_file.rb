@@ -51,7 +51,7 @@ class Chef
         #  assuming we find it, we open it up and set it to raw_file.
         if Chef::Config[:solo]
           filename = ::File.join(Chef::Config[:cookbook_path], @new_resource.cookbook_name.to_s, "files/default/#{source}")
-          Chef::Log.debug("using local file for remote_file:#{filename}")
+          Chef::Log.debug("Using local file for remote_file:#{filename}")
           raw_file = ::File.open(filename)
         else
         # Otherwise, we need to go get it from the chef server

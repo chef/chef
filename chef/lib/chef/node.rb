@@ -28,7 +28,7 @@ require 'json'
 class Chef
   class Node
     
-    attr_accessor :attribute, :recipe_list, :couchdb_rev
+    attr_accessor :attribute, :recipe_list, :couchdb_rev, :run_state
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
@@ -66,6 +66,9 @@ class Chef
       @recipe_list = Array.new
       @couchdb_rev = nil
       @couchdb = Chef::CouchDB.new
+      @run_state = {
+        :template_cache => Hash.new
+      }
     end
     
     # Find a recipe for this Chef::Node by fqdn.  Will search first for 

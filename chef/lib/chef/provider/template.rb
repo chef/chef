@@ -32,12 +32,16 @@ class Chef
       include Chef::Mixin::Template
       
       def action_create
+        Chef::Log.debug(@node.run_state.inspect)
         raw_template_file = nil
         cache_file_name = "cookbooks/#{@new_resource.cookbook_name}/templates/default/#{@new_resource.source}"
         if Chef::Config[:solo]
           filename = ::File.join(Chef::Config[:cookbook_path], "#{@new_resource.cookbook_name}/templates/default/#{@new_resource.source}")
-          Chef::Log.debug("using local file for  template:#{filename}")
+          Chef::Log.debug("Using local file for template:#{filename}")
           raw_template_file = ::File.open(filename)
+        elsif @node.run_state[:template_cache].has_key?(@new_resource.to_s)
+          Chef::Log.debug("I have already fetched #{@new_resource} once this run, not checking again.")
+          template_updated = false
         else
           r = Chef::REST.new(Chef::Config[:template_url])
           
@@ -67,7 +71,10 @@ class Chef
             else
               raise e
             end
-          end        
+          end
+          
+          # We have checked the cache for this template this run
+          @node.run_state[:template_cache][@new_resource.to_s] = true
         end  
         
         if template_updated
@@ -100,7 +107,7 @@ class Chef
         else
           Chef::Log.debug("#{@new_resource} is unchanged")
         end
-      
+              
         set_owner if @new_resource.owner != nil
         set_group if @new_resource.group != nil
         set_mode if @new_resource.mode != nil
