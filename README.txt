@@ -16,19 +16,26 @@ I'm in ur netwerk, cookin up yer servers. :)
 
 == REQUIREMENTS:
 
-RubyGems:
+chef:
 
-* stomp
-* stompserver
-* facter
-* ferret
-* merb-core
-* merb-haml
-* haml
-* ruby-openid (>= 2.0.1)
-* json
-* mongrel
-* rspec
+*  ruby-openid  
+*  json  
+*  erubis  
+*  extlib  
+*  stomp  
+*  ohai  
+
+chef-server, same requires as chef above, plus:
+
+*  stompserver 
+*  ferret 
+*  merb-core 
+*  merb-haml 
+*  mongrel 
+*  haml
+*  ruby-openid 
+*  syntax
+
 
 External Servers:
 
