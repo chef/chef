@@ -26,5 +26,6 @@ class Chef
     class UnsupportedAction < RuntimeError; end
     class MissingLibrary < RuntimeError; end
     class User < RuntimeError; end
+    class Group < RuntimeError; end
   end
 end

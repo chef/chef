@@ -53,7 +53,7 @@ class Chef
           :kind_of => [ String, Array ]
         )
       end
-      
+ 
     end
   end
 end
