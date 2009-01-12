@@ -58,6 +58,7 @@ class Chef
         :bash => Chef::Provider::Script,
         :csh => Chef::Provider::Script,
         :user => Chef::Provider::User::Useradd,
+        :group => Chef::Provider::Group::Groupadd,
         :http_request => Chef::Provider::HttpRequest,
       }
     }
