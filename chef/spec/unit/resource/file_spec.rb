@@ -48,8 +48,8 @@ describe Chef::Resource::File do
     lambda { @resource.backup "blues" }.should raise_error(ArgumentError)
   end
   
-  it "should accept an md5sum for checksum" do
-    lambda { @resource.checksum "bfda9e7a13afb123433667c2c7801d11" }.should_not raise_error(ArgumentError)
+  it "should accept a sha256 for checksum" do
+    lambda { @resource.checksum "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa" }.should_not raise_error(ArgumentError)
     lambda { @resource.checksum "monkey!" }.should raise_error(ArgumentError)
   end
   

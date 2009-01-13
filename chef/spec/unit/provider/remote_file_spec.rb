@@ -49,9 +49,9 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     @node.name "latte"
     @node.fqdn "latte.local"
     @provider = Chef::Provider::RemoteFile.new(@node, @resource)
-    @provider.stub!(:checksum).and_return("dad86c61eea237932f201009e5431609")
+    @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     @provider.current_resource = @resource.clone
-    @provider.current_resource.checksum("dad86c61eea237932f201009e5431609")
+    @provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     File.stub!(:exists?).and_return(true)
     FileUtils.stub!(:cp).and_return(true)
     Chef::Platform.stub!(:find_platform_and_version).and_return([ :mac_os_x, "10.5.1" ])
@@ -74,7 +74,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
   end
   
   it "should call generate_url with the current checksum as an extra attribute" do
-    @provider.should_receive(:generate_url).with(@resource.source, "files", { :checksum => "dad86c61eea237932f201009e5431609"})
+    @provider.should_receive(:generate_url).with(@resource.source, "files", { :checksum => "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"})
     do_remote_file
   end
   
@@ -83,7 +83,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     url += "&platform=mac_os_x"
     url += "&version=10.5.1"
     url += "&fqdn=latte.local"
-    url += "&checksum=dad86c61eea237932f201009e5431609"
+    url += "&checksum=0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
     @rest.should_receive(:get_rest).with(url, true).and_return(@tempfile)
     do_remote_file
   end
@@ -110,7 +110,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
   end
   
   it "should checksum the raw file" do
-    @provider.should_receive(:checksum).with(@tempfile.path).and_return("dad86c61eea237932f201009e5431608")
+    @provider.should_receive(:checksum).with(@tempfile.path).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     do_remote_file
   end
   
@@ -120,7 +120,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     end
 
     it "should backup the original file if it is different" do
-      @provider.current_resource.checksum("qnq86p61rrn237932s201009r5431609")
+      @provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924ab")
       @provider.should_receive(:backup).with(@resource.path).and_return(true)
       do_remote_file
     end

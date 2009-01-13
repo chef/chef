@@ -72,9 +72,9 @@ describe Chef::Provider::File do
     @provider.current_resource.owner.should eql(stats.uid)
   end
   
-  it "should load an md5 sum for an existing file" do
+  it "should load an sha256 sum for an existing file" do
     @provider.load_current_resource
-    @provider.current_resource.checksum("8d6152c7d62ea9188eda596c4d31e732")
+    @provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
   end
   
   it "should compare the current owner with the requested owner" do

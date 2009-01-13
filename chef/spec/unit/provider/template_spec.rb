@@ -32,9 +32,9 @@ describe Chef::Provider::Template, "action_create" do
     @node = Chef::Node.new
     @node.name "latte"
     @provider = Chef::Provider::Template.new(@node, @resource)
-    @provider.stub!(:checksum).and_return("dad86c61eea237932f201009e5431609")
+    @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     @provider.current_resource = @resource.clone
-    @provider.current_resource.checksum("dad86c61eea237932f201009e5431609")
+    @provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     FileUtils.stub!(:cp).and_return(true)
     Chef::FileCache.stub!(:has_key).and_return(false)
     Chef::FileCache.stub!(:move_to).and_return(true)
@@ -52,7 +52,7 @@ describe Chef::Provider::Template, "action_create" do
   end
   
   it "should set the checksum of the new resource to the value of the returned template" do
-    @resource.should_receive(:checksum).with("dad86c61eea237932f201009e5431609").once
+    @resource.should_receive(:checksum).with("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa").once
     @resource.should_receive(:checksum).twice
     do_action_create
   end
@@ -63,7 +63,7 @@ describe Chef::Provider::Template, "action_create" do
   end
   
   it "should copy the tempfile to the real file if the checksums do not match" do
-    @provider.stub!(:checksum).and_return("dad86c61eea237932f201009e5431607")
+    @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924ab")
     FileUtils.should_receive(:cp).once
     @provider.stub!(:backup).and_return(true)
     do_action_create
