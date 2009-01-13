@@ -27,7 +27,7 @@ class Chef
         @resource_name = :http_request
         @message = name
         @url = nil
-        @action = :create
+        @action = :get
         @allowed_actions.push(:get, :put, :post, :delete, :head, :options)
       end
       
