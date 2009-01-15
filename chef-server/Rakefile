@@ -44,3 +44,11 @@ end
 task :install => :package do
   sh %{sudo gem install pkg/#{GEM}-#{CHEF_SERVER_VERSION} --no-rdoc --no-ri}
 end
+
+desc "create a gemspec file"
+task :make_spec do
+  File.open("#{GEM}.gemspec", "w") do |file|
+    file.puts spec.to_ruby
+  end
+end
+
