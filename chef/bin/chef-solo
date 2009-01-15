@@ -42,7 +42,6 @@ opts = OptionParser.new do |opts|
   opts.on("-n", "--noop", "Print what you would do, but don't actually do it.") do
     config[:noop] = true
   end
-  
   opts.on("-r RECIPEURL", "--recipes RECIPEURL", "Pull down a remote gzipped tarball of recipes and untar it into the proer place.") do |r|
     config[:recipes] = r
   end
@@ -82,8 +81,9 @@ end
 if config[:recipes]
   recipes_path = Chef::Config[:cookbook_path].gsub(/cookbooks/, '')
   require 'net/http'
-  require 'uri'
+  require 'open-uri'
   require 'fileutils'
+  
   FileUtils.mkdir_p recipes_path
   path = File.join(recipes_path, 'recipes.tgz')
   File.open(path, 'wb') do |f|
