@@ -151,15 +151,16 @@ class Chef
           args[:returns] ||= 0
           if status.exitstatus != args[:returns]
             # if the log level is not debug, through output of command when we fail
+            output = ""
             if Chef::Log.logger.level > 0
-              Chef::Log.fatal("---- Begin #{args[:command]} STDOUT ----")
-              Chef::Log.fatal(command_stdout)
-              Chef::Log.fatal("---- End #{args[:command]} STDOUT ----")
-              Chef::Log.fatal("---- Begin #{args[:command]} STDERR ----")
-              Chef::Log.fatal(command_stderr)
-              Chef::Log.fatal("---- End #{args[:command]} STDERR ----")
+              output << "\n---- Begin #{args[:command]} STDOUT ----\n"
+              output << "#{command_stdout}\n"
+              output << "---- End #{args[:command]} STDOUT ----\n"
+              output << "---- Begin #{args[:command]} STDERR ----\n"
+              output << "#{command_stderr}\n"
+              output << "---- End #{args[:command]} STDERR ----\n"
             end
-            raise Chef::Exception::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}"
+            raise Chef::Exception::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
           else
             Chef::Log.debug("Ran #{args[:command_string]} (#{args[:command]}) returned #{status.exitstatus}")
           end
