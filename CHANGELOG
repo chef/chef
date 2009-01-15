@@ -1,0 +1,27 @@
+
+Thu Jan 15 11:13:45 PST 2009
+Release Notes - Chef - Version 0.5.0
+http://tickets.opscode.com/
+
+** Bug
+    * [CHEF-3] - Require chef loads everything
+    * [CHEF-7] - Remote File tests failing after Solo updates
+    * [CHEF-10] - Remove Chef::FileStore in favor of Chef::FileCache
+    * [CHEF-12] - spec_helper causes bogus Constant redefinition 
+    * [CHEF-16] - Search and SearchIndex are only used by the Chef Server, but they live in Chef Client
+    * [CHEF-18] - Search index does not understand nested hashes
+    * [CHEF-22] - templates aren't created / found in the cache and execution aborts
+
+** Improvement
+    * [CHEF-6] - Chef should require Ohai, not Facter
+    * [CHEF-21] - Chef::Daemon needs unit tests
+    * [CHEF-27] - No longer use MD5 anywhere - no sleep till SHA-256
+
+** New Feature
+    * [CHEF-1] - Group Support
+    * [CHEF-5] - Documentation for Service Providers/Resources
+    * [CHEF-8] - Add sugar for a Tag attribute on the nodes
+    * [CHEF-9] - Chef Client should Daemonize, schedule, and splay
+    * [CHEF-25] - http_request resource and provider
+    * [CHEF-26] - When you have a resource with the same name, it should inherit the pre-existing resources attributes
+
