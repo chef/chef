@@ -1,9 +1,7 @@
-%h1 Node List
+- throw_content(:header, "Node List")
 - @node_list.each do |node|
   .node
     %a{ :href => url(:node, { :id => node.gsub(/\./, "_") }) }
       = node
-      %form{ :method => "post", :action => url(:node, { :id => node.gsub(/\./, "_") })}
-        %input{ :type => "hidden", :name => "_method", :value => "delete" }
-        %input{ :type => "submit", :name => "Delete", :value => "Delete" }
-      
+    - if session[:level] == :admin
+      = delete_button url(:node, { :id => node.gsub(/\./, "_") }), "Delete"

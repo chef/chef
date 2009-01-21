@@ -81,12 +81,12 @@ class Nodes < Application
     rescue RuntimeError => e
       raise BadRequest, "Node #{params[:id]} does not exist to destroy!"
     end
-    @status = 202
     @node.destroy
-    if content_type == :html
-      redirect url(:nodes)
-    else
+    if request.xhr?
+      @status = 202
       display @node
+    else
+      redirect(url(:nodes), {:message => { :notice => "Node #{params[:id]} deleted succesfully" }, :permanent => true})
     end
   end
   

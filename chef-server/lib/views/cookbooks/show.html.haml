@@ -1,4 +1,4 @@
-%h1= "Cookbook #{h @cookbook.name}"
+- throw_content(:header, "Cookbook #{h @cookbook.name}")
 .cookbook
 - if @cookbook.lib_files.length > 0
   %h2 Library Files

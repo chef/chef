@@ -1,4 +1,4 @@
-%h1= "Search Index #{h params[:search_id]} entry #{h params[:id]}"
+- throw_content(:header, "Search Index #{h params[:search_id]} entry #{h params[:id]}")
 .search_result
   %h3= "#{h @entry[:index_name]} (#{h @entry[:id]})"
   %table
