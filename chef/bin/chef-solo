@@ -29,7 +29,6 @@ require 'rubygems'
 config = {
   :config_file => "/etc/chef/solo.rb",
   :log_level => :info,
-  :noop => false
 }
 
 Chef::Config[:solo] = true
@@ -38,9 +37,6 @@ opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
   opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
     config[:config_file] = c
-  end
-  opts.on("-n", "--noop", "Print what you would do, but don't actually do it.") do
-    config[:noop] = true
   end
   opts.on("-r RECIPEURL", "--recipes RECIPEURL", "Pull down a remote gzipped tarball of recipes and untar it into the proer place.") do |r|
     config[:recipes] = r
