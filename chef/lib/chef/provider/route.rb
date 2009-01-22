@@ -47,7 +47,7 @@ class Chef
         end
 
         unless status.exitstatus == 0
-          raise Chef::Exception::Package, "route failed - #{status.inspect}!"
+          raise Chef::Exception::Route, "route failed - #{status.inspect}!"
         end
 
         @current_resource
@@ -71,7 +71,7 @@ class Chef
           )
           @new_resource.updated = true
         else
-          Chef::Log.debug("Route #{@current_resource.target} already exists")
+          Chef::Log.debug("Route #{@current_resource} already exists")
         end
       end
 
@@ -89,7 +89,7 @@ class Chef
           )
           @new_resource.updated = true
         else
-          Chef::Log.debug("Route #{@current_resource.target} does not exist")
+          Chef::Log.debug("Route #{@current_resource} does not exist")
         end
       end
     end

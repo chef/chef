@@ -80,7 +80,7 @@ class Chef
         set_or_return(
           :route_type,
           real_arg,
-          :equal_to => [ :host, :net]
+          :equal_to => [ :host, :net ]
         )
       end
     end
