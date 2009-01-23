@@ -111,20 +111,24 @@ class Chef
         
         exec_processing_block = lambda do |pid, stdin, stdout, stderr|
           stdin.close
-
-          stdout_string = stdout.gets(nil)
-          if stdout_string
-            command_stdout = stdout_string
-            Chef::Log.debug("---- Begin #{args[:command]} STDOUT ----")
-            Chef::Log.debug(stdout_string.strip)
-            Chef::Log.debug("---- End #{args[:command]} STDOUT ----")
+          
+          Timeout.timeout(Chef::Config[:run_command_stdout_timeout]) do
+            stdout_string = stdout.gets(nil)
+            if stdout_string
+              command_stdout = stdout_string
+              Chef::Log.debug("---- Begin #{args[:command]} STDOUT ----")
+              Chef::Log.debug(stdout_string.strip)
+              Chef::Log.debug("---- End #{args[:command]} STDOUT ----")
+            end
           end
-          stderr_string = stderr.gets(nil)
-          if stderr_string
-            command_stderr = stderr_string
-            Chef::Log.debug("---- Begin #{args[:command]} STDERR ----")
-            Chef::Log.debug(stderr_string.strip)
-            Chef::Log.debug("---- End #{args[:command]} STDERR ----")
+          Timeout.timeout(Chef::Config[:run_command_stderr_timeout]) do
+            stderr_string = stderr.gets(nil)
+            if stderr_string
+              command_stderr = stderr_string
+              Chef::Log.debug("---- Begin #{args[:command]} STDERR ----")
+              Chef::Log.debug(stderr_string.strip)
+              Chef::Log.debug("---- End #{args[:command]} STDERR ----")
+            end
           end
         end
         

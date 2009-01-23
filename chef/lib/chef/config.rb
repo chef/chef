@@ -77,7 +77,9 @@ class Chef
       :queue_user => "",
       :queue_password => "",
       :queue_host => "localhost",
-      :queue_port => 61613
+      :queue_port => 61613,
+      :run_command_stdout_timeout => 120,
+      :run_command_stderr_timeout => 120
     }
     
     class << self
