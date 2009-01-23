@@ -30,6 +30,7 @@ class Chef
         @cron_exists = false
         @cron_empty = false
       end
+      attr_accessor :cron_exists, :cron_empty
 
       def load_current_resource
         crontab = String.new
@@ -38,23 +39,20 @@ class Chef
           stdin.close
           stdout.each { |line| crontab << line }
         end
-
         if status.exitstatus > 1
           raise Chef::Exception::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
         elsif status.exitstatus == 0
           crontab.each do |line|
             case line
-            when /#{@new_resource.name}/
+            when /^# Chef Name: #{@new_resource.name}/
               Chef::Log.debug("Found cron '#{@new_resource.name}'")
               @cron_exists = true
             end
           end
-          Chef::Log.debug("Cron #{@new_resource.name} not found") unless @cron_exists
+          Chef::Log.debug("Cron '#{@new_resource.name}' not found") unless @cron_exists
         elsif status.exitstatus == 1
           Chef::Log.debug("Cron empty for '#{@new_resource.user}'")
           @cron_empty = true
-        else 
-          Chef::Log.debug("Cron '#{@new_resource.name}' not found")
         end
         
         @current_resource
