@@ -114,6 +114,7 @@ class Chef
       ohai.all_plugins
       
       node_name ||= ohai[:fqdn] ? ohai[:fqdn] : ohai[:hostname]      
+      raise RuntimeError, "Unable to determine node name from ohai" unless node_name
       @safe_name = node_name.gsub(/\./, '_')
       Chef::Log.debug("Building node object for #{@safe_name}")
       unless solo
