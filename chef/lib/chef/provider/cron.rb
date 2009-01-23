@@ -66,7 +66,7 @@ class Chef
             stdin.close
             stdout.each_line do |line|
               if cron_found
-                crontab << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}"
+                crontab << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
                 cron_found = false
                 next
               end
@@ -92,7 +92,7 @@ class Chef
           end
   
           crontab << "# Chef Name: #{new_resource.name}\n"
-          crontab << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}"
+          crontab << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
   
           status = popen4("crontab -u #{@new_resource.user} -") do |pid, stdin, stdout, stderr|
             crontab.each { |line| stdin.puts "#{line}" }
