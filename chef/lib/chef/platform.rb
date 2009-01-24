@@ -38,7 +38,8 @@ class Chef
       :redhat   => {},
       :gentoo   => {
         :default => {
-          :package => Chef::Provider::Package::Portage
+          :package => Chef::Provider::Package::Portage,
+          :service => Chef::Provider::Service::Gentoo
         }
       },
       :solaris  => {},
