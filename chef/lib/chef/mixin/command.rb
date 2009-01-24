@@ -112,7 +112,16 @@ class Chef
         exec_processing_block = lambda do |pid, stdin, stdout, stderr|
           stdin.close
           
-          Timeout.timeout(Chef::Config[:run_command_stdout_timeout]) do
+          begin
+            Timeout.timeout(Chef::Config[:run_command_stdout_timeout]) do
+              while stdout.ready? == nil
+                Chef::Log.debug("Waiting for STDOUT to be ready..")
+                sleep 1
+              end
+            end
+          rescue Timeout::Error => e
+            Chef::Log.error("#{args[:command]} timed out reading STDOUT")
+          else
             stdout_string = stdout.gets(nil)
             if stdout_string
               command_stdout = stdout_string
@@ -121,7 +130,17 @@ class Chef
               Chef::Log.debug("---- End #{args[:command]} STDOUT ----")
             end
           end
-          Timeout.timeout(Chef::Config[:run_command_stderr_timeout]) do
+          
+          begin
+            Timeout.timeout(Chef::Config[:run_command_stderr_timeout]) do
+              while stderr.ready? == nil
+                Chef::Log.debug("Waiting for STDERR to be ready..")
+                sleep 1
+              end
+            end
+          rescue Timeout::Error => e
+            Chef::Log.error("#{args[:command]} timed out reading STDERR")
+          else
             stderr_string = stderr.gets(nil)
             if stderr_string
               command_stderr = stderr_string
@@ -130,6 +149,7 @@ class Chef
               Chef::Log.debug("---- End #{args[:command]} STDERR ----")
             end
           end
+          
         end
         
         args[:cwd] ||= Dir.tmpdir        
@@ -144,7 +164,7 @@ class Chef
               Timeout.timeout(args[:timeout]) do
                 status = popen4(args[:command], args, &exec_processing_block)
               end
-            rescue Exception => e
+            rescue Timeout::Error => e
               Chef::Log.error("#{args[:command_string]} exceeded timeout #{args[:timeout]}")
               raise(e)
             end
