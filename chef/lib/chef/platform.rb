@@ -28,6 +28,11 @@ class Chef
         
     @platforms = {
       :mac_os_x => {},
+      :freebsd7 => {
+        :default => {
+          :package => Chef::Provider::Package::Pkg,
+        }
+      },
       :ubuntu   => {
         :default => {
           :package => Chef::Provider::Package::Apt,
