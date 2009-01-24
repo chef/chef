@@ -30,9 +30,13 @@ describe Chef::Provider::Service::Gentoo do
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
     File.stub!(:exists?).and_return(true)
     
-    @io = mock("IO")
-    IO.stub!(:popen).and_return(@io)
-    @io.stub!(:each_line).and_yield("  gfs | default ")
+    @status = mock("Status", :exitstatus => 0)
+    @provider.stub!(:popen4).and_return(@status)
+    @stdin = mock("STDIN", :null_object => true)
+    @stdout = mock("STDOUT", :null_object => true)
+    @stdout.stub!(:each_line).and_yield("  gfs | default ")    
+    @stderr = mock("STDERR", :null_object => true)
+    @pid = mock("PID", :null_object => true)    
   end
   
   describe "load_current_resource" do  
@@ -42,25 +46,23 @@ describe Chef::Provider::Service::Gentoo do
     end
   
     it "should set enabled true if rc-update indicates service is in default runlevel" do
-      IO.should_receive(:popen).with("/sbin/rc-update -s default").and_yield(@io)
-      @io.should_receive(:each_line).
+      @stdout.should_receive(:each_line).
           and_yield('  gfs | default ').
           and_yield(' chef | default ').
           and_yield('monit | default ').
           and_yield('mysql | default ')
-    
+      @provider.should_receive(:popen4).with("/sbin/rc-update -s default").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @current_resource.should_receive(:enabled).with(true)
       @provider.load_current_resource
     end
   
     it "should set enabled false if rc-update indicates service is not in default runlevel" do
-      IO.should_receive(:popen).with("/sbin/rc-update -s default").and_yield(@io)
-      @io.should_receive(:each_line).
+      @stdout.should_receive(:each_line).
           and_yield('    gfs | default ').
           and_yield('notchef | default ').
           and_yield('  monit | default ').
           and_yield('  mysql | default ')
-    
+      @provider.should_receive(:popen4).with("/sbin/rc-update -s default").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.load_current_resource
       @current_resource.enabled.should be_false
     end

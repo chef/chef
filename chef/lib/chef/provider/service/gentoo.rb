@@ -28,12 +28,18 @@ class Chef
           
           raise Chef::Exception::Service unless ::File.exists?("/sbin/rc-update")
           
-          IO.popen('/sbin/rc-update -s default') do |io|
-            io.each_line do |line|
+          status = popen4("/sbin/rc-update -s default") do |pid, stdin, stdout, stderr|
+            stdin.close
+            
+            stdout.each_line do |line|
               if line.match(/^\s*#{@current_resource.service_name}\s+/)
                 @current_resource.enabled true
               end
             end
+          end
+          
+          unless status.exitstatus == 0
+            raise Chef::Exception::Service, "/sbin/rc-update -s default failed - #{status.inspect}"
           end
           
           @current_resource
