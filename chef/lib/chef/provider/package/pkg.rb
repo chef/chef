@@ -37,11 +37,10 @@ class Chef
               when /^#{@new_resource.package_name}-(.+)/
                 @current_resource.version($1)
                 Chef::Log.debug("Current version is #{@current_resource.version}")
-              else
-                @current_resource.version(nil)
               end
             end
           end
+          @current_resource.version(nil) unless @current_resource.version
 
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exception::Package, "pkg_info -E #{@new_resource.package_name} failed - #{status.inspect}!"
@@ -59,13 +58,9 @@ class Chef
                   case line
                   when /^PORTVERSION=\s+(\S+)/
                     @candidate_version = $1
+                    Chef::Log.debug("Candidate version is #{@candidate_version}")
                   end
                 end
-
-                @current_resource.version($1)
-                Chef::Log.debug("Current version is #{@current_resource.version}")
-              else
-                @current_resource.version(nil)
               end
             end
           end
