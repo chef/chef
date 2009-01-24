@@ -38,7 +38,8 @@ class Chef
       :redhat   => {},
       :gentoo   => {
         :default => {
-          :package => Chef::Provider::Package::Portage
+          :package => Chef::Provider::Package::Portage,
+          :service => Chef::Provider::Service::Gentoo
         }
       },
       :solaris  => {},
@@ -60,6 +61,7 @@ class Chef
         :user => Chef::Provider::User::Useradd,
         :group => Chef::Provider::Group::Groupadd,
         :http_request => Chef::Provider::HttpRequest,
+        :route => Chef::Provider::Route
       }
     }
 
