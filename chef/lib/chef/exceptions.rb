@@ -17,6 +17,7 @@
 
 class Chef
   class Exception
+    class Cron < RuntimeError; end
     class Exec < RuntimeError; end
     class FileNotFound < RuntimeError; end  
     class Package < RuntimeError; end

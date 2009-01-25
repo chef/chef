@@ -37,6 +37,7 @@ class Chef
         :default => {
           :package => Chef::Provider::Package::Apt,
           :service => Chef::Provider::Service::Debian,
+          :cron => Chef::Provider::Cron,
         }
       },
       :centos   => {},
