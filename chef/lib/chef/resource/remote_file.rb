@@ -27,7 +27,6 @@ class Chef
         @resource_name = :remote_file
         @action = "create"
         @source = nil
-        @variables = Hash.new
       end
       
       def source(args=nil)
