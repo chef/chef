@@ -56,7 +56,7 @@ class Chef
             if line =~ /\*(.*)/
               pkg = $1.strip
             end
-            if pkg == package
+            if pkg == package or pkg.split('/').last == package
               if line =~ /Latest version available: (.*)/
                 available = $1
               elsif line =~ /Latest version installed: (.*)/
