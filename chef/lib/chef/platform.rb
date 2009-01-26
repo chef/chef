@@ -45,7 +45,8 @@ class Chef
       :gentoo   => {
         :default => {
           :package => Chef::Provider::Package::Portage,
-          :service => Chef::Provider::Service::Gentoo
+          :service => Chef::Provider::Service::Gentoo,
+          :cron => Chef::Provider::Cron,
         }
       },
       :solaris  => {},
