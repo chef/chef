@@ -21,6 +21,7 @@ require 'chef/exceptions'
 require 'tmpdir'
 require 'fcntl'
 require 'etc'
+require 'io/wait'
 
 class Chef
   module Mixin
@@ -112,7 +113,11 @@ class Chef
         exec_processing_block = lambda do |pid, stdin, stdout, stderr|
           stdin.close
           
-          Timeout.timeout(Chef::Config[:run_command_stdout_timeout]) do
+          stdout.sync = true
+          stderr.sync = true
+          
+          stdout.wait(Chef::Config[:run_command_stdout_timeout])
+          if stdout.ready?
             stdout_string = stdout.gets(nil)
             if stdout_string
               command_stdout = stdout_string
@@ -120,8 +125,12 @@ class Chef
               Chef::Log.debug(stdout_string.strip)
               Chef::Log.debug("---- End #{args[:command]} STDOUT ----")
             end
+          else
+            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDOUT, or #{Chef::Config[:run_command_stdout_timeout]} seconds exceeded.")
           end
-          Timeout.timeout(Chef::Config[:run_command_stderr_timeout]) do
+          
+          stderr.wait(Chef::Config[:run_command_stdout_timeout])
+          if stderr.ready?
             stderr_string = stderr.gets(nil)
             if stderr_string
               command_stderr = stderr_string
@@ -129,6 +138,8 @@ class Chef
               Chef::Log.debug(stderr_string.strip)
               Chef::Log.debug("---- End #{args[:command]} STDERR ----")
             end
+          else
+            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDERR, or #{Chef::Config[:run_command_stderr_timeout]} seconds exceeded.")            
           end
         end
         
@@ -144,7 +155,7 @@ class Chef
               Timeout.timeout(args[:timeout]) do
                 status = popen4(args[:command], args, &exec_processing_block)
               end
-            rescue Exception => e
+            rescue Timeout::Error => e
               Chef::Log.error("#{args[:command_string]} exceeded timeout #{args[:timeout]}")
               raise(e)
             end
