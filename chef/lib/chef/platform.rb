@@ -40,6 +40,13 @@ class Chef
           :cron => Chef::Provider::Cron,
         }
       },
+      :debian => {
+        :default => {
+          :package => Chef::Provider::Package::Apt,
+          :service => Chef::Provider::Service::Debian,
+          :cron => Chef::Provider::Cron,
+        }
+      },
       :centos   => {},
       :redhat   => {},
       :gentoo   => {
