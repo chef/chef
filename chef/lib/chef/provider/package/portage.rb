@@ -54,7 +54,7 @@ class Chef
           available, installed, pkg = nil
           txt.each do |line|
             if line =~ /\*(.*)/
-              pkg = $1.strip.split('/').last
+              pkg = $1.strip
             end
             if pkg == package
               if line =~ /Latest version available: (.*)/
