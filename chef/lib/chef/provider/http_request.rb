@@ -66,7 +66,7 @@ class Chef
           false
         )
         @new_resource.updated = true
-        Chef::Log.info("#{@new_resource} POST to #{@new_resource.url} successful")
+        Chef::Log.info("#{@new_resource} POST to #{@new_resource.url} message: #{@new_resource.message.inspect} successful")
         Chef::Log.debug("#{@new_resource} POST request response: #{body}")
       end
       
