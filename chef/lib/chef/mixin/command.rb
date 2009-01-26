@@ -21,6 +21,7 @@ require 'chef/exceptions'
 require 'tmpdir'
 require 'fcntl'
 require 'etc'
+require 'io/wait'
 
 class Chef
   module Mixin
@@ -112,16 +113,11 @@ class Chef
         exec_processing_block = lambda do |pid, stdin, stdout, stderr|
           stdin.close
           
-          begin
-            Timeout.timeout(Chef::Config[:run_command_stdout_timeout]) do
-              while stdout.ready? == nil
-                Chef::Log.debug("Waiting for STDOUT to be ready..")
-                sleep 1
-              end
-            end
-          rescue Timeout::Error => e
-            Chef::Log.error("#{args[:command]} timed out reading STDOUT")
-          else
+          stdout.sync = true
+          stderr.sync = true
+          
+          stdout.wait(Chef::Config[:run_command_stdout_timeout])
+          if stdout.ready?
             stdout_string = stdout.gets(nil)
             if stdout_string
               command_stdout = stdout_string
@@ -129,18 +125,12 @@ class Chef
               Chef::Log.debug(stdout_string.strip)
               Chef::Log.debug("---- End #{args[:command]} STDOUT ----")
             end
+          else
+            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDOUT, or #{Chef::Config[:run_command_stdout_timeout]} seconds exceeded.")
           end
           
-          begin
-            Timeout.timeout(Chef::Config[:run_command_stderr_timeout]) do
-              while stderr.ready? == nil
-                Chef::Log.debug("Waiting for STDERR to be ready..")
-                sleep 1
-              end
-            end
-          rescue Timeout::Error => e
-            Chef::Log.error("#{args[:command]} timed out reading STDERR")
-          else
+          stderr.wait(Chef::Config[:run_command_stdout_timeout])
+          if stderr.ready?
             stderr_string = stderr.gets(nil)
             if stderr_string
               command_stderr = stderr_string
@@ -148,8 +138,9 @@ class Chef
               Chef::Log.debug(stderr_string.strip)
               Chef::Log.debug("---- End #{args[:command]} STDERR ----")
             end
+          else
+            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDERR, or #{Chef::Config[:run_command_stderr_timeout]} seconds exceeded.")            
           end
-          
         end
         
         args[:cwd] ||= Dir.tmpdir        

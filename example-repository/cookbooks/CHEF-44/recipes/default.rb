@@ -19,15 +19,11 @@
 
 
 execute "sleepy" do
-  Chef::Config[:run_command_stdout_timeout] = 1
-  Chef::Config[:run_command_stderr_timeout] = 1
-  command "sleep 5"
+  command "echo 'one monster'; sleep 5"
 end
 
 
 execute "sleepy2" do
-  Chef::Config[:run_command_stdout_timeout] = 120
-  Chef::Config[:run_command_stderr_timeout] = 120
   command "sleep 5"
 end
 
