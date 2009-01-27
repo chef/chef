@@ -107,6 +107,17 @@ describe Chef::Provider::Template, "action_create" do
     lambda { do_action_create }.should raise_error(Net::HTTPRetriableError)
   end
   
+  it "should populate the template_cache as true after rendering once" do
+    do_action_create
+    @node.run_state[:template_cache]["#{@resource.cookbook_name}_#{@resource.source}"].should eql(true)
+  end
+  
+  it "should not update the FileCache for the template on the second pass" do
+    do_action_create
+    Chef::FileCache.should_not_receive(:move_to)
+    do_action_create
+  end
+  
 end
 
 describe Chef::Provider::Template, "action_create_if_missing" do

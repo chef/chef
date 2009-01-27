@@ -35,12 +35,14 @@ class Chef
         Chef::Log.debug(@node.run_state.inspect)
         raw_template_file = nil
         cache_file_name = "cookbooks/#{@new_resource.cookbook_name}/templates/default/#{@new_resource.source}"
+        template_cache_name = "#{@new_resource.cookbook_name}_#{@new_resource.source}"
+        
         if Chef::Config[:solo]
           filename = ::File.join(Chef::Config[:cookbook_path], "#{@new_resource.cookbook_name}/templates/default/#{@new_resource.source}")
           Chef::Log.debug("Using local file for template:#{filename}")
           raw_template_file = ::File.open(filename)
-        elsif @node.run_state[:template_cache].has_key?(@new_resource.to_s)
-          Chef::Log.debug("I have already fetched #{@new_resource} once this run, not checking again.")
+        elsif @node.run_state[:template_cache].has_key?(template_cache_name)
+          Chef::Log.debug("I have already fetched the template for #{@new_resource} once this run, not checking again.")
           template_updated = false
         else
           r = Chef::REST.new(Chef::Config[:template_url])
@@ -74,7 +76,7 @@ class Chef
           end
           
           # We have checked the cache for this template this run
-          @node.run_state[:template_cache][@new_resource.to_s] = true
+          @node.run_state[:template_cache][template_cache_name] = true
         end  
         
         if template_updated
