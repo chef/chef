@@ -41,7 +41,7 @@ class Chef
           filename = find_preferred_file(
             @new_resource.cookbook_name.to_s,
             :template,
-            source,
+            @new_resource.source,
             @node[:fqdn],
             @node[:platform],
             @node[:platform_version]
