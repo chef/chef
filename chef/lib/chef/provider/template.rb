@@ -38,7 +38,14 @@ class Chef
         template_cache_name = "#{@new_resource.cookbook_name}_#{@new_resource.source}"
         
         if Chef::Config[:solo]
-          filename = ::File.join(Chef::Config[:cookbook_path], "#{@new_resource.cookbook_name}/templates/default/#{@new_resource.source}")
+          filename = find_preferred_file(
+            @new_resource.cookbook_name.to_s,
+            :template,
+            source,
+            @node[:fqdn],
+            @node[:platform],
+            @node[:platform_version]
+          )
           Chef::Log.debug("Using local file for template:#{filename}")
           raw_template_file = ::File.open(filename)
         elsif @node.run_state[:template_cache].has_key?(template_cache_name)

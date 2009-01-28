@@ -18,6 +18,7 @@
 
 require 'chef/provider/file'
 require 'chef/rest'
+require 'chef/mixin/find_preferred_file'
 require 'uri'
 require 'tempfile'
 require 'net/https'
@@ -25,6 +26,8 @@ require 'net/https'
 class Chef
   class Provider
     class RemoteFile < Chef::Provider::File
+      
+      include Chef::Mixin::FindPreferredFile
       
       def action_create        
         Chef::Log.debug("Checking #{@new_resource} for changes")
@@ -50,7 +53,14 @@ class Chef
         # If we are solo, try and find the file in a local cookbook
         #  assuming we find it, we open it up and set it to raw_file.
         if Chef::Config[:solo]
-          filename = ::File.join(Chef::Config[:cookbook_path], @new_resource.cookbook_name.to_s, "files/default/#{source}")
+          filename = find_preferred_file(
+            @new_resource.cookbook_name.to_s,
+            :remote_file,
+            source,
+            @node[:fqdn],
+            @node[:platform],
+            @node[:platform_version]
+          )
           Chef::Log.debug("Using local file for remote_file:#{filename}")
           raw_file = ::File.open(filename)
         else
