@@ -27,6 +27,12 @@ class Chef
         tf = Tempfile.new("chef-script")
         tf.puts(@new_resource.code)
         tf.close
+        
+        fr = Chef::Resource::File.new(tf.path, nil, @node)
+        fr.owner(@new_resource.user)
+        fr.group(@new_resource.group)
+        fr.run_action(:create)
+        
         @new_resource.command("#{@new_resource.interpreter} #{tf.path}") 
         super
       end
