@@ -19,6 +19,7 @@
 require 'chef/provider/file'
 require 'chef/mixin/template'
 require 'chef/mixin/checksum'
+require 'chef/mixin/find_preferred_file'
 require 'chef/rest'
 require 'chef/file_cache'
 require 'uri'
@@ -30,6 +31,7 @@ class Chef
       
       include Chef::Mixin::Checksum
       include Chef::Mixin::Template
+      include Chef::Mixin::FindPreferredFile
       
       def action_create
         Chef::Log.debug(@node.run_state.inspect)
