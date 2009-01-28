@@ -33,35 +33,35 @@ class Chef
         @current_resource.link_type(@new_resource.link_type)
         if @new_resource.link_type == :symbolic          
           if ::File.exists?(@current_resource.target_file) && ::File.symlink?(@current_resource.target_file)
-            @current_resource.source_file(
+            @current_resource.to(
               ::File.expand_path(::File.readlink(@current_resource.target_file))
             )
           else
-            @current_resource.source_file("")
+            @current_resource.to("")
           end
         elsif @new_resource.link_type == :hard
-          if ::File.exists?(@current_resource.target_file) && ::File.exists?(@new_resource.source_file)
-            if ::File.stat(@current_resource.target_file).ino == ::File.stat(@new_resource.source_file).ino
-              @current_resource.source_file(@new_resource.source_file)
+          if ::File.exists?(@current_resource.target_file) && ::File.exists?(@new_resource.to)
+            if ::File.stat(@current_resource.target_file).ino == ::File.stat(@new_resource.to).ino
+              @current_resource.to(@new_resource.to)
             else
-              @current_resource.source_file("")
+              @current_resource.to("")
             end
           else
-            @current_resource.source_file("")
+            @current_resource.to("")
           end
         end
         @current_resource
       end      
       
       def action_create
-        if @current_resource.source_file != @new_resource.source_file
-          Chef::Log.info("Creating a #{@new_resource.link_type} link from #{@new_resource.source_file} -> #{@new_resource.target_file} for #{@new_resource}")
+        if @current_resource.to != @new_resource.to
+          Chef::Log.info("Creating a #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file} for #{@new_resource}")
           if @new_resource.link_type == :symbolic
             run_command(
-              :command => "ln -nfs #{@new_resource.source_file} #{@new_resource.target_file}"
+              :command => "ln -nfs #{@new_resource.to} #{@new_resource.target_file}"
             )
           elsif @new_resource.link_type == :hard
-            ::File.link(@new_resource.source_file, @new_resource.target_file)
+            ::File.link(@new_resource.to, @new_resource.target_file)
           end
           @new_resource.updated = true
         end

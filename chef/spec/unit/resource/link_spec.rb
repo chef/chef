@@ -37,24 +37,31 @@ describe Chef::Resource::Link do
     @resource.action.should eql(:create)
   end
   
-  it "should accept create or delete for action" do
-    lambda { @resource.action :create }.should_not raise_error(ArgumentError)
-    lambda { @resource.action :delete }.should_not raise_error(ArgumentError)
-    lambda { @resource.action :blues }.should raise_error(ArgumentError)
+  { :create => false, :delete => false, :blues => true }.each do |action,bad_value|
+    it "should #{bad_value ? 'not' : ''} accept #{action.to_s}" do
+      if bad_value
+        lambda { @resource.action action }.should raise_error(ArgumentError)
+      else
+        lambda { @resource.action action }.should_not raise_error(ArgumentError)
+      end
+    end
   end
     
-  it "should use the object name as the source_file by default" do
-    @resource.source_file.should eql("fakey_fakerton")
+  it "should use the object name as the target_file by default" do
+    @resource.target_file.should eql("fakey_fakerton")
   end
   
-  it "should accept a string as the source_file" do
-    lambda { @resource.source_file "/tmp" }.should_not raise_error(ArgumentError)
-    lambda { @resource.source_file Hash.new }.should raise_error(ArgumentError)
+  it "should accept a string as the link source via 'to'" do
+    lambda { @resource.to "/tmp" }.should_not raise_error(ArgumentError)
   end
   
-  it "should allow you to set a target_file" do
-    @resource.target_file "/tmp/foo"
-    @resource.target_file.should eql("/tmp/foo")
+  it "should not accept a Hash for the link source via 'to'" do
+    lambda { @resource.to Hash.new }.should raise_error(ArgumentError)
+  end
+  
+  it "should allow you to set a link source via 'to'" do
+    @resource.to "/tmp/foo"
+    @resource.to.should eql("/tmp/foo")
   end
   
   it "should allow you to specify the link type" do

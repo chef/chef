@@ -25,14 +25,14 @@ class Chef
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)
         @resource_name = :link
-        @source_file = name
+        @to = nil
         @action = :create
         @link_type = :symbolic
-        @target_file = nil
+        @target_file = name
         @allowed_actions.push(:create, :delete)
       end
       
-      def source_file(arg=nil)
+      def to(arg=nil)
         set_or_return(
           :source_file,
           arg,

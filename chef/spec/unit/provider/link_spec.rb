@@ -1,5 +1,5 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: AJ Christensen (<aj@junglist.gen.nz>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -16,132 +16,310 @@
 # limitations under the License.
 #
 
-require 'ostruct'
-
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-describe Chef::Provider::Link do
-  before(:each) do
-    @new_resource = mock("New Resource", :null_object => true)
-    @new_resource.stub!(:name).and_return("symlink")
-    @new_resource.stub!(:source_file).and_return("/tmp/fofile")
-    @new_resource.stub!(:target_file).and_return("/tmp/fofile-link")
-    @new_resource.stub!(:link_type).and_return(:symbolic)
-    @new_resource.stub!(:updated).and_return(false)
-    @node = Chef::Node.new
-    @node.name "latte"
-    @provider = Chef::Provider::Link.new(@node, @new_resource)
+describe Chef::Provider::Link, "initialize" do
+  before do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource", :null_object => true)
   end
   
-  it "should load the current resource based on the new resource" do
-    File.should_receive(:exists?).once.and_return(true)
-    File.should_receive(:symlink?).once.and_return(true)
-    File.should_receive(:readlink).once.and_return("/tmp/fofile")
-    @provider.load_current_resource
-    @provider.current_resource.name.should eql("symlink")
-    @provider.current_resource.source_file.should eql("/tmp/fofile")
-    @provider.current_resource.target_file.should eql("/tmp/fofile-link")
-    @provider.current_resource.link_type.should eql(:symbolic)
+  it "should return a Chef::Provider::Link object" do
+    provider = Chef::Provider::Link.new(@node, @new_resource)
+    provider.should be_a_kind_of(Chef::Provider::Link)
   end
-  
-  it "should set the current resource's source_file to '' if the target_file doesn't exist" do
-    File.should_receive(:exists?).once.and_return(true)
-    File.should_receive(:symlink?).once.and_return(false)
-    @provider.load_current_resource
-    @provider.current_resource.source_file.should eql("")
-  end
-  
-  it "should load the current resource if it is a hard link" do
-    @new_resource.stub!(:link_type).and_return(:hard)
-    File.should_receive(:exists?).twice.and_return(true)
-    cstat = mock("stats", :null_object => true)
-    cstat.stub!(:ino).and_return(1)
-    File.should_receive(:stat).with("/tmp/fofile-link").and_return(cstat)
-    File.should_receive(:stat).with("/tmp/fofile").and_return(cstat)
-    @provider.load_current_resource
-    @provider.current_resource.name.should eql("symlink")
-    @provider.current_resource.source_file.should eql("/tmp/fofile")
-    @provider.current_resource.target_file.should eql("/tmp/fofile-link")
-    @provider.current_resource.link_type.should eql(:hard)
-  end
-  
-  it "should set the current resource's source_file to '' if the target_file doesn't exist" do
-    @new_resource.stub!(:link_type).and_return(:hard)
-    File.should_receive(:exists?).once.and_return(false)
-    @provider.load_current_resource
-    @provider.current_resource.source_file.should eql("")
-  end
-  
-  it "should set the current resource's source_file to '' if the two files arent hardlinked" do
-    @new_resource.stub!(:link_type).and_return(:hard)
-    File.stub!(:exists?).and_return(true)
-    cstat = mock("stats", :null_object => true)
-    cstat.stub!(:ino).and_return(0)
-    bstat = mock("stats", :null_object => true)
-    bstat.stub!(:ino).and_return(1)
-    File.should_receive(:stat).with("/tmp/fofile-link").and_return(cstat)
-    File.should_receive(:stat).with("/tmp/fofile").and_return(bstat)
-    @provider.load_current_resource
-    @provider.current_resource.source_file.should eql("")
-  end
-  
-  it "should create a new symlink on create, setting updated to true" do
-    load_mock_symlink_provider
-    @provider.current_resource.source_file("nil")
-    File.stub!(:symlink).and_return(true)
-    @provider.new_resource.should_receive(:updated=).with(true)
-    @provider.action_create
-  end
-  
-  it "should not create a new symlink on create if it already exists" do
-    load_mock_symlink_provider
-    File.should_not_receive(:symlink).with(@new_resource.source_file, @new_resource.target_file)
-    @provider.action_create
-  end 
+end
 
-  it "should create a new hard link on create, setting updated to true" do
-    load_mock_hardlink_provider
-    @provider.current_resource.source_file("nil")
-    File.should_receive(:link).with(@new_resource.source_file, @new_resource.target_file).once.and_return(true)
-    @provider.new_resource.should_receive(:updated=).with(true)
-    @provider.action_create
-  end
-  
-  it "should not create a new hard link on create if it already exists" do
-    load_mock_symlink_provider
-    File.should_not_receive(:link).with(@new_resource.source_file, @new_resource.target_file)
-    @provider.action_create
-  end
-  
-  it "should delete the link if it exists, and is writable with action_delete" do
-    load_mock_symlink_provider
-    File.should_receive(:exists?).once.and_return(true)
-    File.should_receive(:writable?).once.and_return(true)
-    File.should_receive(:delete).with(@new_resource.target_file).once.and_return(true)
-    @provider.action_delete
-  end
-  
-  it "should raise an exception if it cannot delete the link due to bad permissions" do
-    load_mock_symlink_provider
-    File.stub!(:exists?).and_return(true)
-    File.stub!(:writable?).and_return(false)
-    lambda { @provider.action_delete }.should raise_error(RuntimeError)
-  end
-  
-  def load_mock_symlink_provider
+describe Chef::Provider::Link, "load_current_resource" do
+  before do
+    @node = mock("Chef::Node", :null_object => true)
+
+    @new_resource = mock("Chef::Resource::Link",
+      :null_object => true,
+      :name => "linkytimes",
+      :to => "/tmp/fofile",
+      :target_file => "/tmp/fofile-link",
+      :link_type => :symbolic,
+      :updated => false
+    )
+
+    @current_resource = mock("Chef::Resource::Link",
+      :null_object => true,
+      :name => "linkytimes",
+      :to => "/tmp/fofile",
+      :target_file => "/tmp/fofile-link",
+      :link_type => :symbolic,
+      :updated => false
+    )
+
+    @provider = Chef::Provider::Link.new(@node, @new_resource)
+    Chef::Resource::Link.stub!(:new).and_return(@current_resource)  
     File.stub!(:exists?).and_return(true)
     File.stub!(:symlink?).and_return(true)
-    File.stub!(:readlink).and_return("/tmp/fofile")
+    File.stub!(:readlink).and_return("")  
+  end
+
+  it "should set the symink target" do
+    @current_resource.should_receive(:target_file).with("/tmp/fofile-link").and_return(true)
     @provider.load_current_resource
   end
   
-  def load_mock_hardlink_provider
-    @new_resource.stub!(:link_type).and_return(:hard)
-    File.stub!(:exists?).twice.and_return(true)
-    cstat = mock("stats", :null_object => true)
-    cstat.stub!(:ino).and_return(1)
-    File.stub!(:stat).with("/tmp/fofile-link").and_return(cstat)
-    File.stub!(:stat).with("/tmp/fofile").and_return(cstat)
+  it "should set the link type" do
+    @current_resource.should_recieve(:link_type).with(:symbolic).and_return(true)
     @provider.load_current_resource
+  end
+  
+  describe "when the link type is symbolic" do
+    
+    before do
+      @new_resource.stub(:link_type).and_return(:symbolic)
+    end
+    
+    describe "and the target exists and is a symlink" do
+      before do
+        File.should_receive(:exists?).with("/tmp/fofile-link").and_return(true)
+        File.should_receive(:symlink?).with("/tmp/fofile-link").and_return(true)
+        File.should_receive(:readlink).with("/tmp/fofile-link").and_return("/tmp/fofile")
+        @current_resource.stub(:target_file).and_return("/tmp/fofile")
+      end
+      
+      it "should update the source of the existing link with the links target" do
+        @current_resource.should_recieve(:to).with("/tmp/fofile").and_return(true)
+        @provider.load_current_resource
+      end    
+    end
+    
+    describe "and the target doesn't exist" do
+      before do
+        File.should_receive(:exists?).with("/tmp/fofile-link").and_return(false)
+      end
+      
+      it "should update the source of the existing link to an empty string" do
+        @current_resource.should_receive(:to).with("").and_return(true)
+        @provider.load_current_resource
+      end
+      
+    end
+    
+    describe "and the target isn't a symlink" do
+      before do
+        File.should_receive(:symlink?).with("/tmp/fofile-link").and_return(false)
+      end
+      
+      it "should update the current source of the existing link with an empty string" do
+        @current_resource.should_receive(:to).with("").and_return(true)
+        @provider.load_current_resource
+      end
+    end
+  end
+  
+  describe "when the link type is hard, " do
+    before do
+      @new_resource.stub!(:link_type).and_return(:hard)
+    end
+    
+    describe "the target file and source file both exist" do
+      before do
+        File.should_receive(:exists?).with("/tmp/fofile-link").and_return(true)
+        File.should_receive(:exists?).with("/tmp/fofile").and_return(true)
+      end
+      
+      describe "and the inodes match" do
+        before do
+          stat = mock("stats", :null_object => true)
+          stat.stub!(:ino).and_return(1)
+          File.should_receive(:stat).with("/tmp/fofile-link").and_return(stat)
+          File.should_receive(:stat).with("/tmp/fofile").and_return(stat)
+        end
+        
+        it "should update the source of the existing link to the target file" do
+          @current_resource.should_receive(:to).with("/tmp/fofile").and_return(true)
+          @provider.load_current_resource
+        end
+      end
+      
+      describe "and the inodes don't match" do
+        before do
+          stat = mock("stats", :null_object => true)
+          stat.stub!(:ino).and_return(1)
+          stat_two = mock("stats", :null_object => true)
+          stat.stub!(:ino).and_return(2)
+          File.should_receive(:stat).with("/tmp/fofile-link").and_return(stat)
+          File.should_receive(:stat).with("/tmp/fofile").and_return(stat_two)
+        end
+        
+        it "should set the source of the existing link to an empty string" do
+          @current_resource.should_recieve(:to).with("").and_return(true)
+          @provider.load_current_resource
+        end
+      end
+    end
+    describe "but the target does not exist" do
+      before do
+        File.should_receive(:exists?).with("/tmp/fofile-link").and_return(false)
+      end
+      
+      it "should set the source of the existing link to an empty string" do
+        @current_resource.should_receive(:to).with("").and_return(true)
+        @provider.load_current_resource
+      end
+    end
+    describe "but the source does not exist" do
+      before do
+        File.should_receive(:exists?).with("/tmp/fofile").and_return(false)
+      end
+      
+      it "should set the source of the existing link to an empty string" do
+        @current_resource.should_receive(:to).with("").and_return(true)
+        @provider.load_current_resource
+      end
+    end
+  end
+  
+  it "should return the current resource" do
+    @provider.load_current_resource.should eql(@current_resource)
+  end
+end
+
+describe Chef::Provider::Link, "action_create" do
+  before do
+    @node = mock("Chef::Node", :null_object => true)
+
+    @new_resource = mock("Chef::Resource::Link",
+      :null_object => true,
+      :name => "linkytimes",
+      :to => "/tmp/fofile",
+      :target_file => "/tmp/fofile-link",
+      :link_type => :symbolic,
+      :updated => false
+    )
+
+    @current_resource = mock("Chef::Resource::Link",
+      :null_object => true,
+      :name => "linkytimes",
+      :to => "/tmp/fofile",
+      :target_file => "/tmp/fofile-link",
+      :link_type => :symbolic,
+      :updated => false
+    )
+
+    @provider = Chef::Provider::Link.new(@node, @new_resource)
+    Chef::Resource::Link.stub!(:new).and_return(@current_resource)
+    @provider.current_resource = @current_resource
+    @provider.stub!(:run_command).and_return(true)
+    @new_resource.stub!(:to_s).and_return("link[/tmp/fofile]")
+    File.stub!(:link).and_return(true)
+  end
+  
+  describe "when the source for the link doesn't match" do
+    before do
+      @new_resource.stub!(:to).and_return("/tmp/lolololol")
+    end
+    
+    it "should log an appropriate message" do
+      Chef::Log.should_receive(:info).with("Creating a symbolic link from /tmp/lolololol -> /tmp/fofile-link for link[/tmp/fofile]")
+      @provider.action_create
+    end
+    
+    describe "and we're building a symbolic link" do
+      before do
+        @new_resource.stub!(:link_type).and_return(:symbolic)
+      end
+      
+      it "should run 'ln' with the parameters to create the link" do
+        @provider.should_receive(:run_command).with({:command => "ln -nfs /tmp/lolololol /tmp/fofile-link"}).and_return(true)
+        @provider.action_create
+      end
+    end
+    
+    describe "and we're building a hard link" do
+      before do
+        @new_resource.stub!(:link_type).and_return(:hard)
+      end
+      
+      it "should use the ruby builtin to create the link" do
+        File.should_receive(:link).with("/tmp/lolololol", "/tmp/fofile-link").and_return(true)
+        @provider.action_create
+      end
+    end
+    
+    it "should set updated to true" do
+      @new_resource.should_receive(:updated=).with(true).and_return(true)
+      @provider.action_create
+    end
+  end
+  
+end
+
+describe Chef::Provider::Link, "action_delete" do
+  before do
+    @node = mock("Chef::Node", :null_object => true)
+
+    @new_resource = mock("Chef::Resource::Link",
+      :null_object => true,
+      :name => "linkytimes",
+      :to => "/tmp/fofile",
+      :target_file => "/tmp/fofile-link",
+      :link_type => :symbolic,
+      :updated => false
+    )
+
+    @current_resource = mock("Chef::Resource::Link",
+      :null_object => true,
+      :name => "linkytimes",
+      :to => "/tmp/fofile",
+      :target_file => "/tmp/fofile-link",
+      :link_type => :symbolic,
+      :updated => false
+    )
+
+    @provider = Chef::Provider::Link.new(@node, @new_resource)
+    Chef::Resource::Link.stub!(:new).and_return(@current_resource)
+    @provider.current_resource = @current_resource
+    @new_resource.stub!(:to_s).and_return("link[/tmp/fofile]")
+    File.stub!(:exists?).and_return(true)
+    File.stub!(:delete).and_return(true)
+  end
+  
+  describe "when the file exists and is writeable" do
+    before do
+      File.should_receive(:exists?).with("/tmp/fofile-link").and_return(true)
+      File.should_receive(:writable?).with("/tmp/fofile-link").and_return(true)
+    end
+    
+    it "should log an appropriate error message" do
+      Chef::Log.should_receive(:info).with("Deleting link[/tmp/fofile] at /tmp/fofile-link")
+      @provider.action_delete
+    end
+    
+    it "should use the ruby builtin to delete the file" do
+      File.should_receive(:delete).with("/tmp/fofile-link").and_return(true)
+      @provider.action_delete
+    end
+    
+    it "should set updated to true" do
+      @new_resource.should_receive(:updated=).with(true).and_return(true)
+      @provider.action_delete
+    end
+  end
+  
+  describe "when the file does not exist" do
+    before do
+      File.should_receive(:exists?).with("/tmp/fofile-link").and_return(false)
+    end
+    
+    it "should raise a runtime error" do
+      lambda { @provider.action_delete }.should raise_error(RuntimeError)
+    end
+  end
+  
+  describe "when the file isn't writable" do
+    before do
+      File.should_receive(:writable?).with("/tmp/fofile-link").and_return(false)
+    end
+    
+    it "should raise a runtime error" do
+      lambda { @provider.action_delete }.should raise_error(RuntimeError)
+    end
   end
 end
