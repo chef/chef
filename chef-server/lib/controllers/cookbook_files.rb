@@ -18,35 +18,16 @@
 
 require 'chef' / 'mixin' / 'checksum'
 require 'chef' / 'cookbook_loader'
+require 'chef' / 'mixin' / 'find_preferred_file'
 
 class CookbookFiles < Application
   
   provides :html, :json
   
   include Chef::Mixin::Checksum
+  include Chef::Mixin::FindPreferredFile
 
   layout nil
-
-  def load_cookbook_files()
-    @cl = Chef::CookbookLoader.new
-    @cookbook = @cl[params[:cookbook_id]]
-    raise NotFound unless @cookbook
-    
-    @remote_files = Hash.new
-    @cookbook.remote_files.each do |rf|
-      full = File.expand_path(rf)
-      name = File.basename(full)
-      rf =~ /^.+#{params[:cookbook_id]}[\\|\/]files[\\|\/](.+?)[\\|\/]#{name}/
-      singlecopy = $1
-      @remote_files[full] = {
-        :name => name,
-        :singlecopy => singlecopy,
-        :file => full,
-      }
-    end
-    Chef::Log.debug("Remote files found: #{@remote_files.inspect}")
-    @remote_files
-  end
   
   def index
     if params[:id]
@@ -56,26 +37,40 @@ class CookbookFiles < Application
         show
       end
     else
-      load_cookbook_files()
+      @remote_files = load_cookbook_files(params[:cookbook_id], :remote_file)
       display @remote_files
     end
   end
 
   def show
     only_provides :json
-    to_send = find_preferred_file
+    to_send = find_preferred_file(
+      params[:cookbook_id], 
+      :remote_file, 
+      params[:id], 
+      params[:fqdn], 
+      params[:platform], 
+      params[:version]
+    )
     raise NotFound, "Cannot find a suitable file!" unless to_send
     current_checksum = checksum(to_send)
     Chef::Log.debug("old sum: #{params[:checksum]}, new sum: #{current_checksum}") 
     if current_checksum == params[:checksum]
-      display "File #{to_send} has not changed", :status => 304
+      render "File #{to_send} has not changed", :status => 304
     else
       send_file(to_send)
     end
   end
   
   def show_directory
-    dir_to_send = find_preferred_file
+    dir_to_send = find_preferred_file(
+      params[:cookbook_id], 
+      :remote_file, 
+      params[:id], 
+      params[:fqdn], 
+      params[:platform], 
+      params[:version]
+    )
     unless (dir_to_send && File.directory?(dir_to_send))
       raise NotFound, "Cannot find a suitable directory"
     end
@@ -89,31 +84,5 @@ class CookbookFiles < Application
     
     display @directory_listing
   end
-  
-  protected
-  
-    def find_preferred_file
-      load_cookbook_files()
-      preferences = [
-        File.join("host-#{params[:fqdn]}", "#{params[:id]}"),
-        File.join("#{params[:platform]}-#{params[:version]}", "#{params[:id]}"),
-        File.join("#{params[:platform]}", "#{params[:id]}"),
-        File.join("default", "#{params[:id]}")
-      ]
-      to_send = nil
-      @remote_files.each_key do |file|
-        Chef::Log.debug("Looking at #{file}")
-        preferences.each do |pref|
-          Chef::Log.debug("Compared to #{pref}")
-          if file =~ /#{pref}$/
-            Chef::Log.debug("Matched #{pref} for #{file}!")         
-            to_send = file
-            break
-          end
-        end
-        break if to_send
-      end
-      to_send
-    end
   
 end
