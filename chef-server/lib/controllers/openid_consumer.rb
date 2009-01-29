@@ -62,7 +62,10 @@ class OpenidConsumer < Application
       when OpenID::Consumer::SUCCESS
         session[:openid] = oidresp.identity_url
         if oidresp.display_identifier =~ /openid\/server\/node\/(.+)$/
-          session[:level] = :node
+          reg_name = $1
+          reg = Chef::OpenIDRegistration.load(reg_name)
+          Chef::Log.error("#{reg_name} is an admin #{reg.admin}")
+          session[:level] = reg.admin ? :admin : :node
           session[:node_name] = $1
         else
           session[:level] = :admin

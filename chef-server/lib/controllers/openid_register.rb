@@ -96,4 +96,15 @@ class OpenidRegister < Application
     r.save
     redirect url(:registrations)
   end
+  
+  def admin
+    begin
+      r = Chef::OpenIDRegistration.load(params[:id])
+    rescue Exception => e
+      raise BadRequest, "Cannot find the registration for #{params[:id]}"
+    end
+    r.admin = r.admin ? false : true
+    r.save
+    redirect url(:registrations)
+  end
 end

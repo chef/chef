@@ -192,6 +192,8 @@ Merb::Router.prepare do |r|
   
   resources :registrations, :controller => "openid_register" 
   resources :registrations, :controller => "openid_register", :member => { :validate => :post }
+  resources :registrations, :controller => "openid_register", :member => { :admin => :post }
+  
   match("/openid/server").to(:controller => "openid_server", :action => "index").name(:openid_server)
   match("/openid/server/server/xrds").
     to(:controller => "openid_server", :action => 'idp_xrds').name(:openid_server_xrds)

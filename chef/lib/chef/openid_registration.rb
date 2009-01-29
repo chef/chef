@@ -26,7 +26,7 @@ require 'json'
 class Chef
   class OpenIDRegistration
     
-    attr_accessor :name, :salt, :validated, :password, :couchdb_rev
+    attr_accessor :name, :salt, :validated, :password, :couchdb_rev, :admin
     
     include Chef::Mixin::ParamsValidate
     
@@ -83,6 +83,7 @@ class Chef
       @salt = nil
       @password = nil
       @validated = false
+      @admin = false
       @couchdb_rev = nil
       @couchdb = Chef::CouchDB.new
     end
@@ -107,6 +108,7 @@ class Chef
         'salt' => @salt,
         'password' => @password,
         'validated' => @validated,
+        'admin' => @admin,
         'chef_type' => 'openid_registration',
       }
       result["_rev"] = @couchdb_rev if @couchdb_rev
@@ -120,6 +122,7 @@ class Chef
       me.salt = o["salt"]
       me.password = o["password"]
       me.validated = o["validated"]
+      me.admin = o["admin"]
       me.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       me
     end

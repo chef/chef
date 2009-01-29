@@ -10,6 +10,9 @@
         %form{ :method => "post", :action => url(:validate_registration, { :id => node.name })}
           - submit_name =  node.validated ? "Invalidate" : "Validate"
           %input{ :type => "submit", :name => submit_name, :value => submit_name }
+        %form{ :method => "post", :action => url(:admin_registration, { :id => node.name })}
+          - submit_name =  node.admin ? "Remove Admin Rights" : "Admin"
+          %input{ :type => "submit", :name => submit_name, :value => submit_name }
         %form{ :method => "post", :action => url(:registration, { :id => node.name })}
           %input{ :type => "hidden", :name => "_method", :value => "delete" }
           %input{ :type => "submit", :name => "Delete", :value => "Delete" }
