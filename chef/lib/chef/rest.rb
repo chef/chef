@@ -33,6 +33,42 @@ class Chef
       @cookies = Hash.new
     end
     
+    # Register for an OpenID
+    def register(user, pass, validation_token=nil)
+      Chef::Log.debug("Registering #{user} for an openid") 
+      registration = nil
+      begin
+        registration = get_rest("registrations/#{user}")
+      rescue Net::HTTPServerException => e
+        unless e.message =~ /^404/
+          raise e
+        end
+      end
+      unless registration
+        post_rest(
+          "registrations", 
+          { 
+            :id => user, 
+            :password => pass, 
+            :validation_token => validation_token 
+          }
+        )
+      end
+    end
+    
+    # Authenticate 
+    def authenticate(user, pass)
+      Chef::Log.debug("Authenticating #{user} via openid") 
+      response = post_rest('openid/consumer/start', { 
+        "openid_identifier" => "#{Chef::Config[:openid_url]}/openid/server/node/#{user}",
+        "submit" => "Verify"
+      })
+      post_rest(
+        "#{Chef::Config[:openid_url]}#{response["action"]}",
+        { "password" => pass }
+      )
+    end
+    
     # Send an HTTP GET request to the path
     #
     # === Parameters
