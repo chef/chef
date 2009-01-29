@@ -30,9 +30,10 @@ class Chef
       
       # Send a GET request to @new_resource.url, with ?message=@new_resource.message
       def action_get  
+        message = check_message(@new_resource.message)
         body = @rest.run_request(
           :GET, 
-          @rest.create_url("#{@new_resource.url}?message=#{@new_resource.message}"),
+          @rest.create_url("#{@new_resource.url}?message=#{message}"),
           false,
           10,
           false
@@ -44,10 +45,11 @@ class Chef
       
       # Send a PUT request to @new_resource.url, with the message as the payload
       def action_put 
+        message = check_message(@new_resource.message)
         body = @rest.run_request(
           :PUT,
           @rest.create_url("#{@new_resource.url}"),
-          @new_resource.message,
+          message,
           10,
           false
         )
@@ -58,15 +60,16 @@ class Chef
       
       # Send a POST request to @new_resource.url, with the message as the payload
       def action_post
+        message = check_message(@new_resource.message)
         body = @rest.run_request(
           :POST,
           @rest.create_url("#{@new_resource.url}"),
-          @new_resource.message,
+          message,
           10,
           false
         )
         @new_resource.updated = true
-        Chef::Log.info("#{@new_resource} POST to #{@new_resource.url} message: #{@new_resource.message.inspect} successful")
+        Chef::Log.info("#{@new_resource} POST to #{@new_resource.url} message: #{message.inspect} successful")
         Chef::Log.debug("#{@new_resource} POST request response: #{body}")
       end
       
@@ -83,6 +86,16 @@ class Chef
         Chef::Log.info("#{@new_resource} DELETE to #{@new_resource.url} successful")
         Chef::Log.debug("#{@new_resource} DELETE request response: #{body}")
       end
+      
+      private
+        
+        def check_message(message)
+          if message.kind_of?(Proc)
+            message.call
+          else
+            message
+          end
+        end
       
     end
   end

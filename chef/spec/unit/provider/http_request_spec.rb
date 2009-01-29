@@ -76,6 +76,12 @@ describe Chef::Provider::HttpRequest, "action_get" do
     @provider.action_get
   end
   
+  it "should inflate a message block at runtime" do
+    @new_resource.stub!(:message).and_return(lambda { "return" })
+    @rest.should_receive(:create_url).with("#{@new_resource.url}?message=return")
+    @provider.action_get
+  end
+  
   it "should run a GET request" do
     @rest.should_receive(:run_request).with(:GET, @rest.create_url, false, 10, false)
     @provider.action_get
@@ -115,6 +121,12 @@ describe Chef::Provider::HttpRequest, "action_put" do
     @provider.action_put
   end
   
+  it "should inflate a message block at runtime" do
+    @new_resource.stub!(:message).and_return(lambda { "return" })
+    @rest.should_receive(:run_request).with(:PUT, @rest.create_url, "return", 10, false)    
+    @provider.action_put
+  end
+  
   it "should update the resource" do
     @new_resource.should_receive(:updated=).with(true)
     @provider.action_put
@@ -146,6 +158,12 @@ describe Chef::Provider::HttpRequest, "action_post" do
   
   it "should run a PUT request with the message as the payload" do
     @rest.should_receive(:run_request).with(:POST, @rest.create_url, @new_resource.message, 10, false)
+    @provider.action_post
+  end
+  
+  it "should inflate a message block at runtime" do
+    @new_resource.stub!(:message).and_return(lambda { "return" })
+    @rest.should_receive(:run_request).with(:POST, @rest.create_url, "return", 10, false)    
     @provider.action_post
   end
   
