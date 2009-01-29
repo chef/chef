@@ -1,7 +1,16 @@
-.edit_area#node{:to_update => node.name}
-  %h2 Recipes
-  %ol
-    = recipe_list(node)
-  %h2 Attributes
-  %ol
-    = attribute_list(node)
+- if session[:level] == :admin
+  .edit_area#node{:to_update => node.name}
+    %h2 Recipes
+    %ol
+      = recipe_list(node)
+    %h2 Attributes
+    %ol
+      = attribute_list(node)
+- else
+  #node
+    %h2 Recipes
+    %ol
+      = recipe_list(node)
+    %h2 Attributes
+    %ol
+      = attribute_list(node)
