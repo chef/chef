@@ -23,6 +23,11 @@ class Chef
   class Provider
     class Service
       class Init < Chef::Provider::Service
+        
+        def initialize(node, new_resource)
+          super(node, new_resource)
+          @init_command ||= "/etc/init.d/#{@new_resource.service_name}"
+        end
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
@@ -31,7 +36,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} supports status, running")
 
             begin
-              if run_command(:command => "/etc/init.d/#{@current_resource.service_name} status") == 0
+              if run_command(:command => "#{@init_command} status") == 0
                 @current_resource.running true
               end
             rescue Chef::Exception::Exec
@@ -80,37 +85,37 @@ class Chef
           @current_resource
         end
 
-        def start_service(name)
+        def start_service
           if @new_resource.start_command
             run_command(:command => @new_resource.start_command)
           else
-            run_command(:command => "/etc/init.d/#{name} start")
+            run_command(:command => "#{@init_command} start")
           end
         end
 
-        def stop_service(name)
+        def stop_service
           if @new_resource.stop_command
             run_command(:command => @new_resource.stop_command)
           else
-            run_command(:command => "/etc/init.d/#{name} stop")
+            run_command(:command => "#{@init_command} stop")
           end
         end
 
-        def restart_service(name)
+        def restart_service
           if @new_resource.supports[:restart]
-            run_command(:command => "/etc/init.d/#{name} restart")
+            run_command(:command => "#{@init_command} restart")
           elsif @new_resource.restart_command
             run_command(:command => @new_resource.restart_command)
           else
-            stop_service(name)
+            stop_service
             sleep 1
-            start_service(name)
+            start_service
           end
         end
 
-        def reload_service(name)
+        def reload_service
           if @new_resource.supports[:reload]
-            run_command(:command => "/etc/init.d/#{name} reload")
+            run_command(:command => "#{@init_command} reload")
           elsif @new_resource.reload_command
             run_command(:command => @new_resource.reload_command)
           end

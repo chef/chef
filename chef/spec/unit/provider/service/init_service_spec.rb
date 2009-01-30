@@ -174,12 +174,12 @@ describe Chef::Provider::Service::Init, "start_service" do
   it "should call the start command if one is specified" do
     @new_resource.stub!(:start_command).and_return("/etc/init.d/chef startyousillysally")
     @provider.should_receive(:run_command).with({:command => "/etc/init.d/chef startyousillysally"}).and_return(0)
-    @provider.start_service(@new_resource.service_name)
+    @provider.start_service()
   end
 
   it "should call '/etc/init.d/service_name start' if no start command is specified" do
     @provider.should_receive(:run_command).with({:command => "/etc/init.d/#{@new_resource.service_name} start"}).and_return(0)
-    @provider.start_service(@new_resource.service_name)
+    @provider.start_service()
   end 
 end
 
@@ -200,12 +200,12 @@ describe Chef::Provider::Service::Init, "stop_service" do
   it "should call the stop command if one is specified" do
     @new_resource.stub!(:stop_command).and_return("/etc/init.d/chef itoldyoutostop")
     @provider.should_receive(:run_command).with({:command => "/etc/init.d/chef itoldyoutostop"}).and_return(0)
-    @provider.stop_service(@new_resource.service_name)
+    @provider.stop_service()
   end
 
   it "should call '/etc/init.d/service_name stop' if no stop command is specified" do
     @provider.should_receive(:run_command).with({:command => "/etc/init.d/#{@new_resource.service_name} stop"}).and_return(0)
-    @provider.stop_service(@new_resource.service_name)
+    @provider.stop_service()
   end
 end
 
@@ -227,20 +227,20 @@ describe Chef::Provider::Service::Init, "restart_service" do
   it "should call 'restart' on the service_name if the resource supports it" do
     @new_resource.stub!(:supports).and_return({:restart => true})
     @provider.should_receive(:run_command).with({:command => "/etc/init.d/#{@new_resource.service_name} restart"}).and_return(0)
-    @provider.restart_service(@new_resource.service_name)
+    @provider.restart_service()
   end
 
   it "should call the restart_command if one has been specified" do
     @new_resource.stub!(:restart_command).and_return("/etc/init.d/chef restartinafire")
     @provider.should_receive(:run_command).with({:command => "/etc/init.d/#{@new_resource.service_name} restartinafire"}).and_return(0)
-    @provider.restart_service(@new_resource.service_name)
+    @provider.restart_service()
   end
 
   it "should just call stop, then start when the resource doesn't support restart and no restart_command is specified" do
-    @provider.should_receive(:stop_service).with(@new_resource.service_name)
+    @provider.should_receive(:stop_service)
     @provider.should_receive(:sleep).with(1)
-    @provider.should_receive(:start_service).with(@new_resource.service_name)
-    @provider.restart_service(@new_resource.service_name)
+    @provider.should_receive(:start_service)
+    @provider.restart_service()
   end
 end
 
@@ -262,12 +262,12 @@ describe Chef::Provider::Service::Init, "reload_service" do
   it "should call 'reload' on the service if it supports it" do
     @new_resource.stub!(:supports).and_return({:reload => true})
     @provider.should_receive(:run_command).with({:command => "/etc/init.d/#{@new_resource.service_name} reload"}).and_return(0)
-    @provider.reload_service(@new_resource.service_name)
+    @provider.reload_service()
   end
 
   it "should should run the user specified reload command if one is specified and the service doesn't support reload" do
     @new_resource.stub!(:reload_command).and_return("/etc/init.d/chef lollerpants")
     @provider.should_receive(:run_command).with({:command => "/etc/init.d/#{@new_resource.service_name} lollerpants"}).and_return(0)
-    @provider.reload_service(@new_resource.service_name)
+    @provider.reload_service()
   end
 end

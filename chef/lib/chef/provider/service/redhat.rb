@@ -23,40 +23,43 @@ require 'chef/mixin/command'
 class Chef
   class Provider
     class Service
-      class Debian < Chef::Provider::Service::Init
+      class Redhat < Chef::Provider::Service::Init
+        
+        def initialize(node, new_resource)
+           super(node, new_resource)
+           @init_command ||= "/sbin/service #{@new_resource.service_name}"
+         end
+        
         def load_current_resource
           super
           
-          unless ::File.exists? "/usr/sbin/update-rc.d"
-            raise Chef::Exception::Service, "/usr/sbin/update-rc.d does not exist!"
+          unless ::File.exists? "/sbin/chkconfig"
+            raise Chef::Exception::Service, "/sbin/chkconfig does not exist!"
           end
 
-          status = popen4("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
+          status = popen4("/sbin/chkconfig --list #{@current_resource.service_name}") do |pid, stdin, stdout, stderr|
             stdin.close
-            r = /etc\/rc[\dS].d\/S|not installed/i
-            stdout.each_line do |line|
-              if r.match(line)
-                @current_resource.enabled true
-                break
-              else
-                @current_resource.enabled false
-              end
+            
+            if stdout.gets =~ /\d:on/
+              @current_resource.enabled true
+            else
+              @current_resource.enabled false
             end
           end  
 
           unless status.exitstatus == 0
-            raise Chef::Exception::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
+            raise Chef::Exception::Service, "/sbin/chkconfig --list #{@current_resource.service_name} failed - #{status.inspect}"
           end
 
           @current_resource        
         end
 
         def enable_service()
-          run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults")
+          run_command(:command => "/sbin/chkconfig --add #{@new_resource.service_name}")
         end
 
         def disable_service()
-          run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
+          run_command(:command => "/sbin/chkconfig --del #{@new_resource.service_name}")
         end
         
       end

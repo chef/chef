@@ -45,12 +45,12 @@ class Chef
           @current_resource
         end
         
-        def enable_service(name)
-          run_command(:command => "/sbin/rc-update add #{name} default")
+        def enable_service()
+          run_command(:command => "/sbin/rc-update add #{@new_resource.service_name} default")
         end
         
-        def disable_service(name)
-          run_command(:command => "/sbin/rc-update del #{name} default")
+        def disable_service()
+          run_command(:command => "/sbin/rc-update del #{@new_resource.service_name} default")
         end
       end
     end

@@ -47,8 +47,18 @@ class Chef
           :cron => Chef::Provider::Cron,
         }
       },
-      :centos   => {},
-      :redhat   => {},
+      :centos   => {
+        :default => {
+          :service => Chef::Provider::Service::Redhat,
+          :cron => Chef::Provider::Cron
+        }
+      },
+      :redhat   => {
+        :default => {
+          :service => Chef::Provider::Service::Redhat,
+          :cron => Chef::Provider::Cron
+        }
+      },
       :gentoo   => {
         :default => {
           :package => Chef::Provider::Package::Portage,

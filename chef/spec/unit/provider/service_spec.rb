@@ -51,13 +51,13 @@ describe Chef::Provider::Service, "action_enable" do
 
   it "should enable the service if disabled" do
     @current_resource.stub!(:enabled).and_return(false)
-    @provider.should_receive(:enable_service).with(@new_resource.name).and_return(true)
+    @provider.should_receive(:enable_service).and_return(true)
     @provider.action_enable
   end
 
   it "should not enable the service if already enabled" do
     @current_resource.stub!(:enabled).and_return(true)
-    @provider.should_not_receive(:enable_service).with(@new_resource.name).and_return(true)
+    @provider.should_not_receive(:enable_service).and_return(true)
     @provider.action_enable
   end
 end
@@ -82,13 +82,13 @@ describe Chef::Provider::Service, "action_disable" do
 
   it "should disable the service if enabled" do
     @current_resource.stub!(:enabled).and_return(true)
-    @provider.should_receive(:disable_service).with(@new_resource.name).and_return(true)
+    @provider.should_receive(:disable_service).and_return(true)
     @provider.action_disable
   end
 
   it "should not disable the service if already disabled" do
     @current_resource.stub!(:enabled).and_return(false)
-    @provider.should_not_receive(:disable_service).with(@new_resource.name).and_return(true)
+    @provider.should_not_receive(:disable_service).and_return(true)
     @provider.action_disable
   end
 end
@@ -113,13 +113,13 @@ before(:each) do
 
   it "should start the service if it isn't running" do
     @current_resource.stub!(:running).and_return(false)
-    @provider.should_receive(:start_service).with(@new_resource.name).and_return(true)
+    @provider.should_receive(:start_service).with.and_return(true)
     @provider.action_start
   end
 
   it "should not start the service if already running" do
     @current_resource.stub!(:running).and_return(true)
-    @provider.should_not_receive(:start_service).with(@new_resource.name).and_return(true)
+    @provider.should_not_receive(:start_service).and_return(true)
     @provider.action_enable
   end
 end
@@ -144,13 +144,13 @@ before(:each) do
 
   it "should stop the service if it is running" do
     @current_resource.stub!(:running).and_return(true)
-    @provider.should_receive(:stop_service).with(@new_resource.name).and_return(true)
+    @provider.should_receive(:stop_service).and_return(true)
     @provider.action_stop
   end
 
   it "should not stop the service if it's already stopped" do
     @current_resource.stub!(:running).and_return(false)
-    @provider.should_not_receive(:stop_service).with(@new_resource.name).and_return(true)
+    @provider.should_not_receive(:stop_service).and_return(true)
     @provider.action_stop
   end
 end
@@ -177,13 +177,13 @@ before(:each) do
 
   it "should restart the service if it's supported and running" do
     @current_resource.stub!(:running).and_return(true)
-    @provider.should_receive(:restart_service).with(@new_resource.name).and_return(true)
+    @provider.should_receive(:restart_service).and_return(true)
     @provider.action_restart
   end
 
   it "should not restart the service if it is not running" do
     @current_resource.stub!(:running).and_return(false)
-    @provider.should_not_receive(:restart_service).with(@new_resource.name).and_return(true)
+    @provider.should_not_receive(:restart_service).and_return(true)
     @provider.action_restart
   end
 end
@@ -216,13 +216,13 @@ before(:each) do
 
   it "should reload the service if it is running" do
     @current_resource.stub!(:running).and_return(true)
-    @provider.should_receive(:reload_service).with(@new_resource.name).and_return(true)
+    @provider.should_receive(:reload_service).and_return(true)
     @provider.action_reload
   end
 
   it "should not reload the service if it's stopped" do
     @current_resource.stub!(:running).and_return(false)
-    @provider.should_not_receive(:stop_service).with(@new_resource.name).and_return(true)
+    @provider.should_not_receive(:stop_service).and_return(true)
     @provider.action_stop
   end
 end
