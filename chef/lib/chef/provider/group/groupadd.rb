@@ -20,12 +20,24 @@ class Chef
   class Provider
     class Group
       class Groupadd < Chef::Provider::Group
+        
+        def load_current_resource
+          super
+          
+          [ "/usr/sbin/groupadd",
+            "/usr/sbin/groupmod",
+            "/usr/sbin/groupdel",
+            "/usr/bin/gpasswd" ].each do |required_binary|
+            raise Chef::Exception::Group, "Could not find binary #{required_binary} for #{@new_resource}" unless ::File.exists?(required_binary)
+          end
+        end
 
         # Create the group
         def create_group
           command = "groupadd"
           command << set_options
-          run_command(:command => command)    
+          run_command(:command => command)
+          modify_group_members    
         end
         
         # Manage the group when it already exists
@@ -33,11 +45,17 @@ class Chef
           command = "groupmod"
           command << set_options
           run_command(:command => command)
+          modify_group_members
         end
         
         # Remove the group
         def remove_group
           run_command(:command => "groupdel #{@new_resource.group_name}")
+        end
+        
+        def modify_group_members
+          Chef::Log.debug("#{@new_resource}: setting group members to #{@new_resource.members.join(', ')}")
+          run_command(:command => "gpasswd -M #{@new_resource.members.join(',')} #{@new_resource.group_name}")
         end
         
         # Little bit of magic as per Adam's useradd provider to pull the assign the command line flags

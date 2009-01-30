@@ -25,7 +25,7 @@ class Chef
         @resource_name = :group
         @group_name = name
         @gid = nil
-        @members = nil
+        @members = []
         @action = :create
         @allowed_actions.push(:create, :remove, :modify, :manage)
       end
@@ -47,10 +47,11 @@ class Chef
       end
 
       def members(arg=nil)
+        converted_members = arg.is_a?(String) ? [].push(arg) : arg
         set_or_return(
           :members,
-          arg,
-          :kind_of => [ String, Array ]
+          converted_members,
+          :kind_of => [ Array ]
         )
       end
  

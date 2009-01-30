@@ -69,11 +69,18 @@ describe Chef::Provider::Group::Groupadd, "create_group" do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Group", :null_object => true)
     @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
+    @provider.stub!(:run_command).and_return(true)
     @provider.stub!(:set_options).and_return(" monkey")
+    @provider.stub!(:modify_group_members).and_return(true)
   end
   
   it "should run groupadd with the return of set_options" do
     @provider.should_receive(:run_command).with({ :command => "groupadd monkey" }).and_return(true)
+    @provider.create_group
+  end
+  
+  it "should modify the group members" do
+    @provider.should_receive(:modify_group_members).and_return(true)
     @provider.create_group
   end
 end
@@ -83,11 +90,18 @@ describe Chef::Provider::Group::Groupadd, "manage_group" do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Group", :null_object => true)
     @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
+    @provider.stub!(:run_command).and_return(true)
     @provider.stub!(:set_options).and_return(" monkey")
+    @provider.stub!(:modify_group_members).and_return(true)
   end
   
   it "should run groupmod with the return of set_options" do
     @provider.should_receive(:run_command).with({ :command => "groupmod monkey" }).and_return(true)
+    @provider.manage_group
+  end
+  
+  it "should modify the group members" do
+    @provider.should_receive(:modify_group_members).and_return(true)
     @provider.manage_group
   end
 end
@@ -100,10 +114,59 @@ describe Chef::Provider::Group::Groupadd, "remove_group" do
       :group_name => "aj"
     )
     @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
+    @provider.stub!(:run_command).and_return(true)
   end
   
   it "should run groupdel with the new resources group name" do
-    @provider.should_receive(:run_command).with({ :command => "groupdel #{@new_resource.group_name}" }).and_return(true)
+    @provider.should_receive(:run_command).with({ :command => "groupdel aj" }).and_return(true)
     @provider.remove_group
+  end
+end
+
+describe Chef::Provider::Group::Groupadd, "modify_group_members" do
+  before do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Group",
+      :null_object => true,
+      :group_name => "aj",
+      :members => [ "all", "your", "base", "are", "belong", "to", "us" ]
+    )
+    @new_resource.stub!(:to_s).and_return("group[aj]")
+    @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
+    @provider.stub!(:run_command).and_return(true)
+  end
+  
+  it "should log an appropriate debug message" do
+    Chef::Log.should_receive(:debug).with("group[aj]: setting group members to all, your, base, are, belong, to, us")
+    @provider.modify_group_members
+  end
+  
+  it "should run gpasswd with the members joined by ',' and the target group" do
+    @provider.should_receive(:run_command).with({:command => "gpasswd -M all,your,base,are,belong,to,us aj"})
+    @provider.modify_group_members
+  end
+end
+
+describe Chef::Provider::Group::Groupadd, "load_current_resource" do
+  before do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
+    @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
+    File.stub!(:exists?).and_return(false)
+  end
+
+  [ "/usr/sbin/groupadd",
+    "/usr/sbin/groupmod",
+    "/usr/sbin/groupdel",
+    "/usr/bin/gpasswd" ].each do |required_binary|
+    it "should raise an error if the required binary #{required_binary} doesn't exist" do
+      File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(false)
+      lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Group)
+    end
+  end
+  
+  it "shouldn't raise an error if the required binaries exist" do
+    File.stub!(:exists?).and_return(true)
+    lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exception::Group)
   end
 end
