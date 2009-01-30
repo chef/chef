@@ -328,11 +328,9 @@ class Chef
     #
     # === Returns
     # true:: Always returns true
-    def converge(solo=false)
+    def converge
       Chef::Log.debug("Compiling recipes for node #{@safe_name}")
-      unless solo
-        Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
-      end
+      Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
       compile = Chef::Compile.new()
       compile.node = @node
       compile.load_libraries
