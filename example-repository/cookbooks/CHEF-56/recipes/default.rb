@@ -19,21 +19,5 @@
 
 service "vncserver" do
   supports :status => true, :reload => true
-  action :enable
-end
-
-service "vncserver" do
-  action :start
-end
-
-service "vncserver" do
-  action :restart
-end
-
-service "vncserver" do
-  action :stop
-end
-
-service "vncserver" do
-  action :disable
+  action [ :enable, :start, :restart, :stop, :disable ]
 end
