@@ -27,7 +27,7 @@ class Chef
         
         def initialize(node, new_resource)
            super(node, new_resource)
-           @init_command ||= "/sbin/service #{@new_resource.service_name}"
+           @init_command = "/sbin/service #{@new_resource.service_name}"
          end
         
         def load_current_resource
