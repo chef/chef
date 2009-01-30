@@ -93,7 +93,7 @@ class Chef
       Chef::Log.info("Starting Chef Solo Run")
       
       build_node(@node_name, solo = true)
-      converge(true)
+      converge()
       
       end_time = Time.now
       Chef::Log.info("Chef Run complete in #{end_time - start_time} seconds")
