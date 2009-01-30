@@ -23,7 +23,7 @@ class Chef
     module Checksum
 
       def checksum(file)
-        digest = Digest::SHA2.new
+        digest = Digest::SHA256.new
         fh = ::File.open(file)
         fh.each do |line|
           digest.update(line)
