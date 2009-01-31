@@ -23,7 +23,7 @@ require 'chef/resource/package'
 class Chef
   class Provider
     class Package
-      class Portage < Chef::Provider::Package  
+      class Portage < Chef::Provider::Package
       
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
