@@ -22,7 +22,7 @@ require 'chef/mixin/command'
 class Chef
   class Provider
     class Service
-      class Freebsd < Chef::Provider::Service
+      class Freebsd < Chef::Provider::Service::Init
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
@@ -30,19 +30,19 @@ class Chef
 
           # Determine if we're talking about /etc/rc.d or /usr/local/etc/rc.d
           if ::File.exists?("/etc/rc.d/#{current_resource.service_name}")
-            @service_path = "/etc/rc.d"
+            @init_command = "/etc/rc.d/#{current_resource.service_name}" 
           elsif ::File.exists?("/usr/local/etc/rc.d/#{current_resource.service_name}")
-            @service_path = "/usr/local/etc/rc.d"
+            @init_command = "/usr/local/etc/rc.d/#{current_resource.service_name}" 
           else
             raise Chef::Exception::Service, "#{@new_resource}: unable to locate the rc.d script"
           end
-          Chef::Log.debug("#{@current_resource.name} found at #{@service_path}/#{@current_resource.service_name}")
+          Chef::Log.debug("#{@current_resource.name} found at #{@init_command}")
             
           if @new_resource.supports[:status]
             Chef::Log.debug("#{@new_resource} supports status, checking state")
 
             begin
-              if run_command(:command => "#{@service_path}/#{@current_resource.service_name} status") == 0
+              if run_command(:command => "#{@init_command} status") == 0
                 @current_resource.running true
               end
             rescue Chef::Exception::Exec
@@ -108,43 +108,7 @@ class Chef
           @current_resource
         end
 
-        def start_service(name)
-          if @new_resource.start_command
-            run_command(:command => @new_resource.start_command)
-          else
-            run_command(:command => "#{@service_path}/#{name} start")
-          end
-        end
-
-        def stop_service(name)
-          if @new_resource.stop_command
-            run_command(:command => @new_resource.stop_command)
-          else
-            run_command(:command => "#{@service_path}/#{name} stop")
-          end
-        end
-
-        def restart_service(name)
-          if @new_resource.supports[:restart]
-            run_command(:command => "#{@service_path}/#{name} restart")
-          elsif @new_resource.restart_command
-            run_command(:command => @new_resource.restart_command)
-          else
-            stop_service(name)
-            sleep 1
-            start_service(name)
-          end
-        end
-
-        def reload_service(name)
-          if @new_resource.supports[:reload]
-            run_command(:command => "#{@service_path}/#{name} reload")
-          elsif @new_resource.reload_command
-            run_command(:command => @new_resource.reload_command)
-          end
-        end
-   
-        def enable_service(name)
+        def enable_service()
           unless @current_resource.enabled 
             rcfile = ::File.open("/etc/rc.conf", 'r')
             lines = rcfile.readlines
@@ -162,7 +126,7 @@ class Chef
           end
         end
 
-        def disable_service(name)
+        def disable_service()
           if @current_resource.enabled
             rcfile = ::File.open("/etc/rc.conf", 'r')
             lines = rcfile.readlines
