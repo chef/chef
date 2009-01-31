@@ -278,7 +278,9 @@ class Chef
         if b 
           begin
             b[cid, *pi]
-            Process.waitpid2(cid, Process::WNOHANG).last
+            Signal.trap("CLD") do
+              Process.waitpid2(cid).last
+            end
           ensure
             pi.each{|fd| fd.close unless fd.closed?}
           end
