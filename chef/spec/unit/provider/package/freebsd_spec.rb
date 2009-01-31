@@ -36,11 +36,17 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
 
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)    
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
+
     @status = mock("Status", :exitstatus => 0)
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
+    @provider.stub!(:popen4).and_return(true)
+
+    @lines = mock("lines")
+    @lines.stub!(:each).and_yield("zsh-4.3.6_7")
+    ::File.stub!(:open).and_return(@lines)
   end
 
   it "should create a current resource with the name of the new_resource" do
@@ -51,6 +57,9 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
 
   it "should return a version if the package is installed" do
     @stdout.stub!(:each).and_yield("zsh-4.3.6_7")
+    @lines = mock("lines")
+    @lines.stub!(:each).and_yield("zsh-4.3.6_7")
+    ::File.stub!(:open).and_return(@lines)
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     @current_resource.should_receive(:version).with("4.3.6_7").and_return(true)
     @provider.load_current_resource

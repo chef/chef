@@ -34,7 +34,7 @@ class Chef
 
             stdout.each do |line|
               case line
-              when /^#{@new_resource.package_name}-(.+)/
+              when /^#{@current_resource.package_name}-(.+)/
                 @current_resource.version($1)
                 Chef::Log.debug("Current version is #{@current_resource.version}")
               end
@@ -45,7 +45,7 @@ class Chef
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exception::Package, "pkg_info -E #{@new_resource.package_name} failed - #{status.inspect}!"
           end
-       
+      
           port_path = nil
           status = popen4("whereis -s #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdin.close
@@ -53,15 +53,17 @@ class Chef
             stdout.each do |line|
               case line
               when /^#{@new_resource.package_name}:\s+(.+)$/
-                makefile = ::File.open($1 + "/Makefile")
-                makefile.each do |line|
-                  case line
-                  when /^PORTVERSION=\s+(\S+)/
-                    @candidate_version = $1
-                    Chef::Log.debug("Candidate version is #{@candidate_version}")
-                  end
-                end
+                @port_path = $1
               end
+            end
+          end
+
+          makefile = ::File.open("#{@port_path}/Makefile")
+          makefile.each do |line|
+            case line
+            when /^PORTVERSION=\s+(\S+)/
+              @candidate_version = $1
+              Chef::Log.debug("Ports candidate version is #{@candidate_version}")
             end
           end
 
@@ -70,19 +72,39 @@ class Chef
 
         def install_package(name, version)
           unless @current_resource.version
-            run_command(
-              :command => "pkg_add -r #{name}"
-            )
-            Chef::Log.info("Installed package #{name}")
+            case @new_resource.source
+            when /^ports$/
+              run_command(
+                :command => "make -DBATCH install",
+                :cwd => "#{@port_path}"
+              )
+            when /^http/, /^ftp/
+              run_command(
+                :command => "pkg_add -r #{@new_resource.name}",
+                :environment => { "PACKAGESITE" => @new_resource.source }
+              )
+              Chef::Log.info("Installed package #{@new_resource.name} from: #{@new_resource.source}")
+            when /^\//
+              run_command(
+                :command => "pkg_add #{@new_resource.name}",
+                :environment => { "PKG_PATH" => @new_resource.source }
+              )
+              Chef::Log.info("Installed package #{@new_resource.name} from: #{@new_resource.source}")
+            else
+              run_command(
+                :command => "pkg_add -r #{@new_resource.name}"
+              )
+              Chef::Log.info("Installed package #{@new_resource.name}")
+            end
           end
         end
       
         def remove_package(name, version)
           if @current_resource.version
             run_command(
-              :command => "pkg_delete #{name}-#{@current_resource.version}"
+              :command => "pkg_delete #{@current_resource.name}-#{@current_resource.version}"
             )
-            Chef::Log.info("Removed package #{name}-#{@current_resource.version}")
+            Chef::Log.info("Removed package #{@current_resource.name}-#{@current_resource.version}")
           end
         end
       end
