@@ -31,6 +31,7 @@ class Chef
       :freebsd => {
         :default => {
           :package => Chef::Provider::Package::Pkg,
+          :service => Chef::Provider::Service::Freebsd,
         }
       },
       :ubuntu   => {
