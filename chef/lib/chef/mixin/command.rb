@@ -194,6 +194,9 @@ class Chef
       # Thanks, Ara. 
       def popen4(cmd, args={}, &b)
         
+        # Waitlast - this is magic.  
+        args[:waitlast] ||= false
+        
         args[:user] ||= nil
         unless args[:user].kind_of?(Integer)
           args[:user] = Etc.getpwnam(args[:user]).uid if args[:user]
@@ -277,8 +280,15 @@ class Chef
 
         if b 
           begin
-            b[cid, *pi]
-            Process.waitpid2(cid).last
+            if args[:waitlast]
+              b[cid, *pi]
+              Process.waitpid2(cid).last
+            else
+              pi[0].close
+              results = Process.waitpid2(cid).last
+              b[cid, *pi]
+              results
+            end
           ensure
             pi.each{|fd| fd.close unless fd.closed?}
           end
