@@ -286,6 +286,8 @@ class Chef
             else
               pi[0].close
               results = Process.waitpid2(cid).last
+              pr.last.close
+              pe.last.close
               b[cid, *pi]
               results
             end
