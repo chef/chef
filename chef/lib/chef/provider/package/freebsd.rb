@@ -23,7 +23,7 @@ require 'chef/resource/package'
 class Chef
   class Provider
     class Package
-      class Pkg < Chef::Provider::Package  
+      class Freebsd < Chef::Provider::Package  
       
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)

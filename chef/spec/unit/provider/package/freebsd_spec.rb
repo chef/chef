@@ -18,7 +18,7 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
 
-describe Chef::Provider::Package::Pkg, "load_current_resource" do
+describe Chef::Provider::Package::Freebsd, "load_current_resource" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Package", 
@@ -34,7 +34,7 @@ describe Chef::Provider::Package::Pkg, "load_current_resource" do
       :version => nil
     )
 
-    @provider = Chef::Provider::Package::Pkg.new(@node, @new_resource)    
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)    
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     @status = mock("Status", :exitstatus => 0)
     @stdin = mock("STDIN", :null_object => true)
@@ -74,7 +74,7 @@ describe Chef::Provider::Package::Pkg, "load_current_resource" do
   end
 end
 
-describe Chef::Provider::Package::Pkg, "install_package" do
+describe Chef::Provider::Package::Freebsd, "install_package" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Package",
@@ -89,7 +89,7 @@ describe Chef::Provider::Package::Pkg, "install_package" do
       :package_name => "zsh",
       :version => nil
     )
-    @provider = Chef::Provider::Package::Pkg.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
   end
 
@@ -101,7 +101,7 @@ describe Chef::Provider::Package::Pkg, "install_package" do
   end
 end
 
-describe Chef::Provider::Package::Pkg, "remove_package" do
+describe Chef::Provider::Package::Freebsd, "remove_package" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Package",
@@ -116,7 +116,7 @@ describe Chef::Provider::Package::Pkg, "remove_package" do
       :package_name => "zsh",
       :version => "4.3.6_7"
     )
-    @provider = Chef::Provider::Package::Pkg.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
   end
 
