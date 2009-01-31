@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-service "vncserver" do
-  supports :status => true, :reload => true
-  action [ :enable, :start, :restart, :stop, :disable ]
+service "gpm" do
+  supports :status => true, :restart => true
+  action [ :restart, :stop, :disable, :start, :enable ]
 end

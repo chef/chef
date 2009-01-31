@@ -278,7 +278,7 @@ class Chef
         if b 
           begin
             b[cid, *pi]
-            Process.waitpid2(cid).last
+            Process.waitpid2(cid, Process::WNOHANG).last
           ensure
             pi.each{|fd| fd.close unless fd.closed?}
           end
