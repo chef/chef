@@ -2,7 +2,7 @@ require 'rubygems'
 require 'rake/gempackagetask'
 
 GEM = "chef-server"
-CHEF_SERVER_VERSION = "0.5.2"
+CHEF_SERVER_VERSION = "0.5.3"
 AUTHOR = "Adam Jacob"
 EMAIL = "adam@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"
