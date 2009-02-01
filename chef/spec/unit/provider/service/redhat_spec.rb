@@ -79,11 +79,6 @@ describe Chef::Provider::Service::Redhat, "load_current_resource" do
     @provider.load_current_resource
   end
 
-  it "should raise an error if chkconfig fails" do
-    @status.stub!(:exitstatus).and_return(-1)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
-  end
-
   it "should return the current resource" do
     @provider.load_current_resource.should eql(@current_resource)
   end
