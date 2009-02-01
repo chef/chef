@@ -36,10 +36,12 @@ describe Chef::Resource::Group, "initialize" do
     @resource.group_name.should eql("admin")
   end
 
-  %w{members gid}.each do |attrib|
-    it "should set #{attrib} to nil" do
-      @resource.send(attrib).should eql(nil)
-    end
+  it "should default gid to nil" do
+    @resource.gid.should eql(nil)
+  end
+  
+  it "should default members to an empty array" do
+    @resource.members.should eql([])
   end
   
   it "should set action to :create" do
@@ -88,9 +90,9 @@ describe Chef::Resource::Group, "members" do
     @resource = Chef::Resource::Group.new("admin")
   end
 
-  it "should allow a string" do
+  it "should allow and convert a string" do
     @resource.members "aj"
-    @resource.members.should eql("aj")
+    @resource.members.should eql(["aj"])
   end
 
   it "should allow an array" do
