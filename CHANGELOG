@@ -1,3 +1,38 @@
+Sat Jan 31 18:52:41 PST 2009
+Release Notes - Chef - Version 0.5.2
+http://tickets.opscode.com/
+
+** Bug
+    * [CHEF-28] - Rendering error when editing a node
+    * [CHEF-34] - Failing unit test on OS X
+    * [CHEF-36] - Default @action for http_request is :create instead of :get
+    * [CHEF-37] - Chef Solo does not obey the file selection laws
+    * [CHEF-38] - Unabled to delete nodes from the Node page
+    * [CHEF-41] - Chef Solo tells lies about being able to --noop
+    * [CHEF-43] - service provider lacks action_none
+    * [CHEF-44] - Chef will block forever reading IO, even on processes that don't play nicely with their filehandles
+    * [CHEF-52] - Chef traces miserably if ohai fails to provide it with a hostname
+    * [CHEF-57] - Permission denied when using bash resource and a non-root uid
+    * [CHEF-60] - Teach chef about the debian platform
+    * [CHEF-62] - portage provider should support both fully qualified package names and non prefixed package names
+    * [CHEF-70] - Clicking on certain recipes within Chef Server (chef-server 1.0.8.1) Web UI results in error 500
+    * [CHEF-75] - Badly behaved children block all IO
+
+** Improvement
+    * [CHEF-11] - Templates should be cached once
+    * [CHEF-29] - Group provider needs to be able to manage group members
+    * [CHEF-30] - Link should be more intuitive
+    * [CHEF-49] - Chef should be able to manipulate cron jobs
+    * [CHEF-55] - Service resource needs Gentoo providers
+    * [CHEF-56] - Service resource needs Redhat providers
+
+** New Feature
+    * [CHEF-35] - http_request should allow a block for the message, which will get evaluated when the request is sent
+    * [CHEF-46] - route provider for adding and deleting routes
+    * [CHEF-53] - support for freebsd pkg_*
+    * [CHEF-58] - Support for rc.d services in freebsd
+    * [CHEF-61] - Added Cron provider support for gentoo in platform.rb
+    * [CHEF-66] - Create registrations via REST easily
 
 Thu Jan 15 11:13:45 PST 2009
 Release Notes - Chef - Version 0.5.1
