@@ -45,10 +45,6 @@ class Chef
             end
           end  
 
-          unless status.exitstatus == 0
-            raise Chef::Exception::Service, "/sbin/chkconfig --list #{@current_resource.service_name} failed - #{status.inspect}"
-          end
-
           @current_resource        
         end
 
