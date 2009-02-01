@@ -146,6 +146,8 @@ class Chef
           raise Chef::Exception::Exec, "#{args[:cwd]} does not exist or is not a directory"
         end
         
+        Chef::Log.debug("Executing #{args[:command]}")
+        
         status = nil
         Dir.chdir(args[:cwd]) do
           if args[:timeout]
