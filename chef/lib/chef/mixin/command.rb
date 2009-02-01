@@ -114,7 +114,6 @@ class Chef
           stdout.sync = true
           stderr.sync = true
           
-          #stdout.wait(Chef::Config[:run_command_stdout_timeout])
           if stdout.ready?
             stdout_string = stdout.gets(nil)
             if stdout_string
@@ -124,10 +123,9 @@ class Chef
               Chef::Log.debug("---- End #{args[:command]} STDOUT ----")
             end
           else
-            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDOUT, or #{Chef::Config[:run_command_stdout_timeout]} seconds exceeded.")
+            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDOUT.")
           end
           
-          #stderr.wait(Chef::Config[:run_command_stdout_timeout])
           if stderr.ready?
             stderr_string = stderr.gets(nil)
             if stderr_string
@@ -137,7 +135,7 @@ class Chef
               Chef::Log.debug("---- End #{args[:command]} STDERR ----")
             end
           else
-            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDERR, or #{Chef::Config[:run_command_stderr_timeout]} seconds exceeded.")            
+            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDERR.")            
           end
         end
         
