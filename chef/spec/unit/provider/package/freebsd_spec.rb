@@ -18,7 +18,7 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
 
-describe Chef::Provider::Package::Pkg, "load_current_resource" do
+describe Chef::Provider::Package::Freebsd, "load_current_resource" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Package", 
@@ -34,13 +34,19 @@ describe Chef::Provider::Package::Pkg, "load_current_resource" do
       :version => nil
     )
 
-    @provider = Chef::Provider::Package::Pkg.new(@node, @new_resource)    
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)    
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
+
     @status = mock("Status", :exitstatus => 0)
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
+    @provider.stub!(:popen4).and_return(true)
+
+    @lines = mock("lines")
+    @lines.stub!(:each).and_yield("zsh-4.3.6_7")
+    ::File.stub!(:open).and_return(@lines)
   end
 
   it "should create a current resource with the name of the new_resource" do
@@ -51,6 +57,9 @@ describe Chef::Provider::Package::Pkg, "load_current_resource" do
 
   it "should return a version if the package is installed" do
     @stdout.stub!(:each).and_yield("zsh-4.3.6_7")
+    @lines = mock("lines")
+    @lines.stub!(:each).and_yield("zsh-4.3.6_7")
+    ::File.stub!(:open).and_return(@lines)
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     @current_resource.should_receive(:version).with("4.3.6_7").and_return(true)
     @provider.load_current_resource
@@ -74,7 +83,7 @@ describe Chef::Provider::Package::Pkg, "load_current_resource" do
   end
 end
 
-describe Chef::Provider::Package::Pkg, "install_package" do
+describe Chef::Provider::Package::Freebsd, "install_package" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Package",
@@ -89,7 +98,7 @@ describe Chef::Provider::Package::Pkg, "install_package" do
       :package_name => "zsh",
       :version => nil
     )
-    @provider = Chef::Provider::Package::Pkg.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
   end
 
@@ -101,7 +110,7 @@ describe Chef::Provider::Package::Pkg, "install_package" do
   end
 end
 
-describe Chef::Provider::Package::Pkg, "remove_package" do
+describe Chef::Provider::Package::Freebsd, "remove_package" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Package",
@@ -116,7 +125,7 @@ describe Chef::Provider::Package::Pkg, "remove_package" do
       :package_name => "zsh",
       :version => "4.3.6_7"
     )
-    @provider = Chef::Provider::Package::Pkg.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
   end
 

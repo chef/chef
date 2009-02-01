@@ -30,7 +30,8 @@ class Chef
       :mac_os_x => {},
       :freebsd => {
         :default => {
-          :package => Chef::Provider::Package::Pkg,
+          :package => Chef::Provider::Package::Freebsd,
+          :service => Chef::Provider::Service::Freebsd,
         }
       },
       :ubuntu   => {
