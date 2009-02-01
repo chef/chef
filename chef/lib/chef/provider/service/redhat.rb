@@ -38,8 +38,6 @@ class Chef
           end
 
           status = popen4("/sbin/chkconfig --list #{@current_resource.service_name}") do |pid, stdin, stdout, stderr|
-            stdin.close
-            
             if stdout.gets =~ /\d:on/
               @current_resource.enabled true
             else

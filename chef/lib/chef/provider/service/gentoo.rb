@@ -29,8 +29,6 @@ class Chef
           raise Chef::Exception::Service unless ::File.exists?("/sbin/rc-update")
           
           status = popen4("/sbin/rc-update -s default") do |pid, stdin, stdout, stderr|
-            stdin.close
-            
             stdout.each_line do |line|
               if line.match(/^\s*#{@current_resource.service_name}\s+/)
                 @current_resource.enabled true

@@ -36,7 +36,6 @@ class Chef
         crontab = String.new
         @current_resource = Chef::Resource::Cron.new(@new_resource.name)
         status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
-          stdin.close
           stdout.each { |line| crontab << line }
         end
         if status.exitstatus > 1
@@ -63,7 +62,6 @@ class Chef
         cron_found = false
         if @cron_exists
           status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
-            stdin.close
             stdout.each_line do |line|
               if cron_found
                 crontab << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
@@ -78,7 +76,7 @@ class Chef
             end
           end
 
-          status = popen4("crontab -u #{@new_resource.user} -") do |pid, stdin, stdout, stderr|
+          status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
             crontab.each { |line| stdin.puts "#{line}" }
             stdin.close
           end
@@ -86,7 +84,6 @@ class Chef
         else
           unless @cron_empty
             status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
-              stdin.close
               stdout.each { |line| crontab << line }
             end
           end
@@ -94,7 +91,7 @@ class Chef
           crontab << "# Chef Name: #{new_resource.name}\n"
           crontab << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
   
-          status = popen4("crontab -u #{@new_resource.user} -") do |pid, stdin, stdout, stderr|
+          status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
             crontab.each { |line| stdin.puts "#{line}" }
             stdin.close
           end
@@ -107,7 +104,6 @@ class Chef
           crontab = String.new
           cron_found = false
           status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
-            stdin.close
             stdout.each_line do |line|
               if cron_found
                 cron_found = false
@@ -122,7 +118,7 @@ class Chef
             end
           end
 
-          status = popen4("crontab -u #{@new_resource.user} -") do |pid, stdin, stdout, stderr|
+          status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
             crontab.each { |line| stdin.puts "#{line}" }
             stdin.close
           end

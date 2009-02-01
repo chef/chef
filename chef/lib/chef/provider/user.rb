@@ -130,7 +130,6 @@ class Chef
       
       def check_lock
         status = popen4("passwd -S #{@new_resource.username}") do |pid, stdin, stdout, stderr|
-          stdin.close
           status_line = stdout.gets.split(' ')
           case status_line[1]
           when /^P/

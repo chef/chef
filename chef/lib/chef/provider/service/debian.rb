@@ -32,7 +32,6 @@ class Chef
           end
 
           status = popen4("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
-            stdin.close
             r = /etc\/rc[\dS].d\/S|not installed/i
             stdout.each_line do |line|
               if r.match(line)

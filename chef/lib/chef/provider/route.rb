@@ -30,7 +30,6 @@ class Chef
 
         Chef::Log.debug("Checking routes for #{@current_resource.target}")
         status = popen4("route -n") do |pid, stdin, stdout, stderr|
-          stdin.close
           stdout.each do |line|
             case line
             # Destination     Gateway         Genmask         Flags Metric Ref    Use Iface

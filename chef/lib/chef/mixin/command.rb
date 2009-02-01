@@ -111,8 +111,6 @@ class Chef
         end
         
         exec_processing_block = lambda do |pid, stdin, stdout, stderr|
-          stdin.close
-          
           stdout.sync = true
           stderr.sync = true
           
@@ -284,10 +282,17 @@ class Chef
               b[cid, *pi]
               Process.waitpid2(cid).last
             else
+              # This took some doing.
+              # The trick here is to close STDIN
+              # Then set our end of the childs pipes to be O_NONBLOCK
+              # Then wait for the child to die, which means any IO it
+              # wants to do must be done - it's dead.  If it isn't,
+              # it's because something totally skanky is happening,
+              # and we don't care.
               pi[0].close
+              pi[1].fcntl(Fcntl::F_SETFL, pi[1].fcntl(Fcntl::F_GETFL) | Fcntl::O_NONBLOCK)
+              pi[2].fcntl(Fcntl::F_SETFL, pi[2].fcntl(Fcntl::F_GETFL) | Fcntl::O_NONBLOCK)
               results = Process.waitpid2(cid).last
-              pr.last.close
-              pe.last.close
               b[cid, *pi]
               results
             end

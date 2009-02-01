@@ -30,8 +30,6 @@ class Chef
           @current_resource.package_name(@new_resource.package_name)
         
           status = popen4("pkg_info -E #{@new_resource.package_name}*") do |pid, stdin, stdout, stderr|
-            stdin.close
-
             stdout.each do |line|
               case line
               when /^#{@new_resource.package_name}-(.+)/
@@ -48,8 +46,6 @@ class Chef
        
           port_path = nil
           status = popen4("whereis -s #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdin.close
-
             stdout.each do |line|
               case line
               when /^#{@new_resource.package_name}:\s+(.+)$/

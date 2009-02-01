@@ -30,8 +30,6 @@ class Chef
           @current_resource.package_name(@new_resource.package_name)
         
           status = popen4("emerge --color n --nospinner --search #{@new_resource.package_name.split('/').last}") do |pid, stdin, stdout, stderr|
-            stdin.close
-            
             available, installed = parse_emerge(@new_resource.package_name, stdout.read)
             
             if installed == "[ Not Installed ]"

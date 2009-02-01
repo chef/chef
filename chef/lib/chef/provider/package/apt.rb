@@ -31,7 +31,6 @@ class Chef
         
           Chef::Log.debug("Checking apt-cache policy for #{@new_resource.package_name}")
           status = popen4("apt-cache policy #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdin.close
             stdout.each do |line|
               case line
               when /^\s{2}Installed: (.+)$/

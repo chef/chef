@@ -58,12 +58,6 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
     @provider.should_receive(:popen4).with("/usr/sbin/update-rc.d -n -f chef remove").and_return(@status)
     @provider.load_current_resource
   end
-  
-  it "should close stdin on the update-rc.d command" do
-    @provider.stub!(:popen4).with("/usr/sbin/update-rc.d -n -f chef remove").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @stdin.should_receive(:close).and_return(true)
-    @provider.load_current_resource
-  end
 
   it "should read the stdout of the update-rc.d command" do
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)

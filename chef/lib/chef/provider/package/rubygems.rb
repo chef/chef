@@ -42,7 +42,6 @@ class Chef
         
           # First, we need to look up whether we have the local gem installed or not
           status = popen4("gem list --local #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdin.close
             stdout.each do |line|
               installed_versions = gem_list_parse(line)
               next unless installed_versions
@@ -65,7 +64,6 @@ class Chef
           end
           
           status = popen4("gem list --remote #{@new_resource.package_name}#{' --source=' + @new_resource.source if @new_resource.source}") do |pid, stdin, stdout, stderr|
-            stdin.close
             stdout.each do |line|
               installed_versions = gem_list_parse(line)
               next unless installed_versions

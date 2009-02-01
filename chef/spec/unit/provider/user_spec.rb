@@ -372,12 +372,6 @@ describe Chef::Provider::User, "check_lock" do
     @provider.check_lock
   end
   
-  it "should close stdin on passwd -S" do
-    @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @stdin.should_receive(:close).and_return(true)
-    @provider.check_lock
-  end
-  
   it "should get the first line of passwd -S STDOUT" do
     @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     @stdout.should_receive(:gets).and_return("root P 09/02/2008 0 99999 7 -1")
