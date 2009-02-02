@@ -80,9 +80,9 @@ class Chef
       end
       
       def action_remove        
-        if should_remove_package(@current_resource.version, @new_resource.version)
+        if should_remove_package(@current_resource.version, @current_resource.version)
           Chef::Log.info("Removing #{@new_resource}")
-          remove_package(@new_resource.package_name, @new_resource.version)
+          remove_package(@current_resource.package_name, @current_resource.version)
           @new_resource.updated = true
         end
       end
@@ -104,7 +104,7 @@ class Chef
       def action_purge
         if should_remove_package(@current_resource.version, @new_resource.version)
           Chef::Log.info("Purging #{@new_resource}")
-          purge_package(@new_resource.package_name, @new_resource.version)
+          purge_package(@current_resource.package_name, @current_resource.version)
           @new_resource.updated = true
         end
       end
