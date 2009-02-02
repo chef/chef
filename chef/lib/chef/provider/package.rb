@@ -72,7 +72,7 @@ class Chef
       def action_upgrade
         if @current_resource.version != @candidate_version
           Chef::Log.info("Upgrading #{@new_resource} version from #{@current_resource.version} to #{@candidate_version}")
-          status = install_package(@new_resource.package_name, @candidate_version)
+          status = upgrade_package(@new_resource.package_name, @candidate_version)
           if status
             @new_resource.updated = true
           end
