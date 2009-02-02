@@ -59,6 +59,7 @@ class Chef
     
     private
       def build_search_query(type, query)
+        query = "id:*" if query == '*'
         "index_name:#{type} AND (#{query})"
       end
     

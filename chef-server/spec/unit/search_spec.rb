@@ -71,4 +71,9 @@ describe Chef::Search, "search method" do
     @mf.should_receive(:search_each).with("index_name:node AND (tag:monkey)", :limit => :all).and_return(true)
     do_search(:node, "tag:monkey").should eql([])
   end
+  
+  it "should expand a splat query to id:splat" do
+    @mf.should_receive(:search_each).with("index_name:node AND (id:*)", :limit => :all).and_return(true)
+    do_search(:node, '*')    
+  end
 end
