@@ -18,5 +18,5 @@
 #
 
 package "zsh" do
-  action [ :install, :remove, :upgrade, :purge ]
+  action [ :install, :upgrade, :remove, :upgrade, :purge ]
 end
