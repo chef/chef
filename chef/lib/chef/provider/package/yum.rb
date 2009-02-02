@@ -92,7 +92,7 @@ class Chef
             install_package(name, version)
           end
         end
-      
+
         def remove_package(name, version)
           run_command(
             :command => "yum -q -y remove #{name}-#{version}"
