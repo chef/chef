@@ -51,13 +51,15 @@ class Chef
       :centos   => {
         :default => {
           :service => Chef::Provider::Service::Redhat,
-          :cron => Chef::Provider::Cron
+          :cron => Chef::Provider::Cron,
+          :package => Chef::Provider::Package::Yum
         }
       },
       :redhat   => {
         :default => {
           :service => Chef::Provider::Service::Redhat,
-          :cron => Chef::Provider::Cron
+          :cron => Chef::Provider::Cron,
+          :package => Chef::Provider::Package::Yum
         }
       },
       :gentoo   => {
