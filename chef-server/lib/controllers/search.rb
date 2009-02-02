@@ -33,9 +33,9 @@ class Search < Application
     @s = Chef::Search.new
     @results = nil
     if params[:q]
-      @results = @s.search(params[:id], params[:q] == "" ? "?*" : params[:q])
+      @results = @s.search(params[:id], params[:q] == "" ? "*" : params[:q])
     else
-      @results = @s.search(params[:id], "?*")
+      @results = @s.search(params[:id], "*")
     end
     # Boy, this should move to the search function
     if params[:a]
@@ -59,7 +59,7 @@ class Search < Application
 
   def destroy
     @s = Chef::Search.new
-    @entries = @s.search(params[:id], "?*")
+    @entries = @s.search(params[:id], "*")
     @entries.each do |entry|
       Chef::Queue.send_msg(:queue, :remove, entry)
     end
