@@ -68,10 +68,6 @@ class Chef
           unless status.exitstatus == 0
             raise Chef::Exception::Package, "yum failed - #{status.inspect}!"
           end
-          
-          unless @candidate_version
-            raise Chef::Exception::Package, "yum does not have a version of package #{@new_resource.package_name}"
-          end
         
           @current_resource
         end

@@ -137,11 +137,11 @@ describe Chef::Provider::Package, "action_upgrade" do
     @provider = Chef::Provider::Package.new(@node, @new_resource)
     @provider.candidate_version = "1.0"
     @provider.current_resource = @current_resource
-    @provider.stub!(:install_package).and_return(true)
+    @provider.stub!(:upgrade_package).and_return(true)
   end
 
-  it "should install the package if the current version is not the candidate version" do
-    @provider.should_receive(:install_package).with(
+  it "should upgrade the package if the current version is not the candidate version" do
+    @provider.should_receive(:upgrade_package).with(
       @new_resource.name, 
       @provider.candidate_version
     ).and_return(true)
@@ -155,7 +155,7 @@ describe Chef::Provider::Package, "action_upgrade" do
   
   it "should not install the package if the current version is the candidate version" do
     @current_resource.stub!(:version).and_return("1.0")
-    @provider.should_not_receive(:install_package)
+    @provider.should_not_receive(:upgrade_package)
     @provider.action_upgrade
   end
 end
