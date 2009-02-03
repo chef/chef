@@ -84,8 +84,12 @@ class Chef
         end
       
         def install_package(name, version)
+          src = nil
+          if @new_resource.source
+            src = "  --source=#{@new_resource.source} --source=http://gems.rubyforge.org"
+          end  
           run_command(
-            :command => "gem install #{name} -q --no-rdoc --no-ri -v #{version}#{' --source=' + @new_resource.source if @new_resource.source}"
+            :command => "gem install #{name} -q --no-rdoc --no-ri -v #{version}#{src}"
           )
         end
       
