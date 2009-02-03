@@ -89,13 +89,17 @@ class Chef
       @collection.resources(*args)
     end
     
-    def search(type, query, &block)
+    def search(type, query, attributes=[], &block)
       Chef::Log.debug("Searching #{type} index with #{query}")
       r = Chef::REST.new(Chef::Config[:search_url])
-      results = r.get_rest("search/#{type}?q=#{query}")
+      results = r.get_rest("search/#{type}?q=#{query}&a=#{attributes.join(',')}")
       Chef::Log.debug("Searching #{type} index with #{query} returned #{results.length} entries")
-      results.each do |sr|
-        block.call(sr)
+      if block
+        results.each do |sr|
+          block.call(sr)
+        end
+      else
+        results
       end
     end
     
