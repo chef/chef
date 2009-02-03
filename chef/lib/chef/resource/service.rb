@@ -120,7 +120,7 @@ class Chef
 
       def supports(args={})
         if args.is_a? Array
-          args.each { |arg| @supports[arg] = "true" }
+          args.each { |arg| @supports[arg] = true }
         elsif args.any?
           @supports = args
         else
