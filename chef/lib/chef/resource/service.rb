@@ -118,6 +118,16 @@ class Chef
         )
       end
 
+      def supports(args={})
+        if args.is_a? Array
+          args.each { |arg| @supports[arg] = "true" }
+        elsif args.any?
+          @supports = args
+        else
+          @supports
+        end
+      end
+
   
     end
   end
