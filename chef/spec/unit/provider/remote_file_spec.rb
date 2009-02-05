@@ -41,6 +41,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     @rest = mock(Chef::REST, { })
     @tempfile = mock(Tempfile, { :path => "/tmp/foo", })
     @tempfile.stub!(:open).and_return(@tempfile)
+    @tempfile.stub!(:close)
     @rest.stub!(:get_rest).and_return(@tempfile)
     @resource = Chef::Resource::RemoteFile.new("seattle")
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
@@ -181,6 +182,10 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     do_remote_file
   end
   
+  it "should close the file when done" do
+    @tempfile.should_receive(:close)
+    do_remote_file
+  end
 # TODO: Finish these tests
 
 end

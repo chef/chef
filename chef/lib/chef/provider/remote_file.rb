@@ -77,11 +77,13 @@ class Chef
 
         FileUtils.cp(raw_file.path, @new_resource.path)
         @new_resource.updated = true
-
+        
         set_owner if @new_resource.owner
         set_group if @new_resource.group
         set_mode  if @new_resource.mode
 
+        # We're done with the file, so make sure to close it if it was open.
+        raw_file.close 
         true
       end
 
