@@ -40,6 +40,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
   before(:each) do
     @rest = mock(Chef::REST, { })
     @tempfile = mock(Tempfile, { :path => "/tmp/foo", })
+    @tempfile.stub!(:open).and_return(@tempfile)
     @rest.stub!(:get_rest).and_return(@tempfile)
     @resource = Chef::Resource::RemoteFile.new("seattle")
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))

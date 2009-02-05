@@ -89,7 +89,7 @@ class Chef
         uri = URI.parse(source)
         if uri.absolute
           r = Chef::REST.new(source)
-          r.get_rest(source, true)
+          r.get_rest(source, true).open
         end
       rescue URI::InvalidURIError
         nil
@@ -99,7 +99,7 @@ class Chef
         unless Chef::Config[:solo]
           r = Chef::REST.new(Chef::Config[:remotefile_url])
           url = generate_url(source, "files", :checksum => current_checksum)
-          r.get_rest(url, true)
+          r.get_rest(url, true).open
         end
       end
 
