@@ -46,7 +46,7 @@ class Chef
             return false
           end
         else  
-          status = popen4(command) { |p, i, o, e| i.close }
+          status = run_command(:command => command, :ignore_failure => true)
           if status.exitstatus != 0
             return false
           end
@@ -75,7 +75,7 @@ class Chef
             return false
           end
         else  
-          status = popen4(command) { |p, i, o, e| i.close }
+          status = run_command(:command => command, :ignore_failure => true)
           if status.exitstatus == 0
             return false
           end
@@ -92,7 +92,8 @@ class Chef
       #   cwd<String>: Working directory to execute command in, defaults to Dir.tmpdir
       #   timeout<String>: How many seconds to wait for the command to execute before timing out
       #   returns<String>: The single exit value command is expected to return, otherwise causes an exception
-      #
+      #   ignore_failure<Boolean>: Whether to raise an exception on failure, or just return the status
+      # 
       #   user<String>: The UID or user name of the user to execute the command as
       #   group<String>: The GID or group name of the group to execute the command as
       #   environment<Hash>: Pairs of environment variable names and their values to set before execution
@@ -102,6 +103,8 @@ class Chef
       def run_command(args={})         
         command_stdout = nil
         command_stderr = nil
+        
+        args[:ignore_failure] ||= false
 
         if args.has_key?(:creates)
           if File.exists?(args[:creates])
@@ -160,23 +163,24 @@ class Chef
           else
             status = popen4(args[:command], args, &exec_processing_block)
           end
-        
-          args[:returns] ||= 0
-          if status.exitstatus != args[:returns]
-            # if the log level is not debug, through output of command when we fail
-            output = ""
-            if Chef::Log.logger.level > 0
-              output << "\n---- Begin #{args[:command]} STDOUT ----\n"
-              output << "#{command_stdout}\n"
-              output << "---- End #{args[:command]} STDOUT ----\n"
-              output << "---- Begin #{args[:command]} STDERR ----\n"
-              output << "#{command_stderr}\n"
-              output << "---- End #{args[:command]} STDERR ----\n"
+          
+          unless args[:ignore_failure] 
+            args[:returns] ||= 0
+            if status.exitstatus != args[:returns]
+              # if the log level is not debug, through output of command when we fail
+              output = ""
+              if Chef::Log.logger.level > 0
+                output << "\n---- Begin #{args[:command]} STDOUT ----\n"
+                output << "#{command_stdout}\n"
+                output << "---- End #{args[:command]} STDOUT ----\n"
+                output << "---- Begin #{args[:command]} STDERR ----\n"
+                output << "#{command_stderr}\n"
+                output << "---- End #{args[:command]} STDERR ----\n"
+              end
+              raise Chef::Exception::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
             end
-            raise Chef::Exception::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
-          else
-            Chef::Log.debug("Ran #{args[:command_string]} (#{args[:command]}) returned #{status.exitstatus}")
           end
+          Chef::Log.debug("Ran #{args[:command_string]} (#{args[:command]}) returned #{status.exitstatus}")
         end
         status
       end
