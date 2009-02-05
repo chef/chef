@@ -3,7 +3,7 @@
 ###
 
 # The company name - used for SSL certificates, and in various other places
-COMPANY_NAME = "Example Com"
+COMPANY_NAME = "Opscode"
 
 # The Country Name to use for SSL Certificates
 SSL_COUNTRY_NAME = "US"

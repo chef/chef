@@ -2,7 +2,7 @@
 # Cookbook Name:: global-onlyif
 # Recipe:: default
 #
-# Copyright 2008, Example Com
+# Copyright 2008, Opscode
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
