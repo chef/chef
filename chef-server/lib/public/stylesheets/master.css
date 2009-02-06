@@ -1,6 +1,6 @@
-/* body {
-  font-family: Arial, Verdana, sans-serif;
-  font-size: 12px;
+body {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 11px;
   background-color: #fff;
   margin: ;
 }
@@ -112,6 +112,11 @@ a:hover {
 }
 #main-container ul {
   margin-left: 3.0em;
+  margin-right: 3.0em;
+}
+#main-container ol {
+  margin-left: 3.0em;
+  margin-right: 3.0em;
 }
 
 div.resource_collection {
@@ -150,8 +155,23 @@ div.node {
   margin: 10px;
   padding: 5px;
   border: 1px solid #999;
+  width: 95%;
 }
-*/
+li {
+   overflow-x: auto; /* Use horizontal scroller if needed; for Firefox 2, not needed in Firefox 3 */
+   white-space: pre-wrap; /* css-3 */
+   white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+   white-space: -pre-wrap; /* Opera 4-6 */
+   white-space: -o-pre-wrap; /* Opera 7 */
+   /* width: 99%; */
+   word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+textarea {
+    font-size: 10px;
+    font-family: monospace;
+    border: 1px solid #999;
+}
 
 .ruby .normal {}
 .ruby .comment { color: #005; font-style: italic; }
