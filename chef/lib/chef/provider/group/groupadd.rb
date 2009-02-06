@@ -54,8 +54,12 @@ class Chef
         end
         
         def modify_group_members
-          Chef::Log.debug("#{@new_resource}: setting group members to #{@new_resource.members.join(', ')}")
-          run_command(:command => "gpasswd -M #{@new_resource.members.join(',')} #{@new_resource.group_name}")
+          unless @new_resource.members.empty?
+            Chef::Log.debug("#{@new_resource}: setting group members to #{@new_resource.members.join(', ')}")
+            run_command(:command => "gpasswd -M #{@new_resource.members.join(',')} #{@new_resource.group_name}")
+          else
+            Chef::Log.debug("#{@new_resource}: not changing group members, the group has no members")
+          end
         end
         
         # Little bit of magic as per Adam's useradd provider to pull the assign the command line flags
