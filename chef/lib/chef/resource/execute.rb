@@ -33,7 +33,6 @@ class Chef
         @environment = nil
         @group = nil
         @path = nil
-        @notify_only = false
         @returns = 0
         @timeout = nil
         @user = nil
