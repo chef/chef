@@ -106,16 +106,18 @@ class Chef
       end
 
       def get_from_local_cookbook(source)
-        filename = find_preferred_file(
-          @new_resource.cookbook_name.to_s,
-          :remote_file,
-          source,
-          @node[:fqdn],
-          @node[:platform],
-          @node[:platform_version]
-        )
-        Chef::Log.debug("Using local file for remote_file:#{filename}")
-        ::File.open(filename)
+        if Chef::Config[:solo]
+          filename = find_preferred_file(
+            @new_resource.cookbook_name.to_s,
+            :remote_file,
+            source,
+            @node[:fqdn],
+            @node[:platform],
+            @node[:platform_version]
+          )
+          Chef::Log.debug("Using local file for remote_file:#{filename}")
+          ::File.open(filename)
+        end
       end
 
     end
