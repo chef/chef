@@ -40,6 +40,8 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
   before(:each) do
     @rest = mock(Chef::REST, { })
     @tempfile = mock(Tempfile, { :path => "/tmp/foo", })
+    @tempfile.stub!(:open).and_return(@tempfile)
+    @tempfile.stub!(:close)
     @rest.stub!(:get_rest).and_return(@tempfile)
     @resource = Chef::Resource::RemoteFile.new("seattle")
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
@@ -61,7 +63,41 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     Chef::REST.stub!(:new).and_return(@rest)    
     @provider.do_remote_file(@resource.source, @resource.path)
   end
+
+  describe "when given a URI source" do
+    it "should download the file from the remote URL" do
+      @resource.source("http://opscode.com/seattle.txt")
+      @rest.should_receive(:get_rest).with("http://opscode.com/seattle.txt", true).and_return(@tempfile)
+      do_remote_file
+    end
+  end
   
+  describe "when given a non-URI source" do
+    describe "and using chef-solo" do
+      it "should load the file from the local cookbook" do
+        Chef::Config[:solo] = true
+        File.stub!(:open).and_return(@tempfile)
+        @provider.should_receive(:find_preferred_file).with("monkey", :remote_file, @resource.source, "latte.local", nil, nil).and_return(@tempfile.path)
+        do_remote_file
+      end
+    end
+    
+    it "should call generate_url with the current checksum as an extra attribute" do
+      @provider.should_receive(:generate_url).with(@resource.source, "files", { :checksum => "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"})
+      do_remote_file
+    end
+
+    it "should call get_rest with a correctly composed url" do
+      url = "cookbooks/#{@resource.cookbook_name}/files?id=#{@resource.source}"
+      url += "&platform=mac_os_x"
+      url += "&version=10.5.1"
+      url += "&fqdn=latte.local"
+      url += "&checksum=0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
+      @rest.should_receive(:get_rest).with(url, true).and_return(@tempfile)
+      do_remote_file
+    end
+  end
+
   it "should set the checksum if the file exists" do
     @provider.should_receive(:checksum).with(@resource.path)
     do_remote_file
@@ -72,22 +108,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     @provider.should_not_receive(:checksum).with(@resource.path)
     do_remote_file
   end
-  
-  it "should call generate_url with the current checksum as an extra attribute" do
-    @provider.should_receive(:generate_url).with(@resource.source, "files", { :checksum => "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"})
-    do_remote_file
-  end
-  
-  it "should call get_rest with a correctly composed url" do
-    url = "cookbooks/#{@resource.cookbook_name}/files?id=#{@resource.source}"
-    url += "&platform=mac_os_x"
-    url += "&version=10.5.1"
-    url += "&fqdn=latte.local"
-    url += "&checksum=0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
-    @rest.should_receive(:get_rest).with(url, true).and_return(@tempfile)
-    do_remote_file
-  end
-  
+    
   it "should not transfer the file if it has not been changed" do
     r = Net::HTTPNotModified.new("one", "two", "three")
     e = Net::HTTPRetriableError.new("304", r)
@@ -117,6 +138,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
   describe "when the target file already exists" do
     before do
       ::File.stub!(:exists?).and_return(true)
+      @provider.stub!(:get_from_server).and_return(@tempfile)
     end
 
     it "should backup the original file if it is different" do
@@ -160,6 +182,10 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     do_remote_file
   end
   
+  it "should close the file when done" do
+    @tempfile.should_receive(:close)
+    do_remote_file
+  end
 # TODO: Finish these tests
 
 end
