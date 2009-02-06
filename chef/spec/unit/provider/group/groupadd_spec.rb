@@ -129,21 +129,38 @@ describe Chef::Provider::Group::Groupadd, "modify_group_members" do
     @new_resource = mock("Chef::Resource::Group",
       :null_object => true,
       :group_name => "aj",
-      :members => [ "all", "your", "base", "are", "belong", "to", "us" ]
+      :members => [ "all", "your", "base" ]
     )
     @new_resource.stub!(:to_s).and_return("group[aj]")
     @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
     @provider.stub!(:run_command).and_return(true)
   end
   
-  it "should log an appropriate debug message" do
-    Chef::Log.should_receive(:debug).with("group[aj]: setting group members to all, your, base, are, belong, to, us")
-    @provider.modify_group_members
+  describe "with an empty members array" do
+    before do
+      @new_resource.stub!(:members).and_return([])
+    end
+    
+    it "should log an appropriate message" do
+      Chef::Log.should_receive(:debug).with("group[aj]: not changing group members, the group has no members")
+      @provider.modify_group_members
+    end
   end
   
-  it "should run gpasswd with the members joined by ',' and the target group" do
-    @provider.should_receive(:run_command).with({:command => "gpasswd -M all,your,base,are,belong,to,us aj"})
-    @provider.modify_group_members
+  describe "with supplied members" do
+    before do
+      @new_resource.stub!(:members).and_return(["all", "your", "base"])
+    end
+    
+    it "should log an appropriate debug message" do
+      Chef::Log.should_receive(:debug).with("group[aj]: setting group members to all, your, base")
+      @provider.modify_group_members
+    end
+    
+    it "should run gpasswd with the members joined by ',' followed by the target group" do
+       @provider.should_receive(:run_command).with({:command => "gpasswd -M all,your,base aj"})
+       @provider.modify_group_members
+    end
   end
 end
 
