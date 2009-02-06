@@ -80,6 +80,10 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
         @provider.should_receive(:find_preferred_file).with("monkey", :remote_file, @resource.source, "latte.local", nil, nil).and_return(@tempfile.path)
         do_remote_file
       end
+      
+      after(:each) do
+        Chef::Config[:solo] = false
+      end
     end
     
     it "should call generate_url with the current checksum as an extra attribute" do
