@@ -1,4 +1,4 @@
-#
+ #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -31,29 +31,11 @@ class Search < Application
 
   def show
     @s = Chef::Search.new
-    @results = nil
-    if params[:q]
-      @results = @s.search(params[:id], params[:q] == "" ? "*" : params[:q])
-    else
-      @results = @s.search(params[:id], "*")
-    end
-    # Boy, this should move to the search function
-    if params[:a]
-      attributes = params[:a].split(",").collect { |a| a.to_sym }
-      unless attributes.length == 0
-        @results = @results.collect do |r|
-          nr = Hash.new
-          nr[:index_name] = r[:index_name]
-          nr[:id] = r[:id]
-          attributes.each do |attrib|
-            if r.has_key?(attrib)
-              nr[attrib] = r[attrib]
-            end
-          end
-          nr
-        end
-      end
-    end
+    
+    query = params[:q].nil? ? "*" : (params[:q].empty? ? "*" : params[:q])
+    attributes = params[:a].nil? ? [] : params[:a].split(",").collect { |a| a.to_sym }
+    @results = @s.search(params[:id], query, attributes)
+    
     display @results
   end
 

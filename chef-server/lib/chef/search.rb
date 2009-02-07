@@ -27,22 +27,31 @@ class Chef
       @index = Ferret::Index::Index.new(:path => Chef::Config[:search_index_path])
     end
     
-    def search(type, query, &block)
+    def search(type, query, attributes, &block)
       search_query = build_search_query(type, query)
       start_time = Time.now
-      result = Array.new
       
-      if Kernel.block_given?
-        result = @index.search_each(search_query, :limit => :all) do |id, score|
-          block.call(build_hash(@index.doc(id)))
-        end
-      else
-        @index.search_each(search_query, :limit => :all) do |id, score|          
-          result << build_hash(@index.doc(id))
-        end
+      results = @index.search_each(search_query, :limit => :all) do |id, score|
+        q = build_hash(@index.doc(id))
+        Kernel.block_given? ? block.call(q) : [q]
       end
+      
       Chef::Log.debug("Search #{search_query} complete in #{Time.now - start_time} seconds")
-      result
+      
+      unless attributes.empty?
+         results = results.collect do |r|
+           nr = Hash.new
+           nr[:index_name] = r[:index_name]
+           nr[:id] = r[:id]
+           attributes.each do |attrib|
+             if r.has_key?(attrib)
+               nr[attrib] = r[attrib]
+             end
+           end
+           nr
+         end
+      end 
+      results
     end
     
     def list_indexes
