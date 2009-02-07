@@ -94,7 +94,7 @@ describe Chef::Provider::Service, "action_disable" do
 end
 
 describe Chef::Provider::Service, "action_start" do
-before(:each) do
+  before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
@@ -125,7 +125,7 @@ before(:each) do
 end
 
 describe Chef::Provider::Service, "action_stop" do
-before(:each) do
+  before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,

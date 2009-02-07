@@ -125,20 +125,20 @@ describe Chef::Resource::Service do
 
     it "should default all the feature support to false" do
       support_hash = { :status => false, :restart => false, :reload=> false }
-      @resource.supports.should eql(support_hash)
+      @resource.supports.should == support_hash
     end 
 
     it "should allow you to set what features this resource supports as a array" do
       support_array = [ :status, :restart ]
       support_hash = { :status => true, :restart => true, :reload => false }
       @resource.supports(support_array)
-      @resource.supports.should eql(support_hash)
+      @resource.supports.should == support_hash
     end
 
     it "should allow you to set what features this resource supports as a hash" do
       support_hash = { :status => true, :restart => true, :reload => false }
       @resource.supports(support_hash)
-      @resource.supports.should eql(support_hash)
+      @resource.supports.should == support_hash
     end
   end
 end
