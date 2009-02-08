@@ -37,49 +37,68 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)    
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
 
-    @status = mock("Status", :exitstatus => 0)
-    @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
-    @provider.stub!(:popen4).and_return(true)
-
-    @lines = mock("lines")
-    @lines.stub!(:each).and_yield("zsh-4.3.6_7")
-    ::File.stub!(:open).and_return(@lines)
+    @provider.should_receive(:port_path_from_name).with("zsh").and_return("/usr/ports/zsh")
+    @provider.should_receive(:ports_candidate_version).with("/usr/ports/zsh").and_return("4.3.6")
   end
 
   it "should create a current resource with the name of the new_resource" do
     Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    @provider.should_receive(:current_installed_version).with("zsh").and_return(nil)
     @provider.load_current_resource
   end
 
   it "should return a version if the package is installed" do
-    @stdout.stub!(:each).and_yield("zsh-4.3.6_7")
-    @lines = mock("lines")
-    @lines.stub!(:each).and_yield("zsh-4.3.6_7")
-    ::File.stub!(:open).and_return(@lines)
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    @provider.should_receive(:current_installed_version).with("zsh").and_return("4.3.6_7")
     @current_resource.should_receive(:version).with("4.3.6_7").and_return(true)
     @provider.load_current_resource
   end
 
   it "should return nil if the package is not installed" do
-    #@stdout.stub!(:each).and_yield("zsh-4.3.6_7")
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    @provider.should_receive(:current_installed_version).with("zsh").and_return(nil)
     @current_resource.should_receive(:version).with(nil).and_return(true)
     @provider.load_current_resource
   end
 
   it "should return a candidate version if it exists" do
-    @stdout.stub!(:each).and_yield("zsh: /usr/ports/shells/zsh")
-    #@stdout.stub!(:each).and_yield("PORTVERSION=  4.3.6")
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    File.stub!(:open)
-    @makefile.stub!(:each).and_yield("PORTVERSION= 4.3.6")
+    @provider.should_receive(:current_installed_version).with("zsh").and_return(nil)
     @provider.load_current_resource
     @provider.candidate_version.should eql("4.3.6")
+  end
+end
+
+describe Chef::Provider::Package::Freebsd, "system call wrappers" do
+  before(:each) do
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)    
+
+    @status = mock("Status", :exitstatus => 0)
+    @stdin = mock("STDIN", :null_object => true)
+    @stderr = mock("STDERR", :null_object => true)
+    @pid = mock("PID", :null_object => true)
+  end
+
+  it "should return the version number when it is installed" do
+    @provider.should_receive(:popen4).with("pkg_info -E zsh*").and_yield(@pid, @stdin, ["zsh-4.3.6_7"], @stderr).and_return(@status)
+    @provider.current_installed_version("zsh").should == "4.3.6_7"
+  end
+
+  it "should return nil when the package is not installed" do
+    @provider.should_receive(:popen4).with("pkg_info -E zsh*").and_yield(@pid, @stdin, [], @stderr).and_return(@status)
+    @provider.current_installed_version("zsh").should be_nil
+  end
+  
+  it "should return the port path for a valid port name" do
+    @provider.should_receive(:popen4).with("whereis -s zsh").and_yield(@pid, @stdin, ["zsh: /usr/ports/shells/zsh"], @stderr).and_return(@status)
+    @provider.port_path_from_name("zsh").should == "/usr/ports/shells/zsh"
+  end
+
+  it "should return nil for a invalid port name" do
+    @provider.should_receive(:popen4).with("whereis -s foo").and_yield(@pid, @stdin, ["foo:"], @stderr).and_return(@status)
+    @provider.port_path_from_name("foo").should be_nil
+  end
+  
+  it "should return the ports candidate version when given a valid port path" do
+    ::File.should_receive(:open).with("/usr/ports/shells/zsh/Makefile").and_return(["blah", "PORTVERSION=    4.3.6", "blah"])
+    @provider.ports_candidate_version("/usr/ports/shells/zsh").should == "4.3.6"
   end
 end
 
