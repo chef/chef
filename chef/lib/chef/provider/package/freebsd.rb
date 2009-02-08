@@ -37,6 +37,19 @@ class Chef
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exception::Package, "pkg_info -E #{package_name} failed - #{status.inspect}!"
           end
+          nil
+        end
+        
+        def port_path_from_name(port_name)
+          status = popen4("whereis -s #{port_name}") do |pid, stdin, stdout, stderr|
+            stdout.each do |line|
+              case line
+              when /^#{port_name}:\s+(.+)$/
+                return $1
+              end
+            end
+          end
+          nil
         end
         
         def load_current_resource
@@ -49,7 +62,6 @@ class Chef
           # if passed ports:package, build DIST_SUBDIR from ports
           # if passed a sole word in source that isn't ports, consider it DIST_SUBDIR, install package
           # otherwise, the user meant what they said
-          @port_path = nil
           case @new_resource.source
             when /^(?!ports)\w+/
               port_name = @new_resource.source
@@ -59,14 +71,8 @@ class Chef
               port_name = @new_resource.package_name
           end
           Chef::Log.debug("Using #{port_name} as package name")
-          status = popen4("whereis -s #{port_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^#{@new_resource.package_name}:\s+(.+)$/
-                @port_path = $1
-              end
-            end
-          end
+          
+          @port_path = port_path_from_name(port_name)
 
           makefile = ::File.open("#{@port_path}/Makefile")
           makefile.each do |line|
