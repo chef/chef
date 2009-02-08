@@ -113,7 +113,7 @@ class Chef
           raw_msg = @client.receive()
           Chef::Log.debug("Received Message from #{raw_msg.headers["destination"]} containing: #{raw_msg.body}")
         rescue
-          Chef::Log.debug("Recieved nil message from stomp, retrying")
+          Chef::Log.debug("Received nil message from stomp, retrying")
           retry
         end
         msg = JSON.parse(raw_msg.body)
