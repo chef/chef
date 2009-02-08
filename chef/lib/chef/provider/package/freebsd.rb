@@ -52,6 +52,17 @@ class Chef
           nil
         end
         
+        def ports_candidate_version(port_path)
+          makefile = ::File.open("#{port_path}/Makefile")
+          makefile.each do |line|
+            case line
+            when /^PORTVERSION=\s+(\S+)/
+              return $1
+            end
+          end
+          nil
+        end
+        
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
@@ -74,15 +85,9 @@ class Chef
           
           @port_path = port_path_from_name(port_name)
 
-          makefile = ::File.open("#{@port_path}/Makefile")
-          makefile.each do |line|
-            case line
-            when /^PORTVERSION=\s+(\S+)/
-              @candidate_version = $1
-              Chef::Log.debug("Ports candidate version is #{@candidate_version}")
-            end
-          end
-
+          @candidate_version = ports_candidate_version(@port_path)
+          Chef::Log.debug("Ports candidate version is #{@candidate_version}") if @candidate_version
+          
           @current_resource
         end
 
