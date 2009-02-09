@@ -127,7 +127,7 @@ class Chef
           makefile = ::File.open(@init_command)
           makefile.each do |line|
             case line
-            when /^name="(.+)"/
+            when /^name="?(\w+)"?/
               return $1 + "_enable"
             end
           end
