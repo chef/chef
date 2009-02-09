@@ -95,11 +95,6 @@ describe Chef::Provider::Package::Freebsd, "system call wrappers" do
     @provider.should_receive(:popen4).with("whereis -s foo").and_yield(@pid, @stdin, ["foo:"], @stderr).and_return(@status)
     @provider.port_path_from_name("foo").should be_nil
   end
-  
-  it "should return the ports candidate version when given a valid port path" do
-    ::File.should_receive(:open).with("/usr/ports/shells/zsh/Makefile").and_return(["blah", "PORTVERSION=    4.3.6", "blah"])
-    @provider.ports_candidate_version("/usr/ports/shells/zsh").should == "4.3.6"
-  end
 end
 
 describe Chef::Provider::Package::Freebsd, "install_package" do

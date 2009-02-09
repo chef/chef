@@ -54,12 +54,12 @@ class Chef
         end
         
         def ports_candidate_version(port_path)
-          makefile = ::File.open("#{port_path}/Makefile")
-          makefile.each do |line|
-            case line
-            when /^PORTVERSION=\s+(\S+)/
-              return $1
-            end
+          command = "cd #{port_path}; make -V PORTVERSION"
+          status = popen4(command) do |pid, stdin, stdout, stderr|
+            return stdout.readline.strip
+          end
+          unless status.exitstatus == 0 || status.exitstatus == 1
+            raise Chef::Exception::Package, "#{command} failed - #{status.inspect}!"
           end
           nil
         end
