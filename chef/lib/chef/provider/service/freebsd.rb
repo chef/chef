@@ -119,13 +119,10 @@ class Chef
         
         def set_service_enable(value)
           lines = read_rc_conf
-          lines.collect! do |line|
-            if line =~ /#{current_resource.service_name}_enable/
-              line = "#{current_resource.service_name}_enable=\"#{value}\""
-            else 
-              line = line
-            end
-          end
+          # Remove line that set the old value
+          lines.delete_if { |line| line =~ /#{current_resource.service_name}_enable/ }
+          # And append the line that sets the new value at the end
+          lines << "#{current_resource.service_name}_enable=\"#{value}\""
           write_rc_conf(lines)
         end
         

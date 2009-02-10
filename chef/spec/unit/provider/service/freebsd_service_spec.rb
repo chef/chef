@@ -194,7 +194,14 @@ describe Chef::Provider::Service::Freebsd, "enable_service" do
   it "should should enable the service if it is not enabled" do
     @current_resource.stub!(:enabled).and_return(false)
     @provider.should_receive(:read_rc_conf).and_return([ "foo", "apache22_enable=\"NO\"", "bar" ])
-    @provider.should_receive(:write_rc_conf).with(["foo", "apache22_enable=\"YES\"", "bar"])
+    @provider.should_receive(:write_rc_conf).with(["foo", "bar", "apache22_enable=\"YES\""])
+    @provider.enable_service()
+  end
+  
+  it "should enable the service if it is not enabled and not already specified in the rc.conf file" do
+    @current_resource.stub!(:enabled).and_return(false)
+    @provider.should_receive(:read_rc_conf).and_return([ "foo", "bar" ])
+    @provider.should_receive(:write_rc_conf).with(["foo", "bar", "apache22_enable=\"YES\""])
     @provider.enable_service()
   end
 
@@ -232,7 +239,7 @@ describe Chef::Provider::Service::Freebsd, "disable_service" do
   it "should should disable the service if it is not disabled" do
     @current_resource.stub!(:enabled).and_return(true)
     @provider.should_receive(:read_rc_conf).and_return([ "foo", "apache22_enable=\"YES\"", "bar" ])
-    @provider.should_receive(:write_rc_conf).with(["foo", "apache22_enable=\"NO\"", "bar"])
+    @provider.should_receive(:write_rc_conf).with(["foo", "bar", "apache22_enable=\"NO\""])
     @provider.disable_service()
   end
 
