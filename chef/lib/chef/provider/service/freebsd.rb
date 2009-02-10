@@ -117,32 +117,24 @@ class Chef
           end
         end
         
-        def enable_service()
-          unless @current_resource.enabled 
-            lines = read_rc_conf
-            lines.collect! do |line|
-              if line =~ /#{current_resource.service_name}_enable/
-                line = "#{current_resource.service_name}_enable=\"YES\""
-              else 
-                line = line
-              end
+        def set_service_enable(value)
+          lines = read_rc_conf
+          lines.collect! do |line|
+            if line =~ /#{current_resource.service_name}_enable/
+              line = "#{current_resource.service_name}_enable=\"#{value}\""
+            else 
+              line = line
             end
-            write_rc_conf(lines)
           end
+          write_rc_conf(lines)
+        end
+        
+        def enable_service()
+          set_service_enable("YES") unless @current_resource.enabled
         end
 
         def disable_service()
-          if @current_resource.enabled
-            lines = read_rc_conf
-            lines.collect! do |line|
-              if line =~ /#{current_resource.service_name}_enable/
-                line = "#{current_resource.service_name}_enable=\"NO\""
-              else 
-                line = line
-              end
-            end
-            write_rc_conf(lines)
-          end 
+          set_service_enable("NO") if @current_resource.enabled
         end
      
       end
