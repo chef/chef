@@ -75,14 +75,9 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If the users are identical
       def compare_user
-        change_required = false
-        change_required = true if @new_resource.uid != @current_resource.uid
-        change_required = true if @new_resource.gid != @current_resource.gid
-        change_required = true if @new_resource.comment != @current_resource.comment
-        change_required = true if @new_resource.home != @current_resource.home
-        change_required = true if @new_resource.shell != @current_resource.shell
-        change_required = true if @new_resource.password != @current_resource.password
-        change_required
+        [ :uid, :gid, :comment, :home, :shell, :password ].any? do |user_attrib|
+          !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
+        end
       end
       
       def action_create

@@ -161,8 +161,8 @@ describe Chef::Provider::User, "compare_user" do
   
   %w{uid gid comment home shell password}.each do |attribute|
     it "should return true if #{attribute} doesn't match" do
-      @new_resource.should_receive(attribute).and_return(true)
-      @current_resource.should_receive(attribute).and_return(false)
+      @new_resource.should_receive(attribute).exactly(2).times.and_return(true)
+      @current_resource.should_receive(attribute).once.and_return(false)
       @provider.compare_user.should eql(true)
     end
   end
