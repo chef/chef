@@ -89,8 +89,7 @@ class Chef
           end
 
           if ::File.exists?("/etc/rc.conf")
-            rcfile = ::File.open("/etc/rc.conf")
-            rcfile.each do |line|
+            read_rc_conf.each do |line|
               case line
               when /#{current_resource.service_name}_enable="(\w+)"/
                 if $1 =~ /[Yy][Ee][Ss]/
@@ -108,10 +107,19 @@ class Chef
           @current_resource
         end
 
+        def read_rc_conf
+          ::File.open("/etc/rc.conf", 'r') { |file| file.readlines }
+        end
+        
+        def write_rc_conf(lines)
+          ::File.open("/etc/rc.conf", 'w') do |file|
+            lines.each { |line| file.puts(line) }
+          end
+        end
+        
         def enable_service()
           unless @current_resource.enabled 
-            rcfile = ::File.open("/etc/rc.conf", 'r')
-            lines = rcfile.readlines
+            lines = read_rc_conf
             lines.collect! do |line|
               if line =~ /#{current_resource.service_name}_enable/
                 line = "#{current_resource.service_name}_enable=\"YES\""
@@ -119,17 +127,13 @@ class Chef
                 line = line
               end
             end
-            rcfile.close
-            rcfile = ::File.open("/etc/rc.conf", 'w')
-            lines.each { |line| rcfile.puts(line) }
-            rcfile.close
+            write_rc_conf(lines)
           end
         end
 
         def disable_service()
           if @current_resource.enabled
-            rcfile = ::File.open("/etc/rc.conf", 'r')
-            lines = rcfile.readlines
+            lines = read_rc_conf
             lines.collect! do |line|
               if line =~ /#{current_resource.service_name}_enable/
                 line = "#{current_resource.service_name}_enable=\"NO\""
@@ -137,10 +141,7 @@ class Chef
                 line = line
               end
             end
-            rcfile.close
-            rcfile = ::File.open("/etc/rc.conf", 'w')
-            lines.each { |line| rcfile.puts(line) }
-            rcfile.close
+            write_rc_conf(lines)
           end 
         end
      

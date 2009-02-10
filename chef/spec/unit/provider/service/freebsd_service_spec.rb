@@ -188,22 +188,19 @@ describe Chef::Provider::Service::Freebsd, "enable_service" do
 
     @provider = Chef::Provider::Service::Freebsd.new(@node, @new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
-
-    @lines = mock("lines")
-    @lines.stub!(:readlines).and_return([ "apache22_enable=\"NO\"" ] )
-    @lines.stub!(:close).and_return(true)
-    ::File.stub!(:open).and_return(@lines)
     @provider.current_resource = @current_resource
   end
 
   it "should should enable the service if it is not enabled" do
     @current_resource.stub!(:enabled).and_return(false)
-    @lines.should_receive(:puts).with("apache22_enable=\"YES\"")
+    @provider.should_receive(:read_rc_conf).and_return([ "foo", "apache22_enable=\"NO\"", "bar" ])
+    @provider.should_receive(:write_rc_conf).with(["foo", "apache22_enable=\"YES\"", "bar"])
     @provider.enable_service()
   end
 
   it "should not enable the service if it is already enabled" do
     @current_resource.stub!(:enabled).and_return(true)
+    @provider.should_not_receive(:write_rc_conf)
     @provider.enable_service
   end
 end
@@ -229,22 +226,19 @@ describe Chef::Provider::Service::Freebsd, "disable_service" do
 
     @provider = Chef::Provider::Service::Freebsd.new(@node, @new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
-
-    @lines = mock("lines")
-    @lines.stub!(:readlines).and_return( [ "apache22_enable=\"YES\"" ] )
-    @lines.stub!(:close).and_return(true)
-    ::File.stub!(:open).and_return(@lines)
     @provider.current_resource = @current_resource
   end
 
   it "should should disable the service if it is not disabled" do
     @current_resource.stub!(:enabled).and_return(true)
-    @lines.should_receive(:puts).with("apache22_enable=\"NO\"")
+    @provider.should_receive(:read_rc_conf).and_return([ "foo", "apache22_enable=\"YES\"", "bar" ])
+    @provider.should_receive(:write_rc_conf).with(["foo", "apache22_enable=\"NO\"", "bar"])
     @provider.disable_service()
   end
 
   it "should not disable the service if it is already disabled" do
     @current_resource.stub!(:enabled).and_return(false)
+    @provider.should_not_receive(:write_rc_conf)
     @provider.disable_service()
   end
 end
