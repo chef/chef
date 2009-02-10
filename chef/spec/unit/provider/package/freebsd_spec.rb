@@ -77,12 +77,12 @@ describe Chef::Provider::Package::Freebsd, "system call wrappers" do
   end
 
   it "should return the version number when it is installed" do
-    @provider.should_receive(:popen4).with("pkg_info -E zsh*").and_yield(@pid, @stdin, ["zsh-4.3.6_7"], @stderr).and_return(@status)
+    @provider.should_receive(:popen4).with('pkg_info -E "zsh*"').and_yield(@pid, @stdin, ["zsh-4.3.6_7"], @stderr).and_return(@status)
     @provider.current_installed_version("zsh").should == "4.3.6_7"
   end
 
   it "should return nil when the package is not installed" do
-    @provider.should_receive(:popen4).with("pkg_info -E zsh*").and_yield(@pid, @stdin, [], @stderr).and_return(@status)
+    @provider.should_receive(:popen4).with('pkg_info -E "zsh*"').and_yield(@pid, @stdin, [], @stderr).and_return(@status)
     @provider.current_installed_version("zsh").should be_nil
   end
   

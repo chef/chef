@@ -26,7 +26,8 @@ class Chef
       class Freebsd < Chef::Provider::Package  
       
         def current_installed_version(package_name)
-          status = popen4("pkg_info -E #{package_name}*") do |pid, stdin, stdout, stderr|
+          command = "pkg_info -E \"#{package_name}*\""
+          status = popen4(command) do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
               when /^#{package_name}-(.+)/
@@ -35,7 +36,7 @@ class Chef
             end
           end
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exception::Package, "pkg_info -E #{package_name} failed - #{status.inspect}!"
+            raise Chef::Exception::Package, "#{command} failed - #{status.inspect}!"
           end
           nil
         end
