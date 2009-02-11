@@ -57,12 +57,13 @@ class Chef
           if @new_resource.password
             begin
               require 'shadow'
-            rescue Exception => e
+            rescue LoadError
               Chef::Log.error("You must have ruby-shadow installed for password support!")
               raise Chef::Exception::MissingLibrary, "You must have ruby-shadow installed for password support!"
+            else
+              shadow_info = Shadow::Passwd.getspnam(@new_resource.username)
+              @current_resource.password(shadow_info.sp_pwdp)
             end
-            shadow_info = Shadow::Passwd.getspnam(@new_resource.username)
-            @current_resource.password(shadow_info.sp_pwdp)
           end
         end
         
