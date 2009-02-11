@@ -231,14 +231,14 @@ class Chef
 
             STDOUT.sync = STDERR.sync = true
 
-            if args[:user]
-              Process.euid = args[:user]
-              Process.uid = args[:user]
-            end
-            
             if args[:group]
               Process.egid = args[:group]
               Process.gid = args[:group]
+            end
+
+            if args[:user]
+              Process.euid = args[:user]
+              Process.uid = args[:user]
             end
             
             if args[:environment]
