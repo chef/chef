@@ -161,6 +161,7 @@ class Chef
         # This dupes the high level object, but we still need to dup the params
         new_def = @definitions[method_symbol].dup
         new_def.params = new_def.params.dup
+        new_def.node = @node
         # This sets up the parameter overrides
         new_def.instance_eval(&block) if block
         new_recipe = Chef::Recipe.new(@cookbook_name, @recipe_name, @node, @collection, @definitions, @cookbook_loader)

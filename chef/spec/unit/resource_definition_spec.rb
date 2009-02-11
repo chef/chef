@@ -23,6 +23,37 @@ describe Chef::ResourceDefinition do
     @def = Chef::ResourceDefinition.new()
   end
   
+  describe "initialize" do
+    it "should be a Chef::ResourceDefinition" do
+      @def.should be_a_kind_of(Chef::ResourceDefinition)
+    end
+    
+    it "should not initialize a new node if one is not provided" do
+      @def.node.should eql(nil)
+    end
+    
+    it "should accept a node as an argument" do
+      node = Chef::Node.new
+      node.name("bobo")
+      @def = Chef::ResourceDefinition.new(node)
+      @def.node.name.should == "bobo"
+    end
+  end
+  
+  describe "node" do
+    it "should set the node with node=" do
+      node = Chef::Node.new
+      node.name("bobo")
+      @def.node = node
+      @def.node.name.should == "bobo"
+    end
+    
+    it "should return the node" do
+      @def.node = Chef::Node.new
+      @def.node.should be_a_kind_of(Chef::Node)
+    end
+  end
+  
   it "should accept a new definition with a symbol for a name" do
     lambda { 
       @def.define :smoke do 
@@ -84,4 +115,5 @@ describe Chef::ResourceDefinition do
     @def.name = :woot
     @def.to_s.should eql("woot")
   end
+  
 end

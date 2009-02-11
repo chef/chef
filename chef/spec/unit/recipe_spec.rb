@@ -108,6 +108,22 @@ CODE
     @recipe.resources(:zen_master => "lao tzu").name.should eql("lao tzu")
     @recipe.resources(:zen_master => "lao tzu").something.should eql(true)
   end
+  
+  it "should set the node on defined resources" do
+    crow_define = Chef::ResourceDefinition.new
+    crow_define.define :crow, :peace => false, :something => true do
+      zen_master "lao tzu" do
+        peace params[:peace]
+        something params[:something]
+      end
+    end
+    @recipe.definitions[:crow] = crow_define    
+    @recipe.node[:foo] = false
+    @recipe.crow "mine" do
+      something node[:foo]
+    end
+    @recipe.resources(:zen_master => "lao tzu").something.should eql(false)
+  end
 
   it "should load a resource from a ruby file" do
     @recipe.from_file(File.join(File.dirname(__FILE__), "..", "data", "recipes", "test.rb"))

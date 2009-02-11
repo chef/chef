@@ -25,12 +25,13 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
     
-    attr_accessor :name, :params, :recipe
+    attr_accessor :name, :params, :recipe, :node
     
-    def initialize
+    def initialize(node=nil)
       @name = nil
       @params = Hash.new
       @recipe = nil
+      @node = node
     end
     
     def define(resource_name, prototype_params=nil, &block)
