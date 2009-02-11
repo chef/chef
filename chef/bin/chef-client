@@ -112,7 +112,7 @@ loop do
     c.validation_token = Chef::Config[:validation_token]
     c.node_name = Chef::Config[:node_name]
     c.run
-    if Chef::Config[:daemonize]
+    if Chef::Config[:interval]
       Chef::Log.debug("Sleeping for #{delay} seconds")
       sleep delay
     else
