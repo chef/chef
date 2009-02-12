@@ -41,7 +41,7 @@ class Chef
       args.flatten.each do |a|
         is_chef_resource(a)
         @resources << a
-        @resources_by_name[a.to_s] = @resources.length - 1
+        @resources_by_name[a.to_s] = @resources.length - 1 
       end
     end
     
@@ -49,7 +49,7 @@ class Chef
       args.flatten.each do |a|
         is_chef_resource(a)
         @resources.push(a)
-        @resources_by_name[a.to_s] = @resources.length - 1 
+        @resources_by_name[a.to_s] = @resources.length - 1
       end
     end
   
