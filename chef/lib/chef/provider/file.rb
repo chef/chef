@@ -169,7 +169,8 @@ class Chef
       end
       
       def generate_url(url, type, args=nil)
-        generate_cookbook_url(url, @new_resource.cookbook_name, type, @node, args)
+        cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
+        generate_cookbook_url(url, cookbook_name, type, @node, args)
       end
       
     end

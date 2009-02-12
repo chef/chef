@@ -107,8 +107,9 @@ class Chef
 
       def get_from_local_cookbook(source)
         if Chef::Config[:solo]
+          cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
           filename = find_preferred_file(
-            @new_resource.cookbook_name.to_s,
+            cookbook_name,
             :remote_file,
             source,
             @node[:fqdn],

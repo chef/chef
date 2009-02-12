@@ -24,20 +24,37 @@ describe Chef::Resource::Template do
     @resource = Chef::Resource::Template.new("fakey_fakerton")
   end  
 
-  it "should create a new Chef::Resource::Template" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::File)
-    @resource.should be_a_kind_of(Chef::Resource::Template)
+  describe "initialize" do
+    it "should create a new Chef::Resource::Template" do
+      @resource.should be_a_kind_of(Chef::Resource)
+      @resource.should be_a_kind_of(Chef::Resource::File)
+      @resource.should be_a_kind_of(Chef::Resource::Template)
+    end
   end
 
-  it "should accept a string for the template source" do
-    @resource.source "something"
-    @resource.source.should eql("something")
+  describe "source" do
+    it "should accept a string for the template source" do
+      @resource.source "something"
+      @resource.source.should eql("something")
+    end
   end
   
-  it "should accept a hash for the variable list" do
-    @resource.variables({ :reluctance => :awkward })
-    @resource.variables.should == { :reluctance => :awkward }
+  describe "variables" do
+    it "should accept a hash for the variable list" do
+      @resource.variables({ :reluctance => :awkward })
+      @resource.variables.should == { :reluctance => :awkward }
+    end
+  end
+  
+  describe "cookbook" do
+    it "should accept a string for the cookbook name" do
+      @resource.cookbook("foo")
+      @resource.cookbook.should == "foo"
+    end
+    
+    it "should default to nil" do
+      @resource.cookbook.should == nil
+    end
   end
   
 end

@@ -36,12 +36,15 @@ class Chef
       def action_create
         Chef::Log.debug(@node.run_state.inspect)
         raw_template_file = nil
-        cache_file_name = "cookbooks/#{@new_resource.cookbook_name}/templates/default/#{@new_resource.source}"
-        template_cache_name = "#{@new_resource.cookbook_name}_#{@new_resource.source}"
+        
+        cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
+        
+        cache_file_name = "cookbooks/#{cookbook_name}/templates/default/#{@new_resource.source}"
+        template_cache_name = "#{cookbook_name}_#{@new_resource.source}"
         
         if Chef::Config[:solo]
           filename = find_preferred_file(
-            @new_resource.cookbook_name.to_s,
+            cookbook_name,
             :template,
             @new_resource.source,
             @node[:fqdn],

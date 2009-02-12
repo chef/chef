@@ -22,17 +22,32 @@ describe Chef::Resource::RemoteFile do
 
   before(:each) do
     @resource = Chef::Resource::RemoteFile.new("fakey_fakerton")
-  end  
-
-  it "should create a new Chef::Resource::RemoteFile" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::File)
-    @resource.should be_a_kind_of(Chef::Resource::RemoteFile)
   end
 
-  it "should accept a string for the remote file source" do
-    @resource.source "something"
-    @resource.source.should eql("something")
+  describe "initialize" do
+    it "should create a new Chef::Resource::RemoteFile" do
+      @resource.should be_a_kind_of(Chef::Resource)
+      @resource.should be_a_kind_of(Chef::Resource::File)
+      @resource.should be_a_kind_of(Chef::Resource::RemoteFile)
+    end
+  end
+
+  describe "source" do
+    it "should accept a string for the remote file source" do
+      @resource.source "something"
+      @resource.source.should eql("something")
+    end
+  end
+  
+  describe "cookbook" do
+    it "should accept a string for the cookbook name" do
+      @resource.cookbook "something"
+      @resource.cookbook.should eql("something")
+    end
+    
+    it "should default to nil" do
+      @resource.cookbook.should == nil
+    end
   end
   
 end

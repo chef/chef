@@ -27,6 +27,7 @@ class Chef
         @resource_name = :template
         @action = "create"
         @source = nil
+        @cookbook = nil
         @variables = Hash.new
       end
 
@@ -43,6 +44,14 @@ class Chef
           :variables,
           args,
           :kind_of => [ Hash ]
+        )
+      end
+      
+      def cookbook(args=nil)
+        set_or_return(
+          :cookbook,
+          args,
+          :kind_of => [ String ]
         )
       end
 

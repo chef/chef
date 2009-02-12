@@ -27,11 +27,20 @@ class Chef
         @resource_name = :remote_file
         @action = "create"
         @source = nil
+        @cookbook = nil
       end
       
       def source(args=nil)
         set_or_return(
           :source,
+          args,
+          :kind_of => String
+        )
+      end
+      
+      def cookbook(args=nil)
+        set_or_return(
+          :cookbook,
           args,
           :kind_of => String
         )
