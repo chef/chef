@@ -56,19 +56,16 @@ class Chef
         @cookbook_loader = Chef::CookbookLoader.new()
       end
       
-      @params = Hash.new
-      
-      @@seen_recipes ||= Hash.new
+      @params = Hash.new      
     end
     
     def include_recipe(*args)
       args.flatten.each do |recipe|
-        if @@seen_recipes.has_key?(recipe)
+        if @node.run_state[:seen_recipes].has_key?(recipe)
           Chef::Log.debug("I am not loading #{recipe}, because I have already seen it.")
           next
-        end
-        Chef::Log.debug("#{@@seen_recipes.inspect}")
-        @@seen_recipes[recipe] = true
+        end        
+        @node.run_state[:seen_recipes][recipe] = true
         
         rmatch = recipe.match(/(.+?)::(.+)/)
         if rmatch

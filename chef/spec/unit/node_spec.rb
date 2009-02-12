@@ -29,6 +29,21 @@ describe Chef::Node, "new method" do
   end
 end
 
+describe Chef::Node, "run_state" do
+  before(:each) do
+    Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    @node = Chef::Node.new()
+  end
+  
+  it "should have a template_cache hash" do
+    @node.run_state[:template_cache].should be_a_kind_of(Hash)
+  end
+  
+  it "should have a seen_recipes hash" do
+    @node.run_state[:seen_recipes].should be_a_kind_of(Hash)
+  end
+end
+
 describe Chef::Node, "name" do
   before(:each) do
     Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
