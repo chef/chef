@@ -28,7 +28,7 @@ require 'rubygems'
 
 config = {
   :config_file => "/etc/chef/solo.rb",
-  :log_level => :info,
+  :log_level => :info
 }
 
 Chef::Config[:solo] = true
@@ -38,7 +38,7 @@ opts = OptionParser.new do |opts|
   opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
     config[:config_file] = c
   end
-  opts.on("-r RECIPEURL", "--recipes RECIPEURL", "Pull down a remote gzipped tarball of recipes and untar it into the proer place.") do |r|
+  opts.on("-r RECIPEURL", "--recipe-url RECIPEURL", "Pull down a remote gzipped tarball of recipes and untar it into the proer place.") do |r|
     config[:recipes] = r
   end
   opts.on("-j JSON_ATTRIBS", "--json-attributes JSON_ATTRIBS", "Load attributes from a JSON file") do |j|

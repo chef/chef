@@ -87,6 +87,10 @@ class Chef
           break if to_send
         end
         
+        unless to_send
+          raise Chef::Exception::FileNotFound, "Cannot find a preferred file for #{file_name}!"
+        end
+        
         to_send
       end
       

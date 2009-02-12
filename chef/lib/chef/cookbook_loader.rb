@@ -64,22 +64,21 @@ class Chef
             cookbook_settings[cookbook_name][:recipe_files],
             cookbook_settings[cookbook_name][:ignore_regexes]
           )
+          load_files_unless_basename(
+            File.join(cookbook, "libraries", "*.rb"),               
+            cookbook_settings[cookbook_name][:lib_files],
+            cookbook_settings[cookbook_name][:ignore_regexes]
+          )
           load_cascading_files(
-            File.join(cookbook, "templates", "**", "*.erb"),
+            "*.erb",
             File.join(cookbook, "templates"),
             cookbook_settings[cookbook_name][:template_files],
             cookbook_settings[cookbook_name][:ignore_regexes]
           )
           load_cascading_files(
-            File.join(cookbook, "files", "**", "*"),
+            "*",
             File.join(cookbook, "files"),
             cookbook_settings[cookbook_name][:remote_files],
-            cookbook_settings[cookbook_name][:ignore_regexes]
-          )
-          load_cascading_files(
-            File.join(cookbook, "libraries", "**", "*.rb"),
-            File.join(cookbook, "libraries"),
-            cookbook_settings[cookbook_name][:lib_files],
             cookbook_settings[cookbook_name][:ignore_regexes]
           )
         end
@@ -125,7 +124,11 @@ class Chef
       end
       
       def load_cascading_files(file_glob, base_path, result_array, ignore_regexes)
-        Dir[file_glob].each do |file|
+        Dir[
+          File.join(base_path, "**/.[!.]#{file_glob}"), 
+          File.join(base_path, "**/.??#{file_glob}"),
+          File.join(base_path, "**/#{file_glob}")
+        ].each do |file|
           next if skip_file(file, ignore_regexes)
           file =~ /^#{base_path}\/(.+)$/
           singlecopy = $1
