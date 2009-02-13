@@ -108,7 +108,7 @@ describe Chef::Provider::Cron, "action_create" do
       and_yield("# Chef Name: foo").
       and_yield("* 5 * * * /bin/true")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    Chef::Log.should_receive(:debug).with("Added cron '#{@new_resource.name}'")
+    Chef::Log.should_receive(:info).with("Added cron '#{@new_resource.name}'")
     @provider.action_create
   end
 
@@ -124,7 +124,7 @@ describe Chef::Provider::Cron, "action_create" do
       and_yield("* 5 * * * /bin/true")
     @provider.cron_empty=true
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    Chef::Log.should_receive(:debug).with("Added cron '#{@new_resource.name}'")
+    Chef::Log.should_receive(:info).with("Added cron '#{@new_resource.name}'")
     @provider.action_create
   end
 
@@ -140,7 +140,7 @@ describe Chef::Provider::Cron, "action_create" do
       and_yield("* 5 * * * /bin/true")
     @provider.cron_exists=true
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    Chef::Log.should_receive(:debug).with("Updated cron '#{@new_resource.name}'")
+    Chef::Log.should_receive(:info).with("Updated cron '#{@new_resource.name}'")
     @provider.action_create
 
   end
