@@ -150,8 +150,17 @@ Merb::Config.use do |c|
   c[:session_store] = 'cookie'
   c[:exception_details] = true
   c[:reload_classes] = false
-  c[:log_level] = :debug
-  c[:log_stream] = STDOUT
+  if Chef::Config[:log_level]
+    c[:log_level] = Chef::Config[:log_level]
+  else
+    c[:log_level] = :debug
+  end
+  
+  if Chef::Config[:log_location]
+    c[:log_stream] = Chef::Config[:log_location]
+  else
+    c[:log_stream] = STDOUT
+  end
 end
 
 Chef::Log.info("Compiling routes...")
