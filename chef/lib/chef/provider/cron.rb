@@ -80,7 +80,7 @@ class Chef
             crontab.each { |line| stdin.puts "#{line}" }
             stdin.close
           end
-          Chef::Log.debug("Updated cron '#{@new_resource.name}'")
+          Chef::Log.info("Updated cron '#{@new_resource.name}'")
         else
           unless @cron_empty
             status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
@@ -95,7 +95,7 @@ class Chef
             crontab.each { |line| stdin.puts "#{line}" }
             stdin.close
           end
-          Chef::Log.debug("Added cron '#{@new_resource.name}'")
+          Chef::Log.info("Added cron '#{@new_resource.name}'")
         end
       end
 
