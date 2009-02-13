@@ -137,7 +137,6 @@ require 'syntax/convertors/html'
 # use_test :test_unit
 use_test :rspec
 
-
 #
 # ==== Set up your basic configuration
 #
@@ -146,15 +145,27 @@ Merb::Config.use do |c|
   # Sets up a custom session id key, if you want to piggyback sessions of other applications
   # with the cookie session store. If not specified, defaults to '_session_id'.
   c[:session_id_key] = '_chef_server_session_id'
-  c[:session_secret_key]  = '0992ea491c30ec76c98367c1ca53b18c1e7c5b30'
+
+  newpass = nil
+  if Chef::FileCache.has_key?("chef_server_cookie_id")
+    newpass = Chef::FileCache.load("chef_server_cookie_id")
+  else
+    chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
+    newpass = ""
+    1.upto(40) { |i| newpass << chars[rand(chars.size-1)] }
+    Chef::FileCache.store("chef_server_cookie_id", newpass)
+  end
+
+  c[:session_secret_key]  = newpass
   c[:session_store] = 'cookie'
   c[:exception_details] = true
   c[:reload_classes] = false
-  c[:log_level] = :debug
-  c[:log_stream] = STDOUT
+  c[:log_level] = Chef::Config[:log_level]
+  c[:log_stream] = Chef::Config[:log_location]
 end
 
-Chef::Log.info("Compiling routes...")
+Chef::Log.logger = Merb.logger
+Chef::Log.error("Compiling routes...")
 Merb::Router.prepare do |r|
   # RESTful routes
   # r.resources :posts
