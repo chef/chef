@@ -88,7 +88,6 @@ Merb::BootLoader.after_app_loads do
   # create the couch design docs for nodes and openid registrations
   Chef::Node.create_design_document
   Chef::OpenIDRegistration.create_design_document
-
   # dependency "magic_admin" # this gem uses the app's model classes
 end
 
@@ -165,7 +164,8 @@ Merb::Config.use do |c|
 end
 
 Chef::Log.logger = Merb.logger
-Chef::Log.error("Compiling routes...")
+Chef::Log.info("Compiling routes... (totally normal to see 'Cannot find resource model')")
+
 Merb::Router.prepare do |r|
   # RESTful routes
   # r.resources :posts
