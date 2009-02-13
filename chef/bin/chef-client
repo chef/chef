@@ -90,6 +90,11 @@ if Chef::Config[:daemonize]
     Chef::Log.init(Chef::Config[:log_location])
   end
   Chef::Log.level(Chef::Config[:log_level])
+  
+  # We want to set the interval to half an hour, if one is not set.
+  unless Chef::Config[:interval]
+    Chef::Config[:interval] = 1800
+  end
   Chef::Daemon.daemonize("chef-client")
 else
   Chef::Log.level(Chef::Config[:log_level])
@@ -112,7 +117,7 @@ loop do
     c.validation_token = Chef::Config[:validation_token]
     c.node_name = Chef::Config[:node_name]
     c.run
-    if Chef::Config[:daemonize]
+    if Chef::Config[:interval]
       Chef::Log.debug("Sleeping for #{delay} seconds")
       sleep delay
     else
