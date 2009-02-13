@@ -23,17 +23,16 @@ require 'chef/resource/package'
 class Chef
   class Provider
     class Package
-      class Dpkg < Chef::Provider::Package
+      class Dpkg < Chef::Provider::Package::Apt
       
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @new_resource.version(nil)
 
-            Chef::Log.debug("SOURCE: #{@new_resource.source}")
+          # We only -need- source for action install
           if @new_resource.source
-            Chef::Log.debug("FOUND SOURCE!!!!")
             unless ::File.exists?(@new_resource.source)
-              raise Chef::Exception::Package, "Package #{@new_resource.name} not found: #{@new_resource.package_name}"
+              raise Chef::Exception::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
             end
 
             # Get information from the package if supplied
@@ -49,7 +48,7 @@ class Chef
             end
           else
             # if the source was not set, and we're installing, fail
-            if @new_resource.actions.has_key?(:install)
+            if @new_resource.action.include?(:install)
               raise Chef::Exception::Package, "Source for package #{@new_resource.name} required for action install"
             end
             @current_resource.package_name(@new_resource.package_name)
