@@ -23,22 +23,36 @@ require 'chef/resource/package'
 class Chef
   class Provider
     class Package
-      class Dpkg < Chef::Provider::Package  
+      class Dpkg < Chef::Provider::Package
       
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @new_resource.version(nil)
 
-          # Get information from the package supplied
-          Chef::Log.debug("Checking dpkg status for #{@new_resource.package_name}")
-          status = popen4("dpkg-deb -W #{@new_resource.source}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /([\w\d]+)\t([\w\d.-]+)/
-                @current_resource.package_name($1)
-                @new_resource.version($2)
+            Chef::Log.debug("SOURCE: #{@new_resource.source}")
+          if @new_resource.source
+            Chef::Log.debug("FOUND SOURCE!!!!")
+            unless ::File.exists?(@new_resource.source)
+              raise Chef::Exception::Package, "Package #{@new_resource.name} not found: #{@new_resource.package_name}"
+            end
+
+            # Get information from the package if supplied
+            Chef::Log.debug("Checking dpkg status for #{@new_resource.package_name}")
+            status = popen4("dpkg-deb -W #{@new_resource.source}") do |pid, stdin, stdout, stderr|
+              stdout.each do |line|
+                case line
+                when /([\w\d]+)\t([\w\d.-]+)/
+                  @current_resource.package_name($1)
+                  @new_resource.version($2)
+                end
               end
             end
+          else
+            # if the source was not set, and we're installing, fail
+            if @new_resource.actions.has_key?(:install)
+              raise Chef::Exception::Package, "Source for package #{@new_resource.name} required for action install"
+            end
+            @current_resource.package_name(@new_resource.package_name)
           end
           
           # Check to see if it is installed
@@ -74,10 +88,6 @@ class Chef
           )
         end
 
-        def upgrade_package(name, version)
-          install_package(name, version)
-        end
-      
         def remove_package(name, version)
           run_command(
             :command => "dpkg -r #{@new_resource.package_name}",
@@ -95,20 +105,6 @@ class Chef
             }
           )
         end
-        
-        def preseed_package(name, version)
-          preseed_file = get_preseed_file(name, version)
-          if preseed_file
-            Chef::Log.info("Pre-seeding #{@new_resource} with package installation instructions.")
-            run_command(
-              :command => "debconf-set-selections #{preseed_file}",
-              :environment => {
-                "DEBIAN_FRONTEND" => "noninteractive"
-              }
-            )
-          end
-        end
-      
       end
     end
   end
