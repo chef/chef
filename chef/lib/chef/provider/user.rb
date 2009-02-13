@@ -35,6 +35,14 @@ class Chef
         @locked = nil
       end
   
+      def convert_group_name
+        if @new_resource.gid.is_a? String
+          @new_resource.gid Etc.getgrnam(@new_resource.gid).gid
+        end
+      rescue ArgumentError => e
+        raise Chef::Exception::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"
+      end
+      
       def load_current_resource
         @current_resource = Chef::Resource::User.new(@new_resource.name)
         @current_resource.username(@new_resource.username)
@@ -64,6 +72,10 @@ class Chef
               shadow_info = Shadow::Passwd.getspnam(@new_resource.username)
               @current_resource.password(shadow_info.sp_pwdp)
             end
+          end
+          
+          if @new_resource.gid
+            convert_group_name
           end
         end
         

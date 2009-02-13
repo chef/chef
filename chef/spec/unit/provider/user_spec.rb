@@ -125,6 +125,17 @@ describe Chef::Provider::User, "load_current_resource" do
     end
   end
   
+  it "should attempt to convert the group gid if one has been supplied" do
+    @provider.should_receive(:convert_group_name)
+    @provider.load_current_resource
+  end
+  
+  it "shouldn't try and convert the group gid if none has been supplied" do
+    @new_resource.stub!(:gid).and_return(nil)
+    @provider.should_not_receive(:convert_group_name)
+    @provider.load_current_resource
+  end
+  
   it "should return the current resource" do
     @provider.load_current_resource.should eql(@current_resource)
   end
@@ -464,5 +475,33 @@ describe Chef::Provider::User, "action_unlock" do
   it "should raise a Chef::Exception::User if we try and unlock a user that does not exist" do
     @provider.user_exists = false
     lambda { @provider.action_unlock }.should raise_error(Chef::Exception::User)
+  end
+end
+
+describe Chef::Provider::User, "convert_group_name" do
+  before do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::User", :null_object => true, :gid => "lololo")
+    @new_resource.stub!(:to_s).and_return("user[lololo]")
+    @current_resource = mock("Chef::Resource::User", :null_object => true)
+    @provider = Chef::Provider::User.new(@node, @new_resource)
+    @provider.current_resource = @current_resource
+    @group = mock("Struct::Group", :null_object => true, :gid => 999)
+    Etc.stub!(:getgrnam).with("lololo").and_return(@group)
+  end
+  
+  it "should lookup the group name locally" do
+    Etc.should_receive(:getgrnam).with("lololo")
+    @provider.convert_group_name
+  end
+  
+  it "should raise an error if we can't translate the group name" do
+    Etc.stub!(:getgrnam).and_raise(ArgumentError)
+    lambda { @provider.convert_group_name }.should raise_error(Chef::Exception::User)
+  end
+  
+  it "should set the new resources gid to the integerized version if available" do
+    @new_resource.should_receive(:gid).with(999)
+    @provider.convert_group_name
   end
 end
