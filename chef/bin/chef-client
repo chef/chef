@@ -70,6 +70,13 @@ opts = OptionParser.new do |opts|
 end
 opts.parse!(ARGV)
 
+trap("INT") { Chef.fatal!("SIGINT received, stopping", 2) }
+trap("HUP") { 
+  Chef::Log.info("SIGHUP received, reloading configuration")
+  Chef::Config.from_file(config[:config_file])
+  Chef::Config.configure { |c| c.merge!(config) }
+}
+
 unless File.exists?(config[:config_file]) and File.readable?(config[:config_file])
   Chef.fatal!("I cannot find or read the config file: #{config[:config_file]}", 1)
 end
