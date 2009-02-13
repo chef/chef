@@ -149,7 +149,7 @@ Merb::Config.use do |c|
   c[:session_secret_key]  = '0992ea491c30ec76c98367c1ca53b18c1e7c5b30'
   c[:session_store] = 'cookie'
   c[:exception_details] = true
-  c[:reload_classes] = true
+  c[:reload_classes] = false
   c[:log_level] = :debug
   c[:log_stream] = STDOUT
 end
