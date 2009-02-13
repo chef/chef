@@ -27,6 +27,7 @@ class Chef
       
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
+          @current_resource.package_name(@new_resource.package_name)
           @new_resource.version(nil)
 
           # We only -need- source for action install
@@ -51,7 +52,6 @@ class Chef
             if @new_resource.action.include?(:install)
               raise Chef::Exception::Package, "Source for package #{@new_resource.name} required for action install"
             end
-            @current_resource.package_name(@new_resource.package_name)
           end
           
           # Check to see if it is installed
