@@ -48,7 +48,7 @@ class Chef
           case line
           when /^[#\s]/
             next
-          when /^[/\w]+#{@new_resource.mount_point}/
+          when /^[\/\w]+#{@new_resource.mount_point}/
             @mount_exists = true
             Chef::Log.debug("Found mount point #{@new_resource.mount_point} in /etc/fstab")
           end

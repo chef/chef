@@ -15,129 +15,88 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
 describe Chef::Resource::Mount do
-
   before(:each) do
-    @resource = Chef::Resource::Mount.new("chef")
-  end  
-
+    @resource = Chef::Resource::Mount.new("filesystem")
+  end
+  
   it "should create a new Chef::Resource::Mount" do
     @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::Mount)
   end
 
-  it "should set the mount_point to the first argument to name" do
-    @resource.mount_point.should eql("chef")
+  it "should have a name" do
+    @resource.name.should eql("filesystem")
   end
 
-  it "should set the name of the resource" do
-    @resource.name.should eql("chef")
+  it "should set mount_point to the name" do
+    @resource.mount_point.should eql("filesystem")
+  end
+  
+  it "should have a default action of mount" do
+    @resource.action.should eql(:mount)
+  end
+  
+  it "should accept mount, umount and remount as actions" do
+    lambda { @resource.action :mount }.should_not raise_error(ArgumentError)
+    lambda { @resource.action :umount }.should_not raise_error(ArgumentError)
+    lambda { @resource.action :remount }.should_not raise_error(ArgumentError)
+    lambda { @resource.action :brooklyn }.should raise_error(ArgumentError)
+  end
+  
+  it "should allow you to set the device attribute" do
+    @resource.device "/dev/sdb3"
+    @resource.device.should eql("/dev/sdb3")
   end
 
-  it "should accept a string for the mount_point" do
-    @resource.mount_point "something"
-    @resource.mount_point.should eql("something")
-  end
- 
-  it "should accept a string for the service pattern" do
-    @resource.pattern ".*"
-    @resource.pattern.should eql(".*")
+  it "should allow you to set the fstype attribute" do
+    @resource.fstype "nfs"
+    @resource.fstype.should eql("nfs")
   end
 
-  it "should not accept a regexp for the service pattern" do
-    lambda {
-      @resource.pattern /.*/
-    }.should raise_error(ArgumentError)
-  end
-  
-  it "should accept a string for the service start command" do
-    @resource.start_command "/etc/init.d/chef start"
-    @resource.start_command.should eql("/etc/init.d/chef start")
+  it "should allow you to set the dump attribute" do
+    @resource.dump 1
+    @resource.dump.should eql(1)
   end
 
-  it "should not accept a regexp for the service start command" do
-    lambda {
-      @resource.start_command /.*/
-    }.should raise_error(ArgumentError)
-  end
-  
-  it "should accept a string for the service stop command" do
-    @resource.stop_command "/etc/init.d/chef stop"
-    @resource.stop_command.should eql("/etc/init.d/chef stop")
+  it "should allow you to set the pass attribute" do
+    @resource.pass 1
+    @resource.pass.should eql(1)
   end
 
-  it "should not accept a regexp for the service stop command" do
-    lambda {
-      @resource.stop_command /.*/
-    }.should raise_error(ArgumentError)
-  end
-  
-  it "should accept a string for the service status command" do
-    @resource.status_command "/etc/init.d/chef status"
-    @resource.status_command.should eql("/etc/init.d/chef status")
-  end
-  
-  it "should not accept a regexp for the service status command" do
-    lambda {
-      @resource.status_command /.*/
-    }.should raise_error(ArgumentError)
-  end
-  
-  it "should accept a string for the service restart command" do
-    @resource.restart_command "/etc/init.d/chef restart"
-    @resource.restart_command.should eql("/etc/init.d/chef restart")
-  end
-  
-  it "should not accept a regexp for the service restart command" do
-    lambda {
-      @resource.restart_command /.*/
-    }.should raise_error(ArgumentError)
+  it "should set the options attribute to defaults" do
+    @resource.options.should eql("defaults")
   end
 
-  it "should accept a string for the service reload command" do
-    @resource.reload_command "/etc/init.d/chef reload"
-    @resource.reload_command.should eql("/etc/init.d/chef reload")
+  it "should allow options to be sent as a string, and convert to array" do
+    @resource.options "rw,noexec"
+    @resource.options.should be_a_kind_of(Array)
   end
   
-  it "should not accept a regexp for the service reload command" do
-    lambda {
-      @resource.reload_command /.*/
-    }.should raise_error(ArgumentError)
+  it "should allow options attribute as an array" do
+    @resource.options ["ro", "nosuid"]
+    @resource.options.should be_a_kind_of(Array)
   end
-  
-  %w{enabled running}.each do |attrib|
-    it "should accept true for #{attrib}" do
-      @resource.send(attrib, true) 
-      @resource.send(attrib).should eql(true)
-    end
-  
-    it "should accept false for #{attrib}" do
-      @resource.send(attrib, false)
-      @resource.send(attrib).should eql(false)
-    end
-  
-    it "should not accept a string for #{attrib}" do
-      lambda { @resource.send(attrib, "derp") }.should raise_error(ArgumentError)
-    end
 
-    it "should default all the feature support to false" do
-      support_hash = { :remount => false }
-      @resource.supports.should == support_hash
-    end 
-
-    it "should allow you to set what features this resource supports as a array" do
-      support_array = [ :remount ] 
-      support_hash = { :remount => true }
-      @resource.supports(support_array)
-      @resource.supports.should == support_hash
-    end
-
-    it "should allow you to set what features this resource supports as a hash" do
-      support_hash = { :remount => true }
-      @resource.supports(support_hash)
-      @resource.supports.should == support_hash
-    end
+  it "should default all feature support to false" do
+    support_hash = { :remount => false }
+    @resource.supports.should == support_hash
   end
+
+  it "should allow you to set feature support as an array" do
+    support_array = [ :remount ]
+    support_hash = { :remount => true }
+    @resource.supports(support_array)
+    @resource.supports.should == support_hash
+  end
+
+  it "should allow you to set feature support as a hash" do
+    support_hash = { :remount => true }
+    @resource.supports(support_hash)
+    @resource.supports.should == support_hash
+  end
+
 end
