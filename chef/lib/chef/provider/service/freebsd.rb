@@ -89,8 +89,7 @@ class Chef
           end
 
           if ::File.exists?("/etc/rc.conf")
-            rcfile = ::File.open("/etc/rc.conf")
-            rcfile.each do |line|
+            read_rc_conf.each do |line|
               case line
               when /#{current_resource.service_name}_enable="(\w+)"/
                 if $1 =~ /[Yy][Ee][Ss]/
@@ -108,40 +107,31 @@ class Chef
           @current_resource
         end
 
-        def enable_service()
-          unless @current_resource.enabled 
-            rcfile = ::File.open("/etc/rc.conf", 'r')
-            lines = rcfile.readlines
-            lines.collect! do |line|
-              if line =~ /#{current_resource.service_name}_enable/
-                line = "#{current_resource.service_name}_enable=\"YES\""
-              else 
-                line = line
-              end
-            end
-            rcfile.close
-            rcfile = ::File.open("/etc/rc.conf", 'w')
-            lines.each { |line| rcfile.puts(line) }
-            rcfile.close
+        def read_rc_conf
+          ::File.open("/etc/rc.conf", 'r') { |file| file.readlines }
+        end
+        
+        def write_rc_conf(lines)
+          ::File.open("/etc/rc.conf", 'w') do |file|
+            lines.each { |line| file.puts(line) }
           end
+        end
+        
+        def set_service_enable(value)
+          lines = read_rc_conf
+          # Remove line that set the old value
+          lines.delete_if { |line| line =~ /#{current_resource.service_name}_enable/ }
+          # And append the line that sets the new value at the end
+          lines << "#{current_resource.service_name}_enable=\"#{value}\""
+          write_rc_conf(lines)
+        end
+        
+        def enable_service()
+          set_service_enable("YES") unless @current_resource.enabled
         end
 
         def disable_service()
-          if @current_resource.enabled
-            rcfile = ::File.open("/etc/rc.conf", 'r')
-            lines = rcfile.readlines
-            lines.collect! do |line|
-              if line =~ /#{current_resource.service_name}_enable/
-                line = "#{current_resource.service_name}_enable=\"NO\""
-              else 
-                line = line
-              end
-            end
-            rcfile.close
-            rcfile = ::File.open("/etc/rc.conf", 'w')
-            lines.each { |line| rcfile.puts(line) }
-            rcfile.close
-          end 
+          set_service_enable("NO") if @current_resource.enabled
         end
      
       end
