@@ -10,4 +10,5 @@ chef/pkg
 chef-server/pkg
 chef/log
 chef-server/log
+features/data/tmp/**
 *.swp
