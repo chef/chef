@@ -15,9 +15,8 @@ Feature: Manage Files
       And it includes the recipe 'manage_files::set_the_owner_of_a_created_file'
      When I run the chef-client
      Then the run should exit '0'
-      And a file named 'create_a_file.txt' should exist
-      
-     
+      And the file named 'create_a_file.txt' should be owned by 'nobody'
+       
   Scenario: Delete a file
     Given a validated node
       And it includes the recipe 'manage_files::delete_a_file'

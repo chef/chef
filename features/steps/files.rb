@@ -52,3 +52,8 @@ Then /^the (.)time of '(.+)' should be different$/ do |time_type, filename|
     current_atime.should_not == @atime
   end
 end
+
+Then /^the file named '(.+)' should be owned by '(.+)'$/ do |filename, owner|
+  
+end
+
