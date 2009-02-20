@@ -30,10 +30,21 @@ spec = Gem::Specification.new do |s|
 #  s.executables  = %w( chef-indexer chef-server )
  
 # BUGBUG [cb] add LICENSE and README.txt
-  s.files = %w(Rakefile) + Dir.glob("{lib}/**/*")
+  s.files = %w(Rakefile) + ["{app}/**/*",
+                            "{config}/**/*",
+                            "{doc}/**/*",
+                            "{lib}/**/*",
+                            "{log}/**/*",
+                            "{merb}/**/*",
+                            "{public}/**/*",
+                            "{slices}/**/*",
+                            "{spec}/**/*",
+                            "{tasks}/**/*",].inject([]) { |m,dir| m << Dir.glob(dir) }.flatten
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
+
+
 
