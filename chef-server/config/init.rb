@@ -8,11 +8,13 @@ use_template_engine :haml
  
 Merb::Config.use do |c|
   c[:use_mutex] = false
-  c[:session_store] = 'cookie'  # can also be 'memory', 'memcache', 'container', 'datamapper
-  
-  # cookie session store configuration
-  c[:session_secret_key]  = '424458a3d40b41b5e6d4b19b9eaffb706e7eef42'  # required for cookie session store
-  c[:session_id_key] = '_chef-server_session_id' # cookie session id key, defaults to "_session_id"
+  c[:session_id_key] = '_chef_server_session_id'
+  c[:session_secret_key]  = Chef::Config.manage_secret_key
+  c[:session_store] = 'cookie'
+  c[:exception_details] = true
+  c[:reload_classes] = false
+  c[:log_level] = Chef::Config[:log_level]
+  c[:log_stream] = Chef::Config[:log_location]
 end
  
 Merb::BootLoader.before_app_loads do

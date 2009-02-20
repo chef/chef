@@ -4,6 +4,8 @@ require 'rake/rdoctask'
 require 'merb-core'
 require 'merb-core/tasks/merb'
 
+require 'chef'
+
 include FileUtils
 
 GEM = "chef-server"
