@@ -28,8 +28,9 @@ spec = Gem::Specification.new do |s|
   
   s.bindir       = "bin"
 #  s.executables  = %w( chef-indexer chef-server )
-  
-#  s.files = %w(LICENSE README.txt Rakefile) + Dir.glob("{lib}/**/*")
+ 
+# BUGBUG [cb] add LICENSE and README.txt
+  s.files = %w(Rakefile) + Dir.glob("{lib}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
