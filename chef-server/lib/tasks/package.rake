@@ -28,6 +28,7 @@ spec = Gem::Specification.new do |s|
   
   s.bindir       = "bin"
 #  s.executables  = %w( chef-indexer chef-server )
+  s.executables  = %w( chef-server )  
  
 # BUGBUG [cb] add LICENSE and README.txt
   s.files = %w(Rakefile) + ["{app}/**/*",
