@@ -1,4 +1,4 @@
-gems = %w[chef chef-server]
+gems = %w[chef chefserverslice chef-server]
 
 desc "Build the chef gems"
 task :gem do
