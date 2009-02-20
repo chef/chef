@@ -53,7 +53,7 @@ class Chef
           full_dir = ::File.dirname(full_path)
           unless ::File.directory?(full_dir)
             new_dir = Chef::Resource::Directory.new(full_dir, nil, @node)
-            new_dir.cookbook_name = @new_resource.cookbook_name
+            new_dir.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name            
             new_dir.mode(@new_resource.mode)
             new_dir.group(@new_resource.group)
             new_dir.owner(@new_resource.owner)
@@ -67,7 +67,7 @@ class Chef
           end
           
           remote_file = Chef::Resource::RemoteFile.new(full_path, nil, @node)
-          remote_file.cookbook_name = @new_resource.cookbook_name
+          remote_file.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name           
           remote_file.source(::File.join(@new_resource.source, remote_file_source))
           remote_file.mode(@new_resource.files_mode) if @new_resource.files_mode
           remote_file.group(@new_resource.files_group) if @new_resource.files_group
