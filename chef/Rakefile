@@ -50,7 +50,7 @@ task :install => :package do
 end
 
 task :uninstall do
-  sh %{sudo gem uninstall #{GEM} -v #{CHEF_VERSION} }
+  sh %{sudo gem uninstall #{GEM} -x -v #{CHEF_VERSION} }
 end
 
 desc "create a gemspec file"
