@@ -49,6 +49,10 @@ task :install => :package do
   sh %{sudo gem install pkg/#{GEM}-#{CHEF_VERSION} --no-rdoc --no-ri}
 end
 
+task :uninstall do
+  sh %{sudo gem uninstall #{GEM} -v #{CHEF_VERSION} }
+end
+
 desc "create a gemspec file"
 task :make_spec do
   File.open("#{GEM}.gemspec", "w") do |file|

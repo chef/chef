@@ -14,6 +14,13 @@ task :install do
   end
 end
 
+desc "Uninstall the chef gems"
+task :uninstall do
+  gems.reverse.each do |dir|
+    Dir.chdir(dir) { sh "rake uninstall" }
+  end
+end
+
 desc "Run the rspec tests"
 task :spec do
   gems.each do |dir|
