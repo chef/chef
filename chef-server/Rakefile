@@ -6,6 +6,13 @@ require 'merb-core/tasks/merb'
 
 include FileUtils
 
+GEM = "chef-server"
+CHEF_SERVER_VERSION = "0.5.3"
+AUTHOR = "Adam Jacob"
+EMAIL = "adam@opscode.com"
+HOMEPAGE = "http://wiki.opscode.com/display/chef"
+SUMMARY = "A systems integration framework, built to bring the benefits of configuration management to your entire infrastructure."
+
 # Load the basic runtime dependencies; this will include 
 # any plugins and therefore plugin rake tasks.
 init_env = ENV['MERB_ENV'] || 'rake'
