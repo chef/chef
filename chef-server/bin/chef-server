@@ -24,13 +24,17 @@ require "rubygems"
 require "merb-core"
 require "chef"
 
+Dir.chdir File.join(File.dirname(__FILE__),"..")
+__DIR__ = Dir.getwd
+
 if ARGV[0] && ARGV[0] =~ /^[^-]/
   ARGV.push "-H"
 end 
 unless %w[-a --adapter -i --irb-console -r --script-runner].any? { |o| ARGV.index(o) }
   ARGV.push *%w[-a mongrel]
 end
-ARGV.push *[ "-I", File.join(File.dirname(__FILE__), "..", "config", "init.rb") ]
+ARGV.push *[ "-I", File.join(__DIR__, "config", "init.rb") ]
+ARGV.push *[ "-m", __DIR__]
 
 if index = ARGV.index("-C")
   config = ARGV[index+1]
