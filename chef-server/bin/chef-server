@@ -30,7 +30,7 @@ end
 unless %w[-a --adapter -i --irb-console -r --script-runner].any? { |o| ARGV.index(o) }
   ARGV.push *%w[-a mongrel]
 end
-ARGV.push *[ "-I", File.join(File.dirname(__FILE__), "..", "lib", "init.rb") ]
+ARGV.push *[ "-I", File.join(File.dirname(__FILE__), "..", "config", "init.rb") ]
 
 if index = ARGV.index("-C")
   config = ARGV[index+1]
