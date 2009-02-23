@@ -36,48 +36,73 @@ describe Chef::Provider::Mount, "action_mount" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Mount", 
-      :null_object => true,
-      :name => "chef",
-      :mount_point => "chef"
+    :null_object => true,
+    :device => "/dev/sdz1",
+    :name => "/tmp/foo",
+    :mount_point => "/tmp/foo",
+    :fstype => "ext3",
+    :mounted => false
     )
     @current_resource = mock("Chef::Resource::Mount",
-      :null_object => true,
-      :name => "chef",
-      :mount_point => "chef"
+    :null_object => true,
+    :device => "/dev/sdz1",
+    :name => "/tmp/foo",
+    :mount_point => "/tmp/foo",
+    :fstype => "ext3",
+    :mounted => false
     )
     @provider = Chef::Provider::Mount.new(@node, @new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:mount_fs).and_return(true)
   end
   
-  it "should execute the mount command" do
+  it "should mount the filesystem if it isn't mounted" do
     @current_resource.stub!(:mounted).and_return(false)
     @provider.should_receive(:mount_fs).with.and_return(true)
     @provider.action_mount
   end
+
+  it "should not mount the filesystem if it is mounted" do
+    @current_resource.stub!(:mounted).and_return(true)
+    @provider.should_not_receive(:mount_fs).with.and_return(true)
+    @provider.action_mount
+  end
+
 end
 
 describe Chef::Provider::Mount, "action_umount" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Mount", 
-      :null_object => true,
-      :name => "chef",
-      :mount_point => "chef"
+    :null_object => true,
+    :device => "/dev/sdz1",
+    :name => "/tmp/foo",
+    :mount_point => "/tmp/foo",
+    :fstype => "ext3",
+    :mounted => false
     )
     @current_resource = mock("Chef::Resource::Mount",
-      :null_object => true,
-      :name => "chef",
-      :mount_point => "chef"
+    :null_object => true,
+    :device => "/dev/sdz1",
+    :name => "/tmp/foo",
+    :mount_point => "/tmp/foo",
+    :fstype => "ext3",
+    :mounted => false
     )
     @provider = Chef::Provider::Mount.new(@node, @new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:umount_fs).and_return(true)
   end
   
-  it "should execute the umount command" do
+  it "should umount the filesystem if it is mounted" do
     @current_resource.stub!(:mounted).and_return(true)
     @provider.should_receive(:umount_fs).with.and_return(true)
+    @provider.action_umount
+  end
+
+  it "should not umount the filesystem if it is not mounted" do
+    @current_resource.stub!(:mounted).and_return(false)
+    @provider.should_not_receive(:umount_fs).with.and_return(true)
     @provider.action_umount
   end
 end
@@ -86,15 +111,20 @@ describe Chef::Provider::Mount, "action_remount" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Mount", 
-      :null_object => true,
-      :name => "chef",
-      :mount_point => "chef"
+    :null_object => true,
+    :device => "/dev/sdz1",
+    :name => "/tmp/foo",
+    :mount_point => "/tmp/foo",
+    :fstype => "ext3",
+    :mounted => false
     )
     @current_resource = mock("Chef::Resource::Mount",
-      :null_object => true,
-      :name => "chef",
-      :mount_point => "chef",
-      :supports => { :remount => false }
+    :null_object => true,
+    :device => "/dev/sdz1",
+    :name => "/tmp/foo",
+    :mount_point => "/tmp/foo",
+    :fstype => "ext3",
+    :mounted => false
     )
     @provider = Chef::Provider::Mount.new(@node, @new_resource)
     @provider.current_resource = @current_resource
@@ -102,10 +132,16 @@ describe Chef::Provider::Mount, "action_remount" do
     @current_resource.stub!(:supports).and_return({:remount => true})
   end
   
-  it "should execute command for remount if remount is supported" do
+  it "should remount the filesystem if remount is support and it is mounted" do
     @current_resource.stub!(:mounted).and_return(true)
     @provider.should_receive(:remount_fs).and_return(true)
-    @provider.remount_fs
+    @provider.action_remount
+  end
+  
+  it "should not remount the filesystem if it is not mounted" do
+    @current_resource.stub!(:mounted).and_return(false)
+    @provider.should_not_receive(:remount_fs).and_return(true)
+    @provider.action_remount
   end
 end
 

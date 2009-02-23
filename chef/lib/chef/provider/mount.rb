@@ -65,11 +65,7 @@ class Chef
               Chef::Log.info("#{@new_resource}: remounted succesfully")
             end
           else
-            Chef::Log.debug("#{@new_resource}: not mounted, :remount requested, attempting mount")
-            status = mount_fs()
-            if status
-              Chef::Log.info("#{@new_resource}: mounted successfully")
-            end
+            Chef::Log.debug("#{@new_resource}: not mounted, not remounting")
           end
         end
       end

@@ -23,6 +23,7 @@ describe Chef::Provider::Mount::Mount, "load_current_resource" do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Mount", 
       :null_object => true,
+      :device => "/dev/sdz1",
       :name => "/tmp/foo",
       :mount_point => "/tmp/foo",
       :fstype => "ext3",
@@ -32,6 +33,7 @@ describe Chef::Provider::Mount::Mount, "load_current_resource" do
     
     @current_resource = mock("Chef::Resource::Mount", 
       :null_object => true,
+      :device => "/dev/sdz1",
       :name => "/tmp/foo",
       :mount_point => "/tmp/foo",
       :fstype => "ext3",
@@ -52,18 +54,25 @@ describe Chef::Provider::Mount::Mount, "load_current_resource" do
   
   it "should create a current resource with the name of the new resource" do
     Chef::Resource::Mount.should_receive(:new).and_return(@current_resource)
-    @provider.load_current_resource
+    @provider.load_current_resource()
   end
   
   it "should set the current resources mount point to the new resources mount point" do
     @current_resource.should_receive(:mount_point).with(@new_resource.mount_point)
-    @provider.load_current_resource
+    @provider.load_current_resource()
   end
   
   it "should set mounted true if the mount point is found in the mounts list" do
-    @stdout.stub!(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
-    @current_resource.mounted.should eql(true)
-    @provider.load_current_resource 
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
+    @current_resource.should_receive(:mounted).with(true)
+    @provider.load_current_resource()
+  end
+  
+  it "mounted should be false if the mount point is not found in the mounts list" do
+    @stdout.stub!(:each).and_yield("pants on #{@new_resource.mount_point}")
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
+    @current_resource.should_receive(:mounted).with(false)
+    @provider.load_current_resource()
   end
   
 end
@@ -72,6 +81,7 @@ describe Chef::Provider::Mount::Mount, "mount_fs" do
   before(:each) do
     @new_resource = mock("Chef::Resource::Mount",
       :null_object => true,
+      :device => "/dev/sdz1",
       :name => "/tmp/foo",
       :mount_point => "/tmp/foo",
       :fstype => "ext3",
@@ -83,18 +93,16 @@ describe Chef::Provider::Mount::Mount, "mount_fs" do
     Chef::Resource::Mount.stub!(:new).and_return(@current_resource)
   end
   
-  # it "should mount the filesystem if it is not mounted" do
-    # @new_resource.stub(:mounted).and_return(false)
+  it "should mount the filesystem if it is not mounted" do
     # @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} #{@new_resource.mount_point}"})
-  # end
+  end
   
-  # it "should mount the filesystem with options if options were passed" do
-  #   
-  # end
-  # 
-  # it "should log to info for mounting if the filesystem is mounted" do
-  #   
-  # end
+  it "should mount the filesystem with options if options were passed" do
+    @new_resource.stub!(:options).and_return("rw,noexec,noauto")
+    @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} -o #{@new_resource.options} #{@new_resource.device} #{@new_resource.mount_point}"})
+    @provider.mount_fs()
+  end
+  
 end
 
 describe Chef::Provider::Mount::Mount, "umount_fs" do

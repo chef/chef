@@ -41,6 +41,8 @@ class Chef
               when /^#{@new_resource.device}\s+on\s+#{@new_resource.mount_point}/
                 @current_resource.mounted(true)
                 Chef::Log.debug("Special device #{@new_resource.device} mounted as #{@new_resource.mount_point}")
+              else
+                @current_resource.mounted(false)
               end
             end
           end
@@ -65,7 +67,7 @@ class Chef
               command = "mount -t #{@new_resource.fstype} "
             end
             command << "#{@new_resource.device} "
-            command << "#{@new_resource.mount_point} "
+            command << "#{@new_resource.mount_point}"
             run_command(:command => command)
             Chef::Log.info("Mounted #{@new_resource.mount_point}")
           end
@@ -84,11 +86,11 @@ class Chef
             command = "mount -o remount #{@new_resource.mount_point}"
             run_command(:command => command)
             Chef::Log.info("Remounted #{@new_resource.mount_point}")
-          # elsif @mounted 
-          #   umount_fs
-          #   mount_fs
-          # else
-          #   Chef::Log.info("#{@new_resource.mount_point} is not mounted.")
+          elsif @current_resource.mounted 
+            umount_fs
+            mount_fs
+          else
+            Chef::Log.info("#{@new_resource.mount_point} is not mounted.")
           end
         end
       
