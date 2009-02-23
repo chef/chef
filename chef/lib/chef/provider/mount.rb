@@ -55,7 +55,7 @@ class Chef
       end
 
       def action_remount
-        unless @new_resource.supports[:remount] or @new_resource.remount_command
+        unless @new_resource.supports[:remount]
           raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :remount"
         else
           if @current_resource.mounted
