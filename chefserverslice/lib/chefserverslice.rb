@@ -10,13 +10,15 @@ if defined?(Merb::Plugins)
 
   # Register the Slice for the current host application
   Merb::Slices::register(__FILE__)
+
+  Merb.disable :json
   
   # Slice configuration - set this in a before_app_loads callback.
   # By default a Slice uses its own layout, so you can swicht to 
   # the main application layout or no layout at all if needed.
   # 
   # Configuration options:
-  # :layout - the layout to use; defaults to :chefserver
+  # :layout - the layout to use; defaults to :chefserverslice
   # :mirror - which path component types to use on copy operations; defaults to all
   Merb::Slices::config[:chefserverslice][:layout] ||= :chefserverslice
   
@@ -115,7 +117,7 @@ if defined?(Merb::Plugins)
       scope.match('/').to(:controller => 'nodes', :action =>'index').name(:top)      
       # enable slice-level default routes by default
       # [cb] disable default routing in favor of explicit (see scope.resources above)
-      # scope.default_routes
+      #scope.default_routes
     end
     
   end
@@ -134,5 +136,11 @@ if defined?(Merb::Plugins)
   # Or just call setup_default_structure! to setup a basic Merb MVC structure.
   Chefserverslice.setup_default_structure!
   
+  # freaky path fix for javascript and stylesheets
+  unless Chefserverslice.standalone?
+    Chefserverslice.public_components.each do |component|
+      Chefserverslice.push_app_path(component, Merb.dir_for(:public) / "#{component}s", nil)    
+    end
+  end
 end
 
