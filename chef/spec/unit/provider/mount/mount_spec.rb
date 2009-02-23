@@ -47,7 +47,6 @@ describe Chef::Provider::Mount::Mount, "load_current_resource" do
     @provider.stub!(:popen4).and_return(@status)
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)
-    @stdout.stub!(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
   end
@@ -63,13 +62,14 @@ describe Chef::Provider::Mount::Mount, "load_current_resource" do
   end
   
   it "should set mounted true if the mount point is found in the mounts list" do
+    @stdout.stub!(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
     @current_resource.should_receive(:mounted).with(true)
     @provider.load_current_resource()
   end
   
   it "mounted should be false if the mount point is not found in the mounts list" do
-    @stdout.stub!(:each).and_yield("pants on #{@new_resource.mount_point}")
+    @stdout.stub!(:each).and_yield("#{@new_resource.mount_point} on #{@new_resource.mount_point}")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
     @current_resource.should_receive(:mounted).with(false)
     @provider.load_current_resource()
@@ -91,17 +91,29 @@ describe Chef::Provider::Mount::Mount, "mount_fs" do
 
     @provider = Chef::Provider::Mount::Mount.new(@node, @new_resource)
     Chef::Resource::Mount.stub!(:new).and_return(@current_resource)
+    @status = mock("Status", :exitstatus => 0)
+    @provider.stub!(:popen4).and_return(@status)
+    @stdin = mock("STDIN", :null_object => true)
+    @stdout = mock("STDOUT", :null_object => true)
+    @stdout.stub!(:each).and_yield("#{@new_resource.mount_point} on #{@new_resource.mount_point}")
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
+    @stderr = mock("STDERR", :null_object => true)
+    @pid = mock("PID", :null_object => true)
   end
   
-  # it "should mount the filesystem if it is not mounted" do
-  #   @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} #{@new_resource.mount_point}"})
-  # end
-  # 
-  # it "should mount the filesystem with options if options were passed" do
-  #   @new_resource.stub!(:options).and_return("rw,noexec,noauto")
-  #   @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} -o #{@new_resource.options} #{@new_resource.device} #{@new_resource.mount_point}"})
-  #   @provider.mount_fs()
-  # end
+  it "should mount the filesystem if it is not mounted" do
+    @stdout.stub!(:each).and_yield("#{@new_resource.mount_point} on #{@new_resource.mount_point}")
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
+    
+    @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} #{@new_resource.mount_point}"})
+    @provider.mount_fs()
+  end
+  
+  it "should mount the filesystem with options if options were passed" do
+    # @new_resource.stub!(:options).and_return("rw,noexec,noauto")
+    # @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} -o #{@new_resource.options} #{@new_resource.device} #{@new_resource.mount_point}"})
+    # @provider.mount_fs()
+  end
   
 end
 
