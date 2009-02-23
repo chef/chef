@@ -61,10 +61,10 @@ class Chef
       
         def mount_fs
           unless @current_resource.mounted
-            if @new_resource.options
-              command = "mount -t #{@new_resource.fstype} -o #{@new_resource.options} "
-            else
+            if @new_resource.options.include?("defaults") or @new_resource.options == nil
               command = "mount -t #{@new_resource.fstype} "
+            else
+              command = "mount -t #{@new_resource.fstype} -o #{@new_resource.options} "
             end
             command << "#{@new_resource.device} "
             command << "#{@new_resource.mount_point}"
@@ -78,6 +78,8 @@ class Chef
             command = "umount #{@new_resource.mount_point}"
             run_command(:command => command)
             Chef::Log.info("Unmounted #{@new_resource.mount_point}")
+          else
+            Chef::Log.debug("#{@new_resource.mount_point} is not mounted.")
           end
         end
             
@@ -88,9 +90,10 @@ class Chef
             Chef::Log.info("Remounted #{@new_resource.mount_point}")
           elsif @current_resource.mounted 
             umount_fs
+            sleep 1
             mount_fs
           else
-            Chef::Log.info("#{@new_resource.mount_point} is not mounted.")
+            Chef::Log.debug("#{@new_resource.mount_point} is not mounted.")
           end
         end
       

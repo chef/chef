@@ -101,6 +101,7 @@ describe Chef::Provider::Mount::Mount, "mount_fs" do
     
     @provider = Chef::Provider::Mount::Mount.new(@node, @new_resource)
     Chef::Resource::Mount.stub!(:new).and_return(@current_resource)
+    @provider.current_resource = @current_resource
     
     @status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
@@ -111,70 +112,131 @@ describe Chef::Provider::Mount::Mount, "mount_fs" do
   end
   
   it "should mount the filesystem if it is not mounted" do
-    @stdout.stub!(:each).and_yield("#{@new_resource.mount_point} on #{@new_resource.mount_point}")
+    @stdout.stub!(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
-    
-    @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} #{@new_resource.mount_point}"})
+    @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} #{@new_resource.device} #{@new_resource.mount_point}"})
     @provider.mount_fs()
   end
   
   it "should mount the filesystem with options if options were passed" do
-    # @new_resource.stub!(:options).and_return("rw,noexec,noauto")
-    # @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} -o #{@new_resource.options} #{@new_resource.device} #{@new_resource.mount_point}"})
-    # @provider.mount_fs()
+    @stdout.stub!(:each).and_yield("#{@new_resource.mount_point} on #{@new_resource.mount_point}")
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
+    @new_resource.stub!(:options).and_return("rw,noexec,noauto")
+    @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} -o #{@new_resource.options} #{@new_resource.device} #{@new_resource.mount_point}"})
+    @provider.mount_fs()
+  end
+  
+  it "should not mount the filesystem if it is mounted" do
+    @current_resource.stub!(:mounted).and_return(true)
+    @provider.should_not_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} #{@new_resource.device} #{@new_resource.mount_point}"})
+    @provider.mount_fs()
   end
   
 end
 
 describe Chef::Provider::Mount::Mount, "umount_fs" do
   before(:each) do
-    @new_resource = mock("Chef::Resource::Mount",
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Mount", 
       :null_object => true,
+      :device => "/dev/sdz1",
       :name => "/tmp/foo",
       :mount_point => "/tmp/foo",
       :fstype => "ext3",
-      :mounted => false
+      :mounted => true
     )
-    @new_resource.stub!(:remount_fs).and_return(false)
     @new_resource.stub!(:supports).and_return({:remount => false})
-
+    
+    @current_resource = mock("Chef::Resource::Mount", 
+      :null_object => true,
+      :device => "/dev/sdz1",
+      :name => "/tmp/foo",
+      :mount_point => "/tmp/foo",
+      :fstype => "ext3",
+      :mounted => true
+    )
+    
     @provider = Chef::Provider::Mount::Mount.new(@node, @new_resource)
     Chef::Resource::Mount.stub!(:new).and_return(@current_resource)
+    @provider.current_resource = @current_resource
+    
+    @status = mock("Status", :exitstatus => 0)
+    @provider.stub!(:popen4).and_return(@status)
+    @stdin = mock("STDIN", :null_object => true)
+    @stdout = mock("STDOUT", :null_object => true)
+    @stderr = mock("STDERR", :null_object => true)
+    @pid = mock("PID", :null_object => true)
   end
   
-  # it "should umount the filesystem if it is mounted" do
-  #   
-  # end
-  # 
-  # it "should log to info for unmounting if the filesystem is not mounted" do
-  #   
-  # end
+  it "should umount the filesystem if it is mounted" do
+    @stdout.stub!(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
+    @provider.should_receive(:run_command).with({:command => "umount #{@new_resource.mount_point}"})
+    @provider.umount_fs()
+  end
+
+  it "should not umount the filesystem if it is not mounted" do
+    @current_resource.stub!(:mounted).and_return(false)
+    @provider.should_not_receive(:run_command).with({:command => "umount #{@new_resource.mount_point}"})
+    @provider.umount_fs()
+  end
 end
 
 describe Chef::Provider::Mount::Mount, "remount_fs" do
   before(:each) do
-    @new_resource = mock("Chef::Resource::Mount",
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Mount", 
       :null_object => true,
+      :device => "/dev/sdz1",
       :name => "/tmp/foo",
       :mount_point => "/tmp/foo",
-      :mounted => false
+      :fstype => "ext3",
+      :mounted => true
     )
-    @new_resource.stub!(:remount_fs).and_return(false)
     @new_resource.stub!(:supports).and_return({:remount => false})
-
+    
+    @current_resource = mock("Chef::Resource::Mount", 
+      :null_object => true,
+      :device => "/dev/sdz1",
+      :name => "/tmp/foo",
+      :mount_point => "/tmp/foo",
+      :fstype => "ext3",
+      :mounted => true
+    )
+    
     @provider = Chef::Provider::Mount::Mount.new(@node, @new_resource)
     Chef::Resource::Mount.stub!(:new).and_return(@current_resource)
+    @provider.current_resource = @current_resource
+    
+    @status = mock("Status", :exitstatus => 0)
+    @provider.stub!(:popen4).and_return(@status)
+    @stdin = mock("STDIN", :null_object => true)
+    @stdout = mock("STDOUT", :null_object => true)
+    @stderr = mock("STDERR", :null_object => true)
+    @pid = mock("PID", :null_object => true)
+
   end
 
-  # it "should use mount -o remount if remount is supported" do
-  #   @new_resource.stub!(:supports).and_return({:remount => true})
-  #   @provider.should_receive(:run_command).with({:command => "mount -o remount #{@new_resource.mount_point}"})
-  #   @provider.remount_fs
-  # end
-  # it "should umount and mount if remount is not supported" do
-  # end
+  it "should use mount -o remount if remount is supported" do
+    @new_resource.stub!(:supports).and_return({:remount => true})
+    @provider.should_receive(:run_command).with({:command => "mount -o remount #{@new_resource.mount_point}"})
+    @provider.remount_fs
+  end
+
+  it "should umount and mount if remount is not supported" do
+    @new_resource.stub!(:suports).and_return({:remount => false})
+    @provider.should_receive(:umount_fs)
+    @provider.should_receive(:sleep).with(1)
+    @provider.should_receive(:mount_fs)
+    @provider.remount_fs()
+  end
   
-  # it "should not try to remount at all if mounted is false" do
-  #   @new_resource.stub!(:mounted => false)
-  # end
+  it "should not try to remount at all if mounted is false" do
+    @current_resource.stub!(:mounted).and_return(false)
+    @provider.should_not_receive(:run_command).with({:command => "mount -o remount #{@new_resource.mount_point}"})
+    @provider.should_not_receive(:umount_fs)
+    @provider.should_not_receive(:sleep).with(1)
+    @provider.should_not_receive(:mount_fs)
+    @provider.remount_fs()
+  end
 end
