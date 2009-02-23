@@ -145,3 +145,35 @@ describe Chef::Provider::Mount, "action_remount" do
   end
 end
 
+%w{mount umount remount}.each do |act|
+  act_string = "#{act}_fs"
+
+  describe Chef::Provider::Service, act_string do
+    before(:each) do
+      @node = mock("Chef::Node", :null_object => true)
+      @new_resource = mock("Chef::Resource::Mount", 
+      :null_object => true,
+      :device => "/dev/sdz1",
+      :name => "/tmp/foo",
+      :mount_point => "/tmp/foo",
+      :fstype => "ext3",
+      :mounted => false
+      )
+      @current_resource = mock("Chef::Resource::Mount",
+      :null_object => true,
+      :device => "/dev/sdz1",
+      :name => "/tmp/foo",
+      :mount_point => "/tmp/foo",
+      :fstype => "ext3",
+      :mounted => false
+      )
+      @provider = Chef::Provider::Mount.new(@node, @new_resource)
+      @provider.current_resource = @current_resource
+      
+    end
+
+    it "should raise Chef::Exception::UnsupportedAction on an unsupported action" do
+      lambda { @provider.send(act_string, @new_resource.name) }.should raise_error(Chef::Exception::UnsupportedAction)
+    end
+  end
+end
