@@ -93,15 +93,15 @@ describe Chef::Provider::Mount::Mount, "mount_fs" do
     Chef::Resource::Mount.stub!(:new).and_return(@current_resource)
   end
   
-  it "should mount the filesystem if it is not mounted" do
-    # @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} #{@new_resource.mount_point}"})
-  end
-  
-  it "should mount the filesystem with options if options were passed" do
-    @new_resource.stub!(:options).and_return("rw,noexec,noauto")
-    @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} -o #{@new_resource.options} #{@new_resource.device} #{@new_resource.mount_point}"})
-    @provider.mount_fs()
-  end
+  # it "should mount the filesystem if it is not mounted" do
+  #   @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} #{@new_resource.mount_point}"})
+  # end
+  # 
+  # it "should mount the filesystem with options if options were passed" do
+  #   @new_resource.stub!(:options).and_return("rw,noexec,noauto")
+  #   @provider.should_receive(:run_command).with({:command => "mount -t #{@new_resource.fstype} -o #{@new_resource.options} #{@new_resource.device} #{@new_resource.mount_point}"})
+  #   @provider.mount_fs()
+  # end
   
 end
 
