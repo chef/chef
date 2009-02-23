@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'cucumber/rake/task'
+
 gems = %w[chef chef-server]
 
 desc "Build the chef gems"
@@ -29,4 +32,10 @@ namespace :dev do
     end
     Dir.chdir("example-repository") { sh("rake install") }
   end
+end
+
+Cucumber::Rake::Task.new(:features) do |t|
+  t.step_pattern = 'features/steps/**/*.rb'
+  supportdir = 'features/support'
+  t.cucumber_opts = "--format pretty -r #{supportdir}"
 end
