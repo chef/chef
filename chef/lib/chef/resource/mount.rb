@@ -31,6 +31,7 @@ class Chef
         @options = "defaults"
         @dump = 0
         @pass = 2
+        @mounted = false
         @action = :mount
         @supports = { :remount => false }
         @allowed_actions.push(:mount, :umount, :remount)
@@ -87,6 +88,14 @@ class Chef
           :pass,
           arg,
           :kind_of => [ Integer, FalseClass ]
+        )
+      end
+      
+      def mounted(arg=nil)
+        set_or_return(
+          :mounted,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
       

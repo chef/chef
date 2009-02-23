@@ -28,7 +28,6 @@ class Chef
 
       def initialize(node, new_resource)
         super(node, new_resource)
-        @mounted = nil
       end
 
       def action_mount

@@ -41,13 +41,13 @@ describe Chef::Provider::Mount::Mount, "load_current_resource" do
     @provider = Chef::Provider::Mount::Mount.new(@node, @new_resource)
     Chef::Resource::Mount.stub!(:new).and_return(@current_resource)
     
-    # @status = mock("Status", :exitstatus => 0)
-    # @provider.stub!(:popen4).and_return(@status)
-    # @stdin = mock("STDIN", :null_object => true)
-    # @stdout = mock("STDOUT", :null_object => true)
-    # @stdout.stub!(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
-    # @stderr = mock("STDERR", :null_object => true)
-    # @pid = mock("PID", :null_object => true)
+    @status = mock("Status", :exitstatus => 0)
+    @provider.stub!(:popen4).and_return(@status)
+    @stdin = mock("STDIN", :null_object => true)
+    @stdout = mock("STDOUT", :null_object => true)
+    @stdout.stub!(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
+    @stderr = mock("STDERR", :null_object => true)
+    @pid = mock("PID", :null_object => true)
   end
   
   it "should create a current resource with the name of the new resource" do
@@ -61,8 +61,8 @@ describe Chef::Provider::Mount::Mount, "load_current_resource" do
   end
   
   it "should set mounted true if the mount point is found in the mounts list" do
-    @stdout.stub!(:each_line).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
-    @current_resource.should_receive(:mounted).with(true)
+    @stdout.stub!(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
+    @current_resource.mounted.should eql(true)
     @provider.load_current_resource 
   end
   

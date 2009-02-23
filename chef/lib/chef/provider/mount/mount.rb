@@ -29,7 +29,6 @@ class Chef
             
         def initialize(node, new_resource)
           super(node, new_resource)
-          @mounted = false
         end
             
         def load_current_resource
@@ -40,7 +39,7 @@ class Chef
             stdout.each do |line|
               case line
               when /^#{@new_resource.device}\s+on\s+#{@new_resource.mount_point}/
-                @mounted = true
+                @current_resource.mounted(true)
                 Chef::Log.debug("Special device #{@new_resource.device} mounted as #{@new_resource.mount_point}")
               end
             end
@@ -59,7 +58,7 @@ class Chef
         end
       
         def mount_fs
-          unless @mounted
+          unless @current_resource.mounted
             if @new_resource.options
               command = "mount -t #{@new_resource.fstype} -o #{@new_resource.options} "
             else
@@ -73,7 +72,7 @@ class Chef
         end
       
         def umount_fs
-          if @mounted
+          if @current_resource.mounted
             command = "umount #{@new_resource.mount_point}"
             run_command(:command => command)
             Chef::Log.info("Unmounted #{@new_resource.mount_point}")
@@ -81,7 +80,7 @@ class Chef
         end
             
         def remount_fs
-          if @mounted and @new_resource.supports[:remount]
+          if @current_resource.mounted and @new_resource.supports[:remount]
             command = "mount -o remount #{@new_resource.mount_point}"
             run_command(:command => command)
             Chef::Log.info("Remounted #{@new_resource.mount_point}")

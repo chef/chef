@@ -81,6 +81,24 @@ describe Chef::Resource::Mount do
     @resource.options.should be_a_kind_of(Array)
   end
 
+  it "should accept true for mounted" do
+    @resource.mounted(true) 
+    @resource.mounted.should eql(true)
+  end
+
+  it "should accept false for mounted" do
+    @resource.mounted(false) 
+    @resource.mounted.should eql(false)
+  end
+
+  it "should set mounted to false by default" do
+    @resource.mounted.should eql(false)
+  end
+
+  it "should not accept a string for mounted" do
+    lambda { @resource.mounted("poop") }.should raise_error(ArgumentError)
+  end
+
   it "should default all feature support to false" do
     support_hash = { :remount => false }
     @resource.supports.should == support_hash
