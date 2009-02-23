@@ -79,7 +79,8 @@ end
 
 describe Chef::Provider::Mount::Mount, "mount_fs" do
   before(:each) do
-    @new_resource = mock("Chef::Resource::Mount",
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Mount", 
       :null_object => true,
       :device => "/dev/sdz1",
       :name => "/tmp/foo",
@@ -88,15 +89,23 @@ describe Chef::Provider::Mount::Mount, "mount_fs" do
       :mounted => false
     )
     @new_resource.stub!(:supports).and_return({:remount => false})
-
+    
+    @current_resource = mock("Chef::Resource::Mount", 
+      :null_object => true,
+      :device => "/dev/sdz1",
+      :name => "/tmp/foo",
+      :mount_point => "/tmp/foo",
+      :fstype => "ext3",
+      :mounted => false
+    )
+    
     @provider = Chef::Provider::Mount::Mount.new(@node, @new_resource)
     Chef::Resource::Mount.stub!(:new).and_return(@current_resource)
+    
     @status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)
-    @stdout.stub!(:each).and_yield("#{@new_resource.mount_point} on #{@new_resource.mount_point}")
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
   end
