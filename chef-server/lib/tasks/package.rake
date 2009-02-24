@@ -6,7 +6,7 @@ spec = Gem::Specification.new do |s|
   s.version = CHEF_SERVER_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
-  s.extra_rdoc_files = ["README.txt", "LICENSE", 'NOTICE']
+  s.extra_rdoc_files = ["README.rdoc", "LICENSE", 'NOTICE']
   s.summary = SUMMARY
   s.description = s.summary
   s.author = AUTHOR
@@ -28,7 +28,7 @@ spec = Gem::Specification.new do |s|
   
   s.bindir       = "bin"
   s.executables  = %w( chef-server chef-indexer )  
-  s.files = %w(LICENSE NOTICE README.txt Rakefile) + 
+  s.files = %w(LICENSE NOTICE README.rdoc Rakefile) + 
     [ "README.txt",
       "LICENSE",
       "NOTICE",
