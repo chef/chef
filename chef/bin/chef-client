@@ -34,14 +34,15 @@ opts = OptionParser.new do |opts|
     :config_file=> {  :short=>"-c CONFIG",        :long=>"--config CONFIG",       :description=>"The Chef Config file to use", :proc=>nil },
     :user=>        {  :short=>"-u USER",          :long=>"--user USER",           :description=>"User to change uid to before daemonizing", :proc=>nil },
     :group=>       {  :short=>"-g GROUP",         :long=>"--group GROUP",         :description=>"Group to change gid to before daemonizing", :proc=>nil },
-    :daemonize=>   {  :short=>"-d",               :long=>"--daemonize",           :description=>"Daemonize the process", :proc=>{ |p| true} },
+    :daemonize=>   {  :short=>"-d",               :long=>"--daemonize",           :description=>"Daemonize the process", :proc=> lambda { |p| true} },
     :interval=>    {  :short=>"-i SECONDS",       :long=>"--interval SECONDS",    :description=>"Run chef-client periodically, in seconds", :proc=>nil },
     :json_attribs=>{  :short=>"-j JSON_ATTRIBS",  :long=>"--json-attributes JSON_ATTRIBS", :description=>"Load attributes from a JSON file", :proc=>nil },
     :node_name=>   {  :short=>"-N NODE_NAME",     :long=>"--node-name NODE_NAME", :description=>"The node name for this client", :proc=>nil },
     :splay=>       {  :short=>"-s SECONDS",       :long=>"--splay SECONDS",       :description=>"The splay time for running at intervals, in seconds", :proc=>nil },
-    :log_level=>   {  :short=>"-l LEVEL",         :long=>"--loglevel LEVEL",      :description=>"Set the log level (debug, info, warn, error, fatal)", :proc=>{ |p| p.to_sym} },
+    :log_level=>   {  :short=>"-l LEVEL",         :long=>"--loglevel LEVEL",      :description=>"Set the log level (debug, info, warn, error, fatal)", :proc=>lambda { |p| p.to_sym} },
     :log_location=>{  :short=>"-L LOGLOCATION",   :long=>"--logfile LOGLOCATION", :description=>"Set the log file location, defaults to STDOUT - recommended for daemonizing", :proc=>nil },
-    :validation_token=>{ :short=>"-t TOKEN",      :long=>"--token TOKEN",         :description=>"Set the openid validation token", :proc=>nil },}
+    :validation_token=>{ :short=>"-t TOKEN",      :long=>"--token TOKEN",         :description=>"Set the openid validation token", :proc=>nil },
+  }
   
   opts.on(val[:short],val[:long],val[:description]) do |c|
     config[key] = (val[:proc] && val[:proc].call) || c
