@@ -23,8 +23,6 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.bindir = "bin"
-  s.executables = %w(chef-indexer chefserver)
 
   ["merb-slices",
   "stomp",

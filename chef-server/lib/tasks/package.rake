@@ -27,8 +27,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "syntax"
   
   s.bindir       = "bin"
-#  s.executables  = %w( chef-indexer chef-server )
-  s.executables  = %w( chef-server )  
+  s.executables  = %w( chef-server chef-indexer )  
   s.files = %w(LICENSE NOTICE README.txt Rakefile) + 
     [ "README.txt",
       "LICENSE",
