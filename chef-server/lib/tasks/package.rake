@@ -6,7 +6,7 @@ spec = Gem::Specification.new do |s|
   s.version = CHEF_SERVER_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
-#  s.extra_rdoc_files = ["README.txt", "LICENSE", 'NOTICE']
+  s.extra_rdoc_files = ["README.txt", "LICENSE", 'NOTICE']
   s.summary = SUMMARY
   s.description = s.summary
   s.author = AUTHOR
@@ -29,18 +29,20 @@ spec = Gem::Specification.new do |s|
   s.bindir       = "bin"
 #  s.executables  = %w( chef-indexer chef-server )
   s.executables  = %w( chef-server )  
- 
-# BUGBUG [cb] add LICENSE and README.txt
-  s.files = %w(Rakefile) + ["{app}/**/*",
-                            "{config}/**/*",
-                            "{doc}/**/*",
-                            "{lib}/**/*",
-                            "{log}/**/*",
-                            "{merb}/**/*",
-                            "{public}/**/*",
-                            "{slices}/**/*",
-                            "{spec}/**/*",
-                            "{tasks}/**/*",].inject([]) { |m,dir| m << Dir.glob(dir) }.flatten
+  s.files = %w(LICENSE NOTICE README.txt Rakefile) + 
+    [ "README.txt",
+      "LICENSE",
+      "NOTICE",
+      "{app}/**/*",
+      "{config}/**/*",
+      "{doc}/**/*",
+      "{lib}/**/*",
+      "{log}/**/*",
+      "{merb}/**/*",
+      "{public}/**/*",
+      "{slices}/**/*",
+      "{spec}/**/*",
+      "{tasks}/**/*",].inject([]) { |m,dir| m << Dir.glob(dir) }.flatten
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|

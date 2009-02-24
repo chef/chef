@@ -19,7 +19,7 @@ chef:
 *  stomp  
 *  ohai  
 
-chef-server, same requires as chef above, plus:
+chef-server and the chefserverslice (merb slice), same requires as chef above, plus:
 
 *  stompserver 
 *  ferret 
