@@ -46,6 +46,7 @@ class Chef
       :json_attribs => nil,
       :cookbook_path => [ "/var/chef/site-cookbooks", "/var/chef/cookbooks" ],
       :validation_token => nil,
+      :node_path => "/var/chef/node",      
       :file_store_path => "/var/chef/store",
       :search_index_path => "/var/chef/search_index",
       :log_level => :info,
