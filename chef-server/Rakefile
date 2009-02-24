@@ -3,7 +3,8 @@ require 'rake/rdoctask'
 
 require 'merb-core'
 require 'merb-core/tasks/merb'
-
+require 'spec'
+require 'spec/rake/spectask'
 require 'chef'
 
 include FileUtils

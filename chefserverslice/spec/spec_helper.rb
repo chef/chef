@@ -1,10 +1,9 @@
 require 'rubygems'
 require 'merb-core'
 require 'merb-slices'
-require 'spec'
 
 # Add chefserverslice.rb to the search path
-Merb::Plugins.config[:merb_slices][:auto_register] = true
+Merb::Plugins.config[:merb_slices][:auto_register] = false
 Merb::Plugins.config[:merb_slices][:search_path]   = File.join(File.dirname(__FILE__), '..', 'lib', 'chefserverslice.rb')
 
 # Require chefserver.rb explicitly so any dependencies are loaded
