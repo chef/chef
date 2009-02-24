@@ -20,9 +20,7 @@ describe  "/chefserverslice/" do
     # You can also use the other webrat methods to click links,
     # fill up forms etc...
     it "should render the default slice layout" do
-      @response.should have_tag(:h1, :content => "Chefserver Slice")
-      @response.should have_selector("div#container div#main")
-      @response.should have_xpath("//div[@id='container']/div[@id='main']")
+      @response.should have_tag(:title, :content => "Chef Server")
     end
     
   end
