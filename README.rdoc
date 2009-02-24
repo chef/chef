@@ -30,6 +30,15 @@ chef-server and the chefserverslice (merb slice), same requires as chef above, p
 *  ruby-openid 
 *  syntax
 
+Interim Note:
+
+Once the {chef,chef-server,chefserverslice}.gem set is installed, do the following:
+
+     > cd /Library/Ruby/Gems/1.8/gems/chef-server<xxx> # or wherever your gems land
+     > sudo rake slices:chefserverslice:install
+
+This installs the chefserverslice into the chef-server merb application
+
 External Servers:
 
 * stompserver (for easy stomp mq testing)

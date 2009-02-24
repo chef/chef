@@ -1,32 +1,43 @@
-= chef-server
+= chef
 
-* http://oss.hjksolutions.com/chef
+* http://www.opscode.com/chef
 
 == DESCRIPTION:
 
-Chef is a configuration management tool inspired by Puppet. 
+Chef is a systems management framework masquerading as a configuration management tool.
 
 I'm in ur netwerk, cookin up yer servers. :)
 
-== FEATURES/PROBLEMS:
-
-
-== SYNOPSIS:
-
-
 == REQUIREMENTS:
 
-RubyGems:
+chef:
 
-* stomp
-* stompserver
-* ultraviolet
-* facter
-* ferret
-* merb-core
-* haml
-* ruby-openid
-* json
+*  ruby-openid  
+*  json  
+*  erubis  
+*  extlib  
+*  stomp  
+*  ohai  
+
+chef-server and the chefserverslice (merb slice), same requires as chef above, plus:
+
+*  stompserver 
+*  ferret 
+*  merb-core 
+*  merb-haml 
+*  mongrel 
+*  haml
+*  ruby-openid 
+*  syntax
+
+Interim Note:
+
+Once the {chef,chef-server,chefserverslice}.gem set is installed, do the following:
+
+     > cd /Library/Ruby/Gems/1.8/gems/chef-server<xxx> # or wherever your gems land
+     > sudo rake slices:chefserverslice:install
+
+This installs the chefserverslice into the chef-server merb application
 
 External Servers:
 
@@ -41,19 +52,25 @@ Install all of the above.  To fire up a develpment environment, do the following
   * Start stompserver with 'stompserver' 
   * Start chef-indexer with:
 
-		./bin/chef-indexer -l debug -c ./config/chef-server.rb
+    chef-indexer -l debug 
 
-  * Start chef-server on port 4000 with:
+  * Start chef-server:
 
-    ./bin/chef-server
+    chef-server -N -c 2
 
-  * Start chef-server on port 4001 with:
+  * Test run chef to begin node registration:
 
-    ./bin/chef-server -p 4001
+    sudo ./bin/chef-client 
+
+  * Validate the node registration:
+
+    Visit http://localhost:4000
+      Login, enter an openid URL (see http://openid.net/get/)
+      Registrations, click Validate
 
   * Test run chef with:
 
-    sudo ./bin/chef-client -l debug -c ./examples/config/chef-solo.rb
+    chef-client 
 
 == LICENSE:
 
