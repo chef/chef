@@ -28,6 +28,7 @@ Given /^a validated node$/ do
 end
 
 Given /^it includes the recipe '(.+)'$/ do |recipe|
+  @recipe = recipe
   @client.node.recipes << recipe
   @client.save_node
 end
