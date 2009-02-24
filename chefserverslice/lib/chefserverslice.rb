@@ -37,8 +37,9 @@ if defined?(Merb::Plugins)
       # create the couch design docs for nodes and openid registrations
       Chef::Node.create_design_document
       Chef::OpenIDRegistration.create_design_document
-      # BUGBUG [cb] This doesn't actually work here
+
       Chef::Log.logger = Merb.logger
+      Chef::Log.info("Compiling routes... (totally normal to see 'Cannot find resource model')")      
     end
     
     # Initialization hook - runs before AfterAppLoads BootLoader
