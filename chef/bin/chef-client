@@ -30,7 +30,7 @@ config = {
 }
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
-  { 
+  client_option_hash = { 
     :config_file=> {  :short=>"-c CONFIG",        :long=>"--config CONFIG",       :description=>"The Chef Config file to use", :proc=>nil },
     :user=>        {  :short=>"-u USER",          :long=>"--user USER",           :description=>"User to change uid to before daemonizing", :proc=>nil },
     :group=>       {  :short=>"-g GROUP",         :long=>"--group GROUP",         :description=>"Group to change gid to before daemonizing", :proc=>nil },
@@ -43,9 +43,11 @@ opts = OptionParser.new do |opts|
     :log_location=>{  :short=>"-L LOGLOCATION",   :long=>"--logfile LOGLOCATION", :description=>"Set the log file location, defaults to STDOUT - recommended for daemonizing", :proc=>nil },
     :validation_token=>{ :short=>"-t TOKEN",      :long=>"--token TOKEN",         :description=>"Set the openid validation token", :proc=>nil },
   }
-  
-  opts.on(val[:short],val[:long],val[:description]) do |c|
-    config[key] = (val[:proc] && val[:proc].call) || c
+
+  client_option_hash.each do |opt_key, opt_val|
+    opts.on(opt_val[:short],opt_val[:long],opt_val[:description]) do |c|
+      config[opt_key] = (opt_val[:proc] && opt_val[:proc].call) || c
+    end
   end
   
   opts.on_tail("-h", "--help", "Show this message") do

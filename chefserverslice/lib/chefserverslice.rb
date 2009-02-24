@@ -110,10 +110,6 @@ if defined?(Merb::Plugins)
       scope.match('/openid/consumer/complete').to(:controller => 'openid_consumer', :action => 'complete').name(:openid_consumer_complete)
       scope.match('/openid/consumer/logout').to(:controller => 'openid_consumer', :action => 'logout').name(:openid_consumer_logout)
 
-      scope.resources :nodes
-      scope.resources :searches, :path=>"search", :controller=>"search" do 
-        scope.resources :entries, :controller=>"search_entries"
-      end
       # the slice is mounted at /chefserverslice - note that it comes before default_routes
       scope.match('/').to(:controller => 'nodes', :action =>'index').name(:top)      
       # enable slice-level default routes by default
