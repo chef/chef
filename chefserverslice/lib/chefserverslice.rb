@@ -66,6 +66,7 @@ if defined?(Merb::Plugins)
     def self.setup_router(scope)
       
       scope.resources :nodes
+
       scope.resources :searches, :path => "search", :controller => "search" do
         scope.resources :entries, :controller => "search_entries"
       end 
@@ -81,20 +82,7 @@ if defined?(Merb::Plugins)
       scope.match("/cookbooks/:cookbook_id/recipes").to(:controller => "cookbook_recipes", :action => "index")
       scope.match("/cookbooks/:cookbook_id/attributes").to(:controller => "cookbook_attributes", :action => "index")      
       
-      scope.resources :cookbooks do
-        scope.resources :templates, :controller => "cookbook_templates"
-        scope.resources :files, :controller => "cookbook_files"
-        scope.resources :recipes, :controller => "cookbook_recipes"
-        scope.resources :attributes, :controller => "cookbook_attributes"
-        scope.resources :definitions, :controller => "cookbook_definitions"
-        scope.resources :libraries, :controller => "cookbook_libraries"
-      end
-      
-      #r.scope.resources :openid do |res|
-      #  res.scope.resources :register, :controller => "openid_register"
-      #  res.scope.resources :server, :controller => "openid_server"
-      #end
-      
+      scope.resources :cookbooks
       scope.resources :registrations, :controller => "openid_register" 
       scope.resources :registrations, :controller => "openid_register", :member => { :validate => :post }
       scope.resources :registrations, :controller => "openid_register", :member => { :admin => :post }
@@ -117,7 +105,7 @@ if defined?(Merb::Plugins)
       # the slice is mounted at /chefserverslice - note that it comes before default_routes
       scope.match('/').to(:controller => 'nodes', :action =>'index').name(:top)      
       # enable slice-level default routes by default
-      scope.default_routes
+      # scope.default_routes
     end
     
   end
