@@ -14,7 +14,7 @@ if defined?(Merb::Plugins)
   Merb.disable :json
   
   # Slice configuration - set this in a before_app_loads callback.
-  # By default a Slice uses its own layout, so you can swicht to 
+  # By default a Slice uses its own layout, so you can switch to 
   # the main application layout or no layout at all if needed.
   # 
   # Configuration options:
