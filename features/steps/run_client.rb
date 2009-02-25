@@ -16,23 +16,33 @@
 # limitations under the License.
 #
 
-$:.unshift(File.dirname(__FILE__)) unless
-  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
-
-require 'rubygems'
-require 'extlib'
-require 'chef/exceptions'
-require 'chef/log'
-require 'chef/config'
-Dir[File.join(File.dirname(__FILE__), 'chef/mixin/**/*.rb')].sort.each { |lib| require lib }
-
-class Chef
-  VERSION = '0.5.5'
-  
-  class << self
-    def fatal!(msg, err = -1)
-      Chef::Log.fatal(msg)
-      exit err
-    end
+###
+# When
+###
+When /^I run the chef\-client$/ do
+  status = Chef::Mixin::Command.popen4(
+    "chef-client -c #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))}", :waitlast => true) do |p, i, o, e|
+    i.close
+    @stdout = o.gets(nil)
+    @stderr = e.gets(nil)
   end
+  @status = status
+end
+
+###
+# Then
+###
+Then /^the run should exit '(.+)'$/ do |exit_code|
+  begin
+    @status.exitstatus.should eql(exit_code.to_i)
+  rescue 
+    puts "--- run stdout: #{@stdout}"
+    puts @stdout
+    puts "--- run stderr: #{@stderr}"
+    raise
+  end
+end
+
+Then /^stdout should have '(.+)'$/ do |to_match|
+  @stdout.should match(/#{to_match}/m)
 end

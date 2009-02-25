@@ -123,6 +123,10 @@ class Chef
         if Chef::Config[:ssl_verify_mode] == :verify_none
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         end
+        if File.exists?(Chef::Config[:ssl_client_cert])
+          http.cert = OpenSSL::X509::Certificate.new(File.read(Chef::Config[:ssl_client_cert]))
+          http.key = OpenSSL::PKey::RSA.new(File.read(Chef::Config[:ssl_client_key]))
+        end
       end
       http.read_timeout = Chef::Config[:rest_timeout]
       headers = Hash.new

@@ -1,3 +1,42 @@
+Fri Feb 13 12:26:07 PST 2009
+Release Notes - Chef - Version 0.5.4
+http://tickets.opscode.com/
+
+** Bug
+    * [CHEF-48] - Invalid default recipe causes merb 500 error
+    * [CHEF-64] - chef-server pukes if you type an invalid url in the openid login
+    * [CHEF-72] - Templates used in definitions searched for only the cookbook they are used in
+    * [CHEF-76] - Search queries return empty results occationally
+    * [CHEF-77] - Indexer broken - theoretically creates index, but cannot read them
+    * [CHEF-82] - user provider doesn't handle 'shadow' not being installed correctly
+    * [CHEF-87] - File specificity (preferred file) is broken by dotfiles
+    * [CHEF-89] - remote_file doesn't support being passed a URL as a source, but the documentation argues otherwise - solo only
+    * [CHEF-90] - Search in recipes does not allow for attribute selection, even though the REST API does.
+    * [CHEF-92] - When loading the prior resource we should never load its action
+    * [CHEF-94] - Definitions should allow access to the node object within the parameter setting block
+    * [CHEF-95] - not_if's string behaviour is broken, closed stream
+    * [CHEF-96] - group resource doesn't if members is empty so it always tried to add them
+    * [CHEF-97] - not_if and only_if cause exceptions in popen4
+    * [CHEF-108] - @@seen_recipes is a class variable, this makes chef-client and chef-solo *not* run any recipes after the first run in daemon mode
+    * [CHEF-110] - interval / splay needs to be supported outside of daemonized mode for chef-client
+    * [CHEF-111] - user provider mistakenly attempts to modify the user even if no changes are required
+    * [CHEF-114] - when not given an interval on the command line, chef-client runs in a tight loop driving server load up
+    * [CHEF-117] - Can't setgid if you have already setuid-ed
+    * [CHEF-123] - User provider fails to correctly compare a numeric GID to a string GID
+    * [CHEF-124] - Chef-server should set reload_classes false
+    * [CHEF-125] - chef-server init.rb should set Merb log_stream to the location supplied by chef/server.rb
+
+** Improvement
+    * [CHEF-71] - service resource :supports attribute too rubyish and unlike :action
+    * [CHEF-73] - When specifying a custom gem source for a gem_package, also include rubyforge in the list of sources so gem dependencies can be installed
+    * [CHEF-106] - refactor search, move attributes to search function  : chef/chef-server/lib/chef/search.rb, chef/chef-server/lib/controllers/search.rb
+    * [CHEF-107] - more informative message for info log on package upgrade
+    * [CHEF-127] - cron resource should log to info for update/add instead of debug
+
+** New Feature
+    * [CHEF-59] - Package resource need Redhat provider
+    * [CHEF-91] - Chef Client should reload the configuration on SIGHUP
+
 Sat Jan 31 18:52:41 PST 2009
 Release Notes - Chef - Version 0.5.2
 http://tickets.opscode.com/

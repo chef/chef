@@ -16,23 +16,16 @@
 # limitations under the License.
 #
 
-$:.unshift(File.dirname(__FILE__)) unless
-  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
+Before do
+  system("mkdir -p #{tmpdir}")
+  cdb = Chef::CouchDB.new(Chef::Config[:couchdb_url])
+  cdb.create_db
+  Chef::Node.create_design_document
+  Chef::OpenIDRegistration.create_design_document
+end
 
-require 'rubygems'
-require 'extlib'
-require 'chef/exceptions'
-require 'chef/log'
-require 'chef/config'
-Dir[File.join(File.dirname(__FILE__), 'chef/mixin/**/*.rb')].sort.each { |lib| require lib }
-
-class Chef
-  VERSION = '0.5.5'
-  
-  class << self
-    def fatal!(msg, err = -1)
-      Chef::Log.fatal(msg)
-      exit err
-    end
-  end
+After do
+  r = Chef::REST.new(Chef::Config[:couchdb_url])
+  r.delete_rest("#{Chef::Config[:couchdb_database]}/")
+  system("rm -rf #{tmpdir}")
 end

@@ -126,7 +126,8 @@ describe Chef::Provider::Package, "action_upgrade" do
       :null_object => true,
       :name => "emacs",
       :version => nil,
-      :package_name => "emacs"
+      :package_name => "emacs", 
+      :to_s => 'package[emacs]'
     )
     @current_resource = mock("Chef::Resource::Package", 
       :null_object => true,
@@ -156,6 +157,12 @@ describe Chef::Provider::Package, "action_upgrade" do
   it "should not install the package if the current version is the candidate version" do
     @current_resource.stub!(:version).and_return("1.0")
     @provider.should_not_receive(:upgrade_package)
+    @provider.action_upgrade
+  end
+  
+  it "should print the word 'uninstalled' if there was no original version" do
+    @current_resource.stub!(:version).and_return(nil)
+    Chef::Log.should_receive(:info).with("Upgrading #{@new_resource} version from uninstalled to 1.0")
     @provider.action_upgrade
   end
 end

@@ -53,6 +53,8 @@ class Chef
       :log_location => STDOUT,
       :openid_providers => nil,
       :ssl_verify_mode => :verify_none,
+      :ssl_client_cert => "",
+      :ssl_client_key => "",
       :rest_timeout => 60,
       :couchdb_url => "http://localhost:5984",
       :registration_url => "http://localhost:4000",

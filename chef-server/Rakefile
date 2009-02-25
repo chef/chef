@@ -10,7 +10,7 @@ require 'chef'
 include FileUtils
 
 GEM = "chef-server"
-CHEF_SERVER_VERSION = "0.5.3"
+CHEF_SERVER_VERSION = "0.5.5"
 AUTHOR = "Opscode"
 EMAIL = "chef@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"

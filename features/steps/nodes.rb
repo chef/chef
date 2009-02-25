@@ -16,23 +16,27 @@
 # limitations under the License.
 #
 
-$:.unshift(File.dirname(__FILE__)) unless
-  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
-
-require 'rubygems'
-require 'extlib'
-require 'chef/exceptions'
-require 'chef/log'
-require 'chef/config'
-Dir[File.join(File.dirname(__FILE__), 'chef/mixin/**/*.rb')].sort.each { |lib| require lib }
-
-class Chef
-  VERSION = '0.5.5'
-  
-  class << self
-    def fatal!(msg, err = -1)
-      Chef::Log.fatal(msg)
-      exit err
-    end
-  end
+###
+# Given
+###
+Given /^a validated node$/ do
+  @client.validation_token = Chef::Config[:validation_token] = 'ceelo'
+  @client.build_node
+  @client.node.recipes = "integration_setup"
+  @client.register
+  @client.authenticate
 end
+
+Given /^it includes the recipe '(.+)'$/ do |recipe|
+  @recipe = recipe
+  @client.node.recipes << recipe
+  @client.save_node
+end
+
+###
+# When
+###
+When /^the node is converged$/ do
+  @client.run
+end
+
