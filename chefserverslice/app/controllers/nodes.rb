@@ -39,7 +39,7 @@ class Chefserverslice::Nodes < Chefserverslice::Application
       raise NotFound, "Cannot load node #{params[:id]}"
     end
     if params[:ajax] == "true"
-      render JSON.pretty_generate(@node)
+      render JSON.pretty_generate(@node), :layout=>false
     else
       display @node
     end
