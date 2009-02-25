@@ -219,7 +219,6 @@ class Chef
         end
         run_request(:GET, create_url(res['location']), false, limit - 1, raw)
       else
-        Chef::Log.error("Failed REST request to: #{url}, #{res}")
         res.error!
       end
     end
