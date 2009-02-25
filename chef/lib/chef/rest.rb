@@ -162,7 +162,7 @@ class Chef
       http_retries = 1
 
       # TODO - Figure out how to test this block - I really have no idea how 
-      # to do it wouthout actually calling http.request... 
+      # to do it without actually calling http.request... 
       begin
         res = http.request(req) do |response|
           if raw
@@ -219,6 +219,7 @@ class Chef
         end
         run_request(:GET, create_url(res['location']), false, limit - 1, raw)
       else
+        Chef::Log.error("Failed REST request to: #{url}, #{res}")
         res.error!
       end
     end

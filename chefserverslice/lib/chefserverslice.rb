@@ -113,8 +113,7 @@ if defined?(Merb::Plugins)
       # the slice is mounted at /chefserverslice - note that it comes before default_routes
       scope.match('/').to(:controller => 'nodes', :action =>'index').name(:top)      
       # enable slice-level default routes by default
-      # [cb] disable default routing in favor of explicit (see scope.resources above)
-      #scope.default_routes
+      scope.default_routes
     end
     
   end
