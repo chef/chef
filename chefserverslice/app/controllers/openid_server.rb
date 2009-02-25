@@ -61,12 +61,12 @@ class Chefserverslice::OpenidServer < Chefserverslice::Application
       elsif self.is_authorized(identity, oidreq.trust_root)
         oidresp = oidreq.answer(true, nil, identity)
       elsif oidreq.immediate
-        server_url = url :openid_server
+        server_url = slice_url :openid_server
         oidresp = oidreq.answer(false, server_url)
       else
         if content_type != 'application/json'
           session[:last_oidreq] = oidreq
-          response = { :action => url(:openid_server_decision) }
+          response = { :action => slice_url(:openid_server_decision) }
           return response.to_json
         else
           return show_decision_page(oidreq)

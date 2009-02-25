@@ -46,7 +46,7 @@ opts = OptionParser.new do |opts|
 
   client_option_hash.each do |opt_key, opt_val|
     opts.on(opt_val[:short],opt_val[:long],opt_val[:description]) do |c|
-      config[opt_key] = (opt_val[:proc] && opt_val[:proc].call) || c
+      config[opt_key] = (opt_val[:proc] && opt_val[:proc].call(c)) || c
     end
   end
   
