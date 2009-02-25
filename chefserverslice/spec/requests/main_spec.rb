@@ -24,5 +24,9 @@ describe  "/chefserverslice/" do
     end
     
   end
+
+  after(:all) do
+    dismount_slice
+  end
   
 end
