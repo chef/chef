@@ -34,6 +34,7 @@ class Chef
         @files_group = nil
         @files_mode = 0644
         @allowed_actions.push(:create, :delete)
+        @cookbook = nil
       end
       
       def source(args=nil)
@@ -73,6 +74,14 @@ class Chef
           :files_owner,
           arg,
           :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
+        )
+      end
+      
+      def cookbook(args=nil)
+        set_or_return(
+          :cookbook,
+          args,
+          :kind_of => String
         )
       end
       

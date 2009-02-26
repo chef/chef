@@ -91,7 +91,7 @@ class Chef
           if ::File.exists?("/etc/rc.conf")
             read_rc_conf.each do |line|
               case line
-              when /#{current_resource.service_name}_enable="(\w+)"/
+              when /#{service_enable_variable_name}="(\w+)"/
                 if $1 =~ /[Yy][Ee][Ss]/
                   @current_resource.enabled true
                 elsif $1 =~ /[Nn][Oo][Nn]?[Oo]?[Nn]?[Ee]?/
@@ -117,12 +117,29 @@ class Chef
           end
         end
         
+        
+        # The variable name used in /etc/rc.conf for enabling this service
+        def service_enable_variable_name
+          # Look for name="foo" in the shell script @init_command. Use this for determining the variable name in /etc/rc.conf
+          # corresponding to this service
+          # For example: to enable the service mysql-server with the init command /usr/local/etc/rc.d/mysql-server, you need
+          # to set mysql_enable="YES" in /etc/rc.conf
+          makefile = ::File.open(@init_command)
+          makefile.each do |line|
+            case line
+            when /^name="?(\w+)"?/
+              return $1 + "_enable"
+            end
+          end
+          raise Chef::Exception::Service, "Could not find name=\"service\" line in #{@init_command}"
+        end
+        
         def set_service_enable(value)
           lines = read_rc_conf
           # Remove line that set the old value
-          lines.delete_if { |line| line =~ /#{current_resource.service_name}_enable/ }
+          lines.delete_if { |line| line =~ /#{service_enable_variable_name}/ }
           # And append the line that sets the new value at the end
-          lines << "#{current_resource.service_name}_enable=\"#{value}\""
+          lines << "#{service_enable_variable_name}=\"#{value}\""
           write_rc_conf(lines)
         end
         
