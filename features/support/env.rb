@@ -35,10 +35,22 @@ class ChefWorld
   def initialize
     @client = Chef::Client.new
     @tmpdir = File.join(Dir.tmpdir, "chef_integration")
+    @cleanup_files = Array.new
+    @cleanup_dirs = Array.new
+    @recipe = nil
   end
 end
 
 World do
   ChefWorld.new
+end
+
+After do
+  @cleanup_files.each do |file|
+    system("rm #{file}")
+  end
+  @cleanup_dirs.each do |dir|
+    system("rm -rf #{dir}")
+  end
 end
 

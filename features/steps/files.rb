@@ -53,7 +53,13 @@ Then /^the (.)time of '(.+)' should be different$/ do |time_type, filename|
   end
 end
 
-Then /^the file named '(.+)' should be owned by '(.+)'$/ do |filename, owner|
-  
+Then /^a file named '(.+)' should contain '(.+)'$/ do |filename, contents|
+  file = IO.read(File.join(tmpdir, filename))
+  file.should =~ /#{contents}/m
+end
+
+Then /^a file named '(.+)' should be from the '(.+)' specific directory$/ do |filename, specificity|
+  file = IO.read(File.join(tmpdir, filename))
+  file.should == "#{specificity}\n"
 end
 
