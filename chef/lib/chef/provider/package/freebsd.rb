@@ -70,26 +70,26 @@ class Chef
         
           @current_resource.version(current_installed_version(@new_resource.package_name))
           Chef::Log.debug("Current version is #{@current_resource.version}") if @current_resource.version
+          Chef::Log.debug("Using #{port_name} as package name")
           
+          @candidate_version = ports_candidate_version(port_path_from_name(port_name))
+          Chef::Log.debug("Ports candidate version is #{@candidate_version}") if @candidate_version
+          
+          @current_resource
+        end
+        
+        def port_name
           # if passed ports:package, build DIST_SUBDIR from ports
           # if passed a sole word in source that isn't ports, consider it DIST_SUBDIR, install package
           # otherwise, the user meant what they said
           case @new_resource.source
             when /^(?!ports)\w+/
-              port_name = @new_resource.source
+              @new_resource.source
             when /^ports:(\w+)/
-              port_name = $1
+              $1
             else
-              port_name = @new_resource.package_name
+              @new_resource.package_name
           end
-          Chef::Log.debug("Using #{port_name} as package name")
-          
-          @port_path = port_path_from_name(port_name)
-
-          @candidate_version = ports_candidate_version(@port_path)
-          Chef::Log.debug("Ports candidate version is #{@candidate_version}") if @candidate_version
-          
-          @current_resource
         end
 
         def install_package(name, version)
@@ -98,7 +98,7 @@ class Chef
             when /^ports$/
               run_command(
                 :command => "make -DBATCH install",
-                :cwd => "#{@port_path}"
+                :cwd => "#{port_path_from_name(port_name)}"
               )
             when /^http/, /^ftp/
               run_command(

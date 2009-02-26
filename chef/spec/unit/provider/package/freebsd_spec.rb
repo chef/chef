@@ -125,9 +125,17 @@ describe Chef::Provider::Package::Freebsd, "install_package" do
   end
 
   it "should run pkg_add -r with the package name" do
+    @new_resource.stub!(:source)
     @provider.should_receive(:run_command).with({
       :command => "pkg_add -r zsh",
     })
+    @provider.install_package("zsh", "4.3.6_7")
+  end
+
+  it "should run make install when installing from ports" do
+    @new_resource.stub!(:source).and_return("ports")
+    @provider.should_receive(:port_path_from_name).with("zsh").and_return("/usr/ports/shells/zsh")
+    @provider.should_receive(:run_command).with(:command => "make -DBATCH install", :cwd => "/usr/ports/shells/zsh")
     @provider.install_package("zsh", "4.3.6_7")
   end
 end
