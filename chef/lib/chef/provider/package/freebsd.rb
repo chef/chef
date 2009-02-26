@@ -78,6 +78,7 @@ class Chef
           @current_resource
         end
         
+        # The name of the leaf directory in /usr/ports
         def port_name
           # if passed ports:package, build DIST_SUBDIR from ports
           # if passed a sole word in source that isn't ports, consider it DIST_SUBDIR, install package
@@ -91,6 +92,11 @@ class Chef
               @new_resource.package_name
           end
         end
+        
+        # The name of the package as understood by pkg_add and pkg_info
+        def package_name
+          @new_resource.package_name
+        end
 
         def install_package(name, version)
           unless @current_resource.version
@@ -102,10 +108,10 @@ class Chef
               )
             when /^http/, /^ftp/
               run_command(
-                :command => "pkg_add -r #{@new_resource.name}",
+                :command => "pkg_add -r #{package_name}",
                 :environment => { "PACKAGESITE" => @new_resource.source }
               )
-              Chef::Log.info("Installed package #{@new_resource.name} from: #{@new_resource.source}")
+              Chef::Log.info("Installed package #{package_name} from: #{@new_resource.source}")
             when /^\//
               run_command(
                 :command => "pkg_add #{@new_resource.name}",
@@ -114,9 +120,9 @@ class Chef
               Chef::Log.info("Installed package #{@new_resource.name} from: #{@new_resource.source}")
             else
               run_command(
-                :command => "pkg_add -r #{@new_resource.name}"
+                :command => "pkg_add -r #{package_name}"
               )
-              Chef::Log.info("Installed package #{@new_resource.name}")
+              Chef::Log.info("Installed package #{package_name}")
             end
           end
         end
@@ -124,9 +130,9 @@ class Chef
         def remove_package(name, version)
           if @current_resource.version
             run_command(
-              :command => "pkg_delete #{@current_resource.name}-#{@current_resource.version}"
+              :command => "pkg_delete #{package_name}-#{@current_resource.version}"
             )
-            Chef::Log.info("Removed package #{@current_resource.name}-#{@current_resource.version}")
+            Chef::Log.info("Removed package #{package_name}-#{@current_resource.version}")
           end
         end
       end
