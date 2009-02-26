@@ -25,7 +25,7 @@ class Chef
     class Package
       class Freebsd < Chef::Provider::Package  
       
-        def current_installed_version(package_name)
+        def current_installed_version
           command = "pkg_info -E \"#{package_name}*\""
           status = popen4(command) do |pid, stdin, stdout, stderr|
             stdout.each do |line|
@@ -68,7 +68,7 @@ class Chef
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
         
-          @current_resource.version(current_installed_version(@new_resource.package_name))
+          @current_resource.version(current_installed_version)
           Chef::Log.debug("Current version is #{@current_resource.version}") if @current_resource.version
           Chef::Log.debug("Using #{port_name} as package name")
           

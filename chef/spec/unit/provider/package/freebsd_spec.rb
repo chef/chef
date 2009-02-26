@@ -43,24 +43,24 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
 
   it "should create a current resource with the name of the new_resource" do
     Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
-    @provider.should_receive(:current_installed_version).with("zsh").and_return(nil)
+    @provider.should_receive(:current_installed_version).and_return(nil)
     @provider.load_current_resource
   end
 
   it "should return a version if the package is installed" do
-    @provider.should_receive(:current_installed_version).with("zsh").and_return("4.3.6_7")
+    @provider.should_receive(:current_installed_version).and_return("4.3.6_7")
     @current_resource.should_receive(:version).with("4.3.6_7").and_return(true)
     @provider.load_current_resource
   end
 
   it "should return nil if the package is not installed" do
-    @provider.should_receive(:current_installed_version).with("zsh").and_return(nil)
+    @provider.should_receive(:current_installed_version).and_return(nil)
     @current_resource.should_receive(:version).with(nil).and_return(true)
     @provider.load_current_resource
   end
 
   it "should return a candidate version if it exists" do
-    @provider.should_receive(:current_installed_version).with("zsh").and_return(nil)
+    @provider.should_receive(:current_installed_version).and_return(nil)
     @provider.load_current_resource
     @provider.candidate_version.should eql("4.3.6")
   end
@@ -68,6 +68,13 @@ end
 
 describe Chef::Provider::Package::Freebsd, "system call wrappers" do
   before(:each) do
+    @new_resource = mock("Chef::Resource::Package", 
+      :null_object => true,
+      :name => "zsh",
+      :package_name => "zsh",
+      :version => nil
+    )
+
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)    
 
     @status = mock("Status", :exitstatus => 0)
@@ -79,12 +86,12 @@ describe Chef::Provider::Package::Freebsd, "system call wrappers" do
 
   it "should return the version number when it is installed" do
     @provider.should_receive(:popen4).with('pkg_info -E "zsh*"').and_yield(@pid, @stdin, ["zsh-4.3.6_7"], @stderr).and_return(@status)
-    @provider.current_installed_version("zsh").should == "4.3.6_7"
+    @provider.current_installed_version.should == "4.3.6_7"
   end
 
   it "should return nil when the package is not installed" do
     @provider.should_receive(:popen4).with('pkg_info -E "zsh*"').and_yield(@pid, @stdin, [], @stderr).and_return(@status)
-    @provider.current_installed_version("zsh").should be_nil
+    @provider.current_installed_version.should be_nil
   end
   
   it "should return the port path for a valid port name" do
