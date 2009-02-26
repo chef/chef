@@ -69,6 +69,10 @@ Gem.path.unshift(Merb.root / "gems")
 # disable the ActiveSupport json annoying stuff, as it breaks our to_json
 Merb.disable :json
 
+Merb::BootLoader.before_app_loads do
+  Chef::Log.logger = Merb.logger
+end
+
 # ==== Dependencies
 
 # These are some examples of how you might specify dependencies.
@@ -163,7 +167,6 @@ Merb::Config.use do |c|
   c[:log_stream] = Chef::Config[:log_location]
 end
 
-Chef::Log.logger = Merb.logger
 Chef::Log.info("Compiling routes... (totally normal to see 'Cannot find resource model')")
 
 Merb::Router.prepare do |r|
