@@ -53,7 +53,7 @@ class Chef
           nil
         end
         
-        def ports_candidate_version(port_path)
+        def ports_candidate_version
           command = "cd #{port_path}; make -V PORTVERSION"
           status = popen4(command) do |pid, stdin, stdout, stderr|
             return stdout.readline.strip
@@ -72,7 +72,7 @@ class Chef
           Chef::Log.debug("Current version is #{@current_resource.version}") if @current_resource.version
           Chef::Log.debug("Using #{port_name} as package name")
           
-          @candidate_version = ports_candidate_version(port_path)
+          @candidate_version = ports_candidate_version
           Chef::Log.debug("Ports candidate version is #{@candidate_version}") if @candidate_version
           
           @current_resource

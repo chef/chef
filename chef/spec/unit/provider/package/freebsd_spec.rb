@@ -37,8 +37,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)    
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
 
-    @provider.should_receive(:port_path).and_return("/usr/ports/zsh")
-    @provider.should_receive(:ports_candidate_version).with("/usr/ports/zsh").and_return("4.3.6")
+    @provider.should_receive(:ports_candidate_version).and_return("4.3.6")
   end
 
   it "should create a current resource with the name of the new_resource" do
@@ -102,9 +101,10 @@ describe Chef::Provider::Package::Freebsd, "system call wrappers" do
 
   # Not happy with the form of these tests as they are far too closely tied to the implementation and so very fragile.
   it "should return the ports candidate version when given a valid port path" do
+    @provider.should_receive(:port_path).and_return("/usr/ports/shells/zsh")
     @provider.should_receive(:popen4).with("cd /usr/ports/shells/zsh; make -V PORTVERSION").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     @stdout.should_receive(:readline).and_return("4.3.6\n")
-    @provider.ports_candidate_version("/usr/ports/shells/zsh").should == "4.3.6"
+    @provider.ports_candidate_version.should == "4.3.6"
   end
 end
 
