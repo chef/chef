@@ -72,6 +72,7 @@ describe Chef::Provider::Package::Freebsd, "system call wrappers" do
 
     @status = mock("Status", :exitstatus => 0)
     @stdin = mock("STDIN", :null_object => true)
+    @stdout = mock("STDOUT", :null_object => true)
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
   end
@@ -94,6 +95,13 @@ describe Chef::Provider::Package::Freebsd, "system call wrappers" do
   it "should return nil for a invalid port name" do
     @provider.should_receive(:popen4).with("whereis -s foo").and_yield(@pid, @stdin, ["foo:"], @stderr).and_return(@status)
     @provider.port_path_from_name("foo").should be_nil
+  end
+  
+  # Not happy with the form of these tests as they are far too closely tied to the implementation and so very fragile.
+  it "should return the ports candidate version when given a valid port path" do
+    @provider.should_receive(:popen4).with("cd /usr/ports/shells/zsh; make -V PORTVERSION").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    @stdout.should_receive(:readline).and_return("4.3.6\n")
+    @provider.ports_candidate_version("/usr/ports/shells/zsh").should == "4.3.6"
   end
 end
 
