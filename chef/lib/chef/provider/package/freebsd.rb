@@ -83,9 +83,9 @@ class Chef
           # if passed a sole word in source that isn't ports, consider it DIST_SUBDIR, install package
           # otherwise, the user meant what they said
           case @new_resource.source
-            when /^(?!ports)\w+/
+            when /^(?!ports)[\w-]+/
               @new_resource.source
-            when /^ports:(\w+)/
+            when /^ports:([\w-]+)/
               $1
             else
               @new_resource.package_name
@@ -95,7 +95,7 @@ class Chef
         def install_package(name, version)
           unless @current_resource.version
             case @new_resource.source
-            when /^ports$/
+            when /^ports$/, /^ports:/
               run_command(
                 :command => "make -DBATCH install",
                 :cwd => "#{port_path_from_name(port_name)}"

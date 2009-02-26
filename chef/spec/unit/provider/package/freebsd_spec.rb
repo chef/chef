@@ -140,6 +140,39 @@ describe Chef::Provider::Package::Freebsd, "install_package" do
   end
 end
 
+describe Chef::Provider::Package::Freebsd, "ruby-iconv (package with a dash in the name)" do
+  before(:each) do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Package",
+      :null_object => true,
+      :name => "ruby18-iconv",
+      :package_name => "ruby18-iconv",
+      :version => nil
+    )
+    @current_resource = mock("Chef::Resource::Package", 
+      :null_object => true,
+      :name => "ruby18-iconv",
+      :package_name => "ruby18-iconv",
+      :version => nil
+    )
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
+    @provider.current_resource = @current_resource
+  end
+
+  it "should run pkg_add -r with the package name" do
+    @new_resource.stub!(:source).and_return("ruby-iconv")
+    @provider.should_receive(:run_command).with(:command => "pkg_add -r ruby18-iconv")
+    @provider.install_package("ruby18-iconv", "1.0")
+  end
+
+  it "should run make install when installing from ports" do
+    @new_resource.stub!(:source).and_return("ports:ruby-iconv")
+    @provider.should_receive(:port_path_from_name).with("ruby-iconv").and_return("/usr/ports/converters/ruby-iconv")
+    @provider.should_receive(:run_command).with(:command => "make -DBATCH install", :cwd => "/usr/ports/converters/ruby-iconv")
+    @provider.install_package("ruby18-iconv", "1.0")
+  end
+end
+
 describe Chef::Provider::Package::Freebsd, "remove_package" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
