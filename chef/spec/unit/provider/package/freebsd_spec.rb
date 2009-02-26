@@ -37,7 +37,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)    
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
 
-    @provider.should_receive(:port_path_from_name).with("zsh").and_return("/usr/ports/zsh")
+    @provider.should_receive(:port_path).and_return("/usr/ports/zsh")
     @provider.should_receive(:ports_candidate_version).with("/usr/ports/zsh").and_return("4.3.6")
   end
 
@@ -89,14 +89,10 @@ describe Chef::Provider::Package::Freebsd, "system call wrappers" do
   
   it "should return the port path for a valid port name" do
     @provider.should_receive(:popen4).with("whereis -s zsh").and_yield(@pid, @stdin, ["zsh: /usr/ports/shells/zsh"], @stderr).and_return(@status)
-    @provider.port_path_from_name("zsh").should == "/usr/ports/shells/zsh"
+    @provider.stub!(:port_name).and_return("zsh")
+    @provider.port_path.should == "/usr/ports/shells/zsh"
   end
 
-  it "should return nil for a invalid port name" do
-    @provider.should_receive(:popen4).with("whereis -s foo").and_yield(@pid, @stdin, ["foo:"], @stderr).and_return(@status)
-    @provider.port_path_from_name("foo").should be_nil
-  end
-  
   # Not happy with the form of these tests as they are far too closely tied to the implementation and so very fragile.
   it "should return the ports candidate version when given a valid port path" do
     @provider.should_receive(:popen4).with("cd /usr/ports/shells/zsh; make -V PORTVERSION").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
@@ -134,7 +130,7 @@ describe Chef::Provider::Package::Freebsd, "install_package" do
 
   it "should run make install when installing from ports" do
     @new_resource.stub!(:source).and_return("ports")
-    @provider.should_receive(:port_path_from_name).with("zsh").and_return("/usr/ports/shells/zsh")
+    @provider.should_receive(:port_path).and_return("/usr/ports/shells/zsh")
     @provider.should_receive(:run_command).with(:command => "make -DBATCH install", :cwd => "/usr/ports/shells/zsh")
     @provider.install_package("zsh", "4.3.6_7")
   end
@@ -157,6 +153,7 @@ describe Chef::Provider::Package::Freebsd, "ruby-iconv (package with a dash in t
     )
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
+    @provider.stub!(:port_path).and_return("/usr/ports/converters/ruby-iconv")
   end
 
   it "should run pkg_add -r with the package name" do
@@ -167,7 +164,6 @@ describe Chef::Provider::Package::Freebsd, "ruby-iconv (package with a dash in t
 
   it "should run make install when installing from ports" do
     @new_resource.stub!(:source).and_return("ports:ruby-iconv")
-    @provider.should_receive(:port_path_from_name).with("ruby-iconv").and_return("/usr/ports/converters/ruby-iconv")
     @provider.should_receive(:run_command).with(:command => "make -DBATCH install", :cwd => "/usr/ports/converters/ruby-iconv")
     @provider.install_package("ruby18-iconv", "1.0")
   end

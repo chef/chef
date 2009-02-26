@@ -41,7 +41,7 @@ class Chef
           nil
         end
         
-        def port_path_from_name(port_name)
+        def port_path
           status = popen4("whereis -s #{port_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
@@ -72,7 +72,7 @@ class Chef
           Chef::Log.debug("Current version is #{@current_resource.version}") if @current_resource.version
           Chef::Log.debug("Using #{port_name} as package name")
           
-          @candidate_version = ports_candidate_version(port_path_from_name(port_name))
+          @candidate_version = ports_candidate_version(port_path)
           Chef::Log.debug("Ports candidate version is #{@candidate_version}") if @candidate_version
           
           @current_resource
@@ -98,7 +98,7 @@ class Chef
             when /^ports$/, /^ports:/
               run_command(
                 :command => "make -DBATCH install",
-                :cwd => "#{port_path_from_name(port_name)}"
+                :cwd => "#{port_path}"
               )
             when /^http/, /^ftp/
               run_command(
