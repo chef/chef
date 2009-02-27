@@ -50,7 +50,7 @@ class Chef
               end
             end
           end
-          nil
+          raise Chef::Exception::Package, "Could not find port with the name #{port_name}"
         end
         
         def ports_makefile_variable_value(variable)
@@ -84,17 +84,7 @@ class Chef
         
         # The name of the leaf directory in /usr/ports
         def port_name
-          # if passed ports:package, build DIST_SUBDIR from ports
-          # if passed a sole word in source that isn't ports, consider it DIST_SUBDIR, install package
-          # otherwise, the user meant what they said
-          case @new_resource.source
-            when /^(?!ports)[\w-]+/
-              @new_resource.source
-            when /^ports:([\w-]+)/
-              $1
-            else
-              @new_resource.package_name
-          end
+          @new_resource.package_name
         end
         
         # The name of the package (without the version number) as understood by pkg_add and pkg_info
@@ -109,7 +99,7 @@ class Chef
         def install_package(name, version)
           unless @current_resource.version
             case @new_resource.source
-            when /^ports$/, /^ports:/
+            when /^ports$/
               run_command(
                 :command => "make -DBATCH install",
                 :cwd => "#{port_path}"
