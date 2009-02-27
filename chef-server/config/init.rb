@@ -3,7 +3,6 @@
 require 'config/dependencies.rb'
 require 'chef'
  
-use_orm :datamapper
 use_test :rspec
 use_template_engine :haml
  
