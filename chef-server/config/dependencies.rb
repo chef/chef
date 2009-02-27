@@ -32,4 +32,4 @@ dependency "dm-validations", dm_gems_version
 dependency "dm-serializer", dm_gems_version   
 
 dependency "merb_datamapper", merb_gems_version
-dependency "chefserverslice"
+dependency "chef-server-slice"

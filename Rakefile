@@ -1,4 +1,4 @@
-gems = %w[chef chefserverslice chef-server]
+gems = %w[chef chef-server-slice chef-server]
 require 'rubygems'
 require 'cucumber/rake/task'
 
