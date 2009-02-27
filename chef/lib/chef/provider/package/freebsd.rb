@@ -97,9 +97,13 @@ class Chef
           end
         end
         
-        # The name of the package as understood by pkg_add and pkg_info
+        # The name of the package (without the version number) as understood by pkg_add and pkg_info
         def package_name
-          @new_resource.package_name
+          if ports_makefile_variable_value("PKGNAME") =~ /^(.+)-[^-]+$/
+            $1
+          else
+            raise Chef::Exception::Package, "Unexpected form for PKGNAME variable in #{port_path}/Makefile"
+          end
         end
 
         def install_package(name, version)

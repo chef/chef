@@ -85,11 +85,13 @@ describe Chef::Provider::Package::Freebsd, "system call wrappers" do
 
   it "should return the version number when it is installed" do
     @provider.should_receive(:popen4).with('pkg_info -E "zsh*"').and_yield(@pid, @stdin, ["zsh-4.3.6_7"], @stderr).and_return(@status)
+    @provider.stub!(:package_name).and_return("zsh")
     @provider.current_installed_version.should == "4.3.6_7"
   end
 
   it "should return nil when the package is not installed" do
     @provider.should_receive(:popen4).with('pkg_info -E "zsh*"').and_yield(@pid, @stdin, [], @stderr).and_return(@status)
+    @provider.stub!(:package_name).and_return("zsh")
     @provider.current_installed_version.should be_nil
   end
   
@@ -105,6 +107,11 @@ describe Chef::Provider::Package::Freebsd, "system call wrappers" do
     @provider.should_receive(:popen4).with("cd /usr/ports/shells/zsh; make -V PORTVERSION").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     @stdout.should_receive(:readline).and_return("4.3.6\n")
     @provider.ports_candidate_version.should == "4.3.6"
+  end
+  
+  it "should figure out the package name" do
+    @provider.should_receive(:ports_makefile_variable_value).with("PKGNAME").and_return("zsh-4.3.6_7")
+    @provider.package_name.should == "zsh"
   end
 end
 
@@ -125,10 +132,10 @@ describe Chef::Provider::Package::Freebsd, "install_package" do
     )
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
+    @provider.stub!(:package_name).and_return("zsh")
   end
 
   it "should run pkg_add -r with the package name" do
-    @new_resource.stub!(:source)
     @provider.should_receive(:run_command).with({
       :command => "pkg_add -r zsh",
     })
@@ -148,31 +155,31 @@ describe Chef::Provider::Package::Freebsd, "ruby-iconv (package with a dash in t
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Package",
       :null_object => true,
-      :name => "ruby18-iconv",
-      :package_name => "ruby18-iconv",
+      :name => "ruby-iconv",
+      :package_name => "ruby-iconv",
       :version => nil
     )
     @current_resource = mock("Chef::Resource::Package", 
       :null_object => true,
-      :name => "ruby18-iconv",
-      :package_name => "ruby18-iconv",
+      :name => "ruby-iconv",
+      :package_name => "ruby-iconv",
       :version => nil
     )
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:port_path).and_return("/usr/ports/converters/ruby-iconv")
+    @provider.stub!(:package_name).and_return("ruby18-iconv")
   end
 
   it "should run pkg_add -r with the package name" do
-    @new_resource.stub!(:source).and_return("ruby-iconv")
     @provider.should_receive(:run_command).with(:command => "pkg_add -r ruby18-iconv")
-    @provider.install_package("ruby18-iconv", "1.0")
+    @provider.install_package("ruby-iconv", "1.0")
   end
 
   it "should run make install when installing from ports" do
-    @new_resource.stub!(:source).and_return("ports:ruby-iconv")
+    @new_resource.stub!(:source).and_return("ports")
     @provider.should_receive(:run_command).with(:command => "make -DBATCH install", :cwd => "/usr/ports/converters/ruby-iconv")
-    @provider.install_package("ruby18-iconv", "1.0")
+    @provider.install_package("ruby-iconv", "1.0")
   end
 end
 
@@ -193,6 +200,7 @@ describe Chef::Provider::Package::Freebsd, "remove_package" do
     )
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
+    @provider.stub!(:package_name).and_return("zsh")
   end
 
   it "should run pkg_delete with the package name and version" do
