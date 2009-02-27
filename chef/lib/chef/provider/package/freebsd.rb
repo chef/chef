@@ -53,8 +53,8 @@ class Chef
           nil
         end
         
-        def ports_candidate_version
-          command = "cd #{port_path}; make -V PORTVERSION"
+        def ports_makefile_variable_value(variable)
+          command = "cd #{port_path}; make -V #{variable}"
           status = popen4(command) do |pid, stdin, stdout, stderr|
             return stdout.readline.strip
           end
@@ -62,6 +62,10 @@ class Chef
             raise Chef::Exception::Package, "#{command} failed - #{status.inspect}!"
           end
           nil
+        end
+        
+        def ports_candidate_version
+          ports_makefile_variable_value("PORTVERSION")
         end
         
         def load_current_resource
