@@ -102,7 +102,6 @@ if defined?(Merb::Plugins)
       scope.match('/openid/consumer/complete').to(:controller => 'openid_consumer', :action => 'complete').name(:openid_consumer_complete)
       scope.match('/openid/consumer/logout').to(:controller => 'openid_consumer', :action => 'logout').name(:openid_consumer_logout)
 
-      # the slice is mounted at /chefserverslice - note that it comes before default_routes
       scope.match('/').to(:controller => 'nodes', :action =>'index').name(:top)      
       # enable slice-level default routes by default
       # scope.default_routes
@@ -123,12 +122,5 @@ if defined?(Merb::Plugins)
   #
   # Or just call setup_default_structure! to setup a basic Merb MVC structure.
   ChefServerSlice.setup_default_structure!
-  
-  # freaky path fix for javascript and stylesheets
-  unless ChefServerSlice.standalone?
-    ChefServerSlice.public_components.each do |component|
-      ChefServerSlice.push_app_path(component, Merb.dir_for(:public) / "#{component}s", nil)    
-    end
-  end
 end
 
