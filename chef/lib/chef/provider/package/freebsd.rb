@@ -87,6 +87,10 @@ class Chef
           @new_resource.package_name
         end
         
+        def latest_link_name
+          ports_makefile_variable_value("LATEST_LINK")
+        end
+        
         # The name of the package (without the version number) as understood by pkg_add and pkg_info
         def package_name
           if ports_makefile_variable_value("PKGNAME") =~ /^(.+)-[^-]+$/
@@ -118,7 +122,7 @@ class Chef
               Chef::Log.info("Installed package #{@new_resource.name} from: #{@new_resource.source}")
             else
               run_command(
-                :command => "pkg_add -r #{package_name}"
+                :command => "pkg_add -r #{latest_link_name}"
               )
               Chef::Log.info("Installed package #{package_name}")
             end

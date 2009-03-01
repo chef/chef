@@ -133,6 +133,7 @@ describe Chef::Provider::Package::Freebsd, "install_package" do
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:package_name).and_return("zsh")
+    @provider.stub!(:latest_link_name).and_return("zsh")
   end
 
   it "should run pkg_add -r with the package name" do
@@ -169,6 +170,7 @@ describe Chef::Provider::Package::Freebsd, "ruby-iconv (package with a dash in t
     @provider.current_resource = @current_resource
     @provider.stub!(:port_path).and_return("/usr/ports/converters/ruby-iconv")
     @provider.stub!(:package_name).and_return("ruby18-iconv")
+    @provider.stub!(:latest_link_name).and_return("ruby18-iconv")
   end
 
   it "should run pkg_add -r with the package name" do
@@ -208,6 +210,75 @@ describe Chef::Provider::Package::Freebsd, "remove_package" do
       :command => "pkg_delete zsh-4.3.6_7"
     })
     @provider.remove_package("zsh", "4.3.6_7")
+  end
+end
+
+# A couple of examples to show up the difficulty of determining the command to install the binary package given the port:
+# PORT DIRECTORY                        INSTALLED PACKAGE NAME  COMMAND TO INSTALL PACKAGE
+# /usr/ports/lang/perl5.8               perl-5.8.8_1            pkg_add -r perl
+# /usr/ports/databases/mysql50-server   mysql-server-5.0.45_1   pkg_add -r mysql50-server
+#
+# So, in one case it appears the command to install the package can be derived from the name of the port directory and in the
+# other case it appears the command can be derived from the package name. Very confusing!
+# Well, luckily, after much poking around, I discovered that the two can be disambiguated through the use of the LATEST_LINK
+# variable which is set by the ports Makefile
+#
+# PORT DIRECTORY                        LATEST_LINK     INSTALLED PACKAGE NAME  COMMAND TO INSTALL PACKAGE
+# /usr/ports/lang/perl5.8               perl            perl-5.8.8_1            pkg_add -r perl
+# /usr/ports/databases/mysql50-server   mysql50-server  mysql-server-5.0.45_1   pkg_add -r mysql50-server
+#
+# The variable LATEST_LINK is named that way because the directory that "pkg_add -r" downloads from is called "Latest" and
+# contains the "latest" versions of package as symbolic links to the files in the "All" directory.
+
+describe Chef::Provider::Package::Freebsd, "install_package latest link fixes" do
+  it "should install the perl binary package with the correct name" do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Package",
+      :null_object => true,
+      :name => "perl5.8",
+      :package_name => "perl5.8",
+      :version => nil
+    )
+    @current_resource = mock("Chef::Resource::Package", 
+      :null_object => true,
+      :name => "perl5.8",
+      :package_name => "perl5.8",
+      :version => nil
+    )
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
+    @provider.current_resource = @current_resource
+    @provider.stub!(:package_name).and_return("perl")
+    @provider.stub!(:latest_link_name).and_return("perl")
+
+    @provider.should_receive(:run_command).with({
+      :command => "pkg_add -r perl",
+    })
+    @provider.install_package("perl5.8", "5.8.8_1")
+  end
+
+  it "should install the mysql50-server binary package with the correct name" do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Package",
+      :null_object => true,
+      :name => "mysql50-server",
+      :package_name => "mysql50-server",
+      :version => nil
+    )
+    @current_resource = mock("Chef::Resource::Package", 
+      :null_object => true,
+      :name => "mysql50-server",
+      :package_name => "mysql50-server",
+      :version => nil
+    )
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
+    @provider.current_resource = @current_resource
+    @provider.stub!(:package_name).and_return("mysql-server")
+    @provider.stub!(:latest_link_name).and_return("mysql50-server")
+
+    @provider.should_receive(:run_command).with({
+      :command => "pkg_add -r mysql50-server",
+    })
+    @provider.install_package("mysql50-server", "5.0.45_1")
   end
 end
 
