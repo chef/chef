@@ -167,17 +167,20 @@ class Chef
         new_recipe.instance_eval(&new_def.recipe)
       else
         method_name = method_symbol.to_s
-      # Otherwise, we're rocking the regular resource call route.
+        # Otherwise, we're rocking the regular resource call route.
         rname = nil
-        mn = method_name.match(/^(.+)_(.+)$/)
+        regexp = %r{^(.+?)(_(.+))?$}
+
+        mn = method_name.match(regexp)
         if mn
-          rname = "Chef::Resource::#{mn[1].capitalize}#{mn[2].capitalize}"
-        else
-          short_match = method_name.match(/^(.+)$/)
-          if short_match
-            rname = "Chef::Resource::#{short_match[1].capitalize}"
+          rname = "Chef::Resource::#{mn[1].capitalize}"
+
+          while mn && mn[3]
+            mn = mn[3].match(regexp)          
+            rname << mn[1].capitalize if mn
           end
         end
+
         begin
           args << @collection
           args << @node
