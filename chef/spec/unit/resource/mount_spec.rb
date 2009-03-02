@@ -68,7 +68,7 @@ describe Chef::Resource::Mount do
   end
 
   it "should set the options attribute to defaults" do
-    @resource.options.should eql("defaults")
+    @resource.options.should eql(["defaults"])
   end
 
   it "should allow options to be sent as a string, and convert to array" do
@@ -97,6 +97,24 @@ describe Chef::Resource::Mount do
 
   it "should not accept a string for mounted" do
     lambda { @resource.mounted("poop") }.should raise_error(ArgumentError)
+  end
+
+  it "should accept true for enabled" do
+    @resource.enabled(true) 
+    @resource.enabled.should eql(true)
+  end
+
+  it "should accept false for enabled" do
+    @resource.enabled(false) 
+    @resource.enabled.should eql(false)
+  end
+
+  it "should set enabled to false by default" do
+    @resource.enabled.should eql(false)
+  end
+
+  it "should not accept a string for enabled" do
+    lambda { @resource.enabled("poop") }.should raise_error(ArgumentError)
   end
 
   it "should default all feature support to false" do
