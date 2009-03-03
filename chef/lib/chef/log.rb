@@ -37,6 +37,9 @@ class Chef
       def init(*opts)
         if opts.length == 0
           @logger = Logger.new(STDOUT)
+          # Turn off any buffering that Ruby might do on stdout to ensure that the log output appears as
+          # soon as possible.
+          $stdout.sync = true
         else
           @logger = Logger.new(*opts)
         end
