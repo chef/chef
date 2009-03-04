@@ -37,61 +37,86 @@ class Chef
       end
 
       def minute(arg=nil)
+        if arg.is_a?(Integer)
+          converted_arg = arg.to_s
+        else
+          converted_arg = arg
+        end
         begin
           if Integer(arg) > 59 then raise RangeError end
         rescue ArgumentError
         end
         set_or_return(
           :minute,
-          arg,
+          converted_arg,
           :kind_of => String
         )
       end
 
       def hour(arg=nil)
+        if arg.is_a?(Integer)
+          converted_arg = arg.to_s
+        else
+          converted_arg = arg
+        end
         begin
           if Integer(arg) > 23 then raise RangeError end
         rescue ArgumentError
         end
         set_or_return(
           :hour,
-          arg,
+          converted_arg,
           :kind_of => String
         )
       end
 
       def day(arg=nil)
+        if arg.is_a?(Integer)
+          converted_arg = arg.to_s
+        else
+          converted_arg = arg
+        end
         begin
           if Integer(arg) > 31 then raise RangeError end
         rescue ArgumentError
         end
         set_or_return(
           :day,
-          arg,
+          converted_arg,
           :kind_of => String
         )
       end
 
       def month(arg=nil)
+        if arg.is_a?(Integer)
+          converted_arg = arg.to_s
+        else
+          converted_arg = arg
+        end
         begin
           if Integer(arg) > 12 then raise RangeError end
         rescue ArgumentError
         end
         set_or_return(
           :month,
-          arg,
+          converted_arg,
           :kind_of => String
         )
       end
 
       def weekday(arg=nil)
+        if arg.is_a?(Integer)
+          converted_arg = arg.to_s
+        else
+          converted_arg = arg
+        end
         begin
           if Integer(arg) > 7 then raise RangeError end
         rescue ArgumentError
         end
         set_or_return(
           :weekday,
-          arg,
+          converted_arg,
           :kind_of => String
         )
       end
