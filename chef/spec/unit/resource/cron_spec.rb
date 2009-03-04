@@ -119,4 +119,10 @@ describe Chef::Resource::Cron do
   it "should reject any weekday over 7" do
     lambda { @resource.weekday "8" }.should raise_error(RangeError)
   end
+  
+  it "should convert integer schedule values to a string" do
+    [ "minute", "hour", "day", "month", "weekday" ].each do |x|
+      @resource.send(x, 5).should eql("5")
+    end
+  end
 end
