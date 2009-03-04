@@ -28,13 +28,14 @@ class Chef
         @mount_point = name
         @device = nil
         @fstype = nil
-        @options = "defaults"
+        @options = ["defaults"]
         @dump = 0
         @pass = 2
         @mounted = false
+        @enabled = false
         @action = :mount
         @supports = { :remount => false }
-        @allowed_actions.push(:mount, :umount, :remount)
+        @allowed_actions.push(:mount, :umount, :remount, :enable, :disable)
       end
       
       def mount_point(arg=nil)
@@ -98,7 +99,15 @@ class Chef
           :kind_of => [ TrueClass, FalseClass ]
         )
       end
-      
+
+      def enabled(arg=nil)
+        set_or_return(
+          :enabled,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+        
       def supports(args={})
         if args.is_a? Array
           args.each { |arg| @supports[arg] = true }
