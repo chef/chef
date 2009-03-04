@@ -78,6 +78,7 @@ class Chef
         :remote_file => Chef::Provider::RemoteFile,
         :remote_directory => Chef::Provider::RemoteDirectory,
         :execute => Chef::Provider::Execute,
+        :mount => Chef::Provider::Mount::Mount,
         :script => Chef::Provider::Script,
         :service => Chef::Provider::Service::Init,
         :perl => Chef::Provider::Script,
