@@ -177,7 +177,7 @@ class Chef
             res.body
           end
         end
-      elsif res.kind_of?(Net::HTTPFound)
+      elsif res.kind_of?(Net::HTTPFound) or res.kind_of?(Net::HTTPMovedPermanently)
         if res['set-cookie']
           @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
         end

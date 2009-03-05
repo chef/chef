@@ -207,10 +207,19 @@ describe Chef::REST, "run_request method" do
     @http_response_mock.stub!(:[]).with('location').and_return(@url_mock.path)
     lambda { do_run_request(method=:GET, data=false, limit=1) }.should raise_error(ArgumentError)
   end
+
+  it "should call run_request again on a Permanent Redirect response" do
+    @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
+    @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
+    @http_response_mock.stub!(:kind_of?).with(Net::HTTPMovedPermanently).and_return(true)
+    @http_response_mock.stub!(:[]).with('location').and_return(@url_mock.path)
+    lambda { do_run_request(method=:GET, data=false, limit=1) }.should raise_error(ArgumentError)
+  end
   
   it "should raise an exception on an unsuccessful request" do
     @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
     @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
+    @http_response_mock.stub!(:kind_of?).with(Net::HTTPMovedPermanently).and_return(false)
     @http_response_mock.should_receive(:error!)
     do_run_request
   end
