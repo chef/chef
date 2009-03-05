@@ -42,6 +42,14 @@ describe Chef::Recipe do
           end
         end.should_not raise_error(ArgumentError)
       end
+      
+      it "should load a four word (one_two_three_four) resource" do 
+        lambda do
+          @recipe.one_two_three_four "numbers" do
+            i_can_count true
+          end
+        end.should_not raise_error(ArgumentError)
+      end
   
       it "should throw an error if you access a resource that we can't find" do
         lambda { @recipe.not_home { || } }.should raise_error(NameError)

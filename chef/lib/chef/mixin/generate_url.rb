@@ -24,7 +24,7 @@ class Chef
     
       def generate_cookbook_url(url, cookbook, type, node, args=nil)
         new_url = nil
-        if url =~ /^http/
+        if url =~ /^(http|https):\/\//
           new_url = url
         else
           new_url = "cookbooks/#{cookbook}/#{type}?"

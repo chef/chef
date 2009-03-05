@@ -140,6 +140,55 @@ describe Chef::REST, "run_request method" do
     do_run_request
   end
   
+  describe "with a client SSL cert" do
+    before(:each) do
+      Chef::Config[:ssl_client_cert] = "/etc/chef/client-cert.pem"
+      Chef::Config[:ssl_client_key] = "/etc/chef/client-cert.key"
+      File.stub!(:exists?).with("/etc/chef/client-cert.pem").and_return(true)
+      File.stub!(:exists?).with("/etc/chef/client-cert.key").and_return(true)
+      File.stub!(:read).with("/etc/chef/client-cert.pem").and_return("monkey magic client")
+      File.stub!(:read).with("/etc/chef/client-cert.key").and_return("monkey magic key")
+      OpenSSL::X509::Certificate.stub!(:new).and_return("monkey magic client data")
+      OpenSSL::PKey::RSA.stub!(:new).and_return("monkey magic key data")
+    end
+
+    it "should check that the client cert file exists" do
+      File.should_receive(:exists?).with("/etc/chef/client-cert.pem").and_return(true)
+      do_run_request
+    end
+
+    it "should read the cert file" do
+      File.should_receive(:read).with("/etc/chef/client-cert.pem").and_return("monkey magic client")
+      do_run_request
+    end
+
+    it "should read the cert into OpenSSL" do
+      OpenSSL::X509::Certificate.should_receive(:new).and_return("monkey magic client data")
+      do_run_request
+    end
+
+    it "should set the cert" do
+      @http_mock.should_receive(:cert=).and_return(true)
+      do_run_request
+    end
+
+    it "should read the key file" do
+      File.should_receive(:read).with("/etc/chef/client-cert.key").and_return("monkey magic key")
+      do_run_request
+    end
+
+    it "should read the key into OpenSSL" do
+      OpenSSL::PKey::RSA.should_receive(:new).and_return("monkey magic key data")
+      do_run_request
+    end
+
+    it "should set the key" do
+      @http_mock.should_receive(:key=).and_return(true)
+      do_run_request
+    end
+
+  end
+
   it "should set a read timeout based on the rest_timeout config option" do
     Chef::Config[:rest_timeout] = 10
     @http_mock.should_receive(:read_timeout=).with(10).and_return(true)
