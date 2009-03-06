@@ -1,3 +1,32 @@
+Thu Mar  5 19:51:02 PST 2009
+Release Notes - Chef - Version 0.5.6
+http://tickets.opscode.com
+
+** Bug
+    * [CHEF-112] - FreeBSD service provider does not enable service in /etc/rc.conf if service_enable line is not already there
+    * [CHEF-115] - Remote file resource appears to have reserved words that if used, lead to a 404 error
+    * [CHEF-118] - FreeBSD package provider can not read the candidate version of the port "php5-mysql"
+    * [CHEF-119] - FreeBSD service provider uses incorrect name for enabling MySQL server in /etc/rc.conf
+    * [CHEF-126] - chef session_secret_key is hard-coded
+    * [CHEF-132] - cron resource should check integer values and convert to string
+    * [CHEF-138] - remote_directory doesn't work
+    * [CHEF-139] - log_level doesn't affect the actual log level
+    * [CHEF-141] - remote_file with URL source does not obey http 301 redirects
+    * [CHEF-149] - chef-client banner
+
+** Improvement
+    * [CHEF-54] - chef-server should be a merb slice
+    * [CHEF-102] - display template error line numbers to aid debugging
+    * [CHEF-140] - Chef client should know how to use client certs
+    * [CHEF-146] - Should be able to run features from scratch, starting couch and other deps
+    * [CHEF-150] - Resource names are limited to one underscore
+    * [CHEF-152] - The mount resource should be able to add/remove entries in /etc/fstab
+
+** New Feature
+    * [CHEF-80] - rpm package provider
+    * [CHEF-93] - mount / filesystem provider and resource type
+    * [CHEF-130] - Cucumber integration testing
+
 Fri Feb 13 12:26:07 PST 2009
 Release Notes - Chef - Version 0.5.4
 http://tickets.opscode.com/
