@@ -39,3 +39,10 @@ Feature: Transfer Remote Files
        When I run the chef-client
        Then the run should exit '0'
         And a file named 'host_specific.txt' should be from the 'platform' specific directory
+
+    Scenario: Transfer a file from a specific cookbook
+      Given a validated node
+        And it includes the recipe 'transfer_remote_files::transfer_a_file_from_a_specific_cookbook'
+       When I run the chef-client
+       Then the run should exit '0'
+        And a file named 'from_definition.txt' should contain 'easy like saturday morning'

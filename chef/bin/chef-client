@@ -29,7 +29,7 @@ config = {
   :config_file => "/etc/chef/client.rb"
 }
 opts = OptionParser.new do |opts|
-  opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
+  opts.banner = "Usage: #{$0} (options)"
   client_option_hash = { 
     :config_file=> {  :short=>"-c CONFIG",        :long=>"--config CONFIG",       :description=>"The Chef Config file to use", :proc=>nil },
     :user=>        {  :short=>"-u USER",          :long=>"--user USER",           :description=>"User to change uid to before daemonizing", :proc=>nil },

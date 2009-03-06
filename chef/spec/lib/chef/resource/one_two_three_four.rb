@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: John Hampton (<john@cleanoffer.com>)
+# Copyright:: Copyright (c) 2009 CleanOffer, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,23 +16,28 @@
 # limitations under the License.
 #
 
-$:.unshift(File.dirname(__FILE__)) unless
-  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
-
-require 'rubygems'
-require 'extlib'
-require 'chef/exceptions'
-require 'chef/log'
-require 'chef/config'
-Dir[File.join(File.dirname(__FILE__), 'chef/mixin/**/*.rb')].sort.each { |lib| require lib }
-
 class Chef
-  VERSION = '0.5.7'
-  
-  class << self
-    def fatal!(msg, err = -1)
-      Chef::Log.fatal(msg)
-      exit err
+  class Resource
+    class OneTwoThreeFour < Chef::Resource
+      attr_reader :i_can_count
+      
+      def initialize(name, collection=nil, node=nil)
+        @resource_name = :one_two_three_four
+        super(name, collection, node)
+      end
+      
+      def i_can_count(tf)
+        @i_can_count = tf
+      end
+      
+      def something(arg=nil)
+        set_if_args(@something, arg) do
+          case arg
+          when true, false
+            @something = arg
+          end
+        end
+      end
     end
   end
 end

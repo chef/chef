@@ -25,44 +25,70 @@ class Chef
     class Package
       class Freebsd < Chef::Provider::Package  
       
+        def current_installed_version(package_name)
+          command = "pkg_info -E \"#{package_name}*\""
+          status = popen4(command) do |pid, stdin, stdout, stderr|
+            stdout.each do |line|
+              case line
+              when /^#{package_name}-(.+)/
+                return $1
+              end
+            end
+          end
+          unless status.exitstatus == 0 || status.exitstatus == 1
+            raise Chef::Exception::Package, "#{command} failed - #{status.inspect}!"
+          end
+          nil
+        end
+        
+        def port_path_from_name(port_name)
+          status = popen4("whereis -s #{port_name}") do |pid, stdin, stdout, stderr|
+            stdout.each do |line|
+              case line
+              when /^#{port_name}:\s+(.+)$/
+                return $1
+              end
+            end
+          end
+          nil
+        end
+        
+        def ports_candidate_version(port_path)
+          command = "cd #{port_path}; make -V PORTVERSION"
+          status = popen4(command) do |pid, stdin, stdout, stderr|
+            return stdout.readline.strip
+          end
+          unless status.exitstatus == 0 || status.exitstatus == 1
+            raise Chef::Exception::Package, "#{command} failed - #{status.inspect}!"
+          end
+          nil
+        end
+        
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
         
-          status = popen4("pkg_info -E #{@new_resource.package_name}*") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^#{@current_resource.package_name}-(.+)/
-                @current_resource.version($1)
-                Chef::Log.debug("Current version is #{@current_resource.version}")
-              end
-            end
+          @current_resource.version(current_installed_version(@new_resource.package_name))
+          Chef::Log.debug("Current version is #{@current_resource.version}") if @current_resource.version
+          
+          # if passed ports:package, build DIST_SUBDIR from ports
+          # if passed a sole word in source that isn't ports, consider it DIST_SUBDIR, install package
+          # otherwise, the user meant what they said
+          case @new_resource.source
+            when /^(?!ports)\w+/
+              port_name = @new_resource.source
+            when /^ports:(\w+)/
+              port_name = $1
+            else
+              port_name = @new_resource.package_name
           end
-          @current_resource.version(nil) unless @current_resource.version
+          Chef::Log.debug("Using #{port_name} as package name")
+          
+          @port_path = port_path_from_name(port_name)
 
-          unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exception::Package, "pkg_info -E #{@new_resource.package_name} failed - #{status.inspect}!"
-          end
-      
-          port_path = nil
-          status = popen4("whereis -s #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^#{@new_resource.package_name}:\s+(.+)$/
-                @port_path = $1
-              end
-            end
-          end
-
-          makefile = ::File.open("#{@port_path}/Makefile")
-          makefile.each do |line|
-            case line
-            when /^PORTVERSION=\s+(\S+)/
-              @candidate_version = $1
-              Chef::Log.debug("Ports candidate version is #{@candidate_version}")
-            end
-          end
-
+          @candidate_version = ports_candidate_version(@port_path)
+          Chef::Log.debug("Ports candidate version is #{@candidate_version}") if @candidate_version
+          
           @current_resource
         end
 
