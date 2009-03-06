@@ -6,5 +6,4 @@ dependency "merb-core", merb_gems_version
 dependency "merb-assets", merb_gems_version  
 dependency "merb-helpers", merb_gems_version 
 dependency "merb-slices", merb_gems_version  
-dependency "merb-exceptions", merb_gems_version
 dependency "chef-server-slice"
