@@ -27,7 +27,7 @@ require 'chef/config'
 Dir[File.join(File.dirname(__FILE__), 'chef/mixin/**/*.rb')].sort.each { |lib| require lib }
 
 class Chef
-  VERSION = '0.5.6'
+  VERSION = '0.5.7'
   
   class << self
     def fatal!(msg, err = -1)
