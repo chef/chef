@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Thom May (<thom@clearairturbulence.org>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -217,7 +218,7 @@ class Chef
             res.body
           end
         end
-      elsif res.kind_of?(Net::HTTPFound)
+      elsif res.kind_of?(Net::HTTPFound) or res.kind_of?(Net::HTTPMovedPermanently)
         if res['set-cookie']
           @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
         end

@@ -10,7 +10,8 @@ Contributors and Copyright holders:
  * Copyright 2008, Bryan McLellan <btm@loftninjas.org>
  * Copyright 2008, Ezra Zygmuntowicz <ezra@engineyard.com>
  * Copyright 2009, Sean Cribbs <seancribbs@gmail.com>
- 
+ * Copyright 2009, Thom May <thom@clearairturbulence.org>
+
 Chef incorporates code modified from Open4 (http://www.codeforpeople.com/lib/ruby/open4/), which was written by Ara T. Howard.
 
 Chef incorporates code modified from Merb (http://www.merbivore.com), which is Copyright (c) 2008 Engine Yard.
