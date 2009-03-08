@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'etc'
+
 ###
 # Given
 ###
@@ -61,5 +63,11 @@ end
 Then /^a file named '(.+)' should be from the '(.+)' specific directory$/ do |filename, specificity|
   file = IO.read(File.join(tmpdir, filename))
   file.should == "#{specificity}\n"
+end
+
+Then /^the file named '(.+)' should be owned by '(.+)'$/ do |filename, owner|
+  uid = Etc.getpwnam(owner).uid
+  cstats = File.stat(File.join(tmpdir, filename))
+  cstats.uid.should == uid
 end
 
