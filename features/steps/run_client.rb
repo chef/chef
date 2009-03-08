@@ -20,8 +20,9 @@
 # When
 ###
 When /^I run the chef\-client$/ do
+  log_level = ENV["LOG_LEVEL"] ? ENV["LOG_LEVEL"] : "error"
   status = Chef::Mixin::Command.popen4(
-    "chef-client -c #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))}", :waitlast => true) do |p, i, o, e|
+    "chef-client -l #{log_level} -c #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))}", :waitlast => true) do |p, i, o, e|
     i.close
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
