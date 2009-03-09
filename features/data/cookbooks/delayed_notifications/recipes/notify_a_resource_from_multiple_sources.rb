@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: delayed_notifications
-# Recipe:: notify_a_resource_from_a_single_source
+# Recipe:: notify_a_resource_from_multiple_sources
 #
 # Copyright 2009, Opscode
 #
@@ -17,10 +17,15 @@
 # limitations under the License.
 #
 
-file "#{node[:tmpdir]}/notified_file.txt" do
+execute "bob dylan" do
+  command "echo 'bob dylan' >> #{node[:tmpdir]}/notified_file.txt"
   action :nothing
 end
 
 execute "echo foo" do
-  notifies :create, resources("file[#{node[:tmpdir]}/notified_file.txt]"), :delayed
+  notifies :run, resources("execute[bob dylan]"), :delayed
+end
+
+execute "echo bar" do
+  notifies :run, resources("execute[bob dylan]"), :delayed
 end

@@ -63,3 +63,14 @@ Then /^a file named '(.+)' should be from the '(.+)' specific directory$/ do |fi
   file.should == "#{specificity}\n"
 end
 
+Then /^a file named '(.+)' should contain '(.+)' only '(.+)' time$/ do |filename, string, count|
+  seen_count = 0
+  IO.foreach(File.join(tmpdir, filename)) do |line|
+    if line =~ /#{string}/
+      seen_count += 1
+    end
+  end
+  seen_count.should == count.to_i
+end
+
+

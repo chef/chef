@@ -9,6 +9,13 @@ Feature: Delayed Notifications
      When I run the chef-client
      Then the run should exit '0'
       And a file named 'notified_file.txt' should exist
+      
+  Scenario: Notify a resource from multiple sources
+    Given a validated node
+      And it includes the recipe 'delayed_notifications::notify_a_resource_from_multiple_sources'
+     When I run the chef-client
+     Then the run should exit '0'
+      And a file named 'notified_file.txt' should contain 'bob dylan' only '1' time
   
 
   

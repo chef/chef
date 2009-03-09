@@ -37,11 +37,17 @@ Then /^the run should exit '(.+)'$/ do |exit_code|
   begin
     @status.exitstatus.should eql(exit_code.to_i)
   rescue 
-    puts "--- run stdout: #{@stdout}"
-    puts @stdout
-    puts "--- run stderr: #{@stderr}"
+    print_output
     raise
   end
+  print_output if ENV["LOG_LEVEL"] == "debug"
+end
+
+def print_output
+  puts "--- run stdout:"
+  puts @stdout
+  puts "--- run stderr"
+  puts @stderr
 end
 
 Then /^stdout should have '(.+)'$/ do |to_match|
