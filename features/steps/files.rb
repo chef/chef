@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'etc'
+
 ###
 # Given
 ###
@@ -73,4 +75,8 @@ Then /^a file named '(.+)' should contain '(.+)' only '(.+)' time$/ do |filename
   seen_count.should == count.to_i
 end
 
-
+Then /^the file named '(.+)' should be owned by '(.+)'$/ do |filename, owner|
+  uid = Etc.getpwnam(owner).uid
+  cstats = File.stat(File.join(tmpdir, filename))
+  cstats.uid.should == uid
+end
