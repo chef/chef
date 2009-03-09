@@ -1,13 +1,19 @@
-- throw_content(:header, "Search Results")
-.search 
-  = partial(:search_form, :index_name => params[:id])
-.query
-  %h2= "Search Query was #{params[:q] ? params[:q] : '*'}"
-- @results.each do |result|
-  .search_result
-    %h3= "#{h result[:index_name]} (#{h result[:id]})"
-    %table
-      - result.sort { |a,b| a[0].to_s <=> b[0].to_s }.each do |k, v|
-        %tr.attr_group
-          %td.attr_name= k
-          %td.attr_value= v.kind_of?(Array) ? v.join(",") : v
+.block#block-tables
+  .content
+    %h2.title Search Results
+    .inner
+      %table.table
+        %tr
+          %th.first Attribute
+          %th.last Value
+          - if @results.empty?
+            %tr
+              %td= "No search results for query #{params[:q]}"
+          - else
+            - @results.each do |result|
+              .search_attribute_result
+                %h3= "#{h result[:index_name]} (#{h result[:id]})"
+                - result.sort { |a,b| a[0].to_s <=> b[0].to_s}.each_with_index do |h,index|
+                  %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
+                    %td= h.key
+                    %td= h.value.kind_of?(Array) ? h.value.join(", ") : h.value

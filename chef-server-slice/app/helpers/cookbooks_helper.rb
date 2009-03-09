@@ -22,9 +22,9 @@ module Merb
       def syntax_highlight(code)
         converter = Syntax::Convertors::HTML.for_syntax "ruby"
         if File.exists?(code)
-          converter.convert(File.read(code))
+          converter.convert(File.read(code), false)
         else
-          converter.convert(code)
+          converter.convert(code, false)
         end
       end
     end

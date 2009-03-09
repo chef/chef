@@ -17,20 +17,6 @@
 //
 
 $(document).ready(function() {
-  $(".edit_area").editable(location.href + ".json", { 
-      type      : 'textarea',
-      cancel    : 'Cancel',
-      submit    : 'Save',
-      indicator : "<img src='/images/indicator.gif'>",
-      target    : location.href + "?ajax=true",
-      loadtype  : "GET",
-      loadurl   : location.href + ".json?ajax=true",
-      tooltip   : 'Click to edit...',
-      method : "PUT"
-  });
-});
-
-$(document).ready(function() {
   $('a[method]').livequery(function(){
     var message = $(this).attr('confirm');
     var method  = $(this).attr('method');
@@ -53,4 +39,14 @@ $(document).ready(function() {
       }
     });
   });
+});
+
+$(document).ready(function(){
+  
+	$('.accordion .head').click(function() {
+		$(this).next().toggle('slow');
+		return false;
+	}).next().hide();
+	
+	$('a[rel*=facebox]').facebox();
 });

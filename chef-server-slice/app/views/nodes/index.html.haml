@@ -1,7 +1,16 @@
-- throw_content(:header, "Node List")
-- @node_list.each do |node|
-  .node
-    %a{ :href => slice_url(:node, { :id => node.gsub(/\./, "_") }) }
-      = node
-    - if session[:level] == :admin
-      = delete_button slice_url(:node, { :id => node.gsub(/\./, "_") }), "Delete"
+.block#block-tables
+  .content
+    %h2.title Node List
+    .inner
+      %table.table
+        %tr
+          %th.first Node Name
+          %th.last &nbsp
+          - if @node_list.empty?
+            %tr
+              %td= "You appear to have no nodes - try connecting one, or validating an existing #{link_to('registration', slice_url(:registrations))}"
+          - else
+            - @node_list.each_with_index do |node, index|
+              %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
+                %td= link_to node, slice_url(:node, { :id => node.gsub(/\./, ")" ) } )
+                %td= link_to "Delete", slice_url(:node, { :id => node.gsub(/\./, "_") }), :method => "delete", :confirm => "Are you sure? There is no undo."
