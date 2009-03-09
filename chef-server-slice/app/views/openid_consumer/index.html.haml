@@ -6,7 +6,7 @@
 -if session[:success]
   .success= h session[:success]
 #verify-form
-  %form{ :method => "get", "accept-charset" => "UTF-8", :action => slice_url(:openid_consumer_start) }
+  %form{ :method => "get", "accept-charset" => "UTF-8", :action => slice_url(:openid_consumer_login) }
     Identifier:
     %input.openid{ :type => "text", :name => "openid_identifier" }/
     %input{ :type => "submit", :value => "Verify"}/
