@@ -36,7 +36,8 @@
                 .inner
                   .flash
                     - message.each do |type, msg|
-                      %div{:class => "message #{type}"}= msg             
+                      %div{:class => "message #{type}"}
+                        %p= msg             
           = catch_content :for_layout
           #footer
             .block

@@ -12,5 +12,5 @@
           - else
             - @node_list.each_with_index do |node, index|
               %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-                %td= link_to node, slice_url(:node, { :id => node.gsub(/\./, ")" ) } )
+                %td= link_to node, slice_url(:node, { :id => node.gsub(/\./, "_" ) } )
                 %td= link_to "Delete", slice_url(:node, { :id => node.gsub(/\./, "_") }), :method => "delete", :confirm => "Are you sure? There is no undo."

@@ -4,6 +4,6 @@
     .inner
       - @search_indexes.sort{ |a,b| a.to_s <=> b.to_s}.each do |index|
         %form.form{ :method => "get", "accept-charset" => "UTF-8", :action => slice_url(:search, { :id => index})}
-          .group= text_field :name => "q", :label => "Query"
-          .group= text_field :name => "a", :label => "Attributes"
+          .group.label= text_field :name => "q", :label => "Query"
+          .group.label= text_field :name => "a", :label => "Attributes"
           .group= submit "Search #{index}"

@@ -39,7 +39,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
       raise NotFound, "Cannot load node #{params[:id]}"
     end
     if request.xhr?
-      render JSON.pretty_generate(@node), :layout=>false
+      render JSON.pretty_generate(@node), :layout => false
     else
       display @node
     end
@@ -66,7 +66,11 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     if @node
       @status = 202
       @node.save
-      redirect slice_url(:node, :id => @node.name)   
+      if request.xhr?
+        render JSON.pretty_generate(@node), :layout => false
+      else
+        display @node
+      end   
     else
       raise NotFound, "You must provide a Node to update"
     end
