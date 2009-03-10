@@ -5,7 +5,7 @@
     %meta{ "http-equiv" => "content-type", :content => "text/html; charset=utf-8" }
     %title Chef Server
     = css_include_tag "base", "themes/blue/style", "chef", "/facebox/facebox.css"
-    = js_include_tag "jquery-1.3.1.min", "jquery.jeditable.mini", "jquery.livequery", "jquery.localscroll", "jquery.scrollTo"
+    = js_include_tag "jquery-1.3.1.min", "jquery.jeditable.mini", "jquery.livequery", "jquery.localscroll", "jquery.scrollTo", "jquery.editinline"
     = js_include_tag "chef"
     = js_include_tag "/facebox/facebox.js"
     
@@ -29,6 +29,14 @@
           .clear
       #wrapper
         #main
+          - unless message.empty?
+            .block#block-messages
+              .content
+                %h2.title Error Messages
+                .inner
+                  .flash
+                    - message.each do |type, msg|
+                      %div{:class => "message #{type}"}= msg             
           = catch_content :for_layout
           #footer
             .block

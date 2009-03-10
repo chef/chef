@@ -38,7 +38,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     rescue Net::HTTPServerException => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
-    if params[:ajax] == "true"
+    if request.xhr?
       render JSON.pretty_generate(@node), :layout=>false
     else
       display @node
@@ -57,7 +57,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
   end
 
   def update
-    if params[:ajax]
+    if request.xhr?
       @node = JSON.parse(params[:value])
     else      
       @node = params.has_key?("inflated_object") ? params["inflated_object"] : nil
@@ -66,11 +66,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     if @node
       @status = 202
       @node.save
-      if params[:ajax]
-        partial("nodes/node", :node => @node)
-      else
-        display @node
-      end
+      redirect slice_url(:node, :id => @node.name)   
     else
       raise NotFound, "You must provide a Node to update"
     end

@@ -2,18 +2,13 @@
   .content
     %h2.title Search Results
     .inner
-      %table.table
-        %tr
-          %th.first Attribute
-          %th.last Value
-          - if @results.empty?
-            %tr
-              %td= "No search results for query #{params[:q]}"
-          - else
-            - @results.each do |result|
-              .search_attribute_result
-                %h3= "#{h result[:index_name]} (#{h result[:id]})"
-                - result.sort { |a,b| a[0].to_s <=> b[0].to_s}.each_with_index do |h,index|
-                  %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-                    %td= h.key
-                    %td= h.value.kind_of?(Array) ? h.value.join(", ") : h.value
+      - @results.each do |result|
+        %table.table.search{:width => '400px'}
+          %tr
+            %th.first Attribute
+            %th.last Value
+          - @results.each do |result|
+            - result.sort { |a,b| a[0].to_s <=> b[0].to_s}.each_with_index do |h,index|
+              %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
+                %td= "#{h[0]} (#{h[1].class})"
+                %td= h[1]

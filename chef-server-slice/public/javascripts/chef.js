@@ -1,5 +1,6 @@
 //
 // Author:: Adam Jacob (<adam@opscode.com>)
+// Author:: AJ Christensen (<aj@junglist.gen.nz>)
 // Copyright:: Copyright (c) 2008 Opscode, Inc.
 // License:: Apache License, Version 2.0
 //
@@ -16,7 +17,8 @@
 // limitations under the License.
 //
 
-$(document).ready(function() {
+$(document).ready(function(){
+  // livequery hidden form for link_to ajax magic
   $('a[method]').livequery(function(){
     var message = $(this).attr('confirm');
     var method  = $(this).attr('method');
@@ -39,14 +41,25 @@ $(document).ready(function() {
       }
     });
   });
-});
-
-$(document).ready(function(){
   
+  // editable table for the node show view
+  $(".edit_area").editable(location.href + ".json", { 
+    target : location.href,
+    method : "PUT",
+    submit : "Save",
+    cancel : "Cancel",
+    indicator : "Saving..",
+    loadurl : location.href + ".json",
+    type  : "textarea",
+    height : 300
+  });
+  
+  // accordion for the cookbooks show view
 	$('.accordion .head').click(function() {
 		$(this).next().toggle('slow');
 		return false;
 	}).next().hide();
 	
+	// global facebox callback
 	$('a[rel*=facebox]').facebox();
 });

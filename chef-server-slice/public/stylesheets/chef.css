@@ -26,7 +26,7 @@
   font-size: 0.8em;
 }
 
-.search_attribute_result {
-  overflow: auto;
+.search td {
+  /*overflow: auto;*/
   font-size: 0.8em;
 }
