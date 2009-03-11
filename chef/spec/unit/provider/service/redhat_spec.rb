@@ -42,6 +42,7 @@ describe Chef::Provider::Service::Redhat, "load_current_resource" do
 
     @status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
+    @provider.should_receive(:run_command).with(:command => "/sbin/service chef status")
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)
     @stdout_string = "chef    0:off   1:off   2:off   3:off   4:off   5:off   6:off"
@@ -62,7 +63,7 @@ describe Chef::Provider::Service::Redhat, "load_current_resource" do
 
   it "should read the stdout of the chkconfig command" do
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @stdout.should_receive(:gets).twice.and_return(@stdout_string)
+    @stdout.should_receive(:gets).once.and_return(@stdout_string)
     @provider.load_current_resource
   end
 

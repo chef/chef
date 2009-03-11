@@ -42,6 +42,7 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
 
     @status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
+    @provider.should_receive(:run_command).with(:command => "/etc/init.d/chef status")
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)
     @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/chef ...")
