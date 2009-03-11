@@ -117,19 +117,15 @@ class Chef
           stderr.sync = true
           
           Chef::Log.debug("---- Begin output of #{args[:command]} ----")
-          stdout_string = stdout.gets(nil)
-          if stdout_string
-            stdout_string.split.each do |line|
-              command_output << "STDOUT: #{line.strip}\n"
-              Chef::Log.debug("STDOUT: #{line.strip}")
-            end
-          end          
-          stderr_string = stderr.gets(nil)
-          if stderr_string
-            stderr_string.split.each do |line|
-              command_output << "STDERR: #{line.strip}\n"
-              Chef::Log.debug("STDERR: #{line.strip}")
-            end
+          while !stdout.eof? do
+            line = stdout.gets
+            command_output << "STDOUT: #{line.strip}\n"
+            Chef::Log.debug("STDOUT: #{line.strip}")
+          end
+          while !stderr.eof? do
+            line = stderr.gets
+            command_output << "STDERR: #{line.strip}\n"
+            Chef::Log.debug("STDERR: #{line.strip}")
           end
           Chef::Log.debug("---- End output of #{args[:command]} ----")
         end
@@ -142,6 +138,11 @@ class Chef
         Chef::Log.debug("Executing #{args[:command]}")
         
         status = nil
+        
+        # I don't understand what this :waitlast argument is doing, but setting it to true is causing the block in popen4
+        # not to wait until the command is finished to execute, kind of the opposite of what I would guess from the name
+        args[:waitlast] ||= true
+        
         Dir.chdir(args[:cwd]) do
           if args[:timeout]
             begin

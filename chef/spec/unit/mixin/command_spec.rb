@@ -76,4 +76,12 @@ describe Chef::Mixin::Command do
     Chef::Log.level :info
     lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exception::Exec, "#{command} returned 1, expected 0\n---- Begin output of #{command} ----\nSTDOUT: 1\n---- End output of #{command} ----\n")
   end
+  
+  it "should log the output as the command is executing" do
+    command = "ruby -e 'STDOUT.sync = true; puts 1; sleep 2; puts 2'"
+    Chef::Log.should_receive(:debug).with("Executing #{command}").ordered
+    Chef::Log.should_receive(:debug).with("---- Begin output of #{command} ----").ordered
+    Chef::Log.should_receive(:debug).with("STDOUT: 1").ordered
+    lambda {Chef::Mixin::Command.run_command(:command => command, :timeout => 1)}.should raise_error(Timeout::Error)
+  end
 end
