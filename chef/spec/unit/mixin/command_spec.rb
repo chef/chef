@@ -31,10 +31,9 @@ describe Chef::Mixin::Command do
   it "should log the command's standard output at debug log level" do
     command = "ruby -e 'puts 5'"
     Chef::Log.should_receive(:debug).with("Executing #{command}").ordered
-    Chef::Log.should_receive(:debug).with("---- Begin #{command} STDOUT ----").ordered
-    Chef::Log.should_receive(:debug).with("5").ordered
-    Chef::Log.should_receive(:debug).with("---- End #{command} STDOUT ----").ordered
-    Chef::Log.should_receive(:debug).with("Nothing to read on '#{command}' STDERR.").ordered
+    Chef::Log.should_receive(:debug).with("---- Begin output of #{command} ----").ordered
+    Chef::Log.should_receive(:debug).with("STDOUT: 5").ordered
+    Chef::Log.should_receive(:debug).with("---- End output of #{command} ----").ordered
     Chef::Log.should_receive(:debug).with("Ran #{command} returned 0").ordered
     Chef::Mixin::Command.run_command(:command => command)
   end
@@ -42,10 +41,9 @@ describe Chef::Mixin::Command do
   it "should log the command's standard error at debug log level" do
     command = "ruby -e 'STDERR.puts 5'"
     Chef::Log.should_receive(:debug).with("Executing #{command}").ordered
-    Chef::Log.should_receive(:debug).with("Nothing to read on '#{command}' STDOUT.").ordered
-    Chef::Log.should_receive(:debug).with("---- Begin #{command} STDERR ----").ordered
-    Chef::Log.should_receive(:debug).with("5").ordered
-    Chef::Log.should_receive(:debug).with("---- End #{command} STDERR ----").ordered
+    Chef::Log.should_receive(:debug).with("---- Begin output of #{command} ----").ordered
+    Chef::Log.should_receive(:debug).with("STDERR: 5").ordered
+    Chef::Log.should_receive(:debug).with("---- End output of #{command} ----").ordered
     Chef::Log.should_receive(:debug).with("Ran #{command} returned 0").ordered
     Chef::Mixin::Command.run_command(:command => command)
   end
@@ -55,12 +53,12 @@ describe Chef::Mixin::Command do
     # by the little Ruby program. This, some would say, is a bug.
     command = "ruby -e 'STDERR.puts 1; puts 2; STDERR.puts 3; puts 4'"
     Chef::Log.should_receive(:debug).with("Executing #{command}").ordered
-    Chef::Log.should_receive(:debug).with("---- Begin #{command} STDOUT ----").ordered
-    Chef::Log.should_receive(:debug).with("2\n4").ordered
-    Chef::Log.should_receive(:debug).with("---- End #{command} STDOUT ----").ordered
-    Chef::Log.should_receive(:debug).with("---- Begin #{command} STDERR ----").ordered
-    Chef::Log.should_receive(:debug).with("1\n3").ordered
-    Chef::Log.should_receive(:debug).with("---- End #{command} STDERR ----").ordered
+    Chef::Log.should_receive(:debug).with("---- Begin output of #{command} ----").ordered
+    Chef::Log.should_receive(:debug).with("STDOUT: 2").ordered
+    Chef::Log.should_receive(:debug).with("STDOUT: 4").ordered
+    Chef::Log.should_receive(:debug).with("STDERR: 1").ordered
+    Chef::Log.should_receive(:debug).with("STDERR: 3").ordered
+    Chef::Log.should_receive(:debug).with("---- End output of #{command} ----").ordered
     Chef::Log.should_receive(:debug).with("Ran #{command} returned 0").ordered
     Chef::Mixin::Command.run_command(:command => command)
   end
@@ -76,8 +74,6 @@ describe Chef::Mixin::Command do
   it "should include the command output in the exception if the log level is not at debug" do
     command = "ruby -e 'puts 1; exit 1'"
     Chef::Log.level :info
-    # Stub out Chef::Log.debug to avoid messages going to console
-    #Chef::Log.stub!(:debug)
-    lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exception::Exec, "#{command} returned 1, expected 0\n---- Begin ruby -e 'puts 1; exit 1' STDOUT ----\n1\n\n---- End ruby -e 'puts 1; exit 1' STDOUT ----\n---- Begin ruby -e 'puts 1; exit 1' STDERR ----\n\n---- End ruby -e 'puts 1; exit 1' STDERR ----\n")
+    lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exception::Exec, "#{command} returned 1, expected 0\n---- Begin output of ruby -e 'puts 1; exit 1' ----\nSTDOUT: 1\n---- End output of ruby -e 'puts 1; exit 1' ----\n")
   end
 end

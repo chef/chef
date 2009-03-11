@@ -101,8 +101,7 @@ class Chef
       # === Returns
       # Returns the exit status of args[:command]
       def run_command(args={})         
-        command_stdout = nil
-        command_stderr = nil
+        command_output = ""
         
         args[:ignore_failure] ||= false
 
@@ -117,29 +116,22 @@ class Chef
           stdout.sync = true
           stderr.sync = true
           
-          if stdout.ready?
-            stdout_string = stdout.gets(nil)
-            if stdout_string
-              command_stdout = stdout_string
-              Chef::Log.debug("---- Begin #{args[:command]} STDOUT ----")
-              Chef::Log.debug(stdout_string.strip)
-              Chef::Log.debug("---- End #{args[:command]} STDOUT ----")
+          Chef::Log.debug("---- Begin output of #{args[:command]} ----")
+          stdout_string = stdout.gets(nil)
+          if stdout_string
+            stdout_string.split.each do |line|
+              command_output << "STDOUT: #{line.strip}\n"
+              Chef::Log.debug("STDOUT: #{line.strip}")
             end
-          else
-            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDOUT.")
-          end
-          
-          if stderr.ready?
-            stderr_string = stderr.gets(nil)
-            if stderr_string
-              command_stderr = stderr_string
-              Chef::Log.debug("---- Begin #{args[:command]} STDERR ----")
-              Chef::Log.debug(stderr_string.strip)
-              Chef::Log.debug("---- End #{args[:command]} STDERR ----")
+          end          
+          stderr_string = stderr.gets(nil)
+          if stderr_string
+            stderr_string.split.each do |line|
+              command_output << "STDERR: #{line.strip}\n"
+              Chef::Log.debug("STDERR: #{line.strip}")
             end
-          else
-            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDERR.")            
           end
+          Chef::Log.debug("---- End output of #{args[:command]} ----")
         end
         
         args[:cwd] ||= Dir.tmpdir        
@@ -170,12 +162,9 @@ class Chef
               # if the log level is not debug, through output of command when we fail
               output = ""
               if Chef::Log.logger.level > 0
-                output << "\n---- Begin #{args[:command]} STDOUT ----\n"
-                output << "#{command_stdout}\n"
-                output << "---- End #{args[:command]} STDOUT ----\n"
-                output << "---- Begin #{args[:command]} STDERR ----\n"
-                output << "#{command_stderr}\n"
-                output << "---- End #{args[:command]} STDERR ----\n"
+                output << "\n---- Begin output of #{args[:command]} ----\n"
+                output << "#{command_output}"
+                output << "---- End output of #{args[:command]} ----\n"
               end
               raise Chef::Exception::Exec, "#{args[:command]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
             end
