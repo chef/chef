@@ -35,7 +35,7 @@ describe Chef::Mixin::Command do
     Chef::Log.should_receive(:debug).with("5").ordered
     Chef::Log.should_receive(:debug).with("---- End #{command} STDOUT ----").ordered
     Chef::Log.should_receive(:debug).with("Nothing to read on '#{command}' STDERR.").ordered
-    Chef::Log.should_receive(:debug).with("Ran  (#{command}) returned 0").ordered
+    Chef::Log.should_receive(:debug).with("Ran #{command} returned 0").ordered
     Chef::Mixin::Command.run_command(:command => command)
   end
   
@@ -46,7 +46,7 @@ describe Chef::Mixin::Command do
     Chef::Log.should_receive(:debug).with("---- Begin #{command} STDERR ----").ordered
     Chef::Log.should_receive(:debug).with("5").ordered
     Chef::Log.should_receive(:debug).with("---- End #{command} STDERR ----").ordered
-    Chef::Log.should_receive(:debug).with("Ran  (#{command}) returned 0").ordered
+    Chef::Log.should_receive(:debug).with("Ran #{command} returned 0").ordered
     Chef::Mixin::Command.run_command(:command => command)
   end
   
@@ -61,7 +61,7 @@ describe Chef::Mixin::Command do
     Chef::Log.should_receive(:debug).with("---- Begin #{command} STDERR ----").ordered
     Chef::Log.should_receive(:debug).with("1\n3").ordered
     Chef::Log.should_receive(:debug).with("---- End #{command} STDERR ----").ordered
-    Chef::Log.should_receive(:debug).with("Ran  (#{command}) returned 0").ordered
+    Chef::Log.should_receive(:debug).with("Ran #{command} returned 0").ordered
     Chef::Mixin::Command.run_command(:command => command)
   end
   
@@ -70,7 +70,7 @@ describe Chef::Mixin::Command do
     Chef::Log.level :debug
     # Stub out Chef::Log.debug to avoid messages going to console
     Chef::Log.stub!(:debug)
-    lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exception::Exec, " returned 1, expected 0")
+    lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exception::Exec, "#{command} returned 1, expected 0")
   end
 
   it "should include the command output in the exception if the log level is not at debug" do
@@ -78,6 +78,6 @@ describe Chef::Mixin::Command do
     Chef::Log.level :info
     # Stub out Chef::Log.debug to avoid messages going to console
     #Chef::Log.stub!(:debug)
-    lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exception::Exec, " returned 1, expected 0\n---- Begin ruby -e 'puts 1; exit 1' STDOUT ----\n1\n\n---- End ruby -e 'puts 1; exit 1' STDOUT ----\n---- Begin ruby -e 'puts 1; exit 1' STDERR ----\n\n---- End ruby -e 'puts 1; exit 1' STDERR ----\n")
+    lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exception::Exec, "#{command} returned 1, expected 0\n---- Begin ruby -e 'puts 1; exit 1' STDOUT ----\n1\n\n---- End ruby -e 'puts 1; exit 1' STDOUT ----\n---- Begin ruby -e 'puts 1; exit 1' STDERR ----\n\n---- End ruby -e 'puts 1; exit 1' STDERR ----\n")
   end
 end

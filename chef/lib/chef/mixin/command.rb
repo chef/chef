@@ -157,7 +157,7 @@ class Chef
                 status = popen4(args[:command], args, &exec_processing_block)
               end
             rescue Timeout::Error => e
-              Chef::Log.error("#{args[:command_string]} exceeded timeout #{args[:timeout]}")
+              Chef::Log.error("#{args[:command]} exceeded timeout #{args[:timeout]}")
               raise(e)
             end
           else
@@ -177,10 +177,10 @@ class Chef
                 output << "#{command_stderr}\n"
                 output << "---- End #{args[:command]} STDERR ----\n"
               end
-              raise Chef::Exception::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
+              raise Chef::Exception::Exec, "#{args[:command]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
             end
           end
-          Chef::Log.debug("Ran #{args[:command_string]} (#{args[:command]}) returned #{status.exitstatus}")
+          Chef::Log.debug("Ran #{args[:command]} returned #{status.exitstatus}")
         end
         status
       end
