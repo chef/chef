@@ -4,7 +4,7 @@ require 'rake/rdoctask'
 require './tasks/rspec.rb'
 
 GEM = "chef"
-CHEF_VERSION = "0.5.5"
+CHEF_VERSION = "0.5.7"
 AUTHOR = "Adam Jacob"
 EMAIL = "adam@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"
@@ -15,7 +15,7 @@ spec = Gem::Specification.new do |s|
   s.version = CHEF_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
-  s.extra_rdoc_files = ["README.txt", "LICENSE", 'NOTICE']
+  s.extra_rdoc_files = ["README.txt", "LICENSE" ]
   s.summary = SUMMARY
   s.description = s.summary
   s.author = AUTHOR
@@ -47,6 +47,10 @@ end
 
 task :install => :package do
   sh %{sudo gem install pkg/#{GEM}-#{CHEF_VERSION} --no-rdoc --no-ri}
+end
+
+task :uninstall do
+  sh %{sudo gem uninstall #{GEM} -x -v #{CHEF_VERSION} }
 end
 
 desc "create a gemspec file"

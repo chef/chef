@@ -16,10 +16,8 @@ template_url       "http://127.0.0.1:4000"
 remotefile_url     "http://127.0.0.1:4000"
 search_url         "http://127.0.0.1:4000"
 cookbook_path      [ "/var/chef/site-cookbooks", "/var/chef/cookbooks" ]
-node_path          "/var/chef/nodes"
 openid_store_path  "/var/chef/openid/store"
 openid_cstore_path "/var/chef/openid/cstore"
-merb_log_path      "/var/log/chef-server.log"
 search_index_path  "/var/chef/search_index"
 
 Chef::Log::Formatter.show_time = false

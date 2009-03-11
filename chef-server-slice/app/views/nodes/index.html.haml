@@ -1,0 +1,7 @@
+- throw_content(:header, "Node List")
+- @node_list.each do |node|
+  .node
+    %a{ :href => slice_url(:node, { :id => node.gsub(/\./, "_") }) }
+      = node
+    - if session[:level] == :admin
+      = delete_button slice_url(:node, { :id => node.gsub(/\./, "_") }), "Delete"
