@@ -117,15 +117,30 @@ class Chef
           stderr.sync = true
           
           Chef::Log.debug("---- Begin output of #{args[:command]} ----")
-          while !stdout.eof? do
-            line = stdout.gets
-            command_output << "STDOUT: #{line.strip}\n"
-            Chef::Log.debug("STDOUT: #{line.strip}")
-          end
-          while !stderr.eof? do
-            line = stderr.gets
-            command_output << "STDERR: #{line.strip}\n"
-            Chef::Log.debug("STDERR: #{line.strip}")
+          
+          stdout_finished = false
+          stderr_finished = false
+          
+          while !stdout_finished || !stderr_finished
+            ready = IO.select([stdout, stderr], nil, nil, 1.0)
+            if ready.first.include?(stdout)
+              line = stdout.gets
+              if line
+                command_output << "STDOUT: #{line.strip}\n"
+                Chef::Log.debug("STDOUT: #{line.strip}")
+              else
+                stdout_finished = true
+              end
+            end
+            if ready.first.include?(stderr)
+              line = stderr.gets
+              if line
+                command_output << "STDERR: #{line.strip}\n"
+                Chef::Log.debug("STDERR: #{line.strip}")
+              else
+                stderr_finished = true
+              end
+            end
           end
           Chef::Log.debug("---- End output of #{args[:command]} ----")
         end

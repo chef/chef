@@ -49,20 +49,18 @@ describe Chef::Mixin::Command do
   end
   
   it "should log the command's standard out and error at the same time" do
-    # Note that standard error and out messages are not returned in the same order as they were produced
-    # by the little Ruby program. This, some would say, is a bug.
     command = "ruby -e 'STDERR.puts 1; puts 2; STDERR.puts 3; puts 4'"
     Chef::Log.should_receive(:debug).with("Executing #{command}").ordered
     Chef::Log.should_receive(:debug).with("---- Begin output of #{command} ----").ordered
-    Chef::Log.should_receive(:debug).with("STDOUT: 2").ordered
-    Chef::Log.should_receive(:debug).with("STDOUT: 4").ordered
     Chef::Log.should_receive(:debug).with("STDERR: 1").ordered
+    Chef::Log.should_receive(:debug).with("STDOUT: 2").ordered
     Chef::Log.should_receive(:debug).with("STDERR: 3").ordered
+    Chef::Log.should_receive(:debug).with("STDOUT: 4").ordered
     Chef::Log.should_receive(:debug).with("---- End output of #{command} ----").ordered
     Chef::Log.should_receive(:debug).with("Ran #{command} returned 0").ordered
     Chef::Mixin::Command.run_command(:command => command)
   end
-  
+
   it "should throw an exception if the command returns a bad exit value" do
     command = "ruby -e 'puts 1; exit 1'"
     Chef::Log.level :debug
