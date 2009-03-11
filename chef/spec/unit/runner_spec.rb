@@ -140,5 +140,17 @@ describe Chef::Runner do
     @runner.converge
   end
   
+  it "should collapse delayed actions on changed resources" do
+    Chef::Platform.stub!(:find_provider_for_node).and_return(Chef::Provider::SnakeOil)
+    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
+    Chef::Provider::SnakeOil.stub!(:new).and_return(provider)   
+    cat = Chef::Resource::Cat.new("peanut", @collection)
+    cat.notifies :buy, @collection[0], :delayed
+    cat.updated = true
+    @collection << cat
+    @collection << cat
+    provider.should_receive(:action_buy).once.and_return(true)
+    @runner.converge
+  end
 
 end

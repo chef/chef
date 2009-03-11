@@ -44,15 +44,13 @@ class Chef
       :user => nil,
       :group => nil,
       :json_attribs => nil,
-      :cookbook_path => [ "/etc/chef/site-cookbook", "/etc/chef/cookbook" ],
+      :cookbook_path => [ "/var/chef/site-cookbooks", "/var/chef/cookbooks" ],
       :validation_token => nil,
-      :merb_root => "/var/chef/merb",
-      :node_path => "/etc/chef/node",
+      :node_path => "/var/chef/node",      
       :file_store_path => "/var/chef/store",
       :search_index_path => "/var/chef/search_index",
       :log_level => :info,
       :log_location => STDOUT,
-      :merb_log_path => "/var/log/chef/merb.log",
       :openid_providers => nil,
       :ssl_verify_mode => :verify_none,
       :ssl_client_cert => "",
@@ -95,6 +93,23 @@ class Chef
         yield @configuration
       end
       
+      # Manages the chef secret session key
+      # === Returns
+      # <newkey>:: A new or retrieved session key
+      #
+      def manage_secret_key
+        newkey = nil
+        if Chef::FileCache.has_key?("chef_server_cookie_id")
+          newkey = Chef::FileCache.load("chef_server_cookie_id")
+        else
+          chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
+          newkey = ""
+          1.upto(40) { |i| newkey << chars[rand(chars.size-1)] }
+          Chef::FileCache.store("chef_server_cookie_id", newkey)
+        end
+        newkey
+      end
+
       # Get the value of a configuration option
       #
       # === Parameters

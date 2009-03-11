@@ -1,7 +1,6 @@
+gems = %w[chef chef-server-slice chef-server]
 require 'rubygems'
 require 'cucumber/rake/task'
-
-gems = %w[chef chef-server]
 
 desc "Build the chef gems"
 task :gem do
@@ -14,6 +13,13 @@ desc "Install the chef gems"
 task :install do
   gems.each do |dir|
     Dir.chdir(dir) { sh "rake install" }
+  end
+end
+
+desc "Uninstall the chef gems"
+task :uninstall do
+  gems.reverse.each do |dir|
+    Dir.chdir(dir) { sh "rake uninstall" }
   end
 end
 
@@ -113,6 +119,7 @@ namespace :dev do
     end
     Dir.chdir("example-repository") { sh("rake install") }
   end
+
   
   desc "Install a test instance of Chef for doing features against"
   task :features do
