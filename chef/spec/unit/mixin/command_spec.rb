@@ -74,6 +74,6 @@ describe Chef::Mixin::Command do
   it "should include the command output in the exception if the log level is not at debug" do
     command = "ruby -e 'puts 1; exit 1'"
     Chef::Log.level :info
-    lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exception::Exec, "#{command} returned 1, expected 0\n---- Begin output of ruby -e 'puts 1; exit 1' ----\nSTDOUT: 1\n---- End output of ruby -e 'puts 1; exit 1' ----\n")
+    lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exception::Exec, "#{command} returned 1, expected 0\n---- Begin output of #{command} ----\nSTDOUT: 1\n---- End output of #{command} ----\n")
   end
 end
