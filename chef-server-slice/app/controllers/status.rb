@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Joe Williams (joe@joetify.com)
+# Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,25 +16,15 @@
 # limitations under the License.
 #
 
-module Merb
-  module ChefServerSlice
-    module NodesHelper
-      def recipe_list(node)
-        response = ""
-        node.recipes.each do |recipe|
-          response << "<li>#{recipe}</li>"
-        end
-        response
-      end
+require 'chef' / 'node'
 
-      def attribute_list(node)
-        response = ""
-        node.each_attribute do |k,v|
-          response << "<li><b>#{k}</b>: #{v}</li>"
-        end
-        response
-      end
-    end
+class ChefServerSlice::Status < ChefServerSlice::Application
 
+  provides :html, :json
+
+  def index
+    @node_list = Chef::Node.list
+    display @node_list
   end
+
 end

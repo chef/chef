@@ -12,6 +12,7 @@ Contributors and Copyright holders:
  * Copyright 2009, Sean Cribbs <seancribbs@gmail.com>
  * Copyright 2009, Christopher Brown <cb@opscode.com>
  * Copyright 2009, Thom May <thom@clearairturbulence.org>
+ * Copyright 2009, Joe Williams <joe@joetify.com>
 
 Chef incorporates code modified from Open4 (http://www.codeforpeople.com/lib/ruby/open4/), which was written by Ara T. Howard.
 

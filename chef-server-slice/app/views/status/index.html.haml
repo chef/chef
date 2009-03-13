@@ -1,0 +1,8 @@
+- throw_content(:header, "Status")
+- @node_list.each do |node|
+  .node
+    %h3= node
+    = get_info(node)
+    %br
+    %strong Recipes:
+    = recipe_list(node)

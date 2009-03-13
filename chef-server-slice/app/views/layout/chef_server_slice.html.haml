@@ -13,6 +13,8 @@
       |
       %a{:href => slice_url(:nodes) } Nodes
       |
+      %a{:href => slice_url(:status) } Status
+      |
       %a{:href => slice_url(:cookbooks) } Cookbooks
       |
       %a{:href => slice_url(:registrations)} Registrations
@@ -28,5 +30,3 @@
       = message[:error]
       = message[:notice]
     = catch_content :for_layout
-
- 
