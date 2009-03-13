@@ -2,8 +2,7 @@
 - @node_list.each do |node|
   .node
     %h3= node
-    %strong Last Check-in:
-    = last_check_in(node)
+    = get_info(node)
     %br
     %strong Recipes:
     = recipe_list(node)

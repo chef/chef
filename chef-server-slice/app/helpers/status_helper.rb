@@ -24,16 +24,20 @@ module Merb
         data = Chef::Node.load(node)
         response = ""
         data.recipes.each do |recipe|
-          response << "<em>#{recipe} </em>"
+          response << "<em> #{recipe}</em>"
         end
         response
       end
 
-      def last_check_in(node)
+      def get_info(node)
         data = Chef::Node.load(node)
         response = ""
+        response << "<b>FQDN: </b><em>#{data[:fqdn]}</em><br>"
+        response << "<b>IP Address: </b><em>#{data[:ipaddress]}</em><br>"
         ohai_time = Time.at(data[:ohai_time])
-        response << "</em>#{ohai_time}</em>"
+        response << "<b>Last Check-in: </b><em>#{ohai_time}</em><br>"
+        response << "<b>Uptime: </b><em>#{data[:uptime]}</em><br>"
+        response << "<b>Platform: </b><em>#{data[:platform]} #{data[:platform_version]}</em>"
         response
       end
     end
