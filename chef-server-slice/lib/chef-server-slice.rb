@@ -67,6 +67,8 @@ if defined?(Merb::Plugins)
 
       scope.resources :nodes
 
+      scope.match("/status").to(:controller => "status", :action => "index").name(:status)
+
       scope.resources :searches, :path => "search", :controller => "search" do
         scope.resources :entries, :controller => "search_entries"
       end
