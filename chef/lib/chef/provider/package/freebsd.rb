@@ -43,7 +43,7 @@ class Chef
         end
         
         def port_path
-          status = popen4("whereis -s #{port_name}") do |pid, stdin, stdout, stderr|
+          popen4("whereis -s #{port_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
               when /^#{port_name}:\s+(.+)$/
