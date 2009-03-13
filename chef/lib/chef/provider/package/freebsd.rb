@@ -43,15 +43,26 @@ class Chef
         end
         
         def port_path
-          popen4("whereis -s #{port_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^#{port_name}:\s+(.+)$/
-                return $1
+          case @new_resource.package_name
+          # When the package name starts with a '/' treat it as the full path to the ports directory
+          when /^\//
+            @new_resource.package_name
+          # Otherwise if the package name contains a '/' not at the start (like 'www/wordpress') treat as a relative
+          # path from /usr/ports
+          when /\//
+            "/usr/ports/#{@new_resource.package_name}"
+          # Otherwise look up the path to the ports directory using 'whereis'
+          else
+            popen4("whereis -s #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+              stdout.each do |line|
+                case line
+                when /^#{@new_resource.package_name}:\s+(.+)$/
+                  return $1
+                end
               end
             end
-          end
-          raise Chef::Exception::Package, "Could not find port with the name #{port_name}"
+            raise Chef::Exception::Package, "Could not find port with the name #{@new_resource.package_name}"
+          end          
         end
         
         def ports_makefile_variable_value(variable)
@@ -80,11 +91,6 @@ class Chef
           Chef::Log.debug("Ports candidate version is #{@candidate_version}") if @candidate_version
           
           @current_resource
-        end
-        
-        # The name of the leaf directory in /usr/ports
-        def port_name
-          @new_resource.package_name
         end
         
         def latest_link_name

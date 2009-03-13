@@ -152,6 +152,29 @@ describe Chef::Provider::Package::Freebsd, "install_package" do
   end
 end
 
+describe Chef::Provider::Package::Freebsd, "port path" do
+  it "should figure out the port path from the package_name using whereis" do
+    @new_resource = mock("Chef::Resource::Package", :package_name => "zsh")
+    @provider = Chef::Provider::Package::Freebsd.new(mock("Chef::Node"), @new_resource)
+    @provider.should_receive(:popen4).with("whereis -s zsh").and_yield(nil, nil, ["zsh: /usr/ports/shells/zsh"], nil)
+    @provider.port_path.should == "/usr/ports/shells/zsh"
+  end
+  
+  it "should use the package_name as the port path when it starts with /" do
+    @new_resource = mock("Chef::Resource::Package", :package_name => "/usr/ports/www/wordpress")
+    @provider = Chef::Provider::Package::Freebsd.new(mock("Chef::Node"), @new_resource)
+    @provider.should_not_receive(:popen4)
+    @provider.port_path.should == "/usr/ports/www/wordpress"
+  end
+  
+  it "should use the package_name as a relative path from /usr/ports when it contains / but doesn't start with it" do
+    @new_resource = mock("Chef::Resource::Package", :package_name => "www/wordpress")
+    @provider = Chef::Provider::Package::Freebsd.new(mock("Chef::Node"), @new_resource)
+    @provider.should_not_receive(:popen4)
+    @provider.port_path.should == "/usr/ports/www/wordpress"
+  end 
+end
+
 describe Chef::Provider::Package::Freebsd, "ruby-iconv (package with a dash in the name)" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
