@@ -123,7 +123,7 @@ class Chef
           
           while !stdout_finished || !stderr_finished
             ready = IO.select([stdout, stderr], nil, nil, 1.0)
-            if ready.first.include?(stdout)
+            if ready && ready.first.include?(stdout)
               line = stdout.gets
               if line
                 command_output << "STDOUT: #{line.strip}\n"
@@ -132,7 +132,7 @@ class Chef
                 stdout_finished = true
               end
             end
-            if ready.first.include?(stderr)
+            if ready && ready.first.include?(stderr)
               line = stderr.gets
               if line
                 command_output << "STDERR: #{line.strip}\n"
