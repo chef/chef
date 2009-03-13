@@ -15,23 +15,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'chef' / 'node'
 
 module Merb
   module ChefServerSlice
-    module NodesHelper
+    module StatusHelper
       def recipe_list(node)
+        data = Chef::Node.load(node)
         response = ""
-        node.recipes.each do |recipe|
-          response << "<li>#{recipe}</li>"
+        data.recipes.each do |recipe|
+          response << "<em>#{recipe} </em>"
         end
         response
       end
 
-      def attribute_list(node)
+      def last_check_in(node)
+        data = Chef::Node.load(node)
         response = ""
-        node.each_attribute do |k,v|
-          response << "<li><b>#{k}</b>: #{v}</li>"
-        end
+        ohai_time = Time.at(data[:ohai_time])
+        response << "</em>#{ohai_time}</em>"
         response
       end
     end
