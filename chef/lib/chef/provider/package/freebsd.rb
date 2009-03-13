@@ -75,7 +75,6 @@ class Chef
         
           @current_resource.version(current_installed_version)
           Chef::Log.debug("Current version is #{@current_resource.version}") if @current_resource.version
-          Chef::Log.debug("Using #{port_name} as package name")
           
           @candidate_version = ports_candidate_version
           Chef::Log.debug("Ports candidate version is #{@candidate_version}") if @candidate_version
