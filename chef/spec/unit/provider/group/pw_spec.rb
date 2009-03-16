@@ -34,7 +34,7 @@ describe Chef::Provider::Group::Pw, "set_options" do
       :members => [ "root", "aj"]
     )
     @provider = Chef::Provider::Group::Pw.new(@node, @new_resource)
-    @provider.current_resource = @current_resource    
+    @provider.current_resource = @current_resource
   end
   
   field_list = {
@@ -45,8 +45,8 @@ describe Chef::Provider::Group::Pw, "set_options" do
     it "should check for differences in #{attribute.to_s} between the current and new resources" do
         @new_resource.should_receive(attribute)
         @current_resource.should_receive(attribute)
-        @provider.set_options     
-    end  
+        @provider.set_options
+    end
     it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
       @new_resource.stub!(attribute).and_return("wowaweea")
       @provider.set_options.should eql(" #{@new_resource.group_name} #{option} '#{@new_resource.send(attribute)}'")
@@ -99,7 +99,7 @@ end
 describe Chef::Provider::Group::Pw, "remove_group" do
   before do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Group", 
+    @new_resource = mock("Chef::Resource::Group",
       :null_object => true,
       :group_name => "aj"
     )
@@ -160,7 +160,7 @@ describe Chef::Provider::Group::Pw, "set_members_option" do
     
     it "should set the -d option with the members joined by ','" do
       @provider.set_members_option.should eql(" -d all,your,base")
-    end      
+    end
   end
   
   describe "with supplied members array in the new resource and an empty members array in the current resource" do

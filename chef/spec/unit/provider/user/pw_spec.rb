@@ -21,7 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 describe Chef::Provider::User::Pw, "set_options" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User", 
+    @new_resource = mock("Chef::Resource::User",
       :null_object => true,
       :username => "adam",
       :comment => "Adam Jacob",
@@ -32,7 +32,7 @@ describe Chef::Provider::User::Pw, "set_options" do
       :password => "abracadabra",
       :updated => nil
     )
-    @current_resource = mock("Chef::Resource::User", 
+    @current_resource = mock("Chef::Resource::User",
       :null_object => true,
       :username => "adam",
       :comment => "Adam Jacob",
@@ -129,7 +129,7 @@ end
 describe Chef::Provider::User::Pw, "remove_user" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User", 
+    @new_resource = mock("Chef::Resource::User",
       :null_object => true,
       :username => "adam",
       :supports => { :manage_home => false }
@@ -153,7 +153,7 @@ describe Chef::Provider::User::Pw, "check_lock" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::User", :null_object => true)
-    @current_resource = mock("Chef::Resource::User", 
+    @current_resource = mock("Chef::Resource::User",
       :null_object => true,
       :password => "abracadabra"
     )
@@ -175,7 +175,7 @@ end
 describe Chef::Provider::User::Pw, "lock_user" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User", 
+    @new_resource = mock("Chef::Resource::User",
       :null_object => true,
       :username => "adam"
     )
@@ -191,7 +191,7 @@ end
 describe Chef::Provider::User::Pw, "unlock_user" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User", 
+    @new_resource = mock("Chef::Resource::User",
       :null_object => true,
       :username => "adam"
     )
@@ -207,12 +207,12 @@ end
 describe Chef::Provider::User::Pw, "modify_password" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User", 
+    @new_resource = mock("Chef::Resource::User",
       :null_object => true,
       :username => "adam",
       :password => "abracadabra"
     )
-    @current_resource = mock("Chef::Resource::User", 
+    @current_resource = mock("Chef::Resource::User",
       :null_object => true,
       :username => "adam",
       :password => "abracadabra"
