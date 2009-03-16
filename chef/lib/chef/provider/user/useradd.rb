@@ -41,6 +41,26 @@ class Chef
           run_command(:command => command)
         end
         
+        def check_lock
+          status = popen4("passwd -S #{@new_resource.username}") do |pid, stdin, stdout, stderr|
+            status_line = stdout.gets.split(' ')
+            case status_line[1]
+            when /^P/
+              @locked = false
+            when /^N/
+              @locked = false
+            when /^L/
+              @locked = true
+            end
+          end
+
+          unless status.exitstatus == 0
+            raise Chef::Exception::User, "Cannot determine if #{@new_resource} is locked!"
+          end
+
+          @locked
+        end
+        
         def lock_user
           run_command(:command => "usermod -L #{@new_resource.username}")
         end
