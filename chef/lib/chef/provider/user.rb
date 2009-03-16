@@ -61,13 +61,14 @@ class Chef
           @current_resource.comment(user_info.gecos)
           @current_resource.home(user_info.dir)
           @current_resource.shell(user_info.shell)
+          @current_resource.password(user_info.passwd)
         
-          if @new_resource.password
+          if @new_resource.password && @current_resource.password == 'x'
             begin
               require 'shadow'
             rescue LoadError
-              Chef::Log.error("You must have ruby-shadow installed for password support!")
-              raise Chef::Exception::MissingLibrary, "You must have ruby-shadow installed for password support!"
+              Chef::Log.error("You must have ruby-shadow installed for shadow password support!")
+              raise Chef::Exception::MissingLibrary, "You must have ruby-shadow installed for shadow password support!"
             else
               shadow_info = Shadow::Passwd.getspnam(@new_resource.username)
               @current_resource.password(shadow_info.sp_pwdp)
