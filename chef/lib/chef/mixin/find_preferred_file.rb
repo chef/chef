@@ -88,7 +88,7 @@ class Chef
         end
         
         unless to_send
-          raise Chef::Exception::FileNotFound, "Cannot find a preferred file for #{file_name}!"
+          raise Chef::Exceptions::FileNotFound, "Cannot find a preferred file for #{file_name}!"
         end
         
         to_send

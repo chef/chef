@@ -46,7 +46,7 @@ class Chef
         end
 
         unless status.exitstatus == 0
-          raise Chef::Exception::Route, "route failed - #{status.inspect}!"
+          raise Chef::Exceptions::Route, "route failed - #{status.inspect}!"
         end
 
         @current_resource

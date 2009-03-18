@@ -98,7 +98,7 @@ class Chef
       # String:: A string with the file contents, or the path to the file.
       #
       # === Raises
-      # Chef::Exception::FileNotFound:: If it cannot find the file in the cache
+      # Chef::Exceptions::FileNotFound:: If it cannot find the file in the cache
       def load(path, read=true)
         validate(
           {
@@ -109,7 +109,7 @@ class Chef
           }
         )
         cache_path = create_cache_path(path, false)
-        raise Chef::Exception::FileNotFound, "Cannot find #{cache_path} for #{path}!" unless File.exists?(cache_path)
+        raise Chef::Exceptions::FileNotFound, "Cannot find #{cache_path} for #{path}!" unless File.exists?(cache_path)
         if read
           File.read(cache_path)
         else

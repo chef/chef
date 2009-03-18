@@ -144,7 +144,7 @@ class Chef
         
         args[:cwd] ||= Dir.tmpdir        
         unless File.directory?(args[:cwd])
-          raise Chef::Exception::Exec, "#{args[:cwd]} does not exist or is not a directory"
+          raise Chef::Exceptions::Exec, "#{args[:cwd]} does not exist or is not a directory"
         end
         
         Chef::Log.debug("Executing #{args[:command]}")
@@ -177,7 +177,7 @@ class Chef
                 output << "#{command_stderr}\n"
                 output << "---- End #{args[:command]} STDERR ----\n"
               end
-              raise Chef::Exception::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
+              raise Chef::Exceptions::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
             end
           end
           Chef::Log.debug("Ran #{args[:command_string]} (#{args[:command]}) returned #{status.exitstatus}")
@@ -191,9 +191,9 @@ class Chef
       # modified to suit the needs of Chef.  Any bugs here are most likely
       # my own, and not Ara's.
       #
-      # The original appears in external/open4.rb in it's unmodified form. 
+      # The original appears in external/open4.rb in its unmodified form. 
       #
-      # Thanks, Ara. 
+      # Thanks Ara!
       def popen4(cmd, args={}, &b)
         
         # Waitlast - this is magic.  

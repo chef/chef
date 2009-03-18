@@ -178,12 +178,12 @@ describe Chef::Provider::Group::Groupadd, "load_current_resource" do
     "/usr/bin/gpasswd" ].each do |required_binary|
     it "should raise an error if the required binary #{required_binary} doesn't exist" do
       File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(false)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Group)
+      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Group)
     end
   end
   
   it "shouldn't raise an error if the required binaries exist" do
     File.stub!(:exists?).and_return(true)
-    lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exception::Group)
+    lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Group)
   end
 end

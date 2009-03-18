@@ -67,9 +67,9 @@ describe Chef::FileCache, "load method" do
     Chef::FileCache.load('whiz/bang')
   end
   
-  it "should raise a Chef::Exception::FileNotFound if the file doesn't exist" do
+  it "should raise a Chef::Exceptions::FileNotFound if the file doesn't exist" do
     File.stub!(:exists?).and_return(false)
-    lambda { Chef::FileCache.load('whiz/bang') }.should raise_error(Chef::Exception::FileNotFound)
+    lambda { Chef::FileCache.load('whiz/bang') }.should raise_error(Chef::Exceptions::FileNotFound)
   end
 end
  

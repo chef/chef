@@ -39,7 +39,7 @@ class Chef
           stdout.each { |line| crontab << line }
         end
         if status.exitstatus > 1
-          raise Chef::Exception::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
+          raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
         elsif status.exitstatus == 0
           crontab.each do |line|
             case line

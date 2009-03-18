@@ -355,9 +355,9 @@ describe Chef::Provider::User, "action_modify" do
     @provider.action_modify
   end
   
-  it "should raise a Chef::Exception::User if the user doesn't exist" do
+  it "should raise a Chef::Exceptions::User if the user doesn't exist" do
     @provider.user_exists = false
-    lambda { @provider.action_modify }.should raise_error(Chef::Exception::User)
+    lambda { @provider.action_modify }.should raise_error(Chef::Exceptions::User)
   end
 end
 
@@ -406,9 +406,9 @@ describe Chef::Provider::User, "check_lock" do
     @provider.check_lock.should eql(true)
   end
   
-  it "should raise a Chef::Exception::User if passwd -S fails" do
+  it "should raise a Chef::Exceptions::User if passwd -S fails" do
     @status.should_receive(:exitstatus).and_return(1)
-    lambda { @provider.check_lock }.should raise_error(Chef::Exception::User)
+    lambda { @provider.check_lock }.should raise_error(Chef::Exceptions::User)
   end
 end
 
@@ -440,9 +440,9 @@ describe Chef::Provider::User, "action_lock" do
     @provider.action_lock
   end
   
-  it "should raise a Chef::Exception::User if we try and lock a user that does not exist" do
+  it "should raise a Chef::Exceptions::User if we try and lock a user that does not exist" do
     @provider.user_exists = false
-    lambda { @provider.action_lock }.should raise_error(Chef::Exception::User)
+    lambda { @provider.action_lock }.should raise_error(Chef::Exceptions::User)
   end
 end
 
@@ -472,9 +472,9 @@ describe Chef::Provider::User, "action_unlock" do
     @provider.action_unlock
   end
   
-  it "should raise a Chef::Exception::User if we try and unlock a user that does not exist" do
+  it "should raise a Chef::Exceptions::User if we try and unlock a user that does not exist" do
     @provider.user_exists = false
-    lambda { @provider.action_unlock }.should raise_error(Chef::Exception::User)
+    lambda { @provider.action_unlock }.should raise_error(Chef::Exceptions::User)
   end
 end
 
@@ -497,7 +497,7 @@ describe Chef::Provider::User, "convert_group_name" do
   
   it "should raise an error if we can't translate the group name" do
     Etc.stub!(:getgrnam).and_raise(ArgumentError)
-    lambda { @provider.convert_group_name }.should raise_error(Chef::Exception::User)
+    lambda { @provider.convert_group_name }.should raise_error(Chef::Exceptions::User)
   end
   
   it "should set the new resources gid to the integerized version if available" do
