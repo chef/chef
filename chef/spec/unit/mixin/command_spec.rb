@@ -66,13 +66,13 @@ describe Chef::Mixin::Command do
     Chef::Log.level :debug
     # Stub out Chef::Log.debug to avoid messages going to console
     Chef::Log.stub!(:debug)
-    lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exception::Exec, "#{command} returned 1, expected 0")
+    lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exceptions::Exec, "#{command} returned 1, expected 0")
   end
 
   it "should include the command output in the exception if the log level is not at debug" do
     command = "ruby -e 'puts 1; exit 1'"
     Chef::Log.level :info
-    lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exception::Exec, "#{command} returned 1, expected 0\n---- Begin output of #{command} ----\nSTDOUT: 1\n---- End output of #{command} ----\n")
+    lambda {Chef::Mixin::Command.run_command(:command => command)}.should raise_error(Chef::Exceptions::Exec, "#{command} returned 1, expected 0\n---- Begin output of #{command} ----\nSTDOUT: 1\n---- End output of #{command} ----\n")
   end
   
   it "should log the output as the command is executing" do
