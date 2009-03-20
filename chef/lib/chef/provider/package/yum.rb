@@ -66,7 +66,7 @@ class Chef
           end
 
           unless status.exitstatus == 0
-            raise Chef::Exception::Package, "yum failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "yum failed - #{status.inspect}!"
           end
         
           @current_resource

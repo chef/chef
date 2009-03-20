@@ -111,12 +111,12 @@ describe Chef::Provider::Service::Freebsd, "load_current_resource" do
 
   it "should set running to false if the node has a nil ps attribute" do
     @node.stub!(:[]).with(:command).and_return({:ps => nil})
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
   end
 
   it "should set running to false if the node has an empty ps attribute" do
     @node.stub!(:[]).with(:command).and_return(:ps => "")
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
   end
 
   describe "when we have a 'ps' attribute" do
@@ -157,7 +157,7 @@ describe Chef::Provider::Service::Freebsd, "load_current_resource" do
 
     it "should raise an exception if ps fails" do
       @status.stub!(:exitstatus).and_return(-1)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
     end
   end
 

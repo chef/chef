@@ -98,12 +98,12 @@ describe Chef::Provider::Package::Apt, "load_current_resource" do
   
   it "should raise an exception if apt-cache policy fails" do
     @status.should_receive(:exitstatus).and_return(1)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Package)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
   end
   
   it "should not raise an exception if apt-cache policy succeeds" do
     @status.should_receive(:exitstatus).and_return(0)
-    lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exception::Package)
+    lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Package)
   end
   
   it "should raise an exception if apt-cache policy does not return a candidate version" do
@@ -112,7 +112,7 @@ describe Chef::Provider::Package::Apt, "load_current_resource" do
                          and_yield("  Candidate: (none)").
                          and_yield("  Version Table:")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)                     
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Package)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
   end
   
   it "should return the current resouce" do

@@ -40,7 +40,7 @@ class Chef
           @new_resource.gid Etc.getgrnam(@new_resource.gid).gid
         end
       rescue ArgumentError => e
-        raise Chef::Exception::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"
+        raise Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"
       end
       
       def load_current_resource
@@ -67,7 +67,7 @@ class Chef
               require 'shadow'
             rescue LoadError
               Chef::Log.error("You must have ruby-shadow installed for password support!")
-              raise Chef::Exception::MissingLibrary, "You must have ruby-shadow installed for password support!"
+              raise Chef::Exceptions::MissingLibrary, "You must have ruby-shadow installed for password support!"
             else
               shadow_info = Shadow::Passwd.getspnam(@new_resource.username)
               @current_resource.password(shadow_info.sp_pwdp)
@@ -132,7 +132,7 @@ class Chef
             Chef::Log.info("Modified #{@new_resource}")
           end
         else
-          raise Chef::Exception::User, "Cannot modify #{@new_resource} - user does not exist!"
+          raise Chef::Exceptions::User, "Cannot modify #{@new_resource} - user does not exist!"
         end
       end
       
@@ -150,7 +150,7 @@ class Chef
         end
         
         unless status.exitstatus == 0
-          raise Chef::Exception::User, "Cannot determine if #{@new_resource} is locked!"
+          raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!"
         end
         
         @locked
@@ -166,7 +166,7 @@ class Chef
             Chef::Log.debug("No need to lock #{@new_resource}")
           end
         else
-          raise Chef::Exception::User, "Cannot lock #{@new_resource} - user does not exist!"
+          raise Chef::Exceptions::User, "Cannot lock #{@new_resource} - user does not exist!"
         end
       end
       
@@ -180,7 +180,7 @@ class Chef
             Chef::Log.debug("No need to unlock #{@new_resource}")
           end
         else
-          raise Chef::Exception::User, "Cannot unlock #{@new_resource} - user does not exist!"
+          raise Chef::Exceptions::User, "Cannot unlock #{@new_resource} - user does not exist!"
         end
       end
       

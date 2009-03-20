@@ -31,7 +31,7 @@ class Chef
           
           if @new_resource.source
             unless ::File.exists?(@new_resource.source)
-              raise Chef::Exception::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
+              raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
             end
             
             Chef::Log.debug("Checking rpm status for #{@new_resource.package_name}")
@@ -46,7 +46,7 @@ class Chef
             end
           else
             if @new_resource.action.include?(:install)
-              raise Chef::Exception::Package, "Source for package #{@new_resource.name} required for action install"
+              raise Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
             end
           end
           
@@ -62,7 +62,7 @@ class Chef
           end
           
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exception::Package, "rpm failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "rpm failed - #{status.inspect}!"
           end
           
           @current_resource

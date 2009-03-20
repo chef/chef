@@ -38,7 +38,7 @@ class Chef
       end
     
       def action_create_if_missing
-        raise Chef::Exception::UnsupportedAction, "Remote Directories do not support create_if_missing."
+        raise Chef::Exceptions::UnsupportedAction, "Remote Directories do not support create_if_missing."
       end
     
       def do_recursive

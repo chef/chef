@@ -16,7 +16,7 @@
 # limitations under the License.
 
 class Chef
-  class Exception
+  class Exceptions
     class Cron < RuntimeError; end
     class Exec < RuntimeError; end
     class FileNotFound < RuntimeError; end  

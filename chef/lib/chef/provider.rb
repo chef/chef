@@ -28,7 +28,7 @@ class Chef
     end
     
     def load_current_resource
-      raise Chef::Exception::Override, "You must override load_current_resource in #{self.to_s}"
+      raise Chef::Exceptions::Override, "You must override load_current_resource in #{self.to_s}"
     end
     
     def action_nothing
