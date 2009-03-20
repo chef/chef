@@ -25,7 +25,7 @@ class Chef
 
         def load_current_resource
           super
-          raise Chef::Exception::User, "Could not find binary /usr/sbin/pw for #{@new_resource}" unless ::File.exists?("/usr/sbin/pw")
+          raise Chef::Exceptions::User, "Could not find binary /usr/sbin/pw for #{@new_resource}" unless ::File.exists?("/usr/sbin/pw")
         end
 
         def create_user
@@ -101,7 +101,7 @@ class Chef
             end
             
             unless status.exitstatus == 0
-              raise Chef::Exception::User, "pw failed - #{status.inspect}!"
+              raise Chef::Exceptions::User, "pw failed - #{status.inspect}!"
             end
           else
             Chef::Log.debug("#{new_resource}: no change needed to password")

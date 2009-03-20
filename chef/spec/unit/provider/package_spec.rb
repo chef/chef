@@ -53,9 +53,9 @@ describe Chef::Provider::Package, "action_install" do
     @provider.stub!(:install_package).and_return(true)
   end
   
-  it "should raise a Chef::Exception::Package if no version is specified, and no candidate is available" do
+  it "should raise a Chef::Exceptions::Package if no version is specified, and no candidate is available" do
     @provider.candidate_version = nil
-    lambda { @provider.action_install }.should raise_error(Chef::Exception::Package)
+    lambda { @provider.action_install }.should raise_error(Chef::Exceptions::Package)
   end
   
   it "should call preseed_package if a response_file is given" do
@@ -257,8 +257,8 @@ end
       @provider.current_resource = @current_resource
     end
     
-    it "should raise Chef::Exception::UnsupportedAction" do
-      lambda { @provider.send(act_string, @new_resource.name, @new_resource.version) }.should raise_error(Chef::Exception::UnsupportedAction)      
+    it "should raise Chef::Exceptions::UnsupportedAction" do
+      lambda { @provider.send(act_string, @new_resource.name, @new_resource.version) }.should raise_error(Chef::Exceptions::UnsupportedAction)      
     end
   end
 end
@@ -283,8 +283,8 @@ describe Chef::Provider::Package, "preseed_package" do
     @provider.current_resource = @current_resource
   end
   
-  it "should raise Chef::Exception::UnsupportedAction" do
-    lambda { @provider.preseed_package(@new_resource.name, @new_resource.version, "response_file") }.should raise_error(Chef::Exception::UnsupportedAction)      
+  it "should raise Chef::Exceptions::UnsupportedAction" do
+    lambda { @provider.preseed_package(@new_resource.name, @new_resource.version, "response_file") }.should raise_error(Chef::Exceptions::UnsupportedAction)      
   end
 end
 

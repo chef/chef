@@ -34,7 +34,7 @@ class Chef
           super
           
           unless ::File.exists? "/sbin/chkconfig"
-            raise Chef::Exception::Service, "/sbin/chkconfig does not exist!"
+            raise Chef::Exceptions::Service, "/sbin/chkconfig does not exist!"
           end
 
           status = popen4("/sbin/chkconfig --list #{@current_resource.service_name}") do |pid, stdin, stdout, stderr|

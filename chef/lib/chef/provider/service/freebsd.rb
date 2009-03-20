@@ -34,7 +34,7 @@ class Chef
           elsif ::File.exists?("/usr/local/etc/rc.d/#{current_resource.service_name}")
             @init_command = "/usr/local/etc/rc.d/#{current_resource.service_name}" 
           else
-            raise Chef::Exception::Service, "#{@new_resource}: unable to locate the rc.d script"
+            raise Chef::Exceptions::Service, "#{@new_resource}: unable to locate the rc.d script"
           end
           Chef::Log.debug("#{@current_resource.name} found at #{@init_command}")
             
@@ -45,7 +45,7 @@ class Chef
               if run_command(:command => "#{@init_command} status") == 0
                 @current_resource.running true
               end
-            rescue Chef::Exception::Exec
+            rescue Chef::Exceptions::Exec
               @current_resource.running false
               nil
             end
@@ -57,7 +57,7 @@ class Chef
               if run_command(:command => @new_resource.status_command) == 0
                 @current_resource.running true
               end
-            rescue Chef::Exception::Exec
+            rescue Chef::Exceptions::Exec
               @current_resource.running false
               nil
             end
@@ -66,7 +66,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} does not support status and you have not specified a status command, falling back to process table inspection")
 
             if @node[:command][:ps].nil? or @node[:command][:ps].empty?
-              raise Chef::Exception::Service, "#{@new_resource}: could not determine how to inspect the process table, please set this nodes 'ps' attribute"
+              raise Chef::Exceptions::Service, "#{@new_resource}: could not determine how to inspect the process table, please set this nodes 'ps' attribute"
             end
 
             status = popen4(@node[:command][:ps]) do |pid, stdin, stdout, stderr|
@@ -82,7 +82,7 @@ class Chef
               @current_resource.running false unless @current_resource.running
             end
             unless status.exitstatus == 0
-              raise Chef::Exception::Service, "Command #{@node[:command][:ps]} failed"
+              raise Chef::Exceptions::Service, "Command #{@node[:command][:ps]} failed"
             else
               Chef::Log.debug("#{@new_resource}: #{@node[:command][:ps]} exited and parsed succesfully, process running: #{@current_resource.running}")
             end
@@ -131,7 +131,7 @@ class Chef
               return $1 + "_enable"
             end
           end
-          raise Chef::Exception::Service, "Could not find name=\"service\" line in #{@init_command}"
+          raise Chef::Exceptions::Service, "Could not find name=\"service\" line in #{@init_command}"
         end
         
         def set_service_enable(value)

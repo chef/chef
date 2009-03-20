@@ -55,7 +55,7 @@ class Chef
           end
 
           unless status.exitstatus == 0
-            raise Chef::Exception::User, "Cannot determine if #{@new_resource} is locked!"
+            raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!"
           end
 
           @locked

@@ -41,7 +41,7 @@ class Chef
           end
 
           unless status.exitstatus == 0
-            raise Chef::Exception::Package, "emerge --search failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "emerge --search failed - #{status.inspect}!"
           end
         
           @current_resource

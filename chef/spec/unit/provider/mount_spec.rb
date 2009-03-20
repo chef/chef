@@ -256,8 +256,8 @@ end
       
     end
 
-    it "should raise Chef::Exception::UnsupportedAction on an unsupported action" do
-      lambda { @provider.send(act_string) }.should raise_error(Chef::Exception::UnsupportedAction)
+    it "should raise Chef::Exceptions::UnsupportedAction on an unsupported action" do
+      lambda { @provider.send(act_string) }.should raise_error(Chef::Exceptions::UnsupportedAction)
     end
   end
 end
