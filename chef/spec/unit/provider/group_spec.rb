@@ -295,8 +295,8 @@ describe Chef::Provider::Group, "action_modify" do
     @provider.action_modify
   end
   
-  it "should raise a Chef::Exception::Group if the group doesn't exist" do
+  it "should raise a Chef::Exceptions::Group if the group doesn't exist" do
     @provider.group_exists = false
-    lambda { @provider.action_modify }.should raise_error(Chef::Exception::Group)
+    lambda { @provider.action_modify }.should raise_error(Chef::Exceptions::Group)
   end
 end

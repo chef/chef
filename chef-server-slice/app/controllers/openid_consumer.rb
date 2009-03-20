@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,12 +39,31 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
     end
     return_to = absolute_slice_url(:openid_consumer_complete)
     realm = absolute_slice_url(:openid_consumer)
-    
+
     if oidreq.send_redirect?(realm, return_to, params[:immediate])
       return redirect(oidreq.redirect_url(realm, return_to, params[:immediate]))
     else
       @form_text = oidreq.form_markup(realm, return_to, params[:immediate], {'id' => 'openid_form'})
-      render 
+      render
+    end
+  end
+
+  def login
+  	check_authorized_openid_identifier(params[:openid_identifier])
+    check_valid_openid_provider(params[:openid_identifier])
+    begin
+      oidreq = consumer.begin(params[:openid_identifier])
+    rescue OpenID::OpenIDError => e
+      raise BadRequest, "Discovery failed for #{params[:openid_identifier]}: #{e}"
+    end
+    return_to = absolute_slice_url(:openid_consumer_complete)
+    realm = absolute_slice_url(:openid_consumer)
+
+    if oidreq.send_redirect?(realm, return_to, params[:immediate])
+      return redirect(oidreq.redirect_url(realm, return_to, params[:immediate]))
+    else
+      @form_text = oidreq.form_markup(realm, return_to, params[:immediate], {'id' => 'openid_form'})
+      render
     end
   end
 
@@ -81,7 +100,7 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
     end
     redirect absolute_slice_url(:openid_consumer)
   end
-  
+
   def logout
     session[:openid] = nil    if session.has_key?(:openid)
     session[:level] = nil     if session.has_key?(:level)
@@ -90,8 +109,8 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
   end
 
   private
-  
-  # Returns true if the openid is at a valid provider, based on whether :openid_providers is 
+
+  # Returns true if the openid is at a valid provider, based on whether :openid_providers is
   # defined.  Raises an exception if it is not an allowed provider.
   def check_valid_openid_provider(openid)
     if Chef::Config[:openid_providers]
@@ -103,8 +122,25 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
           false
         end
       end
-      unless fp 
+      unless fp
         raise Unauthorized, "Sorry, #{openid} is not an allowed OpenID Provider."
+      end
+    end
+    true
+  end
+
+  def check_authorized_openid_identifier(openid)
+    if Chef::Config[:authorized_openid_identifiers]
+      fp = Chef::Config[:authorized_openid_identifiers].detect do |p|
+        case openid
+        when p
+          true
+        else
+          false
+        end
+      end
+      unless fp
+        raise Unauthorized, "Sorry, #{openid} is not an authorized OpenID."
       end
     end
     true

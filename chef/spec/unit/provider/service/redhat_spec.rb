@@ -53,7 +53,7 @@ describe Chef::Provider::Service::Redhat, "load_current_resource" do
 
   it "should raise an error if /sbin/chkconfig does not exist" do
     File.should_receive(:exists?).with("/sbin/chkconfig").and_return(false)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
   end
 
   it "should popen4 '/sbin/chkconfig --list service_name'" do

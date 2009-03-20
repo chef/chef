@@ -1,6 +1,6 @@
 #
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 OpsCode, Inc.
+# Author:: Stephen Haynes (<sh@nomitor.com>)
+# Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,55 +19,40 @@
 class Chef
   class Provider
     class Group
-      class Groupadd < Chef::Provider::Group
+      class Pw < Chef::Provider::Group
         
         def load_current_resource
           super
-          
-          [ "/usr/sbin/groupadd",
-            "/usr/sbin/groupmod",
-            "/usr/sbin/groupdel",
-            "/usr/bin/gpasswd" ].each do |required_binary|
-            raise Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{@new_resource}" unless ::File.exists?(required_binary)
-          end
+          raise Chef::Exceptions::Group, "Could not find binary /usr/sbin/pw for #{@new_resource}" unless ::File.exists?("/usr/sbin/pw")
         end
-
+        
         # Create the group
         def create_group
-          command = "groupadd"
+          command = "pw groupadd"
           command << set_options
+          command << set_members_option
           run_command(:command => command)
-          modify_group_members    
         end
         
         # Manage the group when it already exists
         def manage_group
-          command = "groupmod"
+          command = "pw groupmod"
           command << set_options
+          command << set_members_option
           run_command(:command => command)
-          modify_group_members
         end
         
         # Remove the group
         def remove_group
-          run_command(:command => "groupdel #{@new_resource.group_name}")
+          run_command(:command => "pw groupdel #{@new_resource.group_name}")
         end
         
-        def modify_group_members
-          unless @new_resource.members.empty?
-            Chef::Log.debug("#{@new_resource}: setting group members to #{@new_resource.members.join(', ')}")
-            run_command(:command => "gpasswd -M #{@new_resource.members.join(',')} #{@new_resource.group_name}")
-          else
-            Chef::Log.debug("#{@new_resource}: not changing group members, the group has no members")
-          end
-        end
-        
-        # Little bit of magic as per Adam's useradd provider to pull the assign the command line flags
+        # Little bit of magic as per Adam's useradd provider to pull and assign the command line flags
         #
         # ==== Returns
         # <string>:: A string containing the option and then the quoted value
         def set_options
-          opts = ""
+          opts = " #{@new_resource.group_name}"
           { :gid => "-g" }.sort { |a,b| a[0] <=> b[0] }.each do |field, option|
             if @current_resource.send(field) != @new_resource.send(field)
               if @new_resource.send(field)
@@ -76,7 +61,25 @@ class Chef
               end
             end
           end
-          opts << " #{@new_resource.group_name}"
+          opts
+        end
+
+        # Set the membership option depending on the current resource states
+        def set_members_option
+          opt = ""
+          unless @new_resource.members.empty?
+            opt << " -M #{@new_resource.members.join(',')}"
+            Chef::Log.debug("#{@new_resource}: setting group members to #{@new_resource.members.join(', ')}")
+          else
+            # New member list is empty so we should delete any old group members
+            unless @current_resource.members.empty?
+              opt << " -d #{@current_resource.members.join(',')}"
+              Chef::Log.debug("#{@new_resource}: removing group members #{@current_resource.members.join(', ')}")
+            else
+              Chef::Log.debug("#{@new_resource}: not changing group members, the group has no members")
+            end
+          end
+          opt
         end
         
       end

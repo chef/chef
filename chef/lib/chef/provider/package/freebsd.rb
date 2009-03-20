@@ -37,7 +37,7 @@ class Chef
             end
           end
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exception::Package, "#{command} failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "#{command} failed - #{status.inspect}!"
           end
           nil
         end
@@ -71,7 +71,7 @@ class Chef
             return stdout.readline.strip
           end
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exception::Package, "#{command} failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "#{command} failed - #{status.inspect}!"
           end
           nil
         end

@@ -211,7 +211,7 @@ before(:each) do
   it "should raise an exception if reload isn't supported" do
     @new_resource.stub!(:supports).and_return({:reload => false})
     @new_resource.stub!(:reload_command).and_return(false)
-    lambda { @provider.action_reload }.should raise_error(Chef::Exception::UnsupportedAction)
+    lambda { @provider.action_reload }.should raise_error(Chef::Exceptions::UnsupportedAction)
   end
 
   it "should reload the service if it is running" do
@@ -247,8 +247,8 @@ end
       @provider.current_resource = @current_resource
     end
 
-    it "should raise Chef::Exception::UnsupportedAction on an unsupported action" do
-      lambda { @provider.send(act_string, @new_resource.name) }.should raise_error(Chef::Exception::UnsupportedAction)
+    it "should raise Chef::Exceptions::UnsupportedAction on an unsupported action" do
+      lambda { @provider.send(act_string, @new_resource.name) }.should raise_error(Chef::Exceptions::UnsupportedAction)
     end
   end
 end
