@@ -270,12 +270,12 @@ describe Chef::Provider::User::Pw, "modify_password" do
     
     it "should raise an exception if pw usermod fails" do
       @status.should_receive(:exitstatus).and_return(1)
-      lambda { @provider.modify_password }.should raise_error(Chef::Exception::User)
+      lambda { @provider.modify_password }.should raise_error(Chef::Exceptions::User)
     end
     
     it "should not raise an exception if pw usermod succeeds" do
       @status.should_receive(:exitstatus).and_return(0)
-      lambda { @provider.modify_password }.should_not raise_error(Chef::Exception::User)
+      lambda { @provider.modify_password }.should_not raise_error(Chef::Exceptions::User)
     end
   end
 end
@@ -290,11 +290,11 @@ describe Chef::Provider::User::Pw, "load_current_resource" do
   
   it "should raise an error if the required binary /usr/sbin/pw doesn't exist" do
     File.should_receive(:exists?).with("/usr/sbin/pw").and_return(false)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::User)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::User)
   end
   
   it "shouldn't raise an error if /usr/sbin/pw exists" do
     File.stub!(:exists?).and_return(true)
-    lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exception::User)
+    lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::User)
   end
 end

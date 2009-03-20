@@ -23,7 +23,7 @@ class Chef
         
         def load_current_resource
           super
-          raise Chef::Exception::Group, "Could not find binary /usr/sbin/pw for #{@new_resource}" unless ::File.exists?("/usr/sbin/pw")
+          raise Chef::Exceptions::Group, "Could not find binary /usr/sbin/pw for #{@new_resource}" unless ::File.exists?("/usr/sbin/pw")
         end
         
         # Create the group

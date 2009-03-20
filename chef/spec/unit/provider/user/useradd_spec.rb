@@ -191,9 +191,9 @@ describe Chef::Provider::User::Useradd, "check_lock" do
     @provider.check_lock.should eql(true)
   end
   
-  it "should raise a Chef::Exception::User if passwd -S fails" do
+  it "should raise a Chef::Exceptions::User if passwd -S fails" do
     @status.should_receive(:exitstatus).and_return(1)
-    lambda { @provider.check_lock }.should raise_error(Chef::Exception::User)
+    lambda { @provider.check_lock }.should raise_error(Chef::Exceptions::User)
   end
 end
 
