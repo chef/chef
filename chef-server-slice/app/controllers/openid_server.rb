@@ -27,6 +27,7 @@ require 'pathname'
 require "openid"
 require "openid/consumer/discovery"
 require 'openid/store/filesystem'
+require 'openid-store-couchdb'
 require 'json'
 require 'chef' / 'openid_registration'
 #end
@@ -176,7 +177,8 @@ EOS
     if @server.nil?
       server_url = absolute_slice_url(:openid_server)
       dir = Chef::Config[:openid_store_path]
-      store = OpenID::Store::Filesystem.new(dir)
+      #store = OpenID::Store::Filesystem.new(dir)
+      store = OpenID::Store::CouchDB("http://localhost:5984")
       @server = Server.new(store, server_url)
     end
     return @server
