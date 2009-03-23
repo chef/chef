@@ -1,56 +1,45 @@
 require 'rubygems'
-require 'rake/gempackagetask'
+require 'rake/rdoctask'
+
+require 'merb-core'
+require 'merb-core/tasks/merb'
+require 'spec'
+require 'spec/rake/spectask'
+require 'chef'
+
+include FileUtils
 
 GEM = "chef-server"
-CHEF_SERVER_VERSION = "0.5.5"
-AUTHOR = "Adam Jacob"
-EMAIL = "adam@opscode.com"
+CHEF_SERVER_VERSION = "0.5.7"
+AUTHOR = "Opscode"
+EMAIL = "chef@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"
 SUMMARY = "A systems integration framework, built to bring the benefits of configuration management to your entire infrastructure."
 
-spec = Gem::Specification.new do |s|
-  s.name = GEM
-  s.version = CHEF_SERVER_VERSION
-  s.platform = Gem::Platform::RUBY
-  s.has_rdoc = true
-  s.extra_rdoc_files = ["README.txt", "LICENSE", 'NOTICE']
-  s.summary = SUMMARY
-  s.description = s.summary
-  s.author = AUTHOR
-  s.email = EMAIL
-  s.homepage = HOMEPAGE
-  
-  s.add_dependency "stomp"
-  s.add_dependency "stompserver"
-  s.add_dependency "ferret"
-  s.add_dependency "merb-core"
-  s.add_dependency "merb-haml"
-  s.add_dependency "merb-assets"
-  s.add_dependency "merb-helpers"
-  s.add_dependency "mongrel"
-  s.add_dependency "haml"
-  s.add_dependency "ruby-openid"
-  s.add_dependency "json"
-  s.add_dependency "syntax"
-  
-  s.bindir       = "bin"
-  s.executables  = %w( chef-indexer chef-server )
-  
-  s.files = %w(LICENSE README.txt Rakefile) + Dir.glob("{lib}/**/*")
+# Load the basic runtime dependencies; this will include 
+# any plugins and therefore plugin rake tasks.
+init_env = ENV['MERB_ENV'] || 'rake'
+Merb.load_dependencies(:environment => init_env)
+     
+# Get Merb plugins and dependencies
+Merb::Plugins.rakefiles.each { |r| require r } 
+
+# Load any app level custom rakefile extensions from lib/tasks
+tasks_path = File.join(File.dirname(__FILE__), "lib", "tasks")
+rake_files = Dir["#{tasks_path}/*.rake"]
+rake_files.each{|rake_file| load rake_file }
+
+desc "Start runner environment"
+task :merb_env do
+  Merb.start_environment(:environment => init_env, :adapter => 'runner')
 end
 
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.gem_spec = spec
-end
+require 'spec/rake/spectask'
+require 'merb-core/test/tasks/spectasks'
+desc 'Default: run spec examples'
+task :default => 'spec'
 
-task :install => :package do
-  sh %{sudo gem install pkg/#{GEM}-#{CHEF_SERVER_VERSION} --no-rdoc --no-ri}
-end
-
-desc "create a gemspec file"
-task :make_spec do
-  File.open("#{GEM}.gemspec", "w") do |file|
-    file.puts spec.to_ruby
-  end
-end
-
+##############################################################################
+# ADD YOUR CUSTOM TASKS IN /lib/tasks
+# NAME YOUR RAKE FILES file_name.rake
+##############################################################################

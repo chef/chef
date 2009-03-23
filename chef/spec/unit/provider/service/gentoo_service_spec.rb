@@ -40,9 +40,9 @@ describe Chef::Provider::Service::Gentoo do
   end
   
   describe "load_current_resource" do  
-    it "should raise Chef::Exception::Service if /sbin/rc-update does not exist" do
+    it "should raise Chef::Exceptions::Service if /sbin/rc-update does not exist" do
       File.should_receive(:exists?).with("/sbin/rc-update").and_return(false)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
     end
   
     it "should set enabled true if rc-update indicates service is in default runlevel" do

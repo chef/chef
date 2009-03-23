@@ -26,7 +26,7 @@ class Chef
         def load_current_resource
           super
           
-          raise Chef::Exception::Service unless ::File.exists?("/sbin/rc-update")
+          raise Chef::Exceptions::Service unless ::File.exists?("/sbin/rc-update")
           
           status = popen4("/sbin/rc-update -s default") do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
@@ -37,7 +37,7 @@ class Chef
           end
           
           unless status.exitstatus == 0
-            raise Chef::Exception::Service, "/sbin/rc-update -s default failed - #{status.inspect}"
+            raise Chef::Exceptions::Service, "/sbin/rc-update -s default failed - #{status.inspect}"
           end
           
           @current_resource

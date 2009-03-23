@@ -1,6 +1,7 @@
 #
-# Author:: Bryan McLellan (btm@loftninjas.org)
-# Copyright:: Copyright (c) 2009 Bryan McLellan
+# Authors:: Bryan McLellan (btm@loftninjas.org)
+#           Matthew Landauer (matthew@openaustralia.org)
+# Copyright:: Copyright (c) 2009 Bryan McLellan, Matthew Landauer
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +26,7 @@ class Chef
     class Package
       class Freebsd < Chef::Provider::Package  
       
-        def current_installed_version(package_name)
+        def current_installed_version
           command = "pkg_info -E \"#{package_name}*\""
           status = popen4(command) do |pid, stdin, stdout, stderr|
             stdout.each do |line|
@@ -36,60 +37,73 @@ class Chef
             end
           end
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exception::Package, "#{command} failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "#{command} failed - #{status.inspect}!"
           end
           nil
         end
         
-        def port_path_from_name(port_name)
-          status = popen4("whereis -s #{port_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^#{port_name}:\s+(.+)$/
-                return $1
+        def port_path
+          case @new_resource.package_name
+          # When the package name starts with a '/' treat it as the full path to the ports directory
+          when /^\//
+            @new_resource.package_name
+          # Otherwise if the package name contains a '/' not at the start (like 'www/wordpress') treat as a relative
+          # path from /usr/ports
+          when /\//
+            "/usr/ports/#{@new_resource.package_name}"
+          # Otherwise look up the path to the ports directory using 'whereis'
+          else
+            popen4("whereis -s #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+              stdout.each do |line|
+                case line
+                when /^#{@new_resource.package_name}:\s+(.+)$/
+                  return $1
+                end
               end
             end
-          end
-          nil
+            raise Chef::Exception::Package, "Could not find port with the name #{@new_resource.package_name}"
+          end          
         end
         
-        def ports_candidate_version(port_path)
-          command = "cd #{port_path}; make -V PORTVERSION"
+        def ports_makefile_variable_value(variable)
+          command = "cd #{port_path}; make -V #{variable}"
           status = popen4(command) do |pid, stdin, stdout, stderr|
             return stdout.readline.strip
           end
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exception::Package, "#{command} failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "#{command} failed - #{status.inspect}!"
           end
           nil
+        end
+        
+        def ports_candidate_version
+          ports_makefile_variable_value("PORTVERSION")
         end
         
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
         
-          @current_resource.version(current_installed_version(@new_resource.package_name))
+          @current_resource.version(current_installed_version)
           Chef::Log.debug("Current version is #{@current_resource.version}") if @current_resource.version
           
-          # if passed ports:package, build DIST_SUBDIR from ports
-          # if passed a sole word in source that isn't ports, consider it DIST_SUBDIR, install package
-          # otherwise, the user meant what they said
-          case @new_resource.source
-            when /^(?!ports)\w+/
-              port_name = @new_resource.source
-            when /^ports:(\w+)/
-              port_name = $1
-            else
-              port_name = @new_resource.package_name
-          end
-          Chef::Log.debug("Using #{port_name} as package name")
-          
-          @port_path = port_path_from_name(port_name)
-
-          @candidate_version = ports_candidate_version(@port_path)
+          @candidate_version = ports_candidate_version
           Chef::Log.debug("Ports candidate version is #{@candidate_version}") if @candidate_version
           
           @current_resource
+        end
+        
+        def latest_link_name
+          ports_makefile_variable_value("LATEST_LINK")
+        end
+        
+        # The name of the package (without the version number) as understood by pkg_add and pkg_info
+        def package_name
+          if ports_makefile_variable_value("PKGNAME") =~ /^(.+)-[^-]+$/
+            $1
+          else
+            raise Chef::Exception::Package, "Unexpected form for PKGNAME variable in #{port_path}/Makefile"
+          end
         end
 
         def install_package(name, version)
@@ -98,14 +112,14 @@ class Chef
             when /^ports$/
               run_command(
                 :command => "make -DBATCH install",
-                :cwd => "#{@port_path}"
+                :cwd => "#{port_path}"
               )
             when /^http/, /^ftp/
               run_command(
-                :command => "pkg_add -r #{@new_resource.name}",
+                :command => "pkg_add -r #{package_name}",
                 :environment => { "PACKAGESITE" => @new_resource.source }
               )
-              Chef::Log.info("Installed package #{@new_resource.name} from: #{@new_resource.source}")
+              Chef::Log.info("Installed package #{package_name} from: #{@new_resource.source}")
             when /^\//
               run_command(
                 :command => "pkg_add #{@new_resource.name}",
@@ -114,9 +128,9 @@ class Chef
               Chef::Log.info("Installed package #{@new_resource.name} from: #{@new_resource.source}")
             else
               run_command(
-                :command => "pkg_add -r #{@new_resource.name}"
+                :command => "pkg_add -r #{latest_link_name}"
               )
-              Chef::Log.info("Installed package #{@new_resource.name}")
+              Chef::Log.info("Installed package #{package_name}")
             end
           end
         end
@@ -124,9 +138,9 @@ class Chef
         def remove_package(name, version)
           if @current_resource.version
             run_command(
-              :command => "pkg_delete #{@current_resource.name}-#{@current_resource.version}"
+              :command => "pkg_delete #{package_name}-#{@current_resource.version}"
             )
-            Chef::Log.info("Removed package #{@current_resource.name}-#{@current_resource.version}")
+            Chef::Log.info("Removed package #{package_name}-#{@current_resource.version}")
           end
         end
       end

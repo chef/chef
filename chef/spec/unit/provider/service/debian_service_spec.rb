@@ -42,6 +42,7 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
 
     @status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
+    @provider.should_receive(:run_command).with(:command => "/etc/init.d/chef status")
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)
     @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/chef ...")
@@ -51,7 +52,7 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
 
   it "should raise an error if /usr/sbin/update-rc.d does not exist" do
     File.should_receive(:exists?).with("/usr/sbin/update-rc.d").and_return(false)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
   end
 
   it "should popen4 '/usr/sbin/update-rc.d -n -f service_name'" do
@@ -88,7 +89,7 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
 
   it "should raise an error if update-rc.d fails" do
     @status.stub!(:exitstatus).and_return(-1)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Service)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
   end
 
 #  it "should raise an error if update-rc.d fails"

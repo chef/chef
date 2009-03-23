@@ -101,8 +101,7 @@ class Chef
       # === Returns
       # Returns the exit status of args[:command]
       def run_command(args={})         
-        command_stdout = nil
-        command_stderr = nil
+        command_output = ""
         
         args[:ignore_failure] ||= false
 
@@ -117,39 +116,48 @@ class Chef
           stdout.sync = true
           stderr.sync = true
           
-          if stdout.ready?
-            stdout_string = stdout.gets(nil)
-            if stdout_string
-              command_stdout = stdout_string
-              Chef::Log.debug("---- Begin #{args[:command]} STDOUT ----")
-              Chef::Log.debug(stdout_string.strip)
-              Chef::Log.debug("---- End #{args[:command]} STDOUT ----")
-            end
-          else
-            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDOUT.")
-          end
+          Chef::Log.debug("---- Begin output of #{args[:command]} ----")
           
-          if stderr.ready?
-            stderr_string = stderr.gets(nil)
-            if stderr_string
-              command_stderr = stderr_string
-              Chef::Log.debug("---- Begin #{args[:command]} STDERR ----")
-              Chef::Log.debug(stderr_string.strip)
-              Chef::Log.debug("---- End #{args[:command]} STDERR ----")
+          stdout_finished = false
+          stderr_finished = false
+          
+          while !stdout_finished || !stderr_finished
+            ready = IO.select([stdout, stderr], nil, nil, 1.0)
+            if ready && ready.first.include?(stdout)
+              line = stdout.gets
+              if line
+                command_output << "STDOUT: #{line.strip}\n"
+                Chef::Log.debug("STDOUT: #{line.strip}")
+              else
+                stdout_finished = true
+              end
             end
-          else
-            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDERR.")            
+            if ready && ready.first.include?(stderr)
+              line = stderr.gets
+              if line
+                command_output << "STDERR: #{line.strip}\n"
+                Chef::Log.debug("STDERR: #{line.strip}")
+              else
+                stderr_finished = true
+              end
+            end
           end
+          Chef::Log.debug("---- End output of #{args[:command]} ----")
         end
         
         args[:cwd] ||= Dir.tmpdir        
         unless File.directory?(args[:cwd])
-          raise Chef::Exception::Exec, "#{args[:cwd]} does not exist or is not a directory"
+          raise Chef::Exceptions::Exec, "#{args[:cwd]} does not exist or is not a directory"
         end
         
         Chef::Log.debug("Executing #{args[:command]}")
         
         status = nil
+        
+        # I don't understand what this :waitlast argument is doing, but setting it to true is causing the block in popen4
+        # not to wait until the command is finished to execute, kind of the opposite of what I would guess from the name
+        args[:waitlast] ||= true
+        
         Dir.chdir(args[:cwd]) do
           if args[:timeout]
             begin
@@ -157,7 +165,7 @@ class Chef
                 status = popen4(args[:command], args, &exec_processing_block)
               end
             rescue Timeout::Error => e
-              Chef::Log.error("#{args[:command_string]} exceeded timeout #{args[:timeout]}")
+              Chef::Log.error("#{args[:command]} exceeded timeout #{args[:timeout]}")
               raise(e)
             end
           else
@@ -170,17 +178,14 @@ class Chef
               # if the log level is not debug, through output of command when we fail
               output = ""
               if Chef::Log.logger.level > 0
-                output << "\n---- Begin #{args[:command]} STDOUT ----\n"
-                output << "#{command_stdout}\n"
-                output << "---- End #{args[:command]} STDOUT ----\n"
-                output << "---- Begin #{args[:command]} STDERR ----\n"
-                output << "#{command_stderr}\n"
-                output << "---- End #{args[:command]} STDERR ----\n"
+                output << "\n---- Begin output of #{args[:command]} ----\n"
+                output << "#{command_output}"
+                output << "---- End output of #{args[:command]} ----\n"
               end
-              raise Chef::Exception::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
+              raise Chef::Exceptions::Exec, "#{args[:command]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
             end
           end
-          Chef::Log.debug("Ran #{args[:command_string]} (#{args[:command]}) returned #{status.exitstatus}")
+          Chef::Log.debug("Ran #{args[:command]} returned #{status.exitstatus}")
         end
         status
       end
@@ -191,9 +196,9 @@ class Chef
       # modified to suit the needs of Chef.  Any bugs here are most likely
       # my own, and not Ara's.
       #
-      # The original appears in external/open4.rb in it's unmodified form. 
+      # The original appears in external/open4.rb in its unmodified form. 
       #
-      # Thanks, Ara. 
+      # Thanks Ara!
       def popen4(cmd, args={}, &b)
         
         # Waitlast - this is magic.  

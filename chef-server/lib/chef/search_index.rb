@@ -44,15 +44,15 @@ class Chef
       elsif new_object.kind_of?(Hash)
         index_hash = new_object
       else
-        raise Chef::Exception::SearchIndex, "Cannot transform argument to a Hash!" 
+        raise Chef::Exceptions::SearchIndex, "Cannot transform argument to a Hash!" 
       end
       
       unless index_hash.has_key?(:index_name) || index_hash.has_key?("index_name")
-        raise Chef::Exception::SearchIndex, "Cannot index without an index_name key: #{index_hash.inspect}"
+        raise Chef::Exceptions::SearchIndex, "Cannot index without an index_name key: #{index_hash.inspect}"
       end
       
       unless index_hash.has_key?(:id) || index_hash.has_key?("id")
-        raise Chef::Exception::SearchIndex, "Cannot index without an id key: #{index_hash.inspect}"
+        raise Chef::Exceptions::SearchIndex, "Cannot index without an id key: #{index_hash.inspect}"
       end
       
       index_hash.each do |k,v|

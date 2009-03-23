@@ -58,7 +58,7 @@ class Chef
     
     def converge
 
-      delayed_actions = Array.new
+      delayed_actions = Hash.new
       
       @collection.each do |resource|
         begin
@@ -95,10 +95,11 @@ class Chef
                 end
                 if resource.actions[action].has_key?(:delayed)
                   resource.actions[action][:delayed].each do |r|
-                    delayed_actions << lambda {
+                    delayed_actions[r] = Hash.new unless delayed_actions.has_key?(r)
+                    delayed_actions[r][action] = Array.new unless delayed_actions[r].has_key?(action)
+                    delayed_actions[r][action] << lambda {
                       Chef::Log.info("#{resource} sending #{action} action to #{r} (delayed)")
-                      build_provider(r).send("action_#{action}") 
-                    }
+                    } 
                   end
                 end
               end
@@ -111,7 +112,12 @@ class Chef
       end
       
       # Run all our :delayed actions
-      delayed_actions.each { |da| da.call }
+      delayed_actions.each do |resource, action_hash| 
+        action_hash.each do |action, log_array|
+          log_array.each { |l| l.call } # Call each log message
+          build_provider(resource).send("action_#{action}") 
+        end
+      end
 
       true
     end

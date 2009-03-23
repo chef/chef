@@ -20,8 +20,9 @@
 # When
 ###
 When /^I run the chef\-client$/ do
+  log_level = ENV["LOG_LEVEL"] ? ENV["LOG_LEVEL"] : "error"
   status = Chef::Mixin::Command.popen4(
-    "chef-client -c #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))}", :waitlast => true) do |p, i, o, e|
+    "chef-client -l #{log_level} -c #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))}", :waitlast => true) do |p, i, o, e|
     i.close
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
@@ -36,11 +37,17 @@ Then /^the run should exit '(.+)'$/ do |exit_code|
   begin
     @status.exitstatus.should eql(exit_code.to_i)
   rescue 
-    puts "--- run stdout: #{@stdout}"
-    puts @stdout
-    puts "--- run stderr: #{@stderr}"
+    print_output
     raise
   end
+  print_output if ENV["LOG_LEVEL"] == "debug"
+end
+
+def print_output
+  puts "--- run stdout:"
+  puts @stdout
+  puts "--- run stderr"
+  puts @stderr
 end
 
 Then /^stdout should have '(.+)'$/ do |to_match|

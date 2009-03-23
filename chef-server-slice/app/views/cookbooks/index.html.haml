@@ -1,0 +1,7 @@
+- throw_content(:header, "Cookbooks")
+- @cl.each do |cookbook|
+  .index
+    %table
+      %tr
+        %td
+          %a{ :href => slice_url(:cookbook, { :id => cookbook.name }) }= cookbook.name

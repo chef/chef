@@ -41,7 +41,7 @@ class Chef
         install_version ||= @candidate_version
         
         unless install_version
-          raise(Chef::Exception::Package, "No version specified, and no candidate version available!")
+          raise(Chef::Exceptions::Package, "No version specified, and no candidate version available!")
         end
         
         do_package = false
@@ -111,23 +111,23 @@ class Chef
       end
       
       def install_package(name, version)
-        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :install"
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :install"
       end
       
       def upgrade_package(name, version)
-        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :upgrade" 
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :upgrade" 
       end
       
       def remove_package(name, version)
-        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :remove" 
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remove" 
       end
       
       def purge_package(name, version)
-        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :purge" 
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :purge" 
       end
       
       def preseed_package(name, version, preseed)
-        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support pre-seeding package install/upgrade instructions - don't ask it to!" 
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support pre-seeding package install/upgrade instructions - don't ask it to!" 
       end
       
       def get_preseed_file(name, version)        

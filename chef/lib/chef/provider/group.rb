@@ -102,7 +102,7 @@ class Chef
             Chef::Log.info("Modified #{@new_resource}")
           end
         else
-          raise Chef::Exception::Group, "Cannot modify #{@new_resource} - group does not exist!"
+          raise Chef::Exceptions::Group, "Cannot modify #{@new_resource} - group does not exist!"
         end
       end
     end

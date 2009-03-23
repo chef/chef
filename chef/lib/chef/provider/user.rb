@@ -40,7 +40,7 @@ class Chef
           @new_resource.gid Etc.getgrnam(@new_resource.gid).gid
         end
       rescue ArgumentError => e
-        raise Chef::Exception::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"
+        raise Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"
       end
       
       def load_current_resource
@@ -61,13 +61,14 @@ class Chef
           @current_resource.comment(user_info.gecos)
           @current_resource.home(user_info.dir)
           @current_resource.shell(user_info.shell)
+          @current_resource.password(user_info.passwd)
         
-          if @new_resource.password
+          if @new_resource.password && @current_resource.password == 'x'
             begin
               require 'shadow'
             rescue LoadError
               Chef::Log.error("You must have ruby-shadow installed for password support!")
-              raise Chef::Exception::MissingLibrary, "You must have ruby-shadow installed for password support!"
+              raise Chef::Exceptions::MissingLibrary, "You must have ruby-shadow installed for password support!"
             else
               shadow_info = Shadow::Passwd.getspnam(@new_resource.username)
               @current_resource.password(shadow_info.sp_pwdp)
@@ -132,28 +133,8 @@ class Chef
             Chef::Log.info("Modified #{@new_resource}")
           end
         else
-          raise Chef::Exception::User, "Cannot modify #{@new_resource} - user does not exist!"
+          raise Chef::Exceptions::User, "Cannot modify #{@new_resource} - user does not exist!"
         end
-      end
-      
-      def check_lock
-        status = popen4("passwd -S #{@new_resource.username}") do |pid, stdin, stdout, stderr|
-          status_line = stdout.gets.split(' ')
-          case status_line[1]
-          when /^P/
-            @locked = false
-          when /^N/
-            @locked = false
-          when /^L/
-            @locked = true
-          end
-        end
-        
-        unless status.exitstatus == 0
-          raise Chef::Exception::User, "Cannot determine if #{@new_resource} is locked!"
-        end
-        
-        @locked
       end
       
       def action_lock
@@ -166,7 +147,7 @@ class Chef
             Chef::Log.debug("No need to lock #{@new_resource}")
           end
         else
-          raise Chef::Exception::User, "Cannot lock #{@new_resource} - user does not exist!"
+          raise Chef::Exceptions::User, "Cannot lock #{@new_resource} - user does not exist!"
         end
       end
       
@@ -180,7 +161,7 @@ class Chef
             Chef::Log.debug("No need to unlock #{@new_resource}")
           end
         else
-          raise Chef::Exception::User, "Cannot unlock #{@new_resource} - user does not exist!"
+          raise Chef::Exceptions::User, "Cannot unlock #{@new_resource} - user does not exist!"
         end
       end
       

@@ -30,39 +30,26 @@ config = {
 }
 opts = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} (options)"
-  opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
-    config[:config_file] = c
+  client_option_hash = { 
+    :config_file=> {  :short=>"-c CONFIG",        :long=>"--config CONFIG",       :description=>"The Chef Config file to use", :proc=>nil },
+    :user=>        {  :short=>"-u USER",          :long=>"--user USER",           :description=>"User to change uid to before daemonizing", :proc=>nil },
+    :group=>       {  :short=>"-g GROUP",         :long=>"--group GROUP",         :description=>"Group to change gid to before daemonizing", :proc=>nil },
+    :daemonize=>   {  :short=>"-d",               :long=>"--daemonize",           :description=>"Daemonize the process", :proc=> lambda { |p| true} },
+    :interval=>    {  :short=>"-i SECONDS",       :long=>"--interval SECONDS",    :description=>"Run chef-client periodically, in seconds", :proc=>nil },
+    :json_attribs=>{  :short=>"-j JSON_ATTRIBS",  :long=>"--json-attributes JSON_ATTRIBS", :description=>"Load attributes from a JSON file", :proc=>nil },
+    :node_name=>   {  :short=>"-N NODE_NAME",     :long=>"--node-name NODE_NAME", :description=>"The node name for this client", :proc=>nil },
+    :splay=>       {  :short=>"-s SECONDS",       :long=>"--splay SECONDS",       :description=>"The splay time for running at intervals, in seconds", :proc=>nil },
+    :log_level=>   {  :short=>"-l LEVEL",         :long=>"--loglevel LEVEL",      :description=>"Set the log level (debug, info, warn, error, fatal)", :proc=>lambda { |p| p.to_sym} },
+    :log_location=>{  :short=>"-L LOGLOCATION",   :long=>"--logfile LOGLOCATION", :description=>"Set the log file location, defaults to STDOUT - recommended for daemonizing", :proc=>nil },
+    :validation_token=>{ :short=>"-t TOKEN",      :long=>"--token TOKEN",         :description=>"Set the openid validation token", :proc=>nil },
+  }
+
+  client_option_hash.each do |opt_key, opt_val|
+    opts.on(opt_val[:short],opt_val[:long],opt_val[:description]) do |c|
+      config[opt_key] = (opt_val[:proc] && opt_val[:proc].call(c)) || c
+    end
   end
-  opts.on("-u USER", "--user USER", "User to change uid to before daemonizing") do |u|
-    config[:user] = u
-  end
-  opts.on("-g GROUP", "--group GROUP", "Group to change gid to before daemonizing") do |g|
-    config[:group] = g
-  end
-  opts.on("-d", "--daemonize", "Daemonize the process") do |d|
-    config[:daemonize] = true
-  end
-  opts.on("-i SECONDS", "--interval SECONDS", "Run chef-client peridoically, in seconds") do |i|
-    config[:interval] = i
-  end
-  opts.on("-j JSON_ATTRIBS", "--json-attributes JSON_ATTRIBS", "Load attributes from a JSON file") do |j|
-    config[:json_attribs] = j
-  end
-  opts.on("-N NODE_NAME", "--node-name NODE_NAME", "The node name for this client") do |n|
-    config[:node_name] = n
-  end
-  opts.on("-s SECONDS", "--splay SECONDS", "The splay time for running at intervals, in seconds") do |s|
-    config[:splay] = s
-  end
-  opts.on("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
-    config[:log_level] = l.to_sym
-  end
-  opts.on("-L LOGLOCATION", "--logfile LOGLOCATION", "Set the log file location, defaults to STDOUT - recommended for daemonizing") do |lf|
-    config[:log_location] = lf
-  end
-  opts.on("-t TOKEN", "--token TOKEN", "Set the openid validation token") do |t|
-    config[:validation_token] = t
-  end
+  
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
     exit 0
