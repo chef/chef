@@ -20,7 +20,6 @@
 require 'pathname'
 
 require "openid"
-require 'openid/store/filesystem'
 
 class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
 
@@ -148,8 +147,14 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
 
   def consumer
     if @consumer.nil?
-      dir = Chef::Config[:openid_cstore_path]
-      store = OpenID::Store::Filesystem.new(dir)
+      if Chef::Config[:openid_cstore_couchdb]
+        require 'openid-store-couchdb'
+        store = OpenID::Store::CouchDB.new(Chef::Config[:couchdb_url])
+      else
+        require 'openid/store/filesystem'
+        dir = Chef::Config[:openid_cstore_path]
+        store = OpenID::Store::Filesystem.new(dir)
+      end
       @consumer = OpenID::Consumer.new(session, store)
     end
     return @consumer
