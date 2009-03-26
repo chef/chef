@@ -18,13 +18,8 @@
 #
 
 require 'pathname'
-
 require 'openid'
-require 'openid/store/filesystem'
-begin
-  require 'openid-store-couchdb'
-rescue LoadError
-end
+require (Chef::Config[:openid_cstore_couchdb] ?   'openid-store-couchdb' : 'openid/store/filesystem')
 
 class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
 
