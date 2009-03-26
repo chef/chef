@@ -19,7 +19,12 @@
 
 require 'pathname'
 
-require "openid"
+require 'openid'
+require 'openid/store/filesystem'
+begin
+  require 'openid-store-couchdb'
+rescue LoadError
+end
 
 class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
 
@@ -28,14 +33,19 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
   def index
     render
   end
-
+  
   def start
-    check_valid_openid_provider(params[:openid_identifier])
+    oid = params[:openid_identifier]
+    providers = Chef::Config[:openid_providers]
+    raise(Unauthorized, "Sorry, #{openid} is not an authorized OpenID.") unless is_authorized_openid_identifier?(oid, providers)    
+    raise(Unauthorized, "Sorry, #{openid} is not an allowed OpenID Provider.") unless is_valid_openid_provider?(oid,providers)
+    
     begin
-      oidreq = consumer.begin(params[:openid_identifier])
+      oidreq = consumer.begin(oid)
     rescue OpenID::OpenIDError => e
       raise BadRequest, "Discovery failed for #{params[:openid_identifier]}: #{e}"
     end
+    
     return_to = absolute_slice_url(:openid_consumer_complete)
     realm = absolute_slice_url(:openid_consumer)
 
@@ -48,24 +58,9 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
   end
 
   def login
-  	check_authorized_openid_identifier(params[:openid_identifier])
-    check_valid_openid_provider(params[:openid_identifier])
-    begin
-      oidreq = consumer.begin(params[:openid_identifier])
-    rescue OpenID::OpenIDError => e
-      raise BadRequest, "Discovery failed for #{params[:openid_identifier]}: #{e}"
-    end
-    return_to = absolute_slice_url(:openid_consumer_complete)
-    realm = absolute_slice_url(:openid_consumer)
-
-    if oidreq.send_redirect?(realm, return_to, params[:immediate])
-      return redirect(oidreq.redirect_url(realm, return_to, params[:immediate]))
-    else
-      @form_text = oidreq.form_markup(realm, return_to, params[:immediate], {'id' => 'openid_form'})
-      render
-    end
+    start
   end
-
+  
   def complete
     # FIXME - url_for some action is not necessarily the current URL.
     current_url = absolute_slice_url(:openid_consumer_complete)
@@ -73,11 +68,7 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
     oidresp = consumer.complete(parameters, current_url)
     case oidresp.status
       when OpenID::Consumer::FAILURE
-        if oidresp.display_identifier
-          raise BadRequest, "Verification of #{oidresp.display_identifier} failed: #{oidresp.message}"
-        else
-          raise BadRequest, "Verification failed: #{oidresp.message}"
-        end
+        raise BadRequest, "Verification failed: #{oidresp.message}" + (oidresp.display_identifier ? " for identifier '#{oidresp.display_identifier}'" : "")
       when OpenID::Consumer::SUCCESS
         session[:openid] = oidresp.identity_url
         if oidresp.display_identifier =~ /openid\/server\/node\/(.+)$/
@@ -101,62 +92,31 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
   end
 
   def logout
-    session[:openid] = nil    if session.has_key?(:openid)
-    session[:level] = nil     if session.has_key?(:level)
-    session[:node_name] = nil if session.has_key?(:node_name)
+    [:openid,:level,:node_name].each { |n| session.delete(n) }
     redirect slice_url(:top)
   end
 
   private
-
+  #      
+  #    
+  
   # Returns true if the openid is at a valid provider, based on whether :openid_providers is
   # defined.  Raises an exception if it is not an allowed provider.
-  def check_valid_openid_provider(openid)
-    if Chef::Config[:openid_providers]
-      fp = Chef::Config[:openid_providers].detect do |p|
-        case openid
-        when /^https?:\/\/#{p}/, /^#{p}/
-          true
-        else
-          false
-        end
-      end
-      unless fp
-        raise Unauthorized, "Sorry, #{openid} is not an allowed OpenID Provider."
-      end
-    end
-    true
-  end
+  def is_valid_openid_provider?(openid,providers)
+    (providers && providers.detect {|p| openid =~ /^https?:\/\/#{p}/ or openid =~ /^#{p}/}) || true
+   end
 
-  def check_authorized_openid_identifier(openid)
-    if Chef::Config[:authorized_openid_identifiers]
-      fp = Chef::Config[:authorized_openid_identifiers].detect do |p|
-        case openid
-        when p
-          true
-        else
-          false
-        end
-      end
-      unless fp
-        raise Unauthorized, "Sorry, #{openid} is not an authorized OpenID."
-      end
-    end
-    true
+  def is_authorized_openid_identifier?(openid,providers)
+    (providers && providers.detect { |p| openid==p }) || true
   end
 
   def consumer
-    if @consumer.nil?
-      if Chef::Config[:openid_cstore_couchdb]
-        require 'openid-store-couchdb'
-        store = OpenID::Store::CouchDB.new(Chef::Config[:couchdb_url])
-      else
-        require 'openid/store/filesystem'
-        dir = Chef::Config[:openid_cstore_path]
-        store = OpenID::Store::Filesystem.new(dir)
-      end
-      @consumer = OpenID::Consumer.new(session, store)
-    end
-    return @consumer
+    @consumer ||= OpenID::Consumer.new(session,
+                                       if Chef::Config[:openid_cstore_couchdb]
+                                         OpenID::Store::CouchDB.new(Chef::Config[:couchdb_url])
+                                       else
+                                         OpenID::Store::Filesystem.new(Chef::Config[:openid_cstore_path])
+                                       end)
   end
+                                       
 end
