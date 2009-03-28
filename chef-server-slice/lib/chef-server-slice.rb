@@ -34,6 +34,18 @@ if defined?(Merb::Plugins)
     def self.loaded
       Chef::Queue.connect
 
+      # create the couch databases for openid association and nonce storage, if configured
+      if Chef::Config[:openid_store_couchdb] || Chef::Config[:openid_cstore_couchdb]
+        rest = Chef::REST.new(Chef::Config[:couchdb_url])
+        @database_list = rest.get_rest("_all_dbs")
+        unless @database_list.detect { |db| db == 'associations' }
+          response = rest.put_rest('associations', Hash.new)
+        end
+        unless @database_list.detect { |db| db == 'nonces' }
+          response = rest.put_rest('nonces', Hash.new)
+        end
+      end
+      
       # create the couch design docs for nodes and openid registrations
       Chef::Node.create_design_document
       Chef::OpenIDRegistration.create_design_document
