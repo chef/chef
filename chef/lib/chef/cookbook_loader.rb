@@ -134,11 +134,8 @@ class Chef
       end
       
       def load_cascading_files(file_glob, base_path, result_array, ignore_regexes)
-        Dir[
-          File.join(base_path, "**/.[!.]#{file_glob}"), 
-          File.join(base_path, "**/.??#{file_glob}"),
-          File.join(base_path, "**/#{file_glob}")
-        ].each do |file|
+        # To handle dotfiles like .ssh
+        Dir.glob(File.join(base_path, "**/#{file_glob}"), File::FNM_DOTMATCH).each do |file|
           next if skip_file(file, ignore_regexes)
           file =~ /^#{base_path}\/(.+)$/
           singlecopy = $1

@@ -126,6 +126,9 @@ describe Chef::CookbookLoader do
       @cl[:openldap].remote_files.detect { |f|
         f =~ /\.dotfile$/
       }.should =~ /\.dotfile$/
+      @cl[:openldap].remote_files.detect { |f|
+        f =~ /\.ssh\/id_rsa$/
+      }.should =~ /\.ssh\/id_rsa$/
     end
 
     it "should load the metadata for the cookbook" do
