@@ -26,7 +26,6 @@ require 'pathname'
 #rescue LoadError
 require "openid"
 require "openid/consumer/discovery"
-require 'openid/store/filesystem'
 require 'json'
 require 'chef' / 'openid_registration'
 #end
@@ -175,8 +174,14 @@ EOS
   def server
     if @server.nil?
       server_url = absolute_slice_url(:openid_server)
-      dir = Chef::Config[:openid_store_path]
-      store = OpenID::Store::Filesystem.new(dir)
+      if Chef::Config[:openid_store_couchdb]
+        require 'openid-store-couchdb'
+        store = OpenID::Store::CouchDB.new(Chef::Config[:couchdb_url])
+      else
+        require 'openid/store/filesystem'
+        dir = Chef::Config[:openid_store_path]
+        store = OpenID::Store::Filesystem.new(dir)
+      end
       @server = Server.new(store, server_url)
     end
     return @server
