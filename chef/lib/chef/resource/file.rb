@@ -59,7 +59,7 @@ class Chef
         set_or_return(
           :mode,
           arg,
-          :regex => /^\d{3,4}$/
+          :regex => /^0?\d{3,4}$/
         )
       end
       
