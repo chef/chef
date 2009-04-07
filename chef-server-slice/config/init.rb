@@ -21,7 +21,7 @@
 # code and views.
 #
 
-merb_gems_version = "> 1.0"
+merb_gems_version = "1.0.11"
 dependency "merb-haml", merb_gems_version
 dependency "merb-assets", merb_gems_version
 dependency "merb-helpers", merb_gems_version
