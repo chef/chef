@@ -25,10 +25,11 @@ require 'json'
 class Chef
   class CouchDB
     include Chef::Mixin::ParamsValidate
-    
+
     def initialize(url=nil)
       url ||= Chef::Config[:couchdb_url]
       @rest = Chef::REST.new(url)
+      Chef::Config[:couchdb_version] ||= @rest.run_request(:GET, URI.parse(@rest.url + "/"), false, 10, false)["version"].gsub(/-.+/,"").to_f
     end
     
     def create_db
@@ -119,9 +120,9 @@ class Chef
         }
       )
       if inflate
-        @rest.get_rest("#{Chef::Config[:couchdb_database]}/_view/#{view}/all")
+        @rest.get_rest(view_uri(view, "all"))
       else
-        @rest.get_rest("#{Chef::Config[:couchdb_database]}/_view/#{view}/all_id")
+        @rest.get_rest(view_uri(view, "all_id"))
       end
     end
   
@@ -145,9 +146,19 @@ class Chef
     end
     
     private
-      def safe_name(name)
-        name.gsub(/\./, "_")
+    
+    def safe_name(name)
+      name.gsub(/\./, "_")
+    end
+      
+    def view_uri(design, view)
+      case Chef::Config[:couchdb_version]
+      when 0.9
+        "#{Chef::Config[:couchdb_database]}/_design/#{design}/_view/#{view}"
+      when 0.8
+        "#{Chef::Config[:couchdb_database]}/_view/#{design}/#{view}"
       end
+    end
 
   end
 end
