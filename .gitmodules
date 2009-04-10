@@ -1,0 +1,3 @@
+[submodule "chef-server-slice/public/javascripts/jsoneditor"]
+	path = chef-server-slice/public/javascripts/jsoneditor
+	url = git://github.com/iterationlabs/jsoneditor.git
