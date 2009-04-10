@@ -80,3 +80,14 @@ Then /^the file named '(.+)' should be owned by '(.+)'$/ do |filename, owner|
   cstats = File.stat(File.join(tmpdir, filename))
   cstats.uid.should == uid
 end
+
+Then /^the file named '(.+)' should have octal mode '(.+)'$/ do |filename, expected_mode|
+  cstats = File.stat(File.join(tmpdir, filename))
+  (cstats.mode & 007777).should == expected_mode.oct
+end
+
+Then /^the file named '(.+)' should have decimal mode '(.+)'$/ do |filename, expected_mode|
+  cstats = File.stat(File.join(tmpdir, filename))
+  (cstats.mode & 007777).should == expected_mode.to_i
+end
+
