@@ -41,8 +41,6 @@ class Chef
       :interval => nil,
       :splay => nil,
       :solo  => false,
-      :user => nil,
-      :group => nil,
       :json_attribs => nil,
       :cookbook_path => [ "/var/chef/site-cookbooks", "/var/chef/cookbooks" ],
       :validation_token => nil,
