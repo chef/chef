@@ -62,4 +62,14 @@ $(document).ready(function(){
 	
 	// global facebox callback
 	$('a[rel*=facebox]').facebox();
+	
+  JSONEditor.prototype.ADD_IMG = '/images/add.png';
+  JSONEditor.prototype.DELETE_IMG = '/images/delete.png';
+  var attrib_editor = new JSONEditor($("#attrib_json_edit"), 400, 300);
+  attrib_editor.doTruncation(true);
+  attrib_editor.showFunctionButtons();
+  
+  var recipe_editor = new JSONEditor($("#recipe_json_edit"), 400, 300);
+  recipe_editor.doTruncation(true);
+  recipe_editor.showFunctionButtons();
 });

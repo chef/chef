@@ -5,10 +5,12 @@
       %table.table
         %tr
           %th.first Registration Name
+          %th &nbsp
+          %th Control
           %th.last &nbsp;
           - @registered_nodes.sort{ |a,b| a.name.to_s <=> b.name.to_s }.each_with_index do |node, index|
             %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-              %td= link_to(node.name, slice_url(:registration, { :id => node.name }))
+              %td{:colspan => 2}= link_to(node.name, slice_url(:registration, { :id => node.name }))
               %td
                 = link_to((node.validated ? "Invalidate" : "Validate"), slice_url(:validate_registration, { :id => node.name}), :method => "post", :confirm => "Are you sure you want to toggle this registrations validation?")
                 |

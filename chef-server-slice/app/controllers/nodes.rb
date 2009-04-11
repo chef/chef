@@ -38,11 +38,8 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     rescue Net::HTTPServerException => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
-    if request.xhr?
-      render JSON.pretty_generate(@node), :layout => false
-    else
-      display @node
-    end
+
+    display @node
   end
 
   def create

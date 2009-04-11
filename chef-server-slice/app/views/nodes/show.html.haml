@@ -2,10 +2,5 @@
   .content
     %h2.title= "Node #{h @node.name}"
     .inner
-      %div{ :id => 'node', :class => "#{session[:level] == :admin ? 'edit_area' : 'non_edit_area'}", :to_update => @node.name}
-        %h2 Recipes
-        %ol
-          = recipe_list(@node)
-        %h2 Attributes
-        %ol
-          = attribute_list(@node)
+      %textarea#attrib_json_edit= JSON.pretty_generate(@node.attribute)
+      %textarea#recipe_json_edit= JSON.pretty_generate(@node.recipes)
