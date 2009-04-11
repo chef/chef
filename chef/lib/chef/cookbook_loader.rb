@@ -124,16 +124,18 @@ class Chef
       end
       
       def load_cascading_files(file_glob, base_path, result_array, ignore_regexes)
-        Dir[
+        [
           File.join(base_path, "**/.[!.]#{file_glob}"), 
           File.join(base_path, "**/.??#{file_glob}"),
           File.join(base_path, "**/#{file_glob}")
-        ].each do |file|
-          next if skip_file(file, ignore_regexes)
-          file =~ /^#{base_path}\/(.+)$/
-          singlecopy = $1
-          unless result_array.detect { |f| f =~ /#{singlecopy}$/ }
-            result_array << file
+        ].each do |dir|
+          Dir[dir].each do |file|
+            next if skip_file(file, ignore_regexes)
+            file =~ /^#{base_path}\/(.+)$/
+            singlecopy = $1
+            unless result_array.detect { |f| f =~ /#{singlecopy}$/ }
+              result_array << file
+            end
           end
         end
       end
