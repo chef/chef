@@ -40,7 +40,6 @@ class Chef
             exit if fork
             Process.setsid
             exit if fork
-            change_privilege
             Chef::Log.info("Forked, in #{Process.pid}. Priveleges: #{Process.euid} #{Process.egid}")
             File.umask 0000
             $stdin.reopen("/dev/null")

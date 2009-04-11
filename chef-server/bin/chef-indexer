@@ -64,6 +64,8 @@ end
 Chef::Config.from_file(config[:config_file])
 Chef::Config.configure { |c| c.merge!(config) }
 
+Chef::Daemon.change_privilege
+
 if Chef::Config[:daemonize]
   unless Chef::Config[:log_location].is_a? IO
     Chef::Log.init(Chef::Config[:log_location])
