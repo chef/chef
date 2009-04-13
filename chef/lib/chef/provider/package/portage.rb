@@ -34,8 +34,10 @@ class Chef
 
           @current_resource.version(nil)
 
-          if( ::File.exists?("/var/db/pkg/#{category}") )         
-            Dir.entries("/var/db/pkg/#{category}").each do |entry|
+          catdir = "/var/db/pkg/#{category}"
+
+          if( ::File.exists?(catdir) )
+            Dir.entries(catdir).each do |entry|
               if(entry =~ /^#{pkg}-(.+)/)
                 @current_resource.version($1)
                 Chef::Log.debug("Got current version #{$1}")
