@@ -26,6 +26,7 @@ class Chef
         def load_current_resource
 
           @new_resource.supports[:status] = true
+          @new_resource.supports[:restart] = true
 
           super
           
