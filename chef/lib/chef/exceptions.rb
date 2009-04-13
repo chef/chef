@@ -30,5 +30,6 @@ class Chef
     class User < RuntimeError; end
     class Group < RuntimeError; end
     class Link < RuntimeError; end
+    class Mount < RuntimeError; end
   end
 end

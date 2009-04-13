@@ -27,6 +27,7 @@ class Chef
         @resource_name = :mount
         @mount_point = name
         @device = nil
+        @device_type = :device
         @fstype = nil
         @options = ["defaults"]
         @dump = 0
@@ -54,6 +55,15 @@ class Chef
         )
       end
       
+      def device_type(arg=nil)
+        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
+        set_or_return(
+          :device_type,
+          real_arg,
+          :equal_to => [ :device, :label, :uuid ]
+        )
+      end
+
       def fstype(arg=nil)
         set_or_return(
           :fstype,
