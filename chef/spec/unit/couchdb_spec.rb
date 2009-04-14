@@ -36,10 +36,6 @@ describe Chef::CouchDB, "new" do
     Chef::REST.should_receive(:new).with("http://monkeypants")
     Chef::CouchDB.new("http://monkeypants")
   end  
-  
-  it "should parse the CouchDB version number" do
-    
-  end
 end
 
 describe Chef::CouchDB, "create_db" do
@@ -269,6 +265,14 @@ describe Chef::CouchDB, "view_uri" do
     @couchdb = mock("Chef::CouchDB", :null_object => true)
     Chef::CouchDB.stub!(:new).and_return(@couchdb)
     Chef::Config.stub!(:[]).with(:couchdb_database).and_return("chef")
+  end
+  
+  describe "when the couchdb version is unknown" do
+    it "should set the couchdb version appropriately" do
+      Chef::Config.stub!(:[]).with(:couchdb_version).and_return(nil)
+      Chef::Config.should_receive(:couchdb_version).and_return(true)
+      @couchdb.view_uri("nodes", "all")
+    end
   end
   
   describe "on couchdb 0.8" do
