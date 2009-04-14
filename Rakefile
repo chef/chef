@@ -10,14 +10,14 @@ namespace :git do
 end
 
 desc "Build the chef gems"
-task :gem => "git:update_and_init" do
+task :gem => "git:submodule_update" do
   gems.each do |dir|
     Dir.chdir(dir) { sh "rake package" }
   end
 end
  
 desc "Install the chef gems"
-task :install => "git:update_and_init" do
+task :install => "git:submodule_update" do
   gems.each do |dir|
     Dir.chdir(dir) { sh "rake install" }
   end
