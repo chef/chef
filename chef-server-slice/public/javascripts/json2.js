@@ -1,1 +1,0 @@
-jsoneditor/jsoneditor/json2.js
