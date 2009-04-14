@@ -13,11 +13,10 @@
   %table.table
     %tr
       %th.first Attributes
-      %th.last &nbps
+      %th.last &nbsp
     - if @node.attribute.empty?
       %tr
         %td{:colspan => 2} This node has no attributes, double click to add one.
     - else
-      - @node.attribute.each_with_index do |attrib, index|
-        %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-          %td{:colspan => 2, :style => 'overflow: auto'}= "<b>#{attrib[0]}</b>: #{attrib[1]}"
+      %tr
+        %td{:colspan => 2}= build_tree(@node)

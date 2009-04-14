@@ -30,3 +30,21 @@
   /*overflow: auto;*/
   font-size: 0.8em;
 }
+
+dl dt { font-weight: bold; }
+.content td dl { margin: 0; padding: 0; }
+.content td dt {
+  background: transparent url(/images/toggle-collapse.gif) 0 3px no-repeat;
+  clear: left; color: #333; cursor: pointer; line-height: 1em;
+  margin-left: -12px; padding-left: 14px;
+}
+.content td dd { margin: 0;
+  padding: 0 0 0 1em;
+}
+.content td dt.collapsed {
+  background-image: url(/images/toggle-expand.gif);
+}
+.content td dt.inline { background-image: none; cursor: default;
+  float: left; margin-left: 0; padding-left: 2px; padding-right: .5em;
+  padding-top: 2px;
+}

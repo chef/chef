@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: AJ Christensen (<aj@junglist.gen.nz>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -34,7 +35,31 @@ module Merb
         end
         response
       end
+      
+      # Recursively build a tree of lists.
+      def build_tree(node)
+        list = "<dl>"
+        list << "\n<!-- Beginning of Node Tree -->"
+        walk = lambda do |key,value|
+          case value
+            when Hash, Array
+              list << "\n<!-- Beginning of Enumerable obj -->"
+              list << "\n<dt>#{key}</dt>"
+              list << "<dd>"
+              list << "\t<dl>\n"
+              value.each(&walk)
+              list << "\t</dl>\n"
+              list << "</dd>"
+              list << "\n<!-- End of Enumerable obj -->"
+              
+            else
+              list << "\n<dt>#{key}</dt>"
+              list << "<dd>#{value}</dd>"
+          end
+        end
+        node.attribute.each(&walk)
+        list << "</dl>"
+      end
     end
-
   end
 end
