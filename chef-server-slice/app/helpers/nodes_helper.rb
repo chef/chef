@@ -57,7 +57,7 @@ module Merb
               list << "<dd>#{value}</dd>"
           end
         end
-        node.attribute.each(&walk)
+        node.attribute.sort{ |a,b| a[0] <=> b[0] }.each(&walk)
         list << "</dl>"
       end
     end
