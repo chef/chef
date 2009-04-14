@@ -66,7 +66,11 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     if @node
       @status = 202
       @node.save
-      partial :node, :node => @node
+      if request.xhr?
+        partial :node, :node => @node
+      else
+        display @node
+      end
     else
       raise NotFound, "You must provide a Node to update"
     end
