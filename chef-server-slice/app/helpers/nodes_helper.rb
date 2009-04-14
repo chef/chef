@@ -22,7 +22,7 @@ module Merb
       def recipe_list(node)
         response = ""
         node.recipes.each do |recipe|
-          response << "<li>#{recipe}</li>"
+          response << "<li>#{recipe}</li>\n"
         end
         response
       end
@@ -30,7 +30,7 @@ module Merb
       def attribute_list(node)
         response = ""
         node.each_attribute do |k,v|
-          response << "<li><b>#{k}</b>: #{v}</li>"
+          response << "<li><b>#{k}</b>: #{v}</li>\n"
         end
         response
       end

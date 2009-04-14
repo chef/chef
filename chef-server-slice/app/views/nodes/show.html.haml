@@ -1,6 +1,5 @@
-.block#block-text
+.block#block-tables
   .content
     %h2.title= "Node #{h @node.name}"
     .inner
-      %textarea#attrib_json_edit= JSON.pretty_generate(@node.attribute)
-      %textarea#recipe_json_edit= JSON.pretty_generate(@node.recipes)
+      = partial :node, :node => @node

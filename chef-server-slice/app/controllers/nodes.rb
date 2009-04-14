@@ -38,8 +38,11 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     rescue Net::HTTPServerException => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
-
-    display @node
+    if request.xhr?
+      render JSON.pretty_generate(@node), :layout => false
+    else
+      display @node
+    end
   end
 
   def create
@@ -63,11 +66,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     if @node
       @status = 202
       @node.save
-      if request.xhr?
-        render JSON.pretty_generate(@node), :layout => false
-      else
-        display @node
-      end   
+      partial :node, :node => @node
     else
       raise NotFound, "You must provide a Node to update"
     end
@@ -84,7 +83,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
       @status = 202
       display @node
     else
-      redirect(absolute_slice_url(:nodes), {:message => { :notice => "Node #{params[:id]} deleted succesfully" }, :permanent => true})
+      redirect(absolute_slice_url(:nodes), {:message => { :notice => "Node #{params[:id]} deleted succesfully" }, :permanent => false})
     end
   end
   

@@ -49,7 +49,8 @@ $(document).ready(function(){
     submit : "Save",
     cancel : "Cancel",
     indicator : "Saving..",
-    loadurl : location.href + ".json",
+    loadurl : location.href,
+    tooltip : "Click to edit",
     type  : "textarea",
     height : 300
   });
