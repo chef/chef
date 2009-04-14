@@ -5,7 +5,7 @@ require 'cucumber/rake/task'
 namespace :git do
   desc "Initialise and update the Git submodules"
   task :submodule_update do
-    exec("git submodule update --init")
+    sh "git submodule update --init"
   end
 end
 
