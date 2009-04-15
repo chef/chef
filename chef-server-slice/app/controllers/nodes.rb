@@ -87,7 +87,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
       @status = 202
       display @node
     else
-      redirect(absolute_slice_url(:nodes), {:message => { :notice => "Node #{params[:id]} deleted succesfully" }, :permanent => true})
+      redirect(absolute_slice_url(:nodes), {:message => { :notice => "Node #{params[:id]} deleted successfully" }, :permanent => true})
     end
   end
   

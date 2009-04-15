@@ -77,7 +77,7 @@ class Chef
             unless status.exitstatus == 0
               raise Chef::Exceptions::Service, "Command #{@node[:command][:ps]} failed"
             else
-              Chef::Log.debug("#{@new_resource}: #{@node[:command][:ps]} exited and parsed succesfully, process running: #{@current_resource.running}")
+              Chef::Log.debug("#{@new_resource}: #{@node[:command][:ps]} exited and parsed successfully, process running: #{@current_resource.running}")
             end
           end
 
