@@ -65,7 +65,7 @@ class Chef
             stdout.each_line do |line|
               if cron_found
                 cronline = "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
-                if(line == cronline)
+                if (line == cronline)
                   Chef::Log.debug("Skipping existing cron entry '#{@new_resource.name}'")
                   return
                 end
