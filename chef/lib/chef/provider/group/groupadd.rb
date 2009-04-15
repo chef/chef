@@ -57,7 +57,7 @@ class Chef
           unless @new_resource.members.empty?
             if(@new_resource.append)
               @new_resource.members.each do |member|
-                Chef::Log.debug("#{@new_resource}: appending group member #{member} to #{@new_resource.members.join(', ')}")
+                Chef::Log.debug("#{@new_resource}: appending member #{member} to group #{@new_resource.group_name}")
                 run_command(:command => "gpasswd -a #{member} #{@new_resource.group_name}")
               end
             else
