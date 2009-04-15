@@ -36,10 +36,6 @@ describe Chef::CouchDB, "new" do
     Chef::REST.should_receive(:new).with("http://monkeypants")
     Chef::CouchDB.new("http://monkeypants")
   end  
-  
-  it "should parse the CouchDB version number" do
-    
-  end
 end
 
 describe Chef::CouchDB, "create_db" do
@@ -261,35 +257,5 @@ describe Chef::CouchDB, "safe_name" do
   it "should convert the name to a safe name" do
     @couchdb.should_receive(:safe_name).with("asdf.lol.com").and_return("asdf_lol_com")
     @couchdb.safe_name("asdf.lol.com")
-  end
-end
-
-describe Chef::CouchDB, "view_uri" do
-  before do
-    @couchdb = mock("Chef::CouchDB", :null_object => true)
-    Chef::CouchDB.stub!(:new).and_return(@couchdb)
-    Chef::Config.stub!(:[]).with(:couchdb_database).and_return("chef")
-  end
-  
-  describe "on couchdb 0.8" do
-    before do
-      Chef::Config.stub!(:[]).with(:couchdb_version).and_return(0.8)
-    end
-    
-    it "should output an appropriately formed view URI" do
-      @couchdb.should_receive(:view_uri).with("nodes", "all").and_return("chef/_view/nodes/all")
-      @couchdb.view_uri("nodes", "all")
-    end
-  end
-
-  describe "on couchdb 0.9" do
-    before do
-      Chef::Config.stub!(:[]).with(:couchdb_version).and_return(0.9)
-    end
-
-    it "should output an appropriately formed view URI" do
-      @couchdb.should_receive(:view_uri).with("nodes", "all").and_return("chef/_design/nodes/_view/all")
-      @couchdb.view_uri("nodes", "all")
-    end
   end
 end
