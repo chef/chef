@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: AJ Christensen (<aj@junglist.gen.nz>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -22,7 +23,7 @@ module Merb
       def recipe_list(node)
         response = ""
         node.recipes.each do |recipe|
-          response << "<li>#{recipe}</li>"
+          response << "<li>#{recipe}</li>\n"
         end
         response
       end
@@ -30,11 +31,35 @@ module Merb
       def attribute_list(node)
         response = ""
         node.each_attribute do |k,v|
-          response << "<li><b>#{k}</b>: #{v}</li>"
+          response << "<li><b>#{k}</b>: #{v}</li>\n"
         end
         response
       end
+      
+      # Recursively build a tree of lists.
+      def build_tree(node)
+        list = "<dl>"
+        list << "\n<!-- Beginning of Node Tree -->"
+        walk = lambda do |key,value|
+          case value
+            when Hash, Array
+              list << "\n<!-- Beginning of Enumerable obj -->"
+              list << "\n<dt>#{key}</dt>"
+              list << "<dd>"
+              list << "\t<dl>\n"
+              value.each(&walk)
+              list << "\t</dl>\n"
+              list << "</dd>"
+              list << "\n<!-- End of Enumerable obj -->"
+              
+            else
+              list << "\n<dt>#{key}</dt>"
+              list << "<dd>#{value}</dd>"
+          end
+        end
+        node.attribute.sort{ |a,b| a[0] <=> b[0] }.each(&walk)
+        list << "</dl>"
+      end
     end
-
   end
 end
