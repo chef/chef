@@ -111,12 +111,12 @@ describe Chef::Resource::Group, "append" do
   end
   
   it "should default to false" do
-    @resource.gid.should eql(false)
+    @resource.append.should eql(false)
   end
   
   it "should allow a boolean" do
-    @resource.gid true
-    @resource.gid.should eql(true)
+    @resource.append true
+    @resource.append.should eql(true)
   end
 
   it "should not allow a hash" do

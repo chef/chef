@@ -60,7 +60,7 @@ class Chef
         set_or_return(
           :append,
           arg,
-          kind_of => [ Boolean ]
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
     end

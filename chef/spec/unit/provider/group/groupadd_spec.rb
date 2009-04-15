@@ -129,7 +129,8 @@ describe Chef::Provider::Group::Groupadd, "modify_group_members" do
     @new_resource = mock("Chef::Resource::Group",
       :null_object => true,
       :group_name => "aj",
-      :members => [ "all", "your", "base" ]
+      :members => [ "all", "your", "base" ],
+      :append => false
     )
     @new_resource.stub!(:to_s).and_return("group[aj]")
     @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
