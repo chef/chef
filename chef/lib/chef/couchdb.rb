@@ -144,12 +144,6 @@ class Chef
       end
     end
     
-    private
-    
-    def safe_name(name)
-      name.gsub(/\./, "_")
-    end
-      
     def view_uri(design, view)
       Chef::Config[:couchdb_version] ||= @rest.run_request(:GET, URI.parse(@rest.url + "/"), false, 10, false)["version"].gsub(/-.+/,"").to_f
       case Chef::Config[:couchdb_version]
@@ -159,6 +153,12 @@ class Chef
         "#{Chef::Config[:couchdb_database]}/_view/#{design}/#{view}"
       end
     end
-
+    
+    private
+    
+    def safe_name(name)
+      name.gsub(/\./, "_")
+    end
+      
   end
 end
