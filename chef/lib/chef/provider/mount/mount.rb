@@ -172,7 +172,7 @@ class Chef
               real_device = stdout.first
             end
             unless status.exitstatus == 0
-              raise Chef::Exceptions::Mount, "findfs #{@device_fstab} failed - #{status.inspect}!"
+              real_device = "/dev/null"
             end
         
             real_device.chomp
