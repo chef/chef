@@ -66,7 +66,10 @@ class FileEdit
     @match = false
   end
 
-    #helper method to search_file_replace_delete_line, search_file_replace_delete, and insert_line_after_match
+  
+  private
+  
+  #helper method to search_file_replace_delete_line, search_file_replace_delete, and insert_line_after_match
   def search_match(regex, replace, command, method)
 
     raise ArgumentError, "command should be 'r' or 'd'" unless (command == 'r' or command == 'd' or command == 'i')
