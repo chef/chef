@@ -70,9 +70,9 @@ class FileEdit
   private
   
   #helper method to search_file_replace_delete_line, search_file_replace_delete, and insert_line_after_match
+  #command is the switch of delete, replace, and insert ('d', 'r', 'i')
+  #method is to control operation on whole line or only the match (1 for line, 2 for match)
   def search_match(regex, replace, command, method)
-
-    raise ArgumentError, "command should be 'r' or 'd'" unless (command == 'r' or command == 'd' or command == 'i')
   
     #check if regex is Regexp object or simple string and store the Regexp object in exp.
     (regex.kind_of? Regexp)? exp = regex : exp = Regexp.new(regex)
