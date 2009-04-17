@@ -13,10 +13,8 @@ class FileEdit
     @match = false
     
 
-    raise ArgumentError, "File doesn't exist" unless (ret = File.exist? @filename)
-
-    f = File.new(@filename)
-    raise ArgumentError, "File is blank" unless (@contents = f.readlines).length > 0
+    raise ArgumentError, "File doesn't exist" unless File.exist? @filename
+    raise ArgumentError, "File is blank" unless (@contents = File.new(@filename).readlines).length > 0
     
   end
   
@@ -69,7 +67,7 @@ class FileEdit
   
   private
   
-  #helper method to search_file_replace_delete_line, search_file_replace_delete, and insert_line_after_match
+  #helper method to do the match, replace, delete, and insert operations
   #command is the switch of delete, replace, and insert ('d', 'r', 'i')
   #method is to control operation on whole line or only the match (1 for line, 2 for match)
   def search_match(regex, replace, command, method)
