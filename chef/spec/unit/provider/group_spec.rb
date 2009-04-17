@@ -109,7 +109,8 @@ describe Chef::Provider::Group, "compare_group" do
       :null_object => true,
       :group_name => "aj",
       :gid => 50,
-      :members => [ "root", "aj"]
+      :members => [ "root", "aj"],
+      :append => false
     )
     @current_resource = mock("Chef::Resource::Group",
       :null_object => true,
@@ -128,9 +129,22 @@ describe Chef::Provider::Group, "compare_group" do
     end
   end
   
-  it "should return false if no change is required" do
+  it "should return false if gid and members are equal" do
     @provider.compare_group.should be_false
   end
+
+  it "should return false if append is true and the group member(s) already exists" do
+    @current_resource.members << "extra_user"
+    @new_resource.stub!(:append).and_return(true)
+    @provider.compare_group.should be_false
+  end
+
+  it "should return true if append is true and the group member(s) do not already exist" do
+    @new_resource.members << "extra_user"
+    @new_resource.stub!(:append).and_return(true)
+    @provider.compare_group.should be_true
+  end
+
 end
 
 describe Chef::Provider::Group, "action_create" do
