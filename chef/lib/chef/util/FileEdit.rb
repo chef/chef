@@ -1,5 +1,5 @@
 class FileEdit
-  
+
   require 'ftools'
 
   private
@@ -9,16 +9,13 @@ class FileEdit
   
   def initialize(filepath)
     @filename = filepath
-    @contents = Array.new
     @match = false
     
-
     raise ArgumentError, "File doesn't exist" unless File.exist? @filename
     raise ArgumentError, "File is blank" unless (@contents = File.new(@filename).readlines).length > 0
     
   end
   
-
   #search the file line by line and match each line with the given regex
   #if matched, replace the whole line with newline.
   def search_file_replace_line(regex, newline)
@@ -63,7 +60,6 @@ class FileEdit
     end
     @match = false
   end
-
   
   private
   
@@ -74,7 +70,8 @@ class FileEdit
   
     #check if regex is Regexp object or simple string and store the Regexp object in exp.
     (regex.kind_of? Regexp)? exp = regex : exp = Regexp.new(regex)
-    
+
+    #loop through @contents and do the appropriate operation depending on 'command' and 'method'
     i = 0
     begin
       line = @contents[i]
@@ -97,8 +94,6 @@ class FileEdit
       i = i+1
     end until i == @contents.length
   end
-
-  
 end
 
 #test
