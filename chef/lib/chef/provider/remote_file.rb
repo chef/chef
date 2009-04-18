@@ -82,6 +82,8 @@ class Chef
           # We're done with the file, so make sure to close it if it was open.
           raw_file.close 
           true
+        else
+          Chef::Log.debug("File #{@new_resource} checksum matches, not updating")
         end
          
         set_owner if @new_resource.owner
