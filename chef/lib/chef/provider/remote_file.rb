@@ -46,7 +46,9 @@ class Chef
         # The current files checksum
         current_checksum = self.checksum(path) if ::File.exists?(path)
 
-        unless (@new_resource.checksum && @new_resource.checksum == current_checksum)
+        if(@new_resource.checksum && current_checksum && current_checksum =~ /^#{@new_resource.checksum}/)
+          Chef::Log.debug("File #{@new_resource} checksum matches, not updating")
+        else
           begin
             # The remote filehandle
             raw_file = get_from_uri(source)    ||
@@ -82,8 +84,6 @@ class Chef
           # We're done with the file, so make sure to close it if it was open.
           raw_file.close 
           true
-        else
-          Chef::Log.debug("File #{@new_resource} checksum matches, not updating")
         end
          
         set_owner if @new_resource.owner

@@ -73,12 +73,29 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
         do_remote_file
       end
 
-      it "should download the file if the checksum matches" do
+      it "should not download the file if the checksum is a partial match from the beginning" do
+        @resource.checksum("0fd012fd")
+        @resource.source("http://opscode.com/seattle.txt")
+        @rest.should_not_receive(:get_rest).with("http://opscode.com/seattle.txt", true).and_return(@tempfile)
+        do_remote_file
+      end
+
+
+      it "should download the file if the checksum does not match" do
         @resource.checksum("this hash doesn't match")
         @resource.source("http://opscode.com/seattle.txt")
         @rest.should_receive(:get_rest).with("http://opscode.com/seattle.txt", true).and_return(@tempfile)
         do_remote_file
       end
+
+      it "should download the file if the checksum matches, but not from the beginning" do
+        @resource.checksum("fd012fd")
+        @resource.source("http://opscode.com/seattle.txt")
+        @rest.should_receive(:get_rest).with("http://opscode.com/seattle.txt", true).and_return(@tempfile)
+        do_remote_file
+      end
+
+
     end
 
     describe "and not given a checksum" do
