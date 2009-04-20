@@ -86,8 +86,15 @@ class Chef
         
         
         def install_package(name, version)
+          pkg = "=#{name}-#{version}" 
+          
+          if(version =~ /^\~(.+)/)
+            # If we start with a tilde
+            pkg = "~#{name}-#{$1}"
+          end
+               
           run_command(
-            :command => "emerge -g --color n --nospinner --quiet =#{name}-#{version}"
+            :command => "emerge -g --color n --nospinner --quiet #{pkg}"
           )
         end
       
@@ -96,8 +103,14 @@ class Chef
         end
       
         def remove_package(name, version)
+          if(version)
+            pkg = "=#{@new_resource.package_name}-#{version}"
+          else            
+            pkg = "#{@new_resource.package_name}"
+          end
+
           run_command(
-            :command => "emerge --unmerge --color n --nospinner --quiet #{@new_resource.package_name}"
+            :command => "emerge --unmerge --color n --nospinner --quiet #{pkg}"
           )
         end
       
