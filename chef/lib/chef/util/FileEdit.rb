@@ -1,19 +1,21 @@
+require 'ftools'
+require 'fileutils'
+require 'tempfile'
+
 class FileEdit
 
-  require 'ftools'
-
   private
-  attr_accessor :filename, :contents, :match
+  
+  attr_accessor :original_pathname, :contents, :file_edited
 
   public
   
   def initialize(filepath)
-    @filename = filepath
-    @match = false
+    @original_pathname = filepath
+    @file_edited = false
     
-    raise ArgumentError, "File doesn't exist" unless File.exist? @filename
-    raise ArgumentError, "File is blank" unless (@contents = File.new(@filename).readlines).length > 0
-    
+    raise ArgumentError, "File doesn't exist" unless File.exist? @original_pathname
+    raise ArgumentError, "File is blank" unless (@contents = File.new(@original_pathname).readlines).length > 0
   end
   
   #search the file line by line and match each line with the given regex
@@ -48,17 +50,21 @@ class FileEdit
    
   #Make a copy of old_file and write new file out (only if file changed)
   def write_file
-    # @match is false when there is no match in the whole file. Nothing need to be done.
-    if @match == true
-      File.copy(@filename, @filename + ".old")
-      newfile = File.new("temp", "w")
-      @contents.each() do |line|
-        newfile.puts(line)
+    
+    # file_edited is false when there was no match in the whole file and thus no contents have changed.
+    if file_edited
+      backup_pathname = original_pathname + ".old"
+      File.copy(original_pathname, backup_pathname)
+      Tempfile.open("w") do |newfile|
+        contents.each do |line|
+          newfile.puts(line)
+        end
+        newfile.flush
+        FileUtils.mv(newfile.path, original_pathname)
       end
-      newfile.close
-      File.rename("temp", @filename)
     end
-    @match = false
+    self.file_edited = false
+
   end
   
   private
@@ -67,39 +73,39 @@ class FileEdit
   #command is the switch of delete, replace, and insert ('d', 'r', 'i')
   #method is to control operation on whole line or only the match (1 for line, 2 for match)
   def search_match(regex, replace, command, method)
-  
+    
     #check if regex is Regexp object or simple string and store the Regexp object in exp.
-    (regex.kind_of? Regexp)? exp = regex : exp = Regexp.new(regex)
+    exp = (regex.respond_to?(:gsub!) ? regex : Regexp.new(regex.to_s))
 
-    #loop through @contents and do the appropriate operation depending on 'command' and 'method'
-    i = 0
-    begin
-      line = @contents[i]
-      if line =~ exp
-        @match = true
+    #loop through contents and do the appropriate operation depending on 'command' and 'method'
+    new_contents = []
+    
+    contents.each do |line|
+      if exp.match(line) # =~ exp
+        self.file_edited = true
         case
         when command == 'r'
-          (method == 1)? @contents[i] = replace: @contents[i].gsub!(exp, replace)
+          new_contents << ((method == 1) ? replace : line.gsub!(exp, replace))
         when command == 'd'
-          if method == 1
-            @contents.delete_at(i)
-            i = i - 1
-          else
-            @contents[i].gsub!(exp, "")
+          if method == 2
+            new_contents << line.gsub!(exp, "")
           end
         when command == 'i'
-          @contents.insert(i+1, replace)
+          new_contents << line
+          new_contents << replace
         end
+      else
+        new_contents << line
       end
-      i = i+1
-    end until i == @contents.length
+    end
+
+    self.contents = new_contents
   end
 end
 
 #test
 if __FILE__ == $0
   fedit = FileEdit.new("test")
-  
   fedit.insert_line_after_match(/test/, "new Line Inserted")
   fedit.search_file_replace(/test/, "replace")
   fedit.search_file_replace_line(/replace/, "this line is replaced")
