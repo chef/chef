@@ -74,14 +74,14 @@ class FileEdit
   #method is to control operation on whole line or only the match (1 for line, 2 for match)
   def search_match(regex, replace, command, method)
     
-    #check if regex is Regexp object or simple string and store the Regexp object in exp.
-    exp = (regex.respond_to?(:gsub!) ? regex : Regexp.new(regex.to_s))
+    #convert regex to a Regexp object (if not already is one) and store it in exp.
+    exp = Regexp.new(regex)
 
     #loop through contents and do the appropriate operation depending on 'command' and 'method'
     new_contents = []
     
     contents.each do |line|
-      if exp.match(line) # =~ exp
+      if line.match(exp) 
         self.file_edited = true
         case
         when command == 'r'
@@ -101,15 +101,4 @@ class FileEdit
 
     self.contents = new_contents
   end
-end
-
-#test
-if __FILE__ == $0
-  fedit = FileEdit.new("test")
-  fedit.insert_line_after_match(/test/, "new Line Inserted")
-  fedit.search_file_replace(/test/, "replace")
-  fedit.search_file_replace_line(/replace/, "this line is replaced")
-  fedit.search_file_delete(/this/)
-  fedit.search_file_delete_line(/new/)
-  fedit.write_file()
 end
