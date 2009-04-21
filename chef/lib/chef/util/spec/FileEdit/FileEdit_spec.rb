@@ -55,12 +55,12 @@ describe FileEdit, "search_file_replace_line" do
     fedit.write_file
     newfile = File.new("./spec/FileEdit/hosts").readlines
     newfile[0].should match(/replacement/)
+    newfile[0].should_not match(/127/)
     File.delete("./spec/FileEdit/hosts")
     File.rename("./spec/FileEdit/hosts.old", "./spec/FileEdit/hosts")
   end
   
 end
-
 
 describe FileEdit, "search_file_delete" do
   it "should search for match and delete the match" do
@@ -69,6 +69,7 @@ describe FileEdit, "search_file_delete" do
     fedit.write_file
     newfile = File.new("./spec/FileEdit/hosts").readlines
     newfile[0].should_not match(/localhost/)
+    newfile[0].should match(/127/)
     File.delete("./spec/FileEdit/hosts")
     File.rename("./spec/FileEdit/hosts.old", "./spec/FileEdit/hosts")
   end
