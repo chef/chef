@@ -17,3 +17,14 @@ Feature: Execute Commands
      Then the run should exit '0'
       And a file named 'execute-4k.txt' should exist
 
+  Scenario: Execute a command at the debug log level
+    Given a validated node
+      And it includes the recipe 'execute_commands::debug'
+     When I run the chef-client at log level 'debug'
+     Then the run should exit '0'
+      And 'stdout' should have 'DEBUG: Executing ruby -e .puts "whats up"; STDERR.puts "doc!".'
+      And 'stdout' should have 'DEBUG: ---- Begin output of ruby -e .puts "whats up"; STDERR.puts "doc!". ----'
+      And 'stdout' should have 'DEBUG: STDOUT: whats up'
+      And 'stdout' should have 'DEBUG: STDERR: doc!'
+      And 'stdout' should have 'DEBUG: ---- End output of ruby -e .puts "whats up"; STDERR.puts "doc!". ----'
+      And 'stdout' should have 'DEBUG: Ran ruby -e .puts "whats up"; STDERR.puts "doc!". returned 0'
