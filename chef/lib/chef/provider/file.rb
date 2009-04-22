@@ -159,7 +159,7 @@ class Chef
       
       def backup(file=nil)
         file ||= @new_resource.path
-        if @new_resource.backup >0 && ::File.exist?(file)
+        if @new_resource.backup > 0 && ::File.exist?(file)
           time = Time.now
           savetime = time.strftime("%Y%m%d%H%M%S")
           backup_filename = "#{@new_resource.path}.chef-#{savetime}"
@@ -176,7 +176,6 @@ class Chef
               FileUtils.rm(backup_to_delete)
             end
           end
-
         end
       end
       
