@@ -220,7 +220,16 @@ describe Chef::Provider::File do
     File.stub!(:exist?).and_return(true)
     @provider.backup
   end
-  
+
+  it "should not attempt to backup a file if :backup == 0" do
+    @provider.load_current_resource
+    @provider.new_resource.stub!(:path).and_return("/tmp/s-20080705111233")
+    @provider.new_resource.stub!(:backup).and_return(0)
+    FileUtils.stub!(:cp).and_return(true)
+    File.stub!(:exist?).and_return(true)
+    FileUtils.should_not_receive(:cp)  
+    @provider.backup
+  end
 end
 
 describe Chef::Provider::File, "action_create_if_missing" do
