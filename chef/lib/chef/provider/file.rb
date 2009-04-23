@@ -37,8 +37,12 @@ class Chef
         end
         big
       end
+      
+      def octal_mode(mode)
+        ((mode.respond_to?(:oct) ? mode.oct : mode.to_i) & 007777)
+      end
 
-      private :negative_complement
+      private :negative_complement, :octal_mode
       
       def load_current_resource
         @current_resource = Chef::Resource::File.new(@new_resource.name)
@@ -47,7 +51,7 @@ class Chef
           cstats = ::File.stat(@current_resource.path)
           @current_resource.owner(cstats.uid)
           @current_resource.group(cstats.gid)
-          @current_resource.mode("%o" % (cstats.mode & 007777))
+          @current_resource.mode(octal_mode(cstats.mode))
           @current_resource.checksum(checksum(@current_resource.path))
         end
         @current_resource
@@ -104,8 +108,7 @@ class Chef
       def compare_mode
         case @new_resource.mode
         when /^\d+$/, Integer
-          real_mode = sprintf("%o" % (@new_resource.mode & 007777))
-          real_mode.to_i == @current_resource.mode.to_i
+          octal_mode(@new_resource.mode) == octal_mode(@current_resource.mode)
         else
           false
         end
@@ -113,8 +116,9 @@ class Chef
       
       def set_mode
         unless compare_mode && @new_resource.mode != nil
-          Chef::Log.info("Setting mode to #{sprintf("%o" % (@new_resource.mode & 007777))} for #{@new_resource}")
-          ::File.chmod(@new_resource.mode.to_i, @new_resource.path)
+          Chef::Log.info("Setting mode to #{sprintf("%o" % octal_mode(@new_resource.mode))} for #{@new_resource}")
+          # CHEF-174, bad mojo around treating integers as octal.  If a string is passed, we try to do the "right" thing
+          ::File.chmod(octal_mode(@new_resource.mode), @new_resource.path)
           @new_resource.updated = true
         end
       end
@@ -125,9 +129,9 @@ class Chef
           ::File.open(@new_resource.path, "w+") { |f| }
           @new_resource.updated = true
         end
-        set_owner if @new_resource.owner != nil
-        set_group if @new_resource.group != nil
-        set_mode if @new_resource.mode != nil
+        set_owner unless @new_resource.owner.nil?
+        set_group unless @new_resource.group.nil?
+        set_mode unless @new_resource.mode.nil?
       end
       
       def action_create_if_missing

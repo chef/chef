@@ -68,12 +68,24 @@ class Chef
       end
       
       def action_delete
-        if ::File.exists?(@new_resource.target_file) && ::File.writable?(@new_resource.target_file)
-          Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.target_file}")
-          ::File.delete(@new_resource.target_file)
-          @new_resource.updated = true
-        else
-          raise "Cannot delete #{@new_resource} at #{@new_resource_path}!"
+        if ::File.exists?(@new_resource.target_file)
+  	      if @new_resource.link_type == :symbolic 
+  	        if ::File.symlink?(@new_resource.target_file)
+              Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.target_file}")
+              ::File.delete(@new_resource.target_file)
+              @new_resource.updated = true
+            else
+              raise Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a symbolic link."
+            end
+          elsif @new_resource.link_type == :hard 
+            if ::File.exists?(@new_resource.to) && ::File.stat(@current_resource.target_file).ino == ::File.stat(@new_resource.to).ino
+              Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.target_file}")
+              ::File.delete(@new_resource.target_file)
+              @new_resource.updated = true
+            else
+              raise Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a hard link."
+            end
+          end
         end
       end
     end

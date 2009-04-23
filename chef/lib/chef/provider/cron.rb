@@ -64,7 +64,12 @@ class Chef
           status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
               if cron_found
-                crontab << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
+                cronline = "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
+                if (line == cronline)
+                  Chef::Log.debug("Skipping existing cron entry '#{@new_resource.name}'")
+                  return
+                end
+                crontab << cronline
                 cron_found = false
                 next
               end
@@ -75,6 +80,7 @@ class Chef
               crontab << line 
             end
           end
+
 
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
             crontab.each { |line| stdin.puts "#{line}" }

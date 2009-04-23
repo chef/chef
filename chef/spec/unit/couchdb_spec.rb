@@ -19,16 +19,23 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::CouchDB, "new" do
-  it "should create a new Chef::REST object from the default url" do
-    Chef::Config[:couchdb_url] = "http://monkey"
-    Chef::REST.should_receive(:new).with("http://monkey").and_return(true)
-    Chef::CouchDB.new
+  before do
+    @mock_rest = mock("Chef::REST", :null_object => true)
+    @mock_rest.stub!(:run_request).and_return({"couchdb" => "Welcome", "version" =>"0.9.0"})
+    @mock_rest.stub!(:url).and_return("http://localhost:5984")
+    Chef::REST.stub!(:new).and_return(@mock_rest)
   end
   
-  it "should create a new Chef::REST object from a provided url" do
-    Chef::REST.should_receive(:new).with("http://monkeypants").and_return(true)
-    Chef::CouchDB.new("http://monkeypants")
+  it "should create a new Chef::REST object from the default url" do
+    Chef::Config[:couchdb_url] = "http://monkey"
+    Chef::REST.should_receive(:new).with("http://monkey")
+    Chef::CouchDB.new
   end
+
+  it "should create a new Chef::REST object from a provided url" do
+    Chef::REST.should_receive(:new).with("http://monkeypants")
+    Chef::CouchDB.new("http://monkeypants")
+  end  
 end
 
 describe Chef::CouchDB, "create_db" do
@@ -185,18 +192,42 @@ end
 
 describe Chef::CouchDB, "list" do
   before(:each) do
-    @mock_rest = mock("Chef::REST", :null_object => true)
+    @mock_rest = mock("Chef::REST", :null_object => true, :url => "http://monkeypants")
     Chef::REST.stub!(:new).and_return(@mock_rest)
+    @couch = Chef::CouchDB.new("http://monkeypants")
+    Chef::Config.stub!(:[]).with(:couchdb_database).and_return("chef")
   end
   
-  it "should get the view for all objects if inflate is true" do
-    @mock_rest.should_receive(:get_rest).with("chef/_view/node/all").and_return(true)
-    Chef::CouchDB.new.list("node", true)
+  describe "on couchdb 0.8" do
+    before do
+      Chef::Config.stub!(:[]).with(:couchdb_version).and_return(0.8)
+    end
+    
+    it "should get the view for all objects if inflate is true" do
+      @mock_rest.should_receive(:get_rest).with("chef/_view/node/all").and_return(true)
+      @couch.list("node", true)
+    end
+
+    it "should get the view for just the object id's if inflate is false" do
+      @mock_rest.should_receive(:get_rest).with("chef/_view/node/all_id").and_return(true)
+      @couch.list("node", false)
+    end
   end
-  
-  it "should get the view for just the object id's if inflate is false" do
-    @mock_rest.should_receive(:get_rest).with("chef/_view/node/all_id").and_return(true)
-    Chef::CouchDB.new.list("node", false)
+
+  describe "on couchdb 0.9" do
+    before do
+      Chef::Config.stub!(:[]).with(:couchdb_version).and_return(0.9)
+    end
+    
+    it "should get the view for all objects if inflate is true" do
+      @mock_rest.should_receive(:get_rest).with("chef/_design/node/_view/all").and_return(true)
+      @couch.list("node", true)
+    end
+
+    it "should get the view for just the object id's if inflate is false" do
+      @mock_rest.should_receive(:get_rest).with("chef/_design/node/_view/all_id").and_return(true)
+      @couch.list("node", false)
+    end
   end
 end
 
@@ -214,5 +245,51 @@ describe Chef::CouchDB, "has_key?" do
   it "should return false if the object does not exist" do
     @mock_rest.should_receive(:get_rest).and_raise(ArgumentError)
     Chef::CouchDB.new.has_key?("node", "bob").should eql(false)
+  end
+end
+
+describe Chef::CouchDB, "view_uri" do
+  before do
+    @mock_rest = mock("Chef::REST", :null_object => true, :url => "http://monkeypants")
+    Chef::REST.stub!(:new).and_return(@mock_rest)
+    @couchdb = Chef::CouchDB.new("http://localhost")    
+  end
+  
+  describe "when the couchdb version is unknown" do
+    it "should set the couchdb version appropriately" do
+      ov = Chef::Config[:couchdb_version]
+      Chef::Config[:couchdb_version] = nil      
+      @mock_rest.should_receive(:run_request).with(
+        :GET, 
+        URI.parse("http://monkeypants/"), 
+        false, 
+        10, 
+        false
+      ).and_return({ "version" => "0.9" })
+      @couchdb.view_uri("nodes", "all")
+      Chef::Config[:couchdb_version] = ov
+    end
+  end
+  
+  describe "on couchdb 0.8" do
+    before do
+      Chef::Config.stub!(:[]).with(:couchdb_version).and_return(0.8)
+    end
+    
+    it "should output an appropriately formed view URI" do
+      @couchdb.should_receive(:view_uri).with("nodes", "all").and_return("chef/_view/nodes/all")
+      @couchdb.view_uri("nodes", "all")
+    end
+  end
+
+  describe "on couchdb 0.9" do
+    before do
+      Chef::Config.stub!(:[]).with(:couchdb_version).and_return(0.9)
+    end
+
+    it "should output an appropriately formed view URI" do
+      @couchdb.should_receive(:view_uri).with("nodes", "all").and_return("chef/_design/nodes/_view/all")
+      @couchdb.view_uri("nodes", "all")
+    end
   end
 end

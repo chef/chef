@@ -81,9 +81,13 @@ if defined?(Merb::Plugins)
 
       scope.match("/status").to(:controller => "status", :action => "index").name(:status)
 
-      scope.resources :searches, :path => "search", :controller => "search" do
-        scope.resources :entries, :controller => "search_entries"
-      end
+      scope.resources :searches, :path => "search", :controller => "search"
+      scope.match("/search/:search_id/entries", :method => 'get').to(:controller => "search_entries", :action => "index")
+      scope.match("/search/:search_id/entries", :method => 'post').to(:controller => "search_entries", :action => "create")
+      scope.match("/search/:search_id/entries/:id", :method => 'get').to(:controller => "search_entries", :action => "show")
+      scope.match("/search/:search_id/entries/:id", :method => 'put').to(:controller => "search_entries", :action => "create")
+      scope.match("/search/:search_id/entries/:id", :method => 'post').to(:controller => "search_entries", :action => "update")
+      scope.match("/search/:search_id/entries/:id", :method => 'delete').to(:controller => "search_entries", :action => "destroy")
 
       scope.match("/cookbooks/_attribute_files").to(:controller => "cookbooks", :action => "attribute_files")
       scope.match("/cookbooks/_recipe_files").to(:controller => "cookbooks", :action => "recipe_files")

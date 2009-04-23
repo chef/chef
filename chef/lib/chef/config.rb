@@ -62,6 +62,7 @@ class Chef
       :template_url => "http://localhost:4000",
       :remotefile_url => "http://localhost:4000",
       :search_url => "http://localhost:4000",
+      :couchdb_version => nil,
       :couchdb_database => "chef",
       :openid_store_couchdb => false,
       :openid_cstore_couchdb => false,

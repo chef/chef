@@ -40,7 +40,7 @@ class Chef
                 package_type = :installed
               when /^Available Packages$/
                 package_type = :available
-              when /^Version: (.+)$/
+              when /^Version\s*: (.+)$/
                 if package_type == :installed
                   installed_version = $1
                 elsif package_type == :available
