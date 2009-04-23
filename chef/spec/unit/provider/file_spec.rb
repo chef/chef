@@ -65,6 +65,22 @@ describe Chef::Provider::File do
     provider.current_resource.group.should eql(nil)
     provider.current_resource.mode.should eql(nil)
   end
+
+  it "should not backup symbolic links on delete" do
+    path = File.join(File.dirname(__FILE__), "..", "..", "data", "detroit.txt")
+    ::File.open(path, "w") do |file|
+      file.write("Detroit's not so nice, so you should come to Seattle instead and buy me a beer instead.")
+    end
+    @resource = Chef::Resource::File.new("detroit")
+    @resource.path(path)
+    @node = Chef::Node.new
+    @node.name "latte"
+    @provider = Chef::Provider::File.new(@node, @resource)
+
+    ::File.stub!(:symlink?).and_return(true)
+    @provider.should_not_receive(:backup)
+    @provider.action_delete
+  end
   
   it "should load the correct value for owner of the current resource" do
     stats = File.stat(@resource.path)
