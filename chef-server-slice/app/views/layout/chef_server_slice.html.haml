@@ -2,31 +2,45 @@
 !!!
 %html
   %head
+    %meta{ "http-equiv" => "content-type", :content => "text/html; charset=utf-8" }
     %title Chef Server
-    %meta{"http-equiv" => "content-type", :content => "text/html; charset=utf-8" }
-    %link{:rel => "stylesheet", :href => "/stylesheets/master-highlight.css", :type => "text/css", :media => "screen", :charset => "utf-8" }
-    = js_include_tag "jquery-1.3.1.min", "jquery.jeditable.mini", "jquery.livequery"
+    = css_include_tag "base", "themes/djime-cerulean/style", "chef", "/facebox/facebox.css"
+    = js_include_tag "jquery-1.3.1.min", "jquery.jeditable.mini", "jquery.livequery", "jquery.localscroll", "jquery.scrollTo"
+    = js_include_tag "/facebox/facebox.js"
     = js_include_tag "chef"
+        
   %body
-    .header
-      %a{:href => slice_url(:searches) } Search
-      |
-      %a{:href => slice_url(:nodes) } Nodes
-      |
-      %a{:href => slice_url(:status) } Status
-      |
-      %a{:href => slice_url(:cookbooks) } Cookbooks
-      |
-      %a{:href => slice_url(:registrations)} Registrations
-      - if session[:openid]
-        |
-        %a{:href => slice_url(:openid_consumer_logout)}= "Logout #{h session[:openid]}"
-        = "(#{session[:level].to_s})"
-      - else
-        |
-        %a{:href => slice_url(:openid_consumer)} Login
-      %h3= catch_content :header
-    - unless message.empty?
-      = message[:error]
-      = message[:notice]
-    = catch_content :for_layout
+    #container
+      #header
+        %h1= link_to "Chef Server", slice_url(:top)
+        #user-navigation
+          %ul
+            - if session[:openid]
+              %li= link_to "Logout #{h session[:openid]} (#{session[:level].to_s})", slice_url(:openid_consumer_logout), :method => "get", :confirm => "Are you sure you want to logout?"
+            - else
+              %li= link_to "Login", slice_url(:openid_consumer), :rel => "facebox"
+          .clear
+        #main-navigation
+          %ul
+            %li= link_to "Search", slice_url(:searches)
+            %li= link_to "Status", slice_url(:status)
+            %li= link_to "Nodes", slice_url(:nodes)
+            %li= link_to "Cookbooks", slice_url(:cookbooks)
+            %li= link_to "Registrations", slice_url(:registrations)
+          .clear
+      #wrapper
+        #main
+          - unless message.empty?
+            .block#block-messages
+              .content
+                %h2.title Error Messages
+                .inner
+                  .flash
+                    - message.each do |type, msg|
+                      %div{:class => "message #{type}"}
+                        %p= msg             
+          = catch_content :for_layout
+          #footer
+            .block
+              %p Copyright &copy; 2009 Opscode
+        .clear

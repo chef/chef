@@ -1,7 +1,10 @@
-- throw_content(:header, "Cookbooks")
-- @cl.each do |cookbook|
-  .index
-    %table
-      %tr
-        %td
-          %a{ :href => slice_url(:cookbook, { :id => cookbook.name }) }= cookbook.name
+.block#block-tables
+  .content
+    %h2.title Cookbooks
+    .inner
+      %table.table
+        %tr
+          %th.first Cookbook Name
+          - @cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }.each_with_index do |cookbook, index|
+            %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
+              %td= link_to cookbook.name, slice_url(:cookbook, { :id => cookbook.name })

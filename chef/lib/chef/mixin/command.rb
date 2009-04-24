@@ -113,35 +113,11 @@ class Chef
         end
         
         exec_processing_block = lambda do |pid, stdin, stdout, stderr|
-          stdout.sync = true
-          stderr.sync = true
-          
           Chef::Log.debug("---- Begin output of #{args[:command]} ----")
-          
-          stdout_finished = false
-          stderr_finished = false
-          
-          while !stdout_finished || !stderr_finished
-            ready = IO.select([stdout, stderr], nil, nil, 1.0)
-            if ready && ready.first.include?(stdout)
-              line = stdout.gets
-              if line
-                command_output << "STDOUT: #{line.strip}\n"
-                Chef::Log.debug("STDOUT: #{line.strip}")
-              else
-                stdout_finished = true
-              end
-            end
-            if ready && ready.first.include?(stderr)
-              line = stderr.gets
-              if line
-                command_output << "STDERR: #{line.strip}\n"
-                Chef::Log.debug("STDERR: #{line.strip}")
-              else
-                stderr_finished = true
-              end
-            end
-          end
+          Chef::Log.debug("STDOUT: #{stdout.string.chomp!}")  
+          Chef::Log.debug("STDERR: #{stderr.string.chomp!}") 
+          command_output << "STDOUT: #{stdout.string.chomp!}"
+          command_output << "STDERR: #{stderr.string.chomp!}"
           Chef::Log.debug("---- End output of #{args[:command]} ----")
         end
         
@@ -153,10 +129,6 @@ class Chef
         Chef::Log.debug("Executing #{args[:command]}")
         
         status = nil
-        
-        # I don't understand what this :waitlast argument is doing, but setting it to true is causing the block in popen4
-        # not to wait until the command is finished to execute, kind of the opposite of what I would guess from the name
-        args[:waitlast] ||= true
         
         Dir.chdir(args[:cwd]) do
           if args[:timeout]
@@ -200,8 +172,13 @@ class Chef
       #
       # Thanks Ara!
       def popen4(cmd, args={}, &b)
-        
+       
         # Waitlast - this is magic.  
+        # 
+        # Do we wait for the child process to die before we yield
+        # to the block, or after?  That is the magic of waitlast.
+        #
+        # By default, we are waiting before we yield the block.
         args[:waitlast] ||= false
         
         args[:user] ||= nil
@@ -298,11 +275,58 @@ class Chef
               # wants to do must be done - it's dead.  If it isn't,
               # it's because something totally skanky is happening,
               # and we don't care.
+              o = StringIO.new
+              e = StringIO.new
+
               pi[0].close
-              pi[1].fcntl(Fcntl::F_SETFL, pi[1].fcntl(Fcntl::F_GETFL) | Fcntl::O_NONBLOCK)
-              pi[2].fcntl(Fcntl::F_SETFL, pi[2].fcntl(Fcntl::F_GETFL) | Fcntl::O_NONBLOCK)
-              results = Process.waitpid2(cid).last
-              b[cid, *pi]
+              
+              stdout = pi[1]
+              stderr = pi[2]
+
+              stdout.sync = true
+              stderr.sync = true
+
+              stdout.fcntl(Fcntl::F_SETFL, pi[1].fcntl(Fcntl::F_GETFL) | Fcntl::O_NONBLOCK)
+              stderr.fcntl(Fcntl::F_SETFL, pi[2].fcntl(Fcntl::F_GETFL) | Fcntl::O_NONBLOCK)
+              
+              
+              stdout_finished = false
+              stderr_finished = false
+             
+              results = nil
+
+              while !stdout_finished || !stderr_finished
+                begin
+                  ready = IO.select([stdout, stderr], nil, nil, 1.0)
+                rescue Errno::EAGAIN
+                  results = Process.waitpid2(cid, Process::WNOHANG)
+                  if results
+                    stdout_finished = true
+                    stderr_finished = true 
+                  end
+                end
+
+                if ready && ready.first.include?(stdout)
+                  line = results ? stdout.gets(nil) : stdout.gets
+                  if line
+                    o.write(line)
+                  else
+                    stdout_finished = true
+                  end
+                end
+                if ready && ready.first.include?(stderr)
+                  line = results ? stderr.gets(nil) : stderr.gets
+                  if line
+                    e.write(line)
+                  else
+                    stderr_finished = true
+                  end
+                end
+              end
+              results = Process.waitpid2(cid).last unless results
+              o.rewind
+              e.rewind
+              b[cid, pi[0], o, e]
               results
             end
           ensure
