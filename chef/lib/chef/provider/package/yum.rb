@@ -19,6 +19,7 @@
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
+require 'singleton'
 
 class Chef
   class Provider
@@ -27,9 +28,10 @@ class Chef
       
        class YumCache
           include Chef::Mixin::Command
+          include Singleton
 
-          def initialize(created_at)
-            @created_at = created_at
+          def initialize
+            @created_at = Time.now 
             load_data
           end
 
@@ -93,6 +95,11 @@ class Chef
             @data.clear
           end
        end
+
+        def initialize(node, new_resource)
+          @yum = YumCache.instance
+          super(node, new_resource)
+        end
       
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -100,12 +107,11 @@ class Chef
         
           Chef::Log.debug("Checking yum info for #{@new_resource.package_name}")
     
-          @@yum ||= YumCache.new(Time.now)
-          @@yum.refresh
+          @yum.refresh
 
-          installed_version = @@yum.installed_version(@new_resource.package_name)
-          @candidate_version = @@yum.candidate_version(@new_resource.package_name)
-
+          installed_version = @yum.installed_version(@new_resource.package_name)
+          @candidate_version = @yum.candidate_version(@new_resource.package_name)
+          
           @current_resource.version(installed_version)
           if candidate_version
             @candidate_version = candidate_version
@@ -115,12 +121,12 @@ class Chef
         
           @current_resource
         end
-      
+
         def install_package(name, version)
           run_command(
             :command => "yum -q -y install #{name}-#{version}"
           )
-          @@yum.flush
+          @yum.flush
         end
       
         def upgrade_package(name, version)
@@ -129,7 +135,7 @@ class Chef
             run_command(
               :command => "yum -q -y update #{name}-#{version}"
             )   
-            @@yum.flush
+            @yum.flush
           else
             install_package(name, version)
           end
@@ -139,7 +145,7 @@ class Chef
           run_command(
             :command => "yum -q -y remove #{name}-#{version}"
           )
-          @@yum.flush
+          @yum.flush
         end
       
         def purge_package(name, version)
