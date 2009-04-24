@@ -26,7 +26,7 @@ class Chef
     class Package
       class Yum < Chef::Provider::Package  
       
-       class YumCache
+        class YumCache
           include Chef::Mixin::Command
           include Singleton
 
@@ -94,7 +94,7 @@ class Chef
           def flush
             @data.clear
           end
-       end
+        end
 
         def initialize(node, new_resource)
           @yum = YumCache.instance
