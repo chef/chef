@@ -20,9 +20,18 @@
 
 # Based on the 'merb' command, by Ezra
 
+# Add chef and chef-server-slice lib dirs to the load path
+# Load chef and chef-server slice from source rather than gem, if present
+
 require "rubygems"
 require "merb-core"
-require "chef"
+
+[ 'chef', 'chef-server-slice' ].each do |lib|
+  library = File.join(File.dirname(__FILE__), "..", "..", lib, "lib", "#{lib}.rb")
+  require library if File.exists?(library)
+end
+
+require "chef" unless defined?(Chef)
 
 Dir.chdir File.join(File.dirname(__FILE__),"..")
 __DIR__ = Dir.getwd

@@ -2,7 +2,7 @@ if defined?(Merb::Plugins)
   $:.unshift File.dirname(__FILE__)
 
   dependency 'merb-slices', :immediate => true
-  dependency 'chef', :immediate=>true
+  dependency 'chef', :immediate=>true unless defined?(Chef)
 
   require 'syntax/convertors/html'
 
