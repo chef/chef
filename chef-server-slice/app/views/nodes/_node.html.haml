@@ -12,6 +12,16 @@
           %td{:colspan => 2}= recipe
   %table.table
     %tr
+      %th.first Tags
+      %th.last &nbsp
+    - if @node[:tags].empty?
+      %tr
+        %td{:colspan => 2} This node has no tags applied, double click to add one.
+    - else
+      %tr
+        %td{:colspan => 2}= @node[:tags].join(", ")
+  %table.table
+    %tr
       %th.first Attributes
       %th.last &nbsp
     - if @node.attribute.empty?
@@ -20,3 +30,4 @@
     - else
       %tr
         %td{:colspan => 2}= build_tree(@node)
+
