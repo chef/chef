@@ -107,7 +107,7 @@ class ChefServerSlice::Application < Merb::Controller
     case content_type
     when :html
       store_location
-      redirect url(:openid_consumer)
+      redirect slice_url(:openid_consumer), :message => { :error => "You don't have access to that, please login."}
     else
       raise Unauthorized, "You must authenticate first!"
     end
