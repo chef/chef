@@ -26,7 +26,11 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
   provides :html, :json
 
   def index
-    render
+    if request.xhr?
+      render :layout => false
+    else  
+      render
+    end
   end
   
   def start

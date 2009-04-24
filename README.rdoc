@@ -4,9 +4,7 @@
 
 == DESCRIPTION:
 
-Chef is a systems management framework masquerading as a configuration management tool.
-
-I'm in ur netwerk, cookin up yer servers. :)
+Chef is a systems integration framework masquerading as a configuration management tool.
 
 == REQUIREMENTS:
 
@@ -19,7 +17,7 @@ chef:
 *  stomp  
 *  ohai  
 
-chef-server and the chefserverslice (merb slice), same requires as chef above, plus:
+chef-server and the chef-server-slice (merb slice), same requires as chef above, plus:
 
 *  stompserver 
 *  ferret 
@@ -30,15 +28,6 @@ chef-server and the chefserverslice (merb slice), same requires as chef above, p
 *  ruby-openid 
 *  syntax
 
-Interim Note:
-
-Once the {chef,chef-server,chefserverslice}.gem set is installed, do the following:
-
-     > cd /Library/Ruby/Gems/1.8/gems/chef-server<xxx> # or wherever your gems land
-     > sudo rake slices:chefserverslice:install
-
-This installs the chefserverslice into the chef-server merb application
-
 External Servers:
 
 * stompserver (for easy stomp mq testing)
@@ -46,7 +35,7 @@ External Servers:
 
 == INSTALL:
 
-Install all of the above.  To fire up a develpment environment, do the following:
+Install all of the above.  To fire up a development environment, do the following:
 
   * Start CouchDB with 'couchdb'
   * Start stompserver with 'stompserver' 
@@ -57,10 +46,13 @@ Install all of the above.  To fire up a develpment environment, do the following
   * Start chef-server:
 
     chef-server -N -c 2
+    OR
+    (in chef-server-slice)
+    slice -N -c 2
 
   * Test run chef to begin node registration:
 
-    sudo ./bin/chef-client 
+    chef-client
 
   * Validate the node registration:
 
