@@ -139,13 +139,15 @@ class Chef
       end
       
       def action_delete
-        if ::File.exists?(@new_resource.path) && ::File.writable?(@new_resource.path)
-          backup unless ::File.symlink?(@new_resource.path)
-          Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.path}")
-          ::File.delete(@new_resource.path)
-          @new_resource.updated = true
-        else
-          raise "Cannot delete #{@new_resource} at #{@new_resource_path}!"
+        if ::File.exists?(@new_resource.path)
+          if ::File.writable?(@new_resource.path)
+            backup unless ::File.symlink?(@new_resource.path)
+            Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.path}")
+            ::File.delete(@new_resource.path)
+            @new_resource.updated = true
+          else
+            raise "Cannot delete #{@new_resource} at #{@new_resource_path}!"
+          end
         end
       end
       

@@ -43,48 +43,50 @@ class Chef
       end
 
       def do_remote_file(source, path)
-        # The current files checksum
-        current_checksum = self.checksum(path) if ::File.exists?(path)
-
-        begin
-          # The remote filehandle
-          raw_file = get_from_uri(source)    ||
-                     get_from_server(source, current_checksum) ||
-                     get_from_local_cookbook(source)
-        rescue Net::HTTPRetriableError => e
-          if e.response.kind_of?(Net::HTTPNotModified)
-            Chef::Log.debug("File #{path} is unchanged")
-            return false
-          else
-            raise e
-          end
-        end
-
-        # If the file exists
-        if ::File.exists?(@new_resource.path)
-          # And it matches the checksum of the raw file
-          @new_resource.checksum(self.checksum(raw_file.path))
-          if @new_resource.checksum != @current_resource.checksum
-            # Updating target file, let's perform a backup!
-            Chef::Log.debug("#{@new_resource} changed from #{@current_resource.checksum} to #{@new_resource.checksum}")
-            Chef::Log.info("Updating #{@new_resource} at #{@new_resource.path}")
-            backup(@new_resource.path)
-          end
+        if(@new_resource.checksum && @current_resource.checksum && @current_resource.checksum =~ /^#{@new_resource.checksum}/)
+          Chef::Log.debug("File #{@new_resource} checksum matches, not updating")
         else
-          # We're creating a new file
-          Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
-        end
+          begin
+            # The remote filehandle
+            raw_file = get_from_uri(source)    ||
+                       get_from_server(source, @current_resource.checksum) ||
+                       get_from_local_cookbook(source)
+          rescue Net::HTTPRetriableError => e
+            if e.response.kind_of?(Net::HTTPNotModified)
+              Chef::Log.debug("File #{path} is unchanged")
+              return false
+            else
+              raise e
+            end
+          end
 
-        FileUtils.cp(raw_file.path, @new_resource.path)
-        @new_resource.updated = true
-        
+          # If the file exists
+          if ::File.exists?(@new_resource.path)
+            # And it matches the checksum of the raw file
+            @new_resource.checksum(self.checksum(raw_file.path))
+            if @new_resource.checksum != @current_resource.checksum
+              # Updating target file, let's perform a backup!
+              Chef::Log.debug("#{@new_resource} changed from #{@current_resource.checksum} to #{@new_resource.checksum}")
+              Chef::Log.info("Updating #{@new_resource} at #{@new_resource.path}")
+              backup(@new_resource.path)
+             end
+          else
+            # We're creating a new file
+            Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
+          end
+
+          FileUtils.cp(raw_file.path, @new_resource.path)
+          @new_resource.updated = true
+
+          # We're done with the file, so make sure to close it if it was open.
+          raw_file.close 
+          true
+        end
+         
         set_owner if @new_resource.owner
         set_group if @new_resource.group
         set_mode  if @new_resource.mode
 
-        # We're done with the file, so make sure to close it if it was open.
-        raw_file.close 
-        true
       end
 
       def get_from_uri(source)
