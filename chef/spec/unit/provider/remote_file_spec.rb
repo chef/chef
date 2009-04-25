@@ -138,17 +138,6 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     end
   end
 
-  it "should set the checksum if the file exists" do
-    @provider.should_receive(:checksum).with(@resource.path)
-    do_remote_file
-  end
-  
-  it "should not set the checksum if the file doesn't exist" do
-    File.stub!(:exists?).with(@resource.path).and_return(false)
-    @provider.should_not_receive(:checksum).with(@resource.path)
-    do_remote_file
-  end
-    
   it "should not transfer the file if it has not been changed" do
     r = Net::HTTPNotModified.new("one", "two", "three")
     e = Net::HTTPRetriableError.new("304", r)

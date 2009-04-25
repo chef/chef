@@ -43,16 +43,13 @@ class Chef
       end
 
       def do_remote_file(source, path)
-        # The current files checksum
-        current_checksum = self.checksum(path) if ::File.exists?(path)
-
-        if(@new_resource.checksum && current_checksum && current_checksum =~ /^#{@new_resource.checksum}/)
+        if(@new_resource.checksum && @current_resource.checksum && @current_resource.checksum =~ /^#{@new_resource.checksum}/)
           Chef::Log.debug("File #{@new_resource} checksum matches, not updating")
         else
           begin
             # The remote filehandle
             raw_file = get_from_uri(source)    ||
-                       get_from_server(source, current_checksum) ||
+                       get_from_server(source, @current_resource.checksum) ||
                        get_from_local_cookbook(source)
           rescue Net::HTTPRetriableError => e
             if e.response.kind_of?(Net::HTTPNotModified)
