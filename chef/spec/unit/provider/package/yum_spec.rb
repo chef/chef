@@ -36,55 +36,16 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
       :updated => nil
     )
     @status = mock("Status", :exitstatus => 0)
+		@yum_cache = mock(
+			'Chef::Provider::Yum::YumCache',
+			:refresh => true,
+			:flush => true,
+		  :installed_version => "1.2.4-11.18.el5",
+		  :candidate_version => "1.2.4-11.18.el5_2.3"
+		)
+		Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@node, @new_resource)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
-    @provider.stub!(:popen4).and_return(@status)
-    @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)    
-    @stdout.stub!(:each).and_yield("Installed Packages").
-      and_yield("Name   : cups").
-      and_yield("Arch   : i386").
-      and_yield("Epoch  : 1").
-      and_yield("Version: 1.2.4").
-      and_yield("Release: 11.18.el5").
-      and_yield("Size   : 7.8 M").
-      and_yield("Repo   : installed").
-      and_yield("Summary: Common Unix Printing System").
-      and_yield("Description:").
-      and_yield("The Common UNIX Printing System provides a portable printing layer for").
-      and_yield("UNIX® operating systems. It has been developed by Easy Software Products").
-      and_yield("to promote a standard printing solution for all UNIX vendors and users.").
-      and_yield("CUPS provides the System V and Berkeley command-line interfaces.").
-      and_yield("").
-      and_yield("Available Packages").
-      and_yield("Name   : cups").
-      and_yield("Arch   : i386").
-      and_yield("Epoch  : 1").
-      and_yield("Version: 1.2.4").
-      and_yield("Release: 11.18.el5_2.3").
-      and_yield("Size   : 2.7 M").
-      and_yield("Repo   : updates").
-      and_yield("Summary: Common Unix Printing System").
-      and_yield("Description:").
-      and_yield("The Common UNIX Printing System provides a portable printing layer for").
-      and_yield("UNIX® operating systems. It has been developed by Easy Software Products").
-      and_yield("to promote a standard printing solution for all UNIX vendors and users.").
-      and_yield("CUPS provides the System V and Berkeley command-line interfaces.")
-    @stdout_available = mock("STDOUT AVAILABLE", :null_object => true)
-    @stdout_available.stub!(:each).and_yield("Available Packages").
-      and_yield("Name   : cups").
-      and_yield("Arch   : i386").
-      and_yield("Epoch  : 1").
-      and_yield("Version: 1.2.4").
-      and_yield("Release: 11.18.el5_2.3").
-      and_yield("Size   : 2.7 M").
-      and_yield("Repo   : updates").
-      and_yield("Summary: Common Unix Printing System").
-      and_yield("Description:").
-      and_yield("The Common UNIX Printing System provides a portable printing layer for").
-      and_yield("UNIX® operating systems. It has been developed by Easy Software Products").
-      and_yield("to promote a standard printing solution for all UNIX vendors and users.").
-      and_yield("CUPS provides the System V and Berkeley command-line interfaces.")
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
   end
@@ -99,43 +60,20 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
     @provider.load_current_resource
   end
   
-  it "should run yum info with the package name" do
-    @provider.should_receive(:popen4).with("yum info -q -y #{@new_resource.package_name}").and_return(@status)
-    @provider.load_current_resource
-  end
-  
-  it "should read stdout on yum info" do
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @stdout.should_receive(:each).and_return(true)
-    @provider.load_current_resource
-  end
-  
   it "should set the installed version to nil on the current resource if no installed package" do
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout_available, @stderr).and_return(@status)
+		@yum_cache.stub!(:installed_version).and_return(nil)
     @current_resource.should_receive(:version).with(nil).and_return(true)
     @provider.load_current_resource
   end
   
-  it "should set the installed version if yum info has one" do
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+  it "should set the installed version if yum has one" do
     @current_resource.should_receive(:version).with("1.2.4-11.18.el5").and_return(true)
     @provider.load_current_resource
   end
   
   it "should set the candidate version if yum info has one" do
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     @provider.load_current_resource
     @provider.candidate_version.should eql("1.2.4-11.18.el5_2.3")
-  end
-  
-  it "should raise an exception if yum info fails" do
-    @status.should_receive(:exitstatus).and_return(1)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
-  end
-  
-  it "should not raise an exception if yum info succeeds" do
-    @status.should_receive(:exitstatus).and_return(0)
-    lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Package)
   end
   
   it "should return the current resouce" do
@@ -154,6 +92,14 @@ describe Chef::Provider::Package::Yum, "install_package" do
       :package_name => "emacs",
       :updated => nil
     )
+		@yum_cache = mock(
+			'Chef::Provider::Yum::YumCache',
+			:refresh => true,
+			:flush => true,
+		  :installed_version => "1.2.4-11.18.el5",
+		  :candidate_version => "1.2.4-11.18.el5_2.3"
+		)
+		Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@node, @new_resource)
   end
   
@@ -169,13 +115,21 @@ describe Chef::Provider::Package::Yum, "upgrade_package" do
   
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Package", 
+    @new_resource = mock("Chef::Resource::Package",
       :null_object => true,
       :name => "emacs",
       :version => nil,
       :package_name => "emacs",
       :updated => nil
     )
+		@yum_cache = mock(
+			'Chef::Provider::Yum::YumCache',
+			:refresh => true,
+			:flush => true,
+		  :installed_version => "1.2.4-11.18.el5",
+		  :candidate_version => "1.2.4-11.18.el5_2.3"
+		)
+		Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
     @current_resource = mock("Chef::Resource::Package", 
       :null_object => true,
       :name => "emacs",
@@ -214,6 +168,14 @@ describe Chef::Provider::Package::Yum, "remove_package" do
       :package_name => "emacs",
       :updated => nil
     )
+		@yum_cache = mock(
+			'Chef::Provider::Yum::YumCache',
+			:refresh => true,
+			:flush => true,
+		  :installed_version => "1.2.4-11.18.el5",
+		  :candidate_version => "1.2.4-11.18.el5_2.3"
+		)
+		Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@node, @new_resource)
   end
   
@@ -235,6 +197,14 @@ describe Chef::Provider::Package::Yum, "purge_package" do
       :package_name => "emacs",
       :updated => nil
     )
+		@yum_cache = mock(
+			'Chef::Provider::Yum::YumCache',
+			:refresh => true,
+			:flush => true,
+		  :installed_version => "1.2.4-11.18.el5",
+		  :candidate_version => "1.2.4-11.18.el5_2.3"
+		)
+		Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@node, @new_resource)
   end
   

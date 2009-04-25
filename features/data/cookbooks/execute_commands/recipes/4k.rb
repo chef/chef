@@ -16,20 +16,10 @@
 # limitations under the License.
 #
 
-class Chef
-  class Provider
-    class Easy < Chef::Provider
-      def load_current_resource
-        true
-      end
-  
-      def action_sell
-        true
-      end
-      
-      def action_buy
-        true
-      end
-    end
-  end
+execute "create-4k-file" do
+  command "dd if=/dev/random of=#{node[:tmpdir]}/execute-4k.txt bs=1024 count=5"
+end
+
+execute "read-4k-file" do
+  command "cat #{node[:tmpdir]}/execute-4k.txt"
 end

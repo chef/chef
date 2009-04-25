@@ -16,20 +16,7 @@
 # limitations under the License.
 #
 
-class Chef
-  class Provider
-    class Easy < Chef::Provider
-      def load_current_resource
-        true
-      end
-  
-      def action_sell
-        true
-      end
-      
-      def action_buy
-        true
-      end
-    end
-  end
+execute "debug-log" do
+  command "ruby -e 'puts \"whats up\"; STDERR.puts \"doc!\"'"
 end
+

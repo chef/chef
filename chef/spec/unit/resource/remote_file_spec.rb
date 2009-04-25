@@ -49,5 +49,16 @@ describe Chef::Resource::RemoteFile do
       @resource.cookbook.should == nil
     end
   end
+
+  describe "checksum" do
+    it "should accept a string for the checksum object" do
+      @resource.checksum "asdf"
+      @resource.checksum.should eql("asdf")
+    end
+
+    it "should default to nil" do
+      @resource.checksum.should == nil
+    end
+  end
   
 end
