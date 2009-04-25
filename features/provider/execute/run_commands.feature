@@ -1,4 +1,4 @@
-Feature: Execute Commands 
+Feature: Run Commands 
   In order to utilize the plethora of useful command line utilities 
   As a Developer
   I want to execute commands from within chef 
