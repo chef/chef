@@ -38,8 +38,8 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     rescue Net::HTTPServerException => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
-    if params[:ajax] == "true"
-      render JSON.pretty_generate(@node), :layout=>false
+    if request.xhr?
+      render JSON.pretty_generate(@node), :layout => false
     else
       display @node
     end
@@ -57,7 +57,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
   end
 
   def update
-    if params[:ajax]
+    if request.xhr?
       @node = JSON.parse(params[:value])
     else      
       @node = params.has_key?("inflated_object") ? params["inflated_object"] : nil
@@ -66,8 +66,8 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     if @node
       @status = 202
       @node.save
-      if params[:ajax]
-        partial("nodes/node", :node => @node)
+      if request.xhr?
+        partial :node, :node => @node
       else
         display @node
       end
@@ -87,7 +87,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
       @status = 202
       display @node
     else
-      redirect(absolute_slice_url(:nodes), {:message => { :notice => "Node #{params[:id]} deleted succesfully" }, :permanent => true})
+      redirect(absolute_slice_url(:nodes), {:message => { :notice => "Node #{params[:id]} deleted successfully" }, :permanent => true})
     end
   end
   

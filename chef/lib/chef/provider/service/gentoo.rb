@@ -24,6 +24,10 @@ class Chef
     class Service
       class Gentoo < Chef::Provider::Service::Init
         def load_current_resource
+
+          @new_resource.supports[:status] = true
+          @new_resource.supports[:restart] = true
+
           super
           
           raise Chef::Exceptions::Service unless ::File.exists?("/sbin/rc-update")

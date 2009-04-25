@@ -22,7 +22,7 @@ describe Chef::Provider::Service::Gentoo do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     
-    resource_opts     = { :null_object => true, :name => 'chef', :service_name => 'chef', :enabled => false, :running => nil }
+    resource_opts     = { :null_object => true, :name => 'chef', :service_name => 'chef', :enabled => false, :running => nil, :supports => {} }
     @new_resource     = mock("Chef::Resource::Service", resource_opts)
     @current_resource = mock("Chef::Resource::Service", resource_opts)
     
@@ -70,6 +70,22 @@ describe Chef::Provider::Service::Gentoo do
     it "should return the current_resource" do
       @provider.load_current_resource.should == @current_resource
     end  
+
+    it "should support the status command automatically" do
+      @provider.load_current_resource
+      @new_resource.supports[:status].should be_true
+    end
+
+    it "should support the restart command automatically" do
+      @provider.load_current_resource
+      @new_resource.supports[:restart].should be_true
+    end
+
+    it "should not support the reload command automatically" do
+      @provider.load_current_resource
+      @new_resource.supports[:reload].should_not be_true
+    end
+
   end
   
   describe "action_methods" do
@@ -89,4 +105,5 @@ describe Chef::Provider::Service::Gentoo do
       end
     end
   end
+
 end

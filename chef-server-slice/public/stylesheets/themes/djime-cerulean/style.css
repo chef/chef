@@ -1,0 +1,298 @@
+/**
+ * Cerulean web-app-theme made for Djime: http://github.com/mikl/djime/
+ *
+ * Please note that we're using CSSEdit's @group comment syntax.
+ *
+ * Colour sheme:
+ *   Cerulean:       #007BA7
+ *   Bright blue:    #01B8DE
+ *   Near-white:     #F7F7F8
+ *   Silver grey:    #C2C8D1
+ *   Dark blue:      #001C26
+ *
+ * http://www.colourlovers.com/palette/646252/Cerulean_touch
+ */
+
+/* @group General styles */
+
+.small { font-size:11px; }
+.gray { color:#999; }
+.hightlight { background-color:#ffc; }
+
+a:link, a:visited, a:hover, a:active, h1, h2, h3 { color: #007BA7; }
+
+body {
+  color: #222;
+  background: #C2C8D1;
+  font-family: "Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif;
+}
+
+hr {
+  background: #EEF0F0;
+  color: #EEF0F0;
+}
+
+/* @end */
+
+/* @group Header */
+
+#header {
+  background: #007BA7;
+}
+
+#header h1 {
+  padding: 20px 0;
+}
+
+#header h1 a:link, #header h1 a:active, #header h1 a:hover, #header h1 a:visited {
+  color: #F7F7F8;
+}
+
+/* @end */
+
+#user-navigation {
+  top: auto;
+  bottom: 5px;
+  right: 25px;
+}
+
+#main .block .content {
+  background: #F7F7F8;
+  padding-top: 1px;
+}
+
+#main .block .content h2 {
+  margin-left: 15px;
+}
+
+
+
+/* @group Main navigation */
+
+#main-navigation ul li {
+  padding-left: 0;
+}
+
+#main-navigation ul li a {
+  padding: 8px 0;
+}
+
+#main-navigation ul li a {
+  padding: 8px 15px;
+}
+
+#main-navigation {
+  background-color: #005573;
+}
+
+#main-navigation ul li a:hover {
+  background-color: #001C26;
+}
+
+#main-navigation ul li.active a {
+  background-color: #C2C8D1;
+  background: -webkit-gradient(linear, left top, left bottom, from(#C2C8D1), to(#C2C8D1), color-stop(0.5, #F7F7F8), color-stop(0.5, #F7F7F8));
+
+}
+
+/* @end */
+
+/* @group Secondary navigation */
+
+.secondary-navigation li a:hover {
+  background: #005573;
+}
+
+.secondary-navigation {
+  background: #007BA7;
+  border-bottom-width: 7px;
+  border-bottom-color: #005573;
+}
+
+.secondary-navigation ul li.active, .secondary-navigation ul li.active a:hover {
+  background-color: #005573;
+}
+
+/* @end */
+
+/* @group Sidebar */
+
+#sidebar .block {
+  background: #F7F7F8;
+}
+
+#sidebar h3 {
+  background: #007BA7;
+  color: #F7F7F8;
+  border-bottom: 7px solid #005573;
+}
+
+#sidebar ul li a:link, #sidebar ul li a:visited {
+  background: #F7F7F8;
+  border-bottom: 1px solid #EEF0F0;
+  text-decoration: none;
+}
+
+#sidebar ul li a:hover, #sidebar ul li a:active {
+  background: #005573;
+  color: #F7F7F8;
+}
+
+/* @end */
+
+#main-navigation ul li a:link, #main-navigation ul li a:visited, #main-navigation ul li a:hover, #main-navigation ul li a:active,
+.secondary-navigation ul li a:link, .secondary-navigation ul li a:visited, .secondary-navigation ul li a:hover, .secondary-navigation ul li a:active,
+#user-navigation ul li a:link, #user-navigation ul li a:visited, #user-navigation ul li a:hover, #user-navigation ul li a:active {
+  text-decoration: none;
+  color: #F7F7F8;
+}
+
+#main-navigation ul li.active a:link, #main-navigation ul li.active a:visited, #main-navigation ul li.active a:hover, #main-navigation ul li.active a:active {
+  color: #001C26;
+}
+
+#footer .block {
+  color: #F7F7F8;
+  background: #005573;
+}
+
+#footer .block p {
+  margin: 0;
+  padding: 10px;
+}
+
+/* pagination */
+
+.pagination span.current {
+  background: #005573;
+  color: #F7F7F8;
+  border-color: #005573;
+}
+
+.pagination a,
+.pagination span {
+  color: #001C26;
+  border-color: #005573;
+}
+
+.pagination a:hover {
+    color: #F7F7F8;
+    background: #005573;
+}
+
+/* tables */
+
+.table th {
+  background: #C2C8D1;
+  color: #001C26;
+}
+
+.table td {
+  border-bottom:1px solid #EEF0F0;
+}
+
+/* forms */
+
+.form input.text_field, .form textarea.text_area {
+  width: 100%;
+  border: 1px solid #001C26;
+}
+
+.form input.button {
+  background: #EEE;
+  color: #001C26;
+  padding: 2px 5px;
+  border: 1px solid #001C26;
+  cursor: pointer;
+}
+
+.form .description {
+  color: #8C8C8C;
+  font-size: .9em;
+}
+
+/* @group Flash messages */
+
+.flash .message {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  text-align:center;
+  margin: 0 auto 15px;
+}
+
+.flash .message p {
+  margin:8px;
+}
+.flash .error {
+  border: 1px solid #fbb;
+  background-color: #fdd;
+}
+.flash .warning {
+  border: 1px solid #e0d300;
+  background-color: #ffffcc;
+}
+.flash .notice {
+  border: 1px solid #8ec4df;
+  background-color: #dffaff;
+}
+
+/* @end */
+
+/* lists */
+
+ul.list li {
+  border-bottom-color: #EEF0F0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+
+ul.list li .item .avatar {
+  border-color: #EEF0F0;
+  border-width: 1px;
+  border-style: solid;
+  padding: 2px;
+}
+
+/* box */
+
+#box .block {
+  background: #F7F7F8;
+}
+
+#box .block h2 {
+  background: #005573;
+  color: #F7F7F8;
+}
+
+
+/* rounded borders */
+
+#main, #main-navigation, #main-navigation li, #main-navigation li a, .secondary-navigation, #main .block, #sidebar .block, #sidebar h3, ul.list li, 
+#footer .block, .form input.button, #box .block, #box .block h2 {
+  -moz-border-radius-topleft: 4px;
+  -webkit-border-top-left-radius: 4px;
+  -moz-border-radius-topright: 4px;
+  -webkit-border-top-right-radius: 4px;
+}
+
+.secondary-navigation li.first a, .secondary-navigation ul li.first, .table th.first, .table th.first {
+  -moz-border-radius-topleft: 4px;
+  -webkit-border-top-left-radius: 4px;
+}
+
+.table th.last {
+  -moz-border-radius-topright: 4px;
+  -webkit-border-top-right-radius: 4px;
+}
+
+.secondary-navigation ul li.first {
+  -moz-border-radius-topleft: 4px;
+  -webkit-border-top-left-radius: 4px;
+}
+
+#sidebar, #sidebar .block, #main .block, #sidebar ul.navigation, ul.list li, #footer .block, .form input.button, #box .block {
+  -moz-border-radius-bottomleft: 4px;
+  -webkit-border-bottom-left-radius: 4px;
+  -moz-border-radius-bottomright: 4px;
+  -webkit-border-bottom-right-radius: 4px;
+}
