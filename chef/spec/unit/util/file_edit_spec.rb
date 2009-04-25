@@ -1,21 +1,40 @@
-require File.join(File.dirname(__FILE__), "/../spec_helper")
+#
+# Author:: Nuo Yan (<nuo@opscode.com>)
+# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-describe FileEdit, "initialiize" do
-  it "should create a new FileEdit object" do
-    FileEdit.new("./spec/data/fileedit/hosts").should be_kind_of(FileEdit)
+
+require File.join(File.dirname(__FILE__), '..', '..', "spec_helper")
+
+describe Chef::Util::FileEdit, "initialiize" do
+  it "should create a new Chef::Util::FileEdit object" do
+    Chef::Util::FileEdit.new("./spec/data/fileedit/hosts").should be_kind_of(Chef::Util::FileEdit)
   end
   
   it "should throw an exception if the input file does not exist" do
-    lambda{FileEdit.new("nonexistfile")}.should raise_error
+    lambda{Chef::Util::FileEdit.new("nonexistfile")}.should raise_error
   end
 
   it "should throw an exception if the input file is blank" do
-    lambda{FileEdit.new("./spec/data/fileedit/blank")}.should raise_error 
+    lambda{Chef::Util::FileEdit.new("./spec/data/fileedit/blank")}.should raise_error 
   end
   
 end
 
-describe FileEdit, "search_file_replace" do
+describe Chef::Util::FileEdit, "search_file_replace" do
   
   it "should accept regex passed in as a string (not Regexp object) and replace the match if there is one" do
     helper_method("./spec/data/fileedit/hosts", "localhost", true)
@@ -33,7 +52,7 @@ describe FileEdit, "search_file_replace" do
 
   
   def helper_method(filename, regex, value)
-    fedit = FileEdit.new(filename)
+    fedit = Chef::Util::FileEdit.new(filename)
     fedit.search_file_replace(regex, "replacement")
     fedit.write_file
     (File.exist? filename+".old").should be(value)
@@ -47,10 +66,10 @@ describe FileEdit, "search_file_replace" do
   
 end
 
-describe FileEdit, "search_file_replace_line" do
+describe Chef::Util::FileEdit, "search_file_replace_line" do
 
   it "should search for match and replace the whole line" do
-    fedit = FileEdit.new("./spec/data/fileedit/hosts")
+    fedit = Chef::Util::FileEdit.new("./spec/data/fileedit/hosts")
     fedit.search_file_replace_line(/localhost/, "replacement line")
     fedit.write_file
     newfile = File.new("./spec/data/fileedit/hosts").readlines
@@ -62,9 +81,9 @@ describe FileEdit, "search_file_replace_line" do
   
 end
 
-describe FileEdit, "search_file_delete" do
+describe Chef::Util::FileEdit, "search_file_delete" do
   it "should search for match and delete the match" do
-    fedit = FileEdit.new("./spec/data/fileedit/hosts")
+    fedit = Chef::Util::FileEdit.new("./spec/data/fileedit/hosts")
     fedit.search_file_delete(/localhost/)
     fedit.write_file
     newfile = File.new("./spec/data/fileedit/hosts").readlines
@@ -75,9 +94,9 @@ describe FileEdit, "search_file_delete" do
   end
 end
 
-describe FileEdit, "search_file_delete_line" do
+describe Chef::Util::FileEdit, "search_file_delete_line" do
   it "should search for match and delete the matching line" do
-    fedit = FileEdit.new("./spec/data/fileedit/hosts")
+    fedit = Chef::Util::FileEdit.new("./spec/data/fileedit/hosts")
     fedit.search_file_delete_line(/localhost/)
     fedit.write_file
     newfile = File.new("./spec/data/fileedit/hosts").readlines
@@ -88,9 +107,9 @@ describe FileEdit, "search_file_delete_line" do
   end
 end
 
-describe FileEdit, "insert_line_after_match" do
+describe Chef::Util::FileEdit, "insert_line_after_match" do
   it "should search for match and insert the given line after the matching line" do
-    fedit = FileEdit.new("./spec/data/fileedit/hosts")
+    fedit = Chef::Util::FileEdit.new("./spec/data/fileedit/hosts")
     fedit.insert_line_after_match(/localhost/, "new line inserted")
     fedit.write_file
     newfile = File.new("./spec/data/fileedit/hosts").readlines
