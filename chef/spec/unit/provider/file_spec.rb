@@ -191,12 +191,12 @@ describe Chef::Provider::File do
     @provider.action_delete
   end
   
-  it "should raise an error if it cannot delete the file" do
+  it "should not raise an error if it cannot delete the file because it does not exist" do
     @provider.load_current_resource
     @provider.stub!(:backup).and_return(true)
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
     File.should_receive("exists?").with(@provider.new_resource.path).and_return(false)
-    lambda { @provider.action_delete }.should raise_error()    
+    lambda { @provider.action_delete }.should_not raise_error()    
   end
   
   it "should update the atime/mtime on action_touch" do
