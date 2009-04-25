@@ -1,6 +1,7 @@
-- throw_content(:header, "Registered OpenID Node #{@registered_node.name}")
-%ol
-  %li
-    %a{ :href => slice_url(:openid_node , { :id => @registered_node.name.gsub(/\./, "_") }) } OpenID URL
-  %li= "Validated: #{@registered_node.validated}"
-  %li= "Admin: #{@registered_node.admin}"
+.block#block-text
+  .content
+    %h2.title= "Registration #{@registered_node.name}"
+    .inner
+      = link_to "OpenID URL", slice_url(:openid_node, { :id => @registered_node.name.gsub(/\./, "_")})
+      %br= "Validated: #{@registered_node.validated}"
+      %br= "Admin: #{@registered_node.admin}"
