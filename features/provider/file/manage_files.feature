@@ -28,8 +28,7 @@ Feature: Manage Files
     Given a validated node
       And it includes the recipe 'manage_files::delete_a_file_that_does_not_already_exist'
      When I run the chef-client
-     Then the run should exit '1'
-      And stdout should have 'Cannot delete file'
+     Then the run should exit '0'
   
   Scenario: Touch a file
     Given a validated node
