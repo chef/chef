@@ -227,12 +227,15 @@ class Chef
       remote_list.each do |rf|
         cache_file = File.join("cookbooks", rf['cookbook'], segment, rf['name'])
         file_canonical[cache_file] = true
+
+        # For back-compat between older clients and new chef servers
+        rf['checksum'] ||= nil 
       
         current_checksum = nil
         if Chef::FileCache.has_key?(cache_file)
           current_checksum = checksum(Chef::FileCache.load(cache_file, false))
         end
-      
+
         rf_url = generate_cookbook_url(
           rf['name'], 
           rf['cookbook'], 
@@ -241,22 +244,24 @@ class Chef
           current_checksum ? { 'checksum' => current_checksum } : nil
         )
         Chef::Log.debug(rf_url)
-      
-        changed = true
-        begin
-          raw_file = @rest.get_rest(rf_url, true)
-        rescue Net::HTTPRetriableError => e
-          if e.response.kind_of?(Net::HTTPNotModified)
-            changed = false
-            Chef::Log.debug("Cache file #{cache_file} is unchanged")
-          else
-            raise e
+
+        if current_checksum != rf['checksum']
+          changed = true
+          begin
+            raw_file = @rest.get_rest(rf_url, true)
+          rescue Net::HTTPRetriableError => e
+            if e.response.kind_of?(Net::HTTPNotModified)
+              changed = false
+              Chef::Log.debug("Cache file #{cache_file} is unchanged")
+            else
+              raise e
+            end
           end
-        end
-      
-        if changed
-          Chef::Log.info("Storing updated #{cache_file} in the cache.")
-          Chef::FileCache.move_to(raw_file.path, cache_file)
+
+          if changed
+            Chef::Log.info("Storing updated #{cache_file} in the cache.")
+            Chef::FileCache.move_to(raw_file.path, cache_file)
+          end
         end
       end
       
@@ -309,7 +314,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def sync_recipes
-      Chef::Log.debug("Synchronizing recipes") 
+      Chef::Log.debug("Synchronizing recipes")
       update_file_cache("recipes", @rest.get_rest('cookbooks/_recipe_files'))
     end
     

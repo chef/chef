@@ -57,3 +57,8 @@ end
 Then /^'(.+)' should have '(.+)'$/ do |which, to_match|
   self.instance_variable_get("@#{which}".to_sym).should match(/#{to_match}/m)
 end
+
+Then /^'(.+)' should not have '(.+)'$/ do |which, to_match|
+  self.instance_variable_get("@#{which}".to_sym).should_not match(/#{to_match}/m)
+end
+

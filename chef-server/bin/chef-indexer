@@ -31,7 +31,7 @@ config = {
   :config_file => "/etc/chef/server.rb",
 }
 opts = OptionParser.new do |opts|
-  opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
+  opts.banner = "Usage: #{$0} (options)"
   opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
     config[:config_file] = c
   end
@@ -63,6 +63,8 @@ end
 
 Chef::Config.from_file(config[:config_file])
 Chef::Config.configure { |c| c.merge!(config) }
+
+Chef::Daemon.change_privilege
 
 if Chef::Config[:daemonize]
   unless Chef::Config[:log_location].is_a? IO
