@@ -27,7 +27,7 @@ class Chef
       @index = Ferret::Index::Index.new(:path => Chef::Config[:search_index_path])
     end
     
-    def search(type, query, attributes, &block)
+    def search(type, query="*", attributes=[], &block)
       search_query = build_search_query(type, query)
       start_time = Time.now
       results = []
