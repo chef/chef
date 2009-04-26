@@ -227,12 +227,15 @@ class Chef
       remote_list.each do |rf|
         cache_file = File.join("cookbooks", rf['cookbook'], segment, rf['name'])
         file_canonical[cache_file] = true
+
+        # For back-compat between older clients and new chef servers
+        rf['checksum'] ||= nil 
       
         current_checksum = nil
         if Chef::FileCache.has_key?(cache_file)
           current_checksum = checksum(Chef::FileCache.load(cache_file, false))
         end
-      
+
         rf_url = generate_cookbook_url(
           rf['name'], 
           rf['cookbook'], 
