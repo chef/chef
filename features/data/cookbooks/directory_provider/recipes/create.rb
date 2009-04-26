@@ -1,7 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Cookbook Name:: directory_provider
+# Recipe:: create 
+#
+# Copyright 2009, Opscode
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,20 +17,9 @@
 # limitations under the License.
 #
 
-class Chef
-  class Provider
-    class Easy < Chef::Provider
-      def load_current_resource
-        true
-      end
-  
-      def action_sell
-        true
-      end
-      
-      def action_buy
-        true
-      end
-    end
-  end
+directory "#{node[:tmpdir]}/isis" do
+  mode "755"
+  owner "nobody"
+  action :create
 end
+

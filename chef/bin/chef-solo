@@ -34,7 +34,7 @@ config = {
 Chef::Config[:solo] = true
 
 opts = OptionParser.new do |opts|
-  opts.banner = "Usage: #{$0} [-d DIR|-r FILE] (options)"
+  opts.banner = "Usage: #{$0} (options)"
   opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
     config[:config_file] = c
   end
