@@ -228,6 +228,11 @@ class Chef
                 ENV[key] = value
               end
             end
+
+            if args[:umask]
+              umask = ((args[:umask].respond_to?(:oct) ? args[:umask].oct : args[:umask].to_i) & 007777)
+              File.umask(umask)
+            end
             
             begin
               if cmd.kind_of?(Array)
