@@ -108,7 +108,15 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
    end
 
   def is_authorized_openid_identifier?(openid,authorized_openids)
-    (authorized_openids && authorized_openids.detect { |p| openid==p })
+    if authorized_openids
+      if authorized_openids.length > 0 
+        authorized_openids.detect { |p| openid == p } 
+      else
+        true
+      end
+    else
+      true
+    end
   end
 
   def consumer
