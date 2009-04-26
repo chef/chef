@@ -1,25 +1,17 @@
-- throw_content(:header, "OpenID Relaying Party")
--if session[:alert]
-  .alert= h session[:alert]
--if session[:error]
-  .error= h session[:error]
--if session[:success]
-  .success= h session[:success]
-#verify-form
-  %form{ :method => "get", "accept-charset" => "UTF-8", :action => slice_url(:openid_consumer_login) }
-    Identifier:
-    %input.openid{ :type => "text", :name => "openid_identifier" }/
-    %input{ :type => "submit", :value => "Verify"}/
-    %br
-    %input#immediate{ :name => "immediate", :type => "checkbox" }/
-    %label{:for => "immediate"} Use immediate mode
-    %br
-    %input#immediate{ :name => "use_sreg", :type => "checkbox" }/
-    %label{:for => "use_sreg"} Request registration data
-    %br
-    %input#immediate{ :name => "use_pape", :type => "checkbox" }/
-    %label{:for => "use_pape"} Request phishing-resistent auth policy
-    %br
-    %input#immediate{ :name => "force_post", :type => "checkbox" }/
-    %label{:for => "force_post"} Force the transaction to POST
-    %br
+.block#block-forms
+  .content
+    %h2.title Login
+    .inner
+      %form.form{ :method => "get", "accept-charset" => "UTF-8", :action => slice_url(:openid_consumer_login) }
+        .group
+          .text_field= text_field :openid_identifier
+        .group
+          .check_box= check_box :name => "immediate", :label => "Use immediate mode", :value => "0"
+        .group
+          .check_box= check_box :name => "use_sreg", :label => "Request registration data", :value => "0"
+        .group
+          .check_box= check_box :name => "use_pape", :label => "Request phishing-resistent auth policy", :value => "0"
+        .group
+          .check_box= check_box :name => "force_post", :label => "Force the transaction to POST", :value => "0"
+        .group.navform
+          .button= submit "Login &rarr;"

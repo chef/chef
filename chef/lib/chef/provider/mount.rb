@@ -36,7 +36,7 @@ class Chef
           status = mount_fs()
           if status
             @new_resource.updated = true            
-            Chef::Log.info("#{@new_resource}: mounted succesfully")
+            Chef::Log.info("#{@new_resource}: mounted successfully")
           end
         else
           Chef::Log.debug("#{@new_resource}: not mounting, already mounted")
@@ -49,7 +49,7 @@ class Chef
           status = umount_fs()
           if status
             @new_resource.updated = true            
-            Chef::Log.info("#{@new_resource}: unmounted succesfully")
+            Chef::Log.info("#{@new_resource}: unmounted successfully")
           end
         else
           Chef::Log.debug("#{@new_resource}: not unmounting, already unmounted")
@@ -65,7 +65,7 @@ class Chef
             status = remount_fs()
             if status
               @new_resource.updated = true            
-              Chef::Log.info("#{@new_resource}: remounted succesfully")
+              Chef::Log.info("#{@new_resource}: remounted successfully")
             end
           else
             Chef::Log.debug("#{@new_resource}: not mounted, not remounting")

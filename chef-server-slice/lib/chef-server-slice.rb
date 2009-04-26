@@ -94,12 +94,12 @@ if defined?(Merb::Plugins)
       scope.match("/cookbooks/_definition_files").to(:controller => "cookbooks", :action => "definition_files")
       scope.match("/cookbooks/_library_files").to(:controller => "cookbooks", :action => "library_files")
 
-      scope.match("/cookbooks/:cookbook_id/templates").to(:controller => "cookbook_templates", :action => "index")
-      scope.match("/cookbooks/:cookbook_id/libraries").to(:controller => "cookbook_libraries", :action => "index")
-      scope.match("/cookbooks/:cookbook_id/definitions").to(:controller => "cookbook_definitions", :action => "index")
-      scope.match("/cookbooks/:cookbook_id/recipes").to(:controller => "cookbook_recipes", :action => "index")
-      scope.match("/cookbooks/:cookbook_id/attributes").to(:controller => "cookbook_attributes", :action => "index")
-      scope.match("/cookbooks/:cookbook_id/files").to(:controller => "cookbook_files", :action => "index")
+      scope.match("/cookbooks/:cookbook_id/templates", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_templates", :action => "index")
+      scope.match("/cookbooks/:cookbook_id/libraries", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_libraries", :action => "index")
+      scope.match("/cookbooks/:cookbook_id/definitions", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_definitions", :action => "index")
+      scope.match("/cookbooks/:cookbook_id/recipes", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_recipes", :action => "index")
+      scope.match("/cookbooks/:cookbook_id/attributes", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_attributes", :action => "index")
+      scope.match("/cookbooks/:cookbook_id/files", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_files", :action => "index")
 
       scope.resources :cookbooks
       scope.resources :registrations, :controller => "openid_register"

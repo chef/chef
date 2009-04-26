@@ -20,14 +20,18 @@
 # When
 ###
 When /^I run the chef\-client$/ do
-  log_level = ENV["LOG_LEVEL"] ? ENV["LOG_LEVEL"] : "error"
+  @log_level ||= ENV["LOG_LEVEL"] ? ENV["LOG_LEVEL"] : "error"
   status = Chef::Mixin::Command.popen4(
-    "chef-client -l #{log_level} -c #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))}", :waitlast => true) do |p, i, o, e|
-    i.close
+    "chef-client -l #{@log_level} -c #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))}") do |p, i, o, e|
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
   end
   @status = status
+end
+
+When /^I run the chef\-client at log level '(.+)'$/ do |log_level|
+  @log_level = log_level
+  When "I run the chef-client"
 end
 
 ###
@@ -46,10 +50,15 @@ end
 def print_output
   puts "--- run stdout:"
   puts @stdout
-  puts "--- run stderr"
+  puts "--- run stderr:"
   puts @stderr
 end
 
-Then /^stdout should have '(.+)'$/ do |to_match|
-  @stdout.should match(/#{to_match}/m)
+Then /^'(.+)' should have '(.+)'$/ do |which, to_match|
+  self.instance_variable_get("@#{which}".to_sym).should match(/#{to_match}/m)
 end
+
+Then /^'(.+)' should not have '(.+)'$/ do |which, to_match|
+  self.instance_variable_get("@#{which}".to_sym).should_not match(/#{to_match}/m)
+end
+

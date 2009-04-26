@@ -1,0 +1,50 @@
+.ruby .normal {}
+.ruby .comment { color: #005; font-style: italic; }
+.ruby .keyword { color: #A00; font-weight: bold; }
+.ruby .method { color: #077; }
+.ruby .class { color: #074; }
+.ruby .module { color: #050; }
+.ruby .punct { color: #447; font-weight: bold; }
+.ruby .symbol { color: #099; }
+.ruby .string { color: #944; background: #FFE; }
+.ruby .char { color: #F07; }
+.ruby .ident { color: #004; }
+.ruby .constant { color: #07F; }
+.ruby .regex { color: #B66; background: #FEF; }
+.ruby .number { color: #F99; }
+.ruby .attribute { color: #7BB; }
+.ruby .global { color: #7FB; }
+.ruby .expr { color: #227; }
+.ruby .escape { color: #277; }
+
+.files {
+  padding-left: 20px;
+}
+
+.code {
+  overflow: auto;
+  font-size: 0.8em;
+}
+
+.search td {
+  /*overflow: auto;*/
+  font-size: 0.8em;
+}
+
+dl dt { font-weight: bold; }
+.content td dl { margin: 0; padding: 0; }
+.content td dt {
+  background: transparent url(/images/toggle-collapse.gif) 0 3px no-repeat;
+  clear: left; color: #333; cursor: pointer; line-height: 1em;
+  margin-left: -12px; padding-left: 14px;
+}
+.content td dd { margin: 0;
+  padding: 0 0 0 1em;
+}
+.content td dt.collapsed {
+  background-image: url(/images/toggle-expand.gif);
+}
+.content td dt.inline { background-image: none; cursor: default;
+  float: left; margin-left: 0; padding-left: 2px; padding-right: .5em;
+  padding-top: 2px;
+}

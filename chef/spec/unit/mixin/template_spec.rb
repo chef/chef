@@ -31,7 +31,8 @@ describe Chef::Mixin::Template, "render_template" do
   end
   
   it "should return a file" do
-    @template.render_template("abcdef", {}).should be_kind_of(File)
+    f = @template.render_template("abcdef", {})
+    @template.render_template("abcdef", {}).should be_kind_of(Tempfile)
   end
   
   describe "when an exception is raised in the template" do
