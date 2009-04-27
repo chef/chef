@@ -48,6 +48,7 @@ end
 Then /^'(.+)' should exist and raise error when copying$/ do |filename|
   File.exists?(filename).should be(true)
   lambda{copy(filename, filename + "_copy", false)}.should raise_error()
+  File.delete(filename)
 end
 
 
