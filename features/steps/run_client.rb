@@ -21,8 +21,9 @@
 ###
 When /^I run the chef\-client$/ do
   @log_level ||= ENV["LOG_LEVEL"] ? ENV["LOG_LEVEL"] : "error"
+  @config_file ||= File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))
   status = Chef::Mixin::Command.popen4(
-    "chef-client -l #{@log_level} -c #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))}") do |p, i, o, e|
+    "chef-client -l #{@log_level} -c #{@config_file}") do |p, i, o, e|
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
   end
@@ -32,6 +33,41 @@ end
 When /^I run the chef\-client at log level '(.+)'$/ do |log_level|
   @log_level = log_level
   When "I run the chef-client"
+end
+
+When /^I run the chef\-client with config file '(.+)'$/ do |config_file|
+  @config_file = config_file
+  When "I run the chef-client"
+end
+
+When /^I run the chef\-client with logging to the file '(.+)'$/ do |log_file|
+  
+config_data = <<CONFIG
+supportdir = File.expand_path(File.join(File.dirname(__FILE__), ".."))
+tmpdir = File.expand_path(File.join(File.dirname(__FILE__), "..", "tmp"))
+
+log_level        :debug
+log_location     File.join(tmpdir, "silly-monkey.log")
+file_cache_path  File.join(tmpdir, "cache")
+ssl_verify_mode  :verify_none
+registration_url "http://127.0.0.1:4000"
+openid_url       "http://127.0.0.1:4001"
+template_url     "http://127.0.0.1:4000"
+remotefile_url   "http://127.0.0.1:4000"
+search_url       "http://127.0.0.1:4000"
+couchdb_database   'chef_integration'
+CONFIG
+  
+  @config_file = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client-with-logging.rb'))  
+  File.open(@config_file, "w") do |file|
+    file.write(config_data)
+  end
+  
+  @status = Chef::Mixin::Command.popen4("chef-client -c #{@config_file}") do |p, i, o, e|
+    @stdout = o.gets(nil)
+    @stderr = e.gets(nil)
+  end
+  
 end
 
 ###

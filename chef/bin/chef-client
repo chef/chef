@@ -83,29 +83,15 @@ Chef::Config.configure { |c| c.merge!(config) }
 
 Chef::Daemon.change_privilege
 
-if Chef::Config[:daemonize]
-  unless Chef::Config[:log_location].is_a? IO
-    Chef::Log.init(Chef::Config[:log_location])
-  end
-  Chef::Log.level(Chef::Config[:log_level])
-  
-  # We want to set the interval to half an hour, if one is not set.
-  unless Chef::Config[:interval]
-    Chef::Config[:interval] = 1800
-  end
-  Chef::Daemon.daemonize("chef-client")
-else
-  Chef::Log.level(Chef::Config[:log_level])
-end
+Chef::Log.init(Chef::Config[:log_location])
+Chef::Log.level(Chef::Config[:log_level])
+Chef::Config[:delay] = 0
 
-if Chef::Config[:interval]
-  if Chef::Config[:splay]
-    delay = Chef::Config[:interval].to_i + rand(Chef::Config[:splay])
-  else
-    delay = Chef::Config[:interval].to_i
-  end
-else
-  delay = 0
+if Chef::Config[:daemonize]
+  # We want to set the interval to half an hour, if one is not set.
+  Chef::Config[:interval] ||= 1800
+  Chef::Daemon.daemonize("chef-client")
+  Chef::Config[:delay] = Chef::Config[:interval].to_i + (Chef::Config[:splay] ? rand(Chef::Config[:splay]) : 0)
 end
 
 loop do
@@ -115,9 +101,9 @@ loop do
     c.validation_token = Chef::Config[:validation_token]
     c.node_name = Chef::Config[:node_name]
     c.run
-    if Chef::Config[:interval]
-      Chef::Log.debug("Sleeping for #{delay} seconds")
-      sleep delay
+    if Chef::Config[:daemonize]
+      Chef::Log.debug("Sleeping for #{Chef::Config[:delay]} seconds")
+      sleep Chef::Config[:delay]
     else
       exit 0
     end
@@ -127,8 +113,8 @@ loop do
     if Chef::Config[:daemonize]
       Chef::Log.error("#{e.class}")
       Chef::Log.fatal("#{e}\n#{e.backtrace.join("\n")}")
-      Chef::Log.fatal("Sleeping for #{delay} seconds before trying again")
-      sleep delay
+      Chef::Log.fatal("Sleeping for #{Chef::Config[:delay]} seconds before trying again")
+      sleep Chef::Config[:delay]
       retry
     else
       raise
