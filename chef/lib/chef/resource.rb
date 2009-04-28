@@ -137,7 +137,7 @@ class Chef
     end
     
     def notifies(*args)
-      raise ArgumentError unless ( args.size > 0 && args.size < 4)
+      raise ArgumentError, "Wrong number of arguments (should be 1, 2, or 3)" unless ( args.size > 0 && args.size < 4)
       if args.size > 1
         notifies_helper(*args)
       else
