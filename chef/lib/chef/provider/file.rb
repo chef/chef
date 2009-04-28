@@ -139,13 +139,15 @@ class Chef
       end
       
       def action_delete
-        if ::File.exists?(@new_resource.path) && ::File.writable?(@new_resource.path)
-          backup
-          Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.path}")
-          ::File.delete(@new_resource.path)
-          @new_resource.updated = true
-        else
-          raise "Cannot delete #{@new_resource} at #{@new_resource_path}!"
+        if ::File.exists?(@new_resource.path)
+          if ::File.writable?(@new_resource.path)
+            backup unless ::File.symlink?(@new_resource.path)
+            Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.path}")
+            ::File.delete(@new_resource.path)
+            @new_resource.updated = true
+          else
+            raise "Cannot delete #{@new_resource} at #{@new_resource_path}!"
+          end
         end
       end
       
@@ -159,7 +161,7 @@ class Chef
       
       def backup(file=nil)
         file ||= @new_resource.path
-        if @new_resource.backup && ::File.exist?(file)
+        if @new_resource.backup > 0 && ::File.exist?(file)
           time = Time.now
           savetime = time.strftime("%Y%m%d%H%M%S")
           backup_filename = "#{@new_resource.path}.chef-#{savetime}"
@@ -176,7 +178,6 @@ class Chef
               FileUtils.rm(backup_to_delete)
             end
           end
-
         end
       end
       

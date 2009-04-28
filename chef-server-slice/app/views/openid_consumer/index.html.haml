@@ -2,7 +2,7 @@
   .content
     %h2.title Login
     .inner
-      %form.form{ :method => "get", "accept-charset" => "UTF-8", :action => slice_url(:openid_consumer_start) }
+      %form.form{ :method => "get", "accept-charset" => "UTF-8", :action => slice_url(:openid_consumer_login) }
         .group
           .text_field= text_field :openid_identifier
         .group
