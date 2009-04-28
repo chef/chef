@@ -62,11 +62,14 @@ CONFIG
   File.open(@config_file, "w") do |file|
     file.write(config_data)
   end
+
+  @cleanup_files << @config_file
   
   @status = Chef::Mixin::Command.popen4("chef-client -c #{@config_file}") do |p, i, o, e|
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
   end
+
   
 end
 
