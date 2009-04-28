@@ -69,7 +69,7 @@ describe Chef::Provider::Package::Apt, "load_current_resource" do
     @stdout.should_receive(:each).and_return(true)
     @provider.load_current_resource
   end
-  
+    
   it "should set the installed version to nil on the current resource if apt-cache policy installed version is (none)" do
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     @current_resource.should_receive(:version).with(nil).and_return(true)
@@ -98,12 +98,12 @@ describe Chef::Provider::Package::Apt, "load_current_resource" do
   
   it "should raise an exception if apt-cache policy fails" do
     @status.should_receive(:exitstatus).and_return(1)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Package)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
   end
   
   it "should not raise an exception if apt-cache policy succeeds" do
     @status.should_receive(:exitstatus).and_return(0)
-    lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exception::Package)
+    lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Package)
   end
   
   it "should raise an exception if apt-cache policy does not return a candidate version" do
@@ -112,7 +112,7 @@ describe Chef::Provider::Package::Apt, "load_current_resource" do
                          and_yield("  Candidate: (none)").
                          and_yield("  Version Table:")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)                     
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Package)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
   end
   
   it "should return the current resouce" do
@@ -138,7 +138,8 @@ describe Chef::Provider::Package::Apt, "install_package" do
     @provider.should_receive(:run_command).with({
       :command => "apt-get -q -y install emacs=1.0",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive"
+        "DEBIAN_FRONTEND" => "noninteractive",
+        "LANG" => "en_US"
       }
     })
     @provider.install_package("emacs", "1.0")
@@ -182,7 +183,8 @@ describe Chef::Provider::Package::Apt, "remove_package" do
     @provider.should_receive(:run_command).with({
       :command => "apt-get -q -y remove emacs",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive"
+        "DEBIAN_FRONTEND" => "noninteractive",
+        "LANG" => "en_US"
       }
     })
     @provider.remove_package("emacs", "1.0")
@@ -206,7 +208,8 @@ describe Chef::Provider::Package::Apt, "purge_package" do
     @provider.should_receive(:run_command).with({
       :command => "apt-get -q -y purge emacs",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive"
+        "DEBIAN_FRONTEND" => "noninteractive",
+        "LANG" => "en_US"
       }
     })
     @provider.purge_package("emacs", "1.0")
@@ -238,7 +241,8 @@ describe Chef::Provider::Package::Apt, "preseed_package" do
     @provider.should_receive(:run_command).with({
       :command => "debconf-set-selections /tmp/emacs-10.seed",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive"
+        "DEBIAN_FRONTEND" => "noninteractive",
+        "LANG" => "en_US"
       }
     }).and_return(true)
     @provider.preseed_package("emacs", "10")

@@ -130,12 +130,12 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
   
   it "should raise an exception if yum info fails" do
     @status.should_receive(:exitstatus).and_return(1)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Package)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
   end
   
   it "should not raise an exception if yum info succeeds" do
     @status.should_receive(:exitstatus).and_return(0)
-    lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exception::Package)
+    lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Package)
   end
   
   it "should return the current resouce" do

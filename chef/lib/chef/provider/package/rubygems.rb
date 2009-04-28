@@ -60,7 +60,7 @@ class Chef
           end
           
           unless status.exitstatus == 0
-            raise Chef::Exception::Package, "gem list --local failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "gem list --local failed - #{status.inspect}!"
           end
           
           status = popen4("gem list --remote #{@new_resource.package_name}#{' --source=' + @new_resource.source if @new_resource.source}") do |pid, stdin, stdout, stderr|
@@ -77,7 +77,7 @@ class Chef
           end
 
           unless status.exitstatus == 0
-            raise Chef::Exception::Package, "gem list --remote failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "gem list --remote failed - #{status.inspect}!"
           end
         
           @current_resource

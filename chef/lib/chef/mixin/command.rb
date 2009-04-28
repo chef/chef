@@ -101,8 +101,7 @@ class Chef
       # === Returns
       # Returns the exit status of args[:command]
       def run_command(args={})         
-        command_stdout = nil
-        command_stderr = nil
+        command_output = ""
         
         args[:ignore_failure] ||= false
 
@@ -114,42 +113,23 @@ class Chef
         end
         
         exec_processing_block = lambda do |pid, stdin, stdout, stderr|
-          stdout.sync = true
-          stderr.sync = true
-          
-          if stdout.ready?
-            stdout_string = stdout.gets(nil)
-            if stdout_string
-              command_stdout = stdout_string
-              Chef::Log.debug("---- Begin #{args[:command]} STDOUT ----")
-              Chef::Log.debug(stdout_string.strip)
-              Chef::Log.debug("---- End #{args[:command]} STDOUT ----")
-            end
-          else
-            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDOUT.")
-          end
-          
-          if stderr.ready?
-            stderr_string = stderr.gets(nil)
-            if stderr_string
-              command_stderr = stderr_string
-              Chef::Log.debug("---- Begin #{args[:command]} STDERR ----")
-              Chef::Log.debug(stderr_string.strip)
-              Chef::Log.debug("---- End #{args[:command]} STDERR ----")
-            end
-          else
-            Chef::Log.debug("Nothing to read on '#{args[:command]}' STDERR.")            
-          end
+          Chef::Log.debug("---- Begin output of #{args[:command]} ----")
+          Chef::Log.debug("STDOUT: #{stdout.string.chomp!}")  
+          Chef::Log.debug("STDERR: #{stderr.string.chomp!}") 
+          command_output << "STDOUT: #{stdout.string.chomp!}"
+          command_output << "STDERR: #{stderr.string.chomp!}"
+          Chef::Log.debug("---- End output of #{args[:command]} ----")
         end
         
         args[:cwd] ||= Dir.tmpdir        
         unless File.directory?(args[:cwd])
-          raise Chef::Exception::Exec, "#{args[:cwd]} does not exist or is not a directory"
+          raise Chef::Exceptions::Exec, "#{args[:cwd]} does not exist or is not a directory"
         end
         
         Chef::Log.debug("Executing #{args[:command]}")
         
         status = nil
+        
         Dir.chdir(args[:cwd]) do
           if args[:timeout]
             begin
@@ -157,7 +137,7 @@ class Chef
                 status = popen4(args[:command], args, &exec_processing_block)
               end
             rescue Timeout::Error => e
-              Chef::Log.error("#{args[:command_string]} exceeded timeout #{args[:timeout]}")
+              Chef::Log.error("#{args[:command]} exceeded timeout #{args[:timeout]}")
               raise(e)
             end
           else
@@ -170,17 +150,14 @@ class Chef
               # if the log level is not debug, through output of command when we fail
               output = ""
               if Chef::Log.logger.level > 0
-                output << "\n---- Begin #{args[:command]} STDOUT ----\n"
-                output << "#{command_stdout}\n"
-                output << "---- End #{args[:command]} STDOUT ----\n"
-                output << "---- Begin #{args[:command]} STDERR ----\n"
-                output << "#{command_stderr}\n"
-                output << "---- End #{args[:command]} STDERR ----\n"
+                output << "\n---- Begin output of #{args[:command]} ----\n"
+                output << "#{command_output}"
+                output << "---- End output of #{args[:command]} ----\n"
               end
-              raise Chef::Exception::Exec, "#{args[:command_string]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
+              raise Chef::Exceptions::Exec, "#{args[:command]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
             end
           end
-          Chef::Log.debug("Ran #{args[:command_string]} (#{args[:command]}) returned #{status.exitstatus}")
+          Chef::Log.debug("Ran #{args[:command]} returned #{status.exitstatus}")
         end
         status
       end
@@ -191,12 +168,17 @@ class Chef
       # modified to suit the needs of Chef.  Any bugs here are most likely
       # my own, and not Ara's.
       #
-      # The original appears in external/open4.rb in it's unmodified form. 
+      # The original appears in external/open4.rb in its unmodified form. 
       #
-      # Thanks, Ara. 
+      # Thanks Ara!
       def popen4(cmd, args={}, &b)
-        
+       
         # Waitlast - this is magic.  
+        # 
+        # Do we wait for the child process to die before we yield
+        # to the block, or after?  That is the magic of waitlast.
+        #
+        # By default, we are waiting before we yield the block.
         args[:waitlast] ||= false
         
         args[:user] ||= nil
@@ -293,11 +275,58 @@ class Chef
               # wants to do must be done - it's dead.  If it isn't,
               # it's because something totally skanky is happening,
               # and we don't care.
+              o = StringIO.new
+              e = StringIO.new
+
               pi[0].close
-              pi[1].fcntl(Fcntl::F_SETFL, pi[1].fcntl(Fcntl::F_GETFL) | Fcntl::O_NONBLOCK)
-              pi[2].fcntl(Fcntl::F_SETFL, pi[2].fcntl(Fcntl::F_GETFL) | Fcntl::O_NONBLOCK)
-              results = Process.waitpid2(cid).last
-              b[cid, *pi]
+              
+              stdout = pi[1]
+              stderr = pi[2]
+
+              stdout.sync = true
+              stderr.sync = true
+
+              stdout.fcntl(Fcntl::F_SETFL, pi[1].fcntl(Fcntl::F_GETFL) | Fcntl::O_NONBLOCK)
+              stderr.fcntl(Fcntl::F_SETFL, pi[2].fcntl(Fcntl::F_GETFL) | Fcntl::O_NONBLOCK)
+              
+              
+              stdout_finished = false
+              stderr_finished = false
+             
+              results = nil
+
+              while !stdout_finished || !stderr_finished
+                begin
+                  ready = IO.select([stdout, stderr], nil, nil, 1.0)
+                rescue Errno::EAGAIN
+                  results = Process.waitpid2(cid, Process::WNOHANG)
+                  if results
+                    stdout_finished = true
+                    stderr_finished = true 
+                  end
+                end
+
+                if ready && ready.first.include?(stdout)
+                  line = results ? stdout.gets(nil) : stdout.gets
+                  if line
+                    o.write(line)
+                  else
+                    stdout_finished = true
+                  end
+                end
+                if ready && ready.first.include?(stderr)
+                  line = results ? stderr.gets(nil) : stderr.gets
+                  if line
+                    e.write(line)
+                  else
+                    stderr_finished = true
+                  end
+                end
+              end
+              results = Process.waitpid2(cid).last unless results
+              o.rewind
+              e.rewind
+              b[cid, pi[0], o, e]
               results
             end
           ensure

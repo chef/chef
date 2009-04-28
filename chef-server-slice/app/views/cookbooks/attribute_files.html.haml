@@ -1,4 +1,0 @@
-- throw_content(:header, "All Attributes Files")
-- @attribute_files.each do |af_hash|
-  %h2= "#{af_hash[:cookbook]}"
-  = partial(:attribute_file, :name => af_hash[:name], :contents => af_hash[:contents])

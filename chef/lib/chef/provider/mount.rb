@@ -36,7 +36,7 @@ class Chef
           status = mount_fs()
           if status
             @new_resource.updated = true            
-            Chef::Log.info("#{@new_resource}: mounted succesfully")
+            Chef::Log.info("#{@new_resource}: mounted successfully")
           end
         else
           Chef::Log.debug("#{@new_resource}: not mounting, already mounted")
@@ -49,7 +49,7 @@ class Chef
           status = umount_fs()
           if status
             @new_resource.updated = true            
-            Chef::Log.info("#{@new_resource}: unmounted succesfully")
+            Chef::Log.info("#{@new_resource}: unmounted successfully")
           end
         else
           Chef::Log.debug("#{@new_resource}: not unmounting, already unmounted")
@@ -58,14 +58,14 @@ class Chef
 
       def action_remount
         unless @new_resource.supports[:remount]
-          raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :remount"
+          raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remount"
         else
           if @current_resource.mounted
             Chef::Log.debug("#{@new_resource}: attempting to remount")
             status = remount_fs()
             if status
               @new_resource.updated = true            
-              Chef::Log.info("#{@new_resource}: remounted succesfully")
+              Chef::Log.info("#{@new_resource}: remounted successfully")
             end
           else
             Chef::Log.debug("#{@new_resource}: not mounted, not remounting")
@@ -98,23 +98,23 @@ class Chef
       end
 
       def mount_fs
-        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :mount"
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :mount"
       end
 
       def umount_fs
-        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :umount"
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :umount"
       end
 
       def remount_fs
-        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :remount"
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remount"
       end
       
       def enable_fs
-        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :enable"        
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"        
       end
       
       def disable_fs
-        raise Chef::Exception::UnsupportedAction, "#{self.to_s} does not support :disable"        
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"        
       end      
     end
   end

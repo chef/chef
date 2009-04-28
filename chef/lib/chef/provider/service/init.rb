@@ -39,7 +39,7 @@ class Chef
               if run_command(:command => "#{@init_command} status") == 0
                 @current_resource.running true
               end
-            rescue Chef::Exception::Exec
+            rescue Chef::Exceptions::Exec
               @current_resource.running false
               nil
             end
@@ -51,7 +51,7 @@ class Chef
               if run_command(:command => @new_resource.status_command) == 0
                 @current_resource.running true
               end
-            rescue Chef::Exception::Exec
+            rescue Chef::Exceptions::Exec
               @current_resource.running false
               nil
             end
@@ -60,7 +60,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} does not support status and you have not specified a status command, falling back to process table inspection")
 
             if @node[:command][:ps].nil? or @node[:command][:ps].empty?
-              raise Chef::Exception::Service, "#{@new_resource}: could not determine how to inspect the process table, please set this nodes 'ps' attribute"
+              raise Chef::Exceptions::Service, "#{@new_resource}: could not determine how to inspect the process table, please set this nodes 'ps' attribute"
             end
 
             status = popen4(@node[:command][:ps]) do |pid, stdin, stdout, stderr|
@@ -75,9 +75,9 @@ class Chef
               @current_resource.running false unless @current_resource.running
             end
             unless status.exitstatus == 0
-              raise Chef::Exception::Service, "Command #{@node[:command][:ps]} failed"
+              raise Chef::Exceptions::Service, "Command #{@node[:command][:ps]} failed"
             else
-              Chef::Log.debug("#{@new_resource}: #{@node[:command][:ps]} exited and parsed succesfully, process running: #{@current_resource.running}")
+              Chef::Log.debug("#{@new_resource}: #{@node[:command][:ps]} exited and parsed successfully, process running: #{@current_resource.running}")
             end
           end
 

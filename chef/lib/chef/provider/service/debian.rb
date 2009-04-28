@@ -28,7 +28,7 @@ class Chef
           super
           
           unless ::File.exists? "/usr/sbin/update-rc.d"
-            raise Chef::Exception::Service, "/usr/sbin/update-rc.d does not exist!"
+            raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d does not exist!"
           end
 
           status = popen4("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
@@ -44,7 +44,7 @@ class Chef
           end  
 
           unless status.exitstatus == 0
-            raise Chef::Exception::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
+            raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
           end
 
           @current_resource        

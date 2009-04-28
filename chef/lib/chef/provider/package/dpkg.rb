@@ -33,7 +33,7 @@ class Chef
           # We only -need- source for action install
           if @new_resource.source
             unless ::File.exists?(@new_resource.source)
-              raise Chef::Exception::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
+              raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
             end
 
             # Get information from the package if supplied
@@ -50,7 +50,7 @@ class Chef
           else
             # if the source was not set, and we're installing, fail
             if @new_resource.action.include?(:install)
-              raise Chef::Exception::Package, "Source for package #{@new_resource.name} required for action install"
+              raise Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
             end
           end
           
@@ -72,7 +72,7 @@ class Chef
           end
 
           unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exception::Package, "dpkg failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "dpkg failed - #{status.inspect}!"
           end
           
           @current_resource
@@ -82,7 +82,8 @@ class Chef
           run_command(
             :command => "dpkg -i #{@new_resource.source}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
+              "DEBIAN_FRONTEND" => "noninteractive",
+              "LANG" => "en_US"
             }
           )
         end
@@ -91,7 +92,8 @@ class Chef
           run_command(
             :command => "dpkg -r #{@new_resource.package_name}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
+              "DEBIAN_FRONTEND" => "noninteractive",
+              "LANG" => "en_US"
             }
           )
         end
@@ -100,7 +102,8 @@ class Chef
           run_command(
             :command => "dpkg -P #{@new_resource.package_name}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
+              "DEBIAN_FRONTEND" => "noninteractive",
+              "LANG" => "en_US"
             }
           )
         end

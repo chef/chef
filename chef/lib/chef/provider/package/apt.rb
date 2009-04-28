@@ -50,11 +50,11 @@ class Chef
           end
 
           unless status.exitstatus == 0
-            raise Chef::Exception::Package, "apt-cache failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "apt-cache failed - #{status.inspect}!"
           end
           
           if @candidate_version == "(none)"
-            raise Chef::Exception::Package, "apt does not have a version of package #{@new_resource.package_name}"
+            raise Chef::Exceptions::Package, "apt does not have a version of package #{@new_resource.package_name}"
           end
         
           @current_resource
@@ -64,7 +64,8 @@ class Chef
           run_command(
             :command => "apt-get -q -y install #{name}=#{version}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
+              "DEBIAN_FRONTEND" => "noninteractive",
+              "LANG" => "en_US"
             }
           )
         end
@@ -77,7 +78,8 @@ class Chef
           run_command(
             :command => "apt-get -q -y remove #{@new_resource.package_name}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
+              "DEBIAN_FRONTEND" => "noninteractive",
+              "LANG" => "en_US"
             }
           )
         end
@@ -86,7 +88,8 @@ class Chef
           run_command(
             :command => "apt-get -q -y purge #{@new_resource.package_name}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
+              "DEBIAN_FRONTEND" => "noninteractive",
+              "LANG" => "en_US"
             }
           )
         end
@@ -98,7 +101,8 @@ class Chef
             run_command(
               :command => "debconf-set-selections #{preseed_file}",
               :environment => {
-                "DEBIAN_FRONTEND" => "noninteractive"
+                "DEBIAN_FRONTEND" => "noninteractive",
+                "LANG" => "en_US"
               }
             )
           end

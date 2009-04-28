@@ -47,13 +47,13 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 desc "Install the gem"
-task :install do
-  Merb::RakeHelper.install(GEM_NAME, :version => CHEF_SERVER_VERSION)
+task :install => :package do
+  sh %{sudo gem install pkg/#{GEM_NAME}-#{CHEF_SERVER_VERSION} --no-rdoc --no-ri}
 end
 
 desc "Uninstall the gem"
 task :uninstall do
-  Merb::RakeHelper.uninstall(GEM_NAME, :version => CHEF_SERVER_VERSION)
+  sh %{sudo gem uninstall #{GEM_NAME} -x -v #{CHEF_SERVER_VERSION} }
 end
 
 desc "Create a gemspec file"

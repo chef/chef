@@ -62,7 +62,7 @@ describe Chef::Provider::Package::Dpkg, "load_current_resource" do
 
   it "should raise an exception if a source is supplied but not found" do
     ::File.stub!(:exists?).and_return(false)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Package)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
   end
 
   it "should get the source package version from dpkg-deb if provided" do
@@ -83,7 +83,7 @@ describe Chef::Provider::Package::Dpkg, "load_current_resource" do
       :source => nil
     )
     @provider = Chef::Provider::Package::Dpkg.new(@node, @new_resource)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Package)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
 
   end
 
@@ -107,7 +107,7 @@ describe Chef::Provider::Package::Dpkg, "load_current_resource" do
   it "should raise an exception if dpkg fails to run" do
     @status = mock("Status", :exitstatus => -1)
     @provider.stub!(:popen4).and_return(@status)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exception::Package)
+    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
   end
 end
 
@@ -129,7 +129,8 @@ describe Chef::Provider::Package::Dpkg, "install and upgrade" do
     @provider.should_receive(:run_command).with({
       :command => "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive"
+        "DEBIAN_FRONTEND" => "noninteractive",
+        "LANG" => "en_US"
       }
     })
     @provider.install_package("wget", "1.11.4-1ubuntu1")
@@ -158,7 +159,8 @@ describe Chef::Provider::Package::Dpkg, "remove and purge" do
     @provider.should_receive(:run_command).with({
       :command => "dpkg -r wget",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive"
+        "DEBIAN_FRONTEND" => "noninteractive",
+        "LANG" => "en_US"
       }
     })
     @provider.remove_package("wget", "1.11.4-1ubuntu1")
@@ -168,7 +170,8 @@ describe Chef::Provider::Package::Dpkg, "remove and purge" do
     @provider.should_receive(:run_command).with({
       :command => "dpkg -P wget",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive"
+        "DEBIAN_FRONTEND" => "noninteractive",
+        "LANG" => "en_US"
       }
     })
     @provider.purge_package("wget", "1.11.4-1ubuntu1")

@@ -277,14 +277,14 @@ describe Chef::Provider::Link, "action_delete" do
     Chef::Resource::Link.stub!(:new).and_return(@current_resource)
     @provider.current_resource = @current_resource
     @new_resource.stub!(:to_s).and_return("link[/tmp/fofile]")
+    File.stub!(:symlink?).and_return(true)
     File.stub!(:exists?).and_return(true)
     File.stub!(:delete).and_return(true)
   end
   
-  describe "when the file exists and is writeable" do
+  describe "when the file exists" do
     before do
       File.should_receive(:exists?).with("/tmp/fofile-link").and_return(true)
-      File.should_receive(:writable?).with("/tmp/fofile-link").and_return(true)
     end
     
     it "should log an appropriate error message" do
@@ -303,23 +303,24 @@ describe Chef::Provider::Link, "action_delete" do
     end
   end
   
+  describe "when the file exists but is not a symbolic link" do
+    before(:each) do
+      File.should_receive(:symlink?).with("/tmp/fofile-link").and_return(false)
+    end
+    
+    it "should raise a Link error" do
+      lambda { @provider.action_delete }.should raise_error(Chef::Exceptions::Link)
+    end
+  end
+  
   describe "when the file does not exist" do
     before do
       File.should_receive(:exists?).with("/tmp/fofile-link").and_return(false)
     end
     
-    it "should raise a runtime error" do
-      lambda { @provider.action_delete }.should raise_error(RuntimeError)
+    it "should not raise a Link error" do
+      lambda { @provider.action_delete }.should_not raise_error(Chef::Exceptions::Link)
     end
   end
-  
-  describe "when the file isn't writable" do
-    before do
-      File.should_receive(:writable?).with("/tmp/fofile-link").and_return(false)
-    end
-    
-    it "should raise a runtime error" do
-      lambda { @provider.action_delete }.should raise_error(RuntimeError)
-    end
-  end
+
 end

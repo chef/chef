@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,7 @@ require 'chef/mixin/from_file'
 class Chef
   class Config
     include Chef::Mixin::CheckHelper
-  
+
     @configuration = {
       :daemonize => nil,
       :user => nil,
@@ -46,7 +46,7 @@ class Chef
       :json_attribs => nil,
       :cookbook_path => [ "/var/chef/site-cookbooks", "/var/chef/cookbooks" ],
       :validation_token => nil,
-      :node_path => "/var/chef/node",      
+      :node_path => "/var/chef/node",
       :file_store_path => "/var/chef/store",
       :search_index_path => "/var/chef/search_index",
       :log_level => :info,
@@ -62,7 +62,10 @@ class Chef
       :template_url => "http://localhost:4000",
       :remotefile_url => "http://localhost:4000",
       :search_url => "http://localhost:4000",
+      :couchdb_version => nil,
       :couchdb_database => "chef",
+      :openid_store_couchdb => false,
+      :openid_cstore_couchdb => false,
       :openid_store_path => "/var/chef/openid/db",
       :openid_cstore_path => "/var/chef/openid/cstore",
       :file_cache_path => "/var/chef/cache",
@@ -79,12 +82,13 @@ class Chef
       :queue_host => "localhost",
       :queue_port => 61613,
       :run_command_stdout_timeout => 120,
-      :run_command_stderr_timeout => 120
+      :run_command_stderr_timeout => 120,
+      :authorized_openid_identifiers => nil
     }
-    
+
     class << self
       include Chef::Mixin::FromFile
-      
+
       # Pass Chef::Config.configure() a block, and it will yield @configuration.
       #
       # === Parameters
@@ -92,7 +96,7 @@ class Chef
       def configure(&block)
         yield @configuration
       end
-      
+
       # Manages the chef secret session key
       # === Returns
       # <newkey>:: A new or retrieved session key
@@ -127,7 +131,7 @@ class Chef
           raise ArgumentError, "Cannot find configuration option #{config_option.to_s}"
         end
       end
-      
+
       # Set the value of a configuration option
       #
       # === Parameters
@@ -139,7 +143,7 @@ class Chef
       def []=(config_option, value)
         @configuration[config_option.to_sym] = value
       end
-      
+
       # Check if Chef::Config has a configuration option.
       #
       # === Parameters
@@ -151,7 +155,7 @@ class Chef
       def has_key?(key)
         @configuration.has_key?(key.to_sym)
       end
-      
+
       # Allows for simple lookups and setting of configuration options via method calls
       # on Chef::Config.  If there any arguments to the method, they are used to set
       # the value of the configuration option.  Otherwise, it's a simple get operation.
@@ -177,7 +181,7 @@ class Chef
           raise ArgumentError, "Cannot find configuration option #{method_symbol.to_s}"
         end
       end
-      
+
     end # class << self
   end
 end

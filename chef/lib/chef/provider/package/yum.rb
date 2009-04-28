@@ -40,7 +40,7 @@ class Chef
                 package_type = :installed
               when /^Available Packages$/
                 package_type = :available
-              when /^Version: (.+)$/
+              when /^Version\s*: (.+)$/
                 if package_type == :installed
                   installed_version = $1
                 elsif package_type == :available
@@ -66,7 +66,7 @@ class Chef
           end
 
           unless status.exitstatus == 0
-            raise Chef::Exception::Package, "yum failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "yum failed - #{status.inspect}!"
           end
         
           @current_resource

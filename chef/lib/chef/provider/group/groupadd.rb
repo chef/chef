@@ -28,7 +28,7 @@ class Chef
             "/usr/sbin/groupmod",
             "/usr/sbin/groupdel",
             "/usr/bin/gpasswd" ].each do |required_binary|
-            raise Chef::Exception::Group, "Could not find binary #{required_binary} for #{@new_resource}" unless ::File.exists?(required_binary)
+            raise Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{@new_resource}" unless ::File.exists?(required_binary)
           end
         end
 
