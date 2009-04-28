@@ -1,7 +1,7 @@
 # Go to http://wiki.merbivore.com/pages/init-rb
  
 require 'config/dependencies.rb'
-require 'chef'
+require 'chef' unless defined?(Chef)
  
 use_test :rspec
 use_template_engine :haml
@@ -23,4 +23,5 @@ end
  
 Merb::BootLoader.after_app_loads do
   # This will get executed after your app's classes have been loaded.
+  OpenID::Util.logger = Merb.logger
 end

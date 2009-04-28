@@ -65,10 +65,46 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
   end
 
   describe "when given a URI source" do
-    it "should download the file from the remote URL" do
-      @resource.source("http://opscode.com/seattle.txt")
-      @rest.should_receive(:get_rest).with("http://opscode.com/seattle.txt", true).and_return(@tempfile)
-      do_remote_file
+    describe "and given a checksum" do
+      it "should not download the file if the checksum matches" do
+        @resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+        @resource.source("http://opscode.com/seattle.txt")
+        @rest.should_not_receive(:get_rest).with("http://opscode.com/seattle.txt", true).and_return(@tempfile)
+        do_remote_file
+      end
+
+      it "should not download the file if the checksum is a partial match from the beginning" do
+        @resource.checksum("0fd012fd")
+        @resource.source("http://opscode.com/seattle.txt")
+        @rest.should_not_receive(:get_rest).with("http://opscode.com/seattle.txt", true).and_return(@tempfile)
+        do_remote_file
+      end
+
+
+      it "should download the file if the checksum does not match" do
+        @resource.checksum("this hash doesn't match")
+        @resource.source("http://opscode.com/seattle.txt")
+        @rest.should_receive(:get_rest).with("http://opscode.com/seattle.txt", true).and_return(@tempfile)
+        do_remote_file
+      end
+
+      it "should download the file if the checksum matches, but not from the beginning" do
+        @resource.checksum("fd012fd")
+        @resource.source("http://opscode.com/seattle.txt")
+        @rest.should_receive(:get_rest).with("http://opscode.com/seattle.txt", true).and_return(@tempfile)
+        do_remote_file
+      end
+
+
+    end
+
+    describe "and not given a checksum" do
+      it "should download the file from the remote URL" do
+        @resource.checksum(nil)
+        @resource.source("http://opscode.com/seattle.txt")
+        @rest.should_receive(:get_rest).with("http://opscode.com/seattle.txt", true).and_return(@tempfile)
+        do_remote_file
+      end
     end
   end
   
@@ -102,17 +138,6 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     end
   end
 
-  it "should set the checksum if the file exists" do
-    @provider.should_receive(:checksum).with(@resource.path)
-    do_remote_file
-  end
-  
-  it "should not set the checksum if the file doesn't exist" do
-    File.stub!(:exists?).with(@resource.path).and_return(false)
-    @provider.should_not_receive(:checksum).with(@resource.path)
-    do_remote_file
-  end
-    
   it "should not transfer the file if it has not been changed" do
     r = Net::HTTPNotModified.new("one", "two", "three")
     e = Net::HTTPRetriableError.new("304", r)

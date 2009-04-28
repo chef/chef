@@ -29,5 +29,6 @@ class Chef
     class MissingLibrary < RuntimeError; end
     class User < RuntimeError; end
     class Group < RuntimeError; end
+    class Link < RuntimeError; end
   end
 end

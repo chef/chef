@@ -45,15 +45,19 @@ class ChefServerSlice::CookbookFiles < ChefServerSlice::Application
 
   def show
     only_provides :json
-    to_send = find_preferred_file(
-      params[:cookbook_id], 
-      :remote_file, 
-      params[:id], 
-      params[:fqdn], 
-      params[:platform], 
-      params[:version]
-    )
-    raise NotFound, "Cannot find a suitable file!" unless to_send
+    begin
+      to_send = find_preferred_file(
+        params[:cookbook_id], 
+        :remote_file, 
+        params[:id], 
+        params[:fqdn], 
+        params[:platform], 
+        params[:version]
+      )
+    rescue Chef::Exceptions::FileNotFound
+      raise NotFound, "Cannot find a suitable file!"
+    end
+
     current_checksum = checksum(to_send)
     Chef::Log.debug("old sum: #{params[:checksum]}, new sum: #{current_checksum}") 
     if current_checksum == params[:checksum]

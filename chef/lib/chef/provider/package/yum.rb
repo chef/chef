@@ -19,63 +19,114 @@
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
+require 'singleton'
 
 class Chef
   class Provider
     class Package
       class Yum < Chef::Provider::Package  
       
+        class YumCache
+          include Chef::Mixin::Command
+          include Singleton
+
+          def initialize
+            @created_at = Time.now 
+            load_data
+          end
+
+          def stale?
+            interval = Chef::Config[:interval].to_f
+
+            # run once mode
+            if interval == 0
+              return false
+            elsif (Time.now - @created_at) > interval
+              return true
+            end
+
+            false
+          end
+            
+          def refresh
+            if @data.empty?
+              reload
+            elsif stale?
+               reload
+            end
+          end
+
+          def load_data
+            parsed = String.new
+            helper = ::File.join(::File.dirname(__FILE__), 'yum-dump-json.py')
+            status = popen4("python #{helper}", :waitlast => true) do |pid, stdin, stdout, stderr|
+              stdout.each do |line|
+                parsed << line
+              end
+            end
+
+            unless status.exitstatus == 0
+              raise Chef::Exceptions::Package, "yum failed - #{status.inspect}!"
+            end
+
+            @data = JSON.parse(parsed)
+          end
+          alias :reload :load_data
+
+          def version(package_name, type)
+            if (x = @data[package_name])
+              if (y = x[type])
+                return "#{y["version"]}-#{y["release"]}"
+              end
+            end
+
+            nil
+          end
+
+          def installed_version(package_name)
+            version(package_name, "installed")
+          end
+
+          def candidate_version(package_name)
+            version(package_name, "available")
+          end
+         
+          def flush
+            @data.clear
+          end
+        end
+
+        def initialize(node, new_resource)
+          @yum = YumCache.instance
+          super(node, new_resource)
+        end
+      
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
         
           Chef::Log.debug("Checking yum info for #{@new_resource.package_name}")
-          status = popen4("yum info -q -y #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            package_type = nil
-            installed_version = nil
-            candidate_version = nil
-            stdout.each do |line|
-              case line
-              when /^Installed Packages$/
-                package_type = :installed
-              when /^Available Packages$/
-                package_type = :available
-              when /^Version: (.+)$/
-                if package_type == :installed
-                  installed_version = $1
-                elsif package_type == :available
-                  candidate_version = $1
-                end
-              when /^Release: (.+)$/
-                if package_type == :installed
-                  installed_version += "-#{$1}"
-                  Chef::Log.debug("Installed release is #{installed_version}")
-                elsif package_type == :available
-                  candidate_version += "-#{$1}"
-                  Chef::Log.debug("Candidate version is #{candidate_version}")
-                end
-              end
-            end
-            
-            @current_resource.version(installed_version)
-            if candidate_version
-              @candidate_version = candidate_version
-            else
-              @candidate_version = installed_version
-            end
-          end
+    
+          @yum.refresh
 
-          unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "yum failed - #{status.inspect}!"
+          installed_version = @yum.installed_version(@new_resource.package_name)
+          @candidate_version = @yum.candidate_version(@new_resource.package_name)
+          
+          @current_resource.version(installed_version)
+          if candidate_version
+            @candidate_version = candidate_version
+          else
+            @candidate_version = installed_version
           end
         
           @current_resource
         end
-      
+
         def install_package(name, version)
           run_command(
             :command => "yum -q -y install #{name}-#{version}"
           )
+          @yum.flush
         end
       
         def upgrade_package(name, version)
@@ -84,6 +135,7 @@ class Chef
             run_command(
               :command => "yum -q -y update #{name}-#{version}"
             )   
+            @yum.flush
           else
             install_package(name, version)
           end
@@ -93,6 +145,7 @@ class Chef
           run_command(
             :command => "yum -q -y remove #{name}-#{version}"
           )
+          @yum.flush
         end
       
         def purge_package(name, version)

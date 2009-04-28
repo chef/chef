@@ -22,6 +22,8 @@ require "chef" / "cookbook_loader"
 
 class ChefServerSlice::Application < Merb::Controller
 
+  include Chef::Mixin::Checksum
+
   controller_for_slice
   
   # Generate the absolute url for a slice - takes the slice's :path_prefix into account.
@@ -107,7 +109,7 @@ class ChefServerSlice::Application < Merb::Controller
     case content_type
     when :html
       store_location
-      redirect url(:openid_consumer)
+      redirect slice_url(:openid_consumer), :message => { :error => "You don't have access to that, please login."}
     else
       raise Unauthorized, "You must authenticate first!"
     end
@@ -168,7 +170,8 @@ class ChefServerSlice::Application < Merb::Controller
         file_name = mo[1]
         files << { 
           :cookbook => cookbook.name, 
-          :name => file_name
+          :name => file_name,
+          :checksum => checksum(sf)
         }
       end
     end
