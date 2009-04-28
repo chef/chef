@@ -1,3 +1,58 @@
+Tue Apr 28 16:43:43 PDT 2009
+Release Notes - Chef - Version 0.6.0
+http://tickets.opscode.com
+
+** Bug
+    * [CHEF-134] - User IDs and GIDs with negative numbers cause a type exception
+    * [CHEF-162] - delayed notifications should coalesce so they don't run multiple times
+    * [CHEF-163] - remote_file not working on head, 404 due to missing route
+    * [CHEF-164] - Slice routing changes break remote file provider
+    * [CHEF-169] - Detect and use new view URL's for CouchDB 0.9.0 compatability
+    * [CHEF-171] - Package name with a dash (-) in it is not recognised
+    * [CHEF-173] - With debug logging level set long running commands do not show their output in real time
+    * [CHEF-174] - directory mode not set correctly
+    * [CHEF-182] - Chef::Exception masks ::Exception (see OHAI-79)
+    * [CHEF-185] - file delete backs up links
+    * [CHEF-186] - file delete fails if file does not exist
+    * [CHEF-188] - Merb dependencies for both the server app and slice need to be updated to 1.0.10 
+    * [CHEF-190] - apt provider fails on non-English debian installations
+    * [CHEF-195] - The backup attribute for File needlessly creates a backup then deletes it when set to 0
+    * [CHEF-198] - chef-solo banner
+    * [CHEF-206] - chef-server-slice rake install fails
+    * [CHEF-207] - chef-server and chef-server-slice should require merb > 1.0, not specific versions
+    * [CHEF-218] - Search indexes are broken due to missing route
+    * [CHEF-222] - CouchDB 0.9 compat causes the client to attempt a connection to the CouchDB server (while instantiating a node object)
+    * [CHEF-227] - Delete operation of Search Index is not working
+    * [CHEF-228] - chef-server under passenger: Controller class not found for controller `registrations'
+    * [CHEF-230] - remote_file with a url should include a type of hash option to verify the downloaded file is what we expected
+    * [CHEF-237] - Apt provider won't install msttcorefonts
+    * [CHEF-238] - Commands with over 4k of output will block forever
+    * [CHEF-244] - Chef server no longer checks openid's against the authorized_openid_identifiers configuration
+
+** Improvement
+    * [CHEF-54] - chef-server should be a merb slice
+    * [CHEF-129] - Implement pilu's web-app-theme for chef-server
+    * [CHEF-148] - cookbook naming and routing
+    * [CHEF-153] - Allow access to a list of OpenID's via configration.
+    * [CHEF-159] - CookbookLoader#load_cascading_files uses Dir.glob(array) syntax, which is unavailable on RHEL and Centos
+    * [CHEF-167] - chef-server-slice rake install requires sudo
+    * [CHEF-172] - In FreeBSD package provider simplify source parameter "magic" by using PKGNAME in ports Makefile
+    * [CHEF-177] - Where multiple ports have the same name allow path to ports to be given
+    * [CHEF-192] - speed up yum provider
+    * [CHEF-200] - fixes from centos packaging attempt
+    * [CHEF-210] - enterprise linux init scripts and configs
+    * [CHEF-213] - Fixing typos in the code
+    * [CHEF-214] - On Gentoo, services always support the :status command, so enable it by default
+    * [CHEF-246] - Should be clearer what tags are attached to a node
+    * [CHEF-247] - Let chef-server and chef-client compare checksums in bulk rather than one at a time.
+
+** New Feature
+    * [CHEF-78] - Add a mixin for parsing a file and replacing lines
+    * [CHEF-176] - Chef status page that displays basic info about each chef managed node
+    * [CHEF-191] - Enable optional CouchDB storage for OpenID associations and nonces
+    * [CHEF-216] - Allow execute/script resources to set umask
+
+
 Thu Mar  5 19:51:02 PST 2009
 Release Notes - Chef - Version 0.5.6
 http://tickets.opscode.com
