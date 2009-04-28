@@ -18,6 +18,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+$: << File.join(File.dirname(__FILE__), "..", "lib")
+
 require 'optparse'
 require 'rubygems'
 require 'chef'
@@ -78,6 +80,8 @@ end
 
 Chef::Config.from_file(config[:config_file])
 Chef::Config.configure { |c| c.merge!(config) }
+
+Chef::Daemon.change_privilege
 
 if Chef::Config[:daemonize]
   unless Chef::Config[:log_location].is_a? IO

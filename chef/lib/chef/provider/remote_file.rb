@@ -43,25 +43,23 @@ class Chef
       end
 
       def do_remote_file(source, path)
-        # The current files checksum
-        current_checksum = self.checksum(path) if ::File.exists?(path)
-
-        contents_changed = true
-        begin
-          # The remote filehandle
-          raw_file = get_from_uri(source)    ||
-                     get_from_server(source, current_checksum) ||
-                     get_from_local_cookbook(source)
-        rescue Net::HTTPRetriableError => e
-          if e.response.kind_of?(Net::HTTPNotModified)
-            Chef::Log.debug("File contents for #{path} are unchanged")
-            contents_changed = false
-          else
-            raise e
+        if(@new_resource.checksum && @current_resource.checksum && @current_resource.checksum =~ /^#{@new_resource.checksum}/)
+          Chef::Log.debug("File #{@new_resource} checksum matches, not updating")
+        else
+          begin
+            # The remote filehandle
+            raw_file = get_from_uri(source)    ||
+                       get_from_server(source, @current_resource.checksum) ||
+                       get_from_local_cookbook(source)
+          rescue Net::HTTPRetriableError => e
+            if e.response.kind_of?(Net::HTTPNotModified)
+              Chef::Log.debug("File #{path} is unchanged")
+              return false
+            else
+              raise e
+            end
           end
-        end
 
-        if contents_changed
           # If the file exists
           if ::File.exists?(@new_resource.path)
             # And it matches the checksum of the raw file
@@ -71,7 +69,7 @@ class Chef
               Chef::Log.debug("#{@new_resource} changed from #{@current_resource.checksum} to #{@new_resource.checksum}")
               Chef::Log.info("Updating #{@new_resource} at #{@new_resource.path}")
               backup(@new_resource.path)
-            end
+             end
           else
             # We're creating a new file
             Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
@@ -82,8 +80,9 @@ class Chef
 
           # We're done with the file, so make sure to close it if it was open.
           raw_file.close 
+          true
         end
-
+         
         set_owner if @new_resource.owner
         set_group if @new_resource.group
         set_mode  if @new_resource.mode
