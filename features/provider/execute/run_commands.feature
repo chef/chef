@@ -9,6 +9,13 @@ Feature: Run Commands
      When I run the chef-client
      Then the run should exit '0'
       And a file named 'mastodon_rocks' should exist
+      
+  Scenario: Execute a command with umask value 777
+    Given a validated node
+      And it includes the recipe 'execute_commands::umask'
+     When I run the chef-client
+     Then the run should exit '0'
+      And '/mastodon_rocks_umask' should exist and raise error when copying
 
   Scenario: Execute a command with client logging to file
     Given a validated node

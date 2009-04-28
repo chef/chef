@@ -19,6 +19,7 @@
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
 require 'chef'
+require File.join(File.dirname(__FILE__), "/../lib/chef/util/fileedit")
 
 chef_lib_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 Dir[
