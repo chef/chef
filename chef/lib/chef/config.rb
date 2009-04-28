@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Brown (<cb@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -106,7 +107,7 @@ class Chef
         else
           chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
           newkey = ""
-          1.upto(40) { |i| newkey << chars[rand(chars.size-1)] }
+          40.times { |i| newkey << chars[rand(chars.size-1)] }
           Chef::FileCache.store("chef_server_cookie_id", newkey)
         end
         newkey
@@ -130,6 +131,33 @@ class Chef
         end
       end
 
+      # Override the config dispatch to set the value of log_location configuration option
+      #
+      # === Parameters
+      # location<IO||String>:: Logging location as either an IO stream or string representing log file path
+      #
+      def log_location=(location)
+        @configuration[:log_location]=(location.respond_to?(:sync=) ? location : File.new(location, "w+"))
+      end
+      
+      # Internal dispatch setter, calling either the real defined method or setting the
+      # hash value directly
+      #
+      # === Parameters
+      # method_symbol<Symbol>:: Name of the method (variable setter)
+      # value<Object>:: Value to be set in config hash
+      #      
+      def internal_set(method_symbol,value)
+        method_name = method_symbol.id2name
+        if self.public_methods.include?("#{method_name}=")
+          self.send("#{method_name}=", value)
+        else
+          @configuration[method_symbol] = value
+        end
+      end
+
+      private :internal_set
+      
       # Set the value of a configuration option
       #
       # === Parameters
@@ -139,7 +167,7 @@ class Chef
       # === Returns
       # value:: The new value of the configuration option
       def []=(config_option, value)
-        @configuration[config_option.to_sym] = value
+        internal_set(config_option,value)
       end
 
       # Check if Chef::Config has a configuration option.
@@ -169,10 +197,8 @@ class Chef
       # <ArgumentError>:: If the method_symbol does not match a configuration option.
       def method_missing(method_symbol, *args)
         if @configuration.has_key?(method_symbol)
-          if args.length == 1
-            @configuration[method_symbol] = args[0]
-          elsif args.length > 1
-            @configuration[method_symbol] = args
+          if args.length > 0
+            internal_set(method_symbol,(args.length==1 ? args[0] : args))
           end
           return @configuration[method_symbol]
         else
