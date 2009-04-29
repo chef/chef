@@ -55,7 +55,7 @@ desc "Test your cookbooks for syntax errors"
 task :test do
   puts "** Testing your cookbooks for syntax errors"
 
-  recipes = ["cookbooks", "site-cookbooks"].map { |folder|
+  recipes = ["*cookbooks"].map { |folder|
     Dir[File.join(TOPDIR, folder, "**", "*.rb")]
   }.flatten
 
