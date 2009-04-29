@@ -104,12 +104,15 @@ Chef::Daemon.change_privilege
 
 Chef::Log.init(Chef::Config[:log_location])
 Chef::Log.level(Chef::Config[:log_level])
-Chef::Config[:delay] = 0
+Chef::Config[:delay] = 0 
 
 if Chef::Config[:daemonize]
   # We want to set the interval to half an hour, if one is not set.
   Chef::Config[:interval] ||= 1800
   Chef::Daemon.daemonize("chef-client")
+end
+
+if Chef::Config[:interval]
   Chef::Config[:delay] = Chef::Config[:interval].to_i + (Chef::Config[:splay] ? rand(Chef::Config[:splay]) : 0)
 end
 
@@ -120,7 +123,7 @@ loop do
     c.validation_token = Chef::Config[:validation_token]
     c.node_name = Chef::Config[:node_name]
     c.run
-    if Chef::Config[:daemonize]
+    if Chef::Config[:interval]
       Chef::Log.debug("Sleeping for #{Chef::Config[:delay]} seconds")
       sleep Chef::Config[:delay]
     else
@@ -129,7 +132,7 @@ loop do
   rescue SystemExit => e
     raise
   rescue Exception => e
-    if Chef::Config[:daemonize]
+    if Chef::Config[:interval]
       Chef::Log.error("#{e.class}")
       Chef::Log.fatal("#{e}\n#{e.backtrace.join("\n")}")
       Chef::Log.fatal("Sleeping for #{Chef::Config[:delay]} seconds before trying again")

@@ -36,3 +36,14 @@ describe Chef::Resource::GemPackage, "initialize" do
     @resource.provider.should eql(Chef::Provider::Package::Rubygems)
   end
 end
+
+describe Chef::Resource::GemPackage, "gem_binary" do
+  before(:each) do
+    @resource = Chef::Resource::GemPackage.new("foo")
+  end
+
+  it "should set the gem_binary variable to whatever is passed in" do
+    @resource.gem_binary("/opt/local/bin/gem")
+    @resource.gem_binary.should eql("/opt/local/bin/gem")
+  end
+end

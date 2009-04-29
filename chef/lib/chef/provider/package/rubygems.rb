@@ -34,6 +34,11 @@ class Chef
             nil
           end
         end
+
+        def gem_binary_path
+          path = @new_resource.gem_binary
+          path ? path : 'gem'
+        end
       
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -41,7 +46,7 @@ class Chef
           @current_resource.version(nil)
         
           # First, we need to look up whether we have the local gem installed or not
-          status = popen4("gem list --local #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("#{gem_binary_path} list --local #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               installed_versions = gem_list_parse(line)
               next unless installed_versions
@@ -60,10 +65,10 @@ class Chef
           end
           
           unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "gem list --local failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "#{gem_binary_path} list --local failed - #{status.inspect}!"
           end
           
-          status = popen4("gem list --remote #{@new_resource.package_name}#{' --source=' + @new_resource.source if @new_resource.source}") do |pid, stdin, stdout, stderr|
+          status = popen4("#{gem_binary_path} list --remote #{@new_resource.package_name}#{' --source=' + @new_resource.source if @new_resource.source}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               installed_versions = gem_list_parse(line)
               next unless installed_versions
@@ -77,7 +82,7 @@ class Chef
           end
 
           unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "gem list --remote failed - #{status.inspect}!"
+            raise Chef::Exceptions::Package, "#{gem_binary_path} list --remote failed - #{status.inspect}!"
           end
         
           @current_resource
@@ -89,7 +94,7 @@ class Chef
             src = "  --source=#{@new_resource.source} --source=http://gems.rubyforge.org"
           end  
           run_command(
-            :command => "gem install #{name} -q --no-rdoc --no-ri -v #{version}#{src}"
+            :command => "#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v #{version}#{src}"
           )
         end
       
@@ -100,11 +105,11 @@ class Chef
         def remove_package(name, version)
           if version
             run_command(
-              :command => "gem uninstall #{name} -q -v #{version}"
+              :command => "#{gem_binary_path} uninstall #{name} -q -v #{version}"
             )
           else
             run_command(
-              :command => "gem uninstall #{name} -q -a"
+              :command => "#{gem_binary_path} uninstall #{name} -q -a"
             )
           end
         end
