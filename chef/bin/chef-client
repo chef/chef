@@ -38,7 +38,7 @@ opts = OptionParser.new do |opts|
     :group=>       {  :short=>"-g GROUP",         :long=>"--group GROUP",         :description=>"Group to change gid to before daemonizing", :proc=>nil },
     :daemonize=>   {  :short=>"-d",               :long=>"--daemonize",           :description=>"Daemonize the process", :proc=> lambda { |p| true} },
     :interval=>    {  :short=>"-i SECONDS",       :long=>"--interval SECONDS",    :description=>"Run chef-client periodically, in seconds", :proc=>nil },
-    :json_attribs=>{  :short=>"-j JSON_ATTRIBS",  :long=>"--json-attributes JSON_ATTRIBS", :description=>"Load attributes from a JSON file", :proc=>nil },
+    :json_attribs=>{  :short=>"-j JSON_ATTRIBS",  :long=>"--json-attributes JSON_ATTRIBS", :description=>"Load attributes from a JSON file/URL", :proc=>nil },
     :node_name=>   {  :short=>"-N NODE_NAME",     :long=>"--node-name NODE_NAME", :description=>"The node name for this client", :proc=>nil },
     :splay=>       {  :short=>"-s SECONDS",       :long=>"--splay SECONDS",       :description=>"The splay time for running at intervals, in seconds", :proc=>nil },
     :log_level=>   {  :short=>"-l LEVEL",         :long=>"--loglevel LEVEL",      :description=>"Set the log level (debug, info, warn, error, fatal)", :proc=>lambda { |p| p.to_sym} },
@@ -71,10 +71,29 @@ unless File.exists?(config[:config_file]) and File.readable?(config[:config_file
 end
 
 if config[:json_attribs]
-  if File.exists?(config[:json_attribs]) and File.readable?(config[:json_attribs])
-    config[:json_attribs] = JSON.parse(IO.read(config[:json_attribs]))
-  else
-    Chef.fatal!("I cannot find or read #{config[:json_attribs]}", 2)
+  require 'net/http'
+  require 'open-uri'
+
+  json_io = nil
+  begin
+    json_io = open(config[:json_attribs])
+  rescue SocketError => error
+    Chef.fatal!("I cannot connect to #{config[:json_attribs]}", 2)
+  rescue Errno::ENOENT => error
+    Chef.fatal!("I cannot find #{config[:json_attribs]}", 2)
+  rescue Errno::EACCES => error
+    Chef.fatal!("Permissions are incorrect on #{config[:json_attribs]}. Please chmod a+r #{config[:json_attribs]}", 2)
+  rescue Exception => error
+    Chef.fatal!("Got an unexpected error reading #{config[:json_attribs]}: #{error.message}", 2)
+  end
+
+  json_contents = json_io.read
+ 
+  begin
+    config[:json_attribs] = JSON.parse(json_contents)
+  rescue JSON::ParserError => error
+    Chef.fatal!("Could not parse the provided JSON file (#{config[:json_attribs]})!: " + error.message, 2)
+    exit 2
   end
 end
 
