@@ -44,6 +44,7 @@ class Chef
         command_args[:user] = @new_resource.user if @new_resource.user
         command_args[:group] = @new_resource.group if @new_resource.group
         command_args[:cwd] = @new_resource.cwd if @new_resource.cwd
+        command_args[:umask] = @new_resource.umask if @new_resource.umask
         
         status = run_command(command_args)
         if status

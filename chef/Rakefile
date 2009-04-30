@@ -4,7 +4,7 @@ require 'rake/rdoctask'
 require './tasks/rspec.rb'
 
 GEM = "chef"
-CHEF_VERSION = "0.5.7"
+CHEF_VERSION = "0.6.2"
 AUTHOR = "Adam Jacob"
 EMAIL = "adam@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"

@@ -27,7 +27,15 @@ class Chef
         @resource_name = :gem_package
         @provider = Chef::Provider::Package::Rubygems
       end
-      
+
+      # Sets a custom gem_binary to run for gem commands.
+      def gem_binary(arg=nil)
+        set_or_return(
+          :gem_binary,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
     end
   end
 end

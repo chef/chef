@@ -54,7 +54,12 @@ end
 desc "Test your cookbooks for syntax errors"
 task :test do
   puts "** Testing your cookbooks for syntax errors"
-  Dir[ File.join(TOPDIR, "cookbooks", "**", "*.rb") ].each do |recipe|
+
+  recipes = ["*cookbooks"].map { |folder|
+    Dir[File.join(TOPDIR, folder, "**", "*.rb")]
+  }.flatten
+
+  recipes.each do |recipe|
     print "Testing recipe #{recipe}: "
     sh %{ruby -c #{recipe}} do |ok, res|
       if ! ok

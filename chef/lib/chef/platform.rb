@@ -130,6 +130,7 @@ class Chef
         pmap = Chef::Platform.find(platform, version)
         rtkey = resource_type
         if resource_type.kind_of?(Chef::Resource)
+          return resource_type.provider if resource_type.provider
           rtkey = resource_type.resource_name.to_sym
         end
         if pmap.has_key?(rtkey)
