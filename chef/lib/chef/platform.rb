@@ -27,7 +27,11 @@ class Chef
   class Platform
         
     @platforms = {
-      :mac_os_x => {},
+      :mac_os_x => {
+        :default => {
+          :package => Chef::Provider::Package::Macports
+        }
+      },
       :freebsd => {
         :default => {
           :group => Chef::Provider::Group::Pw,
