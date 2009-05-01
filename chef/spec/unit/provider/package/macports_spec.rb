@@ -78,13 +78,18 @@ describe Chef::Provider::Package::Macports do
 
   describe "current_installed_version" do
     it "should return the current version if the package is installed" do
-      @stdout.should_receive(:readline).and_return("  openssl @0.9.8k_0 (active)\n")
+      @stdout.should_receive(:read).and_return(<<EOF
+The following ports are currently installed:
+  openssl @0.9.8k_0 (active)
+EOF
+      )
+
       @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.current_installed_version.should == "0.9.8k_0"
     end
 
     it "should return nil if a package is not currently installed" do
-      @stdout.should_receive(:readline).and_return("       \n")
+      @stdout.should_receive(:read).and_return("       \n")
       @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.current_installed_version.should be_nil
     end
@@ -92,13 +97,13 @@ describe Chef::Provider::Package::Macports do
 
   describe "macports_candidate_version" do
     it "should return the latest available version of a given package" do
-      @stdout.should_receive(:readline).and_return("version: 4.2.7\n")
+      @stdout.should_receive(:read).and_return("version: 4.2.7\n")
       @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.macports_candidate_version.should == "4.2.7"
     end
 
     it "should return nil if there is no version for a given package" do
-      @stdout.should_receive(:readline).and_return("Error: port fadsfadsfads not found\n")
+      @stdout.should_receive(:read).and_return("Error: port fadsfadsfads not found\n")
       @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.macports_candidate_version.should be_nil
     end
@@ -127,6 +132,11 @@ describe Chef::Provider::Package::Macports do
       @provider.should_receive(:run_command).with(:command => "port uninstall zsh @4.2.7")
       @provider.purge_package("zsh", "4.2.7")
     end
+
+    it "should purge the currently active version if no explicit version is passed in" do
+      @provider.should_receive(:run_command).with(:command => "port uninstall zsh")
+      @provider.purge_package("zsh", nil)
+    end
   end
 
   describe "remove_package" do
@@ -134,21 +144,35 @@ describe Chef::Provider::Package::Macports do
       @provider.should_receive(:run_command).with(:command => "port deactivate zsh @4.2.7")
       @provider.remove_package("zsh", "4.2.7")
     end
+
+    it "should remove the currently active version if no explicit version is passed in" do
+      @provider.should_receive(:run_command).with(:command => "port deactivate zsh")
+      @provider.remove_package("zsh", nil)
+    end
   end
 
   describe "upgrade_package" do
     it "should run the port upgrade command with the correct version" do
-      @current_resource.should_receive(:version).and_return("4.1.6")
+      @current_resource.should_receive(:version).at_least(:once).and_return("4.1.6")
       @provider.current_resource = @current_resource
+
       @provider.should_receive(:run_command).with(:command => "port upgrade zsh @4.2.7")
 
       @provider.upgrade_package("zsh", "4.2.7")
     end
 
     it "should not run the port upgrade command if the version is already installed" do
-      @current_resource.should_receive(:version).and_return("4.2.7")
+      @current_resource.should_receive(:version).at_least(:once).and_return("4.2.7")
       @provider.current_resource = @current_resource
       @provider.should_not_receive(:run_command)
+
+      @provider.upgrade_package("zsh", "4.2.7")
+    end
+
+    it "should call install_package if the package isn't currently installed" do
+      @current_resource.should_receive(:version).at_least(:once).and_return(nil)
+      @provider.current_resource = @current_resource
+      @provider.should_receive(:install_package).and_return(true)
 
       @provider.upgrade_package("zsh", "4.2.7")
     end
