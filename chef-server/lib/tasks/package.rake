@@ -34,6 +34,7 @@ spec = Gem::Specification.new do |s|
       "NOTICE",
       "{app}/**/*",
       "{config}/**/*",
+      "{contrib}/**/*",
       "{doc}/**/*",
       "{lib}/**/*",
       "{log}/**/*",
