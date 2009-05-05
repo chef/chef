@@ -48,7 +48,7 @@ class Chef
           popen4("mount") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
-              when /^#{@device_mount_regex}\s+on\s+#{@new_resource.mount_point}/
+              when /^#{device_mount_regex}\s+on\s+#{@new_resource.mount_point}/
                 mounted = true
                 Chef::Log.debug("Special device #{@device_logstring} mounted as #{@new_resource.mount_point}")
               when /^([\/\w])+\son\s#{@new_resource.mount_point}\s+/
@@ -171,7 +171,7 @@ class Chef
             @new_resource.device
           else
           	real_device = nil
-            status = popen4("findfs #{@device_fstab}") do |pid, stdin, stdout, stderr|
+            status = popen4("/sbin/findfs #{@device_fstab}") do |pid, stdin, stdout, stderr|
               real_device = stdout.first
             end
             unless status.exitstatus == 0
