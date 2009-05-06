@@ -213,7 +213,11 @@ class Chef
             end
           else
             if @platforms.has_key?(args[:platform])            
-              @platforms[args[:platform]][:default][args[:resource].to_sym] = args[:provider]
+              if @platforms[args[:platform]].has_key?(:default)
+                @platforms[args[:platform]][:default][args[:resource].to_sym] = args[:provider]
+              else
+                @platforms[args[:platform]] = { :default => { args[:resource].to_sym => args[:provider] } }
+              end
             else
               @platforms[args[:platform]] = {
                 :default => {
