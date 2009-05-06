@@ -44,7 +44,7 @@ class Chef
           @logger = Logger.new(*opts)
         end
         @logger.formatter = Chef::Log::Formatter.new()
-        level(Chef::Config.log_level)
+        level(Chef::Config[:log_level])
       end
       
       # Sets the level for the Logger object by symbol.  Valid arguments are:

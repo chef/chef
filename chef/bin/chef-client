@@ -59,7 +59,7 @@ opts = OptionParser.new do |opts|
 end
 opts.parse!(ARGV)
 
-trap("INT") { Chef.fatal!("SIGINT received, stopping", 2) }
+trap("INT") { Chef::Application.fatal!("SIGINT received, stopping", 2) }
 trap("HUP") { 
   Chef::Log.info("SIGHUP received, reloading configuration")
   Chef::Config.from_file(config[:config_file])
@@ -67,7 +67,7 @@ trap("HUP") {
 }
 
 unless File.exists?(config[:config_file]) and File.readable?(config[:config_file])
-  Chef.fatal!("I cannot find or read the config file: #{config[:config_file]}", 1)
+  Chef::Application.fatal!("I cannot find or read the config file: #{config[:config_file]}", 1)
 end
 
 if config[:json_attribs]
@@ -78,13 +78,13 @@ if config[:json_attribs]
   begin
     json_io = open(config[:json_attribs])
   rescue SocketError => error
-    Chef.fatal!("I cannot connect to #{config[:json_attribs]}", 2)
+    Chef::Application.fatal!("I cannot connect to #{config[:json_attribs]}", 2)
   rescue Errno::ENOENT => error
-    Chef.fatal!("I cannot find #{config[:json_attribs]}", 2)
+    Chef::Application.fatal!("I cannot find #{config[:json_attribs]}", 2)
   rescue Errno::EACCES => error
-    Chef.fatal!("Permissions are incorrect on #{config[:json_attribs]}. Please chmod a+r #{config[:json_attribs]}", 2)
+    Chef::Application.fatal!("Permissions are incorrect on #{config[:json_attribs]}. Please chmod a+r #{config[:json_attribs]}", 2)
   rescue Exception => error
-    Chef.fatal!("Got an unexpected error reading #{config[:json_attribs]}: #{error.message}", 2)
+    Chef::Application.fatal!("Got an unexpected error reading #{config[:json_attribs]}: #{error.message}", 2)
   end
 
   json_contents = json_io.read
@@ -92,7 +92,7 @@ if config[:json_attribs]
   begin
     config[:json_attribs] = JSON.parse(json_contents)
   rescue JSON::ParserError => error
-    Chef.fatal!("Could not parse the provided JSON file (#{config[:json_attribs]})!: " + error.message, 2)
+    Chef::Application.fatal!("Could not parse the provided JSON file (#{config[:json_attribs]})!: " + error.message, 2)
     exit 2
   end
 end

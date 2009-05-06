@@ -18,19 +18,19 @@
 require 'optparse'
 require 'chef'
 require 'chef/exceptions'
-require 'chef/logger'
+require 'chef/log'
 
 class Chef::Application
-  attr_accessor :argv, :config, :options, :opt_parser
   
-  def initialize()
+  attr_accessor :argv, :config, :options  
+    
+  def initialize
     @argv = ARGV.dup
-    @config = { :config_file => "/etc/chef/default.rb" }
-    @options = nil
-    @opt_parser = nil
+    @config = {}
+    @options = {}
     
     trap("INT") do
-       Chef.fatal!("SIGINT received, stopping", 2)
+       Chef::Application.fatal!("SIGINT received, stopping", 2)
     end
     
     trap("HUP") do 
@@ -40,24 +40,26 @@ class Chef::Application
     
     at_exit do
       # tear down the logger and shit
-    end
-        
+    end  
   end
   
+  # Reconfigure the application. You'll want to override this.
   def reconfigure
     configure_opt_parser
     configure_chef
-    parse_arguments
     configure_logging
   end
   
+  # Kick off the application
   def run
     reconfigure
-    get_this_party_started
+    setup_application
+    run_application
   end
   
+  # Build an Option Parser, merge the default options and then parse the command line arguments into the config hash
   def configure_opt_parser    
-    @opt_parser = OptionParser.new do |opts|
+    OptionParser.new do |opts|
       opts.banner = "Usage: #{$0} (options)"
 
       default_options = { 
@@ -79,53 +81,49 @@ class Chef::Application
       }
       
       # just a step to the left
-      @options = default_options.merge(@options) if @options
-
-      # setup our instance config hash
+      @options = default_options.merge(@options)
+      
+      # Add the CLI options into OptionParser
       @options.each do |opt_key, opt_val|
         opts.on(opt_val[:short], opt_val[:long], opt_val[:description]) do |c|
+          # Update our internal Chef::Config hash, to be merged later.
           @config[opt_key] = (opt_val[:proc] && opt_val[:proc].call(c)) || c
         end
       end
 
       opts.on_tail("-h", "--help", "Show this message") do
         puts opts
-        exit 0
+        self.fatal!("Exiting", 0)
       end
-    end
+    end.parse!(@argv)
   end
   
   # Parse the configuration file
   def configure_chef
-    Chef::Config.from_file(@config[:config_file])
+    Chef::Config.from_file(@config[:config_file]) if @config[:config_file]
     Chef::Config.configure { |c| c.merge!(@config).rehash }
   end
   
   # Initialize and configure the logger
   def configure_logging
     Chef::Log.init(Chef::Config[:log_location])
-    Chef::Log.level(Chef::Config[:log_level])
   end
   
-  # Parse ARGV for arguments
-  def parse_arguments
-    raise Chef::Exceptions::Application, "#{self.to_s}: option parser has not been configured" unless @opt_parser
-    @opt_parser.parse!(@argv)
+  class << self
+    # Log a fatal error message and exit the application
+    def fatal!(msg, err = -1)
+      Chef::Log.fatal(msg)
+      Process.exit err
+    end
   end
   
-  # Log a fatal error message and exit the process
-  def fatal!(msg, err = -1)
-    Chef::Log.fatal(msg)
-    exit err
+  # Called prior to starting the application, by the run method
+  def setup_application
+    raise Chef::Exceptions::Application, "#{self.to_s}: you must override setup_application"      
   end
   
-  private
-  
-  def get_this_party_started
-    raise Chef::Exceptions::Application, "#{self.to_s}: you must override get_this_party_started"
+  # Actually run the application
+  def run_application
+    raise Chef::Exceptions::Application, "#{self.to_s}: you must override run_application"  
   end
-
 end
-
-
-Chef::Application.new.run

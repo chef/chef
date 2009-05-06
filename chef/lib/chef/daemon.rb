@@ -48,10 +48,10 @@ class Chef
             save_pid_file
             at_exit { remove_pid_file }
           rescue NotImplementedError => e
-            Chef.fatal!("There is no fork: #{e.message}")
+            Chef::Application.fatal!("There is no fork: #{e.message}")
           end
         else
-          Chef.fatal!("Chef is already running pid #{pid}")
+          Chef::Application.fatal!("Chef is already running pid #{pid}")
         end
       end
   
@@ -71,7 +71,7 @@ class Chef
       rescue Errno::ESRCH, Errno::ENOENT
         false
       rescue Errno::EACCES => e
-        Chef.fatal!("You don't have access to the PID file at #{pid_file}: #{e.message}")
+        Chef::Application.fatal!("You don't have access to the PID file at #{pid_file}: #{e.message}")
       end
       
       # Gets the pid file for @name
@@ -103,13 +103,13 @@ class Chef
         begin
           FileUtils.mkdir_p(File.dirname(file))
         rescue Errno::EACCES => e
-          Chef.fatal!("Failed store pid in #{File.dirname(file)}, permission denied: #{e.message}")
+          Chef::Application.fatal!("Failed store pid in #{File.dirname(file)}, permission denied: #{e.message}")
         end
       
         begin
           File.open(file, "w") { |f| f.write(Process.pid.to_s) }
         rescue Errno::EACCES => e
-          Chef.fatal!("Couldn't write to pidfile #{file}, permission denied: #{e.message}")
+          Chef::Application.fatal!("Couldn't write to pidfile #{file}, permission denied: #{e.message}")
         end
       end
     
@@ -145,14 +145,14 @@ class Chef
         begin
           target_uid = Etc.getpwnam(user).uid
         rescue ArgumentError => e
-          Chef.fatal!("Failed to get UID for user #{user}, does it exist? #{e.message}")
+          Chef::Application.fatal!("Failed to get UID for user #{user}, does it exist? #{e.message}")
           return false
         end
    
         begin
           target_gid = Etc.getgrnam(group).gid
         rescue ArgumentError => e
-          Chef.fatal!("Failed to get GID for group #{group}, does it exist? #{e.message}")
+          Chef::Application.fatal!("Failed to get GID for group #{group}, does it exist? #{e.message}")
           return false
         end
       
@@ -163,7 +163,7 @@ class Chef
         end
         true
       rescue Errno::EPERM => e
-        Chef.fatal!("Permission denied when trying to change #{uid}:#{gid} to #{target_uid}:#{target_gid}. #{e.message}")
+        Chef::Application.fatal!("Permission denied when trying to change #{uid}:#{gid} to #{target_uid}:#{target_gid}. #{e.message}")
       end
     end
   end

@@ -25,7 +25,7 @@ require 'chef/queue'
 require 'chef/search_index'
 require 'chef/daemon'
 
-trap("INT") { Chef.fatal!("SIGINT received, stopping", 2) }
+trap("INT") { Chef::Application.fatal!("SIGINT received, stopping", 2) }
 
 config = {
   :config_file => "/etc/chef/server.rb",
@@ -58,7 +58,7 @@ end
 opts.parse!(ARGV)
 
 unless File.exists?(config[:config_file]) and File.readable?(config[:config_file])
-  Chef.fatal!("I cannot find or read the config file: #{config[:config_file]}", 1)
+  Chef::Application.fatal!("I cannot find or read the config file: #{config[:config_file]}", 1)
 end
 
 Chef::Config.from_file(config[:config_file])
