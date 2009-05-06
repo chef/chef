@@ -22,10 +22,8 @@ describe Chef::Application, "initialize" do
     @app = Chef::Application.new
   end
   
-  describe "initialize" do
-    it "should create an instance of Chef::Application" do
-      @app.should be_kind_of(Chef::Application)
-    end
+  it "should create an instance of Chef::Application" do
+    @app.should be_kind_of(Chef::Application)
   end
 end
 

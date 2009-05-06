@@ -43,14 +43,14 @@ class Chef::Application
     end  
   end
   
-  # Reconfigure the application. You'll want to override this.
+  # Reconfigure the application. You'll want to override and super this method.
   def reconfigure
     configure_opt_parser
     configure_chef
     configure_logging
   end
   
-  # Kick off the application
+  # Get this party started
   def run
     reconfigure
     setup_application
@@ -93,7 +93,7 @@ class Chef::Application
 
       opts.on_tail("-h", "--help", "Show this message") do
         puts opts
-        self.fatal!("Exiting", 0)
+        Chef::Application.fatal!("Exiting", 0)
       end
     end.parse!(@argv)
   end
