@@ -1,5 +1,5 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: AJ Christensen (<aj@junglist.gen.nz>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -15,21 +15,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class Chef
-  class Exceptions
-    class Application < RuntimeError; end
-    class Cron < RuntimeError; end
-    class Exec < RuntimeError; end
-    class FileNotFound < RuntimeError; end  
-    class Package < RuntimeError; end
-    class Service < RuntimeError; end
-    class Route < RuntimeError; end
-    class SearchIndex < RuntimeError; end  
-    class Override < RuntimeError; end
-    class UnsupportedAction < RuntimeError; end
-    class MissingLibrary < RuntimeError; end
-    class User < RuntimeError; end
-    class Group < RuntimeError; end
-    class Link < RuntimeError; end
-  end
-end
+require 'chef/application'
