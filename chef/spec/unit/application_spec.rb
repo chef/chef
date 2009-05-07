@@ -31,6 +31,9 @@ end
 describe Chef::Application, "reconfigure" do
   before do
     @app = Chef::Application.new
+    @app.stub!(:configure_opt_parser).and_return(true)
+    @app.stub!(:configure_chef).and_return(true)
+    @app.stub!(:configure_logging).and_return(true)
   end
   
   it "should configure the options parser" do
@@ -59,6 +62,9 @@ describe Chef::Application do
     before do
       @app.stub!(:setup_application).and_return(true)
       @app.stub!(:run_application).and_return(true)
+      @app.stub!(:configure_opt_parser).and_return(true)
+      @app.stub!(:configure_chef).and_return(true)
+      @app.stub!(:configure_logging).and_return(true)
     end
     
     it "should reconfigure the application before running" do
