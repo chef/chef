@@ -93,7 +93,7 @@ class Chef
       Chef::Log.info("Starting Chef Solo Run")
       
       build_node(@node_name, solo = true)
-      converge()
+      converge(solo = true)
       
       end_time = Time.now
       Chef::Log.info("Chef Run complete in #{end_time - start_time} seconds")
@@ -333,9 +333,11 @@ class Chef
     #
     # === Returns
     # true:: Always returns true
-    def converge
+    def converge(solo=false)
       Chef::Log.debug("Compiling recipes for node #{@safe_name}")
-      Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+      unless solo
+        Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+      end
       compile = Chef::Compile.new()
       compile.node = @node
       compile.load_libraries
