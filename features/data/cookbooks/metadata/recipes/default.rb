@@ -1,9 +1,8 @@
 #
-# Rakefile for Chef Server Repository
+# Cookbook Name:: metadata
+# Recipe:: default
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Copyright 2009, Opscode
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,19 +16,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-require 'rubygems'
-require 'json'
-
-# Make sure you have loaded constants first
-require File.join(File.dirname(__FILE__), 'config', 'rake')
-
-# And choosen a VCS
-if File.directory?(File.join(TOPDIR, ".svn"))
-  $vcs = :svn
-elsif File.directory?(File.join(TOPDIR, ".git"))
-  $vcs = :git
-end
-
-require 'chef/tasks/chef_repo'
-

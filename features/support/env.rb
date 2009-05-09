@@ -35,6 +35,7 @@ class ChefWorld
   def initialize
     @client = Chef::Client.new
     @tmpdir = File.join(Dir.tmpdir, "chef_integration")
+    @datadir = File.join(File.dirname(__FILE__), "..", "data")
     @cleanup_files = Array.new
     @cleanup_dirs = Array.new
     @recipe = nil

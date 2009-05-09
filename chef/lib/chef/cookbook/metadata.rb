@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require 'chef/mixin/from_file'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/log'
@@ -365,7 +367,7 @@ class Chef
         }
         result.to_json(*a)
       end
-      
+
       def self.from_hash(o)
         cm = self.new() 
         cm.name o['name']
