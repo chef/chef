@@ -30,9 +30,8 @@ describe Chef::Cookbook::Metadata do
       @meta.should be_a_kind_of(Chef::Cookbook::Metadata)
     end
     
-    it "should require a cookbook as the first argument" do
-      lambda { Chef::Cookbook::Metadata.new("string") }.should raise_error(ArgumentError)
-      lambda { Chef::Cookbook::Metadata.new() }.should raise_error(ArgumentError)
+    it "should allow a cookbook as the first argument" do
+      lambda { Chef::Cookbook::Metadata.new(@cookbook) }.should_not raise_error
     end
 
     it "should allow an maintainer name for the second argument" do
@@ -328,6 +327,116 @@ describe Chef::Cookbook::Metadata do
 
     it "should think 9.04 is >> 8.04" do
       @meta._check_valid_version("9.04", ">> 8.04").should == true
+    end
+  end
+
+  describe "recipes" do
+    before(:each) do 
+      @cookbook.recipe_files = [ "default.rb", "enlighten.rb" ]
+      @meta = Chef::Cookbook::Metadata.new(@cookbook)
+    end
+    
+    it "should have the names of the recipes" do
+      @meta.recipes["test_cookbook"].should == ""
+      @meta.recipes["test_cookbook::enlighten"].should == ""
+    end
+
+    it "should let you set the description for a recipe" do
+      @meta.recipe "test_cookbook", "It, um... tests stuff?"
+      @meta.recipes["test_cookbook"].should == "It, um... tests stuff?"
+    end
+
+    it "should automatically provide each recipe" do
+      @meta.providing.has_key?("test_cookbook").should == true
+      @meta.providing.has_key?("test_cookbook::enlighten").should == true
+    end
+
+  end
+
+  describe "json" do
+    before(:each) do 
+      @cookbook.recipe_files = [ "default.rb", "enlighten.rb" ]
+      @meta = Chef::Cookbook::Metadata.new(@cookbook)
+      @meta.version "1.0"
+      @meta.maintainer "Bobo T. Clown"
+      @meta.maintainer_email "bobo@example.com"
+      @meta.long_description "I have a long arm!"
+      @meta.supports :ubuntu, ">> 8.04"
+      @meta.depends "bobo", "= 1.0"
+      @meta.depends "bobotclown", "= 1.1"
+      @meta.recommends "snark", "<< 3.0"
+      @meta.suggests "kindness", ">> 2.0", "<< 4.0"
+      @meta.conflicts "hatred"
+      @meta.provides "foo(:bar, :baz)"
+      @meta.replaces "snarkitron"
+      @meta.recipe "test_cookbook::enlighten", "is your buddy"
+      @meta.attribute "bizspark/has_login", 
+        :display_name => "You have nothing" 
+    end
+ 
+    describe "serialize" do
+      before(:each) do
+        @serial = JSON.parse(@meta.to_json)
+      end
+
+      it "should serialize to a json hash" do
+        JSON.parse(@meta.to_json).should be_a_kind_of(Hash)
+      end
+
+      %w{
+        name 
+        description 
+        long_description 
+        maintainer 
+        maintainer_email 
+        license
+        platforms 
+        dependencies 
+        suggestions 
+        recommendations 
+        conflicting 
+        providing
+        replacing 
+        attributes 
+        recipes
+      }.each do |t| 
+        it "should include '#{t}'" do
+          @serial[t].should == @meta.send(t.to_sym)
+        end
+      end
+    end
+
+    describe "deserialize" do
+      before(:each) do
+        @deserial = Chef::Cookbook::Metadata.from_json(@meta.to_json)
+      end
+
+      it "should deserialize to a Chef::Cookbook::Metadata object" do
+        @deserial.should be_a_kind_of(Chef::Cookbook::Metadata)
+      end
+
+      %w{
+        name 
+        description 
+        long_description 
+        maintainer 
+        maintainer_email 
+        license
+        platforms 
+        dependencies 
+        suggestions 
+        recommendations 
+        conflicting 
+        providing
+        replacing 
+        attributes 
+        recipes
+      }.each do |t| 
+        it "should match '#{t}'" do
+          @deserial.send(t.to_sym).should == @meta.send(t.to_sym)
+        end
+      end
+
     end
 
   end
