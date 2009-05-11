@@ -1,5 +1,5 @@
 #
-# Author:: AJ Christensen (<aj@junglist.gen.nz>)
+# Author:: AJ Christensen (<aj@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -15,19 +15,45 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'optparse'
-require 'chef'
+require 'mixlib/cli'
 require 'chef/exceptions'
 require 'chef/log'
+require 'chef/config'
+
 
 class Chef::Application
+  include Mixlib::CLI
   
-  attr_accessor :argv, :config, :options  
-    
+  option :config_file, 
+      :short => "-c CONFIG",
+      :long  => "--config CONFIG",
+      :default => 'config.rb',
+      :description => "The configuration file to use"
+      
+    option :log_level, 
+      :short => "-l LEVEL",
+      :long  => "--log_level LEVEL",
+      :description => "Set the log level (debug, info, warn, error, fatal)",
+      :required => true,
+      :proc => Proc.new { |l| l.to_sym }
+      
+    option :log_location,
+        :short => "-L LOGLOCATION",
+        :long => "--logfile LOGLOCATION",
+        :description => "Set the log file location, defaults to STDOUT - recommended for daemonizing",
+        :proc => nil }
+      
+    option :help,
+      :short => "-h",
+      :long => "--help",
+      :description => "Show this message",
+      :on => :tail,
+      :boolean => true,
+      :show_options => true,
+      :exit => 0
+      
   def initialize
     @argv = ARGV.dup
-    @config = {}
-    @options = {}
     
     trap("INT") do
        Chef::Application.fatal!("SIGINT received, stopping", 2)
@@ -45,7 +71,6 @@ class Chef::Application
   
   # Reconfigure the application. You'll want to override and super this method.
   def reconfigure
-    configure_opt_parser
     configure_chef
     configure_logging
   end
@@ -56,52 +81,12 @@ class Chef::Application
     setup_application
     run_application
   end
-  
-  # Build an Option Parser, merge the default options and then parse the command line arguments into the config hash
-  def configure_opt_parser    
-    OptionParser.new do |opts|
-      opts.banner = "Usage: #{$0} (options)"
 
-      default_options = { 
-        :config_file => {
-          :short => "-c CONFIG",
-          :long => "--config CONFIG",
-          :description => "The Chef Config file to use",
-          :proc => nil }, 
-        :log_level => { 
-          :short => "-l LEVEL",
-          :long => "--loglevel LEVEL",
-          :description => "Set the log level (debug, info, warn, error, fatal)",
-          :proc => lambda { |p| p.to_sym} },
-        :log_location => {
-          :short => "-L LOGLOCATION",
-          :long => "--logfile LOGLOCATION",
-          :description => "Set the log file location, defaults to STDOUT - recommended for daemonizing",
-          :proc => nil }
-      }
-      
-      # just a step to the left
-      @options = default_options.merge(@options)
-      
-      # Add the CLI options into OptionParser
-      @options.each do |opt_key, opt_val|
-        opts.on(opt_val[:short], opt_val[:long], opt_val[:description]) do |c|
-          # Update our internal Chef::Config hash, to be merged later.
-          @config[opt_key] = (opt_val[:proc] && opt_val[:proc].call(c)) || c
-        end
-      end
-
-      opts.on_tail("-h", "--help", "Show this message") do
-        puts opts
-        Chef::Application.fatal!("Exiting", 0)
-      end
-    end.parse!(@argv)
-  end
-  
   # Parse the configuration file
   def configure_chef
-    Chef::Config.from_file(@config[:config_file]) if @config[:config_file]
-    Chef::Config.configure { |c| c.merge!(@config).rehash }
+    parse_options(@argv)
+    Chef::Config.from_file(config[:config_file]) if config[:config_file]
+    Chef::Config.merge!(config)
   end
   
   # Initialize and configure the logger

@@ -1,5 +1,5 @@
 #
-# Author:: AJ Christensen (<aj@junglist.gen.nz>)
+# Author:: AJ Christensen (<aj@opscode.com)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -22,60 +22,56 @@ require 'chef/daemon'
 
 class Chef::Application::Client < Chef::Application
   
+    option :user,
+      :short => "-u USER",
+      :long => "--user USER",
+      :description => "User to change uid to before daemonizing",
+      :proc => nil
+      
+    option :group,
+      :short => "-g GROUP",
+      :long => "--group GROUP",
+      :description => "Group to change gid to before daemonizing",
+      :proc => nil
+      
+    option :daemonize,
+      :short => "-d",
+      :long => "--daemonize",
+      :description => "Daemonize the process",
+      :proc => lambda { |p| true }
+      
+    option :interval,
+      :short => "-i SECONDS",
+      :long => "--interval SECONDS",
+      :description => "Run chef-client periodically, in seconds",
+      :proc => lambda { |s| s.to_i }
+      
+    option :json_attribs,
+      :short => "-j JSON_ATTRIBS",
+      :long => "--json-attributes JSON_ATTRIBS",
+      :description => "Load attributes from a JSON file or URL",
+      :proc => nil
+      
+    option :node_name,
+      :short => "-N NODE_NAME",
+      :long => "--node-name NODE_NAME",
+      :description => "The node name for this client",
+      :proc => nil
+      
+    option :splay,
+      :short => "-s SECONDS",
+      :long => "--splay SECONDS",
+      :description => "The splay time for running at intervals, in seconds",
+      :proc => lambda { |s| s.to_i }
+      
+    option :validation_token,
+      :short => "-t TOKEN",
+      :long => "--token TOKEN",
+      :description => "Set the openid validation token",
+      :proc => nil
+  
   def initialize
     super
-    
-    @options = { 
-      :user => {
-        :short => "-u USER",
-        :long => "--user USER",
-        :description => "User to change uid to before daemonizing",
-        :proc => nil
-      },
-      :group => {
-        :short => "-g GROUP",
-        :long => "--group GROUP",
-        :description => "Group to change gid to before daemonizing",
-        :proc => nil
-      },
-      :daemonize => {
-        :short => "-d",
-        :long => "--daemonize",
-        :description => "Daemonize the process",
-        :proc => lambda { |p| true}
-      },
-      :interval => {
-        :short => "-i SECONDS",
-        :long => "--interval SECONDS",
-        :description => "Run chef-client periodically, in seconds",
-        :proc => lambda { |s| s.to_i }
-      },
-      :json_attribs => {
-        :short => "-j JSON_ATTRIBS",
-        :long => "--json-attributes JSON_ATTRIBS",
-        :description => "Load attributes from a JSON file or URL",
-        :proc => nil
-      },
-      :node_name => {
-        :short => "-N NODE_NAME",
-        :long => "--node-name NODE_NAME",
-        :description => "The node name for this client",
-        :proc => nil
-      },
-      :splay => {
-        :short => "-s SECONDS",
-        :long => "--splay SECONDS",
-        :description => "The splay time for running at intervals, in seconds",
-        :proc => lambda { |s| s.to_i }
-      },
-      :validation_token => {
-        :short => "-t TOKEN",
-        :long => "--token TOKEN",
-        :description => "Set the openid validation token",
-        :proc => nil
-      },
-    }
-    
     @chef_client = nil
     @chef_client_json = nil
   end
