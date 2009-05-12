@@ -15,63 +15,93 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef'
 require 'chef/application'
 require 'chef/client'
+require 'chef/config'
 require 'chef/daemon'
+require 'chef/log'
+
 
 class Chef::Application::Client < Chef::Application
   
-    option :user,
-      :short => "-u USER",
-      :long => "--user USER",
-      :description => "User to change uid to before daemonizing",
-      :proc => nil
-      
-    option :group,
-      :short => "-g GROUP",
-      :long => "--group GROUP",
-      :description => "Group to change gid to before daemonizing",
-      :proc => nil
-      
-    option :daemonize,
-      :short => "-d",
-      :long => "--daemonize",
-      :description => "Daemonize the process",
-      :proc => lambda { |p| true }
-      
-    option :interval,
-      :short => "-i SECONDS",
-      :long => "--interval SECONDS",
-      :description => "Run chef-client periodically, in seconds",
-      :proc => lambda { |s| s.to_i }
-      
-    option :json_attribs,
-      :short => "-j JSON_ATTRIBS",
-      :long => "--json-attributes JSON_ATTRIBS",
-      :description => "Load attributes from a JSON file or URL",
-      :proc => nil
-      
-    option :node_name,
-      :short => "-N NODE_NAME",
-      :long => "--node-name NODE_NAME",
-      :description => "The node name for this client",
-      :proc => nil
-      
-    option :splay,
-      :short => "-s SECONDS",
-      :long => "--splay SECONDS",
-      :description => "The splay time for running at intervals, in seconds",
-      :proc => lambda { |s| s.to_i }
-      
-    option :validation_token,
-      :short => "-t TOKEN",
-      :long => "--token TOKEN",
-      :description => "Set the openid validation token",
-      :proc => nil
+  option :config_file, 
+    :short => "-c CONFIG",
+    :long  => "--config CONFIG",
+    :default => 'config.rb',
+    :description => "The configuration file to use"
+
+  option :log_level, 
+    :short        => "-l LEVEL",
+    :long         => "--log_level LEVEL",
+    :description  => "Set the log level (debug, info, warn, error, fatal)",
+    :proc         => lambda { |l| l.to_sym }
+
+  option :log_location,
+    :short        => "-L LOGLOCATION",
+    :long         => "--logfile LOGLOCATION",
+    :description  => "Set the log file location, defaults to STDOUT - recommended for daemonizing",
+    :proc         => nil
+
+  option :help,
+    :short        => "-h",
+    :long         => "--help",
+    :description  => "Show this message",
+    :on           => :tail,
+    :boolean      => true,
+    :show_options => true,
+    :exit         => 0
+    
+  option :user,
+    :short => "-u USER",
+    :long => "--user USER",
+    :description => "User to change uid to before daemonizing",
+    :proc => nil
+
+  option :group,
+    :short => "-g GROUP",
+    :long => "--group GROUP",
+    :description => "Group to change gid to before daemonizing",
+    :proc => nil
+
+  option :daemonize,
+    :short => "-d",
+    :long => "--daemonize",
+    :description => "Daemonize the process",
+    :proc => lambda { |p| true }
+
+  option :interval,
+    :short => "-i SECONDS",
+    :long => "--interval SECONDS",
+    :description => "Run chef-client periodically, in seconds",
+    :proc => lambda { |s| s.to_i }
+
+  option :json_attribs,
+    :short => "-j JSON_ATTRIBS",
+    :long => "--json-attributes JSON_ATTRIBS",
+    :description => "Load attributes from a JSON file or URL",
+    :proc => nil
+
+  option :node_name,
+    :short => "-N NODE_NAME",
+    :long => "--node-name NODE_NAME",
+    :description => "The node name for this client",
+    :proc => nil
+
+  option :splay,
+    :short => "-s SECONDS",
+    :long => "--splay SECONDS",
+    :description => "The splay time for running at intervals, in seconds",
+    :proc => lambda { |s| s.to_i }
+
+  option :validation_token,
+    :short => "-t TOKEN",
+    :long => "--token TOKEN",
+    :description => "Set the openid validation token",
+    :proc => nil
   
   def initialize
     super
+
     @chef_client = nil
     @chef_client_json = nil
   end

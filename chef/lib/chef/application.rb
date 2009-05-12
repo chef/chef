@@ -15,45 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'mixlib/cli'
+require 'chef/config'
 require 'chef/exceptions'
 require 'chef/log'
-require 'chef/config'
-
+require 'mixlib/cli'
 
 class Chef::Application
   include Mixlib::CLI
-  
-  option :config_file, 
-      :short => "-c CONFIG",
-      :long  => "--config CONFIG",
-      :default => 'config.rb',
-      :description => "The configuration file to use"
-      
-    option :log_level, 
-      :short => "-l LEVEL",
-      :long  => "--log_level LEVEL",
-      :description => "Set the log level (debug, info, warn, error, fatal)",
-      :required => true,
-      :proc => Proc.new { |l| l.to_sym }
-      
-    option :log_location,
-        :short => "-L LOGLOCATION",
-        :long => "--logfile LOGLOCATION",
-        :description => "Set the log file location, defaults to STDOUT - recommended for daemonizing",
-        :proc => nil }
-      
-    option :help,
-      :short => "-h",
-      :long => "--help",
-      :description => "Show this message",
-      :on => :tail,
-      :boolean => true,
-      :show_options => true,
-      :exit => 0
-      
-  def initialize
-    @argv = ARGV.dup
+   
+  def initialize   
+    super
     
     trap("INT") do
        Chef::Application.fatal!("SIGINT received, stopping", 2)
@@ -84,7 +55,8 @@ class Chef::Application
 
   # Parse the configuration file
   def configure_chef
-    parse_options(@argv)
+    parse_options
+    
     Chef::Config.from_file(config[:config_file]) if config[:config_file]
     Chef::Config.merge!(config)
   end
