@@ -41,6 +41,15 @@ class Chef
       newkey
     end
   
+    # Override the config dispatch to set the value of log_location configuration option
+    #
+    # === Parameters
+    # location<IO||String>:: Logging location as either an IO stream or string representing log file path
+    #
+    def self.log_location=(location)
+      @@configuration[:log_location]=(location.respond_to?(:sync=) ? location : File.new(location, "w+"))
+    end
+  
     authorized_openid_identifiers nil
     cookbook_path [ "/var/chef/site-cookbooks", "/var/chef/cookbooks" ]
     couchdb_database "chef"
