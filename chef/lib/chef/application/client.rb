@@ -110,33 +110,21 @@ class Chef::Application::Client < Chef::Application
   # Re-open the JSON attributes and load them into the node
   def reconfigure 
     super 
+    
+    Chef::Config[:delay] = Chef::Config[:interval] + (Chef::Config[:splay] ? rand(Chef::Config[:splay]) : 0)
        
     if Chef::Config[:json_attribs]
       require 'net/http'
       require 'open-uri'
 
-      json_io = nil
       begin
-        json_io = Kernel.open(Chef::Config[:json_attribs])
-      rescue SocketError => error
-        Chef::Application.fatal!("I cannot connect to #{Chef::Config[:json_attribs]}", 2)
-      rescue Errno::ENOENT => error
-        Chef::Application.fatal!("I cannot find #{Chef::Config[:json_attribs]}", 2)
-      rescue Errno::EACCES => error
-        Chef::Application.fatal!("Permissions are incorrect on #{Chef::Config[:json_attribs]}. Please chmod a+r #{Chef::Config[:json_attribs]}", 2)
-      rescue Exception => error
-        Chef::Application.fatal!("Got an unexpected error reading #{Chef::Config[:json_attribs]}: #{error.message}", 2)
+        open(Chef::Config[:json_attribs]) do |json_io|
+          @chef_client_json = JSON.parse(json_io.read)
+        end
+      rescue Exception
+        Chef::Application.fatal!("Error parsing json attributes", 2)
       end
-
-      begin
-        @chef_client_json = JSON.parse(json_io.read)
-      rescue JSON::ParserError => error
-        Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
-        exit 2
-      end
-    end
-    
-    Chef::Config[:delay] = Chef::Config[:interval] + (Chef::Config[:splay] ? rand(Chef::Config[:splay]) : 0)
+    end    
   end
   
   # Setup an instance of the chef client
@@ -158,17 +146,17 @@ class Chef::Application::Client < Chef::Application
     loop do
       @chef_client.run
       
-      if Chef::Config[:interval]
+      if Chef::Config[:delay]
         Chef::Log.debug("Sleeping for #{Chef::Config[:delay]} seconds")
         sleep Chef::Config[:delay]
       else
-        exit 0
+        Chef::Application.fatal! "Exiting", 0
       end
     end
   rescue SystemExit => e
     raise
   rescue Exception => e
-    if Chef::Config[:interval]
+    if Chef::Config[:delay]
       Chef::Log.error("#{e.class}")
       Chef::Log.fatal("#{e}\n#{e.backtrace.join("\n")}")
       Chef::Log.fatal("Sleeping for #{Chef::Config[:delay]} seconds before trying again")

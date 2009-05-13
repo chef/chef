@@ -2,7 +2,7 @@
 #
 # ./chef-client - Run the chef client
 #
-# Author:: AJ Christensen (<adam@opscode.com>)
+# Author:: AJ Christensen (<aj@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #

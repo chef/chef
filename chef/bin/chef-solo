@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 #
-# ./chef-client - Run the chef client
+# ./chef-solo - Run the chef client, in stand-alone mode
 #
-# Author:: AJ Christensen (<adam@opscode.com>)
+# Author:: AJ Christensen (<aj@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #

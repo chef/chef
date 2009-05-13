@@ -33,27 +33,56 @@ describe Chef::Application::Client, "reconfigure" do
     @app.stub!(:configure_opt_parser).and_return(true)
     @app.stub!(:configure_chef).and_return(true)
     @app.stub!(:configure_logging).and_return(true)
-    Chef::Config.stub!(:[]).with(:json_attribs).and_return(nil)
+    Chef::Config.stub!(:[]).with(:json_attribs).and_return(false)
   end
   
-  it "should set the delay based on the interval and splay values"
+  describe "with an splay value" do
+    before do
+      Chef::Config.stub!(:[]).with(:splay).and_return(60)
+      Chef::Config.stub!(:[]).with(:interval).and_return(10)
+    end
+    
+    it "should set the delay based on the interval and splay values" do
+      Chef::Config.should_receive(:[]=).with(:delay, an_instance_of(Fixnum))
+      @app.reconfigure
+    end
+  end
+  
+  describe "without an splay value" do
+    before do
+      Chef::Config.stub!(:[]).with(:splay).and_return(nil)
+      Chef::Config.stub!(:[]).with(:interval).and_return(10)
+    end
+    
+    it "should set the delay based on the interval" do
+      Chef::Config.should_receive(:[]=).with(:delay, 10)
+      @app.reconfigure
+    end
+  end
+
+end
+
+describe Chef::Application::Client, "reconfigure" do
+  before do
+    @app = Chef::Application::Client.new
+    @app.stub!(:configure_opt_parser).and_return(true)
+    @app.stub!(:configure_chef).and_return(true)
+    @app.stub!(:configure_logging).and_return(true)
+    Chef::Config.stub!(:[]).with(:interval).and_return(10)
+    Chef::Config.stub!(:[]).with(:splay).and_return(nil)
+  end
 
   describe "when the json_attribs configuration option is specified" do
     before do
       Chef::Config.stub!(:[]).with(:json_attribs).and_return("/etc/chef/dna.json")
-      @json = mock("IO", :null_object => true)
-      Kernel.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
+      @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
+      @app.stub!(:open).and_yield(@json)
     end
     
-    it "should try and open the json attribute file"
-    
-    it "should bomb out on a socket error"
-    
-    it "should bomb out if the json file doesn't exist"
-    
-    it "should bomb out if we don't have sufficient access to the json file"
-    
-    it "should bomb out on an unexpected exception"
+    it "should parse the json out of the file" do
+      JSON.should_receive(:parse).with(@json.read)
+      @app.reconfigure
+    end
   end
 end
 
@@ -61,44 +90,11 @@ describe Chef::Application::Client, "setup_application" do
   before do
     @chef_client = mock("Chef::Client", :null_object => true)
     Chef::Client.stub!(:new).and_return(@chef_client)
-    JSON.stub!(:parse).and_return({:a => 'b', :d => 'c'})
     @app = Chef::Application::Client.new
   end
   
   it "should instantiate a chef::client object" do
     Chef::Client.should_receive(:new).and_return(@chef_client)
     @app.setup_application
-  end
-  
-  it "should assign the json attribs"
-  
-  it "should assign the validation token"
-  
-  it "should assign the node name"
-end
-
-describe Chef::Application::Client, "run_application" do
-  before do
-    @chef_client = mock("Chef::Client", :null_object => true)
-    Chef::Client.stub!(:new).and_return(@chef_client)
-    @app = Chef::Application::Client.new
-  end
-  
-  describe "if we're daemonizing" do
-    before do
-      Chef::Config.stub!(:[]).with(:daemonize).and_return(true)
-    end
-    
-    it "should change privileges"
-    
-    it "should daemonize the process"
-  end
-  
-  describe "if we're not daemonizing" do
-    before do
-      Chef::Config.stub!(:[]).with(:daemonize).and_return(false)
-    end
-    
-    it "should run the chef client"
   end
 end
