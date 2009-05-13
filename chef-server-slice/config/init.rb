@@ -38,6 +38,6 @@ Merb::Config.use do |c|
   c[:session_secret_key]  = Chef::Config.manage_secret_key
   c[:session_store] = 'cookie'
   c[:exception_details] = true
-  c[:reload_classes] = false
+  c[:reload_classes] = true 
 end
 

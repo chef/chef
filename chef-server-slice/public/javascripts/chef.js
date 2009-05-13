@@ -18,6 +18,15 @@
 //
 
 $(document).ready(function(){
+
+  $('form#create_role').submit(function(event) {
+    var form = $('form#create_role');
+    var to_role = $('ul#for_role').sortable('toArray');
+    jQuery.each(to_role, function(i, field) {
+      form.append('<input type="hidden" name="for_role[]" value="' + field + '">');
+    });
+  });
+
   // livequery hidden form for link_to ajax magic
   $('a[method]').livequery(function(){
     var message = $(this).attr('confirm');
@@ -93,4 +102,8 @@ $(document).ready(function(){
   recipe_editor.doTruncation(true);
   recipe_editor.showFunctionButtons();
   */
+  $("#for_role, #available_recipes").sortable({
+    connectWith: '.connectedSortable',
+   	placeholder: 'ui-state-highlight'
+  }).disableSelection();
 });
