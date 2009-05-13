@@ -1,0 +1,1 @@
+default: --format pretty -r features/steps -r features/support features 

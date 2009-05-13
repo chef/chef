@@ -19,6 +19,7 @@
 #
 
 require 'rubygems'
+require 'chef'
 require 'json'
 
 # Make sure you have loaded constants first

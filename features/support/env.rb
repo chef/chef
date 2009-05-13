@@ -16,41 +16,78 @@
 # limitations under the License.
 #
 
-%w{chef chef-server}.each do |inc_dir|
+%w{chef chef-server chef-server-slice}.each do |inc_dir|
   $: << File.join(File.dirname(__FILE__), '..', '..', inc_dir, 'lib')
 end
 
-require 'spec/expectations'
+require 'rubygems'
+require 'spec'
 require 'chef'
 require 'chef/config'
 require 'chef/client'
 require 'tmpdir'
+require 'merb-core'
+require 'merb_cucumber/world/webrat'
 
-Chef::Config.from_file(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))
+def Spec.run? ; true; end
+
+Chef::Config.from_file(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'server.rb'))
+Chef::Config[:log_level] = :error
 Ohai::Config[:log_level] = :error
 
-class ChefWorld
-  attr_accessor :client, :tmpdir
-  
-  def initialize
-    @client = Chef::Client.new
-    @tmpdir = File.join(Dir.tmpdir, "chef_integration")
-    @datadir = File.join(File.dirname(__FILE__), "..", "data")
-    @cleanup_files = Array.new
-    @cleanup_dirs = Array.new
-    @recipe = nil
-  end
+if ENV['DEBUG'] = 'true'
+  Merb.logger.set_log(STDOUT, :debug) if ENV['DEBUG'] = 'true'
+else
+  Merb.logger.set_log(STDOUT, :error)
 end
 
-World do
-  ChefWorld.new
+Merb.start_environment(
+  :merb_root => File.join(File.dirname(__FILE__), "..", "..", "chef-server"), 
+  :testing => true, 
+  :adapter => 'runner',
+  :environment => ENV['MERB_ENV'] || 'test',
+  :session_store => 'memory'
+)
+
+Spec::Runner.configure do |config|
+  config.include(Merb::Test::ViewHelper)
+  config.include(Merb::Test::RouteHelper)
+  config.include(Merb::Test::ControllerHelper)
 end
+
+module ChefWorld
+
+  attr_accessor :recipe, :cookbook, :response, :inflated_response, :log_level, :chef_args, :config_file, :stdout, :stderr, :status
+
+  def client
+    @client ||= Chef::Client.new
+  end
+
+  def tmpdir
+    @tmpdir ||= File.join(Dir.tmpdir, "chef_integration")
+  end
+  
+  def datadir
+    @datadir ||= File.join(File.dirname(__FILE__), "..", "data")
+  end
+
+  def cleanup_files
+    @cleanup_files ||= Array.new
+  end
+
+  def cleanup_dirs
+    @cleanup_dirs ||= Array.new
+  end
+  
+end
+
+World(ChefWorld)
 
 After do
-  @cleanup_files.each do |file|
+  cleanup_files.each do |file|
     system("rm #{file}")
   end
-  @cleanup_dirs.each do |dir|
+  cleanup_dirs.each do |dir|
     system("rm -rf #{dir}")
   end
 end
