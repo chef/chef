@@ -31,14 +31,8 @@ end
 describe Chef::Application, "reconfigure" do
   before do
     @app = Chef::Application.new
-    @app.stub!(:configure_opt_parser).and_return(true)
     @app.stub!(:configure_chef).and_return(true)
     @app.stub!(:configure_logging).and_return(true)
-  end
-  
-  it "should configure the options parser" do
-    @app.should_receive(:configure_opt_parser).and_return(true)
-    @app.reconfigure
   end
   
   it "should configure chef" do
@@ -62,7 +56,6 @@ describe Chef::Application do
     before do
       @app.stub!(:setup_application).and_return(true)
       @app.stub!(:run_application).and_return(true)
-      @app.stub!(:configure_opt_parser).and_return(true)
       @app.stub!(:configure_chef).and_return(true)
       @app.stub!(:configure_logging).and_return(true)
     end
@@ -84,91 +77,16 @@ describe Chef::Application do
   end
 end
 
-describe Chef::Application, "configure_opt_parser" do
-  before do
-    @opt = mock("OptionParser", :null_object => true)
-    @opt.stub!(:parse!).and_return(true)
-    OptionParser.stub!(:new).and_yield(@opt)
-    @app = Chef::Application.new
-  end
-
-  it "should create a new OptionParser" do
-    OptionParser.should_receive(:new).and_yield(@opt)
-    @app.configure_opt_parser
-  end
-    
-  { :config_file => {
-      :short => "-c CONFIG",
-      :long => "--config CONFIG",
-      :description => "The Chef Config file to use",
-      :proc => nil }, 
-    :log_level => { 
-      :short => "-l LEVEL",
-      :long => "--loglevel LEVEL",
-      :description => "Set the log level (debug, info, warn, error, fatal)",
-      :proc => lambda { |p| p.to_sym} },
-    :log_location => {
-      :short => "-L LOGLOCATION",
-      :long => "--logfile LOGLOCATION",
-      :description => "Set the log file location, defaults to STDOUT - recommended for daemonizing",
-      :proc => nil }
-  }.each do |opt_key, opt_val|
-    # Can't seem to work out how to make this check the 'proc' option, so just short/long/desc for now.
-    %w{short long description}.collect { |s| s.to_sym }.each do |opt|
-      it "should have the default option #{opt_key} with the #{opt.to_s} value of #{opt_val[opt].to_s}" do
-        @app.configure_opt_parser
-        @app.options[opt_key][opt].should == opt_val[opt]
-      end
-    end
-  end
-  
-  describe "with additional options" do
-    before do
-      @app.options = {
-        :banana_boat => {
-          :short => "-b BANANABOAT",
-          :long => "--bananaboat BANANABOAT",
-          :description => "I see a deadly black tarantula!",
-          :proc => nil }
-        }
-    end
-    
-    { :config_file => {
-        :short => "-c CONFIG",
-        :long => "--config CONFIG",
-        :description => "The Chef Config file to use",
-        :proc => nil }, 
-      :log_level => { 
-        :short => "-l LEVEL",
-        :long => "--loglevel LEVEL",
-        :description => "Set the log level (debug, info, warn, error, fatal)",
-        :proc => lambda { |p| p.to_sym} },
-      :log_location => {
-        :short => "-L LOGLOCATION",
-        :long => "--logfile LOGLOCATION",
-        :description => "Set the log file location, defaults to STDOUT - recommended for daemonizing",
-        :proc => nil },
-      :banana_boat => {
-        :short => "-b BANANABOAT",
-        :long => "--bananaboat BANANABOAT",
-        :description => "I see a deadly black tarantula!",
-        :proc => nil }
-    }.each do |opt_key, opt_val|
-      # Can't seem to work out how to make this check the 'proc' option, so just short/long/desc for now.
-      %w{short long description}.collect { |s| s.to_sym }.each do |opt|
-        it "should have the option #{opt_key} with the #{opt.to_s} value of #{opt_val[opt].to_s}" do
-          @app.configure_opt_parser
-          @app.options[opt_key][opt].should == opt_val[opt]
-        end
-      end
-    end
-    
-  end
-end
-
 describe Chef::Application, "configure_chef" do
   before do
     @app = Chef::Application.new
+    Chef::Config.stub!(:merge!).and_return(true)
+    @app.stub!(:parse_options).and_return(true)
+  end
+  
+  it "should parse the commandline options" do
+    @app.should_receive(:parse_options).and_return(true)
+    @app.configure_chef
   end
   
   describe "when a config_file is present" do
@@ -195,7 +113,7 @@ describe Chef::Application, "configure_chef" do
   
   
   it "should merge the local config hash into chef::config" do
-    Chef::Config.should_receive(:configure)
+    Chef::Config.should_receive(:merge!).and_return(true)
     @app.configure_chef
   end
 
@@ -205,7 +123,6 @@ describe Chef::Application, "configure_logging" do
   before do
     @app = Chef::Application.new
     Chef::Config.stub!(:[]).with(:log_location).and_return(STDOUT)
-    Chef::Config.stub!(:[]).with(:log_level).and_return(:debug)
   end
   
   it "should initialise the chef logger" do
@@ -213,10 +130,6 @@ describe Chef::Application, "configure_logging" do
     @app.configure_logging
   end
 
-  it "should set the chef logger level" do
-    Chef::Log.should_receive(:level).with(:debug).and_return(true)
-    @app.configure_logging
-  end
 end
 
 describe Chef::Application, "class method: fatal!" do

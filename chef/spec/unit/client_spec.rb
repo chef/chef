@@ -107,7 +107,7 @@ describe Chef::Client, "run_solo" do
   
   it "should start/top the run timer" do
     time = Time.now
-    Time.should_receive(:now).twice.and_return(time)
+    Time.should_receive(:now).at_least(1).times.and_return(time)
     @client.run_solo
   end
   
