@@ -64,7 +64,8 @@ $(document).ready(function(){
   });
   
   // editable table for the node show view
-  $(".edit_area").editable(location.href + ".json", { 
+  /*
+    $(".edit_area").editable(location.href + ".json", { 
     target : location.href,
     method : "PUT",
     submit : "Save",
@@ -76,6 +77,7 @@ $(document).ready(function(){
     event     : "dblclick",
     height : 300
   });
+  */
   
 
   //alert("blah" + $('#json_tree_source').text());
@@ -106,4 +108,8 @@ $(document).ready(function(){
     connectWith: '.connectedSortable',
    	placeholder: 'ui-state-highlight'
   }).disableSelection();
+
+  // The table tree!
+  $('table.tree').treeTable({ expandable: true });
+  $('span.expander').click(function() { $('tr#' + $(this).attr('toggle')).toggleBranch(); });
 });

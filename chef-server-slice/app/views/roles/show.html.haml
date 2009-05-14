@@ -1,5 +1,30 @@
-%h1 Roles controller, show action
+.block#block-tables
+  .content
+    %h2.title= "Role #{h @role.name}"
+    .inner
+      .secondary-navigation
+        %ul
+          %li.first.active= link_to('Show', slice_url(:role, @role.name))
+          %li= link_to('Edit', slice_url(:edit_role, @role.name))
+          %li= link_to('Delete', slice_url(:role, @role.name))
+        .clear
+      .content
+        .inner
+          .left
+            %h3 Description
+            = @role.description
 
-%p
-  Edit this file in
-  %tt app/views/roles/show.html.haml
+          .left 
+            %h3 Recipes
+            .inner
+              %ol.list
+                - @role.recipes.each do |recipe|
+                  %li= recipe
+          .left 
+            %h3 Default Attributes
+            = build_tree('defattrs', @role.default_attributes)
+
+          .left 
+            %h3 Override Attributes
+            = build_tree('overattrs', @role.override_attributes)
+

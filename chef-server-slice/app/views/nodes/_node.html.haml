@@ -7,9 +7,11 @@
       %tr
         %td{:colspan => 2} This node has no recipes applied, double click to add one.
     - else
-      - @node.recipes.each_with_index do |recipe, index|
-        %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-          %td{:colspan => 2}= recipe
+      %tr
+        %td{:colspan => 2}
+          %div.recipe_list
+            - @node.recipes.each_with_index do |recipe, index|
+              %div{ :class => "#{index % 2 == 1 ? 'odd' : 'even'}", :id => recipe }= recipe
   %table.table
     %tr
       %th.first Tags
@@ -29,5 +31,5 @@
         %td{:colspan => 2} This node has no attributes, double click to add one.
     - else
       %tr
-        %td{:colspan => 2}= build_tree(@node)
+        %td{:colspan => 2}= build_tree("attrs", @node.attribute)
 

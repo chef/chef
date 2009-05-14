@@ -13,7 +13,12 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
 
   # GET /roles/:id
   def show
-    render
+    begin
+      @role = Chef::Role.load(params[:id])
+    rescue Net::HTTPServerException => e
+      raise NotFound, "Cannot load role #{params[:id]}"
+    end
+    display @role
   end
 
   # GET /roles/new

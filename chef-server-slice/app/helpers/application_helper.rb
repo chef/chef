@@ -58,6 +58,81 @@ module Merb
       def slice_path_for(type, *segments)
         ::ChefServerSlice.slice_path_for(type, *segments)
       end
+
+      def build_tree(name, node)
+        html = "<table id='#{name}' class='tree table'>"
+        count = 0
+        parent = 0
+        append_tree(name, html, node, count, parent)
+        html << "</table>"
+        html
+      end
+
+      def append_tree(name, html, node, count, parent)
+        node.sort{ |a,b| a[0] <=> b[0] }.each do |key, value|
+          to_send = Array.new
+          count += 1
+          is_parent = false
+          local_html = ""
+          local_html << "<tr id='#{name}-#{count}' class='collapsed #{name}"
+          if parent != 0
+            local_html << " child-of-#{name}-#{parent}' style='display: none;'>"
+          else
+            local_html << "'>"
+          end
+          local_html << "<td class='table-key'><span toggle='#{name}-#{count}'/>#{key}</td>"
+          case value
+          when Hash
+            is_parent = true 
+            local_html << "<td>--</td>"
+            p = count
+            to_send << Proc.new { append_tree(name, html, value, count, p) }
+          when Array
+            is_parent = true 
+            local_html << "<td>--</td>"
+            as_hash = {}
+            value.each_index { |i| as_hash[i] = value[i] }
+            p = count
+            to_send << Proc.new { append_tree(name, html, as_hash, count, p) }
+          when String,Symbol
+            local_html << "<td>#{value}</td>"
+          else
+            local_html << "<td>#{JSON.pretty_generate(value)}</td>"
+          end
+          local_html << "</tr>"
+          local_html.sub!(/class='collapsed/, 'class=\'collapsed parent') if is_parent
+          local_html.sub!(/<span/, "<span class='expander'") if is_parent
+          html << local_html
+          to_send.each { |s| count = s.call }
+          count += to_send.length
+        end
+        count
+      end
+
+      # Recursively build a tree of lists.
+      #def build_tree(node)
+      #  list = "<dl>"
+      #  list << "\n<!-- Beginning of Tree -->"
+      #  walk = lambda do |key,value|
+      #    case value
+      #      when Hash, Array
+      #        list << "\n<!-- Beginning of Enumerable obj -->"
+      #        list << "\n<dt>#{key}</dt>"
+      #        list << "<dd>"
+      #        list << "\t<dl>\n"
+      #        value.each(&walk)
+      #        list << "\t</dl>\n"
+      #        list << "</dd>"
+      #        list << "\n<!-- End of Enumerable obj -->"
+      #        
+      #      else
+      #        list << "\n<dt>#{key}</dt>"
+      #        list << "<dd>#{value}</dd>"
+      #    end
+      #  end
+      #  node.sort{ |a,b| a[0] <=> b[0] }.each(&walk)
+      #  list << "</dl>"
+      #end
       
     end
   end
