@@ -23,6 +23,9 @@ spec = Gem::Specification.new do |s|
   s.homepage = HOMEPAGE
   
   # Uncomment this to add a dependency
+  s.add_dependency "mixlib-config"
+  s.add_dependency "mixlib-cli"
+  s.add_dependency "mixlib-log"
   s.add_dependency "ruby-openid"
   s.add_dependency "json"
   s.add_dependency "erubis"  
