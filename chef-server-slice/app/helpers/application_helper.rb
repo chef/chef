@@ -61,6 +61,7 @@ module Merb
 
       def build_tree(name, node)
         html = "<table id='#{name}' class='tree table'>"
+        html << "<tr><th class='first'>Attribute</th><th class='last'>Value</th></tr>"
         count = 0
         parent = 0
         append_tree(name, html, node, count, parent)
@@ -84,18 +85,18 @@ module Merb
           case value
           when Hash
             is_parent = true 
-            local_html << "<td>--</td>"
+            local_html << "<td></td>"
             p = count
             to_send << Proc.new { append_tree(name, html, value, count, p) }
           when Array
             is_parent = true 
-            local_html << "<td>--</td>"
+            local_html << "<td></td>"
             as_hash = {}
             value.each_index { |i| as_hash[i] = value[i] }
             p = count
             to_send << Proc.new { append_tree(name, html, as_hash, count, p) }
           when String,Symbol
-            local_html << "<td>#{value}</td>"
+            local_html << "<td><div class='json-attr'>#{value}</div></td>"
           else
             local_html << "<td>#{JSON.pretty_generate(value)}</td>"
           end

@@ -1,45 +1,6 @@
 .block#block-tables
   .content
-    %h2.title Create New Role 
+    %h2.title= "Role"
     .inner
-      = form :action => slice_url(:roles), :method => :post, :id => 'create_role', :class => 'form' do
-        %div.group
-          %label.label Name
-          = text_field :name => "name", :class => "text_field"
-          %span.description The name of the Role
-        %div.group
-          %label.label Description
-          = text_area :name => "description", :class => "text_area"
-          %span.description A description of this Role 
-        %div.group
-          %label.label Default Attributes 
-          = text_area :name => "default_attributes", :class => "text_area", :rows => 10, :cols => 80
-          %span.description A JSON hash for default attributes for nodes of this role.  These attributes will only be applied if the node does not already have a value for the attributes.
-        %div.group
-          %label.label Override Attributes 
-          = text_area :name => "override_attributes", :class => "text_area", :rows => 10, :cols => 80
-          %span.description A JSON hash for the override attributes for nodes which have this role.  These attributes will always apply to every node with this role, regardless of any other value. 
-        %div.group
-          %table.sortable
-            %tr
-              %td 
-                %label.label Available Recipes
-              %td
-                %label.label Recipes for this Role 
-            %tr
-              %td
-                %div.sortable
-                  %ul#available_recipes.connectedSortable
-                    - @available_recipes.each do |cookbook|
-                      %li{ :id => h(cookbook.name), :class => 'ui-state-highlight' }= h cookbook.name
-              %td
-                %div.sortable
-                  %ul#for_role.connectedSortable
-
-              %td.help
-                %span.description
-                  Drag recipes from the list of Available Recipes section on the left, and drop them
-                  in the "Recipes for this Role" section on the right.  Then sort the recipes for this role list to the order you would like to see the recipes applied.
-        %div.group
-          .actions-bar
-            .actions= submit "Create Role", :id => 'create_role_button', :class => 'button'
+      = partial('navigation', :active => 'create')
+  = partial('role_form', :header => "Create new Role", :form_id => 'create_role', :submit_name => "Create Role", :submit_id => "create_role_button", :form_for => 'create', :form_url => slice_url(:roles))

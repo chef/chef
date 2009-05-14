@@ -25,18 +25,27 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
   def new
     cl = Chef::CookbookLoader.new
     @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
-    @current_recipes = Array.new
+    @role = Chef::Role.new
+    @current_recipes = @role.recipes.sort 
     render
   end
 
   # GET /roles/:id/edit
   def edit
-    render
+    begin
+      @role = Chef::Role.load(params[:id])
+    rescue Net::HTTPServerException => e
+      raise NotFound, "Cannot load role #{params[:id]}"
+    end
+    cl = Chef::CookbookLoader.new
+    @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+    @current_recipes = @role.recipes.sort
+    render 
   end
 
   # GET /roles/:id/delete
   def delete
-    render
+    
   end
 
   # POST /roles
@@ -60,12 +69,40 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
 
   # PUT /roles/:id
   def update
-    render
+    begin
+      @role = Chef::Role.load(params[:id])
+    rescue Net::HTTPServerException => e
+      raise NotFound, "Cannot load role #{params[:id]}"
+    end
+
+    if params.has_key?("inflated_object")
+      @role.description(params["inflated_object"].description)
+      @role.recipes(params["inflated_object"].recipes)
+      @role.default_attributes(params["inflated_object"].default_attributes)
+      @role.override_attributes(params["inflated_object"].override_attributes)
+      @role.save
+      self.status = 200
+      display(@role)
+    else
+      @role.recipes(params[:for_role])
+      @role.description(params[:description]) if params[:description] != ''
+      @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
+      @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
+      @role.save
+      @_message = { :notice => "Updated Role" }
+      render :show
+    end
   end
 
   # DELETE /roles/:id
   def destroy
-    render
+    begin
+      @role = Chef::Role.load(params[:id])
+    rescue Net::HTTPServerException => e
+      raise NotFound, "Cannot load role #{params[:id]}"
+    end
+    @role.destroy
+    redirect(absolute_slice_url(:roles), :message => { :notice => "Role #{@role.name} deleted successfully." }, :permanent => true)
   end
 
 end

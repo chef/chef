@@ -53,7 +53,7 @@ div.sortable {
   height: 200px;
   width: 225px;
   margin-right: 10px;
-  border: 1px solid #999;
+  border: 1px solid black;
   overflow: scroll;
   background: #777777;
 }
@@ -75,10 +75,6 @@ div.help {
   vertical-align: top;
 }
 
-table.form td.label {
-  
-}
-
 table.form td {
   text-align: left;
   /* vertical-align: top; */
@@ -96,6 +92,28 @@ table.sortable ul {
 
 td.table-key {
   font-weight: bold;
+}
+
+div.json-attr {
+  overflow: auto;
+  max-width: 400px;
+}
+
+td.position {
+  font-weight: bold;
+}
+
+div#tree {
+  float: left;
+}
+
+div#jform { 
+  float: left;
+  margin-left: 50px;
+}
+
+div.editor {
+  border: 1px solid black;
 }
 
 #for_role, #available_recipes { list-style-type: none; margin: 0; padding: 0; float: left; margin-right: 10px; background: #eee; padding: 5px; width: 200px;}

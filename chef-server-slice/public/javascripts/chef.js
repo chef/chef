@@ -19,11 +19,20 @@
 
 $(document).ready(function(){
 
-  $('form#create_role').submit(function(event) {
-    var form = $('form#create_role');
+  $('form#edit_role, form#create_role').submit(function(event) {
+    var form = $(this);
     var to_role = $('ul#for_role').sortable('toArray');
+    if (form.attr('id') == 'edit_role') {
+      form.append('<input type="hidden" name="_method" value="put">');
+    }
+    form.append($('input#role_name')).css('display', 'none');
+    form.append($('textarea#role_description')).css('display', 'none');
+    form.append('<input type="hidden" id="default_attributes" name="default_attributes"/>');
+    $('input#default_attributes').attr('value', JSONeditor.treeBuilder.JSONstring.make(JSONeditor.treeBuilder.json.defaults))
+    form.append('<input type="hidden" id="override_attributes" name="override_attributes"/>');
+    $('input#override_attributes').attr('value', JSONeditor.treeBuilder.JSONstring.make(JSONeditor.treeBuilder.json.overrides));
     jQuery.each(to_role, function(i, field) {
-      form.append('<input type="hidden" name="for_role[]" value="' + field + '">');
+      form.append('<input type="hidden" name="for_role[]" value="' + field + '"/>');
     });
   });
 
@@ -104,6 +113,7 @@ $(document).ready(function(){
   recipe_editor.doTruncation(true);
   recipe_editor.showFunctionButtons();
   */
+
   $("#for_role, #available_recipes").sortable({
     connectWith: '.connectedSortable',
    	placeholder: 'ui-state-highlight'
