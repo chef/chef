@@ -26,7 +26,7 @@ class Chef::Application::Solo < Chef::Application
   option :config_file, 
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => 'config.rb',
+    :default => 'solo.rb',
     :description => "The configuration file to use"
 
   option :log_level, 

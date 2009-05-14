@@ -21,6 +21,6 @@
 $: << File.join(File.dirname(__FILE__), "..", "lib")
 
 require 'rubygems'
-require 'chef/application/Indexer'
+require 'chef/application/indexer'
 
 Chef::Application::Indexer.new.run

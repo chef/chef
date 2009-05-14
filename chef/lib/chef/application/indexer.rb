@@ -29,7 +29,7 @@ class Chef::Application::Indexer < Chef::Application
   option :config_file, 
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => 'config.rb',
+    :default => 'indexer.rb',
     :description => "The configuration file to use"
 
   option :log_level, 
