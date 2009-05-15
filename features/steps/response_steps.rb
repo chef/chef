@@ -1,3 +1,7 @@
+Then /^I should get a '(.+)' exception$/ do |exception|
+  self.exception.to_s.should == exception
+end
+
 Then /^the response code should be '(.+)'$/ do |response_code|
   response.status.should == response_code.to_i
 end

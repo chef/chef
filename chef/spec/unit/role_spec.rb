@@ -32,12 +32,16 @@ describe Chef::Role do
 
   describe "name" do
     it "should let you set the name to a string" do
-      @role.name("Ops Master").should == "Ops Master"
+      @role.name("ops_master").should == "ops_master"
     end
 
     it "should return the current name" do
-      @role.name "Ops Master"
-      @role.name.should == "Ops Master"
+      @role.name "ops_master"
+      @role.name.should == "ops_master"
+    end
+
+    it "should not accept spaces" do
+      lambda { @role.name "ops master" }.should raise_error(ArgumentError)
     end
 
     it "should throw an ArgumentError if you feed it anything but a string" do
@@ -92,7 +96,7 @@ describe Chef::Role do
 
   describe "serialize" do
     before(:each) do
-      @role.name('Mars Volta')
+      @role.name('mars_volta')
       @role.description('Great band!')
       @role.recipes('one', 'two')
       @role.default_attributes({ :el_groupo => 'nuevo' })
@@ -128,7 +132,7 @@ describe Chef::Role do
 
   describe "deserialize" do
     before(:each) do
-      @role.name('Mars Volta')
+      @role.name('mars_volta')
       @role.description('Great band!')
       @role.recipes('one', 'two')
       @role.default_attributes({ 'el_groupo' => 'nuevo' })

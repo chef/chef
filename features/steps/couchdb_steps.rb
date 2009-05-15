@@ -21,6 +21,7 @@ Before do
   cdb = Chef::CouchDB.new(Chef::Config[:couchdb_url])
   cdb.create_db
   Chef::Node.create_design_document
+  Chef::Role.create_design_document
   Chef::OpenIDRegistration.create_design_document
 end
 

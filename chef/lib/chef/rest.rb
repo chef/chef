@@ -69,7 +69,7 @@ class Chef
         { "password" => pass }
       )
     end
-    
+
     # Send an HTTP GET request to the path
     #
     # === Parameters

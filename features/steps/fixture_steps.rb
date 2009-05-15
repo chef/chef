@@ -20,6 +20,15 @@ Before do
         r.default_attributes({ 'a' => 'b' })
         r.override_attributes({ 'c' => 'd' })
         r 
+      end,
+      'db' => Proc.new do
+        r = Chef::Role.new
+        r.name "db"
+        r.description "monkey"
+        r.recipes("role::db", "role::base")
+        r.default_attributes({ 'a' => 'bake' })
+        r.override_attributes({ 'c' => 'down' })
+        r 
       end
     }
   }
@@ -54,11 +63,11 @@ Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|
 end
 
 Given /^changing the '(.+)' field '(.+)' to '(.+)'$/ do |stash_name, stash_key, stash_value|
-  @stash[stash_name][stash_key.to_sym] = stash_value
+  @stash[stash_name].send(stash_key.to_sym, stash_value)
 end
 
 Given /^removing the '(.+)' field '(.+)'$/ do |stash_name, key|
-  @stash[stash_name].delete(key.to_sym)
+  @stash[stash_name].send(key.to_sym, '')
 end
 
 Given /^there are no .+$/ do

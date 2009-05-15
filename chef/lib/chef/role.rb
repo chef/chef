@@ -71,7 +71,7 @@ class Chef
       set_or_return(
         :name,
         arg,
-        :kind_of => String
+        :regex => /^[\-[:alnum:]_]+$/
       )
     end
 
@@ -135,15 +135,9 @@ class Chef
       role = new
       role.name(o["name"])
       role.description(o["description"])
-      o["default_attributes"].each do |k,v|
-        role.default_attributes[k] = v
-      end
-      o["override_attributes"].each do |k,v|
-        role.override_attributes[k] = v
-      end
-      o["recipes"].each do |r|
-        role.recipes << r
-      end
+      role.default_attributes(o["default_attributes"])
+      role.override_attributes(o["override_attributes"])
+      role.recipes(o["recipes"])
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       role 
     end

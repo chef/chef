@@ -57,10 +57,14 @@ end
 
 module ChefWorld
 
-  attr_accessor :recipe, :cookbook, :response, :inflated_response, :log_level, :chef_args, :config_file, :stdout, :stderr, :status
+  attr_accessor :recipe, :cookbook, :response, :inflated_response, :log_level, :chef_args, :config_file, :stdout, :stderr, :status, :exception
 
   def client
     @client ||= Chef::Client.new
+  end
+
+  def rest
+    @rest ||= Chef::REST.new('http://localhost:4000')
   end
 
   def tmpdir
@@ -77,6 +81,10 @@ module ChefWorld
 
   def cleanup_dirs
     @cleanup_dirs ||= Array.new
+  end
+
+  def stash
+    @stash ||= Hash.new
   end
   
 end

@@ -8,7 +8,7 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
   # GET /roles
   def index
     @role_list = Chef::Role.list(true)
-    display @role_list
+    display(@role_list.collect { |r| absolute_slice_url(:role, r.name) }) 
   end
 
   # GET /roles/:id
@@ -52,18 +52,37 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
   def create
     if params.has_key?("inflated_object")
       @role = params["inflated_object"]
+      exists = true 
+      begin
+        Chef::Role.load(@role.name)
+      rescue Net::HTTPServerException
+        exists = false 
+      end
+      raise Forbidden, "Role already exists" if exists
+
       @role.save
       self.status = 201
-      display({ :uri => slice_url(:role, @role.name) })
+      display({ :uri => absolute_slice_url(:role, @role.name) })
     else
-      @role = Chef::Role.new
-      @role.name(params[:name])
-      @role.recipes(params[:for_role])
-      @role.description(params[:description]) if params[:description] != ''
-      @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
-      @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
-      @role.save
-      redirect(slice_url(:roles), :message => { :notice => "Created Role #{@role.name}" })
+      begin
+        @role = Chef::Role.new
+        @role.name(params[:name])
+        @role.recipes(params[:for_role] ? params[:for_role] : [])
+        @role.description(params[:description]) if params[:description] != ''
+        @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
+        @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
+        @role.save
+        redirect(slice_url(:roles), :message => { :notice => "Created Role #{@role.name}" })
+      rescue ArgumentError 
+        cl = Chef::CookbookLoader.new
+        @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+        @role = Chef::Role.new
+        @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
+        @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
+        @current_recipes = params[:for_role] 
+        @_message = { :error => $! }
+        render :new
+      end
     end
   end
 
@@ -84,13 +103,23 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
       self.status = 200
       display(@role)
     else
-      @role.recipes(params[:for_role])
-      @role.description(params[:description]) if params[:description] != ''
-      @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
-      @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
-      @role.save
-      @_message = { :notice => "Updated Role" }
-      render :show
+      begin
+        @role.recipes(params[:for_role])
+        @role.description(params[:description]) if params[:description] != ''
+        @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
+        @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
+        @role.save
+        @_message = { :notice => "Updated Role" }
+        render :show
+      rescue ArgumentError
+        cl = Chef::CookbookLoader.new
+        @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+        @current_recipes = params[:for_role] 
+        @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
+        @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
+        render :edit
+      end
+
     end
   end
 
