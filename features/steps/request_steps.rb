@@ -1,7 +1,7 @@
 When /^I '(.+)' the path '(.+)'$/ do |http_method, request_uri|
   begin
     self.response = rest.send("#{http_method}_rest".downcase.to_sym, request_uri)
-    self.inflated_response = response 
+    self.inflated_response = self.response 
   rescue
     self.exception = $!
   end

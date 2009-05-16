@@ -131,7 +131,11 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
       raise NotFound, "Cannot load role #{params[:id]}"
     end
     @role.destroy
-    redirect(absolute_slice_url(:roles), :message => { :notice => "Role #{@role.name} deleted successfully." }, :permanent => true)
+    if request.accept == "application/json"
+      display @role
+    else
+      redirect(absolute_slice_url(:roles), :message => { :notice => "Role #{@role.name} deleted successfully." }, :permanent => true)
+    end
   end
 
 end

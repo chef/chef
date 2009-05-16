@@ -44,6 +44,24 @@ Then /^the inflated response should match the '(.+)'$/ do |stash_name|
   end
 end
 
+Then /^the inflated response should be the '(.+)'$/ do |stash_key|
+  stash[stash_key].should == inflated_response
+end
+
+Then /^the inflated response should be a kind of '(.+)'$/ do |thing|
+  inflated_response.should be_a_kind_of(thing)
+end
+
+Then /^the inflated response should respond to '(.+)' with '(.+)'$/ do |method, to_match|
+  to_match = JSON.parse(to_match) if to_match =~ /^\[|\{/
+  inflated_response.send(method.to_sym).should == to_match 
+end
+
+Then /^the inflated response should respond to '(.+)' and match '(.+)'$/ do |method, to_match|
+  inflated_response.send(method.to_sym).should == to_match 
+end
+
+
 Then /^the fields in the inflated response should match the '(.+)'$/ do |stash_name|
   inflated_response.each do |k,v|
     unless k =~ /^_/ || k == 'couchrest-type'

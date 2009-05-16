@@ -62,6 +62,11 @@ Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|
   end
 end
 
+Given /^sending the method '(.+)' to the '(.+)' with '(.+)'/ do |method, stash_name, update_value|
+  update_value = JSON.parse(update_value) if update_value =~ /^\[|\{/
+  @stash[stash_name].send(method.to_sym, update_value)
+end
+
 Given /^changing the '(.+)' field '(.+)' to '(.+)'$/ do |stash_name, stash_key, stash_value|
   @stash[stash_name].send(stash_key.to_sym, stash_value)
 end
