@@ -45,9 +45,9 @@ When /^I run the rake task to generate cookbook metadata$/ do
   to_run = "rake metadata"
   to_run += " COOKBOOK=#{cookbook}" if cookbook
   Dir.chdir(File.join(tmpdir, 'cookbooks_dir')) do
-    status = Chef::Mixin::Command.popen4(to_run) do |p, i, o, e|
-      stdout = o.gets(nil)
-      stderr = o.gets(nil)
+    self.status = Chef::Mixin::Command.popen4(to_run) do |p, i, o, e|
+      self.stdout = o.gets(nil)
+      self.stderr = o.gets(nil)
     end
   end
 end
