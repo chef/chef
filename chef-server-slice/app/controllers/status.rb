@@ -21,6 +21,7 @@ require 'chef' / 'node'
 class ChefServerSlice::Status < ChefServerSlice::Application
 
   provides :html, :json
+  before :login_required 
 
   def index
     @node_list = Chef::Node.list
