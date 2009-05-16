@@ -21,10 +21,10 @@
 ###
 Given /^a validated node$/ do
   client.validation_token = Chef::Config[:validation_token] = 'ceelo'
-  client.build_node
-  client.node.recipes = "integration_setup"
   client.register
   client.authenticate
+  client.build_node
+  client.node.recipes = "integration_setup"
 end
 
 Given /^it includes the recipe '(.+)'$/ do |recipe|
