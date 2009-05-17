@@ -29,7 +29,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
   
   def index
     @node_list = Chef::Node.list 
-    display @node_list
+    display(@node_list.collect { |n| absolute_slice_url(:node, escape_node_id(n)) })
   end
 
   def show

@@ -21,6 +21,9 @@
 # code and views.
 #
 
+$: << File.join(File.dirname(__FILE__), "..", "..", "chef", "lib")
+require 'chef'
+
 merb_gems_version = " > 1.0"
 dependency "merb-haml", merb_gems_version
 dependency "merb-assets", merb_gems_version

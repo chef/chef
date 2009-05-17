@@ -55,10 +55,11 @@ class ChefServerSlice::Application < Merb::Controller
     end
   end
   
-  def escape_node_id
-    if params.has_key?(:id)
-      params[:id].gsub(/_/, '.')
+  def escape_node_id(arg=nil)
+    unless arg
+      arg = params[:id] if params.has_key?(:id)
     end
+    arg.gsub(/\./, '_')
   end
   
   def login_required
