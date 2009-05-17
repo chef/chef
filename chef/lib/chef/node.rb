@@ -63,6 +63,8 @@ class Chef
     def initialize()
       @name = nil
       @attribute = Mash.new
+      @run_list = Array.new
+      @role_list = Array.new
       @recipe_list = Array.new
       @couchdb_rev = nil
       @couchdb = Chef::CouchDB.new
@@ -165,6 +167,36 @@ class Chef
       else
         @recipe_list
       end
+    end
+
+    # Returns an Array of roles.  If you call it with arguments, they will become the new
+    # list of roles.
+    def roles(*args)
+      if args.length > 0
+        @role_list = args.flatten
+      else
+        @role_list
+      end
+    end
+
+    # Returns true if this Node expects a given role, false if not.
+    def role?(role_name)
+      @role_list.detect { |r| r == role_name } ? true : false
+    end
+
+    # Returns an Array of roles and recipes, in the order they will be applied.
+    # If you call it with arguments, they will become the new list of roles and recipes. 
+    def run_list(*args)
+      if args.length > 0
+        @run_list = args.flatten
+      else
+        @run_list
+      end
+    end
+
+    # Returns true if this Node expects a given role, false if not.
+    def run_list?(item)
+      @run_list.detect { |r| r == item } ? true : false
     end
     
     # Set an attribute based on the missing method.  If you pass an argument, we'll use that
