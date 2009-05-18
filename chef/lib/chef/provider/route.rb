@@ -19,6 +19,7 @@
 require 'chef/log'
 require 'chef/mixin/command'
 require 'chef/provider'
+require 'erb'
 
 class Chef
   class Provider
@@ -46,7 +47,7 @@ class Chef
         end
 
         unless status.exitstatus == 0
-          raise Chef::Exceptions::Route, "route failed - #{status.inspect}!"
+          raise Chef::Exception::Route, "route failed - #{status.inspect}!"
         end
 
         @current_resource
@@ -72,6 +73,8 @@ class Chef
         else
           Chef::Log.debug("Route #{@current_resource} already exists")
         end
+        # Write out the config files
+        generate_config
       end
 
       def action_delete
@@ -91,6 +94,25 @@ class Chef
           Chef::Log.debug("Route #{@current_resource} does not exist")
         end
       end
+
+      def generate_config
+        b = binding
+        case node[:platform]
+        when ("centos" || "redhat" || "fedora")
+          content = %{
+<% if @new_resource.networking %>NETWORKING=<%= @new_resource.networking %><% end %>
+<% if @new_resource.networking_ipv6 %>NETWORKING_IPV6=<%= @new_resource.networking_ipv6 %><% end %>
+<% if @new_resource.hostname %>HOSTNAME=<%= @new_resource.hostname %><% end %>
+<% if @new_resource.name %>GATEWAY=<%= @new_resource.name %><% end %>
+<% if @new_resource.domainname %>DOMAINNAME=<%= @new_resource.domainname %><% end %>
+<% if @new_resource.domainname %>DOMAIN=<%= @new_resource.domainname %><% end %>
+          }
+          template = ::ERB.new(content)
+          network_file = ::File.new("/etc/sysconfig/network", "w")
+          network_file.puts(template.result(b))
+          network_file.close
+        end
+      end    
     end
   end
 end

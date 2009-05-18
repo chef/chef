@@ -136,11 +136,15 @@ class Chef
         end
       
         def remove_package(name, version)
-          if @current_resource.version
+          # a version is mandatory
+          if version
+            run_command(
+              :command => "pkg_delete #{package_name}-#{version}"
+            )
+          else
             run_command(
               :command => "pkg_delete #{package_name}-#{@current_resource.version}"
             )
-            Chef::Log.info("Removed package #{package_name}-#{@current_resource.version}")
           end
         end
       end

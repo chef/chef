@@ -137,7 +137,7 @@ class Chef
       # location<IO||String>:: Logging location as either an IO stream or string representing log file path
       #
       def log_location=(location)
-        @configuration[:log_location]=(location.respond_to?(:sync=) ? location : File.new(location, "w+"))
+        @configuration[:log_location]=(location.respond_to?(:sync=) ? location : File.new(location, "a"))
       end
       
       # Internal dispatch setter, calling either the real defined method or setting the
