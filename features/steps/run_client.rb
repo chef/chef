@@ -20,14 +20,78 @@
 # When
 ###
 When /^I run the chef\-client$/ do
-  log_level = ENV["LOG_LEVEL"] ? ENV["LOG_LEVEL"] : "error"
+  @log_level ||= ENV["LOG_LEVEL"] ? ENV["LOG_LEVEL"] : "error"
+  @chef_args ||= ""
+  @config_file ||= File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))
   status = Chef::Mixin::Command.popen4(
-    "chef-client -l #{log_level} -c #{File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))}", :waitlast => true) do |p, i, o, e|
-    i.close
+    "chef-client -l #{@log_level} -c #{@config_file} #{@chef_args}") do |p, i, o, e|
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
   end
   @status = status
+end
+
+When /^I run the chef\-client with '(.+)'$/ do |args|
+  @chef_args = args
+  When "I run the chef-client"
+end
+
+When /^I run the chef\-client with '(.+)' for '(.+)' seconds$/ do |args, run_for|
+  @chef_args = args
+  When "I run the chef-client for '#{run_for}' seconds"
+end
+
+When /^I run the chef\-client for '(.+)' seconds$/ do |run_for|
+  cid = fork { 
+    sleep run_for.to_i
+    client_pid = `ps ax | grep chef-client | grep -v grep | grep -v rake | grep -v cucumber | awk '{ print $1 }'`
+    Process.kill("KILL", client_pid.to_i)
+  } 
+  When 'I run the chef-client'
+  Process.waitpid2(cid)
+end
+
+When /^I run the chef\-client at log level '(.+)'$/ do |log_level|
+  @log_level = log_level
+  When "I run the chef-client"
+end
+
+When /^I run the chef\-client with config file '(.+)'$/ do |config_file|
+  @config_file = config_file
+  When "I run the chef-client"
+end
+
+When /^I run the chef\-client with logging to the file '(.+)'$/ do |log_file|
+  
+config_data = <<CONFIG
+supportdir = File.expand_path(File.join(File.dirname(__FILE__), ".."))
+tmpdir = File.expand_path(File.join(File.dirname(__FILE__), "..", "tmp"))
+
+log_level        :debug
+log_location     File.join(tmpdir, "silly-monkey.log")
+file_cache_path  File.join(tmpdir, "cache")
+ssl_verify_mode  :verify_none
+registration_url "http://127.0.0.1:4000"
+openid_url       "http://127.0.0.1:4001"
+template_url     "http://127.0.0.1:4000"
+remotefile_url   "http://127.0.0.1:4000"
+search_url       "http://127.0.0.1:4000"
+couchdb_database   'chef_integration'
+CONFIG
+  
+  @config_file = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client-with-logging.rb'))  
+  File.open(@config_file, "w") do |file|
+    file.write(config_data)
+  end
+
+  @cleanup_files << @config_file
+  
+  @status = Chef::Mixin::Command.popen4("chef-client -c #{@config_file}") do |p, i, o, e|
+    @stdout = o.gets(nil)
+    @stderr = e.gets(nil)
+  end
+
+  
 end
 
 ###
@@ -43,13 +107,37 @@ Then /^the run should exit '(.+)'$/ do |exit_code|
   print_output if ENV["LOG_LEVEL"] == "debug"
 end
 
+Then /^the run should exit from being signaled$/ do 
+  begin
+    @status.signaled?.should == true
+  rescue 
+    print_output
+    raise
+  end
+  print_output if ENV["LOG_LEVEL"] == "debug"
+end
+
+
 def print_output
   puts "--- run stdout:"
   puts @stdout
-  puts "--- run stderr"
+  puts "--- run stderr:"
   puts @stderr
 end
 
-Then /^stdout should have '(.+)'$/ do |to_match|
-  @stdout.should match(/#{to_match}/m)
+Then /^'(.+)' should have '(.+)'$/ do |which, to_match|
+  self.instance_variable_get("@#{which}".to_sym).should match(/#{to_match}/m)
 end
+
+Then /^'(.+)' should not have '(.+)'$/ do |which, to_match|
+  self.instance_variable_get("@#{which}".to_sym).should_not match(/#{to_match}/m)
+end
+
+Then /^'(.+)' should appear on '(.+)' '(.+)' times$/ do |to_match, which, count|
+  seen_count = 0
+  self.instance_variable_get("@#{which}".to_sym).split("\n").each do |line|
+    seen_count += 1 if line =~ /#{to_match}/
+  end
+  seen_count.should == count.to_i
+end
+

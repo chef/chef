@@ -1,0 +1,77 @@
+#!/bin/bash
+# Startup script for chef-server 
+#
+# chkconfig: - 65 35
+# description: Server component of the Chef systems integration framework.
+# processname: chef-server
+#
+# config: /etc/sysconfig/chef-server
+# pidfile: /var/run/chef/chef-server.pid
+
+# Source function library
+. /etc/init.d/functions
+
+[ -f /etc/sysconfig/chef-server ] && . /etc/sysconfig/chef-server
+
+prog="chef-server"
+PIDFILE=/var/run/chef/chef-server.pid
+LOCKFILE=/var/lock/subsys/$prog
+CONFIG=/etc/chef/server.rb
+USER="chef"
+GROUP="chef"
+CLUSTER_NODES=2
+LOGFILE=/var/log/chef/chef-server-merb.log
+OPTIONS=
+
+start() {
+    echo -n "Starting $prog:"
+    daemon chef-server -d -c "$CLUSTER_NODES" -C "$CONFIG" -u "$USER" -G "$GROUP" -L "$LOGFILE" -P "$PIDFILE" "$OPTIONS" ">/dev/null"
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch ${LOCKFILE}
+    return $RETVAL
+}
+
+stop() {
+    echo -n "Stopping $prog: "
+    if [ -f $PIDFILE ]; then
+        killproc chef-server
+        RETVAL=$?
+        if [ $RETVAL -ne 0 ]; then
+            failure;
+        fi;
+    else
+        RETVAL=1
+        failure;
+    fi
+    rm -f $LOCKFILE
+    echo
+    return $RETVAL
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+        stop
+        start
+        ;;
+  condrestart)
+        if [ -f $LOCKFILE ]; then
+            stop
+            start
+        fi
+        ;;
+  status)
+        status chef-server
+        ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|condrestart|status}"
+    exit 1
+esac
+
+exit $RETVAL

@@ -23,10 +23,11 @@ require 'chef' / 'queue'
 class ChefServerSlice::SearchEntries < ChefServerSlice::Application
   
   provides :html, :json
+  before :login_required 
     
   def index
     @s = Chef::Search.new
-    @entries = @s.search(params[:search_id], "?*")
+    @entries = @s.search(params[:search_id])
     display @entries
   end
 
@@ -57,7 +58,7 @@ class ChefServerSlice::SearchEntries < ChefServerSlice::Application
   
   def destroy
     @s = Chef::Search.new
-    @entries = @s.search(params[:id], "?*")
+    @entries = @s.search(params[:id])
     @entries.each do |entry|
       Chef::Queue.send_msg(:queue, :remove, entry)
     end

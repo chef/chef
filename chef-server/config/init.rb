@@ -1,11 +1,13 @@
 # Go to http://wiki.merbivore.com/pages/init-rb
  
 require 'config/dependencies.rb'
-require 'chef'
- 
+require 'chef' unless defined?(Chef)
+
+Chef::Config.from_file(File.join("/etc", "chef", "server.rb"))
+
 use_test :rspec
 use_template_engine :haml
- 
+
 Merb::Config.use do |c|
   c[:use_mutex] = false
   c[:session_id_key] = '_chef_server_session_id'
@@ -14,7 +16,7 @@ Merb::Config.use do |c|
   c[:exception_details] = true
   c[:reload_classes] = false
   c[:log_level] = Chef::Config[:log_level]
-  c[:log_stream] = Chef::Config[:log_location]
+  c[:log_file] = Chef::Config[:log_location]
 end
  
 Merb::BootLoader.before_app_loads do
@@ -23,4 +25,5 @@ end
  
 Merb::BootLoader.after_app_loads do
   # This will get executed after your app's classes have been loaded.
+  OpenID::Util.logger = Merb.logger
 end
