@@ -129,7 +129,8 @@ describe Chef::Provider::Group::Groupadd, "modify_group_members" do
     @new_resource = mock("Chef::Resource::Group",
       :null_object => true,
       :group_name => "aj",
-      :members => [ "all", "your", "base" ]
+      :members => [ "all", "your", "base" ],
+      :append => false
     )
     @new_resource.stub!(:to_s).and_return("group[aj]")
     @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
@@ -158,9 +159,18 @@ describe Chef::Provider::Group::Groupadd, "modify_group_members" do
     end
     
     it "should run gpasswd with the members joined by ',' followed by the target group" do
-       @provider.should_receive(:run_command).with({:command => "gpasswd -M all,your,base aj"})
-       @provider.modify_group_members
+      @provider.should_receive(:run_command).with({:command => "gpasswd -M all,your,base aj"})
+      @provider.modify_group_members
     end
+    
+    it "should run gpasswd individually for each user when the append option is set" do
+      @new_resource.stub!(:append).and_return(true)
+      @provider.should_receive(:run_command).with({:command => "gpasswd -a all aj"})
+      @provider.should_receive(:run_command).with({:command => "gpasswd -a your aj"})
+      @provider.should_receive(:run_command).with({:command => "gpasswd -a base aj"})
+      @provider.modify_group_members
+    end
+    
   end
 end
 

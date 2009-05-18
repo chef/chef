@@ -4,7 +4,7 @@ require 'rake/rdoctask'
 require './tasks/rspec.rb'
 
 GEM = "chef"
-CHEF_VERSION = "0.5.7"
+CHEF_VERSION = "0.6.3"
 AUTHOR = "Adam Jacob"
 EMAIL = "adam@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"
@@ -25,7 +25,7 @@ spec = Gem::Specification.new do |s|
   # Uncomment this to add a dependency
   s.add_dependency "ruby-openid"
   s.add_dependency "json"
-  s.add_dependency "erubis"  
+  s.add_dependency "erubis"
   s.add_dependency "extlib"
   s.add_dependency "stomp"
   s.add_dependency "ohai"
@@ -34,7 +34,7 @@ spec = Gem::Specification.new do |s|
   s.executables  = %w( chef-client chef-solo )
   
   s.require_path = 'lib'
-  s.files = %w(LICENSE README.txt Rakefile) + Dir.glob("{lib,specs,config,examples}/**/*")
+  s.files = %w(LICENSE README.txt Rakefile) + Dir.glob("{lib,specs,config,examples,contrib}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|

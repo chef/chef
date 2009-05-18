@@ -23,6 +23,7 @@ require 'chef' / 'cookbook_loader'
 class ChefServerSlice::CookbookLibraries < ChefServerSlice::Application
   
   provides :html, :json
+  before :login_required 
   
   include Chef::Mixin::Checksum
   

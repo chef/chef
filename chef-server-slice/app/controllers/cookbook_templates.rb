@@ -24,6 +24,7 @@ require 'chef' / 'mixin' / 'find_preferred_file'
 class ChefServerSlice::CookbookTemplates < ChefServerSlice::Application
   
   provides :html, :json
+  before :login_required 
   
   include Chef::Mixin::Checksum
   include Chef::Mixin::FindPreferredFile

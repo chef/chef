@@ -82,7 +82,8 @@ class Chef
           run_command(
             :command => "dpkg -i #{@new_resource.source}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
+              "DEBIAN_FRONTEND" => "noninteractive",
+              "LANG" => "en_US"
             }
           )
         end
@@ -91,7 +92,8 @@ class Chef
           run_command(
             :command => "dpkg -r #{@new_resource.package_name}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
+              "DEBIAN_FRONTEND" => "noninteractive",
+              "LANG" => "en_US"
             }
           )
         end
@@ -100,7 +102,8 @@ class Chef
           run_command(
             :command => "dpkg -P #{@new_resource.package_name}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
+              "DEBIAN_FRONTEND" => "noninteractive",
+              "LANG" => "en_US"
             }
           )
         end

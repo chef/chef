@@ -98,8 +98,8 @@ describe Chef::Provider::Service::Redhat, "enable_service" do
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
 
-  it "should call chkconfig --add 'service_name'" do
-    @provider.should_receive(:run_command).with({:command => "/sbin/chkconfig --add #{@new_resource.service_name}"})
+  it "should call chkconfig to add 'service_name'" do
+    @provider.should_receive(:run_command).with({:command => "/sbin/chkconfig #{@new_resource.service_name} on"})
     @provider.enable_service()
   end
 end
@@ -117,8 +117,8 @@ describe Chef::Provider::Service::Redhat, "disable_service" do
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
 
-  it "should call chkconfig --del 'service_name'" do
-    @provider.should_receive(:run_command).with({:command => "/sbin/chkconfig --del #{@new_resource.service_name}"})
+  it "should call chkconfig to del 'service_name'" do
+    @provider.should_receive(:run_command).with({:command => "/sbin/chkconfig #{@new_resource.service_name} off"})
     @provider.disable_service()
   end
 end

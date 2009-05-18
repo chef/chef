@@ -2,22 +2,15 @@ gems = %w[chef chef-server-slice chef-server]
 require 'rubygems'
 require 'cucumber/rake/task'
 
-namespace :git do
-  desc "Initialise and update the Git submodules"
-  task :submodule_update do
-    sh "git submodule update --init"
-  end
-end
-
 desc "Build the chef gems"
-task :gem => "git:submodule_update" do
+task :gem do
   gems.each do |dir|
     Dir.chdir(dir) { sh "rake package" }
   end
 end
  
 desc "Install the chef gems"
-task :install => "git:submodule_update" do
+task :install do
   gems.each do |dir|
     Dir.chdir(dir) { sh "rake install" }
   end

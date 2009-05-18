@@ -31,7 +31,7 @@ describe Chef::CouchDB, "new" do
     Chef::REST.should_receive(:new).with("http://monkey")
     Chef::CouchDB.new
   end
-  
+
   it "should create a new Chef::REST object from a provided url" do
     Chef::REST.should_receive(:new).with("http://monkeypants")
     Chef::CouchDB.new("http://monkeypants")
