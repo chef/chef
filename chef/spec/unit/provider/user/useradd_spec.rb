@@ -49,7 +49,6 @@ describe Chef::Provider::User::Useradd, "set_options" do
   
   field_list = {
     'comment' => "-c",
-    'home' => "-d",
     'gid' => "-g",
     'uid' => "-u",
     'shell' => "-s",
