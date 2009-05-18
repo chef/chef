@@ -30,10 +30,8 @@ class Chef
       :mac_os_x => {},
       :freebsd => {
         :default => {
-          :group => Chef::Provider::Group::Pw,
           :package => Chef::Provider::Package::Freebsd,
           :service => Chef::Provider::Service::Freebsd,
-          :user => Chef::Provider::User::Pw
         }
       },
       :ubuntu   => {
@@ -91,7 +89,8 @@ class Chef
         :user => Chef::Provider::User::Useradd,
         :group => Chef::Provider::Group::Groupadd,
         :http_request => Chef::Provider::HttpRequest,
-        :route => Chef::Provider::Route
+        :route => Chef::Provider::Route,
+        :ifconfig => Chef::Provider::Ifconfig
       }
     }
 
@@ -213,7 +212,11 @@ class Chef
             end
           else
             if @platforms.has_key?(args[:platform])            
-              @platforms[args[:platform]][:default][args[:resource].to_sym] = args[:provider]
+              if @platforms[args[:platform]].has_key?(:default)
+                @platforms[args[:platform]][:default][args[:resource].to_sym] = args[:provider]
+              else
+                @platforms[args[:platform]] = { :default => { args[:resource].to_sym => args[:provider] } }
+              end
             else
               @platforms[args[:platform]] = {
                 :default => {
