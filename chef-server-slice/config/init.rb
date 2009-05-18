@@ -21,11 +21,11 @@
 # code and views.
 #
 
-merb_gems_version = "> 1.0"
+merb_gems_version = " > 1.0"
 dependency "merb-haml", merb_gems_version
 dependency "merb-assets", merb_gems_version
 dependency "merb-helpers", merb_gems_version
-dependency "chef", :immediate=>true
+dependency "chef", :immediate=>true unless defined?(Chef)
 
 use_template_engine :haml
 
@@ -33,12 +33,13 @@ Merb::Config.use do |c|
   # BUGBUG [cb] For some reason, this next line
   # causes a merb slice to vomit around openid
   #  c[:fork_for_class_load] = false
+  
   c[:session_id_key] = '_chef_server_session_id'
   c[:session_secret_key]  = Chef::Config.manage_secret_key
   c[:session_store] = 'cookie'
   c[:exception_details] = true
   c[:reload_classes] = false
   c[:log_level] = Chef::Config[:log_level]
-  c[:log_stream] = Chef::Config[:log_location]
+  c[:log_file] = Chef::Config[:log_location]
 end
 

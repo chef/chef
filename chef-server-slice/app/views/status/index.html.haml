@@ -1,8 +1,22 @@
-- throw_content(:header, "Status")
-- @node_list.each do |node|
-  .node
-    %h3= node
-    = get_info(node)
-    %br
-    %strong Recipes:
-    = recipe_list(node)
+.block#block-tables
+  .content
+    %h2.title Status
+    .inner
+      %table.table
+        %tr
+          %th.first Node Name
+          %th &nbsp
+          %th State
+          %th.last &nbsp
+          - if @node_list.empty?
+            %tr
+              %td{:colspan => 4}= "You appear to have no nodes - try connecting one, or validating an existing #{link_to('registration', slice_url(:registrations))}"
+          - else
+            - @node_list.each_with_index do |node, index|
+              %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
+                %td{:colspan => 2}= node
+                %td
+                  = get_info(node)
+                  %br
+                  %strong Recipes:
+                  = recipe_list(node)

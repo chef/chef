@@ -35,7 +35,7 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to enable")
           status = enable_service()
           if status
-            Chef::Log.info("#{@new_resource}: enabled succesfully")
+            Chef::Log.info("#{@new_resource}: enabled successfully")
           end
         else
           Chef::Log.debug("#{@new_resource}: not enabling, already enabled")
@@ -47,7 +47,7 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to disable")
           status = disable_service()
           if status
-            Chef::Log.info("#{@new_resource}: disabled succesfully")
+            Chef::Log.info("#{@new_resource}: disabled successfully")
           end
         else
           Chef::Log.debug("#{@new_resource}: not disabling, already disabled")
@@ -59,7 +59,7 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to start")
           status = start_service()
           if status
-            Chef::Log.info("Started service #{@new_resource} succesfully")
+            Chef::Log.info("Started service #{@new_resource} successfully")
           end
         else
           Chef::Log.debug("#{@new_resource}: not starting, already running")
@@ -71,7 +71,7 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to stop")
           status = stop_service()
           if status
-            Chef::Log.info("#{@new_resource}: stopped succesfully")
+            Chef::Log.info("#{@new_resource}: stopped successfully")
           end
         else
           Chef::Log.debug("#{@new_resource}: not stopping, already stopped")
@@ -83,7 +83,7 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to restart")
           status = restart_service()
           if status
-            Chef::Log.info("#{@new_resource}: restarted succesfully")
+            Chef::Log.info("#{@new_resource}: restarted successfully")
           end
         end
       end
@@ -96,7 +96,7 @@ class Chef
             Chef::Log.debug("#{@new_resource}: attempting to reload")
             status = reload_service()
             if status
-              Chef::Log.info("#{@new_resource}: reloaded succesfully")
+              Chef::Log.info("#{@new_resource}: reloaded successfully")
             end
           end
         end

@@ -2,7 +2,7 @@ if defined?(Merb::Plugins)
   $:.unshift File.dirname(__FILE__)
 
   dependency 'merb-slices', :immediate => true
-  dependency 'chef', :immediate=>true
+  dependency 'chef', :immediate=>true unless defined?(Chef)
 
   require 'syntax/convertors/html'
 
@@ -81,21 +81,25 @@ if defined?(Merb::Plugins)
 
       scope.match("/status").to(:controller => "status", :action => "index").name(:status)
 
-      scope.resources :searches, :path => "search", :controller => "search" do
-        scope.resources :entries, :controller => "search_entries"
-      end
+      scope.resources :searches, :path => "search", :controller => "search"
+      scope.match("/search/:search_id/entries", :method => 'get').to(:controller => "search_entries", :action => "index")
+      scope.match("/search/:search_id/entries", :method => 'post').to(:controller => "search_entries", :action => "create")
+      scope.match("/search/:search_id/entries/:id", :method => 'get').to(:controller => "search_entries", :action => "show")
+      scope.match("/search/:search_id/entries/:id", :method => 'put').to(:controller => "search_entries", :action => "create")
+      scope.match("/search/:search_id/entries/:id", :method => 'post').to(:controller => "search_entries", :action => "update")
+      scope.match("/search/:search_id/entries/:id", :method => 'delete').to(:controller => "search_entries", :action => "destroy")
 
       scope.match("/cookbooks/_attribute_files").to(:controller => "cookbooks", :action => "attribute_files")
       scope.match("/cookbooks/_recipe_files").to(:controller => "cookbooks", :action => "recipe_files")
       scope.match("/cookbooks/_definition_files").to(:controller => "cookbooks", :action => "definition_files")
       scope.match("/cookbooks/_library_files").to(:controller => "cookbooks", :action => "library_files")
 
-      scope.match("/cookbooks/:cookbook_id/templates").to(:controller => "cookbook_templates", :action => "index")
-      scope.match("/cookbooks/:cookbook_id/libraries").to(:controller => "cookbook_libraries", :action => "index")
-      scope.match("/cookbooks/:cookbook_id/definitions").to(:controller => "cookbook_definitions", :action => "index")
-      scope.match("/cookbooks/:cookbook_id/recipes").to(:controller => "cookbook_recipes", :action => "index")
-      scope.match("/cookbooks/:cookbook_id/attributes").to(:controller => "cookbook_attributes", :action => "index")
-      scope.match("/cookbooks/:cookbook_id/files").to(:controller => "cookbook_files", :action => "index")
+      scope.match("/cookbooks/:cookbook_id/templates", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_templates", :action => "index")
+      scope.match("/cookbooks/:cookbook_id/libraries", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_libraries", :action => "index")
+      scope.match("/cookbooks/:cookbook_id/definitions", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_definitions", :action => "index")
+      scope.match("/cookbooks/:cookbook_id/recipes", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_recipes", :action => "index")
+      scope.match("/cookbooks/:cookbook_id/attributes", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_attributes", :action => "index")
+      scope.match("/cookbooks/:cookbook_id/files", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_files", :action => "index")
 
       scope.resources :cookbooks
       scope.resources :registrations, :controller => "openid_register"

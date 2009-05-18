@@ -1,3 +1,5 @@
-- throw_content(:header, "Node #{h @node.name}")
-.node
-  = partial(:node, :node => @node)
+.block#block-tables
+  .content
+    %h2.title= "Node #{h @node.name}"
+    .inner
+      = partial :node, :node => @node

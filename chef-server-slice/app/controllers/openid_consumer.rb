@@ -26,21 +26,24 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
   provides :html, :json
 
   def index
-    render
+    if request.xhr?
+      render :layout => false
+    else
+      render
+    end
   end
-  
+
   def start
     oid = params[:openid_identifier]
     providers = Chef::Config[:openid_providers]
-    raise(Unauthorized, "Sorry, #{openid} is not an authorized OpenID.") unless is_authorized_openid_identifier?(oid, providers)    
-    raise(Unauthorized, "Sorry, #{openid} is not an allowed OpenID Provider.") unless is_valid_openid_provider?(oid,providers)
-    
+    raise(Unauthorized, "Sorry, #{oid} is not an allowed OpenID Provider.") unless is_valid_openid_provider?(oid,providers)
+
     begin
       oidreq = consumer.begin(oid)
     rescue OpenID::OpenIDError => e
       raise BadRequest, "Discovery failed for #{params[:openid_identifier]}: #{e}"
     end
-    
+
     return_to = absolute_slice_url(:openid_consumer_complete)
     realm = absolute_slice_url(:openid_consumer)
 
@@ -53,9 +56,12 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
   end
 
   def login
+    oid = params[:openid_identifier]
+    authorized_openids = Chef::Config[:authorized_openid_identifiers]
+    raise(Unauthorized, "Sorry, #{oid} is not an authorized OpenID.") unless is_authorized_openid_identifier?(oid, authorized_openids)
     start
   end
-  
+
   def complete
     # FIXME - url_for some action is not necessarily the current URL.
     current_url = absolute_slice_url(:openid_consumer_complete)
@@ -92,17 +98,25 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
   end
 
   private
-  #      
-  #    
-  
+  #
+  #
+
   # Returns true if the openid is at a valid provider, based on whether :openid_providers is
   # defined.  Raises an exception if it is not an allowed provider.
   def is_valid_openid_provider?(openid,providers)
     (providers && providers.detect {|p| openid =~ /^https?:\/\/#{p}/ or openid =~ /^#{p}/}) || true
    end
 
-  def is_authorized_openid_identifier?(openid,providers)
-    (providers && providers.detect { |p| openid==p }) || true
+  def is_authorized_openid_identifier?(openid,authorized_openids)
+    if authorized_openids
+      if authorized_openids.length > 0 
+        authorized_openids.detect { |p| openid == p } 
+      else
+        true
+      end
+    else
+      true
+    end
   end
 
   def consumer
@@ -113,5 +127,5 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
                                          OpenID::Store::Filesystem.new(Chef::Config[:openid_cstore_path])
                                        end)
   end
-                                       
+
 end
