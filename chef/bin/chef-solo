@@ -99,7 +99,8 @@ if config[:log_level]
 end
 
 if config[:recipes]
-  recipes_path = Chef::Config[:cookbook_path].gsub(/cookbooks/, '')
+  cookbooks_path = Chef::Config[:cookbook_path].detect{|e| e =~ /\/cookbooks\/*$/ }
+  recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
   require 'net/http'
   require 'open-uri'
   require 'fileutils'

@@ -36,7 +36,6 @@ describe Chef::Client, "run" do
       :sync_definitions,
       :sync_recipes,
       :save_node,
-      :converge,
       :save_node
     ]
     to_stub.each do |method|
@@ -44,6 +43,8 @@ describe Chef::Client, "run" do
     end
     time = Time.now
     Time.stub!(:now).and_return(time)
+    Chef::Compile.stub!(:new).and_return(mock("Chef::Compile", :null_object => true))
+    Chef::Runner.stub!(:new).and_return(mock("Chef::Runner", :null_object => true))
   end
   
   it "should start the run clock timer" do
@@ -96,16 +97,23 @@ describe Chef::Client, "run" do
     @client.should_receive(:converge).and_return(true)
     @client.run
   end
+
+  it "should set the cookbook_path" do
+    Chef::Config.should_receive('[]').with(:file_cache_path).
+      and_return('/var/chef/cache/cookbooks')
+    @client.run
+  end
 end
 
 describe Chef::Client, "run_solo" do
   before(:each) do
     @client = Chef::Client.new
     @client.stub!(:build_node).and_return(true)
-    @client.stub!(:converge).and_return(true)
+    Chef::Compile.stub!(:new).and_return(mock("Chef::Compile", :null_object => true))
+    Chef::Runner.stub!(:new).and_return(mock("Chef::Runner", :null_object => true))
   end
   
-  it "should start/top the run timer" do
+  it "should start/stop the run timer" do
     time = Time.now
     Time.should_receive(:now).twice.and_return(time)
     @client.run_solo
@@ -119,6 +127,12 @@ describe Chef::Client, "run_solo" do
   it "should converge the node to the proper state" do
     @client.should_receive(:converge).and_return(true)
     @client.run_solo
+  end
+
+  it "should use the configured cookbook_path" do
+    Chef::Config[:cookbook_path] = ['one', 'two']
+    @client.run_solo
+    Chef::Config[:cookbook_path].should eql(['one', 'two'])
   end
 end
 
