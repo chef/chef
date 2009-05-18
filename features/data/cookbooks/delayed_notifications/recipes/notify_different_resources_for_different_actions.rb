@@ -1,9 +1,8 @@
 #
-# Rakefile for Chef Server Repository
+# Cookbook Name:: delayed_notifications
+# Recipe:: notify_different_resources_for_different_actions
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Copyright 2009, Opscode
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,18 +17,15 @@
 # limitations under the License.
 #
 
-require 'rubygems'
-require 'json'
-
-# Make sure you have loaded constants first
-require File.join(File.dirname(__FILE__), 'config', 'rake')
-
-# And choosen a VCS
-if File.directory?(File.join(TOPDIR, ".svn"))
-  $vcs = :svn
-elsif File.directory?(File.join(TOPDIR, ".git"))
-  $vcs = :git
+file "#{node[:tmpdir]}/notified_file_2.txt" do
+  action :nothing
 end
 
-require 'chef/tasks/chef_repo.rake'
+file "#{node[:tmpdir]}/notified_file_3.txt" do
+  action :nothing
+end
 
+execute "echo foo" do
+  notifies([{resources("file[#{node[:tmpdir]}/notified_file_2.txt]")  => [:create, :delayed]},
+            {resources("file[#{node[:tmpdir]}/notified_file_3.txt]")  => [:create, :delayed]}])
+end

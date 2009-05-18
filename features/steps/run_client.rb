@@ -98,8 +98,6 @@ end
 # Then
 ###
 Then /^the run should exit '(.+)'$/ do |exit_code|
-  puts @status.inspect
-  puts @status.exitstatus
   begin
     @status.exitstatus.should eql(exit_code.to_i)
   rescue 
