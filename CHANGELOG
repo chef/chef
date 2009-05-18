@@ -1,3 +1,15 @@
+Wed Apr 29 16:08:40 PDT 2009
+Release Notes - Chef - Version 0.6.2
+http://tickets.opscode.com
+
+** Bug
+    * [CHEF-255] - chef-client doesn't respect interval and stay running in foreground.
+    * [CHEF-257] - Rake test does not execute tests against the site-cookbooks directory
+
+** Improvement
+    * [CHEF-249] - can I has open-uri supported "-j http://blah.com/some.json" for chef-solo/client?
+    * [CHEF-258] - gem_package doesn't allow you to point at a custom gem binary outside of your $PATH
+
 Tue Apr 28 16:43:43 PDT 2009
 Release Notes - Chef - Version 0.6.0
 http://tickets.opscode.com

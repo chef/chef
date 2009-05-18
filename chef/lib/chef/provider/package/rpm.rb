@@ -81,10 +81,17 @@ class Chef
         end
         
         def remove_package(name, version)
-          run_command(
-            :command => "rpm -e #{@new_resource.name}"
-          )
+          if version
+            run_command(
+              :command => "rpm -e #{name}-#{version}"
+            )
+          else
+            run_command(
+              :command => "rpm -e #{name}"
+            )
+          end
         end
+
       end
     end
   end

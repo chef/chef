@@ -32,6 +32,7 @@ spec = Gem::Specification.new do |s|
     [ "README.txt",
       "LICENSE",
       "NOTICE",
+      "config.ru",
       "{app}/**/*",
       "{config}/**/*",
       "{contrib}/**/*",

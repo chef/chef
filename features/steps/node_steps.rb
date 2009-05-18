@@ -20,23 +20,23 @@
 # Given
 ###
 Given /^a validated node$/ do
-  @client.validation_token = Chef::Config[:validation_token] = 'ceelo'
-  @client.build_node
-  @client.node.recipes = "integration_setup"
-  @client.register
-  @client.authenticate
+  client.validation_token = Chef::Config[:validation_token] = 'ceelo'
+  client.register
+  client.authenticate
+  client.build_node
+  client.node.recipes = "integration_setup"
 end
 
 Given /^it includes the recipe '(.+)'$/ do |recipe|
-  @recipe = recipe
-  @client.node.recipes << recipe
-  @client.save_node
+  self.recipe = recipe
+  client.node.recipes << recipe
+  client.save_node
 end
 
 ###
 # When
 ###
 When /^the node is converged$/ do
-  @client.run
+  client.run
 end
 
