@@ -143,7 +143,7 @@ describe Chef::Provider::Package::Rpm, "remove" do
 
   it "should run rpm -e to remove the package" do
     @provider.should_receive(:run_command).with({
-      :command => "rpm -e emacs"
+      :command => "rpm -e emacs-21.4-20.el5"
     })
     @provider.remove_package("emacs", "21.4-20.el5")
   end

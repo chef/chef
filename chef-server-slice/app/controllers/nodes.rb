@@ -24,7 +24,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
   provides :html, :json
   
   before :fix_up_node_id
-  before :login_required,  :only => [ :create, :update, :destroy ]
+  before :login_required
   before :authorized_node, :only => [ :update, :destroy ]
   
   def index

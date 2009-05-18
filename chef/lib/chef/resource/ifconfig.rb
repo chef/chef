@@ -1,6 +1,6 @@
 #
-# Author:: Bryan McLellan (btm@loftninjas.org)
-# Copyright:: Copyright (c) 2009 Bryan McLellan
+# Author:: Jason K. Jackson (jason.jackson@monster.com)
+# Copyright:: Copyright (c) 2009 Jason K. Jackson
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,64 +20,24 @@ require 'chef/resource'
 
 class Chef
   class Resource
-    class Route < Chef::Resource
+    class Ifconfig < Chef::Resource
 
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)
-        @resource_name = :route
+        @resource_name = :ifconfig
         @target = name
         @action = :add
         @allowed_actions.push(:add, :delete)
-        @netmask = nil
-        @gateway = nil
+        @hwaddr = nil
+        @mask = nil
+        @inet_addr = nil
+        @bcast = nil
+        @mtu = nil
         @metric = nil
         @device = nil 
-        @route_type = :host
-        @networking = nil
-        @networking_ipv6 = nil
-        @hostname = nil
-        @domainname = nil
-        @domain = nil
-      end
-
-      def networking(arg=nil)
-        set_or_return(
-          :networking,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def networking_ipv6(arg=nil)
-        set_or_return(
-          :networking_ipv6,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def hostname(arg=nil)
-        set_or_return(
-          :hostname,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def domainname(arg=nil)
-        set_or_return(
-          :domainname,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def domain(arg=nil)
-        set_or_return(
-          :domain,
-          arg,
-          :kind_of => String
-        )
+        @onboot = nil
+        @network = nil
+        @bootproto = nil
       end
 
       def target(arg=nil)
@@ -85,30 +45,6 @@ class Chef
           :target,
           arg,
           :kind_of => String
-        )
-      end
-
-      def netmask(arg=nil)
-        set_or_return(
-          :netmask,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def gateway(arg=nil)
-        set_or_return(
-          :gateway,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def metric(arg=nil)
-        set_or_return(
-          :metric,
-          arg,
-          :kind_of => Integer
         )
       end
 
@@ -120,12 +56,75 @@ class Chef
         )
       end
 
-      def route_type(arg=nil)
-        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
+      def hwaddr(arg=nil)
         set_or_return(
-          :route_type,
-          real_arg,
-          :equal_to => [ :host, :net ]
+          :hwaddr,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def inet_addr(arg=nil)
+        set_or_return(
+          :inet_addr,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def bcast(arg=nil)
+        set_or_return(
+          :bcast,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def mask(arg=nil)
+        set_or_return(
+          :mask,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def mtu(arg=nil)
+        set_or_return(
+          :mtu,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def metric(arg=nil)
+        set_or_return(
+          :metric,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def onboot(arg=nil)
+        set_or_return(
+          :onboot,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def network(arg=nil)
+        set_or_return(
+          :network,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def bootproto(arg=nil)
+        set_or_return(
+          :bootproto,
+          arg,
+          :kind_of => String
         )
       end
     end
