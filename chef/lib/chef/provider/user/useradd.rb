@@ -74,7 +74,6 @@ class Chef
           
           field_list = {
             'comment' => "-c",
-            'home' => "-d",
             'gid' => "-g",
             'uid' => "-u",
             'shell' => "-s",
@@ -89,13 +88,15 @@ class Chef
               end
             end
           end
-          if @new_resource.supports[:manage_home]
-            Chef::Log.debug("Managing the home directory for #{@new_resource}")
-            case @node[:operatingsystem]
-            when "Fedora","RedHat","CentOS"
-              opts << " -M"
-            else
-              opts << " -m"
+          if @current_resource.home != @new_resource.home
+            if @new_resource.supports[:manage_home]
+              Chef::Log.debug("Managing the home directory for #{@new_resource}")
+              case @node[:operatingsystem]
+              when "Fedora","RedHat","CentOS"
+                opts << "-d -M #{@new_resource.home}"
+              else
+                opts << "-d -m #{@new_resource.home}"
+              end
             end
           end
           opts << " #{@new_resource.username}"
