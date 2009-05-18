@@ -93,9 +93,9 @@ class Chef
               Chef::Log.debug("Managing the home directory for #{@new_resource}")
               case @node[:operatingsystem]
               when "Fedora","RedHat","CentOS"
-                opts << "-d -M #{@new_resource.home}"
+                opts << " -M -d #{@new_resource.home}"
               else
-                opts << "-d -m #{@new_resource.home}"
+                opts << " -m -d #{@new_resource.home}"
               end
             end
           end

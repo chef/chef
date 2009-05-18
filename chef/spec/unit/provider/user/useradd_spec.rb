@@ -43,6 +43,7 @@ describe Chef::Provider::User::Useradd, "set_options" do
       :password => "abracadabra",
       :updated => nil
     )
+    @new_resource.stub!(:supports).and_return({:manage_home => false})
     @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
   end
@@ -63,7 +64,7 @@ describe Chef::Provider::User::Useradd, "set_options" do
     
     it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
       @new_resource.stub!(attribute).and_return("hola")
-      @provider.set_options.should eql(" #{option} '#{@new_resource.send(attribute)}' -m #{@new_resource.username}")
+      @provider.set_options.should eql(" #{option} '#{@new_resource.send(attribute)}' #{@new_resource.username}")
     end
     
     it "should set the option for #{attribute} if the new resources #{attribute} is not null, without homedir management" do
@@ -79,18 +80,35 @@ describe Chef::Provider::User::Useradd, "set_options" do
       @new_resource.stub!(attribute).and_return("hola")
       match_string << " #{option} 'hola'"
     end
-    match_string << " -m adam"
+    match_string << " adam"
     @provider.set_options.should eql(match_string)
   end
   
-  it "should use -m unless the operating system is a redhat descendent" do
-    @node.stub!(:[]).with(:operatingsystem).and_return("Debian")
-    @provider.set_options.should eql(" -m adam")
-  end
-  
-  it "should use -M if the operating system is a redhat descendent" do
-    @node.stub!(:[]).with(:operatingsystem).and_return("RedHat")
-    @provider.set_options.should eql(" -M adam")
+  describe "when the resource has a different home directory and supports home directory management" do
+    before do
+      @new_resource.stub!(:home).and_return("/wowaweea")
+      @new_resource.stub!(:supports).and_return({:manage_home => true})
+    end
+    
+    describe "and the operating system is redhat based" do
+      before do
+        @node.stub!(:[]).with(:operatingsystem).and_return("RedHat")
+      end
+      
+      it "should use -M -d /homedir if the operating system is a redhat descendent" do
+        @provider.set_options.should eql(" -M -d /wowaweea adam")
+      end
+    end
+    
+    describe "and the operating system is not redhat based" do
+      before do
+        @node.stub!(:[]).with(:operatingsystem).and_return("Debian")
+      end
+      
+      it "should use -m -d /homedir unless the operating system is a redhat descendent" do    
+        @provider.set_options.should eql(" -m -d /wowaweea adam")
+      end
+    end
   end
 end
 
