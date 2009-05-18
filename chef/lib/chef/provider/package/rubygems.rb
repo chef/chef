@@ -68,6 +68,12 @@ class Chef
             raise Chef::Exceptions::Package, "#{gem_binary_path} list --local failed - #{status.inspect}!"
           end
           
+          @current_resource
+        end
+
+        def candidate_version
+          return @candidate_version if @candidate_version
+
           status = popen4("#{gem_binary_path} list --remote #{@new_resource.package_name}#{' --source=' + @new_resource.source if @new_resource.source}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               installed_versions = gem_list_parse(line)
@@ -79,13 +85,13 @@ class Chef
                 @candidate_version = installed_versions.first
               end
             end
+
+            @candidate_version
           end
 
           unless status.exitstatus == 0
             raise Chef::Exceptions::Package, "#{gem_binary_path} list --remote failed - #{status.inspect}!"
           end
-        
-          @current_resource
         end
       
         def install_package(name, version)

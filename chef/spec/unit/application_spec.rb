@@ -92,6 +92,8 @@ describe Chef::Application, "configure_chef" do
   describe "when a config_file is present" do
     before do
       @app.config[:config_file] = "/etc/chef/default.rb"
+      File.stub!(:exists?).and_return(true)
+      File.stub!(:readable?).and_return(true)
     end
     
     it "should configure chef::config from a file" do

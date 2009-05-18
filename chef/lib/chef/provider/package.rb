@@ -36,44 +36,38 @@ class Chef
       end
       
       def action_install  
-        # First, select what version we should be using
-        install_version = @new_resource.version
-        install_version ||= @candidate_version
-        
+        # If we specified a version, and it's not the current version, move to the current version
+        if @new_resource.version != nil && @new_resource.version != @current_resource.version
+          install_version = @new_resource.version
+        # If it's not installed at all, install it
+        elsif @current_resource.version == nil
+          install_version = candidate_version
+        else
+          return
+        end
+
         unless install_version
           raise(Chef::Exceptions::Package, "No version specified, and no candidate version available!")
         end
-        
-        do_package = false
-        # If it's not installed at all, install it
-        if @current_resource.version == nil
-          do_package = true
-        # If we specified a version, and it's not the current version, move to the current version
-        elsif @new_resource.version != nil
-          if @new_resource.version != @current_resource.version
-            do_package = true
-          end
+
+        Chef::Log.info("Installing #{@new_resource} version #{install_version}")
+          
+        # We need to make sure we handle the preseed file
+        if @new_resource.response_file
+          preseed_package(@new_resource.package_name, install_version)
         end
-        if do_package
-          Chef::Log.info("Installing #{@new_resource} version #{install_version}")
           
-          # We need to make sure we handle the preseed file
-          if @new_resource.response_file
-            preseed_package(@new_resource.package_name, install_version)
-          end
-          
-          status = install_package(@new_resource.package_name, install_version)
-          if status
-            @new_resource.updated = true
-          end
+        status = install_package(@new_resource.package_name, install_version)
+        if status
+          @new_resource.updated = true
         end
       end
       
       def action_upgrade
-        if @current_resource.version != @candidate_version
+        if @current_resource.version != candidate_version
           orig_version = @current_resource.version || "uninstalled"
-          Chef::Log.info("Upgrading #{@new_resource} version from #{orig_version} to #{@candidate_version}")
-          status = upgrade_package(@new_resource.package_name, @candidate_version)
+          Chef::Log.info("Upgrading #{@new_resource} version from #{orig_version} to #{candidate_version}")
+          status = upgrade_package(@new_resource.package_name, candidate_version)
           if status
             @new_resource.updated = true
           end

@@ -29,7 +29,13 @@ class Chef
 
         def initialize(node, new_resource)
           super(node, new_resource)
+          @device_fstab = device_fstab
+          @device_real = device_real
+          @device_logstring = device_logstring
+          @device_mount_regex = device_mount_regex
+          @device_fstab_regex = device_fstab_regex
         end
+        attr_accessor :device_fstab, :device_real, :device_logstring, :device_mount_regex, :device_fstab_regex
 
         def load_current_resource
           @current_resource = Chef::Resource::Mount.new(@new_resource.name)
@@ -42,9 +48,9 @@ class Chef
           popen4("mount") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
-              when /^#{device_regex}\s+on\s+#{@new_resource.mount_point}/
+              when /^#{@device_mount_regex}\s+on\s+#{@new_resource.mount_point}/
                 mounted = true
-                Chef::Log.debug("Special device #{@new_resource.device} mounted as #{@new_resource.mount_point}")
+                Chef::Log.debug("Special device #{@device_logstring} mounted as #{@new_resource.mount_point}")
               when /^([\/\w])+\son\s#{@new_resource.mount_point}\s+/
                 mounted = false
                 Chef::Log.debug("Special device #{$~[1]} mounted as #{@new_resource.mount_point}")
@@ -59,9 +65,9 @@ class Chef
             case line
             when /^[#\s]/
               next
-            when /^#{device_regex}\s+#{@new_resource.mount_point}/
+            when /^#{device_fstab_regex}\s+#{@new_resource.mount_point}/
               enabled = true
-              Chef::Log.debug("Found mount #{@new_resource.device} to #{@new_resource.mount_point} in /etc/fstab")
+              Chef::Log.debug("Found mount #{@device_fstab} to #{@new_resource.mount_point} in /etc/fstab")
             when /^[\/\w]+\s+#{@new_resource.mount_point}/
               enabled = false
               Chef::Log.debug("Found conflicting mount point #{@new_resource.mount_point} in /etc/fstab")
@@ -74,7 +80,7 @@ class Chef
           unless @current_resource.mounted
             command = "mount -t #{@new_resource.fstype}"
             command << " -o #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
-            command << " #{@new_resource.device}"
+            command << " #{@device_real}"
             command << " #{@new_resource.mount_point}"
             run_command(:command => command)
             Chef::Log.info("Mounted #{@new_resource.mount_point}")
@@ -112,7 +118,7 @@ class Chef
         def enable_fs
           unless @current_resource.enabled
             ::File.open("/etc/fstab", "a") do |fstab|
-              fstab.puts("#{@new_resource.device} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? "defaults" : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
+              fstab.puts("#{@device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? "defaults" : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
               Chef::Log.info("Enabled #{@new_resource.mount_point}")
             end
           else
@@ -126,7 +132,7 @@ class Chef
             
             found = false
             ::File.readlines("/etc/fstab").reverse_each do |line|
-              if !found && line =~ /^#{device_regex}\s+#{@new_resource.mount_point}/
+              if !found && line =~ /^#{device_fstab_regex}\s+#{@new_resource.mount_point}/
                 found = true
                 Chef::Log.debug("Removing #{@new_resource.mount_point} from fstab")
                 next
@@ -144,8 +150,59 @@ class Chef
         end
 
         private
+
         def device_regex
           ::File.symlink?(@new_resource.device) ? "(?:#{@new_resource.device})|(?:#{::File.readlink(@new_resource.device)})" : @new_resource.device
+        end
+
+        def device_fstab
+          case @new_resource.device_type
+          when :device
+            @new_resource.device
+          when :label
+            "LABEL=#{@new_resource.device}"
+          when :uuid
+            "UUID=#{@new_resource.device}"
+          end
+        end
+
+        def device_real
+          if @new_resource.device_type == :device
+            @new_resource.device
+          else
+          	real_device = nil
+            status = popen4("findfs #{@device_fstab}") do |pid, stdin, stdout, stderr|
+              real_device = stdout.first
+            end
+            unless status.exitstatus == 0
+              real_device = "/dev/null"
+            end
+        
+            real_device.chomp
+          end
+        end
+
+        def device_logstring
+          case @new_resource.device_type
+          when :device
+            "#{@device_real}"
+          when :label
+            "#{@device_real} with label #{@new_resource.device}"
+          when :uuid
+            "#{@device_real} with uuid #{@new_resource.device}"
+          end
+        end
+
+        def device_mount_regex
+          ::File.symlink?(@device_real) ? "(?:#{@device_real})|(?:#{::File.readlink(@device_real)})" : @device_real
+        end
+
+        def device_fstab_regex
+          if @new_resource.device_type == :device
+            @device_mount_regex
+          else
+            @device_fstab
+          end
         end
       end
     end

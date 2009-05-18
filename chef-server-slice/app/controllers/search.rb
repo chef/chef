@@ -23,6 +23,7 @@ require 'chef' / 'queue'
 class ChefServerSlice::Search < ChefServerSlice::Application
   
   provides :html, :json
+  before :login_required 
     
   def index
     @s = Chef::Search.new

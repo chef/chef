@@ -98,6 +98,10 @@ end
 # Then
 ###
 Then /^the run should exit '(.+)'$/ do |exit_code|
+  if ENV['LOG_LEVEL'] == 'debug'
+    puts @status.inspect
+    puts @status.exitstatus
+  end
   begin
     @status.exitstatus.should eql(exit_code.to_i)
   rescue 

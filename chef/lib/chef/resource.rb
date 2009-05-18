@@ -136,23 +136,20 @@ class Chef
       ignore_failure(arg)
     end
     
-    def notifies(action, resources, timing=:delayed)
-      timing = check_timing(timing)
-      rarray = resources.kind_of?(Array) ? resources : [ resources ]
-      rarray.each do |resource|
-        action_sym = action.to_sym
-        if @actions.has_key?(action_sym)
-          @actions[action_sym][timing] << resource
-        else
-          @actions[action_sym] = Hash.new
-          @actions[action_sym][:delayed] = Array.new
-          @actions[action_sym][:immediate] = Array.new   
-          @actions[action_sym][timing] << resource
-        end
+    def notifies(*args)
+      raise ArgumentError, "Wrong number of arguments (should be 1, 2, or 3)" unless ( args.size > 0 && args.size < 4)
+      if args.size > 1
+        notifies_helper(*args)
+      else
+        resources_array = *args
+        resources_array.each do |resource|
+          resource.each do |key, value|
+            notifies_helper(value[0], key, value[1])    
+          end
+        end 
       end
-      true
     end
-    
+  
     def resources(*args)
       @collection.resources(*args)
     end
@@ -238,6 +235,23 @@ class Chef
           timing = :immediate
         end
         timing
+      end
+      
+      def notifies_helper(action, resources, timing=:delayed)
+        timing = check_timing(timing)
+        rarray = resources.kind_of?(Array) ? resources : [ resources ]
+        rarray.each do |resource|
+          action_sym = action.to_sym
+          if @actions.has_key?(action_sym)
+            @actions[action_sym][timing] << resource
+          else
+            @actions[action_sym] = Hash.new
+            @actions[action_sym][:delayed] = Array.new
+            @actions[action_sym][:immediate] = Array.new   
+            @actions[action_sym][timing] << resource
+          end
+        end
+        true
       end
   end
 end

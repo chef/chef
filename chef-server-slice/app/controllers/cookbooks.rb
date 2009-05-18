@@ -22,6 +22,7 @@ require 'chef' / 'cookbook_loader'
 class ChefServerSlice::Cookbooks < ChefServerSlice::Application
   
   provides :html, :json
+  before :login_required 
   
   def index
     @cl = Chef::CookbookLoader.new
