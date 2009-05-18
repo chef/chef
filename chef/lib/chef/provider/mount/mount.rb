@@ -150,9 +150,11 @@ class Chef
         end
 
         private
+
         def device_regex
           ::File.symlink?(@new_resource.device) ? "(?:#{@new_resource.device})|(?:#{::File.readlink(@new_resource.device)})" : @new_resource.device
         end
+
         def device_fstab
           case @new_resource.device_type
           when :device
@@ -163,6 +165,7 @@ class Chef
             "UUID=#{@new_resource.device}"
           end
         end
+
         def device_real
           if @new_resource.device_type == :device
             @new_resource.device
@@ -178,6 +181,7 @@ class Chef
             real_device.chomp
           end
         end
+
         def device_logstring
           case @new_resource.device_type
           when :device
@@ -188,9 +192,11 @@ class Chef
             "#{@device_real} with uuid #{@new_resource.device}"
           end
         end
+
         def device_mount_regex
           ::File.symlink?(@device_real) ? "(?:#{@device_real})|(?:#{::File.readlink(@device_real)})" : @device_real
         end
+
         def device_fstab_regex
           if @new_resource.device_type == :device
             @device_mount_regex
