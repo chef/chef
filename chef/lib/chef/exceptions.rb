@@ -17,6 +17,7 @@
 
 class Chef
   class Exceptions
+    class Application < RuntimeError; end
     class Cron < RuntimeError; end
     class Exec < RuntimeError; end
     class FileNotFound < RuntimeError; end  
@@ -30,5 +31,6 @@ class Chef
     class User < RuntimeError; end
     class Group < RuntimeError; end
     class Link < RuntimeError; end
+    class Mount < RuntimeError; end
   end
 end

@@ -12,8 +12,8 @@
             %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
               %td{:colspan => 2}= link_to(node.name, slice_url(:registration, { :id => node.name }))
               %td
-                = link_to((node.validated ? "Invalidate" : "Validate"), slice_url(:validate_registration, { :id => node.name}), :method => "post", :confirm => "Are you sure you want to toggle this registrations validation?")
+                = link_to( (node.validated ? "Invalidate Registration" : "Validate Registration"), slice_url( :validate_registration, { :id => node.name} ), :method => "post", :confirm => "Are you sure you want to"  + (node.validated  ?  " invalidate " : " validate ") + "this node's registration?")
                 |
-                = link_to((node.admin ? "Remove Admin Rights" : "Make Admin"), slice_url(:admin_registration, { :id => node.name}), :method => "post", :confirm => "Are you sure you want to toggle this registrations administrator privileges?")
+                = link_to((node.admin ? "Remove Admin Rights" : "Grant Admin Rights"), slice_url(:admin_registration, { :id => node.name}), :method => "post", :confirm => "Are you sure you want to"  + (node.admin ? " remove administrator privileges from this node?" : " grant administrator privileges to this node?"))
                 |
                 = link_to("Delete", slice_url(:registration, { :id => node.name} ), :method => "delete", :confirm => "Are you sure you want to delete this registration")

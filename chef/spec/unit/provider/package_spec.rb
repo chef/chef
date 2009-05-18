@@ -111,6 +111,37 @@ describe Chef::Provider::Package, "action_install" do
     @provider.should_not_receive(:install_package)
     @provider.action_install
   end
+
+  it "should call the candidate_version accessor if the package is not currently installed" do
+    @provider.should_receive(:candidate_version).and_return(true)
+    @provider.action_install
+  end 
+
+  it "should not call the candidate_version accessor if the package is already installed and no version is specified" do
+    @current_resource.stub!(:version).and_return("1.0")
+    @provider.should_not_receive(:candidate_version)
+    @provider.action_install
+  end
+
+  it "should not call the candidate_version accessor if the package is already installed at the version specified" do
+    @current_resource.stub!(:version).and_return("1.0")
+    @new_resource.stub!(:version).and_return("1.0")
+    @provider.should_not_receive(:candidate_version)
+    @provider.action_install
+  end
+
+  it "should not call the candidate_version accessor if the package is not installed new package's version is specified" do
+    @new_resource.stub!(:version).and_return("1.0")
+    @provider.should_not_receive(:candidate_version)
+    @provider.action_install
+  end
+
+  it "should not call the candidate_version accessor if the package at the version specified is a different version than installed" do
+    @new_resource.stub!(:version).and_return("1.0")
+    @current_resource.stub!(:version).and_return("0.99")
+    @provider.should_not_receive(:candidate_version)
+    @provider.action_install
+  end
   
   it "should set the resource to updated if it installs the package" do
     @new_resource.should_recieve(:updated=).with(true)
