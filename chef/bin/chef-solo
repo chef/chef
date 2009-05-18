@@ -41,7 +41,7 @@ opts = OptionParser.new do |opts|
   opts.on("-r RECIPEURL", "--recipe-url RECIPEURL", "Pull down a remote gzipped tarball of recipes and untar it into the proer place.") do |r|
     config[:recipes] = r
   end
-  opts.on("-j JSON_ATTRIBS", "--json-attributes JSON_ATTRIBS", "Load attributes from a JSON file") do |j|
+  opts.on("-j JSON_ATTRIBS", "--json-attributes JSON_ATTRIBS", "Load attributes from a JSON file (path or URL)") do |j|
     config[:json_attribs] = j
   end
   opts.on_tail("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
@@ -61,11 +61,35 @@ unless File.exists?(config[:config_file]) && File.readable?(config[:config_file]
 end
 
 if config[:json_attribs]
-  unless File.exists?(config[:json_attribs])
+  require 'net/http'
+  require 'open-uri'
+
+  json_io = nil
+  begin
+    json_io = open(config[:json_attribs])
+  rescue SocketError => error
+    puts "I cannot connect to #{config[:json_attribs]}"
+    exit 2
+  rescue Errno::ENOENT => error
     puts "I cannot find #{config[:json_attribs]}"
     exit 2
+  rescue Errno::EACCES => error
+    puts "Permissions are incorrect on #{config[:json_attribs]}. Please chmod a+r #{config[:json_attribs]}"
+    exit 2
+  rescue Exception => error
+    puts "Got an unexpected error reading #{config[:json_attribs]}: #{error.message}"
+    exit 2
   end
-  config[:json_attribs] = JSON.parse(IO.read(config[:json_attribs]))
+
+  json_contents = json_io.read
+ 
+  begin
+    config[:json_attribs] = JSON.parse(json_contents)
+  rescue JSON::ParserError => error
+    puts "Could not parse the provided JSON file (#{config[:json_attribs]})!"
+    puts error.message
+    exit 2
+  end
 end
 
 # Load our config file

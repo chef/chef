@@ -129,7 +129,8 @@ describe Chef::Provider::Package::Dpkg, "install and upgrade" do
     @provider.should_receive(:run_command).with({
       :command => "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive"
+        "DEBIAN_FRONTEND" => "noninteractive",
+        "LANG" => "en_US"
       }
     })
     @provider.install_package("wget", "1.11.4-1ubuntu1")
@@ -158,7 +159,8 @@ describe Chef::Provider::Package::Dpkg, "remove and purge" do
     @provider.should_receive(:run_command).with({
       :command => "dpkg -r wget",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive"
+        "DEBIAN_FRONTEND" => "noninteractive",
+        "LANG" => "en_US"
       }
     })
     @provider.remove_package("wget", "1.11.4-1ubuntu1")
@@ -168,7 +170,8 @@ describe Chef::Provider::Package::Dpkg, "remove and purge" do
     @provider.should_receive(:run_command).with({
       :command => "dpkg -P wget",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive"
+        "DEBIAN_FRONTEND" => "noninteractive",
+        "LANG" => "en_US"
       }
     })
     @provider.purge_package("wget", "1.11.4-1ubuntu1")
