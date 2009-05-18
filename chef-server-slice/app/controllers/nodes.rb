@@ -38,21 +38,48 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     rescue Net::HTTPServerException => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
-    if request.xhr?
-      render JSON.pretty_generate(@node), :layout => false
-    else
-      display @node
-    end
+    display @node
+  end
+
+  def new
+    @node = Chef::Node.new
+    cl = Chef::CookbookLoader.new
+    @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+    @available_roles = Chef::Role.list.sort
+    @run_list = @node.run_list
+    render
   end
 
   def create
-    @node = params.has_key?("inflated_object") ? params["inflated_object"] : nil    
-    if @node
-      @status = 202
+    if params.has_key?("inflated_object")
+      @node = params["inflated_object"]
+      exists = true
+      begin
+        Chef::Node.load(@node.name)
+      rescue Net::HTTPServerException
+        exists = false
+      end
+      raise Forbidden, "Node already exists" if exists
+      self.status = 201
       @node.save
-      display @node
+      display({ :uri => absolute_slice_url(:node, @node) })
     else
-      raise BadRequest, "You must provide a Node to create"
+      begin
+        @node = Chef::Node.new
+        @node.name params[:name]
+        @node.attribute = JSON.parse(params[:attributes])
+        @node.run_list params[:for_node]
+        @node.save
+        redirect(slice_url(:nodes), :message => { :notice => "Created Node #{@node.name}" })
+      rescue
+        cl = Chef::CookbookLoader.new
+        @node.attribute = JSON.parse(params[:attributes])
+        @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+        @available_roles = Chef::Role.list.sort
+        @run_list = params[:for_node] 
+        @_message = { :error => $! }
+        render :new
+      end
     end
   end
 

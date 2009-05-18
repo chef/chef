@@ -36,6 +36,20 @@ $(document).ready(function(){
     });
   });
 
+  $('form#edit_node, form#create_node').submit(function(event) {
+    var form = $(this);
+    var to_node = $('ul#for_node').sortable('toArray');
+    if (form.attr('id') == 'edit_node') {
+      form.append('<input type="hidden" name="_method" value="put">');
+    }
+    form.append($('input#node_name')).css('display', 'none');
+    form.append('<input type="hidden" id="attributes" name="attributes"/>');
+    $('input#attributes').attr('value', JSONeditor.treeBuilder.JSONstring.make(JSONeditor.treeBuilder.json))
+    jQuery.each(to_node, function(i, field) {
+      form.append('<input type="hidden" name="for_node[]" value="' + field + '"/>');
+    });
+  });
+
   // livequery hidden form for link_to ajax magic
   $('a[method]').livequery(function(){
     var message = $(this).attr('confirm');
@@ -60,39 +74,6 @@ $(document).ready(function(){
     });
   });
   
-  $("dd:has(dl)").livequery(function(){
-    $(this).hide().prev("dt").addClass("collapsed");
-  });
-  $("dd:not(:has(dl))").livequery(function(){
-    $(this).addClass("inline").prev().addClass("inline");
-  });
-  $("dt.collapsed").livequery(function(){
-    $(this).click(function() {
-      $(this).toggleClass("collapsed").next().toggle();
-    });
-  });
-  
-  // editable table for the node show view
-  /*
-    $(".edit_area").editable(location.href + ".json", { 
-    target : location.href,
-    method : "PUT",
-    submit : "Save",
-    cancel : "Cancel",
-    indicator : "Saving..",
-    loadurl : location.href,
-    tooltip : "Click to edit",
-    type  : "textarea",
-    event     : "dblclick",
-    height : 300
-  });
-  */
-  
-
-  //alert("blah" + $('#json_tree_source').text());
-  //var json = $('#json_tree_source').text();
-  //$('#attribute_tree_view').append(TreeView($('#json_tree_source').text()));
-  
   // accordion for the cookbooks show view
 	$('.accordion .head').click(function() {
 		$(this).next().toggle('slow');
@@ -114,9 +95,9 @@ $(document).ready(function(){
   recipe_editor.showFunctionButtons();
   */
 
-  $("#for_role, #available_recipes").sortable({
-    connectWith: '.connectedSortable',
-   	placeholder: 'ui-state-highlight'
+  $('.connectedSortable').sortable({
+    placeholder: 'ui-state-highlight',
+    connectWith: $('.connectedSortable')
   }).disableSelection();
 
   // The table tree!

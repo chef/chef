@@ -22,13 +22,14 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/queue'
+require 'chef/run_list'
 require 'extlib'
 require 'json'
 
 class Chef
   class Node
     
-    attr_accessor :attribute, :recipe_list, :couchdb_rev, :run_state
+    attr_accessor :attribute, :recipe_list, :couchdb_rev, :run_state, :run_list
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
@@ -63,9 +64,7 @@ class Chef
     def initialize()
       @name = nil
       @attribute = Mash.new
-      @run_list = Array.new
-      @role_list = Array.new
-      @recipe_list = Array.new
+      @run_list = Chef::RunList.new 
       @couchdb_rev = nil
       @couchdb = Chef::CouchDB.new
       @run_state = {
@@ -156,39 +155,29 @@ class Chef
     
     # Returns true if this Node expects a given recipe, false if not.
     def recipe?(recipe_name)
-      @recipe_list.detect { |r| r == recipe_name } ? true : false
+      @run_list.include?(recipe_name)
     end
     
     # Returns an Array of recipes.  If you call it with arguments, they will become the new
     # list of recipes.
     def recipes(*args)
       if args.length > 0
-        @recipe_list = args.flatten
+        @run_list.reset(args)
       else
-        @recipe_list
-      end
-    end
-
-    # Returns an Array of roles.  If you call it with arguments, they will become the new
-    # list of roles.
-    def roles(*args)
-      if args.length > 0
-        @role_list = args.flatten
-      else
-        @role_list
+        @run_list
       end
     end
 
     # Returns true if this Node expects a given role, false if not.
     def role?(role_name)
-      @role_list.detect { |r| r == role_name } ? true : false
+      @role_list.include?("role[#{role_name}]")
     end
 
     # Returns an Array of roles and recipes, in the order they will be applied.
     # If you call it with arguments, they will become the new list of roles and recipes. 
     def run_list(*args)
       if args.length > 0
-        @run_list = args.flatten
+        @run_list.reset(args)
       else
         @run_list
       end
@@ -238,6 +227,8 @@ class Chef
         end
       end
       index_hash["recipe"] = @recipe_list if @recipe_list.length > 0
+      index_hash["roles"] = @role_list if @role_list.length > 0
+      index_hash["run_list"] = @run_list if @run_list.length > 0
       index_hash
     end
     
@@ -266,7 +257,7 @@ class Chef
         'json_class' => self.class.name,
         "attributes" => @attribute,
         "chef_type" => "node",
-        "recipes" => @recipe_list,
+        "run_list" => @run_list.run_list,
       }
       result["_rev"] = @couchdb_rev if @couchdb_rev
       result.to_json(*a)
@@ -279,9 +270,7 @@ class Chef
       o["attributes"].each do |k,v|
         node[k] = v
       end
-      o["recipes"].each do |r|
-        node.recipes << r
-      end
+      node.run_list o["run_list"] 
       node.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       node
     end
