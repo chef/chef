@@ -28,22 +28,24 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
-        
-          status = popen4("emerge --color n --nospinner --search #{@new_resource.package_name.split('/').last}") do |pid, stdin, stdout, stderr|
-            available, installed = parse_emerge(@new_resource.package_name, stdout.read)
-            
-            if installed == "[ Not Installed ]"
-              @current_resource.version(nil)
-            else
-              @current_resource.version(installed)
-            end  
-            @candidate_version = available
+
+          category = @new_resource.package_name.split('/').first
+          pkg = @new_resource.package_name.split('/').last
+
+          @current_resource.version(nil)
+
+          catdir = "/var/db/pkg/#{category}"
+
+          if( ::File.exists?(catdir) )
+            Dir.entries(catdir).each do |entry|
+              if(entry =~ /^#{Regexp.escape(pkg)}\-(.+)/)
+                @current_resource.version($1)
+                Chef::Log.debug("Got current version #{$1}")
+                break
+              end
+            end
           end
 
-          unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "emerge --search failed - #{status.inspect}!"
-          end
-        
           @current_resource
         end
       
@@ -65,11 +67,34 @@ class Chef
           available = installed unless available
           [available, installed]
         end
+
+        def candidate_version
+          return @candidate_version if @candidate_version
+
+          status = popen4("emerge --color n --nospinner --search #{@new_resource.package_name.split('/').last}") do |pid, stdin, stdout, stderr|
+            available, installed = parse_emerge(@new_resource.package_name, stdout.read)
+            @candidate_version = available
+          end
+
+          unless status.exitstatus == 0
+            raise Chef::Exceptions::Package, "emerge --search failed - #{status.inspect}!"
+          end
+
+          @candidate_version
+
+        end
         
         
         def install_package(name, version)
+          pkg = "=#{name}-#{version}" 
+          
+          if(version =~ /^\~(.+)/)
+            # If we start with a tilde
+            pkg = "~#{name}-#{$1}"
+          end
+               
           run_command(
-            :command => "emerge -g --color n --nospinner --quiet =#{name}-#{version}"
+            :command => "emerge -g --color n --nospinner --quiet #{pkg}"
           )
         end
       
@@ -78,8 +103,14 @@ class Chef
         end
       
         def remove_package(name, version)
+          if(version)
+            pkg = "=#{@new_resource.package_name}-#{version}"
+          else            
+            pkg = "#{@new_resource.package_name}"
+          end
+
           run_command(
-            :command => "emerge --unmerge --color n --nospinner --quiet #{@new_resource.package_name}"
+            :command => "emerge --unmerge --color n --nospinner --quiet #{pkg}"
           )
         end
       

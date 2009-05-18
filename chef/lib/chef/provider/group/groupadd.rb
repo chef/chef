@@ -55,8 +55,15 @@ class Chef
         
         def modify_group_members
           unless @new_resource.members.empty?
-            Chef::Log.debug("#{@new_resource}: setting group members to #{@new_resource.members.join(', ')}")
-            run_command(:command => "gpasswd -M #{@new_resource.members.join(',')} #{@new_resource.group_name}")
+            if(@new_resource.append)
+              @new_resource.members.each do |member|
+                Chef::Log.debug("#{@new_resource}: appending member #{member} to group #{@new_resource.group_name}")
+                run_command(:command => "gpasswd -a #{member} #{@new_resource.group_name}")
+              end
+            else
+              Chef::Log.debug("#{@new_resource}: setting group members to #{@new_resource.members.join(', ')}")
+              run_command(:command => "gpasswd -M #{@new_resource.members.join(',')} #{@new_resource.group_name}")
+            end
           else
             Chef::Log.debug("#{@new_resource}: not changing group members, the group has no members")
           end
