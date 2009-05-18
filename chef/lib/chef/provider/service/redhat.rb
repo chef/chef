@@ -49,11 +49,11 @@ class Chef
         end
 
         def enable_service()
-          run_command(:command => "/sbin/chkconfig --add #{@new_resource.service_name}")
+          run_command(:command => "/sbin/chkconfig #{@new_resource.service_name} on")
         end
 
         def disable_service()
-          run_command(:command => "/sbin/chkconfig --del #{@new_resource.service_name}")
+          run_command(:command => "/sbin/chkconfig #{@new_resource.service_name} off")
         end
         
       end
