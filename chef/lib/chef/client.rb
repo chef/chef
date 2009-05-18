@@ -34,7 +34,7 @@ class Chef
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
     
-    attr_accessor :node, :registration, :safe_name, :json_attribs, :validation_token, :node_name
+    attr_accessor :node, :registration, :safe_name, :json_attribs, :validation_token, :node_name, :ohai, :ohai_has_run
     
     # Creates a new Chef::Client.
     def initialize()
@@ -44,6 +44,9 @@ class Chef
       @registration = nil
       @json_attribs = nil
       @node_name = nil
+      Ohai::Log.logger = Chef::Log.logger
+      @ohai = Ohai::System.new
+      @ohai_has_run = false
       @rest = Chef::REST.new(Chef::Config[:registration_url])
     end
     
@@ -65,9 +68,9 @@ class Chef
       start_time = Time.now
       Chef::Log.info("Starting Chef Run")
       
-      build_node(@node_name)
       register
       authenticate
+      build_node(@node_name)
       sync_library_files
       sync_attribute_files
       sync_definitions
@@ -93,13 +96,27 @@ class Chef
       Chef::Log.info("Starting Chef Solo Run")
       
       build_node(@node_name, solo = true)
-      converge()
+      converge(solo = true)
       
       end_time = Time.now
       Chef::Log.info("Chef Run complete in #{end_time - start_time} seconds")
       true
     end
-    
+
+    def run_ohai
+      @ohai.all_plugins unless @ohai_has_run
+      @ohai_has_run = true
+    end
+
+    def determine_node_name
+      run_ohai
+      unless @safe_name && @node_name
+        @node_name ||= @ohai[:fqdn] ? @ohai[:fqdn] : @ohai[:hostname]
+        @safe_name = @node_name.gsub(/\./, '_')
+      end
+      @node_name
+    end
+
     # Builds a new node object for this client.  Starts with querying for the FQDN of the current
     # host (unless it is supplied), then merges in the facts from Ohai.
     #
@@ -109,13 +126,9 @@ class Chef
     # === Returns
     # node<Chef::Node>:: Returns the created node object, also stored in @node
     def build_node(node_name=nil, solo=false)
-      Ohai::Log.logger = Chef::Log.logger
-      ohai = Ohai::System.new
-      ohai.all_plugins
-      
-      node_name ||= ohai[:fqdn] ? ohai[:fqdn] : ohai[:hostname]      
+      node_name ||= determine_node_name
+
       raise RuntimeError, "Unable to determine node name from ohai" unless node_name
-      @safe_name = node_name.gsub(/\./, '_')
       Chef::Log.debug("Building node object for #{@safe_name}")
       unless solo
         begin
@@ -166,6 +179,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def register
+      determine_node_name
       Chef::Log.debug("Registering #{@safe_name} for an openid") 
       @registration = nil
       begin
@@ -201,6 +215,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def authenticate
+      determine_node_name
       Chef::Log.debug("Authenticating #{@safe_name} via openid") 
       response = @rest.post_rest('openid/consumer/start', { 
         "openid_identifier" => "#{Chef::Config[:openid_url]}/openid/server/node/#{@safe_name}",
@@ -333,9 +348,11 @@ class Chef
     #
     # === Returns
     # true:: Always returns true
-    def converge
+    def converge(solo=false)
       Chef::Log.debug("Compiling recipes for node #{@safe_name}")
-      Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+      unless solo
+        Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+      end
       compile = Chef::Compile.new()
       compile.node = @node
       compile.load_libraries

@@ -104,3 +104,23 @@ describe Chef::Resource::Group, "members" do
     lambda { @resource.send(:members, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
   end
 end
+
+describe Chef::Resource::Group, "append" do
+  before(:each) do
+    @resource = Chef::Resource::Group.new("admin")
+  end
+  
+  it "should default to false" do
+    @resource.append.should eql(false)
+  end
+  
+  it "should allow a boolean" do
+    @resource.append true
+    @resource.append.should eql(true)
+  end
+
+  it "should not allow a hash" do
+    lambda { @resource.send(:gid, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
+  end
+  
+end
