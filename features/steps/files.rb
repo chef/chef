@@ -44,6 +44,14 @@ Then /^a file named '(.+)' should not exist$/ do |filename|
   File.exists?(File.join(tmpdir, filename)).should be(false)
 end
 
+#currently using absolute path (specified in recipe execute_commands/recipes/umask.rb)
+Then /^'(.+)' should exist and raise error when copying$/ do |filename|
+  File.exists?(filename).should be(true)
+  lambda{copy(filename, filename + "_copy", false)}.should raise_error()
+  File.delete(filename)
+end
+
+
 Then /^the (.)time of '(.+)' should be different$/ do |time_type, filename|
   case time_type
   when "m"

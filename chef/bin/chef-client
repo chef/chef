@@ -38,7 +38,7 @@ opts = OptionParser.new do |opts|
     :group=>       {  :short=>"-g GROUP",         :long=>"--group GROUP",         :description=>"Group to change gid to before daemonizing", :proc=>nil },
     :daemonize=>   {  :short=>"-d",               :long=>"--daemonize",           :description=>"Daemonize the process", :proc=> lambda { |p| true} },
     :interval=>    {  :short=>"-i SECONDS",       :long=>"--interval SECONDS",    :description=>"Run chef-client periodically, in seconds", :proc=>nil },
-    :json_attribs=>{  :short=>"-j JSON_ATTRIBS",  :long=>"--json-attributes JSON_ATTRIBS", :description=>"Load attributes from a JSON file", :proc=>nil },
+    :json_attribs=>{  :short=>"-j JSON_ATTRIBS",  :long=>"--json-attributes JSON_ATTRIBS", :description=>"Load attributes from a JSON file/URL", :proc=>nil },
     :node_name=>   {  :short=>"-N NODE_NAME",     :long=>"--node-name NODE_NAME", :description=>"The node name for this client", :proc=>nil },
     :splay=>       {  :short=>"-s SECONDS",       :long=>"--splay SECONDS",       :description=>"The splay time for running at intervals, in seconds", :proc=>nil },
     :log_level=>   {  :short=>"-l LEVEL",         :long=>"--loglevel LEVEL",      :description=>"Set the log level (debug, info, warn, error, fatal)", :proc=>lambda { |p| p.to_sym} },
@@ -71,10 +71,29 @@ unless File.exists?(config[:config_file]) and File.readable?(config[:config_file
 end
 
 if config[:json_attribs]
-  if File.exists?(config[:json_attribs]) and File.readable?(config[:json_attribs])
-    config[:json_attribs] = JSON.parse(IO.read(config[:json_attribs]))
-  else
-    Chef.fatal!("I cannot find or read #{config[:json_attribs]}", 2)
+  require 'net/http'
+  require 'open-uri'
+
+  json_io = nil
+  begin
+    json_io = open(config[:json_attribs])
+  rescue SocketError => error
+    Chef.fatal!("I cannot connect to #{config[:json_attribs]}", 2)
+  rescue Errno::ENOENT => error
+    Chef.fatal!("I cannot find #{config[:json_attribs]}", 2)
+  rescue Errno::EACCES => error
+    Chef.fatal!("Permissions are incorrect on #{config[:json_attribs]}. Please chmod a+r #{config[:json_attribs]}", 2)
+  rescue Exception => error
+    Chef.fatal!("Got an unexpected error reading #{config[:json_attribs]}: #{error.message}", 2)
+  end
+
+  json_contents = json_io.read
+ 
+  begin
+    config[:json_attribs] = JSON.parse(json_contents)
+  rescue JSON::ParserError => error
+    Chef.fatal!("Could not parse the provided JSON file (#{config[:json_attribs]})!: " + error.message, 2)
+    exit 2
   end
 end
 
@@ -83,29 +102,18 @@ Chef::Config.configure { |c| c.merge!(config) }
 
 Chef::Daemon.change_privilege
 
+Chef::Log.init(Chef::Config[:log_location])
+Chef::Log.level(Chef::Config[:log_level])
+Chef::Config[:delay] = 0 
+
 if Chef::Config[:daemonize]
-  unless Chef::Config[:log_location].is_a? IO
-    Chef::Log.init(Chef::Config[:log_location])
-  end
-  Chef::Log.level(Chef::Config[:log_level])
-  
   # We want to set the interval to half an hour, if one is not set.
-  unless Chef::Config[:interval]
-    Chef::Config[:interval] = 1800
-  end
+  Chef::Config[:interval] ||= 1800
   Chef::Daemon.daemonize("chef-client")
-else
-  Chef::Log.level(Chef::Config[:log_level])
 end
 
 if Chef::Config[:interval]
-  if Chef::Config[:splay]
-    delay = Chef::Config[:interval].to_i + rand(Chef::Config[:splay])
-  else
-    delay = Chef::Config[:interval].to_i
-  end
-else
-  delay = 0
+  Chef::Config[:delay] = Chef::Config[:interval].to_i + (Chef::Config[:splay] ? rand(Chef::Config[:splay]) : 0)
 end
 
 loop do
@@ -116,19 +124,19 @@ loop do
     c.node_name = Chef::Config[:node_name]
     c.run
     if Chef::Config[:interval]
-      Chef::Log.debug("Sleeping for #{delay} seconds")
-      sleep delay
+      Chef::Log.debug("Sleeping for #{Chef::Config[:delay]} seconds")
+      sleep Chef::Config[:delay]
     else
       exit 0
     end
   rescue SystemExit => e
     raise
   rescue Exception => e
-    if Chef::Config[:daemonize]
+    if Chef::Config[:interval]
       Chef::Log.error("#{e.class}")
       Chef::Log.fatal("#{e}\n#{e.backtrace.join("\n")}")
-      Chef::Log.fatal("Sleeping for #{delay} seconds before trying again")
-      sleep delay
+      Chef::Log.fatal("Sleeping for #{Chef::Config[:delay]} seconds before trying again")
+      sleep Chef::Config[:delay]
       retry
     else
       raise

@@ -38,18 +38,25 @@ Feature: Transfer Remote Files
      Then the run should exit '0'
       And a file named 'host_specific.txt' should be from the 'platform-version' specific directory
       
-    Scenario: Should prefer the file for the correct platform
-      Given a validated node
-        And it includes the recipe 'transfer_remote_files::should_prefer_the_file_for_this_specific_host'
-        And the cookbook has a 'file' named 'host_specific.txt' in the 'platform' specific directory
-        And the cookbook has a 'file' named 'host_specific.txt' in the 'default' specific directory
-       When I run the chef-client
-       Then the run should exit '0'
-        And a file named 'host_specific.txt' should be from the 'platform' specific directory
+  Scenario: Should prefer the file for the correct platform
+    Given a validated node
+      And it includes the recipe 'transfer_remote_files::should_prefer_the_file_for_this_specific_host'
+      And the cookbook has a 'file' named 'host_specific.txt' in the 'platform' specific directory
+      And the cookbook has a 'file' named 'host_specific.txt' in the 'default' specific directory
+     When I run the chef-client
+     Then the run should exit '0'
+      And a file named 'host_specific.txt' should be from the 'platform' specific directory
 
-    Scenario: Transfer a file from a specific cookbook
-      Given a validated node
-        And it includes the recipe 'transfer_remote_files::transfer_a_file_from_a_specific_cookbook'
-       When I run the chef-client
-       Then the run should exit '0'
-        And a file named 'from_definition.txt' should contain 'easy like saturday morning'
+  Scenario: Transfer a file from a specific cookbook
+    Given a validated node
+      And it includes the recipe 'transfer_remote_files::transfer_a_file_from_a_specific_cookbook'
+     When I run the chef-client
+     Then the run should exit '0'
+      And a file named 'from_definition.txt' should contain 'easy like saturday morning'
+
+  Scenario: Change permissions for a pre-existing remote_file
+    Given a validated node
+      And it includes the recipe 'transfer_remote_files::change_remote_file_perms_trickery'
+     When I run the chef-client
+     Then the run should exit '0'
+      And the file named 'transfer_a_file_from_a_cookbook.txt' should have octal mode '0644'
