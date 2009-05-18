@@ -1,0 +1,76 @@
+#!/bin/bash
+# Startup script for chef-indexer 
+#
+# chkconfig: - 75 25
+# description: Server component of the Chef systems integration framework.
+# processname: chef-indexer
+#
+# config: /etc/sysconfig/chef-indexer
+# pidfile: /var/run/chef/chef-indexer.pid
+
+# Source function library
+. /etc/init.d/functions
+
+[ -f /etc/sysconfig/chef-indexer ] && . /etc/sysconfig/chef-indexer
+
+prog="chef-indexer"
+PIDFILE=/var/run/chef/chef-indexer.pid
+LOCKFILE=/var/lock/subsys/$prog
+CONFIG=/etc/chef/indexer.rb
+USER="chef"
+GROUP="chef"
+LOGFILE=/var/log/chef/chef-indexer.log
+OPTIONS=
+
+start() {
+    echo -n "Starting $prog:"
+    daemon chef-indexer -d -c "$CONFIG" -u "$USER" -g "$GROUP" -L "$LOGFILE" "$OPTIONS" ">/dev/null"
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch ${LOCKFILE}
+    return $RETVAL
+}
+
+stop() {
+    echo -n "Stopping $prog: "
+    if [ -f $PIDFILE ]; then
+        killproc chef-indexer
+        RETVAL=$?
+        if [ $RETVAL -ne 0 ]; then
+            failure;
+        fi;
+    else
+        RETVAL=1
+        failure;
+    fi
+    rm -f $LOCKFILE
+    echo
+    return $RETVAL
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+        stop
+        start
+        ;;
+  condrestart)
+        if [ -f $LOCKFILE ]; then
+            stop
+            start
+        fi
+        ;;
+  status)
+        status chef-indexer
+        ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|condrestart|status}"
+    exit 1
+esac
+
+exit $RETVAL

@@ -33,6 +33,51 @@ class Chef
         @metric = nil
         @device = nil 
         @route_type = :host
+        @networking = nil
+        @networking_ipv6 = nil
+        @hostname = nil
+        @domainname = nil
+        @domain = nil
+      end
+
+      def networking(arg=nil)
+        set_or_return(
+          :networking,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def networking_ipv6(arg=nil)
+        set_or_return(
+          :networking_ipv6,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def hostname(arg=nil)
+        set_or_return(
+          :hostname,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def domainname(arg=nil)
+        set_or_return(
+          :domainname,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def domain(arg=nil)
+        set_or_return(
+          :domain,
+          arg,
+          :kind_of => String
+        )
       end
 
       def target(arg=nil)
