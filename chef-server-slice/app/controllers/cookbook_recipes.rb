@@ -22,6 +22,7 @@ require 'chef' / 'mixin' / 'checksum'
 class ChefServerSlice::CookbookRecipes < ChefServerSlice::Application
   
   provides :html, :json
+  before :login_required 
   
   include Chef::Mixin::Checksum
   

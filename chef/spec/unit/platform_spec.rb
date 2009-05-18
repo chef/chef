@@ -140,6 +140,10 @@ describe Chef::Platform do
          :provider => "masterful"
     )
     Chef::Platform.platforms[:default][:file].should eql("masterful")
+
+    Chef::Platform.platforms = { :neurosis => {} }
+    Chef::Platform.set(:platform => :neurosis, :resource => :package, :provider => "masterful")
+    Chef::Platform.platforms[:neurosis][:default][:package].should eql("masterful")
     
   end
   
