@@ -22,6 +22,8 @@ require "chef" / "cookbook_loader"
 
 class ChefServerSlice::Application < Merb::Controller
 
+  include Chef::Mixin::Checksum
+
   controller_for_slice
   
   # Generate the absolute url for a slice - takes the slice's :path_prefix into account.
@@ -168,7 +170,8 @@ class ChefServerSlice::Application < Merb::Controller
         file_name = mo[1]
         files << { 
           :cookbook => cookbook.name, 
-          :name => file_name
+          :name => file_name,
+          :checksum => checksum(sf)
         }
       end
     end

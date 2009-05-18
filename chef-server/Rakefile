@@ -1,3 +1,4 @@
+ 
 require 'rubygems'
 require 'rake/rdoctask'
 
@@ -5,12 +6,19 @@ require 'merb-core'
 require 'merb-core/tasks/merb'
 require 'spec'
 require 'spec/rake/spectask'
-require 'chef'
+
+# Load chef and chef-server slice from source rather than gem, if present
+[ 'chef', 'chef-server-slice' ].each do |lib|
+  library = File.join(File.dirname(__FILE__), "..", lib, "lib", "#{lib}.rb")
+  require library if File.exists?(library)
+end
+
+require 'chef' unless defined?(Chef)
 
 include FileUtils
 
 GEM = "chef-server"
-CHEF_SERVER_VERSION = "0.5.7"
+CHEF_SERVER_VERSION = "0.6.3"
 AUTHOR = "Opscode"
 EMAIL = "chef@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"

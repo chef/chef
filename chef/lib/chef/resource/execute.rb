@@ -37,8 +37,17 @@ class Chef
         @timeout = nil
         @user = nil
         @allowed_actions.push(:run)
+        @umask = nil
       end
-      
+
+      def umask(arg=nil)
+        set_or_return(
+          :umask,
+          arg,
+          :kind_of => [ String, Integer ]
+        )
+      end
+    
       def command(arg=nil)
         set_or_return(
           :command,
@@ -46,7 +55,7 @@ class Chef
           :kind_of => [ String ]
         )
       end
-
+      
       def creates(arg=nil)
         set_or_return(
           :creates,
@@ -110,6 +119,8 @@ class Chef
           :kind_of => [ String, Integer ]
         )
       end
+
+
 
     end
   end
