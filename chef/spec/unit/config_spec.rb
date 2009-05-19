@@ -19,73 +19,37 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Config do
-  
-  it "should load a .rb file in context" do
-    lambda { 
-      Chef::Config.from_file(File.join(File.dirname(__FILE__), "..", "data", "config.rb"))
-    }.should_not raise_error    
-  end
-  
-  it "should raise an ArgumentError with an explanation if you try and set a non-existent variable" do
-    lambda { 
-      Chef::Config.from_file(File.join(File.dirname(__FILE__), "..", "data", "bad-config.rb")) 
-    }.should raise_error(ArgumentError)
-  end
-  
-  it "should raise an IOError if it can't find the file" do
-    lambda { 
-      Chef::Config.from_file("/tmp/timmytimmytimmy")
-    }.should raise_error(IOError)
-  end
-  
-  it "should have a default cookbook_path" do
-    Chef::Config.cookbook_path.should be_kind_of(Array)
-  end
-  
-  it "should allow you to set a cookbook_path with a string" do
-    Chef::Config.cookbook_path("/etc/chef/cookbook")
-    Chef::Config.cookbook_path.should eql("/etc/chef/cookbook")
-  end
-  
-  it "should allow you to set a cookbook_path with multiple strings" do
-    Chef::Config.cookbook_path("/etc/chef/cookbook", "/etc/chef/upstream-cookbooks")
-    Chef::Config.cookbook_path.should eql([ 
-      "/etc/chef/cookbook", 
-      "/etc/chef/upstream-cookbooks" 
-    ])
-  end
-  
-  it "should allow you to set a cookbook_path with an array" do
-    Chef::Config.cookbook_path ["one", "two"]
-    Chef::Config.cookbook_path.should eql(["one", "two"])
-  end
-  
-  it "should allow you to reference a value by index" do
-    Chef::Config[:cookbook_path].should be_kind_of(Array)
-  end
-  
-  it "should allow you to set a value by index" do
-    Chef::Config[:cookbook_path] = "one"
-    Chef::Config[:cookbook_path].should == "one"
-  end
-  
-  it "should allow you to set config values with a block" do
-    Chef::Config.configure do |c|
-      c[:cookbook_path] = "monkey_rabbit"
-      c[:otherthing] = "boo"
+  describe "class method: manage_secret_key" do
+    before do
+      Chef::FileCache.stub!(:has_key?).with("chef_server_cookie_id").and_return(false)
     end
-    Chef::Config.cookbook_path.should == "monkey_rabbit"
-    Chef::Config.otherthing.should == "boo"
+    
+    it "should generate and store a chef server cookie id" do
+      Chef::FileCache.should_receive(:store).with("chef_server_cookie_id", /\w{40}/).and_return(true)
+      Chef::Config.manage_secret_key
+    end
+    
+    describe "when the filecache has a chef server cookie id key" do
+      before do
+        Chef::FileCache.stub!(:has_key?).with("chef_server_cookie_id").and_return(true)        
+      end
+    end
+    
   end
   
-  it "should raise an ArgumentError if you access a config option that does not exist" do
-    lambda { Chef::Config[:snob_hobbery] }.should raise_error(ArgumentError)
+  describe "class method: log_method=" do
+    describe "when given an object that responds to sync e.g. IO" do
+      it "should internally configure itself to use the IO as log_location" do
+        Chef::Config.should_receive(:configure).and_return(STDOUT)
+        Chef::Config.log_location = STDOUT
+      end
+    end
+    
+    describe "when not given an object that responds to sync e.g. String" do
+      it "should internally configure itself to use a File object based upon the String" do
+        File.should_receive(:new).with("/var/log/chef/client.log", "w+")
+        Chef::Config.log_location = "/var/log/chef/client.log"
+      end
+    end
   end
-  
-  it "should return true or false with has_key?" do
-    Chef::Config.has_key?(:monkey).should eql(false)
-    Chef::Config[:monkey] = "gotcha"
-    Chef::Config.has_key?(:monkey).should eql(true)
-  end
-  
 end

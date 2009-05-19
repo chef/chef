@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 #
-# ./chef-indexer - Build indexes from Chef Queues!
+# ./chef-indexer - Run the chef indexer
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: AJ Christensen (<aj@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -18,83 +18,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+$: << File.join(File.dirname(__FILE__), "..", "lib")
+
 require 'rubygems'
-require 'optparse'
-require 'chef'
-require 'chef/queue'
-require 'chef/search_index'
-require 'chef/daemon'
+require 'chef/application/indexer'
 
-trap("INT") { Chef.fatal!("SIGINT received, stopping", 2) }
-
-config = {
-  :config_file => "/etc/chef/server.rb",
-}
-opts = OptionParser.new do |opts|
-  opts.banner = "Usage: #{$0} (options)"
-  opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
-    config[:config_file] = c
-  end
-  opts.on("-u USER", "--user USER", "User to change uid to before daemonizing") do |u|
-    config[:user] = u
-  end
-  opts.on("-g GROUP", "--group GROUP", "Group to change gid to before daemonizing") do |g|
-    config[:group] = g
-  end
-  opts.on("-d", "--daemonize", "Daemonize the process") do
-    config[:daemonize] = true
-  end
-  opts.on("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
-    config[:log_level] = l.to_sym
-  end
-  opts.on("-L LOGLOCATION", "--logfile LOGLOCATION", "Set the log file location, defaults to STDOUT - recommended for daemonizing") do |lf|
-    config[:log_location] = lf
-  end
-  opts.on_tail("-h", "--help", "Show this message") do
-    puts opts
-    exit
-  end
-end
-opts.parse!(ARGV)
-
-unless File.exists?(config[:config_file]) and File.readable?(config[:config_file])
-  Chef.fatal!("I cannot find or read the config file: #{config[:config_file]}", 1)
-end
-
-Chef::Config.from_file(config[:config_file])
-Chef::Config.configure { |c| c.merge!(config) }
-
-Chef::Daemon.change_privilege
-
-if Chef::Config[:daemonize]
-  unless Chef::Config[:log_location].is_a? IO
-    Chef::Log.init(Chef::Config[:log_location])
-  end
-  Chef::Log.level(Chef::Config[:log_level])
-  Chef::Daemon.daemonize("chef-indexer")
-else
-  Chef::Log.level(Chef::Config[:log_level])
-end
-
-# Get a Chef::SearchIndex object
-indexer = Chef::SearchIndex.new
-Chef::Queue.connect
-Chef::Queue.subscribe(:queue, "index")
-Chef::Queue.subscribe(:queue, "remove")
-loop do
-  object, headers = Chef::Queue.receive_msg
-  Chef::Log.info("Headers #{headers.inspect}")
-  if headers["destination"] == "/queue/chef/index"
-    start_timer = Time.new
-    indexer.add(object)
-    indexer.commit
-    final_timer = Time.new
-    Chef::Log.info("Indexed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
-  elsif headers["destination"] == "/queue/chef/remove"
-    start_timer = Time.new
-    indexer.delete(object)
-    indexer.commit
-    final_timer = Time.new
-    Chef::Log.info("Removed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
-  end
-end
+Chef::Application::Indexer.new.run

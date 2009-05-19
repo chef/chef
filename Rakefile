@@ -30,6 +30,8 @@ task :spec do
   end
 end
 
+task :default => :spec
+
 def start_dev_environment(type="normal")
   @couchdb_server_pid = nil
   @chef_server_pid    = nil

@@ -52,7 +52,7 @@ class Chef
             @node[:platform_version]
           )
           Chef::Log.debug("Using local file for template:#{filename}")
-          raw_template_file = ::File.open(filename)
+          cache_file_name = Pathname.new(filename).relative_path_from(Pathname.new(Chef::Config[:file_cache_path])).to_s
         elsif @node.run_state[:template_cache].has_key?(template_cache_name)
           Chef::Log.debug("I have already fetched the template for #{@new_resource} once this run, not checking again.")
           template_updated = false

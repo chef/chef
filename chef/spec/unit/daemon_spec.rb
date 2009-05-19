@@ -95,7 +95,7 @@ describe Chef::Daemon do
     before do
       Process.stub!(:pid).and_return(1337)
       Chef::Config.stub!(:[]).with(:pid_file).and_return("/var/run/chef/chef-client.pid")
-      Chef.stub!(:fatal!).and_return(true)
+      Chef::Application.stub!(:fatal!).and_return(true)
       @f_mock = mock(File, { :print => true, :close => true, :write => true })
       File.stub!(:open).with("/var/run/chef/chef-client.pid", "w").and_yield(@f_mock)
     end
@@ -153,7 +153,7 @@ describe Chef::Daemon do
   describe ".change_privilege" do
     
     before do
-      Chef.stub!(:fatal!).and_return(true)
+      Chef::Application.stub!(:fatal!).and_return(true)
       Chef::Config.stub!(:[]).with(:user).and_return("aj")
     end
     
@@ -239,7 +239,7 @@ describe Chef::Daemon do
       
       it "should log an appropriate error message and fail miserably" do
         Process.stub!(:initgroups).and_raise(Errno::EPERM)
-        Chef.should_receive(:fatal!).with("Permission denied when trying to change 999:999 to 501:20. Operation not permitted")
+        Chef::Application.should_receive(:fatal!).with("Permission denied when trying to change 999:999 to 501:20. Operation not permitted")
         Chef::Daemon._change_privilege("aj")
       end
     end

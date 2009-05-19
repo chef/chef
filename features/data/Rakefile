@@ -31,5 +31,5 @@ elsif File.directory?(File.join(TOPDIR, ".git"))
   $vcs = :git
 end
 
-require 'chef/tasks/chef_repo'
+require 'chef/tasks/chef_repo.rake'
 

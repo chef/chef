@@ -30,7 +30,7 @@ Chef::Config.from_file(File.join(File.dirname(__FILE__), '..', 'data', 'config',
 Ohai::Config[:log_level] = :error
 
 class ChefWorld
-  attr_accessor :client, :tmpdir
+  attr_accessor :client, :tmpdir, :recipe
   
   def initialize
     @client = Chef::Client.new
