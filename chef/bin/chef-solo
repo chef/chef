@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 #
-# ./chef-client - Build a meal with chef
+# ./chef-solo - Run the chef client, in stand-alone mode
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: AJ Christensen (<aj@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -18,101 +18,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 $: << File.join(File.dirname(__FILE__), "..", "lib")
 
-require 'optparse'
-require 'chef'
-require 'chef/client'
 require 'rubygems'
+require 'chef/application/solo'
 
-config = {
-  :config_file => "/etc/chef/solo.rb",
-  :log_level => :info
-}
-
-Chef::Config[:solo] = true
-
-opts = OptionParser.new do |opts|
-  opts.banner = "Usage: #{$0} (options)"
-  opts.on("-c CONFIG", "--config CONFIG", "The Chef Config file to use") do |c|
-    config[:config_file] = c
-  end
-  opts.on("-r RECIPEURL", "--recipe-url RECIPEURL", "Pull down a remote gzipped tarball of recipes and untar it into the proer place.") do |r|
-    config[:recipes] = r
-  end
-  opts.on("-j JSON_ATTRIBS", "--json-attributes JSON_ATTRIBS", "Load attributes from a JSON file (path or URL)") do |j|
-    config[:json_attribs] = j
-  end
-  opts.on_tail("-l LEVEL", "--loglevel LEVEL", "Set the log level (debug, info, warn, error, fatal)") do |l|
-    config[:log_level] = l.to_sym
-  end
-  opts.on_tail("-h", "--help", "Show this message") do
-    puts opts
-    exit
-  end
-end
-opts.parse!(ARGV)
-
-unless File.exists?(config[:config_file]) && File.readable?(config[:config_file])
-  puts "I cannot find or read the config file: #{config[:config_file]}"
-  puts opts
-  exit 1
-end
-
-if config[:json_attribs]
-  require 'net/http'
-  require 'open-uri'
-
-  json_io = nil
-  begin
-    json_io = open(config[:json_attribs])
-  rescue SocketError => error
-    puts "I cannot connect to #{config[:json_attribs]}"
-    exit 2
-  rescue Errno::ENOENT => error
-    puts "I cannot find #{config[:json_attribs]}"
-    exit 2
-  rescue Errno::EACCES => error
-    puts "Permissions are incorrect on #{config[:json_attribs]}. Please chmod a+r #{config[:json_attribs]}"
-    exit 2
-  rescue Exception => error
-    puts "Got an unexpected error reading #{config[:json_attribs]}: #{error.message}"
-    exit 2
-  end
-
-  json_contents = json_io.read
- 
-  begin
-    config[:json_attribs] = JSON.parse(json_contents)
-  rescue JSON::ParserError => error
-    puts "Could not parse the provided JSON file (#{config[:json_attribs]})!"
-    puts error.message
-    exit 2
-  end
-end
-
-# Load our config file
-Chef::Config.from_file(config[:config_file])
-if config[:log_level]
-  Chef::Log.level(config[:log_level].to_sym)
-end
-
-if config[:recipes]
-  recipes_path = Chef::Config[:cookbook_path].gsub(/cookbooks/, '')
-  require 'net/http'
-  require 'open-uri'
-  require 'fileutils'
-  
-  FileUtils.mkdir_p recipes_path
-  path = File.join(recipes_path, 'recipes.tgz')
-  File.open(path, 'wb') do |f|
-    f.write open(config[:recipes]).read
-  end
-  Chef::Mixin::Command.run_command(:command => "cd #{recipes_path} && tar xzvf #{path}")
-end
-
-c = Chef::Client.new
-c.json_attribs = config[:json_attribs]
-c.node_name = config[:node_name]
-c.run_solo
+Chef::Application::Solo.new.run

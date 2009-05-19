@@ -100,6 +100,8 @@ class Chef
     def load_recipes
       @node.recipes.each do |recipe|
         Chef::Log.debug("Loading Recipe #{recipe}")
+        @node.run_state[:seen_recipes][recipe] = true
+
         rmatch = recipe.match(/(.+?)::(.+)/)
         if rmatch
          cookbook = @cookbook_loader[rmatch[1]]

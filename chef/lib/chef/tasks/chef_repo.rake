@@ -21,6 +21,7 @@ require 'json'
 require 'chef'
 require 'chef/cookbook/metadata'
 require 'tempfile'
+require 'rake'
 
 desc "Update your repository from source control"
 task :update do

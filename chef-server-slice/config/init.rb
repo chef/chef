@@ -42,5 +42,7 @@ Merb::Config.use do |c|
   c[:session_store] = 'cookie'
   c[:exception_details] = true
   c[:reload_classes] = true 
+  c[:log_level] = Chef::Config[:log_level]
+  c[:log_file] = Chef::Config[:log_location]
 end
 

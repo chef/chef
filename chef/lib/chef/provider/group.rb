@@ -45,6 +45,7 @@ class Chef
         end
         
         if group_info
+          @new_resource.gid(group_info.gid)
           @current_resource.gid(group_info.gid)
           @current_resource.members(group_info.mem)
         end
@@ -58,9 +59,18 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If a change is not required
       def compare_group
-        !![ :gid, :members ].find do |group_attrib|
-          @new_resource.send(group_attrib) != @current_resource.send(group_attrib)
+        return true if @new_resource.gid != @current_resource.gid
+
+        if(@new_resource.append)
+          @new_resource.members.each do |member|
+            next if @current_resource.members.include?(member)
+            return true
+          end
+        else
+          return true if @new_resource.members != @current_resource.members
         end
+
+        return false
       end
       
       def action_create

@@ -142,9 +142,16 @@ class Chef
         end
 
         def remove_package(name, version)
-          run_command(
-            :command => "yum -q -y remove #{name}-#{version}"
-          )
+          if version
+            run_command(
+             :command => "yum -q -y remove #{name}-#{version}"
+            )
+          else
+            run_command(
+             :command => "yum -q -y remove #{name}"
+            )
+          end
+            
           @yum.flush
         end
       
