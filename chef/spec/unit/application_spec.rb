@@ -136,6 +136,7 @@ end
 
 describe Chef::Application, "class method: fatal!" do
   before do
+    Chef::Log.stub!(:fatal).with("blah").and_return(true)
     Process.stub!(:exit).and_return(true)
   end
   

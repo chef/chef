@@ -92,6 +92,7 @@ end
 
 describe Chef::REST, "run_request method" do
   before(:each) do
+    Chef::REST::CookieJar.stub!(:instance).and_return({})
     @r = Chef::REST.new("url")
     @url_mock = mock("URI", :null_object => true)
     @url_mock.stub!(:host).and_return("one")
