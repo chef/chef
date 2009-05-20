@@ -22,5 +22,15 @@ require 'mixlib/log'
 class Chef
   class Log
     extend Mixlib::Log
+    class Formatter
+      def self.show_time=(arg)
+        Mixlib::Log::Formatter.show_time = arg
+      end
+
+      def self.show_time
+        Mixlib::Log::Formatter.show_time
+      end
+    end
   end
 end
+
