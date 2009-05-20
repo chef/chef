@@ -10,6 +10,7 @@ openid_url         "http://127.0.0.1:4001"
 template_url       "http://127.0.0.1:4000"
 remotefile_url     "http://127.0.0.1:4000"
 search_url         "http://127.0.0.1:4000"
+roles_url          "http://127.0.0.1:4000"
 cookbook_path      File.join(supportdir, "cookbooks")
 openid_store_path  File.join(tmpdir, "openid", "store")
 openid_cstore_path File.join(tmpdir, "openid", "cstore")
