@@ -110,8 +110,8 @@ describe Chef::Node do
   end
 
   describe "recipes" do
-    it "should have an array of recipes that should be applied" do
-      @node.recipes.should be_a_kind_of(Array)
+    it "should have a RunList of recipes that should be applied" do
+      @node.recipes.should be_a_kind_of(Chef::RunList)
     end
     
     it "should allow you to query whether or not it has a recipe applied with recipe?" do
@@ -128,26 +128,23 @@ describe Chef::Node do
   end
 
   describe "roles" do
-    it "should have an array of roles that should be applied" do
-      @node.roles.should be_a_kind_of(Array)
-    end
-
     it "should allow you to query whether or not it has a recipe applied with role?" do
-      @node.roles << "sunrise"
+      @node.run_list << "role[sunrise]"
       @node.role?("sunrise").should eql(true)
       @node.role?("not at home").should eql(false)
     end
 
     it "should allow you to set roles with arguments" do
-      @node.roles "one", "two"
+      @node.run_list << "role[one]"
+      @node.run_list << "role[two]"
       @node.role?("one").should eql(true)
       @node.role?("two").should eql(true)
     end
   end
 
   describe "run_list" do
-    it "should have an array of recipes and roles that should be applied" do
-      @node.run_list.should be_a_kind_of(Array)
+    it "should have a Chef::RunList of recipes and roles that should be applied" do
+      @node.run_list.should be_a_kind_of(Chef::RunList)
     end
 
     it "should allow you to query the run list with arguments" do
@@ -168,7 +165,7 @@ describe Chef::Node do
       @node.name.should eql("test.example.com short")
       @node.sunshine.should eql("in")
       @node.something.should eql("else")
-      @node.recipes.should eql(["operations-master", "operations-monitoring"])
+      @node.recipes.should == ["operations-master", "operations-monitoring"]
     end
     
     it "should raise an exception if the file cannot be found or read" do
@@ -213,7 +210,7 @@ describe Chef::Node do
       json.should =~ /json_class/
       json.should =~ /name/
       json.should =~ /attributes/
-      json.should =~ /recipes/
+      json.should =~ /run_list/
     end
     
     it "should deserialize itself from json" do
@@ -225,7 +222,7 @@ describe Chef::Node do
       @node.each_attribute do |k,v|
         serialized_node[k].should eql(v)
       end
-      serialized_node.recipes.should eql(@node.recipes)
+      serialized_node.run_list.should == @node.run_list
     end
   end
 

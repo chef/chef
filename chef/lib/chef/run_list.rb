@@ -39,6 +39,25 @@ class Chef
       self
     end
 
+    def ==(*isequal)
+      check_array = nil
+      if isequal[0].kind_of?(Chef::RunList)
+        check_array = isequal[0].run_list
+      else
+        check_array = isequal.flatten
+      end
+      
+      return false if check_array.length != @run_list.length
+
+      check_array.each_index do |i|
+        to_check = check_array[i]
+        type, name, fname = parse_entry(to_check)
+        return false if @run_list[i] != fname
+      end
+
+      true
+    end
+
     def [](pos)
       @run_list[pos]
     end
@@ -65,6 +84,29 @@ class Chef
         self << item
       end
       self
+    end
+
+    def expand(from_disk=false)
+      results = Array.new
+      @run_list.each do |entry|
+        type, name, fname = parse_entry(entry)
+        case type
+        when 'recipe'
+          results << name unless results.include?(name)
+        when 'role'
+          role = nil
+          if from_disk || Chef::Config[:solo]
+            # Load the role from disk
+            Chef::Role.from_disk("#{name}")
+          else
+            # Load the role from the server
+            r = Chef::REST.new(Chef::Config[:role_url])
+            role = r.get_rest("roles/#{name}")
+          end
+          role.recipes.each { |r| results <<  r unless results.include?(r) }
+        end
+      end
+      results
     end
 
     def parse_entry(entry)

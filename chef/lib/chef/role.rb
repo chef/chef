@@ -179,5 +179,21 @@ class Chef
       "role[#{@name}]"
     end
 
+    # Load a role from disk - prefers to load the JSON, but will happily load
+    # the raw rb files as well.
+    def self.from_disk(name)
+      js_file = File.join(Chef::Config[:role_path], "#{name}.json")
+      rb_file = File.join(Chef::Config[:role_path], "#{name}.rb")
+
+      if File.exists?(js_file)
+        JSON.parse(IO.read(js_file))
+      elsif File.exists?(rb_file)
+        role = Chef::Role.new
+        role.name(name)
+        role.from_file(rb_file)
+        role
+      end
+    end
+
   end
 end

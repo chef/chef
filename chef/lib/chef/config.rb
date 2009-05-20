@@ -63,7 +63,7 @@ class Chef
     group nil
     http_retry_count 5
     http_retry_delay 5
-    interval 1800
+    interval nil 
     json_attribs nil
     log_level :info
     log_location STDOUT
@@ -97,5 +97,8 @@ class Chef
     template_url "http://localhost:4000"
     user nil
     validation_token nil
+
+    role_path "/var/chef/roles"
+    role_url "http://localhost:4000"
   end
 end

@@ -98,7 +98,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def load_recipes
-      @node.recipes.each do |recipe|
+      @node.run_list.expand.each do |recipe|
         Chef::Log.debug("Loading Recipe #{recipe}")
         @node.run_state[:seen_recipes][recipe] = true
 

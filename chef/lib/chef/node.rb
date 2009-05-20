@@ -170,7 +170,7 @@ class Chef
 
     # Returns true if this Node expects a given role, false if not.
     def role?(role_name)
-      @role_list.include?("role[#{role_name}]")
+      @run_list.include?("role[#{role_name}]")
     end
 
     # Returns an Array of roles and recipes, in the order they will be applied.
@@ -226,9 +226,9 @@ class Chef
           index_hash[key] = value
         end
       end
-      index_hash["recipe"] = @recipe_list if @recipe_list.length > 0
-      index_hash["roles"] = @role_list if @role_list.length > 0
-      index_hash["run_list"] = @run_list if @run_list.length > 0
+      index_hash["recipe"] = @run_list.recipes if @run_list.recipes.length > 0
+      index_hash["roles"] = @run_list.roles if @run_list.roles.length > 0
+      index_hash["run_list"] = @run_list.run_list if @run_list.run_list.length > 0
       index_hash
     end
     
