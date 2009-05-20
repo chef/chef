@@ -49,8 +49,19 @@ class Chef
     def self.log_location=(location)
       configure { |c| c[:log_location] = (location.respond_to?(:sync=) ? location : File.new(location, "w+")) }
     end
-  
+    
+    # Override the config dispatch to set the value of authorized_openid_providers when openid_providers (deprecated) is used
+    #
+    # === Parameters
+    # providers<Array>:: An array of openid providers that are authorized to login to the chef server
+    #
+    def self.openid_providers=(providers)
+      Chef::Log.info("DEPRECATION: openid_providers will be removed, please use authorized_openid_providers")
+      configure { |c| c[:authorized_openid_provders] = providers }
+    end
+    
     authorized_openid_identifiers nil
+    authorized_openid_providers nil
     cookbook_path [ "/var/chef/site-cookbooks", "/var/chef/cookbooks" ]
     couchdb_database "chef"
     couchdb_url "http://localhost:5984"
