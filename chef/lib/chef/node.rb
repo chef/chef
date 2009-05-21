@@ -270,7 +270,11 @@ class Chef
       o["attributes"].each do |k,v|
         node[k] = v
       end
-      node.run_list o["run_list"] 
+      if o.has_key?("run_list")
+        node.run_list o["run_list"] 
+      else
+        o["recipes"].each { |r| node.recipes << r }
+      end
       node.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       node
     end

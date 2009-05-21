@@ -50,6 +50,19 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     render
   end
 
+  def edit
+    begin
+      @node = Chef::Node.load(params[:id])
+    rescue Net::HTTPServerException => e
+      raise NotFound, "Cannot load node #{params[:id]}"
+    end
+    cl = Chef::CookbookLoader.new
+    @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+    @available_roles = Chef::Role.list.sort
+    @run_list = @node.run_list
+    render
+  end
+
   def create
     if params.has_key?("inflated_object")
       @node = params["inflated_object"]
@@ -84,22 +97,33 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
   end
 
   def update
-    if request.xhr?
-      @node = JSON.parse(params[:value])
-    else      
-      @node = params.has_key?("inflated_object") ? params["inflated_object"] : nil
+    begin
+      @node = Chef::Node.load(params[:id])
+    rescue Net::HTTPServerException => e
+      raise NotFound, "Cannot load node #{params[:id]}"
     end
-    
-    if @node
-      @status = 202
+
+    if params.has_key?("inflated_object")
+      updated = params['inflated_object']
+      @node.run_list(updated.run_list)
+      @node.attribute = updated.attribute
       @node.save
-      if request.xhr?
-        partial :node, :node => @node
-      else
-        display @node
-      end
+      display(@node)
     else
-      raise NotFound, "You must provide a Node to update"
+      begin
+        @node.run_list(params[:for_node])
+        @node.attribute = JSON.parse(params[:attributes])
+        @node.save
+        @_message = { :notice => "Updated Node" }
+        render :show
+      rescue
+        cl = Chef::CookbookLoader.new
+        @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+        @available_roles = Chef::Role.list.sort
+        @run_list = Chef::RunList.new
+        @run_list.reset(params[:for_node])
+        render :edit
+      end
     end
   end
 

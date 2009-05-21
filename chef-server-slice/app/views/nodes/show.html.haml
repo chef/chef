@@ -18,27 +18,30 @@
                     %td{:colspan => 2} This node has no roles or recipes applied.
                 - else
                   -@node.run_list.each_index do |i|
-                    - @node.run_list[i] =~ /^(.+)\[(.+)\]$/
-                    - type = $1
-                    - name = $2 
+                    - type, name, fname = @node.run_list.parse_entry(@node.run_list[i])
                     %tr
                       %td.position= i
                       %td= name 
                       %td= type 
-          .left
-            %h3 Recipes
-            %table#recipes.table
-              %tr
-                %th.first Position
-                %th.last Name
-              - if @node.recipes.empty?
+          .left.accordion
+            %h3.head= link_to("Recipes", "#")
+            %div
+              %span.description.form.help
+                This is the list of recipes, fully expanded, as they will be applied to the node in question.  
+              %table#recipes.table
                 %tr
-                  %td{:colspan => 2} This node has no recipes applied.
-              - else
-                - @node.recipes.each_index do |i|
+                  %th.first Position
+                  %th.last Name
+                - if @node.run_list.empty?
                   %tr
-                    %td.position= i
-                    %td= @node.recipes[i]
+                    %td{:colspan => 2} This node has no recipes applied.
+                - else
+                  - full_recipe_list = @node.run_list.expand("couchdb")
+                  - full_recipe_list.each_index do |i|
+                    %tr
+                      %td.position= i
+                      %td= full_recipe_list[i]
+            
           .left
             %h3 Tags 
             %table#recipes.table
@@ -54,5 +57,4 @@
           .left
             %h3 Attributes
             = build_tree('attrs', @node.attribute)
-
 

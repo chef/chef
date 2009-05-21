@@ -58,6 +58,10 @@ class Chef
       true
     end
 
+    def empty?
+      @run_list.length == 0 ? true : false
+    end
+
     def [](pos)
       @run_list[pos]
     end
@@ -69,6 +73,10 @@ class Chef
 
     def each(&block)
       @run_list.each { |i| block.call(i) }
+    end
+
+    def each_index(&block)
+      @run_list.each_index { |i| block.call(i) }
     end
 
     def include?(item)
@@ -86,7 +94,7 @@ class Chef
       self
     end
 
-    def expand(from_disk=false)
+    def expand(from='server')
       results = Array.new
       @run_list.each do |entry|
         type, name, fname = parse_entry(entry)
@@ -95,13 +103,16 @@ class Chef
           results << name unless results.include?(name)
         when 'role'
           role = nil
-          if from_disk || Chef::Config[:solo]
+          if from == 'disk' || Chef::Config[:solo]
             # Load the role from disk
             Chef::Role.from_disk("#{name}")
-          else
+          elsif from == 'server'
             # Load the role from the server
             r = Chef::REST.new(Chef::Config[:role_url])
             role = r.get_rest("roles/#{name}")
+          elsif from == 'couchdb'
+            # Load the role from couchdb
+            role = Chef::Role.load(name)
           end
           role.recipes.each { |r| results <<  r unless results.include?(r) }
         end
