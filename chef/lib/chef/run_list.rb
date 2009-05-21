@@ -89,18 +89,25 @@ class Chef
       @recipes = Array.new
       @roles = Array.new
       args.flatten.each do |item|
-        self << item
+        if item.kind_of?(Chef::RunList)
+          item.each { |r| self << r }
+        else
+          self << item
+        end
       end
       self
     end
 
     def expand(from='server')
-      results = Array.new
+      recipes = Array.new
+      default_attrs = Hash.new
+      override_attrs = Hash.new
+      
       @run_list.each do |entry|
         type, name, fname = parse_entry(entry)
         case type
         when 'recipe'
-          results << name unless results.include?(name)
+          recipes << name unless recipes.include?(name)
         when 'role'
           role = nil
           if from == 'disk' || Chef::Config[:solo]
@@ -114,10 +121,12 @@ class Chef
             # Load the role from couchdb
             role = Chef::Role.load(name)
           end
-          role.recipes.each { |r| results <<  r unless results.include?(r) }
+          role.recipes.each { |r| recipes <<  r unless recipes.include?(r) }
+          default_attrs.merge!(role.default_attributes)
+          override_attrs.merge!(role.override_attributes)
         end
       end
-      results
+      return recipes, default_attrs, override_attrs
     end
 
     def parse_entry(entry)

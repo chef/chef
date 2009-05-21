@@ -75,7 +75,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
       raise Forbidden, "Node already exists" if exists
       self.status = 201
       @node.save
-      display({ :uri => absolute_slice_url(:node, @node) })
+      display({ :uri => absolute_slice_url(:node, escape_node_id(@node.name)) })
     else
       begin
         @node = Chef::Node.new
@@ -105,7 +105,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
 
     if params.has_key?("inflated_object")
       updated = params['inflated_object']
-      @node.run_list(updated.run_list)
+      @node.run_list.reset(updated.run_list)
       @node.attribute = updated.attribute
       @node.save
       display(@node)

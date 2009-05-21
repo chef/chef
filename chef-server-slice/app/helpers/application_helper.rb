@@ -59,17 +59,19 @@ module Merb
         ::ChefServerSlice.slice_path_for(type, *segments)
       end
 
-      def build_tree(name, node)
+      def build_tree(name, node, default={}, override={})
+        node = default.merge(node)
+        node.merge!(override)
         html = "<table id='#{name}' class='tree table'>"
         html << "<tr><th class='first'>Attribute</th><th class='last'>Value</th></tr>"
         count = 0
         parent = 0
-        append_tree(name, html, node, count, parent)
+        append_tree(name, html, node, count, parent, override)
         html << "</table>"
         html
       end
 
-      def append_tree(name, html, node, count, parent)
+      def append_tree(name, html, node, count, parent, override)
         node.sort{ |a,b| a[0] <=> b[0] }.each do |key, value|
           to_send = Array.new
           count += 1
@@ -87,14 +89,14 @@ module Merb
             is_parent = true 
             local_html << "<td></td>"
             p = count
-            to_send << Proc.new { append_tree(name, html, value, count, p) }
+            to_send << Proc.new { append_tree(name, html, value, count, p, override) }
           when Array
             is_parent = true 
             local_html << "<td></td>"
             as_hash = {}
             value.each_index { |i| as_hash[i] = value[i] }
             p = count
-            to_send << Proc.new { append_tree(name, html, as_hash, count, p) }
+            to_send << Proc.new { append_tree(name, html, as_hash, count, p, override) }
           when String,Symbol
             local_html << "<td><div class='json-attr'>#{value}</div></td>"
           else

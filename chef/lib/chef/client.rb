@@ -44,6 +44,7 @@ class Chef
       @registration = nil
       @json_attribs = nil
       @node_name = nil
+      @node_exists = true 
       Ohai::Log.logger = Chef::Log.logger
       @ohai = Ohai::System.new
       @ohai_has_run = false
@@ -140,6 +141,7 @@ class Chef
         end
       end
       unless @node
+        @node_exists = false
         @node ||= Chef::Node.new
         @node.name(node_name)
       end
@@ -339,7 +341,13 @@ class Chef
     # true:: Always returns true
     def save_node
       Chef::Log.debug("Saving the current state of node #{@safe_name}")
-      @node = @rest.put_rest("nodes/#{@safe_name}", @node)
+      if @node_exists
+        @node = @rest.put_rest("nodes/#{@safe_name}", @node)
+      else
+        result = @rest.post_rest("nodes", @node)
+        @node = @rest.get_rest(result['uri'])
+        @node_exists = true
+      end
       true
     end
     
@@ -353,8 +361,7 @@ class Chef
       unless solo
         Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
       end
-      compile = Chef::Compile.new()
-      compile.node = @node
+      compile = Chef::Compile.new(@node)
       compile.load_libraries
       compile.load_attributes
       compile.load_definitions

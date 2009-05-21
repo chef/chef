@@ -24,7 +24,7 @@ Given /^a validated node$/ do
   client.register
   client.authenticate
   client.build_node
-  client.node.recipes = "integration_setup"
+  client.node.recipes << "integration_setup"
 end
 
 Given /^it includes the recipe '(.+)'$/ do |recipe|

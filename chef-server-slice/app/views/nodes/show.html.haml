@@ -25,6 +25,7 @@
                       %td= type 
           .left.accordion
             %h3.head= link_to("Recipes", "#")
+            - full_recipe_list, default_attrs, override_attrs = @node.run_list.expand("couchdb")
             %div
               %span.description.form.help
                 This is the list of recipes, fully expanded, as they will be applied to the node in question.  
@@ -36,7 +37,6 @@
                   %tr
                     %td{:colspan => 2} This node has no recipes applied.
                 - else
-                  - full_recipe_list = @node.run_list.expand("couchdb")
                   - full_recipe_list.each_index do |i|
                     %tr
                       %td.position= i
@@ -56,5 +56,5 @@
             
           .left
             %h3 Attributes
-            = build_tree('attrs', @node.attribute)
+            = build_tree('attrs', @node.attribute, default_attrs, override_attrs)
 

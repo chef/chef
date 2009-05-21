@@ -271,7 +271,7 @@ class Chef
         node[k] = v
       end
       if o.has_key?("run_list")
-        node.run_list o["run_list"] 
+        node.run_list.reset(o["run_list"])
       else
         o["recipes"].each { |r| node.recipes << r }
       end
