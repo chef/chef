@@ -98,5 +98,9 @@ After do
   cleanup_dirs.each do |dir|
     system("rm -rf #{dir}")
   end
+  cj = Chef::REST::CookieJar.instance
+  cj.keys.each do |key|
+    cj.delete(key)
+  end
 end
 
