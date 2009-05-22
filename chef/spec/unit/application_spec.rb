@@ -124,11 +124,17 @@ end
 describe Chef::Application, "configure_logging" do
   before do
     @app = Chef::Application.new
-    Chef::Config.stub!(:[]).with(:log_location).and_return(STDOUT)
+    Chef::Log.stub!(:init)
+    Chef::Log.stub!(:level)
   end
   
   it "should initialise the chef logger" do
-    Chef::Log.should_receive(:init).with(STDOUT).and_return(true)
+    Chef::Log.should_receive(:init).with(Chef::Config[:log_location]).and_return(true)
+    @app.configure_logging
+  end
+
+  it "should initialise the chef logger level" do
+    Chef::Log.should_receive(:level).with(Chef::Config[:log_level]).and_return(true)
     @app.configure_logging
   end
 
