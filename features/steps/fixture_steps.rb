@@ -30,6 +30,23 @@ Before do
         r.override_attributes({ 'c' => 'down' })
         r 
       end
+    },
+    'node' => {
+      'webserver' => Proc.new do
+        n = Chef::Node.new
+        n.name 'webserver'
+        n.run_list << "tacos"
+        n.snakes "on a plane"
+        n.zombie "we're not unreasonable, I mean no-ones gonna eat your eyes"
+        n
+      end,
+      'dbserver' => Proc.new do
+        n = Chef::Node.new
+        n.name 'dbserver'
+        n.run_list << "oracle"
+        n.just "kidding - who uses oracle?"
+        n
+      end
     }
   }
   @stash = {}

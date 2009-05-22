@@ -130,12 +130,11 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
   def destroy
     begin
       @node = Chef::Node.load(params[:id])
-    rescue RuntimeError => e
-      raise BadRequest, "Node #{params[:id]} does not exist to destroy!"
+    rescue Net::HTTPServerException => e 
+      raise NotFound, "Cannot load node #{params[:id]}"
     end
     @node.destroy
-    if request.xhr?
-      @status = 202
+    if request.accept == 'application/json'
       display @node
     else
       redirect(absolute_slice_url(:nodes), {:message => { :notice => "Node #{params[:id]} deleted successfully" }, :permanent => true})
