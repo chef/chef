@@ -112,7 +112,7 @@ class Chef
           role = nil
           if from == 'disk' || Chef::Config[:solo]
             # Load the role from disk
-            Chef::Role.from_disk("#{name}")
+            role = Chef::Role.from_disk("#{name}")
           elsif from == 'server'
             # Load the role from the server
             r = Chef::REST.new(Chef::Config[:role_url])
