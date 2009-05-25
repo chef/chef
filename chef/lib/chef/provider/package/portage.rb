@@ -92,9 +92,9 @@ class Chef
             # If we start with a tilde
             pkg = "~#{name}-#{$1}"
           end
-               
+     
           run_command(
-            :command => "emerge -g --color n --nospinner --quiet #{pkg}"
+            :command => "emerge -g --color n --nospinner --quiet #{@new_resource.options} #{pkg}"
           )
         end
       
