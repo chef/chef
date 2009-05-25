@@ -37,22 +37,26 @@ class ChefServerSlice::Cookbooks < ChefServerSlice::Application
   end
   
   def recipe_files
-    @recipe_files = load_all_files(:recipes)
+    node = params.has_key?('node') ? params[:node] : nil 
+    @recipe_files = load_all_files(:recipes, node)
     display @recipe_files
   end
 
   def attribute_files
-    @attribute_files = load_all_files(:attributes)
+    node = params.has_key?('node') ? params[:node] : nil 
+    @attribute_files = load_all_files(:attributes, node)
     display @attribute_files
   end
   
   def definition_files
-    @definition_files = load_all_files(:definitions)
+    node = params.has_key?('node') ? params[:node] : nil 
+    @definition_files = load_all_files(:definitions, node)
     display @definition_files
   end
   
   def library_files
-    @lib_files = load_all_files(:libraries)
+    node = params.has_key?('node') ? params[:node] : nil 
+    @lib_files = load_all_files(:libraries, node)
     display @lib_files
   end
   

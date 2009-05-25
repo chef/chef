@@ -300,7 +300,7 @@ class Chef
     # true:: Always returns true
     def sync_attribute_files
       Chef::Log.debug("Synchronizing attributes")
-      update_file_cache("attributes", @rest.get_rest('cookbooks/_attribute_files'))
+      update_file_cache("attributes", @rest.get_rest("cookbooks/_attribute_files?node=#{@node.name}"))
       true
     end
     
@@ -311,7 +311,7 @@ class Chef
     # true:: Always returns true
     def sync_library_files
       Chef::Log.debug("Synchronizing libraries")
-      update_file_cache("libraries", @rest.get_rest('cookbooks/_library_files'))
+      update_file_cache("libraries", @rest.get_rest("cookbooks/_library_files?node=#{@node.name}"))
       true
     end
     
@@ -322,7 +322,7 @@ class Chef
     # true:: Always returns true
     def sync_definitions
       Chef::Log.debug("Synchronizing definitions") 
-      update_file_cache("definitions", @rest.get_rest('cookbooks/_definition_files'))
+      update_file_cache("definitions", @rest.get_rest("cookbooks/_definition_files?node=#{@node.name}"))
     end
     
     # Gets all the recipe files included in all the cookbooks available on the server,
@@ -332,7 +332,7 @@ class Chef
     # true:: Always returns true
     def sync_recipes
       Chef::Log.debug("Synchronizing recipes")
-      update_file_cache("recipes", @rest.get_rest('cookbooks/_recipe_files'))
+      update_file_cache("recipes", @rest.get_rest("cookbooks/_recipe_files?node=#{@node.name}"))
     end
     
     # Updates the current node configuration on the server.

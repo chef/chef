@@ -370,27 +370,37 @@ class Chef
 
       def self.from_hash(o)
         cm = self.new() 
-        cm.name o['name']
-        cm.description o['description']
-        cm.long_description o['long_description']
-        cm.maintainer o['maintainer']
-        cm.maintainer_email o['maintainer_email']
-        cm.license o['license']
-        cm.platforms = o['platforms']
-        cm.dependencies = o['dependencies']
-        cm.recommendations = o['recommendations']
-        cm.suggestions = o['suggestions']
-        cm.conflicting = o['conflicting']
-        cm.providing = o['providing']
-        cm.replacing = o['replacing']
-        cm.attributes = o['attributes']
-        cm.recipes = o['recipes']
+        cm.from_hash(o)
         cm
+      end
+
+      def from_hash(o)
+        self.name o['name'] if o.has_key?('name')
+        self.description o['description'] if o.has_key?('description')
+        self.long_description o['long_description'] if o.has_key?('long_description')
+        self.maintainer o['maintainer'] if o.has_key?('maintainer')
+        self.maintainer_email o['maintainer_email'] if o.has_key?('maintainer_email')
+        self.license o['license'] if o.has_key?('license')
+        self.platforms = o['platforms'] if o.has_key?('platforms')
+        self.dependencies = o['dependencies'] if o.has_key?('dependencies')
+        self.recommendations = o['recommendations'] if o.has_key?('recommendations')
+        self.suggestions = o['suggestions'] if o.has_key?('suggestions')
+        self.conflicting = o['conflicting'] if o.has_key?('conflicting')
+        self.providing = o['providing'] if o.has_key?('providing')
+        self.replacing = o['replacing'] if o.has_key?('replacing')
+        self.attributes = o['attributes'] if o.has_key?('attributes')
+        self.recipes = o['recipes'] if o.has_key?('recipes')
+        self
       end
 
       def self.from_json(string)
         o = JSON.parse(string)
         self.from_hash(o)
+      end
+
+      def from_json(string)
+        o = JSON.parse(string)
+        from_hash(o)
       end
 
     end

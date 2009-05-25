@@ -17,16 +17,18 @@
 
 require 'chef/config'
 require 'chef/cookbook'
+require 'chef/cookbook/metadata'
 
 class Chef
   class CookbookLoader
     
-    attr_accessor :cookbook
+    attr_accessor :cookbook, :metadata
     
     include Enumerable
     
     def initialize()
       @cookbook = Hash.new
+      @metadata = Hash.new
       load_cookbooks
     end
     
@@ -44,7 +46,8 @@ class Chef
               :recipe_files => Array.new,
               :template_files => Array.new,
               :remote_files => Array.new,
-              :lib_files => Array.new
+              :lib_files => Array.new,
+              :metadata_files => Array.new
             }
           end
           ignore_regexes = load_ignore_file(File.join(cookbook, "ignore"))
@@ -81,6 +84,9 @@ class Chef
             cookbook_settings[cookbook_name][:remote_files],
             cookbook_settings[cookbook_name][:ignore_regexes]
           )
+          if File.exists?(File.join(cookbook, "metadata.json"))
+            cookbook_settings[cookbook_name][:metadata_files] << File.join(cookbook, "metadata.json")
+          end
         end
       end
       cookbook_settings.each_key do |cookbook|
@@ -91,6 +97,10 @@ class Chef
         @cookbook[cookbook].template_files = cookbook_settings[cookbook][:template_files]
         @cookbook[cookbook].remote_files = cookbook_settings[cookbook][:remote_files]
         @cookbook[cookbook].lib_files = cookbook_settings[cookbook][:lib_files]
+        @metadata[cookbook] = Chef::Cookbook::Metadata.new(@cookbook[cookbook])
+        cookbook_settings[cookbook][:metadata_files].each do |meta_json|
+          @metadata[cookbook].from_json(IO.read(meta_json))
+        end
       end
     end
     

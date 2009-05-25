@@ -1,0 +1,39 @@
+{
+  "maintainer": "Your Name",
+  "recommendations": {
+
+  },
+  "dependencies": {
+    "fakefile": [
+
+    ]
+  },
+  "maintainer_email": "youremail@example.com",
+  "attributes": {
+
+  },
+  "suggestions": {
+
+  },
+  "name": "tempfile",
+  "license": "Apache v2.0",
+  "conflicting": {
+
+  },
+  "providing": {
+    "tempfile": [
+
+    ]
+  },
+  "description": "A fabulous new cookbook",
+  "recipes": {
+    "tempfile": ""
+  },
+  "replacing": {
+
+  },
+  "platforms": {
+
+  },
+  "long_description": ""
+}

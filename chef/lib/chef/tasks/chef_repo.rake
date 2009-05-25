@@ -65,7 +65,7 @@ task :test do
 end
 
 desc "Install the latest copy of the repository on this Chef Server"
-task :install => [ :update, :test ] do
+task :install => [ :update, :test, :metadata ] do
   puts "** Installing your cookbooks"  
   directories = [ 
     COOKBOOK_PATH,
@@ -177,7 +177,7 @@ end
 
 desc "Build cookbook metadata"
 task :metadata do
-  Chef::Config[:cookbook_path] = [ COOKBOOK_PATH, SITE_COOKBOOK_PATH ]
+  Chef::Config[:cookbook_path] = [ File.join(TOPDIR, 'cookbooks'), File.join(TOPDIR, 'site-cookbooks') ]
   cl = Chef::CookbookLoader.new
   cl.each do |cookbook|
     if ENV['COOKBOOK']
