@@ -100,8 +100,8 @@ class Chef
 
     def expand(from='server')
       recipes = Array.new
-      default_attrs = Hash.new
-      override_attrs = Hash.new
+      default_attrs = Mash.new
+      override_attrs = Mash.new
       
       @run_list.each do |entry|
         type, name, fname = parse_entry(entry)
