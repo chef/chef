@@ -43,6 +43,12 @@ class Chef
           @current_resource.device(@new_resource.device)
           Chef::Log.debug("Checking for mount point #{@current_resource.mount_point}")
 
+          if( !::File.exists?(@new_resource.device) )
+            raise Chef::Exceptions::Mount, "Device #{@new_resource.device} does not exist"
+          elsif( !::File.exists?(@new_resource.mount_point) )
+            raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
+          end
+
           # Check to see if the volume is mounted. Last volume entry wins.
           mounted = false
           popen4("mount") do |pid, stdin, stdout, stderr|
