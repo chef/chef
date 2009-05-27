@@ -96,7 +96,7 @@ class Chef::Application::Solo < Chef::Application
       end
     end
     
-    if Chef::Config[:recipes]
+    if Chef::Config[:recipe_url]
       cookbooks_path = Chef::Config[:cookbook_path].detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
       require 'net/http'
@@ -106,7 +106,7 @@ class Chef::Application::Solo < Chef::Application
       FileUtils.mkdir_p recipes_path
       path = File.join(recipes_path, 'recipes.tgz')
       File.open(path, 'wb') do |f|
-        f.write open(config[:recipes]).read
+        f.write open(config[:recipe_url]).read
       end
       Chef::Mixin::Command.run_command(:command => "cd #{recipes_path} && tar xzvf #{path}")
     end

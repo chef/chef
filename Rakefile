@@ -150,5 +150,11 @@ namespace :features do
     Cucumber::Rake::Task.new(:remote_file) do |t|
       t.profile = "provider_remote_file"
     end
+    
+    namespace :package do
+      Cucumber::Rake::Task.new(:macports) do |t|
+        t.profile = "provider_package_macports"
+      end
+    end
   end
 end

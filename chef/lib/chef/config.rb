@@ -99,5 +99,6 @@ class Chef
     validation_token nil
     role_path "/var/chef/roles"
     role_url "http://localhost:4000"
+    recipe_url nil
   end
 end
