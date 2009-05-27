@@ -134,6 +134,21 @@ namespace :dev do
 end
 
 Cucumber::Rake::Task.new(:features) do |t|
-  t.step_pattern = 'features/steps/**/*.rb'
-  t.cucumber_opts = "--format pretty -r features/support/env.rb"
+  t.profile = "default"
+end
+
+namespace :features do
+  Cucumber::Rake::Task.new(:api) do |t|
+    t.profile = "api"
+  end
+
+  Cucumber::Rake::Task.new(:client) do |t|
+    t.profile = "client"
+  end
+
+  namespace :provider do
+    Cucumber::Rake::Task.new(:remote_file) do |t|
+      t.profile = "provider_remote_file"
+    end
+  end
 end

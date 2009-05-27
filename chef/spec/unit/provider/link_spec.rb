@@ -56,7 +56,7 @@ describe Chef::Provider::Link, "load_current_resource" do
     Chef::Resource::Link.stub!(:new).and_return(@current_resource)  
     File.stub!(:exists?).and_return(true)
     File.stub!(:symlink?).and_return(true)
-    File.stub!(:readlink).and_return("")  
+    File.stub!(:readlink).and_return("")
   end
 
   it "should set the symink target" do

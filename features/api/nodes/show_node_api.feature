@@ -1,3 +1,4 @@
+@api
 Feature: Show a node via the REST API 
   In order to know what the details are for a node 
   As a Developer

@@ -80,7 +80,7 @@ class Chef
         @new_resource.updated = true if rf_provider.new_resource.updated        
       end
       
-      def create_directory
+      def create_directory(full_dir)
         new_dir = Chef::Resource::Directory.new(full_dir, nil, @node)
         new_dir.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name            
         new_dir.mode(@new_resource.mode)

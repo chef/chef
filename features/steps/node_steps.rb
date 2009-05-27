@@ -33,6 +33,12 @@ Given /^it includes the recipe '(.+)'$/ do |recipe|
   client.save_node
 end
 
+Given /^it includes the role '(.+)'$/ do |recipe|
+  self.recipe = recipe
+  client.node.recipes << recipe
+  client.save_node
+end
+
 ###
 # When
 ###
