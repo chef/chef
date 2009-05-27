@@ -1,3 +1,4 @@
+@api
 Feature: Create a node via the REST API
   In order to create nodes programatically 
   As a Devleoper

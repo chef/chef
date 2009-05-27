@@ -102,5 +102,7 @@ After do
   cj.keys.each do |key|
     cj.delete(key)
   end
+  data_tmp = File.join(File.dirname(__FILE__), "..", "data", "tmp")
+  system("rm -rf #{data_tmp}/*")
 end
 

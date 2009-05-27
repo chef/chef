@@ -1,3 +1,4 @@
+@api
 Feature: Update a node
   In order to keep my node data up-to-date
   As a Developer

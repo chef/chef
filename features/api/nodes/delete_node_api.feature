@@ -1,3 +1,4 @@
+@api
 Feature: Delete a node via the REST API 
   In order to remove a node 
   As a Developer 

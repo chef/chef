@@ -1,3 +1,4 @@
+@provider @package @macports
 Feature: Macports integration
   In order to easily manage my OS X machines
   As a Developer
@@ -7,7 +8,7 @@ Feature: Macports integration
     Given that I have the MacPorts package system installed
     When I run chef-solo with the '<recipe>' recipe
     Then the run should exit '<exitcode>'
-    And there <should> be a binary on the path called '<binary>' 
+    And there <should> be a binary on the path called '<binary>'
 
   Examples:
     | recipe                                 | binary   | should     | exitcode |

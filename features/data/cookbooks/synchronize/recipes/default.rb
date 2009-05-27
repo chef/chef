@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Cookbook Name:: synchronize
+# Recipe:: default
+#
+# Copyright 2009, Opscode
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,18 +16,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-class Exceptions < ChefServerSlice::Application
-  
-  provides :html, :json
-  
-  def standard_error
-    Merb.logger.warn(request.content_type)
-    if request.accept =~ /application\/json/
-      display({ "error" => request.exceptions }) 
-    else
-      raise request.exceptions.first 
-    end
-  end
-
-end

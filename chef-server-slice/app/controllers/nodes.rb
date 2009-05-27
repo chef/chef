@@ -111,7 +111,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
       display(@node)
     else
       begin
-        @node.run_list(params[:for_node])
+        @node.run_list.reset(params[:for_node] ? params[:for_node] : [])
         @node.attribute = JSON.parse(params[:attributes])
         @node.save
         @_message = { :notice => "Updated Node" }

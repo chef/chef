@@ -1,7 +1,7 @@
 {
   "maintainer_email": "youremail@example.com",
   "recipes": {
-    "tempfile": ""
+    "synchronize_deps": ""
   },
   "suggestions": {
 
@@ -11,16 +11,16 @@
 
   },
   "dependencies": {
-    "fakefile": [
+    "synchronize": [
 
     ]
   },
   "attributes": {
 
   },
-  "name": "tempfile",
+  "name": "synchronize_deps",
   "providing": {
-    "tempfile": [
+    "synchronize_deps": [
 
     ]
   },

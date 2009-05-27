@@ -127,6 +127,12 @@ describe Chef::CookbookLoader do
         f =~ /\.dotfile$/
       }.should =~ /\.dotfile$/
     end
+
+    it "should load the metadata for the cookbook" do
+      @cl.metadata[:openldap].name.should == :openldap
+      @cl.metadata[:openldap].should be_a_kind_of(Chef::Cookbook::Metadata)
+    end
+
   end
   
 end
