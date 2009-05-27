@@ -23,10 +23,9 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
 
   # GET /roles/new
   def new
-    cl = Chef::CookbookLoader.new
-    @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+    @available_recipes = get_available_recipes 
     @role = Chef::Role.new
-    @current_recipes = @role.recipes.sort 
+    @current_recipes = @role.recipes
     render
   end
 
@@ -37,9 +36,8 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
     rescue Net::HTTPServerException => e
       raise NotFound, "Cannot load role #{params[:id]}"
     end
-    cl = Chef::CookbookLoader.new
-    @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
-    @current_recipes = @role.recipes.sort
+    @available_recipes = get_available_recipes 
+    @current_recipes = @role.recipes
     render 
   end
 
@@ -74,8 +72,7 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
         @role.save
         redirect(slice_url(:roles), :message => { :notice => "Created Role #{@role.name}" })
       rescue ArgumentError 
-        cl = Chef::CookbookLoader.new
-        @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+        @available_recipes = get_available_recipes 
         @role = Chef::Role.new
         @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
         @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
@@ -112,8 +109,7 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
         @_message = { :notice => "Updated Role" }
         render :show
       rescue ArgumentError
-        cl = Chef::CookbookLoader.new
-        @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+        @available_recipes = get_available_recipes 
         @current_recipes = params[:for_role] 
         @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
         @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
@@ -136,6 +132,15 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
     else
       redirect(absolute_slice_url(:roles), :message => { :notice => "Role #{@role.name} deleted successfully." }, :permanent => true)
     end
+  end
+
+  def get_available_recipes
+    cl = Chef::CookbookLoader.new
+    available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
+      element.recipes.sort.each { |r| result << r =~ /^(.+)::default$/ ? $1 : r }
+      result
+    end
+    available_recipes
   end
 
 end

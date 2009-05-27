@@ -21,13 +21,13 @@
           %td
             %div.sortable
               %ul#available_recipes.connectedSortable
-                - @available_recipes.each do |cookbook|
-                  %li{ :id => h(cookbook.name), :class => 'ui-state-highlight' }= h cookbook.name
+                - @available_recipes.each do |recipe|
+                  %li{ :id => h(recipe), :class => 'ui-state-highlight' }= h recipe 
           %td
             %div.sortable
               %ul#for_role.connectedSortable
-                - @current_recipes.each do |cookbook|
-                  %li{ :id => h(cookbook), :class => 'ui-state-highlight' }= h cookbook
+                - @current_recipes.each do |recipe|
+                  %li{ :id => h(recipe), :class => 'ui-state-highlight' }= h recipe 
 
           %td.help
             %span.description
