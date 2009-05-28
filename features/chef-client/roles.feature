@@ -10,3 +10,4 @@ Feature: Configure nodes based on their role
      When I run the chef-client with '-l debug'
      Then the run should exit '0'
 
+

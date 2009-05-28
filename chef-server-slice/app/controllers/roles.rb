@@ -134,13 +134,4 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
     end
   end
 
-  def get_available_recipes
-    cl = Chef::CookbookLoader.new
-    available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
-      element.recipes.sort.each { |r| result << r =~ /^(.+)::default$/ ? $1 : r }
-      result
-    end
-    available_recipes
-  end
-
 end
