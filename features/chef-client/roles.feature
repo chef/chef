@@ -9,5 +9,5 @@ Feature: Configure nodes based on their role
       And it includes the role 'role_test'
      When I run the chef-client with '-l debug'
      Then the run should exit '0'
-
+      And 'stdout' should have 'DEBUG: Loading Recipe roles'
 
