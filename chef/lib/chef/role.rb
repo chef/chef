@@ -161,6 +161,12 @@ class Chef
     # Remove this role from the CouchDB
     def destroy
       @couchdb.delete("role", @name, @couchdb_rev)
+      rs = @couchdb.get_view("nodes", "by_run_list", :startkey => "role[#{@name}]", :endkey => "role[#{@name}]", :include_docs => true)
+      rs["rows"].each do |row| 
+        node = row["doc"]
+        node.run_list.remove("role[#{@name}]")
+        node.save
+      end
     end
     
     # Save this role to the CouchDB
