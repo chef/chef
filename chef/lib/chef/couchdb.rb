@@ -146,7 +146,7 @@ class Chef
 
     def get_view(design, view, options={})
       view_string = view_uri(design, view)
-      view_string << "?" if options.length
+      view_string << "?" if options.length != 0
       first = true;
       options.each { |k,v| view_string << "#{first ? '' : '&'}#{k}=#{URI.escape(v.to_json)}"; first = false }
       @rest.get_rest(view_string)
