@@ -57,6 +57,7 @@ class Chef
 
           def load_data
             @data = Hash.new
+            error = String.new
 
             helper = ::File.join(::File.dirname(__FILE__), 'yum-dump.py')
             status = popen4("python #{helper}", :waitlast => true) do |pid, stdin, stdout, stderr|
@@ -70,10 +71,12 @@ class Chef
                 @data[name][type_sym] = { :epoch => epoch, :version => version,
                                           :release => release, :arch => arch }
               end
+              
+              error = stderr.readlines
             end
 
             unless status.exitstatus == 0
-              raise Chef::Exceptions::Package, "yum failed - #{status.inspect}!"
+              raise Chef::Exceptions::Package, "yum failed - #{status.inspect} - returns: #{error}"
             end
 
             @updated_at = Time.now
