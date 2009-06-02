@@ -31,7 +31,6 @@ class Chef
           include Singleton
 
           def initialize
-            @created_at = Time.now 
             load_data
           end
 
@@ -41,7 +40,7 @@ class Chef
             # run once mode
             if interval == 0
               return false
-            elsif (Time.now - @created_at) > interval
+            elsif (Time.now - @updated_at) > interval
               return true
             end
 
@@ -70,6 +69,7 @@ class Chef
             end
 
             @data = JSON.parse(parsed)
+            @updated_at = Time.now
           end
           alias :reload :load_data
 
