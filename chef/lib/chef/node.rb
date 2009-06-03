@@ -36,7 +36,7 @@ class Chef
     include Chef::Mixin::ParamsValidate
     
     DESIGN_DOCUMENT = {
-      "version" => 3,
+      "version" => 8,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -57,6 +57,64 @@ class Chef
           }
           EOJS
         },
+        "status" => {
+          "map" => <<-EOJS
+            function(doc) {
+              if (doc.chef_type == "node") {
+                var to_emit = { "name": doc.name };
+                if (doc["attributes"]["fqdn"]) {
+                  to_emit["fqdn"] = doc["attributes"]["fqdn"];
+                } else {
+                  to_emit["fqdn"] = "Undefined";
+                }
+                if (doc["attributes"]["ipaddress"]) {
+                  to_emit["ipaddress"] = doc["attributes"]["ipaddress"];
+                } else {
+                  to_emit["ipaddress"] = "Undefined";
+                }
+                if (doc["attributes"]["ohai_time"]) {
+                  to_emit["ohai_time"] = doc["attributes"]["ohai_time"];
+                } else {
+                  to_emit["ohai_time"] = "Undefined";
+                } 
+                if (doc["attributes"]["uptime"]) {
+                  to_emit["uptime"] = doc["attributes"]["uptime"];
+                } else {
+                  to_emit["uptime"] = "Undefined";
+                }
+                if (doc["attributes"]["platform"]) {
+                  to_emit["platform"] = doc["attributes"]["platform"];
+                } else {
+                  to_emit["platform"] = "Undefined";
+                }
+                if (doc["attributes"]["platform_version"]) {
+                  to_emit["platform_version"] = doc["attributes"]["platform_version"];
+                } else {
+                  to_emit["platform_version"] = "Undefined";
+                }
+                if (doc["run_list"]) {
+                  to_emit["run_list"] = doc["run_list"];
+                } else {
+                  to_emit["run_list"] = "Undefined";
+                }
+                emit(doc.name, to_emit);
+              }
+            }
+          EOJS
+        },
+        "by_run_list" => {
+          "map" => <<-EOJS
+            function(doc) {
+              if (doc.chef_type == "node") {
+                if (doc['run_list']) {
+                  for (var i=0; i < doc.run_list.length; i++) {
+                    emit(doc['run_list'][i], doc.name);
+                  }
+                }
+              }
+            }
+          EOJS
+        }
       },
     }
     

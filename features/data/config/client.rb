@@ -10,4 +10,5 @@ openid_url       "http://127.0.0.1:4001"
 template_url     "http://127.0.0.1:4000"
 remotefile_url   "http://127.0.0.1:4000"
 search_url       "http://127.0.0.1:4000"
+role_url          "http://127.0.0.1:4000"
 couchdb_database   'chef_integration'

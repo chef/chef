@@ -1,0 +1,16 @@
+{
+  "name": "role_test",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+    "ossining": "this time around",
+    "reason": "unbalancing"
+  },
+  "description": "A simple test role",
+  "recipes": [
+    "roles"
+  ],
+  "override_attributes": {
+    "snakes": "on a plane"
+  }
+}

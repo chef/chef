@@ -36,8 +36,8 @@
           %td
             %div.sortable
               %ul#node_available_recipes.connectedSortable
-                - @available_recipes.each do |cookbook|
-                  %li{ :id => "recipe[#{cookbook.name}]", :class => 'ui-state-default' }= h cookbook.name
+                - @available_recipes.each do |recipe|
+                  %li{ :id => "recipe[#{recipe}]", :class => 'ui-state-default' }= h recipe 
 
 
     %div.group.form
