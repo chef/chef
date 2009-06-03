@@ -267,8 +267,8 @@ describe Chef::CouchDB, "get_view" do
   end
 
   it "should allow arguments to the view" do
-    @mock_rest.should_receive(:get_rest).with("chef/_design/nodes/_view/mastodon?startkey=%22dont%20stay%22&run_away=%22hes%20ordered%22")
-    @couchdb.get_view("nodes", "mastodon", :startkey => "dont stay", :run_away => "hes ordered")
+    @mock_rest.should_receive(:get_rest).with("chef/_design/nodes/_view/mastodon?startkey=%22dont%20stay%22")
+    @couchdb.get_view("nodes", "mastodon", :startkey => "dont stay")
   end
 
 end
