@@ -3,6 +3,7 @@ if defined?(Merb::Plugins)
 
   dependency 'merb-slices', :immediate => true
   dependency 'chef', :immediate=>true unless defined?(Chef)
+  require 'chef/role'
 
   require 'syntax/convertors/html'
 
@@ -48,10 +49,13 @@ if defined?(Merb::Plugins)
       
       # create the couch design docs for nodes and openid registrations
       Chef::Node.create_design_document
+      Chef::Role.create_design_document
       Chef::OpenIDRegistration.create_design_document
 
       Chef::Log.logger = Merb.logger
       Chef::Log.info("Compiling routes... (totally normal to see 'Cannot find resource model')")
+      Chef::Log.info("Loading roles")
+      Chef::Role.sync_from_disk_to_couchdb
     end
 
     # Initialization hook - runs before AfterAppLoads BootLoader
@@ -78,6 +82,7 @@ if defined?(Merb::Plugins)
     def self.setup_router(scope)
 
       scope.resources :nodes
+      scope.resources :roles
 
       scope.match("/status").to(:controller => "status", :action => "index").name(:status)
 

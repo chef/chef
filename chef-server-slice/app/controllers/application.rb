@@ -55,10 +55,11 @@ class ChefServerSlice::Application < Merb::Controller
     end
   end
   
-  def escape_node_id
-    if params.has_key?(:id)
-      params[:id].gsub(/_/, '.')
+  def escape_node_id(arg=nil)
+    unless arg
+      arg = params[:id] if params.has_key?(:id)
     end
+    arg.gsub(/\./, '_')
   end
   
   def login_required
@@ -160,11 +161,42 @@ class ChefServerSlice::Application < Merb::Controller
     end
     files_list
   end
+
+  def specific_cookbooks(node_name, cl)
+    valid_cookbooks = Hash.new
+    begin
+      node = Chef::Node.load(node_name)
+      recipes, default_attrs, override_attrs = node.run_list.expand('couchdb')
+    rescue Net::HTTPServerException
+      recipes = []
+    end
+    recipes.each do |recipe|
+      valid_cookbooks = expand_cookbook_deps(valid_cookbooks, cl, recipe)
+    end
+    valid_cookbooks
+  end
+
+  def expand_cookbook_deps(valid_cookbooks, cl, recipe)
+    cookbook = recipe
+    if recipe =~ /^(.+)::/
+      cookbook = $1
+    end
+    Chef::Log.debug("Node requires #{cookbook}")
+    valid_cookbooks[cookbook] = true 
+    cl.metadata[cookbook.to_sym].dependencies.each do |dep, versions|
+      expand_cookbook_deps(valid_cookbooks, cl, dep) unless valid_cookbooks[dep]
+    end
+    valid_cookbooks
+  end
   
-  def load_all_files(segment)
+  def load_all_files(segment, node_name=nil)
     cl = Chef::CookbookLoader.new
     files = Array.new
+    valid_cookbooks = node_name ? specific_cookbooks(node_name, cl) : {} 
     cl.each do |cookbook|
+      if node_name
+        next unless valid_cookbooks[cookbook.name.to_s]
+      end
       segment_files(segment, cookbook).each do |sf|
         mo = sf.match("cookbooks/#{cookbook.name}/#{segment}/(.+)")
         file_name = mo[1]
@@ -176,6 +208,21 @@ class ChefServerSlice::Application < Merb::Controller
       end
     end
     files
+  end
+
+  def get_available_recipes
+    cl = Chef::CookbookLoader.new
+    available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
+      element.recipes.sort.each do |r| 
+        if r =~ /^(.+)::default$/
+          result << $1
+        else
+          result << r
+        end
+      end
+      result
+    end
+    available_recipes
   end
 
 end

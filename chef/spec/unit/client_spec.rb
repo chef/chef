@@ -178,7 +178,7 @@ describe Chef::Client, "build_node" do
   it "should allow you to set recipes from the json attributes" do
     @client.json_attribs = { "recipes" => [ "one", "two", "three" ]}
     @client.build_node
-    @client.node.recipes.should eql([ "one", "two", "three" ])
+    @client.node.recipes.should == [ "one", "two", "three" ]
   end
   
   it "should not add duplicate recipes from the json attributes" do
@@ -186,7 +186,7 @@ describe Chef::Client, "build_node" do
     @client.node.recipes << "one"
     @client.json_attribs = { "recipes" => [ "one", "two", "three" ]}
     @client.build_node
-    @client.node.recipes.should eql([ "one", "two", "three" ])
+    @client.node.recipes.should  == [ "one", "two", "three" ]
   end
   
   it "should set the tags attribute to an empty array if it is not already defined" do

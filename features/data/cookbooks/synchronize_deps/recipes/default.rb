@@ -1,7 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Cookbook Name:: synchronize_deps
+# Recipe:: default
+#
+# Copyright 2009, Opscode
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,17 +16,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-Before do
-  system("mkdir -p #{tmpdir}")
-  cdb = Chef::CouchDB.new(Chef::Config[:couchdb_url])
-  cdb.create_db
-  Chef::Node.create_design_document
-  Chef::OpenIDRegistration.create_design_document
-end
-
-After do
-  r = Chef::REST.new(Chef::Config[:couchdb_url])
-  r.delete_rest("#{Chef::Config[:couchdb_database]}/")
-  system("rm -rf #{tmpdir}")
-end

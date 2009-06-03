@@ -45,7 +45,7 @@ When /^I run the chef\-client for '(.+)' seconds$/ do |run_for|
   cid = fork { 
     sleep run_for.to_i
     client_pid = `ps ax | grep chef-client | grep -v grep | grep -v rake | grep -v cucumber | awk '{ print $1 }'`
-    Process.kill("KILL", client_pid.to_i)
+    Process.kill("INT", client_pid.to_i)
   } 
   When 'I run the chef-client'
   Process.waitpid2(cid)
@@ -84,7 +84,7 @@ CONFIG
     file.write(config_data)
   end
 
-  @cleanup_files << @config_file
+  self.cleanup_files << @config_file
   
   @status = Chef::Mixin::Command.popen4("chef-client -c #{@config_file}") do |p, i, o, e|
     @stdout = o.gets(nil)

@@ -3,8 +3,6 @@
 require 'config/dependencies.rb'
 require 'chef' unless defined?(Chef)
 
-Chef::Config.from_file(File.join("/etc", "chef", "server.rb"))
-
 use_test :rspec
 use_template_engine :haml
 

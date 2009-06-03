@@ -31,7 +31,7 @@ class Chef
           new_url += "id=#{url}"
           platform, version = Chef::Platform.find_platform_and_version(node)
           if type == "files" || type == "templates"
-            new_url += "&platform=#{platform}&version=#{version}&fqdn=#{node[:fqdn]}"
+            new_url += "&platform=#{platform}&version=#{version}&fqdn=#{node[:fqdn]}&node_name=#{node.name}"
           end
           if args
             args.each do |key, value|

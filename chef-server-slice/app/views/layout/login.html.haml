@@ -1,0 +1,43 @@
+!!! XML
+!!!
+%html
+  %head
+    %meta{ "http-equiv" => "content-type", :content => "text/html; charset=utf-8" }
+    %title Chef Server
+    = css_include_tag "base", "themes/djime-cerulean/style", "chef", "/facebox/facebox.css", "jquery-ui-1.7.1.custom", "jquery.treeTable"
+    = js_include_tag "jquery-1.3.2.min", "jquery.jeditable.mini", "jquery.livequery", "jquery.localscroll", "jquery.scrollTo"
+    = js_include_tag "/facebox/facebox.js"
+    = js_include_tag "jquery-ui-1.7.1.custom.min"
+    = js_include_tag "jquery.treeTable.min"
+    = js_include_tag "JSONEditor"
+    = js_include_tag "chef"
+        
+  %body
+    #container
+      #header
+        %h1= link_to "Chef Server", slice_url(:top)
+      #wrapper
+        #main
+          - unless message.empty?
+            .block#block-messages
+              .content
+                %h2.title Messages
+                .inner
+                  .flash
+                    - message.each do |type, msg|
+                      %div{:class => "message #{type}"}
+                        %p= msg             
+          = catch_content :for_layout
+          #footer
+            .block
+              %p Copyright &copy; 2009 Opscode
+        - unless Chef::Config[:openid_providers]
+          #sidebar
+            %div.block.notice
+              %h4 Where do I get a Login? 
+              %p 
+                Chef uses OpenID for user logins.  By default, Chef allows you to use any OpenID provider you like.  You should configure the server to utilize only trusted OpenID servers and URIs.   
+              %p
+                This box will disappear when you have altered the default security configuration.
+        .clear
+

@@ -18,6 +18,38 @@
 //
 
 $(document).ready(function(){
+
+  $('form#edit_role, form#create_role').submit(function(event) {
+    var form = $(this);
+    var to_role = $('ul#for_role').sortable('toArray');
+    if (form.attr('id') == 'edit_role') {
+      form.append('<input type="hidden" name="_method" value="put">');
+    }
+    form.append($('input#role_name')).css('display', 'none');
+    form.append($('textarea#role_description')).css('display', 'none');
+    form.append('<input type="hidden" id="default_attributes" name="default_attributes"/>');
+    $('input#default_attributes').attr('value', JSONeditor.treeBuilder.JSONstring.make(JSONeditor.treeBuilder.json.defaults))
+    form.append('<input type="hidden" id="override_attributes" name="override_attributes"/>');
+    $('input#override_attributes').attr('value', JSONeditor.treeBuilder.JSONstring.make(JSONeditor.treeBuilder.json.overrides));
+    jQuery.each(to_role, function(i, field) {
+      form.append('<input type="hidden" name="for_role[]" value="' + field + '"/>');
+    });
+  });
+
+  $('form#edit_node, form#create_node').submit(function(event) {
+    var form = $(this);
+    var to_node = $('ul#for_node').sortable('toArray');
+    if (form.attr('id') == 'edit_node') {
+      form.append('<input type="hidden" name="_method" value="put">');
+    }
+    form.append($('input#node_name')).css('display', 'none');
+    form.append('<input type="hidden" id="attributes" name="attributes"/>');
+    $('input#attributes').attr('value', JSONeditor.treeBuilder.JSONstring.make(JSONeditor.treeBuilder.json))
+    jQuery.each(to_node, function(i, field) {
+      form.append('<input type="hidden" name="for_node[]" value="' + field + '"/>');
+    });
+  });
+
   // livequery hidden form for link_to ajax magic
   $('a[method]').livequery(function(){
     var message = $(this).attr('confirm');
@@ -42,37 +74,6 @@ $(document).ready(function(){
     });
   });
   
-  $("dd:has(dl)").livequery(function(){
-    $(this).hide().prev("dt").addClass("collapsed");
-  });
-  $("dd:not(:has(dl))").livequery(function(){
-    $(this).addClass("inline").prev().addClass("inline");
-  });
-  $("dt.collapsed").livequery(function(){
-    $(this).click(function() {
-      $(this).toggleClass("collapsed").next().toggle();
-    });
-  });
-  
-  // editable table for the node show view
-  $(".edit_area").editable(location.href + ".json", { 
-    target : location.href,
-    method : "PUT",
-    submit : "Save",
-    cancel : "Cancel",
-    indicator : "Saving..",
-    loadurl : location.href,
-    tooltip : "Click to edit",
-    type  : "textarea",
-    event     : "dblclick",
-    height : 300
-  });
-  
-
-  //alert("blah" + $('#json_tree_source').text());
-  //var json = $('#json_tree_source').text();
-  //$('#attribute_tree_view').append(TreeView($('#json_tree_source').text()));
-  
   // accordion for the cookbooks show view
 	$('.accordion .head').click(function() {
 		$(this).next().toggle('slow');
@@ -93,4 +94,13 @@ $(document).ready(function(){
   recipe_editor.doTruncation(true);
   recipe_editor.showFunctionButtons();
   */
+
+  $('.connectedSortable').sortable({
+    placeholder: 'ui-state-highlight',
+    connectWith: $('.connectedSortable')
+  }).disableSelection();
+
+  // The table tree!
+  $('table.tree').treeTable({ expandable: true });
+  $('span.expander').click(function() { $('tr#' + $(this).attr('toggle')).toggleBranch(); });
 });

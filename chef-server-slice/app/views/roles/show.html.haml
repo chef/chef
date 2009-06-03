@@ -1,0 +1,29 @@
+.block#block-tables
+  .content
+    %h2.title= "Role #{h @role.name}"
+    .inner
+      = partial("navigation", :active => "show")
+      .content
+        .inner
+          .left
+            %h3 Description
+            = @role.description
+
+          .left 
+            %h3 Recipes
+            %table#recipes.table
+              %tr
+                %th.first Position
+                %th.last Name
+              - @role.recipes.each_index do |i|
+                %tr
+                  %td.position= i
+                  %td= @role.recipes[i]
+          .left 
+            %h3 Default Attributes
+            = build_tree('defattrs', @role.default_attributes)
+
+          .left 
+            %h3 Override Attributes
+            = build_tree('overattrs', @role.override_attributes)
+

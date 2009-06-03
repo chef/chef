@@ -1,0 +1,39 @@
+{
+  "maintainer_email": "youremail@example.com",
+  "recipes": {
+    "synchronize_deps": ""
+  },
+  "suggestions": {
+
+  },
+  "license": "Apache v2.0",
+  "conflicting": {
+
+  },
+  "dependencies": {
+    "synchronize": [
+
+    ]
+  },
+  "attributes": {
+
+  },
+  "name": "synchronize_deps",
+  "providing": {
+    "synchronize_deps": [
+
+    ]
+  },
+  "replacing": {
+
+  },
+  "long_description": "",
+  "description": "A fabulous new cookbook",
+  "maintainer": "Your Name",
+  "recommendations": {
+
+  },
+  "platforms": {
+
+  }
+}

@@ -22,20 +22,21 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/queue'
+require 'chef/run_list'
 require 'extlib'
 require 'json'
 
 class Chef
   class Node
     
-    attr_accessor :attribute, :recipe_list, :couchdb_rev, :run_state
+    attr_accessor :attribute, :recipe_list, :couchdb_rev, :run_state, :run_list
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
     
     DESIGN_DOCUMENT = {
-      "version" => 3,
+      "version" => 8,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -56,6 +57,64 @@ class Chef
           }
           EOJS
         },
+        "status" => {
+          "map" => <<-EOJS
+            function(doc) {
+              if (doc.chef_type == "node") {
+                var to_emit = { "name": doc.name };
+                if (doc["attributes"]["fqdn"]) {
+                  to_emit["fqdn"] = doc["attributes"]["fqdn"];
+                } else {
+                  to_emit["fqdn"] = "Undefined";
+                }
+                if (doc["attributes"]["ipaddress"]) {
+                  to_emit["ipaddress"] = doc["attributes"]["ipaddress"];
+                } else {
+                  to_emit["ipaddress"] = "Undefined";
+                }
+                if (doc["attributes"]["ohai_time"]) {
+                  to_emit["ohai_time"] = doc["attributes"]["ohai_time"];
+                } else {
+                  to_emit["ohai_time"] = "Undefined";
+                } 
+                if (doc["attributes"]["uptime"]) {
+                  to_emit["uptime"] = doc["attributes"]["uptime"];
+                } else {
+                  to_emit["uptime"] = "Undefined";
+                }
+                if (doc["attributes"]["platform"]) {
+                  to_emit["platform"] = doc["attributes"]["platform"];
+                } else {
+                  to_emit["platform"] = "Undefined";
+                }
+                if (doc["attributes"]["platform_version"]) {
+                  to_emit["platform_version"] = doc["attributes"]["platform_version"];
+                } else {
+                  to_emit["platform_version"] = "Undefined";
+                }
+                if (doc["run_list"]) {
+                  to_emit["run_list"] = doc["run_list"];
+                } else {
+                  to_emit["run_list"] = "Undefined";
+                }
+                emit(doc.name, to_emit);
+              }
+            }
+          EOJS
+        },
+        "by_run_list" => {
+          "map" => <<-EOJS
+            function(doc) {
+              if (doc.chef_type == "node") {
+                if (doc['run_list']) {
+                  for (var i=0; i < doc.run_list.length; i++) {
+                    emit(doc['run_list'][i], doc.name);
+                  }
+                }
+              }
+            }
+          EOJS
+        }
       },
     }
     
@@ -63,7 +122,7 @@ class Chef
     def initialize()
       @name = nil
       @attribute = Mash.new
-      @recipe_list = Array.new
+      @run_list = Chef::RunList.new 
       @couchdb_rev = nil
       @couchdb = Chef::CouchDB.new
       @run_state = {
@@ -154,17 +213,37 @@ class Chef
     
     # Returns true if this Node expects a given recipe, false if not.
     def recipe?(recipe_name)
-      @recipe_list.detect { |r| r == recipe_name } ? true : false
+      @run_list.include?(recipe_name)
     end
     
     # Returns an Array of recipes.  If you call it with arguments, they will become the new
     # list of recipes.
     def recipes(*args)
       if args.length > 0
-        @recipe_list = args.flatten
+        @run_list.reset(args)
       else
-        @recipe_list
+        @run_list
       end
+    end
+
+    # Returns true if this Node expects a given role, false if not.
+    def role?(role_name)
+      @run_list.include?("role[#{role_name}]")
+    end
+
+    # Returns an Array of roles and recipes, in the order they will be applied.
+    # If you call it with arguments, they will become the new list of roles and recipes. 
+    def run_list(*args)
+      if args.length > 0
+        @run_list.reset(args)
+      else
+        @run_list
+      end
+    end
+
+    # Returns true if this Node expects a given role, false if not.
+    def run_list?(item)
+      @run_list.detect { |r| r == item } ? true : false
     end
     
     # Set an attribute based on the missing method.  If you pass an argument, we'll use that
@@ -205,7 +284,9 @@ class Chef
           index_hash[key] = value
         end
       end
-      index_hash["recipe"] = @recipe_list if @recipe_list.length > 0
+      index_hash["recipe"] = @run_list.recipes if @run_list.recipes.length > 0
+      index_hash["roles"] = @run_list.roles if @run_list.roles.length > 0
+      index_hash["run_list"] = @run_list.run_list if @run_list.run_list.length > 0
       index_hash
     end
     
@@ -234,7 +315,7 @@ class Chef
         'json_class' => self.class.name,
         "attributes" => @attribute,
         "chef_type" => "node",
-        "recipes" => @recipe_list,
+        "run_list" => @run_list.run_list,
       }
       result["_rev"] = @couchdb_rev if @couchdb_rev
       result.to_json(*a)
@@ -247,8 +328,10 @@ class Chef
       o["attributes"].each do |k,v|
         node[k] = v
       end
-      o["recipes"].each do |r|
-        node.recipes << r
+      if o.has_key?("run_list")
+        node.run_list.reset(o["run_list"])
+      else
+        o["recipes"].each { |r| node.recipes << r }
       end
       node.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       node

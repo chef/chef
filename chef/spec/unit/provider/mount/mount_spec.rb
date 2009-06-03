@@ -81,7 +81,8 @@ describe Chef::Provider::Mount::Mount, "load_current_resource" do
     
     ::File.stub!(:symlink?).with("#{@new_resource.device}").and_return(true)
     ::File.stub!(:readlink).with("#{@new_resource.device}").and_return(target)
-        
+
+    @provider = Chef::Provider::Mount::Mount.new(@node, @new_resource)
     @stdout.stub!(:each).and_yield("#{target} on #{@new_resource.mount_point} type ext3 (rw)\n")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
     @current_resource.should_receive(:mounted).with(true)

@@ -138,8 +138,7 @@ describe Chef::Provider::Package::Apt, "install_package" do
     @provider.should_receive(:run_command).with({
       :command => "apt-get -q -y install emacs=1.0",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive",
-        "LANG" => "en_US"
+        "DEBIAN_FRONTEND" => "noninteractive"
       }
     })
     @provider.install_package("emacs", "1.0")
@@ -183,8 +182,7 @@ describe Chef::Provider::Package::Apt, "remove_package" do
     @provider.should_receive(:run_command).with({
       :command => "apt-get -q -y remove emacs",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive",
-        "LANG" => "en_US"
+        "DEBIAN_FRONTEND" => "noninteractive"
       }
     })
     @provider.remove_package("emacs", "1.0")
@@ -208,8 +206,7 @@ describe Chef::Provider::Package::Apt, "purge_package" do
     @provider.should_receive(:run_command).with({
       :command => "apt-get -q -y purge emacs",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive",
-        "LANG" => "en_US"
+        "DEBIAN_FRONTEND" => "noninteractive"
       }
     })
     @provider.purge_package("emacs", "1.0")
@@ -241,8 +238,7 @@ describe Chef::Provider::Package::Apt, "preseed_package" do
     @provider.should_receive(:run_command).with({
       :command => "debconf-set-selections /tmp/emacs-10.seed",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive",
-        "LANG" => "en_US"
+        "DEBIAN_FRONTEND" => "noninteractive"
       }
     }).and_return(true)
     @provider.preseed_package("emacs", "10")

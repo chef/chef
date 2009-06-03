@@ -1,0 +1,48 @@
+.content
+  .inner
+    - if form_for != "edit"
+      %div.group.form
+        %label.label Name
+        = text_field :id => "role_name", :name => "name", :class => "text_field", :value => params.has_key?(:name) ? h(params[:name]) : @role.name 
+        %span.description The name of the Role
+    %div.group.form
+      %label.label Description
+      = text_area(params.has_key?(:description) ? h(params[:description]) : @role.description, :name => "description", :class => "text_area", :id => "role_description")
+      %span.description A description of this Role 
+
+    %div.group.form
+      %table.sortable
+        %tr
+          %td 
+            %label.label Available Recipes
+          %td
+            %label.label Recipes for this Role 
+        %tr
+          %td
+            %div.sortable
+              %ul#available_recipes.connectedSortable
+                - @available_recipes.each do |recipe|
+                  %li{ :id => h(recipe), :class => 'ui-state-highlight' }= h recipe 
+          %td
+            %div.sortable
+              %ul#for_role.connectedSortable
+                - @current_recipes.each do |recipe|
+                  %li{ :id => h(recipe), :class => 'ui-state-highlight' }= h recipe 
+
+          %td.help
+            %span.description
+              Drag recipes from the list of Available Recipes section on the left, and drop them
+              in the "Recipes for this Role" section on the right.  Then sort the recipes for this role list to the order you would like to see the recipes applied.
+
+    %div.group.form
+      %label.label Default and Override Attributes 
+      %div.editor
+        %div#tree
+        %div#jform
+        %div.clear
+          %script= "$(document).ready(function() { JSONeditor.start('tree', 'jform', #{ { :defaults => @role.default_attributes, :overrides => @role.override_attributes }.to_json }, false); });"
+      %span.description A JSON hash for default attributes for nodes of this role.  These attributes will only be applied if the node does not already have a value for the attributes.
+    = form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do
+      %div.group
+        .actions-bar
+          .actions= submit submit_name, :id => submit_id, :class => 'button'

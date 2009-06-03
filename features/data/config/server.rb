@@ -10,10 +10,12 @@ openid_url         "http://127.0.0.1:4001"
 template_url       "http://127.0.0.1:4000"
 remotefile_url     "http://127.0.0.1:4000"
 search_url         "http://127.0.0.1:4000"
+role_url          "http://127.0.0.1:4000"
 cookbook_path      File.join(supportdir, "cookbooks")
 openid_store_path  File.join(tmpdir, "openid", "store")
 openid_cstore_path File.join(tmpdir, "openid", "cstore")
 search_index_path  File.join(tmpdir, "search_index")
+role_path          File.join(supportdir, "roles")
 validation_token   'ceelo'
 couchdb_database   'chef_integration'
 
