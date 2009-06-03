@@ -18,6 +18,7 @@
 require 'chef/cookbook_loader'
 require 'chef/resource_collection'
 require 'chef/node'
+require 'chef/role'
 require 'chef/log'
 
 class Chef
@@ -30,11 +31,14 @@ class Chef
     #
     # === Returns
     # object<Chef::Compile>:: Duh. :)
-    def initialize()
-      @node = nil
+    def initialize(node=nil)
+      @node = node 
       @cookbook_loader = Chef::CookbookLoader.new
       @collection = Chef::ResourceCollection.new
       @definitions = Hash.new
+      @recipes = Array.new
+      @default_attributes = Array.new
+      @override_attributes = Array.new
     end
     
     # Looks up the node via the "name" argument, first from CouchDB, then by calling
@@ -57,9 +61,14 @@ class Chef
     # === Returns
     # true:: Always returns true
     def load_attributes()
+      recipes, default_attrs, override_attrs = expand_node
+      # Merge the default attrs, using the nodes current as the winner 
+      @node.attribute = default_attrs.merge(@node.attribute)
       @cookbook_loader.each do |cookbook|
         cookbook.load_attributes(@node)
       end
+      # Merge the override attrs, using the nodes current as the winner
+      @node.attribute.merge!(override_attrs)
       true
     end
     
@@ -98,7 +107,8 @@ class Chef
     # === Returns
     # true:: Always returns true
     def load_recipes
-      @node.recipes.each do |recipe|
+      expand_node
+      @recipes.each do |recipe|
         Chef::Log.debug("Loading Recipe #{recipe}")
         @node.run_state[:seen_recipes][recipe] = true
 
@@ -112,6 +122,13 @@ class Chef
         end
       end
       true
+    end
+
+    def expand_node
+      if @recipes.empty? && @override_attributes.empty? && @default_attributes.empty?
+        @recipes, @default_attributes, @override_attributes = @node.run_list.expand
+      end
+      return @recipes, @default_attributes, @override_attributes
     end
     
   end

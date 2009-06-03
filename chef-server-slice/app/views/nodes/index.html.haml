@@ -2,16 +2,24 @@
   .content
     %h2.title Node List
     .inner
-      %table.table
-        %tr
-          %th.first{:colspan => 2} Node Name
-          %th Control
-          %th.last &nbsp
-        - if @node_list.empty?
+      = partial('navigation', :active => 'index')
+    .content
+      .inner
+        %table.table
           %tr
+            %th.first{:colspan => 2} Name
+            %th &nbsp;
+            %th.last &nbsp;
+          - even = false
+          - if @node_list.empty?
             %td{:colspan => 4}= "You appear to have no nodes - try connecting one, or validating an existing #{link_to('registration', slice_url(:registrations))}"
-        - else
-          - @node_list.each_with_index do |node, index|
-            %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-              %td{:colspan => 2}= link_to node, slice_url(:node, { :id => node.gsub(/\./, "_" ) } )
-              %td= link_to "Delete", slice_url(:node, { :id => node.gsub(/\./, "_") }), :method => "delete", :confirm => "Are you sure? There is no undo."
+          - else
+            - @node_list.each do |node|
+              %tr{:class => even ? "even": "odd" }
+                %td{:colspan => 2}= link_to node, slice_url(:node, { :id => escape_node_id(node) } )
+                %td
+                  = link_to('Edit', slice_url(:edit_node, escape_node_id(node))) 
+                  |
+                  = link_to('Delete', slice_url(:node, escape_node_id(node)), :method => "delete", :confirm => "Really delete Node #{node}?  There is no undo.")
+                - even ? even = false: even = true
+

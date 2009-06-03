@@ -1,3 +1,4 @@
+@client
 Feature: Run chef-client at periodic intervals 
   In order to ensure a system is always correctly configured 
   As an Administrator
@@ -7,6 +8,6 @@ Feature: Run chef-client at periodic intervals
     Given a validated node
       And it includes the recipe 'run_interval'
      When I run the chef-client with '-l info -i 5' for '10' seconds
-     Then the run should exit from being signaled 
+     Then the run should exit '2' 
       And 'INFO: Starting Chef Run' should appear on 'stdout' '2' times
 

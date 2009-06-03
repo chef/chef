@@ -97,14 +97,14 @@ class Chef::Application::Indexer < Chef::Application
       Chef::Log.info("Headers #{headers.inspect}")
       if headers["destination"] == "/queue/chef/index"
         start_timer = Time.new
-        indexer.add(object)
-        indexer.commit
+        @chef_search_indexer.add(object)
+        @chef_search_indexer.commit
         final_timer = Time.new
         Chef::Log.info("Indexed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
       elsif headers["destination"] == "/queue/chef/remove"
         start_timer = Time.new
-        indexer.delete(object)
-        indexer.commit
+        @chef_search_indexer.delete(object)
+        @chef_search_indexer.commit
         final_timer = Time.new
         Chef::Log.info("Removed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
       end

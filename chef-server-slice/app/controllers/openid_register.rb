@@ -25,7 +25,7 @@ class ChefServerSlice::OpenidRegister < ChefServerSlice::Application
   provides :html, :json
   
   before :fix_up_node_id
-  before :login_required,  :only => [ :update, :destroy, :validate, :admin ]
+  before :login_required,  :only => [ :index, :update, :destroy, :validate, :admin ]
   before :authorized_node, :only => [ :update, :destroy, :validate, :admin ]
 
   def index

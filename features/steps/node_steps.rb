@@ -24,12 +24,18 @@ Given /^a validated node$/ do
   client.register
   client.authenticate
   client.build_node
-  client.node.recipes = "integration_setup"
+  client.node.recipes << "integration_setup"
 end
 
 Given /^it includes the recipe '(.+)'$/ do |recipe|
   self.recipe = recipe
   client.node.recipes << recipe
+  client.save_node
+end
+
+Given /^it includes the role '(.+)'$/ do |role|
+  self.recipe = "role[#{role}]"
+  client.node.run_list << "role[#{role}]" 
   client.save_node
 end
 

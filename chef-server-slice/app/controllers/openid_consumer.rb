@@ -29,7 +29,7 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
     if request.xhr?
       render :layout => false
     else
-      render
+      render :layout => 'login'
     end
   end
 

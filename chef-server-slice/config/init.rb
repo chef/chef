@@ -21,6 +21,9 @@
 # code and views.
 #
 
+$: << File.join(File.dirname(__FILE__), "..", "..", "chef", "lib")
+require 'chef'
+
 merb_gems_version = " > 1.0"
 dependency "merb-haml", merb_gems_version
 dependency "merb-assets", merb_gems_version
@@ -38,7 +41,7 @@ Merb::Config.use do |c|
   c[:session_secret_key]  = Chef::Config.manage_secret_key
   c[:session_store] = 'cookie'
   c[:exception_details] = true
-  c[:reload_classes] = false
+  c[:reload_classes] = true 
   c[:log_level] = Chef::Config[:log_level]
   c[:log_file] = Chef::Config[:log_location]
 end

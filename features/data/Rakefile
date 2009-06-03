@@ -18,7 +18,10 @@
 # limitations under the License.
 #
 
+$: << File.join(File.dirname(__FILE__), "..", "..", "chef", "lib")
+
 require 'rubygems'
+require 'chef'
 require 'json'
 
 # Make sure you have loaded constants first
@@ -31,5 +34,5 @@ elsif File.directory?(File.join(TOPDIR, ".git"))
   $vcs = :git
 end
 
-require 'chef/tasks/chef_repo.rake'
+load 'chef/tasks/chef_repo.rake'
 

@@ -132,6 +132,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
       url += "&platform=mac_os_x"
       url += "&version=10.5.1"
       url += "&fqdn=latte.local"
+      url += "&node_name=latte"
       url += "&checksum=0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
       @rest.should_receive(:get_rest).with(url, true).and_return(@tempfile)
       do_remote_file

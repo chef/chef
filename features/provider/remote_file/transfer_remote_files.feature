@@ -1,3 +1,4 @@
+@provider @remote_file
 Feature: Transfer Remote Files
   In order to easily manage many systems at once
   As a Developer

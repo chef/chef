@@ -29,7 +29,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
   
   def index
     @node_list = Chef::Node.list 
-    display @node_list
+    display(@node_list.collect { |n| absolute_slice_url(:node, escape_node_id(n)) })
   end
 
   def show
@@ -38,53 +38,99 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     rescue Net::HTTPServerException => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
-    if request.xhr?
-      render JSON.pretty_generate(@node), :layout => false
-    else
-      display @node
+    display @node
+  end
+
+  def new
+    @node = Chef::Node.new
+    @available_recipes = get_available_recipes 
+    @available_roles = Chef::Role.list.sort
+    @run_list = @node.run_list
+    render
+  end
+
+  def edit
+    begin
+      @node = Chef::Node.load(params[:id])
+    rescue Net::HTTPServerException => e
+      raise NotFound, "Cannot load node #{params[:id]}"
     end
+    @available_recipes = get_available_recipes 
+    @available_roles = Chef::Role.list.sort
+    @run_list = @node.run_list
+    render
   end
 
   def create
-    @node = params.has_key?("inflated_object") ? params["inflated_object"] : nil    
-    if @node
-      @status = 202
+    if params.has_key?("inflated_object")
+      @node = params["inflated_object"]
+      exists = true
+      begin
+        Chef::Node.load(@node.name)
+      rescue Net::HTTPServerException
+        exists = false
+      end
+      raise Forbidden, "Node already exists" if exists
+      self.status = 201
       @node.save
-      display @node
+      display({ :uri => absolute_slice_url(:node, escape_node_id(@node.name)) })
     else
-      raise BadRequest, "You must provide a Node to create"
+      begin
+        @node = Chef::Node.new
+        @node.name params[:name]
+        @node.attribute = JSON.parse(params[:attributes])
+        @node.run_list params[:for_node]
+        @node.save
+        redirect(slice_url(:nodes), :message => { :notice => "Created Node #{@node.name}" })
+      rescue
+        @node.attribute = JSON.parse(params[:attributes])
+        @available_recipes = get_available_recipes 
+        @available_roles = Chef::Role.list.sort
+        @run_list = params[:for_node] 
+        @_message = { :error => $! }
+        render :new
+      end
     end
   end
 
   def update
-    if request.xhr?
-      @node = JSON.parse(params[:value])
-    else      
-      @node = params.has_key?("inflated_object") ? params["inflated_object"] : nil
+    begin
+      @node = Chef::Node.load(params[:id])
+    rescue Net::HTTPServerException => e
+      raise NotFound, "Cannot load node #{params[:id]}"
     end
-    
-    if @node
-      @status = 202
+
+    if params.has_key?("inflated_object")
+      updated = params['inflated_object']
+      @node.run_list.reset(updated.run_list)
+      @node.attribute = updated.attribute
       @node.save
-      if request.xhr?
-        partial :node, :node => @node
-      else
-        display @node
-      end
+      display(@node)
     else
-      raise NotFound, "You must provide a Node to update"
+      begin
+        @node.run_list.reset(params[:for_node] ? params[:for_node] : [])
+        @node.attribute = JSON.parse(params[:attributes])
+        @node.save
+        @_message = { :notice => "Updated Node" }
+        render :show
+      rescue
+        @available_recipes = get_available_recipes 
+        @available_roles = Chef::Role.list.sort
+        @run_list = Chef::RunList.new
+        @run_list.reset(params[:for_node])
+        render :edit
+      end
     end
   end
 
   def destroy
     begin
       @node = Chef::Node.load(params[:id])
-    rescue RuntimeError => e
-      raise BadRequest, "Node #{params[:id]} does not exist to destroy!"
+    rescue Net::HTTPServerException => e 
+      raise NotFound, "Cannot load node #{params[:id]}"
     end
     @node.destroy
-    if request.xhr?
-      @status = 202
+    if request.accept == 'application/json'
       display @node
     else
       redirect(absolute_slice_url(:nodes), {:message => { :notice => "Node #{params[:id]} deleted successfully" }, :permanent => true})

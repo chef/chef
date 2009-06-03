@@ -36,7 +36,7 @@ class Chef::Application
     end
     
     at_exit do
-      # tear down the logger and shit
+      # tear down the logger 
     end  
   end
   
@@ -64,14 +64,7 @@ class Chef::Application
   # Initialize and configure the logger
   def configure_logging
     Chef::Log.init(Chef::Config[:log_location])
-  end
-  
-  class << self
-    # Log a fatal error message and exit the application
-    def fatal!(msg, err = -1)
-      Chef::Log.fatal(msg)
-      Process.exit err
-    end
+    Chef::Log.level(Chef::Config[:log_level])
   end
   
   # Called prior to starting the application, by the run method
@@ -83,4 +76,18 @@ class Chef::Application
   def run_application
     raise Chef::Exceptions::Application, "#{self.to_s}: you must override run_application"  
   end
+
+  class << self
+    # Log a fatal error message and exit the application
+    def fatal!(msg, err = -1)
+      Chef::Log.fatal(msg)
+      Process.exit err
+    end
+
+    def exit!(msg, err = -1)
+      Chef::Log.debug(msg)
+      Process.exit err
+    end
+  end
+
 end
