@@ -22,7 +22,7 @@ describe Chef::Provider::Service::Gentoo do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     
-    resource_opts     = { :null_object => true, :name => 'chef', :service_name => 'chef', :enabled => false, :running => nil, :supports => {} }
+    resource_opts     = { :null_object => true, :name => 'chef', :service_name => 'chef', :enabled => false, :running => nil, :supports => {}, :status_command => false }
     @new_resource     = mock("Chef::Resource::Service", resource_opts)
     @current_resource = mock("Chef::Resource::Service", resource_opts)
     

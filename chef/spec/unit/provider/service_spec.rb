@@ -37,12 +37,14 @@ describe Chef::Provider::Service, "action_enable" do
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
     @current_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
     @provider = Chef::Provider::Service.new(@node, @new_resource)
     @provider.current_resource = @current_resource
@@ -68,12 +70,14 @@ describe Chef::Provider::Service, "action_disable" do
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
     @current_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
     @provider = Chef::Provider::Service.new(@node, @new_resource)
     @provider.current_resource = @current_resource
@@ -99,12 +103,14 @@ describe Chef::Provider::Service, "action_start" do
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
     @current_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
     @provider = Chef::Provider::Service.new(@node, @new_resource)
     @provider.current_resource = @current_resource
@@ -130,12 +136,14 @@ describe Chef::Provider::Service, "action_stop" do
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
     @current_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
     @provider = Chef::Provider::Service.new(@node, @new_resource)
     @provider.current_resource = @current_resource
@@ -161,13 +169,15 @@ before(:each) do
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
     @current_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
       :service_name => "chef",
-      :supports => { :restart => false }
+      :supports => { :restart => false },
+      :status_command => false
     )
     @provider = Chef::Provider::Service.new(@node, @new_resource)
     @provider.current_resource = @current_resource
@@ -194,13 +204,15 @@ before(:each) do
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
     @current_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
       :service_name => "chef",
-      :supports => { :reload => false}
+      :supports => { :reload => false},
+      :status_command => false
     )
     @provider = Chef::Provider::Service.new(@node, @new_resource)
     @provider.current_resource = @current_resource
@@ -236,12 +248,14 @@ end
       @new_resource = mock("Chef::Resource::Service",
         :null_object => true,
         :name => "chef",
-        :service_name => "chef"
+        :service_name => "chef",
+        :status_command => false
       )
       @current_resource = mock("Chef::Resource::Service",
         :null_object => true,
         :name => "chef",
-        :service_name => "chef"
+        :service_name => "chef",
+        :status_command => false
       )
       @provider = Chef::Provider::Service.new(@node, @new_resource)
       @provider.current_resource = @current_resource
