@@ -54,15 +54,13 @@ class Chef
       unless index_hash.has_key?(:id) || index_hash.has_key?("id")
         raise Chef::Exceptions::SearchIndex, "Cannot index without an id key: #{index_hash.inspect}"
       end
-      
+     
+      sanitized_hash = Hash.new
       index_hash.each do |k,v|
-        unless k.kind_of?(Symbol)
-          index_hash[k.to_sym] = v
-          index_hash.delete(k)
-        end
+        sanitized_hash[k.to_sym] = v
       end
-      
-      index_hash
+    
+      sanitized_hash
     end
         
     def delete(index_obj)
