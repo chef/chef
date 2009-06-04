@@ -1,3 +1,4 @@
+@api
 Feature: Delete a Role via the REST API 
   In order to remove a role 
   As a Developer 

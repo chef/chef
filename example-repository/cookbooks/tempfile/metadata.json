@@ -1,39 +1,39 @@
 {
-  "maintainer": "Your Name",
   "recommendations": {
 
+  },
+  "maintainer_email": "youremail@example.com",
+  "suggestions": {
+
+  },
+  "recipes": {
+    "tempfile": ""
   },
   "dependencies": {
     "fakefile": [
 
     ]
   },
-  "maintainer_email": "youremail@example.com",
+  "license": "Apache v2.0",
   "attributes": {
 
   },
-  "suggestions": {
-
-  },
-  "name": "tempfile",
-  "license": "Apache v2.0",
   "conflicting": {
 
   },
+  "name": "tempfile",
   "providing": {
     "tempfile": [
 
     ]
   },
-  "description": "A fabulous new cookbook",
-  "recipes": {
-    "tempfile": ""
-  },
   "replacing": {
 
   },
+  "long_description": "",
+  "description": "A fabulous new cookbook",
   "platforms": {
 
   },
-  "long_description": ""
+  "maintainer": "Your Name"
 }

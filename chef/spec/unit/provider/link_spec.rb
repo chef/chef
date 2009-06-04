@@ -56,7 +56,7 @@ describe Chef::Provider::Link, "load_current_resource" do
     Chef::Resource::Link.stub!(:new).and_return(@current_resource)  
     File.stub!(:exists?).and_return(true)
     File.stub!(:symlink?).and_return(true)
-    File.stub!(:readlink).and_return("")  
+    File.stub!(:readlink).and_return("")
   end
 
   it "should set the symink target" do
@@ -77,10 +77,10 @@ describe Chef::Provider::Link, "load_current_resource" do
     
     describe "and the target exists and is a symlink" do
       before do
-        File.should_receive(:exists?).with("/tmp/fofile-link").and_return(true)
-        File.should_receive(:symlink?).with("/tmp/fofile-link").and_return(true)
-        File.should_receive(:readlink).with("/tmp/fofile-link").and_return("/tmp/fofile")
-        @current_resource.stub(:target_file).and_return("/tmp/fofile")
+        File.stub!(:exists?).with("/tmp/fofile-link").and_return(true)
+        File.stub!(:symlink?).with("/tmp/fofile-link").and_return(true)
+        File.stub!(:readlink).with("/tmp/fofile-link").and_return("/tmp/fofile")
+        @current_resource.stub!(:target_file).and_return("/tmp/fofile")
       end
       
       it "should update the source of the existing link with the links target" do

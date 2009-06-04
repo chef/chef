@@ -1,1 +1,7 @@
-default: --format pretty -r features/steps -r features/support features 
+default: -f pretty features -r features/steps -r features/support 
+api: --tags api --format pretty -r features/steps -r features/support features 
+client: --tags client --format pretty -r features/steps -r features/support features 
+search: --tags search --format pretty -r features/steps -r features/support features 
+provider_remote_file: --tags provider,remote_file --format pretty -r features/steps -r features/support features 
+provider_package_macports: --tags macports --format pretty -r features/steps -r features/support features 
+

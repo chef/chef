@@ -1,3 +1,4 @@
+@cookbooks
 Feature: Cookbook Metadata 
   In order to understand cookbooks without evaluating them 
   As an Administrator 

@@ -248,6 +248,31 @@ describe Chef::CouchDB, "has_key?" do
   end
 end
 
+describe Chef::CouchDB, "get_view" do
+  before do
+    @mock_rest = mock("Chef::REST", :null_object => true, :url => "http://monkeypants")
+    Chef::REST.stub!(:new).and_return(@mock_rest)
+    @couchdb = Chef::CouchDB.new("http://localhost")
+    @old_version = Chef::Config[:couchdb_version]
+    Chef::Config[:couchdb_version] = 0.9
+  end
+
+  after do
+    Chef::Config[:couchdb_version] = @old_version
+  end
+
+  it "should construct a call to the view for the proper design document" do
+    @mock_rest.should_recieve(:get_rest).with("chef/_design/nodes/_view/mastodon")
+    @couchdb.get_view("nodes", "mastodon")
+  end
+
+  it "should allow arguments to the view" do
+    @mock_rest.should_receive(:get_rest).with("chef/_design/nodes/_view/mastodon?startkey=%22dont%20stay%22")
+    @couchdb.get_view("nodes", "mastodon", :startkey => "dont stay")
+  end
+
+end
+
 describe Chef::CouchDB, "view_uri" do
   before do
     @mock_rest = mock("Chef::REST", :null_object => true, :url => "http://monkeypants")
