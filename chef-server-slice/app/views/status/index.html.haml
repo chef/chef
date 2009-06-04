@@ -41,22 +41,23 @@
                 - if node["run_list"] != "Undefined"
                   %td
                     .accordion
-                      = link_to("Run List", "#", :class => 'head')
-                      %table.table
-                        %tr
-                          %th.first Position
-                          %th Name
-                          %th.last Type
-                          - if node['run_list'].empty?
-                            %tr
-                              %td{:colspan => 2} This node has no roles or recipes applied.
-                          - else
-                            - rl = Chef::RunList.new
-                            - rl.reset(node["run_list"])
-                            -rl.each_index do |i|
-                              - type, name, fname = rl.parse_entry(rl[i])
+                      = link_to("Run List", "#", :class => 'tooltip')
+                      .tooltip
+                        %table.table.tooltip
+                          %tr
+                            %th.first Position
+                            %th Name
+                            %th.last Type
+                            - if node['run_list'].empty?
                               %tr
-                                %td.position= i
-                                %td= name 
-                                %td= type 
+                                %td{:colspan => 2} This node has no roles or recipes applied.
+                            - else
+                              - rl = Chef::RunList.new
+                              - rl.reset(node["run_list"])
+                              -rl.each_index do |i|
+                                - type, name, fname = rl.parse_entry(rl[i])
+                                %tr
+                                  %td.position= i
+                                  %td= name 
+                                  %td= type 
 
