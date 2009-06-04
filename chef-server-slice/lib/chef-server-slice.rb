@@ -54,6 +54,8 @@ if defined?(Merb::Plugins)
 
       Chef::Log.logger = Merb.logger
       Chef::Log.info("Compiling routes... (totally normal to see 'Cannot find resource model')")
+      Chef::Log.info("Loading roles")
+      Chef::Role.sync_from_disk_to_couchdb
     end
 
     # Initialization hook - runs before AfterAppLoads BootLoader

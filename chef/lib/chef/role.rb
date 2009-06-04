@@ -161,6 +161,12 @@ class Chef
     # Remove this role from the CouchDB
     def destroy
       @couchdb.delete("role", @name, @couchdb_rev)
+      rs = @couchdb.get_view("nodes", "by_run_list", :startkey => "role[#{@name}]", :endkey => "role[#{@name}]", :include_docs => true)
+      rs["rows"].each do |row| 
+        node = row["doc"]
+        node.run_list.remove("role[#{@name}]")
+        node.save
+      end
     end
     
     # Save this role to the CouchDB
@@ -181,17 +187,34 @@ class Chef
 
     # Load a role from disk - prefers to load the JSON, but will happily load
     # the raw rb files as well.
-    def self.from_disk(name)
+    def self.from_disk(name, force=nil)
       js_file = File.join(Chef::Config[:role_path], "#{name}.json")
       rb_file = File.join(Chef::Config[:role_path], "#{name}.rb")
 
-      if File.exists?(js_file)
+      if File.exists?(js_file) || force == "json"
         JSON.parse(IO.read(js_file))
-      elsif File.exists?(rb_file)
+      elsif File.exists?(rb_file) || force == "ruby"
         role = Chef::Role.new
         role.name(name)
         role.from_file(rb_file)
         role
+      end
+    end
+
+    # Sync all the json roles with couchdb from disk
+    def self.sync_from_disk_to_couchdb
+      Dir[File.join(Chef::Config[:role_path], "*.json")].each do |role_file|
+        short_name = File.basename(role_file, ".json") 
+        Chef::Log.warn("Loading #{short_name}")
+        r = Chef::Role.from_disk(short_name, "json")
+        begin
+          couch_role = Chef::Role.load(short_name)
+          r.couchdb_rev = couch_role.couchdb_rev
+          Chef::Log.debug("Replacing role #{short_name} with data from #{role_file}")
+        rescue Net::HTTPServerException
+          Chef::Log.debug("Creating role #{short_name} with data from #{role_file}")
+        end
+        r.save
       end
     end
 
