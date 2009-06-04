@@ -90,24 +90,8 @@ describe Chef::Provider::User::Useradd, "set_options" do
       @new_resource.stub!(:supports).and_return({:manage_home => true})
     end
     
-    describe "and the operating system is redhat based" do
-      before do
-        @node.stub!(:[]).with(:operatingsystem).and_return("RedHat")
-      end
-      
-      it "should use -M -d /homedir if the operating system is a redhat descendent" do
-        @provider.set_options.should eql(" -M -d /wowaweea adam")
-      end
-    end
-    
-    describe "and the operating system is not redhat based" do
-      before do
-        @node.stub!(:[]).with(:operatingsystem).and_return("Debian")
-      end
-      
-      it "should use -m -d /homedir unless the operating system is a redhat descendent" do    
-        @provider.set_options.should eql(" -m -d /wowaweea adam")
-      end
+    it "should set -d /homedir -m" do    
+      @provider.set_options.should eql(" -d /wowaweea -m adam")
     end
   end
 end
