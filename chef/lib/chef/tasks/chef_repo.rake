@@ -81,19 +81,23 @@ task :install => [ :update, :test, :metadata, :roles ] do
   puts "* Installing new Cookbooks"
   sh "sudo rsync -rlP --delete --exclude '.svn' cookbooks/ #{COOKBOOK_PATH}"
   puts "* Installing new Site Cookbooks"
-  sh "sudo rsync -rlP --delete --exclude '.svn' cookbooks/ #{SITE_COOKBOOK_PATH}"
-  puts "* Installing new Chef Server Config"
-  sh "sudo cp config/server.rb #{CHEF_SERVER_CONFIG}"
-  puts "* Installing new Chef Client Config"
-  sh "sudo cp config/client.rb #{CHEF_CLIENT_CONFIG}"
+  sh "sudo rsync -rlP --delete --exclude '.svn' site-cookbooks/ #{SITE_COOKBOOK_PATH}"
+  if File.exists?(File.join(File.dirname(__FILE__), "config", "server.rb"))
+    puts "* Installing new Chef Server Config"
+    sh "sudo cp config/server.rb #{CHEF_SERVER_CONFIG}"
+  end
+  if File.exists?(File.join(File.dirname(__FILE__), "config", "client.rb"))
+    puts "* Installing new Chef Client Config"
+    sh "sudo cp config/client.rb #{CHEF_CLIENT_CONFIG}"
+  end
 end
 
 desc "By default, run rake test"
 task :default => [ :test ]
 
-desc "Create a new cookbook (with COOKBOOK=name)"
+desc "Create a new cookbook (with COOKBOOK=name, optional CB_PREFIX=site-)"
 task :new_cookbook do
-  create_cookbook(File.join(TOPDIR, "cookbooks"))
+  create_cookbook(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
 end
 
 def create_cookbook(dir)
