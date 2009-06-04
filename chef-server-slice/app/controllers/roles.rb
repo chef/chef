@@ -76,7 +76,7 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
         @role = Chef::Role.new
         @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
         @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
-        @current_recipes = params[:for_role] 
+        @current_recipes = params[:for_role] ? params[:for_role] : []
         @_message = { :error => $! }
         render :new
       end
@@ -110,7 +110,7 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
         render :show
       rescue ArgumentError
         @available_recipes = get_available_recipes 
-        @current_recipes = params[:for_role] 
+        @current_recipes = params[:for_role] ? params[:for_role] : []
         @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
         @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
         render :edit
@@ -127,6 +127,7 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
       raise NotFound, "Cannot load role #{params[:id]}"
     end
     @role.destroy
+    
     if request.accept == "application/json"
       display @role
     else

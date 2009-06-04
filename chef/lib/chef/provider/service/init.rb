@@ -32,11 +32,11 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
-          if @new_resource.supports[:status]
-            Chef::Log.debug("#{@new_resource} supports status, running")
+          if @new_resource.status_command
+            Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
 
             begin
-              if run_command(:command => "#{@init_command} status") == 0
+              if run_command(:command => @new_resource.status_command) == 0
                 @current_resource.running true
               end
             rescue Chef::Exceptions::Exec
@@ -44,11 +44,11 @@ class Chef
               nil
             end
 
-          elsif @new_resource.status_command
-            Chef::Log.debug("#{@new_resource} doesn't support status but you have specified a status command, running..")
+          elsif @new_resource.supports[:status]
+            Chef::Log.debug("#{@new_resource} supports status, running")
 
             begin
-              if run_command(:command => @new_resource.status_command) == 0
+              if run_command(:command => "#{@init_command} status") == 0
                 @current_resource.running true
               end
             rescue Chef::Exceptions::Exec
@@ -101,10 +101,10 @@ class Chef
         end
 
         def restart_service
-          if @new_resource.supports[:restart]
-            run_command(:command => "#{@init_command} restart")
-          elsif @new_resource.restart_command
+          if @new_resource.restart_command
             run_command(:command => @new_resource.restart_command)
+          elsif @new_resource.supports[:restart]
+            run_command(:command => "#{@init_command} restart")
           else
             stop_service
             sleep 1
@@ -113,10 +113,10 @@ class Chef
         end
 
         def reload_service
-          if @new_resource.supports[:reload]
-            run_command(:command => "#{@init_command} reload")
-          elsif @new_resource.reload_command
+          if @new_resource.reload_command
             run_command(:command => @new_resource.reload_command)
+          elsif @new_resource.supports[:reload]
+            run_command(:command => "#{@init_command} reload")
           end
         end
 

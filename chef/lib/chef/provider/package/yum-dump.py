@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-# yum-dump-json.py
+# yum-dump.py
 # Inspired by yumhelper.py by David Lutterkort
 #
 # Produce a list of installed and available packages using yum and dump the 
-# result as json to stdout.
+# result to stdout.
 #
 # This invokes yum just as the command line would which makes it subject to 
 # all the caching related configuration paramaters in yum.conf.
@@ -30,10 +30,9 @@
 import os
 import sys
 import yum
-import json
 
 y = yum.YumBase()
-# Only want json in output
+# Only want our output
 y.doConfigSetup(debuglevel=0, errorlevel=0)
 
 # yum assumes it can update the cache directory. Disable this for non root 
@@ -47,21 +46,17 @@ db = y.doPackageLists('all')
 
 y.closeRpmDB()
 
-combined = {}
-
 for pkg in db.installed:
-     combined[pkg.name] = {}
-     combined[pkg.name]["installed"] = { "epoch": pkg.epoch,
-                                         "version": pkg.version,
-                                         "release": pkg.release,
-                                         "arch": pkg.arch }
+     print '%s,installed,%s,%s,%s,%s' % ( pkg.name, 
+                                          pkg.epoch,
+                                          pkg.version,
+                                          pkg.release,
+                                          pkg.arch )
 for pkg in db.available:
-     if not combined.has_key(pkg.name):
-         combined[pkg.name] = {}
-         combined[pkg.name]["available"] = { "epoch": pkg.epoch,
-                                             "version": pkg.version,
-                                             "release": pkg.release,
-                                             "arch": pkg.arch }
-print json.write( combined )
+     print '%s,available,%s,%s,%s,%s' % ( pkg.name, 
+                                          pkg.epoch,
+                                          pkg.version,
+                                          pkg.release,
+                                          pkg.arch )
 
 sys.exit(0)

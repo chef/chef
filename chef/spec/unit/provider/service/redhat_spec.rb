@@ -26,14 +26,16 @@ describe Chef::Provider::Service::Redhat, "load_current_resource" do
       :null_object => true,
       :name => "chef",
       :service_name => "chef",
-      :enabled => false
+      :enabled => false,
+      :status_command => false
     )
 
     @current_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
       :service_name => "chef",
-      :enabled => false
+      :enabled => false,
+      :status_command => false
     )
 
     @provider = Chef::Provider::Service::Redhat.new(@node, @new_resource)
@@ -91,7 +93,8 @@ describe Chef::Provider::Service::Redhat, "enable_service" do
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
 
     @provider = Chef::Provider::Service::Redhat.new(@node, @new_resource)
@@ -110,7 +113,8 @@ describe Chef::Provider::Service::Redhat, "disable_service" do
     @new_resource = mock("Chef::Resource::Redhat",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
 
     @provider = Chef::Provider::Service::Redhat.new(@node, @new_resource)
