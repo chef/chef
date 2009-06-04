@@ -108,7 +108,7 @@ class Chef
       if @cookbook.has_key?(cookbook.to_sym)
         @cookbook[cookbook.to_sym]
       else
-        raise ArgumentError, "Cannot find a cookbook named #{cookbook.to_s}"
+        raise ArgumentError, "Cannot find a cookbook named #{cookbook.to_s}; did you forget to add metadata to a cookbook? (http://wiki.opscode.com/display/chef/Metadata)"
       end
     end
     

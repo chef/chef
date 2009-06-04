@@ -146,6 +146,10 @@ namespace :features do
     t.profile = "client"
   end
 
+  Cucumber::Rake::Task.new(:search) do |t|
+    t.profile = "search"
+  end
+
   namespace :provider do
     Cucumber::Rake::Task.new(:remote_file) do |t|
       t.profile = "provider_remote_file"

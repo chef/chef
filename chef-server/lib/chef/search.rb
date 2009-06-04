@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/search/result'
 require 'ferret'
 
 class Chef
@@ -77,7 +78,7 @@ class Chef
       end
     
       def build_hash(doc)
-        result = Hash.new
+        result = Chef::Search::Result.new
         doc.fields.each do |f|
           result[f] = doc[f]
         end
