@@ -18,6 +18,7 @@
 require 'chef/cookbook_loader'
 require 'chef/resource_collection'
 require 'chef/node'
+require 'chef/role'
 require 'chef/log'
 
 class Chef

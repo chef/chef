@@ -1,3 +1,4 @@
+@api
 Feature: List roles via the REST API
   In order to know what roles exists programatically
   As a Developer

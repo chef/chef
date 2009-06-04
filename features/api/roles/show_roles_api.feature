@@ -1,3 +1,4 @@
+@api
 Feature: Show a role via the REST API 
   In order to know what the details are for a Role 
   As a Developer

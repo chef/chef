@@ -164,8 +164,12 @@ class ChefServerSlice::Application < Merb::Controller
 
   def specific_cookbooks(node_name, cl)
     valid_cookbooks = Hash.new
-    node = Chef::Node.load(node_name)
-    recipes, default_attrs, override_attrs = node.run_list.expand('couchdb')
+    begin
+      node = Chef::Node.load(node_name)
+      recipes, default_attrs, override_attrs = node.run_list.expand('couchdb')
+    rescue Net::HTTPServerException
+      recipes = []
+    end
     recipes.each do |recipe|
       valid_cookbooks = expand_cookbook_deps(valid_cookbooks, cl, recipe)
     end
@@ -188,7 +192,7 @@ class ChefServerSlice::Application < Merb::Controller
   def load_all_files(segment, node_name=nil)
     cl = Chef::CookbookLoader.new
     files = Array.new
-    valid_cookbooks = node_name ? specific_cookbooks(node_name, cl) : nil
+    valid_cookbooks = node_name ? specific_cookbooks(node_name, cl) : {} 
     cl.each do |cookbook|
       if node_name
         next unless valid_cookbooks[cookbook.name.to_s]
@@ -204,6 +208,21 @@ class ChefServerSlice::Application < Merb::Controller
       end
     end
     files
+  end
+
+  def get_available_recipes
+    cl = Chef::CookbookLoader.new
+    available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
+      element.recipes.sort.each do |r| 
+        if r =~ /^(.+)::default$/
+          result << $1
+        else
+          result << r
+        end
+      end
+      result
+    end
+    available_recipes
   end
 
 end

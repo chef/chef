@@ -26,7 +26,7 @@ class Exceptions < ChefServerSlice::Application
     if request.accept =~ /application\/json/
       display({ "error" => request.exceptions }) 
     else
-      display(params)
+      raise request.exceptions.first 
     end
   end
 

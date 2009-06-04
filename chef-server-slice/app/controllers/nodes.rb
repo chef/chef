@@ -43,8 +43,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
 
   def new
     @node = Chef::Node.new
-    cl = Chef::CookbookLoader.new
-    @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+    @available_recipes = get_available_recipes 
     @available_roles = Chef::Role.list.sort
     @run_list = @node.run_list
     render
@@ -56,8 +55,7 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     rescue Net::HTTPServerException => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
-    cl = Chef::CookbookLoader.new
-    @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+    @available_recipes = get_available_recipes 
     @available_roles = Chef::Role.list.sort
     @run_list = @node.run_list
     render
@@ -85,9 +83,8 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
         @node.save
         redirect(slice_url(:nodes), :message => { :notice => "Created Node #{@node.name}" })
       rescue
-        cl = Chef::CookbookLoader.new
         @node.attribute = JSON.parse(params[:attributes])
-        @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+        @available_recipes = get_available_recipes 
         @available_roles = Chef::Role.list.sort
         @run_list = params[:for_node] 
         @_message = { :error => $! }
@@ -111,14 +108,13 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
       display(@node)
     else
       begin
-        @node.run_list(params[:for_node])
+        @node.run_list.reset(params[:for_node] ? params[:for_node] : [])
         @node.attribute = JSON.parse(params[:attributes])
         @node.save
         @_message = { :notice => "Updated Node" }
         render :show
       rescue
-        cl = Chef::CookbookLoader.new
-        @available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }
+        @available_recipes = get_available_recipes 
         @available_roles = Chef::Role.list.sort
         @run_list = Chef::RunList.new
         @run_list.reset(params[:for_node])

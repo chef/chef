@@ -176,6 +176,6 @@ describe Chef::Provider::Template, "generate_url" do
   it "should return a composed url if it does not start with http" do
     Chef::Platform.stub!(:find_platform_and_version).and_return(["monkey", "1.0"])
     @node.fqdn("monkeynode")
-    @provider.generate_url('default/something', "templates").should eql("cookbooks/daft/templates?id=default/something&platform=monkey&version=1.0&fqdn=monkeynode")
+    @provider.generate_url('default/something', "templates").should eql("cookbooks/daft/templates?id=default/something&platform=monkey&version=1.0&fqdn=monkeynode&node_name=latte")
   end
 end

@@ -1,3 +1,4 @@
+@api
 Feature: List nodes via the REST API
   In order to know what nodes exists programatically
   As a Developer

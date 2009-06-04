@@ -98,10 +98,21 @@ class Chef
       self
     end
 
+    def remove(item)
+      type, entry, fentry = parse_entry(item)
+      @run_list.delete_if { |i| i == fentry }
+      if type == "recipe"
+        @recipes.delete_if { |i| i == entry }
+      elsif type == "role"
+        @roles.delete_if { |i| i == entry }
+      end
+      self
+    end
+
     def expand(from='server')
       recipes = Array.new
-      default_attrs = Hash.new
-      override_attrs = Hash.new
+      default_attrs = Mash.new
+      override_attrs = Mash.new
       
       @run_list.each do |entry|
         type, name, fname = parse_entry(entry)
