@@ -1,24 +1,18 @@
 {
-  "recommendations": {
-
-  },
   "maintainer_email": "youremail@example.com",
   "suggestions": {
 
   },
-  "recipes": {
-    "tempfile": ""
+  "license": "Apache v2.0",
+  "conflicting": {
+
   },
   "dependencies": {
     "fakefile": [
 
     ]
   },
-  "license": "Apache v2.0",
   "attributes": {
-
-  },
-  "conflicting": {
 
   },
   "name": "tempfile",
@@ -32,8 +26,14 @@
   },
   "long_description": "",
   "description": "A fabulous new cookbook",
-  "platforms": {
+  "recipes": {
+    "tempfile": ""
+  },
+  "maintainer": "Your Name",
+  "recommendations": {
 
   },
-  "maintainer": "Your Name"
+  "platforms": {
+
+  }
 }

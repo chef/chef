@@ -1,13 +1,11 @@
 {
-  "recommendations": {
-
-  },
   "maintainer_email": "youremail@example.com",
   "suggestions": {
 
   },
-  "recipes": {
-    "fakefile": ""
+  "license": "Apache v2.0",
+  "conflicting": {
+
   },
   "dependencies": {
     "tempfile": [
@@ -17,11 +15,7 @@
 
     ]
   },
-  "license": "Apache v2.0",
   "attributes": {
-
-  },
-  "conflicting": {
 
   },
   "name": "fakefile",
@@ -35,8 +29,14 @@
   },
   "long_description": "",
   "description": "A fabulous new cookbook",
-  "platforms": {
+  "recipes": {
+    "fakefile": ""
+  },
+  "maintainer": "Your Name",
+  "recommendations": {
 
   },
-  "maintainer": "Your Name"
+  "platforms": {
+
+  }
 }
