@@ -252,7 +252,7 @@ task :metadata do
   end
 end
 
-desc "Build roles from roles/role_name.json"
+desc "Build roles from roles/role_name.json from role_name.rb"
 task :roles do
   Chef::Config[:role_path] = File.join(TOPDIR, 'roles')
   Dir[File.join(TOPDIR, 'roles', '**', '*.rb')].each do |role_file|
