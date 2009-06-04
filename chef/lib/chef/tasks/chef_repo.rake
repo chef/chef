@@ -98,6 +98,8 @@ task :default => [ :test ]
 desc "Create a new cookbook (with COOKBOOK=name, optional CB_PREFIX=site-)"
 task :new_cookbook do
   create_cookbook(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
+  create_readme(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
+  create_metadata(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
 end
 
 def create_cookbook(dir)
@@ -145,6 +147,53 @@ EOH
   end
 end
 
+def create_readme(dir)
+  raise "Must provide a COOKBOOK=" unless ENV["COOKBOOK"]
+  puts "** Creating README for cookbook: #{ENV["COOKBOOK"]}"
+  unless File.exists?(File.join(dir, ENV["COOKBOOK"], "README.rdoc"))
+    open(File.join(dir, ENV["COOKBOOK"], "README.rdoc"), "w") do |file|
+      file.puts <<-EOH
+= DESCRIPTION:
+
+= REQUIREMENTS:
+
+= ATTRIBUTES: 
+
+= USAGE:
+
+EOH
+    end
+  end
+end
+
+def create_metadata(dir)
+  raise "Must provide a COOKBOOK=" unless ENV["COOKBOOK"]
+  puts "** Creating metadata for cookbook: #{ENV["COOKBOOK"]}"
+  
+  case NEW_COOKBOOK_LICENSE
+  when :apachev2
+    license = "Apache 2.0"
+  when :none
+    license = "All rights reserved"
+  end
+
+  unless File.exists?(File.join(dir, ENV["COOKBOOK"], "metadata.rb"))
+    open(File.join(dir, ENV["COOKBOOK"], "metadata.rb"), "w") do |file|
+      if File.exists?(File.join(dir, ENV["COOKBOOK"], 'README.rdoc'))
+        long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.rdoc'))"
+      end
+      file.puts <<-EOH
+maintainer       "#{COMPANY_NAME}"
+maintainer_email "#{SSL_EMAIL_ADDRESS}"
+license          "#{license}"
+description      "Installs/Configures #{ENV["COOKBOOK"]}"
+#{long_description}
+version          ""
+EOH
+    end
+  end
+end
+
 desc "Create a new self-signed SSL certificate for FQDN=foo.example.com"
 task :ssl_cert do
   $expect_verbose = true
@@ -180,7 +229,7 @@ EOH
   sh("(cd #{CADIR} && chmod 644 #{fqdn}.pem)")
 end
 
-desc "Build cookbook metadata"
+desc "Build cookbook metadata.json from metadata.rb"
 task :metadata do
   Chef::Config[:cookbook_path] = [ File.join(TOPDIR, 'cookbooks'), File.join(TOPDIR, 'site-cookbooks') ]
   cl = Chef::CookbookLoader.new
@@ -203,7 +252,7 @@ task :metadata do
   end
 end
 
-desc "Build roles"
+desc "Build roles from roles/role_name.json"
 task :roles do
   Chef::Config[:role_path] = File.join(TOPDIR, 'roles')
   Dir[File.join(TOPDIR, 'roles', '**', '*.rb')].each do |role_file|
