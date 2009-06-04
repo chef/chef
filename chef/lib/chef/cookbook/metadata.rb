@@ -276,7 +276,7 @@ class Chef
         @replacing[cookbook] 
       end
 
-      # Adds a cookbook that is replaced by this one, with version checking strings.
+      # Adds a description for a recipe. 
       #
       # === Parameters
       # recipe<String>:: The recipe

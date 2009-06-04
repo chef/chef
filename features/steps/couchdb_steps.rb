@@ -22,6 +22,7 @@ Before do
   cdb.create_db
   Chef::Node.create_design_document
   Chef::Role.create_design_document
+  Chef::Role.sync_from_disk_to_couchdb
   Chef::OpenIDRegistration.create_design_document
 end
 

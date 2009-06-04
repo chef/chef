@@ -26,14 +26,16 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
       :null_object => true,
       :name => "chef",
       :service_name => "chef",
-      :enabled => false
+      :enabled => false,
+      :status_command => false
     )
 
     @current_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
       :service_name => "chef",
-      :enabled => false
+      :enabled => false,
+      :status_command => false
     )
 
     @provider = Chef::Provider::Service::Debian.new(@node, @new_resource)
@@ -105,7 +107,8 @@ describe Chef::Provider::Service::Debian, "enable_service" do
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
 
     @provider = Chef::Provider::Service::Debian.new(@node, @new_resource)
@@ -124,7 +127,8 @@ describe Chef::Provider::Service::Debian, "disable_service" do
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
-      :service_name => "chef"
+      :service_name => "chef",
+      :status_command => false
     )
 
     @provider = Chef::Provider::Service::Debian.new(@node, @new_resource)

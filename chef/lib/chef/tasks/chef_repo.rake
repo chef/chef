@@ -19,6 +19,7 @@
 require 'rubygems'
 require 'json'
 require 'chef'
+require 'chef/role'
 require 'chef/cookbook/metadata'
 require 'tempfile'
 require 'rake'
@@ -65,7 +66,7 @@ task :test do
 end
 
 desc "Install the latest copy of the repository on this Chef Server"
-task :install => [ :update, :test, :metadata ] do
+task :install => [ :update, :test, :metadata, :roles ] do
   puts "** Installing your cookbooks"  
   directories = [ 
     COOKBOOK_PATH,
@@ -194,6 +195,19 @@ task :metadata do
           f.write(JSON.pretty_generate(cook_meta))
         end
       end
+    end
+  end
+end
+
+desc "Build roles"
+task :roles do
+  Chef::Config[:role_path] = File.join(TOPDIR, 'roles')
+  Dir[File.join(TOPDIR, 'roles', '**', '*.rb')].each do |role_file|
+    short_name = File.basename(role_file, '.rb')
+    puts "Generating role JSON for #{short_name}"
+    role = Chef::Role.from_disk(short_name, "ruby")
+    File.open(File.join(TOPDIR, 'roles', "#{short_name}.json"), "w") do |f|
+      f.write(JSON.pretty_generate(role))
     end
   end
 end

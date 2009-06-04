@@ -25,7 +25,7 @@ require 'json'
 class Chef
   class CouchDB
     include Chef::Mixin::ParamsValidate
-    
+
     def initialize(url=nil)
       url ||= Chef::Config[:couchdb_url]
       @rest = Chef::REST.new(url)
@@ -143,6 +143,14 @@ class Chef
         false
       end
     end
+
+    def get_view(design, view, options={})
+      view_string = view_uri(design, view)
+      view_string << "?" if options.length != 0
+      first = true;
+      options.each { |k,v| view_string << "#{first ? '' : '&'}#{k}=#{URI.escape(v.to_json)}"; first = false }
+      @rest.get_rest(view_string)
+    end
     
     def view_uri(design, view)
       Chef::Config[:couchdb_version] ||= @rest.run_request(:GET, URI.parse(@rest.url + "/"), false, 10, false)["version"].gsub(/-.+/,"").to_f
@@ -156,9 +164,9 @@ class Chef
     
     private
     
-    def safe_name(name)
-      name.gsub(/\./, "_")
-    end
+      def safe_name(name)
+        name.gsub(/\./, "_")
+      end
       
   end
 end
