@@ -103,4 +103,24 @@ $(document).ready(function(){
   // The table tree!
   $('table.tree').treeTable({ expandable: true });
   $('span.expander').click(function() { $('tr#' + $(this).attr('toggle')).toggleBranch(); });
+  
+  // Tooltips
+  $("div.tooltip").tooltip({ 
+      position: ['center', 'right'],
+      offset: [-5, 10],
+      effect: 'toggle',
+      opacity: 0.7 
+  });
+  
+  // Show the sidebars if they have text in them!
+  var sidebar_block_notice_children = $("#sidebar_block_notice").children().length;
+  var sidebar_block_children = $("#sidebar_block").children().length;
+  
+  if (sidebar_block_notice_children > 0) {
+    $("#sidebar_block_notice").fadeIn();
+  }
+  
+  if (sidebar_block_children > 0) {
+    $("#sidebar_block").fadeIn();
+  }
 });

@@ -129,3 +129,29 @@ div.editor {
 
 #node_available_roles li, #node_available_recipes li, #for_node li, #for_role li, #available_recipes li { margin: 0 5px 5px 5px; padding: 5px; width: 175px; }
 
+#sidebar_block {
+  display: none;
+}
+
+#sidebar_block_notice {
+  display: none;
+}
+
+div.tooltip { 
+    background-color: #000; 
+    outline: 1px solid #669; 
+    border: 2px solid #fff; 
+    padding: 10px 15px; 
+    /* width: 200px;  */
+    display: none; 
+    color: #fff; 
+    text-align: left; 
+    font-size: 12px; 
+    outline-radius: 4px; 
+    -moz-outline-radius: 4px; 
+    -webkit-outline-radius: 4px; 
+}
+
+table.tooltip {
+  width: 190px;
+}
