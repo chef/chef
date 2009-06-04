@@ -31,6 +31,7 @@ class Chef
         @response_file = nil
         @source = nil
         @action = "install"
+        @options = nil
         @allowed_actions.push(:install, :upgrade, :remove, :purge)
       end
       
@@ -65,7 +66,15 @@ class Chef
           :kind_of => [ String ]
         )
       end
-      
+
+      def options(arg=nil)
+        set_or_return(
+	  :options,
+	  arg,
+	  :kind_of => [ String ]
+	)
+      end
+
     end
   end
 end

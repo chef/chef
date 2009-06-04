@@ -52,5 +52,10 @@ describe Chef::Resource::Package do
     @resource.source "something"
     @resource.source.should eql("something")
   end
-  
+
+  it "should accept a string for the options" do
+    @resource.options "something"
+    @resource.options.should eql("something")
+  end
+
 end

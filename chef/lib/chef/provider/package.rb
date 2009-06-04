@@ -36,7 +36,7 @@ class Chef
       end
       
       def action_install  
-        # If we specified a version, and it's not the current version, move to the current version
+        # If we specified a version, and it's not the current version, move to the specified version
         if @new_resource.version != nil && @new_resource.version != @current_resource.version
           install_version = @new_resource.version
         # If it's not installed at all, install it

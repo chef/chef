@@ -108,24 +108,35 @@ describe Chef::Provider::Package::Portage, "install_package" do
       :name => "dev-util/git",
       :version => nil,
       :package_name => "dev-util/git",
-      :updated => nil
+      :updated => nil,
+      :options => nil
     )
     @provider = Chef::Provider::Package::Portage.new(@node, @new_resource)
   end
 
   it "should install a normally versioned package using portage" do
     @provider.should_receive(:run_command).with({
-      :command => "emerge -g --color n --nospinner --quiet =dev-util/git-1.0.0"
+      :command => "emerge -g --color n --nospinner --quiet  =dev-util/git-1.0.0"
     })
     @provider.install_package("dev-util/git", "1.0.0")
   end
 
   it "should install a tilde versioned package using portage" do
     @provider.should_receive(:run_command).with({
-      :command => "emerge -g --color n --nospinner --quiet ~dev-util/git-1.0.0"
+      :command => "emerge -g --color n --nospinner --quiet  ~dev-util/git-1.0.0"
     })
     @provider.install_package("dev-util/git", "~1.0.0")
   end
+
+  it "should add options to the emerge command when specified" do
+    @provider.should_receive(:run_command).with({
+      :command => "emerge -g --color n --nospinner --quiet --oneshot =dev-util/git-1.0.0"
+    })
+    @new_resource.stub!(:options).and_return("--oneshot")
+    
+    @provider.install_package("dev-util/git", "1.0.0")
+  end
+
 end
 
 describe Chef::Provider::Package::Portage, "remove_package" do
