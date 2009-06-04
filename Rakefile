@@ -25,9 +25,7 @@ end
 
 desc "Run the rspec tests"
 task :spec do
-  gems.each do |dir|
-    Dir.chdir(dir) { sh "rake spec" }
-  end
+  Dir.chdir("chef") { sh "rake spec" }
 end
 
 task :default => :spec
