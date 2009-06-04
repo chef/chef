@@ -29,23 +29,65 @@
 
 import os
 import sys
+import time
 import yum
 
-y = yum.YumBase()
-# Only want our output
-y.doConfigSetup(debuglevel=0, errorlevel=0)
+from yum import Errors
 
-# yum assumes it can update the cache directory. Disable this for non root 
-# users.
-y.conf.cache = os.geteuid() != 0
+# Seconds to wait for exclusive access to yum
+lock_timeout = 10
 
-y.doTsSetup()
-y.doRpmDBSetup()
+failure = False 
 
-db = y.doPackageLists('all')
+# Can't do try: except: finally: in python 2.4 it seems, hence this fun.
+try:
+  try:
+    y = yum.YumBase()
+    # Only want our output
+    y.doConfigSetup(debuglevel=0, errorlevel=0)
+    
+    # Yum assumes it can update the cache directory. Disable this for non root 
+    # users.
+    y.conf.cache = os.geteuid() != 0
+    
+     # Spin up to lock_timeout.
+    countdown = lock_timeout
+    while True:
+      try:
+        y.doLock()
+      except Errors.LockError, e:
+        time.sleep(1)
+        countdown -= 1 
+        if countdown == 0:
+           print >> sys.stderr, "Error! Couldn't obtain an exclusive yum lock in %d seconds. Giving up." % lock_timeout
+           failure = True
+           sys.exit(1)
+      else:
+        break
+    
+    y.doTsSetup()
+    y.doRpmDBSetup()
+    
+    db = y.doPackageLists('all')
+    
+    y.closeRpmDB()
+  
+  except Errors.YumBaseError, e:
+    print >> sys.stderr, "Error! %s" % e 
+    failure = True
+    sys.exit(1)
 
-y.closeRpmDB()
-
+# Ensure we clear the lock.
+finally:
+  try:
+    y.doUnlock()
+  # Keep Unlock from raising a second exception as it does with a yum.conf 
+  # config error.
+  except Errors.YumBaseError:
+    if failure == False: 
+      print >> sys.stderr, "Error! %s" % e 
+    sys.exit(1)
+  
 for pkg in db.installed:
      print '%s,installed,%s,%s,%s,%s' % ( pkg.name, 
                                           pkg.epoch,

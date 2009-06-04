@@ -52,4 +52,16 @@ describe Chef::Config do
       end
     end
   end
+  
+  describe "class method: openid_providers=" do   
+    it "should log an appropriate deprecation info message" do
+      Chef::Log.should_receive(:info).with("DEPRECATION: openid_providers will be removed, please use authorized_openid_providers").and_return(true)
+      Chef::Config.openid_providers = %w{opscode.com junglist.gen.nz}
+    end 
+    
+    it "should internally configure authorized_openid_providers with the value given" do
+      Chef::Config.should_receive(:configure).and_return(%w{opscode.com junglist.gen.nz})
+      Chef::Config.openid_providers = %w{opscode.com junglist.gen.nz}
+    end
+  end
 end

@@ -35,13 +35,10 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
 
   def start
     oid = params[:openid_identifier]
-    providers = Chef::Config[:openid_providers]
-    raise(Unauthorized, "Sorry, #{oid} is not an allowed OpenID Provider.") unless is_valid_openid_provider?(oid,providers)
-
     begin
       oidreq = consumer.begin(oid)
     rescue OpenID::OpenIDError => e
-      raise BadRequest, "Discovery failed for #{params[:openid_identifier]}: #{e}"
+      raise BadRequest, "Discovery failed for #{oid}: #{e}"
     end
 
     return_to = absolute_slice_url(:openid_consumer_complete)
@@ -57,8 +54,8 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
 
   def login
     oid = params[:openid_identifier]
-    authorized_openids = Chef::Config[:authorized_openid_identifiers]
-    raise(Unauthorized, "Sorry, #{oid} is not an authorized OpenID.") unless is_authorized_openid_identifier?(oid, authorized_openids)
+    raise(Unauthorized, "Sorry, #{oid} is not an authorized OpenID.") unless is_authorized_openid_identifier?(oid, Chef::Config[:authorized_openid_identifiers])
+    raise(Unauthorized, "Sorry, #{oid} is not an authorized OpenID Provider.") unless is_authorized_openid_provider?(oid, Chef::Config[:authorized_openid_providers])
     start
   end
 
@@ -98,19 +95,24 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
   end
 
   private
-  #
-  #
-
-  # Returns true if the openid is at a valid provider, based on whether :openid_providers is
-  # defined.  Raises an exception if it is not an allowed provider.
-  def is_valid_openid_provider?(openid,providers)
-    (providers && providers.detect {|p| openid =~ /^https?:\/\/#{p}/ or openid =~ /^#{p}/}) || true
-   end
-
-  def is_authorized_openid_identifier?(openid,authorized_openids)
-    if authorized_openids
-      if authorized_openids.length > 0 
-        authorized_openids.detect { |p| openid == p } 
+  def is_authorized_openid_provider?(openid, authorized_providers)
+    Chef::Log.debug("checking for valid openid provider: openid: #{openid}, authorized providers: #{authorized_providers}")
+    if authorized_providers and openid
+      if authorized_providers.length > 0
+        authorized_providers.detect { |p| Chef::Log.debug("openid: #{openid} (#{openid.class}), p: #{p} (#{p.class})"); openid.match(p) }
+      else
+        true
+      end
+    else
+      true
+    end
+  end
+   
+  def is_authorized_openid_identifier?(openid, authorized_identifiers)
+    Chef::Log.debug("checking for valid openid identifier: openid: #{openid}, authorized openids: #{authorized_identifiers}")
+    if authorized_identifiers and openid
+      if authorized_identifiers.length > 0 
+        authorized_identifiers.detect { |p| Chef::Log.debug("openid: #{openid} (#{openid.class}), p: #{p} (#{p.class})"); openid == p } 
       else
         true
       end
