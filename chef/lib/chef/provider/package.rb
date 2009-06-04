@@ -151,6 +151,10 @@ class Chef
           false
         end
       end
+
+      def expand_options(options)
+        options ? " #{options}" : ""
+      end
       
     end
   end

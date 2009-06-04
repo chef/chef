@@ -137,7 +137,7 @@ describe Chef::Provider::Package::Apt, "install_package" do
   
   it "should run apt-get install with the package name and version" do
     @provider.should_receive(:run_command).with({
-      :command => "apt-get -q -y  install emacs=1.0",
+      :command => "apt-get -q -y install emacs=1.0",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive"
       }
@@ -195,7 +195,7 @@ describe Chef::Provider::Package::Apt, "remove_package" do
   
   it "should run apt-get remove with the package name" do
     @provider.should_receive(:run_command).with({
-      :command => "apt-get -q -y  remove emacs",
+      :command => "apt-get -q -y remove emacs",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive"
       }
@@ -232,7 +232,7 @@ describe Chef::Provider::Package::Apt, "purge_package" do
   
   it "should run apt-get purge with the package name" do
     @provider.should_receive(:run_command).with({
-      :command => "apt-get -q -y  purge emacs",
+      :command => "apt-get -q -y purge emacs",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive"
       }

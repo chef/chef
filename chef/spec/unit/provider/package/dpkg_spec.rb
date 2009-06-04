@@ -128,7 +128,7 @@ describe Chef::Provider::Package::Dpkg, "install and upgrade" do
 
   it "should run dpkg -i with the package source" do
     @provider.should_receive(:run_command).with({
-      :command => "dpkg -i  /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
+      :command => "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive",
         "LANG" => "en_US"
@@ -171,7 +171,7 @@ describe Chef::Provider::Package::Dpkg, "remove and purge" do
 
   it "should run dpkg -r to remove the package" do
     @provider.should_receive(:run_command).with({
-      :command => "dpkg -r  wget",
+      :command => "dpkg -r wget",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive",
         "LANG" => "en_US"
@@ -195,7 +195,7 @@ describe Chef::Provider::Package::Dpkg, "remove and purge" do
 
   it "should run dpkg -P to purge the package" do
     @provider.should_receive(:run_command).with({
-      :command => "dpkg -P  wget",
+      :command => "dpkg -P wget",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive",
         "LANG" => "en_US"

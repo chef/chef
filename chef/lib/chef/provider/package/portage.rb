@@ -94,7 +94,7 @@ class Chef
           end
      
           run_command(
-            :command => "emerge -g --color n --nospinner --quiet #{@new_resource.options} #{pkg}"
+            :command => "emerge -g --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
           )
         end
       
@@ -110,7 +110,7 @@ class Chef
           end
 
           run_command(
-            :command => "emerge --unmerge --color n --nospinner --quiet #{pkg}"
+            :command => "emerge --unmerge --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
           )
         end
       
