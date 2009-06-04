@@ -119,6 +119,15 @@ describe Chef::Node do
       @node.recipe?("sunrise").should eql(true)
       @node.recipe?("not at home").should eql(false)
     end
+
+    it "should allow you to query whether or not a recipe has been applied, even if it was included" do
+      @node.run_state[:seen_recipes]["snakes"] = true
+      @node.recipe?("snakes").should eql(true)
+    end
+
+    it "should return false if a recipe has not been seen" do
+      @node.recipe?("snakes").should eql(false)
+    end
     
     it "should allow you to set recipes with arguments" do
       @node.recipes "one", "two"

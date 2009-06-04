@@ -213,7 +213,15 @@ class Chef
     
     # Returns true if this Node expects a given recipe, false if not.
     def recipe?(recipe_name)
-      @run_list.include?(recipe_name)
+      if @run_list.include?(recipe_name)
+        true
+      else
+        if @run_state[:seen_recipes].include?(recipe_name)
+          true
+        else
+          false
+        end
+      end
     end
     
     # Returns an Array of recipes.  If you call it with arguments, they will become the new
