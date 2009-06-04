@@ -142,7 +142,7 @@ div.tooltip {
     outline: 1px solid #669; 
     border: 2px solid #fff; 
     padding: 10px 15px; 
-    width: 200px; 
+    /* width: 200px;  */
     display: none; 
     color: #fff; 
     text-align: left; 
@@ -150,4 +150,8 @@ div.tooltip {
     outline-radius: 4px; 
     -moz-outline-radius: 4px; 
     -webkit-outline-radius: 4px; 
+}
+
+table.tooltip {
+  width: 190px;
 }
