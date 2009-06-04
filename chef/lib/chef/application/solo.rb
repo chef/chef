@@ -71,44 +71,40 @@ class Chef::Application::Solo < Chef::Application
   def reconfigure
     super
     
+    Chef::Config[:solo] = true
+    
     if Chef::Config[:json_attribs]
       require 'net/http'
       require 'open-uri'
 
-      json_io = nil
       begin
-        json_io = Kernel.open(Chef::Config[:json_attribs])
-      rescue SocketError => error
-        Chef::Application.fatal!("I cannot connect to #{Chef::Config[:json_attribs]}", 2)
-      rescue Errno::ENOENT => error
-        Chef::Application.fatal!("I cannot find #{Chef::Config[:json_attribs]}", 2)
-      rescue Errno::EACCES => error
-        Chef::Application.fatal!("Permissions are incorrect on #{Chef::Config[:json_attribs]}. Please chmod a+r #{Chef::Config[:json_attribs]}", 2)
-      rescue Exception => error
-        Chef::Application.fatal!("Got an unexpected error reading #{Chef::Config[:json_attribs]}: #{error.message}", 2)
-      end
-
-      begin
-        @chef_solo_json = JSON.parse(json_io.read)
-      rescue JSON::ParserError => error
-        Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
-        exit 2
+        open(Chef::Config[:json_attribs]) do |json_io|
+          @chef_client_json = JSON.parse(json_io.read)
+        end
+      rescue Exception => e
+        Chef::Application.fatal! "Error parsing json attributes (#{e})", 2
       end
     end
     
     if Chef::Config[:recipe_url]
-      cookbooks_path = Chef::Config[:cookbook_path].detect{|e| e =~ /\/cookbooks\/*$/ }
+      cookbooks_path = Chef::Config[:cookbook_path].detect { |e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
+      target_file = File.join(recipes_path, 'recipes.tgz')
       require 'net/http'
       require 'open-uri'
       require 'fileutils'
 
       FileUtils.mkdir_p recipes_path
-      path = File.join(recipes_path, 'recipes.tgz')
-      File.open(path, 'wb') do |f|
-        f.write open(config[:recipe_url]).read
+      
+      begin
+        open(Chef::Config[:recipe_url]) do |recipe_io|
+          File.open(target_file, "wb") { |f| f.write(recipe_io.read) }
+        end
+      rescue Exception => e
+        Chef::Application.fatal! "Error downloading recipes from url (#{e})", 2
       end
-      Chef::Mixin::Command.run_command(:command => "cd #{recipes_path} && tar xzvf #{path}")
+
+      Chef::Mixin::Command.run_command(:command => "tar xzvfC #{target_file} #{recipes_path}")
     end
   end
   
