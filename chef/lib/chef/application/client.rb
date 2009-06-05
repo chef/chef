@@ -27,7 +27,7 @@ class Chef::Application::Client < Chef::Application
   option :config_file, 
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => 'client.rb',
+    :default => "/etc/chef/client.rb",
     :description => "The configuration file to use"
 
   option :log_level, 
