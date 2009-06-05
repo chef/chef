@@ -20,6 +20,9 @@ require 'chef/client'
 require 'chef/config'
 require 'chef/daemon'
 require 'chef/log'
+require 'net/http'
+require 'open-uri'
+require 'fileutils'
 
 class Chef::Application::Solo < Chef::Application
   
@@ -72,8 +75,17 @@ class Chef::Application::Solo < Chef::Application
     super
     
     if Chef::Config[:json_attribs]
-      require 'net/http'
-      require 'open-uri'
+      begin
+          json_io = open(Chef::Config[:json_attribs])
+      rescue SocketError => error
+        Chef::Application.fatal!("I cannot connect to #{Chef::Config[:json_attribs]}", 2)
+      rescue Errno::ENOENT => error
+        Chef::Application.fatal!("I cannot find #{Chef::Config[:json_attribs]}", 2)
+      rescue Errno::EACCES => error
+        Chef::Application.fatal!("Permissions are incorrect on #{Chef::Config[:json_attribs]}. Please chmod a+r #{Chef::Config[:json_attribs]}", 2)
+      rescue Exception => error
+        Chef::Application.fatal!("Got an unexpected error reading #{Chef::Config[:json_attribs]}: #{error.message}", 2)
+      end
 
       json_io = nil
       begin
@@ -89,20 +101,18 @@ class Chef::Application::Solo < Chef::Application
       end
 
       begin
-        @chef_solo_json = JSON.parse(json_io.read)
+        @chef_client_json = JSON.parse(json_io.read)
       rescue JSON::ParserError => error
         Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
-        exit 2
       end
     end
     
     if Chef::Config[:recipe_url]
       cookbooks_path = Chef::Config[:cookbook_path].detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
-      require 'net/http'
-      require 'open-uri'
-      require 'fileutils'
+      target_file = File.join(recipes_path, 'recipes.tgz')
 
+      Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p recipes_path
       path = File.join(recipes_path, 'recipes.tgz')
       File.open(path, 'wb') do |f|
