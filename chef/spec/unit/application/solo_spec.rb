@@ -62,9 +62,11 @@ describe Chef::Application::Solo, "reconfigure" do
       FileUtils.stub!(:mkdir_p).and_return(true)
       @tarfile = mock("Tempfile", :null_object => true, :read => "blah")
       @app.stub!(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(@tarfile)
+      
       @target_file = mock("Tempfile", :null_object => true)
       File.stub!(:open).with("/tmp/chef-solo/recipes.tgz", "wb").and_yield(@target_file)
-      Chef::Mixin::Command.stub!(:run_command).with({:command => "tar xzvfC /tmp/chef-solo/recipes.tgz /tmp/chef-solo"}).and_return(true)
+      
+      Chef::Mixin::Command.stub!(:run_command).and_return(true)
     end
        
     it "should create the recipes path based on the parent of the cookbook path" do
@@ -83,7 +85,7 @@ describe Chef::Application::Solo, "reconfigure" do
     end
     
     it "should untar the target file to the parent of the cookbook path" do
-      Chef::Mixin::Command.should_receive(:run_command).with({:command => "tar xzvfC /tmp/chef-solo/recipes.tgz /tmp/chef-solo"}).and_return(true)
+      Chef::Mixin::Command.should_receive(:run_command).with({:command => "tar zxvfC /tmp/chef-solo/recipes.tgz /tmp/chef-solo"}).and_return(true)
       @app.reconfigure
     end
   end

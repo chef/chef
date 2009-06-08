@@ -74,22 +74,11 @@ class Chef::Application::Solo < Chef::Application
   def reconfigure
     super
     
+    Chef::Config[:solo] = true
+    
     if Chef::Config[:json_attribs]
       begin
           json_io = open(Chef::Config[:json_attribs])
-      rescue SocketError => error
-        Chef::Application.fatal!("I cannot connect to #{Chef::Config[:json_attribs]}", 2)
-      rescue Errno::ENOENT => error
-        Chef::Application.fatal!("I cannot find #{Chef::Config[:json_attribs]}", 2)
-      rescue Errno::EACCES => error
-        Chef::Application.fatal!("Permissions are incorrect on #{Chef::Config[:json_attribs]}. Please chmod a+r #{Chef::Config[:json_attribs]}", 2)
-      rescue Exception => error
-        Chef::Application.fatal!("Got an unexpected error reading #{Chef::Config[:json_attribs]}: #{error.message}", 2)
-      end
-
-      json_io = nil
-      begin
-        json_io = Kernel.open(Chef::Config[:json_attribs])
       rescue SocketError => error
         Chef::Application.fatal!("I cannot connect to #{Chef::Config[:json_attribs]}", 2)
       rescue Errno::ENOENT => error
@@ -116,9 +105,11 @@ class Chef::Application::Solo < Chef::Application
       FileUtils.mkdir_p recipes_path
       path = File.join(recipes_path, 'recipes.tgz')
       File.open(path, 'wb') do |f|
-        f.write open(config[:recipe_url]).read
+        open(Chef::Config[:recipe_url]) do |r|
+          f.write(r.read)
+        end
       end
-      Chef::Mixin::Command.run_command(:command => "cd #{recipes_path} && tar xzvf #{path}")
+      Chef::Mixin::Command.run_command(:command => "tar zxvfC #{path} #{recipes_path}")
     end
   end
   
