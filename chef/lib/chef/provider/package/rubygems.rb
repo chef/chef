@@ -78,20 +78,20 @@ class Chef
             stdout.each do |line|
               installed_versions = gem_list_parse(line)
               next unless installed_versions
-              Chef::Log.debug("I have #{installed_versions.inspect}")
+              Chef::Log.debug("candidate_version: remote rubygem(s) available: #{installed_versions.inspect}")
               
-              if installed_versions.length >= 1
-                Chef::Log.debug("Setting candidate version")
+              unless installed_versions.empty?
+                Chef::Log.debug("candidate_version: setting install candidate version to #{installed_versions.first}")
                 @candidate_version = installed_versions.first
               end
             end
 
-            @candidate_version
           end
 
           unless status.exitstatus == 0
             raise Chef::Exceptions::Package, "#{gem_binary_path} list --remote failed - #{status.inspect}!"
           end
+          @candidate_version
         end
       
         def install_package(name, version)
