@@ -36,10 +36,9 @@ describe Chef::Application::Solo, "reconfigure" do
     Chef::Config.stub!(:[]).with(:recipe_url).and_return(false)
     Chef::Config.stub!(:[]).with(:json_attribs).and_return(false)
   end
-
-  it "should set solo mode to true" do
-    Chef::Config.should_receive(:[]=).with(:solo, true).and_return(true)
-    @app.reconfigure
+  
+  after do
+    Chef::Config[:solo] = false
   end
 
   describe "when the json_attribs configuration option is specified" do
