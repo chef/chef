@@ -20,13 +20,16 @@ require 'chef/client'
 require 'chef/config'
 require 'chef/daemon'
 require 'chef/log'
+require 'net/http'
+require 'open-uri'
+require 'fileutils'
 
 class Chef::Application::Solo < Chef::Application
   
   option :config_file, 
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => 'solo.rb',
+    :default => "/etc/chef/solo.rb",
     :description => "The configuration file to use"
 
   option :log_level, 
@@ -71,13 +74,11 @@ class Chef::Application::Solo < Chef::Application
   def reconfigure
     super
     
+    Chef::Config[:solo] = true
+    
     if Chef::Config[:json_attribs]
-      require 'net/http'
-      require 'open-uri'
-
-      json_io = nil
       begin
-        json_io = Kernel.open(Chef::Config[:json_attribs])
+          json_io = open(Chef::Config[:json_attribs])
       rescue SocketError => error
         Chef::Application.fatal!("I cannot connect to #{Chef::Config[:json_attribs]}", 2)
       rescue Errno::ENOENT => error
@@ -89,26 +90,26 @@ class Chef::Application::Solo < Chef::Application
       end
 
       begin
-        @chef_solo_json = JSON.parse(json_io.read)
+        @chef_client_json = JSON.parse(json_io.read)
       rescue JSON::ParserError => error
         Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
-        exit 2
       end
     end
     
     if Chef::Config[:recipe_url]
       cookbooks_path = Chef::Config[:cookbook_path].detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
-      require 'net/http'
-      require 'open-uri'
-      require 'fileutils'
+      target_file = File.join(recipes_path, 'recipes.tgz')
 
+      Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p recipes_path
       path = File.join(recipes_path, 'recipes.tgz')
       File.open(path, 'wb') do |f|
-        f.write open(config[:recipe_url]).read
+        open(Chef::Config[:recipe_url]) do |r|
+          f.write(r.read)
+        end
       end
-      Chef::Mixin::Command.run_command(:command => "cd #{recipes_path} && tar xzvf #{path}")
+      Chef::Mixin::Command.run_command(:command => "tar zxvfC #{path} #{recipes_path}")
     end
   end
   

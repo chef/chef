@@ -16,3 +16,4 @@ couchdb.stderr
 couchdb.stdout
 features/data/tmp/**
 *.swp
+features/data/cookbooks/**/metadata.json

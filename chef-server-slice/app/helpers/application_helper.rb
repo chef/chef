@@ -1,3 +1,5 @@
+require 'chef/mixin/deep_merge'
+
 module Merb
   module ChefServerSlice
     module ApplicationHelper
@@ -60,8 +62,8 @@ module Merb
       end
 
       def build_tree(name, node, default={}, override={})
-        node = default.merge(node)
-        node.merge!(override)
+        node = Chef::Mixin::DeepMerge.merge(default, node)
+        node = Chef::Mixin::DeepMerge.merge(node, override)
         html = "<table id='#{name}' class='tree table'>"
         html << "<tr><th class='first'>Attribute</th><th class='last'>Value</th></tr>"
         count = 0

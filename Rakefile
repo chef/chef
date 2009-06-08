@@ -112,15 +112,6 @@ task :dev => "dev:install" do
 end
 
 namespace :dev do  
-  desc "Install a Devel instance of Chef with the example-repository"
-  task :install do
-    gems.each do |dir|
-      Dir.chdir(dir) { sh "rake install" }
-    end
-    Dir.chdir("example-repository") { sh("rake install") }
-  end
-
-  
   desc "Install a test instance of Chef for doing features against"
   task :features do
     gems.each do |dir|

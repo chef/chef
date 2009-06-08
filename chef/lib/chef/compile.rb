@@ -20,6 +20,7 @@ require 'chef/resource_collection'
 require 'chef/node'
 require 'chef/role'
 require 'chef/log'
+require 'chef/mixin/deep_merge'
 
 class Chef
   class Compile
@@ -63,12 +64,12 @@ class Chef
     def load_attributes()
       recipes, default_attrs, override_attrs = expand_node
       # Merge the default attrs, using the nodes current as the winner 
-      @node.attribute = default_attrs.merge(@node.attribute)
+      @node.attribute = Chef::Mixin::DeepMerge.merge(default_attrs, @node.attribute)
       @cookbook_loader.each do |cookbook|
         cookbook.load_attributes(@node)
       end
       # Merge the override attrs, using the nodes current as the winner
-      @node.attribute.merge!(override_attrs)
+      @node.attribute = Chef::Mixin::DeepMerge.merge(@node.attribute, override_attrs)
       true
     end
     

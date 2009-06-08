@@ -20,6 +20,8 @@ require 'chef/client'
 require 'chef/config'
 require 'chef/daemon'
 require 'chef/log'
+require 'net/http'
+require 'open-uri'
 
 
 class Chef::Application::Client < Chef::Application
@@ -27,7 +29,7 @@ class Chef::Application::Client < Chef::Application
   option :config_file, 
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => 'client.rb',
+    :default => "/etc/chef/client.rb",
     :description => "The configuration file to use"
 
   option :log_level, 
@@ -120,15 +122,22 @@ class Chef::Application::Client < Chef::Application
     end
        
     if Chef::Config[:json_attribs]
-      require 'net/http'
-      require 'open-uri'
+      begin
+          json_io = open(Chef::Config[:json_attribs])
+      rescue SocketError => error
+        Chef::Application.fatal!("I cannot connect to #{Chef::Config[:json_attribs]}", 2)
+      rescue Errno::ENOENT => error
+        Chef::Application.fatal!("I cannot find #{Chef::Config[:json_attribs]}", 2)
+      rescue Errno::EACCES => error
+        Chef::Application.fatal!("Permissions are incorrect on #{Chef::Config[:json_attribs]}. Please chmod a+r #{Chef::Config[:json_attribs]}", 2)
+      rescue Exception => error
+        Chef::Application.fatal!("Got an unexpected error reading #{Chef::Config[:json_attribs]}: #{error.message}", 2)
+      end
 
       begin
-        open(Chef::Config[:json_attribs]) do |json_io|
-          @chef_client_json = JSON.parse(json_io.read)
-        end
-      rescue Exception
-        Chef::Application.fatal!("Error parsing json attributes", 2)
+        @chef_client_json = JSON.parse(json_io.read)
+      rescue JSON::ParserError => error
+        Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
       end
     end
   end

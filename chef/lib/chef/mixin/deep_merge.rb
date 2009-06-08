@@ -1,8 +1,6 @@
 #
-# Rakefile for Chef Server Repository
-#
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +14,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-require 'rubygems'
-require 'chef'
-require 'json'
+class Chef
+  module Mixin
+    class DeepMerge
+      def self.merge(first, second)
+        first = first.to_hash if first.kind_of?(Mash)
+        second = second.to_hash if second.kind_of?(Mash)
+        # Originally From: http://www.ruby-forum.com/topic/142809
+        # Author: Stefan Rusterholz
+        merger = proc do |key,v1,v2| 
+            v1.respond_to?(:keys) && v2.respond_to?(:keys) ? v1.merge(v2, &merger) : v2 
+          end
 
-# Make sure you have loaded constants first
-require File.join(File.dirname(__FILE__), 'config', 'rake')
-
-# And choosen a VCS
-if File.directory?(File.join(TOPDIR, ".svn"))
-  $vcs = :svn
-elsif File.directory?(File.join(TOPDIR, ".git"))
-  $vcs = :git
+        Mash.new(first.merge(second, &merger))
+      end
+    end
+  end
 end
-
-load 'chef/tasks/chef_repo.rake'
-

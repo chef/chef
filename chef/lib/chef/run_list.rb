@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'chef/mixin/deep_merge'
+
 class Chef
   class RunList
     include Enumerable
@@ -133,8 +135,8 @@ class Chef
             role = Chef::Role.load(name)
           end
           role.recipes.each { |r| recipes <<  r unless recipes.include?(r) }
-          default_attrs.merge!(role.default_attributes)
-          override_attrs.merge!(role.override_attributes)
+          default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, role.default_attributes)
+          override_attrs = Chef::Mixin::DeepMerge.merge(override_attrs, role.override_attributes)
         end
       end
       return recipes, default_attrs, override_attrs

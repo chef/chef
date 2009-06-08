@@ -36,4 +36,5 @@ Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| re
 
 Chef::Config.log_level(:fatal)
 Chef::Log.level(Chef::Config.log_level)
+Chef::Config.solo(false)
 

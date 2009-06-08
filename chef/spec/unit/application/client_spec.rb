@@ -76,7 +76,7 @@ describe Chef::Application::Client, "reconfigure" do
     before do
       Chef::Config.stub!(:[]).with(:json_attribs).and_return("/etc/chef/dna.json")
       @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
-      @app.stub!(:open).and_yield(@json)
+      @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
     end
     
     it "should parse the json out of the file" do
