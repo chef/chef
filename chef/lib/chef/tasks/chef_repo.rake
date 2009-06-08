@@ -48,8 +48,14 @@ task :update do
 end
 
 desc "Test your cookbooks for syntax errors"
-task :test do
+task :test_recipes do
   puts "** Testing your cookbooks for syntax errors"
+
+  if File.exists?(TEST_CACHE)
+    cache = JSON.load(open(TEST_CACHE).read)
+  else
+    cache = {}
+  end
 
   recipes = ["*cookbooks"].map { |folder|
     Dir[File.join(TOPDIR, folder, "**", "*.rb")]
@@ -57,12 +63,76 @@ task :test do
 
   recipes.each do |recipe|
     print "Testing recipe #{recipe}: "
+
+    recipe_mtime = File.stat(recipe).mtime.to_s
+    if cache.has_key?(recipe)
+      if cache[recipe]["mtime"] == recipe_mtime 
+         puts "No modification since last test."
+         next
+      end
+    else
+      cache[recipe] = {}
+    end
+
+
     sh %{ruby -c #{recipe}} do |ok, res|
       if ! ok
+        write_cache(cache)
         raise "Syntax error in #{recipe}"
       end
     end
+
+    cache[recipe]["mtime"] = recipe_mtime
   end
+
+  write_cache(cache)
+end
+
+desc "Test your templates for syntax errors"
+task :test_templates do
+  puts "** Testing your cookbooks for syntax errors"
+
+  if File.exists?(TEST_CACHE)
+    cache = JSON.load(open(TEST_CACHE).read)
+  else
+    cache = {}
+  end
+
+  templates = ["*cookbooks"].map { |folder|
+    Dir[File.join(TOPDIR, folder, "**", "*.erb")]
+  }.flatten
+
+  templates.each do |template|
+    print "Testing template #{template}: "
+
+    template_mtime = File.stat(template).mtime.to_s
+    if cache.has_key?(template)
+      if cache[template]["mtime"] == template_mtime 
+         puts "No change since last test."
+         next
+      end
+    else
+      cache[template] = {}
+    end
+
+    sh %{erubis -x #{template} | ruby -c} do |ok, res|
+      if ! ok
+        write_cache(cache)
+        raise "Syntax error in #{template}"
+      end
+    end
+
+    cache[template]["mtime"] = template_mtime
+  end
+
+  write_cache(cache)
+end
+
+desc "Test your cookbooks for syntax errors"
+task :test => [ :test_recipes , :test_templates ]
+
+def write_cache(cache)
+  File.open(TEST_CACHE, "a") {|f| JSON.dump(cache, f)}
 end
 
 desc "Install the latest copy of the repository on this Chef Server"
