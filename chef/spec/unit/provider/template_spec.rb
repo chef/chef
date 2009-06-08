@@ -42,19 +42,19 @@ describe Chef::Provider::Template, "action_create" do
   end
 
   describe Chef::Provider::Template, "action_create solo" do
+    before  do
+      Chef::Config[:solo] = true
+    end
+
+    after do
+      Chef::Config[:solo] = false
+    end
+    
     it "should load the correct file from the FileCache" do
       Chef::Config[:file_cache_path] = '/var/chef'
       @provider.stub!(:find_preferred_file).and_return('/var/chef/site-cookbooks/joe/templates/default/joe.erb')
       Chef::FileCache.should_receive(:load).with('site-cookbooks/joe/templates/default/joe.erb').and_return('joe template')
       do_action_create
-    end
-
-    before(:all) do
-      Chef::Config[:solo] = true
-    end
-
-    after(:all) do
-      Chef::Config[:solo] = false
     end
   end
   
