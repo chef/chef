@@ -83,6 +83,18 @@ describe Chef::Application::Client, "reconfigure" do
       JSON.should_receive(:parse).with(@json.read)
       @app.reconfigure
     end
+    
+    describe "when parsing fails" do
+      before do
+        JSON.stub!(:parse).with(@json.read).and_raise(JSON::ParserError)
+        Chef::Application.stub!(:fatal!).and_return(true)
+      end
+      
+      it "should hard fail the application" do
+        Chef::Application.should_receive(:fatal!).with("Could not parse the provided JSON file (/etc/chef/dna.json)!: JSON::ParserError", 2).and_return(true)
+        @app.reconfigure
+      end
+    end
   end
 end
 
@@ -91,10 +103,42 @@ describe Chef::Application::Client, "setup_application" do
     @chef_client = mock("Chef::Client", :null_object => true)
     Chef::Client.stub!(:new).and_return(@chef_client)
     @app = Chef::Application::Client.new
+    # this is all stuff the reconfigure method needs
+    @app.stub!(:configure_opt_parser).and_return(true)
+    @app.stub!(:configure_chef).and_return(true)
+    @app.stub!(:configure_logging).and_return(true)
+    Chef::Config.stub!(:[]).with(:interval).and_return(false)
+    Chef::Config.stub!(:[]).with(:splay).and_return(false)
+    Chef::Config.stub!(:[]).with(:recipe_url).and_return(false)
+    Chef::Config.stub!(:[]).with(:json_attribs).and_return("/etc/chef/dna.json")
+    @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
+    @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
   end
   
   it "should instantiate a chef::client object" do
     Chef::Client.should_receive(:new).and_return(@chef_client)
     @app.setup_application
+  end
+  
+  it "should assign the json attributes to the chef client instance" do
+    @chef_client.should_receive(:json_attribs=).with({"a"=>"b"}).and_return(true)
+    @app.reconfigure
+    @app.setup_application
+  end
+  
+  it "should assign the validation token to the chef client instance" do
+    Chef::Config.stub!(:[]).with(:validation_token).and_return("testtoken")
+    @chef_client.should_receive(:validation_token=).with("testtoken").and_return(true)
+    @app.setup_application
+  end
+  
+  it "should assign the node name to the chef client instance" do
+    Chef::Config.stub!(:[]).with(:node_name).and_return("testnode")
+    @chef_client.should_receive(:node_name=).with("testnode").and_return(true)
+    @app.setup_application
+  end
+    
+  after do
+    Chef::Config[:solo] = false
   end
 end
