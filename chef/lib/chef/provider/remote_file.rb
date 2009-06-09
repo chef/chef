@@ -73,7 +73,7 @@ class Chef
             @new_resource.updated = true
 
             # We're done with the file, so make sure to close it if it was open.
-            raw_file.close 
+            raw_file.close unless raw_file.closed?
           rescue Net::HTTPRetriableError => e
             if e.response.kind_of?(Net::HTTPNotModified)
               Chef::Log.debug("File #{path} is unchanged")
