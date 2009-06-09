@@ -1,3 +1,66 @@
+Tue Jun  9 13:51:52 PDT 2009
+Release Notes - Chef - Version 0.7.0
+http://tickets.opscode.com
+
+** Bug
+    * [CHEF-178] - remote_directory not supported in chef-solo
+    * [CHEF-242] - activesupport conflicts with to_json in node.rb
+    * [CHEF-245] - chef/provider/user/useradd.rb should only add -m to command line if home directory is being modified
+    * [CHEF-253] - chef-server-slice on centos 5.3 incompatibility with merb-core and ruby 1.8.5
+    * [CHEF-259] - redhat service provider - correct use of chkconfig
+    * [CHEF-260] - yum provider remove_package without version broken
+    * [CHEF-261] - yum provider depends on 'json' which is not available for Python 2.4
+    * [CHEF-271] - rpm packaging - executable examples
+    * [CHEF-276] - server.rb log_location truncation
+    * [CHEF-280] - recipes evaluated twice
+    * [CHEF-281] - Locale isn't set properly during package installation on Ubuntu 8.10 (at least)
+    * [CHEF-283] - "registrations" should be "registration's"
+    * [CHEF-295] - chef-indexer throws fatal exception when processing index/remove messages
+    * [CHEF-296] - limiting openid providers variable consistency
+    * [CHEF-297] - Failing specs for portage provider
+    * [CHEF-310] - yum provider - YumCache - refresh logic
+    * [CHEF-312] - FreeBSD user and group provider broken by CHEF-220
+    * [CHEF-320] - roles creation fails with an `each' nil:NilClass error
+    * [CHEF-330] - Chef::Config[:solo] not being set in Solo runs
+    * [CHEF-331] - user provider - useradd.rb :manage_home confusion
+    * [CHEF-336] - Error when no tags set in create REST call
+    * [CHEF-339] - log file should be a string, got: #<IO:0x7f0db9a68ad8>
+    * [CHEF-342] - chef-server's config.ru should include the server config file
+    * [CHEF-344] - gem_package resources failing to install packages
+    * [CHEF-345] - chef-client doesn't automatically read /etc/chef/client.rb anymore
+    * [CHEF-350] - chef-solo json attributes aren't loaded
+
+** Improvement
+    * [CHEF-116] - Require authentication for the entire Chef Server
+    * [CHEF-122] - Notifies should be able to send different actions to different resources, perhaps through a hash
+    * [CHEF-151] - Refactor application CLI logic to a seperate class so it can be tested
+    * [CHEF-215] - Speedup of package provider (at least, for Gentoo)
+    * [CHEF-225] - Routing provider needs extended to manage configuration files
+    * [CHEF-243] - Search results in recipes & chef server return a *flattened* hash. It should return, or be able to return, a non-flattened hash, with all field names intact.
+    * [CHEF-251] - chef-server should run from gems without requiring config file modifications within the gem directories.
+    * [CHEF-268] - Config files should be able to be passed into chef-client as http resources
+    * [CHEF-272] - include contrib/ in gems
+    * [CHEF-288] - service resource - supports and custom stop/start/etc commands
+    * [CHEF-302] - chef-server authentication requirement should link to information on securing openid
+    * [CHEF-317] - Last Check in relative time ago
+    * [CHEF-323] - yum provider - improve failure output
+    * [CHEF-325] - cookbook not found error message is not helpful for metadata uptake
+    * [CHEF-329] - more useradd home directory fun
+    * [CHEF-332] - Deleting a node via the web-ui pops up an error message, though the deletion is successful
+    * [CHEF-346] - Update 0.7.0 for new rake task to test templates and cache tests
+    * [CHEF-347] - cleanup - chef/provider/remote_directory.rb do_recursive_old
+
+** New Feature
+    * [CHEF-131] - Add a flag to chef-client to re-read JSON attribute file each time it wakes up (in conjunction with daemonization/interval)
+    * [CHEF-220] - Interface Provider
+    * [CHEF-226] - the group resource doesn't allow you to add or remove users from the group, just explicitly set them.
+    * [CHEF-232] - determine if a recipe has been seen / included on a node
+    * [CHEF-265] - Add support for MacPorts on OS X as a package provider
+    * [CHEF-275] - Cookbook Meta-data Generator
+    * [CHEF-284] - Role support
+    * [CHEF-306] - We should only ship the set of cookbooks needed to build a node to the edge
+    * [CHEF-337] - Update skeleton repository for Chef 0.7.0
+
 Wed Apr 29 16:08:40 PDT 2009
 Release Notes - Chef - Version 0.6.2
 http://tickets.opscode.com
