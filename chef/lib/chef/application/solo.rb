@@ -90,7 +90,7 @@ class Chef::Application::Solo < Chef::Application
       end
 
       begin
-        @chef_client_json = JSON.parse(json_io.read)
+        @chef_solo_json = JSON.parse(json_io.read)
       rescue JSON::ParserError => error
         Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
       end
