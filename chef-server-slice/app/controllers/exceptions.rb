@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-class Exceptions < ChefServerSlice::Application
+class ChefServerSlice::Exceptions < ChefServerSlice::Application
   
   provides :html, :json
   
