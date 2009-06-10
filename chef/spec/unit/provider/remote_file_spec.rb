@@ -41,6 +41,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     @rest = mock(Chef::REST, { })
     @tempfile = mock(Tempfile, { :path => "/tmp/foo", })
     @tempfile.stub!(:open).and_return(@tempfile)
+    @tempfile.stub!(:closed?).and_return(false)
     @tempfile.stub!(:close)
     @rest.stub!(:get_rest).and_return(@tempfile)
     @resource = Chef::Resource::RemoteFile.new("seattle")
