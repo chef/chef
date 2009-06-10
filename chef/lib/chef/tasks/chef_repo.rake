@@ -53,6 +53,7 @@ task :test_recipes do
 
   if File.exists?(TEST_CACHE)
     cache = JSON.load(open(TEST_CACHE).read)
+    trap("INT") { puts "INT received, flushing test cache"; write_cache(cache) }
   else
     cache = {}
   end
@@ -76,13 +77,13 @@ task :test_recipes do
 
 
     sh %{ruby -c #{recipe}} do |ok, res|
-      if ! ok
+      if ok
+        cache[recipe]["mtime"] = recipe_mtime
+      else
         write_cache(cache)
         raise "Syntax error in #{recipe}"
       end
     end
-
-    cache[recipe]["mtime"] = recipe_mtime
   end
 
   write_cache(cache)
@@ -94,6 +95,7 @@ task :test_templates do
 
   if File.exists?(TEST_CACHE)
     cache = JSON.load(open(TEST_CACHE).read)
+    trap("INT") { puts "INT received, flushing test cache"; write_cache(cache) }
   else
     cache = {}
   end
@@ -116,13 +118,14 @@ task :test_templates do
     end
 
     sh %{erubis -x #{template} | ruby -c} do |ok, res|
-      if ! ok
+      if ok
+        cache[template]["mtime"] = template_mtime
+      else
         write_cache(cache)
         raise "Syntax error in #{template}"
       end
     end
 
-    cache[template]["mtime"] = template_mtime
   end
 
   write_cache(cache)
@@ -132,7 +135,7 @@ desc "Test your cookbooks for syntax errors"
 task :test => [ :test_recipes , :test_templates ]
 
 def write_cache(cache)
-  File.open(TEST_CACHE, "a") {|f| JSON.dump(cache, f)}
+  File.open(TEST_CACHE, "w") { |f| JSON.dump(cache, f) }
 end
 
 desc "Install the latest copy of the repository on this Chef Server"
