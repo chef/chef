@@ -6,4 +6,8 @@ dependency "merb-core", merb_gems_version
 dependency "merb-assets", merb_gems_version  
 dependency "merb-helpers", merb_gems_version 
 dependency "merb-slices", merb_gems_version  
-dependency "chef-server-slice" unless defined?(ChefServerSlice)
+if defined?(CHEF_SERVER_VERSION)
+  dependency "chef-server-slice", CHEF_SERVER_VERSION unless defined?(ChefServerSlice)
+else
+  dependency "chef-server-slice" unless defined?(ChefServerSlice)
+end

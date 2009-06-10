@@ -31,7 +31,17 @@ require "merb-core"
   require library if File.exists?(library)
 end
 
-require "chef" unless defined?(Chef)
+ObjectSpace.each_object(Gem::Specification) do |gem|
+  next unless gem.name == "chef-server"
+  CHEF_SERVER_VERSION = gem.version.to_s
+  break
+end
+
+# Ensure the chef gem we load is the same version as the chef server
+unless defined?(Chef)
+  gem "chef", "=" + CHEF_SERVER_VERSION if CHEF_SERVER_VERSION
+  require 'chef'  
+end
 
 Dir.chdir File.join(File.dirname(__FILE__),"..")
 __DIR__ = Dir.getwd
