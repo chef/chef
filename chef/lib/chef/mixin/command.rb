@@ -114,10 +114,10 @@ class Chef
         
         exec_processing_block = lambda do |pid, stdin, stdout, stderr|
           Chef::Log.debug("---- Begin output of #{args[:command]} ----")
-          Chef::Log.debug("STDOUT: #{stdout.string.chomp!}")  
-          Chef::Log.debug("STDERR: #{stderr.string.chomp!}") 
-          command_output << "STDOUT: #{stdout.string.chomp!}"
-          command_output << "STDERR: #{stderr.string.chomp!}"
+          Chef::Log.debug("STDOUT: #{stdout.string.chomp}")
+          Chef::Log.debug("STDERR: #{stderr.string.chomp}")
+          command_output << "STDOUT: #{stdout.string.chomp}"
+          command_output << "STDERR: #{stderr.string.chomp}"
           Chef::Log.debug("---- End output of #{args[:command]} ----")
         end
         
