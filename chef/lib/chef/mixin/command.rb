@@ -301,7 +301,10 @@ class Chef
 
               while !stdout_finished || !stderr_finished
                 begin
-                  ready = IO.select([stdout, stderr], nil, nil, 1.0)
+                  channels_to_watch = []
+                  channels_to_watch << stdout if !stdout_finished
+                  channels_to_watch << stderr if !stderr_finished
+                  ready = IO.select(channels_to_watch, nil, nil, 1.0)
                 rescue Errno::EAGAIN
                   results = Process.waitpid2(cid, Process::WNOHANG)
                   if results
