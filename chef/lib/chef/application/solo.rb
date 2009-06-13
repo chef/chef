@@ -18,7 +18,6 @@
 require 'chef/application'
 require 'chef/client'
 require 'chef/config'
-require 'chef/daemon'
 require 'chef/log'
 require 'net/http'
 require 'open-uri'
@@ -41,7 +40,7 @@ class Chef::Application::Solo < Chef::Application
   option :log_location,
     :short        => "-L LOGLOCATION",
     :long         => "--logfile LOGLOCATION",
-    :description  => "Set the log file location, defaults to STDOUT - recommended for daemonizing",
+    :description  => "Set the log file location, defaults to STDOUT",
     :proc         => nil
 
   option :help,
