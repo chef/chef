@@ -21,11 +21,19 @@
                 %td= "#{node["platform"]} #{node["platform_version"]}"
                 %td= node["fqdn"]
                 %td= node["ipaddress"]
-                %td= node["uptime"]
+                %td
+                  .accordion
+                    = link_to("&gt; " + node["uptime"].split(" ")[0..1].join(" ") + " ago", "#", :class => 'tooltip')
+                    .tooltip
+                      %table.table.tooltip
+                        %tr
+                          %td= node["uptime"]
                 - if node["ohai_time"].to_s != "Undefined"
                   - current_time = DateTime.now
                   - date = DateTime.strptime(node["ohai_time"].to_s, "%s")
                   - hours, minutes, seconds, frac = DateTime.day_fraction_to_time(current_time - date)
+                  - hours_text   = "#{hours} hour#{hours == 1 ? '' : 's'}"
+                  - minutes_text = "#{minutes} minute#{minutes == 1 ? '' : 's'}"
                   %td.flash
                     - status_class = ""
                     - if hours > 24 
@@ -33,12 +41,24 @@
                     - elsif hours > 1
                       - status_class = "message warning"
                     %div{ :class => status_class }
-                      = date 
-                      %br
-                      - if hours == 0
-                        = "#{minutes} minute#{minutes == 1 ? '' : 's'} ago"
-                      - else
-                        = "#{hours} hour#{hours == 1 ? '' : 's'} #{minutes} minute#{minutes == 1 ? '' : 's'} ago"
+                      .accordion
+                        - if hours > 48
+                          - status_msg = "&gt; #{hours/24} days ago"
+                        - elsif hours > 0
+                          - status_msg = "&gt; #{hours_text} ago"
+                        - else
+                          - status_msg = "#{minutes_text} ago"
+                        = link_to(status_msg, "#", :class=> 'tooltip')
+                        .tooltip
+                          %table.table.tooltip
+                            %tr
+                              %td
+                                = date 
+                                %br
+                                  - if hours == 0
+                                    = "#{minutes_text} ago" 
+                                  - else
+                                    = "#{hours_text}, #{minutes_text} ago"
                 - else
                   %td Undefined
                 - if node["run_list"] != "Undefined"
@@ -64,3 +84,4 @@
                                   %td= name 
                                   %td= type 
 
+€ý5:q
