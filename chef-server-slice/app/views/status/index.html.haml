@@ -35,7 +35,10 @@
                     %div{ :class => status_class }
                       = date 
                       %br
-                      = "#{hours} hour#{hours == 1 ? '' : 's'} #{minutes} minute#{minutes == 1 ? '' : 's'} ago"
+                      - if hours == 0
+                        = "#{minutes} minute#{minutes == 1 ? '' : 's'} ago"
+                      - else
+                        = "#{hours} hour#{hours == 1 ? '' : 's'} #{minutes} minute#{minutes == 1 ? '' : 's'} ago"
                 - else
                   %td Undefined
                 - if node["run_list"] != "Undefined"
