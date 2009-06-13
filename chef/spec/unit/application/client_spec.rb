@@ -111,6 +111,7 @@ describe Chef::Application::Client, "setup_application" do
     Chef::Config.stub!(:[]).with(:splay).and_return(false)
     Chef::Config.stub!(:[]).with(:recipe_url).and_return(false)
     Chef::Config.stub!(:[]).with(:json_attribs).and_return("/etc/chef/dna.json")
+    Chef::Config.stub!(:[]).with(:user).and_return(nil)
     @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
     @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
   end
