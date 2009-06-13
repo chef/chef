@@ -56,13 +56,13 @@ class Chef::Application::Indexer < Chef::Application
   option :user,
     :short => "-u USER",
     :long => "--user USER",
-    :description => "User to change uid to before daemonizing",
+    :description => "User to set privilege to",
     :proc => nil
 
   option :group,
     :short => "-g GROUP",
     :long => "--group GROUP",
-    :description => "Group to change gid to before daemonizing",
+    :description => "Group to set privilege to",
     :proc => nil
 
   option :daemonize,
@@ -79,6 +79,8 @@ class Chef::Application::Indexer < Chef::Application
   
   # Create a new search indexer and connect to the stomp queues
   def setup_application
+    Chef::Daemon.change_privilege
+
     @chef_search_indexer = Chef::SearchIndex.new
     Chef::Queue.connect
     Chef::Queue.subscribe(:queue, "index")
@@ -88,10 +90,9 @@ class Chef::Application::Indexer < Chef::Application
   # Run the indexer, optionally daemonizing.
   def run_application
     if Chef::Config[:daemonize]
-      Chef::Daemon.change_privilege
-      Chef::Daemon.daemonize("chef-client")
+      Chef::Daemon.daemonize("chef-indexer")
     end
-    
+
     loop do
       object, headers = Chef::Queue.receive_msg
       Chef::Log.info("Headers #{headers.inspect}")

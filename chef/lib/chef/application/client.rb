@@ -56,13 +56,13 @@ class Chef::Application::Client < Chef::Application
   option :user,
     :short => "-u USER",
     :long => "--user USER",
-    :description => "User to change uid to before daemonizing",
+    :description => "User to set privilege to",
     :proc => nil
 
   option :group,
     :short => "-g GROUP",
     :long => "--group GROUP",
-    :description => "Group to change gid to before daemonizing",
+    :description => "Group to set privilege to",
     :proc => nil
 
   option :daemonize,
@@ -145,6 +145,8 @@ class Chef::Application::Client < Chef::Application
   # Setup an instance of the chef client
   # Why is this so ugly? surely the client should just read out of chef::config instead of needing the values to be assigned like this..
   def setup_application
+    Chef::Daemon.change_privilege
+
     @chef_client = Chef::Client.new
     @chef_client.json_attribs = @chef_client_json
     @chef_client.validation_token = Chef::Config[:validation_token]
@@ -154,7 +156,6 @@ class Chef::Application::Client < Chef::Application
   # Run the chef client, optionally daemonizing or looping at intervals.
   def run_application
     if Chef::Config[:daemonize]
-      Chef::Daemon.change_privilege
       Chef::Daemon.daemonize("chef-client")
     end
     
