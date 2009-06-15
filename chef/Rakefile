@@ -37,7 +37,7 @@ spec = Gem::Specification.new do |s|
   s.executables  = %w( chef-client chef-solo )
   
   s.require_path = 'lib'
-  s.files = %w(LICENSE README.txt Rakefile) + Dir.glob("{lib,specs,config,examples,contrib}/**/*")
+  s.files = %w(LICENSE README.txt Rakefile) + Dir.glob("{lib,spec,config,examples,contrib}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
