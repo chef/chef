@@ -181,6 +181,12 @@ describe Chef::Client, "build_node" do
     @client.node.recipes.should == [ "one", "two", "three" ]
   end
   
+  it "should allow you to set a run_list from the json attributes" do
+    @client.json_attribs = { "run_list" => [ "role[base]", "recipe[chef::server]" ] }
+    @client.build_node
+    @client.node.run_list.should == [ "role[base]", "recipe[chef::server]" ]
+  end
+  
   it "should not add duplicate recipes from the json attributes" do
     @client.node = Chef::Node.new
     @client.node.recipes << "one"

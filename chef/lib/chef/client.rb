@@ -149,7 +149,7 @@ class Chef
       if @json_attribs
         Chef::Log.debug("Adding JSON Attributes")
         @json_attribs.each do |key, value|
-          if key == "recipes"
+          if key == "recipes" || key == "run_list"
             value.each do |recipe|
               unless @node.recipes.detect { |r| r == recipe }
                 Chef::Log.debug("Adding recipe #{recipe}")
