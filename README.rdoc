@@ -1,75 +1,40 @@
-= chef
+= Chef
 
-* http://www.opscode.com/chef
+Source:
 
-== DESCRIPTION:
+* http://github.com/opscode/chef/tree/master
 
-Chef is a systems integration framework masquerading as a configuration management tool.
+Wiki Documentation:
 
-== REQUIREMENTS:
+* http://wiki.opscode.com/display/chef/Home
 
-chef:
+Tickets/Issues:
 
-*  ruby-openid  
-*  json  
-*  erubis  
-*  extlib  
-*  stomp  
-*  ohai  
+* http://tickets.opscode.com/
 
-chef-server and the chef-server-slice (merb slice), same requires as chef above, plus:
+= DESCRIPTION:
 
-*  stompserver 
-*  ferret 
-*  merb-core 
-*  merb-haml 
-*  mongrel 
-*  haml
-*  ruby-openid 
-*  syntax
+Chef is a configuration management tool inspired by Puppet, designed to bring automation to your entire infrastructure. The Chef Wiki is the definitive source of documentation. If you're installing Chef from the GitHub repository, you may be most interested in this page.
 
-External Servers:
+* http://wiki.opscode.com/display/chef/Installing+Chef+from+HEAD
 
-* stompserver (for easy stomp mq testing)
-* CouchDB
+= DEVELOPMENT:
 
-== INSTALL:
+We'll assume if you're reading this, your primary interest is doing development on Chef, either for your own purposes, or to contribute to the project. So let's take a look at the requirements and process to get going!
 
-Install all of the above.  To fire up a development environment, do the following:
+== Requirements:
 
-  * Start CouchDB with 'couchdb'
-  * Start stompserver with 'stompserver' 
-  * Start chef-indexer with:
+== Starting the Environment:
 
-    chef-indexer -l debug 
+Chef comes with some rake tasks that will let you get an environment up and running.
 
-  * Start chef-server:
 
-    chef-server -N -c 2
-    OR
-    (in chef-server-slice)
-    slice -N -c 2
-
-  * Test run chef to begin node registration:
-
-    chef-client
-
-  * Validate the node registration:
-
-    Visit http://localhost:4000
-      Login, enter an openid URL (see http://openid.net/get/)
-      Registrations, click Validate
-
-  * Test run chef with:
-
-    chef-client 
-
-== LICENSE:
+= LICENSE:
 
 Chef - A configuration management system
 
 Author:: Adam Jacob (<adam@opscode.com>)
-Copyright:: Copyright (c) 2008 Opscode, Inc.
+Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
 License:: Apache License, Version 2.0
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -83,4 +48,3 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
