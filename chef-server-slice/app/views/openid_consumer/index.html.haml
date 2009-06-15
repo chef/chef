@@ -1,4 +1,4 @@
-- unless Chef::Config[:openid_providers]
+- unless Chef::Config[:authorized_openid_providers]
   - throw_content(:sidebar_block_notice) do
     %h4 Where do I get a Login?
     %p Chef uses OpenID for user logins. By default, Chef allows you to use any OpenID provider you like.  You should configure the server to utilize only trusted OpenID servers and URIs.  This box will disappear when you have altered the default security configuration.
