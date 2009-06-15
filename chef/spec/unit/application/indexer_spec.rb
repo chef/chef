@@ -29,11 +29,17 @@ end
 
 describe Chef::Application::Indexer, "setup_application" do
   before do
+    Chef::Daemon.stub!(:change_privilege).and_return(true)
     @chef_searchindex = mock("Chef::SearchIndex", :null_object => true)
     Chef::SearchIndex.stub!(:new).and_return(@chef_searchindex)
     Chef::Queue.stub!(:connect).and_return(true)
     Chef::Queue.stub!(:subscribe).and_return(true)
     @app = Chef::Application::Indexer.new
+  end
+  
+  it "should change privileges" do
+    Chef::Daemon.should_receive(:change_privilege).and_return(true)
+    @app.setup_application
   end
   
   it "should instantiate a chef::client object" do

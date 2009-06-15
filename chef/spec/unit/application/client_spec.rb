@@ -100,6 +100,7 @@ end
 
 describe Chef::Application::Client, "setup_application" do
   before do
+    Chef::Daemon.stub!(:change_privilege).and_return(true)
     @chef_client = mock("Chef::Client", :null_object => true)
     Chef::Client.stub!(:new).and_return(@chef_client)
     @app = Chef::Application::Client.new
@@ -114,6 +115,11 @@ describe Chef::Application::Client, "setup_application" do
     Chef::Config.stub!(:[]).with(:user).and_return(nil)
     @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
     @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
+  end
+  
+  it "should change privileges" do
+    Chef::Daemon.should_receive(:change_privilege).and_return(true)
+    @app.setup_application
   end
   
   it "should instantiate a chef::client object" do
