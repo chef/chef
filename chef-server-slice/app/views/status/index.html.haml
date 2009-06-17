@@ -23,7 +23,7 @@
                 %td= node["ipaddress"]
                 %td
                   .accordion
-                    = link_to("&gt; " + node["uptime"].split(" ")[0..1].join(" ") + " ago", "#", :class => 'tooltip')
+                    = link_to(node["uptime"].split(" ")[0..1].join(" ") , "#", :class => 'tooltip')
                     .tooltip
                       %table.table.tooltip
                         %tr
@@ -46,6 +46,8 @@
                           - status_msg = "&gt; #{hours/24} days ago"
                         - elsif hours > 0
                           - status_msg = "&gt; #{hours_text} ago"
+                        - elsif minutes < 1
+                          - status_msg = "&lt; 1 minute ago"
                         - else
                           - status_msg = "#{minutes_text} ago"
                         = link_to(status_msg, "#", :class=> 'tooltip')
