@@ -14,7 +14,11 @@ This README focuses on developers who want to modify Chef source code. For users
 
 = DEVELOPMENT:
 
-Before working on the code, if you plan to contribute your changes, you'll need to set up the repository with the appropriate branches. We document the process on the Chef Wiki.
+Before working on the code, if you plan to contribute your changes, you need to read the Opscode Contributing document.
+
+* http://wiki.opscode.com/display/opscode/Contributing
+
+You will also need to set up the repository with the appropriate branches. We document the process on the Chef Wiki.
 
 * http://wiki.opscode.com/display/opscode/Working+with+Git
 
@@ -55,13 +59,13 @@ Once everything is installed, run the dev:features rake task. Since the features
 
   sudo rake dev:features
 
-This task:
+The dev:features task:
 
-# Installs chef, chef-server, chef-server-slice gems. It will fail if required gems above are missing.
-# Starts chef-server on ports 4000 and 4001.
-# Starts chef-indexer.
-# Starts CouchDB on port 5984.
-# Starts the stompserver on port 61613.
+* Installs chef, chef-server, chef-server-slice gems. It will fail if required gems above are missing.
+* Starts chef-server on ports 4000 and 4001.
+* Starts chef-indexer.
+* Starts CouchDB on port 5984.
+* Starts the stompserver on port 61613.
 
 You'll know its running when you see:
 
