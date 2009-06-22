@@ -40,6 +40,7 @@ class ChefServerSlice::OpenidServer < ChefServerSlice::Application
   layout nil
   
   before :fix_up_node_id
+  after :dump_cookies_and_session
 
   def index
         
@@ -152,8 +153,8 @@ EOS
         raise Unauthorized, "This nodes registration has not been validated"
       end
       if openid_node.password == encrypt_password(openid_node.salt, params[:password])     
-        if session[:approvals]
-          session[:approvals] << oidreq.trust_root
+        if session[:approvals] and !session[:approvals].include?(oidreq.trust_root)
+          session[:approvals] << oidreq.trust_root 
         else
           session[:approvals] = [oidreq.trust_root]
         end
@@ -239,5 +240,13 @@ EOS
     end
   end
 
+  def dump_cookies_and_session
+    unless session.empty? or request.cookies.empty?
+      cookie_size = request.cookies.inject(0) {|sum,c| sum + c[1].length }
+      c, s = request.cookies.inspect, session.inspect
+      Chef::Log.debug("cookie dump (size: #{cookie_size}): #{c}")
+      Chef::Log.debug("session dump #{s}")
+    end
+  end
 
 end
