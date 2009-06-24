@@ -1,8 +1,12 @@
 require 'rubygems'
 require 'rake/gempackagetask'
 
-require 'merb-core'
-require 'merb-core/tasks/merb'
+begin
+  require 'merb-core'
+  require 'merb-core/tasks/merb'
+rescue LoadError
+  nil
+end
 
 GEM_NAME = "chef-server-slice"
 CHEF_SERVER_VERSION="0.7.1"
