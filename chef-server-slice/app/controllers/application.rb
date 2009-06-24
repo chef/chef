@@ -61,9 +61,43 @@ class ChefServerSlice::Application < Merb::Controller
     end
     arg.gsub(/\./, '_')
   end
-  
+
+  def authorized_openid
+    oid = session[:openid]
+    Chef::Log.debug("Checking for #{oid} for OpenID authorization.")
+    raise(Unauthorized, "Sorry, #{oid} is not an authorized OpenID.") unless is_authorized_openid_identifier?(oid, Chef::Config[:authorized_openid_identifiers])
+    raise(Unauthorized, "Sorry, #{oid} is not an authorized OpenID Provider.") unless is_authorized_openid_provider?(oid, Chef::Config[:authorized_openid_providers])
+  end
+
+  def is_authorized_openid_provider?(openid, authorized_providers)
+    Chef::Log.debug("checking for valid openid provider: openid: #{openid}, authorized providers: #{authorized_providers}")
+    if authorized_providers and openid
+      if authorized_providers.length > 0
+        authorized_providers.detect { |p| Chef::Log.debug("openid: #{openid} (#{openid.class}), p: #{p} (#{p.class})"); openid.match(p) }
+      else
+        true
+      end
+    else
+      true
+    end
+  end
+   
+  def is_authorized_openid_identifier?(openid, authorized_identifiers)
+    Chef::Log.debug("checking for valid openid identifier: openid: #{openid}, authorized openids: #{authorized_identifiers}")
+    if authorized_identifiers and openid
+      if authorized_identifiers.length > 0 
+        authorized_identifiers.detect { |p| Chef::Log.debug("openid: #{openid} (#{openid.class}), p: #{p} (#{p.class})"); openid == p } 
+      else
+        true
+      end
+    else
+      true
+    end
+  end
+
   def login_required
     if session[:openid]
+      authorized_openid
       return session[:openid]
     else  
       self.store_location
