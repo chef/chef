@@ -1,3 +1,35 @@
+Thu Jun 25 2:22:25 NZST 2009
+Release Notes - Chef - Version 0.7.2
+
+** Bug
+    * [CHEF-166] - chef-server-slice rake install does not pick up merb-core dependency correctly
+    * [CHEF-299] - chef client running under runit does not restart
+    * [CHEF-348] - chef-server-slice version isn't tied to chef-server when loaded
+    * [CHEF-355] - Test chef::rest, chef::couchdb for remote DoS due to BigDecimal
+    * [CHEF-359] - Using chef-server-slice results in exceptions.rb "superclass mismatch for class Exceptions"
+    * [CHEF-360] - rake tasks should copy roles
+    * [CHEF-362] - undefined method `sync=' for "/var/log/chef/server.log":String (NoMethodError)
+    * [CHEF-367] - node run_list is empty when running chef-client with a json file specifying run_list 
+    * [CHEF-369] - chef-indexer pid and permissions
+    * [CHEF-372] - chef-client and chef-solo will fail to run ohai if the node_name is explicitly configured.
+    * [CHEF-376] - Roles don't save. 
+    * [CHEF-383] - Cookies have limit of 4K.
+    * [CHEF-386] - 'rake roles' doesn't update json files from ruby files
+    * [CHEF-387] - deleting a role generates a 500 error in the web interface
+    * [CHEF-396] - 4k cookie limit with nginx+passenger
+
+** Improvement
+    * [CHEF-361] - Init service provider currently doesn't start a service when the 'restart' action is called if the service is not already running.
+    * [CHEF-363] - we should kick out logged in openids if they become unauthorized
+    * [CHEF-368] - Chef README in the GitHub repo is outdated!
+    * [CHEF-370] - prettify /status view of uptime
+    * [CHEF-373] - include specs in chef gem
+    * [CHEF-374] - drop outdated contrib/
+
+** New Feature
+    * [CHEF-274] - Add support for multiple named queues on a single stompserver
+    * [CHEF-381] - Ruby Block Resource
+
 Tue Jun  9 13:51:52 PDT 2009
 Release Notes - Chef - Version 0.7.0
 http://tickets.opscode.com
