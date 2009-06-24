@@ -17,7 +17,7 @@ Merb::Config.use do |c|
   c[:exception_details] = true
   c[:reload_classes] = false
   c[:log_level] = Chef::Config[:log_level]
-  c[:log_file] = Chef::Config[:log_location]
+  c[:log_stream] = Chef::Config[:log_location]
 end
  
 Merb::BootLoader.before_app_loads do

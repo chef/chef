@@ -56,7 +56,6 @@ class Chef
     # providers<Array>:: An array of openid providers that are authorized to login to the chef server
     #
     def self.openid_providers=(providers)
-      Chef::Log.info("DEPRECATION: openid_providers will be removed, please use authorized_openid_providers")
       configure { |c| c[:authorized_openid_provders] = providers }
     end
     
