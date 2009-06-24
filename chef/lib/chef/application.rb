@@ -26,8 +26,12 @@ class Chef::Application
   def initialize   
     super
     
+    trap("TERM") do
+      Chef::Application.fatal!("SIGTERM received, stopping", 1)
+    end
+
     trap("INT") do
-       Chef::Application.fatal!("SIGINT received, stopping", 2)
+      Chef::Application.fatal!("SIGINT received, stopping", 2)
     end
     
     trap("HUP") do 
