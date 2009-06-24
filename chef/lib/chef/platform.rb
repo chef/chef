@@ -96,7 +96,8 @@ class Chef
         :group => Chef::Provider::Group::Groupadd,
         :http_request => Chef::Provider::HttpRequest,
         :route => Chef::Provider::Route,
-        :ifconfig => Chef::Provider::Ifconfig
+        :ifconfig => Chef::Provider::Ifconfig,
+        :ruby_block => Chef::Provider::RubyBlock
       }
     }
 
