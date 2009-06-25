@@ -1,83 +1,125 @@
-= chef
+= Chef
 
-* http://www.opscode.com/chef
+= DESCRIPTION:
 
-== DESCRIPTION:
+Chef is a configuration management tool designed to bring automation to your entire infrastructure. 
 
-Chef is a systems management framework masquerading as a configuration management tool.
+The Chef Wiki is the definitive source of user documentation. 
 
-I'm in ur netwerk, cookin up yer servers. :)
+* http://wiki.opscode.com/display/chef/Home
 
-== REQUIREMENTS:
+This README focuses on developers who want to modify Chef source code. For users who just want to run the latest and greatest Chef development version in their environment, see:
 
-chef:
+* http://wiki.opscode.com/display/chef/Installing+Chef+from+HEAD
 
-*  ruby-openid  
-*  json  
-*  erubis  
-*  extlib  
-*  stomp  
-*  ohai  
+= DEVELOPMENT:
 
-chef-server and the chefserverslice (merb slice), same requires as chef above, plus:
+Before working on the code, if you plan to contribute your changes, you need to read the Opscode Contributing document.
 
-*  stompserver 
-*  ferret 
-*  merb-core 
-*  merb-haml 
-*  mongrel 
-*  haml
-*  ruby-openid 
-*  syntax
+* http://wiki.opscode.com/display/opscode/Contributing
 
-Interim Note:
+You will also need to set up the repository with the appropriate branches. We document the process on the Chef Wiki.
 
-Once the {chef,chef-server,chefserverslice}.gem set is installed, do the following:
+* http://wiki.opscode.com/display/opscode/Working+with+Git
 
-     > cd /Library/Ruby/Gems/1.8/gems/chef-server<xxx> # or wherever your gems land
-     > sudo rake slices:chefserverslice:install
+Once your repository is set up, you can start working on the code. We do use BDD/TDD with RSpec and Cucumber, so you'll need to get a development environment running.
 
-This installs the chefserverslice into the chef-server merb application
+= ENVIRONMENT:
 
-External Servers:
+In order to have a development environment where changes to the Chef code can be tested, we'll need to install a few things after setting up the Git repository.
 
-* stompserver (for easy stomp mq testing)
+== Requirements:
+
+Install these via your platform's preferred method; for example apt, yum, ports, emerge, etc.
+
+* Git
 * CouchDB
+* libxml2 development package (for webrat)
+* libxslt develoment package (for webrat)
 
-== INSTALL:
+Install the following RubyGems.
 
-Install all of the above.  To fire up a develpment environment, do the following:
+* ohai
+* rake
+* rspec
+* cucumber
+* webrat
+* merb-core
+* roman-merb_cucumber
 
-  * Start CouchDB with 'couchdb'
-  * Start stompserver with 'stompserver' 
-  * Start chef-indexer with:
+Ohai is also by Opscode and available on GitHub, http://github.com/opscode/ohai/tree/master.
 
-    chef-indexer -l debug 
+roman-merb_cucumber is available from GitHub:
 
-  * Start chef-server:
+  gem install --source http://gems.github.com/ roman-merb_cucumber
 
-    chef-server -N -c 2
+== Starting the Environment:
 
-  * Test run chef to begin node registration:
+Once everything is installed, run the dev:features rake task. Since the features do integration testing, root access is required.
 
-    sudo ./bin/chef-client 
+  sudo rake dev:features
 
-  * Validate the node registration:
+The dev:features task:
 
-    Visit http://localhost:4000
-      Login, enter an openid URL (see http://openid.net/get/)
-      Registrations, click Validate
+* Installs chef, chef-server, chef-server-slice gems. It will fail if required gems above are missing.
+* Starts chef-server on ports 4000 and 4001.
+* Starts chef-indexer.
+* Starts CouchDB on port 5984.
+* Starts the stompserver on port 61613.
 
-  * Test run chef with:
+You'll know its running when you see:
 
-    chef-client 
+   ~ Activating slice 'ChefServerSlice' ...
+  merb : worker (port 4000) ~ Starting Mongrel at port 4000
+  merb : worker (port 4000) ~ Successfully bound to port 4000
+  merb : worker (port 4001) ~ Starting Mongrel at port 4001
+  merb : worker (port 4001) ~ Successfully bound to port 4001
 
-== LICENSE:
+You'll want to leave this terminal running the dev environment.
+
+== Web Interface:
+
+With the dev environment running, you can now access the web interface via http://localhost:4000/. Supply an OpenID to log in.
+
+== Spec testing:
+
+We use RSpec for unit/spec tests.
+
+  rake spec
+
+This doesn't actually use the development environment, because it does the testing on all the Chef internals. For integration/usage testing, we use Cucumber features.
+
+== Integration testing:
+
+We test integration with Cucumber. The available feature tests are rake tasks:
+
+  rake features                            # Run Features with Cucumber
+  rake features:api                        # Run Features with Cucumber
+  rake features:client                     # Run Features with Cucumber
+  rake features:provider:package:macports  # Run Features with Cucumber
+  rake features:provider:remote_file       # Run Features with Cucumber
+  rake features:search                     # Run Features with Cucumber
+
+= LINKS:
+
+Source:
+
+* http://github.com/opscode/chef/tree/master
+
+Tickets/Issues:
+
+* http://tickets.opscode.com/
+
+Documentation:
+
+* http://wiki.opscode.com/display/chef/Home/
+
+= LICENSE:
 
 Chef - A configuration management system
 
 Author:: Adam Jacob (<adam@opscode.com>)
-Copyright:: Copyright (c) 2008 Opscode, Inc.
+Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
 License:: Apache License, Version 2.0
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -91,4 +133,3 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
