@@ -264,7 +264,7 @@ maintainer_email "#{SSL_EMAIL_ADDRESS}"
 license          "#{license}"
 description      "Installs/Configures #{ENV["COOKBOOK"]}"
 #{long_description}
-version          ""
+version          "0.1"
 EOH
     end
   end
