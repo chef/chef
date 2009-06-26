@@ -1,3 +1,21 @@
+Fri Jun 26 1:52:15 NZST 2009
+
+Release Notes - Chef - Version 0.7.4
+
+** Bug
+    * [CHEF-388] - rake task new_cookbook generates empty version metadata
+    * [CHEF-399] - Unit test fixes and 100% CPU bug
+    * [CHEF-401] - After Install Phusion throws a Runtime Error because of the log file
+    * [CHEF-402] - Weird characters on the bottom of status page
+    * [CHEF-403] - Capitals in authorized_open_id_identifiers
+    * [CHEF-404] - openid consumer only valid for http://authorized_openid_identifier/
+
+** Improvement
+    * [CHEF-363] - we should kick out logged in openids if they become unauthorized
+
+** New Feature
+    * [CHEF-381] - Ruby Block Resource
+
 Thu Jun 25 2:22:25 NZST 2009
 Release Notes - Chef - Version 0.7.2
 
