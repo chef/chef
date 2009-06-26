@@ -21,7 +21,7 @@ require 'mixlib/config'
 
 class Chef
   class Config
- 
+
     extend Mixlib::Config
 
     # Manages the chef secret session key
@@ -40,7 +40,7 @@ class Chef
       end
       newkey
     end
-  
+
     # Override the config dispatch to set the value of log_location configuration option
     #
     # === Parameters
@@ -49,7 +49,7 @@ class Chef
     def self.log_location=(location)
       configure { |c| c[:log_location] = (location.respond_to?(:sync=) ? location : File.new(location, "w+")) }
     end
-    
+
     # Override the config dispatch to set the value of authorized_openid_providers when openid_providers (deprecated) is used
     #
     # === Parameters
@@ -58,7 +58,7 @@ class Chef
     def self.openid_providers=(providers)
       configure { |c| c[:authorized_openid_provders] = providers }
     end
-    
+
     authorized_openid_identifiers nil
     authorized_openid_providers nil
     cookbook_path [ "/var/chef/site-cookbooks", "/var/chef/cookbooks" ]
@@ -73,7 +73,7 @@ class Chef
     group nil
     http_retry_count 5
     http_retry_delay 5
-    interval nil 
+    interval nil
     json_attribs nil
     log_level :info
     log_location STDOUT
@@ -92,6 +92,7 @@ class Chef
     queue_retry_count 5
     queue_retry_delay 5
     queue_user ""
+    queue_prefix nil
     registration_url "http://localhost:4000"
     remotefile_url "http://localhost:4000"
     rest_timeout 60

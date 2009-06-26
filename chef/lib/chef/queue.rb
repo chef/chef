@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,17 +22,17 @@ require 'stomp'
 
 class Chef
   class Queue
-    
+
     @client = nil
     @queue_retry_delay = Chef::Config[:queue_retry_delay]
     @queue_retry_count = Chef::Config[:queue_retry_count]
-    
+
     class << self
       include Chef::Mixin::ParamsValidate
-      
+
       def connect
         queue_user     = Chef::Config[:queue_user]
-        queue_password = Chef::Config[:queue_password] 
+        queue_password = Chef::Config[:queue_password]
         queue_host = Chef::Config[:queue_host]
         queue_port = Chef::Config[:queue_port]
         queue_retries = 1 unless queue_retries
@@ -69,7 +69,13 @@ class Chef
             }
           }
         )
-        queue_url = "/#{type}/chef/#{name}"
+        if Chef::Config[:queue_prefix]
+	        queue_prefix = Chef::Config[:queue_prefix]
+          queue_url = "/#{type}/#{queue_prefix}/chef/#{name}"
+	      else
+	        queue_url = "/#{type}/chef/#{name}"
+	      end
+	      queue_url
       end
 
       def subscribe(type, name)
@@ -119,7 +125,7 @@ class Chef
         msg = JSON.parse(raw_msg.body)
         return msg, raw_msg.headers
       end
-    
+
       def poll_msg
         connect if @client == nil
         raw_msg = @client.poll()

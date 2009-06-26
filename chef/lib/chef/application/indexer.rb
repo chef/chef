@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,14 +25,14 @@ require 'chef/log'
 
 
 class Chef::Application::Indexer < Chef::Application
-  
-  option :config_file, 
+
+  option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
     :default => "/etc/chef/server.rb",
     :description => "The configuration file to use"
 
-  option :log_level, 
+  option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
     :description  => "Set the log level (debug, info, warn, error, fatal)",
@@ -52,7 +52,7 @@ class Chef::Application::Indexer < Chef::Application
     :boolean      => true,
     :show_options => true,
     :exit         => 0
-    
+
   option :user,
     :short => "-u USER",
     :long => "--user USER",
@@ -76,7 +76,7 @@ class Chef::Application::Indexer < Chef::Application
 
     @chef_search_indexer = nil
   end
-  
+
   # Create a new search indexer and connect to the stomp queues
   def setup_application
     Chef::Daemon.change_privilege
@@ -86,7 +86,7 @@ class Chef::Application::Indexer < Chef::Application
     Chef::Queue.subscribe(:queue, "index")
     Chef::Queue.subscribe(:queue, "remove")
   end
-  
+
   # Run the indexer, optionally daemonizing.
   def run_application
     if Chef::Config[:daemonize]
@@ -96,13 +96,13 @@ class Chef::Application::Indexer < Chef::Application
     loop do
       object, headers = Chef::Queue.receive_msg
       Chef::Log.info("Headers #{headers.inspect}")
-      if headers["destination"] == "/queue/chef/index"
+      if headers["destination"] == "/queue/chef/index" || headers["destination"] == "/queue/#{queue_prefix}/chef/index"
         start_timer = Time.new
         @chef_search_indexer.add(object)
         @chef_search_indexer.commit
         final_timer = Time.new
         Chef::Log.info("Indexed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
-      elsif headers["destination"] == "/queue/chef/remove"
+      elsif headers["destination"] == "/queue/chef/remove" || headers["destination"] == "/queue/#{queue_prefix}/chef/remove"
         start_timer = Time.new
         @chef_search_indexer.delete(object)
         @chef_search_indexer.commit
