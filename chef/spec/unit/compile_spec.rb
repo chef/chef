@@ -68,5 +68,4 @@ describe Chef::Compile do
     @compile.collection[4].to_s.should == "cat[fat peanut]"
   end
 
-
 end

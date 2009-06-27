@@ -345,6 +345,7 @@ class Chef
       end      
       
       module_function :popen4
+
     end
   end
 end

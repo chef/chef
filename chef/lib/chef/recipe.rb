@@ -66,6 +66,8 @@ class Chef
           Chef::Log.debug("I am not loading #{recipe}, because I have already seen it.")
           next
         end        
+
+        Chef::Log.debug("Loading Recipe #{recipe} via include_recipe")
         @node.run_state[:seen_recipes][recipe] = true
         
         rmatch = recipe.match(/(.+?)::(.+)/)

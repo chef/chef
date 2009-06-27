@@ -139,6 +139,16 @@ namespace :features do
     t.profile = "search"
   end
 
+  Cucumber::Rake::Task.new(:language) do |t|
+    t.profile = "language"
+  end
+
+  namespace :language do
+    Cucumber::Rake::Task.new(:recipe_include) do |t|
+      t.profile = "recipe_inclusion"
+    end
+  end
+
   namespace :provider do
     Cucumber::Rake::Task.new(:remote_file) do |t|
       t.profile = "provider_remote_file"

@@ -110,6 +110,10 @@ class Chef
     def load_recipes
       expand_node
       @recipes.each do |recipe|
+        if @node.run_state[:seen_recipes].has_key?(recipe)
+          Chef::Log.debug("I am not loading #{recipe}, because I have already seen it.")
+          next
+        end
         Chef::Log.debug("Loading Recipe #{recipe}")
         @node.run_state[:seen_recipes][recipe] = true
 
