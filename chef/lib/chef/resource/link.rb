@@ -57,6 +57,22 @@ class Chef
         )
       end
       
+      def group(arg=nil)
+        set_or_return(
+          :group,
+          arg,
+          :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
+        )
+      end
+      
+      def owner(arg=nil)
+        set_or_return(
+          :owner,
+          arg,
+          :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
+        )
+      end
+
     end
   end
 end
