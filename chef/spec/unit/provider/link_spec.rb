@@ -397,44 +397,113 @@ describe Chef::Provider::Link, "action_delete" do
     File.stub!(:delete).and_return(true)
   end
   
-  describe "when the file exists" do
+  describe "when we're building a symbolic link" do
     before do
-      File.should_receive(:exists?).with("/tmp/fofile-link").and_return(true)
+      @new_resource.stub!(:link_type).and_return(:symbolic)
     end
     
-    it "should log an appropriate error message" do
-      Chef::Log.should_receive(:info).with("Deleting link[/tmp/fofile] at /tmp/fofile-link")
-      @provider.action_delete
+    describe "and when the symlink exists" do
+      before do
+        File.should_receive(:symlink?).with("/tmp/fofile-link").and_return(true)
+      end
+      
+      it "should log an appropriate error message" do
+        Chef::Log.should_receive(:info).with("Deleting link[/tmp/fofile] at /tmp/fofile-link")
+        @provider.action_delete
+      end
+      
+      it "should use the ruby builtin to delete the file" do
+        File.should_receive(:delete).with("/tmp/fofile-link").and_return(true)
+        @provider.action_delete
+      end
+      
+      it "should set updated to true" do
+        @new_resource.should_receive(:updated=).with(true).and_return(true)
+        @provider.action_delete
+      end
     end
     
-    it "should use the ruby builtin to delete the file" do
-      File.should_receive(:delete).with("/tmp/fofile-link").and_return(true)
-      @provider.action_delete
+    describe "and when the file is not a symbolic link but does exist" do
+      before(:each) do
+        File.should_receive(:symlink?).with("/tmp/fofile-link").and_return(false)
+        File.should_receive(:exists?).with("/tmp/fofile-link").and_return(true)
+      end
+      
+      it "should raise a Link error" do
+        lambda { @provider.action_delete }.should raise_error(Chef::Exceptions::Link)
+      end
     end
     
-    it "should set updated to true" do
-      @new_resource.should_receive(:updated=).with(true).and_return(true)
-      @provider.action_delete
+    describe "and when the symbolic link and file do not exist" do
+      before do
+        File.should_receive(:symlink?).with("/tmp/fofile-link").and_return(false)
+        File.should_receive(:exists?).with("/tmp/fofile-link").and_return(false)
+      end
+      
+      it "should not raise a Link error" do
+        lambda { @provider.action_delete }.should_not raise_error(Chef::Exceptions::Link)
+      end
     end
   end
   
-  describe "when the file exists but is not a symbolic link" do
-    before(:each) do
-      File.should_receive(:symlink?).with("/tmp/fofile-link").and_return(false)
-    end
-    
-    it "should raise a Link error" do
-      lambda { @provider.action_delete }.should raise_error(Chef::Exceptions::Link)
-    end
-  end
-  
-  describe "when the file does not exist" do
+  describe "when we're building a hard link" do
     before do
-      File.should_receive(:exists?).with("/tmp/fofile-link").and_return(false)
+      @new_resource.stub!(:link_type).and_return(:hard)
+    end
+      
+    describe "and when the file exists" do
+      before do
+        File.should_receive(:exists?).with("/tmp/fofile-link").and_return(true)
+      end
+      
+      describe "and the inodes match" do
+        before do
+          stat = mock("stats", :null_object => true)
+          stat.stub!(:ino).and_return(1)
+          File.should_receive(:stat).with("/tmp/fofile-link").and_return(stat)
+          File.should_receive(:stat).with("/tmp/fofile").and_return(stat)
+        end
+        
+        it "should log an appropriate error message" do
+          Chef::Log.should_receive(:info).with("Deleting link[/tmp/fofile] at /tmp/fofile-link")
+          @provider.action_delete
+        end
+        it "should use the ruby builtin to delete the file" do
+          File.should_receive(:delete).with("/tmp/fofile-link").and_return(true)
+          @provider.action_delete
+        end
+        
+        it "should set updated to true" do
+          @new_resource.should_receive(:updated=).with(true).and_return(true)
+          @provider.action_delete
+        end
+      end
+      
+      describe "and the inodes don't match" do
+        before do
+          stat = mock("stats", :null_object => true)
+          stat.stub!(:ino).and_return(1)
+          stat_two = mock("stats", :null_object => true)
+          stat.stub!(:ino).and_return(2)
+          File.should_receive(:stat).with("/tmp/fofile-link").and_return(stat)
+          File.should_receive(:stat).with("/tmp/fofile").and_return(stat_two)
+        end
+        
+        it "should raise a Link error" do
+          lambda { @provider.action_delete }.should raise_error(Chef::Exceptions::Link)
+        end
+      end
+      
     end
     
-    it "should not raise a Link error" do
-      lambda { @provider.action_delete }.should_not raise_error(Chef::Exceptions::Link)
+    describe "and when file does not exist" do
+      before do
+        File.should_receive(:exists?).with("/tmp/fofile-link").and_return(false)
+      end
+      
+      it "should not raise a Link error" do
+        lambda { @provider.action_delete }.should_not raise_error(Chef::Exceptions::Link)
+      end
     end
   end
 
