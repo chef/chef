@@ -72,13 +72,13 @@ describe Chef::Provider::Service::Redhat, "load_current_resource" do
   it "should set enabled to true if the regex matches" do
     @stdout.stub!(:gets).and_return("chef    0:off   1:off   2:on   3:on   4:on   5:on   6:off")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @current_resource.should_recieve(:enabled).with(true)
+    @current_resource.should_receive(:enabled).with(true)
     @provider.load_current_resource
   end
 
   it "should set enabled to false if the regex does not match" do
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @current_resource.should_recieve(:enabled).with(false)
+    @current_resource.should_receive(:enabled).with(false)
     @provider.load_current_resource
   end
 

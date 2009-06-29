@@ -262,7 +262,7 @@ describe Chef::CouchDB, "get_view" do
   end
 
   it "should construct a call to the view for the proper design document" do
-    @mock_rest.should_recieve(:get_rest).with("chef/_design/nodes/_view/mastodon")
+    @mock_rest.should_receive(:get_rest).with("chef/_design/nodes/_view/mastodon")
     @couchdb.get_view("nodes", "mastodon")
   end
 

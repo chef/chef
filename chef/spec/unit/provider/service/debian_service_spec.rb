@@ -78,14 +78,14 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
                               and_yield("   /etc/rc5.d/S20chef").
                               and_yield("   /etc/rc6.d/K20chef")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @current_resource.should_recieve(:enabled).with(true)
+    @current_resource.should_receive(:enabled).with(true)
     @provider.load_current_resource
   end
 
   it "should set enabled to false if the regex does not match" do
     @stdout.stub!(:each_line).and_yield(" Removing any system startup links for /etc/init.d/chef ...")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @current_resource.should_recieve(:enabled).with(false)
+    @current_resource.should_receive(:enabled).with(false)
     @provider.load_current_resource
   end
 

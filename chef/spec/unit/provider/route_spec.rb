@@ -54,13 +54,13 @@ describe Chef::Provider::Route, "action_add" do
   it "should add the route if it does not exist" do
     @provider.stub!(:run_command).and_return(true)
     @current_resource.stub!(:gateway).and_return(nil)
-    @new_resource.should_recieve(:updated=).with(true)
+    @new_resource.should_receive(:updated=).with(true)
     @provider.action_add
   end
 
   it "should not add the route if it exists" do
     @provider.stub!(:run_command).and_return(true)
-    @new_resource.should_not_recieve(:updated=).with(true)
+    @new_resource.should_not_receive(:updated=).with(true)
     @provider.action_add
   end
 end
@@ -87,13 +87,14 @@ describe Chef::Provider::Route, "action_delete" do
 
   it "should delete the route if it exists" do
     @provider.stub!(:run_command).and_return(true)
-    @new_resource.should_recieve(:updated=).with(true)
+    @new_resource.should_receive(:updated=).with(true)
     @provider.action_delete
   end
 
   it "should not delete the route if it does not exist" do
+    @current_resource.stub!(:gateway).and_return(nil)
     @provider.stub!(:run_command).and_return(true)
-    @new_resource.should_not_recieve(:updated=).with(true)
+    @new_resource.should_not_receive(:updated=).with(true)
     @provider.action_delete
   end
 end

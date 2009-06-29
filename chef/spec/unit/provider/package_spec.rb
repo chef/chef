@@ -144,7 +144,7 @@ describe Chef::Provider::Package, "action_install" do
   end
   
   it "should set the resource to updated if it installs the package" do
-    @new_resource.should_recieve(:updated=).with(true)
+    @new_resource.should_receive(:updated=).with(true)
     @provider.action_install
   end
   
@@ -181,7 +181,7 @@ describe Chef::Provider::Package, "action_upgrade" do
   end
   
   it "should set the resource to updated if it installs the package" do
-    @new_resource.should_recieve(:updated=).with(true)
+    @new_resource.should_receive(:updated=).with(true)
     @provider.action_upgrade
   end
   
@@ -258,7 +258,7 @@ end
     end
   
     it "should set the resource to updated if it #{act}s the package" do
-      @new_resource.should_recieve(:updated=).with(true)
+      @new_resource.should_receive(:updated=).with(true)
       @provider.send(act_symbol)
     end
 

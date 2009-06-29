@@ -86,13 +86,13 @@ describe Chef::Provider::Service::Freebsd, "load_current_resource" do
   
     it "should set running to true if the the status command returns 0" do
       @provider.stub!(:run_command).with({:command => "/usr/local/etc/rc.d/apache22 status"}).and_return(0)
-      @current_resource.should_recieve(:running).with(true)
+      @current_resource.should_receive(:running).with(true)
       @provider.load_current_resource
     end
 
     it "should set running to false if the status command returns anything except 0" do
-      @provider.stub!(:run_command).with({:command => "/usr/local/etc/rc.d/apache22 status"}).and_return(1)
-      @current_resource.should_recieve(:running).with(true)
+      @provider.stub!(:run_command).with({:command => "/usr/local/etc/rc.d/apache22 status"}).and_raise(Chef::Exceptions::Exec)
+      @current_resource.should_receive(:running).with(false)
       @provider.load_current_resource
     end
   end
