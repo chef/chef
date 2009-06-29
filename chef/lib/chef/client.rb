@@ -70,6 +70,7 @@ class Chef
       start_time = Time.now
       Chef::Log.info("Starting Chef Run")
       
+      run_ohai
       register
       authenticate
       build_node(@node_name)
@@ -97,8 +98,9 @@ class Chef
       start_time = Time.now
       Chef::Log.info("Starting Chef Solo Run")
       
-      build_node(@node_name, solo = true)
-      converge(solo = true)
+      run_ohai
+      build_node(@node_name, true)
+      converge(true)
       
       end_time = Time.now
       Chef::Log.info("Chef Run complete in #{end_time - start_time} seconds")
@@ -106,8 +108,12 @@ class Chef
     end
 
     def run_ohai
-      @ohai.all_plugins unless @ohai_has_run
-      @ohai_has_run = true
+      if @ohai_has_run
+        @ohai.refresh_plugins
+      else
+        @ohai.all_plugins
+        @ohai_has_run = true
+      end
     end
 
     def determine_node_name

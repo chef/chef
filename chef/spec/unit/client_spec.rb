@@ -28,6 +28,7 @@ describe Chef::Client, "run" do
   before(:each) do
     @client = Chef::Client.new
     to_stub = [
+      :run_ohai,
       :build_node,
       :register,
       :authenticate,
@@ -138,10 +139,6 @@ end
 
 describe Chef::Client, "build_node" do
   before(:each) do
-    @mock_facter_fqdn = mock("Facter FQDN")
-    @mock_facter_fqdn.stub!(:value).and_return("foo.bar.com")
-    @mock_facter_hostname = mock("Facter Hostname")
-    @mock_facter_hostname.stub!(:value).and_return("foo")
     @mock_ohai = {
       :fqdn => "foo.bar.com",
       :hostname => "foo"
@@ -212,4 +209,40 @@ describe Chef::Client, "register" do
   before(:each) do
     @mock_rest = mock("Chef::REST", :new => true)
   end
+end
+
+describe Chef::Client, "run_ohai" do
+  before do
+    @mock_ohai = mock("Ohai::System", :null_object => true)
+    @mock_ohai.stub!(:all_plugins).and_return(true)
+    @mock_ohai.stub!(:refresh_plugins).and_return(true)
+    Ohai::System.stub!(:new).and_return(@mock_ohai)
+    @chef_client = Chef::Client.new
+    @chef_client.ohai = @mock_ohai
+  end
+
+  it "refresh the plugins if ohai has already been run" do
+    @chef_client.ohai_has_run = true
+    @mock_ohai.should_receive(:refresh_plugins).and_return(true)
+    @chef_client.run_ohai
+  end
+
+  it "should not refresh the plugins if ohai has not been run" do
+    @chef_client.ohai_has_run = false
+    @mock_ohai.should_not_receive(:refresh_plugins).and_return(true)
+    @chef_client.run_ohai
+  end
+
+  it "should run all plugins if ohai has not already been run" do
+    @chef_client.ohai_has_run = false
+    @mock_ohai.should_receive(:all_plugins).and_return(true)
+    @chef_client.run_ohai
+  end
+
+  it "should not run all plugins if ohai has already been run" do
+    @chef_client.ohai_has_run = true
+    @mock_ohai.should_not_receive(:all_plugins).and_return(true)
+    @chef_client.run_ohai
+  end
+
 end
