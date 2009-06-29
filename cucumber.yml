@@ -1,5 +1,17 @@
 default: -f pretty features -r features/steps -r features/support 
 api: --tags api --format pretty -r features/steps -r features/support features 
+api_roles: --tags roles --format pretty -r features/steps -r features/support features
+api_roles_create: --tags roles_create --format pretty -r features/steps -r features/support features
+api_roles_delete: --tags roles_delete --format pretty -r features/steps -r features/support features
+api_roles_list: --tags roles_list --format pretty -r features/steps -r features/support features
+api_roles_show: --tags roles_show --format pretty -r features/steps -r features/support features
+api_roles_update: --tags roles_update --format pretty -r features/steps -r features/support features
+api_nodes: --tags nodes --format pretty -r features/steps -r features/support features
+api_nodes_create: --tags nodes_create --format pretty -r features/steps -r features/support features
+api_nodes_delete: --tags nodes_delete --format pretty -r features/steps -r features/support features
+api_nodes_list: --tags nodes_list --format pretty -r features/steps -r features/support features
+api_nodes_show: --tags nodes_show --format pretty -r features/steps -r features/support features
+api_nodes_update: --tags nodes_update --format pretty -r features/steps -r features/support features
 client: --tags client --format pretty -r features/steps -r features/support features 
 search: --tags search --format pretty -r features/steps -r features/support features 
 language: --tags language --format pretty -r features/steps -r features/support features 

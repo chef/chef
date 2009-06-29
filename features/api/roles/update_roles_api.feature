@@ -1,4 +1,4 @@
-@api
+@api @roles @roles_update
 Feature: Update a role
   In order to keep my role data up-to-date
   As a Developer

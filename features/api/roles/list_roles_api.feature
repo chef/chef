@@ -1,4 +1,4 @@
-@api
+@api @roles @roles_list
 Feature: List roles via the REST API
   In order to know what roles exists programatically
   As a Developer
@@ -6,7 +6,7 @@ Feature: List roles via the REST API
 
   Scenario: List roles when none have been created
     Given a 'registration' named 'bobo' exists
-      And there are no roles 
+      And there are no roles
      When I authenticate as 'bobo'
       And I 'GET' the path '/roles' 
      Then the inflated response should be an empty array
@@ -24,7 +24,8 @@ Feature: List roles via the REST API
       And a 'role' named 'db' exists
      When I authenticate as 'bobo'
       And I 'GET' the path '/roles'
-     Then the inflated response should be '2' items long
+     Then the inflated response should be '3' items long
+      And the inflated response should include '^http://.+/roles/role_test$'
       And the inflated response should include '^http://.+/roles/webserver$'
       And the inflated response should include '^http://.+/roles/db$'
 

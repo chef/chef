@@ -127,10 +127,24 @@ Cucumber::Rake::Task.new(:features) do |t|
 end
 
 namespace :features do
-  Cucumber::Rake::Task.new(:api) do |t|
-    t.profile = "api"
-  end
+  namespace :api do
+    Cucumber::Rake::Task.new(:api) do |t|
+      t.profile = "api"
+    end
 
+    [ :nodes, :roles].each do |api|
+        Cucumber::Rake::Task.new(api) do |apitask|
+          apitask.profile = "api_#{api.to_s}"
+        end
+      namespace api do
+        %w{create delete list show update}.each do |action|
+          Cucumber::Rake::Task.new("#{action}") do |t|
+            t.profile = "api_#{api.to_s}_#{action}"
+          end
+        end
+      end
+    end
+  end
   Cucumber::Rake::Task.new(:client) do |t|
     t.profile = "client"
   end

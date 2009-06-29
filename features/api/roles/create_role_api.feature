@@ -1,4 +1,4 @@
-@api
+@api @roles @roles_create
 Feature: Create a role via the REST API
   In order to create roles programatically 
   As a Devleoper

@@ -92,6 +92,9 @@ Given /^removing the '(.+)' field '(.+)'$/ do |stash_name, key|
   @stash[stash_name].send(key.to_sym, '')
 end
 
-Given /^there are no .+$/ do
-  # No-Op
+Given /^there are no (.+)$/ do |stash_name|
+  case stash_name
+  when 'roles'
+    Chef::Role.list(true).each { |r| r.destroy }
+  end
 end

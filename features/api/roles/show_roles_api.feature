@@ -1,4 +1,4 @@
-@api
+@api @roles @roles_show
 Feature: Show a role via the REST API 
   In order to know what the details are for a Role 
   As a Developer
