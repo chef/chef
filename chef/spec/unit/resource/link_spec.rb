@@ -82,4 +82,16 @@ describe Chef::Resource::Link do
     lambda { @resource.link_type "x-men" }.should raise_error(ArgumentError)
   end
   
+  it "should accept a group name or id for group" do
+    lambda { @resource.group "root" }.should_not raise_error(ArgumentError)
+    lambda { @resource.group 123 }.should_not raise_error(ArgumentError)
+    lambda { @resource.group "root*goo" }.should raise_error(ArgumentError)
+  end
+
+  it "should accept a user name or id for owner" do
+    lambda { @resource.owner "root" }.should_not raise_error(ArgumentError)
+    lambda { @resource.owner 123 }.should_not raise_error(ArgumentError)
+    lambda { @resource.owner "root*goo" }.should raise_error(ArgumentError)
+  end
+
 end
