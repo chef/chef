@@ -93,16 +93,23 @@ class Chef::Application::Indexer < Chef::Application
       Chef::Daemon.daemonize("chef-indexer")
     end
 
+    if Chef::Config[:queue_prefix]
+      queue_prefix = Chef::Config[:queue_prefix]
+      queue_partial_url = "/queue/#{queue_prefix}/chef"
+    else
+      queue_partial_url = "/queue/chef"
+    end
+
     loop do
       object, headers = Chef::Queue.receive_msg
       Chef::Log.info("Headers #{headers.inspect}")
-      if headers["destination"] == "/queue/chef/index" || headers["destination"] == "/queue/#{queue_prefix}/chef/index"
+      if headers["destination"] == "#{queue_partial_url}/index"
         start_timer = Time.new
         @chef_search_indexer.add(object)
         @chef_search_indexer.commit
         final_timer = Time.new
         Chef::Log.info("Indexed object from #{headers['destination']} in #{final_timer - start_timer} seconds")
-      elsif headers["destination"] == "/queue/chef/remove" || headers["destination"] == "/queue/#{queue_prefix}/chef/remove"
+      elsif headers["destination"] == "#{queue_partial_url}/remove"
         start_timer = Time.new
         @chef_search_indexer.delete(object)
         @chef_search_indexer.commit

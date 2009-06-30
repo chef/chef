@@ -107,12 +107,12 @@ class ChefServerSlice::OpenidConsumer < ChefServerSlice::Application
       true
     end
   end
-   
+
   def is_authorized_openid_identifier?(openid, authorized_identifiers)
     Chef::Log.debug("checking for valid openid identifier: openid: #{openid}, authorized openids: #{authorized_identifiers}")
     if authorized_identifiers and openid
-      if authorized_identifiers.length > 0 
-        authorized_identifiers.detect { |p| Chef::Log.debug("openid: #{openid} (#{openid.class}), p: #{p} (#{p.class})"); openid == p } 
+      if authorized_identifiers.length > 0
+        authorized_identifiers.detect { |p| Chef::Log.debug("openid: #{openid} (#{openid.class}), p: #{p} (#{p.class})"); openid == p }
       else
         true
       end
