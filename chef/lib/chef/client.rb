@@ -117,7 +117,6 @@ class Chef
     end
 
     def determine_node_name
-      run_ohai
       unless @safe_name && @node_name
         @node_name ||= @ohai[:fqdn] ? @ohai[:fqdn] : @ohai[:hostname]
         @safe_name = @node_name.gsub(/\./, '_')

@@ -53,6 +53,11 @@ describe Chef::Client, "run" do
     Time.should_receive(:now).twice.and_return(time)
     @client.run
   end
+
+  it "should run ohai" do
+    @client.should_receive(:run_ohai).and_return(true)
+    @client.run
+  end
   
   it "should build the node" do
     @client.should_receive(:build_node).and_return(true)
@@ -109,6 +114,7 @@ end
 describe Chef::Client, "run_solo" do
   before(:each) do
     @client = Chef::Client.new
+    @client.stub!(:run_ohai).and_return(true)
     @client.stub!(:build_node).and_return(true)
     Chef::Compile.stub!(:new).and_return(mock("Chef::Compile", :null_object => true))
     Chef::Runner.stub!(:new).and_return(mock("Chef::Runner", :null_object => true))
@@ -117,6 +123,11 @@ describe Chef::Client, "run_solo" do
   it "should start/stop the run timer" do
     time = Time.now
     Time.should_receive(:now).at_least(1).times.and_return(time)
+    @client.run_solo
+  end
+
+  it "should run ohai" do
+    @client.should_receive(:run_ohai).and_return(true)
     @client.run_solo
   end
   
