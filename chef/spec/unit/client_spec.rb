@@ -217,9 +217,41 @@ describe Chef::Client, "build_node" do
 end
 
 describe Chef::Client, "register" do
-  before(:each) do
-    @mock_rest = mock("Chef::REST", :new => true)
+  before do
+    require 'net/http'
+    @mock_rest = mock("Chef::REST", :null_object => true)
+    @mock_rest.stub!(:get_rest).and_return(true)
+    Chef::REST.stub!(:new).and_return(@mock_rest)
+    @chef_client = Chef::Client.new
+    @chef_client.safe_name = "testnode"
+    @chef_client.stub!(:determine_node_name).and_return(true)
+    @chef_client.stub!(:create_registration).and_return(true)
+    Chef::Application.stub!(:fatal!).and_return(true)
+    Chef::FileCache.stub!(:create_cache_path).and_return("/tmp")
+    Chef::FileCache.stub!(:load).and_return("/tmp/testnode")
   end
+
+  it "should log an appropriate debug message regarding registering an openid" do
+    Chef::Log.should_receive(:debug).with("Registering testnode for an openid").and_return(true)
+    @chef_client.register
+  end
+
+  it "should fetch the registration based on safe_name from the chef server" do
+    @mock_rest.should_receive(:get_rest).with("registrations/testnode").and_return(true)
+    @chef_client.register
+  end
+
+  it "should load the secret from disk" do
+    Chef::FileCache.should_receive(:load).with(File.join("registration", "testnode")).and_return("/tmp/testnode")
+    @chef_client.register
+  end
+
+  it "should cause chef to die fatally if the filecache cannot find the registration" do
+    Chef::FileCache.stub!(:load).with(File.join("registration", "testnode")).and_raise(Chef::Exceptions::FileNotFound)
+    Chef::Application.should_receive(:fatal!).with(/^.*$/, 3).and_return(true) 
+    @chef_client.register
+  end
+
 end
 
 describe Chef::Client, "run_ohai" do

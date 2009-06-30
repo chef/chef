@@ -188,21 +188,27 @@ class Chef
     # true:: Always returns true
     def register
       determine_node_name
+
       Chef::Log.debug("Registering #{@safe_name} for an openid") 
-      @registration = nil
-      begin
-        @registration = @rest.get_rest("registrations/#{@safe_name}")
-      rescue Net::HTTPServerException => e
-        unless e.message =~ /^404/
-          raise e
-        end
-      end
       
-      if @registration
-        @secret = Chef::FileCache.load(File.join("registration", @safe_name))
-      else
-        create_registration
+      begin
+        if @rest.get_rest("registrations/#{@safe_name}")
+          @secret = Chef::FileCache.load(File.join("registration", @safe_name))
+        end
+      rescue Net::HTTPServerException => e
+        case e.message
+        when /^404/
+          create_registration
+        else
+          raise
+        end
+      rescue Chef::Exceptions::FileNotFound
+        Chef::Application.fatal! "A remote registration already exists for #{@safe_name}, however the local shared secret does not exist." +
+          " To remedy this, you could delete the registration via webUI/REST, change the node_name option in config.rb" +
+          " (or use the -N/--node-name option to the CLI) or" +
+          " copy the old shared secret to #{File.join(Chef::Config[:file_cache_path], 'registration', @safe_name)}", 3
       end
+
       true
     end
     
