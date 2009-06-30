@@ -95,7 +95,21 @@ We test integration with Cucumber. The available feature tests are rake tasks:
 
   rake features                            # Run Features with Cucumber
   rake features:api                        # Run Features with Cucumber
+  rake features:api:nodes                  # Run Features with Cucumber
+  rake features:api:nodes:create           # Run Features with Cucumber
+  rake features:api:nodes:delete           # Run Features with Cucumber
+  rake features:api:nodes:list             # Run Features with Cucumber
+  rake features:api:nodes:show             # Run Features with Cucumber
+  rake features:api:nodes:update           # Run Features with Cucumber
+  rake features:api:roles                  # Run Features with Cucumber
+  rake features:api:roles:create           # Run Features with Cucumber
+  rake features:api:roles:delete           # Run Features with Cucumber
+  rake features:api:roles:list             # Run Features with Cucumber
+  rake features:api:roles:show             # Run Features with Cucumber
+  rake features:api:roles:update           # Run Features with Cucumber
   rake features:client                     # Run Features with Cucumber
+  rake features:language                   # Run Features with Cucumber
+  rake features:language:recipe_include    # Run Features with Cucumber
   rake features:provider:package:macports  # Run Features with Cucumber
   rake features:provider:remote_file       # Run Features with Cucumber
   rake features:search                     # Run Features with Cucumber

@@ -127,11 +127,11 @@ Cucumber::Rake::Task.new(:features) do |t|
 end
 
 namespace :features do
-  namespace :api do
-    Cucumber::Rake::Task.new(:api) do |t|
-      t.profile = "api"
-    end
+  Cucumber::Rake::Task.new(:api) do |t|
+    t.profile = "api"
+  end
 
+  namespace :api do
     [ :nodes, :roles].each do |api|
         Cucumber::Rake::Task.new(api) do |apitask|
           apitask.profile = "api_#{api.to_s}"
