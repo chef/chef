@@ -28,7 +28,6 @@ describe Chef::Client, "run" do
   before(:each) do
     @client = Chef::Client.new
     to_stub = [
-      :run_ohai,
       :build_node,
       :register,
       :authenticate,
@@ -54,11 +53,6 @@ describe Chef::Client, "run" do
     @client.run
   end
 
-  it "should run ohai" do
-    @client.should_receive(:run_ohai).and_return(true)
-    @client.run
-  end
-  
   it "should build the node" do
     @client.should_receive(:build_node).and_return(true)
     @client.run
@@ -114,7 +108,6 @@ end
 describe Chef::Client, "run_solo" do
   before(:each) do
     @client = Chef::Client.new
-    @client.stub!(:run_ohai).and_return(true)
     @client.stub!(:build_node).and_return(true)
     Chef::Compile.stub!(:new).and_return(mock("Chef::Compile", :null_object => true))
     Chef::Runner.stub!(:new).and_return(mock("Chef::Runner", :null_object => true))
@@ -126,11 +119,6 @@ describe Chef::Client, "run_solo" do
     @client.run_solo
   end
 
-  it "should run ohai" do
-    @client.should_receive(:run_ohai).and_return(true)
-    @client.run_solo
-  end
-  
   it "should build the node" do
     @client.should_receive(:build_node).and_return(true)
     @client.run_solo
@@ -154,7 +142,7 @@ describe Chef::Client, "build_node" do
       :fqdn => "foo.bar.com",
       :hostname => "foo"
     }
-    @mock_ohai.stub!(:all_plugins).and_return(true)
+    @mock_ohai.stub!(:refresh_plugins).and_return(true)
     Ohai::System.stub!(:new).and_return(@mock_ohai)
     @node = Chef::Node.new
     @mock_rest.stub!(:get_rest).and_return(@node)
@@ -218,7 +206,6 @@ end
 
 describe Chef::Client, "register" do
   before do
-    require 'net/http'
     @mock_rest = mock("Chef::REST", :null_object => true)
     @mock_rest.stub!(:get_rest).and_return(true)
     Chef::REST.stub!(:new).and_return(@mock_rest)
@@ -257,7 +244,7 @@ end
 describe Chef::Client, "run_ohai" do
   before do
     @mock_ohai = mock("Ohai::System", :null_object => true)
-    @mock_ohai.stub!(:all_plugins).and_return(true)
+    @mock_ohai.stub!(:refresh_plugins).and_return(true)
     @mock_ohai.stub!(:refresh_plugins).and_return(true)
     Ohai::System.stub!(:new).and_return(@mock_ohai)
     @chef_client = Chef::Client.new
@@ -265,27 +252,7 @@ describe Chef::Client, "run_ohai" do
   end
 
   it "refresh the plugins if ohai has already been run" do
-    @chef_client.ohai_has_run = true
     @mock_ohai.should_receive(:refresh_plugins).and_return(true)
     @chef_client.run_ohai
   end
-
-  it "should not refresh the plugins if ohai has not been run" do
-    @chef_client.ohai_has_run = false
-    @mock_ohai.should_not_receive(:refresh_plugins).and_return(true)
-    @chef_client.run_ohai
-  end
-
-  it "should run all plugins if ohai has not already been run" do
-    @chef_client.ohai_has_run = false
-    @mock_ohai.should_receive(:all_plugins).and_return(true)
-    @chef_client.run_ohai
-  end
-
-  it "should not run all plugins if ohai has already been run" do
-    @chef_client.ohai_has_run = true
-    @mock_ohai.should_not_receive(:all_plugins).and_return(true)
-    @chef_client.run_ohai
-  end
-
 end

@@ -35,7 +35,7 @@ class Chef
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
     
-    attr_accessor :node, :registration, :safe_name, :json_attribs, :validation_token, :node_name, :ohai, :ohai_has_run
+    attr_accessor :node, :registration, :safe_name, :json_attribs, :validation_token, :node_name, :ohai
     
     # Creates a new Chef::Client.
     def initialize()
@@ -48,7 +48,6 @@ class Chef
       @node_exists = true 
       Ohai::Log.logger = Chef::Log.logger
       @ohai = Ohai::System.new
-      @ohai_has_run = false
       @rest = Chef::REST.new(Chef::Config[:registration_url])
     end
     
@@ -70,7 +69,7 @@ class Chef
       start_time = Time.now
       Chef::Log.info("Starting Chef Run")
       
-      run_ohai
+      determine_node_name
       register
       authenticate
       build_node(@node_name)
@@ -98,7 +97,7 @@ class Chef
       start_time = Time.now
       Chef::Log.info("Starting Chef Solo Run")
       
-      run_ohai
+      determine_node_name
       build_node(@node_name, true)
       converge(true)
       
@@ -108,15 +107,15 @@ class Chef
     end
 
     def run_ohai
-      if @ohai_has_run
+      if @ohai.keys
         @ohai.refresh_plugins
       else
         @ohai.all_plugins
-        @ohai_has_run = true
       end
     end
 
     def determine_node_name
+      run_ohai
       unless @safe_name && @node_name
         @node_name ||= @ohai[:fqdn] ? @ohai[:fqdn] : @ohai[:hostname]
         @safe_name = @node_name.gsub(/\./, '_')
@@ -134,7 +133,6 @@ class Chef
     # node<Chef::Node>:: Returns the created node object, also stored in @node
     def build_node(node_name=nil, solo=false)
       node_name ||= determine_node_name
-
       raise RuntimeError, "Unable to determine node name from ohai" unless node_name
       Chef::Log.debug("Building node object for #{@safe_name}")
       unless solo
@@ -187,8 +185,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def register
-      determine_node_name
-
+      determine_node_name unless @node_name
       Chef::Log.debug("Registering #{@safe_name} for an openid") 
       
       begin
@@ -229,7 +226,7 @@ class Chef
     # === Returns
     # true:: Always returns true
     def authenticate
-      determine_node_name
+      determine_node_name unless @node_name
       Chef::Log.debug("Authenticating #{@safe_name} via openid") 
       response = @rest.post_rest('openid/consumer/start', { 
         "openid_identifier" => "#{Chef::Config[:openid_url]}/openid/server/node/#{@safe_name}",
