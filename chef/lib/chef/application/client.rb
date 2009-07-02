@@ -125,10 +125,6 @@ class Chef::Application::Client < Chef::Application
       Chef::Config[:interval] ||= 1800
     end
 
-    if Chef::Config[:interval]
-      Chef::Config[:delay] = Chef::Config[:interval] + (Chef::Config[:splay] ? rand(Chef::Config[:splay]) : 0)
-    end
-       
     if Chef::Config[:json_attribs]
       begin
           json_io = open(Chef::Config[:json_attribs])
@@ -169,11 +165,17 @@ class Chef::Application::Client < Chef::Application
     
     loop do
       begin
+        if Chef::Config[:splay]
+          splay = rand(Chef::Config[:splay]);
+          Chef::Log.debug("Splay sleep #{splay} seconds")
+          sleep splay
+        end
+
         @chef_client.run
         
         if Chef::Config[:interval]
-          Chef::Log.debug("Sleeping for #{Chef::Config[:delay]} seconds")
-          sleep Chef::Config[:delay]
+          Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
+          sleep Chef::Config[:interval]
         else
           Chef::Application.exit! "Exiting", 0
         end
@@ -183,8 +185,8 @@ class Chef::Application::Client < Chef::Application
         if Chef::Config[:interval]
           Chef::Log.error("#{e.class}")
           Chef::Log.fatal("#{e}\n#{e.backtrace.join("\n")}")
-          Chef::Log.fatal("Sleeping for #{Chef::Config[:delay]} seconds before trying again")
-          sleep Chef::Config[:delay]
+          Chef::Log.fatal("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
+          sleep Chef::Config[:interval]
           retry
         else
           raise
