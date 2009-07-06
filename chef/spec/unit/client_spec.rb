@@ -89,7 +89,7 @@ describe Chef::Client, "run" do
   end
   
   it "should save the nodes state on the server (twice!)" do
-    @client.should_receive(:save_node).twice.and_return(true)
+    @client.should_receive(:save_node).exactly(3).times.and_return(true)
     @client.run
   end
   

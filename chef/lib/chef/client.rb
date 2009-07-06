@@ -73,6 +73,7 @@ class Chef
       register
       authenticate
       build_node(@node_name)
+      save_node
       sync_library_files
       sync_attribute_files
       sync_definitions
