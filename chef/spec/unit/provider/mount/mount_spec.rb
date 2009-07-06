@@ -77,8 +77,8 @@ describe Chef::Provider::Mount::Mount, "load_current_resource" do
   end
 
   it "should raise an error if the mount point does not exist" do
-   ::File.stub!(:exists?).with("/tmp/foo").and_return false
-   lambda { @provider.load_current_resource() }.should raise_error(Chef::Exceptions::Mount)
+    ::File.stub!(:exists?).with("/tmp/foo").and_return false
+    lambda { @provider.load_current_resource() }.should raise_error(Chef::Exceptions::Mount)
   end
 
 
