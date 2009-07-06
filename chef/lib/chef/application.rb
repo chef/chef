@@ -82,8 +82,9 @@ class Chef::Application
   end
 
   class << self
-    # Log a fatal error message and exit the application
+    # Log a fatal error message to both STDERR and the Logger, exit the application
     def fatal!(msg, err = -1)
+      STDERR.puts("FATAL: #{msg}")
       Chef::Log.fatal(msg)
       Process.exit err
     end
