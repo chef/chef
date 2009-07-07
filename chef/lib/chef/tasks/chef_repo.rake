@@ -152,11 +152,11 @@ task :install => [ :update, :test, :metadata, :roles ] do
     sh "sudo chown root #{dir}"
   end
   puts "* Installing new Cookbooks"
-  sh "sudo rsync -rlP --delete --exclude '.svn' cookbooks/ #{COOKBOOK_PATH}"
+  sh "sudo rsync -rlP --delete --exclude '.svn' --exclude '.git*' cookbooks/ #{COOKBOOK_PATH}"
   puts "* Installing new Site Cookbooks"
-  sh "sudo rsync -rlP --delete --exclude '.svn' site-cookbooks/ #{SITE_COOKBOOK_PATH}"
+  sh "sudo rsync -rlP --delete --exclude '.svn' --exclude '.git*' site-cookbooks/ #{SITE_COOKBOOK_PATH}"
   puts "* Installing new Node Roles"
-  sh "sudo rsync -rlP --delete --exclude '.svn' roles/ #{ROLE_PATH}"
+  sh "sudo rsync -rlP --delete --exclude '.svn' --exclude '.git*' roles/ #{ROLE_PATH}"
   
   if File.exists?(File.join(File.dirname(__FILE__), "config", "server.rb"))
     puts "* Installing new Chef Server Config"
