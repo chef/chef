@@ -88,13 +88,13 @@ class Chef
               end
             end
           end
-          if @current_resource.home != @new_resource.home
+          if @current_resource.home != @new_resource.home && @new_resource.home
             if @new_resource.supports[:manage_home]
               Chef::Log.debug("Managing the home directory for #{@new_resource}")
-              opts << " -d #{@new_resource.home} -m"
+              opts << " -d '#{@new_resource.home}' -m"
             else
               Chef::Log.debug("Setting #{@new_resource} home to #{@new_resource.home}")
-              opts << " -d #{@new_resource.home}"
+              opts << " -d '#{@new_resource.home}'"
             end
           end
           opts << " #{@new_resource.username}"
