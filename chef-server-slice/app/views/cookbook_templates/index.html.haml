@@ -3,5 +3,5 @@
     %table
       %tr
         %td
-          %a{ :href => url(:cookbook_template, { :cookbook_id => params[:cookbook_id], :id => data[:link_name], :version => data[:version] }) }
+          %a{ :href => slice_url(:cookbook_template, { :cookbook_id => params[:cookbook_id], :id => data[:link_name], :version => data[:version] }) }
             = "#{data[:version]} - #{data[:name]}"
