@@ -64,7 +64,7 @@ class ChefServerSlice::OpenidServer < ChefServerSlice::Application
         server_url = slice_url :openid_server
         oidresp = oidreq.answer(false, server_url)
       else
-        if content_type != 'application/json'
+        if content_type == :json
           session[:last_oidreq] = oidreq
           response = { :action => slice_url(:openid_server_decision) }
           return response.to_json
