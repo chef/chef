@@ -100,6 +100,8 @@ describe Chef::REST, "run_request method" do
     @url_mock.stub!(:path).and_return("/")
     @url_mock.stub!(:query).and_return("foo=bar")
     @url_mock.stub!(:scheme).and_return("https")
+    @url_mock.stub!(:user).and_return(nil)
+    @url_mock.stub!(:password).and_return(nil)
     @url_mock.stub!(:to_s).and_return("https://one:80/?foo=bar")
     @http_response_mock = mock("Net::HTTPSuccess", :null_object => true)
     @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(true)
@@ -240,6 +242,21 @@ describe Chef::REST, "run_request method" do
     do_run_request(:DELETE)
   end
   
+  describe "with HTTP Basic Authentication info in the URL" do
+    before(:each) do
+      @url_mock.stub!(:user).and_return('frodo')
+      @url_mock.stub!(:password).and_return('odorf')
+    end
+
+    %w(Get Post Put Delete).each do |verb|
+      it "should authenticate HTTP #{verb.upcase} requests" do
+        Net::HTTP::const_get(verb).stub!(:new).and_return(@request_mock)
+        @request_mock.should_receive(:basic_auth).with('frodo', 'odorf')
+        do_run_request(verb.upcase.to_sym)
+      end
+    end
+  end
+
   it "should raise an error if the method is not GET/PUT/POST/DELETE" do
     lambda { do_run_request(:MONKEY) }.should raise_error(ArgumentError)
   end
