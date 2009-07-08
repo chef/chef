@@ -91,7 +91,7 @@ describe Chef::Provider::User::Useradd, "set_options" do
     end
     
     it "should set -d /homedir -m" do    
-      @provider.set_options.should eql(" -d /wowaweea -m adam")
+      @provider.set_options.should eql(" -d '/wowaweea' -m adam")
     end
   end
 end
