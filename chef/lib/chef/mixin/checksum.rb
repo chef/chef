@@ -28,6 +28,7 @@ class Chef
         fh.each do |line|
           digest.update(line)
         end
+        fh.close
         digest.hexdigest
       end
       
