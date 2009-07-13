@@ -129,6 +129,14 @@ describe Chef::REST, "run_request method" do
   it "should raise an exception if the redirect limit is 0" do
     lambda { @r.run_request(:GET, "/", false, 0)}.should raise_error(ArgumentError)
   end
+
+  it "should not fail if URI contains %d characters" do
+    @http_response_mock.stub!(:read_body).and_yield("ninja")
+    @url_mock.stub!(:path).and_return("/myfile?Expires=1247484042&Signature=hpK%2BbHchAmUCErdz1yCBPazzGRQ%3D")
+    @http_mock.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
+    @http_response_mock.should_receive(:read_body).and_return(true)
+    do_run_request(:GET, false, 10, true)
+  end
   
   it "should use SSL if the url starts with https" do
     @url_mock.should_receive(:scheme).and_return("https")

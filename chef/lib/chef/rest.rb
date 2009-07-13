@@ -171,8 +171,6 @@ class Chef
       tf = nil
       http_retries = 1
 
-      # TODO - Figure out how to test this block - I really have no idea how 
-      # to do it without actually calling http.request... 
       begin
         res = http.request(req) do |response|
           if raw
@@ -188,7 +186,7 @@ class Chef
               elsif total == 0
                 Chef::Log.debug("#{req.path} (zero content length)")
               else
-                Chef::Log.debug("#{req.path} %d%% done (%d of %d)" % [(size * 100) / total, size, total])
+                Chef::Log.debug("#{req.path}" + " %d%% done (%d of %d)" % [(size * 100) / total, size, total])
               end
             end
             tf.close 
