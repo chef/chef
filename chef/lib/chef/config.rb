@@ -41,6 +41,24 @@ class Chef
       newkey
     end
 
+
+    # Override the config dispatch to set the value of multiple server options simultaneously
+    # 
+    # === Parameters
+    # url<String>:: String to be set for all of the chef-server-api URL's
+    #
+    def self.chef_server_url=(url)
+      configure do |c|
+        [ :registration_url,
+          :openid_url,
+          :template_url,
+          :remotefile_url,
+          :search_url,
+          :role_url ].each do |u| 
+            c[u] = url
+        end
+      end
+    end
     # Override the config dispatch to set the value of log_location configuration option
     #
     # === Parameters
@@ -61,6 +79,7 @@ class Chef
 
     authorized_openid_identifiers nil
     authorized_openid_providers nil
+    chef_server_url nil
     cookbook_path [ "/var/chef/site-cookbooks", "/var/chef/cookbooks" ]
     couchdb_database "chef"
     couchdb_url "http://localhost:5984"

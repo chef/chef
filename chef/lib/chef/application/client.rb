@@ -95,6 +95,12 @@ class Chef::Application::Client < Chef::Application
     :description => "The splay time for running at intervals, in seconds",
     :proc => lambda { |s| s.to_i }
 
+  option :chef_server_url,
+    :short => "-S CHEFSERVERURL",
+    :long => "--server CHEFSERVERURL",
+    :description => "The chef server URL",
+    :proc => nil
+
   option :validation_token,
     :short => "-t TOKEN",
     :long => "--token TOKEN",
@@ -112,6 +118,8 @@ class Chef::Application::Client < Chef::Application
   # Re-open the JSON attributes and load them into the node
   def reconfigure 
     super 
+
+    Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
    
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
