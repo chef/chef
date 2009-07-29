@@ -51,6 +51,7 @@ describe Chef::Config do
 
   describe "class method: manage_secret_key" do
     before do
+      Chef::FileCache.stub!(:load).and_return(true)
       Chef::FileCache.stub!(:has_key?).with("chef_server_cookie_id").and_return(false)
     end
     
