@@ -35,11 +35,30 @@ describe Chef::Application::Solo, "reconfigure" do
     @app.stub!(:configure_logging).and_return(true)
     Chef::Config.stub!(:[]).with(:recipe_url).and_return(false)
     Chef::Config.stub!(:[]).with(:json_attribs).and_return(false)
+    Chef::Config.stub!(:[]).with(:splay).and_return(nil)
   end
   
   after do
-    Chef::Config[:solo] = false
+    Chef::Config.solo = false
   end
+
+  describe "when in daemonized mode" do
+    before do
+      Chef::Config.stub!(:[]).with(:daemonize).and_return(true)
+    end
+
+    describe "and no interval has been set" do
+      before do
+        Chef::Config.stub!(:[]).with(:interval).and_return(nil)
+      end
+
+      it "should set the interval to 1800" do
+        Chef::Config.should_receive(:[]=).with(:interval, 1800).once.and_return(1800)
+        @app.reconfigure
+      end
+    end
+  end
+
 
   describe "when the json_attribs configuration option is specified" do
     before do
@@ -104,6 +123,7 @@ end
 
 describe Chef::Application::Solo, "setup_application" do
   before do
+    Chef::Daemon.stub!(:change_privilege).and_return(true)    
     @chef_client = mock("Chef::Client", :null_object => true)
     Chef::Client.stub!(:new).and_return(@chef_client)
     @app = Chef::Application::Solo.new
@@ -111,12 +131,19 @@ describe Chef::Application::Solo, "setup_application" do
     @app.stub!(:configure_opt_parser).and_return(true)
     @app.stub!(:configure_chef).and_return(true)
     @app.stub!(:configure_logging).and_return(true)
+    Chef::Config.stub!(:[]).with(:interval).and_return(false)
+    Chef::Config.stub!(:[]).with(:splay).and_return(false)
     Chef::Config.stub!(:[]).with(:recipe_url).and_return(false)
     Chef::Config.stub!(:[]).with(:json_attribs).and_return("/etc/chef/dna.json")
     @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
     @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
   end
-  
+ 
+  it "should change privileges" do
+    Chef::Daemon.should_receive(:change_privilege).and_return(true)
+    @app.setup_application
+  end
+
   it "should instantiate a chef::client object" do
     Chef::Client.should_receive(:new).and_return(@chef_client)
     @app.setup_application

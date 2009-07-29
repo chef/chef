@@ -18,6 +18,7 @@
 require 'chef/application'
 require 'chef/client'
 require 'chef/config'
+require 'chef/daemon'
 require 'chef/log'
 require 'net/http'
 require 'open-uri'
@@ -51,7 +52,49 @@ class Chef::Application::Solo < Chef::Application
     :boolean      => true,
     :show_options => true,
     :exit         => 0
-  
+
+  option :user,
+    :short => "-u USER",
+    :long => "--user USER",
+    :description => "User to set privilege to",
+    :proc => nil
+
+  option :group,
+    :short => "-g GROUP",
+    :long => "--group GROUP",
+    :description => "Group to set privilege to",
+    :proc => nil
+
+  option :daemonize,
+    :short => "-d",
+    :long => "--daemonize",
+    :description => "Daemonize the process",
+    :proc => lambda { |p| true }
+
+  option :interval,
+    :short => "-i SECONDS",
+    :long => "--interval SECONDS",
+    :description => "Run chef-client periodically, in seconds",
+    :proc => lambda { |s| s.to_i }
+
+  option :json_attribs,
+    :short => "-j JSON_ATTRIBS",
+    :long => "--json-attributes JSON_ATTRIBS",
+    :description => "Load attributes from a JSON file or URL",
+    :proc => nil
+
+  option :node_name,
+    :short => "-N NODE_NAME",
+    :long => "--node-name NODE_NAME",
+    :description => "The node name for this client",
+    :proc => nil
+
+  option :splay,
+    :short => "-s SECONDS",
+    :long => "--splay SECONDS",
+    :description => "The splay time for running at intervals, in seconds",
+    :proc => lambda { |s| s.to_i }
+
   option :json_attribs,
     :short => "-j JSON_ATTRIBS",
     :long => "--json-attributes JSON_ATTRIBS",
@@ -73,7 +116,11 @@ class Chef::Application::Solo < Chef::Application
   def reconfigure
     super
     
-    Chef::Config[:solo] = true
+    Chef::Config.solo = true
+
+    if Chef::Config[:daemonize]
+      Chef::Config[:interval] ||= 1800
+    end
     
     if Chef::Config[:json_attribs]
       begin
@@ -113,12 +160,47 @@ class Chef::Application::Solo < Chef::Application
   end
   
   def setup_application
+    Chef::Daemon.change_privilege
+    
     @chef_solo = Chef::Client.new
     @chef_solo.json_attribs = @chef_solo_json
     @chef_solo.node_name = Chef::Config[:node_name]
   end
   
   def run_application
-    @chef_solo.run_solo
+    if Chef::Config[:daemonize]
+      Chef::Daemon.daemonize("chef-client")
+    end
+
+    loop do
+      begin
+        if Chef::Config[:splay]
+          splay = rand Chef::Config[:splay]
+          Chef::Log.debug("Splay sleep #{splay} seconds")
+          sleep splay
+        end
+
+        @chef_solo.run_solo
+        
+        if Chef::Config[:interval]
+          Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
+          sleep Chef::Config[:interval]
+        else
+          Chef::Application.exit! "Exiting", 0
+        end
+      rescue SystemExit => e
+        raise
+      rescue Exception => e
+        if Chef::Config[:interval]
+          Chef::Log.error("#{e.class}")
+          Chef::Log.fatal("#{e}\n#{e.backtrace.join("\n")}")
+          Chef::Log.fatal("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
+          sleep Chef::Config[:interval]
+          retry
+        else
+          raise
+        end
+      end
+    end
   end
 end

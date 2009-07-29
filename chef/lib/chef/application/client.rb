@@ -166,7 +166,7 @@ class Chef::Application::Client < Chef::Application
     loop do
       begin
         if Chef::Config[:splay]
-          splay = rand(Chef::Config[:splay]);
+          splay = rand Chef::Config[:splay]
           Chef::Log.debug("Splay sleep #{splay} seconds")
           sleep splay
         end

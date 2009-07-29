@@ -33,43 +33,26 @@ describe Chef::Application::Client, "reconfigure" do
     @app.stub!(:configure_opt_parser).and_return(true)
     @app.stub!(:configure_chef).and_return(true)
     @app.stub!(:configure_logging).and_return(true)
-    Chef::Config.stub!(:[]).with(:json_attribs).and_return(false)
-  end
-  
-  describe "with an splay value" do
-    before do
-      Chef::Config.stub!(:[]).with(:splay).and_return(60)
-      Chef::Config.stub!(:[]).with(:interval).and_return(10)
-    end
-    
-    it "should set the delay based on the interval and splay values" do
-      Chef::Config.should_receive(:[]=).with(:delay, an_instance_of(Fixnum))
-      @app.reconfigure
-    end
-  end
-  
-  describe "without an splay value" do
-    before do
-      Chef::Config.stub!(:[]).with(:splay).and_return(nil)
-      Chef::Config.stub!(:[]).with(:interval).and_return(10)
-    end
-    
-    it "should set the delay based on the interval" do
-      Chef::Config.should_receive(:[]=).with(:delay, 10)
-      @app.reconfigure
-    end
-  end
-
-end
-
-describe Chef::Application::Client, "reconfigure" do
-  before do
-    @app = Chef::Application::Client.new
-    @app.stub!(:configure_opt_parser).and_return(true)
-    @app.stub!(:configure_chef).and_return(true)
-    @app.stub!(:configure_logging).and_return(true)
+    Chef::Config.stub!(:[]).with(:json_attribs).and_return(nil)
     Chef::Config.stub!(:[]).with(:interval).and_return(10)
     Chef::Config.stub!(:[]).with(:splay).and_return(nil)
+  end
+
+  describe "when in daemonized mode" do
+    before do
+      Chef::Config.stub!(:[]).with(:daemonize).and_return(true)
+    end
+
+    describe "and no interval has been set" do
+      before do
+        Chef::Config.stub!(:[]).with(:interval).and_return(nil)
+      end
+
+      it "should set the interval to 1800" do
+        Chef::Config.should_receive(:[]=).with(:interval, 1800).and_return(1800)
+        @app.reconfigure
+      end
+    end
   end
 
   describe "when the json_attribs configuration option is specified" do
