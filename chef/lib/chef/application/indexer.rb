@@ -71,6 +71,14 @@ class Chef::Application::Indexer < Chef::Application
     :description => "Daemonize the process",
     :proc => lambda { |p| true }
 
+  option :version,
+    :short        => "-v",
+    :long         => "--version",
+    :description  => "Show chef version",
+    :boolean      => true,
+    :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+    :exit         => 0
+
   def initialize
     super
 
