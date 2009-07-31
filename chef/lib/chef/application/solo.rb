@@ -107,6 +107,14 @@ class Chef::Application::Solo < Chef::Application
       :description => "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache.",
       :proc => nil
   
+  option :version,
+    :short        => "-v",
+    :long         => "--version",
+    :description  => "Show chef version",
+    :boolean      => true,
+    :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+    :exit         => 0
+
   def initialize
     super
     @chef_solo = nil

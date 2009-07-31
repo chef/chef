@@ -107,6 +107,14 @@ class Chef::Application::Client < Chef::Application
     :description => "Set the openid validation token",
     :proc => nil
   
+  option :version,
+    :short        => "-v",
+    :long         => "--version",
+    :description  => "Show chef version",
+    :boolean      => true,
+    :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
+    :exit         => 0
+
   def initialize
     super
 
@@ -159,6 +167,10 @@ class Chef::Application::Client < Chef::Application
   
   # Run the chef client, optionally daemonizing or looping at intervals.
   def run_application
+    if Chef::Config[:version]
+      puts "Chef version: #{::Chef::VERSION}"
+    end
+
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
     end
