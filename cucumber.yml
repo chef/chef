@@ -13,6 +13,7 @@ api_nodes_list: --tags nodes_list --format pretty -r features/steps -r features/
 api_nodes_show: --tags nodes_show --format pretty -r features/steps -r features/support features
 api_nodes_update: --tags nodes_update --format pretty -r features/steps -r features/support features
 client: --tags client --format pretty -r features/steps -r features/support features 
+client_roles: --tags client_roles --format pretty -r features/steps -r features/support features 
 search: --tags search --format pretty -r features/steps -r features/support features 
 language: --tags language --format pretty -r features/steps -r features/support features 
 recipe_inclusion: --tags recipe_inclusion --format pretty -r features/steps -r features/support features 

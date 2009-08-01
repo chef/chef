@@ -145,8 +145,15 @@ namespace :features do
       end
     end
   end
+
   Cucumber::Rake::Task.new(:client) do |t|
     t.profile = "client"
+  end
+
+  namespace :client do
+    Cucumber::Rake::Task.new(:roles) do |t|
+      t.profile = "client_roles"
+    end
   end
 
   Cucumber::Rake::Task.new(:search) do |t|

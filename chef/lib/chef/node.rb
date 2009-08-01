@@ -23,13 +23,14 @@ require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/queue'
 require 'chef/run_list'
+require 'chef/node/attribute'
 require 'extlib'
 require 'json'
 
 class Chef
   class Node
     
-    attr_accessor :attribute, :recipe_list, :couchdb_rev, :run_state, :run_list
+    attr_accessor :attribute, :recipe_list, :couchdb_rev, :run_state, :run_list, :override, :default
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
@@ -121,8 +122,12 @@ class Chef
     # Create a new Chef::Node object.
     def initialize()
       @name = nil
+
       @attribute = Mash.new
+      @override = Mash.new
+      @default = Mash.new
       @run_list = Chef::RunList.new 
+
       @couchdb_rev = nil
       @couchdb = Chef::CouchDB.new
       @run_state = {
@@ -174,41 +179,61 @@ class Chef
     
     # Return an attribute of this node.  Returns nil if the attribute is not found.
     def [](attrib)
-      if @attribute.has_key?(attrib)        
-        @attribute[attrib]
-      elsif @attribute.has_key?(attrib.to_s)        
-        @attribute[attrib.to_s]
-      else
-        nil
-      end
+      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      attrs[attrib] 
     end
     
     # Set an attribute of this node
     def []=(attrib, value)
-      @attribute[attrib] = value
+      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      attrs[attrib] = value
+    end
+
+    # Set an attribute of this node, but auto-vivifiy any Mashes that might
+    # be missing
+    def set
+      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      attrs.auto_vivifiy_on_read = true
+      attrs
+    end
+
+    # Set an attribute of this node, auto-vivifiying any mashes that are
+    # missing, but if the final value already exists, don't set it
+    def set_unless
+      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      attrs.auto_vivifiy_on_read = true
+      attrs.set_unless_value_present = true
+      attrs
+    end
+
+    # Return true if this Node has a given attribute, false if not.  Takes either a symbol or
+    # a string.
+    #
+    # Only works on the top level. Preferred way is to use the normal [] style
+    # lookup and call attribute?()
+    def attribute?(attrib)
+      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      attrs.attribute?(attrib)
     end
   
-    # Yield each key to the block
+    # Yield each key of the top level to the block. 
     def each(&block)
-      @attribute.each_key do |k|
-        yield(k)
-      end
+      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      attrs.each(&block)
     end
     
     # Iterates over each attribute, passing the attribute and value to the block.
     def each_attribute(&block)
-      @attribute.sort {|a,b| a[0] <=> b[0] }.each do |k,v|
-        yield(k, v)
-      end
+      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      attrs.each_attribute(&block)
     end
-    
-    # Return true if this Node has a given attribute, false if not.  Takes either a symbol or
-    # a string.
-    def attribute?(attrib)
-      result = false
-      result = @attribute.has_key?(attrib)
-      return result if result
-      return @attribute.has_key?(attrib.to_sym)
+
+    # Set an attribute based on the missing method.  If you pass an argument, we'll use that
+    # to set the attribute values.  Otherwise, we'll wind up just returning the attributes
+    # value.
+    def method_missing(symbol, *args)
+      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      attrs.send(symbol, *args)
     end
     
     # Returns true if this Node expects a given recipe, false if not.
@@ -252,21 +277,6 @@ class Chef
     # Returns true if this Node expects a given role, false if not.
     def run_list?(item)
       @run_list.detect { |r| r == item } ? true : false
-    end
-    
-    # Set an attribute based on the missing method.  If you pass an argument, we'll use that
-    # to set the attribute values.  Otherwise, we'll wind up just returning the attributes
-    # value.
-    def method_missing(symbol, *args)
-      if args.length != 0
-        @attribute[symbol] = args.length == 1 ? args[0] : args
-      else
-        if @attribute.has_key?(symbol)
-          @attribute[symbol]
-        else
-          raise ArgumentError, "Attribute #{symbol.to_s} is not defined!"
-        end
-      end
     end
     
     # Turns the node into an object that we can index.  I apologize up front for the
@@ -335,6 +345,12 @@ class Chef
       node.name(o["name"])
       o["attributes"].each do |k,v|
         node[k] = v
+      end
+      if o.has_key?("defaults")
+        node.default = o["defaults"]
+      end
+      if o.has_key?("overrides")
+        node.override = o["overrides"]
       end
       if o.has_key?("run_list")
         node.run_list.reset(o["run_list"])
