@@ -38,6 +38,10 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
     rescue Net::HTTPServerException => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
+    # TODO - might as well expand the run list here, too, rather than take multiple round trips.
+    recipes, defaults, overrides = @node.run_list.expand("couchdb")
+    @node.default = defaults
+    @node.override = overrides
     display @node
   end
 

@@ -192,6 +192,7 @@ describe Chef::Node::Attribute do
   
     @default_hash = {
       "domain" => "opscode.com",
+      "hot" => { "day" => "saturday" },
       "music" => { 
         "jimmy_eat_world" => "is fun!",
         "mastodon" => "rocks",
@@ -200,6 +201,8 @@ describe Chef::Node::Attribute do
     }
     @override_hash = {
       "macaddress" => "00:00:00:00:00:00",
+      "hot" => { "day" => "sunday" },
+      "fire" => "still burn",
       "music" => {
         "mars_volta" => "cicatriz"
       }
@@ -242,6 +245,10 @@ describe Chef::Node::Attribute do
       @attributes["platform"].should == "mac_os_x"
     end
 
+    it "should return data that doesn't have corresponding keys in every hash" do
+      @attributes["command"]["ps"].should == "ps -ef"
+    end
+
     it "should return default data if it is not overriden or in attribute data" do
       @attributes["music"]["mastodon"].should == "rocks"
     end
@@ -252,6 +259,10 @@ describe Chef::Node::Attribute do
 
     it "should prefer the attribute data over an available default" do
       @attributes["music"]["jimmy_eat_world"].should == "nice"
+    end
+
+    it "should prefer override data over default data if there is no attribute data" do
+      @attributes["hot"]["day"].should == "sunday"
     end
 
     it "should return the merged hash if all three have values" do
@@ -307,7 +318,6 @@ describe Chef::Node::Attribute do
     end
 
     it "should set deeply nested attribute value when auto_vivifiy_on_read is true" do
-      puts "\n\n\n\n"
       @attributes.auto_vivifiy_on_read = true
       @attributes["longboard"]["hunters"]["comics"] = "surfing"
       @attributes["longboard"]["hunters"]["comics"].should == "surfing"
@@ -317,6 +327,159 @@ describe Chef::Node::Attribute do
 
     it "should die if you try and do nested attributes that do not exist without read vivification" do
       lambda { @attributes["foo"]["bar"] = :baz }.should raise_error
+    end
+
+    it "should let you set attributes manually without vivification" do
+      @attributes["foo"] = Mash.new
+      @attributes["foo"]["bar"] = :baz
+      @attributes["foo"]["bar"].should == :baz
+    end
+
+    it "should optionally skip setting the value if one already exists" do
+      @attributes.set_unless_value_present = true
+      @attributes["hostname"] = "bar"
+      @attributes["hostname"].should == "latte"
+    end
+
+    it "should optionally skip setting the value if a default already exists" do
+      @attributes.set_unless_value_present = true
+      @attributes["music"]["mastodon"] = "slays it"
+      @attributes["music"]["mastodon"].should == "rocks"
+    end
+
+    it "should optionally skip setting the value if an attibute already exists" do
+      @attributes.set_unless_value_present = true
+      @attributes["network"]["default_interface"] = "wiz1"
+      @attributes["network"]["default_interface"].should == "en1"
+    end
+
+    it "should optionally skip setting the value if an override already exists" do
+      @attributes.set_unless_value_present = true
+      @attributes["fire"] = "secret life"
+      @attributes["fire"].should == "still burn"
+    end
+  end
+
+  describe "get_value" do
+    it "should get a value from a top level key" do
+      @attributes.get_value(@default_hash, "domain").should == "opscode.com"
+    end
+
+    it "should return nil for a top level key that does not exist" do
+      @attributes.get_value(@default_hash, "domainz").should == nil
+    end
+
+    it "should get a value based on the state of the object" do
+      @attributes.auto_vivifiy_on_read = true
+      @attributes[:foo][:bar][:baz] = "snack"
+      @attributes.get_value(@attribute_hash, :baz).should == "snack"
+    end
+
+    it "should return nil based on the state of the object if the key does not exist" do
+      @attributes.auto_vivifiy_on_read = true
+      @attributes[:foo][:bar][:baz] = "snack"
+      @attributes.get_value(@attribute_hash, :baznatch).should == nil
+    end
+  end
+
+  describe "attribute?" do
+    it "should return true if an attribute exists" do
+      @attributes.attribute?("music").should == true
+    end
+
+    it "should return false if an attribute does not exist" do
+      @attributes.attribute?("ninja").should == false
+    end
+
+    it "should be looking at the current position of the object" do
+      @attributes["music"]
+      @attributes.attribute?("mastodon").should == true 
+      @attributes.attribute?("whitesnake").should == false
+    end
+  end
+
+  describe "method_missing" do
+    it "should behave like a [] lookup" do
+      @attributes.music.mastodon.should == "rocks"
+    end
+
+    it "should behave like a []= lookup if the last method has an argument" do
+      @attributes.music.mastodon(["dream", "still", "shining"])
+      @attributes.reset
+      @attributes.music.mastodon.should == ["dream", "still", "shining"]
+    end
+  end
+
+  describe "each" do
+    before(:each) do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  { "two" => "three" },
+          "hut" =>  { "two" => "three" },
+        },
+        {
+          "one" =>  { "four" => "five" },
+          "snakes" => "on a plane"
+        },
+        {
+          "one" =>  { "six" => "seven" },
+          "snack" => "cookies"
+        }
+      )
+    end
+
+    it "should yield each top level key" do
+      collect = Array.new
+      @attributes.each do |k|
+        collect << k
+      end
+      collect.include?("one").should == true
+      collect.include?("hut").should == true
+      collect.include?("snakes").should == true
+      collect.include?("snack").should == true
+      collect.length.should == 4
+    end
+
+    it "should yield lower if we go deeper" do
+      collect = Array.new
+      @attributes.one.each do |k|
+        collect << k
+      end
+      collect.include?("two").should == true
+      collect.include?("four").should == true
+      collect.include?("six").should == true
+      collect.length.should == 3 
+    end
+  end
+
+  describe "each_attribute" do
+    before(:each) do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  "two",
+          "hut" =>  "three",
+        },
+        {
+          "one" =>  "four",
+          "snakes" => "on a plane"
+        },
+        {
+          "one" => "six",
+          "snack" => "cookies"
+        }
+      )
+    end
+
+    it "should yield each top level key and value, post merge rules" do
+      collect = Hash.new
+      @attributes.each_attribute do |k, v|
+        collect[k] = v
+      end
+
+      collect["one"].should == "six"
+      collect["hut"].should == "three"
+      collect["snakes"].should == "on a plane"
+      collect["snack"].should == "cookies"
     end
   end
 

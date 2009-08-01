@@ -5,6 +5,7 @@ default_attributes(
   :ossining => "this time around"
 )
 override_attributes(
-  :snakes => "on a plane"
+  :snakes => "on a plane",
+  :ossining => "whatever"
 )
 recipes "roles"

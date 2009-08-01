@@ -28,14 +28,6 @@ module Merb
         response
       end
 
-      def attribute_list(node)
-        response = ""
-        node.each_attribute do |k,v|
-          response << "<li><b>#{k}</b>: #{v}</li>\n"
-        end
-        response
-      end
-      
     end
   end
 end

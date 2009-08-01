@@ -16,3 +16,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+Chef::Log.debug(node.override.inspect)
+Chef::Log.debug(node.default.inspect)
+execute "echo #{node.reason} > #{File.join(node.tmpdir, "role_test_reason.txt")}" 
+execute "echo #{node.ossining} > #{File.join(node.tmpdir, "role_test_ossining.txt")}" 
+execute "echo #{node["languages"]["ruby"]["version"]} > #{File.join(node.tmpdir, "role_test_ruby_version.txt")}" 
+
+

@@ -3,14 +3,15 @@
   "chef_type": "role",
   "json_class": "Chef::Role",
   "default_attributes": {
-    "ossining": "this time around",
-    "reason": "unbalancing"
+    "reason": "unbalancing",
+    "ossining": "this time around"
   },
   "description": "A simple test role",
   "recipes": [
     "roles"
   ],
   "override_attributes": {
+    "ossining": "whatever",
     "snakes": "on a plane"
   }
 }

@@ -81,6 +81,12 @@ describe Chef::Node do
       @node.attribute?("no dice").should eql(false)
     end
 
+    it "should let you go deep with attribute?" do
+      @node.set["battles"]["people"]["wonkey"] = true
+      @node["battles"]["people"].attribute?("wonkey").should == true
+      @node["battles"]["people"].attribute?("snozzberry").should == false 
+    end
+
     it "should allow you to set an attribute via method_missing" do
       @node.sunshine "is bright"
       @node.attribute[:sunshine].should eql("is bright")
@@ -89,6 +95,17 @@ describe Chef::Node do
     it "should allow you get get an attribute via method_missing" do
       @node.sunshine "is bright"
       @node.sunshine.should eql("is bright")
+    end
+
+    it "should allow you to set an attribute with set, without pre-declaring a hash" do
+      @node.set[:snoopy][:is_a_puppy] = true
+      @node[:snoopy][:is_a_puppy].should == true
+    end
+
+    it "should allow you to set an attribute with set_unless, without pre-declaring a hash, but only if the value is not already set" do
+      @node.set[:snoopy][:is_a_puppy] = true 
+      @node.set_unless[:snoopy][:is_a_puppy] = false 
+      @node[:snoopy][:is_a_puppy].should == true 
     end
     
     it "should raise an ArgumentError if you ask for an attribute that doesn't exist via method_missing" do
