@@ -21,6 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::Node do
   before(:each) do
     Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    Nanite.stub!(:request).and_return(true)
     @node = Chef::Node.new()
   end
  
@@ -252,17 +253,6 @@ describe Chef::Node do
     end
   end
 
-  describe "to_index" do
-    before(:each) do
-      @node.foo("bar")
-    end
-    
-    it "should return a hash with :index attributes" do
-      @node.name("airplane")
-      @node.to_index.should == { "foo" => "bar", "index_name" => "node", "id" => "node_airplane", "name" => "airplane" }
-    end
-  end
-
   describe "to_s" do
     it "should turn into a string like node[name]" do
       @node.name("airplane")
@@ -311,7 +301,6 @@ describe Chef::Node do
         node = Chef::Node.new
         node.name "bob"
         node.couchdb_rev = 1
-        Chef::Queue.should_receive(:send_msg).with(:queue, :remove, node)
         node.destroy
       end
     end
@@ -320,14 +309,12 @@ describe Chef::Node do
       before(:each) do
         @mock_couch.stub!(:store).and_return({ "rev" => 33 })
         Chef::CouchDB.stub!(:new).and_return(@mock_couch)
-        Chef::Queue.stub!(:send_msg).and_return(true)
         @node = Chef::Node.new
         @node.name "bob"
         @node.couchdb_rev = 1
       end
 
       it "should save the node to couchdb" do
-        Chef::Queue.should_receive(:send_msg).with(:queue, :index, @node)
         @mock_couch.should_receive(:store).with("node", "bob", @node).and_return({ "rev" => 33 })
         @node.save
       end

@@ -34,7 +34,6 @@ class Chef
       include Chef::Mixin::FindPreferredFile
       
       def action_create
-        Chef::Log.debug(@node.run_state.inspect)
         raw_template_file = nil
         
         cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name

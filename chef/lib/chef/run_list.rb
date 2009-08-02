@@ -111,7 +111,8 @@ class Chef
       self
     end
 
-    def expand(from='server')
+    def expand(from='server', couchdb=nil)
+      couchdb = couchdb ? couchdb : Chef::CouchDB.new
       recipes = Array.new
       default_attrs = Mash.new
       override_attrs = Mash.new
@@ -132,7 +133,7 @@ class Chef
             role = r.get_rest("roles/#{name}")
           elsif from == 'couchdb'
             # Load the role from couchdb
-            role = Chef::Role.load(name)
+            role = Chef::Role.load(name, couchdb)
           end
           role.recipes.each { |r| recipes <<  r unless recipes.include?(r) }
           default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, role.default_attributes)

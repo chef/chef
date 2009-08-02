@@ -21,7 +21,6 @@ require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
-require 'chef/queue'
 require 'chef/run_list'
 require 'chef/node/attribute'
 require 'extlib'
@@ -30,14 +29,14 @@ require 'json'
 class Chef
   class Node
     
-    attr_accessor :attribute, :recipe_list, :couchdb_rev, :run_state, :run_list, :override, :default
+    attr_accessor :attribute, :recipe_list, :couchdb_rev, :couchdb_id, :run_state, :run_list, :override, :default
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
     
     DESIGN_DOCUMENT = {
-      "version" => 8,
+      "version" => 9,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -120,7 +119,7 @@ class Chef
     }
     
     # Create a new Chef::Node object.
-    def initialize()
+    def initialize
       @name = nil
 
       @attribute = Mash.new
@@ -129,6 +128,7 @@ class Chef
       @run_list = Chef::RunList.new 
 
       @couchdb_rev = nil
+      @couchdb_id = nil
       @couchdb = Chef::CouchDB.new
       @run_state = {
         :template_cache => Hash.new,
@@ -279,51 +279,30 @@ class Chef
       @run_list.detect { |r| r == item } ? true : false
     end
     
-    # Turns the node into an object that we can index.  I apologize up front for the
-    # super confusion that is the recursive index_flatten hash, which comes up next.
-    # Faith, young one, faith.
-    #
-    # === Returns
-    # index_hash<Hash>:: A flattened hash of all the nodes attributes, suitable for indexing.
-    def to_index
-      index_hash = {
-        "index_name" => "node",
-        "id" => "node_#{@name}",
-        "name" => @name,
-      }
-      @attribute.each do |key, value|
-        if value.kind_of?(Hash) || value.kind_of?(Mash)
-          index_flatten_hash(key, value).each do |to_index|
-            to_index.each do |nk, nv|
-              index_hash[nk] = nv
-            end
-          end
+    # Set an attribute based on the missing method.  If you pass an argument, we'll use that
+    # to set the attribute values.  Otherwise, we'll wind up just returning the attributes
+    # value.
+    def method_missing(symbol, *args)
+      if args.length != 0
+        @attribute[symbol] = args.length == 1 ? args[0] : args
+      else
+        if @attribute.has_key?(symbol)
+          @attribute[symbol]
         else
-          index_hash[key] = value
+          raise ArgumentError, "Attribute #{symbol.to_s} is not defined!"
         end
       end
-      index_hash["recipe"] = @run_list.recipes if @run_list.recipes.length > 0
+    end
+ 
+    # Transform the node to a Hash
+    def to_hash
+      index_hash = @attribute
+      index_hash["chef_type"] = "node"
+      index_hash["name"] = @name
+      index_hash["recipes"] = @run_list.recipes if @run_list.recipes.length > 0
       index_hash["roles"] = @run_list.roles if @run_list.roles.length > 0
       index_hash["run_list"] = @run_list.run_list if @run_list.run_list.length > 0
       index_hash
-    end
-    
-    # Ah, song of my heart, index_flatten_hash.  This method flattens a hash in preparation
-    # for indexing, by appending the name of it's parent to a current key with an _.  Hence,
-    # node[:bar][:baz] = 'monkey' becomes bar_baz:monkey.
-    #
-    # === Returns
-    # results<Array>:: An array of hashes with one element.
-    def index_flatten_hash(parent_name, hash)
-      results = Array.new
-      hash.each do |k, v|
-        if v.kind_of?(Hash) || v.kind_of?(Mash)
-          results << index_flatten_hash("#{parent_name}_#{k}", v)
-        else
-          results << { "#{parent_name}_#{k}", v }
-        end
-      end
-      results.flatten
     end
     
     # Serialize this object as a hash 
@@ -358,13 +337,15 @@ class Chef
         o["recipes"].each { |r| node.recipes << r }
       end
       node.couchdb_rev = o["_rev"] if o.has_key?("_rev")
+      node.couchdb_id = o["_id"] if o.has_key?("_id")
       node
     end
     
     # List all the Chef::Node objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Nodes, fully inflated.
     def self.list(inflate=false)
-      rs = Chef::CouchDB.new.list("nodes", inflate)
+      couchdb = Chef::CouchDB.new
+      rs = couchdb.list("nodes", inflate)
       if inflate
         rs["rows"].collect { |r| r["value"] }
       else
@@ -374,25 +355,25 @@ class Chef
     
     # Load a node by name from CouchDB
     def self.load(name)
-      Chef::CouchDB.new.load("node", name)
+      couchdb = Chef::CouchDB.new
+      couchdb.load("node", name)
     end
     
     # Remove this node from the CouchDB
     def destroy
-      Chef::Queue.send_msg(:queue, :remove, self)
       @couchdb.delete("node", @name, @couchdb_rev)
     end
     
     # Save this node to the CouchDB
     def save
-      Chef::Queue.send_msg(:queue, :index, self)
       results = @couchdb.store("node", @name, self)
       @couchdb_rev = results["rev"]
     end
-    
+
     # Set up our CouchDB design document
     def self.create_design_document
-      Chef::CouchDB.new.create_design_document("nodes", DESIGN_DOCUMENT)
+      couchdb = Chef::CouchDB.new
+      couchdb.create_design_document("nodes", DESIGN_DOCUMENT)
     end
     
     # As a string

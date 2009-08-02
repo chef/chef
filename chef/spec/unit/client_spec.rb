@@ -30,13 +30,9 @@ describe Chef::Client, "run" do
     to_stub = [
       :build_node,
       :register,
-      :authenticate,
-      :sync_library_files,
-      :sync_attribute_files,
-      :sync_definitions,
-      :sync_recipes,
+      :sync_cookbooks,
       :save_node,
-      :save_node
+      :converge
     ]
     to_stub.each do |method|
       @client.stub!(method).and_return(true)
@@ -58,33 +54,13 @@ describe Chef::Client, "run" do
     @client.run
   end
   
-  it "should register for an openid" do
+  it "should register for a client" do
     @client.should_receive(:register).and_return(true)
     @client.run
   end
   
-  it "should authenticate with the server" do
-    @client.should_receive(:authenticate).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize definitions from the server" do
-    @client.should_receive(:sync_definitions).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize recipes from the server" do
-    @client.should_receive(:sync_recipes).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize and load library files from the server" do
-    @client.should_receive(:sync_library_files).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize and load attribute files from the server" do
-    @client.should_receive(:sync_attribute_files).and_return(true)
+  it "should synchronize the cookbooks from the server" do
+    @client.should_receive(:sync_cookbooks).and_return(true)
     @client.run
   end
   
@@ -98,11 +74,6 @@ describe Chef::Client, "run" do
     @client.run
   end
 
-  it "should set the cookbook_path" do
-    Chef::Config.should_receive('[]').with(:file_cache_path).
-      and_return('/var/chef/cache/cookbooks')
-    @client.run
-  end
 end
 
 describe Chef::Client, "run_solo" do
@@ -149,6 +120,7 @@ describe Chef::Client, "build_node" do
     Chef::REST.stub!(:new).and_return(@mock_rest)
     @client = Chef::Client.new
     Chef::Platform.stub!(:find_platform_and_version).and_return(["FooOS", "1.3.3.7"])
+    Chef::Config[:node_name] = nil
   end
   
   it "should set the name equal to the FQDN" do
@@ -256,3 +228,4 @@ describe Chef::Client, "run_ohai" do
     @chef_client.run_ohai
   end
 end
+
