@@ -47,8 +47,8 @@ describe Chef::Provider::HttpRequest, "load_current_resource" do
     @provider = Chef::Provider::HttpRequest.new(@node, @new_resource)
   end
   
-  it "should set up a Chef::REST client" do
-    Chef::REST.should_receive(:new).with(@new_resource.url)
+  it "should set up a Chef::REST client, with no authentication" do
+    Chef::REST.should_receive(:new).with(@new_resource.url, nil, nil)
     @provider.load_current_resource
   end
 end

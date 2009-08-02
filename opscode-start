@@ -1,0 +1,76 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use FindBin;
+
+my $src_dir = $FindBin::Bin;
+system("sudo echo");
+
+my $osascript = <<EOF;
+  tell application "iTerm"
+          set myterm to (make new terminal)
+          tell myterm
+                  launch session "Default session"
+                  tell the last session
+                          set name to "CouchDB"
+                          write text "cd $src_dir && sudo rake dev:features:start:couchdb"
+                  end tell
+                  launch session "Default session"
+                  tell the last session
+                          set name to "RabbitMQ"
+                          write text "cd $src_dir && sudo rake dev:features:start:rabbitmq"
+                  end tell
+                  launch session "Default session"
+                  tell the last session
+                          set name to "Solr"
+                          write text "cd $src_dir && sudo rake dev:features:start:chef_solr"
+                  end tell
+                  launch session "Default session"
+                  tell the last session
+                          set name to "Dynomite"
+                          write text "cd $src_dir && sudo rake dev:features:start:dynomite"
+                  end tell
+                  launch session "Default session"
+                  tell the last session
+                          set name to "Opscode GUID"
+                          delay 10
+                          write text "cd $src_dir && sudo rake dev:features:start:opscode_guid"
+                  end tell
+                  launch session "Default session"
+                  tell the last session
+                          set name to "Certificate"
+                          write text "cd $src_dir && sudo rake dev:features:start:certificate"
+                  end tell
+                  launch session "Default session"
+                  tell the last session
+                          set name to "Opscode Authz"
+                          write text "cd $src_dir && sudo rake dev:features:start:opscode_authz"
+                  end tell
+                  launch session "Default session"
+                  tell the last session
+                          set name to "Opscode Audit"
+                          write text "cd $src_dir && sudo rake dev:features:start:opscode_audit"
+                  end tell
+                  launch session "Default session"
+                  tell the last session
+                          set name to "Opscode Account"
+                          write text "cd $src_dir && sudo rake dev:features:start:opscode_account"
+                  end tell
+                  launch session "Default session"
+                  tell the last session
+                          set name to "Chef Solr Indexer"
+                          write text "cd $src_dir && sudo rake dev:features:start:chef_solr_indexer"
+                  end tell
+                  launch session "Default session"
+                  tell the last session
+                          set name to "Chef Server"
+                          write text "cd $src_dir && sudo rake dev:features:start:chef_server"
+                  end tell
+          end tell
+  end tell
+EOF
+
+open(CMD, "| osascript");
+print CMD $osascript;
+close(CMD);

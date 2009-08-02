@@ -24,7 +24,7 @@ When /^I run the chef\-client$/ do
   @chef_args ||= ""
   @config_file ||= File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))
   status = Chef::Mixin::Command.popen4(
-    "chef-client -l #{@log_level} -c #{@config_file} #{@chef_args}") do |p, i, o, e|
+    "#{File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "chef-client")} -l #{@log_level} -c #{@config_file} #{@chef_args}") do |p, i, o, e|
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
   end
@@ -76,7 +76,7 @@ openid_url       "http://127.0.0.1:4001"
 template_url     "http://127.0.0.1:4000"
 remotefile_url   "http://127.0.0.1:4000"
 search_url       "http://127.0.0.1:4000"
-couchdb_database   'chef_integration'
+couchdb_database   'chef'
 CONFIG
   
   @config_file = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client-with-logging.rb'))  
@@ -86,12 +86,11 @@ CONFIG
 
   self.cleanup_files << @config_file
   
-  @status = Chef::Mixin::Command.popen4("chef-client -c #{@config_file}") do |p, i, o, e|
+  
+  @status = Chef::Mixin::Command.popen4("#{File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "chef-client")} -l #{@log_level} -c #{@config_file} #{@chef_args}") do |p, i, o, e|
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
   end
-
-  
 end
 
 ###

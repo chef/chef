@@ -1,3 +1,4 @@
+@provider @provider_file
 Feature: Manage Files
   In order to save time
   As a Developer

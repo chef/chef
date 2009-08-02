@@ -46,9 +46,14 @@ class Chef
       @json_attribs = nil
       @node_name = nil
       @node_exists = true 
-      Ohai::Log.logger = Chef::Log.logger
+      Mixlib::Auth::Log.logger = Ohai::Log.logger = Chef::Log.logger
       @ohai = Ohai::System.new
-      @rest = Chef::REST.new(Chef::Config[:registration_url])
+      @ohai_has_run = false
+      if File.exists?(Chef::Config[:client_key])
+        @rest = Chef::REST.new(Chef::Config[:chef_server_url])
+      else
+        @rest = Chef::REST.new(Chef::Config[:chef_server_url], nil, nil)
+      end
     end
     
     # Do a full run for this Chef::Client.  Calls:
@@ -71,13 +76,9 @@ class Chef
       
       determine_node_name
       register
-      authenticate
       build_node(@node_name)
       save_node
-      sync_library_files
-      sync_attribute_files
-      sync_definitions
-      sync_recipes
+      sync_cookbooks
       save_node
       converge
       save_node
@@ -116,9 +117,14 @@ class Chef
     end
 
     def determine_node_name
-      run_ohai
       unless @safe_name && @node_name
-        @node_name ||= @ohai[:fqdn] ? @ohai[:fqdn] : @ohai[:hostname]
+        run_ohai
+        if Chef::Config[:node_name]
+          @node_name = Chef::Config[:node_name]
+        else
+          @node_name ||= @ohai[:fqdn] ? @ohai[:fqdn] : @ohai[:hostname]
+          Chef::Config[:node_name] = @node_name
+        end
         @safe_name = @node_name.gsub(/\./, '_')
       end
       @node_name
@@ -177,66 +183,20 @@ class Chef
       @node[:tags] = Array.new unless @node.attribute?(:tags)
       @node
     end
-    
-    # If this node has been registered before, this method will fetch the current registration
-    # data.
-    #
-    # If it has not, we register it by calling create_registration.
-    #
+   
+    # 
     # === Returns
     # true:: Always returns true
     def register
-      determine_node_name unless @node_name
-      Chef::Log.debug("Registering #{@safe_name} for an openid") 
-      
-      begin
-        if @rest.get_rest("registrations/#{@safe_name}")
-          @secret = Chef::FileCache.load(File.join("registration", @safe_name))
-        end
-      rescue Net::HTTPServerException => e
-        case e.message
-        when /^404/
-          create_registration
-        else
-          raise
-        end
-      rescue Chef::Exceptions::FileNotFound
-        Chef::Application.fatal! "A remote registration already exists for #{@safe_name}, however the local shared secret does not exist." +
-          " To remedy this, you could delete the registration via webUI/REST, change the node_name option in config.rb" +
-          " (or use the -N/--node-name option to the CLI) or" +
-          " copy the old shared secret to #{File.join(Chef::Config[:file_cache_path], 'registration', @safe_name)}", 3
+      if File.exists?(Chef::Config[:validation_key])
+        @vr = Chef::REST.new(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
+        @vr.register(@node_name, Chef::Config[:client_key])
+      else
+        Chef::Log.debug("Validation key #{Chef::Config[:validation_key]} is not present - skipping registration")
       end
-
+      # We now have the client key, and should use it from now on.
+      @rest = Chef::REST.new(Chef::Config[:chef_server_url])
       true
-    end
-    
-    # Generates a random secret, stores it in the Chef::Filestore with the "registration" key,
-    # and posts our nodes registration information to the server.
-    #
-    # === Returns
-    # true:: Always returns true
-    def create_registration
-      @secret = random_password(500)
-      Chef::FileCache.store(File.join("registration", @safe_name), @secret)
-      @rest.post_rest("registrations", { :id => @safe_name, :password => @secret, :validation_token => @validation_token })
-      true
-    end
-    
-    # Authenticates the node via OpenID.
-    #
-    # === Returns
-    # true:: Always returns true
-    def authenticate
-      determine_node_name unless @node_name
-      Chef::Log.debug("Authenticating #{@safe_name} via openid") 
-      response = @rest.post_rest('openid/consumer/start', { 
-        "openid_identifier" => "#{Chef::Config[:openid_url]}/openid/server/node/#{@safe_name}",
-        "submit" => "Verify"
-      })
-      @rest.post_rest(
-        "#{Chef::Config[:openid_url]}#{response["action"]}",
-        { "password" => @secret }
-      )
     end
     
     # Update the file caches for a given cache segment.  Takes a segment name
@@ -246,103 +206,81 @@ class Chef
     # === Parameters
     # segment<String>:: The cache segment to update
     # remote_list<Hash>:: A cookbooks/_attribute_files style remote file listing
-    def update_file_cache(segment, remote_list)  
-      # We need the list of known good attribute files, so we can delete any that are
-      # just laying about.
+    def update_file_cache(cookbook_name, parts)  
+      Chef::Log.debug("Synchronizing cookbook #{cookbook_name}")
+
       file_canonical = Hash.new
-      
-      remote_list.each do |rf|
-        cache_file = File.join("cookbooks", rf['cookbook'], segment, rf['name'])
-        file_canonical[cache_file] = true
 
-        # For back-compat between older clients and new chef servers
-        rf['checksum'] ||= nil 
-      
-        current_checksum = nil
-        if Chef::FileCache.has_key?(cache_file)
-          current_checksum = checksum(Chef::FileCache.load(cache_file, false))
-        end
+      parts.each do |segment, remote_list|
+        # segement = cookbook segment
+        # remote_list = list of file hashes
+        #
+        # We need the list of known good attribute files, so we can delete any that are
+        # just laying about.
+       
+        
+        remote_list.each do |rf|
+          cache_file = File.join("cookbooks", cookbook_name, segment, rf['name'])
+          file_canonical[cache_file] = true
 
-        rf_url = generate_cookbook_url(
-          rf['name'], 
-          rf['cookbook'], 
-          segment, 
-          @node, 
-          current_checksum ? { 'checksum' => current_checksum } : nil
-        )
-        Chef::Log.debug(rf_url)
+          # For back-compat between older clients and new chef servers
+          rf['checksum'] ||= nil 
+        
+          current_checksum = nil
+          if Chef::FileCache.has_key?(cache_file)
+            current_checksum = checksum(Chef::FileCache.load(cache_file, false))
+          end
 
-        if current_checksum != rf['checksum']
-          changed = true
-          begin
-            raw_file = @rest.get_rest(rf_url, true)
-          rescue Net::HTTPRetriableError => e
-            if e.response.kind_of?(Net::HTTPNotModified)
-              changed = false
-              Chef::Log.debug("Cache file #{cache_file} is unchanged")
-            else
-              raise e
+          rf_url = generate_cookbook_url(
+            rf['name'], 
+            cookbook_name, 
+            segment, 
+            @node, 
+            current_checksum ? { 'checksum' => current_checksum } : nil
+          )
+          if current_checksum != rf['checksum']
+            changed = true
+            begin
+              raw_file = @rest.get_rest(rf_url, true)
+            rescue Net::HTTPRetriableError => e
+              if e.response.kind_of?(Net::HTTPNotModified)
+                changed = false
+                Chef::Log.debug("Cache file #{cache_file} is unchanged")
+              else
+                raise e
+              end
+            end
+
+            if changed
+              Chef::Log.info("Storing updated #{cache_file} in the cache.")
+              Chef::FileCache.move_to(raw_file.path, cache_file)
             end
           end
+        end
 
-          if changed
-            Chef::Log.info("Storing updated #{cache_file} in the cache.")
-            Chef::FileCache.move_to(raw_file.path, cache_file)
+        Chef::FileCache.list.each do |cache_file|
+          if cache_file =~ /^cookbooks\/(recipes|attributes|definitions|libraries)\//
+            unless file_canonical[cache_file]
+              Chef::Log.info("Removing #{cache_file} from the cache; it is no longer on the server.")
+              Chef::FileCache.delete(cache_file)
+            end
           end
         end
-      end
-      
-      Chef::FileCache.list.each do |cache_file|
-        if cache_file.match("cookbooks/.+?/#{segment}")
-          unless file_canonical[cache_file]
-            Chef::Log.info("Removing #{cache_file} from the cache; it is no longer on the server.")
-            Chef::FileCache.delete(cache_file)
-          end
-        end
+
       end
       
     end
-    
-    # Gets all the attribute files included in all the cookbooks available on the server,
-    # and executes them.
+
+    # Synchronizes all the cookbooks from the chef-server.
     #
     # === Returns
     # true:: Always returns true
-    def sync_attribute_files
-      Chef::Log.debug("Synchronizing attributes")
-      update_file_cache("attributes", @rest.get_rest("cookbooks/_attribute_files?node=#{@node.name}"))
-      true
-    end
-    
-    # Gets all the library files included in all the cookbooks available on the server,
-    # and loads them.
-    #
-    # === Returns
-    # true:: Always returns true
-    def sync_library_files
-      Chef::Log.debug("Synchronizing libraries")
-      update_file_cache("libraries", @rest.get_rest("cookbooks/_library_files?node=#{@node.name}"))
-      true
-    end
-    
-    # Gets all the definition files included in all the cookbooks available on the server,
-    # and loads them.
-    #
-    # === Returns
-    # true:: Always returns true
-    def sync_definitions
-      Chef::Log.debug("Synchronizing definitions") 
-      update_file_cache("definitions", @rest.get_rest("cookbooks/_definition_files?node=#{@node.name}"))
-    end
-    
-    # Gets all the recipe files included in all the cookbooks available on the server,
-    # and loads them.
-    #
-    # === Returns
-    # true:: Always returns true
-    def sync_recipes
-      Chef::Log.debug("Synchronizing recipes")
-      update_file_cache("recipes", @rest.get_rest("cookbooks/_recipe_files?node=#{@node.name}"))
+    def sync_cookbooks
+      Chef::Log.debug("Synchronizing cookbooks")
+      cookbook_hash = @rest.get_rest("nodes/#{@safe_name}/cookbooks")
+      cookbook_hash.each do |cookbook_name, parts|
+        update_file_cache(cookbook_name, parts)
+      end
     end
     
     # Updates the current node configuration on the server.
@@ -382,15 +320,6 @@ class Chef
       cr.converge
       true
     end
-        
-    protected
-      # Generates a random password of "len" length.
-      def random_password(len)
-        chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
-        newpass = ""
-        1.upto(len) { |i| newpass << chars[rand(chars.size-1)] }
-        newpass
-      end
 
   end
 end

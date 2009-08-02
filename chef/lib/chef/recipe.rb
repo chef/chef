@@ -23,7 +23,6 @@ require 'chef/mixin/language'
 require 'chef/resource_collection'
 require 'chef/cookbook_loader'
 require 'chef/rest'
-require 'chef/search/result'
 
 class Chef
   class Recipe
@@ -87,21 +86,6 @@ class Chef
     
     def resources(*args)
       @collection.resources(*args)
-    end
-    
-    def search(type, query, attributes=[], &block)
-      Chef::Log.debug("Searching #{type} index with #{query}")
-      r = Chef::REST.new(Chef::Config[:search_url])
-
-      results = r.get_rest("search/#{type}?q=#{query}&a=#{attributes.join(',')}")
-      Chef::Log.debug("Searching #{type} index with #{query} returned #{results.length} entries")
-      if block
-        results.each do |sr|
-          block.call(sr)
-        end
-      else
-        results
-      end
     end
     
     # Sets a tag, or list of tags, for this node.  Syntactic sugar for

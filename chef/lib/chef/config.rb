@@ -17,6 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'chef/log'
 require 'mixlib/config'
 
 class Chef
@@ -54,11 +55,13 @@ class Chef
           :template_url,
           :remotefile_url,
           :search_url,
+          :chef_server_url,
           :role_url ].each do |u| 
             c[u] = url
         end
       end
     end
+
     # Override the config dispatch to set the value of log_location configuration option
     #
     # === Parameters
@@ -79,7 +82,7 @@ class Chef
 
     authorized_openid_identifiers nil
     authorized_openid_providers nil
-    chef_server_url nil
+    chef_server_url "http://localhost:4000"
     cookbook_path [ "/var/chef/site-cookbooks", "/var/chef/cookbooks" ]
     couchdb_database "chef"
     couchdb_url "http://localhost:5984"
@@ -105,14 +108,9 @@ class Chef
     openid_store_path "/var/chef/openid/db"
     openid_url "http://localhost:4001"
     pid_file nil
-    queue_host "localhost"
-    queue_password ""
-    queue_port 61613
-    queue_retry_count 5
-    queue_retry_delay 5
-    queue_user ""
-    queue_prefix nil
     registration_url "http://localhost:4000"
+    certificate_url "http://localhost:4000"
+    client_url "http://localhost:4042"
     remotefile_url "http://localhost:4000"
     rest_timeout 60
     run_command_stderr_timeout 120
@@ -130,5 +128,22 @@ class Chef
     role_path "/var/chef/roles"
     role_url "http://localhost:4000"
     recipe_url nil
+    solr_url "http://localhost:8983"
+    solr_jetty_path "/var/chef/solr-jetty"
+    solr_data_path "/var/chef/solr/data"
+    solr_home_path "/var/chef/solr"
+    solr_heap_size "256M"
+    solr_java_opts nil
+    nanite_host '0.0.0.0'
+    nanite_port '5672'
+    nanite_user 'nanite'
+    nanite_pass 'testing'
+    nanite_vhost '/nanite'
+    nanite_identity nil
+
+    client_key "/etc/chef/client.pem"
+    validation_key "/etc/chef/validation.pem"
+    validation_client_name "chef-validator"
+
   end
 end

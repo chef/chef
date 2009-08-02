@@ -1,7 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Thom May (<thom@clearairturbulence.org>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Nuo Yan (<nuo@opscode.com>)
+# Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +25,9 @@ require 'uri'
 require 'json'
 require 'tempfile'
 require 'singleton'
+require 'mixlib/auth/signedheaderauth'
+
+include Mixlib::Auth::SignedHeaderAuth
 
 class Chef
   class REST
@@ -32,47 +36,57 @@ class Chef
       include Singleton
     end
     
-    attr_accessor :url, :cookies
+    attr_accessor :url, :cookies, :signing_key
     
-    def initialize(url)
+    def initialize(url, client_name=Chef::Config[:node_name], signing_key=Chef::Config[:client_key])
       @url = url
       @cookies = CookieJar.instance
+      @client_name = client_name
+      if signing_key
+        @signing_key = load_signing_key(signing_key) 
+      else
+        @signing_key = nil
+      end
+    end
+
+    def load_signing_key(key)
+      if File.exists?(key) && File.readable?(key)
+        IO.read(key)
+      else
+        raise Chef::Exceptions::PrivateKeyMissing, "I cannot find #{key}, which you told me to use to sign requests!"
+      end
     end
     
-    # Register for an OpenID
-    def register(user, pass, validation_token=nil)
-      Chef::Log.debug("Registering #{user} for an openid") 
-      registration = nil
+    # Register the client 
+    def register(name=Chef::Config[:node_name], destination=Chef::Config[:client_key])
+
+      if File.exists?(destination)
+        raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?" unless File.writable?(destination)
+      end
+
+      # First, try and create a new registration
       begin
-        registration = get_rest("registrations/#{user}")
-      rescue Net::HTTPServerException => e
-        unless e.message =~ /^404/
-          raise e
-        end
+        Chef::Log.info("Registering API Client #{name}")
+        response = post_rest("clients", {:clientname => name})
+      rescue Net::HTTPServerException 
+        # If that fails, go ahead and try and update it
+        response = put_rest("clients/#{name}", { :clientname => name, :private_key => true }) 
       end
-      unless registration
-        post_rest(
-          "registrations", 
-          { 
-            :id => user, 
-            :password => pass, 
-            :validation_token => validation_token 
-          }
-        )
+
+      Chef::Log.debug("Registration response: #{response.inspect}")
+
+      raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
+
+      begin
+        # Write out the private key
+        file = File.open(destination, "w")
+        file.print(response["private_key"])
+        file.close
+      rescue 
+        raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination}"
       end
-    end
-    
-    # Authenticate 
-    def authenticate(user, pass)
-      Chef::Log.debug("Authenticating #{user} via openid") 
-      response = post_rest('openid/consumer/start', { 
-        "openid_identifier" => "#{Chef::Config[:openid_url]}/openid/server/node/#{user}",
-        "submit" => "Verify"
-      })
-      post_rest(
-        "#{Chef::Config[:openid_url]}#{response["action"]}",
-        { "password" => pass }
-      )
+
+      true
     end
 
     # Send an HTTP GET request to the path
@@ -81,23 +95,23 @@ class Chef
     # path:: The path to GET
     # raw:: Whether you want the raw body returned, or JSON inflated.  Defaults 
     #   to JSON inflated.
-    def get_rest(path, raw=false)
-      run_request(:GET, create_url(path), false, 10, raw)    
+    def get_rest(path, raw=false, headers={})
+      run_request(:GET, create_url(path), headers, false, 10, raw)    
     end                               
                           
     # Send an HTTP DELETE request to the path
-    def delete_rest(path)             
-      run_request(:DELETE, create_url(path))       
+    def delete_rest(path, headers={}) 
+      run_request(:DELETE, create_url(path), headers)       
     end                               
     
     # Send an HTTP POST request to the path                                  
-    def post_rest(path, json)          
-      run_request(:POST, create_url(path), json)    
+    def post_rest(path, json, headers={})
+      run_request(:POST, create_url(path), headers, json)    
     end                               
                                       
     # Send an HTTP PUT request to the path
-    def put_rest(path, json)           
-      run_request(:PUT, create_url(path), json)
+    def put_rest(path, json, headers={})
+      run_request(:PUT, create_url(path), headers, json)
     end
     
     def create_url(path)
@@ -106,6 +120,18 @@ class Chef
       else
         URI.parse("#{@url}/#{path}")
       end
+    end
+    
+    def sign_request(http_method, private_key, user_id, body = "", host="localhost")
+      #body = "" if body == false
+      timestamp = Time.now.utc.iso8601
+      sign_obj = Mixlib::Auth::SignedHeaderAuth.signing_object(
+                                                         :http_method=>http_method,
+                                                         :body=>body,
+                                                         :user_id=>user_id,
+                                                         :timestamp=>timestamp)
+      signed =  sign_obj.sign(private_key).merge({:host => host})
+      signed.inject({}){|memo, kv| memo["#{kv[0].to_s.upcase}"] = kv[1];memo}
     end
     
     # Actually run an HTTP request.  First argument is the HTTP method,
@@ -117,7 +143,8 @@ class Chef
     # the helper methods (get_rest, post_rest, etc.)
     #
     # Will return the body of the response on success.
-    def run_request(method, url, data=false, limit=10, raw=false)
+    def run_request(method, url, headers={}, data=false, limit=10, raw=false)
+      
       http_retry_delay = Chef::Config[:http_retry_delay] 
       http_retry_count = Chef::Config[:http_retry_count]
 
@@ -129,21 +156,35 @@ class Chef
         if Chef::Config[:ssl_verify_mode] == :verify_none
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         end
-        if File.exists?(Chef::Config[:ssl_client_cert])
+        if Chef::Config[:ssl_client_cert] && File.exists?(Chef::Config[:ssl_client_cert])
           http.cert = OpenSSL::X509::Certificate.new(File.read(Chef::Config[:ssl_client_cert]))
           http.key = OpenSSL::PKey::RSA.new(File.read(Chef::Config[:ssl_client_key]))
         end
       end
+
       http.read_timeout = Chef::Config[:rest_timeout]
-      headers = Hash.new
+
       unless raw
-        headers = { 
+        headers = headers.merge({ 
           'Accept' => "application/json",
-        }
+        })
       end
+      
       if @cookies.has_key?("#{url.host}:#{url.port}")
         headers['Cookie'] = @cookies["#{url.host}:#{url.port}"]
       end
+
+      json_body = data ? data.to_json : nil 
+
+      if @signing_key
+        Chef::Log.debug("Signing the request as #{@client_name}")
+        if json_body
+          headers.merge!(sign_request(method, OpenSSL::PKey::RSA.new(@signing_key), @client_name, json_body, "#{url.host}:#{url.port}"))
+        else
+          headers.merge!(sign_request(method, OpenSSL::PKey::RSA.new(@signing_key), @client_name, "", "#{url.host}:#{url.port}"))
+        end
+      end
+     
       req = nil
       case method
       when :GET
@@ -152,12 +193,16 @@ class Chef
         req = Net::HTTP::Get.new(req_path, headers)
       when :POST
         headers["Content-Type"] = 'application/json' if data
-        req = Net::HTTP::Post.new(url.path, headers)          
-        req.body = data.to_json if data
+        req_path = "#{url.path}"
+        req_path << "?#{url.query}" if url.query
+        req = Net::HTTP::Post.new(req_path, headers)          
+        req.body = json_body if json_body 
       when :PUT
         headers["Content-Type"] = 'application/json' if data
-        req = Net::HTTP::Put.new(url.path, headers)
-        req.body = data.to_json if data
+        req_path = "#{url.path}"
+        req_path << "?#{url.query}" if url.query
+        req = Net::HTTP::Put.new(req_path, headers)
+        req.body = json_body if json_body 
       when :DELETE
         req_path = "#{url.path}"
         req_path << "?#{url.query}" if url.query
@@ -165,6 +210,8 @@ class Chef
       else
         raise ArgumentError, "You must provide :GET, :PUT, :POST or :DELETE as the method"
       end
+
+      Chef::Log.debug("Sending HTTP Request via #{req.method} to #{url.host}:#{url.port}/#{req.path}")
       
       # Optionally handle HTTP Basic Authentication
       req.basic_auth(url.user, url.password) if url.user
@@ -199,7 +246,8 @@ class Chef
           end
           response
         end
-      rescue Errno::ECONNREFUSED
+
+      rescue Errno::ECONNREFUSED => e
         Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path} #{http_retries}/#{http_retry_count}")
         sleep(http_retry_delay)
         retry if (http_retries += 1) < http_retry_count
@@ -216,7 +264,8 @@ class Chef
           @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
         end
         if res['content-type'] =~ /json/
-          JSON.parse(res.body)
+          response_body = res.body.chomp
+          JSON.parse(response_body)
         else
           if raw
             tf
@@ -228,11 +277,11 @@ class Chef
         if res['set-cookie']
           @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
         end
-        run_request(:GET, create_url(res['location']), false, limit - 1, raw)
+        run_request(:GET, create_url(res['location']), {}, false, limit - 1, raw)
       else
         res.error!
       end
     end
- 
+    
   end
 end
