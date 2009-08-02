@@ -62,6 +62,10 @@ class Chef
         false
       end
 
+      def has_key?(key)
+        attribute?(key)
+      end
+
       def each_attribute(&block)
         get_keys.each do |key|
           value = determine_value(
@@ -117,23 +121,27 @@ class Chef
         end
       end
 
+      def hash_and_not_cna?(to_check)
+        (! to_check.kind_of?(Chef::Node::Attribute)) && to_check.respond_to?(:has_key?)
+      end
+
       def determine_value(o_value, a_value, d_value)
         # If all three have hash values, merge them
-        if o_value.respond_to?(:has_key?) && a_value.respond_to?(:has_key?) && d_value.respond_to?(:has_key?)
+        if hash_and_not_cna?(o_value) && hash_and_not_cna?(a_value) && hash_and_not_cna?(d_value)
           value = Chef::Mixin::DeepMerge.merge(d_value, a_value)
           value = Chef::Mixin::DeepMerge.merge(value, o_value)
           value
         # If only the override and attributes have values, merge them 
-        elsif o_value.respond_to?(:has_key?) && a_value.respond_to?(:has_key?)
+        elsif hash_and_not_cna?(o_value) && hash_and_not_cna?(a_value)
           Chef::Mixin::DeepMerge.merge(a_value, o_value)
         # If only the override and default attributes have values, merge them
-        elsif o_value.respond_to?(:has_key?) && d_value.respond_to?(:has_key?)
+        elsif hash_and_not_cna?(o_value) && hash_and_not_cna?(d_value)
           Chef::Mixin::DeepMerge.merge(d_value, o_value)
         # If only the override attribute has a value (any value) use it
         elsif ! o_value.nil?
           o_value
         # If the attributes is a hash, and the default is a hash, merge them
-        elsif a_value.respond_to?(:has_key?) && d_value.respond_to?(:has_key?)
+        elsif hash_and_not_cna?(a_value) && hash_and_not_cna?(d_value)
           Chef::Mixin::DeepMerge.merge(d_value, a_value)
         # If we have an attribute value, use it
         elsif ! a_value.nil?

@@ -236,6 +236,17 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "hash_and_not_cna" do
+    it "should return false if we pass it a Chef::Node::Attribute" do
+      @attributes.hash_and_not_cna?(@attributes).should == false
+    end
+
+    it "should return true if we pass it something that responds to has_key?" do
+      hashy = mock("Hashlike", :has_key? => true)
+      @attributes.hash_and_not_cna?(hashy).should == true
+    end
+  end
+
   describe "[]" do
     it "should return override data if it exists" do
       @attributes["macaddress"].should == "00:00:00:00:00:00"
@@ -379,6 +390,22 @@ describe Chef::Node::Attribute do
       @attributes.auto_vivifiy_on_read = true
       @attributes[:foo][:bar][:baz] = "snack"
       @attributes.get_value(@attribute_hash, :baznatch).should == nil
+    end
+  end
+
+  describe "has_key?" do
+    it "should return true if an attribute exists" do
+      @attributes.has_key?("music").should == true
+    end
+
+    it "should return false if an attribute does not exist" do
+      @attributes.has_key?("ninja").should == false
+    end
+
+    it "should be looking at the current position of the object" do
+      @attributes["music"]
+      @attributes.has_key?("mastodon").should == true 
+      @attributes.has_key?("whitesnake").should == false
     end
   end
 
