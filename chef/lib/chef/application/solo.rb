@@ -124,7 +124,7 @@ class Chef::Application::Solo < Chef::Application
   def reconfigure
     super
     
-    Chef::Config.solo = true
+    Chef::Config.solo true
 
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800

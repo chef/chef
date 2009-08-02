@@ -36,10 +36,16 @@ describe Chef::Application::Solo, "reconfigure" do
     Chef::Config.stub!(:[]).with(:recipe_url).and_return(false)
     Chef::Config.stub!(:[]).with(:json_attribs).and_return(false)
     Chef::Config.stub!(:[]).with(:splay).and_return(nil)
+    Chef::Config.stub!(:solo).and_return(true)
   end
   
   after do
-    Chef::Config.solo = false
+    Chef::Config.solo false
+  end
+
+  it "should set solo mode to true" do
+    Chef::Config.should_receive(:solo).once.with(true).and_return(true)
+    @app.reconfigure
   end
 
   describe "when in daemonized mode" do
