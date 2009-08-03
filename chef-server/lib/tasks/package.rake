@@ -20,7 +20,7 @@ spec = Gem::Specification.new do |s|
   
   s.bindir       = "bin"
   s.executables  = %w( chef-server chef-indexer )  
-  s.files = %w(LICENSE README.rdoc) + Dir.glob("{app,bin,config,lib,public}/**/*")
+  s.files = %w(LICENSE README.rdoc config.ru) + Dir.glob("{app,bin,config,lib,public}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
