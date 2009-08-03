@@ -50,7 +50,7 @@ def setup_logging
     Chef::Log.level(ENV['LOG_LEVEL'].to_sym)
     Merb.logger.set_log(STDOUT, ENV['LOG_LEVEL'].to_sym)
   end
-  Nanite::Log.logger = Mixlib::Auth::Log.logger = Ohai::Log.logger = Chef::Log.logger 
+  Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 
 end
 
 def setup_nanite

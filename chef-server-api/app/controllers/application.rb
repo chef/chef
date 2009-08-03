@@ -1,7 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -18,16 +17,12 @@
 # limitations under the License.
 #
 
-require 'rubygems'
 require "chef" / "mixin" / "checksum"
 require "chef" / "cookbook_loader"
 
 class ChefServerApi::Application < Merb::Controller
-  include AuthenticateEvery
-  include Chef::Mixin::Checksum
 
-  include Mixlib::Auth::AuthHelper
-  include Merb::ChefServerApi::ApplicationHelper::AuthenticateEvery
+  include Chef::Mixin::Checksum
 
   controller_for_slice
   
@@ -55,7 +50,6 @@ class ChefServerApi::Application < Merb::Controller
     end
     protocol = options.delete(:protocol) || request.protocol
     host     = options.delete(:host) || request.host
-
     protocol + "://" + host + slice_url(slice_name, *args)
   end
   
@@ -79,6 +73,13 @@ class ChefServerApi::Application < Merb::Controller
       self.store_location
       throw(:halt, :access_denied)
     end
+  end
+
+  ###
+  # TODO: This should actually authenticate requests
+  ###
+  def authenticate_every
+    true
   end
   
   def authorized_node
@@ -169,14 +170,15 @@ class ChefServerApi::Application < Merb::Controller
     else
       raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions, :remote_files, :template_files or :libraries"
     end
+    Chef::Log.error(files_list.inspect)
     files_list
   end
 
   def specific_cookbooks(node_name, cl)
     valid_cookbooks = Hash.new
     begin
-      node = Chef::Node.load(node_name, @couchdb)
-      recipes, default_attrs, override_attrs = node.run_list.expand('couchdb', @couchdb)
+      node = Chef::Node.load(node_name)
+      recipes, default_attrs, override_attrs = node.run_list.expand('couchdb')
     rescue Net::HTTPServerException
       recipes = []
     end
@@ -214,12 +216,12 @@ class ChefServerApi::Application < Merb::Controller
         file_name = nil
         file_url = nil
         file_specificity = nil
-        
+
         if segment == :templates || segment == :files
-          mo = sf.match("#{Merb::Config.cookbook_cache_path}/[^/]+/#{cookbook.name}/#{segment}/(.+?)/(.+)")
+          mo = sf.match("cookbooks/#{cookbook.name}/#{segment}/(.+?)/(.+)")
           specificity = mo[1]
           file_name = mo[2]
-          url_options = { :cookbook_id => cookbook.name.to_s, :segment => segment, :id => file_name, :organization_id => @organization_id }
+          url_options = { :cookbook_id => cookbook.name.to_s, :segment => segment, :id => file_name }
           
           case specificity
           when "default"
@@ -233,12 +235,12 @@ class ChefServerApi::Application < Merb::Controller
           end
           
           file_specificity = specificity
-          file_url = absolute_slice_url(:organization_cookbook_segment, url_options)
+          file_url = absolute_slice_url(:cookbook_segment, url_options)
         else
-          mo = sf.match("#{Merb::Config.cookbook_cache_path}/[^/]+/#{cookbook.name}/#{segment}/(.+)")
+          mo = sf.match("cookbooks/#{cookbook.name}/#{segment}/(.+)")
           file_name = mo[1]
-          url_options = { :cookbook_id => cookbook.name.to_s, :segment => segment, :id => file_name, :organization_id => @organization_id }
-          file_url = absolute_slice_url(:organization_cookbook_segment, url_options)
+          url_options = { :cookbook_id => cookbook.name.to_s, :segment => segment, :id => file_name }
+          file_url = absolute_slice_url(:cookbook_segment, url_options)
         end
         rs = {
           :name => file_name, 
@@ -253,11 +255,7 @@ class ChefServerApi::Application < Merb::Controller
   end
   
   def load_all_files(node_name=nil)
-    latest_cookbooks = get_all_latest_cookbooks
-    Merb.logger.debug "Retrieved latest cookbooks: #{latest_cookbooks.inspect}"
-    policies = latest_cookbooks.map{|doc| Chef::CookbookPolicy.new(doc['display_name'], doc['_id']) }
-    cl = Chef::CachedCookbookLoader.new(policies)
-    
+    cl = Chef::CookbookLoader.new
     valid_cookbooks = node_name ? specific_cookbooks(node_name, cl) : {} 
     cookbook_list = Hash.new
     cl.each do |cookbook|
@@ -283,5 +281,6 @@ class ChefServerApi::Application < Merb::Controller
     end
     available_recipes
   end
-  
+
 end
+

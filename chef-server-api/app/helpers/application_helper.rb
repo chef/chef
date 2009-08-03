@@ -160,58 +160,6 @@ module Merb
       #  list << "</dl>"
       #end
 
-      
-      module AuthenticateEvery
-        require 'rubygems'
-        require 'mixlib/auth/signatureverification'
-        require 'extlib'
-        
-        class << self
-          def authenticator
-            @authenticator ||= Mixlib::Auth::SignatureVerification.new      
-          end
-        end
-
-
-        protected
-
-        # This is the main method to use as a before filter.  
-        # It will perform the user lookup, header signing and signature comparison
-        # A failed login will result in an Unauthorized exception being raised.
-        #
-        # ====Parameters
-        #
-        def authenticate_every
-          auth = begin
-
-                   Merb.logger.debug("Raw request: #{request.inspect}")
-                   headers = request.env.inject({ }) { |memo, kv| memo[$2.downcase.to_sym] = kv[1] if kv[0] =~ /^(HTTP_)(.*)/; memo }
-                   username = headers[:x_ops_userid].chomp
-                   orgname = params[:organization_id]
-                   Merb.logger.debug "I have #{headers.inspect}"
-                   
-                   user = begin
-                            User.find(username)
-                          rescue ArgumentError
-                            if orgname
-                              cr = database_from_orgname(orgname)
-                              Client.on(cr).by_clientname(:key=>username).first
-                            end
-                          end
-                   
-                   actor = user_to_actor(user.id)
-                   params[:requesting_actor_id] = actor.auth_object_id
-                   user_key = OpenSSL::PKey::RSA.new(user.public_key)
-                   Merb.logger.debug "authenticating:\n #{user.inspect}\n"
-                   AuthenticateEvery::authenticator.authenticate_user_request(request, user_key)
-                 rescue StandardError => se
-                   Merb.logger.debug "authenticate every failed: #{se}, #{se.backtrace}"
-                   nil
-                 end
-          raise Merb::ControllerExceptions::Unauthorized, "Failed authorization" unless auth          
-          auth
-        end
-      end
     end
   end
 end

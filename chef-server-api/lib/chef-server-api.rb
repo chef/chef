@@ -56,7 +56,7 @@ if defined?(Merb::Plugins)
 
     # Activation hook - runs after AfterAppLoads BootLoader
     def self.activate
-      Nanite::Log.logger = Mixlib::Auth::Log.logger = Ohai::Log.logger = Chef::Log.logger 
+      Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 
       Merb.logger.set_log(STDOUT, Chef::Config[:log_level])
       Thread.new do
         until EM.reactor_running?
@@ -133,9 +133,6 @@ if defined?(Merb::Plugins)
   COUCHDB = CouchRest.new(Merb::Config[:couchdb_uri])
   COUCHDB.database!(Merb::Config[:couchdb_database])
   COUCHDB.default_database = Merb::Config[:couchdb_database]
-  
-  Mixlib::Auth::AuthJoin.use_database(COUCHDB.default_database)
-  Mixlib::Auth::PRIVKEY = Chef::Config[:validation_key]
   
   # Setup the slice layout for ChefServerApi
   #
