@@ -27,7 +27,7 @@ class ChefServerApi::Data < ChefServerApi::Application
   
   def index
     @bag_list = Chef::DataBag.list(false)
-    display(@bag_list.collect { |b| absolute_slice_url(:organization_datum, :id => b, :organization_id => @organization_id) })
+    display(@bag_list.collect { |b| absolute_slice_url(:datum, :id => b) })
   end
 
   def show
@@ -36,7 +36,7 @@ class ChefServerApi::Data < ChefServerApi::Application
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load data bag #{params[:id]}"
     end
-    display(@data_bag.list.collect { |i| absolute_slice_url(:organization_data_bag_item, :data_bag_id => @data_bag.name, :id => i) })
+    display(@data_bag.list.collect { |i| absolute_slice_url(:data_bag_item, :data_bag_id => @data_bag.name) })
   end
 
   def create
@@ -56,7 +56,7 @@ class ChefServerApi::Data < ChefServerApi::Application
     raise Forbidden, "Data bag already exists" if exists
     self.status = 201
     @data_bag.save
-    display({ :uri => absolute_slice_url(:organization_datum, :id => @data_bag.name, :organization_id => @organization_id) })
+    display({ :uri => absolute_slice_url(:datum, :id => @data_bag.name) })
   end
 
   def destroy

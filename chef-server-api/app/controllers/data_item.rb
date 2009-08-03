@@ -50,7 +50,6 @@ class ChefServerApi::DataItem < ChefServerApi::Application
       raw_data = params["inflated_object"].raw_data
     else
       raw_data = params
-      raw_data.delete(:organization_id)
       raw_data.delete(:action)
       raw_data.delete(:controller)
       raw_data.delete(:data_bag_id)
