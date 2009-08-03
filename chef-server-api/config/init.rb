@@ -35,18 +35,6 @@ require 'rubygems'
 use_template_engine :haml
 
 Merb::Config.use do |c|
-  # BUGBUG [cb] For some reason, this next line
-  # causes a merb slice to vomit around openid
-  #  c[:fork_for_class_load] = false
-
-  c[:couchdb_uri] = 'localhost:5984'
-  c[:guidservice_host] = 'localhost'
-  c[:guidservice_port] = 8000
-  c[:certificateservice_uri] = 'http://localhost:4000/certificates'
-  c[:couchdb_database] = 'opscode_account'
-  c[:authorizationservice_uri] = 'http://localhost:5959'
-  c[:service_private_key] = OpenSSL::PKey::RSA.new(File.read('/etc/opscode/azs.pem'))
-  
   c[:session_id_key] = '_chef_server_session_id'
   c[:session_secret_key]  = Chef::Config.manage_secret_key
   c[:session_store] = 'cookie'

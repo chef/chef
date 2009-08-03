@@ -106,10 +106,7 @@ if defined?(Merb::Plugins)
       # Cookbooks        
       scope.match('/nodes/:id/cookbooks', :method => 'get').to(:controller => "nodes", :action => "cookbooks")
 
-      scope.match("/cookbooks", :method => 'get').to(:controller => "cookbooks", :action => "index")
-      scope.match("/cookbooks", :method => 'post').to(:controller => "cookbooks", :action => "create")
-      scope.match("/cookbooks/:cookbook_id", :method => 'get', :cookbook_id => /[\w\.]+/).to(:controller => "cookbooks", :action => "show").name(:cookbook)
-      scope.match("/cookbooks/:cookbook_id", :method => 'delete', :cookbook_id => /[\w\.]+/).to(:controller => "cookbooks", :action => "destroy")
+      scope.resources :cookbooks
       scope.match("/cookbooks/:cookbook_id/_content", :method => 'get', :cookbook_id => /[\w\.]+/).to(:controller => "cookbooks", :action => "get_tarball")
       scope.match("/cookbooks/:cookbook_id/_content", :method => 'put', :cookbook_id => /[\w\.]+/).to(:controller => "cookbooks", :action => "update")
       scope.match("/cookbooks/:cookbook_id/:segment", :cookbook_id => /[\w\.]+/).to(:controller => "cookbooks", :action => "show_segment").name(:cookbook_segment)

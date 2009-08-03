@@ -62,7 +62,7 @@ end
 
 def delete_databases
   c = Chef::REST.new(Chef::Config[:couchdb_url], nil, nil)
-  %w{chef_integration}.each do |db|
+  %w{chef_integration chef_integration_safe}.each do |db|
     begin
       c.delete_rest("#{db}/")
     rescue
@@ -80,12 +80,11 @@ def create_databases
   Chef::Role.sync_from_disk_to_couchdb
 end
 
-
 def create_validation
 # TODO: Create the validation certificate here
-  File.open("#{Dir.tmpdir}/validation.pem", "w") do |f|
-    f.print response["private_key"]
-  end
+#  File.open("#{Dir.tmpdir}/validation.pem", "w") do |f|
+#    f.print response["private_key"]
+#  end
 end
 
 def prepare_replicas
@@ -95,9 +94,7 @@ def prepare_replicas
   c.delete_rest("chef_integration")
 end
 
-at_exit do
-  c = Chef::REST.new(Chef::Config[:couchdb_url], nil, nil)
-  c.delete_rest("chef_integration_safe")
+def cleanup
   File.unlink(File.join(Dir.tmpdir, "validation.pem"))
 end
 
@@ -106,6 +103,7 @@ end
 ###
 setup_logging
 setup_nanite
+cleanup
 delete_databases
 create_databases
 create_validation

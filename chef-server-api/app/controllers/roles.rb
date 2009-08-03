@@ -8,7 +8,7 @@ class ChefServerApi::Roles < ChefServerApi::Application
   # GET /roles
   def index
     @role_list = Chef::Role.list(true)
-    display(@role_list.collect { |r| absolute_slice_url(:organization_role, :id => r.name, :organization_id => @organization_id) }) 
+    display(@role_list.collect { |r| absolute_slice_url(:role, :id => r.name) }) 
   end
 
   # GET /roles/:id
@@ -36,7 +36,7 @@ class ChefServerApi::Roles < ChefServerApi::Application
     @role.save
     
     self.status = 201
-    display({ :uri => absolute_slice_url(:organization_role, :id => @role.name, :organization_id => @organization_id) })
+    display({ :uri => absolute_slice_url(:role, :id => @role.name)  })
   end
 
   # PUT /roles/:id

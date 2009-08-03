@@ -256,10 +256,6 @@ namespace :features do
       Cucumber::Rake::Task.new(:cookbooks) do |t|
         t.profile = "api_cookbooks"
       end
-      
-      Cucumber::Rake::Task.new(:cookbook_tarballs) do |t|
-        t.profile = "api_cookbooks_tarballs"
-      end
     end
     
     namespace :data do    

@@ -26,7 +26,7 @@ class ChefServerApi::Search < ChefServerApi::Application
   
   def index
     indexes = valid_indexes
-    display(indexes.collect { |i| absolute_slice_url(:organization_search, :id => i, :organization_id => @organization_id) })
+    display(indexes.collect { |i| absolute_slice_url(:search, :id => i) })
   end
 
   def valid_indexes
