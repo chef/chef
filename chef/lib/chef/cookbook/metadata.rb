@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: AJ Christensen (<aj@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -20,6 +21,7 @@ require 'chef/mixin/from_file'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/log'
+require 'chef/cookbook/metadata/version'
 
 class Chef
   class Cookbook
@@ -29,7 +31,17 @@ class Chef
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
 
-      attr_accessor :cookbook, :platforms, :dependencies, :recommendations, :suggestions, :conflicting, :providing, :replacing, :attributes, :recipes
+      attr_accessor :cookbook, 
+                    :platforms,
+                    :dependencies,
+                    :recommendations,
+                    :suggestions,
+                    :conflicting,
+                    :providing,
+                    :replacing,
+                    :attributes,
+                    :recipes,
+                    :version
 
       # Builds a new Chef::Cookbook::Metadata object.
       # 
@@ -58,6 +70,7 @@ class Chef
         @replacing = Mash.new
         @attributes = Mash.new
         @recipes = Mash.new
+        @version = Version.new "0.0.0"
         if cookbook
           @recipes = cookbook.recipes.inject({}) do |r, e| 
             e = self.name if e =~ /::default$/ 
@@ -143,8 +156,8 @@ class Chef
         )
       end
 
-      # Sets the current cookbook version, or returns it.  Must be two digets, seperated
-      # by a dot.  ie: '2.1', or '0.9'.
+      # Sets the current cookbook version, or returns it.  Can be two or three digits, seperated
+      # by dots.  ie: '2.1', '1.5.4' or '0.9'.
       #
       # === Parameters
       # version<String>:: The curent version, as a string
@@ -152,11 +165,11 @@ class Chef
       # === Returns
       # version<String>:: Returns the current version 
       def version(arg=nil)
-        set_or_return(
-          :version,
-          arg,
-          :regex => /^\d+\.\d+$/
-        )
+        if arg
+          @version = Version.new(arg)
+        end
+
+        @version.to_s
       end
 
       # Sets the name of the cookbook, or returns it.
@@ -331,22 +344,6 @@ class Chef
         end
       end
 
-      def _check_valid_version(to_check, version_string)
-        (selector, version) = _check_version_expression(version_string) 
-        case selector
-        when "<<"
-          to_check < version
-        when "<="
-          to_check <= version
-        when "="
-          to_check == version
-        when ">="
-          to_check >= version
-        when ">>"
-          to_check > version
-        end
-      end
-
       def to_json(*a)
         result = {
           :name => self.name,
@@ -363,7 +360,8 @@ class Chef
           :providing => self.providing,
           :replacing => self.replacing,
           :attributes => self.attributes,
-          :recipes => self.recipes
+          :recipes => self.recipes,
+          :version => self.version
         }
         result.to_json(*a)
       end
@@ -390,6 +388,7 @@ class Chef
         self.replacing = o['replacing'] if o.has_key?('replacing')
         self.attributes = o['attributes'] if o.has_key?('attributes')
         self.recipes = o['recipes'] if o.has_key?('recipes')
+        self.version = o['version'] if o.has_key?('version')
         self
       end
 

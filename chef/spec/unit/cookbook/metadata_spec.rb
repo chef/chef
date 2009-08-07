@@ -99,7 +99,7 @@ describe Chef::Cookbook::Metadata do
       :license => "Apache v2.0",
       :description => "Foobar!",
       :long_description => "Much Longer\nSeriously",
-      :version => "0.6"
+      :version => "0.6.0"
     }
     params.sort { |a,b| a.to_s <=> b.to_s }.each do |field, field_value|
       describe field do
@@ -110,6 +110,17 @@ describe Chef::Cookbook::Metadata do
           @meta.send(field, field_value)
           @meta.send(field).should eql(field_value)
         end
+      end
+    end
+
+    describe "version transformation" do
+      it "should transform an '0.6' version to '0.6.0'" do
+        @meta.send(:version, "0.6").should eql("0.6.0")
+      end
+
+      it "should spit out '0.6.0' after transforming '0.6'" do
+        @meta.send(:version, "0.6")
+        @meta.send(:version).should eql("0.6.0")
       end
     end
   end
@@ -276,59 +287,6 @@ describe Chef::Cookbook::Metadata do
     end
   end
 
-  describe "check for a valid version" do
-    it "should think 8.00 is << 8.04" do
-      @meta._check_valid_version("8.00", "<< 8.04").should == true
-    end
-
-    it "should think 9.04 is not << 8.04" do
-      @meta._check_valid_version("9.04", "<< 8.04").should == false 
-    end
-
-    it "should think 8.00 is <= 8.04" do
-      @meta._check_valid_version("8.00", "<= 8.04").should == true
-    end
-
-    it "should think 8.04 is <= 8.04" do
-      @meta._check_valid_version("8.04", "<= 8.04").should == true
-    end
-
-    it "should think 9.04 is not <= 8.04" do
-      @meta._check_valid_version("9.04", "<= 8.04").should == false 
-    end
-
-    it "should think 8.00 is not = 8.04" do
-      @meta._check_valid_version("8.00", "= 8.04").should == false 
-    end
-
-    it "should think 8.04 is = 8.04" do
-      @meta._check_valid_version("8.04", "= 8.04").should == true
-    end
-
-    it "should think 8.00 is not >= 8.04" do
-      @meta._check_valid_version("8.00", ">= 8.04").should == false 
-    end
-
-    it "should think 9.04 is >= 8.04" do
-      @meta._check_valid_version("9.04", ">= 8.04").should == true
-    end
-
-    it "should think 8.04 is >= 8.04" do
-      @meta._check_valid_version("8.04", ">= 8.04").should == true
-    end
-
-    it "should think 8.00 is not >> 8.04" do
-      @meta._check_valid_version("8.00", ">> 8.04").should == false 
-    end
-
-    it "should think 8.04 is not >> 8.04" do
-      @meta._check_valid_version("8.04", ">> 8.04").should == false 
-    end
-
-    it "should think 9.04 is >> 8.04" do
-      @meta._check_valid_version("9.04", ">> 8.04").should == true
-    end
-  end
 
   describe "recipes" do
     before(:each) do 
@@ -372,6 +330,7 @@ describe Chef::Cookbook::Metadata do
       @meta.recipe "test_cookbook::enlighten", "is your buddy"
       @meta.attribute "bizspark/has_login", 
         :display_name => "You have nothing" 
+      @meta.version "1.2.3"
     end
  
     describe "serialize" do
@@ -399,6 +358,7 @@ describe Chef::Cookbook::Metadata do
         replacing 
         attributes 
         recipes
+        version
       }.each do |t| 
         it "should include '#{t}'" do
           @serial[t].should == @meta.send(t.to_sym)
@@ -431,6 +391,7 @@ describe Chef::Cookbook::Metadata do
         replacing 
         attributes 
         recipes
+        version
       }.each do |t| 
         it "should match '#{t}'" do
           @deserial.send(t.to_sym).should == @meta.send(t.to_sym)
