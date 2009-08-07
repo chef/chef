@@ -39,7 +39,7 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
         exists and readable
       end
     )
-    Chef::Log.debug "#{@new_resource}: enabled: #{@current_resource.enabled})"
+    Chef::Log.debug "#{@new_resource}: enabled: #{@current_resource.enabled}"
 
     @current_resource
   end
