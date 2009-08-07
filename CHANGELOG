@@ -1,3 +1,45 @@
+Sat Aug 8 4:45:50 NZST 2009
+
+Release Notes - Chef - Version 0.7.6
+
+** Bug
+    * [CHEF-87] - File specificity (preferred file) is broken by dotfiles
+    * [CHEF-357] - groupmod error with chef (0.6.2)
+    * [CHEF-371] - Link provider will not delete symbolic link if target does not exist
+    * [CHEF-394] - Last Check-in is only updated on the first run of chef-client, but not on later runs
+    * [CHEF-400] - Chef::Application#fatal! should log output to STDERR aswell, so errors are more plain
+    * [CHEF-406] - typos in specs, fix resulting failures
+    * [CHEF-407] - CHEF-308 breaks mount provider remote filesystem usage
+    * [CHEF-409] - run_list specified in json doesn't run the file caching step before trying to find recipes
+    * [CHEF-410] - Be able to have major, minor, revision for metadata version.
+    * [CHEF-411] - When a recipe is in the run_list and included, it may be run twice
+    * [CHEF-413] - why did chef gem get so big?
+    * [CHEF-415] - Error message clarity when a registration exists for the same hostname but the local secret doesn't exist / match
+    * [CHEF-416] - API roles, search integration features have failing steps
+    * [CHEF-423] - gentoo service provider enable action always runs for long service names
+    * [CHEF-431] - ChefServerSlice::OpenidServer#index should treat content_type as a symbol
+    * [CHEF-432] - chef-server-slice views should use slice_url instead of url
+    * [CHEF-433] - rake install should not copy .git files in addition to .svn
+    * [CHEF-436] - Default attributes from a role should not be written into the role's nodes
+    * [CHEF-437] - if manage_home is set to true but no home is set then home dir becomes -m
+    * [CHEF-439] - service resource - inherited file handle weirdness
+    * [CHEF-458] - File Cache stub missing
+    * [CHEF-463] - chef-solo and chef-client should display the version with --version (and optionally, -v)
+    * [CHEF-465] - chef-solo tries to get templates from localhost:4000
+    * [CHEF-467] - chef-server web ui doesn't load assets properly with 0.7.5
+
+** Improvement
+    * [CHEF-373] - include specs in chef gem
+    * [CHEF-418] - Update readme for new integration tests
+    * [CHEF-427] - Minor cleanup of JSON Attribute editor
+    * [CHEF-430] - Add support for HTTP Basic Authentication to Chef::REST
+    * [CHEF-448] - allow a default URL definition in client.rb
+
+** New Feature
+    * [CHEF-274] - Add support for multiple named queues on a single stompserver
+    * [CHEF-414] - add symlink owner/group support
+    * [CHEF-420] - Decouple usage of -s from -i
+
 Fri Jun 26 1:52:15 NZST 2009
 
 Release Notes - Chef - Version 0.7.4
