@@ -1,5 +1,6 @@
 #
 # Author:: Lee Jensen (<ljensen@engineyard.com>)
+# Author:: AJ Christensen (<aj@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -19,42 +20,35 @@
 require 'chef/provider/service'
 require 'chef/mixin/command'
 
-class Chef
-  class Provider
-    class Service
-      class Gentoo < Chef::Provider::Service::Init
-        def load_current_resource
+class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
+  def load_current_resource
 
-          @new_resource.supports[:status] = true
-          @new_resource.supports[:restart] = true
+    @new_resource.supports[:status] = true
+    @new_resource.supports[:restart] = true
 
-          super
-          
-          raise Chef::Exceptions::Service unless ::File.exists?("/sbin/rc-update")
-          
-          status = popen4("/sbin/rc-update -s default") do |pid, stdin, stdout, stderr|
-            stdout.each_line do |line|
-              if line.match(/^\s*#{@current_resource.service_name}\s+/)
-                @current_resource.enabled true
-              end
-            end
-          end
-          
-          unless status.exitstatus == 0
-            raise Chef::Exceptions::Service, "/sbin/rc-update -s default failed - #{status.inspect}"
-          end
-          
-          @current_resource
-        end
-        
-        def enable_service()
-          run_command(:command => "/sbin/rc-update add #{@new_resource.service_name} default")
-        end
-        
-        def disable_service()
-          run_command(:command => "/sbin/rc-update del #{@new_resource.service_name} default")
-        end
+    super
+    
+    raise Chef::Exceptions::Service unless ::File.exists?("/sbin/rc-update")
+    
+    Chef::Log.debug "#{@new_resource}: checking service enable state"
+    @current_resource.enabled(
+      Dir.glob("/etc/runlevels/**/#{@current_resource.service_name}").any? do |file|
+        exists = ::File.exists? file
+        readable = ::File.readable? file
+        Chef::Log.debug "#{@new_resource}: exists: #{exists}, readable: #{readable}"
+        exists and readable
       end
-    end
+    )
+    Chef::Log.debug "#{@new_resource}: enabled: #{@current_resource.enabled})"
+
+    @current_resource
+  end
+  
+  def enable_service()
+    run_command(:command => "/sbin/rc-update add #{@new_resource.service_name} default")
+  end
+  
+  def disable_service()
+    run_command(:command => "/sbin/rc-update del #{@new_resource.service_name} default")
   end
 end

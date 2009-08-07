@@ -1,5 +1,6 @@
 #
 # Author:: Lee Jensen (<ljensen@engineyard.com>)
+# Author:: AJ Christensen (<aj@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -28,15 +29,12 @@ describe Chef::Provider::Service::Gentoo do
     
     @provider = Chef::Provider::Service::Gentoo.new(@node, @new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
-    File.stub!(:exists?).and_return(true)
-    
-    @status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
-    @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
-    @stdout.stub!(:each_line).and_yield("  gfs | default ")    
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)    
+    @provider.stub!(:run_command).with(:command => "/etc/init.d/chef status").and_return(true)
+    File.stub!(:exists?).with("/etc/init.d/chef").and_return(true)
+    File.stub!(:exists?).with("/sbin/rc-update").and_return(true)
+    File.stub!(:exists?).with("/etc/runlevels/default/chef").and_return(false)
+    File.stub!(:readable?).with("/etc/runlevels/default/chef").and_return(false)
   end
   
   describe "load_current_resource" do  
@@ -44,7 +42,53 @@ describe Chef::Provider::Service::Gentoo do
       File.should_receive(:exists?).with("/sbin/rc-update").and_return(false)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
     end
-  
+
+    describe "when detecting the service enable state" do
+      describe "and the glob returns a default service script file" do
+        before do
+          Dir.stub!(:glob).with("/etc/runlevels/**/chef").and_return(["/etc/runlevels/default/chef"])
+        end
+
+        describe "and the file exists and is readable" do
+          before do
+            File.stub!(:exists?).with("/etc/runlevels/default/chef").and_return(true)
+            File.stub!(:readable?).with("/etc/runlevels/default/chef").and_return(true)
+          end
+          it "should set enabled to true" do
+            @current_resource.should_receive(:enabled).with(true).and_return(true)
+            @provider.load_current_resource
+          end
+        end
+
+        describe "and the file exists but is not readable" do
+          before do
+            File.stub!(:exists?).with("/etc/runlevels/default/chef").and_return(true)
+            File.stub!(:readable?).with("/etc/runlevels/default/chef").and_return(false)
+          end
+          
+          it "should set enabled to false" do
+            @current_resource.should_receive(:enabled).with(false).and_return(false)
+            @provider.load_current_resource
+          end
+        end
+
+        describe "and the file does not exist" do
+          before do
+            File.stub!(:exists?).with("/etc/runlevels/default/chef").and_return(false)
+            File.stub!(:readable?).with("/etc/runlevels/default/chef").and_return("foobarbaz")
+          end
+
+          it "should set enabled to false" do
+            @current_resource.should_receive(:enabled).with(false).and_return(false)
+            @provider.load_current_resource
+          end
+
+        end
+      end
+
+  end
+ 
+=begin
     it "should set enabled true if rc-update indicates service is in default runlevel" do
       @stdout.should_receive(:each_line).
           and_yield('  gfs | default ').
@@ -66,6 +110,7 @@ describe Chef::Provider::Service::Gentoo do
       @provider.load_current_resource
       @current_resource.enabled.should be_false
     end
+=end
   
     it "should return the current_resource" do
       @provider.load_current_resource.should == @current_resource
