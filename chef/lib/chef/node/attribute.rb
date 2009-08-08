@@ -22,7 +22,7 @@ require 'chef/log'
 class Chef
   class Node
     class Attribute
-      attr_accessor :attribute, :default, :override, :state, :current_attribute, :current_default, :current_override, :auto_vivifiy_on_read, :set_unless_value_present
+      attr_accessor :attribute, :default, :override, :state, :current_attribute, :current_default, :current_override, :auto_vivifiy_on_read, :set_unless_value_present, :has_been_read
 
       def initialize(attribute, default, override, state=[])
         @attribute = attribute
@@ -34,6 +34,7 @@ class Chef
         @state = state 
         @auto_vivifiy_on_read = false
         @set_unless_value_present = false
+        @has_been_read = false
       end
 
       # Reset our internal state to the top of every tree 
@@ -41,12 +42,16 @@ class Chef
         @current_attribute = @attribute
         @current_default = @default
         @current_override = @override
+        @has_been_read = false
         @state = []
       end
 
       def [](key)
-
         @state << key 
+
+        # We set this to so that we can cope with ||= as a setting.
+        # See the comments in []= for more details.
+        @has_been_read = true
 
         o_value = value_or_descend(current_override, key, auto_vivifiy_on_read)
         a_value = value_or_descend(current_attribute, key, auto_vivifiy_on_read)
@@ -170,6 +175,14 @@ class Chef
           end
         end
 
+        # If we have been read, and the key we are writing is the same
+        # as our parent, we have most like been ||='ed.  So we need to
+        # just rewind a bit.
+        #
+        # In practice, these objects are single use - this is just 
+        # supporting one more single-use style.
+        @state.pop if @has_been_read && @state.last == key
+
         set_value(@attribute, key, value) 
         set_value(@override, key, value) 
         value
@@ -203,7 +216,7 @@ class Chef
       def auto_vivifiy(data_hash, key)
         if data_hash.has_key?(key)
           unless data_hash[key].respond_to?(:has_key?)
-            raise ArgumentError, "You tried to set a nested key, where the parent is not a hash-like object." unless auto_vivifiy_on_read
+            raise ArgumentError, "You tried to set a nested key, where the parent is not a hash-like object: #{@state.join("/")}/#{key} " unless auto_vivifiy_on_read
           end
         else
           data_hash[key] = Mash.new
