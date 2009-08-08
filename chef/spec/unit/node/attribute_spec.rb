@@ -369,6 +369,12 @@ describe Chef::Node::Attribute do
       @attributes["fire"] = "secret life"
       @attributes["fire"].should == "still burn"
     end
+
+    it "should write to an attribute that has been read before properly" do
+      @attributes["foo"] = Mash.new
+      @attributes["foo"]["bar"] ||= "stop the world"
+      @attributes["foo"]["bar"].should == "stop the world"
+    end
   end
 
   describe "get_value" do
