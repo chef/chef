@@ -234,6 +234,10 @@ describe Chef::Node::Attribute do
       na = Chef::Node::Attribute.new({}, {}, {}, [ "first", "second", "third" ])
       na.state.should == [ "first", "second", "third" ]
     end
+
+    it "should be enumerable" do
+      @attributes.should be_is_a(Enumerable)
+    end
   end
 
   describe "hash_and_not_cna" do
@@ -449,12 +453,13 @@ describe Chef::Node::Attribute do
     end
   end
 
-  describe "each" do
+  describe "keys" do
     before(:each) do
       @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  { "two" => "three" },
           "hut" =>  { "two" => "three" },
+          "place" => { },
         },
         {
           "one" =>  { "four" => "five" },
@@ -469,19 +474,20 @@ describe Chef::Node::Attribute do
 
     it "should yield each top level key" do
       collect = Array.new
-      @attributes.each do |k|
+      @attributes.keys.each do |k|
         collect << k
       end
       collect.include?("one").should == true
       collect.include?("hut").should == true
       collect.include?("snakes").should == true
       collect.include?("snack").should == true
-      collect.length.should == 4
+      collect.include?("place").should == true
+      collect.length.should == 5 
     end
 
     it "should yield lower if we go deeper" do
       collect = Array.new
-      @attributes.one.each do |k|
+      @attributes.one.keys.each do |k|
         collect << k
       end
       collect.include?("two").should == true
@@ -489,9 +495,13 @@ describe Chef::Node::Attribute do
       collect.include?("six").should == true
       collect.length.should == 3 
     end
+
+    it "should not raise an exception if one of the hashes has a nil value on a deep lookup" do
+      lambda { @attributes.place.keys { |k| } }.should_not raise_error(NoMethodError)
+    end
   end
 
-  describe "each_attribute" do
+  describe "each" do
     before(:each) do
       @attributes = Chef::Node::Attribute.new(
         {
@@ -511,7 +521,7 @@ describe Chef::Node::Attribute do
 
     it "should yield each top level key and value, post merge rules" do
       collect = Hash.new
-      @attributes.each_attribute do |k, v|
+      @attributes.each do |k, v|
         collect[k] = v
       end
 
