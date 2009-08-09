@@ -5,7 +5,7 @@ if defined?(Merb::Plugins)
   dependency 'chef', :immediate=>true unless defined?(Chef)
   require 'chef/role'
 
-  require 'syntax/convertors/html'
+  require 'coderay'
 
   Merb::Plugins.add_rakefiles "chef-server-slice/merbtasks", "chef-server-slice/slicetasks", "chef-server-slice/spectasks"
 

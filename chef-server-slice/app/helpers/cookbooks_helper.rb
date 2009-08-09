@@ -14,18 +14,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
 module Merb
   module ChefServerSlice
     module CookbooksHelper
       def syntax_highlight(code)
-        converter = Syntax::Convertors::HTML.for_syntax "ruby"
         if File.exists?(code)
-          converter.convert(File.read(code), false)
+          tokens = CodeRay.scan_file(code, :ruby)
         else
-          converter.convert(code, false)
+          tokens = CodeRay.scan(code, :ruby)
         end
+        return CodeRay.encode_tokens(tokens, :span)
       end
     end
   end
