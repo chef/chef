@@ -441,6 +441,12 @@ describe Chef::Node::Attribute do
       @attributes.reset
       @attributes.music.mastodon.should == ["dream", "still", "shining"]
     end
+
+    it "should allow the last method to set a value if it has an = sign on the end" do
+      @attributes.music.mastodon = [ "dream", "still", "shining" ]
+      @attributes.reset
+      @attributes.music.mastodon.should == [ "dream", "still", "shining" ]
+    end
   end
 
   describe "each" do
