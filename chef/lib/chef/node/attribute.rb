@@ -24,6 +24,8 @@ class Chef
     class Attribute
       attr_accessor :attribute, :default, :override, :state, :current_attribute, :current_default, :current_override, :auto_vivifiy_on_read, :set_unless_value_present, :has_been_read
 
+      include Enumerable
+
       def initialize(attribute, default, override, state=[])
         @attribute = attribute
         @current_attribute = attribute
@@ -83,20 +85,29 @@ class Chef
       end
 
       def get_keys
-        keys = current_override.keys
-        current_attribute.keys.each do |key|
-          keys << key unless keys.include?(key)
-        end
-        current_default.keys.each do |key|
-          keys << key unless keys.include?(key)
-        end
         keys
       end
 
-      def each(&block)
-        get_keys.each do |k|
-          block.call(k)
+      def keys
+        tkeys = []
+        if current_override
+          tkeys = current_override.keys
         end
+        if current_attribute
+          current_attribute.keys.each do |key|
+            tkeys << key unless tkeys.include?(key)
+          end
+        end
+        if current_default
+          current_default.keys.each do |key|
+            tkeys << key unless tkeys.include?(key)
+          end
+        end
+        tkeys
+      end
+
+      def each(&block)
+        each_attribute(&block)
       end
 
       def get_value(data_hash, key)
