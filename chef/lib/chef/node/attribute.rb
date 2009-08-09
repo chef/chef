@@ -257,6 +257,9 @@ class Chef
         end
 
         if args.length != 0
+          if by.to_s =~ /^(.+)=$/
+            by = $1
+          end
           self[by] = args.length == 1 ? args[0] : args
         else
           self[by]
