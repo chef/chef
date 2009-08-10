@@ -23,7 +23,7 @@ class Chef
   class Node
     class Attribute
       attr_accessor :attribute, :default, :override, :state, :current_attribute, :current_default, :current_override, :auto_vivifiy_on_read, :set_unless_value_present, :has_been_read
-
+      
       include Enumerable
 
       def initialize(attribute, default, override, state=[])
