@@ -26,6 +26,8 @@ class Chef
       
       include Enumerable
 
+      include Enumerable
+
       def initialize(attribute, default, override, state=[])
         @attribute = attribute
         @current_attribute = attribute
