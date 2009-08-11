@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: AJ Christensen (<aj@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -417,6 +418,16 @@ describe Chef::Node::Attribute do
       @attributes.has_key?("mastodon").should == true 
       @attributes.has_key?("whitesnake").should == false
     end
+
+    [:include?, :key?, :member?].each do |method|
+      it "should alias the method #{method} to itself" do
+        @attributes.should respond_to(method) 
+      end
+
+      it "#{method} should behave like has_key?" do
+        @attributes.send(method, "music").should == true
+      end
+    end
   end
 
   describe "attribute?" do
@@ -530,6 +541,364 @@ describe Chef::Node::Attribute do
       collect["snakes"].should == "on a plane"
       collect["snack"].should == "cookies"
     end
+
+    it "should yield as a two-element array" do
+      @attributes.each do |a|
+        a.should be_an_instance_of(Array)
+      end
+    end
   end
 
+  describe "each_key" do
+    before do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  "two",
+          "hut" =>  "three",
+        },
+        {
+          "one" =>  "four",
+          "snakes" => "on a plane"
+        },
+        {
+          "one" => "six",
+          "snack" => "cookies"
+        }
+      )
+    end
+
+    it "should respond to each_key" do
+      @attributes.should respond_to(:each_key)
+    end
+
+    it "should yield each top level key, post merge rules" do
+      collect = Array.new
+      @attributes.each_key do |k|
+        collect << k
+      end
+     
+      collect[0].should == "one"
+      collect[1].should == "snack"
+      collect[2].should == "hut"
+      collect[3].should == "snakes"
+    end
+  end
+
+  describe "each_pair" do
+    before do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  "two",
+          "hut" =>  "three",
+        },
+        {
+          "one" =>  "four",
+          "snakes" => "on a plane"
+        },
+        {
+          "one" => "six",
+          "snack" => "cookies"
+        }
+      )
+    end
+
+    it "should respond to each_pair" do
+      @attributes.should respond_to(:each_pair)
+    end
+
+    it "should yield each top level key and value pair, post merge rules" do
+      collect = Hash.new
+      @attributes.each_pair do |k, v|
+        collect[k] = v
+      end
+
+      collect["one"].should == "six"
+      collect["hut"].should == "three"
+      collect["snakes"].should == "on a plane"
+      collect["snack"].should == "cookies"
+    end
+  end
+  
+  describe "each_value" do
+    before do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  "two",
+          "hut" =>  "three",
+        },
+        {
+          "one" =>  "four",
+          "snakes" => "on a plane"
+        },
+        {
+          "one" => "six",
+          "snack" => "cookies"
+        }
+      )
+    end
+
+    it "should respond to each_value" do
+      @attributes.should respond_to(:each_value)
+    end
+
+    it "should yield each value, post merge rules" do
+      collect = Array.new
+      @attributes.each_value do |v|
+        collect << v
+      end
+
+      collect[0].should include("six")
+      collect[1].should include("cookies")
+      collect[2].should include("three")
+      collect[3].should include("on a plane")
+    end
+
+    it "should yield four elements" do
+      collect = Array.new
+      @attributes.each_value do |v|
+        collect << v
+      end
+
+      collect.length.should == 4
+    end
+  end
+
+  describe "empty?" do
+    before do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  "two",
+          "hut" =>  "three",
+        },
+        {
+          "one" =>  "four",
+          "snakes" => "on a plane"
+        },
+        {
+          "one" => "six",
+          "snack" => "cookies"
+        }
+      )
+      @empty = Chef::Node::Attribute.new({}, {}, {})
+    end
+
+    it "should respond to empty?" do
+      @attributes.should respond_to(:empty?)
+    end
+
+    it "should return true when there are no keys" do
+      @empty.empty?.should == true
+    end
+
+    it "should return false when there are keys" do
+      @attributes.empty?.should == false
+    end
+
+  end
+
+  describe "fetch" do
+    before do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  "two",
+          "hut" =>  "three",
+        },
+        {
+          "one" =>  "four",
+          "snakes" => "on a plane"
+        },
+        {
+          "one" => "six",
+          "snack" => "cookies"
+        }
+      )
+    end
+
+    it "should respond to fetch" do
+      @attributes.should respond_to(:fetch)
+    end
+
+    describe "when the key exists" do
+      it "should return the value of the key, post merge (same result as each)" do
+        {
+          "one" => "six",
+          "hut" => "three",
+          "snakes" => "on a plane",
+          "snack" => "cookies"
+        }.each do |k,v|
+          @attributes.fetch(k).should == v
+        end
+      end
+    end
+
+    describe "when the key does not exist" do
+      describe "and no args are passed" do
+        it "should raise an indexerror" do
+          lambda { @attributes.fetch("lololol") }.should raise_error(IndexError)
+        end
+      end
+
+      describe "and a default arg is passed" do
+        it "should return the value of the default arg" do
+          @attributes.fetch("lol", "blah").should == "blah"
+        end
+      end
+
+      describe "and a block is passed" do
+        it "should run the block and return its value" do
+          @attributes.fetch("lol") { |x| "#{x}, blah" }.should == "lol, blah"
+        end
+      end
+    end
+  end
+
+  describe "has_value?" do
+    before do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  "two",
+          "hut" =>  "three",
+        },
+        {
+          "one" =>  "four",
+          "snakes" => "on a plane"
+        },
+        {
+          "one" => "six",
+          "snack" => "cookies"
+        }
+      )
+    end
+
+    it "should respond to has_value?" do
+      @attributes.should respond_to(:has_value?)
+    end
+
+    it "should return true if any key has the value supplied" do
+      @attributes.has_value?("cookies").should == true
+    end
+
+    it "should return false no key has the value supplied" do
+      @attributes.has_value?("lololol").should == false
+    end
+
+    it "should alias value?" do
+      @attributes.should respond_to(:value?)
+    end
+  end
+
+  describe "index" do
+    before do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  "two",
+          "hut" =>  "three",
+        },
+        {
+          "one" =>  "four",
+          "snakes" => "on a plane"
+        },
+        {
+          "one" => "six",
+          "snack" => "cookies"
+        }
+      )
+    end
+
+    it "should respond to index" do
+      @attributes.should respond_to(:index)
+    end
+
+    describe "when the value is indexed" do
+      it "should return the index" do
+        @attributes.index("six").should == "one"
+      end
+    end
+
+    describe "when the value is not indexed" do
+      it "should return nil" do
+        @attributes.index("lolol").should == nil
+      end
+    end
+
+  end
+
+
+  describe "values" do
+    before do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  "two",
+          "hut" =>  "three",
+        },
+        {
+          "one" =>  "four",
+          "snakes" => "on a plane"
+        },
+        {
+          "one" => "six",
+          "snack" => "cookies"
+        }
+      )
+    end
+
+    it "should respond to values" do
+      @attributes.should respond_to(:values)
+    end
+
+    it "should return an array of values" do
+      @attributes.values.length.should == 4
+    end
+
+    it "should match the values output from each" do
+      @attributes.values.should include("six")
+      @attributes.values.should include("cookies")
+      @attributes.values.should include("three")
+      @attributes.values.should include("on a plane")
+    end
+
+  end
+
+  describe "select" do
+    before do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  "two",
+          "hut" =>  "three",
+        },
+        {
+          "one" =>  "four",
+          "snakes" => "on a plane"
+        },
+        {
+          "one" => "six",
+          "snack" => "cookies"
+        }
+      )
+    end
+
+    it "should respond to select" do
+      @attributes.should respond_to(:select)
+    end
+    
+    it "should raise a LocalJumpError if no block is given" do
+      lambda { @attributes.select }.should raise_error(LocalJumpError)
+    end
+
+    it "should return an empty array for a block containing nil" do
+      @attributes.select { nil }.should == []
+    end
+
+    # sorted for spec clarity
+    it "should return a new array of k,v pairs for which the block returns true" do
+      @attributes.select { true }.sort.should == (
+        [
+          ["hut", "three"],
+          ["one", "six"],
+          ["snack", "cookies"],
+          ["snakes", "on a plane"]
+        ]
+      )
+    end
+  end
 end
