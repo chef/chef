@@ -901,4 +901,41 @@ describe Chef::Node::Attribute do
       )
     end
   end
+
+  describe "size" do
+    before do
+      @attributes = Chef::Node::Attribute.new(
+        {
+          "one" =>  "two",
+          "hut" =>  "three",
+        },
+        {
+          "one" =>  "four",
+          "snakes" => "on a plane"
+        },
+        {
+          "one" => "six",
+          "snack" => "cookies"
+        }
+      )
+
+      @empty = Chef::Node::Attribute.new({},{},{})
+    end
+
+    it "should respond to size" do
+      @attributes.should respond_to(:size)
+    end
+
+    it "should alias length to size" do
+      @attributes.should respond_to(:length)
+    end
+
+    it "should return 0 for an empty attribute" do
+      @empty.size.should == 0
+    end
+
+    it "should return the number of pairs" do
+      @attributes.size.should == 4
+    end
+  end
 end

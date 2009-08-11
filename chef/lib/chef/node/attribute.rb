@@ -175,6 +175,12 @@ class Chef::Node
       self.collect { |h| h[1] }
     end
 
+    def size
+      self.collect{}.length
+    end
+
+    alias :length :size
+
     def get_keys
       keys
     end
