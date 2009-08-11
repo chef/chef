@@ -128,11 +128,9 @@ class Chef
     end
 
     def expand_node
-      if @recipes.empty? && @override_attributes.empty? && @default_attributes.empty?
-        @recipes, @default_attributes, @override_attributes = @node.run_list.expand
-        @node.default = @default_attributes
-        @node.override = @override_attributes
-      end
+      @recipes, @default_attributes, @override_attributes = @node.run_list.expand
+      @node.default = @default_attributes
+      @node.override = @override_attributes
       return @recipes, @default_attributes, @override_attributes
     end
     
