@@ -369,7 +369,7 @@ class Chef::Node
         if args.length != 0
           by = symbol
         else
-          raise ArgumentError, "Attribute #{symbol.to_s} is not defined!"
+          raise ArgumentError, "Attribute #{symbol.to_s} is not defined!" unless auto_vivifiy_on_read
         end
       end
 

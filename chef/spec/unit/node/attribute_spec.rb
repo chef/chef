@@ -462,6 +462,13 @@ describe Chef::Node::Attribute do
       @attributes.reset
       @attributes.music.mastodon.should == [ "dream", "still", "shining" ]
     end
+
+    it "should honor auto-vivifiy on read" do
+      @attributes.auto_vivifiy_on_read = true
+      @attributes.rock.and.roll = "boom boom yeah"
+      @attributes.reset
+      @attributes.rock.and.roll.should == "boom boom yeah"
+    end
   end
 
   describe "keys" do
