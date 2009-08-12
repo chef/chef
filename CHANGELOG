@@ -1,3 +1,28 @@
+Wed Aug 12 21:57:53 NZST 2009
+
+Release Notes - Chef - Version 0.7.8
+
+** Bug
+    * [CHEF-269] - remote_file fails if URL contains % characters
+    * [CHEF-431] - ChefServerSlice::OpenidServer#index should treat content_type as a symbol
+    * [CHEF-432] - chef-server-slice views should use slice_url instead of url
+    * [CHEF-439] - service resource - inherited file handle weirdness
+    * [CHEF-472] - Output logging is very choppy
+    * [CHEF-473] - attribute setting issue in 0.7.6
+    * [CHEF-477] - Walking an attribute with .each when it is deeply nested and has no defaults or overrides causes an exception
+    * [CHEF-479] - Attribute setting issue in 0.7.6 - wrong saved names?
+    * [CHEF-482] - Nested hashes loaded from JSON don't act like nested hashes
+    * [CHEF-483] - Chef::Node::Attribute.should behave_like_a(Hash)
+    * [CHEF-484] - Method Missing attribute lookups don't honour auto vivify on read.
+    * [CHEF-486] - Attributes added from an attribute file can unneccessarily block run list expansion
+
+** Improvement
+    * [CHEF-430] - Add support for HTTP Basic Authentication to Chef::REST
+
+** New Feature
+    * [CHEF-474] - Switch chef-server syntax highlighting to coderay
+    * [CHEF-475] - chef-repo should have a roles directory with chef upgrade from blog post
+
 Sat Aug 8 4:45:50 NZST 2009
 
 Release Notes - Chef - Version 0.7.6
