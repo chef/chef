@@ -42,3 +42,26 @@ describe Chef::Provider::Package::Rubygems, "gem_binary_path" do
     @provider.gem_binary_path.should eql("/opt/local/bin/custom/ruby")
   end
 end
+
+describe Chef::Provider::Package::Rubygems, "install_package" do
+  before(:each) do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Package",
+      :null_object => true,
+      :name => "rspec",
+      :version => "1.2.2",
+      :package_name => "rspec",
+      :updated => nil,
+      :gem_binary => nil,
+      :source => nil
+    )
+    @provider = Chef::Provider::Package::Rubygems.new(@node, @new_resource)
+  end
+
+  it "should run gem install with the package name and version" do
+    @provider.should_receive(:run_command).with({
+      :command => "gem install rspec -q --no-rdoc --no-ri -v \"1.2.2\""
+    })
+    @provider.install_package("rspec", "1.2.2")
+  end
+end
