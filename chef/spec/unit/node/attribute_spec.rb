@@ -945,4 +945,22 @@ describe Chef::Node::Attribute do
       @attributes.size.should == 4
     end
   end
+
+  describe "kind_of?" do
+    it "should falsely inform you that it is a Hash" do
+      @attributes.should be_a_kind_of(Hash)
+    end
+
+    it "should falsely inform you that it is a Mash" do
+      @attributes.should be_a_kind_of(Mash)
+    end
+
+    it "should inform you that it is a Chef::Node::Attribute" do
+      @attributes.should be_a_kind_of(Chef::Node::Attribute)
+    end
+
+    it "should inform you that it is anything else" do
+      @attributes.should_not be_a_kind_of(Chef::Node)
+    end
+  end
 end

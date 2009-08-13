@@ -157,6 +157,20 @@ class Chef
         end
       end
 
+      # Writing this method hurts me a little bit.
+      #
+      # TODO: Refactor all this stuff so this kind of horror is no longer needed
+      #
+      # We have invented a new kind of duck-typing, we call it Madoff typing.
+      # We just lie and hope we die before you recognize our scheme. :)
+      def kind_of?(klass)
+        if klass == Hash || klass == Mash || klass == Chef::Node::Attribute
+          true
+        else
+          false
+        end
+      end
+
       def has_value?(value)
         self.any? do |k,v|
           value == v
