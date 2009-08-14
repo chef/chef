@@ -204,7 +204,13 @@ class Chef
         unless args[:group].kind_of?(Integer)
           args[:group] = Etc.getgrnam(args[:group]).gid if args[:group]
         end
-        args[:environment] ||= nil
+        args[:environment] ||= {}
+
+        # Default on C locale so parsing commands output can be done
+        # independently of the node's default locale.
+        unless args[:environment]["LC_ALL"]
+          args[:environment]["LC_ALL"] = "C"
+        end
         
         pw, pr, pe, ps = IO.pipe, IO.pipe, IO.pipe, IO.pipe
 
@@ -238,10 +244,8 @@ class Chef
               Process.uid = args[:user]
             end
             
-            if args[:environment]
-              args[:environment].each do |key,value|
-                ENV[key] = value
-              end
+            args[:environment].each do |key,value|
+              ENV[key] = value
             end
 
             if args[:umask]
