@@ -79,31 +79,28 @@ class Chef
         end
      
         def install_package(name, version)
-          run_command(
+          run_command_with_systems_locale(
             :command => "dpkg -i#{expand_options(@new_resource.options)} #{@new_resource.source}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive",
-              "LANG" => "en_US"
+              "DEBIAN_FRONTEND" => "noninteractive"
             }
           )
         end
 
         def remove_package(name, version)
-          run_command(
+          run_command_with_systems_locale(
             :command => "dpkg -r#{expand_options(@new_resource.options)} #{@new_resource.package_name}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive",
-              "LANG" => "en_US"
+              "DEBIAN_FRONTEND" => "noninteractive"
             }
           )
         end
       
         def purge_package(name, version)
-          run_command(
+          run_command_with_systems_locale(
             :command => "dpkg -P#{expand_options(@new_resource.options)} #{@new_resource.package_name}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive",
-              "LANG" => "en_US"
+              "DEBIAN_FRONTEND" => "noninteractive"
             }
           )
         end

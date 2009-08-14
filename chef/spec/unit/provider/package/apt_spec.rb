@@ -136,7 +136,7 @@ describe Chef::Provider::Package::Apt, "install_package" do
   end
   
   it "should run apt-get install with the package name and version" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "apt-get -q -y install emacs=1.0",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive"
@@ -146,7 +146,7 @@ describe Chef::Provider::Package::Apt, "install_package" do
   end
 
   it "should run apt-get install with the package name and version and options if specified" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "apt-get -q -y --force-yes install emacs=1.0",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive"
@@ -194,7 +194,7 @@ describe Chef::Provider::Package::Apt, "remove_package" do
   end
   
   it "should run apt-get remove with the package name" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "apt-get -q -y remove emacs",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive"
@@ -204,7 +204,7 @@ describe Chef::Provider::Package::Apt, "remove_package" do
   end
 
   it "should run apt-get remove with the package name and options if specified" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "apt-get -q -y --force-yes remove emacs",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive"
@@ -231,7 +231,7 @@ describe Chef::Provider::Package::Apt, "purge_package" do
   end
   
   it "should run apt-get purge with the package name" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "apt-get -q -y purge emacs",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive"
@@ -241,7 +241,7 @@ describe Chef::Provider::Package::Apt, "purge_package" do
   end
 
   it "should run apt-get purge with the package name and options if specified" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "apt-get -q -y --force-yes purge emacs",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive"
@@ -266,7 +266,7 @@ describe Chef::Provider::Package::Apt, "preseed_package" do
     )
     @provider = Chef::Provider::Package::Apt.new(@node, @new_resource)
     @provider.stub!(:get_preseed_file).and_return("/tmp/emacs-10.seed")
-    @provider.stub!(:run_command).and_return(true)
+    @provider.stub!(:run_command_with_systems_locale).and_return(true)
   end
   
   it "should get the full path to the preseed response file" do
@@ -275,7 +275,7 @@ describe Chef::Provider::Package::Apt, "preseed_package" do
   end
   
   it "should run debconf-set-selections on the preseed file if it has changed" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "debconf-set-selections /tmp/emacs-10.seed",
       :environment => {
         "DEBIAN_FRONTEND" => "noninteractive"
@@ -286,7 +286,7 @@ describe Chef::Provider::Package::Apt, "preseed_package" do
   
   it "should not run debconf-set-selections if the preseed file has not changed" do
     @provider.stub!(:get_preseed_file).and_return(false)
-    @provider.should_not_receive(:run_command)
+    @provider.should_not_receive(:run_command_with_systems_locale)
     @provider.preseed_package("emacs", "10")
   end
 end

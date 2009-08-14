@@ -138,7 +138,7 @@ describe Chef::Provider::Package::Freebsd, "install_package" do
   end
 
   it "should run pkg_add -r with the package name" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "pkg_add -r zsh",
     })
     @provider.install_package("zsh", "4.3.6_7")
@@ -147,7 +147,7 @@ describe Chef::Provider::Package::Freebsd, "install_package" do
   it "should run make install when installing from ports" do
     @new_resource.stub!(:source).and_return("ports")
     @provider.should_receive(:port_path).and_return("/usr/ports/shells/zsh")
-    @provider.should_receive(:run_command).with(:command => "make -DBATCH install", :cwd => "/usr/ports/shells/zsh")
+    @provider.should_receive(:run_command_with_systems_locale).with(:command => "make -DBATCH install", :cwd => "/usr/ports/shells/zsh")
     @provider.install_package("zsh", "4.3.6_7")
   end
 end
@@ -198,13 +198,13 @@ describe Chef::Provider::Package::Freebsd, "ruby-iconv (package with a dash in t
   end
 
   it "should run pkg_add -r with the package name" do
-    @provider.should_receive(:run_command).with(:command => "pkg_add -r ruby18-iconv")
+    @provider.should_receive(:run_command_with_systems_locale).with(:command => "pkg_add -r ruby18-iconv")
     @provider.install_package("ruby-iconv", "1.0")
   end
 
   it "should run make install when installing from ports" do
     @new_resource.stub!(:source).and_return("ports")
-    @provider.should_receive(:run_command).with(:command => "make -DBATCH install", :cwd => "/usr/ports/converters/ruby-iconv")
+    @provider.should_receive(:run_command_with_systems_locale).with(:command => "make -DBATCH install", :cwd => "/usr/ports/converters/ruby-iconv")
     @provider.install_package("ruby-iconv", "1.0")
   end
 end
@@ -230,7 +230,7 @@ describe Chef::Provider::Package::Freebsd, "remove_package" do
   end
 
   it "should run pkg_delete with the package name and version" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "pkg_delete zsh-4.3.6_7"
     })
     @provider.remove_package("zsh", "4.3.6_7")
@@ -274,7 +274,7 @@ describe Chef::Provider::Package::Freebsd, "install_package latest link fixes" d
     @provider.stub!(:package_name).and_return("perl")
     @provider.stub!(:latest_link_name).and_return("perl")
 
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "pkg_add -r perl",
     })
     @provider.install_package("perl5.8", "5.8.8_1")
@@ -299,7 +299,7 @@ describe Chef::Provider::Package::Freebsd, "install_package latest link fixes" d
     @provider.stub!(:package_name).and_return("mysql-server")
     @provider.stub!(:latest_link_name).and_return("mysql50-server")
 
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "pkg_add -r mysql50-server",
     })
     @provider.install_package("mysql50-server", "5.0.45_1")

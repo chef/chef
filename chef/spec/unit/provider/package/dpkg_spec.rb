@@ -127,22 +127,20 @@ describe Chef::Provider::Package::Dpkg, "install and upgrade" do
   end
 
   it "should run dpkg -i with the package source" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive",
-        "LANG" => "en_US"
+        "DEBIAN_FRONTEND" => "noninteractive"
       }
     })
     @provider.install_package("wget", "1.11.4-1ubuntu1")
   end
 
   it "should run dpkg -i with the package source and options if specified" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "dpkg -i --force-yes /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive",
-        "LANG" => "en_US"
+        "DEBIAN_FRONTEND" => "noninteractive"
       }
     })
     @new_resource.stub!(:options).and_return("--force-yes")
@@ -170,22 +168,20 @@ describe Chef::Provider::Package::Dpkg, "remove and purge" do
   end
 
   it "should run dpkg -r to remove the package" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "dpkg -r wget",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive",
-        "LANG" => "en_US"
+        "DEBIAN_FRONTEND" => "noninteractive"
       }
     })
     @provider.remove_package("wget", "1.11.4-1ubuntu1")
   end
 
   it "should run dpkg -r to remove the package with options if specified" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "dpkg -r --force-yes wget",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive",
-        "LANG" => "en_US"
+        "DEBIAN_FRONTEND" => "noninteractive"
       }
     })
     @new_resource.stub!(:options).and_return("--force-yes")
@@ -194,22 +190,20 @@ describe Chef::Provider::Package::Dpkg, "remove and purge" do
   end
 
   it "should run dpkg -P to purge the package" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "dpkg -P wget",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive",
-        "LANG" => "en_US"
+        "DEBIAN_FRONTEND" => "noninteractive"
       }
     })
     @provider.purge_package("wget", "1.11.4-1ubuntu1")
   end
 
   it "should run dpkg -P to purge the package with options if specified" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "dpkg -P --force-yes wget",
       :environment => {
-        "DEBIAN_FRONTEND" => "noninteractive",
-        "LANG" => "en_US"
+        "DEBIAN_FRONTEND" => "noninteractive"
       }
     })
     @new_resource.stub!(:options).and_return("--force-yes")

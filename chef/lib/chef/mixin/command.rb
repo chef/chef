@@ -179,6 +179,21 @@ class Chef
       
       module_function :handle_command_failures
            
+      # Call #run_command but set LC_ALL to the system's current environment so it doesn't get changed to C.
+      #
+      # === Parameters
+      # args<Hash>: A number of required and optional arguments that will be handed out to #run_command
+      #
+      # === Returns
+      # Returns the result of #run_command
+      def run_command_with_systems_locale(args={})
+        args[:environment] ||= {}
+        args[:environment]["LC_ALL"] = ENV["LC_ALL"]
+        run_command args
+      end
+
+      module_function :run_command_with_systems_locale
+
       # This is taken directly from Ara T Howard's Open4 library, and then 
       # modified to suit the needs of Chef.  Any bugs here are most likely
       # my own, and not Ara's.
@@ -208,7 +223,8 @@ class Chef
 
         # Default on C locale so parsing commands output can be done
         # independently of the node's default locale.
-        unless args[:environment]["LC_ALL"]
+        # "LC_ALL" could be set to nil, in which case we also must ignore it.
+        unless args[:environment].has_key?("LC_ALL")
           args[:environment]["LC_ALL"] = "C"
         end
         

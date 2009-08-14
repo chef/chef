@@ -133,7 +133,7 @@ class Chef
         end
 
         def install_package(name, version)
-          run_command(
+          run_command_with_systems_locale(
             :command => "yum -q -y install #{name}-#{version}"
           )
           @yum.flush
@@ -142,7 +142,7 @@ class Chef
         def upgrade_package(name, version)
           # If we have a version, we can upgrade - otherwise, install
           if @current_resource.version
-            run_command(
+            run_command_with_systems_locale(
               :command => "yum -q -y update #{name}-#{version}"
             )   
             @yum.flush
@@ -153,11 +153,11 @@ class Chef
 
         def remove_package(name, version)
           if version
-            run_command(
+            run_command_with_systems_locale(
              :command => "yum -q -y remove #{name}-#{version}"
             )
           else
-            run_command(
+            run_command_with_systems_locale(
              :command => "yum -q -y remove #{name}"
             )
           end

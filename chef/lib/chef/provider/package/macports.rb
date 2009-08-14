@@ -45,7 +45,7 @@ class Chef
           unless @current_resource.version == version
             command = "port install #{name}"
             command << " @#{version}" if version and !version.empty? 
-            run_command(
+            run_command_with_systems_locale(
               :command => command
             )
           end
@@ -54,7 +54,7 @@ class Chef
         def purge_package(name, version)
           command = "port uninstall #{name}"
           command << " @#{version}" if version and !version.empty?
-          run_command(
+          run_command_with_systems_locale(
             :command => command
           )
         end
@@ -63,7 +63,7 @@ class Chef
           command = "port deactivate #{name}"
           command << " @#{version}" if version and !version.empty?
 
-          run_command(
+          run_command_with_systems_locale(
             :command => command
           )
         end
@@ -78,7 +78,7 @@ class Chef
             # that hasn't been installed.
             install_package(name, version)
           elsif current_version != version
-            run_command(
+            run_command_with_systems_locale(
               :command => "port upgrade #{name} @#{version}"
             )
           end
