@@ -404,6 +404,18 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "to_hash" do
+    it "should convert to a hash" do
+      @attributes.to_hash.class.should == Hash
+    end
+
+    it "should convert to a hash based on current state" do
+      hash = @attributes["hot"].to_hash
+      hash.class.should == Hash
+      hash["day"].should == "sunday"
+    end
+  end
+
   describe "has_key?" do
     it "should return true if an attribute exists" do
       @attributes.has_key?("music").should == true

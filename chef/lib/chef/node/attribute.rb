@@ -398,6 +398,14 @@ class Chef
         end
       end
 
+      def to_hash
+        result = determine_value(current_override, current_attribute, current_default)
+        if result.class == Hash
+          result
+        else
+          result.to_hash
+        end
+      end
 
     end
   end

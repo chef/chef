@@ -18,5 +18,6 @@ search: --tags search --format pretty -r features/steps -r features/support feat
 language: --tags language --format pretty -r features/steps -r features/support features 
 recipe_inclusion: --tags recipe_inclusion --format pretty -r features/steps -r features/support features 
 provider_remote_file: --tags provider,remote_file --format pretty -r features/steps -r features/support features 
+provider_template: --tags template --format pretty -r features/steps -r features/support features
 provider_package_macports: --tags macports --format pretty -r features/steps -r features/support features 
 

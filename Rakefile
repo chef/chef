@@ -171,6 +171,10 @@ namespace :features do
   end
 
   namespace :provider do
+    Cucumber::Rake::Task.new(:template) do |t|
+      t.profile = "provider_template"
+    end
+
     Cucumber::Rake::Task.new(:remote_file) do |t|
       t.profile = "provider_remote_file"
     end

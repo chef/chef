@@ -95,8 +95,9 @@ class Chef
           Chef::Log.debug("Updating template for #{@new_resource} in the cache")
           Chef::FileCache.move_to(raw_template_file.path, cache_file_name)
         end
-        
-        context = @new_resource.variables
+
+        context = {}
+        context.merge!(@new_resource.variables)
         context[:node] = @node
         template_file = render_template(Chef::FileCache.load(cache_file_name), context)
 
