@@ -30,7 +30,7 @@ spec = Gem::Specification.new do |s|
 
   %w{stomp stompserver ferret
     merb-core merb-haml merb-assets
-    merb-helpers mongrel haml
+    merb-helpers merb-slices mongrel haml
     ruby-openid json coderay}.each { |gem| s.add_dependency gem }
 
   s.require_path = 'lib'
