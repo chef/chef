@@ -19,8 +19,10 @@ class Chef
   module Mixin
     class DeepMerge
       def self.merge(first, second)
-        first = first.to_hash if first.kind_of?(Mash)
-        second = second.to_hash if second.kind_of?(Mash)
+        first = Mash.new(first).to_hash unless second.kind_of?(Mash)
+        first = first.to_hash
+        second = Mash.new(second).to_hash unless second.kind_of?(Mash)
+        second = second.to_hash
         # Originally From: http://www.ruby-forum.com/topic/142809
         # Author: Stefan Rusterholz
         merger = proc do |key,v1,v2| 
