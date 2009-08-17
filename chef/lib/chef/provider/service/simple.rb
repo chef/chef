@@ -27,7 +27,7 @@ class Chef
           if @new_resource.start_command
             run_command(:command => @new_resource.start_command)
           else
-            raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} requires that start_command to be set"
+            raise Chef::Exceptions::Service, "#{self.to_s} requires that start_command to be set"
           end
         end
 
@@ -35,7 +35,7 @@ class Chef
           if @new_resource.stop_command
             run_command(:command => @new_resource.stop_command)
           else
-            raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} requires that stop_command to be set"
+            raise Chef::Exceptions::Service, "#{self.to_s} requires that stop_command to be set"
           end
         end
 
@@ -53,7 +53,7 @@ class Chef
           if @new_resource.reload_command
             run_command(:command => @new_resource.reload_command)
           else
-            raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} requires that reload_command to be set"
+            raise Chef::Exceptions::Service, "#{self.to_s} requires that reload_command to be set"
           end
         end
       end
