@@ -82,7 +82,6 @@ class Chef
 
     authorized_openid_identifiers nil
     authorized_openid_providers nil
-    chef_server_url "http://localhost:4000"
     cookbook_path [ "/var/chef/site-cookbooks", "/var/chef/cookbooks" ]
     couchdb_database "chef"
     couchdb_url "http://localhost:5984"
@@ -108,8 +107,14 @@ class Chef
     openid_store_path "/var/chef/openid/db"
     openid_url "http://localhost:4001"
     pid_file nil
+    queue_host "localhost"
+    queue_password ""
+    queue_port 61613
+    queue_retry_count 5
+    queue_retry_delay 5
+    queue_user ""
+    chef_server_url "http://localhost:4000"
     registration_url "http://localhost:4000"
-    certificate_url "http://localhost:4000"
     client_url "http://localhost:4042"
     remotefile_url "http://localhost:4000"
     rest_timeout 60

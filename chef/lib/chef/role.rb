@@ -217,7 +217,6 @@ class Chef
 
     # Sync all the json roles with couchdb from disk
     def self.sync_from_disk_to_couchdb
-      couchdb = Chef::CouchDB.new
       Dir[File.join(Chef::Config[:role_path], "*.json")].each do |role_file|
         short_name = File.basename(role_file, ".json") 
         Chef::Log.warn("Loading #{short_name}")

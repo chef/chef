@@ -46,7 +46,7 @@ class Chef
       @json_attribs = nil
       @node_name = nil
       @node_exists = true 
-      Mixlib::Auth::Log.logger = Ohai::Log.logger = Chef::Log.logger
+      Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger
       @ohai = Ohai::System.new
       @ohai_has_run = false
       if File.exists?(Chef::Config[:client_key])
@@ -117,8 +117,8 @@ class Chef
     end
 
     def determine_node_name
+      run_ohai      
       unless @safe_name && @node_name
-        run_ohai
         if Chef::Config[:node_name]
           @node_name = Chef::Config[:node_name]
         else
@@ -278,6 +278,7 @@ class Chef
     def sync_cookbooks
       Chef::Log.debug("Synchronizing cookbooks")
       cookbook_hash = @rest.get_rest("nodes/#{@safe_name}/cookbooks")
+      Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
       cookbook_hash.each do |cookbook_name, parts|
         update_file_cache(cookbook_name, parts)
       end
@@ -289,10 +290,12 @@ class Chef
     # true:: Always returns true
     def save_node
       Chef::Log.debug("Saving the current state of node #{@safe_name}")
+      Chef::Log.error(@rest.inspect)
       if @node_exists
         @node = @rest.put_rest("nodes/#{@safe_name}", @node)
       else
         result = @rest.post_rest("nodes", @node)
+        Chef::Log.error "I got this result: #{result}"
         @node = @rest.get_rest(result['uri'])
         @node_exists = true
       end

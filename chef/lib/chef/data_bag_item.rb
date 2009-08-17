@@ -144,6 +144,10 @@ class Chef
         bag_item.couchdb_rev = o["_rev"] 
         o.delete("_rev")
       end
+      if o.has_key?("_id")
+        bag_item.couchdb_id = o["_id"] 
+        o.delete("_id")
+      end
       bag_item.raw_data = o["raw_data"]
       bag_item
     end
