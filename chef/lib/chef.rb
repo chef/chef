@@ -35,10 +35,14 @@ if RUBY_VERSION < "1.8.6"
   class Dir 
     class << self 
       alias_method :glob_, :glob 
-      def glob(*args) 
-         raise ArgumentError if args.empty? 
-         args.inject([]) { |r, p| r + glob_(p) } 
-      end 
+      def glob(pattern, flags=0)
+        raise ArgumentError unless (
+          !pattern.nil? and (
+            pattern.is_a? Array and !pattern.empty?
+          ) or pattern.is_a? String
+        )
+        [pattern].flatten.inject([]) { |r, p| r + glob_(p, flags) }
+      end
       alias_method :[], :glob 
     end 
   end 
