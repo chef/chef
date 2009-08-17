@@ -145,6 +145,11 @@ class Chef::Application::Client < Chef::Application
       end
     end
   end
+
+  def configure_logging
+    super
+    Mixlib::Authentication::Log.logger = Chef::Log.logger
+  end
   
   # Setup an instance of the chef client
   # Why is this so ugly? surely the client should just read out of chef::config instead of needing the values to be assigned like this..

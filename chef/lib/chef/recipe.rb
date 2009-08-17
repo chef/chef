@@ -23,7 +23,6 @@ require 'chef/mixin/language'
 require 'chef/resource_collection'
 require 'chef/cookbook_loader'
 require 'chef/rest'
-require 'chef/search/result'
 
 class Chef
   class Recipe
