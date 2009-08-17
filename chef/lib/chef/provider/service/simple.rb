@@ -1,6 +1,6 @@
 #
 # Author:: Mathieu Sauve-Frankel <msf@kisoku.net>
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2009 Mathieu Sauve-Frankel
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
