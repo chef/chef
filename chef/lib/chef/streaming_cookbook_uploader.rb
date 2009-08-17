@@ -1,5 +1,5 @@
 require 'net/http'
-require 'mixlib/auth/signedheaderauth'
+require 'mixlib/authentication/signedheaderauth'
 require 'openssl'
 
 # inspired by/cargo-culted from http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
@@ -61,7 +61,7 @@ class Chef
           :timestamp=>timestamp}
         (content_file && signing_options[:file] = content_file) || (signing_options[:body] = (content_body || ""))
         
-        headers.merge!(Mixlib::Auth::SignedHeaderAuth.signing_object(signing_options).sign(secret_key))
+        headers.merge!(Mixlib::Authentication::SignedHeaderAuth.signing_object(signing_options).sign(secret_key))
 
         content_file.rewind if content_file
 
@@ -78,7 +78,14 @@ class Chef
         req.content_length = body_stream.size
         req.content_type = 'multipart/form-data; boundary=' + boundary unless parts.empty?
         req.body_stream = body_stream
-        res = Net::HTTP.new(url.host, url.port).start {|http| http.request(req) }
+        
+        http = Net::HTTP.new(url.host, url.port)
+        if url.scheme == "https"
+          http.use_ssl = true
+          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
+        res = http.request(req)
+        #res = http.start {|http_proc| http_proc.request(req) }
 
         # alias status to code and to_s to body for test purposes
         # TODO: stop the following madness!

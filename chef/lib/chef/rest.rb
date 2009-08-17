@@ -25,9 +25,9 @@ require 'uri'
 require 'json'
 require 'tempfile'
 require 'singleton'
-require 'mixlib/auth/signedheaderauth'
+require 'mixlib/authentication/signedheaderauth'
 
-include Mixlib::Auth::SignedHeaderAuth
+include Mixlib::Authentication::SignedHeaderAuth
 
 class Chef
   class REST
@@ -125,7 +125,7 @@ class Chef
     def sign_request(http_method, private_key, user_id, body = "", host="localhost")
       #body = "" if body == false
       timestamp = Time.now.utc.iso8601
-      sign_obj = Mixlib::Auth::SignedHeaderAuth.signing_object(
+      sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
                                                          :http_method=>http_method,
                                                          :body=>body,
                                                          :user_id=>user_id,

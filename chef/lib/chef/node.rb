@@ -130,6 +130,7 @@ class Chef
       @couchdb_rev = nil
       @couchdb_id = nil
       @couchdb = Chef::CouchDB.new
+
       @run_state = {
         :template_cache => Hash.new,
         :seen_recipes => Hash.new

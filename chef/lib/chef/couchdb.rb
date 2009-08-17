@@ -66,8 +66,7 @@ class Chef
           }
         }
       )
-    end
-    
+
     def create_db
       @database_list = @rest.get_rest("_all_dbs")
       unless @database_list.detect { |db| db == couchdb_database }
