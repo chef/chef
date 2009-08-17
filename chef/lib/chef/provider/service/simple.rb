@@ -55,6 +55,7 @@ class Chef
           else
             raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} requires that reload_command to be set"
           end
+        end
       end
     end
   end
