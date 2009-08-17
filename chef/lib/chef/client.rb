@@ -289,12 +289,10 @@ class Chef
     # true:: Always returns true
     def save_node
       Chef::Log.debug("Saving the current state of node #{@safe_name}")
-      Chef::Log.error(@rest.inspect)
       if @node_exists
         @node = @rest.put_rest("nodes/#{@safe_name}", @node)
       else
         result = @rest.post_rest("nodes", @node)
-        Chef::Log.error "I got this result: #{result}"
         @node = @rest.get_rest(result['uri'])
         @node_exists = true
       end
