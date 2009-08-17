@@ -19,8 +19,13 @@
 require 'chef'
 require 'chef/config'
 require 'chef/mixin/params_validate'
-require 'nanite'
 require 'json'
+
+# The client doesn't use this class, so we are cool without having it
+begin
+  require 'nanite'
+rescue LoadError
+end
 
 class Chef
   class Nanite 

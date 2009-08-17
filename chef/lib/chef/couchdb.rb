@@ -21,8 +21,13 @@ require 'chef/rest'
 require 'chef/log'
 require 'digest/sha2'
 require 'json'
-require 'uuidtools'
 require 'chef/nanite'
+
+# We want to fail on create if uuidtools isn't installed
+begin
+  require 'uuidtools'
+rescue LoadError
+end
 
 class Chef
   class CouchDB
