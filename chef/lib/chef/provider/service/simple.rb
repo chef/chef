@@ -22,7 +22,36 @@ require 'chef/mixin/command'
 class Chef
   class Provider
     class Service
-      class Simple
+      class Simple < Chef::Provider::Service
+        def load_current_resource
+          @current_resource = Chef::Resource::Service.new(@new_resource.name)
+          @current_resource.service_name(@new_resource.service_name)
+      
+          if @node[:command][:ps].nil? or @node[:command][:ps].empty?
+            raise Chef::Exceptions::Service, "#{@new_resource}: could not determine how to inspect the process table, please set this nodes 'ps' attribute"
+          end
+
+          status = popen4(@node[:command][:ps]) do |pid, stdin, stdout, stderr|
+            stdin.close
+            r = Regexp.new(@new_resource.pattern)
+            Chef::Log.debug("#{@new_resource}: attempting to match #{@new_resource.pattern} (#{r}) against process table")
+            stdout.each_line do |line|
+              if r.match(line)
+                @current_resource.running true
+                break
+              end
+            end
+            @current_resource.running false unless @current_resource.running
+          end
+          unless status.exitstatus == 0
+            raise Chef::Exceptions::Service, "Command #{@node[:command][:ps]} failed"
+          else
+            Chef::Log.debug("#{@new_resource}: #{@node[:command][:ps]} exited and parsed successfully, process running: #{@current_resource.running}")
+          end
+
+          @current_resource
+        end
+
         def start_service
           if @new_resource.start_command
             run_command(:command => @new_resource.start_command)
