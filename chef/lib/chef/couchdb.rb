@@ -66,6 +66,7 @@ class Chef
           }
         }
       )
+    end
 
     def create_db
       @database_list = @rest.get_rest("_all_dbs")
