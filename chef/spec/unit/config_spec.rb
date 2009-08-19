@@ -83,7 +83,7 @@ describe Chef::Config do
     
     describe "when not given an object that responds to sync e.g. String" do
       it "should internally configure itself to use a File object based upon the String" do
-        File.should_receive(:new).with("/var/log/chef/client.log", "w+")
+        File.should_receive(:new).with("/var/log/chef/client.log", "a")
         Chef::Config.log_location = "/var/log/chef/client.log"
       end
     end
