@@ -216,7 +216,6 @@ class Chef
       # Optionally handle HTTP Basic Authentication
       req.basic_auth(url.user, url.password) if url.user
 
-      Chef::Log.debug("Sending HTTP Request via #{req.method} to #{req.path}")
       res = nil
       tf = nil
       http_retries = 1

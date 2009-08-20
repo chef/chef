@@ -382,7 +382,5 @@ class Chef::Node
         self[by]
       end
     end
-
-
   end
 end

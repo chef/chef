@@ -477,7 +477,7 @@ describe Chef::Node::Attribute do
         {
           "one" =>  { "two" => "three" },
           "hut" =>  { "two" => "three" },
-          "place" => { },
+          "place" => { }
         },
         {
           "one" =>  { "four" => "five" },

@@ -1,5 +1,5 @@
 #login-form
-  %form{ :method => "get", :action => slice_url(:openid_login_submit) }
+  %form{ :method => "get", :action => url(:openid_login_submit) }
     %input{ :type => "text", :name => "username" }/
     %input{ :type => "submit", :value => "Log In"}/
     
