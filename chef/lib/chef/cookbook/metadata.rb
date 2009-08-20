@@ -363,7 +363,8 @@ class Chef
           :providing => self.providing,
           :replacing => self.replacing,
           :attributes => self.attributes,
-          :recipes => self.recipes
+          :recipes => self.recipes,
+          :version => self.version
         }
         result.to_json(*a)
       end
@@ -381,6 +382,7 @@ class Chef
         self.maintainer o['maintainer'] if o.has_key?('maintainer')
         self.maintainer_email o['maintainer_email'] if o.has_key?('maintainer_email')
         self.license o['license'] if o.has_key?('license')
+        self.version o['version'] if o.has_key?('version')
         self.platforms = o['platforms'] if o.has_key?('platforms')
         self.dependencies = o['dependencies'] if o.has_key?('dependencies')
         self.recommendations = o['recommendations'] if o.has_key?('recommendations')
