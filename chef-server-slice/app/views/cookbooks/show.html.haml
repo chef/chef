@@ -35,6 +35,7 @@
           %h2.head= link_to "Template Files", "#"
           .files
             - @cookbook.template_files.each do |f|
+              - rel = f.split('templates/',2)[1]
               .code
-                %h4.head= link_to File.basename(f), "#"
+                %h4.head= link_to rel, "#"
                 %pre.ruby= syntax_highlight(f)
