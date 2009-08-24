@@ -55,10 +55,35 @@ class Chef
       provider.load_current_resource
       provider
     end
-    
+
+    def run_action(resource, ra)
+      provider = build_provider(resource)
+      provider.send("action_#{ra}")
+
+      if resource.updated
+        resource.actions.each_key do |action|
+          if resource.actions[action].has_key?(:immediate)
+            resource.actions[action][:immediate].each do |r|
+              Chef::Log.info("#{resource} sending #{action} action to #{r} (immediate)")
+              run_action(r, action)
+            end
+          end
+          if resource.actions[action].has_key?(:delayed)
+            resource.actions[action][:delayed].each do |r|
+              @delayed_actions[r] = Hash.new unless @delayed_actions.has_key?(r)
+              @delayed_actions[r][action] = Array.new unless @delayed_actions[r].has_key?(action)
+              @delayed_actions[r][action] << lambda {
+                Chef::Log.info("#{resource} sending #{action} action to #{r} (delayed)")
+              } 
+            end
+          end
+        end
+      end
+    end
+
     def converge
 
-      delayed_actions = Hash.new
+      @delayed_actions = Hash.new
       
       @collection.execute_each_resource do |resource|
         begin
@@ -83,27 +108,7 @@ class Chef
           # Walk the actions for this resource, building the provider and running each.
           action_list = resource.action.kind_of?(Array) ? resource.action : [ resource.action ]
           action_list.each do |ra|
-            provider = build_provider(resource)
-            provider.send("action_#{ra}")
-            if resource.updated
-              resource.actions.each_key do |action|
-                if resource.actions[action].has_key?(:immediate)
-                  resource.actions[action][:immediate].each do |r|
-                    Chef::Log.info("#{resource} sending #{action} action to #{r} (immediate)")
-                    build_provider(r).send("action_#{action}")
-                  end
-                end
-                if resource.actions[action].has_key?(:delayed)
-                  resource.actions[action][:delayed].each do |r|
-                    delayed_actions[r] = Hash.new unless delayed_actions.has_key?(r)
-                    delayed_actions[r][action] = Array.new unless delayed_actions[r].has_key?(action)
-                    delayed_actions[r][action] << lambda {
-                      Chef::Log.info("#{resource} sending #{action} action to #{r} (delayed)")
-                    } 
-                  end
-                end
-              end
-            end
+            run_action(resource, ra)
           end
         rescue => e
           Chef::Log.error("#{resource} (#{resource.source_line}) had an error:\n#{e}\n#{e.backtrace}")
@@ -112,10 +117,10 @@ class Chef
       end
       
       # Run all our :delayed actions
-      delayed_actions.each do |resource, action_hash| 
+      @delayed_actions.each do |resource, action_hash| 
         action_hash.each do |action, log_array|
           log_array.each { |l| l.call } # Call each log message
-          build_provider(resource).send("action_#{action}") 
+          run_action(resource, action)
         end
       end
 
