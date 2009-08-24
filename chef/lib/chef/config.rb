@@ -47,7 +47,7 @@ class Chef
     # === Parameters
     # url<String>:: String to be set for all of the chef-server-api URL's
     #
-    def self.chef_server_url=(url)
+    config_attr_writer :chef_server_url do |url|
       configure do |c|
         [ :registration_url,
           :openid_url,
@@ -58,14 +58,16 @@ class Chef
             c[u] = url
         end
       end
+      url
     end
+    
     # Override the config dispatch to set the value of log_location configuration option
     #
     # === Parameters
     # location<IO||String>:: Logging location as either an IO stream or string representing log file path
     #
-    def self.log_location=(location)
-      configure { |c| c[:log_location] = (location.respond_to?(:sync=) ? location : File.new(location, "a")) }
+    config_attr_writer :log_location do |location|
+      (location.respond_to?(:sync=) ? location : File.new(location, "a"))
     end
 
     # Override the config dispatch to set the value of authorized_openid_providers when openid_providers (deprecated) is used
@@ -73,8 +75,9 @@ class Chef
     # === Parameters
     # providers<Array>:: An array of openid providers that are authorized to login to the chef server
     #
-    def self.openid_providers=(providers)
-      configure { |c| c[:authorized_openid_provders] = providers }
+    config_attr_writer :openid_providers do |providers|
+      configure { |c| c[:authorized_openid_providers] = providers }
+      providers
     end
 
     authorized_openid_identifiers nil
