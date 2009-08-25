@@ -1,4 +1,4 @@
-#
+
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -125,6 +125,21 @@ describe Chef::Runner do
     @collection << Chef::Resource::Cat.new("peanut", @collection)
     @collection[1].notifies :buy, @collection[0], :immediately
     @collection[1].updated = true
+    provider.should_receive(:action_buy).once.and_return(true)
+    @runner.converge
+  end
+  
+  it "should follow a chain of actions" do
+    Chef::Platform.should_receive(:find_provider_for_node).exactly(5).times.and_return(Chef::Provider::SnakeOil)
+    @collection << Chef::Resource::Cat.new("peanut", @collection)
+    @collection[1].notifies :buy, @collection[0], :immediately
+    @collection << Chef::Resource::Cat.new("snuffles", @collection)
+    @collection[2].notifies :purr, @collection[1], :immediately
+    @collection[2].updated = true
+    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
+    p1 = Chef::Provider::SnakeOil.new(@node, @collection[1])
+    p2 = Chef::Provider::SnakeOil.new(@node, @collection[2])
+    Chef::Provider::SnakeOil.should_receive(:new).exactly(5).times.and_return(provider, p1, p2, p1, provider)   
     provider.should_receive(:action_buy).once.and_return(true)
     @runner.converge
   end

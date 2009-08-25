@@ -23,6 +23,11 @@ class Chef
         true
       end
   
+      def action_purr
+        @new_resource.updated = true
+        true
+      end
+
       def action_sell
         true
       end
