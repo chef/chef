@@ -67,7 +67,11 @@ class Chef
     # location<IO||String>:: Logging location as either an IO stream or string representing log file path
     #
     config_attr_writer :log_location do |location|
-      (location.respond_to?(:sync=) ? location : File.new(location, "a"))
+      if location.respond_to? :sync=
+        location
+      elsif location.respond_to? :to_str
+        File.new(location.to_str, "a")
+      end
     end
 
     # Override the config dispatch to set the value of authorized_openid_providers when openid_providers (deprecated) is used

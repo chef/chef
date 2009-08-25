@@ -22,7 +22,7 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
   
-  s.add_dependency "mixlib-config", ">= 1.0.9"
+  s.add_dependency "mixlib-config", ">= 1.0.12"
   %w{mixlib-cli mixlib-log ruby-openid
     json erubis extlib
     stomp ohai}.each { |gem| s.add_dependency gem }
