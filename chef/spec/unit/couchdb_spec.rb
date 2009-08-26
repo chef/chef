@@ -317,4 +317,16 @@ describe Chef::CouchDB, "view_uri" do
       @couchdb.view_uri("nodes", "all")
     end
   end
+
+  describe "on couchdb 0.10" do
+    before do
+      Chef::Config.stub!(:[]).with(:couchdb_version).and_return(0.10)
+    end
+
+    it "should output an appropriately formed view URI" do
+      @couchdb.should_receive(:view_uri).with("nodes", "all").and_return("chef/_design/nodes/_view/all")
+      @couchdb.view_uri("nodes", "all")
+    end
+  end
+
 end
