@@ -121,6 +121,38 @@ class Chef
         )
       end
 
+      def mailto(arg=nil)
+        set_or_return(
+          :mailto,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def path(arg=nil)
+        set_or_return(
+          :path,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def home(arg=nil)
+        set_or_return(
+          :home,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def shell(arg=nil)
+        set_or_return(
+          :shell,
+          arg,
+          :kind_of => String
+        )
+      end
+
       def command(arg=nil)
         set_or_return(
           :command,
