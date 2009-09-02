@@ -107,6 +107,17 @@ describe Chef::Node do
       @node.set_unless[:snoopy][:is_a_puppy] = false 
       @node[:snoopy][:is_a_puppy].should == true 
     end
+
+    it "should allow you to set an attribute with default, without pre-declaring a hash, but only if the value is not already set" do
+      @node.set[:snoopy][:is_a_puppy] = true
+      @node.default[:snoopy][:is_a_puppy] = false
+      @node[:snoopy][:is_a_puppy].should == true
+    end
+
+    it "should allow you to set an attribute with default, without pre-declaring a hash" do
+      @node.default[:snoopy][:is_a_puppy] = false
+      @node[:snoopy][:is_a_puppy].should == false
+    end
     
     it "should raise an ArgumentError if you ask for an attribute that doesn't exist via method_missing" do
       lambda { @node.sunshine }.should raise_error(ArgumentError)

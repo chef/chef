@@ -206,6 +206,8 @@ class Chef
       attrs
     end
 
+    alias_method :default, :set_unless
+
     # Return true if this Node has a given attribute, false if not.  Takes either a symbol or
     # a string.
     #
