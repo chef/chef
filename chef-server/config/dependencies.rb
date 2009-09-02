@@ -2,7 +2,7 @@
 merb_gems_version = "> 1.0"
 
 %w{chef chef-server-api chef-solr}.each do |dep|
-  $: << File.join(File.dirname(__FILE__), "..", "..", dep, "lib")
+  $:.unshift(File.join(File.dirname(__FILE__), "..", "..", dep, "lib"))
 end
 
 begin
@@ -19,6 +19,6 @@ dependency "merb-slices", merb_gems_version
 if defined?(CHEF_SERVER_VERSION)
   dependency "chef-server-api", CHEF_SERVER_VERSION unless defined?(ChefServerApi)
 else
-  dependency "chef-server-api" unless defined?(ChefServerSlice)
+  dependency "chef-server-api" unless defined?(ChefServerApi)
 end
 
