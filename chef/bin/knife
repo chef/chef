@@ -448,6 +448,26 @@ class Knife < Thor
     puts JSON.pretty_generate(display)
   end
 
+  #######
+  # EC2 #
+  #######
+
+  desc "instance_data", "Generate EC2 Instance Data"
+  method_options :run_list => :string, :edit => :boolean
+  def instance_data
+    setup
+    attributes = Hash.new
+    attributes["run_list"] = options[:run_list].split(" ")
+    data = {
+      "chef_server" => Chef::Config[:chef_server_url],
+      "validation_client_name" => Chef::Config[:validation_client_name], 
+      "validation_key" => IO.read(Chef::Config[:validation_key]),
+      "attributes" => attributes
+    }
+    output = JSON.pretty_generate(data)
+    output = edit_data(data) if options[:edit]
+    puts output
+  end
 
 #### 
 # Support
