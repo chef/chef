@@ -26,6 +26,7 @@ class Chef
         super(name, collection, node)
         @resource_name = :remote_directory
         @path = name
+        @source = ::File.basename(name)
         @delete = false
         @action = :create
         @recursive = true

@@ -37,6 +37,15 @@ describe Chef::Resource::RemoteFile do
       @resource.source "something"
       @resource.source.should eql("something")
     end
+
+    it "should have a default based on the param name" do
+      @resource.source.should eql("fakey_fakerton")
+    end
+
+    it "should use only the basename of the file as the default" do
+      r = Chef::Resource::RemoteFile.new("/tmp/obit/fakey_fakerton")
+      r.source.should eql("fakey_fakerton")
+    end
   end
   
   describe "cookbook" do

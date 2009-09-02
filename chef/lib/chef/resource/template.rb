@@ -26,7 +26,7 @@ class Chef
         super(name, collection, node)
         @resource_name = :template
         @action = "create"
-        @source = nil
+        @source = "#{::File.basename(name)}.erb"
         @cookbook = nil
         @variables = Hash.new
       end
