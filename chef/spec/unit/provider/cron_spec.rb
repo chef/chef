@@ -79,6 +79,57 @@ describe Chef::Provider::Cron, "load_current_resource" do
         
 end
 
+describe Chef::Provider::Cron, "compare_cron" do
+  before(:each) do
+    @node = mock("Chef::Node", :null_object => true)
+    @new_resource = mock("Chef::Resource::Cron",
+      :null_object => true,
+      :user => "root",
+      :name => "foo",
+      :minute => "30",
+      :hour => "2",
+      :day => "30",
+      :month => "5",
+      :weekday => "3",
+      :command => "/bin/true",
+      :mailto => "test@example.com",
+      :path => "/usr/bin:/bin",
+      :shell => "/bin/zsh",
+      :home => "/home/thom"
+    )
+    @current_resource = mock("Chef::Resource::Cron",
+      :null_object => true,
+      :user => "root",
+      :name => "foo",
+      :minute => "30",
+      :hour => "2",
+      :day => "30",
+      :month => "5",
+      :weekday => "3",
+      :command => "/bin/true",
+      :mailto => "test@example.com",
+      :path => "/usr/bin:/bin",
+      :shell => "/bin/zsh",
+      :home => "/home/thom"
+    )
+    @provider = Chef::Provider::Cron.new(@node, @new_resource)
+    @provider.current_resource = @current_resource
+  end
+
+  %w{ minute hour day month weekday command mailto path shell home }.each do |attribute|
+    it "should return true if #{attribute} doesn't match" do 
+      @new_resource.should_receive(attribute).exactly(2).times.and_return(true)
+      @current_resource.should_receive(attribute).once.and_return(false)
+      @provider.compare_cron.should eql(true)
+    end
+  end
+
+  it "should return false if the objects are identical" do
+    @provider.compare_cron.should eql(false)
+  end
+end
+
+
 describe Chef::Provider::Cron, "action_create" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
