@@ -34,6 +34,10 @@ class Chef
         @weekday = "*"
         @command = nil
         @user = "root"
+        @mailto = nil
+        @path = nil
+        @shell = nil
+        @home = nil
       end
 
       def minute(arg=nil)
