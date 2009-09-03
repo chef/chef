@@ -35,17 +35,46 @@ class Chef
       def load_current_resource
         crontab = String.new
         @current_resource = Chef::Resource::Cron.new(@new_resource.name)
+        @current_resource.user(@new_resource.user)
         status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
           stdout.each { |line| crontab << line }
         end
         if status.exitstatus > 1
           raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
         elsif status.exitstatus == 0
+          cron_found = false
           crontab.each do |line|
             case line
             when /^# Chef Name: #{@new_resource.name}/
               Chef::Log.debug("Found cron '#{@new_resource.name}'")
+              cron_found = true
               @cron_exists = true
+              next
+            when /^MAILTO=(\S*)/
+              @current_resource.mailto($1) if cron_found
+              next
+            when /^PATH=(\S*)/
+              @current_resource.path($1) if cron_found
+              next
+            when /^SHELL=(\S*)/
+              @current_resource.shell($1) if cron_found
+              next
+            when /^HOME=(\S*)/
+              @current_resource.home($1) if cron_found
+              next
+            when /(\S+)\s*(\S+)\s*(\S+)\s*(\S+)\s*(\S+)\s*(.*)/
+              if cron_found
+                @current_resource.minute($1) 
+                @current_resource.hour($2) 
+                @current_resource.day($3)
+                @current_resource.month($4) 
+                @current_resource.weekday($5) 
+                @current_resource.command($6)
+                cron_found=false
+              end
+              next
+            else
+              next
             end
           end
           Chef::Log.debug("Cron '#{@new_resource.name}' not found") unless @cron_exists
