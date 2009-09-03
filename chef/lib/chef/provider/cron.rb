@@ -94,28 +94,38 @@ class Chef
 
       def action_create
         crontab = String.new
+        newcron = String.new
         cron_found = false
+
+        newcron << "# Chef Name: #{new_resource.name}\n"
+        [ :mailto, :path, :shell, :home ].each do |v|
+          newcron << "#{v.to_s.upcase}=#{@new_resource.send(v)}\n" if @new_resource.send(v)
+        end
+        newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
+
         if @cron_exists
+          unless compare_cron
+            Chef::Log.debug("Skipping existing cron entry '#{@new_resource.name}'")
+            return
+          end
           status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
-              if cron_found
-                cronline = "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
-                if (line == cronline)
-                  Chef::Log.debug("Skipping existing cron entry '#{@new_resource.name}'")
-                  return
-                end
-                crontab << cronline
-                cron_found = false
-                next
-              end
               case line
-              when /^# Chef Name: #{new_resource.name}\n/
+              when /^# Chef Name: #{@new_resource.name}\n/
                 cron_found = true
+                next
+              when /([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*(.*)/
+                if cron_found
+                  cron_found = false
+                  crontab << newcron
+                  next
+                end
+              else
+                next if cron_found
               end
               crontab << line 
             end
           end
-
 
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
             crontab.each { |line| stdin.puts "#{line}" }
@@ -129,9 +139,8 @@ class Chef
             end
           end
   
-          crontab << "# Chef Name: #{new_resource.name}\n"
-          crontab << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
-  
+          crontab << newcron
+
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
             crontab.each { |line| stdin.puts "#{line}" }
             stdin.close
