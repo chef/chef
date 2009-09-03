@@ -36,6 +36,7 @@ describe Chef::Provider::Cron, "load_current_resource" do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Cron",
       :null_object => true,
+      :user => "root",
       :name => "foo",
       :minute => "30",
       :command => "/bin/true"
@@ -69,8 +70,8 @@ describe Chef::Provider::Cron, "load_current_resource" do
     @stdout = mock("STDOUT", :null_object => true)    
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
-    @stdout.stub!(:each).and_yield("# Chef Name: foo").
-      and_yield("* 5 * * * /bin/true")
+    @stdout.stub!(:each).and_yield("# Chef Name: foo\n").
+      and_yield("* 5 * * * /bin/true\n")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
     @provider.load_current_resource
