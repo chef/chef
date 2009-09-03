@@ -47,9 +47,7 @@ class Chef
     
     def build_provider(resource)
       provider_klass = resource.provider
-      if provider_klass == nil
-        provider_klass = Chef::Platform.find_provider_for_node(@node, resource)      
-      end
+      provider_klass ||= Chef::Platform.find_provider_for_node(@node, resource)
       Chef::Log.debug("#{resource} using #{provider_klass.to_s}")
       provider = provider_klass.new(@node, resource)
       provider.load_current_resource
