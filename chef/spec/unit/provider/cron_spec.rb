@@ -137,16 +137,31 @@ describe Chef::Provider::Cron, "action_create" do
       :null_object => true,
       :name => "foo",
       :minute => "30",
+      :hour => "*",
+      :day => "*",
+      :month => "*",
+      :weekday => "*",
+      :mailto => nil,
+      :path => nil,
+      :shell => nil,
+      :home => nil,
       :command => "/bin/true"
     )
     @current_resource = mock("Chef::Resource::Cron",
       :null_object => true,
       :name => "foo",
-      :minute => "30",
+      :minute => "*",
+      :hour => "5",
+      :day => "*",
+      :month => "*",
+      :weekday => "*",
+      :mailto => nil,
+      :path => nil,
+      :shell => nil,
+      :home => nil,
       :command => "/bin/true"
     )
     @provider = Chef::Provider::Cron.new(@node, @new_resource)
-
   end
 
   it "should add the cron entry if cron exists" do
@@ -156,9 +171,7 @@ describe Chef::Provider::Cron, "action_create" do
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
     @stdout.stub!(:each_line).and_yield("# Chef Name: bar\n").
-      and_yield("* 10 * * * /bin/false\n").
-      and_yield("# Chef Name: foo\n").
-      and_yield("* 5 * * * /bin/true\n")
+      and_yield("* 10 * * * /bin/false\n")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     Chef::Log.should_receive(:info).with("Added cron '#{@new_resource.name}'")
     @provider.action_create
@@ -181,6 +194,7 @@ describe Chef::Provider::Cron, "action_create" do
   end
 
   it "should update the cron entry if it exists and has changed" do
+    @provider.current_resource = @current_resource
     @status = mock("Status", :exitstatus => 0)
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)    
@@ -193,23 +207,11 @@ describe Chef::Provider::Cron, "action_create" do
     @provider.cron_exists=true
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     Chef::Log.should_receive(:info).with("Updated cron '#{@new_resource.name}'")
+    @provider.should_receive(:compare_cron).once.and_return(true)
     @provider.action_create
   end
 
   it "should not update the cron entry if it exists and has not changed" do
-    resource = mock("Chef::Resource::Cron",
-      :null_object => true,
-      :name => "foo",
-      :minute => "30",
-      :hour => "*",
-      :day => "*",
-      :month => "*",
-      :weekday => "*",
-      :command => "/bin/true"
-    )
-    provider = Chef::Provider::Cron.new(@node, resource)
-
-
     @status = mock("Status", :exitstatus => 0)
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)    
@@ -219,27 +221,16 @@ describe Chef::Provider::Cron, "action_create" do
       and_yield("* 10 * * * /bin/false\n").
       and_yield("# Chef Name: foo\n").
       and_yield("30 * * * * /bin/true\n")
-    provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     Chef::Log.should_not_receive(:info).with("Updated cron '#{@new_resource.name}'")
     Chef::Log.should_receive(:debug).with("Skipping existing cron entry '#{@new_resource.name}'")
-    provider.cron_exists = true
-    provider.action_create
+    @provider.should_receive(:compare_cron).once.and_return(false)
+    @provider.cron_exists = true
+    @provider.action_create
   end
 
   it "should update the cron entry if it exists and has changed environment variables" do
-    resource = mock("Chef::Resource::Cron",
-      :null_object => true,
-      :name => "foo",
-      :minute => "30",
-      :hour => "*",
-      :day => "*",
-      :month => "*",
-      :weekday => "*",
-      :mailto => nil,
-      :command => "/bin/true"
-    )
-    provider = Chef::Provider::Cron.new(@node, resource)
-
+    @provider.current_resource = @current_resource
     @status = mock("Status", :exitstatus => 0)
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)    
@@ -250,10 +241,11 @@ describe Chef::Provider::Cron, "action_create" do
       and_yield("# Chef Name: foo\n").
       and_yield("MAILTO=warn@example.com\n").
       and_yield("30 * * * * /bin/true\n")
-    provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     Chef::Log.should_receive(:info).with("Updated cron '#{@new_resource.name}'")
-    provider.cron_exists = true
-    provider.action_create
+    @provider.cron_exists = true
+    @provider.should_receive(:compare_cron).once.and_return(true)
+    @provider.action_create
   end
 
   it "should update the cron entry if it exists and has no environment variables" do
@@ -266,9 +258,13 @@ describe Chef::Provider::Cron, "action_create" do
       :month => "*",
       :weekday => "*",
       :mailto => "test@example.com",
+      :path => nil,
+      :shell => nil,
+      :home => nil,
       :command => "/bin/true"
     )
     provider = Chef::Provider::Cron.new(@node, resource)
+    provider.current_resource = @current_resource
 
     @status = mock("Status", :exitstatus => 0)
     @stdin = mock("STDIN", :null_object => true)
@@ -282,6 +278,7 @@ describe Chef::Provider::Cron, "action_create" do
     provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     Chef::Log.should_receive(:info).with("Updated cron '#{@new_resource.name}'")
     provider.cron_exists = true
+    provider.should_receive(:compare_cron).once.and_return(true)
     provider.action_create
   end
 
@@ -312,10 +309,10 @@ describe Chef::Provider::Cron, "action_delete" do
     @stdout = mock("STDOUT", :null_object => true)    
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
-    @stdout.stub!(:each).and_yield("# Chef Name: bar").
-      and_yield("* 10 * * * /bin/false").
-      and_yield("# Chef Name: foo").
-      and_yield("* 30 * * * /bin/true")
+    @stdout.stub!(:each_line).and_yield("# Chef Name: bar\n").
+      and_yield("* 10 * * * /bin/false\n").
+      and_yield("# Chef Name: foo\n").
+      and_yield("* 30 * * * /bin/true\n")
     @provider.cron_exists=true
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     Chef::Log.should_receive(:debug).with("Deleted cron '#{@new_resource.name}'")
@@ -329,7 +326,7 @@ describe Chef::Provider::Cron, "action_delete" do
     @stdout = mock("STDOUT", :null_object => true)    
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
-    @stdout.stub!(:each).and_yield("# Chef Name: bar").
+    @stdout.stub!(:each_line).and_yield("# Chef Name: bar").
       and_yield("* 10 * * * /bin/false")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     Chef::Log.should_not_receive(:debug).with("Deleted cron '#{@new_resource.name}'")
