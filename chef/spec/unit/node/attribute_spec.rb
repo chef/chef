@@ -596,10 +596,10 @@ describe Chef::Node::Attribute do
         collect << k
       end
      
-      collect[0].should == "one"
-      collect[1].should == "snack"
-      collect[2].should == "hut"
-      collect[3].should == "snakes"
+      collect.should include("one")
+      collect.should include("snack")
+      collect.should include("hut")
+      collect.should include("snakes")
     end
   end
 
@@ -666,10 +666,9 @@ describe Chef::Node::Attribute do
         collect << v
       end
 
-      collect[0].should include("six")
-      collect[1].should include("cookies")
-      collect[2].should include("three")
-      collect[3].should include("on a plane")
+      collect.should include("cookies")
+      collect.should include("three")
+      collect.should include("on a plane")
     end
 
     it "should yield four elements" do
@@ -899,9 +898,15 @@ describe Chef::Node::Attribute do
     it "should respond to select" do
       @attributes.should respond_to(:select)
     end
-    
-    it "should raise a LocalJumpError if no block is given" do
-      lambda { @attributes.select }.should raise_error(LocalJumpError)
+
+    if RUBY_VERSION >= "1.8.7"
+      it "should not raise a LocalJumpError if no block is given" do
+        lambda { @attributes.select }.should_not raise_error(LocalJumpError)
+      end
+    else
+      it "should raise a LocalJumpError if no block is given" do
+        lambda{ @attributes.select }.should raise_error(LocalJumpError)
+      end
     end
 
     it "should return an empty array for a block containing nil" do
