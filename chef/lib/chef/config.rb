@@ -150,5 +150,16 @@ class Chef
     validation_key "/etc/chef/validation.pem"
     validation_client_name "chef-validator"
 
+    # Server Signing CA
+    #
+    # In truth, these don't even have to change
+    signing_ca_path "/var/chef/ca"
+    signing_ca_country "US"
+    signing_ca_state "Washington"
+    signing_ca_location "Seattle"
+    signing_ca_org "Chef User"
+    signing_ca_domain "opensource.opscode.com"
+    signing_ca_email "opensource-cert@opscode.com"
+
   end
 end

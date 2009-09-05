@@ -10,6 +10,7 @@ if defined?(Merb::Plugins)
   require 'chef/role'
   require 'chef/data_bag'
   require 'chef/data_bag_item'
+  require 'chef/api_client'
   require 'chef/nanite'
 
   require 'mixlib/auth'
@@ -18,9 +19,8 @@ if defined?(Merb::Plugins)
   require 'chef/data_bag_item'
   require 'ohai'
   require 'chef/nanite'
+  require 'openssl'
 
-  require 'syntax/convertors/html'
-  
   Merb::Plugins.add_rakefiles "chef-server-api/merbtasks", "chef-server-api/slicetasks", "chef-server-api/spectasks"
 
   # Register the Slice for the current host application
@@ -57,7 +57,7 @@ if defined?(Merb::Plugins)
     # Activation hook - runs after AfterAppLoads BootLoader
     def self.activate
       Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 
-      Merb.logger.set_log(STDOUT, Chef::Config[:log_level])
+      ChefServerApi.generate_signing_ca
       Thread.new do
         until EM.reactor_running?
           sleep 1
@@ -69,6 +69,7 @@ if defined?(Merb::Plugins)
         Chef::Node.create_design_document
         Chef::Role.create_design_document
         Chef::DataBag.create_design_document
+        Chef::ApiClient.create_design_document
 
         Chef::Log.info('Loading roles')
         Chef::Role.sync_from_disk_to_couchdb
@@ -119,18 +120,51 @@ if defined?(Merb::Plugins)
 
       scope.match('/').to(:controller => 'main', :action =>'index').name(:top)
     end
+
+    def self.generate_signing_ca
+      ca_basedir = Chef::Config[:signing_ca_path]
+      ca_cert_file = File.join ca_basedir, 'ca_cert.pem'
+      ca_keypair_file = File.join ca_basedir, 'ca_keypair.pem'
+
+      unless File.exists?(ca_cert_file) && File.exists?(ca_keypair_file)
+        Chef::Log.info("Creating new signing certificate")
+        FileUtils.mkdir_p ca_basedir
+
+        keypair = OpenSSL::PKey::RSA.generate(1024)
+
+        ca_cert = OpenSSL::X509::Certificate.new
+        ca_cert.version = 3
+        ca_cert.serial = 1
+        info = [
+          ["C", Chef::Config[:signing_ca_country]], 
+          ["ST", Chef::Config[:signing_ca_state]], 
+          ["L", Chef::Config[:signing_ca_location]], 
+          ["O", Chef::Config[:signing_ca_org]],
+          ["OU", "Certificate Service"], 
+          ["CN", "#{Chef::Config[:signing_ca_domain]}/emailAddress=#{Chef::Config[:signing_ca_email]}"]
+        ]
+        ca_cert.subject = ca_cert.issuer = OpenSSL::X509::Name.new(info)
+        ca_cert.not_before = Time.now
+        ca_cert.not_after = Time.now + 10 * 365 * 24 * 60 * 60 # 10 years
+        ca_cert.public_key = keypair.public_key
+
+        ef = OpenSSL::X509::ExtensionFactory.new
+        ef.subject_certificate = ca_cert
+        ef.issuer_certificate = ca_cert
+        ca_cert.extensions = [
+                ef.create_extension("basicConstraints", "CA:TRUE", true),
+                ef.create_extension("subjectKeyIdentifier", "hash"),
+                ef.create_extension("keyUsage", "cRLSign,keyCertSign", true),
+        ]
+        ca_cert.add_extension ef.create_extension("authorityKeyIdentifier", "keyid:always,issuer:always")
+        ca_cert.sign keypair, OpenSSL::Digest::SHA1.new
+
+        File.open(ca_cert_file, "w") { |f| f.write ca_cert.to_pem }
+        File.open(ca_keypair_file, "w") { |f| f.write keypair.to_pem }
+      end
+    end
+
   end
-    
-  # TODO: make this read from an environment-specific file
-  Merb::Config.use do |c|
-    c[:couchdb_uri] = Chef::Config[:couchdb_url] 
-    c[:couchdb_database] = Chef::Config[:couchdb_database] 
-  end
-  
-  COUCHDB = CouchRest.new(Merb::Config[:couchdb_uri])
-  COUCHDB.database!(Merb::Config[:couchdb_database])
-  COUCHDB.default_database = Merb::Config[:couchdb_database]
-  
   # Setup the slice layout for ChefServerApi
   #
   # Use ChefServerApi.push_path and ChefServerApi.push_app_path
