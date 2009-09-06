@@ -19,6 +19,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 require 'chef/api_client'
+require 'tempfile'
 
 describe Chef::ApiClient do
   before(:each) do
@@ -65,10 +66,47 @@ describe Chef::ApiClient do
     end 
   end
 
+  describe "private_key" do
+    it "should let you set the private key" do
+      @client.private_key("super private").should == "super private"
+    end
+
+    it "should return the private key" do
+      @client.private_key("super private")
+      @client.private_key.should == "super private"
+    end
+
+    it "should throw an ArgumentError if you feed it something lame" do
+      lambda { @client.private_key Hash.new }.should raise_error(ArgumentError)
+    end 
+  end
+
+  describe "create_keys" do
+    before(:each) do
+      Chef::Certificate.stub!(:gen_keypair).and_return(["cert", "key"])
+    end
+
+    it "should create a certificate based on the client name" do
+      Chef::Certificate.should_receive(:gen_keypair).with(@client.name)
+      @client.create_keys
+    end
+
+    it "should set the private key" do
+      @client.create_keys
+      @client.private_key.should == "key"
+    end
+
+    it "should set the public key" do
+      @client.create_keys
+      @client.public_key.should == "cert"
+    end
+  end
+
   describe "serialize" do
     before(:each) do
       @client.name("black")
       @client.public_key("crowes")
+      @client.private_key("monkeypants")
       @serial = @client.to_json
     end
 
@@ -83,6 +121,10 @@ describe Chef::ApiClient do
       it "should include '#{t}'" do
         @serial.should =~ /"#{t}":"#{@client.send(t.to_sym)}"/
       end
+
+      it "should not include the private key" do
+        @serial.should_not =~ /"private_key":/
+      end
     end
   end
 
@@ -90,6 +132,7 @@ describe Chef::ApiClient do
     before(:each) do
       @client.name("black")
       @client.public_key("crowes")
+      @client.private_key("monkeypants")
       @deserial = JSON.parse(@client.to_json)
     end
 
@@ -104,6 +147,10 @@ describe Chef::ApiClient do
       it "should match '#{t}'" do
         @deserial.send(t.to_sym).should == @client.send(t.to_sym)
       end
+    end
+
+    it "should not include the private key" do
+      @deserial.private_key.should == nil
     end
 
   end

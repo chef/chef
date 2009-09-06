@@ -18,8 +18,8 @@
 
 require 'chef/config'
 require 'chef/mixin/params_validate'
-require 'chef/mixin/from_file'
 require 'chef/couchdb'
+require 'chef/certificate'
 require 'extlib'
 require 'json'
 
@@ -60,14 +60,16 @@ class Chef
     def initialize
       @name = '' 
       @public_key = nil
-      @default_attributes = Mash.new
-      @override_attributes = Mash.new
-      @recipes = Array.new 
+      @private_key = nil
       @couchdb_rev = nil
       @couchdb_id = nil
       @couchdb = Chef::CouchDB.new 
     end
 
+    # Gets or sets the client name.
+    #
+    # @params [Optional String] The name must be alpha-numeric plus - and _.
+    # @return [String] The current value of the name.
     def name(arg=nil) 
       set_or_return(
         :name,
@@ -76,6 +78,10 @@ class Chef
       )
     end
 
+    # Gets or sets the public key.
+    # 
+    # @params [Optional String] The string representation of the public key. 
+    # @return [String] The current value.
     def public_key(arg=nil) 
       set_or_return(
         :public_key,
@@ -84,6 +90,33 @@ class Chef
       )
     end
 
+    # Gets or sets the public key.
+    # 
+    # @params [Optional String] The string representation of the private key.
+    # @return [String] The current value.
+    def private_key(arg=nil) 
+      set_or_return(
+        :private_key,
+        arg,
+        :kind_of => String
+      )
+    end
+
+    # Creates a new public/private key pair, and populates the public_key and
+    # private_key attributes.
+    # 
+    # @return [True]
+    def create_keys
+      results = Chef::Certificate.gen_keypair(self.name)
+      self.public_key(results[0].to_s)
+      self.private_key(results[1].to_s)
+      true
+    end
+
+    # The hash representation of the object.  Includes the name and public_key,
+    # but never the private key.
+    # 
+    # @return [Hash]
     def to_hash
       result = {
         "name" => @name,
@@ -95,12 +128,13 @@ class Chef
       result
     end
 
-    # Serialize this object as a hash 
+    # The JSON representation of the object.
+    # 
+    # @return [String] the JSON string.
     def to_json(*a)
       to_hash.to_json(*a)
     end
     
-    # Create a Chef::Role from JSON
     def self.json_create(o)
       client = Chef::ApiClient.new
       client.name(o["name"])
@@ -122,18 +156,24 @@ class Chef
       end
     end
     
-    # Load a role by name from CouchDB
+    # Load a client by name from CouchDB
+    # 
+    # @params [String] The name of the client to load
+    # @return [Chef::ApiClient] The resulting Chef::ApiClient object
     def self.load(name)
       couchdb = Chef::CouchDB.new
-      couchdb.load("clients", name)
+      couchdb.load("client", name)
     end
     
-    # Remove this role from the CouchDB
+    # Remove this client from the CouchDB
+    #
+    # @params [String] The name of the client to delete
+    # @return [Chef::ApiClient] The last version of the object
     def destroy
       @couchdb.delete("client", @name, @couchdb_rev)
     end
     
-    # Save this role to the CouchDB
+    # Save this client to the CouchDB
     def save
       results = @couchdb.store("client", @name, self)
       @couchdb_rev = results["rev"]

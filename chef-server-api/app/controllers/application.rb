@@ -19,6 +19,7 @@
 
 require "chef" / "mixin" / "checksum"
 require "chef" / "cookbook_loader"
+require "mixlib/authentication/signatureverification"
 
 class ChefServerApi::Application < Merb::Controller
 
@@ -75,11 +76,27 @@ class ChefServerApi::Application < Merb::Controller
     end
   end
 
-  ###
-  # TODO: This should actually authenticate requests
-  ###
   def authenticate_every
-    true
+    authenticator = Mixlib::Authentication::SignatureVerification.new
+
+    auth = begin
+             headers = request.env.inject({ }) { |memo, kv| memo[$2.downcase.gsub(/\-/,"_").to_sym] = kv[1] if kv[0] =~ /^(HTTP_)(.*)/; memo }
+             Chef::Log.debug("Headers in authenticate_every: #{headers.inspect}")
+             username = headers[:x_ops_userid].chomp
+             Chef::Log.info("Authenticating client #{username}")
+             user = Chef::ApiClient.load(username)
+             Chef::Log.debug("Found API Client: #{user.inspect}")
+             user_key = OpenSSL::PKey::RSA.new(user.public_key)
+             Chef::Log.debug "Authenticating:\n #{user.inspect}\n"
+             authenticator.authenticate_user_request(request, user_key)
+           rescue StandardError => se
+             Chef::Log.debug "Authentication failed: #{se}, #{se.backtrace}"
+             nil
+           end
+
+    raise Merb::ControllerExceptions::Unauthorized, "Failed to authenticate!" unless auth
+
+    auth
   end
   
   def authorized_node

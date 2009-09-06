@@ -153,7 +153,8 @@ class Chef
     # Server Signing CA
     #
     # In truth, these don't even have to change
-    signing_ca_path "/var/chef/ca"
+    signing_ca_cert "/var/chef/ca/cert.pem"
+    signing_ca_key "/var/chef/ca/key.pem"
     signing_ca_country "US"
     signing_ca_state "Washington"
     signing_ca_location "Seattle"

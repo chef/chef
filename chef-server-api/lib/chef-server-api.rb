@@ -12,6 +12,7 @@ if defined?(Merb::Plugins)
   require 'chef/data_bag_item'
   require 'chef/api_client'
   require 'chef/nanite'
+  require 'chef/certificate'
 
   require 'mixlib/auth'
 
@@ -57,7 +58,7 @@ if defined?(Merb::Plugins)
     # Activation hook - runs after AfterAppLoads BootLoader
     def self.activate
       Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 
-      ChefServerApi.generate_signing_ca
+
       Thread.new do
         until EM.reactor_running?
           sleep 1
@@ -73,6 +74,29 @@ if defined?(Merb::Plugins)
 
         Chef::Log.info('Loading roles')
         Chef::Role.sync_from_disk_to_couchdb
+
+        # Create the signing key and certificate 
+        Chef::Certificate.generate_signing_ca
+
+        # Create the validation key
+        create_key = false 
+        begin
+          c = Chef::ApiClient.load(Chef::Config[:validation_client_name])
+        rescue Chef::Exceptions::CouchDBNotFound
+          Chef::Log.info "I am an exception"
+          create_key = true
+        end
+
+        if create_key
+          Chef::Log.info("Creating validation key...")
+          api_client = Chef::ApiClient.new
+          api_client.name(Chef::Config[:validation_client_name])
+          api_client.create_keys
+          api_client.save
+          File.open(Chef::Config[:validation_key], "w") do |f|
+            f.print(api_client.private_key)
+          end
+        end
       end
     end
 
@@ -100,6 +124,12 @@ if defined?(Merb::Plugins)
       # Status
       scope.match("/status").to(:controller => "status", :action => "index").name(:status)
 
+      # Clients
+      scope.match("/clients", :method=>"post").to(:controller=>'clients', :action=>'create')
+      scope.match("/clients", :method=>"get").to(:controller=>'clients', :action=>'index')
+      scope.match("/clients/:id", :id => /[\w\.-]+/, :method=>"get").to(:controller=>'clients', :action=>'show')
+      scope.match("/clients/:id", :id => /[\w\.-]+/, :method=>"put").to(:controller=>'clients', :action=>'update')
+      scope.match("/clients/:id", :id => /[\w\.-]+/, :method=>"delete").to(:controller=>'clients', :action=>'destroy')
 
       # Search
       scope.resources :search
@@ -119,49 +149,6 @@ if defined?(Merb::Plugins)
       scope.resources :data
 
       scope.match('/').to(:controller => 'main', :action =>'index').name(:top)
-    end
-
-    def self.generate_signing_ca
-      ca_basedir = Chef::Config[:signing_ca_path]
-      ca_cert_file = File.join ca_basedir, 'ca_cert.pem'
-      ca_keypair_file = File.join ca_basedir, 'ca_keypair.pem'
-
-      unless File.exists?(ca_cert_file) && File.exists?(ca_keypair_file)
-        Chef::Log.info("Creating new signing certificate")
-        FileUtils.mkdir_p ca_basedir
-
-        keypair = OpenSSL::PKey::RSA.generate(1024)
-
-        ca_cert = OpenSSL::X509::Certificate.new
-        ca_cert.version = 3
-        ca_cert.serial = 1
-        info = [
-          ["C", Chef::Config[:signing_ca_country]], 
-          ["ST", Chef::Config[:signing_ca_state]], 
-          ["L", Chef::Config[:signing_ca_location]], 
-          ["O", Chef::Config[:signing_ca_org]],
-          ["OU", "Certificate Service"], 
-          ["CN", "#{Chef::Config[:signing_ca_domain]}/emailAddress=#{Chef::Config[:signing_ca_email]}"]
-        ]
-        ca_cert.subject = ca_cert.issuer = OpenSSL::X509::Name.new(info)
-        ca_cert.not_before = Time.now
-        ca_cert.not_after = Time.now + 10 * 365 * 24 * 60 * 60 # 10 years
-        ca_cert.public_key = keypair.public_key
-
-        ef = OpenSSL::X509::ExtensionFactory.new
-        ef.subject_certificate = ca_cert
-        ef.issuer_certificate = ca_cert
-        ca_cert.extensions = [
-                ef.create_extension("basicConstraints", "CA:TRUE", true),
-                ef.create_extension("subjectKeyIdentifier", "hash"),
-                ef.create_extension("keyUsage", "cRLSign,keyCertSign", true),
-        ]
-        ca_cert.add_extension ef.create_extension("authorityKeyIdentifier", "keyid:always,issuer:always")
-        ca_cert.sign keypair, OpenSSL::Digest::SHA1.new
-
-        File.open(ca_cert_file, "w") { |f| f.write ca_cert.to_pem }
-        File.open(ca_keypair_file, "w") { |f| f.write keypair.to_pem }
-      end
     end
 
   end
