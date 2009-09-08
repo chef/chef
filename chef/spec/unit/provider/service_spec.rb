@@ -51,17 +51,20 @@ describe Chef::Provider::Service, "action_enable" do
     @provider.stub!(:enable_service).and_return(true)
   end
 
-  it "should enable the service if disabled" do
+  it "should enable the service if disabled and set the resource as updated" do
     @current_resource.stub!(:enabled).and_return(false)
     @provider.should_receive(:enable_service).and_return(true)
+    @provider.new_resource.should_receive(:updated=).with(true)
     @provider.action_enable
   end
 
   it "should not enable the service if already enabled" do
     @current_resource.stub!(:enabled).and_return(true)
     @provider.should_not_receive(:enable_service).and_return(true)
+    @provider.new_resource.should_not_receive(:updated=).with(true)
     @provider.action_enable
   end
+
 end
 
 describe Chef::Provider::Service, "action_disable" do
@@ -84,15 +87,17 @@ describe Chef::Provider::Service, "action_disable" do
     @provider.stub!(:disable_service).and_return(true)
   end
 
-  it "should disable the service if enabled" do
+  it "should disable the service if enabled and set the resource as updated" do
     @current_resource.stub!(:enabled).and_return(true)
     @provider.should_receive(:disable_service).and_return(true)
+    @provider.new_resource.should_receive(:updated=).with(true)
     @provider.action_disable
   end
 
   it "should not disable the service if already disabled" do
     @current_resource.stub!(:enabled).and_return(false)
     @provider.should_not_receive(:disable_service).and_return(true)
+    @provider.new_resource.should_not_receive(:updated=).with(true)
     @provider.action_disable
   end
 end
@@ -117,15 +122,17 @@ describe Chef::Provider::Service, "action_start" do
     @provider.stub!(:start_service).and_return(true)
   end
 
-  it "should start the service if it isn't running" do
+  it "should start the service if it isn't running and set the resource as updated" do
     @current_resource.stub!(:running).and_return(false)
     @provider.should_receive(:start_service).with.and_return(true)
+    @provider.new_resource.should_receive(:updated=).with(true)
     @provider.action_start
   end
 
   it "should not start the service if already running" do
     @current_resource.stub!(:running).and_return(true)
     @provider.should_not_receive(:start_service).and_return(true)
+    @provider.new_resource.should_not_receive(:updated=).with(true)
     @provider.action_enable
   end
 end
@@ -150,15 +157,17 @@ describe Chef::Provider::Service, "action_stop" do
     @provider.stub!(:stop_service).and_return(true)
   end
 
-  it "should stop the service if it is running" do
+  it "should stop the service if it is running and set the resource as updated" do
     @current_resource.stub!(:running).and_return(true)
     @provider.should_receive(:stop_service).and_return(true)
+    @provider.new_resource.should_receive(:updated=).with(true)
     @provider.action_stop
   end
 
   it "should not stop the service if it's already stopped" do
     @current_resource.stub!(:running).and_return(false)
     @provider.should_not_receive(:stop_service).and_return(true)
+    @provider.new_resource.should_not_receive(:updated=).with(true)
     @provider.action_stop
   end
 end
@@ -185,14 +194,16 @@ before(:each) do
     @current_resource.stub!(:supports).and_return({:restart => true})
   end
 
-  it "should restart the service if it's supported" do
+  it "should restart the service if it's supported and set the resource as updated" do
     @provider.should_receive(:restart_service).and_return(true)
+    @provider.new_resource.should_receive(:updated=).with(true)
     @provider.action_restart
   end
 
-  it "should restart the service even if it isn't running" do
+  it "should restart the service even if it isn't running and set the resource as updated" do
     @current_resource.stub!(:running).and_return(false)
     @provider.should_receive(:restart_service).and_return(true)
+    @provider.new_resource.should_receive(:updated=).with(true)
     @provider.action_restart
   end
 end
@@ -225,15 +236,17 @@ before(:each) do
     lambda { @provider.action_reload }.should raise_error(Chef::Exceptions::UnsupportedAction)
   end
 
-  it "should reload the service if it is running" do
+  it "should reload the service if it is running and set the resource as updated" do
     @current_resource.stub!(:running).and_return(true)
     @provider.should_receive(:reload_service).and_return(true)
+    @provider.new_resource.should_receive(:updated=).with(true)
     @provider.action_reload
   end
 
   it "should not reload the service if it's stopped" do
     @current_resource.stub!(:running).and_return(false)
     @provider.should_not_receive(:stop_service).and_return(true)
+    @provider.new_resource.should_not_receive(:updated=).with(true)
     @provider.action_stop
   end
 end
