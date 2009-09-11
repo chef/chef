@@ -22,15 +22,17 @@ class Chef
   class Resource
     class ErlCall < Chef::Resource
 
+      # erl_call : http://erlang.org/doc/man/erl_call.html
+
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)
         @resource_name = :erl_call
 
-        @code = "q()."
-        @cookie = nil
-        @distributed = false
-        @name_type = "sname"
-        @node_name = "chef@localhost"
+        @code = "q()." # your erlang code goes here
+        @cookie = nil # cookie of the erlang node
+        @distributed = false # if you want to have a distributed erlang node
+        @name_type = "sname" # type of erlang hostname name or sname
+        @node_name = "chef@localhost" # the erlang node hostname
       end
 
       def code(arg=nil)
