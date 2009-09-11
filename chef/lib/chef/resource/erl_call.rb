@@ -25,10 +25,20 @@ class Chef
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)
         @resource_name = :erl_call
+
+        @code = "q()."
         @cookie = nil
-        @node_name = "chef@localhost"
-        @name_type = "sname"
         @distributed = false
+        @name_type = "sname"
+        @node_name = "chef@localhost"
+      end
+
+      def code(arg=nil)
+        set_or_return(
+          :code,
+          arg,
+          :kind_of => [ String ]
+        )
       end
 
       def cookie(arg=nil)
@@ -47,17 +57,9 @@ class Chef
         )
       end
 
-      def name(arg=nil)
-        set_or_return(
-          :name,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
       def name_type(arg=nil)
         set_or_return(
-          :sname,
+          :name_type,
           arg,
           :kind_of => [ String ]
         )
@@ -65,7 +67,7 @@ class Chef
 
       def node_name(arg=nil)
         set_or_return(
-          :name,
+          :node_name,
           arg,
           :kind_of => [ String ]
         )

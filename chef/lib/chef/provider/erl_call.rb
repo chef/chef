@@ -27,10 +27,9 @@ class Chef
 
       def initialize(node, new_resource)
         super(node, new_resource)
-        action_run
       end
 
-      def action_run
+      def load_current_resource
         case @new_resource.name_type
         when "sname"
           node = "-sname #{@new_resource.node_name}"
@@ -50,11 +49,15 @@ class Chef
           distributed = ""
         end
 
-        status = popen4("erl_call -e #{distributed} #{cookie} #{node}") do |pid, stdin, stdout, stderr|
+        command = "erl_call -e #{distributed} #{node} #{cookie}"
+
+        status = popen4(command, :waitlast => true) do |pid, stdin, stdout, stderr|
           Chef::Log.info("Running erl_call '#{@new_resource.name}' on '#{@new_resource.node_name}'")
-          @new_resource.code.each { |line| stdin.puts "#{line}" }
+          Chef::Log.debug("erl_call '#{@new_resource.name}' command: #{command}")
+          Chef::Log.debug("erl_call '#{@new_resource.name}' code: #{@new_resource.code}")
+          @new_resource.code.each { |line| stdin.puts "#{line.chomp!}" }
           stdin.close
-          Chef::Log.debug("Output from erl_call on '#{@new_resource.node_name}': ")
+          Chef::Log.debug("erl_call '#{@new_resource.name}' output: ")
           stdout.each { |line| Chef::Log.debug("#{line}")}
         end
       end
