@@ -122,7 +122,7 @@ class Chef
         
       r = @rest.put_rest("#{couchdb_database}/#{uuid}", object)
       Chef::Log.info("Sending #{uuid} to Nanite for indexing..")
-      n = Chef::Nanite.request(
+      n = Chef::Nanite.push(
         "/index/add",
         { 
           :id => uuid,
@@ -131,9 +131,7 @@ class Chef
           :item => object
         },
         :persistent => true
-      ) do |response_full|
-        Chef::Log.debug("Finished indexing #{obj_type} #{uuid} in #{couchdb_database}");
-      end
+      )
       r
     end
 
@@ -176,7 +174,7 @@ class Chef
       r = @rest.delete_rest("#{couchdb_database}/#{obj_id}?rev=#{rev}")
       r.couchdb = self if r.respond_to?(:couchdb)
       Chef::Log.info("Sending #{obj_id} to Nanite for deletion..")
-      n = Chef::Nanite.request(
+      n = Chef::Nanite.push(
         "/index/delete",
         { 
           :id => obj_id,
@@ -184,9 +182,7 @@ class Chef
           :type => obj_type
         },
         :persistent => true
-      ) do |response_full|
-        Chef::Log.debug("Finished Deleting #{obj_type} #{obj_id} in #{couchdb_database}");
-      end
+      )
       r
     end
   

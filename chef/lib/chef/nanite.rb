@@ -24,6 +24,7 @@ require 'json'
 # The client doesn't use this class, so we are cool without having it
 begin
   require 'nanite'
+  require 'uuidtools'
 rescue LoadError
 end
 
@@ -35,7 +36,7 @@ class Chef
       def start_mapper(config={})
         Chef::Log.info("Running the Nanite Mapper")
         ::Nanite::Log.logger = Chef::Log.logger
-        identity = Chef::Config[:nanite_identity] ? Chef::Config[:nanite_identity] : get_identity
+        identity = get_identity
         ::Nanite.start_mapper(
           :host => Chef::Config[:nanite_host], 
           :user => Chef::Config[:nanite_user],
@@ -49,11 +50,15 @@ class Chef
 
       def get_identity(type="mapper")
         id = nil
-        if Chef::FileCache.has_key?("nanite-#{type}-identity")
-          id = Chef::FileCache.load("nanite-#{type}-identity")
+        if Chef::Config[:nanite_persistent_mapper]
+          if Chef::FileCache.has_key?("nanite-#{type}-identity")
+            id = Chef::FileCache.load("nanite-#{type}-identity")
+          else
+            id = UUIDTools::UUID.random_create.to_s 
+            Chef::FileCache.store("nanite-#{type}-identity", id)
+          end
         else
-          id = ::Nanite::Identity.generate
-          Chef::FileCache.store("nanite-#{type}-identity", id)
+          id = Chef::Config[:nanite_identity] ? "#{Chef::Config[:nanite_identity]}-#{UUIDTools::UUID.random_create.to_s}" : UUIDTools::UUID.random_create.to_s 
         end
         id
       end
@@ -61,6 +66,12 @@ class Chef
       def request(*args)
         in_event do
           ::Nanite.request(*args)
+        end
+      end
+
+      def push(*args)
+        in_event do
+          ::Nanite.push(*args)
         end
       end
 
