@@ -8,7 +8,7 @@ class ChefServerApi::Clients < ChefServerApi::Application
   # GET /clients
   def index
     @list = Chef::ApiClient.list(true)
-    display(@list.collect { |r| { r.name => absolute_slice_url(:client, :id => r.name) } })
+    display(@list.inject({}) { |result, element| result[element.name] = absolute_slice_url(:client, :id => element.name); result })
   end
 
   # GET /clients/:id

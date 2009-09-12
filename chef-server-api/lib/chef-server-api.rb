@@ -126,8 +126,8 @@ if defined?(Merb::Plugins)
 
       # Clients
       scope.match("/clients", :method=>"post").to(:controller=>'clients', :action=>'create')
-      scope.match("/clients", :method=>"get").to(:controller=>'clients', :action=>'index')
-      scope.match("/clients/:id", :id => /[\w\.-]+/, :method=>"get").to(:controller=>'clients', :action=>'show')
+      scope.match("/clients", :method=>"get").to(:controller=>'clients', :action=>'index').name(:clients)
+      scope.match("/clients/:id", :id => /[\w\.-]+/, :method=>"get").to(:controller=>'clients', :action=>'show').name(:client)
       scope.match("/clients/:id", :id => /[\w\.-]+/, :method=>"put").to(:controller=>'clients', :action=>'update')
       scope.match("/clients/:id", :id => /[\w\.-]+/, :method=>"delete").to(:controller=>'clients', :action=>'destroy')
 
