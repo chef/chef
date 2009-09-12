@@ -145,6 +145,7 @@ class Chef
     nanite_pass 'testing'
     nanite_vhost '/nanite'
     nanite_identity nil
+    nanite_persistent_mapper false
 
     client_key "/etc/chef/client.pem"
     validation_key "/etc/chef/validation.pem"

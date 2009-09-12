@@ -25,7 +25,7 @@ describe Chef::CouchDB do
     @mock_rest.stub!(:url).and_return("http://localhost:5984")
     Chef::REST.stub!(:new).and_return(@mock_rest)
     @couchdb = Chef::CouchDB.new
-    Chef::Nanite.stub!(:request).and_return(true)
+    Chef::Nanite.stub!(:push).and_return(true)
     Chef::Nanite.stub!(:in_event).and_return(true)
     Chef::Nanite.stub!(:start_mapper).and_return(true)
   end
@@ -155,7 +155,7 @@ describe Chef::CouchDB do
     end
 
     it "should send the object to nanite for indexing" do
-      Chef::Nanite.should_receive(:request)
+      Chef::Nanite.should_receive(:push)
       @couchdb.store("node", "bob", {})
     end
   end
