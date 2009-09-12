@@ -27,9 +27,14 @@ class Chef
 
       def initialize(node, new_resource)
         super(node, new_resource)
+        action_run
       end
 
       def load_current_resource
+        true
+      end
+
+      def action_run
         case @new_resource.name_type
         when "sname"
           node = "-sname #{@new_resource.node_name}"
