@@ -90,7 +90,7 @@ class ChefServerApi::Application < Merb::Controller
              Chef::Log.debug "Authenticating:\n #{user.inspect}\n"
              authenticator.authenticate_user_request(request, user_key)
            rescue StandardError => se
-             Chef::Log.debug "Authentication failed: #{se}, #{se.backtrace}"
+             Chef::Log.debug "Authentication failed: #{se}, #{se.backtrace.join("\n")}"
              nil
            end
 

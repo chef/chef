@@ -25,37 +25,40 @@ class ChefServerApi::Clients < ChefServerApi::Application
 
   # POST /clients
   def create
-    @client = params["inflated_object"]
     exists = true 
     begin
-      Chef::Client.load(@client.name)
+      Chef::ApiClient.load(params[:name])
     rescue Chef::Exceptions::CouchDBNotFound
       exists = false 
     end
     raise Forbidden, "Client already exists" if exists
 
+    @client = Chef::ApiClient.new
+    @client.name(params[:name])
+    @client.create_keys
     @client.save
     
     self.status = 201
-    display({ :uri => absolute_slice_url(:client, :id => @client.name)  })
+    headers['Location'] = absolute_slice_url(:client, @client.name)
+    display({ :uri => absolute_slice_url(:client, @client.name), :private_key => @client.private_key })
   end
 
   # PUT /clients/:id
   def update
     begin
-      @role = Chef::Role.load(params[:id])
+      @client = Chef::ApiClient.load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
-      raise NotFound, "Cannot load role #{params[:id]}"
+      raise NotFound, "Cannot load client #{params[:id]}"
     end
 
-    @role.description(params["inflated_object"].description)
-    @role.recipes(params["inflated_object"].recipes)
-    @role.default_attributes(params["inflated_object"].default_attributes)
-    @role.override_attributes(params["inflated_object"].override_attributes)
-    @role.save
-    self.status = 200
-    @role.couchdb_rev = nil
-    display(@role)
+    results = { :name => @client.name }
+    if params[:private_key] == true
+      @client.create_keys
+      results[:private_key] = @client.private_key
+      @client.save
+    end
+
+    display(results)
   end
 
   # DELETE /roles/:id

@@ -78,25 +78,8 @@ if defined?(Merb::Plugins)
         # Create the signing key and certificate 
         Chef::Certificate.generate_signing_ca
 
-        # Create the validation key
-        create_key = false 
-        begin
-          c = Chef::ApiClient.load(Chef::Config[:validation_client_name])
-        rescue Chef::Exceptions::CouchDBNotFound
-          Chef::Log.info "I am an exception"
-          create_key = true
-        end
-
-        if create_key
-          Chef::Log.info("Creating validation key...")
-          api_client = Chef::ApiClient.new
-          api_client.name(Chef::Config[:validation_client_name])
-          api_client.create_keys
-          api_client.save
-          File.open(Chef::Config[:validation_key], "w") do |f|
-            f.print(api_client.private_key)
-          end
-        end
+        # Generate the validation key
+        Chef::Certificate.gen_validation_key
       end
     end
 

@@ -34,7 +34,7 @@ class ChefServerApi::Nodes < ChefServerApi::Application
   def show
     begin
       @node = Chef::Node.load(params[:id])
-    rescue Net::HTTPServerException => e
+    rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
     @node.couchdb_rev = nil
@@ -46,7 +46,7 @@ class ChefServerApi::Nodes < ChefServerApi::Application
     exists = true 
     begin
       Chef::Node.load(@node.name)
-    rescue Net::HTTPServerException
+    rescue Chef::Exceptions::CouchDBNotFound
       exists = false
     end
     raise Forbidden, "Node already exists" if exists
@@ -58,7 +58,7 @@ class ChefServerApi::Nodes < ChefServerApi::Application
   def update
     begin
       @node = Chef::Node.load(params[:id])
-    rescue Net::HTTPServerException => e
+    rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
 
@@ -73,7 +73,7 @@ class ChefServerApi::Nodes < ChefServerApi::Application
   def destroy
     begin
       @node = Chef::Node.load(params[:id])
-    rescue Net::HTTPServerException => e 
+    rescue Chef::Exceptions::CouchDBNotFound => e 
       raise NotFound, "Cannot load node #{params[:id]}"
     end
     @node.destroy
@@ -84,7 +84,7 @@ class ChefServerApi::Nodes < ChefServerApi::Application
   def cookbooks
     begin
       @node = Chef::Node.load(params[:id])
-    rescue Net::HTTPServerException => e 
+    rescue Chef::Exceptions::CouchDBNotFound => e 
       raise NotFound, "Cannot load node #{params[:id]}"
     end
    

@@ -67,10 +67,10 @@ class Chef
       # First, try and create a new registration
       begin
         Chef::Log.info("Registering API Client #{name}")
-        response = post_rest("clients", {:clientname => name})
+        response = post_rest("clients", {:name => name})
       rescue Net::HTTPServerException 
         # If that fails, go ahead and try and update it
-        response = put_rest("clients/#{name}", { :clientname => name, :private_key => true }) 
+        response = put_rest("clients/#{name}", { :name => name, :private_key => true }) 
       end
 
       Chef::Log.debug("Registration response: #{response.inspect}")

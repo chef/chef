@@ -27,7 +27,9 @@ require 'chef/config'
 require 'chef/client'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
+require 'chef/api_client'
 require 'chef/solr'
+require 'chef/certificate'
 require 'tmpdir'
 require 'merb-core'
 require 'merb_cucumber/world/webrat'
@@ -74,17 +76,15 @@ def create_databases
   Chef::Log.info("Creating bootstrap databases")
   cdb = Chef::CouchDB.new(Chef::Config[:couchdb_url], "chef_integration")
   cdb.create_db
+  cdb.create_id_map
   Chef::Node.create_design_document
   Chef::Role.create_design_document
   Chef::DataBag.create_design_document
+  Chef::ApiClient.create_design_document
   Chef::Role.sync_from_disk_to_couchdb
-end
-
-def create_validation
-# TODO: Create the validation certificate here
-#  File.open("#{Dir.tmpdir}/validation.pem", "w") do |f|
-#    f.print response["private_key"]
-#  end
+  Chef::Certificate.generate_signing_ca
+  Chef::Certificate.gen_validation_key
+  system("cp #{File.join(Dir.tmpdir, "chef_integration", "validation.pem")} #{Dir.tmpdir}")
 end
 
 def prepare_replicas
@@ -95,7 +95,9 @@ def prepare_replicas
 end
 
 def cleanup
-  File.unlink(File.join(Dir.tmpdir, "validation.pem"))
+  if File.exists?(Chef::Config[:validation_key])
+    File.unlink(Chef::Config[:validation_key])
+  end
 end
 
 ###
@@ -106,7 +108,6 @@ setup_nanite
 cleanup
 delete_databases
 create_databases
-create_validation
 prepare_replicas
 
 Merb.start_environment(
