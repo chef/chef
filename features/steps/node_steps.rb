@@ -28,7 +28,6 @@ end
 
 Given /^it includes the recipe '(.+)'$/ do |recipe|
   self.recipe = recipe
-  Chef::Log.error("It's like this we have: #{Chef::Config[:chef_server_url]}")
   client.node.recipes << recipe
   client.save_node
 end

@@ -20,7 +20,7 @@ class ChefServerApi::Clients < ChefServerApi::Application
     end
     @client.couchdb_rev = nil
     @client.public_key = nil
-    display @client
+    display({ :name => @client.name })
   end
 
   # POST /clients
@@ -64,12 +64,12 @@ class ChefServerApi::Clients < ChefServerApi::Application
   # DELETE /roles/:id
   def destroy
     begin
-      @role = Chef::Role.load(params[:id])
+      @client = Chef::ApiClient.load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
-      raise NotFound, "Cannot load role #{params[:id]}"
+      raise NotFound, "Cannot load client #{params[:id]}"
     end
-    @role.destroy
-    display @role
+    @client.destroy
+    display({ :name => @client.name })
   end
 
 end

@@ -10,36 +10,35 @@ Before do
       'bobo' => Proc.new do
 
         OpenStruct.new({ :save => true })
-     #Chef::CouchDB.new(Chef::Config[:couchdb_url], "chef_integration"))
       end
     },
     'data_bag' => {
       'users' => Proc.new do
-        b = Chef::DataBag.new(Chef::CouchDB.new(nil, "chef_integration"))
+        b = Chef::DataBag.new
         b.name "users"
         b
       end,
       'rubies' => Proc.new do
-        b = Chef::DataBag.new(Chef::CouchDB.new(nil, "chef_integration"))
+        b = Chef::DataBag.new
         b.name "rubies"
         b
       end
     },
     'data_bag_item' => {
       'francis' => Proc.new do
-        i = Chef::DataBagItem.new(Chef::CouchDB.new(nil, "chef_integration"))
+        i = Chef::DataBagItem.new
         i.data_bag "users"
         i.raw_data = { "id" => "francis" }
         i
       end,
       'francis_extra' => Proc.new do
-        i = Chef::DataBagItem.new(Chef::CouchDB.new(nil, "chef_integration"))
+        i = Chef::DataBagItem.new
         i.data_bag "users"
         i.raw_data = { "id" => "francis", "extra" => "majority" }
         i
       end,
       'axl_rose' => Proc.new do
-        i = Chef::DataBagItem.new(Chef::CouchDB.new(nil, "chef_integration"))
+        i = Chef::DataBagItem.new
         i.data_bag "users"
         i.raw_data = { "id" => "axl_rose" }
         i
@@ -47,7 +46,7 @@ Before do
     },
     'role' => {
       'webserver' => Proc.new do
-        r = Chef::Role.new(Chef::CouchDB.new(nil, "chef_integration"))
+        r = Chef::Role.new
         r.name "webserver"
         r.description "monkey"
         r.recipes("role::webserver", "role::base")
@@ -56,7 +55,7 @@ Before do
         r 
       end,
       'db' => Proc.new do
-        r = Chef::Role.new(Chef::CouchDB.new(nil, "chef_integration"))
+        r = Chef::Role.new
         r.name "db"
         r.description "monkey"
         r.recipes("role::db", "role::base")
@@ -67,7 +66,7 @@ Before do
     },
     'node' => {
       'webserver' => Proc.new do
-        n = Chef::Node.new(Chef::CouchDB.new(nil, "chef_integration"))
+        n = Chef::Node.new
         n.name 'webserver'
         n.run_list << "tacos"
         n.snakes "on a plane"
@@ -75,14 +74,14 @@ Before do
         n
       end,
       'dbserver' => Proc.new do
-        n = Chef::Node.new(Chef::CouchDB.new(nil, "chef_integration"))
+        n = Chef::Node.new
         n.name 'dbserver'
         n.run_list << "oracle"
         n.just "kidding - who uses oracle?"
         n
       end,
       'sync' => Proc.new do
-        n = Chef::Node.new(Chef::CouchDB.new(nil, "chef_integration"))
+        n = Chef::Node.new
         n.name 'sync'
         n.run_list << "node_cookbook_sync"
         n
@@ -128,7 +127,7 @@ Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|
   @stash[stash_name] = get_fixture(stash_name, stash_key) 
     
   if stash_name == 'registration'
-    r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_user], Chef::Config[:validation_key])
+    r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
     r.register("bobo", "#{tmpdir}/bobo.pem")
     @rest = Chef::REST.new(Chef::Config[:registration_url], 'bobo', "#{tmpdir}/bobo.pem")
   else 
