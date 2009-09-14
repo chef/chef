@@ -20,13 +20,17 @@ class ChefServerApi::Clients < ChefServerApi::Application
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load client #{params[:id]}"
     end
-    display({ :name => @client.name })
+    display({ :name => @client.name, :admin => @client.admin })
   end
 
   # POST /clients
   def create
     exists = true 
-    params[:name] ||= params[:inflated_object].name
+    if params.has_key?(:inflated_object)
+      params[:name] ||= params[:inflated_object].name
+      params[:admin] ||= params[:inflated_object].admin
+    end
+
     begin
       Chef::ApiClient.load(params[:name])
     rescue Chef::Exceptions::CouchDBNotFound
@@ -36,6 +40,7 @@ class ChefServerApi::Clients < ChefServerApi::Application
 
     @client = Chef::ApiClient.new
     @client.name(params[:name])
+    @client.admin(params[:admin]) if params[:admin]
     @client.create_keys
     @client.save
     
@@ -46,19 +51,27 @@ class ChefServerApi::Clients < ChefServerApi::Application
 
   # PUT /clients/:id
   def update
-    params[:private_key] ||= params[:inflated_object].private_key
+    if params.has_key?(:inflated_object)
+      params[:private_key] ||= params[:inflated_object].private_key
+      params[:admin] ||= params[:inflated_object].admin
+    end
+
     begin
       @client = Chef::ApiClient.load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load client #{params[:id]}"
     end
+    
+    @client.admin(params[:admin]) if params[:admin]
 
-    results = { :name => @client.name }
+    results = { :name => @client.name, :admin => @client.admin }
+
     if params[:private_key] == true
       @client.create_keys
       results[:private_key] = @client.private_key
-      @client.save
     end
+
+    @client.save
 
     display(results)
   end

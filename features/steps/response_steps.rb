@@ -15,6 +15,18 @@ Then /^the inflated responses key '(.+)' should match '(.+)'$/ do |key, regex|
   self.inflated_response[key].should =~ /#{regex}/m  
 end
 
+Then /^the inflated responses key '(.+)' should be literally '(.+)'$/ do |key, literal|
+  puts self.inflated_response.inspect if ENV['DEBUG']
+  to_check = case literal
+             when "true"
+               true
+             when "false"
+               false
+             end
+
+  self.inflated_response[key].should == to_check 
+end
+
 Then /^the inflated response should match '(.+)' as json$/ do |regex|
   puts self.inflated_response.inspect if ENV["DEBUG"]
   self.inflated_response.to_json.should =~ /#{regex}/m

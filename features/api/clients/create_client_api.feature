@@ -10,6 +10,13 @@ Feature: Create a client via the REST API
      When I 'POST' the 'client' to the path '/clients' 
       And the inflated responses key 'uri' should match '^http://.+/clients/isis$'
 
+  Scenario: Create a new client as an admin
+    Given a 'registration' named 'bobo' exists
+      And a 'client' named 'adminmonkey'
+     When I 'POST' the 'client' to the path '/clients' 
+     When I 'GET' the path '/clients/adminmonkey' 
+     Then the inflated responses key 'admin' should be literally 'true'
+
   Scenario: Create a client that already exists
     Given a 'registration' named 'bobo' exists
       And an 'client' named 'isis'

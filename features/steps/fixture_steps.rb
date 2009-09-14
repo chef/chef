@@ -19,6 +19,13 @@ Before do
         c.name "neurosis"
         c.create_keys
         c
+      end,
+      'adminmonkey' => Proc.new do
+        c = Chef::ApiClient.new
+        c.name "adminmonkey"
+        c.admin true
+        c.create_keys
+        c
       end
     },
     'signing_caller' =>{ 
