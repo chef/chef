@@ -39,8 +39,11 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
 
   def show
     cl = Chef::CookbookLoader.new
-    cookbook = cl[params[:id]]
-    raise NotFound unless cookbook
+    begin
+      cookbook = cl[params[:id]]
+    rescue ArgumentError => e
+      raise NotFound, "Cannot find a cookbook named #{cookbook.to_s}"
+    end
     results = load_cookbook_files(cookbook)
     results[:name] = cookbook.name.to_s
     results[:metadata] = cl.metadata[cookbook.name.to_sym]
@@ -49,8 +52,11 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
  
   def show_segment 
     cl = Chef::CookbookLoader.new
-    cookbook = cl[params[:cookbook_id]]
-    raise NotFound unless cookbook
+    begin
+      cookbook = cl[params[:cookbook_id]]
+    rescue ArgumentError => e
+      raise NotFound, "Cannot find a cookbook named #{params[:cookbook_id]}" 
+    end
     cookbook_files = load_cookbook_files(cookbook)
     raise NotFound unless cookbook_files.has_key?(params[:segment].to_sym)
 

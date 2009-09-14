@@ -238,7 +238,7 @@ namespace :features do
   end
 
   namespace :api do
-    [ :nodes, :roles ].each do |api|
+    [ :nodes, :roles, :clients ].each do |api|
         Cucumber::Rake::Task.new(api) do |apitask|
           apitask.profile = "api_#{api.to_s}"
         end

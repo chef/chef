@@ -57,7 +57,7 @@ if defined?(Merb::Plugins)
 
     # Activation hook - runs after AfterAppLoads BootLoader
     def self.activate
-      Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 
+      Mixlib::Authentication::Log.logger = Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 
 
       Thread.new do
         until EM.reactor_running?

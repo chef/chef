@@ -18,8 +18,8 @@ Feature: Show a cookbook via the REST API
 
   Scenario: Show a missing cookbook 
     Given a 'registration' named 'bobo' exists
-     When I download the 'frabjabtasticaliciousmonkeyman' cookbook
-     Then the response code should be '404'
+     When I 'GET' the path '/cookbooks/frabnabjabtalistic'
+     Then I should get a '404 "Not Found"' exception
 
   Scenario: Show a cookbook with a wrong private key
     Given a 'registration' named 'bobo' exists

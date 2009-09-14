@@ -246,7 +246,7 @@ class Chef
 
     def bulk_get(*to_fetch)
       response = @rest.post_rest("#{couchdb_database}/_all_docs?include_docs=true", { "keys" => to_fetch.flatten })
-      response["rows"].collect { |r| r["doc"].couchdb = self; r["doc"] }
+      response["rows"].collect { |r| r["doc"] }
     end
     
     def view_uri(design, view)

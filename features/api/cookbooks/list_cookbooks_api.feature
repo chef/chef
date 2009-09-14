@@ -8,9 +8,9 @@ Feature: List cookbooks via the REST API
     Given a 'registration' named 'bobo' exists
      When I 'GET' the path '/cookbooks'
      Then the inflated responses key 'manage_files' should exist
-      And the inflated responses key 'manage_files' should match 'http://[^/]+/organizations/clownco/cookbooks/manage_files'
+      And the inflated responses key 'manage_files' should match 'http://[^/]+/cookbooks/manage_files'
       And the inflated responses key 'delayed_notifications' should exist
-      And the inflated responses key 'delayed_notifications' should match 'http://[^/]+/organizations/clownco/cookbooks/delayed_notifications'
+      And the inflated responses key 'delayed_notifications' should match 'http://[^/]+/cookbooks/delayed_notifications'
 
   Scenario: List cookbooks with a wrong private key
     Given a 'registration' named 'bobo' exists

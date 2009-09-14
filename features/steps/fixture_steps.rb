@@ -3,6 +3,24 @@ require 'ostruct'
 
 Before do
   @fixtures = {
+    'client' => {
+      'isis' => Proc.new do
+        c = Chef::ApiClient.new
+        c.name "isis"
+        c.create_keys
+        c
+      end,
+      'isis_update' => {
+        'name' => 'isis',
+        'private_key' => true
+      },
+      'neurosis' => Proc.new do
+        c = Chef::ApiClient.new
+        c.name "neurosis"
+        c.create_keys
+        c
+      end
+    },
     'signing_caller' =>{ 
       :user_id=>'bobo', :secret_key => "/tmp/poop.pem"
     },
@@ -158,10 +176,6 @@ Given /^removing the '(.+)' field '(.+)'$/ do |stash_name, key|
 end
 
 Given /^there are no (.+)$/ do |stash_name|
-  case stash_name
-  when 'roles'
-    Chef::Role.list(true).each { |r| r.destroy }
-  end
 end
 
 Given /^I wait for '(\d+)' seconds$/ do |time|

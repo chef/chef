@@ -20,6 +20,8 @@
   $: << File.join(File.dirname(__FILE__), '..', '..', inc_dir, 'lib')
 end
 
+Thread.abort_on_exception = true
+
 require 'rubygems'
 require 'spec'
 require 'chef'
@@ -138,7 +140,7 @@ module ChefWorld
   end
 
   def rest
-    @rest ||= Chef::REST.new('http://localhost:4000/organizations/clownco', nil, nil)
+    @rest ||= Chef::REST.new('http://localhost:4000', nil, nil)
   end
 
   def tmpdir

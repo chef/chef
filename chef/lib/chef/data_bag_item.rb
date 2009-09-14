@@ -54,11 +54,12 @@ class Chef
       }
     }
 
-    attr_accessor :couchdb_rev, :raw_data
+    attr_accessor :couchdb_rev, :raw_data, :couchdb_id
     
     # Create a new Chef::DataBagItem
     def initialize(couchdb=nil)
       @couchdb_rev = nil
+      @couchdb_id = nil
       @data_bag = nil
       @raw_data = Hash.new
       @couchdb = Chef::CouchDB.new 

@@ -7,7 +7,7 @@ Feature: Show a cookbooks attribute files via the REST API
   Scenario: Show a cookbooks attribute files
     Given a 'registration' named 'bobo' exists
      When I 'GET' the path '/cookbooks/show_cookbook/attributes'
-     Then the inflated response should match '^[.+]$' as json 
+     Then the inflated response should match '^\[.+\]$' as json 
 
   Scenario: Show a missing cookbook 
     Given a 'registration' named 'bobo' exists

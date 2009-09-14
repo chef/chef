@@ -18,14 +18,13 @@ class ChefServerApi::Clients < ChefServerApi::Application
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load client #{params[:id]}"
     end
-    @client.couchdb_rev = nil
-    @client.public_key = nil
     display({ :name => @client.name })
   end
 
   # POST /clients
   def create
     exists = true 
+    params[:name] ||= params[:inflated_object].name
     begin
       Chef::ApiClient.load(params[:name])
     rescue Chef::Exceptions::CouchDBNotFound
@@ -45,6 +44,7 @@ class ChefServerApi::Clients < ChefServerApi::Application
 
   # PUT /clients/:id
   def update
+    params[:private_key] ||= params[:inflated_object].private_key
     begin
       @client = Chef::ApiClient.load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e

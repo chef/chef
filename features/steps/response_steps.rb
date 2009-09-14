@@ -15,6 +15,11 @@ Then /^the inflated responses key '(.+)' should match '(.+)'$/ do |key, regex|
   self.inflated_response[key].should =~ /#{regex}/m  
 end
 
+Then /^the inflated response should match '(.+)' as json$/ do |regex|
+  puts self.inflated_response.inspect if ENV["DEBUG"]
+  self.inflated_response.to_json.should =~ /#{regex}/m
+end
+
 Then /^the inflated responses key '(.+)' should match '(.+)' as json$/ do |key, regex|
   puts self.inflated_response.inspect if ENV["DEBUG"]
   self.inflated_response[key].to_json.should =~ /#{regex}/m
@@ -45,6 +50,7 @@ Then /^the inflated response should be an empty array$/ do
 end
 
 Then /^the inflated response should include '(.+)'$/ do |entry|
+  puts self.inflated_response.inspect
   self.inflated_response.detect { |n| n =~ /#{entry}/ }.should be(true)
 end
 

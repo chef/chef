@@ -64,12 +64,13 @@ class Chef
       }
     }
 
-    attr_accessor :couchdb_rev 
+    attr_accessor :couchdb_rev, :couchdb_id
     
     # Create a new Chef::DataBag
     def initialize
       @name = '' 
       @couchdb_rev = nil
+      @couchdb_id = nil
       @couchdb = Chef::CouchDB.new 
     end
 
@@ -128,7 +129,6 @@ class Chef
       removed = @couchdb.delete("data_bag", @name, @couchdb_rev)
       rs = @couchdb.get_view("data_bags", "entries", :include_docs => true, :startkey => @name, :endkey => @name)
       rs["rows"].each do |row|
-        row["doc"].couchdb = @couchdb
         row["doc"].destroy
       end
       removed
@@ -145,7 +145,7 @@ class Chef
       rs = nil 
       if inflate
         rs = @couchdb.get_view("data_bags", "entries", :include_docs => true, :startkey => @name, :endkey => @name)
-        rs["rows"].collect { |r| r["doc"].couchdb = @couchdb; r["doc"] }
+        rs["rows"].collect { |r| r["doc"] }
       else
         rs = @couchdb.get_view("data_bags", "entries", :startkey => @name, :endkey => @name)
         rs["rows"].collect { |r| r["value"] }

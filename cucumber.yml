@@ -1,6 +1,12 @@
 default: -f pretty features -r features/steps -r features/support 
 api: --tags @api --format pretty -r features/steps -r features/support features 
 api_cookbooks: --tags @api,@cookbooks --format pretty -r features/steps -r features/support features 
+api_clients: --tags @api_clients --format pretty -r features/steps -r features/support features
+api_clients_create: --tags clients_create --format pretty -r features/steps -r features/support features
+api_clients_delete: --tags clients_delete --format pretty -r features/steps -r features/support features
+api_clients_list: --tags clients_list --format pretty -r features/steps -r features/support features
+api_clients_show: --tags clients_show --format pretty -r features/steps -r features/support features
+api_clients_update: --tags clients_update --format pretty -r features/steps -r features/support features
 api_roles: --tags @api_roles --format pretty -r features/steps -r features/support features
 api_roles_create: --tags roles_create --format pretty -r features/steps -r features/support features
 api_roles_delete: --tags roles_delete --format pretty -r features/steps -r features/support features
