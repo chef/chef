@@ -136,6 +136,7 @@ class Chef
           Chef::Log.info("Creating validation key...")
           api_client = Chef::ApiClient.new
           api_client.name(Chef::Config[:validation_client_name])
+          api_client.admin(true)
           api_client.create_keys
           api_client.save
           key_dir = File.dirname(Chef::Config[:validation_key])

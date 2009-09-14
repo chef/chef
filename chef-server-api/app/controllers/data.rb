@@ -24,6 +24,7 @@ class ChefServerApi::Data < ChefServerApi::Application
   provides :json
   
   before :authenticate_every
+  before :is_admin, :only => [ :create, :destroy ]
   
   def index
     @bag_list = Chef::DataBag.list(false)

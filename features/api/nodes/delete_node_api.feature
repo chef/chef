@@ -22,3 +22,9 @@ Feature: Delete a node via the REST API
      When I 'DELETE' the path '/nodes/webserver' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
+  Scenario: Delete a node as a when I am not an admin
+    Given a 'registration' named 'not_admin' exists
+      And a 'node' named 'webserver' exists
+     When I 'DELETE' the path '/nodes/webserver'
+     Then I should get a '401 "Unauthorized"' exception
+

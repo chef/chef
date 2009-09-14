@@ -23,3 +23,10 @@ Feature: Synchronize cookbooks to the edge
       And a 'node' named 'sync' exists
      When I 'GET' the path '/nodes/sync/cookbooks' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
+
+  Scenario: Retrieve the list of cookbook files to synchronize as a non-admin
+    Given a 'registration' named 'not_admin' exists
+      And a 'node' named 'sync' exists
+     When I 'GET' the path '/nodes/sync/cookbooks'
+     Then I should get a '401 "Unauthorized"' exception
+

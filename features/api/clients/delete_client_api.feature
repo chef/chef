@@ -22,3 +22,9 @@ Feature: Delete a client via the REST API
      When I 'DELETE' the path '/clients/isis' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
+  Scenario: Delete a client when you are not an admin
+    Given a 'registration' named 'not_admin' exists
+      And a 'client' named 'isis' exists
+     When I 'DELETE' the path '/clients/isis'
+     Then I should get a '401 "Unauthorized"' exception
+

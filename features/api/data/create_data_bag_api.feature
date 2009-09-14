@@ -24,3 +24,9 @@ Feature: Create a data bag via the REST API
      When I 'POST' the 'data_bag' to the path '/data' 
      Then I should get a '401 "Unauthorized"' exception
 
+  Scenario: Create a new data bag as a non-admin
+    Given a 'registration' named 'not_admin' exists
+      And a 'data_bag' named 'users'
+     When I 'POST' the 'data_bag' to the path '/data' 
+     Then I should get a '401 "Unauthorized"' exception
+

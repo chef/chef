@@ -20,9 +20,17 @@ Feature: Update a role
       | default_attributes | { "a": "d" } |
       | override_attributes | { "c": "e" } |
       
-  Scenario Outline: Update a role with a wrong private key
+  Scenario: Update a role with a wrong private key
     Given a 'registration' named 'bobo' exists
       And a 'role' named 'webserver' exists
-      And sending the method '<method>' to the 'role' with '<updated_value>'
+      And sending the method 'description' to the 'role' with 'gorilla'
      When I 'PUT' the 'role' to the path '/roles/webserver' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
+
+  Scenario: Update a role as a non-admin user 
+    Given a 'registration' named 'not_admin' exists
+      And a 'role' named 'webserver' exists
+      And sending the method 'description' to the 'role' with 'gorilla'
+     When I 'PUT' the 'role' to the path '/roles/webserver' using a wrong private key
+     Then I should get a '401 "Unauthorized"' exception
+

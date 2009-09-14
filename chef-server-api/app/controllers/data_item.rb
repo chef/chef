@@ -26,6 +26,7 @@ class ChefServerApi::DataItem < ChefServerApi::Application
   
   before :populate_data_bag
   before :authenticate_every
+  before :is_admin, :only => [ :create, :destroy ]
 
   def populate_data_bag
     begin

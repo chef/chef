@@ -19,9 +19,17 @@ Feature: Update a node
       | snakes       | really arent so bad | 
       
 
-  Scenario Outline: Update a node with a wrong private key
+  Scenario: Update a node with a wrong private key
     Given a 'registration' named 'bobo' exists
       And a 'node' named 'webserver' exists
       And sending the method 'run_list' to the 'node' with '[ "recipe[one]", "recipe[two]" ]'
      When I 'PUT' the 'node' to the path '/nodes/webserver' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
+
+  Scenario: Update a node when I am not an admin
+    Given a 'registration' named 'not_admin' exists
+      And a 'node' named 'webserver' exists
+      And sending the method 'run_list' to the 'node' with '[ "recipe[one]", "recipe[two]" ]'
+     When I 'PUT' the 'node' to the path '/nodes/webserver'
+     Then I should get a '401 "Unauthorized"' exception
+

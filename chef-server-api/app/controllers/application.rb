@@ -66,15 +66,6 @@ class ChefServerApi::Application < Merb::Controller
     end
     arg.gsub(/\./, '_')
   end
-  
-  def login_required
-    if session[:openid]
-      return session[:openid]
-    else  
-      self.store_location
-      throw(:halt, :access_denied)
-    end
-  end
 
   def authenticate_every
     authenticator = Mixlib::Authentication::SignatureVerification.new
@@ -88,34 +79,32 @@ class ChefServerApi::Application < Merb::Controller
              Chef::Log.debug("Found API Client: #{user.inspect}")
              user_key = OpenSSL::PKey::RSA.new(user.public_key)
              Chef::Log.debug "Authenticating:\n #{user.inspect}\n"
+             # Store this for later..
+             @auth_user = user
              authenticator.authenticate_user_request(request, user_key)
            rescue StandardError => se
              Chef::Log.debug "Authentication failed: #{se}, #{se.backtrace.join("\n")}"
              nil
            end
 
-    raise Merb::ControllerExceptions::Unauthorized, "Failed to authenticate!" unless auth
+    raise Unauthorized, "Failed to authenticate!" unless auth
 
     auth
   end
   
-  def authorized_node
-    if session[:level] == :admin
-      Chef::Log.debug("Authorized as Administrator")
+  def is_admin 
+    if @auth_user.admin
       true
-    elsif session[:level] == :node
-      Chef::Log.debug("Authorized as node")
-      if session[:node_name] == params[:id].gsub(/\./, '_')
-        true
-      else
-        raise(
-          Unauthorized,
-          "You are not the correct node for this action: #{session[:node_name]} instead of #{params[:id]}"
-        )
-      end
     else
-      Chef::Log.debug("Unauthorized")
       raise Unauthorized, "You are not allowed to take this action."
+    end
+  end
+
+  def is_correct_node
+    if @auth_user.admin || @auth_user.name == params[:id]
+      true
+    else
+      raise Unauthorized, "You are not the correct node, or are not an API administrator."
     end
   end
   

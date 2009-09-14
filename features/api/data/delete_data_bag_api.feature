@@ -32,3 +32,9 @@ Feature: Delete a Data Bag via the REST API
      When I 'DELETE' the path '/data/users'
      Then I should get a '401 "Unauthorized"' exception
 
+  Scenario: Delete a Data Bag as a non-admin
+    Given a 'registration' named 'not_admin' exists
+      And a 'data_bag' named 'users' exists
+     When I 'DELETE' the path '/data/users'
+     Then I should get a '401 "Unauthorized"' exception
+

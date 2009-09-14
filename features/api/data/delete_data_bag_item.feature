@@ -25,3 +25,10 @@ Feature: Delete a Data Bag Item via the REST API
      When I 'DELETE' the path '/data/users/francis'
      Then I should get a '401 "Unauthorized"' exception
 
+  Scenario: Delete a Data Bag Item as a non-admin
+    Given a 'registration' named 'not_admin' exists
+      And a 'data_bag' named 'users' exists
+      And a 'data_bag_item' named 'francis' exists
+     When I 'DELETE' the path '/data/users/francis'
+     Then I should get a '401 "Unauthorized"' exception
+

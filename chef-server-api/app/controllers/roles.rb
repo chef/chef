@@ -4,6 +4,7 @@ class ChefServerApi::Roles < ChefServerApi::Application
   provides :json
 
   before :authenticate_every
+  before :is_admin, :only => [ :create, :update, :destroy ]
   
   # GET /roles
   def index

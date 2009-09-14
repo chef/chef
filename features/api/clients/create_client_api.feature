@@ -22,3 +22,10 @@ Feature: Create a client via the REST API
       And a 'client' named 'isis'
      When I 'POST' the 'client' to the path '/clients' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
+
+  Scenario: Create a new client when you are not an admin
+    Given a 'registration' named 'not_admin' exists
+      And a 'client' named 'isis'
+     When I 'POST' the 'client' to the path '/clients' 
+     Then I should get a '401 "Unauthorized"' exception
+

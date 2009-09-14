@@ -4,6 +4,8 @@ class ChefServerApi::Clients < ChefServerApi::Application
   provides :json
 
   before :authenticate_every
+  before :is_admin, :only => :index
+  before :is_correct_node, :only => [ :show, :create, :update, :destroy ]
   
   # GET /clients
   def index

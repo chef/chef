@@ -22,3 +22,9 @@ Feature: Delete a Role via the REST API
      When I 'DELETE' the path '/roles/webserver' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
+  Scenario: Delete a Role as a non-admin
+    Given a 'registration' named 'not_admin' exists
+      And a 'role' named 'webserver' exists
+     When I 'DELETE' the path '/roles/webserver'
+     Then I should get a '401 "Unauthorized"' exception
+

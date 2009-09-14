@@ -26,7 +26,9 @@ Before do
     },
     'registration' => { 
       'bobo' => Proc.new do
-
+        OpenStruct.new({ :save => true })
+      end,
+      'not_admin' => Proc.new do
         OpenStruct.new({ :save => true })
       end
     },
@@ -145,9 +147,20 @@ Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|
   @stash[stash_name] = get_fixture(stash_name, stash_key) 
     
   if stash_name == 'registration'
-    r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
-    r.register("bobo", "#{tmpdir}/bobo.pem")
-    @rest = Chef::REST.new(Chef::Config[:registration_url], 'bobo', "#{tmpdir}/bobo.pem")
+    if stash_key == "bobo"
+      r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
+      r.register("bobo", "#{tmpdir}/bobo.pem")
+      c = Chef::ApiClient.load("bobo")
+      c.admin(true)
+      c.save
+      @rest = Chef::REST.new(Chef::Config[:registration_url], 'bobo', "#{tmpdir}/bobo.pem")
+    elsif stash_key == "not_admin"
+      r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
+      r.register("not_admin", "#{tmpdir}/not_admin.pem")
+      c = Chef::ApiClient.load("not_admin")
+      c.save
+      @rest = Chef::REST.new(Chef::Config[:registration_url], 'not_admin', "#{tmpdir}/not_admin.pem")
+    end
   else 
     if @stash[stash_name].respond_to?(:save)#stash_name == "registration" 
       @stash[stash_name].save

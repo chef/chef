@@ -51,6 +51,25 @@ describe Chef::ApiClient do
     end
   end
 
+  describe "admin" do
+    it "should let you set the admin bit" do
+      @client.admin(true).should == true
+    end
+
+    it "should return the current admin value" do
+      @client.admin true 
+      @client.admin.should == true 
+    end
+
+    it "should default to false" do
+      @client.admin.should == false
+    end
+
+    it "should throw an ArgumentError if you feed it anything but true or false" do
+      lambda { @client.name Hash.new }.should raise_error(ArgumentError)
+    end
+  end
+
   describe "public_key" do
     it "should let you set the public key" do
       @client.public_key("super public").should == "super public"
@@ -121,10 +140,14 @@ describe Chef::ApiClient do
       it "should include '#{t}'" do
         @serial.should =~ /"#{t}":"#{@client.send(t.to_sym)}"/
       end
+    end
 
-      it "should not include the private key" do
-        @serial.should_not =~ /"private_key":/
-      end
+    it "should include 'admin'" do
+      @serial.should =~ /"admin":false/
+    end
+
+    it "should not include the private key" do
+      @serial.should_not =~ /"private_key":/
     end
   end
 
@@ -133,6 +156,7 @@ describe Chef::ApiClient do
       @client.name("black")
       @client.public_key("crowes")
       @client.private_key("monkeypants")
+      @client.admin(true)
       @deserial = JSON.parse(@client.to_json)
     end
 
@@ -143,6 +167,7 @@ describe Chef::ApiClient do
     %w{
       name
       public_key
+      admin
     }.each do |t| 
       it "should match '#{t}'" do
         @deserial.send(t.to_sym).should == @client.send(t.to_sym)

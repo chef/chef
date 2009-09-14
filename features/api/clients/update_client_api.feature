@@ -18,3 +18,11 @@ Feature: Update a client
       And a 'client' named 'isis_update'
      When I 'PUT' the 'client' to the path '/clients/isis' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
+
+  Scenario: Update a client when you are not an admin
+    Given a 'registration' named 'not_admin' exists
+      And a 'client' named 'isis' exists
+      And a 'client' named 'isis_update'
+     When I 'PUT' the 'client' to the path '/clients/isis'
+     Then I should get a '401 "Unauthorized"' exception
+

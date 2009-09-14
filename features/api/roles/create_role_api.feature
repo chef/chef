@@ -22,3 +22,10 @@ Feature: Create a role via the REST API
       And a 'role' named 'webserver'
      When I 'POST' the 'role' to the path '/roles' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
+
+  Scenario: Create a new role as a non-admin
+    Given a 'registration' named 'not_admin' exists
+      And a 'role' named 'webserver'
+     When I 'POST' the 'role' to the path '/roles' 
+     Then I should get a '401 "Unauthorized"' exception
+

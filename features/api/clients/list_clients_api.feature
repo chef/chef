@@ -30,3 +30,9 @@ Feature: List clients via the REST API
      When I 'GET' the path '/clients' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
+  Scenario: List clients when one has been created and you are not an admin
+    Given a 'registration' named 'not_admin' exists
+    Given a 'client' named 'isis' exists
+     When I 'GET' the path '/clients'
+     Then I should get a '401 "Unauthorized"' exception
+

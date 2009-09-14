@@ -26,7 +26,8 @@ Feature: Show a cookbook via the REST API
      When I 'GET' the path '/cookbooks/show_cookbook' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
-  Scenario: Show a cookbook without authenticating
+  Scenario: Show a cookbook with as a non-administrator  
+    Given a 'registration' named 'not_admin' exists
      When I 'GET' the path '/cookbooks/show_cookbook'
      Then I should get a '401 "Unauthorized"' exception
 

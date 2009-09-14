@@ -63,6 +63,7 @@ class Chef
       @private_key = nil
       @couchdb_rev = nil
       @couchdb_id = nil
+      @admin = false
       @couchdb = Chef::CouchDB.new 
     end
 
@@ -75,6 +76,18 @@ class Chef
         :name,
         arg,
         :regex => /^[\-[:alnum:]_\.]+$/
+      )
+    end
+
+    # Gets or sets whether this client is an admin. 
+    #
+    # @params [Optional True/False] Should be true or false - default is false.
+    # @return [True/False] The current value
+    def admin(arg=nil)
+      set_or_return(
+        :admin,
+        arg,
+        :kind_of => [ TrueClass, FalseClass ]
       )
     end
 
@@ -121,6 +134,7 @@ class Chef
       result = {
         "name" => @name,
         "public_key" => @public_key,
+        "admin" => @admin,
         'json_class' => self.class.name,
         "chef_type" => "client"
       }
@@ -139,6 +153,7 @@ class Chef
       client = Chef::ApiClient.new
       client.name(o["name"])
       client.public_key(o["public_key"])
+      client.admin(o["admin"])
       client.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       client.couchdb_id = o["_id"] if o.has_key?("_id")
       client
