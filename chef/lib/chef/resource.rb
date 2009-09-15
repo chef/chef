@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -200,14 +201,6 @@ class Chef
       instance_vars
     end
     
-    def self.json_create(o)
-      resource = self.new(o["instance_vars"]["@name"])
-      o["instance_vars"].each do |k,v|
-        resource.instance_variable_set(k.to_sym, v)
-      end
-      resource
-    end
-    
     def only_if(arg=nil, &blk)
       if Kernel.block_given?
         @only_if = blk
@@ -230,6 +223,67 @@ class Chef
       provider = Chef::Platform.provider_for_node(@node, self)
       provider.load_current_resource
       provider.send("action_#{action}")
+    end
+    
+    class << self
+      def json_create(o)
+        resource = self.new(o["instance_vars"]["@name"])
+        o["instance_vars"].each do |k,v|
+          resource.instance_variable_set(k.to_sym, v)
+        end
+        resource
+      end
+      
+      def build_from_file(filename)
+        Class.new self do |cls|
+          
+          # default initialize method that ensures that when initialize is finally
+          # wrapped (see below), super is called in the event that the resource
+          # definer does not implement initialize
+          def initialize(name, collection=nil, node=nil)
+            super(name, collection, node)
+          end
+          
+          @actions_to_create = []
+          
+          class << cls
+            include Chef::Mixin::FromFile
+            
+            def actions_to_create
+              @actions_to_create
+            end
+            
+            def actions_to_create=(val)
+              @actions_to_create = val
+            end
+            
+            define_method(:actions) do |*action_names|
+              actions_to_create.push(*action_names)
+            end
+            
+            def attribute(attr_name, validation_opts={})
+              define_method(attr_name.to_sym) do |arg|
+                set_or_return(attr_name.to_sym, arg, validation_opts)
+              end
+            end
+          end
+          
+          # load resource definition from file
+          cls.class_from_file(filename)
+          
+          # create a new constructor that wraps the old one and adds the actions
+          # specified in the DSL
+          old_init = instance_method(:initialize)
+          
+          define_method(:initialize) do |name, *optional_args|
+            collection = optional_args.shift
+            node = optional_args.shift
+            old_init.bind(self).call(name, collection, node)
+            allowed_actions.push(self.class.actions_to_create).flatten!
+          end
+          
+        end
+      end
     end
     
     private

@@ -20,6 +20,7 @@ require 'chef/resource'
 Dir[File.join(File.dirname(__FILE__), 'resource/**/*.rb')].sort.each { |lib| require lib }
 require 'chef/mixin/from_file'
 require 'chef/mixin/language'
+require 'chef/mixin/convert_to_class_name'
 require 'chef/resource_collection'
 require 'chef/cookbook_loader'
 require 'chef/rest'
@@ -30,6 +31,7 @@ class Chef
     
     include Chef::Mixin::FromFile
     include Chef::Mixin::Language
+    include Chef::Mixin::ConvertToClassName
         
     attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :collection, 
                   :definitions, :params, :cookbook_loader
@@ -152,7 +154,7 @@ class Chef
         @node[:tags].delete(tag)
       end
     end
-        
+    
     def method_missing(method_symbol, *args, &block)
       resource = nil
       # If we have a definition that matches, we want to use that instead.  This should
@@ -172,19 +174,8 @@ class Chef
       else
         method_name = method_symbol.to_s
         # Otherwise, we're rocking the regular resource call route.
-        rname = nil
-        regexp = %r{^(.+?)(_(.+))?$}
-
-        mn = method_name.match(regexp)
-        if mn
-          rname = "Chef::Resource::#{mn[1].capitalize}"
-
-          while mn && mn[3]
-            mn = mn[3].match(regexp)          
-            rname << mn[1].capitalize if mn
-          end
-        end
-
+        rname = convert_to_class_name(method_name, Chef::Resource)
+        
         begin
           args << @collection
           args << @node

@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -56,6 +57,10 @@ class Chef
     #  * build_node - Get the last known state, merge with local changes
     #  * register - Make sure we have an openid
     #  * authenticate - Authenticate with our openid
+    #  * sync_library_files - Populate the local cache with all the library files
+    #  * sync_provider_files - Populate the local cache with all the provider files
+    #  * sync_resource_files - Populate the local cache with all the resource files
+    #  * sync_attribute_files - Populate the local cache with all the attribute files
     #  * sync_definitions - Populate the local cache with all the definitions
     #  * sync_recipes - Populate the local cache with all the recipes
     #  * do_attribute_files - Populate the local cache with all attributes, and execute them
@@ -75,6 +80,8 @@ class Chef
       build_node(@node_name)
       save_node
       sync_library_files
+      sync_provider_files
+      sync_resource_files
       sync_attribute_files
       sync_definitions
       sync_recipes
@@ -97,7 +104,7 @@ class Chef
     def run_solo
       start_time = Time.now
       Chef::Log.info("Starting Chef Solo Run")
-      
+
       determine_node_name
       build_node(@node_name, true)
       converge(true)
@@ -324,7 +331,29 @@ class Chef
       update_file_cache("libraries", @rest.get_rest("cookbooks/_library_files?node=#{@node.name}"))
       true
     end
+
+    # Gets all the provider files included in all the cookbooks available on the server,
+    # and loads them.
+    #
+    # === Returns
+    # true:: Always returns true
+    def sync_provider_files
+      Chef::Log.debug("Synchronizing providers") 
+      update_file_cache("providers", @rest.get_rest("cookbooks/_provider_files?node=#{@node.name}"))
+      true
+    end
     
+    # Gets all the resource files included in all the cookbooks available on the server,
+    # and loads them.
+    #
+    # === Returns
+    # true:: Always returns true
+    def sync_resource_files
+      Chef::Log.debug("Synchronizing resources")
+      update_file_cache("resources", @rest.get_rest("cookbooks/_resource_files?node=#{@node.name}"))
+      true
+    end
+
     # Gets all the definition files included in all the cookbooks available on the server,
     # and loads them.
     #
@@ -373,6 +402,8 @@ class Chef
       end
       compile = Chef::Compile.new(@node)
       compile.load_libraries
+      compile.load_providers
+      compile.load_resources
       compile.load_attributes
       compile.load_definitions
       compile.load_recipes

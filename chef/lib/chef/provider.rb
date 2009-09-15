@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -36,5 +37,29 @@ class Chef
       true
     end
     
+    class << self
+      def build_from_file(filename)
+        Class.new self do |cls|
+
+          def load_current_resource
+            # silence Chef::Exceptions::Override exception
+          end
+          
+          # setup DSL's shortcut methods
+          class << cls
+            include Chef::Mixin::FromFile
+            
+            def action(name, &block)
+              define_method("action_#{name}", block)
+            end
+          end
+          
+          # load provider definition from file
+          cls.class_from_file(filename)
+          
+        end
+      end
+    end
+
   end
 end

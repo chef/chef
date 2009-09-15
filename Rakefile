@@ -169,7 +169,11 @@ namespace :features do
       t.profile = "recipe_inclusion"
     end
   end
-
+  
+  Cucumber::Rake::Task.new(:lwrp) do |t|
+    t.profile = "lwrp"
+  end
+  
   namespace :provider do
     Cucumber::Rake::Task.new(:template) do |t|
       t.profile = "provider_template"

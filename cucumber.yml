@@ -21,4 +21,5 @@ provider_remote_file: --tags provider,remote_file --format pretty -r features/st
 provider_git: --tags provider,git --format pretty -r features/steps -r features/support features 
 provider_template: --tags template --format pretty -r features/steps -r features/support features
 provider_package_macports: --tags macports --format pretty -r features/steps -r features/support features 
+lwrp: --tags lwrp --format pretty -r features/steps -r features/support features 
 

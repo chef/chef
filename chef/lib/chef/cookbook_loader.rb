@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -47,6 +48,8 @@ class Chef
               :template_files => Array.new,
               :remote_files => Array.new,
               :lib_files => Array.new,
+              :resource_files => Array.new,
+              :provider_files => Array.new,
               :metadata_files => Array.new
             }
           end
@@ -84,6 +87,19 @@ class Chef
             cookbook_settings[cookbook_name][:remote_files],
             cookbook_settings[cookbook_name][:ignore_regexes]
           )
+          load_cascading_files(
+            "*.rb",
+            File.join(cookbook, "resources"),
+            cookbook_settings[cookbook_name][:resource_files],
+            cookbook_settings[cookbook_name][:ignore_regexes]
+          )
+          load_cascading_files(
+            "*.rb",
+            File.join(cookbook, "providers"),
+            cookbook_settings[cookbook_name][:provider_files],
+            cookbook_settings[cookbook_name][:ignore_regexes]
+          )
+
           if File.exists?(File.join(cookbook, "metadata.json"))
             cookbook_settings[cookbook_name][:metadata_files] << File.join(cookbook, "metadata.json")
           end
@@ -97,6 +113,8 @@ class Chef
         @cookbook[cookbook].template_files = cookbook_settings[cookbook][:template_files]
         @cookbook[cookbook].remote_files = cookbook_settings[cookbook][:remote_files]
         @cookbook[cookbook].lib_files = cookbook_settings[cookbook][:lib_files]
+        @cookbook[cookbook].resource_files = cookbook_settings[cookbook][:resource_files]
+        @cookbook[cookbook].provider_files = cookbook_settings[cookbook][:provider_files]
         @metadata[cookbook] = Chef::Cookbook::Metadata.new(@cookbook[cookbook])
         cookbook_settings[cookbook][:metadata_files].each do |meta_json|
           @metadata[cookbook].from_json(IO.read(meta_json))

@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -94,6 +95,30 @@ class Chef
     def load_libraries()
       @cookbook_loader.each do |cookbook|
         cookbook.load_libraries
+      end
+      true
+    end
+
+    # Load all the providers, from every cookbook, so they are available when we process
+    # the recipes.
+    #
+    # === Returns
+    # true:: Always returns true
+    def load_providers()
+      @cookbook_loader.each do |cookbook|
+        cookbook.load_providers
+      end
+      true
+    end
+
+    # Load all the resources, from every cookbook, so they are available when we process
+    # the recipes.
+    #
+    # === Returns
+    # true:: Always returns true
+    def load_resources()
+      @cookbook_loader.each do |cookbook|
+        cookbook.load_resources
       end
       true
     end

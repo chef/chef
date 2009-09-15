@@ -156,8 +156,12 @@ class ChefServerSlice::Application < Merb::Controller
       files_list = cookbook.definition_files
     when :libraries
       files_list = cookbook.lib_files
+    when :providers
+      files_list = cookbook.provider_files
+    when :resources
+      files_list = cookbook.resource_files
     else
-      raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions or :libraries"
+      raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions, :libraries, :providers, or :resources"
     end
     files_list
   end

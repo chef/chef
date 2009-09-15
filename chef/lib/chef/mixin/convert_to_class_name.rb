@@ -1,8 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,27 +17,27 @@
 # limitations under the License.
 #
 
-require 'chef' / 'cookbook_loader'
+class Chef
+  module Mixin
+    module ConvertToClassName
 
-class ChefServerSlice::Cookbooks < ChefServerSlice::Application
-  
-  provides :html, :json
-  before :login_required
-  
-  def index
-    @cl = Chef::CookbookLoader.new
-    display @cl
-  end
+      def convert_to_class_name(str, mod=nil)
+        rname = nil
+        regexp = %r{^(.+?)(_(.+))?$}
+        
+        mn = str.match(regexp)
+        if mn
+          rname = "#{mod ? "#{mod.to_s}::" : ''}#{mn[1].capitalize}"
 
-  def show
-    @cl = Chef::CookbookLoader.new
-    @cookbook = @cl[params[:id]]
-    raise NotFound unless @cookbook
-    display @cookbook
+          while mn && mn[3]
+            mn = mn[3].match(regexp)          
+            rname << mn[1].capitalize if mn
+          end
+        end
+
+        rname
+      end
+      
+    end
   end
-  
-  def files
-    display load_all_files(params[:type], params[:node])
-  end
-  
 end

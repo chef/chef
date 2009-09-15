@@ -1,7 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,36 +19,31 @@
 #
 
 require 'chef' / 'mixin' / 'checksum'
-require 'chef' / 'cookbook_loader'
 
-class ChefServerSlice::CookbookLibraries < ChefServerSlice::Application
+class ChefServerSlice::CookbookSegment < ChefServerSlice::Application
   
   provides :html, :json
+
   before :login_required 
   
   include Chef::Mixin::Checksum
-  
-  def load_cookbook_libs()
-    @lib_files = load_cookbook_segment(params[:cookbook_id], :libraries)
-  end
   
   def index
     if params[:id]
       show
     else
-      load_cookbook_libs()
-      display @lib_files
+      display load_cookbook_segment(params[:cookbook_id], params[:type])
     end
   end
 
   def show
     only_provides :json
-    load_cookbook_libs
-    raise NotFound, "Cannot find a suitable library file!" unless @lib_files.has_key?(params[:id])
+    files = load_cookbook_segment(params[:cookbook_id], params[:type])
     
-    to_send = @lib_files[params[:id]][:file]
+    raise NotFound, "Cannot find a suitable #{params[:type].to_s.singularize} file!" unless files.has_key?(params[:id])
+    to_send = files[params[:id]][:file]
     current_checksum = checksum(to_send)
-    Chef::Log.debug("Old sum: #{params[:checksum]}, New sum: #{current_checksum}") 
+    Chef::Log.debug("old sum: #{params[:checksum]}, new sum: #{current_checksum}") 
     if current_checksum == params[:checksum]
       display "File #{to_send} has not changed", :status => 304
     else
