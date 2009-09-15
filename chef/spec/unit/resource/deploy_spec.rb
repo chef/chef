@@ -83,12 +83,12 @@ describe Chef::Resource::Deploy do
   
   it "takes arbitrary environment variables in a hash" do
     @resource.environment "RAILS_ENV" => "production"
-    @resource.environment.should eql("RAILS_ENV" => "production")
+    @resource.environment.should == {"RAILS_ENV" => "production"}
   end
   
   it "takes string arguments to environment for backwards compat, setting RAILS_ENV, RACK_ENV, and MERB_ENV" do
     @resource.environment "production"
-    @resource.environment.should eql({"RAILS_ENV"=>"production", "RACK_ENV"=>"production","MERB_ENV"=>"production"})
+    @resource.environment.should == {"RAILS_ENV"=>"production", "RACK_ENV"=>"production","MERB_ENV"=>"production"}
   end
   
   it "sets destination to $deploy_to/shared/$repository_cache" do

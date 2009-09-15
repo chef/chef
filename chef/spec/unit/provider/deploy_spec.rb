@@ -183,7 +183,7 @@ describe Chef::Provider::Deploy do
   end
   
   it "puts resource.to_hash in @configuration for backwards compat with capistano-esque deploy hooks" do
-    @provider.instance_variable_get(:@configuration).should eql(@resource.to_hash)
+    @provider.instance_variable_get(:@configuration).should == @resource.to_hash
   end
   
   it "sets @configuration[:environment] to the value of RAILS_ENV for backwards compat reasons" do

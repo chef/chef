@@ -31,9 +31,9 @@ describe Chef::Provider::Subversion do
   end
   
   it "converts resource attributes to options for run_command and popen4" do
-    @provider.run_options.should eql({})
+    @provider.run_options.should == {}
     @resource.user 'deployninja'
-    @provider.run_options.should eql({:user => "deployninja"})
+    @provider.run_options.should == {:user => "deployninja"}
   end
   
   context "determining the revision of the currently deployed code" do
