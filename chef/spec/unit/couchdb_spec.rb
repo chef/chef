@@ -297,7 +297,6 @@ describe Chef::CouchDB, "view_uri" do
         :GET, 
         URI.parse("http://monkeypants/"), 
         {},
-        false, 
         10, 
         false
       ).and_return({ "version" => "0.9" })
