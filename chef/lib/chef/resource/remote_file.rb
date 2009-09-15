@@ -26,7 +26,7 @@ class Chef
         super(name, collection, node)
         @resource_name = :remote_file
         @action = "create"
-        @source = nil
+        @source = ::File.basename(name)
         @cookbook = nil
       end
       

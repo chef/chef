@@ -19,7 +19,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Config do
-  describe "class method: chef_server_url" do
+  describe "config attribute writer: chef_server_url" do
     before do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
     end
@@ -73,18 +73,27 @@ describe Chef::Config do
     
   end
   
-  describe "class method: log_method=" do
-    describe "when given an object that responds to sync e.g. IO" do
-      it "should internally configure itself to use the IO as log_location" do
-        Chef::Config.should_receive(:configure).and_return(STDOUT)
+  describe "config attribute writer: log_method=" do
+    describe "when given an object that responds to sync= e.g. IO" do
+      it "should configure itself to use the IO as log_location" do
         Chef::Config.log_location = STDOUT
+        Chef::Config.log_location.should == STDOUT
       end
     end
     
-    describe "when not given an object that responds to sync e.g. String" do
-      it "should internally configure itself to use a File object based upon the String" do
-        File.should_receive(:new).with("/var/log/chef/client.log", "w+")
+    describe "when given an object that is stringable (to_str)" do
+      before do
+        @mockfile = mock("File",
+                         :path => "/var/log/chef/client.log",
+                         :null_object => true)
+        File.should_receive(:new).
+          with("/var/log/chef/client.log", "a").
+          and_return(@mockfile)
+      end
+
+      it "should configure itself to use a File object based upon the String" do
         Chef::Config.log_location = "/var/log/chef/client.log"
+        Chef::Config.log_location.path.should == "/var/log/chef/client.log"
       end
     end
   end

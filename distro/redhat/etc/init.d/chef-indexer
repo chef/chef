@@ -1,31 +1,30 @@
 #!/bin/bash
-# Startup script for chef-server 
+# Startup script for chef-indexer
 #
-# chkconfig: - 65 35
+# chkconfig: - 75 25
 # description: Server component of the Chef systems integration framework.
-# processname: chef-server
+# processname: chef-indexer
 #
-# config: /etc/sysconfig/chef-server
-# pidfile: /var/run/chef/chef-server.pid
+# config: /etc/sysconfig/chef-indexer
+# pidfile: /var/run/chef/chef-indexer.pid
 
 # Source function library
 . /etc/init.d/functions
 
-[ -f /etc/sysconfig/chef-server ] && . /etc/sysconfig/chef-server
+[ -f /etc/sysconfig/chef-indexer ] && . /etc/sysconfig/chef-indexer
 
-prog="chef-server"
-PIDFILE=/var/run/chef/chef-server.pid
+prog="chef-indexer"
+PIDFILE=/var/run/chef/chef-indexer.pid
 LOCKFILE=/var/lock/subsys/$prog
-CONFIG=/etc/chef/server.rb
+CONFIG=/etc/chef/indexer.rb
 USER="chef"
 GROUP="chef"
-CLUSTER_NODES=2
-LOGFILE=/var/log/chef/chef-server-merb.log
+LOGFILE=/var/log/chef/chef-indexer.log
 OPTIONS=
 
 start() {
     echo -n "Starting $prog:"
-    daemon chef-server -d -c "$CLUSTER_NODES" -C "$CONFIG" -u "$USER" -G "$GROUP" -L "$LOGFILE" -P "$PIDFILE" "$OPTIONS" ">/dev/null"
+    daemon chef-indexer -d -c "$CONFIG" -u "$USER" -g "$GROUP" -L "$LOGFILE" "$OPTIONS" ">/dev/null"
     RETVAL=$?
     echo
     [ $RETVAL -eq 0 ] && touch ${LOCKFILE}
@@ -35,7 +34,7 @@ start() {
 stop() {
     echo -n "Stopping $prog: "
     if [ -f $PIDFILE ]; then
-        killproc chef-server
+        killproc chef-indexer
         RETVAL=$?
         if [ $RETVAL -ne 0 ]; then
             failure;
@@ -67,7 +66,7 @@ case "$1" in
         fi
         ;;
   status)
-        status chef-server
+        status chef-indexer
         ;;
   *)
     echo "Usage: $0 {start|stop|restart|condrestart|status}"

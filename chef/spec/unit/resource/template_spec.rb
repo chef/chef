@@ -37,6 +37,15 @@ describe Chef::Resource::Template do
       @resource.source "something"
       @resource.source.should eql("something")
     end
+
+    it "should have a default based on the param name with .erb appended" do
+      @resource.source.should eql("fakey_fakerton.erb")
+    end
+
+    it "should use only the basename of the file as the default" do
+      r = Chef::Resource::Template.new("/tmp/obit/fakey_fakerton")
+      r.source.should eql("fakey_fakerton.erb")
+    end
   end
   
   describe "variables" do

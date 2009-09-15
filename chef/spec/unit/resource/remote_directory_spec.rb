@@ -38,6 +38,10 @@ describe Chef::Resource::RemoteDirectory do
     @resource.source.should eql("foo")
   end
 
+  it "should have the basename of the remote directory resource as the default source" do
+    @resource.source.should eql("dunk")
+  end
+
   it "should accept a number for the remote files backup" do
     @resource.files_backup 1
     @resource.files_backup.should eql(1)

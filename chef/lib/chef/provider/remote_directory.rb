@@ -73,8 +73,7 @@ class Chef
         remote_file.owner(@new_resource.files_owner) if @new_resource.files_owner
         remote_file.backup(@new_resource.files_backup) if @new_resource.files_backup
         
-        rf_provider_class = Chef::Platform.find_provider_for_node(@node, remote_file)
-        rf_provider = rf_provider_class.new(@node, remote_file)          
+        rf_provider = Chef::Platform.provider_for_node(@node, remote_file)
         rf_provider.load_current_resource
         rf_provider.action_create
         @new_resource.updated = true if rf_provider.new_resource.updated        
@@ -88,8 +87,7 @@ class Chef
         new_dir.owner(@new_resource.owner)
         new_dir.recursive(true)
         
-        d_provider_class = Chef::Platform.find_provider_for_node(@node, new_dir)
-        d_provider = d_provider_class.new(@node, new_dir)
+        d_provider = Chef::Platform.provider_for_node(@node, new_dir)
         d_provider.load_current_resource
         d_provider.action_create
         @new_resource.updated = true if d_provider.new_resource.updated  

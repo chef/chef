@@ -404,6 +404,18 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "to_hash" do
+    it "should convert to a hash" do
+      @attributes.to_hash.class.should == Hash
+    end
+
+    it "should convert to a hash based on current state" do
+      hash = @attributes["hot"].to_hash
+      hash.class.should == Hash
+      hash["day"].should == "sunday"
+    end
+  end
+
   describe "has_key?" do
     it "should return true if an attribute exists" do
       @attributes.has_key?("music").should == true
@@ -584,10 +596,10 @@ describe Chef::Node::Attribute do
         collect << k
       end
      
-      collect[0].should == "one"
-      collect[1].should == "snack"
-      collect[2].should == "hut"
-      collect[3].should == "snakes"
+      collect.should include("one")
+      collect.should include("snack")
+      collect.should include("hut")
+      collect.should include("snakes")
     end
   end
 
@@ -654,10 +666,9 @@ describe Chef::Node::Attribute do
         collect << v
       end
 
-      collect[0].should include("six")
-      collect[1].should include("cookies")
-      collect[2].should include("three")
-      collect[3].should include("on a plane")
+      collect.should include("cookies")
+      collect.should include("three")
+      collect.should include("on a plane")
     end
 
     it "should yield four elements" do
@@ -887,9 +898,15 @@ describe Chef::Node::Attribute do
     it "should respond to select" do
       @attributes.should respond_to(:select)
     end
-    
-    it "should raise a LocalJumpError if no block is given" do
-      lambda { @attributes.select }.should raise_error(LocalJumpError)
+
+    if RUBY_VERSION >= "1.8.7"
+      it "should not raise a LocalJumpError if no block is given" do
+        lambda { @attributes.select }.should_not raise_error(LocalJumpError)
+      end
+    else
+      it "should raise a LocalJumpError if no block is given" do
+        lambda{ @attributes.select }.should raise_error(LocalJumpError)
+      end
     end
 
     it "should return an empty array for a block containing nil" do
@@ -943,6 +960,24 @@ describe Chef::Node::Attribute do
 
     it "should return the number of pairs" do
       @attributes.size.should == 4
+    end
+  end
+
+  describe "kind_of?" do
+    it "should falsely inform you that it is a Hash" do
+      @attributes.should be_a_kind_of(Hash)
+    end
+
+    it "should falsely inform you that it is a Mash" do
+      @attributes.should be_a_kind_of(Mash)
+    end
+
+    it "should inform you that it is a Chef::Node::Attribute" do
+      @attributes.should be_a_kind_of(Chef::Node::Attribute)
+    end
+
+    it "should inform you that it is anything else" do
+      @attributes.should_not be_a_kind_of(Chef::Node)
     end
   end
 end

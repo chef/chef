@@ -32,8 +32,9 @@ provider: --tags @provider --format pretty -r features/steps -r features/support
 provider_directory: --tags @provider_directory --format pretty -r features/steps -r features/support features 
 provider_execute: --tags @provider_execute --format pretty -r features/steps -r features/support features 
 provider_file: --tags @provider_file --format pretty -r features/steps -r features/support features 
+provider_template: --tags template --format pretty -r features/steps -r features/support features
 provider_remote_file: --tags @remote_file --format pretty -r features/steps -r features/support features 
 provider_package_macports: --tags @macports --format pretty -r features/steps -r features/support features 
 language: --tags @language --format pretty -r features/steps -r features/support features 
+recipe_inclusion: --tags recipe_inclusion --format pretty -r features/steps -r features/support features 
 cookbooks: --tags @cookbooks --format pretty -r features/steps -r features/support features 
-

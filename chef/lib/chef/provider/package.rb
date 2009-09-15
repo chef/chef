@@ -140,8 +140,7 @@ class Chef
         remote_file.source(@new_resource.response_file)
         remote_file.backup(false)
         
-        rf_provider_class = Chef::Platform.find_provider_for_node(@node, remote_file)
-        rf_provider = rf_provider_class.new(@node, remote_file)          
+        rf_provider = Chef::Platform.provider_for_node(@node, remote_file)
         rf_provider.load_current_resource
         rf_provider.action_create
         

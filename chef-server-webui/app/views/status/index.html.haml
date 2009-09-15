@@ -30,7 +30,7 @@
                           %td= node["uptime"]
                 - if node["ohai_time"].to_s != "Undefined"
                   - current_time = DateTime.now
-                  - date = DateTime.strptime(node["ohai_time"].to_s, "%s")
+                  - date = DateTime.parse(Time.at(node["ohai_time"]).to_s)
                   - hours, minutes, seconds, frac = DateTime.day_fraction_to_time(current_time - date)
                   - hours_text   = "#{hours} hour#{hours == 1 ? '' : 's'}"
                   - minutes_text = "#{minutes} minute#{minutes == 1 ? '' : 's'}"

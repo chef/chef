@@ -1,3 +1,28 @@
+Fri Sep 4 7:25:00 NZST 2009
+
+
+Release Notes - Chef - Version 0.7.10
+
+** Bug
+    * [CHEF-287] - chef client logging to file only dumps periodically
+    * [CHEF-362] - regression: mixlib-config 1.0.10 breaks log_location= override
+    * [CHEF-476] - merb-slices gem not installed with new chef server install on ubuntu 9.0.4
+    * [CHEF-481] - 0.7.6 breaks Centos5
+    * [CHEF-488] - When installing a gem_package, the version parameter needs to be quoted
+    * [CHEF-492] - Attributes aren't quite hash enough to fool variables() method in templates
+    * [CHEF-494] - Multiple roles' default_attributes are not merged correctly on the node
+    * [CHEF-497] - Status page fails to work under ruby 1.8.5
+    * [CHEF-500] - server.rb log_location truncation take two
+    * [CHEF-512] - Update chef config for pending mixlib-config config_attr_writer fix
+    * [CHEF-525] - Spec failures in node/attribute_spec.rb
+
+** Improvement
+    * [CHEF-449] - use the basename of the  target path as the default for the template, remote_file and remote_directory sources
+    * [CHEF-493] - Alias set_unless with "default" in attributes.rb
+    * [CHEF-509] - add man pages, initscripts and other goods from packaging efforts
+    * [CHEF-515] - chef-server needs to be compatible with couchdb 0.10.0
+    * [CHEF-524] - Chef::Platform.find_provider_for_node is always used to get an instance of the provider (code duplication)
+
 Wed Aug 12 21:57:53 NZST 2009
 
 Release Notes - Chef - Version 0.7.8

@@ -344,13 +344,18 @@ namespace :features do
     end
 
     desc "Run cucumber tests for file resources"
-    Cucumber::Rake::Task.new(:execute) do |t|
+    Cucumber::Rake::Task.new(:file) do |t|
       t.profile = "provider_file"
     end
 
     desc "Run cucumber tests for remote_file resources"
     Cucumber::Rake::Task.new(:remote_file) do |t|
       t.profile = "provider_remote_file"
+    end
+
+    desc "Run cucumber tests for template resources"
+    Cucumber::Rake::Task.new(:template) do |t|
+      t.profile = "provider_template"
     end
     
     namespace :package do
