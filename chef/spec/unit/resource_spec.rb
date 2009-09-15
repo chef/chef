@@ -164,6 +164,16 @@ describe Chef::Resource do
     end
   end
   
+  describe "to_hash" do
+    it "should convert to a hash" do
+      hash = @resource.to_hash
+      hash.keys.should include( :only_if, :allowed_actions, :params, :provider, 
+                                :updated, :before, :not_if, :supports, :node, 
+                                :actions, :noop, :ignore_failure, :name, :source_line, :action)
+      hash[:name].should eql("funk")
+    end
+  end
+  
   describe "self.json_create" do
     it "should deserialize itself from json" do
       json = @resource.to_json

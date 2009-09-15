@@ -192,6 +192,14 @@ class Chef
       results.to_json(*a)
     end
     
+    def to_hash
+      instance_vars = Hash.new
+      self.instance_variables.each do |iv|
+        instance_vars[iv.sub(/^@/,'').to_sym] = self.instance_variable_get(iv) unless iv == "@collection"
+      end
+      instance_vars
+    end
+    
     def self.json_create(o)
       resource = self.new(o["instance_vars"]["@name"])
       o["instance_vars"].each do |k,v|

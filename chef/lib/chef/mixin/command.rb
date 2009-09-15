@@ -112,13 +112,22 @@ class Chef
           end
         end
         
+        status, stdout, stderr = output_of_command(args[:command], args)
+        command_output << "STDOUT: #{stdout}"
+        command_output << "STDERR: #{stderr}"
+        handle_command_failures(status, command_output, args)
+        
+        status
+      end
+      
+      module_function :run_command
+      
+      def output_of_command(command, args)
+        Chef::Log.debug("Executing #{command}")
+        stderr_string, stdout_string, status = "", "", nil
+        
         exec_processing_block = lambda do |pid, stdin, stdout, stderr|
-          Chef::Log.debug("---- Begin output of #{args[:command]} ----")
-          Chef::Log.debug("STDOUT: #{stdout.string.chomp}")
-          Chef::Log.debug("STDERR: #{stderr.string.chomp}")
-          command_output << "STDOUT: #{stdout.string.chomp}"
-          command_output << "STDERR: #{stderr.string.chomp}"
-          Chef::Log.debug("---- End output of #{args[:command]} ----")
+          stdout_string, stderr_string = stdout.string.chomp, stderr.string.chomp
         end
         
         args[:cwd] ||= Dir.tmpdir        
@@ -126,43 +135,49 @@ class Chef
           raise Chef::Exceptions::Exec, "#{args[:cwd]} does not exist or is not a directory"
         end
         
-        Chef::Log.debug("Executing #{args[:command]}")
-        
-        status = nil
-        
         Dir.chdir(args[:cwd]) do
           if args[:timeout]
             begin
               Timeout.timeout(args[:timeout]) do
-                status = popen4(args[:command], args, &exec_processing_block)
+                status = popen4(command, args, &exec_processing_block)
               end
             rescue Timeout::Error => e
-              Chef::Log.error("#{args[:command]} exceeded timeout #{args[:timeout]}")
+              Chef::Log.error("#{command} exceeded timeout #{args[:timeout]}")
               raise(e)
             end
           else
-            status = popen4(args[:command], args, &exec_processing_block)
+            status = popen4(command, args, &exec_processing_block)
           end
           
-          unless args[:ignore_failure] 
-            args[:returns] ||= 0
-            if status.exitstatus != args[:returns]
-              # if the log level is not debug, through output of command when we fail
-              output = ""
-              if Chef::Log.logger.level > 0
-                output << "\n---- Begin output of #{args[:command]} ----\n"
-                output << "#{command_output}"
-                output << "---- End output of #{args[:command]} ----\n"
-              end
-              raise Chef::Exceptions::Exec, "#{args[:command]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
-            end
-          end
-          Chef::Log.debug("Ran #{args[:command]} returned #{status.exitstatus}")
+          Chef::Log.debug("---- Begin output of #{command} ----")
+          Chef::Log.debug("STDOUT: #{stdout_string}")
+          Chef::Log.debug("STDERR: #{stderr_string}")
+          Chef::Log.debug("---- End output of #{command} ----")
+          Chef::Log.debug("Ran #{command} returned #{status.exitstatus}")
         end
-        status
+        
+        return status, stdout_string, stderr_string
       end
       
-      module_function :run_command
+      module_function :output_of_command
+      
+      def handle_command_failures(status, command_output, args={})
+        unless args[:ignore_failure] 
+          args[:returns] ||= 0
+          if status.exitstatus != args[:returns]
+            # if the log level is not debug, through output of command when we fail
+            output = ""
+            if Chef::Log.logger.level > 0
+              output << "\n---- Begin output of #{args[:command]} ----\n"
+              output << "#{command_output}"
+              output << "---- End output of #{args[:command]} ----\n"
+            end
+            raise Chef::Exceptions::Exec, "#{args[:command]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
+          end
+        end
+      end
+      
+      module_function :handle_command_failures
            
       # This is taken directly from Ara T Howard's Open4 library, and then 
       # modified to suit the needs of Chef.  Any bugs here are most likely

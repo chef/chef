@@ -179,6 +179,10 @@ namespace :features do
       t.profile = "provider_remote_file"
     end
     
+    Cucumber::Rake::Task.new(:git) do |t|
+      t.profile = "provider_git"
+    end
+    
     namespace :package do
       Cucumber::Rake::Task.new(:macports) do |t|
         t.profile = "provider_package_macports"
