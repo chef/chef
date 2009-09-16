@@ -27,7 +27,6 @@ class Chef
 
       def initialize(node, new_resource)
         super(node, new_resource)
-        action_run
       end
 
       def load_current_resource

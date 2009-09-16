@@ -33,6 +33,8 @@ class Chef
         @distributed = false # if you want to have a distributed erlang node
         @name_type = "sname" # type of erlang hostname name or sname
         @node_name = "chef@localhost" # the erlang node hostname
+
+        @action = "run"
       end
 
       def code(arg=nil)
