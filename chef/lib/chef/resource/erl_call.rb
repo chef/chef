@@ -35,6 +35,7 @@ class Chef
         @node_name = "chef@localhost" # the erlang node hostname
 
         @action = "run"
+        @allowed_actions.push(:run)
       end
 
       def code(arg=nil)
