@@ -15,6 +15,9 @@ Feature: Light-weight resources and providers
       | non_default_resource                      | Non-default resource             |
       | overridden_resource_initialize            | Overridden initialize            |
       | overridden_provider_load_current_resource | Overridden load_current_resource |
+      | provider_is_a_string                      | Provider is a string             |
+      | provider_is_a_symbol                      | Provider is a symbol             |
+      | provider_is_a_class                       | Provider is a class              |
 
   @client @api
   Scenario Outline: Chef client handles light-weight resources and providers
@@ -31,4 +34,6 @@ Feature: Light-weight resources and providers
       | non_default_resource                      | Non-default resource             |
       | overridden_resource_initialize            | Overridden initialize            |
       | overridden_provider_load_current_resource | Overridden load_current_resource |
-
+      | provider_is_a_string                      | Provider is a string             |
+      | provider_is_a_symbol                      | Provider is a symbol             |
+      | provider_is_a_class                       | Provider is a class              |

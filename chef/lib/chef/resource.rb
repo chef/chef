@@ -20,6 +20,7 @@
 require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/language'
+require 'chef/mixin/convert_to_class_name'
 require 'chef/resource_collection'
 require 'chef/node'
 
@@ -29,6 +30,7 @@ class Chef
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::Language
+    include Chef::Mixin::ConvertToClassName
     
     attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name
     attr_reader :resource_name, :source_line, :node
@@ -84,9 +86,18 @@ class Chef
     end
     
     def provider(arg=nil)
+      klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
+                begin
+                  Chef::Provider.const_get(convert_to_class_name(arg.to_s))
+                rescue NameError => e
+                  raise ArgumentError, "Undefined provider for #{arg}"
+                end
+              else
+                arg
+              end
       set_or_return(
         :provider,
-        arg,
+        klass,
         :kind_of => [ Class ]
       )
     end
