@@ -47,6 +47,9 @@ class Chef
         @environment = nil
         @repository_cache = 'cached-copy'
         @copy_exclude = []
+        @purge_before_symlink = %w{log tmp/pids public/system}
+        @create_dirs_before_symlink = %w{tmp public config}
+        @map_shared_files = {"system" => "public/system", "pids" => "tmp/pids", "log" => "log", "config/database.yml" => "config/database.yml"}
         @revision = 'HEAD'
         @action = :deploy
         @migrate = false
@@ -253,6 +256,48 @@ class Chef
           :environment,
           arg,
           :kind_of => [ Hash ]
+        )
+      end
+      
+      # An array of paths, relative to your app's root, to be purged from a 
+      # SCM clone/checkout before symlinking. Use this to get rid of files and
+      # directories you want to be shared between releases.
+      # Default: ["log", "tmp/pids", "public/system"]
+      def purge_before_symlink(arg=nil)
+        set_or_return(
+          :purge_before_symlink,
+          arg,
+          :kind_of => Array
+        )
+      end
+      
+      # An array of paths, relative to your app's root, where you expect dirs to
+      # exist before symlinking. This runs after #purge_before_symlink, so you
+      # can use this to recreate dirs that you had previously purged.
+      # For example, if you plan to use a shared directory for pids, and you 
+      # want it to be located in $APP_ROOT/tmp/pids, you could purge tmp, 
+      # then specify tmp here so that the tmp directory will exist when you
+      # symlink the pids directory in to the current release.
+      # Default: ["tmp", "public", "config"]
+      def create_dirs_before_symlink(arg=nil)
+        set_or_return(
+          :create_dirs_before_symlink,
+          arg,
+          :kind_of => Array
+        )
+      end
+      
+      # A Hash of shared/dir/path => release/dir/path. This attribute determines
+      # which files and dirs in the shared directory get symlinked to the current
+      # release directory, and where they go. If you have a directory 
+      # $shared/pids that you would like to symlink as $current_release/tmp/pids
+      # you specify it as "pids" => "tmp/pids"
+      # Default {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
+      def map_shared_files(arg=nil)
+        set_or_return(
+          :map_shared_files,
+          arg,
+          :kind_of => Hash
         )
       end
 

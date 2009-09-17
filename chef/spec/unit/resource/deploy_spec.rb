@@ -124,5 +124,26 @@ describe Chef::Resource::Deploy do
     @resource.git_ssh_wrapper.should eql("git_my_repo.sh")
   end
   
+  it "has an Array attribute purge_before_symlink, default: log, tmp/pids, public/system" do
+    @resource.purge_before_symlink.should == %w{ log tmp/pids public/system }
+    @resource.purge_before_symlink %w{foo bar baz}
+    @resource.purge_before_symlink.should == %w{foo bar baz}
+  end
+  
+  it "has an Array attribute create_dirs_before_symlink, default: tmp, public, config" do
+    @resource.create_dirs_before_symlink.should == %w{tmp public config}
+    @resource.create_dirs_before_symlink %w{foo bar baz}
+    @resource.create_dirs_before_symlink.should == %w{foo bar baz}
+  end
+  
+  it 'has a Hash attribute map_shared_files, default: ' +
+    '{"system" => "public/system", "pids" => "tmp/pids", ' +
+    '"log" => "log", "config/database.yml" => "config/database.yml"}' do
+    default = { "system" => "public/system", "pids" => "tmp/pids", "log" => "log",
+                "config/database.yml" => "config/database.yml"}
+    @resource.map_shared_files.should == default
+    @resource.map_shared_files "foo" => "bar/baz"
+    @resource.map_shared_files.should == {"foo" => "bar/baz"}
+  end
   
 end
