@@ -42,7 +42,6 @@ class Chef
       end
       
       def load_current_resource
-        # TODO: set the current resource to the previous deploy for rollback purposes
       end
       
       def action_deploy
@@ -74,11 +73,6 @@ class Chef
         restart
       end
       
-      # NOTE: if callbacks expect to have attributes available in a
-      # @configuration ivar, they will be sorely disappointed.
-      # But it wouldn't be too difficult to add a #to_hash method
-      # for resources (using the #to_json method as a start) and
-      # set @configuration to that...
       def callback(what)
         if ::File.exist?("#{@release_path}/deploy/#{what}.rb")
           Dir.chdir(@release_path) do
