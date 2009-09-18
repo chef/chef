@@ -136,14 +136,17 @@ describe Chef::Resource::Deploy do
     @resource.create_dirs_before_symlink.should == %w{foo bar baz}
   end
   
-  it 'has a Hash attribute map_shared_files, default: ' +
-    '{"system" => "public/system", "pids" => "tmp/pids", ' +
-    '"log" => "log", "config/database.yml" => "config/database.yml"}' do
-    default = { "system" => "public/system", "pids" => "tmp/pids", "log" => "log",
-                "config/database.yml" => "config/database.yml"}
+  it 'has a Hash attribute map_shared_files, default: {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}' do
+    default = { "system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
     @resource.map_shared_files.should == default
     @resource.map_shared_files "foo" => "bar/baz"
     @resource.map_shared_files.should == {"foo" => "bar/baz"}
+  end
+  
+  it 'has a Hash attribute symlink_before_migrate, default "config/database.yml" => "config/database.yml"' do
+    @resource.symlink_before_migrate.should == {"config/database.yml" => "config/database.yml"}
+    @resource.symlink_before_migrate "wtf?" => "wtf is going on"
+    @resource.symlink_before_migrate.should == {"wtf?" => "wtf is going on"}
   end
   
 end
