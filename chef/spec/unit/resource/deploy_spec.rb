@@ -136,11 +136,11 @@ describe Chef::Resource::Deploy do
     @resource.create_dirs_before_symlink.should == %w{foo bar baz}
   end
   
-  it 'has a Hash attribute map_shared_files, default: {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}' do
+  it 'has a Hash attribute symlinks, default: {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}' do
     default = { "system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
-    @resource.map_shared_files.should == default
-    @resource.map_shared_files "foo" => "bar/baz"
-    @resource.map_shared_files.should == {"foo" => "bar/baz"}
+    @resource.symlinks.should == default
+    @resource.symlinks "foo" => "bar/baz"
+    @resource.symlinks.should == {"foo" => "bar/baz"}
   end
   
   it 'has a Hash attribute symlink_before_migrate, default "config/database.yml" => "config/database.yml"' do

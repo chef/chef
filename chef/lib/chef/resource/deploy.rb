@@ -50,7 +50,7 @@ class Chef
         @purge_before_symlink = %w{log tmp/pids public/system}
         @create_dirs_before_symlink = %w{tmp public config}
         @symlink_before_migrate = {"config/database.yml" => "config/database.yml"}
-        @map_shared_files = {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
+        @symlinks = {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
         @revision = 'HEAD'
         @action = :deploy
         @migrate = false
@@ -294,9 +294,9 @@ class Chef
       # $shared/pids that you would like to symlink as $current_release/tmp/pids
       # you specify it as "pids" => "tmp/pids"
       # Default {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
-      def map_shared_files(arg=nil)
+      def symlinks(arg=nil)
         set_or_return(
-          :map_shared_files,
+          :symlinks,
           arg,
           :kind_of => Hash
         )
@@ -305,7 +305,7 @@ class Chef
       # A Hash of shared/dir/path => release/dir/path. This attribute determines 
       # which files in the shared directory get symlinked to the current release
       # directory and where they go. Unlike map_shared_files, these are symlinked
-      # *before* any migration is run, and <b>only if a migration is run</b>.
+      # *before* any migration is run.
       # For a rails/merb app, this is used to link in a known good database.yml
       # (with the production db password) before running migrate.
       # Default {"config/database.yml" => "config/database.yml"}
