@@ -25,6 +25,24 @@ Feature: Deploy
     When I run the chef-client
 	And I run the chef-client again
 	And there should be 'two' releases
+	
+	Scenario: Deploy an app with custom layout attributes and callbacks
+	  Given a validated node
+	And it includes the recipe 'deploy::callbacks'
+	And I have a clone of typo in the data/tmp dir
+	  When I run the chef-client
+	  Then the run should exit '0'
+	And a callback named <callback_file> should exist
+		|	before_migrate.rb	|
+		|	before_symlink.rb	|
+		|	before_restart.rb	|
+		|	after_restart.rb	|
+	And the callback named <callback> should have run
+		|	before_restart.rb	|
+		|	after_restart.rb	|
+	
+	
+	
   
   Scenario: Rollback an app
     Given a validated node

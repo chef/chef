@@ -1,0 +1,4 @@
+hook_name = "before_restart"
+::File.open(@release_path + "/app/#{hook_name}", "a+") do |fd|
+	fd.puts( {:hook_name => hook_name, :env => @configuration[:environment]}.to_json )
+end

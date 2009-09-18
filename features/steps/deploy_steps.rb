@@ -18,11 +18,14 @@ Then /^I should hear about it$/ do
   puts `ls #{tmpdir}/deploy/current/`
   puts "==current/db:"
   puts `ls #{tmpdir}/deploy/current/db/`
+  puts "==current/deploy:"
+  puts `ls #{tmpdir}/deploy/current/deploy/`
+  puts "==current/app:"
+  puts `ls #{tmpdir}/deploy/current/app/`
   puts "==current/config:"
   puts `ls #{tmpdir}/deploy/current/config/`
   puts "==shared/config/app_config.yml"
   puts `ls #{tmpdir}/deploy/shared/config/`
-  
 end
 
 Then /^there should be '(.*)' releases?$/ do |n|
@@ -30,4 +33,21 @@ Then /^there should be '(.*)' releases?$/ do |n|
   n = numnums.has_key?(n) ? numnums[n] : n.to_i
   @releases = Dir.glob(tmpdir + "/deploy/releases/*")
   @releases.size.should eql(n)
+end
+
+Then /^a callback named <callback_file> should exist$/ do |callback_files|
+  callback_files.raw.each do |file|
+    want_file = "deploy/current/deploy/#{file.first}"
+    Then "a file named '#{want_file}' should exist"
+  end
+end
+
+Then /^the callback named <callback> should have run$/ do |callback_files|
+  callback_files.raw.each do |file|
+    hook_name = file.first.gsub(/\.rb$/, "")
+    evidence_file = "deploy/current/app/" + hook_name 
+    expected_contents = {"hook_name" => hook_name, "env" => "production"}
+    actual_contents = JSON.parse(IO.read(File.join(tmpdir, evidence_file)))
+    expected_contents.should == actual_contents
+  end
 end
