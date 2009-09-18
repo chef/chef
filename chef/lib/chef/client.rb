@@ -211,13 +211,14 @@ class Chef
 
       file_canonical = Hash.new
 
-      parts.each do |segment, remote_list|
+      [ "recipes", "attributes", "definitions", "libraries" ].each do |segment|
+        remote_list = parts[segement]
+
         # segement = cookbook segment
         # remote_list = list of file hashes
         #
         # We need the list of known good attribute files, so we can delete any that are
         # just laying about.
-       
         
         remote_list.each do |rf|
           cache_file = File.join("cookbooks", cookbook_name, segment, rf['name'])
