@@ -26,8 +26,7 @@ class Chef
           
           [ "/usr/sbin/groupadd",
             "/usr/sbin/groupmod",
-            "/usr/sbin/groupdel",
-            "/usr/bin/gpasswd" ].each do |required_binary|
+            "/usr/sbin/groupdel" ].each do |required_binary|
             raise Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{@new_resource}" unless ::File.exists?(required_binary)
           end
         end
@@ -54,21 +53,8 @@ class Chef
         end
         
         def modify_group_members
-          unless @new_resource.members.empty?
-            if(@new_resource.append)
-              @new_resource.members.each do |member|
-                Chef::Log.debug("#{@new_resource}: appending member #{member} to group #{@new_resource.group_name}")
-                run_command(:command => "gpasswd -a #{member} #{@new_resource.group_name}")
-              end
-            else
-              Chef::Log.debug("#{@new_resource}: setting group members to #{@new_resource.members.join(', ')}")
-              run_command(:command => "gpasswd -M #{@new_resource.members.join(',')} #{@new_resource.group_name}")
-            end
-          else
-            Chef::Log.debug("#{@new_resource}: not changing group members, the group has no members")
-          end
+          raise Chef::Exceptions::Group, "you must override modify_group_members in #{self.to_s}"
         end
-        
         # Little bit of magic as per Adam's useradd provider to pull the assign the command line flags
         #
         # ==== Returns

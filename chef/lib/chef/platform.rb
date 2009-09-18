@@ -93,7 +93,7 @@ class Chef
         :bash => Chef::Provider::Script,
         :csh => Chef::Provider::Script,
         :user => Chef::Provider::User::Useradd,
-        :group => Chef::Provider::Group::Groupadd,
+        :group => Chef::Provider::Group::Gpasswd,
         :http_request => Chef::Provider::HttpRequest,
         :route => Chef::Provider::Route,
         :ifconfig => Chef::Provider::Ifconfig,
