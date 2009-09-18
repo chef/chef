@@ -147,29 +147,34 @@ class Chef
       end
       
       def link_shared_db_config_to_current_release
-        shared_database_yml = @new_resource.shared_path + "/config/database.yml"
-        release_database_yml = @release_path + "/config/database.yml"
-        Chef::Log.info "Linking shared db config: #{shared_database_yml} to release db config: #{release_database_yml}"
-        FileUtils.ln_sf(shared_database_yml, release_database_yml)
+        links_info = @new_resource.symlink_before_migrate.map { |src, dst| "#{src} => #{dst}" }.join(", ")
+        Chef::Log.info "Making pre-migration symlinks: #{links_info}"
+        @new_resource.symlink_before_migrate.each do |src, dest|
+          FileUtils.ln_sf(@new_resource.shared_path + "/#{src}", @release_path + "/#{dest}")
+        end
       end
       
       def link_tempfiles_to_current_release
-        Chef::Log.info("Linking shared /log /tmp/pids and /public/system into current release")
-        FileUtils.mkdir_p(@release_path + "/tmp")
-        FileUtils.mkdir_p(@release_path + "/public")
-        FileUtils.mkdir_p(@release_path + "/config")
-        FileUtils.ln_sf(@new_resource.shared_path + "/system",  @release_path + "/public/system")
-        FileUtils.ln_sf(@new_resource.shared_path + "/pids",    @release_path + "/tmp/pids")
-        FileUtils.ln_sf(@new_resource.shared_path + "/log",     @release_path + "/log")
+        dirs_info = @new_resource.create_dirs_before_symlink.join(",")
+        Chef::Log.info("creating directories before symlink: #{dirs_info}")
+        @new_resource.create_dirs_before_symlink.each { |dir| FileUtils.mkdir_p(@release_path + "/#{dir}") }
+        
+        links_info = @new_resource.symlinks.map { |src, dst| "#{src} => #{dst}" }.join(", ")
+        Chef::Log.info("Linking shared paths into current release: #{links_info}")
+        @new_resource.symlinks.each do |src, dest|
+          FileUtils.ln_sf(@new_resource.shared_path + "/#{src}",  @release_path + "/#{dest}")
+        end
         link_shared_db_config_to_current_release
         enforce_ownership
       end
       
+      def create_dirs_before_symlink
+      end
+      
       def purge_tempfiles_from_current_release
-        Chef::Log.info("Purging checked out copies of /log /tmp/pids and /public/system from current release")
-        FileUtils.rm_rf(@release_path + "/log")
-        FileUtils.rm_rf(@release_path + "/tmp/pids")
-        FileUtils.rm_rf(@release_path + "/public/system")
+        log_info = @new_resource.purge_before_symlink.join(", ")
+        Chef::Log.info("Purging directories in checkout #{log_info}")
+        @new_resource.purge_before_symlink.each { |dir| FileUtils.rm_rf(@release_path + "/#{dir}") }
       end
       
       def run_options(run_opts={})

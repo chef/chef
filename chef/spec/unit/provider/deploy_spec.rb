@@ -152,6 +152,33 @@ describe Chef::Provider::Deploy do
     @provider.link_current_release_to_production
   end
   
+  context "with a customized app layout" do
+    
+    before do
+      @resource.purge_before_symlink(%w{foo bar})
+      @resource.create_dirs_before_symlink(%w{baz qux})
+      @resource.symlinks "foo/bar" => "foo/bar", "baz" => "qux/baz"
+      @resource.symlink_before_migrate "radiohead/in_rainbows.yml" => "awesome"
+    end
+    
+    it "purges the purge_before_symlink directories" do
+      FileUtils.should_receive(:rm_rf).with(@expected_release_dir + "/foo")
+      FileUtils.should_receive(:rm_rf).with(@expected_release_dir + "/bar")
+      @provider.purge_tempfiles_from_current_release
+    end
+
+    it "symlinks files from the shared directory to the current release directory" do
+      FileUtils.should_receive(:mkdir_p).with(@expected_release_dir + "/baz")
+      FileUtils.should_receive(:mkdir_p).with(@expected_release_dir + "/qux")
+      FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/foo/bar", @expected_release_dir + "/foo/bar")
+      FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/baz", @expected_release_dir + "/qux/baz")
+      FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/radiohead/in_rainbows.yml", @expected_release_dir + "/awesome")
+      @provider.should_receive(:enforce_ownership)
+      @provider.link_tempfiles_to_current_release
+    end
+
+  end
+  
   it "does nothing for restart if restart_command is empty" do
     @provider.should_not_receive(:run_command)
     @provider.restart
