@@ -44,23 +44,30 @@ describe Chef::Provider::Group::Usermod, "modify_group_members" do
   end
   
   describe "with supplied members" do
+    platforms = {
+      "openbsd" => "-G",
+      "netbsd" => "-G",
+      "solaris" => "-a -G"
+    }
+
     before do
       @new_resource.stub!(:members).and_return(["all", "your", "base"])
     end
-    
+
     it "should raise an error when setting the entire group directly" do
       lambda { @provider.modify_group_members }.should raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider.to_s}")
     end
     
-    it "should run usermod individually for each user when the append option is set" do
-      @node.stub!(:[]).with(:platform).and_return("openbsd")
-      @new_resource.stub!(:append).and_return(true)
-      @provider.should_receive(:run_command).with({:command => "usermod -G aj all"})
-      @provider.should_receive(:run_command).with({:command => "usermod -G aj your"})
-      @provider.should_receive(:run_command).with({:command => "usermod -G aj base"})
-      @provider.modify_group_members
+    platforms.each do |platform, flags|
+      it "should usermod each user when the append option is set on #{platform}" do
+        @node.stub!(:[]).with(:platform).and_return(platform)
+        @new_resource.stub!(:append).and_return(true)
+        @provider.should_receive(:run_command).with({:command => "usermod #{flags} aj all"})
+        @provider.should_receive(:run_command).with({:command => "usermod #{flags} aj your"})
+        @provider.should_receive(:run_command).with({:command => "usermod #{flags} aj base"})
+        @provider.modify_group_members
+      end
     end
-    
   end
 end
 
