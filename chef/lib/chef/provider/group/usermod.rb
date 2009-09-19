@@ -31,9 +31,9 @@ class Chef
 
         def modify_group_members
           case node[:platform]
-          when ( "openbsd" || "netbsd")
+          when "openbsd", "netbsd"
             append_flags = "-G"
-          when ("solaris")
+          when "solaris"
             append_flags = "-a -G"
           end
 
