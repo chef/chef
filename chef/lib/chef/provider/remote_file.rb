@@ -55,14 +55,20 @@ class Chef
                        get_from_local_cookbook(source)
 
             # If the file exists
+            Chef::Log.debug "#{@new_resource}: Checking for file existence of #{@new_resource.path}"
             if ::File.exists?(@new_resource.path)
               # And it matches the checksum of the raw file
               @new_resource.checksum(self.checksum(raw_file.path))
+              Chef::Log.debug "#{@new_resource}: File exists at #{@new_resource.path}"
+              Chef::Log.debug "#{@new_resource}: Target checksum: #{@current_resource.checksum}"
+              Chef::Log.debug "#{@new_resource}: Source checksum: #{@new_resource.checksum}"
               if @new_resource.checksum != @current_resource.checksum
                 # Updating target file, let's perform a backup!
-                Chef::Log.debug("#{@new_resource} changed from #{@current_resource.checksum} to #{@new_resource.checksum}")
-                Chef::Log.info("Updating #{@new_resource} at #{@new_resource.path}")
+                Chef::Log.debug "#{@new_resource}: checksum changed from #{@current_resource.checksum} to #{@new_resource.checksum}"
+                Chef::Log.info "Updating #{@new_resource} at #{@new_resource.path}"
                 backup(@new_resource.path)
+              else
+                Chef::Log.debug "#{@new_resource}: Target and Source checksums are the same, taking no action"
               end
             else
               # We're creating a new file
