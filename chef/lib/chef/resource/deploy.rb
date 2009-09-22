@@ -38,6 +38,19 @@ require "chef/resource/scm"
 
 class Chef
   class Resource
+    
+    # Deploy: Deploy apps from a source control repository.
+    #
+    # Callbacks:
+    # Callbacks can be a block/proc or a hash. If given a block, the code
+    # is evaluated as an in-line recipe within a recipe, run at the specified
+    # point in the deploy process. If given a hash, there are two options:
+    # if the hash is :recipe => "filename" an inline recipe is created
+    # from the specified file; if the hash is :eval => "filename", the code
+    # is instance_eval'd in the context of the provider. The second option
+    # provides backwards compatibility with chef-deploy recipes and recipes
+    # ported from capistrano.
+    #
     class Deploy < Chef::Resource
       
       def initialize(name, collection=nil, node=nil)
