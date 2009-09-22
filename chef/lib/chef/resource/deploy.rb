@@ -61,6 +61,11 @@ class Chef
         @scm_provider = Chef::Provider::Git
         @provider = Chef::Provider::Deploy
         @allowed_actions.push(:deploy, :rollback)
+        # Callbacks:
+        @before_migrate = {:eval => "deploy/before_migrate.rb"}
+        @before_symlink = {:eval => "deploy/before_symlink.rb"}
+        @before_restart = {:eval => "deploy/before_restart.rb"}
+        @after_restart  = {:eval => "deploy/after_restart.rb"}
       end
       
       # where the checked out/cloned code goes
@@ -315,6 +320,52 @@ class Chef
           arg,
           :kind_of => Hash
         )
+      end
+      
+      # Callback fires before migration is run.
+      def before_migrate(arg=nil, &block)
+        validate_callback_attribute(:before_migrate, (block || arg))
+        arg = {:recipe => block} if (block_given? || arg.kind_of?(Proc))
+        set_or_return(:before_migrate, arg, :kind_of => [Proc, Hash])
+      end
+      
+      # Callback fires before symlinking
+      def before_symlink(arg=nil, &block)
+        validate_callback_attribute(:before_symlink, (block || arg))
+        arg = {:recipe => block} if (block_given? || arg.kind_of?(Proc))
+        set_or_return(:before_symlink, arg, :kind_of => [Proc, Hash])
+      end
+      
+      # Callback fires before restart
+      def before_restart(arg=nil, &block)
+        validate_callback_attribute(:before_restart, (block || arg))
+        arg = {:recipe => block} if (block_given? || arg.kind_of?(Proc))
+        set_or_return(:before_restart, arg, :kind_of => [Proc, Hash])
+      end
+      
+      # Callback fires after restart
+      def after_restart(arg=nil, &block)
+        validate_callback_attribute(:after_restart, (block || arg))
+        arg = {:recipe => block} if (block_given? || arg.kind_of?(Proc))
+        set_or_return(:after_restart, arg, :kind_of => [Proc, Hash])
+      end
+      
+      private
+      
+      def validate_callback_attribute(attr_name, arg=nil)
+        return true if arg.nil? || arg.kind_of?(Proc)
+        if arg.kind_of?(Hash)
+          keys = arg.keys
+          unless keys.size == 1 && ["recipe", "eval"].include?(keys.first.to_s)
+            raise ArgumentError, "Option #{attr_name} must be :recipe => 'file' OR :eval => 'file' OR a block"
+          end
+          unless (val = arg[arg.keys.first]).kind_of?(String)
+            raise ArgumentError, 
+                  "the value of Option #{attr_name}[#{val}] must be a string giving the filename of the callback"
+          end
+        else
+          raise ArgumentError, "Option #{attr_name} must be a Hash, Block or Proc"
+        end
       end
 
     end
