@@ -134,13 +134,15 @@ class Chef
         )
       end
       
-      def restart_command(arg=nil)
+      def restart_command(arg=nil, &block)
+        arg ||= block
         set_or_return(
           :restart_command,
           arg,
-          :kind_of => [ String ]
+          :kind_of => [ String, Proc ]
         )
       end
+      alias :restart :restart_command
       
       def migrate(arg=nil)
         set_or_return(

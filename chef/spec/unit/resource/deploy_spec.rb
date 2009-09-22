@@ -203,4 +203,15 @@ describe Chef::Resource::Deploy do
   resource_has_a_callback_attribute :before_restart, :defaults_to => {:eval => "deploy/before_restart.rb"}
   resource_has_a_callback_attribute :after_restart, :defaults_to => {:eval => "deploy/after_restart.rb"}
   
+  it "aliases restart_command as restart" do
+    @resource.restart "foobaz"
+    @resource.restart_command.should == "foobaz"
+  end
+  
+  it "takes a block for the restart parameter" do
+    restart_like_this = lambda {p :noop}
+    @resource.restart(&restart_like_this)
+    @resource.restart.should == restart_like_this
+  end
+  
 end
