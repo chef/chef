@@ -51,13 +51,13 @@ class Chef
         copy_cached_repo
         # chef-deploy then installs gems. hmmm...
         enforce_ownership
-        callback(:before_migrate)
+        callback(@new_resource.before_migrate)
         migrate
-        callback(:before_symlink)
+        callback(@new_resource.before_symlink)
         symlink
-        callback(:before_restart)
+        callback(@new_resource.before_restart)
         restart
-        callback(:after_restart)
+        callback(@new_resource.after_restart)
         cleanup!
       end
       
@@ -73,14 +73,30 @@ class Chef
         restart
       end
       
-      def callback(what)
-        if ::File.exist?("#{@release_path}/deploy/#{what}.rb")
-          Dir.chdir(@release_path) do
-            Chef::Log.info "running deploy hook: #{@release_path}/deploy/#{what}.rb from #{@release_path}"
-            from_file("#{@release_path}/deploy/#{what}.rb")
+      def callback(opts={})
+        if opts.key?(:recipe) && opts[:recipe].kind_of?(Proc)
+          eval_as_recipe(&opts[:recipe])
+        elsif opts[:recipe].kind_of?(String)
+          # files are relative to release dir
+          eval_as_recipe("#{@release_path}/#{opts[:recipe]}")
+        elsif deploy_file = opts[:eval]
+          if ::File.exist?("#{@release_path}/#{deploy_file}")
+            Dir.chdir(@release_path) do
+              Chef::Log.info "running deploy hook: #{@release_path}/#{deploy_file} from #{@release_path}"
+              from_file("#{@release_path}/#{deploy_file}")
+            end
           end
         end
       end
+      
+      # def callback(what)
+      #   if ::File.exist?("#{@release_path}/deploy/#{what}.rb")
+      #     Dir.chdir(@release_path) do
+      #       Chef::Log.info "running deploy hook: #{@release_path}/deploy/#{what}.rb from #{@release_path}"
+      #       from_file("#{@release_path}/deploy/#{what}.rb")
+      #     end
+      #   end
+      # end
       
       def migrate
         if @new_resource.migrate
