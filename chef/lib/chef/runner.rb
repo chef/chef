@@ -26,7 +26,7 @@ class Chef
     
     include Chef::Mixin::ParamsValidate
     
-    def initialize(node, collection)
+    def initialize(node, collection, definitions=nil, cookbook_loader=nil)
       validate(
         {
           :node => node,
@@ -43,13 +43,15 @@ class Chef
       )
       @node = node
       @collection = collection
+      @definitions = definitions
+      @cookbook_loader = cookbook_loader
     end
     
     def build_provider(resource)
       provider_klass = resource.provider
       provider_klass ||= Chef::Platform.find_provider_for_node(@node, resource)
       Chef::Log.debug("#{resource} using #{provider_klass.to_s}")
-      provider = provider_klass.new(@node, resource)
+      provider = provider_klass.new(@node, resource, @collection, @definitions, @cookbook_loader)
       provider.load_current_resource
       provider
     end
@@ -58,7 +60,7 @@ class Chef
 
       delayed_actions = Hash.new
       
-      @collection.each do |resource|
+      @collection.execute_each_resource do |resource|
         begin
           Chef::Log.debug("Processing #{resource}")
           

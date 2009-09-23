@@ -29,8 +29,8 @@ class Chef
       
       attr_accessor :user_exists, :locked
       
-      def initialize(node, new_resource)
-        super(node, new_resource)
+      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
+        super(node, new_resource, collection, definitions, cookbook_loader)
         @user_exists = true
         @locked = nil
       end

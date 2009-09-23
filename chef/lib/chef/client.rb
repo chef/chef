@@ -401,15 +401,9 @@ class Chef
         Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
       end
       compile = Chef::Compile.new(@node)
-      compile.load_libraries
-      compile.load_providers
-      compile.load_resources
-      compile.load_attributes
-      compile.load_definitions
-      compile.load_recipes
-
+      
       Chef::Log.debug("Converging node #{@safe_name}")
-      cr = Chef::Runner.new(@node, compile.collection)
+      cr = Chef::Runner.new(@node, compile.collection, compile.definitions, compile.cookbook_loader)
       cr.converge
       true
     end

@@ -101,9 +101,8 @@ class Chef
     # true:: Always returns true
     def load_resources
       @resource_files.each do |file|
-        class_name = class_name_from_filename(file)
-        Chef::Log.debug("Loading cookbook #{name}'s resources from #{file} into class Chef::Resource::#{class_name}")
-        Chef::Resource.const_set(class_name, Chef::Resource.build_from_file(file))
+        Chef::Log.debug("Loading cookbook #{name}'s resources from #{file}")
+        Chef::Resource.build_from_file(name, file)
       end
     end
     
@@ -113,9 +112,8 @@ class Chef
     # true:: Always returns true
     def load_providers
       @provider_files.each do |file|
-        class_name = class_name_from_filename(file)
-        Chef::Log.debug("Loading cookbook #{name}'s providers from #{file} into class Chef::Provider::#{class_name}")
-        Chef::Provider.const_set(class_name, Chef::Provider.build_from_file(file))
+        Chef::Log.debug("Loading cookbook #{name}'s providers from #{file}")
+        Chef::Provider.build_from_file(name, file)
       end
     end
     
@@ -167,15 +165,6 @@ class Chef
                                 collection, definitions, cookbook_loader)
       recipe.from_file(@recipe_files[@recipe_names[recipe_name]])
       recipe
-    end
-    
-    private
-    
-    def class_name_from_filename(filename)
-      class_name_base = name.to_s
-      file_base = File.basename(filename, ".rb")
-      class_name_base += "_#{file_base}" unless file_base == 'default'
-      convert_to_class_name(class_name_base)
     end
     
   end

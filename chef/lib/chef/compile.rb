@@ -28,8 +28,8 @@ class Chef
       
     attr_accessor :node, :cookbook_loader, :collection, :definitions
     
-    # Creates a new Chef::Compile object.  This object gets used by the Chef Server to generate
-    # a fully compiled recipe list for a node.
+    # Creates a new Chef::Compile object and populates its fields. This object gets
+    # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
     # === Returns
     # object<Chef::Compile>:: Duh. :)
@@ -41,6 +41,13 @@ class Chef
       @recipes = Array.new
       @default_attributes = Array.new
       @override_attributes = Array.new
+
+      load_libraries
+      load_providers
+      load_resources
+      load_attributes
+      load_definitions
+      load_recipes
     end
     
     # Looks up the node via the "name" argument, first from CouchDB, then by calling

@@ -90,7 +90,11 @@ class Chef
                 begin
                   Chef::Provider.const_get(convert_to_class_name(arg.to_s))
                 rescue NameError => e
-                  raise ArgumentError, "Undefined provider for #{arg}"
+                  if e.to_s =~ /Chef::Provider/
+                    raise ArgumentError, "No provider found to match '#{arg}'"
+                  else
+                    raise e
+                  end
                 end
               else
                 arg
@@ -245,8 +249,18 @@ class Chef
         resource
       end
       
-      def build_from_file(filename)
-        Class.new self do |cls|
+      include Chef::Mixin::ConvertToClassName
+      
+      def attribute(attr_name, validation_opts={})
+        define_method(attr_name.to_sym) do |arg|
+          set_or_return(attr_name.to_sym, arg, validation_opts)
+        end
+      end
+      
+      def build_from_file(cookbook_name, filename)
+        rname = filename_to_qualified_string(cookbook_name, filename)
+          
+        new_resource_class = Class.new self do |cls|
           
           # default initialize method that ensures that when initialize is finally
           # wrapped (see below), super is called in the event that the resource
@@ -264,18 +278,8 @@ class Chef
               @actions_to_create
             end
             
-            def actions_to_create=(val)
-              @actions_to_create = val
-            end
-            
             define_method(:actions) do |*action_names|
               actions_to_create.push(*action_names)
-            end
-            
-            def attribute(attr_name, validation_opts={})
-              define_method(attr_name.to_sym) do |arg|
-                set_or_return(attr_name.to_sym, arg, validation_opts)
-              end
             end
           end
           
@@ -285,15 +289,22 @@ class Chef
           # create a new constructor that wraps the old one and adds the actions
           # specified in the DSL
           old_init = instance_method(:initialize)
-          
+
           define_method(:initialize) do |name, *optional_args|
             collection = optional_args.shift
             node = optional_args.shift
+            @resource_name = rname.to_sym
             old_init.bind(self).call(name, collection, node)
             allowed_actions.push(self.class.actions_to_create).flatten!
           end
-          
         end
+        
+        # register new class as a Chef::Resource
+        class_name = convert_to_class_name(rname)
+        Chef::Resource.const_set(class_name, new_resource_class)
+        Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
+        
+        new_resource_class
       end
     end
     

@@ -30,8 +30,8 @@ class Chef
       
       attr_reader :scm_provider, :release_path
       
-      def initialize(node, new_resource)
-        super(node, new_resource)
+      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
+        super(node, new_resource, collection, definitions, cookbook_loader)
         @scm_provider = @new_resource.scm_provider.new(@node, @new_resource)
         @release_path = @new_resource.deploy_to + "/releases/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}"
         

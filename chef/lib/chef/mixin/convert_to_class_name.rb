@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,7 @@ class Chef
         
         mn = str.match(regexp)
         if mn
-          rname = "#{mod ? "#{mod.to_s}::" : ''}#{mn[1].capitalize}"
+          rname = mn[1].capitalize
 
           while mn && mn[3]
             mn = mn[3].match(regexp)          
@@ -36,6 +36,11 @@ class Chef
         end
 
         rname
+      end
+      
+      def filename_to_qualified_string(base, filename)
+        file_base = File.basename(filename, ".rb")
+        base.to_s + (file_base == 'default' ? '' : "_#{file_base}")
       end
       
     end

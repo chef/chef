@@ -19,8 +19,15 @@ Feature: Light-weight resources and providers
       | provider_is_a_symbol                      | Provider is a symbol             |
       | provider_is_a_class                       | Provider is a class              |
 
+  @solo
+  Scenario: Chef solo properly handles providers that invoke resources in their action definitions
+    Given a local cookbook repository
+     When I run chef-solo with the 'lwrp::provider_invokes_resource' recipe
+     Then the run should exit '0'
+      And a file named 'lwrp_touch_file.txt' should exist
+
   @client @api
-  Scenario Outline: Chef client handles light-weight resources and providers
+  Scenario Outline: Chef-client handles light-weight resources and providers
     Given a validated node
       And it includes the recipe 'lwrp::<recipe>'
      When I run the chef-client
@@ -37,3 +44,12 @@ Feature: Light-weight resources and providers
       | provider_is_a_string                      | Provider is a string             |
       | provider_is_a_symbol                      | Provider is a symbol             |
       | provider_is_a_class                       | Provider is a class              |
+
+  @client @api
+  Scenario: Chef-client properly handles providers that invoke resources in their action definitions
+    Given a validated node
+      And it includes the recipe 'lwrp::provider_invokes_resource'
+     When I run the chef-client
+     Then the run should exit '0'
+      And a file named 'lwrp_touch_file.txt' should exist
+

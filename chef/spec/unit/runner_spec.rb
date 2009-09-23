@@ -55,7 +55,7 @@ describe Chef::Runner do
   end
   
   it "should pass each resource in the collection to a provider" do
-    @collection.should_receive(:each).once
+    @collection.should_receive(:execute_each_resource).once
     @runner.converge
   end
   

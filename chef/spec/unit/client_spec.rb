@@ -32,6 +32,8 @@ describe Chef::Client, "run" do
       :register,
       :authenticate,
       :sync_library_files,
+      :sync_provider_files,
+      :sync_resource_files,
       :sync_attribute_files,
       :sync_definitions,
       :sync_recipes,
@@ -85,6 +87,16 @@ describe Chef::Client, "run" do
   
   it "should synchronize and load attribute files from the server" do
     @client.should_receive(:sync_attribute_files).and_return(true)
+    @client.run
+  end
+  
+  it "should synchronize providers from the server" do
+    @client.should_receive(:sync_provider_files).and_return(true)
+    @client.run
+  end
+  
+  it "should synchronize resources from the server" do
+    @client.should_receive(:sync_resource_files).and_return(true)
     @client.run
   end
   

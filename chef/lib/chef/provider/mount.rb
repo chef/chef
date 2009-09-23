@@ -26,10 +26,6 @@ class Chef
 
       include Chef::Mixin::Command
 
-      def initialize(node, new_resource)
-        super(node, new_resource)
-      end
-
       def action_mount
         unless @current_resource.mounted
           Chef::Log.debug("#{@new_resource}: attempting to mount")
