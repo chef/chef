@@ -63,6 +63,16 @@ class Chef
       url
     end
 
+    # When you are using ActiveSupport, they monkey-patch 'daemonize' into Kernel.  
+    # So while this is basically identical to what method_missing would do, we pull
+    # it up here and get a real method written so that things get dispatched 
+    # properly.
+    config_attr_writer :daemonize do |v|
+      configure do |c|
+        c[:daemonize] = v
+      end
+    end
+
     # Override the config dispatch to set the value of log_location configuration option
     #
     # === Parameters
@@ -92,7 +102,6 @@ class Chef
     couchdb_database "chef"
     couchdb_url "http://localhost:5984"
     couchdb_version nil
-    daemonize nil
     delay 0
     executable_path ENV['PATH'] ? ENV['PATH'].split(File::PATH_SEPARATOR) : []
     file_cache_path "/var/chef/cache"
