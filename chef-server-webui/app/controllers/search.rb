@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require 'chef' / 'search'
-require 'chef' / 'queue'
+#require 'chef' / 'search'
+#require 'chef' / 'queue'
 
 class ChefServerWebui::Search < ChefServerWebui::Application
   

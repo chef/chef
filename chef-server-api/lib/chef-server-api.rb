@@ -80,6 +80,9 @@ if defined?(Merb::Plugins)
 
         # Generate the validation key
         Chef::Certificate.gen_validation_key
+
+        # Generate the Web UI Key 
+        Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
       end
     end
 

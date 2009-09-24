@@ -1,5 +1,7 @@
 if defined?(Merb::Plugins)
   $:.unshift File.dirname(__FILE__)
+  $:.unshift File.join(File.dirname(__FILE__), "..", "..", "chef", "lib")
+  $:.unshift File.join(File.dirname(__FILE__), "..", "..", "chef-solr", "lib")
 
   dependency 'merb-slices', :immediate => true
   dependency 'chef', :immediate=>true unless defined?(Chef)
@@ -33,28 +35,6 @@ if defined?(Merb::Plugins)
     # Stub classes loaded hook - runs before LoadClasses BootLoader
     # right after a slice's classes have been loaded internally.
     def self.loaded
-  #    Chef::Queue.connect
-
-      # create the couch databases for openid association and nonce storage, if configured
-      if Chef::Config[:openid_store_couchdb] || Chef::Config[:openid_cstore_couchdb]
-        rest = Chef::REST.new(Chef::Config[:couchdb_url])
-        @database_list = rest.get_rest("_all_dbs")
-        unless @database_list.detect { |db| db == 'associations' }
-          response = rest.put_rest('associations', Hash.new)
-        end
-        unless @database_list.detect { |db| db == 'nonces' }
-          response = rest.put_rest('nonces', Hash.new)
-        end
-      end
-      
-      # create the couch design docs for nodes and openid registrations
-  #    Chef::Node.create_design_document
-  #    Chef::Role.create_design_document
-  #    Chef::OpenIDRegistration.create_design_document
-
-  #    Chef::Log.info("Compiling routes... (totally normal to see 'Cannot find resource model')")
-  #    Chef::Log.info("Loading roles")
-  #    Chef::Role.sync_from_disk_to_couchdb
     end
 
     # Initialization hook - runs before AfterAppLoads BootLoader
@@ -131,6 +111,10 @@ if defined?(Merb::Plugins)
       # scope.default_routes
     end
 
+  end
+
+  Merb::Config.use do |c|
+    c[:rest] = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
   end
 
   # Setup the slice layout for ChefServerWebui
