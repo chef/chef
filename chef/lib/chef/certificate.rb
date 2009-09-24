@@ -123,11 +123,11 @@ class Chef
         return client_cert.public_key, client_keypair
       end
 
-      def gen_validation_key
+      def gen_validation_key(name=Chef::Config[:validation_client_name], key_file=Chef::Config[:validation_key])
         # Create the validation key
         create_key = false 
         begin
-          c = Chef::ApiClient.load(Chef::Config[:validation_client_name])
+          c = Chef::ApiClient.load(name)
         rescue Chef::Exceptions::CouchDBNotFound
           create_key = true
         end
@@ -135,15 +135,15 @@ class Chef
         if create_key
           Chef::Log.info("Creating validation key...")
           api_client = Chef::ApiClient.new
-          api_client.name(Chef::Config[:validation_client_name])
+          api_client.name(name)
           api_client.admin(true)
           api_client.create_keys
           api_client.save
-          key_dir = File.dirname(Chef::Config[:validation_key])
+          key_dir = File.dirname(key_file)
           unless File.directory?(key_dir)
             system("mkdir -p #{key_dir}")
           end
-          File.open(Chef::Config[:validation_key], "w") do |f|
+          File.open(key_file, "w") do |f|
             f.print(api_client.private_key)
           end
         end

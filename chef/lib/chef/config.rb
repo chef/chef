@@ -156,6 +156,8 @@ class Chef
     client_key "/etc/chef/client.pem"
     validation_key "/etc/chef/validation.pem"
     validation_client_name "chef-validator"
+    web_ui_client_name "chef-webui"
+    web_ui_key "/etc/chef/webui.pem"
 
     # Server Signing CA
     #
