@@ -21,7 +21,7 @@ class Chef
   module Mixin
     module ConvertToClassName
 
-      def convert_to_class_name(str, mod=nil)
+      def convert_to_class_name(str)
         rname = nil
         regexp = %r{^(.+?)(_(.+))?$}
         
