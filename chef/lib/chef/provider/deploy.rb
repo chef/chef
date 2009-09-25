@@ -75,10 +75,10 @@ class Chef
       
       def callback(opts={})
         if opts.key?(:recipe) && opts[:recipe].kind_of?(Proc)
-          eval_as_recipe(&opts[:recipe])
+          self.instance_eval(&opts[:recipe])
         elsif opts[:recipe].kind_of?(String)
           # files are relative to release dir
-          eval_as_recipe("#{@release_path}/#{opts[:recipe]}")
+          self.from_file("#{@release_path}/#{opts[:recipe]}")
         elsif deploy_file = opts[:eval]
           if ::File.exist?("#{@release_path}/#{deploy_file}")
             Dir.chdir(@release_path) do
@@ -88,15 +88,6 @@ class Chef
           end
         end
       end
-      
-      # def callback(what)
-      #   if ::File.exist?("#{@release_path}/deploy/#{what}.rb")
-      #     Dir.chdir(@release_path) do
-      #       Chef::Log.info "running deploy hook: #{@release_path}/deploy/#{what}.rb from #{@release_path}"
-      #       from_file("#{@release_path}/deploy/#{what}.rb")
-      #     end
-      #   end
-      # end
       
       def migrate
         if @new_resource.migrate
@@ -122,9 +113,14 @@ class Chef
       end
       
       def restart
-        if @new_resource.restart_command
-          Chef::Log.info("Restarting app with #{@new_resource.restart_command} in #{@new_resource.current_path}")
-          run_command(run_options(:command => @new_resource.restart_command, :cwd => @new_resource.current_path))
+        if restart_cmd = @new_resource.restart_command
+          if restart_cmd.kind_of?(Proc)
+            Chef::Log.info("Restarting app with embedded recipe")
+            instance_eval(&restart_cmd)
+          else
+            Chef::Log.info("Restarting app with #{@new_resource.restart_command} in #{@new_resource.current_path}")
+            run_command(run_options(:command => @new_resource.restart_command, :cwd => @new_resource.current_path))
+          end
         end
       end
       

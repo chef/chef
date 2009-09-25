@@ -231,13 +231,21 @@ describe Chef::Provider::Deploy do
     
     it "runs an inline recipe with the provided block for :callback_name == {:recipe => &block} " do
       recipe_code = lambda {:noop}
-      @provider.should_receive(:eval_as_recipe).with(&recipe_code)
+      @provider.should_receive(:instance_eval).with(&recipe_code)
       @provider.callback({:recipe => recipe_code})
     end
     
     it "loads a recipe file from the specified path and from_file evals it" do
-      @provider.should_receive(:eval_as_recipe).with(@expected_release_dir + "/chefz/foobar_callback.rb")
+      @provider.should_receive(:from_file).with(@expected_release_dir + "/chefz/foobar_callback.rb")
       @provider.callback(:recipe => "chefz/foobar_callback.rb")
+    end
+    
+    it "instance_evals a block/proc for restart command" do
+      snitch = nil
+      restart_cmd = lambda {snitch = 42}
+      @resource.restart(&restart_cmd)
+      @provider.restart
+      snitch.should == 42
     end
     
   end
