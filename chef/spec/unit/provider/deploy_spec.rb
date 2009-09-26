@@ -38,13 +38,13 @@ describe Chef::Provider::Deploy do
     @provider.should_receive(:enforce_ownership).twice
     @provider.should_receive(:update_cached_repo)
     @provider.should_receive(:copy_cached_repo)
-    @provider.should_receive(:callback).with(:eval => "deploy/before_migrate.rb")
+    @provider.should_receive(:callback).with(:before_migrate, nil)
     @provider.should_receive(:migrate)
-    @provider.should_receive(:callback).with(:eval => "deploy/before_symlink.rb")
+    @provider.should_receive(:callback).with(:before_symlink, nil)
     @provider.should_receive(:symlink)
-    @provider.should_receive(:callback).with(:eval => "deploy/before_restart.rb")
+    @provider.should_receive(:callback).with(:before_restart, nil)
     @provider.should_receive(:restart)
-    @provider.should_receive(:callback).with(:eval => "deploy/after_restart.rb")
+    @provider.should_receive(:callback).with(:after_restart, nil)
     @provider.should_receive(:cleanup!)
     @provider.action_deploy
   end
@@ -65,19 +65,33 @@ describe Chef::Provider::Deploy do
     lambda {@provider.action_rollback}.should raise_error(RuntimeError)
   end
   
-  it "loads eval callbacks from the release/ dir if the file exists" do
+  it "loads callback files from the release/ dir if the file exists" do
     foo_callback = @expected_release_dir + "/deploy/foo.rb"
-    ::File.should_receive(:exist?).with(foo_callback).and_return(true)
+    ::File.should_receive(:exist?).with(foo_callback).twice.and_return(true)
     ::Dir.should_receive(:chdir).with(@expected_release_dir).and_yield
     @provider.should_receive(:from_file).with(foo_callback)
-    @provider.callback({:eval => "deploy/foo.rb"})
+    @provider.callback(:foo, "deploy/foo.rb")
+  end
+  
+  it "raises a runtime error if a callback file is explicitly specified but does not exist" do
+    baz_callback = @expected_release_dir + "/deploy/baz.rb"
+    ::File.should_receive(:exist?).with(baz_callback).and_return(false)
+    lambda {@provider.callback(:foo, "deploy/baz.rb")}.should raise_error(RuntimeError)
+  end
+  
+  it "runs a default callback if the callback code is nil" do
+    bar_callback = @expected_release_dir + "/deploy/bar.rb"
+    ::File.should_receive(:exist?).with(bar_callback).and_return(true)
+    ::Dir.should_receive(:chdir).with(@expected_release_dir).and_yield
+    @provider.should_receive(:from_file).with(bar_callback)
+    @provider.callback(:bar, nil)
   end
   
   it "skips an eval callback if the file doesn't exist" do
     barbaz_callback = @expected_release_dir + "/deploy/barbaz.rb"
     ::File.should_receive(:exist?).with(barbaz_callback).and_return(false)
     @provider.should_not_receive(:from_file)
-    @provider.callback({:eval => "deploy/barbaz.rb"})
+    @provider.callback(:barbaz, nil)
   end
   
   it "gets a SCM provider as specified by its resource" do
@@ -232,12 +246,14 @@ describe Chef::Provider::Deploy do
     it "runs an inline recipe with the provided block for :callback_name == {:recipe => &block} " do
       recipe_code = lambda {:noop}
       @provider.should_receive(:instance_eval).with(&recipe_code)
-      @provider.callback({:recipe => recipe_code})
+      @provider.callback(:whateverz, recipe_code)
     end
     
     it "loads a recipe file from the specified path and from_file evals it" do
+      ::File.should_receive(:exist?).with(@expected_release_dir + "/chefz/foobar_callback.rb").twice.and_return(true)
+      ::Dir.should_receive(:chdir).with(@expected_release_dir).and_yield
       @provider.should_receive(:from_file).with(@expected_release_dir + "/chefz/foobar_callback.rb")
-      @provider.callback(:recipe => "chefz/foobar_callback.rb")
+      @provider.callback(:whateverz, "chefz/foobar_callback.rb")
     end
     
     it "instance_evals a block/proc for restart command" do

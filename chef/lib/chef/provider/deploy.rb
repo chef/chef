@@ -51,13 +51,13 @@ class Chef
         copy_cached_repo
         # chef-deploy then installs gems. hmmm...
         enforce_ownership
-        callback(@new_resource.before_migrate)
+        callback(:before_migrate, @new_resource.before_migrate)
         migrate
-        callback(@new_resource.before_symlink)
+        callback(:before_symlink, @new_resource.before_symlink)
         symlink
-        callback(@new_resource.before_restart)
+        callback(:before_restart, @new_resource.before_restart)
         restart
-        callback(@new_resource.after_restart)
+        callback(:after_restart, @new_resource.after_restart)
         cleanup!
       end
       
@@ -73,19 +73,20 @@ class Chef
         restart
       end
       
-      def callback(opts={})
-        if opts.key?(:recipe) && opts[:recipe].kind_of?(Proc)
-          self.instance_eval(&opts[:recipe])
-        elsif opts[:recipe].kind_of?(String)
-          # files are relative to release dir
-          self.from_file("#{@release_path}/#{opts[:recipe]}")
-        elsif deploy_file = opts[:eval]
-          if ::File.exist?("#{@release_path}/#{deploy_file}")
-            Dir.chdir(@release_path) do
-              Chef::Log.info "running deploy hook: #{@release_path}/#{deploy_file} from #{@release_path}"
-              from_file("#{@release_path}/#{deploy_file}")
-            end
+      def callback(what, callback_code=nil)
+        case callback_code
+        when Proc
+          self.instance_eval(&callback_code)
+        when String
+          callback_file = "#{@release_path}/#{callback_code}"
+          unless ::File.exist?(callback_file)
+            raise RuntimeError, "Can't find your callback file #{callback_file}"
           end
+          run_callback_from_file(callback_file)
+        when nil
+          run_callback_from_file("#{@release_path}/deploy/#{what}.rb")
+        else
+          raise RuntimeError, "You gave me a callback I don't know what to do with: #{callback_code.inspect}"
         end
       end
       
@@ -189,11 +190,22 @@ class Chef
         @new_resource.purge_before_symlink.each { |dir| FileUtils.rm_rf(@release_path + "/#{dir}") }
       end
       
+      protected
+      
       def run_options(run_opts={})
         run_opts[:user] = @new_resource.user if @new_resource.user
         run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts[:environment] = @new_resource.environment if @new_resource.environment
         run_opts
+      end
+      
+      def run_callback_from_file(callback_file)
+        if ::File.exist?(callback_file)
+          Dir.chdir(@release_path) do
+            Chef::Log.info "running deploy hook: #{callback_file}"
+            from_file(callback_file)
+          end
+        end
       end
       
     end
