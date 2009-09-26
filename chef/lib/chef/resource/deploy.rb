@@ -74,11 +74,6 @@ class Chef
         @scm_provider = Chef::Provider::Git
         @provider = Chef::Provider::Deploy
         @allowed_actions.push(:deploy, :rollback)
-        # Callbacks:
-        @before_migrate = {:eval => "deploy/before_migrate.rb"}
-        @before_symlink = {:eval => "deploy/before_symlink.rb"}
-        @before_restart = {:eval => "deploy/before_restart.rb"}
-        @after_restart  = {:eval => "deploy/after_restart.rb"}
       end
       
       # where the checked out/cloned code goes
