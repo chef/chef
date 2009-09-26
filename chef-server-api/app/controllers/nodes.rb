@@ -28,8 +28,8 @@ class ChefServerApi::Nodes < ChefServerApi::Application
   before :is_correct_node, :only => [ :create, :update, :destroy, :cookbooks ]
   
   def index
-    @node_list = Chef::Node.list 
-    display(@node_list.collect { |n| absolute_slice_url(:node, escape_node_id(n)) })
+    @node_list = Chef::Node.cdb_list 
+    display(@node_list.inject({}) { |r,n| r[n] = absolute_slice_url(:node, escape_node_id(n)); r })
   end
 
   def show

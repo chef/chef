@@ -21,6 +21,7 @@ require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
+require 'chef/rest'
 require 'chef/run_list'
 require 'chef/node/attribute'
 require 'extlib'
@@ -346,13 +347,26 @@ class Chef
     
     # List all the Chef::Node objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Nodes, fully inflated.
-    def self.list(inflate=false)
+    def self.cdb_list(inflate=false)
       couchdb = Chef::CouchDB.new
       rs = couchdb.list("nodes", inflate)
       if inflate
         rs["rows"].collect { |r| r["value"] }
       else
         rs["rows"].collect { |r| r["key"] }
+      end
+    end
+
+    def self.list(inflate=false)
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      if inflate
+        response = Hash.new
+        Chef::Search::Query.new.search(:node) do |n|
+          response[n.name] = n
+        end
+        response
+      else
+        r.get_rest("nodes")
       end
     end
     

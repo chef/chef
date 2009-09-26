@@ -26,6 +26,8 @@ systmpdir = File.expand_path(File.join(Dir.tmpdir, "chef_integration"))
 validation_client_name "validator"
 validation_key   File.join(systmpdir, "validation.pem")
 client_key       File.join(systmpdir, "client.pem")
+web_ui_client_name "webui"
+web_ui_key File.join(systmpdir, "webui.pem")
 
 solr_jetty_path File.join(supportdir, "solr", "jetty")
 solr_heap_size "250M"

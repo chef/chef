@@ -35,6 +35,8 @@ if defined?(Merb::Plugins)
     # Stub classes loaded hook - runs before LoadClasses BootLoader
     # right after a slice's classes have been loaded internally.
     def self.loaded
+      Chef::Config[:node_name] = Chef::Config[:web_ui_client_name]
+      Chef::Config[:client_key] = Chef::Config[:web_ui_key]
     end
 
     # Initialization hook - runs before AfterAppLoads BootLoader
@@ -113,9 +115,6 @@ if defined?(Merb::Plugins)
 
   end
 
-  Merb::Config.use do |c|
-    c[:rest] = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
-  end
 
   # Setup the slice layout for ChefServerWebui
   #

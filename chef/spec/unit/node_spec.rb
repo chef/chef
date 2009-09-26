@@ -271,7 +271,33 @@ describe Chef::Node do
     end
   end
 
-  describe "couchdb" do
+  describe "api model" do
+    before(:each) do 
+      @rest = mock("Chef::REST")
+      Chef::REST.stub!(:new).and_return(@rest)
+      @query = mock("Chef::Search::Query")
+      Chef::Search::Query.stub!(:new).and_return(@query)
+    end
+
+    describe "list" do
+      describe "inflated" do
+        it "should return a hash of node names and objects" do
+          n1 = mock("Chef::Node", :name => "one")
+          @query.should_receive(:search).with(:node).and_yield(n1)
+          r = Chef::Node.list(true)
+          r["one"].should == n1
+        end
+      end
+
+      it "should return a hash of node names and urls" do
+        @rest.should_receive(:get_rest).and_return({ "one" => "http://foo" })
+        r = Chef::Node.list
+        r["one"].should == "http://foo"
+      end
+    end
+  end
+
+  describe "couchdb model" do
     before(:each) do
       @mock_couch = mock("Chef::CouchDB")
     end
@@ -285,15 +311,15 @@ describe Chef::Node do
       end
 
       it "should retrieve a list of nodes from CouchDB" do
-        Chef::Node.list.should eql(["avenue"])
+        Chef::Node.cdb_list.should eql(["avenue"])
       end
 
       it "should return just the ids if inflate is false" do
-        Chef::Node.list(false).should eql(["avenue"])
+        Chef::Node.cdb_list(false).should eql(["avenue"])
       end
 
       it "should return the full objects if inflate is true" do
-        Chef::Node.list(true).should eql(["a"])
+        Chef::Node.cdb_list(true).should eql(["a"])
       end
     end
 

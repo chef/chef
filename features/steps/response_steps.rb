@@ -61,6 +61,10 @@ Then /^the inflated response should be an empty array$/ do
   self.inflated_response.should == []
 end
 
+Then /^the inflated response should be an empty hash$/ do
+  self.inflated_response.should == {} 
+end
+
 Then /^the inflated response should include '(.+)'$/ do |entry|
   puts self.inflated_response.inspect
   self.inflated_response.detect { |n| n =~ /#{entry}/ }.should be(true)

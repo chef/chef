@@ -112,9 +112,9 @@ class Chef
     def rebuild_index(url=Chef::Config[:couchdb_url], db=Chef::Config[:couchdb_database])
       solr_delete_by_query("X_CHEF_database_CHEF_X:#{db}")
       couchdb = Chef::CouchDB.new(url, db)
-      Chef::Node.list(true, couchdb).each { |i| i.save }  
-      Chef::Role.list(true, couchdb).each { |i| i.save }  
-      Chef::DataBag.list(true, couchdb).each { |i| i.save; i.list(true).each { |x| x.save } }  
+      Chef::Node.cdb_list(true).each { |i| i.save }  
+      Chef::Role.list(true).each { |i| i.save }  
+      Chef::DataBag.list(true).each { |i| i.save; i.list(true).each { |x| x.save } }  
       true
     end
 

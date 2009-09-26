@@ -63,12 +63,12 @@ class ChefServerWebui::Application < Merb::Controller
   end
   
   def login_required
-    if session[:openid]
-      return session[:openid]
-    else  
-      self.store_location
-      throw(:halt, :access_denied)
-    end
+  #  if session[:openid]
+  #    return session[:openid]
+  #  else  
+  #    self.store_location
+  #    throw(:halt, :access_denied)
+  #  end
   end
   
   def authorized_node
