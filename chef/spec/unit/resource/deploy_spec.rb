@@ -39,21 +39,13 @@ describe Chef::Resource::Deploy do
     
     def resource_has_a_callback_attribute(attr_name, opts={:defaults_to=>false})
       it "has a Callback attribute #{attr_name}" do
-        @resource.should_receive(:validate_callback_attribute).with(attr_name, :eval => "foo")
-        @resource.send(attr_name, :eval => "foo")
-        @resource.should_receive(:validate_callback_attribute).with(attr_name, nil)
-        @resource.send(attr_name).should == {:eval => "foo"}
-        l = lambda { p :noop }
-        @resource.should_receive(:validate_callback_attribute).with(attr_name, l).and_return(true)
-        @resource.send(attr_name, &l)
-        @resource.should_receive(:validate_callback_attribute).with(attr_name, nil)
-        @resource.send(attr_name).should == {:recipe => l}
-      end
-      
-      if default = opts[:defaults_to]
-        it "defaults to ``#{default.inspect}'' for callback attribute #{attr_name}" do
-          @resource.send(attr_name).should == default
-        end
+        callback_block = lambda { :noop }
+        lambda {@resource.send(attr_name, &callback_block)}.should_not raise_error
+        @resource.send(attr_name).should == callback_block
+        callback_file = "path/to/callback.rb"
+        lambda {@resource.send(attr_name, callback_file)}.should_not raise_error
+        @resource.send(attr_name).should == callback_file
+        lambda {@resource.send(attr_name, :this_is_fail)}.should raise_error(ArgumentError)
       end
     end
   end
@@ -167,35 +159,6 @@ describe Chef::Resource::Deploy do
     @resource.symlink_before_migrate.should == {"config/database.yml" => "config/database.yml"}
     @resource.symlink_before_migrate "wtf?" => "wtf is going on"
     @resource.symlink_before_migrate.should == {"wtf?" => "wtf is going on"}
-  end
-  
-  it "accepts a proc for a callback (hook) attribute" do
-    proc = lambda { p :noop }
-    lambda {@resource.send(:validate_callback_attribute,:optname, proc)}.should_not raise_error
-  end
-  
-  it "accepts a hash of the form :eval => 'filename' for a callback attribute" do
-    lambda {@resource.send(:validate_callback_attribute,:optname,{:eval => 'filename'})}.should_not raise_error
-  end
-  
-  it "accepts a hash of the form :recipe => 'filename' for a callback attribute" do
-    lambda {@resource.send(:validate_callback_attribute,:optname,{:recipe => 'filename'})}.should_not raise_error
-  end
-  
-  it "rejects a hash with a key other than :recipe or :eval for a callback attribute" do
-    lambda {@resource.send(:validate_callback_attribute,:optname,{:fail=>:me})}.should raise_error(ArgumentError)
-  end
-  
-  it "rejects a hash with more than one key for a callback attribute" do
-    lambda {@resource.send(:validate_callback_attribute,:optname,{:recipe=>"r",:eval=>"code"})}.should raise_error(ArgumentError)
-  end
-  
-  it "rejects a hash with a non-string value for a callback attribute" do
-    lambda {@resource.send(:validate_callback_attribute,:optname,{:eval => 42})}.should raise_error(ArgumentError)
-  end
-  
-  it "rejects an value that is not in [Hash,Proc,Block] for a callback attribute" do
-    lambda {@resource.send(:validate_callback_attribute,:optname,"ucanhaz fail")}.should raise_error(ArgumentError)
   end
   
   resource_has_a_callback_attribute :before_migrate, :defaults_to => {:eval => "deploy/before_migrate.rb"}
