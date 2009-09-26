@@ -37,7 +37,7 @@ describe Chef::Resource::Deploy do
       end
     end
     
-    def resource_has_a_callback_attribute(attr_name, opts={:defaults_to=>false})
+    def resource_has_a_callback_attribute(attr_name)
       it "has a Callback attribute #{attr_name}" do
         callback_block = lambda { :noop }
         lambda {@resource.send(attr_name, &callback_block)}.should_not raise_error
@@ -161,10 +161,10 @@ describe Chef::Resource::Deploy do
     @resource.symlink_before_migrate.should == {"wtf?" => "wtf is going on"}
   end
   
-  resource_has_a_callback_attribute :before_migrate, :defaults_to => {:eval => "deploy/before_migrate.rb"}
-  resource_has_a_callback_attribute :before_symlink, :defaults_to => {:eval => "deploy/before_symlink.rb"}
-  resource_has_a_callback_attribute :before_restart, :defaults_to => {:eval => "deploy/before_restart.rb"}
-  resource_has_a_callback_attribute :after_restart, :defaults_to => {:eval => "deploy/after_restart.rb"}
+  resource_has_a_callback_attribute :before_migrate
+  resource_has_a_callback_attribute :before_symlink
+  resource_has_a_callback_attribute :before_restart
+  resource_has_a_callback_attribute :after_restart
   
   it "aliases restart_command as restart" do
     @resource.restart "foobaz"
