@@ -27,6 +27,8 @@ describe Chef::Provider::Deploy do
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     @node = Chef::Node.new
     @provider = Chef::Provider::Deploy.new(@node, @resource)
+    @runner = mock("runnah", :null_object => true)
+    Chef::Runner.stub!(:new).and_return(@runner)
   end
   
   it "supports :deploy and :rollback actions" do
@@ -63,6 +65,12 @@ describe Chef::Provider::Deploy do
     all_releases = []
     Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
     lambda {@provider.action_rollback}.should raise_error(RuntimeError)
+  end
+  
+  it "runs the new resource collection in the runner during a callback" do
+    @runner.should_receive(:converge)
+    callback_code = lambda { :noop }
+    @provider.callback(:whatevs, &callback_code)
   end
   
   it "loads callback files from the release/ dir if the file exists" do

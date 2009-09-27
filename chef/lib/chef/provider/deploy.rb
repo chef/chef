@@ -32,6 +32,11 @@ class Chef
       
       def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
         super(node, new_resource, collection, definitions, cookbook_loader)
+        
+        # NOTE: workaround for CHEF-577
+        @definitions ||= Hash.new
+        @collection = Chef::ResourceCollection.new
+        
         @scm_provider = @new_resource.scm_provider.new(@node, @new_resource)
         @release_path = @new_resource.deploy_to + "/releases/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}"
         
@@ -76,6 +81,7 @@ class Chef
       def callback(what, callback_code=nil)
         case callback_code
         when Proc
+          Chef::Log.info "Running callback #{what} code block"
           self.instance_eval(&callback_code)
         when String
           callback_file = "#{@release_path}/#{callback_code}"
@@ -88,6 +94,7 @@ class Chef
         else
           raise RuntimeError, "You gave me a callback I don't know what to do with: #{callback_code.inspect}"
         end
+        Chef::Runner.new(@node, @collection).converge
       end
       
       def migrate
