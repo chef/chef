@@ -14,7 +14,7 @@ Feature: List nodes via the REST API
     Given a 'registration' named 'bobo' exists
     Given a 'node' named 'webserver' exists
      When I 'GET' the path '/nodes'
-     Then the inflated responses key 'webserver' should include '^http://.+/nodes/webserver$'
+     Then the inflated responses key 'webserver' should match '^http://.+/nodes/webserver$'
   
   Scenario: List nodes when two have been created
     Given a 'registration' named 'bobo' exists
@@ -22,8 +22,8 @@ Feature: List nodes via the REST API
       And a 'node' named 'dbserver' exists
      When I 'GET' the path '/nodes'
      Then the inflated response should be '2' items long
-     Then the inflated responses key 'webserver' should include '^http://.+/nodes/webserver$'
-     Then the inflated responses key 'dbserver' should include '^http://.+/nodes/dbserver$'
+     Then the inflated responses key 'webserver' should match '^http://.+/nodes/webserver$'
+     Then the inflated responses key 'dbserver' should match '^http://.+/nodes/dbserver$'
 
   Scenario: List nodes none have been created with a wrong private key
     Given a 'registration' named 'bobo' exists

@@ -72,23 +72,23 @@ class ChefServerWebui::Application < Merb::Controller
   end
   
   def authorized_node
-    if session[:level] == :admin
-      Chef::Log.debug("Authorized as Administrator")
-      true
-    elsif session[:level] == :node
-      Chef::Log.debug("Authorized as node")
-      if session[:node_name] == params[:id].gsub(/\./, '_')
-        true
-      else
-        raise(
-          Unauthorized,
-          "You are not the correct node for this action: #{session[:node_name]} instead of #{params[:id]}"
-        )
-      end
-    else
-      Chef::Log.debug("Unauthorized")
-      raise Unauthorized, "You are not allowed to take this action."
-    end
+  #  if session[:level] == :admin
+  #    Chef::Log.debug("Authorized as Administrator")
+  #    true
+  #  elsif session[:level] == :node
+  #    Chef::Log.debug("Authorized as node")
+  #    if session[:node_name] == params[:id].gsub(/\./, '_')
+  #      true
+  #    else
+  #      raise(
+  #        Unauthorized,
+  #        "You are not the correct node for this action: #{session[:node_name]} instead of #{params[:id]}"
+  #      )
+  #    end
+  #  else
+  #    Chef::Log.debug("Unauthorized")
+  #    raise Unauthorized, "You are not allowed to take this action."
+  #  end
   end
   
   # Store the URI of the current request in the session.
@@ -166,7 +166,7 @@ class ChefServerWebui::Application < Merb::Controller
     valid_cookbooks = Hash.new
     begin
       node = Chef::Node.load(node_name)
-      recipes, default_attrs, override_attrs = node.run_list.expand('couchdb')
+      recipes, default_attrs, override_attrs = node.run_list.expand
     rescue Net::HTTPServerException
       recipes = []
     end
@@ -211,18 +211,22 @@ class ChefServerWebui::Application < Merb::Controller
   end
 
   def get_available_recipes
-    cl = Chef::CookbookLoader.new
-    available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
-      element.recipes.sort.each do |r| 
-        if r =~ /^(.+)::default$/
-          result << $1
+    r = Chef::REST.new(Chef::Config[:chef_server_url])
+    result = Array.new
+    cookbooks = r.get_rest("cookbooks")
+    cookbooks.keys.sort.each do |key|
+      cb = r.get_rest(cookbooks[key])
+      cb["recipes"].each do |recipe|
+        recipe["name"] =~ /(.+)\.rb/
+        r_name = $1;
+        if r_name == "default" 
+          result << key
         else
-          result << r
+          result << "#{key}::#{r_name}"
         end
       end
-      result
     end
-    available_recipes
+    result
   end
 
 end

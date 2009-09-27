@@ -34,7 +34,7 @@ class ChefServerApi::Nodes < ChefServerApi::Application
 
   def show
     begin
-      @node = Chef::Node.load(params[:id])
+      @node = Chef::Node.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
@@ -46,19 +46,19 @@ class ChefServerApi::Nodes < ChefServerApi::Application
     @node = params["inflated_object"]
     exists = true 
     begin
-      Chef::Node.load(@node.name)
+      Chef::Node.cdb_load(@node.name)
     rescue Chef::Exceptions::CouchDBNotFound
       exists = false
     end
     raise Forbidden, "Node already exists" if exists
     self.status = 201
-    @node.save
+    @node.cdb_save
     display({ :uri => absolute_slice_url(:node, escape_node_id(@node.name)) })
   end
 
   def update
     begin
-      @node = Chef::Node.load(params[:id])
+      @node = Chef::Node.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
@@ -66,25 +66,25 @@ class ChefServerApi::Nodes < ChefServerApi::Application
     updated = params['inflated_object']
     @node.run_list.reset(updated.run_list)
     @node.attribute = updated.attribute
-    @node.save
+    @node.cdb_save
     @node.couchdb_rev = nil
     display(@node)
   end
 
   def destroy
     begin
-      @node = Chef::Node.load(params[:id])
+      @node = Chef::Node.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e 
       raise NotFound, "Cannot load node #{params[:id]}"
     end
-    @node.destroy
+    @node.cdb_destroy
     @node.couchdb_rev = nil
     display @node
   end
 
   def cookbooks
     begin
-      @node = Chef::Node.load(params[:id])
+      @node = Chef::Node.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e 
       raise NotFound, "Cannot load node #{params[:id]}"
     end

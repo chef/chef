@@ -25,7 +25,7 @@
                       %td= type 
           .left.accordion
             %h3.head= link_to("Recipes", "#")
-            - full_recipe_list, default_attrs, override_attrs = @node.run_list.expand("couchdb")
+            - full_recipe_list, default_attrs, override_attrs = @node.run_list.expand()
             %div
               %span.description.form.help
                 This is the list of recipes, fully expanded, as they will be applied to the node in question.  

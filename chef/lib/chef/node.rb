@@ -371,20 +371,47 @@ class Chef
     end
     
     # Load a node by name from CouchDB
-    def self.load(name)
+    def self.cdb_load(name)
       couchdb = Chef::CouchDB.new
       couchdb.load("node", name)
     end
+
+    # Load a node by name
+    def self.load(name)
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.get_rest("nodes/#{escape_node_id(name)}")
+    end
     
     # Remove this node from the CouchDB
-    def destroy
+    def cdb_destroy
       @couchdb.delete("node", @name, @couchdb_rev)
+    end
+
+    # Remove this node via the REST API
+    def destroy
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.delete_rest("nodes/#{Chef::Node.escape_node_id(@name)}")
     end
     
     # Save this node to the CouchDB
-    def save
+    def cdb_save
       results = @couchdb.store("node", @name, self)
       @couchdb_rev = results["rev"]
+    end
+
+    # Save this node via the REST API
+    def save
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      begin
+        r.put_rest("nodes/#{Chef::Node.escape_node_id(@name)}", self)
+      rescue Net::HTTPServerException => e
+        if e.response.code == "404"
+          r.post_rest("nodes", self)
+        else
+          raise e
+        end
+      end
+      self
     end
 
     # Set up our CouchDB design document
@@ -397,6 +424,13 @@ class Chef
     def to_s
       "node[#{@name}]"
     end
+
+    private
+   
+      def self.escape_node_id(arg=nil)
+        arg.gsub(/\./, '_')
+      end
+
     
   end
 end

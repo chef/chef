@@ -251,6 +251,12 @@ namespace :features do
       end
     end
 
+    namespace :nodes do
+      Cucumber::Rake::Task.new("sync") do |t|
+        t.profile = "api_nodes_sync"
+      end
+    end
+
     namespace :cookbooks do    
       desc "Run cucumber tests for the cookbooks portion of the REST API"
       Cucumber::Rake::Task.new(:cookbooks) do |t|

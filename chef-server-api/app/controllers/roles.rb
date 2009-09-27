@@ -8,8 +8,8 @@ class ChefServerApi::Roles < ChefServerApi::Application
   
   # GET /roles
   def index
-    @role_list = Chef::Role.list(true)
-    display(@role_list.collect { |r| absolute_slice_url(:role, :id => r.name) }) 
+    @role_list = Chef::Role.cdb_list(true)
+    display(@role_list.inject({}) { |r,role| r[role.name] = absolute_slice_url(:role, role.name); r })
   end
 
   # GET /roles/:id

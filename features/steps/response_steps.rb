@@ -71,7 +71,11 @@ Then /^the inflated response should include '(.+)'$/ do |entry|
 end
 
 Then /^the inflated response should be '(.+)' items long$/ do |length|
-  self.inflated_response.length.should == length.to_i
+  if length.respond_to?(:keys)
+    self.inflated_response.keys.length.should == length.to_i
+  else
+    self.inflated_response.length.should == length.to_i
+  end
 end
 
 Then /^the '(.+)' header should match '(.+)'$/ do |header, regex|

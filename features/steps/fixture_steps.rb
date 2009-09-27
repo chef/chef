@@ -169,7 +169,9 @@ Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|
       @rest = Chef::REST.new(Chef::Config[:registration_url], 'not_admin', "#{tmpdir}/not_admin.pem")
     end
   else 
-    if @stash[stash_name].respond_to?(:save)#stash_name == "registration" 
+    if @stash[stash_name].respond_to?(:cdb_save)
+      @stash[stash_name].cdb_save
+    elsif @stash[stash_name].respond_to?(:save)#stash_name == "registration" 
       @stash[stash_name].save
     else
       request("#{stash_name.pluralize}", { 

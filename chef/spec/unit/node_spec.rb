@@ -295,6 +295,43 @@ describe Chef::Node do
         r["one"].should == "http://foo"
       end
     end
+
+    describe "load" do
+      it "should load a node by name" do
+        @rest.should_receive(:get_rest).with("nodes/monkey").and_return("foo")
+        Chef::Node.load("monkey").should == "foo"
+      end
+    end
+
+    describe "destroy" do
+      it "should destroy a node" do
+        @rest.should_receive(:delete_rest).with("nodes/monkey").and_return("foo")
+        @node.name("monkey")
+        @node.destroy
+      end
+    end
+
+    describe "save" do
+      it "should update a node if it already exists" do
+        @node.name("monkey")
+        @rest.should_receive(:put_rest).with("nodes/monkey", @node).and_return("foo")
+        @node.save
+      end
+
+      it "should not try and create if it can update" do
+        @node.name("monkey")
+        @rest.should_receive(:put_rest).with("nodes/monkey", @node).and_return("foo")
+        @rest.should_not_receive(:post_rest)
+        @node.save
+      end
+
+      it "should create if it cannot update" do
+        @node.name("monkey")
+        @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new(1, 3))
+        @rest.should_receive(:post_rest).with("nodes", @node)
+        @node.save
+      end
+    end
   end
 
   describe "couchdb model" do
@@ -327,7 +364,7 @@ describe Chef::Node do
       it "should load a node from couchdb by name" do
         @mock_couch.should_receive(:load).with("node", "coffee").and_return(true)
         Chef::CouchDB.stub!(:new).and_return(@mock_couch)
-        Chef::Node.load("coffee")
+        Chef::Node.cdb_load("coffee")
       end
     end
 
@@ -338,7 +375,7 @@ describe Chef::Node do
         node = Chef::Node.new
         node.name "bob"
         node.couchdb_rev = 1
-        node.destroy
+        node.cdb_destroy
       end
     end
 
@@ -353,11 +390,11 @@ describe Chef::Node do
 
       it "should save the node to couchdb" do
         @mock_couch.should_receive(:store).with("node", "bob", @node).and_return({ "rev" => 33 })
-        @node.save
+        @node.cdb_save
       end
 
       it "should store the new couchdb_rev" do
-        @node.save
+        @node.cdb_save
         @node.couchdb_rev.should eql(33)
       end
     end

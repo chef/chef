@@ -183,7 +183,7 @@ class ChefServerApi::Application < Merb::Controller
   def specific_cookbooks(node_name, cl)
     valid_cookbooks = Hash.new
     begin
-      node = Chef::Node.load(node_name)
+      node = Chef::Node.cdb_load(node_name)
       recipes, default_attrs, override_attrs = node.run_list.expand('couchdb')
     rescue Net::HTTPServerException
       recipes = []

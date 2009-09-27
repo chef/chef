@@ -146,13 +146,27 @@ class Chef
     
     # List all the Chef::Role objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Roles, fully inflated.
-    def self.list(inflate=false)
+    def self.cdb_list(inflate=false)
       couchdb = Chef::CouchDB.new
       rs = couchdb.list("roles", inflate)
       if inflate
         rs["rows"].collect { |r| r["value"] }
       else
         rs["rows"].collect { |r| r["key"] }
+      end
+    end
+
+    # Get the list of all roles from the API.
+    def self.list(inflate=false)
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      if inflate
+        response = Hash.new
+        Chef::Search::Query.new.search(:role) do |n|
+          response[n.name] = n
+        end
+        response
+      else
+        r.get_rest("roles")
       end
     end
     

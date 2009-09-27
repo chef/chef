@@ -44,7 +44,7 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
   def new
     @node = Chef::Node.new
     @available_recipes = get_available_recipes 
-    @available_roles = Chef::Role.list.sort
+    @available_roles = Chef::Role.list.keys.sort
     @run_list = @node.run_list
     render
   end
@@ -56,7 +56,7 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
       raise NotFound, "Cannot load node #{params[:id]}"
     end
     @available_recipes = get_available_recipes 
-    @available_roles = Chef::Role.list.sort
+    @available_roles = Chef::Role.list.keys.sort
     @run_list = @node.run_list
     render
   end
@@ -72,7 +72,7 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
     rescue
       @node.attribute = JSON.parse(params[:attributes])
       @available_recipes = get_available_recipes 
-      @available_roles = Chef::Role.list.sort
+      @available_roles = Chef::Role.list.keys.sort
       @run_list = params[:for_node] 
       @_message = { :error => $! }
       render :new
@@ -90,11 +90,12 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
       @node.run_list.reset(params[:for_node] ? params[:for_node] : [])
       @node.attribute = JSON.parse(params[:attributes])
       @node.save
+      Chef::Log.error("I made it here")
       @_message = { :notice => "Updated Node" }
       render :show
     rescue
       @available_recipes = get_available_recipes 
-      @available_roles = Chef::Role.list.sort
+      @available_roles = Chef::Role.list.keys.sort
       @run_list = Chef::RunList.new
       @run_list.reset(params[:for_node])
       render :edit

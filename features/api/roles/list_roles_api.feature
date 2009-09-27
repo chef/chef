@@ -14,7 +14,7 @@ Feature: List roles via the REST API
     Given a 'registration' named 'bobo' exists
     Given a 'role' named 'webserver' exists
      When I 'GET' the path '/roles'
-     Then the inflated response should include '^http://.+/roles/webserver$'
+     Then the inflated responses key 'webserver' should match '^http://.+/roles/webserver$'
 
   Scenario: List roles when two have been created
     Given a 'registration' named 'bobo' exists
@@ -22,9 +22,9 @@ Feature: List roles via the REST API
       And a 'role' named 'db' exists
      When I 'GET' the path '/roles'
      Then the inflated response should be '3' items long
-      And the inflated response should include '^http://.+/roles/role_test$'
-      And the inflated response should include '^http://.+/roles/webserver$'
-      And the inflated response should include '^http://.+/roles/db$'
+      And the inflated responses key 'role_test' should match '^http://.+/roles/role_test$'
+      And the inflated responses key 'webserver' should match '^http://.+/roles/webserver$'
+      And the inflated responses key 'db' should match '^http://.+/roles/db$'
 
   Scenario: List roles when none have been created with a wrong private key
     Given a 'registration' named 'bobo' exists
