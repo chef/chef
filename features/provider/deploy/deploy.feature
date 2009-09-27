@@ -45,9 +45,8 @@ Feature: Deploy
 	  Given a validated node
 	And it includes the recipe 'deploy::embedded_recipe_callbacks'
 	And I have a clone of typo in the data/tmp dir
-	  When I run the chef-client at log level 'debug'
-		Then I should hear about it
-	  And the run should exit '0'
+	  When I run the chef-client
+	  Then the run should exit '0'
 		And a file named 'deploy/current/app/before_symlink_was_here.txt' should exist
 	
 	
