@@ -23,6 +23,7 @@ class Chef
     module GenerateURL
     
       def generate_cookbook_url(url, cookbook, type, node, args=nil)
+        Chef::Log.debug("generating cookbook url for url=#{url}, cookbook=#{cookbook.inspect}, type=#{type}, node=#{node}")
         new_url = nil
         if url =~ /^(http|https):\/\//
           new_url = url
@@ -39,7 +40,7 @@ class Chef
             end
           end
         end
-
+        Chef::Log.debug("generated cookbook url: #{new_url}")
         return new_url
       end
       
