@@ -35,6 +35,7 @@ class Chef
       @collection = collection
       @definitions = definitions
       @cookbook_loader = cookbook_loader
+      @cookbook_name = @new_resource.cookbook_name
     end
     
     def load_current_resource
