@@ -60,4 +60,11 @@ deploy "#{node[:tmpdir]}/deploy" do
   
   before_symlink "deploy/before_symlink_callback.rb"
   
+  restart do
+    current_release = release_path
+    file "#{release_path}/tmp/restart.txt" do
+      mode "0644"
+    end
+  end
+  
 end

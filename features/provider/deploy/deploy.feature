@@ -47,7 +47,8 @@ Feature: Deploy
 	And I have a clone of typo in the data/tmp dir
 	  When I run the chef-client
 	  Then the run should exit '0'
-		And a file named 'deploy/current/app/before_symlink_was_here.txt' should exist
+	And a file named 'deploy/current/app/before_symlink_was_here.txt' should exist
+ 	And a file named 'deploy/current/tmp/restart.txt' should exist
 	
 	
   
