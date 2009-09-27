@@ -42,14 +42,11 @@ class Chef
     # Deploy: Deploy apps from a source control repository.
     #
     # Callbacks:
-    # Callbacks can be a block/proc or a hash. If given a block, the code
-    # is evaluated as an in-line recipe within a recipe, run at the specified
-    # point in the deploy process. If given a hash, there are two options:
-    # if the hash is :recipe => "filename" an inline recipe is created
-    # from the specified file; if the hash is :eval => "filename", the code
-    # is instance_eval'd in the context of the provider. The second option
-    # provides backwards compatibility with chef-deploy recipes and recipes
-    # ported from capistrano.
+    # Callbacks can be a block or a string. If given a block, the code
+    # is evaluated as an embedded recipe, and run at the specified
+    # point in the deploy process. If given a string, the string is taken as
+    # a path to a callback file/recipe. Paths are evaluated relative to the 
+    # release directory. Callback files can contain chef code (resources, etc.)
     #
     class Deploy < Chef::Resource
       
