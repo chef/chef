@@ -39,6 +39,8 @@ class Chef
         
         cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
         
+        Chef::Log.debug("looking for template #{@new_resource.source} in cookbook #{cookbook_name.inspect}")
+        
         cache_file_name = "cookbooks/#{cookbook_name}/templates/default/#{@new_resource.source}"
         template_cache_name = "#{cookbook_name}_#{@new_resource.source}"
         
