@@ -28,6 +28,15 @@ class Chef
         @provider = Chef::Provider::Package::EasyInstall
       end
 
+      # Sets a custom easy_install_binary to run for easy_install commands.
+      def easy_install_binary(arg=nil)
+        set_or_return(
+          :easy_install_binary,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
     end
   end
 end

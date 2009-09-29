@@ -25,7 +25,67 @@ class Chef
     class Package
       class EasyInstall < Chef::Provider::Package
 
+        def install_check(name, version)
+          command = "python -c \"import sys; print sys.path\""
+          check = false
+          if version
+            package = "#{name}-#{version}"
+          else
+            package = "#{name}"
+          end
+          status = popen4(command) do |pid, stdin, stdout, stderr|
+            stdout.each do |line|
+              if line.include? package
+                check = true
+              end
+            end
+          end
+          check
+        end
 
+        def easy_install_binary_path
+          path = @new_resource.easy_install_binary
+          path ? path : 'easy_install'
+        end
+
+        def load_current_resource
+          @current_resource = Chef::Resource::Package.new(@new_resource.name)
+          @current_resource.package_name(@new_resource.package_name)
+          @current_resource.version(nil)
+
+          if install_check(@new_resource.package_name, @new_resource.version)
+            Chef::Log.debug("#{@new_resource.package_name} at version #{@new_resource.version}")
+            @current_resource.version(@new_resource.version)
+          end
+
+          @current_resource
+        end
+
+        def candidate_version
+          return @candidate_version if @candidate_version
+          @canidate_version = @new_resource.version
+          @candidate_version
+        end
+
+        def install_package(name, version)
+          if version
+            run_command(:command => "#{easy_install_binary_path} \"#{name}==#{version}\"")
+          else
+            run_command(:command => "#{easy_install_binary_path} #{name}")
+          end
+        end
+
+        def upgrade_package(name, version)
+          install_package(name)
+        end
+
+        def remove_package(name, version)
+          run_command(:command => "#{easy_install_binary_path} -m #{name}")
+        end
+
+        def purge_package(name, version)
+          remove_package(name, version)
+        end
 
 
       end
