@@ -62,16 +62,15 @@ class Chef
         end
 
         def candidate_version
-          return @candidate_version if @candidate_version
-          @canidate_version = @new_resource.version
-          @candidate_version
+          no_version = ""
+          no_version
         end
 
         def install_package(name, version)
-          if version
-            run_command(:command => "#{easy_install_binary_path} \"#{name}==#{version}\"")
-          else
+          if version == ""
             run_command(:command => "#{easy_install_binary_path} #{name}")
+          else
+            run_command(:command => "#{easy_install_binary_path} \"#{name}==#{version}\"")
           end
         end
 

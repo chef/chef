@@ -20,7 +20,7 @@ require 'chef/resource/package'
 
 class Chef
   class Resource
-    class EasyInstall < Chef::Resource::Package
+    class EasyInstallPackage < Chef::Resource::Package
 
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)
@@ -28,7 +28,6 @@ class Chef
         @provider = Chef::Provider::Package::EasyInstall
       end
 
-      # Sets a custom easy_install_binary to run for easy_install commands.
       def easy_install_binary(arg=nil)
         set_or_return(
           :easy_install_binary,
