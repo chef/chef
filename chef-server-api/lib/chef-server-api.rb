@@ -14,7 +14,7 @@ if defined?(Merb::Plugins)
   require 'chef/nanite'
   require 'chef/certificate'
 
-  require 'mixlib/auth'
+  require 'mixlib/authentication'
 
   require 'chef/data_bag'
   require 'chef/data_bag_item'

@@ -91,6 +91,13 @@ class Knife < Thor
     puts "Done."
   end
 
+  desc "delete_nodes", "Delete all nodes"
+  def delete_nodes
+    setup
+    nodelist = get_list("nodes")
+    destroy_nodes(nodelist)
+  end
+  
   desc "add_node_recipe", "Add a recipe to a node"
   method_options :recipe => :required, :after => :string, :node => :required
   def add_node_recipe
@@ -259,21 +266,36 @@ class Knife < Thor
   method_options :cookbook => :required
   def show_cookbook
     setup
-    puts JSON.pretty_generate(get_cookbook)
+    begin
+      puts JSON.pretty_generate(get_cookbook)
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No cookbook found for name '#{options[:cookbook]}'"
+    end
   end
 
   desc "show_cookbook_attribute", "Show an attribute file in a cookbook"
   method_options :cookbook => :required, :file => :required
   def show_cookbook_attribute
     setup
-    puts get_cookbook_part("attributes", { :id => options[:file] })
+    begin
+      puts get_cookbook_part("attributes", { :id => options[:file] })
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No cookbook part found for cookbook '#{options[:cookbook]}', attribute '#{options[:file]}'"
+    end
   end
 
   desc "show_cookbook_definition", "Show a definition file in a cookbook"
   method_options :cookbook => :required, :file => :required
   def show_cookbook_definition
     setup
-    puts get_cookbook_part("definitions", { :id => options[:file] })
+    begin
+      puts get_cookbook_part("definitions", { :id => options[:file] })
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No cookbook part found for cookbook '#{options[:cookbook]}', definition '#{options[:file]}'"
+    end    
   end
 
   desc "show_cookbook_file", "Show a remote file in a cookbook"
@@ -284,22 +306,37 @@ class Knife < Thor
     opts[:fqdn] = options[:fqdn] if options.has_key?(:fqdn)
     opts[:platform] = options[:platform] if options.has_key?(:platform)
     opts[:version] = options[:version] if options.has_key?(:version)
-
-    puts get_cookbook_part("files", opts) 
+    
+    begin
+      puts get_cookbook_part("files", opts)
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No file found for cookbook '#{options[:cookbook]}', file '#{options[:file]}'"
+    end
   end
   
   desc "show_cookbook_library", "Show a library file in a cookbook"
   method_options :cookbook => :required, :file => :required
   def show_cookbook_library
     setup
-    puts get_cookbook_part("libraries", { :id => options[:file] })
+    begin
+      puts get_cookbook_part("libraries", { :id => options[:file] })
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No library found for cookbook '#{options[:cookbook]}', library '#{options[:file]}'"
+    end
   end
 
   desc "show_cookbook_recipe", "Show a recipe file in a cookbook"
   method_options :cookbook => :required, :file => :required
   def show_cookbook_recipe
     setup
-    puts get_cookbook_part("recipes", { :id => options[:file] })
+    begin
+      puts get_cookbook_part("recipes", { :id => options[:file] })
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No recipe found for cookbook '#{options[:cookbook]}', recipe '#{options[:file]}'"
+    end    
   end
 
   desc "show_cookbook_template", "Show a template file in a cookbook"
@@ -310,8 +347,13 @@ class Knife < Thor
     opts[:fqdn] = options[:fqdn] if options.has_key?(:fqdn)
     opts[:platform] = options[:platform] if options.has_key?(:platform)
     opts[:version] = options[:version] if options.has_key?(:version)
-
-    puts get_cookbook_part("templates", opts) 
+    
+    begin
+      puts get_cookbook_part("templates", opts)
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No template found for cookbook '#{options[:cookbook]}', recipe '#{options[:file]}'"
+    end    
   end
 
   desc "download_cookbook", "Download a tarball of a cookbook"
@@ -328,8 +370,13 @@ class Knife < Thor
   method_options :cookbook => :required
   def delete_cookbook
     setup
-    destroy_cookbook
-    puts "Done."
+    begin
+      destroy_cookbook
+      puts "Done."      
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No cookbook found for name '#{options[:cookbook]}'"
+    end          
   end
 
   #############
@@ -496,6 +543,12 @@ class Knife < Thor
 
     def destroy_node
       @rest.delete_rest("nodes/#{expand_node(options[:node])}")
+    end
+
+    def destroy_nodes(nodelist)
+      nodelist.each do |node|
+        @rest.delete_rest("nodes/#{expand_node(node)}")
+      end
     end
 
     def save_node(node)
