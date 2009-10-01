@@ -106,7 +106,7 @@ class Chef
       def generate_config
         b = binding
         case node[:platform]
-        when ("centos" || "redhat" || "fedora")
+        when "centos","redhat","fedora"
           content = %{
 <% if @new_resource.device %>DEVICE=<%= @new_resource.device %><% end %>
 <% if @new_resource.onboot %>ONBOOT=<%= @new_resource.onboot %><% end %>
@@ -120,9 +120,9 @@ class Chef
           network_file = ::File.new("/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}", "w")
           network_file.puts(template.result(b))
           network_file.close
-        when ("debian" || "ubantu")
+        when "debian","ubuntu"
           # template
-        when ("slackware")
+        when "slackware"
           # template
         end
       end 
