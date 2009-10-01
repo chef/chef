@@ -55,6 +55,8 @@ class Chef
           :kind_of => [ Array ]
         )
       end
+
+      alias_method :users, :members
  
       def append(arg=nil)
         set_or_return(
