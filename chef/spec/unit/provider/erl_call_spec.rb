@@ -23,21 +23,36 @@ describe Chef::Provider::ErlCall, "action_run" do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::ErlCall",
       :null_object => true,
-      :code => "io:format(\"burritos~n\", []).",
-      :user => nil,
-      :group => nil,
-      :cookie => nil,
-      :distributed => false,
+      :code => "io:format(\"burritos\", []).",
+      :cookie => "nomnomnom",
+      :distributed => true,
       :name_type => "sname",
       :node_name => "chef@localhost",
       :name => "test"
     )
 
+    @provider = Chef::Provider::ErlCall.new(@node, @new_resource)
+
+    @status = mock("Status", :exitstatus => 0)
+    @provider.stub!(:popen4).and_return(@status)
+    @stdin = mock("STDIN", :null_object => true)
+    @stdout = mock("STDOUT", :null_object => true)
+    @stderr = mock("STDERR", :null_object => true)
+    @pid = mock("PID", :null_object => true)
   end
 
   it "should return a Chef::Provider::ErlCall object" do
     provider = Chef::Provider::ErlCall.new(@node, @new_resource)
     provider.should be_a_kind_of(Chef::Provider::ErlCall)
+  end
+
+  it "should return true" do
+    @provider.load_current_resource.should eql(true)
+  end
+
+  it "should write to stdin of the erl_call command" do
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    @provider.action_run
   end
 
 end
