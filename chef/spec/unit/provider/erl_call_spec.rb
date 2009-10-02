@@ -33,7 +33,11 @@ describe Chef::Provider::ErlCall, "action_run" do
       :name => "test"
     )
 
-    @provider = Chef::Provider::ErlCall.new(@node, @new_resource)
+  end
+
+  it "should return a Chef::Provider::ErlCall object" do
+    provider = Chef::Provider::ErlCall.new(@node, @new_resource)
+    provider.should be_a_kind_of(Chef::Provider::ErlCall)
   end
 
 end
