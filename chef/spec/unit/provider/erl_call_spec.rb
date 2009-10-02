@@ -18,23 +18,22 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-describe Chef::Provider::Script, "action_run" do
+describe Chef::Provider::ErlCall, "action_run" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::ErlCall",
       :null_object => true,
       :code => "io:format(\"burritos~n\", []).",
-      :interpreter => 'erl_call',
       :user => nil,
       :group => nil,
       :cookie => nil,
       :distributed => false,
       :name_type => "sname",
-      :node_name => "chef@localhost"
+      :node_name => "chef@localhost",
+      :name => "test"
     )
+
     @provider = Chef::Provider::ErlCall.new(@node, @new_resource)
   end
-
-
 
 end
