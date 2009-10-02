@@ -24,6 +24,11 @@ describe Chef::Resource::EasyInstallPackage, "initialize" do
     @resource = Chef::Resource::EasyInstallPackage.new("foo")
   end
 
+  it "should create a new Chef::Resource::EasyInstallPackage" do
+    @resource.should be_a_kind_of(Chef::Resource)
+    @resource.should be_a_kind_of(Chef::Resource::EasyInstallPackage)
+  end
+
   it "should return a Chef::Resource::EasyInstallPackage" do
     @resource.should be_a_kind_of(Chef::Resource::EasyInstallPackage)
   end
@@ -35,15 +40,9 @@ describe Chef::Resource::EasyInstallPackage, "initialize" do
   it "should set the provider to Chef::Provider::Package::EasyInstall" do
     @resource.provider.should eql(Chef::Provider::Package::EasyInstall)
   end
-end
 
-describe Chef::Resource::EasyInstall, "easy_install_binary" do
-  before(:each) do
-    @resource = Chef::Resource::EasyInstall.new("foo")
-  end
-
-  it "should set the gem_binary variable to whatever is passed in" do
-    @resource.gem_binary("/opt/local/bin/easy_install")
-    @resource.gem_binary.should eql("/opt/local/bin/easy_install")
+  it "should allow you to set the easy_install_binary attribute" do
+    @resource.easy_install_binary "/opt/local/bin/easy_install"
+    @resource.easy_install_binary.should eql("/opt/local/bin/easy_install")
   end
 end
