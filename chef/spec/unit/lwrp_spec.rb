@@ -54,8 +54,9 @@ describe Chef::Provider do
   end
   
   it "should create a method for each attribute" do
-    Chef::Provider::LwrpBuckPasser.new(nil, nil).methods.should include("action_pass_buck")
-    Chef::Provider::LwrpThumbTwiddler.new(nil, nil).methods.should include("action_twiddle_thumbs")
+    new_resource = mock("new resource", :null_object=>true)
+    Chef::Provider::LwrpBuckPasser.new(nil, new_resource).methods.should include("action_pass_buck")
+    Chef::Provider::LwrpThumbTwiddler.new(nil, new_resource).methods.should include("action_twiddle_thumbs")
   end
 
   it "should insert resources embedded in the provider into the middle of the resource collection" do
