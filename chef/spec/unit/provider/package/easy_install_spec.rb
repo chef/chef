@@ -1,7 +1,6 @@
 #
-# Author:: David Balatero (dbalatero@gmail.com)
-#
-# Copyright:: Copyright (c) 2009 David Balatero
+# Author:: Joe Williams (<joe@joetify.com>)
+# Copyright:: Copyright (c) 2009 Joe Williams
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
