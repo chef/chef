@@ -89,7 +89,7 @@ class Chef
         end
 
         def upgrade_package(name, version)
-          install_package(name)
+          install_package(name, version)
         end
 
         def remove_package(name, version)
