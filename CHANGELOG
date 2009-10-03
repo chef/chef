@@ -1,5 +1,34 @@
 Fri Sep 4 7:25:00 NZST 2009
 
+Release Notes - Chef - Version 0.7.12
+
+** Bug
+    * [CHEF-293] - Chef breaks on systems with non-English Locales
+    * [CHEF-501] - Fails to follow notification chains
+    * [CHEF-534] - remove execute permissions from javascripts, images, etc.
+    * [CHEF-544] - Service provider fails to set @new_resource.updated
+    * [CHEF-562] - typo in provider/ifconfig.rb
+    * [CHEF-569] - Remote File causes updates to be sent regardless of idempotency
+    * [CHEF-578] - Lots of files/subdirectories in a remote_directory cause most chef requests to take 11.5 seconds, and the merb process goes up to 100% CPU
+
+** Improvement
+    * [CHEF-503] - cookbooks UI should display the relative path of the template
+    * [CHEF-546] - Make couchdb version switcher 0.8 specific, and use the new format for everything else.
+    * [CHEF-559] - distro/ should be under 'chef' dir and packaged w/ gem.
+    * [CHEF-560] - refactor Chef::Provider::Group::Groupadd
+    * [CHEF-561] - Flexible application layouts for deploy resource and provider
+    * [CHEF-566] - Deploy resource/provider callbacks for before_migrate, &etc. should support in-line recipes
+    * [CHEF-568] - Increase logging for Remote File status, including checksummation.
+    * [CHEF-580] - faster find_preferred_file
+    * [CHEF-582] - group resource should allow users or members as a parameter
+
+** New Feature
+    * [CHEF-145] - Cron resource: add support for setting cron environment variables like MAILTO or PATH
+    * [CHEF-419] - Create SCM resource and providers for git & svn
+    * [CHEF-496] - add simple service provider to chef
+
+** Task
+    * [CHEF-571] - LWRP unit tests
 
 Release Notes - Chef - Version 0.7.10
 
