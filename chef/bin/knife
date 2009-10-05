@@ -251,6 +251,13 @@ class Knife < Thor
     puts "Done."
   end
 
+  desc "delete_clients", "Delete *all* clients"
+  def delete_clients
+    setup
+    destroy_clients(get_list("clients"))
+    puts "Done."
+  end
+
 
   #############
   # Cookbooks #
@@ -548,6 +555,17 @@ class Knife < Thor
     def destroy_nodes(nodelist)
       nodelist.each do |node|
         @rest.delete_rest("nodes/#{expand_node(node)}")
+      end
+    end
+
+    def destroy_clients(clientlist)
+      clientlist.each do |client|
+        begin
+          @rest.delete_rest("clients/#{client}") unless client =~ /-validator$/
+        rescue Net::HTTPServerException
+          raise unless ($!.message =~ /Not Found/ or $!.message =~ /Forbidden/)
+          puts "Client: #{client}, Exception! #{$!.message}"
+        end
       end
     end
 
