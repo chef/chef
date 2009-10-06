@@ -18,7 +18,10 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
-Chef::Resource.build_from_file("lwrp", File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "foo.rb"))
+Dir[File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*")].each do |file|
+  Chef::Resource.build_from_file("lwrp", file)
+end
+
 Dir[File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*")].each do |file|
   Chef::Provider.build_from_file("lwrp", file)
 end
@@ -74,7 +77,37 @@ describe Chef::Provider do
     Chef::Runner.new(node, rc, {}).converge
     
     rc[0].should eql(injector)
-    rc[1].name.should eql(:twiddled_thumbs)
-    rc[2].should eql(dummy)
+    rc[1].name.should eql(:prepared_thumbs)
+    rc[2].name.should eql(:twiddled_thumbs)
+    rc[3].should eql(dummy)
   end
+  
+  it "should insert embedded resources from multiple providers, including from the last position, properly into the resource collection" do
+    node = Chef::Node.new
+    rc = Chef::ResourceCollection.new
+    
+    injector = Chef::Resource::LwrpFoo.new("morpheus")
+    injector.action(:pass_buck)
+    injector.provider(Chef::Provider::LwrpBuckPasser)
+    injector2 = Chef::Resource::LwrpBar.new("tank")
+    injector2.action(:pass_buck)
+    injector2.provider(Chef::Provider::LwrpBuckPasser2)
+    dummy = Chef::Resource::ZenMaster.new("keanu reeves")
+    dummy.provider(Chef::Provider::Easy)
+    
+    rc.insert(injector)
+    rc.insert(dummy)
+    rc.insert(injector2)
+    
+    Chef::Runner.new(node, rc, {}).converge
+    
+    rc[0].should eql(injector)
+    rc[1].name.should eql(:prepared_thumbs)
+    rc[2].name.should eql(:twiddled_thumbs)
+    rc[3].should eql(dummy)
+    rc[4].should eql(injector2)
+    rc[5].name.should eql(:prepared_eyes)
+    rc[6].name.should eql(:dried_paint_watched)
+  end
+  
 end
