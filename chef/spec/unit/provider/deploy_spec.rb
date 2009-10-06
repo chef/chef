@@ -70,7 +70,7 @@ describe Chef::Provider::Deploy do
   it "runs the new resource collection in the runner during a callback" do
     @runner.should_receive(:converge)
     callback_code = lambda { :noop }
-    @provider.callback(:whatevs, &callback_code)
+    @provider.callback(:whatevs, callback_code)
   end
   
   it "loads callback files from the release/ dir if the file exists" do

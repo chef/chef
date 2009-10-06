@@ -79,10 +79,11 @@ class Chef
       end
       
       def callback(what, callback_code=nil)
+        @collection = Chef::ResourceCollection.new
         case callback_code
         when Proc
           Chef::Log.info "Running callback #{what} code block"
-          self.instance_eval(&callback_code)
+          recipe_eval(&callback_code)
         when String
           callback_file = "#{@release_path}/#{callback_code}"
           unless ::File.exist?(callback_file)
@@ -94,7 +95,6 @@ class Chef
         else
           raise RuntimeError, "You gave me a callback I don't know what to do with: #{callback_code.inspect}"
         end
-        Chef::Runner.new(@node, @collection).converge
       end
       
       def migrate
@@ -124,7 +124,7 @@ class Chef
         if restart_cmd = @new_resource.restart_command
           if restart_cmd.kind_of?(Proc)
             Chef::Log.info("Restarting app with embedded recipe")
-            instance_eval(&restart_cmd)
+            recipe_eval(&restart_cmd)
           else
             Chef::Log.info("Restarting app with #{@new_resource.restart_command} in #{@new_resource.current_path}")
             run_command(run_options(:command => @new_resource.restart_command, :cwd => @new_resource.current_path))
@@ -210,9 +210,15 @@ class Chef
         if ::File.exist?(callback_file)
           Dir.chdir(@release_path) do
             Chef::Log.info "running deploy hook: #{callback_file}"
-            from_file(callback_file)
+            recipe_eval { from_file(callback_file) }
           end
         end
+      end
+      
+      def recipe_eval(*args, &block)
+        @collection = Chef::ResourceCollection.new
+        instance_eval(*args, &block)
+        Chef::Runner.new(@node, collection).converge
       end
       
     end
