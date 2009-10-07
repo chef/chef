@@ -215,12 +215,6 @@ class Chef
         end
       end
       
-      def recipe_eval(*args, &block)
-        @collection = Chef::ResourceCollection.new
-        instance_eval(*args, &block)
-        Chef::Runner.new(@node, collection).converge
-      end
-      
     end
   end
 end
