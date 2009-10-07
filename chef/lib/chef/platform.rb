@@ -61,6 +61,13 @@ class Chef
           :package => Chef::Provider::Package::Yum
         }
       },
+       :suse   => {
+        :default => {
+#          :service => Chef::Provider::Service::Zypper,
+          :cron => Chef::Provider::Cron,
+          :package => Chef::Provider::Package::Zypper
+        }
+      },
       :redhat   => {
         :default => {
           :service => Chef::Provider::Service::Redhat,
