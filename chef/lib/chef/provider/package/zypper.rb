@@ -61,7 +61,7 @@ class Chef
             @current_resource.version(nil)
             Chef::Log.debug("dentro installed false");
           end
-
+ 
           if is_installed==true
             if is_out_of_date==true
               @current_resource.version(oud_version)
@@ -99,11 +99,11 @@ class Chef
         def upgrade_package(name, version)
           if version
             run_command(
-              :command => "zypper -n --no-gpg-checks upgrade -l  #{name}=#{version}"
+              :command => "zypper -n --no-gpg-checks update -l  #{name}=#{version}"
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks upgrade -l  #{name}"
+              :command => "zypper -n --no-gpg-checks update -l  #{name}"
             )
           end
         end
@@ -111,11 +111,11 @@ class Chef
         def remove_package(name, version)
           if version
             run_command(
-              :command => "zypper -n --no-gpg-checks remove -l  #{name}=#{version}"
+              :command => "zypper -n --no-gpg-checks remove  #{name}=#{version}"
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks remove -l  #{name}"
+              :command => "zypper -n --no-gpg-checks remove  #{name}"
             )
           end
             
