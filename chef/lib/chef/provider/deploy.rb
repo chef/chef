@@ -64,7 +64,7 @@ class Chef
         enforce_ownership
         update_cached_repo
         copy_cached_repo
-        # chef-deploy then installs gems. hmmm...
+        install_gems
         enforce_ownership
         callback(:before_migrate, @new_resource.before_migrate)
         migrate
@@ -208,6 +208,25 @@ class Chef
       end
       
       protected
+      
+      def install_gems
+        gems_collection = Chef::ResourceCollection.new
+        gem_packages.each { |rbgem| gems_collection << rbgem }
+        Chef::Runner.new(@node, gems_collection).converge
+      end
+      
+      def gem_packages
+        return [] unless ::File.exist?("#{release_path}/gems.yml")
+        gems = YAML.load(IO.read("#{release_path}/gems.yml"))
+        
+        gems.map do |g|
+          r = Chef::Resource::GemPackage.new(g[:name], nil, node)
+          r.version g[:version]
+          r.action :install
+          r.source "http://gems.github.com"
+          r
+        end
+      end
       
       def run_options(run_opts={})
         run_opts[:user] = @new_resource.user if @new_resource.user

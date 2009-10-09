@@ -40,6 +40,7 @@ describe Chef::Provider::Deploy do
     @provider.should_receive(:enforce_ownership).twice
     @provider.should_receive(:update_cached_repo)
     @provider.should_receive(:copy_cached_repo)
+    @provider.should_receive(:install_gems)
     @provider.should_receive(:callback).with(:before_migrate, nil)
     @provider.should_receive(:migrate)
     @provider.should_receive(:callback).with(:before_symlink, nil)
@@ -306,6 +307,36 @@ describe Chef::Provider::Deploy do
       snitch.should be_an_instance_of(Chef::Resource::Execute)
       snitch.user.should == "tehCat"
     end
+  end
+  
+  describe "installing gems from a gems.yml" do
+    
+    before do
+      ::File.stub!(:exist?).with("#{@expected_release_dir}/gems.yml").and_return(true)
+      @gem_list = [{:name=>"ezmobius-nanite",:version=>"0.4.1.2"},{:name=>"eventmachine", :version=>"0.12.9"}]
+    end
+    
+    it "reads a gems.yml file, creating gem providers for each with action :upgrade" do
+      IO.should_receive(:read).with("#{@expected_release_dir}/gems.yml").and_return("cookie")
+      YAML.should_receive(:load).with("cookie").and_return(@gem_list)
+      
+      gems = @provider.send(:gem_packages)
+      
+      gems.map { |g| g.action }.should == [[:install], [:install]]
+      gems.map { |g| g.name }.should == %w{ezmobius-nanite eventmachine}
+      gems.map { |g| g.version }.should == %w{0.4.1.2 0.12.9}
+    end
+    
+    it "takes a list of gem providers converges them" do
+      IO.stub!(:read)
+      YAML.stub!(:load).and_return(@gem_list)
+      gem_resources = @provider.send(:gem_packages)
+      run4r = mock("Chef::Runner")
+      Chef::Runner.should_receive(:new).with(@node, an_instance_of(Chef::ResourceCollection)).and_return(run4r)
+      run4r.should_receive(:converge)
+      @provider.send(:install_gems)
+    end
+    
   end
   
 end
