@@ -49,6 +49,16 @@ class Chef
       def load_current_resource
       end
       
+      def sudo(command,&block)
+        execute(command, &block)
+      end
+      
+      def run(command, &block)
+        exec = execute(command, &block)
+        exec.user(@new_resource.user)
+        exec
+      end
+      
       def action_deploy
         Chef::Log.info "deploying branch: #{@new_resource.branch}"
         enforce_ownership

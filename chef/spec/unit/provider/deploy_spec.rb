@@ -274,4 +274,38 @@ describe Chef::Provider::Deploy do
     
   end
   
+  describe "API bridge to capistrano" do
+    it "defines sudo as a forwarder to execute" do
+      @provider.should_receive(:execute).with("the moon, fool")
+      @provider.sudo("the moon, fool")
+    end
+
+    it "defines run as a forwarder to execute, setting the user to new_resource.user" do
+      mock_execution = mock("Resource::Execute")
+      @provider.should_receive(:execute).with("iGoToHell4this").and_return(mock_execution)
+      @resource.user("notCoolMan")
+      mock_execution.should_receive(:user).with("notCoolMan")
+      @provider.run("iGoToHell4this")
+    end
+
+    it "converts sudo and run to exec resources in hooks" do
+      runner = mock("tehRunner", :null_object => true)
+      Chef::Runner.stub!(:new).and_return(runner)
+      
+      snitch = nil
+      @resource.user("tehCat")
+      
+      callback_code = lambda do
+        snitch = 42
+        temp_collection = self.instance_variable_get(:@collection)
+        run("tehMice")
+        snitch = temp_collection.lookup("execute[tehMice]")
+      end
+      
+      @provider.callback(:phony, callback_code)
+      snitch.should be_an_instance_of(Chef::Resource::Execute)
+      snitch.user.should == "tehCat"
+    end
+  end
+  
 end
