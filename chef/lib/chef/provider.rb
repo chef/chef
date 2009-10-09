@@ -53,7 +53,7 @@ class Chef
       provider_collection, @collection = @collection, Chef::ResourceCollection.new
       
       instance_eval(*args, &block)
-      Chef::Runner.new(@node, collection).converge
+      Chef::Runner.new(@node, @collection).converge
       
       @collection = provider_collection
     end
