@@ -124,6 +124,12 @@ describe Chef::Provider::Deploy do
     @provider.copy_cached_repo
   end
   
+  it "calls the internal callback :release_created when copying the cached repo" do
+    FileUtils.stub!(:mkdir_p)
+    FileUtils.stub!(:cp_r)
+    @provider.should_receive(:release_created)
+    @provider.copy_cached_repo
+  end
   
   it "chowns the whole release dir to user and group specified in the resource" do
     @resource.user "foo"
@@ -232,6 +238,16 @@ describe Chef::Provider::Deploy do
     FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/20040100000000")
     FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/20040200000000")
     FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/20040300000000")
+    @provider.cleanup!
+  end
+  
+  it "fires a callback for :release_deleted when deleting an old release" do
+    all_releases = ["/my/deploy/dir/20040815162342", "/my/deploy/dir/20040700000000", 
+                    "/my/deploy/dir/20040600000000", "/my/deploy/dir/20040500000000",
+                    "/my/deploy/dir/20040400000000", "/my/deploy/dir/20040300000000"].sort!
+    @provider.stub!(:all_releases).and_return(all_releases)
+    FileUtils.stub!(:rm_rf)
+    @provider.should_receive(:release_deleted).with("/my/deploy/dir/20040300000000")
     @provider.cleanup!
   end
   

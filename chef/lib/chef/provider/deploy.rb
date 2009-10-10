@@ -146,6 +146,7 @@ class Chef
         all_releases[0..-6].each do |old_release|
           Chef::Log.info "Removing old release #{old_release}"
           FileUtils.rm_rf(old_release)
+          release_deleted(old_release)
         end
       end
       
@@ -162,6 +163,7 @@ class Chef
         Chef::Log.info "copying the cached checkout to #{release_path}"
         FileUtils.mkdir_p(@new_resource.deploy_to + "/releases")
         FileUtils.cp_r(@new_resource.destination, release_path, :preserve => true)
+        release_created
       end
       
       def enforce_ownership
@@ -209,6 +211,20 @@ class Chef
       
       protected
       
+      # Internal callback, called after copy_cached_repo.
+      # Override if you need to keep state externally.
+      def release_created
+      end
+      
+      # Internal callback, called during cleanup! for each old release removed.
+      # Override if you need to keep state externally.
+      def release_deleted(release_path)
+      end
+      
+      def release_slug
+        raise Chef::Exceptions::Override, "You must override release_slug in #{self.to_s}"
+      end
+      
       def install_gems
         gems_collection = Chef::ResourceCollection.new
         gem_packages.each { |rbgem| gems_collection << rbgem }
@@ -226,10 +242,6 @@ class Chef
           r.source "http://gems.github.com"
           r
         end
-      end
-      
-      def release_slug
-        raise Chef::Exceptions::Override, "You must override release_slug in #{self.to_s}"
       end
       
       def run_options(run_opts={})
