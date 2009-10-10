@@ -125,6 +125,10 @@ describe Chef::Provider::Subversion do
       @provider.revision_int.should eql("11410")
     end
     
+    it "responds to :revision_slug as an alias for revision_sha" do
+      @provider.should respond_to(:revision_slug)
+    end
+
   end
   
   it "generates a checkout command with default options" do

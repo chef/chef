@@ -72,12 +72,19 @@ class Chef
       # up the revision id by asking the server
       # If the specified revision is an integer, trust it.
       def revision_int
-        return @new_resource.revision if @new_resource.revision =~ /^\d+$/
-        command = scm(:info, @new_resource.repository, authentication, "-r#{@new_resource.revision}")
-        status, svn_info, error_message = output_of_command(command, run_options)
-        handle_command_failures(status, "STDOUT: #{svn_info}\nSTDERR: #{error_message}")
-        extract_revision_info(svn_info)
+        @revision_int ||= begin
+          if @new_resource.revision =~ /^\d+$/
+            @new_resource.revision
+          else
+            command = scm(:info, @new_resource.repository, authentication, "-r#{@new_resource.revision}")
+            status, svn_info, error_message = output_of_command(command, run_options)
+            handle_command_failures(status, "STDOUT: #{svn_info}\nSTDERR: #{error_message}")
+            extract_revision_info(svn_info)
+          end
+        end
       end
+      
+      alias :revision_slug :revision_int
       
       def find_current_revision
         return nil unless ::File.exist?(@new_resource.destination)
