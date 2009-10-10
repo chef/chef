@@ -27,6 +27,8 @@ describe Chef::Provider::Deploy do
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     @node = Chef::Node.new
     @provider = Chef::Provider::Deploy.new(@node, @resource)
+    @provider.stub!(:release_slug)
+    @provider.stub!(:release_path).and_return(@expected_release_dir)
     @runner = mock("runnah", :null_object => true)
     Chef::Runner.stub!(:new).and_return(@runner)
   end
@@ -53,6 +55,7 @@ describe Chef::Provider::Deploy do
   end
   
   it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
+    @provider.unstub!(:release_path)
     all_releases = ["/my/deploy/dir/releases/20040815162342", "/my/deploy/dir/releases/20040700000000",
                     "/my/deploy/dir/releases/20040600000000", "/my/deploy/dir/releases/20040500000000"].sort!
     Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)

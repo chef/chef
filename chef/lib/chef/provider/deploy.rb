@@ -38,7 +38,6 @@ class Chef
         @collection = Chef::ResourceCollection.new
         
         @scm_provider = @new_resource.scm_provider.new(@node, @new_resource)
-        @release_path = @new_resource.deploy_to + "/releases/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}"
         
         # @configuration is not used by Deploy, it is only for backwards compat with
         # chef-deploy or capistrano hooks that might use it to get environment information
@@ -47,6 +46,7 @@ class Chef
       end
       
       def load_current_resource
+        @release_path = @new_resource.deploy_to + "/releases/#{release_slug}"
       end
       
       def sudo(command,&block)
@@ -80,7 +80,7 @@ class Chef
         @release_path = all_releases[-2]
         raise RuntimeError, "There is no release to rollback to!" unless @release_path
         release_to_nuke = all_releases.last
-        Chef::Log.info "rolling back to previous release: #{@release_path}"
+        Chef::Log.info "rolling back to previous release: #{release_path}"
         symlink
         Chef::Log.info "removing last release: #{release_to_nuke}"
         FileUtils.rm_rf release_to_nuke
@@ -95,13 +95,13 @@ class Chef
           Chef::Log.info "Running callback #{what} code block"
           recipe_eval(&callback_code)
         when String
-          callback_file = "#{@release_path}/#{callback_code}"
+          callback_file = "#{release_path}/#{callback_code}"
           unless ::File.exist?(callback_file)
             raise RuntimeError, "Can't find your callback file #{callback_file}"
           end
           run_callback_from_file(callback_file)
         when nil
-          run_callback_from_file("#{@release_path}/deploy/#{what}.rb")
+          run_callback_from_file("#{release_path}/deploy/#{what}.rb")
         else
           raise RuntimeError, "You gave me a callback I don't know what to do with: #{callback_code.inspect}"
         end
@@ -119,7 +119,7 @@ class Chef
           
           Chef::Log.info  "Migrating: running #{@new_resource.migration_command} as #{@new_resource.user} " +
                           "with environment #{env_info}"
-          run_command(run_options(:command => @new_resource.migration_command, :cwd=>@release_path))
+          run_command(run_options(:command => @new_resource.migration_command, :cwd=>release_path))
         end
       end
       
@@ -161,7 +161,7 @@ class Chef
       def copy_cached_repo
         Chef::Log.info "copying the cached checkout to #{release_path}"
         FileUtils.mkdir_p(@new_resource.deploy_to + "/releases")
-        FileUtils.cp_r(@new_resource.destination, @release_path, :preserve => true)
+        FileUtils.cp_r(@new_resource.destination, release_path, :preserve => true)
       end
       
       def enforce_ownership
@@ -170,9 +170,9 @@ class Chef
       end
       
       def link_current_release_to_production
-        Chef::Log.info "Linking release #{@release_path} into production at #{@new_resource.current_path}"
+        Chef::Log.info "Linking release #{release_path} into production at #{@new_resource.current_path}"
         FileUtils.rm_f(@new_resource.current_path)
-        FileUtils.ln_sf(@release_path, @new_resource.current_path)
+        FileUtils.ln_sf(release_path, @new_resource.current_path)
         enforce_ownership
       end
       
@@ -180,19 +180,19 @@ class Chef
         links_info = @new_resource.symlink_before_migrate.map { |src, dst| "#{src} => #{dst}" }.join(", ")
         Chef::Log.info "Making pre-migration symlinks: #{links_info}"
         @new_resource.symlink_before_migrate.each do |src, dest|
-          FileUtils.ln_sf(@new_resource.shared_path + "/#{src}", @release_path + "/#{dest}")
+          FileUtils.ln_sf(@new_resource.shared_path + "/#{src}", release_path + "/#{dest}")
         end
       end
       
       def link_tempfiles_to_current_release
         dirs_info = @new_resource.create_dirs_before_symlink.join(",")
         Chef::Log.info("creating directories before symlink: #{dirs_info}")
-        @new_resource.create_dirs_before_symlink.each { |dir| FileUtils.mkdir_p(@release_path + "/#{dir}") }
+        @new_resource.create_dirs_before_symlink.each { |dir| FileUtils.mkdir_p(release_path + "/#{dir}") }
         
         links_info = @new_resource.symlinks.map { |src, dst| "#{src} => #{dst}" }.join(", ")
         Chef::Log.info("Linking shared paths into current release: #{links_info}")
         @new_resource.symlinks.each do |src, dest|
-          FileUtils.ln_sf(@new_resource.shared_path + "/#{src}",  @release_path + "/#{dest}")
+          FileUtils.ln_sf(@new_resource.shared_path + "/#{src}",  release_path + "/#{dest}")
         end
         link_shared_db_config_to_current_release
         enforce_ownership
@@ -204,7 +204,7 @@ class Chef
       def purge_tempfiles_from_current_release
         log_info = @new_resource.purge_before_symlink.join(", ")
         Chef::Log.info("Purging directories in checkout #{log_info}")
-        @new_resource.purge_before_symlink.each { |dir| FileUtils.rm_rf(@release_path + "/#{dir}") }
+        @new_resource.purge_before_symlink.each { |dir| FileUtils.rm_rf(release_path + "/#{dir}") }
       end
       
       protected
@@ -228,6 +228,10 @@ class Chef
         end
       end
       
+      def release_slug
+        raise Chef::Exceptions::Override, "You must override release_slug in #{self.to_s}"
+      end
+      
       def run_options(run_opts={})
         run_opts[:user] = @new_resource.user if @new_resource.user
         run_opts[:group] = @new_resource.group if @new_resource.group
@@ -237,7 +241,7 @@ class Chef
       
       def run_callback_from_file(callback_file)
         if ::File.exist?(callback_file)
-          Dir.chdir(@release_path) do
+          Dir.chdir(release_path) do
             Chef::Log.info "running deploy hook: #{callback_file}"
             recipe_eval { from_file(callback_file) }
           end
