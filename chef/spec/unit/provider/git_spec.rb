@@ -100,6 +100,11 @@ describe Chef::Provider::Git do
                                         and_return(@exitstatus)
       @provider.revision_sha.should eql("503c22a5e41f5ae3193460cca044ed1435029f53")
     end
+    
+    it "raises a runtime error if you try to deploy from ``origin''" do
+      @resource.revision("origin")
+      lambda {@provider.revision_sha}.should raise_error(RuntimeError)
+    end
   
     it "raises a runtime error if the revision can't be resolved to any revision" do
       @resource.revision "FAIL, that's the revision I want"
@@ -128,6 +133,10 @@ describe Chef::Provider::Git do
       @provider.should_receive(:popen4).and_yield("pid","stdin",@stdout,@stderr).and_return(@exitstatus)
       @provider.revision_sha.should eql("28af684d8460ba4793eda3e7ac238c864a5d029a")
     end
+  end
+  
+  it "responds to :revision_slug as an alias for revision_sha" do
+    @provider.should respond_to(:revision_slug)
   end
   
   it "runs a clone command with default git options" do
