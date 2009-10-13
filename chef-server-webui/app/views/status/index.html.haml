@@ -13,7 +13,7 @@
           %th.last Run List
           - if @status.empty?
             %tr
-              %td{:colspan => 7}= "You appear to have no nodes - try connecting one, or validating an existing #{link_to('registration', slice_url(:registrations))}"
+              %td{:colspan => 7}= "You appear to have no nodes - try connecting one, or creating or editing a #{link_to('client', slice_url(:clients))}"
           - else
             - @status.each_with_index do |node, index|
               %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
