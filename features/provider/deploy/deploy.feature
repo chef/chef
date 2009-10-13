@@ -59,3 +59,13 @@ Feature: Deploy
     Then there should be 'one' release
   
   
+	Scenario: Deploy an app twice using the idempotent revision deploy strategy
+	  Given a validated node
+	And it includes the recipe 'deploy::revision_deploy'
+	And I have a clone of typo in the data/tmp dir
+	  When I run the chef-client
+	And I run the chef-client at log level 'info'
+  Then the run should exit '0'
+	And there should be 'one' release
+	And the second chef run should have skipped deployment
+
