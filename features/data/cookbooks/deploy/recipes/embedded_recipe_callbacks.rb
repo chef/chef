@@ -34,7 +34,7 @@ file "#{node[:tmpdir]}/deploy/shared/sqlite/production.sqlite3" do
   mode "0664"
 end
  
-deploy "#{node[:tmpdir]}/deploy" do
+timestamped_deploy "#{node[:tmpdir]}/deploy" do
   repo "#{node[:tmpdir]}/gitrepo/typo/"
   environment "RAILS_ENV" => "production"
   revision "HEAD"
