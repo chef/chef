@@ -127,7 +127,7 @@ class Chef
         # Create the validation key
         create_key = false 
         begin
-          c = Chef::ApiClient.load(name)
+          c = Chef::ApiClient.cdb_load(name)
         rescue Chef::Exceptions::CouchDBNotFound
           create_key = true
         end
@@ -138,7 +138,7 @@ class Chef
           api_client.name(name)
           api_client.admin(true)
           api_client.create_keys
-          api_client.save
+          api_client.cdb_save
           key_dir = File.dirname(key_file)
           unless File.directory?(key_dir)
             system("mkdir -p #{key_dir}")

@@ -9,14 +9,14 @@ Feature: List data bags via the REST API
       And there are no data bags
      When I authenticate as 'bobo'
       And I 'GET' the path '/data' 
-     Then the inflated response should be an empty array
+     Then the inflated response should be an empty hash
 
   Scenario: List data bags when one has been created
     Given a 'registration' named 'bobo' exists
       And a 'data_bag' named 'users' exists
      When I authenticate as 'bobo'
       And I 'GET' the path '/data'
-     Then the inflated response should include '^http://.+/data/users$'
+     Then the inflated responses key 'users' should match '^http://.+/data/users$'
 
   Scenario: List data bags when two have been created
     Given a 'registration' named 'bobo' exists
@@ -25,8 +25,8 @@ Feature: List data bags via the REST API
      When I authenticate as 'bobo'
       And I 'GET' the path '/data'
      Then the inflated response should be '2' items long
-      And the inflated response should include '^http://.+/data/users$'
-      And the inflated response should include '^http://.+/data/rubies$'
+      And the inflated responses key 'users' should match '^http://.+/data/users$'
+      And the inflated responses key 'rubies' should match '^http://.+/data/rubies$'
 
   Scenario: List data bags when you are not authenticated 
      When I 'GET' the path '/data' 

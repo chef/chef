@@ -1,5 +1,5 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -16,17 +16,25 @@
 # limitations under the License.
 #
 
-module Merb
-  module ChefServerWebui
-    module CookbooksHelper
-      def syntax_highlight(code)
-        converter = Syntax::Convertors::HTML.for_syntax "ruby"
-        if File.exists?(code)
-          converter.convert(File.read(code), false)
-        else
-          converter.convert(code, false)
-        end
-      end
-    end
+require 'chef' / 'data_bag'
+
+class ChefServerWebui::Databags < ChefServerWebui::Application
+  
+  provides :html, :json
+  before :login_required 
+  
+  def index
+    r = Chef::REST.new(Chef::Config[:chef_server_url])
+    @databags = r.get_rest("data")
+    render
   end
+
+  def show
+    @databag_name = params[:id]
+    r = Chef::REST.new(Chef::Config[:chef_server_url])
+    @databag = r.get_rest("data/#{params[:id]}")
+    raise NotFound unless @databag
+    display @databag
+  end
+  
 end

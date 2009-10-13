@@ -22,15 +22,16 @@ require 'chef/solr/query'
 class ChefServerApi::Search < ChefServerApi::Application
   provides :json
  
-  before :authenticate_every
+  # TODO: this before filter is commented out at this time for testing the webui work. This should be added back in the future [nuo]
+  #before :authenticate_every
   
   def index
     indexes = valid_indexes
-    display(indexes.collect { |i| absolute_slice_url(:search, :id => i) })
+    display(indexes.inject({}) { |r,i| r[i] = absolute_slice_url(:search, i); r })    
   end
 
   def valid_indexes
-    indexes = Chef::DataBag.list(false)
+    indexes = Chef::DataBag.cdb_list(false)
     indexes << "role"
     indexes << "node"
   end

@@ -102,6 +102,8 @@ end
 
 Then /^the inflated response should respond to '(.+)' with '(.+)'$/ do |method, to_match|
   to_match = JSON.parse(to_match) if to_match =~ /^\[|\{/
+  to_match = true if to_match == 'true'
+  to_match = false if to_match == 'false'
   self.inflated_response.send(method.to_sym).should == to_match 
 end
 

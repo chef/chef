@@ -1,6 +1,6 @@
 class ChefServerApi::Main < ChefServerApi::Application
 
-  before :authenticate_every
+  #before :authenticate_every
   provides :html, :json
 
   def index

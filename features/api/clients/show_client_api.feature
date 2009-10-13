@@ -8,8 +8,8 @@ Feature: Show a client via the REST API
     Given a 'registration' named 'bobo' exists
       And a 'client' named 'isis' exists
      When I 'GET' the path '/clients/isis'
-     Then the inflated responses key 'name' should match '^isis$'
-     Then the inflated responses key 'admin' should be literally 'false'
+     Then the inflated response should respond to 'name' with 'isis'
+      And the inflated response should respond to 'admin' with 'false'
 
   Scenario: Show a missing client
     Given a 'registration' named 'bobo' exists

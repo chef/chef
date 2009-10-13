@@ -1,0 +1,12 @@
+.block#block-text
+  .content
+    %h2.title= "Databag: #{@databag_name}"
+    .inner
+      .accordion
+        - unless @databag.empty?
+          %h2.head= link_to "Databag Items", "#"
+          .files
+            - @databag.each do |f|
+              .code
+                %h4.head= link_to File.basename(f), "#"
+                %pre.ruby= syntax_highlight(get_file(f))      

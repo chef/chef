@@ -35,7 +35,7 @@ Feature: Show a data_bag via the REST API
      When I authenticate as 'bobo'
       And I 'GET' the path '/data/users'
      Then I should get a '404 "Not Found"' exception
-
+  
   Scenario: Show a data_bag without authenticating
     Given a 'data_bag' named 'users' exists
       And I 'GET' the path '/data/users'

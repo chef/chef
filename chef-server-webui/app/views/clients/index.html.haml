@@ -1,6 +1,6 @@
 .block#block-tables
   .content
-    %h2.title Roles 
+    %h2.title Clients
     .inner
       = partial('navigation', :active => 'index')
     .content
@@ -8,14 +8,13 @@
         %table.table
           %tr
             %th.first Name
-            %th Description
             %th.last &nbsp;
           - even = false;
-          - @role_list.each do |role|
+          - @clients_list.each do |client|
             %tr{ :class => even ? "even" : "odd" }
-              %td= link_to(role[0], slice_url(:role, role[0]))
+              %td= link_to(client[0], slice_url(:client, client[0]))
               %td
-                = link_to('Edit', slice_url(:edit_role, role[0])) 
+                = link_to('Edit', slice_url(:edit_client, client[0])) 
                 |
-                = link_to('Delete', slice_url(:role, role[0]), :method => "delete", :confirm => "Really delete Role #{role[0]}?  there is no undo.")
+                = link_to('Delete', slice_url(:client, client[0]), :method => "delete", :confirm => "Really delete Role #{client[0]}?  there is no undo.")
               - even ? even = false: even = true

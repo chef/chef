@@ -63,7 +63,7 @@ if defined?(Merb::Plugins)
     def self.setup_router(scope)
 
       scope.resources :nodes
-      scope.resources :roles
+      scope.resources :roles  
 
       scope.match("/status").to(:controller => "status", :action => "index").name(:status)
 
@@ -88,9 +88,12 @@ if defined?(Merb::Plugins)
       scope.match("/cookbooks/:cookbook_id/files", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_files", :action => "index")
 
       scope.resources :cookbooks
-      scope.resources :registrations, :controller => "openid_register"
-      scope.resources :registrations, :controller => "openid_register", :member => { :validate => :post }
-      scope.resources :registrations, :controller => "openid_register", :member => { :admin => :post }
+      scope.resources :clients
+      scope.resources :databags
+      
+      # scope.resources :registrations, :controller => "openid_register"
+      # scope.resources :registrations, :controller => "openid_register", :member => { :validate => :post }
+      # scope.resources :registrations, :controller => "openid_register", :member => { :admin => :post }
 
       scope.match("/openid/server").to(:controller => "openid_server", :action => "index").name(:openid_server)
       scope.match("/openid/server/server/xrds").

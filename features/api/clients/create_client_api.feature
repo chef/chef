@@ -15,7 +15,7 @@ Feature: Create a client via the REST API
       And a 'client' named 'adminmonkey'
      When I 'POST' the 'client' to the path '/clients' 
      When I 'GET' the path '/clients/adminmonkey' 
-     Then the inflated responses key 'admin' should be literally 'true'
+     Then the inflated response should respond to 'admin' with 'true'
 
   Scenario: Create a client that already exists
     Given a 'registration' named 'bobo' exists

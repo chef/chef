@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -108,7 +109,7 @@ class Chef
     
     # List all the Chef::DataBag objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Roles, fully inflated.
-    def self.list(inflate=false)
+    def self.cdb_list(inflate=false)
       couchdb = Chef::CouchDB.new
       rs = couchdb.list("data_bags", inflate)
       if inflate
@@ -118,26 +119,65 @@ class Chef
       end
     end
     
+    def self.list(inflate=false)
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      if inflate
+        response = Hash.new
+        Chef::Search::Query.new.search(:data) do |n|
+          response[n.name] = n
+        end
+        response
+      else
+        r.get_rest("data")
+      end
+    end
+    
     # Load a Data Bag by name from CouchDB
-    def self.load(name)
+    def self.cdb_load(name)
       couchdb = Chef::CouchDB.new
       couchdb.load("data_bag", name)
     end
     
+    # Load a Data Bag by name via the RESTful API
+    def self.load(name)
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.get_rest("data/#{name}")
+    end
+    
     # Remove this Data Bag from CouchDB
-    def destroy
+    def cdb_destroy
       removed = @couchdb.delete("data_bag", @name, @couchdb_rev)
       rs = @couchdb.get_view("data_bags", "entries", :include_docs => true, :startkey => @name, :endkey => @name)
       rs["rows"].each do |row|
-        row["doc"].destroy
+        row["doc"].cdb_destroy
       end
       removed
     end
     
+    def destroy
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.delete_rest("data/#{@name}")
+    end
+    
     # Save this Data Bag to the CouchDB
-    def save
+    def cdb_save
       results = @couchdb.store("data_bag", @name, self)
       @couchdb_rev = results["rev"]
+    end
+    
+    # Save the Data Bag via RESTful API
+    def save
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      begin
+        r.put_rest("data/#{@name}", self)
+      rescue Net::HTTPServerException => e
+        if e.response.code == "404"
+          r.post_rest("data", self)
+        else
+          raise e
+        end
+      end
+      self
     end
 
     # List all the items in this Bag

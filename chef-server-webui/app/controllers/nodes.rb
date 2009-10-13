@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -62,19 +63,28 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
   end
 
   def create
-    begin
+    begin      
       @node = Chef::Node.new
       @node.name params[:name]
       @node.attribute = JSON.parse(params[:attributes])
       @node.run_list params[:for_node]
-      @node.save
+      begin
+        @node.create
+      rescue Net::HTTPServerException => e
+        if e.message =~ /403/ 
+          raise ArgumentError, "Node already exists" 
+        else 
+          raise e
+        end 
+      end
       redirect(slice_url(:nodes), :message => { :notice => "Created Node #{@node.name}" })
-    rescue
+    rescue StandardError => e
       @node.attribute = JSON.parse(params[:attributes])
       @available_recipes = get_available_recipes 
       @available_roles = Chef::Role.list.keys.sort
-      @run_list = params[:for_node] 
-      @_message = { :error => $! }
+      @node.run_list params[:for_node]
+      @run_list = @node.run_list
+      @_message = { :error => $! }      
       render :new
     end
   end
@@ -90,7 +100,6 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
       @node.run_list.reset(params[:for_node] ? params[:for_node] : [])
       @node.attribute = JSON.parse(params[:attributes])
       @node.save
-      Chef::Log.error("I made it here")
       @_message = { :notice => "Updated Node" }
       render :show
     rescue

@@ -113,6 +113,27 @@ module Merb
         end
         count
       end
+      
+      def syntax_highlight(code)
+        converter = Syntax::Convertors::HTML.for_syntax "ruby"
+        if File.exists?(code)
+          converter.convert(File.read(code), false)
+        else
+          converter.convert(code, false)
+        end
+      end
+      
+      def get_file(uri)
+        r = Chef::REST.new(Chef::Config[:chef_server_url])
+        content = r.get_rest(uri)
+        a = Tempfile.new("cookbook_temp_file")
+        File.open(a.path, 'w'){|f| f.write(content)}
+        a.path
+      end
+      
+      def str_to_bool(str)
+        str =~ /true/ ? true : false
+      end
 
       # Recursively build a tree of lists.
       #def build_tree(node)

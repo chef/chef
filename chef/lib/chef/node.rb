@@ -413,6 +413,13 @@ class Chef
       end
       self
     end
+    
+    # Create the node via the REST API
+    def create
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.post_rest("nodes", self)
+      self
+    end 
 
     # Set up our CouchDB design document
     def self.create_design_document

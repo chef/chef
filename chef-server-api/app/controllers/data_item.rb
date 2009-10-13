@@ -30,7 +30,7 @@ class ChefServerApi::DataItem < ChefServerApi::Application
 
   def populate_data_bag
     begin
-      @data_bag = Chef::DataBag.load(params[:data_bag_id])
+      @data_bag = Chef::DataBag.cdb_load(params[:data_bag_id])
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load data bag #{params[:data_bag_id]}"
     end
@@ -38,7 +38,7 @@ class ChefServerApi::DataItem < ChefServerApi::Application
   
   def show
     begin
-      @data_bag_item = Chef::DataBagItem.load(params[:data_bag_id], params[:id])
+      @data_bag_item = Chef::DataBagItem.cdb_load(params[:data_bag_id], params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load data bag #{params[:data_bag_id]} item #{params[:id]}"
     end
@@ -57,23 +57,23 @@ class ChefServerApi::DataItem < ChefServerApi::Application
     end
     @data_bag_item = nil
     begin
-      @data_bag_item = Chef::DataBagItem.load(@data_bag.name, params[:id])
+      @data_bag_item = Chef::DataBagItem.cdb_load(@data_bag.name, params[:id])
     rescue Chef::Exceptions::CouchDBNotFound
       @data_bag_item = Chef::DataBagItem.new
       @data_bag_item.data_bag(@data_bag.name)
     end
     @data_bag_item.raw_data = raw_data
-    @data_bag_item.save
+    @data_bag_item.cdb_save
     display @data_bag_item.raw_data
   end
 
   def destroy
     begin
-      @data_bag_item = Chef::DataBagItem.load(params[:data_bag_id], params[:id])
+      @data_bag_item = Chef::DataBagItem.cdb_load(params[:data_bag_id], params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e 
       raise NotFound, "Cannot load data bag #{params[:data_bag_id]} item #{params[:id]}"
     end
-    @data_bag_item.destroy
+    @data_bag_item.cdb_destroy
     @data_bag_item.couchdb_rev = nil
     display @data_bag_item
   end

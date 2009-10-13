@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -126,20 +127,19 @@ class ChefServerWebui::Application < Merb::Controller
   # === Returns
   # <Hash>:: A hash consisting of the short name of the file in :name, and the full path
   #   to the file in :file.
-  def load_cookbook_segment(cookbook_id, segment)
-    cl = Chef::CookbookLoader.new
-    cookbook = cl[cookbook_id]
+  def load_cookbook_segment(cookbook_id, segment)    
+    r = Chef::REST.new(Chef::Config[:chef_server_url])
+    cookbook = r.get_rest("cookbooks/#{cookbook_id}")
+
     raise NotFound unless cookbook
     
     files_list = segment_files(segment, cookbook)
     
     files = Hash.new
     files_list.each do |f|
-      full = File.expand_path(f)
-      name = File.basename(full)
-      files[name] = {
-        :name => name,
-        :file => full,
+      files[f['name']] = {
+        :name => f["name"],
+        :file => f["uri"],
       }
     end
     files
@@ -149,66 +149,72 @@ class ChefServerWebui::Application < Merb::Controller
     files_list = nil
     case segment
     when :attributes
-      files_list = cookbook.attribute_files
+      files_list = cookbook["attributes"]
     when :recipes
-      files_list = cookbook.recipe_files
+      files_list = cookbook["recipes"]
     when :definitions
-      files_list = cookbook.definition_files
+      files_list = cookbook["definitions"]
     when :libraries
-      files_list = cookbook.lib_files
+      files_list = cookbook["libraries"]
     else
       raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions or :libraries"
     end
     files_list
   end
 
-  def specific_cookbooks(node_name, cl)
-    valid_cookbooks = Hash.new
-    begin
-      node = Chef::Node.load(node_name)
-      recipes, default_attrs, override_attrs = node.run_list.expand
-    rescue Net::HTTPServerException
-      recipes = []
-    end
-    recipes.each do |recipe|
-      valid_cookbooks = expand_cookbook_deps(valid_cookbooks, cl, recipe)
-    end
-    valid_cookbooks
-  end
-
-  def expand_cookbook_deps(valid_cookbooks, cl, recipe)
-    cookbook = recipe
-    if recipe =~ /^(.+)::/
-      cookbook = $1
-    end
-    Chef::Log.debug("Node requires #{cookbook}")
-    valid_cookbooks[cookbook] = true 
-    cl.metadata[cookbook.to_sym].dependencies.each do |dep, versions|
-      expand_cookbook_deps(valid_cookbooks, cl, dep) unless valid_cookbooks[dep]
-    end
-    valid_cookbooks
-  end
-  
-  def load_all_files(segment, node_name=nil)
-    cl = Chef::CookbookLoader.new
-    files = Array.new
-    valid_cookbooks = node_name ? specific_cookbooks(node_name, cl) : {} 
-    cl.each do |cookbook|
-      if node_name
-        next unless valid_cookbooks[cookbook.name.to_s]
-      end
-      segment_files(segment, cookbook).each do |sf|
-        mo = sf.match("cookbooks/#{cookbook.name}/#{segment}/(.+)")
-        file_name = mo[1]
-        files << { 
-          :cookbook => cookbook.name, 
-          :name => file_name,
-          :checksum => checksum(sf)
-        }
-      end
-    end
-    files
-  end
+  #
+  # The following should no longer be necessary for the re-factored cookbooks replated webui controllers (which talks to the API) 
+  # But I want to wait until further verified before removing the code. [nuo]
+  #
+  # def specific_cookbooks(node_name, cl)
+  #   valid_cookbooks = Hash.new
+  #   begin
+  #     node = Chef::Node.load(node_name)
+  #     recipes, default_attrs, override_attrs = node.run_list.expand
+  #   rescue Net::HTTPServerException
+  #     recipes = []
+  #   end
+  #   recipes.each do |recipe|
+  #     valid_cookbooks = expand_cookbook_deps(valid_cookbooks, cl, recipe)
+  #   end
+  #   valid_cookbooks
+  # end
+  # 
+  # def expand_cookbook_deps(valid_cookbooks, cl, recipe)
+  #   cookbook = recipe
+  #   if recipe =~ /^(.+)::/
+  #     cookbook = $1
+  #   end
+  #   Chef::Log.debug("Node requires #{cookbook}")
+  #   valid_cookbooks[cookbook] = true 
+  #   cl.metadata[cookbook.to_sym].dependencies.each do |dep, versions|
+  #     expand_cookbook_deps(valid_cookbooks, cl, dep) unless valid_cookbooks[dep]
+  #   end
+  #   valid_cookbooks
+  # end
+  # 
+  # def load_all_files(segment, node_name=nil)
+  #   r = Chef::REST.new(Chef::Config[:chef_server_url])
+  #   cookbooks = r.get_rest("cookbooks")
+  #   
+  #   files = Array.new
+  #   valid_cookbooks = node_name ? specific_cookbooks(node_name, cookbooks) : {} 
+  #   cl.each do |cookbook|
+  #     if node_name
+  #       next unless valid_cookbooks[cookbook.name.to_s]
+  #     end
+  #     segment_files(segment, cookbook).each do |sf|
+  #       mo = sf.match("cookbooks/#{cookbook.name}/#{segment}/(.+)")
+  #       file_name = mo[1]
+  #       files << { 
+  #         :cookbook => cookbook.name, 
+  #         :name => file_name,
+  #         :checksum => checksum(sf)
+  #       }
+  #     end
+  #   end
+  #   files
+  # end
 
   def get_available_recipes
     r = Chef::REST.new(Chef::Config[:chef_server_url])

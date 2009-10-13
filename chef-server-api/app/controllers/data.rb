@@ -27,13 +27,14 @@ class ChefServerApi::Data < ChefServerApi::Application
   before :is_admin, :only => [ :create, :destroy ]
   
   def index
-    @bag_list = Chef::DataBag.list(false)
-    display(@bag_list.collect { |b| absolute_slice_url(:datum, :id => b) })
+    @bag_list = Chef::DataBag.cdb_list(false)
+    display(@bag_list.inject({}) { |r,b| r[b] = absolute_slice_url(:datum, :id => b); r })
+    
   end
 
   def show
     begin
-      @data_bag = Chef::DataBag.load(params[:id])
+      @data_bag = Chef::DataBag.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load data bag #{params[:id]}"
     end
@@ -50,23 +51,23 @@ class ChefServerApi::Data < ChefServerApi::Application
     end
     exists = true 
     begin
-      Chef::DataBag.load(@data_bag.name)
+      Chef::DataBag.cdb_load(@data_bag.name)
     rescue Chef::Exceptions::CouchDBNotFound
       exists = false
     end
     raise Forbidden, "Data bag already exists" if exists
     self.status = 201
-    @data_bag.save
+    @data_bag.cdb_save
     display({ :uri => absolute_slice_url(:datum, :id => @data_bag.name) })
   end
 
   def destroy
     begin
-      @data_bag = Chef::DataBag.load(params[:id])
+      @data_bag = Chef::DataBag.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e 
       raise NotFound, "Cannot load data bag #{params[:id]}"
     end
-    @data_bag.destroy
+    @data_bag.cdb_destroy
     @data_bag.couchdb_rev = nil
     display @data_bag
   end

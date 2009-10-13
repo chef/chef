@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -159,21 +160,46 @@ class Chef
     end
     
     # Load a Data Bag Item by name from CouchDB
-    def self.load(data_bag, name)
+    def self.cdb_load(data_bag, name)
       couchdb = Chef::CouchDB.new
       couchdb.load("data_bag_item", object_name(data_bag, name))
     end
     
+    # Load a Data Bag Item by name via RESTful API
+    def self.load(data_bag, name)
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.get_rest("data/#{data_bag}/#{name}")
+    end
+    
     # Remove this Data Bag Item from CouchDB
-    def destroy
+    def cdb_destroy
       removed = @couchdb.delete("data_bag_item", object_name, @couchdb_rev)
       removed
     end
     
+    def destroy(data_bag=data_bag)
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.delete_rest("data/#{data_bag}/#{@name}")
+    end
+     
     # Save this Data Bag Item to CouchDB
-    def save
+    def cdb_save
       results = @couchdb.store("data_bag_item", object_name, self)
       @couchdb_rev = results["rev"]
+    end
+    
+    def save(databag = databag)
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      begin
+        r.put_rest("data/#{data_bag}/#{@name}", self)
+      rescue Net::HTTPServerException => e
+        if e.response.code == "404"
+          r.post_rest("data/#{data_bag}", self)
+        else
+          raise e
+        end
+      end
+      self
     end
     
     # Set up our CouchDB design document

@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -25,38 +26,41 @@ class ChefServerWebui::Cookbooks < ChefServerWebui::Application
   before :login_required 
   
   def index
-    @cl = Chef::CookbookLoader.new
-    display @cl
+    r = Chef::REST.new(Chef::Config[:chef_server_url])
+    @cl = r.get_rest("cookbooks")
+    render
   end
 
   def show
-    @cl = Chef::CookbookLoader.new
-    @cookbook = @cl[params[:id]]
+    r = Chef::REST.new(Chef::Config[:chef_server_url])
+    @cookbook = r.get_rest("cookbooks/#{params[:id]}")
     raise NotFound unless @cookbook
     display @cookbook
   end
   
   def recipe_files
-    node = params.has_key?('node') ? params[:node] : nil 
-    @recipe_files = load_all_files(:recipes, node)
+    # node = params.has_key?('node') ? params[:node] : nil 
+    # @recipe_files = load_all_files(:recipes, node)
+    r = Chef::REST.new(Chef::Config[:chef_server_url])
+    @recipe_files = r.get_rest("cookbooks/#{params[:id]}/recipes")        
     display @recipe_files
   end
 
   def attribute_files
-    node = params.has_key?('node') ? params[:node] : nil 
-    @attribute_files = load_all_files(:attributes, node)
+    r = Chef::REST.new(Chef::Config[:chef_server_url])
+    @recipe_files = r.get_rest("cookbooks/#{params[:id]}/attributes")
     display @attribute_files
   end
   
   def definition_files
-    node = params.has_key?('node') ? params[:node] : nil 
-    @definition_files = load_all_files(:definitions, node)
+    r = Chef::REST.new(Chef::Config[:chef_server_url])
+    @recipe_files = r.get_rest("cookbooks/#{params[:id]}/definitions")
     display @definition_files
   end
   
   def library_files
-    node = params.has_key?('node') ? params[:node] : nil 
-    @lib_files = load_all_files(:libraries, node)
+    r = Chef::REST.new(Chef::Config[:chef_server_url])
+    @recipe_files = r.get_rest("cookbooks/#{params[:id]}/libraries")
     display @lib_files
   end
   

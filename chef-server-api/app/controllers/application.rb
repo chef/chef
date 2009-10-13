@@ -75,7 +75,7 @@ class ChefServerApi::Application < Merb::Controller
              Chef::Log.debug("Headers in authenticate_every: #{headers.inspect}")
              username = headers[:x_ops_userid].chomp
              Chef::Log.info("Authenticating client #{username}")
-             user = Chef::ApiClient.load(username)
+             user = Chef::ApiClient.cdb_load(username)
              Chef::Log.debug("Found API Client: #{user.inspect}")
              user_key = OpenSSL::PKey::RSA.new(user.public_key)
              Chef::Log.debug "Authenticating:\n #{user.inspect}\n"
@@ -104,7 +104,7 @@ class ChefServerApi::Application < Merb::Controller
     if @auth_user.admin || @auth_user.name == params[:id]
       true
     else
-      raise Unauthorized, "You are not the correct node, or are not an API administrator."
+      raise Unauthorized, "You are not the correct node (auth_user name: #{@auth_user.name}, params[:id]: #{params[:id]}), or are not an API administrator (admin: #{@auth_user.admin})."
     end
   end
   

@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -161,7 +162,7 @@ class Chef
     
     # List all the Chef::ApiClient objects in the CouchDB.  If inflate is set
     # to true, you will get the full list of all ApiClients, fully inflated.
-    def self.list(inflate=false)
+    def self.cdb_list(inflate=false)
       couchdb = Chef::CouchDB.new
       rs = couchdb.list("clients", inflate)
       if inflate
@@ -171,27 +172,72 @@ class Chef
       end
     end
     
+    def self.list(inflate=false)
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      if inflate
+        response = Hash.new
+        Chef::Search::Query.new.search(:client) do |n|
+          response[n.name] = n
+        end
+        response
+      else
+        r.get_rest("clients")
+      end
+    end
+    
     # Load a client by name from CouchDB
     # 
     # @params [String] The name of the client to load
     # @return [Chef::ApiClient] The resulting Chef::ApiClient object
-    def self.load(name)
+    def self.cdb_load(name)
       couchdb = Chef::CouchDB.new
       couchdb.load("client", name)
+    end
+    
+    # Load a client by name via the API
+    def self.load(name)
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.get_rest("clients/#{name}")
     end
     
     # Remove this client from the CouchDB
     #
     # @params [String] The name of the client to delete
     # @return [Chef::ApiClient] The last version of the object
-    def destroy
+    def cdb_destroy
       @couchdb.delete("client", @name, @couchdb_rev)
     end
     
+    # Remove this client via the REST API
+    def destroy
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.delete_rest("clients/#{@name}")
+    end
+    
     # Save this client to the CouchDB
-    def save
+    def cdb_save
       results = @couchdb.store("client", @name, self)
       @couchdb_rev = results["rev"]
+    end
+    
+    # Save this client via the REST API, returns a hash including the private key
+    def save
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      res = begin
+              r.put_rest("clients/#{@name}", self)
+            rescue Net::HTTPServerException => e
+              if e.response.code == "404"
+                r.post_rest("clients", self)
+              else
+                raise e
+              end
+            end
+    end
+    
+    # Create the client via the REST API
+    def create
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.post_rest("clients", self)
     end
     
     # Set up our CouchDB design document

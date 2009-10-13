@@ -15,7 +15,7 @@ class ChefServerApi::Roles < ChefServerApi::Application
   # GET /roles/:id
   def show
     begin
-      @role = Chef::Role.load(params[:id])
+      @role = Chef::Role.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load role #{params[:id]}"
     end
@@ -28,13 +28,13 @@ class ChefServerApi::Roles < ChefServerApi::Application
     @role = params["inflated_object"]
     exists = true 
     begin
-      Chef::Role.load(@role.name)
+      Chef::Role.cdb_load(@role.name)
     rescue Chef::Exceptions::CouchDBNotFound
       exists = false 
     end
     raise Forbidden, "Role already exists" if exists
 
-    @role.save
+    @role.cdb_save
     
     self.status = 201
     display({ :uri => absolute_slice_url(:role, :id => @role.name)  })
@@ -43,7 +43,7 @@ class ChefServerApi::Roles < ChefServerApi::Application
   # PUT /roles/:id
   def update
     begin
-      @role = Chef::Role.load(params[:id])
+      @role = Chef::Role.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load role #{params[:id]}"
     end
@@ -52,7 +52,7 @@ class ChefServerApi::Roles < ChefServerApi::Application
     @role.recipes(params["inflated_object"].recipes)
     @role.default_attributes(params["inflated_object"].default_attributes)
     @role.override_attributes(params["inflated_object"].override_attributes)
-    @role.save
+    @role.cdb_save
     self.status = 200
     @role.couchdb_rev = nil
     display(@role)
@@ -61,11 +61,11 @@ class ChefServerApi::Roles < ChefServerApi::Application
   # DELETE /roles/:id
   def destroy
     begin
-      @role = Chef::Role.load(params[:id])
+      @role = Chef::Role.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load role #{params[:id]}"
     end
-    @role.destroy
+    @role.cdb_destroy
     display @role
   end
 

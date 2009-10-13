@@ -257,9 +257,9 @@ class Chef
                                                            false)["version"].gsub(/-.+/,"").to_f
       case Chef::Config[:couchdb_version]
       when 0.8
-        "#{Chef::Config[:couchdb_database]}/_view/#{design}/#{view}"
+        "#{couchdb_database}/_view/#{design}/#{view}"
       else
-        "#{Chef::Config[:couchdb_database]}/_design/#{design}/_view/#{view}"
+        "#{couchdb_database}/_design/#{design}/_view/#{view}"
       end
     end
     

@@ -157,15 +157,15 @@ Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|
     if stash_key == "bobo"
       r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
       r.register("bobo", "#{tmpdir}/bobo.pem")
-      c = Chef::ApiClient.load("bobo")
+      c = Chef::ApiClient.cdb_load("bobo")
       c.admin(true)
-      c.save
+      c.cdb_save
       @rest = Chef::REST.new(Chef::Config[:registration_url], 'bobo', "#{tmpdir}/bobo.pem")
     elsif stash_key == "not_admin"
       r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
       r.register("not_admin", "#{tmpdir}/not_admin.pem")
-      c = Chef::ApiClient.load("not_admin")
-      c.save
+      c = Chef::ApiClient.cdb_load("not_admin")
+      c.cdb_save
       @rest = Chef::REST.new(Chef::Config[:registration_url], 'not_admin', "#{tmpdir}/not_admin.pem")
     end
   else 

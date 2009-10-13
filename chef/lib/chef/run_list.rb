@@ -133,7 +133,7 @@ class Chef
             role = r.get_rest("roles/#{name}")
           elsif from == 'couchdb'
             # Load the role from couchdb
-            role = Chef::Role.load(name, couchdb)
+            role = Chef::Role.cdb_load(name, couchdb)
           end
           role.recipes.each { |r| recipes <<  r unless recipes.include?(r) }
           default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, role.default_attributes)

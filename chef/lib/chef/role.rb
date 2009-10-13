@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -171,13 +172,19 @@ class Chef
     end
     
     # Load a role by name from CouchDB
-    def self.load(name)
+    def self.cdb_load(name)
       couchdb = Chef::CouchDB.new
       couchdb.load("role", name)
     end
     
+    # Load a role by name from the API
+    def self.load(name)
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.get_rest("roles/#{name}")
+    end
+    
     # Remove this role from the CouchDB
-    def destroy
+    def cdb_destroy
       @couchdb.delete("role", @name, @couchdb_rev)
 
       if Chef::Config[:couchdb_version] == 0.9
@@ -185,22 +192,57 @@ class Chef
         rs["rows"].each do |row| 
           node = row["doc"]
           node.run_list.remove("role[#{@name}]")
-          node.save
+          node.cdb_save
         end
       else
-       Chef::Node.list.each do |node|
-         n = Chef::Node.load(node)
+       Chef::Node.cdb_list.each do |node|
+         n = Chef::Node.cdb_load(node)
          n.run_list.remove("role[#{@name}]")
-         n.save
+         n.cdb_save
        end
       end
     end
     
+    # Remove this role via the REST API
+    def destroy
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.delete_rest("roles/#{@name}")
+      
+      Chef::Node.list.each do |node|
+        n = Chef::Node.load(node[0])
+        n.run_list.remove("role[#{@name}]")
+        n.save
+      end
+      
+    end
+    
     # Save this role to the CouchDB
-    def save
+    def cdb_save
       results = @couchdb.store("role", @name, self)
       @couchdb_rev = results["rev"]
     end
+    
+    # Save this role via the REST API
+    def save
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      begin
+        r.put_rest("roles/#{@name}", self)
+      rescue Net::HTTPServerException => e
+        if e.response.code == "404"
+          r.post_rest("roles", self)
+        else
+          raise e
+        end
+      end
+      self
+    end
+    
+    # Create the role via the REST API
+    def create
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.post_rest("roles", self)
+      self
+    end 
     
     # Set up our CouchDB design document
     def self.create_design_document
@@ -236,13 +278,13 @@ class Chef
         Chef::Log.warn("Loading #{short_name}")
         r = Chef::Role.from_disk(short_name, "json")
         begin
-          couch_role = Chef::Role.load(short_name)
+          couch_role = Chef::Role.cdb_load(short_name)
           r.couchdb_rev = couch_role.couchdb_rev
           Chef::Log.debug("Replacing role #{short_name} with data from #{role_file}")
         rescue Chef::Exceptions::CouchDBNotFound 
           Chef::Log.debug("Creating role #{short_name} with data from #{role_file}")
         end
-        r.save
+        r.cdb_save
       end
     end
 

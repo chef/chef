@@ -5,6 +5,6 @@
       %table.table
         %tr
           %th.first Cookbook Name
-          - @cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }.each_with_index do |cookbook, index|
+          - @cl.sort.each_with_index do |cookbook, index|
             %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-              %td= link_to cookbook.name, slice_url(:cookbook, { :id => cookbook.name })
+              %td= link_to cookbook[0], slice_url(:cookbook, { :id => cookbook[0] })

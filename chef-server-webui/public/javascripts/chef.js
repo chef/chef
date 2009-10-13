@@ -50,6 +50,16 @@ $(document).ready(function(){
     });
   });
 
+  $('form#edit_client, form#create_client').submit(function(event) {
+    var form = $(this);
+    if (form.attr('id') == 'edit_client') {
+      form.append('<input type="hidden" name="_method" value="put">');
+    }
+    form.append($('input#client_name')).css('display', 'none');
+    form.append($('input#client_admin')).css('display', 'none');
+    form.append($('input#client_private_key')).css('display', 'none');
+  });
+
   // livequery hidden form for link_to ajax magic
   $('a[method]').livequery(function(){
     var message = $(this).attr('confirm');

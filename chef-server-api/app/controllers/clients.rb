@@ -1,3 +1,22 @@
+#
+# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
+# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 require 'chef/api_client'
 
 class ChefServerApi::Clients < ChefServerApi::Application
@@ -9,18 +28,19 @@ class ChefServerApi::Clients < ChefServerApi::Application
   
   # GET /clients
   def index
-    @list = Chef::ApiClient.list(true)
+    @list = Chef::ApiClient.cdb_list(true)
     display(@list.inject({}) { |result, element| result[element.name] = absolute_slice_url(:client, :id => element.name); result })
   end
 
   # GET /clients/:id
   def show
     begin
-      @client = Chef::ApiClient.load(params[:id])
+      @client = Chef::ApiClient.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load client #{params[:id]}"
     end
-    display({ :name => @client.name, :admin => @client.admin })
+    #display({ :name => @client.name, :admin => @client.admin, :public_key => @client.public_key })
+    display @client
   end
 
   # POST /clients
@@ -32,7 +52,7 @@ class ChefServerApi::Clients < ChefServerApi::Application
     end
 
     begin
-      Chef::ApiClient.load(params[:name])
+      Chef::ApiClient.cdb_load(params[:name])
     rescue Chef::Exceptions::CouchDBNotFound
       exists = false 
     end
@@ -42,7 +62,7 @@ class ChefServerApi::Clients < ChefServerApi::Application
     @client.name(params[:name])
     @client.admin(params[:admin]) if params[:admin]
     @client.create_keys
-    @client.save
+    @client.cdb_save
     
     self.status = 201
     headers['Location'] = absolute_slice_url(:client, @client.name)
@@ -57,12 +77,12 @@ class ChefServerApi::Clients < ChefServerApi::Application
     end
 
     begin
-      @client = Chef::ApiClient.load(params[:id])
+      @client = Chef::ApiClient.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load client #{params[:id]}"
     end
     
-    @client.admin(params[:admin]) if params[:admin]
+    @client.admin(params[:admin]) unless params[:admin].nil?
 
     results = { :name => @client.name, :admin => @client.admin }
 
@@ -71,19 +91,19 @@ class ChefServerApi::Clients < ChefServerApi::Application
       results[:private_key] = @client.private_key
     end
 
-    @client.save
+    @client.cdb_save
 
     display(results)
   end
 
-  # DELETE /roles/:id
+  # DELETE /clients/:id
   def destroy
     begin
-      @client = Chef::ApiClient.load(params[:id])
+      @client = Chef::ApiClient.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load client #{params[:id]}"
     end
-    @client.destroy
+    @client.cdb_destroy
     display({ :name => @client.name })
   end
 
