@@ -50,6 +50,8 @@ class Chef
     #
     class Deploy < Chef::Resource
       
+      provider_base Chef::Provider::Deploy
+      
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)
         @resource_name = :deploy
@@ -69,7 +71,7 @@ class Chef
         @shallow_clone = false
         @force_deploy = false
         @scm_provider = Chef::Provider::Git
-        @provider = Chef::Provider::Deploy
+        @provider = Chef::Provider::Deploy::Timestamped
         @allowed_actions.push(:deploy, :rollback)
       end
       

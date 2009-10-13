@@ -177,4 +177,23 @@ describe Chef::Resource::Deploy do
     @resource.restart.should == restart_like_this
   end
   
+  it "defaults to using the Deploy::Timestamped provider" do
+    @resource.provider.should == Chef::Provider::Deploy::Timestamped
+  end
+  
+  it "allows providers to be set with a full class name" do
+    @resource.provider Chef::Provider::Deploy::Timestamped
+    @resource.provider.should == Chef::Provider::Deploy::Timestamped
+  end
+  
+  it "allows deploy providers to be set via symbol" do
+    @resource.provider :revision
+    @resource.provider.should == Chef::Provider::Deploy::Revision
+  end
+  
+  it "allows deploy providers to be set via string" do
+    @resource.provider "revision"
+    @resource.provider.should == Chef::Provider::Deploy::Revision
+  end
+  
 end
