@@ -26,7 +26,7 @@ class Chef
     
     include Chef::Mixin::ParamsValidate
     
-    def initialize(node, collection, definitions=nil, cookbook_loader=nil)
+    def initialize(node, collection, definitions={}, cookbook_loader=nil)
       validate(
         {
           :node => node,

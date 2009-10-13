@@ -28,7 +28,7 @@ class Chef
     
     attr_accessor :node, :new_resource, :current_resource
     
-    def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
+    def initialize(node, new_resource, collection=nil, definitions={}, cookbook_loader=nil)
       @node = node
       @new_resource = new_resource
       @current_resource = nil
