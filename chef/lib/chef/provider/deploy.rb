@@ -60,6 +60,34 @@ class Chef
       end
       
       def action_deploy
+        if all_releases.include?(release_path)
+          Chef::Log.info("Already deployed app at #{release_path}, skipping. Use action :force_deploy to force.")
+        else
+          deploy
+        end
+      end
+      
+      def action_force_deploy
+        if all_releases.include?(release_path)
+          Chef::Log.info("Already deployed app at #{release_path}, forcing.")
+          FileUtils.rm_rf(release_path)
+        end
+        deploy
+      end
+      
+      def action_rollback
+        @release_path = all_releases[-2]
+        raise RuntimeError, "There is no release to rollback to!" unless @release_path
+        release_to_nuke = all_releases.last
+        Chef::Log.info "rolling back to previous release: #{release_path}"
+        symlink
+        Chef::Log.info "removing last release: #{release_to_nuke}"
+        FileUtils.rm_rf release_to_nuke
+        Chef::Log.info "restarting with previous release"
+        restart
+      end
+      
+      def deploy
         Chef::Log.info "deploying branch: #{@new_resource.branch}"
         enforce_ownership
         update_cached_repo
@@ -74,18 +102,6 @@ class Chef
         restart
         callback(:after_restart, @new_resource.after_restart)
         cleanup!
-      end
-      
-      def action_rollback
-        @release_path = all_releases[-2]
-        raise RuntimeError, "There is no release to rollback to!" unless @release_path
-        release_to_nuke = all_releases.last
-        Chef::Log.info "rolling back to previous release: #{release_path}"
-        symlink
-        Chef::Log.info "removing last release: #{release_to_nuke}"
-        FileUtils.rm_rf release_to_nuke
-        Chef::Log.info "restarting with previous release"
-        restart
       end
       
       def callback(what, callback_code=nil)
@@ -162,8 +178,8 @@ class Chef
       def copy_cached_repo
         Chef::Log.info "copying the cached checkout to #{release_path}"
         FileUtils.mkdir_p(@new_resource.deploy_to + "/releases")
-        FileUtils.cp_r(@new_resource.destination, release_path, :preserve => true)
-        release_created
+        FileUtils.cp_r("#{@new_resource.destination}.", release_path, :preserve => true)
+        release_created(release_path)
       end
       
       def enforce_ownership
@@ -213,7 +229,7 @@ class Chef
       
       # Internal callback, called after copy_cached_repo.
       # Override if you need to keep state externally.
-      def release_created
+      def release_created(release_path)
       end
       
       # Internal callback, called during cleanup! for each old release removed.

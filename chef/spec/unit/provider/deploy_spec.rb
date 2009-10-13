@@ -51,7 +51,33 @@ describe Chef::Provider::Deploy do
     @provider.should_receive(:restart)
     @provider.should_receive(:callback).with(:after_restart, nil)
     @provider.should_receive(:cleanup!)
+    @provider.deploy
+  end
+  
+  it "does not deploy when using the :deploy action if there is already a deploy at release_path" do
+    @provider.stub!(:all_releases).and_return([@expected_release_dir])
+    @provider.should_not_receive(:enforce_ownership)
+    @provider.should_not_receive(:update_cached_repo)
     @provider.action_deploy
+  end
+  
+  it "calls deploy when deploying a new release" do
+    @provider.stub!(:all_releases).and_return([])
+    @provider.should_receive(:deploy)
+    @provider.action_deploy
+  end
+  
+  it "Removes the old release before deploying when force deploying over it" do
+    @provider.stub!(:all_releases).and_return([@expected_release_dir])
+    FileUtils.should_receive(:rm_rf).with(@expected_release_dir)
+    @provider.should_receive(:deploy)
+    @provider.action_force_deploy
+  end
+  
+  it "deploys as normal when force deploying and there's no prior release at the same path" do
+    @provider.stub!(:all_releases).and_return([])
+    @provider.should_receive(:deploy)
+    @provider.action_force_deploy
   end
   
   it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
@@ -118,7 +144,7 @@ describe Chef::Provider::Deploy do
   
   it "makes a copy of the cached repo in releases dir" do
     FileUtils.should_receive(:mkdir_p).with("/my/deploy/dir/releases")
-    FileUtils.should_receive(:cp_r).with( "/my/deploy/dir/shared/cached-copy/", 
+    FileUtils.should_receive(:cp_r).with( "/my/deploy/dir/shared/cached-copy/.", 
                                           @expected_release_dir, 
                                           :preserve => true)
     @provider.copy_cached_repo
