@@ -12,7 +12,7 @@
             %th.last &nbsp;
           - even = false
           - if @node_list.empty?
-            %td{:colspan => 4}= "You appear to have no nodes - try connecting one, or validating an existing #{link_to('registration', slice_url(:registrations))}"
+            %td{:colspan => 4}= "You appear to have no nodes - try connecting one, or creating or editing a #{link_to('client', slice_url(:clients))}"
           - else
             - @node_list.each do |node, node_url|
               %tr{:class => even ? "even": "odd" }
