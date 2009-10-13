@@ -22,8 +22,7 @@ require 'chef/solr/query'
 class ChefServerApi::Search < ChefServerApi::Application
   provides :json
  
-  # TODO: this before filter is commented out at this time for testing the webui work. This should be added back in the future [nuo]
-  #before :authenticate_every
+  before :authenticate_every
   
   def index
     indexes = valid_indexes
