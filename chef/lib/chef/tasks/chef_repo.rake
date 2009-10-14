@@ -33,7 +33,6 @@ task :update do
     sh %{svn up}
   when :git
     pull = false
-    pull = true if File.join(TOPDIR, ".git", "remotes", "origin")
     IO.foreach(File.join(TOPDIR, ".git", "config")) do |line|
       pull = true if line =~ /\[remote "origin"\]/
     end
