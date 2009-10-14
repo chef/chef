@@ -32,7 +32,7 @@ class Chef
     include Chef::Mixin::Language
     include Chef::Mixin::ConvertToClassName
     
-    attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name
+    attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name, :enclosing_provider
     attr_reader :resource_name, :source_line, :node
     
     def initialize(name, collection=nil, node=nil)
@@ -59,6 +59,17 @@ class Chef
       if sline
         @source_line = sline.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
         @source_line = ::File.expand_path(@source_line) if @source_line
+      end
+    end
+
+    # If an unknown method is invoked, determine whether the enclosing Provider's
+    # lexical scope can fulfill the request. E.g. This happens when the Resource's
+    # block invokes new_resource.
+    def method_missing(method_symbol, *args, &block)
+      if enclosing_provider && enclosing_provider.respond_to?(method_symbol)
+        enclosing_provider.send(method_symbol, *args, &block)
+      else
+        raise NoMethodError, "undefined method `#{method_symbol.to_s}' for #{self.class.to_s}"
       end
     end
     

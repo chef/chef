@@ -68,13 +68,13 @@ describe Chef::Provider do
     
     injector = Chef::Resource::LwrpFoo.new("morpheus")
     injector.action(:pass_buck)
-    injector.provider(Chef::Provider::LwrpBuckPasser)
+    injector.provider(:lwrp_buck_passer)
     dummy = Chef::Resource::ZenMaster.new("keanu reeves")
     dummy.provider(Chef::Provider::Easy)
     rc.insert(injector)
     rc.insert(dummy)
     
-    Chef::Runner.new(node, rc, {}).converge
+    Chef::Runner.new(node, rc).converge
     
     rc[0].should eql(injector)
     rc[1].name.should eql(:prepared_thumbs)
@@ -88,10 +88,10 @@ describe Chef::Provider do
     
     injector = Chef::Resource::LwrpFoo.new("morpheus")
     injector.action(:pass_buck)
-    injector.provider(Chef::Provider::LwrpBuckPasser)
+    injector.provider(:lwrp_buck_passer)
     injector2 = Chef::Resource::LwrpBar.new("tank")
     injector2.action(:pass_buck)
-    injector2.provider(Chef::Provider::LwrpBuckPasser2)
+    injector2.provider(:lwrp_buck_passer_2)
     dummy = Chef::Resource::ZenMaster.new("keanu reeves")
     dummy.provider(Chef::Provider::Easy)
     
@@ -99,7 +99,7 @@ describe Chef::Provider do
     rc.insert(dummy)
     rc.insert(injector2)
     
-    Chef::Runner.new(node, rc, {}).converge
+    Chef::Runner.new(node, rc).converge
     
     rc[0].should eql(injector)
     rc[1].name.should eql(:prepared_thumbs)
@@ -108,6 +108,36 @@ describe Chef::Provider do
     rc[4].should eql(injector2)
     rc[5].name.should eql(:prepared_eyes)
     rc[6].name.should eql(:dried_paint_watched)
+  end
+
+  it "should properly handle a new_resource reference" do
+    node = Chef::Node.new
+    rc = Chef::ResourceCollection.new
+    
+    res = Chef::Resource::LwrpFoo.new("morpheus")
+    res.monkey("bob")
+    res.action(:twiddle_thumbs)
+    res.provider(:lwrp_monkey_name_printer)
+    rc.insert(res)
+
+    STDOUT.should_receive(:write).with("my monkey's name is 'bob'").exactly(:once)
+    STDOUT.should_receive(:write).with("\n").exactly(:once)
+    Chef::Runner.new(node, rc).converge
+  end
+
+  it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
+    node = Chef::Node.new
+    rc = Chef::ResourceCollection.new
+    
+    res = Chef::Resource::LwrpFoo.new("morpheus")
+    res.monkey("bob")
+    res.action(:twiddle_thumbs)
+    res.provider(:lwrp_embedded_resource_accesses_providers_scope)
+    rc.insert(res)
+    
+    STDOUT.should_receive(:write).with("my monkey's name is 'bob, the monkey'").exactly(:once)
+    STDOUT.should_receive(:write).with("\n").exactly(:once)
+    Chef::Runner.new(node, rc).converge
   end
   
 end
