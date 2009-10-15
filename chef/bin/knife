@@ -34,8 +34,8 @@ class Knife < Thor
   end
 
   desc "show_node", "Show a node"
-  method_options :node => :required, :attribute => :string, :run_list => :boolean 
-  def show_node 
+  method_options :node => :required, :attribute => :string, :run_list => :boolean
+  def show_node
     setup
     node = get_node
     display = node
@@ -85,7 +85,7 @@ class Knife < Thor
 
   desc "delete_node", "Delete a node"
   method_options :node => :required
-  def delete_node 
+  def delete_node
     setup
     destroy_node
     puts "Done."
@@ -97,7 +97,7 @@ class Knife < Thor
     nodelist = get_list("nodes")
     destroy_nodes(nodelist)
   end
-  
+
   desc "add_node_recipe", "Add a recipe to a node"
   method_options :recipe => :required, :after => :string, :node => :required
   def add_node_recipe
@@ -140,7 +140,7 @@ class Knife < Thor
 
   desc "add_node_run_list", "Add an item to the run list for a node"
   method_options :item => :required, :after => :string, :node => :required
-  def add_node_run_list 
+  def add_node_run_list
     setup
     node = get_node
     add_to_run_list(node, options[:item], options[:after])
@@ -150,7 +150,7 @@ class Knife < Thor
 
   desc "remove_node_run_list", "Remove an item from the run list for a node"
   method_options :item => :required, :node => :required
-  def remove_node_run_list 
+  def remove_node_run_list
     setup
     node = get_node
     node.run_list.remove(options[:item])
@@ -169,22 +169,26 @@ class Knife < Thor
   end
 
   desc "create_role", "Create a Role"
-  method_options :role => :required, :description => :string
+  method_options :role => :required, :rbfile => :string, :description => :string
   def create_role
     setup
-    role = {
-      "name" => options[:role],
-      "description" => options[:description] || "DESCRIPTION",
-      "recipes" => [],
-      "default_attributes" => { },
-      "override_attributes" => { }
-    }
+    if options[:rbfile]
+      role = get_role
+    else
+      role = {
+        "name" => options[:role],
+        "description" => options[:description] || "DESCRIPTION",
+        "recipes" => [],
+        "default_attributes" => { },
+        "override_attributes" => { },
+        "chef_type" => "role",
+        "json_class" => "Chef::Role"
+      }
+    end
     result = JSON.parse(edit_data(role))
-    result["chef_type"] = "role"
-    result["json_class"] = "Chef::Role"
     @rest.post_rest("roles", result)
   end
-  
+
   desc "show_role", "Show a role"
   method_options :role => :required
   def show_role
@@ -193,7 +197,7 @@ class Knife < Thor
   end
 
   desc "edit_role", "Edit a Role"
-  method_options :role => :required
+  method_options :role => :required, :rbfile => :string
   def edit_role
     setup
     role = get_role
@@ -221,8 +225,8 @@ class Knife < Thor
   desc "create_client", "Create a Client"
   method_options :client => :required, :key => :required
   def create_client
-    validation_name = ENV["OPSCODE_USER"] 
-    validation_key =  ENV["OPSCODE_KEY"] 
+    validation_name = ENV["OPSCODE_USER"]
+    validation_key =  ENV["OPSCODE_KEY"]
 
     @vr = Chef::REST.new(Chef::Config[:chef_server_url], validation_name, validation_key)
     @vr.register(options[:client], options[:key])
@@ -302,7 +306,7 @@ class Knife < Thor
     rescue Net::HTTPServerException
       raise unless $!.message =~ /Not Found/
       puts "No cookbook part found for cookbook '#{options[:cookbook]}', definition '#{options[:file]}'"
-    end    
+    end
   end
 
   desc "show_cookbook_file", "Show a remote file in a cookbook"
@@ -313,7 +317,7 @@ class Knife < Thor
     opts[:fqdn] = options[:fqdn] if options.has_key?(:fqdn)
     opts[:platform] = options[:platform] if options.has_key?(:platform)
     opts[:version] = options[:version] if options.has_key?(:version)
-    
+
     begin
       puts get_cookbook_part("files", opts)
     rescue Net::HTTPServerException
@@ -321,7 +325,7 @@ class Knife < Thor
       puts "No file found for cookbook '#{options[:cookbook]}', file '#{options[:file]}'"
     end
   end
-  
+
   desc "show_cookbook_library", "Show a library file in a cookbook"
   method_options :cookbook => :required, :file => :required
   def show_cookbook_library
@@ -343,7 +347,7 @@ class Knife < Thor
     rescue Net::HTTPServerException
       raise unless $!.message =~ /Not Found/
       puts "No recipe found for cookbook '#{options[:cookbook]}', recipe '#{options[:file]}'"
-    end    
+    end
   end
 
   desc "show_cookbook_template", "Show a template file in a cookbook"
@@ -354,13 +358,13 @@ class Knife < Thor
     opts[:fqdn] = options[:fqdn] if options.has_key?(:fqdn)
     opts[:platform] = options[:platform] if options.has_key?(:platform)
     opts[:version] = options[:version] if options.has_key?(:version)
-    
+
     begin
       puts get_cookbook_part("templates", opts)
     rescue Net::HTTPServerException
       raise unless $!.message =~ /Not Found/
       puts "No template found for cookbook '#{options[:cookbook]}', recipe '#{options[:file]}'"
-    end    
+    end
   end
 
   desc "download_cookbook", "Download a tarball of a cookbook"
@@ -379,11 +383,11 @@ class Knife < Thor
     setup
     begin
       destroy_cookbook
-      puts "Done."      
+      puts "Done."
     rescue Net::HTTPServerException
       raise unless $!.message =~ /Not Found/
       puts "No cookbook found for name '#{options[:cookbook]}'"
-    end          
+    end
   end
 
   #############
@@ -394,7 +398,7 @@ class Knife < Thor
     setup
     puts JSON.pretty_generate(get_list("data"))
   end
-   
+
   desc "create_data", "Create a Data Bag"
   method_options :bag => :required
   def create_data
@@ -405,7 +409,7 @@ class Knife < Thor
     result = JSON.parse(edit_data(bag))
     @rest.post_rest("data", result)
   end
-  
+
   desc "show_data", "Show a Data Bag"
   method_options :bag => :required
   def show_data
@@ -426,7 +430,7 @@ class Knife < Thor
   def create_item
     setup
     item = {
-      "id" => options[:id]   
+      "id" => options[:id]
     }
     result = JSON.parse(edit_data(item))
     @rest.put_rest("data/#{options[:bag]}/#{options[:id]}", result)
@@ -456,7 +460,7 @@ class Knife < Thor
     destroy_item
     puts "Done."
   end
-  
+
   ##########
   # Search #
   ##########
@@ -482,7 +486,7 @@ class Knife < Thor
       results["rows"].each do |item|
         is_dbi = false
         if item.kind_of?(Chef::DataBagItem)
-          is_dbi = true 
+          is_dbi = true
           data = item.raw_data
         else
           data = item
@@ -514,7 +518,7 @@ class Knife < Thor
     attributes["run_list"] = options[:run_list].split(" ")
     data = {
       "chef_server" => Chef::Config[:chef_server_url],
-      "validation_client_name" => Chef::Config[:validation_client_name], 
+      "validation_client_name" => Chef::Config[:validation_client_name],
       "validation_key" => IO.read(Chef::Config[:validation_key]),
       "attributes" => attributes
     }
@@ -523,7 +527,7 @@ class Knife < Thor
     puts output
   end
 
-#### 
+####
 # Support
 ###################################################
   no_tasks {
@@ -536,7 +540,7 @@ class Knife < Thor
     end
 
     def get_cookbook_part(part, req_opts)
-      query_part = make_query_params(req_opts) 
+      query_part = make_query_params(req_opts)
       @rest.get_rest("cookbooks/#{options[:cookbook]}/#{part}?#{query_part}")
     end
 
@@ -573,8 +577,8 @@ class Knife < Thor
       puts "Storing node data for #{expand_node(options[:node])}..."
       begin
         retries = 5
-        @rest.put_rest("nodes/#{expand_node(options[:node])}", node)    
-      rescue Net::HTTPFatalError 
+        @rest.put_rest("nodes/#{expand_node(options[:node])}", node)
+      rescue Net::HTTPFatalError
         retry if (retries -= 1) > 0
       end
       puts "Done."
@@ -599,15 +603,22 @@ class Knife < Thor
     end
 
     def get_role
-      @rest.get_rest("roles/#{options[:role]}")
+      if options[:rbfile]
+        puts "Loading #{options[:role]} from #{options[:rbfile]}"
+        Chef::Config[:role_path] = File.join(Dir.getwd, "roles")
+        short_name = File.basename(options[:rbfile], ".rb")
+        Chef::Role.from_disk(short_name, "ruby")
+      else
+        @rest.get_rest("roles/#{options[:role]}")
+      end
     end
 
     def save_role(role)
       puts "Storing role data for #{options[:role]}..."
       retries = 5
       begin
-        @rest.put_rest("roles/#{options[:role]}", role)    
-      rescue Errno::ECONNREFUSED 
+        @rest.put_rest("roles/#{options[:role]}", role)
+      rescue Errno::ECONNREFUSED
         puts "Could not connect - trying again"
         retry if (retries -= 1) > 0
       end
@@ -665,7 +676,7 @@ class Knife < Thor
 
     def add_to_run_list(node, new_value, after=nil)
       if after
-        nlist = [] 
+        nlist = []
         node.run_list.each do |entry|
           nlist << entry
           if entry == after
@@ -674,7 +685,7 @@ class Knife < Thor
         end
         node.run_list.reset(nlist)
       else
-        node.run_list << new_value 
+        node.run_list << new_value
       end
     end
 
@@ -688,5 +699,4 @@ class Knife < Thor
   }
 end
 
-  
 Knife.start
