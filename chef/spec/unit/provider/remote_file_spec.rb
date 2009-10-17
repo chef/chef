@@ -165,34 +165,57 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     @provider.should_receive(:checksum).with(@tempfile.path).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     do_remote_file
   end
-  
-  describe "when the target file already exists" do
+
+  describe "when the target file does not exist" do
     before do
-      ::File.stub!(:exists?).and_return(true)
+      ::File.stub!(:exists?).with(@resource.path).and_return(false)
       @provider.stub!(:get_from_server).and_return(@tempfile)
     end
 
-    it "should backup the original file if it is different" do
-      @provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924ab")
-      @provider.should_receive(:backup).with(@resource.path).and_return(true)
+    it "should copy the raw file to the new resource" do
+      FileUtils.should_receive(:cp).with(@tempfile.path, @resource.path).and_return(true)    
       do_remote_file
+    end
+
+    it "should set the new resource to updated" do
+      @resource.should_receive(:updated=).with(true)    
+      do_remote_file
+    end
+  end
+  
+  describe "when the target file already exists" do
+    before do
+      ::File.stub!(:exists?).with(@resource.path).and_return(true)
+      @provider.stub!(:get_from_server).and_return(@tempfile)
+    end
+
+    describe "and the checksum doesn't match" do
+      before do
+        @provider.
+          current_resource.
+          checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924ab")
+      end
+
+      it "should backup the original file" do
+        @provider.should_receive(:backup).with(@resource.path).and_return(true)
+        do_remote_file
+      end
+
+      it "should copy the raw file to the new resource" do
+        FileUtils.should_receive(:cp).with(@tempfile.path, @resource.path).and_return(true)    
+        do_remote_file
+      end
+
+      it "should set the new resource to updated" do
+        @resource.should_receive(:updated=).with(true)    
+        do_remote_file
+      end
     end
 
     it "shouldn't backup the original file when it's the same" do
       @provider.should_not_receive(:backup).with(@resource.path).and_return(true)
       do_remote_file
     end
-
-  end
-  
-  it "should set the new resource to updated" do
-    @resource.should_receive(:updated=).with(true)    
-    do_remote_file
-  end
-  
-  it "should copy the raw file to the new resource" do
-    FileUtils.should_receive(:cp).with(@tempfile.path, @resource.path).and_return(true)    
-    do_remote_file
   end
   
   it "should set the owner if provided" do

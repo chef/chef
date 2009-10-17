@@ -78,6 +78,26 @@ describe Chef::Resource::Cron do
     @resource.weekday.should eql("2")
   end
 
+  it "should allow you to specify the mailto variable" do
+    @resource.mailto "test@example.com"
+    @resource.mailto.should eql("test@example.com")
+  end
+
+  it "should allow you to specify the path" do
+    @resource.path "/usr/bin:/usr/sbin"
+    @resource.path.should eql("/usr/bin:/usr/sbin")
+  end
+
+  it "should allow you to specify the home directory" do
+    @resource.home "/root"
+    @resource.home.should eql("/root")
+  end
+
+  it "should allow you to specify the shell to run the command with" do
+    @resource.shell "/bin/zsh"
+    @resource.shell.should eql("/bin/zsh")
+  end
+
   it "should allow * for all time and date values" do
     [ "minute", "hour", "day", "month", "weekday" ].each do |x|
       @resource.send(x, "*").should eql("*")

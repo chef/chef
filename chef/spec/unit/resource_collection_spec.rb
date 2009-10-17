@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,6 +57,37 @@ describe Chef::ResourceCollection do
     end
   end
   
+  describe "insert" do 
+    it "should accept only Chef::Resources" do
+      lambda { @rc.insert(@resource) }.should_not raise_error
+      lambda { @rc.insert("string") }.should raise_error
+    end
+    
+    it "should append resources to the end of the collection when not executing a run" do
+      zmr = Chef::Resource::ZenMaster.new("there is no spoon")
+      @rc.insert(@resource)
+      @rc.insert(zmr)
+      @rc[0].should eql(@resource)
+      @rc[1].should eql(zmr)
+    end
+    
+    it "should insert resources to the middle of the collection if called while executing a run" do
+      resource_to_inject = Chef::Resource::ZenMaster.new("there is no spoon")
+      zmr = Chef::Resource::ZenMaster.new("morpheus")
+      dummy = Chef::Resource::ZenMaster.new("keanu reeves")
+      @rc.insert(zmr)
+      @rc.insert(dummy)
+      
+      @rc.execute_each_resource do |resource|
+        @rc.insert(resource_to_inject) if resource == zmr
+      end
+      
+      @rc[0].should eql(zmr)
+      @rc[1].should eql(resource_to_inject)
+      @rc[2].should eql(dummy)
+    end
+  end
+
   describe "each" do
     it "should allow you to iterate over every resource in the collection" do
       load_up_resources

@@ -1,0 +1,23 @@
+---
+default: &default
+  name: masquerade
+  host: localhost:3000
+  use_ssl: false
+  time_zone: Berlin
+  email: info@your.domain.com
+  session:
+    session_key: openidserver_session_id
+    secret: replacethiswithyourowntopsecretsessionsecretsothatnoonewillknowit
+  mailer:
+    address: localhost
+    domain: your.domain.com
+    from: info@your.domain.com
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default

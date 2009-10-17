@@ -18,6 +18,10 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
+class ResourceTestHarness < Chef::Resource
+  provider_base Chef::Provider::Package
+end
+
 describe Chef::Resource do
   before(:each) do
     @resource = Chef::Resource.new("funk")
@@ -164,6 +168,16 @@ describe Chef::Resource do
     end
   end
   
+  describe "to_hash" do
+    it "should convert to a hash" do
+      hash = @resource.to_hash
+      hash.keys.should include( :only_if, :allowed_actions, :params, :provider, 
+                                :updated, :before, :not_if, :supports, :node, 
+                                :actions, :noop, :ignore_failure, :name, :source_line, :action)
+      hash[:name].should eql("funk")
+    end
+  end
+  
   describe "self.json_create" do
     it "should deserialize itself from json" do
       json = @resource.to_json
@@ -199,6 +213,18 @@ describe Chef::Resource do
       @resource.epic_fail(true)
       @resource.epic_fail.should == true
     end
+  end
+  
+  describe "setting the base provider class for the resource" do
+    
+    it "defaults to Chef::Provider for the base class" do
+      Chef::Resource.provider_base.should == Chef::Provider
+    end
+    
+    it "allows the base provider to be overriden by a " do
+      ResourceTestHarness.provider_base.should == Chef::Provider::Package
+    end
+    
   end
   
 end

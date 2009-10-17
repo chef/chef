@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,10 +22,11 @@ require 'chef/resource'
 class Chef
   class ResourceCollection
     include Enumerable
-    
+
     def initialize
       @resources = Array.new
       @resources_by_name = Hash.new
+      @insert_after_idx = nil
     end
     
     def [](index)
@@ -36,12 +38,31 @@ class Chef
       @resources[index] = arg 
       @resources_by_name[arg.to_s] = index
     end
-    
+
     def <<(*args)
       args.flatten.each do |a|
         is_chef_resource(a)
         @resources << a
         @resources_by_name[a.to_s] = @resources.length - 1 
+      end
+    end
+
+    def insert(resource)
+      is_chef_resource(resource)
+      if @insert_after_idx
+        # in the middle of executing a run, so any resources inserted now should
+        # be placed after the most recent addition done by the currently executing
+        # resource
+        @resources.insert(@insert_after_idx + 1, resource)
+        # update name -> location mappings and register new resource
+        @resources_by_name.each_key do |key|
+          @resources_by_name[key] += 1 if @resources_by_name[key] > @insert_after_idx
+        end
+        @resources_by_name[resource.to_s] = @insert_after_idx + 1
+        @insert_after_idx += 1
+      else  
+        @resources << resource
+        @resources_by_name[resource.to_s] = @resources.length - 1
       end
     end
     
@@ -55,6 +76,13 @@ class Chef
   
     def each
       @resources.each do |r|
+        yield r
+      end
+    end
+
+    def execute_each_resource
+      @resources.each_with_index do |r, idx|
+        @insert_after_idx = idx
         yield r
       end
     end

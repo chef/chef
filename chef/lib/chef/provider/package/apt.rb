@@ -61,7 +61,7 @@ class Chef
         end
       
         def install_package(name, version)
-          run_command(
+          run_command_with_systems_locale(
             :command => "apt-get -q -y#{expand_options(@new_resource.options)} install #{name}=#{version}",
             :environment => {
               "DEBIAN_FRONTEND" => "noninteractive"
@@ -74,7 +74,7 @@ class Chef
         end
       
         def remove_package(name, version)
-          run_command(
+          run_command_with_systems_locale(
             :command => "apt-get -q -y#{expand_options(@new_resource.options)} remove #{@new_resource.package_name}",
             :environment => {
               "DEBIAN_FRONTEND" => "noninteractive"
@@ -83,7 +83,7 @@ class Chef
         end
       
         def purge_package(name, version)
-          run_command(
+          run_command_with_systems_locale(
             :command => "apt-get -q -y#{expand_options(@new_resource.options)} purge #{@new_resource.package_name}",
             :environment => {
               "DEBIAN_FRONTEND" => "noninteractive"
@@ -95,7 +95,7 @@ class Chef
           preseed_file = get_preseed_file(name, version)
           if preseed_file
             Chef::Log.info("Pre-seeding #{@new_resource} with package installation instructions.")
-            run_command(
+            run_command_with_systems_locale(
               :command => "debconf-set-selections #{preseed_file}",
               :environment => {
                 "DEBIAN_FRONTEND" => "noninteractive"

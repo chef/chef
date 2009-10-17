@@ -29,6 +29,18 @@ describe Chef::Mixin::Command, "popen4" do
     end
   end
 
+  it "should default all commands to be run in the POSIX standard C locale" do
+    popen4("echo $LC_ALL") do |pid, stdin, stdout, stderr|
+      stdout.read.strip.should == "C"
+    end
+  end
+
+  it "should respect locale when specified explicitly" do
+    popen4("echo $LC_ALL", :environment => {"LC_ALL" => "es"}) do |pid, stdin, stdout, stderr|
+      stdout.read.strip.should == "es"
+    end
+  end
+
 end
 
 describe Chef::Mixin::Command, "run_command" do

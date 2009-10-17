@@ -34,6 +34,10 @@ class Chef
         @weekday = "*"
         @command = nil
         @user = "root"
+        @mailto = nil
+        @path = nil
+        @shell = nil
+        @home = nil
       end
 
       def minute(arg=nil)
@@ -117,6 +121,38 @@ class Chef
         set_or_return(
           :weekday,
           converted_arg,
+          :kind_of => String
+        )
+      end
+
+      def mailto(arg=nil)
+        set_or_return(
+          :mailto,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def path(arg=nil)
+        set_or_return(
+          :path,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def home(arg=nil)
+        set_or_return(
+          :home,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def shell(arg=nil)
+        set_or_return(
+          :shell,
+          arg,
           :kind_of => String
         )
       end

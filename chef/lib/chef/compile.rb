@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -27,8 +28,8 @@ class Chef
       
     attr_accessor :node, :cookbook_loader, :collection, :definitions
     
-    # Creates a new Chef::Compile object.  This object gets used by the Chef Server to generate
-    # a fully compiled recipe list for a node.
+    # Creates a new Chef::Compile object and populates its fields. This object gets
+    # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
     # === Returns
     # object<Chef::Compile>:: Duh. :)
@@ -40,6 +41,13 @@ class Chef
       @recipes = Array.new
       @default_attributes = Array.new
       @override_attributes = Array.new
+
+      load_libraries
+      load_providers
+      load_resources
+      load_attributes
+      load_definitions
+      load_recipes
     end
     
     # Looks up the node via the "name" argument, first from CouchDB, then by calling
@@ -94,6 +102,30 @@ class Chef
     def load_libraries()
       @cookbook_loader.each do |cookbook|
         cookbook.load_libraries
+      end
+      true
+    end
+
+    # Load all the providers, from every cookbook, so they are available when we process
+    # the recipes.
+    #
+    # === Returns
+    # true:: Always returns true
+    def load_providers()
+      @cookbook_loader.each do |cookbook|
+        cookbook.load_providers
+      end
+      true
+    end
+
+    # Load all the resources, from every cookbook, so they are available when we process
+    # the recipes.
+    #
+    # === Returns
+    # true:: Always returns true
+    def load_resources()
+      @cookbook_loader.each do |cookbook|
+        cookbook.load_resources
       end
       true
     end

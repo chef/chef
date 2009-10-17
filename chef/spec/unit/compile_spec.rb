@@ -22,7 +22,15 @@ describe Chef::Compile do
   before(:each) do
     Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "compile", "nodes"))
     Chef::Config.cookbook_path(File.join(File.dirname(__FILE__), "..", "data", "compile", "cookbooks"))
-    @compile = Chef::Compile.new
+    node = Chef::Node.new
+    node.stub!(:determine_node_name).and_return(true)
+    node.stub!(:load_libraries).and_return(true)
+    node.stub!(:load_providers).and_return(true)
+    node.stub!(:load_resources).and_return(true)
+    node.stub!(:load_attributes).and_return(true)
+    node.stub!(:load_definitions).and_return(true)
+    node.stub!(:load_recipes).and_return(true)
+    @compile = Chef::Compile.new(node)
   end
   
   it "should create a new Chef::Compile" do

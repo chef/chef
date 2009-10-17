@@ -114,14 +114,14 @@ describe Chef::Provider::Package::Rpm, "install and upgrade" do
   end
   
   it "should run rpm -i with the package source to install" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "rpm -i /tmp/emacs-21.4-20.el5.i386.rpm"
     })
     @provider.install_package("emacs", "21.4-20.el5")
   end
   
   it "should run rpm -U with the package source to upgrade" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "rpm -U /tmp/emacs-21.4-20.el5.i386.rpm"
     })
     @provider.upgrade_package("emacs", "21.4-20.el5")
@@ -142,7 +142,7 @@ describe Chef::Provider::Package::Rpm, "remove" do
   end
 
   it "should run rpm -e to remove the package" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "rpm -e emacs-21.4-20.el5"
     })
     @provider.remove_package("emacs", "21.4-20.el5")

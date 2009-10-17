@@ -40,10 +40,9 @@ class Chef
             Chef::Log.debug("Checking dpkg status for #{@new_resource.package_name}")
             status = popen4("dpkg-deb -W #{@new_resource.source}") do |pid, stdin, stdout, stderr|
               stdout.each do |line|
-                case line
-                when /([\w\d]+)\t([\w\d.-]+)/
-                  @current_resource.package_name($1)
-                  @new_resource.version($2)
+                if pkginfo = /([a-z\d\-\+]+)\t([\w\d.-]+)/.match(line)
+                  @current_resource.package_name(pkginfo[1])
+                  @new_resource.version(pkginfo[2])
                 end
               end
             end
@@ -79,31 +78,28 @@ class Chef
         end
      
         def install_package(name, version)
-          run_command(
+          run_command_with_systems_locale(
             :command => "dpkg -i#{expand_options(@new_resource.options)} #{@new_resource.source}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive",
-              "LANG" => "en_US"
+              "DEBIAN_FRONTEND" => "noninteractive"
             }
           )
         end
 
         def remove_package(name, version)
-          run_command(
+          run_command_with_systems_locale(
             :command => "dpkg -r#{expand_options(@new_resource.options)} #{@new_resource.package_name}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive",
-              "LANG" => "en_US"
+              "DEBIAN_FRONTEND" => "noninteractive"
             }
           )
         end
       
         def purge_package(name, version)
-          run_command(
+          run_command_with_systems_locale(
             :command => "dpkg -P#{expand_options(@new_resource.options)} #{@new_resource.package_name}",
             :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive",
-              "LANG" => "en_US"
+              "DEBIAN_FRONTEND" => "noninteractive"
             }
           )
         end

@@ -169,12 +169,16 @@ class ChefServerApi::Application < Merb::Controller
       files_list = cookbook.definition_files
     when :libraries
       files_list = cookbook.lib_files
+    when :providers
+      files_list = cookbook.provider_files
+    when :resources
+      files_list = cookbook.resource_files
     when :files
       files_list = cookbook.remote_files
     when :templates
       files_list = cookbook.template_files
     else
-      raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions, :remote_files, :template_files or :libraries"
+      raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions, :remote_files, :template_files, :resources, :providers or :libraries"
     end
     Chef::Log.error(files_list.inspect)
     files_list
@@ -214,9 +218,11 @@ class ChefServerApi::Application < Merb::Controller
       :libraries => Array.new,
       :attributes => Array.new,
       :files => Array.new,
-      :templates => Array.new
+      :templates => Array.new,
+      :resources => Array.new,
+      :providers => Array.new
     }
-    [ :recipes, :definitions, :libraries, :attributes, :files, :templates ].each do |segment|
+    [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates ].each do |segment|
       segment_files(segment, cookbook).each do |sf|
         next if File.directory?(sf)
         file_name = nil

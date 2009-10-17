@@ -117,21 +117,21 @@ describe Chef::Provider::Package::Portage, "install_package" do
   end
 
   it "should install a normally versioned package using portage" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "emerge -g --color n --nospinner --quiet =dev-util/git-1.0.0"
     })
     @provider.install_package("dev-util/git", "1.0.0")
   end
 
   it "should install a tilde versioned package using portage" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "emerge -g --color n --nospinner --quiet ~dev-util/git-1.0.0"
     })
     @provider.install_package("dev-util/git", "~1.0.0")
   end
 
   it "should add options to the emerge command when specified" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "emerge -g --color n --nospinner --quiet --oneshot =dev-util/git-1.0.0"
     })
     @new_resource.stub!(:options).and_return("--oneshot")
@@ -156,14 +156,14 @@ describe Chef::Provider::Package::Portage, "remove_package" do
   end
 
   it "should un-emerge the package with no version specified" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "emerge --unmerge --color n --nospinner --quiet dev-util/git"
     })
     @provider.remove_package("dev-util/git", nil)
   end
 
   it "should un-emerge the package with a version specified" do
-    @provider.should_receive(:run_command).with({
+    @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "emerge --unmerge --color n --nospinner --quiet =dev-util/git-1.0.0"
     })
     @provider.remove_package("dev-util/git", "1.0.0")

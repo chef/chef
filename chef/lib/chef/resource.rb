@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -19,6 +20,7 @@
 require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/language'
+require 'chef/mixin/convert_to_class_name'
 require 'chef/resource_collection'
 require 'chef/node'
 
@@ -28,8 +30,9 @@ class Chef
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::Language
+    include Chef::Mixin::ConvertToClassName
     
-    attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name
+    attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name, :enclosing_provider
     attr_reader :resource_name, :source_line, :node
     
     def initialize(name, collection=nil, node=nil)
@@ -58,6 +61,17 @@ class Chef
         @source_line = ::File.expand_path(@source_line) if @source_line
       end
     end
+
+    # If an unknown method is invoked, determine whether the enclosing Provider's
+    # lexical scope can fulfill the request. E.g. This happens when the Resource's
+    # block invokes new_resource.
+    def method_missing(method_symbol, *args, &block)
+      if enclosing_provider && enclosing_provider.respond_to?(method_symbol)
+        enclosing_provider.send(method_symbol, *args, &block)
+      else
+        raise NoMethodError, "undefined method `#{method_symbol.to_s}' for #{self.class.to_s}"
+      end
+    end
     
     def load_prior_resource
       begin
@@ -83,9 +97,14 @@ class Chef
     end
     
     def provider(arg=nil)
+      klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
+                lookup_provider_constant(arg)
+              else
+                arg
+              end
       set_or_return(
         :provider,
-        arg,
+        klass,
         :kind_of => [ Class ]
       )
     end
@@ -192,12 +211,12 @@ class Chef
       results.to_json(*a)
     end
     
-    def self.json_create(o)
-      resource = self.new(o["instance_vars"]["@name"])
-      o["instance_vars"].each do |k,v|
-        resource.instance_variable_set(k.to_sym, v)
+    def to_hash
+      instance_vars = Hash.new
+      self.instance_variables.each do |iv|
+        instance_vars[iv.sub(/^@/,'').to_sym] = self.instance_variable_get(iv) unless iv == "@collection"
       end
-      resource
+      instance_vars
     end
     
     def only_if(arg=nil, &blk)
@@ -224,7 +243,101 @@ class Chef
       provider.send("action_#{action}")
     end
     
+    class << self
+      
+      def json_create(o)
+        resource = self.new(o["instance_vars"]["@name"])
+        o["instance_vars"].each do |k,v|
+          resource.instance_variable_set(k.to_sym, v)
+        end
+        resource
+      end
+      
+      include Chef::Mixin::ConvertToClassName
+      
+      def attribute(attr_name, validation_opts={})
+        define_method(attr_name.to_sym) do |arg|
+          set_or_return(attr_name.to_sym, arg, validation_opts)
+        end
+      end
+      
+      def build_from_file(cookbook_name, filename)
+        rname = filename_to_qualified_string(cookbook_name, filename)
+          
+        new_resource_class = Class.new self do |cls|
+          
+          # default initialize method that ensures that when initialize is finally
+          # wrapped (see below), super is called in the event that the resource
+          # definer does not implement initialize
+          def initialize(name, collection=nil, node=nil)
+            super(name, collection, node)
+          end
+          
+          @actions_to_create = []
+          
+          class << cls
+            include Chef::Mixin::FromFile
+            
+            def actions_to_create
+              @actions_to_create
+            end
+            
+            define_method(:actions) do |*action_names|
+              actions_to_create.push(*action_names)
+            end
+          end
+          
+          # load resource definition from file
+          cls.class_from_file(filename)
+          
+          # create a new constructor that wraps the old one and adds the actions
+          # specified in the DSL
+          old_init = instance_method(:initialize)
+
+          define_method(:initialize) do |name, *optional_args|
+            collection = optional_args.shift
+            node = optional_args.shift
+            @resource_name = rname.to_sym
+            old_init.bind(self).call(name, collection, node)
+            allowed_actions.push(self.class.actions_to_create).flatten!
+          end
+        end
+        
+        # register new class as a Chef::Resource
+        class_name = convert_to_class_name(rname)
+        Chef::Resource.const_set(class_name, new_resource_class)
+        Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
+        
+        new_resource_class
+      end
+      
+      # Resources that want providers namespaced somewhere other than 
+      # Chef::Provider can set the namespace with +provider_base+
+      # Ex:
+      #   class MyResource < Chef::Resource
+      #     provider_base Chef::Provider::Deploy
+      #     # ...other stuff
+      #   end
+      def provider_base(arg=nil)
+        @provider_base ||= arg
+        @provider_base ||= Chef::Provider
+      end
+      
+    end
+    
     private
+    
+      def lookup_provider_constant(name)
+        begin
+          self.class.provider_base.const_get(convert_to_class_name(name.to_s))
+        rescue NameError => e
+          if e.to_s =~ /#{self.class.provider_base.to_s}/
+            raise ArgumentError, "No provider found to match '#{name}'"
+          else
+            raise e
+          end
+        end
+      end
       
       def check_timing(timing)
         unless timing == :delayed || timing == :immediate || timing == :immediately

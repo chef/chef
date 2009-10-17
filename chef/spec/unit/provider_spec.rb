@@ -21,6 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::Provider do
   before(:each) do
     @resource = Chef::Resource.new("funk")
+    @resource.cookbook_name = "a_delicious_pie"
     @node = Chef::Node.new
     @node.name "latte"
     @provider = Chef::Provider.new(@node, @resource)
@@ -44,5 +45,18 @@ describe Chef::Provider do
   
   it "should return true for action_nothing" do
     @provider.action_nothing.should eql(true)
+  end
+  
+  it "sets @cookbook_name to the cookbook name given by @new_resource" do
+    @provider.instance_variable_get(:@cookbook_name).should == "a_delicious_pie"
+  end
+  
+  it "evals embedded recipes with a pristine resource collection" do
+    @provider.instance_variable_set(:@collection, "bouncyCastle")
+    temporary_collection = nil
+    snitch = lambda {temporary_collection = @collection}
+    @provider.send(:recipe_eval, &snitch)
+    temporary_collection.should be_an_instance_of(Chef::ResourceCollection)
+    @provider.instance_variable_get(:@collection).should == "bouncyCastle"
   end
 end

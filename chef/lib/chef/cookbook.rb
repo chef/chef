@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Nuo Yan (<nuo@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -20,12 +21,14 @@ require 'chef/log'
 require 'chef/node'
 require 'chef/resource_definition'
 require 'chef/recipe'
+require 'chef/mixin/convert_to_class_name'
 
 class Chef
   class Cookbook
+    include Chef::Mixin::ConvertToClassName
     
     attr_accessor :attribute_files, :definition_files, :template_files, :remote_files, 
-                  :lib_files, :name
+                  :lib_files, :resource_files, :provider_files, :name
     attr_reader :recipe_files
     
     # Creates a new Chef::Cookbook object.  
@@ -41,6 +44,8 @@ class Chef
       @recipe_files = Array.new
       @recipe_names = Hash.new
       @lib_files = Array.new
+      @resource_files = Array.new
+      @provider_files = Array.new
     end
     
     # Loads all the library files in this cookbook via require.
@@ -89,6 +94,28 @@ class Chef
         results[resourcedef.name] = resourcedef
       end
       results
+    end
+
+    # Loads all the resources in this cookbook.
+    #
+    # === Returns
+    # true:: Always returns true
+    def load_resources
+      @resource_files.each do |file|
+        Chef::Log.debug("Loading cookbook #{name}'s resources from #{file}")
+        Chef::Resource.build_from_file(name, file)
+      end
+    end
+    
+    # Loads all the providers in this cookbook.
+    #
+    # === Returns
+    # true:: Always returns true
+    def load_providers
+      @provider_files.each do |file|
+        Chef::Log.debug("Loading cookbook #{name}'s providers from #{file}")
+        Chef::Provider.build_from_file(name, file)
+      end
     end
     
     def recipe_files=(*args)

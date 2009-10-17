@@ -25,8 +25,8 @@ class Chef
 
       include Chef::Mixin::Command
 
-      def initialize(node, new_resource)
-        super(node, new_resource)
+      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
+        super(node, new_resource, collection, definitions, cookbook_loader)
         @enabled = nil
       end
 
@@ -35,6 +35,7 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to enable")
           status = enable_service()
           if status
+            @new_resource.updated = true
             Chef::Log.info("#{@new_resource}: enabled successfully")
           end
         else
@@ -47,6 +48,7 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to disable")
           status = disable_service()
           if status
+            @new_resource.updated = true
             Chef::Log.info("#{@new_resource}: disabled successfully")
           end
         else
@@ -59,6 +61,7 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to start")
           status = start_service()
           if status
+            @new_resource.updated = true
             Chef::Log.info("Started service #{@new_resource} successfully")
           end
         else
@@ -71,6 +74,7 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to stop")
           status = stop_service()
           if status
+            @new_resource.updated = true
             Chef::Log.info("#{@new_resource}: stopped successfully")
           end
         else
@@ -82,6 +86,7 @@ class Chef
         Chef::Log.debug("#{@new_resource}: attempting to restart")
         status = restart_service()
         if status
+          @new_resource.updated = true
           Chef::Log.info("#{@new_resource}: restarted successfully")
         end
       end
@@ -94,6 +99,7 @@ class Chef
             Chef::Log.debug("#{@new_resource}: attempting to reload")
             status = reload_service()
             if status
+              @new_resource.updated = true
               Chef::Log.info("#{@new_resource}: reloaded successfully")
             end
           end

@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -61,6 +62,10 @@ class Chef
     #  * build_node - Get the last known state, merge with local changes
     #  * register - Make sure we have an openid
     #  * authenticate - Authenticate with our openid
+    #  * sync_library_files - Populate the local cache with all the library files
+    #  * sync_provider_files - Populate the local cache with all the provider files
+    #  * sync_resource_files - Populate the local cache with all the resource files
+    #  * sync_attribute_files - Populate the local cache with all the attribute files
     #  * sync_definitions - Populate the local cache with all the definitions
     #  * sync_recipes - Populate the local cache with all the recipes
     #  * do_attribute_files - Populate the local cache with all attributes, and execute them
@@ -98,7 +103,7 @@ class Chef
     def run_solo
       start_time = Time.now
       Chef::Log.info("Starting Chef Solo Run")
-      
+
       determine_node_name
       build_node(@node_name, true)
       converge(true)
@@ -118,7 +123,7 @@ class Chef
 
     def determine_node_name
       run_ohai      
-      unless @safe_name && @node_name
+      unless safe_name && node_name
         if Chef::Config[:node_name]
           @node_name = Chef::Config[:node_name]
         else
@@ -211,7 +216,7 @@ class Chef
 
       file_canonical = Hash.new
 
-      [ "recipes", "attributes", "definitions", "libraries" ].each do |segment|
+      [ "recipes", "attributes", "definitions", "libraries", "resources", "providers" ].each do |segment|
         remote_list = parts[segment]
 
         # segement = cookbook segment
@@ -312,13 +317,9 @@ class Chef
         Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
       end
       compile = Chef::Compile.new(@node)
-      compile.load_libraries
-      compile.load_attributes
-      compile.load_definitions
-      compile.load_recipes
-
+      
       Chef::Log.debug("Converging node #{@safe_name}")
-      cr = Chef::Runner.new(@node, compile.collection)
+      cr = Chef::Runner.new(@node, compile.collection, compile.definitions, compile.cookbook_loader)
       cr.converge
       true
     end

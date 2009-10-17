@@ -60,7 +60,10 @@ describe Chef::Provider::Package::Rubygems, "install_package" do
 
   it "should run gem install with the package name and version" do
     @provider.should_receive(:run_command).with({
-      :command => "gem install rspec -q --no-rdoc --no-ri -v \"1.2.2\""
+      :command => "gem install rspec -q --no-rdoc --no-ri -v \"1.2.2\"",
+      :environment => {
+        "LC_ALL" => nil
+      }
     })
     @provider.install_package("rspec", "1.2.2")
   end

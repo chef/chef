@@ -43,6 +43,10 @@ describe Chef::Resource::Group, "initialize" do
   it "should default members to an empty array" do
     @resource.members.should eql([])
   end
+
+  it "should alias users to members, also an empty array" do
+    @resource.users.should eql([])
+  end
   
   it "should set action to :create" do
     @resource.action.should eql(:create)
@@ -90,18 +94,20 @@ describe Chef::Resource::Group, "members" do
     @resource = Chef::Resource::Group.new("admin")
   end
 
-  it "should allow and convert a string" do
-    @resource.members "aj"
-    @resource.members.should eql(["aj"])
-  end
+  [ :users, :members].each do |method|
+    it "(#{method}) should allow and convert a string" do
+      @resource.send(method, "aj")
+      @resource.send(method).should eql(["aj"])
+    end
 
-  it "should allow an array" do
-    @resource.members [ "aj", "adam" ]
-    @resource.members.should eql( ["aj", "adam"] )
-  end
+    it "(#{method}) should allow an array" do
+      @resource.send(method, [ "aj", "adam" ])
+      @resource.send(method).should eql( ["aj", "adam"] )
+    end
 
-  it "should not allow a hash" do
-    lambda { @resource.send(:members, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
+    it "(#{method}) should not allow a hash" do
+      lambda { @resource.send(method, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
+    end
   end
 end
 

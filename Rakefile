@@ -332,12 +332,17 @@ namespace :features do
       t.profile = "recipe_inclusion"
     end
   end
+  
+  Cucumber::Rake::Task.new(:lwrp) do |t|
+    t.profile = "lwrp"
+  end
 
   desc "Run cucumber tests for providers" 
   Cucumber::Rake::Task.new(:provider) do |t|
     t.profile = "provider"
   end
 
+  
   namespace :provider do
     desc "Run cucumber tests for directory resources"
     Cucumber::Rake::Task.new(:directory) do |t|
@@ -362,6 +367,10 @@ namespace :features do
     desc "Run cucumber tests for template resources"
     Cucumber::Rake::Task.new(:template) do |t|
       t.profile = "provider_template"
+    end
+    
+    Cucumber::Rake::Task.new(:git) do |t|
+      t.profile = "provider_git"
     end
     
     namespace :package do

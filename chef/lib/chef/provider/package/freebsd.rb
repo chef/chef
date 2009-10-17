@@ -110,24 +110,24 @@ class Chef
           unless @current_resource.version
             case @new_resource.source
             when /^ports$/
-              run_command(
+              run_command_with_systems_locale(
                 :command => "make -DBATCH install",
                 :cwd => "#{port_path}"
               )
             when /^http/, /^ftp/
-              run_command(
+              run_command_with_systems_locale(
                 :command => "pkg_add -r #{package_name}",
                 :environment => { "PACKAGESITE" => @new_resource.source }
               )
               Chef::Log.info("Installed package #{package_name} from: #{@new_resource.source}")
             when /^\//
-              run_command(
+              run_command_with_systems_locale(
                 :command => "pkg_add #{@new_resource.name}",
                 :environment => { "PKG_PATH" => @new_resource.source }
               )
               Chef::Log.info("Installed package #{@new_resource.name} from: #{@new_resource.source}")
             else
-              run_command(
+              run_command_with_systems_locale(
                 :command => "pkg_add -r #{latest_link_name}"
               )
               Chef::Log.info("Installed package #{package_name}")
@@ -138,11 +138,11 @@ class Chef
         def remove_package(name, version)
           # a version is mandatory
           if version
-            run_command(
+            run_command_with_systems_locale(
               :command => "pkg_delete #{package_name}-#{version}"
             )
           else
-            run_command(
+            run_command_with_systems_locale(
               :command => "pkg_delete #{package_name}-#{@current_resource.version}"
             )
           end

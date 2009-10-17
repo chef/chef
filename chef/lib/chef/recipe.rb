@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +21,7 @@ require 'chef/resource'
 Dir[File.join(File.dirname(__FILE__), 'resource/**/*.rb')].sort.each { |lib| require lib }
 require 'chef/mixin/from_file'
 require 'chef/mixin/language'
+require 'chef/mixin/recipe_definition_dsl_core'
 require 'chef/resource_collection'
 require 'chef/cookbook_loader'
 require 'chef/rest'
@@ -29,7 +31,8 @@ class Chef
     
     include Chef::Mixin::FromFile
     include Chef::Mixin::Language
-        
+    include Chef::Mixin::RecipeDefinitionDSLCore
+    
     attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :collection, 
                   :definitions, :params, :cookbook_loader
     
@@ -37,25 +40,9 @@ class Chef
       @cookbook_name = cookbook_name
       @recipe_name = recipe_name
       @node = node
-      
-      if collection
-        @collection = collection
-      else
-        @collection = Chef::ResourceCollection.new()
-      end
-      
-      if definitions
-        @definitions = definitions
-      else
-        @definitions = Hash.new
-      end
-      
-      if cookbook_loader
-        @cookbook_loader = cookbook_loader
-      else
-        @cookbook_loader = Chef::CookbookLoader.new()
-      end
-      
+      @collection = collection || Chef::ResourceCollection.new
+      @definitions = definitions || Hash.new
+      @cookbook_loader = cookbook_loader || Chef::CookbookLoader.new
       @params = Hash.new      
     end
     
@@ -136,59 +123,6 @@ class Chef
         @node[:tags].delete(tag)
       end
     end
-        
-    def method_missing(method_symbol, *args, &block)
-      resource = nil
-      # If we have a definition that matches, we want to use that instead.  This should
-      # let you do some really crazy over-riding of "native" types, if you really want
-      # to. 
-      if @definitions.has_key?(method_symbol)
-        # This dupes the high level object, but we still need to dup the params
-        new_def = @definitions[method_symbol].dup
-        new_def.params = new_def.params.dup
-        new_def.node = @node
-        # This sets up the parameter overrides
-        new_def.instance_eval(&block) if block
-        new_recipe = Chef::Recipe.new(@cookbook_name, @recipe_name, @node, @collection, @definitions, @cookbook_loader)
-        new_recipe.params = new_def.params
-        new_recipe.params[:name] = args[0]
-        new_recipe.instance_eval(&new_def.recipe)
-      else
-        method_name = method_symbol.to_s
-        # Otherwise, we're rocking the regular resource call route.
-        rname = nil
-        regexp = %r{^(.+?)(_(.+))?$}
-
-        mn = method_name.match(regexp)
-        if mn
-          rname = "Chef::Resource::#{mn[1].capitalize}"
-
-          while mn && mn[3]
-            mn = mn[3].match(regexp)          
-            rname << mn[1].capitalize if mn
-          end
-        end
-
-        begin
-          args << @collection
-          args << @node
-          resource = eval(rname).new(*args)
-          # If we have a resource like this one, we want to steal it's state
-          resource.load_prior_resource
-          resource.cookbook_name = @cookbook_name
-          resource.recipe_name = @recipe_name
-          resource.params = @params
-          resource.instance_eval(&block) if block
-        rescue Exception => e
-          if e.kind_of?(NameError) && e.to_s =~ /Chef::Resource/
-            raise NameError, "Cannot find #{rname} for #{method_name}\nOriginal: #{e.to_s}"
-          else
-            raise e
-          end
-        end
-        @collection << resource
-        resource
-      end
-    end
+    
   end
 end

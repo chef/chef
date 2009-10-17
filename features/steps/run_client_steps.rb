@@ -31,6 +31,10 @@ When /^I run the chef\-client$/ do
   @status = status
 end
 
+When /^I run the chef\-client again$/ do
+  When "I run the chef-client"
+end
+
 When /^I run the chef\-client with '(.+)'$/ do |args|
   @chef_args = args
   When "I run the chef-client"

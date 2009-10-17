@@ -93,7 +93,7 @@ class Chef
             pkg = "~#{name}-#{$1}"
           end
      
-          run_command(
+          run_command_with_systems_locale(
             :command => "emerge -g --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
           )
         end
@@ -109,7 +109,7 @@ class Chef
             pkg = "#{@new_resource.package_name}"
           end
 
-          run_command(
+          run_command_with_systems_locale(
             :command => "emerge --unmerge --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
           )
         end
