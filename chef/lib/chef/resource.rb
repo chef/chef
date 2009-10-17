@@ -256,7 +256,18 @@ class Chef
       include Chef::Mixin::ConvertToClassName
       
       def attribute(attr_name, validation_opts={})
-        define_method(attr_name.to_sym) do |arg|
+        # This atrocity is the only way to support 1.8 and 1.9 at the same time
+        # When you're ready to drop 1.8 support, do this:
+        # define_method attr_name.to_sym do |arg=nil|
+        # etc.
+        shim_method=<<-SHIM
+        def #{attr_name}(arg=nil)
+          _set_or_return_#{attr_name}(arg)
+        end
+        SHIM
+        class_eval(shim_method)
+        
+        define_method("_set_or_return_#{attr_name.to_s}".to_sym) do |arg|
           set_or_return(attr_name.to_sym, arg, validation_opts)
         end
       end
