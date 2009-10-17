@@ -64,36 +64,6 @@ describe Chef::Client, "run" do
     @client.run
   end
   
-  it "should synchronize definitions from the server" do
-    @client.should_receive(:sync_definitions).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize recipes from the server" do
-    @client.should_receive(:sync_recipes).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize and load library files from the server" do
-    @client.should_receive(:sync_library_files).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize and load attribute files from the server" do
-    @client.should_receive(:sync_attribute_files).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize providers from the server" do
-    @client.should_receive(:sync_provider_files).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize resources from the server" do
-    @client.should_receive(:sync_resource_files).and_return(true)
-    @client.run
-  end
-  
   it "should save the nodes state on the server (twice!)" do
     @client.should_receive(:save_node).exactly(3).times.and_return(true)
     @client.run
