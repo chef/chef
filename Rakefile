@@ -191,6 +191,10 @@ namespace :features do
       Cucumber::Rake::Task.new(:macports) do |t|
         t.profile = "provider_package_macports"
       end
+      
+      Cucumber::Rake::Task.new(:gems) do |g|
+        g.profile = "provider_package_rubygems"
+      end
     end
   end
 end
