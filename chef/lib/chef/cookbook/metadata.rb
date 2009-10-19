@@ -40,6 +40,7 @@ class Chef
                     :providing,
                     :replacing,
                     :attributes,
+                    :groupings,
                     :recipes,
                     :version
 
@@ -69,6 +70,7 @@ class Chef
         @providing = Mash.new
         @replacing = Mash.new
         @attributes = Mash.new
+        @groupings = Mash.new
         @recipes = Mash.new
         @version = Version.new "0.0.0"
         if cookbook
@@ -307,9 +309,10 @@ class Chef
       #
       #   display_name<String>:: What a UI should show for this attribute
       #   description<String>:: A hint as to what this attr is for
-      #   multiple_values<True>,<False>:: Whether it supports multiple values
-      #   type<String>:: "string", "hash" or "array" - default is "string"
-      #   required<True>,<False>:: Whether this attr is required - default false
+      #   choice<Array>:: An array of choices to present to the user.
+      #   calculated<Boolean>:: If true, the default value is calculated by the recipe and cannot be displayed.
+      #   type<String>:: "string" or "array" - default is "string"  ("hash" is supported for backwards compatibility)
+      #   required<String>:: Whether this attr is 'required', 'recommended' or 'optional' - default 'optional' (true/false values also supported for backwards compatibility)
       #   recipes<Array>:: An array of recipes which need this attr set.
       #   default<String>,<Array>,<Hash>:: The default value
       #
@@ -325,15 +328,33 @@ class Chef
           {
             :display_name => { :kind_of => String },
             :description => { :kind_of => String },
-            :multiple_values => { :equal_to => [ true, false ], :default => false },
+            :choice => { :kind_of => [ Array ], :default => [] },
+            :calculated => { :equal_to => [ true, false ], :default => false },
             :type => { :equal_to => [ "string", "array", "hash" ], :default => "string" },
-            :required => { :equal_to => [ true, false ], :default => false },
+            :required => { :equal_to => [ "required", "recommended", "optional", true, false ], :default => "optional" },
             :recipes => { :kind_of => [ Array ], :default => [] },
             :default => { :kind_of => [ String, Array, Hash ] }
           }
         )
+        options["required"] = remap_required_attribute(options[:required])
+        validate_string_array(options[:choice])
+        validate_calculated_default_rule(options)
+        validate_choice_default_rule(options)
+
         @attributes[name] = options 
         @attributes[name]
+      end
+
+      def grouping(name, options)
+        validate(
+          options,
+          {
+            :title => { :kind_of => String },
+            :description => { :kind_of => String }
+          }
+        )
+        @groupings[name] = options 
+        @groupings[name]
       end
 
       def _check_version_expression(version_string)
@@ -360,6 +381,7 @@ class Chef
           :providing => self.providing,
           :replacing => self.replacing,
           :attributes => self.attributes,
+          :groupings => self.groupings,
           :recipes => self.recipes,
           :version => self.version
         }
@@ -387,6 +409,7 @@ class Chef
         self.providing = o['providing'] if o.has_key?('providing')
         self.replacing = o['replacing'] if o.has_key?('replacing')
         self.attributes = o['attributes'] if o.has_key?('attributes')
+        self.groupings = o['groupings'] if o.has_key?('groupings')
         self.recipes = o['recipes'] if o.has_key?('recipes')
         self.version = o['version'] if o.has_key?('version')
         self
@@ -400,6 +423,62 @@ class Chef
       def from_json(string)
         o = JSON.parse(string)
         from_hash(o)
+      end
+
+    private
+
+      # Verify that the given array is an array of strings
+      #
+      # Raise an exception if the members of the array are not Strings
+      #
+      # === Parameters
+      # arry<Array>:: An array to be validated
+      def validate_string_array(arry)
+        if arry.kind_of?(Array)
+          arry.each do |choice|
+            validate( {:choice => choice}, {:choice => {:kind_of => String}} )
+          end
+        end
+      end
+
+      # For backwards compatibility, remap Boolean values to String
+      #   true is mapped to "required"
+      #   false is mapped to "optional"
+      #
+      # === Parameters
+      # required_attr<String><Boolean>:: The value of options[:required]
+      #
+      # === Returns
+      # required_attr<String>:: "required", "recommended", or "optional"
+      def remap_required_attribute(value)
+        case value
+        when true
+          value = "required"
+        when false
+          value = "optional"
+        end
+        value
+      end
+
+      def validate_calculated_default_rule(options)
+        calculated_conflict = ((options[:default].is_a?(Array) && !options[:default].empty?) ||
+                               (options[:default].is_a?(String) && !options[:default] != "")) &&
+                              options[:calculated] == true
+        raise ArgumentError, "Default cannot be specified if calculated is true!" if calculated_conflict
+      end
+
+      def validate_choice_default_rule(options)
+        return if !options[:choice].is_a?(Array) || options[:choice].empty?
+
+        if options[:default].is_a?(String) && options[:default] != ""
+          raise ArgumentError, "Default must be one of your choice values!" if options[:choice].index(options[:default]) == nil
+        end
+
+        if options[:default].is_a?(Array) && !options[:default].empty?
+          options[:default].each do |val|
+            raise ArgumentError, "Default values must be a subset of your choice values!" if options[:choice].index(val) == nil
+          end
+        end
       end
 
     end
