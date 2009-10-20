@@ -25,6 +25,9 @@ require 'chef/data_bag_item'
 class Chef
   class Search
     class Query 
+
+      attr_accessor :rest
+
       def initialize(url=nil)
         url ||= Chef::Config[:search_url]
         @rest = Chef::REST.new(url)
