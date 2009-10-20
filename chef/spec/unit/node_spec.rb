@@ -327,7 +327,8 @@ describe Chef::Node do
 
       it "should create if it cannot update" do
         @node.name("monkey")
-        @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new(1, 3))
+        exception = mock("404 error", :code => "404")
+        @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
         @rest.should_receive(:post_rest).with("nodes", @node)
         @node.save
       end

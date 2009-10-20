@@ -25,7 +25,7 @@ class ChefServerApi::Nodes < ChefServerApi::Application
   
   before :authenticate_every 
   before :fix_up_node_id
-  before :is_correct_node, :only => [ :create, :update, :destroy, :cookbooks ]
+  before :is_correct_node, :only => [ :update, :destroy, :cookbooks ]
   
   def index
     @node_list = Chef::Node.cdb_list 

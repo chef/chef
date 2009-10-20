@@ -283,21 +283,6 @@ class Chef
       @run_list.detect { |r| r == item } ? true : false
     end
     
-    # Set an attribute based on the missing method.  If you pass an argument, we'll use that
-    # to set the attribute values.  Otherwise, we'll wind up just returning the attributes
-    # value.
-    def method_missing(symbol, *args)
-      if args.length != 0
-        @attribute[symbol] = args.length == 1 ? args[0] : args
-      else
-        if @attribute.has_key?(symbol)
-          @attribute[symbol]
-        else
-          raise ArgumentError, "Attribute #{symbol.to_s} is not defined!"
-        end
-      end
-    end
- 
     # Transform the node to a Hash
     def to_hash
       index_hash = @attribute

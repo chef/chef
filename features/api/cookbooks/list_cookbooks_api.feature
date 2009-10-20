@@ -17,8 +17,4 @@ Feature: List cookbooks via the REST API
      When I 'GET' the path '/cookbooks' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
-  Scenario: List cookbooks when I am not an admin
-    Given a 'registration' named 'not_admin' exists
-     When I 'GET' the path '/cookbooks'
-     Then I should get a '401 "Unauthorized"' exception
 

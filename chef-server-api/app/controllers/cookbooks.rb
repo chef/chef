@@ -25,7 +25,6 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
   provides :json
 
   before :authenticate_every
-  before :is_admin
 
   include Chef::Mixin::Checksum
   

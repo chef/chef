@@ -23,9 +23,3 @@ Feature: Create a node via the REST API
      When I 'POST' the 'node' to the path '/nodes' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
-  Scenario: Create a new node as when I am not an admin
-    Given a 'registration' named 'not_admin' exists
-      And a 'node' named 'webserver'
-     When I 'POST' the 'node' to the path '/nodes' 
-     Then I should get a '401 "Unauthorized"' exception
-     

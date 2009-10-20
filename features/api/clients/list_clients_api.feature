@@ -8,7 +8,7 @@ Feature: List clients via the REST API
     Given a 'registration' named 'bobo' exists
       And there are no clients 
      When I 'GET' the path '/clients' 
-     Then the inflated response should be '2' items long 
+     Then the inflated response should be '3' items long 
 
   Scenario: List clients when one has been created
     Given a 'registration' named 'bobo' exists

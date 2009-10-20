@@ -1,5 +1,3 @@
-#
-# Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -88,6 +86,7 @@ def create_databases
   Chef::Certificate.gen_validation_key
   Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
   system("cp #{File.join(Dir.tmpdir, "chef_integration", "validation.pem")} #{Dir.tmpdir}")
+  system("cp #{File.join(Dir.tmpdir, "chef_integration", "webui.pem")} #{Dir.tmpdir}")
 end
 
 def prepare_replicas
@@ -101,7 +100,18 @@ def cleanup
   if File.exists?(Chef::Config[:validation_key])
     File.unlink(Chef::Config[:validation_key])
   end
+  if File.exists?(Chef::Config[:web_ui_key])
+    File.unlink(Chef::Config[:web_ui_key])
+  end
 end
+
+Merb.start_environment(
+  :merb_root => File.join(File.dirname(__FILE__), "..", "..", "chef-server"), 
+  :testing => true, 
+  :adapter => 'runner',
+  :environment => ENV['MERB_ENV'] || 'test',
+  :session_store => 'memory'
+)
 
 ###
 # Pre-testing setup
@@ -112,14 +122,6 @@ cleanup
 delete_databases
 create_databases
 prepare_replicas
-
-Merb.start_environment(
-  :merb_root => File.join(File.dirname(__FILE__), "..", "..", "chef-server"), 
-  :testing => true, 
-  :adapter => 'runner',
-  :environment => ENV['MERB_ENV'] || 'test',
-  :session_store => 'memory'
-)
 
 Spec::Runner.configure do |config|
   config.include(Merb::Test::ViewHelper)
@@ -171,6 +173,7 @@ World(ChefWorld)
 Before do
   system("mkdir -p #{tmpdir}")
   system("cp -r #{File.join(Dir.tmpdir, "validation.pem")} #{File.join(tmpdir, "validation.pem")}")
+  system("cp -r #{File.join(Dir.tmpdir, "webui.pem")} #{File.join(tmpdir, "webui.pem")}")
   Chef::CouchDB.new(Chef::Config[:couchdb_url], "chef_integration").create_db
   c = Chef::REST.new(Chef::Config[:couchdb_url], nil, nil)
   c.post_rest("_replicate", { 

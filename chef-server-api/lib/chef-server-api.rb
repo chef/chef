@@ -65,24 +65,26 @@ if defined?(Merb::Plugins)
         end
         Chef::Nanite.in_event { Chef::Log.info("Nanite is ready") }
 
-        # create the couch design docs for nodes, roles, and databags
-        Chef::CouchDB.new.create_id_map
-        Chef::Node.create_design_document
-        Chef::Role.create_design_document
-        Chef::DataBag.create_design_document
-        Chef::ApiClient.create_design_document
+        unless Merb::Config.environment == "test"
+          # create the couch design docs for nodes, roles, and databags
+          Chef::CouchDB.new.create_id_map
+          Chef::Node.create_design_document
+          Chef::Role.create_design_document
+          Chef::DataBag.create_design_document
+          Chef::ApiClient.create_design_document
 
-        Chef::Log.info('Loading roles')
-        Chef::Role.sync_from_disk_to_couchdb
+          Chef::Log.info('Loading roles')
+          Chef::Role.sync_from_disk_to_couchdb
 
-        # Create the signing key and certificate 
-        Chef::Certificate.generate_signing_ca
+          # Create the signing key and certificate 
+          Chef::Certificate.generate_signing_ca
 
-        # Generate the validation key
-        Chef::Certificate.gen_validation_key
+          # Generate the validation key
+          Chef::Certificate.gen_validation_key
 
-        # Generate the Web UI Key 
-        Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
+          # Generate the Web UI Key 
+          Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
+        end
       end
     end
 

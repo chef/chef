@@ -4,11 +4,7 @@ require 'rake/rdoctask'
 require './tasks/rspec.rb'
 
 GEM = "chef"
-<<<<<<< HEAD:chef/Rakefile
 CHEF_VERSION = "0.8.0"
-=======
-CHEF_VERSION = "0.7.12"
->>>>>>> 6f78b9ff0026b1784375a8baf8076c0cc210c946:chef/Rakefile
 AUTHOR = "Adam Jacob"
 EMAIL = "adam@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"
@@ -27,14 +23,7 @@ spec = Gem::Specification.new do |s|
   s.homepage = HOMEPAGE
   
   s.add_dependency "mixlib-config", ">= 1.0.12"
-<<<<<<< HEAD:chef/Rakefile
   %w{mixlib-cli mixlib-log mixlib-authentication json erubis extlib ohai amqp thor ruby-hmac}.each { |gem| s.add_dependency gem }
-=======
-  s.add_dependency "ohai", ">= 0.3.4"
-  %w{mixlib-cli mixlib-log ruby-openid
-    json erubis extlib
-    stomp}.each { |gem| s.add_dependency gem }
->>>>>>> 6f78b9ff0026b1784375a8baf8076c0cc210c946:chef/Rakefile
   
   s.bindir       = "bin"
   s.executables  = %w( chef-client chef-solo knife )
