@@ -167,7 +167,7 @@ class Chef
       end
       
       def all_releases
-        Dir.glob(@new_resource.deploy_to + "/releases/*")
+        Dir.glob(@new_resource.deploy_to + "/releases/*").sort
       end
       
       def update_cached_repo
