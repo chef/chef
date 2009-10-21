@@ -80,7 +80,7 @@ describe Chef::Provider::Deploy do
     @provider.action_force_deploy
   end
  
-  describe "on systems with broken Dir.glob results" do
+  describe "on systems without broken Dir.glob results" do
     it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
       @provider.unstub!(:release_path)
       all_releases = [ "/my/deploy/dir/releases/20040815162342",
@@ -95,7 +95,7 @@ describe Chef::Provider::Deploy do
     end
   end
 
-  describe "CHEF-628: on systems without broken Dir.glob results" do
+  describe "CHEF-628: on systems with broken Dir.glob results" do
     it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
       @provider.unstub!(:release_path)
       all_releases = [ "/my/deploy/dir/releases/20040500000000",
