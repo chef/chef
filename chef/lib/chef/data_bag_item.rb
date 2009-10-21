@@ -188,13 +188,13 @@ class Chef
       @couchdb_rev = results["rev"]
     end
     
-    def save(databag = databag)
+    def save
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       begin
-        r.put_rest("data/#{data_bag}/#{@name}", self)
+        r.put_rest("data/#{data_bag}/#{@raw_data['id']}", @raw_data)
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
-          r.post_rest("data/#{data_bag}", self)
+          r.post_rest("data/#{data_bag}", @raw_data) 
         else
           raise e
         end
