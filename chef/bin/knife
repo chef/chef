@@ -244,7 +244,11 @@ class Knife < Thor
   method_options :client => :required, :key => :required
   def reregister_client
     setup
-    @rest.put_rest("clients/#{options[:client]}", { :private_key => true })
+    r = @rest.put_rest("clients/#{options[:client]}", { :private_key => true })
+    puts r["private_key"]
+    File.open(options[:key], "w") do |f|
+      f.print r["private_key"]
+    end
   end
 
   desc "delete_client", "Delete a client"
