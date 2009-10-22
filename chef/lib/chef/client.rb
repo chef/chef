@@ -217,7 +217,7 @@ class Chef
       file_canonical = Hash.new
 
       [ "recipes", "attributes", "definitions", "libraries", "resources", "providers" ].each do |segment|
-        remote_list = parts[segment]
+        remote_list = parts.has_key?(segment) ? parts[segment] : []
 
         # segement = cookbook segment
         # remote_list = list of file hashes
