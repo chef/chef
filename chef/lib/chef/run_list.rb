@@ -140,10 +140,6 @@ class Chef
           override_attrs = Chef::Mixin::DeepMerge.merge(override_attrs, role.override_attributes)
         end
       end
-      Chef::Log.error("****\n\n\n")
-      Chef::Log.error(default_attrs)
-      Chef::Log.error(override_attrs)
-      Chef::Log.error("****\n\n\n")
       return recipes, default_attrs, override_attrs
     end
 
