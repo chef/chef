@@ -86,12 +86,13 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
         @node.run_list params[:for_node]
         @node.save
         redirect(slice_url(:nodes), :message => { :notice => "Created Node #{@node.name}" })
-      rescue
+      rescue Exception => e
+        Chef::Log.error("Exception creating node: #{e.message}")
         @node.attribute = JSON.parse(params[:attributes])
         @available_recipes = get_available_recipes 
         @available_roles = Chef::Role.list.sort
         @run_list = params[:for_node] 
-        @_message = { :error => $! }
+        @_message = { :error => "Exception raised creating node, please check logs for details" }
         render :new
       end
     end
@@ -117,11 +118,13 @@ class ChefServerSlice::Nodes < ChefServerSlice::Application
         @node.save
         @_message = { :notice => "Updated Node" }
         render :show
-      rescue
+      rescue Exception => e
+        Chef::Log.error("Exception updating node: #{e.message}")
         @available_recipes = get_available_recipes 
         @available_roles = Chef::Role.list.sort
         @run_list = Chef::RunList.new
         @run_list.reset(params[:for_node])
+        @_message = { :error => "Exception raised updating node, please check logs for details" }
         render :edit
       end
     end
