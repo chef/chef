@@ -21,6 +21,7 @@ require 'chef/node'
 require 'chef/role'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
+require 'uri'
 
 class Chef
   class Search
@@ -54,12 +55,12 @@ class Chef
       end
 
       private
-        # escapes a query key/value for http
-        # Thanks to RSolr!
         def escape(s)
-          s.to_s.gsub(/([^ a-zA-Z0-9_.-]+)/n) {
-            '%'+$1.unpack('H2'*$1.size).join('%').upcase
-          }.tr(' ', '+') 
+          if s
+            URI.escape(s.to_s) 
+          else
+            s
+          end
         end
     end
   end
