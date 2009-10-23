@@ -54,31 +54,31 @@ describe Chef::Search::Query do
     end
 
     it "should query for every object of a type by default" do
-      @rest.should_receive(:get_rest).with("search/foo?q=%2A%3A%2A&sort=&start=0&rows=20").and_return(@response)
+      @rest.should_receive(:get_rest).with("search/foo?q=*:*&sort=&start=0&rows=20").and_return(@response)
       @query = Chef::Search::Query.new
       @query.search(:foo)
     end
 
     it "should allow a custom query" do
-      @rest.should_receive(:get_rest).with("search/foo?q=gorilla%3Adundee&sort=&start=0&rows=20").and_return(@response)
+      @rest.should_receive(:get_rest).with("search/foo?q=gorilla:dundee&sort=&start=0&rows=20").and_return(@response)
       @query = Chef::Search::Query.new
       @query.search(:foo, "gorilla:dundee")
     end
 
     it "should let you set a sort order" do
-      @rest.should_receive(:get_rest).with("search/foo?q=gorilla%3Adundee&sort=id+desc&start=0&rows=20").and_return(@response)
+      @rest.should_receive(:get_rest).with("search/foo?q=gorilla:dundee&sort=id%20desc&start=0&rows=20").and_return(@response)
       @query = Chef::Search::Query.new
       @query.search(:foo, "gorilla:dundee", "id desc")
     end
 
     it "should let you set a starting object" do
-      @rest.should_receive(:get_rest).with("search/foo?q=gorilla%3Adundee&sort=id+desc&start=2&rows=20").and_return(@response)
+      @rest.should_receive(:get_rest).with("search/foo?q=gorilla:dundee&sort=id%20desc&start=2&rows=20").and_return(@response)
       @query = Chef::Search::Query.new
       @query.search(:foo, "gorilla:dundee", "id desc", 2)
     end
 
     it "should let you set how many rows to return" do
-      @rest.should_receive(:get_rest).with("search/foo?q=gorilla%3Adundee&sort=id+desc&start=2&rows=40").and_return(@response)
+      @rest.should_receive(:get_rest).with("search/foo?q=gorilla:dundee&sort=id%20desc&start=2&rows=40").and_return(@response)
       @query = Chef::Search::Query.new
       @query.search(:foo, "gorilla:dundee", "id desc", 2, 40)
     end
