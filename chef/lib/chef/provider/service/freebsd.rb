@@ -70,7 +70,6 @@ class Chef
             end
 
             status = popen4(@node[:command][:ps]) do |pid, stdin, stdout, stderr|
-              stdin.close
               r = Regexp.new(@new_resource.pattern)
               Chef::Log.debug("#{@new_resource}: attempting to match #{@new_resource.pattern} (#{r}) against process table")
               stdout.each_line do |line|
