@@ -344,6 +344,11 @@ namespace :features do
 
   
   namespace :provider do
+    desc "Run cucumber tests for deploy resources"
+    Cucumber::Rake::Task.new(:deploy) do |t|
+      t.profile = "provider_deploy"
+    end
+
     desc "Run cucumber tests for directory resources"
     Cucumber::Rake::Task.new(:directory) do |t|
       t.profile = "provider_directory"

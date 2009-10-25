@@ -31,6 +31,7 @@ client_roles: --tags client_roles --format pretty -r features/steps -r features/
 search: --tags @search --format pretty -r features/steps -r features/support features 
 provider: --tags @provider --format pretty -r features/steps -r features/support features 
 provider_directory: --tags @provider_directory --format pretty -r features/steps -r features/support features 
+provider_deploy: --tags @provider_deploy --format pretty -r features/steps -r features/support features 
 provider_execute: --tags @provider_execute --format pretty -r features/steps -r features/support features 
 provider_file: --tags @provider_file --format pretty -r features/steps -r features/support features 
 provider_template: --tags template --format pretty -r features/steps -r features/support features
