@@ -54,6 +54,6 @@ end
 
 Then /^the second chef run should have skipped deployment$/ do
   expected_deploy = "#{tmpdir}/deploy/releases/62c9979f6694612d9659259f8a68d71048ae9a5b"
-  Then "'stdout' should have 'INFO: Already deployed app at #{expected_deploy}, skipping. Use action :force_deploy to force.'"
+  Then "'stdout' should not have 'INFO: Already deployed app at #{expected_deploy}.  Rolling back to it - use action :force_deploy to re-checkout this revision.'"
 end
   

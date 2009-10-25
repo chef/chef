@@ -53,11 +53,16 @@ describe Chef::Provider::Deploy do
     @provider.should_receive(:cleanup!)
     @provider.deploy
   end
-  
-  it "does not deploy when using the :deploy action if there is already a deploy at release_path" do
+ 
+  it "should not deploy if there is already a deploy at release_path, and it is the current release" do
     @provider.stub!(:all_releases).and_return([@expected_release_dir])
-    @provider.should_not_receive(:enforce_ownership)
-    @provider.should_not_receive(:update_cached_repo)
+    @provider.should_not_receive(:deploy)
+    @provider.action_deploy
+  end
+
+  it "should call action_rollback if there is already a deploy of this revision at release_path, and it is not the current release" do
+    @provider.stub!(:all_releases).and_return([@expected_release_dir, "102021"])
+    @provider.should_receive(:action_rollback)
     @provider.action_deploy
   end
   
@@ -80,7 +85,18 @@ describe Chef::Provider::Deploy do
     @provider.action_force_deploy
   end
   
-  it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
+  it "sets the release path to the penultimate release when one is not specified, symlinks, and rm's the last release on rollback" do
+    @provider.stub!(:release_path).and_return("/my/deploy/dir/releases/3")
+    all_releases = ["/my/deploy/dir/releases/1", "/my/deploy/dir/releases/2", "/my/deploy/dir/releases/3", "/my/deploy/dir/releases/4", "/my/deploy/dir/releases/5"]
+    Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+    @provider.should_receive(:symlink)
+    FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/4")
+    FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/5")
+    @provider.action_rollback
+    @provider.release_path.should eql("/my/deploy/dir/releases/3")
+  end
+
+  it "sets the release path to the specified release, symlinks, and rm's any newer releases on rollback" do
     @provider.unstub!(:release_path)
     all_releases = ["/my/deploy/dir/releases/20040815162342", "/my/deploy/dir/releases/20040700000000",
                     "/my/deploy/dir/releases/20040600000000", "/my/deploy/dir/releases/20040500000000"].sort!
