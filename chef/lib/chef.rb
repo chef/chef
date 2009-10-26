@@ -27,7 +27,7 @@ require 'chef/config'
 Dir[File.join(File.dirname(__FILE__), 'chef/mixin/**/*.rb')].sort.each { |lib| require lib }
 
 class Chef
-  VERSION = '0.7.14'
+  VERSION = '0.7.15'
 end
 
 # Adds a Dir.glob to Ruby 1.8.5, for compat

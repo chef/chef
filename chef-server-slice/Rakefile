@@ -9,7 +9,7 @@ rescue LoadError
 end
 
 GEM_NAME = "chef-server-slice"
-CHEF_SERVER_VERSION="0.7.14"
+CHEF_SERVER_VERSION="0.7.15"
 AUTHOR = "Opscode"
 EMAIL = "chef@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"
