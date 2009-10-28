@@ -33,7 +33,6 @@ require 'chef/certificate'
 require 'tmpdir'
 require 'merb-core'
 require 'merb_cucumber/world/webrat'
-require 'opscode/audit'
 require 'chef/streaming_cookbook_uploader'
 
 def Spec.run? ; true; end
@@ -106,7 +105,7 @@ def cleanup
 end
 
 Merb.start_environment(
-  :merb_root => File.join(File.dirname(__FILE__), "..", "..", "chef-server"), 
+  :merb_root => File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "chef-server")), 
   :testing => true, 
   :adapter => 'runner',
   :environment => ENV['MERB_ENV'] || 'test',
