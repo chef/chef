@@ -77,7 +77,7 @@ describe Chef::Provider::Cron, "load_current_resource" do
     @provider.load_current_resource
   end
         
-  it "should not fail if there's an existing cron a numerical argument" do
+  it "should not fail if there's an existing cron with a numerical argument" do
     @status = mock("Status", :exitstatus => 0)
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)    
