@@ -185,6 +185,8 @@ def create_cookbook(dir)
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "recipes")}" 
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "definitions")}" 
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "libraries")}" 
+  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "resources")}" 
+  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "providers")}" 
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "files", "default")}" 
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "templates", "default")}" 
   unless File.exists?(File.join(dir, ENV["COOKBOOK"], "recipes", "default.rb"))

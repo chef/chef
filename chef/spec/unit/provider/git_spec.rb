@@ -199,13 +199,15 @@ describe Chef::Provider::Git do
     @provider.should_receive(:clone)
     @provider.should_receive(:checkout)
     @provider.should_receive(:enable_submodules)
+    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_checkout
   end
-  
+
   it "does a sync by running the sync command" do
     ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
     ::Dir.stub!(:entries).and_return(['.','..',"lib", "spec"])
     @provider.should_receive(:sync)
+    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_sync
   end
   
@@ -213,6 +215,7 @@ describe Chef::Provider::Git do
     ::File.stub!(:exist?).with("/my/deploy/dir").and_return(false)
     @provider.should_receive(:action_checkout)
     @provider.should_not_receive(:run_command)
+    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_sync
   end
   
@@ -222,12 +225,14 @@ describe Chef::Provider::Git do
     @provider.stub!(:sync_command).and_return("huzzah!")
     @provider.should_receive(:action_checkout)
     @provider.should_not_receive(:run_command).with(:command => "huzzah!", :cwd => "/my/deploy/dir")
+    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_sync
   end
   
   it "does an export by cloning the repo then removing the .git directory" do
     @provider.should_receive(:action_checkout)
     FileUtils.should_receive(:rm_rf).with(@resource.destination + "/.git")
+    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_export
   end
   

@@ -1,3 +1,29 @@
+Mon Sep 27 6:22:00 NZST 2009
+
+Release Notes - Chef - Version 0.7.14
+
+** Bug
+    * [CHEF-454] - Centos4 yum provider failure
+    * [CHEF-565] - dpkg provider fails at packages with a dash in it, causing packages to be re-installed on every chef run
+    * [CHEF-570] - Portage package provider uses wrong regexp in load_current_resource
+    * [CHEF-577] - provider.rb doesn't give @definitions a default value of Hash.new, causing epic fail in resource DSL 
+    * [CHEF-588] - RC is missing debugging info in find_preferred_file
+    * [CHEF-591] - if service doesn't have a status command, process table inspection fails in simple service provider
+    * [CHEF-593] - deploy resource is not idempotent
+    * [CHEF-602] - in deploy provider, callback-defined resources are executed in all subsequent callbacks
+    * [CHEF-603] - deploy: gems.yml support
+    * [CHEF-604] - deploy: sudo / run command handler support
+    * [CHEF-614] - LWRP  undefined local variable or method `new_resource'
+    * [CHEF-619] - Mixlib-* gems installed from gemcutter.org have too restrictive permissions
+    * [CHEF-621] - LWRP dynamic attribute methods are Ruby 1.9 incompatible and cause warnings in 1.8
+    * [CHEF-628] - Deploy resource removes newest release instead of oldest
+
+** Improvement
+    * [CHEF-620] - LWRP components should be shown in Web UI
+    * [CHEF-622] - Gem Package resource/provider shouldn't silently ignore the options attribute
+    * [CHEF-631] - Should create LWRP resources/providers for new_cookbook
+
+
 Fri Sep 4 7:25:00 NZST 2009
 
 Release Notes - Chef - Version 0.7.12
