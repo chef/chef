@@ -51,6 +51,30 @@ def start_rabbitmq(type="normal")
   end
 end
 
+def configure_rabbitmq(type="normal")
+  # hack. wait for rabbit to come up.
+  sleep 2
+  
+  puts `rabbitmqctl add_vhost /nanite`
+
+  # create 'mapper' and 'nanite' users, give them each the password 'testing'
+  %w[mapper nanite].each do |agent|
+    puts `rabbitmqctl add_user #{agent} testing`
+  end
+
+  # grant the mapper user the ability to do anything with the /nanite vhost
+  # the three regex's map to config, write, read permissions respectively
+  puts `rabbitmqctl set_permissions -p /nanite mapper ".*" ".*" ".*"`
+
+  # grant the nanite user more limited permissions on the /nanite vhost
+  puts `rabbitmqctl set_permissions -p /nanite nanite ".*" ".*" ".*"`
+
+  puts `rabbitmqctl list_users`
+  puts `rabbitmqctl list_vhosts`
+  puts `rabbitmqctl list_permissions -p /nanite`
+  
+end
+
 def start_chef_solr(type="normal")
   @chef_solr_pid = nil
   cid = fork
@@ -99,6 +123,7 @@ end
 def start_dev_environment(type="normal")
   start_couchdb(type)
   start_rabbitmq(type)
+  configure_rabbitmq(type)
   start_chef_solr(type)
   start_chef_solr_indexer(type)
   start_chef_server(type)
@@ -170,9 +195,10 @@ namespace :dev do
       desc "Start RabbitMQ for testing"
       task :rabbitmq do
         start_rabbitmq("features")
+        configure_rabbitmq("features")
         wait_for_ctrlc
       end
-
+      
       desc "Start Chef Solr for testing"
       task :chef_solr do
         start_chef_solr("features")
