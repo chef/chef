@@ -5,10 +5,9 @@
       - @results.each do |result|
         %table.table.search{:width => '400px'}
           %tr
-            %th.first Attribute
-            %th.last Value
+            %th.first Name
+            %th.last
           - @results.each do |result|
-            - result.sort { |a,b| a[0].to_s <=> b[0].to_s}.each_with_index do |h,index|
-              %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-                %td= "#{h[0]} (#{h[1].class})"
-                %td= h[1]
+            - result.each do |o|
+              %tr
+                %td= link_to(o.name, slice_url(@type.to_sym, determine_name(@type.to_sym, o)))

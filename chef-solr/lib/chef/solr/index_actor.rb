@@ -26,6 +26,7 @@ require 'chef/role'
 require 'chef/rest'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
+require 'chef/api_client'
 require 'chef/couchdb'
 require 'nanite/actor'
 

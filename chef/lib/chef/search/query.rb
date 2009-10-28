@@ -53,6 +53,10 @@ class Chef
           [ response["rows"], response["start"], response["total"] ]
         end
       end
+      
+      def list_indexes
+        response = @rest.get_rest("search")
+      end 
 
       private
         def escape(s)
