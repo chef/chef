@@ -1,3 +1,4 @@
+@provider @provider_directory
 Feature: Delete Directories 
   In order to save time 
   As a Developer

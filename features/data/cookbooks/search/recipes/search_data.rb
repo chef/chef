@@ -17,11 +17,12 @@
 # limitations under the License.
 #
 
-node.save
-sleep 5
-search(:node, "*") do |entry|
-  Chef::Log.error(entry.inspect)
-  entry["search_files"].each do |filename|
-    file "#{node[:tmpdir]}/#{filename}" 
-  end
+# We have to sleep at least 10 seconds to confirm that the data has made it 
+# into the index.  We can only rely on this because we are in a test environment
+# in real-land Chef, the index is only eventually consistent.. and may take a
+# variable amount of time.
+sleep 10
+search(:users, "*:*") do |entry|
+  file "#{node[:tmpdir]}/#{entry["id"]}"
 end
+

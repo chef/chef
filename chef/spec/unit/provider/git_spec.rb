@@ -129,7 +129,7 @@ describe Chef::Provider::Git do
                       "b7d19519a1c15f1c1a324e2683bd728b6198ce5a\trefs/tags/0.7.8^{}\n"+
                       "ebc1b392fe7e8f0fbabc305c299b4d365d2b4d9b\trefs/tags/chef-server-package"
       @resource.revision ''
-      @stdout.stub(:string).and_return(lots_of_shas)
+      @stdout.stub!(:string).and_return(lots_of_shas)
       @provider.should_receive(:popen4).and_yield("pid","stdin",@stdout,@stderr).and_return(@exitstatus)
       @provider.revision_sha.should eql("28af684d8460ba4793eda3e7ac238c864a5d029a")
     end

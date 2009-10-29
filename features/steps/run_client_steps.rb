@@ -24,7 +24,7 @@ When /^I run the chef\-client$/ do
   @chef_args ||= ""
   @config_file ||= File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))
   status = Chef::Mixin::Command.popen4(
-    "chef-client -l #{@log_level} -c #{@config_file} #{@chef_args}") do |p, i, o, e|
+    "#{File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "chef-client")} -l #{@log_level} -c #{@config_file} #{@chef_args}") do |p, i, o, e|
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
   end
@@ -56,7 +56,7 @@ When /^I run the chef\-client for '(.+)' seconds$/ do |run_for|
 end
 
 When /^I run the chef\-client at log level '(.+)'$/ do |log_level|
-  @log_level = log_level
+  @log_level = log_level.to_sym
   When "I run the chef-client"
 end
 
@@ -76,11 +76,17 @@ log_location     File.join(tmpdir, "silly-monkey.log")
 file_cache_path  File.join(tmpdir, "cache")
 ssl_verify_mode  :verify_none
 registration_url "http://127.0.0.1:4000"
-openid_url       "http://127.0.0.1:4001"
+openid_url       "http://127.0.0.1:4000"
 template_url     "http://127.0.0.1:4000"
 remotefile_url   "http://127.0.0.1:4000"
 search_url       "http://127.0.0.1:4000"
-couchdb_database   'chef_integration'
+role_url         "http://127.0.0.1:4000"
+client_url       "http://127.0.0.1:4000"
+chef_server_url  "http://127.0.0.1:4000"
+validation_client_name "validator"
+systmpdir = File.expand_path(File.join(Dir.tmpdir, "chef_integration"))
+validation_key   File.join(systmpdir, "validation.pem")
+client_key       File.join(systmpdir, "client.pem")
 CONFIG
   
   @config_file = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client-with-logging.rb'))  
@@ -90,12 +96,11 @@ CONFIG
 
   self.cleanup_files << @config_file
   
-  @status = Chef::Mixin::Command.popen4("chef-client -c #{@config_file}") do |p, i, o, e|
+  
+  @status = Chef::Mixin::Command.popen4("#{File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "chef-client")} -c #{@config_file} #{@chef_args}") do |p, i, o, e|
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
   end
-
-  
 end
 
 ###
