@@ -9,7 +9,8 @@ examples/openid-cstore
 examples/openid-db
 chef/pkg
 chef-server/pkg
-chef-server-slice/pkg
+chef-server-webui/pkg
+chef-server-api/pkg
 chef/log
 chef-server/log
 log
@@ -18,3 +19,5 @@ couchdb.stdout
 features/data/tmp/**
 *.swp
 features/data/cookbooks/**/metadata.json
+features/data/solr/**
+erl_crash.dump

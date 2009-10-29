@@ -1,0 +1,60 @@
+.block#block-tables
+  .content
+    %h2.title= "Node #{h @node.name}"
+    .inner
+      = partial('navigation', :active => 'show')
+
+      .content
+        .inner
+          .left
+            %h3 Run List
+            %table.table
+              %tr
+                %th.first Position
+                %th Name
+                %th.last Type
+                - if @node.run_list.empty?
+                  %tr
+                    %td{:colspan => 2} This node has no roles or recipes applied.
+                - else
+                  -@node.run_list.each_index do |i|
+                    - type, name, fname = @node.run_list.parse_entry(@node.run_list[i])
+                    %tr
+                      %td.position= i
+                      %td= name 
+                      %td= type 
+          .left.accordion
+            %h3.head= link_to("Recipes", "#")
+            - full_recipe_list, default_attrs, override_attrs = @node.run_list.expand()
+            %div
+              %span.description.form.help
+                This is the list of recipes, fully expanded, as they will be applied to the node in question.  
+              %table#recipes.table
+                %tr
+                  %th.first Position
+                  %th.last Name
+                - if @node.run_list.empty?
+                  %tr
+                    %td{:colspan => 2} This node has no recipes applied.
+                - else
+                  - full_recipe_list.each_index do |i|
+                    %tr
+                      %td.position= i
+                      %td= full_recipe_list[i]
+            
+          .left
+            %h3 Tags 
+            %table#recipes.table
+              %tr
+                %th.first Tags
+                %th.last &nbsp;
+              %tr
+                - if (@node.attribute?(:tags) == false) || @node[:tags].empty?
+                  %td{:colspan => 2} This node has no tags applied.
+                - else
+                  %td{:colspan => 2}= @node[:tags].join(", ")
+            
+          .left
+            %h3 Attributes
+            = build_tree('attrs', @node.attribute, default_attrs, override_attrs)
+

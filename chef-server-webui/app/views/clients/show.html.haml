@@ -1,0 +1,15 @@
+.block#block-tables
+  .content
+    %h2.title= "Client: #{h @client.name}"
+    .inner
+      = partial("navigation", :active => "show")
+      .content
+        .inner
+          .left
+            %h3 Admin
+            = @client.admin
+          .left
+            %h3 Public Key
+            = @client.public_key
+          
+

@@ -1,4 +1,4 @@
-@provider @git @deploy
+@provider @git @deploy @provider_deploy
 
 Feature: Deploy
   In order to repeatably and reliably deploy web apps from a source repository from the comfort of chef
