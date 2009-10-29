@@ -61,9 +61,15 @@ class Chef
       
       def action_deploy
         if all_releases.include?(release_path)
-          Chef::Log.info("Already deployed app at #{release_path}, skipping. Use action :force_deploy to force.")
+          if all_releases[-1] == release_path
+            Chef::Log.debug("Already deployed app at #{release_path}, and it is the latest revision.  Use action :force_deploy to re-deploy this revision.")
+          else
+            Chef::Log.info("Already deployed app at #{release_path}.  Rolling back to it - use action :force_deploy to re-checkout this revision.")
+            action_rollback
+          end
         else
           deploy
+          @new_resource.updated = true
         end
       end
       
@@ -73,18 +79,31 @@ class Chef
           FileUtils.rm_rf(release_path)
         end
         deploy
+        @new_resource.updated = true
       end
       
       def action_rollback
-        @release_path = all_releases[-2]
-        raise RuntimeError, "There is no release to rollback to!" unless @release_path
-        release_to_nuke = all_releases.last
+        if release_path
+          rp_index = all_releases.index(release_path)
+          raise RuntimeError, "There is no release to rollback to!" unless rp_index
+          rp_index += 1
+          releases_to_nuke = all_releases[rp_index..-1]
+        else
+          @release_path = all_releases[-2] 
+          raise RuntimeError, "There is no release to rollback to!" unless @release_path
+          releases_to_nuke = [ all_releases.last ]
+        end
+
         Chef::Log.info "rolling back to previous release: #{release_path}"
         symlink
-        Chef::Log.info "removing last release: #{release_to_nuke}"
-        FileUtils.rm_rf release_to_nuke
         Chef::Log.info "restarting with previous release"
         restart
+        releases_to_nuke.each do |i|
+          Chef::Log.info "Removing release: #{i}"
+          FileUtils.rm_rf i 
+          release_deleted(i)
+        end
+        @new_resource.updated = true
       end
       
       def deploy

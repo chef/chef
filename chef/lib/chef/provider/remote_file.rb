@@ -102,7 +102,7 @@ class Chef
         begin
           uri = URI.parse(source)
           if uri.absolute
-            r = Chef::REST.new(source)
+            r = Chef::REST.new(source, nil, nil)
             Chef::Log.debug("Downloading from absolute URI: #{source}")
             r.get_rest(source, true).open
           end

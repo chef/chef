@@ -20,9 +20,8 @@
 # Given
 ###
 Given /^a validated node$/ do
-  client.validation_token = Chef::Config[:validation_token] = 'ceelo'
+  client.determine_node_name
   client.register
-  client.authenticate
   client.build_node
   client.node.recipes << "integration_setup"
 end

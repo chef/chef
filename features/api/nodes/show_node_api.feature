@@ -1,4 +1,4 @@
-@api @nodes @nodes_show
+@api @api_nodes @nodes_show
 Feature: Show a node via the REST API 
   In order to know what the details are for a node 
   As a Developer
@@ -7,19 +7,18 @@ Feature: Show a node via the REST API
   Scenario: Show a node
     Given a 'registration' named 'bobo' exists
       And a 'node' named 'webserver' exists
-     When I authenticate as 'bobo'
-      And I 'GET' the path '/nodes/webserver'
+     When I 'GET' the path '/nodes/webserver'
      Then the inflated response should respond to 'name' with 'webserver'
 
   Scenario: Show a missing node
     Given a 'registration' named 'bobo' exists
       And there are no nodes 
-     When I authenticate as 'bobo'
-      And I 'GET' the path '/nodes/bobo'
+     When I 'GET' the path '/nodes/bobo'
      Then I should get a '404 "Not Found"' exception
 
-  Scenario: Show a node without authenticating
-    Given a 'node' named 'webserver' exists
-      And I 'GET' the path '/nodes/webserver'
+  Scenario: Show a node with a wrong private key
+    Given a 'registration' named 'bobo' exists
+      And a 'node' named 'webserver' exists
+     When I 'GET' the path '/nodes/webserver' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 

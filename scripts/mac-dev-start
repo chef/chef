@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'appscript'
+
+include Appscript
+
+SRCDIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
+DELAY  = 1
+BASE_CMD = case ARGV[0]
+           when "features"
+             "cd #{SRCDIR} && sudo rake dev:features:start:"
+           when "dev"
+             "cd #{SRCDIR} && sudo rake dev:start:"
+           else
+             "cd #{SRCDIR} && sudo rake dev:start:"
+           end
+SERVICES = ["couchdb","rabbitmq","chef_solr","chef_solr_indexer","chef_server"]
+
+def auth_up
+  system("sudo echo")  
+end
+
+def create_tab
+  app("System Events").application_processes["Terminal.app"].keystroke("t", :using=>:command_down)
+end
+
+def activate_terminal
+  app("/Applications/Utilities/Terminal.app").windows.first.activate  
+  app("System Events").application_processes["Terminal.app"].keystroke("n", :using=>:command_down)
+  app('Terminal')  
+end
+
+def start_service_in_last_tab(window,service)
+  app('Terminal').do_script(BASE_CMD+service, :in => window.tabs.last.get)
+  sleep DELAY  
+end
+
+def start_services
+  auth_up
+  term = activate_terminal
+  window = term.windows.first.get
+  
+  SERVICES.each do |service|
+    create_tab
+    start_service_in_last_tab(window,service)
+  end
+end
+
+
+if __FILE__ == $0
+  start_services
+end
+

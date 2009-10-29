@@ -4,7 +4,7 @@ require 'rake/rdoctask'
 require './tasks/rspec.rb'
 
 GEM = "chef"
-CHEF_VERSION = "0.7.12"
+CHEF_VERSION = "0.8.0"
 AUTHOR = "Adam Jacob"
 EMAIL = "adam@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"
@@ -23,13 +23,11 @@ spec = Gem::Specification.new do |s|
   s.homepage = HOMEPAGE
   
   s.add_dependency "mixlib-config", ">= 1.0.12"
-  s.add_dependency "ohai", ">= 0.3.4"
-  %w{mixlib-cli mixlib-log ruby-openid
-    json erubis extlib
-    stomp}.each { |gem| s.add_dependency gem }
+  s.add_dependency "ohai", ">= 0.3.6"
+  %w{mixlib-cli mixlib-log mixlib-authentication json erubis extlib amqp thor ruby-hmac}.each { |gem| s.add_dependency gem }
   
   s.bindir       = "bin"
-  s.executables  = %w( chef-client chef-solo )
+  s.executables  = %w( chef-client chef-solo knife )
   s.require_path = 'lib'
   s.files = %w(LICENSE README.rdoc) + Dir.glob("{distro,lib}/**/*")
 end

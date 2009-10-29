@@ -55,7 +55,6 @@ class Chef
               raise Chef::Exceptions::Service, "#{@new_resource}: could not determine how to inspect the process table, please set this nodes 'command.ps' attribute"
             end
             status = popen4(@node[:command][:ps]) do |pid, stdin, stdout, stderr|
-              stdin.close rescue nil
               r = Regexp.new(@new_resource.pattern)
               Chef::Log.warn "#{@new_resource}: attempting to match '#{@new_resource.pattern}' (#{r}) against process list"
               stdout.each_line do |line|

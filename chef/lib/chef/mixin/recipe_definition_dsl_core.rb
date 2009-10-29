@@ -20,12 +20,14 @@
 require 'chef/recipe'
 require 'chef/resource'
 require 'chef/mixin/convert_to_class_name'
+require 'chef/mixin/language'
 
 class Chef
   module Mixin
     module RecipeDefinitionDSLCore
       
       include Chef::Mixin::ConvertToClassName
+      include Chef::Mixin::Language
       
       def method_missing(method_symbol, *args, &block)
         # If we have a definition that matches, we want to use that instead.  This should

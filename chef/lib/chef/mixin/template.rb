@@ -22,7 +22,17 @@ require 'erubis'
 class Chef
   module Mixin
     module Template
-    
+      
+      module ChefContext
+        def node
+          return @node if @node
+          raise "Could not find a value for node. If you are explicitly setting variables in a template, " +
+                "include a node variable if you plan to use it."
+        end
+      end
+      
+      ::Erubis::Context.send(:include, ChefContext)
+      
       # Render a template with Erubis.  Takes a template as a string, and a 
       # context hash.  
       def render_template(template, context)
