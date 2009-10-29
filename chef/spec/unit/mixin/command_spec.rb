@@ -40,6 +40,19 @@ describe Chef::Mixin::Command, "popen4" do
       stdout.read.strip.should == "es"
     end
   end
+  
+  describe "when a process detaches but doesn't close STDOUT and STDERR [CHEF-584]" do
+    
+    it "returns immediately after the first child process exits" do
+      lambda {Timeout.timeout(2) do
+        pid, stdin,stdout,stderr = nil,nil,nil,nil
+        evil_forker="exit if fork; 10.times { sleep 1}"
+        popen4("ruby -e '#{evil_forker}'") do |pid,stdin,stdout,stderr|
+        end
+      end}.should_not raise_error
+    end
+    
+  end
 
 end
 
@@ -55,6 +68,16 @@ describe Chef::Mixin::Command, "run_command" do
       e.message.should =~ /STDOUT: hello/
       e.message.should =~ /STDERR: world/
     end
+  end
+  
+  describe "when a process detaches but doesn't close STDOUT and STDERR [CHEF-584]" do
+    it "returns successfully" do
+      lambda {Timeout.timeout(2) do
+        evil_forker="exit if fork; 10.times { sleep 1}"
+        run_command(:command => "ruby -e '#{evil_forker}'")
+      end}.should_not raise_error
+    end
+    
   end
   
 end

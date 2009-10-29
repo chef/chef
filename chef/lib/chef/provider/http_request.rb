@@ -25,7 +25,7 @@ class Chef
       attr_accessor :rest
       
       def load_current_resource
-        @rest = Chef::REST.new(@new_resource.url)
+        @rest = Chef::REST.new(@new_resource.url, nil, nil)
       end
       
       # Send a GET request to @new_resource.url, with ?message=@new_resource.message
@@ -34,6 +34,7 @@ class Chef
         body = @rest.run_request(
           :GET, 
           @rest.create_url("#{@new_resource.url}?message=#{message}"),
+          {},
           false,
           10,
           false
@@ -49,6 +50,7 @@ class Chef
         body = @rest.run_request(
           :PUT,
           @rest.create_url("#{@new_resource.url}"),
+          {},
           message,
           10,
           false
@@ -64,6 +66,7 @@ class Chef
         body = @rest.run_request(
           :POST,
           @rest.create_url("#{@new_resource.url}"),
+          {},
           message,
           10,
           false
@@ -78,6 +81,7 @@ class Chef
         body = @rest.run_request(
           :DELETE,
           @rest.create_url("#{@new_resource.url}"),
+          {},
           false,
           10,
           false

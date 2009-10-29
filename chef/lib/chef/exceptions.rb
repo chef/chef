@@ -32,5 +32,8 @@ class Chef
     class Group < RuntimeError; end
     class Link < RuntimeError; end
     class Mount < RuntimeError; end
+    class CouchDBNotFound < RuntimeError; end
+    class PrivateKeyMissing < RuntimeError; end
+    class CannotWritePrivateKey < RuntimeError; end
   end
 end

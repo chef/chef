@@ -30,6 +30,10 @@ describe Chef::Mixin::Template, "render_template" do
     @template.render_template("<%= @foo %>", { :foo => "bar" }).open.read.should == "bar"
   end
   
+  it "should provide a node method to access @node" do
+    @template.render_template("<%= node %>",{:node => "tehShizzle"}).open.read.should == "tehShizzle"
+  end
+  
   it "should return a file" do
     f = @template.render_template("abcdef", {})
     @template.render_template("abcdef", {}).should be_kind_of(Tempfile)
@@ -45,6 +49,10 @@ describe Chef::Mixin::Template, "render_template" do
       lambda { do_raise }.should raise_error(Chef::Mixin::Template::TemplateError)
     end
     
+    it "should raise an error if an attempt is made to access node but it is nil" do
+      lambda {@template.render_template("<%= node %>",{})}.should raise_error(Chef::Mixin::Template::TemplateError)
+    end
+
     describe "the raised TemplateError" do
       before :each do
         begin

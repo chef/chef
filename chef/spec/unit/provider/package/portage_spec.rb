@@ -59,6 +59,12 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
     @current_resource.should_receive(:version).with("1.0.0")
     @provider.load_current_resource
   end
+
+  it "should return a current resource with the correct version if the package is found with revision" do
+    ::Dir.stub!(:entries).and_return("git-1.0.0-r1")
+    @current_resource.should_receive(:version).with("1.0.0-r1")
+    @provider.load_current_resource
+  end
   
   it "should return a current resource with a nil version if the package is not found" do
     ::Dir.stub!(:entries).and_return("notgit-1.0.0")

@@ -145,6 +145,7 @@ end
 describe Chef::Provider::Group::Usermod, "load_current_resource" do
   before do
     @node = mock("Chef::Node", :null_object => true)
+    Chef::Node.stub!(:new).and_return(@node)
     @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
     @provider = Chef::Provider::Group::Usermod.new(@node, @new_resource)
     File.stub!(:exists?).and_return(false)

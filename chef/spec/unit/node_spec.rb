@@ -21,6 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::Node do
   before(:each) do
     Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    Nanite.stub!(:request).and_return(true)
     @node = Chef::Node.new()
   end
  
@@ -263,17 +264,6 @@ describe Chef::Node do
     end
   end
 
-  describe "to_index" do
-    before(:each) do
-      @node.foo("bar")
-    end
-    
-    it "should return a hash with :index attributes" do
-      @node.name("airplane")
-      @node.to_index.should == { "foo" => "bar", "index_name" => "node", "id" => "node_airplane", "name" => "airplane" }
-    end
-  end
-
   describe "to_s" do
     it "should turn into a string like node[name]" do
       @node.name("airplane")
@@ -281,7 +271,71 @@ describe Chef::Node do
     end
   end
 
-  describe "couchdb" do
+  describe "api model" do
+    before(:each) do 
+      @rest = mock("Chef::REST")
+      Chef::REST.stub!(:new).and_return(@rest)
+      @query = mock("Chef::Search::Query")
+      Chef::Search::Query.stub!(:new).and_return(@query)
+    end
+
+    describe "list" do
+      describe "inflated" do
+        it "should return a hash of node names and objects" do
+          n1 = mock("Chef::Node", :name => "one")
+          @query.should_receive(:search).with(:node).and_yield(n1)
+          r = Chef::Node.list(true)
+          r["one"].should == n1
+        end
+      end
+
+      it "should return a hash of node names and urls" do
+        @rest.should_receive(:get_rest).and_return({ "one" => "http://foo" })
+        r = Chef::Node.list
+        r["one"].should == "http://foo"
+      end
+    end
+
+    describe "load" do
+      it "should load a node by name" do
+        @rest.should_receive(:get_rest).with("nodes/monkey").and_return("foo")
+        Chef::Node.load("monkey").should == "foo"
+      end
+    end
+
+    describe "destroy" do
+      it "should destroy a node" do
+        @rest.should_receive(:delete_rest).with("nodes/monkey").and_return("foo")
+        @node.name("monkey")
+        @node.destroy
+      end
+    end
+
+    describe "save" do
+      it "should update a node if it already exists" do
+        @node.name("monkey")
+        @rest.should_receive(:put_rest).with("nodes/monkey", @node).and_return("foo")
+        @node.save
+      end
+
+      it "should not try and create if it can update" do
+        @node.name("monkey")
+        @rest.should_receive(:put_rest).with("nodes/monkey", @node).and_return("foo")
+        @rest.should_not_receive(:post_rest)
+        @node.save
+      end
+
+      it "should create if it cannot update" do
+        @node.name("monkey")
+        exception = mock("404 error", :code => "404")
+        @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
+        @rest.should_receive(:post_rest).with("nodes", @node)
+        @node.save
+      end
+    end
+  end
+
+  describe "couchdb model" do
     before(:each) do
       @mock_couch = mock("Chef::CouchDB")
     end
@@ -295,15 +349,15 @@ describe Chef::Node do
       end
 
       it "should retrieve a list of nodes from CouchDB" do
-        Chef::Node.list.should eql(["avenue"])
+        Chef::Node.cdb_list.should eql(["avenue"])
       end
 
       it "should return just the ids if inflate is false" do
-        Chef::Node.list(false).should eql(["avenue"])
+        Chef::Node.cdb_list(false).should eql(["avenue"])
       end
 
       it "should return the full objects if inflate is true" do
-        Chef::Node.list(true).should eql(["a"])
+        Chef::Node.cdb_list(true).should eql(["a"])
       end
     end
 
@@ -311,7 +365,7 @@ describe Chef::Node do
       it "should load a node from couchdb by name" do
         @mock_couch.should_receive(:load).with("node", "coffee").and_return(true)
         Chef::CouchDB.stub!(:new).and_return(@mock_couch)
-        Chef::Node.load("coffee")
+        Chef::Node.cdb_load("coffee")
       end
     end
 
@@ -322,8 +376,7 @@ describe Chef::Node do
         node = Chef::Node.new
         node.name "bob"
         node.couchdb_rev = 1
-        Chef::Queue.should_receive(:send_msg).with(:queue, :remove, node)
-        node.destroy
+        node.cdb_destroy
       end
     end
 
@@ -331,20 +384,18 @@ describe Chef::Node do
       before(:each) do
         @mock_couch.stub!(:store).and_return({ "rev" => 33 })
         Chef::CouchDB.stub!(:new).and_return(@mock_couch)
-        Chef::Queue.stub!(:send_msg).and_return(true)
         @node = Chef::Node.new
         @node.name "bob"
         @node.couchdb_rev = 1
       end
 
       it "should save the node to couchdb" do
-        Chef::Queue.should_receive(:send_msg).with(:queue, :index, @node)
         @mock_couch.should_receive(:store).with("node", "bob", @node).and_return({ "rev" => 33 })
-        @node.save
+        @node.cdb_save
       end
 
       it "should store the new couchdb_rev" do
-        @node.save
+        @node.cdb_save
         @node.couchdb_rev.should eql(33)
       end
     end

@@ -143,7 +143,6 @@ class Chef
         if pmap.has_key?(rtkey)
           pmap[rtkey]
         else
-          Chef::Log.error("#{rtkey.inspect} #{pmap.inspect}")
           raise(
             ArgumentError,
             "Cannot find a provider for #{resource_type} on #{platform} version #{version}"
