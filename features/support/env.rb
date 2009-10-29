@@ -106,7 +106,7 @@ def cleanup
 end
 
 Merb.start_environment(
-  :merb_root => File.join(File.dirname(__FILE__), "..", "..", "chef-server"), 
+  :merb_root => File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "chef-server")), 
   :testing => true, 
   :adapter => 'runner',
   :environment => ENV['MERB_ENV'] || 'test',
