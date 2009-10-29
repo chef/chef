@@ -16,3 +16,4 @@
 # limitations under the License.
 
 require 'chef/application'
+

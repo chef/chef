@@ -129,7 +129,6 @@ class Chef
 
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
             crontab.each { |line| stdin.puts "#{line}" }
-            stdin.close rescue nil
           end
           Chef::Log.info("Updated cron '#{@new_resource.name}'")
           @new_resource.updated = true
@@ -144,7 +143,6 @@ class Chef
 
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
             crontab.each { |line| stdin.puts "#{line}" }
-            stdin.close rescue nil
           end
           Chef::Log.info("Added cron '#{@new_resource.name}'")
           @new_resource.updated = true
@@ -175,7 +173,6 @@ class Chef
 
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
             crontab.each { |line| stdin.puts "#{line}" }
-            stdin.close rescue nil
           end
           Chef::Log.debug("Deleted cron '#{@new_resource.name}'")
           @new_resource.updated = true

@@ -19,7 +19,7 @@
 
 directory node[:int][:tmpdir] do
   owner "root"
-  mode 1777
+  mode "1777"
   action :create
 end
 

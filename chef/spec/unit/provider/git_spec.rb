@@ -129,7 +129,7 @@ describe Chef::Provider::Git do
                       "b7d19519a1c15f1c1a324e2683bd728b6198ce5a\trefs/tags/0.7.8^{}\n"+
                       "ebc1b392fe7e8f0fbabc305c299b4d365d2b4d9b\trefs/tags/chef-server-package"
       @resource.revision ''
-      @stdout.stub(:string).and_return(lots_of_shas)
+      @stdout.stub!(:string).and_return(lots_of_shas)
       @provider.should_receive(:popen4).and_yield("pid","stdin",@stdout,@stderr).and_return(@exitstatus)
       @provider.revision_sha.should eql("28af684d8460ba4793eda3e7ac238c864a5d029a")
     end
@@ -199,13 +199,15 @@ describe Chef::Provider::Git do
     @provider.should_receive(:clone)
     @provider.should_receive(:checkout)
     @provider.should_receive(:enable_submodules)
+    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_checkout
   end
-  
+
   it "does a sync by running the sync command" do
     ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
     ::Dir.stub!(:entries).and_return(['.','..',"lib", "spec"])
     @provider.should_receive(:sync)
+    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_sync
   end
   
@@ -213,6 +215,7 @@ describe Chef::Provider::Git do
     ::File.stub!(:exist?).with("/my/deploy/dir").and_return(false)
     @provider.should_receive(:action_checkout)
     @provider.should_not_receive(:run_command)
+    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_sync
   end
   
@@ -222,12 +225,14 @@ describe Chef::Provider::Git do
     @provider.stub!(:sync_command).and_return("huzzah!")
     @provider.should_receive(:action_checkout)
     @provider.should_not_receive(:run_command).with(:command => "huzzah!", :cwd => "/my/deploy/dir")
+    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_sync
   end
   
   it "does an export by cloning the repo then removing the .git directory" do
     @provider.should_receive(:action_checkout)
     FileUtils.should_receive(:rm_rf).with(@resource.destination + "/.git")
+    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_export
   end
   

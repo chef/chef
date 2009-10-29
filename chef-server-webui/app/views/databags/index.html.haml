@@ -1,0 +1,10 @@
+.block#block-tables
+  .content
+    %h2.title Databags
+    .inner
+      %table.table
+        %tr
+          %th.first Databag Name
+          - @databags.sort.each_with_index do |databag, index|
+            %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
+              %td= link_to databag[0], slice_url(:databag, { :id => databag[0] })

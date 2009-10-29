@@ -39,11 +39,13 @@ class Chef
         clone
         checkout
         enable_submodules
+        @new_resource.updated = true
       end
       
       def action_export
         action_checkout
         FileUtils.rm_rf(::File.join(@new_resource.destination,".git"))
+        @new_resource.updated = true
       end
       
       def action_sync
@@ -53,6 +55,8 @@ class Chef
           sync
           enable_submodules
         end
+
+        @new_resource.updated = true
       end
       
       def find_current_revision

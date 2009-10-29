@@ -73,7 +73,6 @@ describe Chef::Resource::Deploy do
   resource_has_a_boolean_attribute(:migrate, :defaults_to=>false)
   resource_has_a_boolean_attribute(:enable_submodules, :defaults_to=>false)
   resource_has_a_boolean_attribute(:shallow_clone, :defaults_to=>false)
-  resource_has_a_boolean_attribute(:force_deploy, :defaults_to=>false)
   
   it "uses the first argument as the deploy directory" do
     @resource.deploy_to.should eql("/my/deploy/dir")

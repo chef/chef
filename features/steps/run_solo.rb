@@ -26,7 +26,7 @@ When /^I run chef-solo with the '(.+)' recipe$/ do |recipe_name|
   cleanup_files << config_file
 
   binary_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'chef', 'bin', 'chef-solo'))
-  command = "chef-solo -c #{config_file} -j #{dna_file}"
+  command = "#{binary_path} -c #{config_file} -j #{dna_file}"
   command += " -l debug" if ENV['LOG_LEVEL'] == 'debug'
 
   # Run it
