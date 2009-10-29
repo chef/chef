@@ -30,18 +30,9 @@ describe Chef::Client, "run" do
     to_stub = [
       :build_node,
       :register,
-      :authenticate,
-      :sync_library_files,
-      :sync_provider_files,
-      :sync_resource_files,
-      :sync_attribute_files,
-      :sync_definitions,
-      :sync_recipes,
+      :sync_cookbooks,
       :save_node,
-      :save_node,
-      :run_ohai,
-      :safe_name,
-      :node_name
+      :converge
     ]
     to_stub.each do |method|
       @client.stub!(method).and_return(true)
@@ -63,43 +54,13 @@ describe Chef::Client, "run" do
     @client.run
   end
   
-  it "should register for an openid" do
+  it "should register for a client" do
     @client.should_receive(:register).and_return(true)
     @client.run
   end
   
-  it "should authenticate with the server" do
-    @client.should_receive(:authenticate).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize definitions from the server" do
-    @client.should_receive(:sync_definitions).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize recipes from the server" do
-    @client.should_receive(:sync_recipes).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize and load library files from the server" do
-    @client.should_receive(:sync_library_files).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize and load attribute files from the server" do
-    @client.should_receive(:sync_attribute_files).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize providers from the server" do
-    @client.should_receive(:sync_provider_files).and_return(true)
-    @client.run
-  end
-  
-  it "should synchronize resources from the server" do
-    @client.should_receive(:sync_resource_files).and_return(true)
+  it "should synchronize the cookbooks from the server" do
+    @client.should_receive(:sync_cookbooks).and_return(true)
     @client.run
   end
   
@@ -113,11 +74,6 @@ describe Chef::Client, "run" do
     @client.run
   end
 
-  it "should set the cookbook_path" do
-    Chef::Config.should_receive('[]').with(:file_cache_path).
-      and_return('/var/chef/cache/cookbooks')
-    @client.run
-  end
 end
 
 describe Chef::Client, "run_solo" do
@@ -166,6 +122,7 @@ describe Chef::Client, "build_node" do
     Chef::REST.stub!(:new).and_return(@mock_rest)
     @client = Chef::Client.new
     Chef::Platform.stub!(:find_platform_and_version).and_return(["FooOS", "1.3.3.7"])
+    Chef::Config[:node_name] = nil
   end
   
   it "should set the name equal to the FQDN" do
@@ -225,35 +182,34 @@ describe Chef::Client, "register" do
   before do
     @mock_rest = mock("Chef::REST", :null_object => true)
     @mock_rest.stub!(:get_rest).and_return(true)
+    @mock_rest.stub!(:register).and_return(true)
     Chef::REST.stub!(:new).and_return(@mock_rest)
     @chef_client = Chef::Client.new
     @chef_client.safe_name = "testnode"
+    @chef_client.node_name = "testnode"
     @chef_client.stub!(:determine_node_name).and_return(true)
-    @chef_client.stub!(:create_registration).and_return(true)
-    Chef::Application.stub!(:fatal!).and_return(true)
-    Chef::FileCache.stub!(:create_cache_path).and_return("/tmp")
-    Chef::FileCache.stub!(:load).and_return("/tmp/testnode")
+    File.stub!(:exists?).and_return(false)
+  end
+  
+  describe "when the validation key is present" do
+    before(:each) do
+      File.stub!(:exists?).with(Chef::Config[:validation_key]).and_return(true)
+    end
+
+    it "should sign requests with the validation key" do
+      Chef::REST.should_receive(:new).with(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).and_return(@mock_rest)
+      @chef_client.register
+    end
+
+    it "should register for a new key-pair" do
+      @mock_rest.should_receive(:register).with("testnode", Chef::Config[:client_key])
+      @chef_client.register
+    end
   end
 
-  it "should log an appropriate debug message regarding registering an openid" do
-    Chef::Log.should_receive(:debug).with("Registering testnode for an openid").and_return(true)
-    @chef_client.register
-  end
-
-  it "should fetch the registration based on safe_name from the chef server" do
-    @mock_rest.should_receive(:get_rest).with("registrations/testnode").and_return(true)
-    @chef_client.register
-  end
-
-  it "should load the secret from disk" do
-    Chef::FileCache.should_receive(:load).with(File.join("registration", "testnode")).and_return("/tmp/testnode")
-    @chef_client.register
-  end
-
-  it "should cause chef to die fatally if the filecache cannot find the registration" do
-    Chef::FileCache.stub!(:load).with(File.join("registration", "testnode")).and_raise(Chef::Exceptions::FileNotFound)
-    Chef::Application.should_receive(:fatal!).with(/^.*$/, 3).and_return(true) 
-    @chef_client.register
+  it "should setup the rest client to use the client key-pair" do
+    Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url]).and_return(@mock_rest)
+    @chef_client.register 
   end
 
 end
@@ -273,3 +229,4 @@ describe Chef::Client, "run_ohai" do
     @chef_client.run_ohai
   end
 end
+

@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/search/query'
+
 class Chef
   module Mixin
     module Language
@@ -72,6 +74,10 @@ class Chef
         end
   
         has_platform
+      end
+
+      def search(*args, &block)
+        Chef::Search::Query.new.search(*args, &block)
       end
       
     end

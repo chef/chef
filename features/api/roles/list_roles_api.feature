@@ -1,4 +1,4 @@
-@api @roles @roles_list
+@api @api_roles @roles_list
 Feature: List roles via the REST API
   In order to know what roles exists programatically
   As a Developer
@@ -6,30 +6,29 @@ Feature: List roles via the REST API
 
   Scenario: List roles when none have been created
     Given a 'registration' named 'bobo' exists
-      And there are no roles
-     When I authenticate as 'bobo'
-      And I 'GET' the path '/roles' 
-     Then the inflated response should be an empty array
+      And there are no roles 
+     When I 'GET' the path '/roles' 
+     Then the inflated response should be '1' items long 
 
   Scenario: List roles when one has been created
     Given a 'registration' named 'bobo' exists
     Given a 'role' named 'webserver' exists
-     When I authenticate as 'bobo'
-      And I 'GET' the path '/roles'
-     Then the inflated response should include '^http://.+/roles/webserver$'
+     When I 'GET' the path '/roles'
+     Then the inflated responses key 'webserver' should match '^http://.+/roles/webserver$'
 
   Scenario: List roles when two have been created
     Given a 'registration' named 'bobo' exists
       And a 'role' named 'webserver' exists
       And a 'role' named 'db' exists
-     When I authenticate as 'bobo'
-      And I 'GET' the path '/roles'
+     When I 'GET' the path '/roles'
      Then the inflated response should be '3' items long
-      And the inflated response should include '^http://.+/roles/role_test$'
-      And the inflated response should include '^http://.+/roles/webserver$'
-      And the inflated response should include '^http://.+/roles/db$'
+      And the inflated responses key 'role_test' should match '^http://.+/roles/role_test$'
+      And the inflated responses key 'webserver' should match '^http://.+/roles/webserver$'
+      And the inflated responses key 'db' should match '^http://.+/roles/db$'
 
-  Scenario: List roles when you are not authenticated 
-     When I 'GET' the path '/roles' 
+  Scenario: List roles when none have been created with a wrong private key
+    Given a 'registration' named 'bobo' exists
+      And there are no roles 
+     When I 'GET' the path '/roles' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 

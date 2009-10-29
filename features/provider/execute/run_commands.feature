@@ -1,3 +1,4 @@
+@provider @provider_execute
 Feature: Run Commands 
   In order to utilize the plethora of useful command line utilities 
   As a Developer

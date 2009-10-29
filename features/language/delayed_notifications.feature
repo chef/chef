@@ -1,3 +1,4 @@
+@language
 Feature: Delayed Notifications
   In order to not impact the system we are configuring unduly
   As a developer

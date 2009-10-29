@@ -1,0 +1,707 @@
+#!/usr/bin/env ruby
+
+$:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
+
+require 'rubygems'
+require 'thor'
+require 'chef'
+require 'chef/node'
+require 'chef/role'
+require 'chef/data_bag'
+require 'chef/data_bag_item'
+require 'chef/rest'
+require 'tmpdir'
+require 'uri'
+
+Chef::Config.from_file("/etc/chef/client.rb")
+Chef::Log.level(ENV.has_key?("LOG_LEVEL") ? ENV["LOG_LEVEL"].to_sym : Chef::Config[:log_level])
+Mixlib::Authentication::Log.logger = Chef::Log.logger
+
+API_OPSCODE_USER=ENV['OPSCODE_USER']
+API_OPSCODE_KEY=ENV['OPSCODE_KEY']
+
+raise StandardError, "Please set OPSCODE_USER and OPSCODE_KEY" unless ENV['OPSCODE_USER'] && ENV['OPSCODE_KEY']
+
+class Knife < Thor
+
+  #########
+  # Nodes #
+  #########
+  desc "list_nodes", "List all the nodes in the system"
+  method_options :show_uri => :boolean
+  def list_nodes
+    setup
+    puts JSON.pretty_generate(get_list("nodes"))
+  end
+
+  desc "show_node", "Show a node"
+  method_options :node => :required, :attribute => :string, :run_list => :boolean
+  def show_node
+    setup
+    node = get_node
+    display = node
+    if options[:attribute]
+      options[:attribute].split(".").each do |attr|
+        display = display[attr]
+      end
+    end
+    if options[:run_list]
+      display = node.run_list.run_list
+    end
+    puts JSON.pretty_generate(display)
+  end
+
+  desc "edit_node", "Edit a node with your $EDITOR"
+  method_options :node => :required, :attribute => :string
+  def edit_node
+    setup
+    node = get_node
+    to_edit = node
+    new_node = nil
+
+    if options[:attribute]
+
+      attr_bits = options[:attribute].split(".")
+      to_edit = node
+      attr_bits.each do |attr|
+        to_edit = to_edit[attr]
+      end
+      edited_data = JSON.parse(edit_data(to_edit))
+
+      walker = node
+      attr_bits.each_index do |i|
+        if (attr_bits.length - 1) == i
+          walker[attr_bits[i]] = edited_data
+        else
+          walker = walker[attr_bits[i]]
+        end
+      end
+      new_node = node
+    else
+      new_node = JSON.parse(edit_data(node))
+    end
+
+    save_node(new_node)
+  end
+
+  desc "delete_node", "Delete a node"
+  method_options :node => :required
+  def delete_node
+    setup
+    destroy_node
+    puts "Done."
+  end
+
+  desc "delete_nodes", "Delete all nodes"
+  def delete_nodes
+    setup
+    nodelist = get_list("nodes")
+    destroy_nodes(nodelist)
+  end
+
+  desc "add_node_recipe", "Add a recipe to a node"
+  method_options :recipe => :required, :after => :string, :node => :required
+  def add_node_recipe
+    setup
+    node = get_node
+    add_to_run_list(node, "recipe[#{options[:recipe]}]", options[:after])
+    save_node(node)
+    print_run_list(node)
+  end
+
+  desc "remove_node_recipe", "Remove a recipe from a node"
+  method_options :recipe => :required, :node => :required
+  def remove_node_recipe
+    setup
+    node = get_node
+    node.run_list.remove("recipe[#{options[:recipe]}]")
+    save_node(node)
+    print_run_list(node)
+  end
+
+  desc "add_node_role", "Add a role to a node"
+  method_options :role => :required, :after => :string, :node => :required
+  def add_node_role
+    setup
+    node = get_node
+    add_to_run_list(node, "role[#{options[:role]}]", options[:after])
+    save_node(node)
+    print_run_list(node)
+  end
+
+  desc "remove_node_role", "Remove a role from a node"
+  method_options :role => :required, :node => :required
+  def remove_node_role
+    setup
+    node = get_node
+    node.run_list.remove("role[#{options[:role]}]")
+    save_node(node)
+    print_run_list(node)
+  end
+
+  desc "add_node_run_list", "Add an item to the run list for a node"
+  method_options :item => :required, :after => :string, :node => :required
+  def add_node_run_list
+    setup
+    node = get_node
+    add_to_run_list(node, options[:item], options[:after])
+    save_node(node)
+    print_run_list(node)
+  end
+
+  desc "remove_node_run_list", "Remove an item from the run list for a node"
+  method_options :item => :required, :node => :required
+  def remove_node_run_list
+    setup
+    node = get_node
+    node.run_list.remove(options[:item])
+    save_node(node)
+    print_run_list(node)
+  end
+
+  #########
+  # Roles #
+  #########
+  desc "list_roles", "List all the roles in the system"
+  method_options :show_uri => :boolean
+  def list_roles
+    setup
+    puts JSON.pretty_generate(get_list("roles"))
+  end
+
+  desc "create_role", "Create a Role"
+  method_options :role => :required, :rbfile => :string, :description => :string
+  def create_role
+    setup
+    if options[:rbfile]
+      role = get_role
+    else
+      role = {
+        "name" => options[:role],
+        "description" => options[:description] || "DESCRIPTION",
+        "recipes" => [],
+        "default_attributes" => { },
+        "override_attributes" => { },
+        "chef_type" => "role",
+        "json_class" => "Chef::Role"
+      }
+    end
+    result = JSON.parse(edit_data(role))
+    @rest.post_rest("roles", result)
+  end
+
+  desc "show_role", "Show a role"
+  method_options :role => :required
+  def show_role
+    setup
+    puts JSON.pretty_generate(get_role)
+  end
+
+  desc "edit_role", "Edit a Role"
+  method_options :role => :required, :rbfile => :string
+  def edit_role
+    setup
+    role = get_role
+    save_role(JSON.parse(edit_data(role)))
+  end
+
+  desc "delete_role", "Delete a role"
+  method_options :role => :required
+  def delete_role
+    setup
+    destroy_role
+    puts "Done."
+  end
+
+  ###########
+  # Clients #
+  ###########
+  desc "list_clients", "List all the API clients in the system"
+  method_options :show_uri => :boolean
+  def list_clients
+    setup
+    puts JSON.pretty_generate(get_list("clients"))
+  end
+
+  desc "create_client", "Create a Client"
+  method_options :client => :required, :key => :required
+  def create_client
+    validation_name = ENV["OPSCODE_USER"]
+    validation_key =  ENV["OPSCODE_KEY"]
+
+    @vr = Chef::REST.new(Chef::Config[:chef_server_url], validation_name, validation_key)
+    @vr.register(options[:client], options[:key])
+    puts "Done."
+  end
+
+  desc "show_client", "Show a client"
+  method_options :client => :required
+  def show_client
+    setup
+    puts JSON.pretty_generate(get_client)
+  end
+
+  desc "reregister_client", "Re-Generate the key for a Client"
+  method_options :client => :required, :key => :required
+  def reregister_client
+    setup
+    r = @rest.put_rest("clients/#{options[:client]}", { :private_key => true })
+    puts r["private_key"]
+    File.open(options[:key], "w") do |f|
+      f.print r["private_key"]
+    end
+  end
+
+  desc "delete_client", "Delete a client"
+  method_options :client => :required
+  def delete_client
+    setup
+    destroy_client
+    puts "Done."
+  end
+
+  desc "delete_clients", "Delete *all* clients"
+  def delete_clients
+    setup
+    destroy_clients(get_list("clients"))
+    puts "Done."
+  end
+
+
+  #############
+  # Cookbooks #
+  #############
+  desc "list_cookbooks", "List all the cookbooks on the server"
+  method_options :show_uri => :boolean
+  def list_cookbooks
+    setup
+    puts JSON.pretty_generate(get_list("cookbooks"))
+  end
+
+  desc "show_cookbook", "Show a cookbook"
+  method_options :cookbook => :required
+  def show_cookbook
+    setup
+    begin
+      puts JSON.pretty_generate(get_cookbook)
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No cookbook found for name '#{options[:cookbook]}'"
+    end
+  end
+
+  desc "show_cookbook_attribute", "Show an attribute file in a cookbook"
+  method_options :cookbook => :required, :file => :required
+  def show_cookbook_attribute
+    setup
+    begin
+      puts get_cookbook_part("attributes", { :id => options[:file] })
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No cookbook part found for cookbook '#{options[:cookbook]}', attribute '#{options[:file]}'"
+    end
+  end
+
+  desc "show_cookbook_definition", "Show a definition file in a cookbook"
+  method_options :cookbook => :required, :file => :required
+  def show_cookbook_definition
+    setup
+    begin
+      puts get_cookbook_part("definitions", { :id => options[:file] })
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No cookbook part found for cookbook '#{options[:cookbook]}', definition '#{options[:file]}'"
+    end
+  end
+
+  desc "show_cookbook_file", "Show a remote file in a cookbook"
+  method_options :cookbook => :required, :file => :required, :fqdn => :string, :platform => :string, :version => :string
+  def show_cookbook_file
+    setup
+    opts = { :id => options[:file] }
+    opts[:fqdn] = options[:fqdn] if options.has_key?(:fqdn)
+    opts[:platform] = options[:platform] if options.has_key?(:platform)
+    opts[:version] = options[:version] if options.has_key?(:version)
+
+    begin
+      puts get_cookbook_part("files", opts)
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No file found for cookbook '#{options[:cookbook]}', file '#{options[:file]}'"
+    end
+  end
+
+  desc "show_cookbook_library", "Show a library file in a cookbook"
+  method_options :cookbook => :required, :file => :required
+  def show_cookbook_library
+    setup
+    begin
+      puts get_cookbook_part("libraries", { :id => options[:file] })
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No library found for cookbook '#{options[:cookbook]}', library '#{options[:file]}'"
+    end
+  end
+
+  desc "show_cookbook_recipe", "Show a recipe file in a cookbook"
+  method_options :cookbook => :required, :file => :required
+  def show_cookbook_recipe
+    setup
+    begin
+      puts get_cookbook_part("recipes", { :id => options[:file] })
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No recipe found for cookbook '#{options[:cookbook]}', recipe '#{options[:file]}'"
+    end
+  end
+
+  desc "show_cookbook_template", "Show a template file in a cookbook"
+  method_options :cookbook => :required, :file => :required, :fqdn => :string, :platform => :string, :version => :string
+  def show_cookbook_template
+    setup
+    opts = { :id => options[:file] }
+    opts[:fqdn] = options[:fqdn] if options.has_key?(:fqdn)
+    opts[:platform] = options[:platform] if options.has_key?(:platform)
+    opts[:version] = options[:version] if options.has_key?(:version)
+
+    begin
+      puts get_cookbook_part("templates", opts)
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No template found for cookbook '#{options[:cookbook]}', recipe '#{options[:file]}'"
+    end
+  end
+
+  desc "download_cookbook", "Download a tarball of a cookbook"
+  method_options :cookbook => :required, :file => :required
+  def download_cookbook
+    setup
+    Chef::Log.level(:debug)
+    tf = @rest.get_rest("cookbooks/#{options[:cookbook]}/_content", true)
+    FileUtils.cp(tf.path, options[:file])
+    puts "Done."
+  end
+
+  desc "delete_cookbook", "Remove a cookbook"
+  method_options :cookbook => :required
+  def delete_cookbook
+    setup
+    begin
+      destroy_cookbook
+      puts "Done."
+    rescue Net::HTTPServerException
+      raise unless $!.message =~ /Not Found/
+      puts "No cookbook found for name '#{options[:cookbook]}'"
+    end
+  end
+
+  #############
+  # Data Bags #
+  #############
+  desc "list_data", "List the available data bags"
+  def list_data
+    setup
+    puts JSON.pretty_generate(get_list("data"))
+  end
+
+  desc "create_data", "Create a Data Bag"
+  method_options :bag => :required
+  def create_data
+    setup
+    bag = {
+      "name" => options[:bag],
+    }
+    result = JSON.parse(edit_data(bag))
+    @rest.post_rest("data", result)
+  end
+
+  desc "show_data", "Show a Data Bag"
+  method_options :bag => :required
+  def show_data
+    setup
+    puts JSON.pretty_generate(get_list("data/#{options[:bag]}"))
+  end
+
+  desc "delete_data", "Remove a data bag"
+  method_options :bag => :required
+  def delete_data
+    setup
+    destroy_data
+    puts "Done."
+  end
+
+  desc "create_item", "Create an item in a data bag"
+  method_options :bag => :required, :id => :required
+  def create_item
+    setup
+    item = {
+      "id" => options[:id]
+    }
+    result = JSON.parse(edit_data(item))
+    @rest.put_rest("data/#{options[:bag]}/#{options[:id]}", result)
+  end
+
+  desc "show_item", "Show an item in a data bag"
+  method_options :bag => :required, :id => :required
+  def show_item
+    setup
+    puts JSON.pretty_generate(@rest.get_rest("data/#{options[:bag]}/#{options[:id]}"))
+  end
+
+  desc "edit_item", "Edit an item in a data bag"
+  method_options :bag => :required, :id => :required
+  def edit_item
+    setup
+    item = @rest.get_rest("data/#{options[:bag]}/#{options[:id]}")
+    result = JSON.parse(edit_data(item))
+    @rest.put_rest("data/#{options[:bag]}/#{options[:id]}", result)
+    puts "Done."
+  end
+
+  desc "delete_item", "Remove a data bag item"
+  method_options :bag => :required, :id => :required
+  def delete_item
+    setup
+    destroy_item
+    puts "Done."
+  end
+
+  ##########
+  # Search #
+  ##########
+
+  desc "list_search", "List the available search indexes"
+  def list_search
+    setup
+    puts JSON.pretty_generate(get_list("search"))
+  end
+
+  desc "search", "Search an index"
+  method_options :i => :required, :q => :required, :sort => :string, :start => :string, :rows => :string, :attribute => :string, :raw => :string, :id_only => :string
+  def search
+    setup
+    opts = { :q => options[:q] }
+    [ :sort, :start, :rows ].each do |o|
+      opts[o] = options[o] if options.has_key?(o)
+    end
+    results = @rest.get_rest("search/#{options[:i]}?#{make_query_params(opts)}")
+    display = results
+    unless options[:raw]
+      display = { :total => results["total"], :start => results["start"], :rows => [ ] }
+      results["rows"].each do |item|
+        is_dbi = false
+        if item.kind_of?(Chef::DataBagItem)
+          is_dbi = true
+          data = item.raw_data
+        else
+          data = item
+        end
+
+        if options[:id_only]
+
+        elsif options[:attribute]
+          options[:attribute].split(".").each do |attr|
+            data = data[attr]
+          end
+        end
+
+        display[:rows] << { :id => is_dbi ? item["id"] : item.name, options[:attribute] => data }
+      end
+    end
+    puts JSON.pretty_generate(display)
+  end
+
+  #######
+  # EC2 #
+  #######
+
+  desc "instance_data", "Generate EC2 Instance Data"
+  method_options :run_list => :string, :edit => :boolean
+  def instance_data
+    setup
+    attributes = Hash.new
+    attributes["run_list"] = options[:run_list].split(" ")
+    data = {
+      "chef_server" => Chef::Config[:chef_server_url],
+      "validation_client_name" => Chef::Config[:validation_client_name],
+      "validation_key" => IO.read(Chef::Config[:validation_key]),
+      "attributes" => attributes
+    }
+    output = JSON.pretty_generate(data)
+    output = edit_data(data) if options[:edit]
+    puts output
+  end
+
+####
+# Support
+###################################################
+  no_tasks {
+    def make_query_params(req_opts)
+      query_part = ""
+      req_opts.each do |key, value|
+        query_part << "#{key}=#{URI.escape(value)}"
+      end
+      query_part
+    end
+
+    def get_cookbook_part(part, req_opts)
+      query_part = make_query_params(req_opts)
+      @rest.get_rest("cookbooks/#{options[:cookbook]}/#{part}?#{query_part}")
+    end
+
+    def setup
+      @rest = Chef::REST.new(Chef::Config[:chef_server_url], ENV["OPSCODE_USER"], ENV["OPSCODE_KEY"])
+    end
+
+    def get_node
+      @rest.get_rest("nodes/#{expand_node(options[:node])}")
+    end
+
+    def destroy_node
+      @rest.delete_rest("nodes/#{expand_node(options[:node])}")
+    end
+
+    def destroy_nodes(nodelist)
+      nodelist.each do |node|
+        @rest.delete_rest("nodes/#{expand_node(node)}")
+      end
+    end
+
+    def destroy_clients(clientlist)
+      clientlist.each do |client|
+        begin
+          @rest.delete_rest("clients/#{client}") unless client =~ /-validator$/
+        rescue Net::HTTPServerException
+          raise unless ($!.message =~ /Not Found/ or $!.message =~ /Forbidden/)
+          puts "Client: #{client}, Exception! #{$!.message}"
+        end
+      end
+    end
+
+    def save_node(node)
+      puts "Storing node data for #{expand_node(options[:node])}..."
+      begin
+        retries = 5
+        @rest.put_rest("nodes/#{expand_node(options[:node])}", node)
+      rescue Net::HTTPFatalError
+        retry if (retries -= 1) > 0
+      end
+      puts "Done."
+    end
+
+    def print_run_list(node)
+      puts JSON.pretty_generate(node.run_list.run_list)
+    end
+
+    def get_list(thing)
+      listing = @rest.get_rest(thing)
+      if listing.kind_of?(Array)
+        listing.collect! { |l| l =~ /^.+\/(.+)$/; $1 } unless options[:show_uri]
+      else
+        if options[:show_uri]
+          listing = listing.values
+        else
+          listing = listing.keys
+        end
+      end
+      listing
+    end
+
+    def get_role
+      if options[:rbfile]
+        puts "Loading #{options[:role]} from #{options[:rbfile]}"
+        Chef::Config[:role_path] = File.join(Dir.getwd, "roles")
+        short_name = File.basename(options[:rbfile], ".rb")
+        Chef::Role.from_disk(short_name, "ruby")
+      else
+        @rest.get_rest("roles/#{options[:role]}")
+      end
+    end
+
+    def save_role(role)
+      puts "Storing role data for #{options[:role]}..."
+      retries = 5
+      begin
+        @rest.put_rest("roles/#{options[:role]}", role)
+      rescue Errno::ECONNREFUSED
+        puts "Could not connect - trying again"
+        retry if (retries -= 1) > 0
+      end
+      puts "Done."
+    end
+
+    def destroy_role
+      @rest.delete_rest("roles/#{options[:role]}")
+    end
+
+    def destroy_client
+      @rest.delete_rest("clients/#{options[:client]}")
+    end
+
+    def destroy_cookbook
+      @rest.delete_rest("cookbooks/#{options[:cookbook]}")
+    end
+
+    def destroy_data
+      @rest.delete_rest("data/#{options[:bag]}")
+    end
+
+    def destroy_item
+      @rest.delete_rest("data/#{options[:bag]}/#{options[:id]}")
+    end
+
+    def edit_data(data)
+      filename = "knife-edit-"
+      0.upto(20) { filename += rand(9).to_s }
+      filename << ".js"
+      filename = File.join(Dir.tmpdir, filename)
+      tf = File.open(filename, "w")
+      tf.sync = true
+      tf.puts JSON.pretty_generate(data)
+      tf.close
+      system("#{ENV["EDITOR"]} #{tf.path}")
+      tf = File.open(filename, "r")
+      output = tf.gets(nil)
+      tf.close
+      File.unlink(filename)
+      output
+    end
+
+    def get_data
+      @rest.get_rest("data/#{options[:bag]}")
+    end
+
+    def get_client
+      @rest.get_rest("clients/#{options[:client]}")
+    end
+
+    def get_cookbook
+      @rest.get_rest("cookbooks/#{options[:cookbook]}")
+    end
+
+    def add_to_run_list(node, new_value, after=nil)
+      if after
+        nlist = []
+        node.run_list.each do |entry|
+          nlist << entry
+          if entry == after
+            nlist << new_value
+          end
+        end
+        node.run_list.reset(nlist)
+      else
+        node.run_list << new_value
+      end
+    end
+
+    def expand_node(name)
+      if name =~ /./
+        name = name.dup
+        name.gsub!(".", "_")
+      end
+      name
+    end
+  }
+end
+
+Knife.start

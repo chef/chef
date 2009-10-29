@@ -185,6 +185,8 @@ def create_cookbook(dir)
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "recipes")}" 
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "definitions")}" 
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "libraries")}" 
+  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "resources")}" 
+  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "providers")}" 
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "files", "default")}" 
   sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "templates", "default")}" 
   unless File.exists?(File.join(dir, ENV["COOKBOOK"], "recipes", "default.rb"))
@@ -341,5 +343,65 @@ task :roles do
       f.write(JSON.pretty_generate(role))
     end
   end
+end
+
+desc "Upload all cookbooks"
+task :upload_cookbooks => [ :metadata ]
+task :upload_cookbooks do
+  Chef::Config[:cookbook_path] = [ File.join(TOPDIR, 'cookbooks'), File.join(TOPDIR, 'site-cookbooks') ]
+  cl = Chef::CookbookLoader.new
+  cl.each do |cookbook|
+    cook_meta = Chef::Cookbook::Metadata.new(cookbook)
+    upload_single_cookbook(cookbook.name.to_s, cook_meta.version)
+    puts "* Uploaded #{cookbook.name.to_s}"
+  end
+end
+
+desc "Upload a single cookbook"
+task :upload_cookbook => [ :metadata ]
+task :upload_cookbook, :cookbook do |t, args|
+  upload_single_cookbook(args.cookbook)
+  puts "* Uploaded #{args.cookbook}"
+end
+
+def upload_single_cookbook(cookbook_name, version=nil)
+  require 'chef/streaming_cookbook_uploader'
+  Chef::Log.level(:error)
+  Mixlib::Authentication::Log.logger = Chef::Log.logger
+  raise ArgumentError, "OPSCODE_KEY must be set to your API Key" unless ENV.has_key?("OPSCODE_KEY")
+  raise ArgumentError, "OPSCODE_USER must be set to your Username" unless ENV.has_key?("OPSCODE_USER")
+
+  Chef::Config.from_file("/etc/chef/client.rb")
+
+  tarball_name = "#{cookbook_name}.tar.gz"
+  temp_dir = File.join(Dir.tmpdir, "chef-upload-cookbooks")
+  temp_cookbook_dir = File.join(temp_dir, cookbook_name)
+  FileUtils.mkdir(temp_dir) 
+  FileUtils.mkdir(temp_cookbook_dir)
+ 
+  child_folders = [ "cookbooks/#{cookbook_name}", "site-cookbooks/#{cookbook_name}" ]
+  child_folders.each do |folder|
+    file_path = File.join(TOPDIR, folder, ".")
+    FileUtils.cp_r(file_path, temp_cookbook_dir) if File.directory?(file_path)
+  end 
+      
+  system("tar", "-C", temp_dir, "-czf", File.join(temp_dir, tarball_name), "./#{cookbook_name}")
+
+  r = Chef::REST.new(Chef::Config[:chef_server_url], ENV['OPSCODE_USER'], ENV['OPSCODE_KEY'])
+  begin
+    cb = r.get_rest("cookbooks/#{cookbook_name}")
+    cookbook_uploaded = true
+  rescue Net::HTTPServerException
+    cookbook_uploaded = false
+  end
+  puts "* Uploading #{cookbook_name} (#{cookbook_uploaded ? 'new version' : 'first time'})"
+  if cookbook_uploaded
+    Chef::StreamingCookbookUploader.put("#{Chef::Config[:chef_server_url]}/cookbooks/#{cookbook_name}/_content", ENV["OPSCODE_USER"], ENV["OPSCODE_KEY"], {:file => File.new(File.join(temp_dir, tarball_name)), :name => cookbook_name})
+  else
+    Chef::StreamingCookbookUploader.post("#{Chef::Config[:chef_server_url]}/cookbooks", ENV["OPSCODE_USER"], ENV["OPSCODE_KEY"], {:file => File.new(File.join(temp_dir, tarball_name)), :name => cookbook_name})
+  end
+
+  #delete temp files (e.g. /tmp/cookbooks and /tmp/cookbooks.tgz)
+  FileUtils.rm_rf temp_dir
 end
 

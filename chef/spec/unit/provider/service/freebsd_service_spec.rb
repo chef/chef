@@ -129,12 +129,6 @@ describe Chef::Provider::Service::Freebsd, "load_current_resource" do
       @provider.load_current_resource
     end
 
-    it "should close stdin inside popen" do
-      @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @stdin.should_receive(:close).and_return(true)
-      @provider.load_current_resource
-    end
-
     it "should read stdout of the ps command" do
       @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @stdout.should_receive(:each_line).and_return(true)

@@ -4,8 +4,10 @@ require 'chef'
 
 Chef::Config.from_file(File.join("/etc", "chef", "server.rb"))
 
-Merb::Config.setup(:merb_root   => File.expand_path(File.dirname(__FILE__)),
-                   :environment => ENV['RACK_ENV'], :init_file => File.dirname(__FILE__) / "config/init.rb")
+Merb::Config.setup(:merb_root   => File.expand_path(File.dirname(__FILE__)), 
+                   :environment => ENV['RACK_ENV'], 
+                   :fork_for_class_load => false,
+                   :init_file => File.dirname(__FILE__) / "config/init.rb")
 Merb.environment = Merb::Config[:environment]
 Merb.root = Merb::Config[:merb_root]
 Merb::BootLoader.run
