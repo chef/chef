@@ -306,6 +306,10 @@ namespace :features do
     Cucumber::Rake::Task.new(:roles) do |t|
       t.profile = "client_roles"
     end
+
+    Cucumber::Rake::Task.new(:run_interval) do |t|
+      t.profile = "client_run_interval"
+    end
   end
 
   desc "Run cucumber tests for the cookbooks"
@@ -382,6 +386,10 @@ namespace :features do
       desc "Run cucumber tests for macports packages"
       Cucumber::Rake::Task.new(:macports) do |t|
         t.profile = "provider_package_macports"
+      end
+      
+      Cucumber::Rake::Task.new(:gems) do |g|
+        g.profile = "provider_package_rubygems"
       end
     end
   end

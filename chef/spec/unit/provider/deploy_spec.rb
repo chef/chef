@@ -85,28 +85,59 @@ describe Chef::Provider::Deploy do
     @provider.action_force_deploy
   end
   
-  it "sets the release path to the penultimate release when one is not specified, symlinks, and rm's the last release on rollback" do
-    @provider.stub!(:release_path).and_return("/my/deploy/dir/releases/3")
-    all_releases = ["/my/deploy/dir/releases/1", "/my/deploy/dir/releases/2", "/my/deploy/dir/releases/3", "/my/deploy/dir/releases/4", "/my/deploy/dir/releases/5"]
-    Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
-    @provider.should_receive(:symlink)
-    FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/4")
-    FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/5")
-    @provider.action_rollback
-    @provider.release_path.should eql("/my/deploy/dir/releases/3")
+ 
+  describe "on systems without broken Dir.glob results" do
+    it "sets the release path to the penultimate release when one is not specified, symlinks, and rm's the last release on rollback" do
+      @provider.stub!(:release_path).and_return("/my/deploy/dir/releases/3")
+      all_releases = ["/my/deploy/dir/releases/1", "/my/deploy/dir/releases/2", "/my/deploy/dir/releases/3", "/my/deploy/dir/releases/4", "/my/deploy/dir/releases/5"]
+      Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+      @provider.should_receive(:symlink)
+      FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/4")
+      FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/5")
+      @provider.action_rollback
+      @provider.release_path.should eql("/my/deploy/dir/releases/3")
+    end
+
+    it "sets the release path to the specified release, symlinks, and rm's any newer releases on rollback" do
+      @provider.unstub!(:release_path)
+      all_releases = ["/my/deploy/dir/releases/20040815162342", "/my/deploy/dir/releases/20040700000000",
+                      "/my/deploy/dir/releases/20040600000000", "/my/deploy/dir/releases/20040500000000"].sort!
+      Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+      @provider.should_receive(:symlink)
+      FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
+      @provider.action_rollback
+      @provider.release_path.should eql("/my/deploy/dir/releases/20040700000000")
+    end
+
+    it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
+      @provider.unstub!(:release_path)
+      all_releases = [ "/my/deploy/dir/releases/20040815162342",
+                       "/my/deploy/dir/releases/20040700000000",
+                       "/my/deploy/dir/releases/20040600000000",
+                       "/my/deploy/dir/releases/20040500000000"]
+      Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+      @provider.should_receive(:symlink)
+      FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
+      @provider.action_rollback
+      @provider.release_path.should eql("/my/deploy/dir/releases/20040700000000")
+    end
   end
 
-  it "sets the release path to the specified release, symlinks, and rm's any newer releases on rollback" do
-    @provider.unstub!(:release_path)
-    all_releases = ["/my/deploy/dir/releases/20040815162342", "/my/deploy/dir/releases/20040700000000",
-                    "/my/deploy/dir/releases/20040600000000", "/my/deploy/dir/releases/20040500000000"].sort!
-    Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
-    @provider.should_receive(:symlink)
-    FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
-    @provider.action_rollback
-    @provider.release_path.should eql("/my/deploy/dir/releases/20040700000000")
+  describe "CHEF-628: on systems with broken Dir.glob results" do
+    it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
+      @provider.unstub!(:release_path)
+      all_releases = [ "/my/deploy/dir/releases/20040500000000",
+                       "/my/deploy/dir/releases/20040600000000",
+                       "/my/deploy/dir/releases/20040700000000",
+                       "/my/deploy/dir/releases/20040815162342" ]
+      Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+      @provider.should_receive(:symlink)
+      FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
+      @provider.action_rollback
+      @provider.release_path.should eql("/my/deploy/dir/releases/20040700000000")
+    end
   end
-  
+
   it "raises a runtime error when there's no release to rollback to" do
     all_releases = []
     Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)

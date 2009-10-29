@@ -69,10 +69,9 @@ class Chef
         @remote = "origin"
         @enable_submodules = false
         @shallow_clone = false
-        @force_deploy = false
         @scm_provider = Chef::Provider::Git
         @provider = Chef::Provider::Deploy::Timestamped
-        @allowed_actions.push(:deploy, :rollback)
+        @allowed_actions.push(:force_deploy, :deploy, :rollback)
       end
       
       # where the checked out/cloned code goes
@@ -241,15 +240,6 @@ class Chef
           :svn_arguments,
           arg,
           :kind_of => [ String ]
-        )
-      end
-      
-      # Shall we run the deploy even if the code has not changed?
-      def force_deploy(arg=nil)
-        set_or_return(
-          :force_deploy,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
         )
       end
       
