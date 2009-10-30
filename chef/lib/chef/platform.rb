@@ -45,6 +45,7 @@ class Chef
           :package => Chef::Provider::Package::Apt,
           :service => Chef::Provider::Service::Debian,
           :cron => Chef::Provider::Cron,
+          :mdadm => Chef::Provider::Mdadm
         }
       },
       :debian => {
@@ -52,20 +53,23 @@ class Chef
           :package => Chef::Provider::Package::Apt,
           :service => Chef::Provider::Service::Debian,
           :cron => Chef::Provider::Cron,
+          :mdadm => Chef::Provider::Mdadm
         }
       },
       :centos   => {
         :default => {
           :service => Chef::Provider::Service::Redhat,
           :cron => Chef::Provider::Cron,
-          :package => Chef::Provider::Package::Yum
+          :package => Chef::Provider::Package::Yum,
+          :mdadm => Chef::Provider::Mdadm
         }
       },
       :redhat   => {
         :default => {
           :service => Chef::Provider::Service::Redhat,
           :cron => Chef::Provider::Cron,
-          :package => Chef::Provider::Package::Yum
+          :package => Chef::Provider::Package::Yum,
+          :mdadm => Chef::Provider::Mdadm
         }
       },
       :gentoo   => {
@@ -73,6 +77,7 @@ class Chef
           :package => Chef::Provider::Package::Portage,
           :service => Chef::Provider::Service::Gentoo,
           :cron => Chef::Provider::Cron,
+          :mdadm => Chef::Provider::Mdadm
         }
       },
       :solaris  => {},
