@@ -114,10 +114,10 @@ class Chef
     end
 
     def run_ohai
-      if @ohai.keys
-        @ohai.refresh_plugins
+      if ohai.keys
+        ohai.refresh_plugins
       else
-        @ohai.all_plugins
+        ohai.all_plugins
       end
     end
 
@@ -127,7 +127,7 @@ class Chef
         if Chef::Config[:node_name]
           @node_name = Chef::Config[:node_name]
         else
-          @node_name ||= @ohai[:fqdn] ? @ohai[:fqdn] : @ohai[:hostname]
+          @node_name ||= ohai[:fqdn] ? ohai[:fqdn] : ohai[:hostname]
           Chef::Config[:node_name] = @node_name
         end
         @safe_name = @node_name.gsub(/\./, '_')
