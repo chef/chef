@@ -47,24 +47,26 @@ class Chef
           method_name = method_symbol.to_s
           rname = convert_to_class_name(method_name)
           
-          resource = nil
-          begin
-            args << @collection
-            args << @node
-            resource = Chef::Resource.const_get(rname).new(*args)
-            # If we have a resource like this one, we want to steal its state
-            resource.load_prior_resource
-            resource.cookbook_name = @cookbook_name
-            resource.recipe_name = @recipe_name
-            resource.params = @params
-            resource.instance_eval(&block) if block
-          rescue NameError => e
-            if e.to_s =~ /Chef::Resource/
-              raise NameError, "Cannot find #{rname} for #{method_name}\nOriginal: #{e.to_s}"
-            else
-              raise e
-            end
-          end
+          # If we have a resource like this one, we want to steal its state
+          resource = begin
+                       args << @collection
+                       args << @node
+                       Chef::Resource.const_get(rname).new(*args)
+                     rescue NameError => e
+                       if e.to_s =~ /Chef::Resource/
+                         raise NameError, "Cannot find #{rname} for #{method_name}\nOriginal exception: #{e.class}: #{e.message}"
+                       else
+                         raise e
+                       end
+                     end
+          resource.load_prior_resource
+          resource.cookbook_name = @cookbook_name
+          resource.recipe_name = @recipe_name
+          resource.params = @params
+          # Determine whether this resource is being created in the context of an enclosing Provider
+          resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil
+          resource.instance_eval(&block) if block
+
           @collection.insert(resource)
           resource
         end

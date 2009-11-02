@@ -32,7 +32,7 @@ class Chef
     include Chef::Mixin::Language
     include Chef::Mixin::ConvertToClassName
     
-    attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name
+    attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name, :enclosing_provider
     attr_reader :resource_name, :source_line, :node
     
     def initialize(name, collection=nil, node=nil)
@@ -61,6 +61,17 @@ class Chef
         @source_line = ::File.expand_path(@source_line) if @source_line
       end
     end
+
+    # If an unknown method is invoked, determine whether the enclosing Provider's
+    # lexical scope can fulfill the request. E.g. This happens when the Resource's
+    # block invokes new_resource.
+    def method_missing(method_symbol, *args, &block)
+      if enclosing_provider && enclosing_provider.respond_to?(method_symbol)
+        enclosing_provider.send(method_symbol, *args, &block)
+      else
+        raise NoMethodError, "undefined method `#{method_symbol.to_s}' for #{self.class.to_s}"
+      end
+    end
     
     def load_prior_resource
       begin
@@ -87,15 +98,7 @@ class Chef
     
     def provider(arg=nil)
       klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
-                begin
-                  Chef::Provider.const_get(convert_to_class_name(arg.to_s))
-                rescue NameError => e
-                  if e.to_s =~ /Chef::Provider/
-                    raise ArgumentError, "No provider found to match '#{arg}'"
-                  else
-                    raise e
-                  end
-                end
+                lookup_provider_constant(arg)
               else
                 arg
               end
@@ -241,6 +244,7 @@ class Chef
     end
     
     class << self
+      
       def json_create(o)
         resource = self.new(o["instance_vars"]["@name"])
         o["instance_vars"].each do |k,v|
@@ -252,7 +256,18 @@ class Chef
       include Chef::Mixin::ConvertToClassName
       
       def attribute(attr_name, validation_opts={})
-        define_method(attr_name.to_sym) do |arg|
+        # This atrocity is the only way to support 1.8 and 1.9 at the same time
+        # When you're ready to drop 1.8 support, do this:
+        # define_method attr_name.to_sym do |arg=nil|
+        # etc.
+        shim_method=<<-SHIM
+        def #{attr_name}(arg=nil)
+          _set_or_return_#{attr_name}(arg)
+        end
+        SHIM
+        class_eval(shim_method)
+        
+        define_method("_set_or_return_#{attr_name.to_s}".to_sym) do |arg|
           set_or_return(attr_name.to_sym, arg, validation_opts)
         end
       end
@@ -306,9 +321,34 @@ class Chef
         
         new_resource_class
       end
+      
+      # Resources that want providers namespaced somewhere other than 
+      # Chef::Provider can set the namespace with +provider_base+
+      # Ex:
+      #   class MyResource < Chef::Resource
+      #     provider_base Chef::Provider::Deploy
+      #     # ...other stuff
+      #   end
+      def provider_base(arg=nil)
+        @provider_base ||= arg
+        @provider_base ||= Chef::Provider
+      end
+      
     end
     
     private
+    
+      def lookup_provider_constant(name)
+        begin
+          self.class.provider_base.const_get(convert_to_class_name(name.to_s))
+        rescue NameError => e
+          if e.to_s =~ /#{self.class.provider_base.to_s}/
+            raise ArgumentError, "No provider found to match '#{name}'"
+          else
+            raise e
+          end
+        end
+      end
       
       def check_timing(timing)
         unless timing == :delayed || timing == :immediate || timing == :immediately

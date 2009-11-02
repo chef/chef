@@ -154,6 +154,10 @@ namespace :features do
     Cucumber::Rake::Task.new(:roles) do |t|
       t.profile = "client_roles"
     end
+
+    Cucumber::Rake::Task.new(:run_interval) do |t|
+      t.profile = "client_run_interval"
+    end
   end
 
   Cucumber::Rake::Task.new(:search) do |t|
@@ -190,6 +194,10 @@ namespace :features do
     namespace :package do
       Cucumber::Rake::Task.new(:macports) do |t|
         t.profile = "provider_package_macports"
+      end
+      
+      Cucumber::Rake::Task.new(:gems) do |g|
+        g.profile = "provider_package_rubygems"
       end
     end
   end

@@ -51,3 +51,9 @@ Then /^the callback named <callback> should have run$/ do |callback_files|
     expected_contents.should == actual_contents
   end
 end
+
+Then /^the second chef run should have skipped deployment$/ do
+  expected_deploy = "#{tmpdir}/deploy/releases/62c9979f6694612d9659259f8a68d71048ae9a5b"
+  Then "'stdout' should have 'INFO: Already deployed app at #{expected_deploy}, skipping. Use action :force_deploy to force.'"
+end
+  

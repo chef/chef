@@ -27,6 +27,8 @@ describe Chef::Provider::Deploy do
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     @node = Chef::Node.new
     @provider = Chef::Provider::Deploy.new(@node, @resource)
+    @provider.stub!(:release_slug)
+    @provider.stub!(:release_path).and_return(@expected_release_dir)
     @runner = mock("runnah", :null_object => true)
     Chef::Runner.stub!(:new).and_return(@runner)
   end
@@ -40,6 +42,7 @@ describe Chef::Provider::Deploy do
     @provider.should_receive(:enforce_ownership).twice
     @provider.should_receive(:update_cached_repo)
     @provider.should_receive(:copy_cached_repo)
+    @provider.should_receive(:install_gems)
     @provider.should_receive(:callback).with(:before_migrate, nil)
     @provider.should_receive(:migrate)
     @provider.should_receive(:callback).with(:before_symlink, nil)
@@ -48,19 +51,65 @@ describe Chef::Provider::Deploy do
     @provider.should_receive(:restart)
     @provider.should_receive(:callback).with(:after_restart, nil)
     @provider.should_receive(:cleanup!)
+    @provider.deploy
+  end
+  
+  it "does not deploy when using the :deploy action if there is already a deploy at release_path" do
+    @provider.stub!(:all_releases).and_return([@expected_release_dir])
+    @provider.should_not_receive(:enforce_ownership)
+    @provider.should_not_receive(:update_cached_repo)
     @provider.action_deploy
   end
   
-  it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
-    all_releases = ["/my/deploy/dir/releases/20040815162342", "/my/deploy/dir/releases/20040700000000",
-                    "/my/deploy/dir/releases/20040600000000", "/my/deploy/dir/releases/20040500000000"].sort!
-    Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
-    @provider.should_receive(:symlink)
-    FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
-    @provider.action_rollback
-    @provider.release_path.should eql("/my/deploy/dir/releases/20040700000000")
+  it "calls deploy when deploying a new release" do
+    @provider.stub!(:all_releases).and_return([])
+    @provider.should_receive(:deploy)
+    @provider.action_deploy
   end
   
+  it "Removes the old release before deploying when force deploying over it" do
+    @provider.stub!(:all_releases).and_return([@expected_release_dir])
+    FileUtils.should_receive(:rm_rf).with(@expected_release_dir)
+    @provider.should_receive(:deploy)
+    @provider.action_force_deploy
+  end
+  
+  it "deploys as normal when force deploying and there's no prior release at the same path" do
+    @provider.stub!(:all_releases).and_return([])
+    @provider.should_receive(:deploy)
+    @provider.action_force_deploy
+  end
+ 
+  describe "on systems without broken Dir.glob results" do
+    it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
+      @provider.unstub!(:release_path)
+      all_releases = [ "/my/deploy/dir/releases/20040815162342",
+                       "/my/deploy/dir/releases/20040700000000",
+                       "/my/deploy/dir/releases/20040600000000",
+                       "/my/deploy/dir/releases/20040500000000"]
+      Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+      @provider.should_receive(:symlink)
+      FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
+      @provider.action_rollback
+      @provider.release_path.should eql("/my/deploy/dir/releases/20040700000000")
+    end
+  end
+
+  describe "CHEF-628: on systems with broken Dir.glob results" do
+    it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
+      @provider.unstub!(:release_path)
+      all_releases = [ "/my/deploy/dir/releases/20040500000000",
+                       "/my/deploy/dir/releases/20040600000000",
+                       "/my/deploy/dir/releases/20040700000000",
+                       "/my/deploy/dir/releases/20040815162342" ]
+      Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+      @provider.should_receive(:symlink)
+      FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
+      @provider.action_rollback
+      @provider.release_path.should eql("/my/deploy/dir/releases/20040700000000")
+    end
+  end
+
   it "raises a runtime error when there's no release to rollback to" do
     all_releases = []
     Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
@@ -70,7 +119,7 @@ describe Chef::Provider::Deploy do
   it "runs the new resource collection in the runner during a callback" do
     @runner.should_receive(:converge)
     callback_code = lambda { :noop }
-    @provider.callback(:whatevs, &callback_code)
+    @provider.callback(:whatevs, callback_code)
   end
   
   it "loads callback files from the release/ dir if the file exists" do
@@ -114,12 +163,18 @@ describe Chef::Provider::Deploy do
   
   it "makes a copy of the cached repo in releases dir" do
     FileUtils.should_receive(:mkdir_p).with("/my/deploy/dir/releases")
-    FileUtils.should_receive(:cp_r).with( "/my/deploy/dir/shared/cached-copy/", 
+    FileUtils.should_receive(:cp_r).with( "/my/deploy/dir/shared/cached-copy/.", 
                                           @expected_release_dir, 
                                           :preserve => true)
     @provider.copy_cached_repo
   end
   
+  it "calls the internal callback :release_created when copying the cached repo" do
+    FileUtils.stub!(:mkdir_p)
+    FileUtils.stub!(:cp_r)
+    @provider.should_receive(:release_created)
+    @provider.copy_cached_repo
+  end
   
   it "chowns the whole release dir to user and group specified in the resource" do
     @resource.user "foo"
@@ -231,6 +286,16 @@ describe Chef::Provider::Deploy do
     @provider.cleanup!
   end
   
+  it "fires a callback for :release_deleted when deleting an old release" do
+    all_releases = ["/my/deploy/dir/20040815162342", "/my/deploy/dir/20040700000000", 
+                    "/my/deploy/dir/20040600000000", "/my/deploy/dir/20040500000000",
+                    "/my/deploy/dir/20040400000000", "/my/deploy/dir/20040300000000"].sort!
+    @provider.stub!(:all_releases).and_return(all_releases)
+    FileUtils.stub!(:rm_rf)
+    @provider.should_receive(:release_deleted).with("/my/deploy/dir/20040300000000")
+    @provider.cleanup!
+  end
+  
   it "puts resource.to_hash in @configuration for backwards compat with capistano-esque deploy hooks" do
     @provider.instance_variable_get(:@configuration).should == @resource.to_hash
   end
@@ -270,6 +335,70 @@ describe Chef::Provider::Deploy do
       @resource.restart(&restart_cmd)
       @provider.restart
       snitch.should == 42
+    end
+    
+  end
+  
+  describe "API bridge to capistrano" do
+    it "defines sudo as a forwarder to execute" do
+      @provider.should_receive(:execute).with("the moon, fool")
+      @provider.sudo("the moon, fool")
+    end
+
+    it "defines run as a forwarder to execute, setting the user to new_resource.user" do
+      mock_execution = mock("Resource::Execute")
+      @provider.should_receive(:execute).with("iGoToHell4this").and_return(mock_execution)
+      @resource.user("notCoolMan")
+      mock_execution.should_receive(:user).with("notCoolMan")
+      @provider.run("iGoToHell4this")
+    end
+
+    it "converts sudo and run to exec resources in hooks" do
+      runner = mock("tehRunner", :null_object => true)
+      Chef::Runner.stub!(:new).and_return(runner)
+      
+      snitch = nil
+      @resource.user("tehCat")
+      
+      callback_code = lambda do
+        snitch = 42
+        temp_collection = self.instance_variable_get(:@collection)
+        run("tehMice")
+        snitch = temp_collection.lookup("execute[tehMice]")
+      end
+      
+      @provider.callback(:phony, callback_code)
+      snitch.should be_an_instance_of(Chef::Resource::Execute)
+      snitch.user.should == "tehCat"
+    end
+  end
+  
+  describe "installing gems from a gems.yml" do
+    
+    before do
+      ::File.stub!(:exist?).with("#{@expected_release_dir}/gems.yml").and_return(true)
+      @gem_list = [{:name=>"ezmobius-nanite",:version=>"0.4.1.2"},{:name=>"eventmachine", :version=>"0.12.9"}]
+    end
+    
+    it "reads a gems.yml file, creating gem providers for each with action :upgrade" do
+      IO.should_receive(:read).with("#{@expected_release_dir}/gems.yml").and_return("cookie")
+      YAML.should_receive(:load).with("cookie").and_return(@gem_list)
+      
+      gems = @provider.send(:gem_packages)
+      
+      gems.map { |g| g.action }.should == [[:install], [:install]]
+      gems.map { |g| g.name }.should == %w{ezmobius-nanite eventmachine}
+      gems.map { |g| g.version }.should == %w{0.4.1.2 0.12.9}
+    end
+    
+    it "takes a list of gem providers converges them" do
+      IO.stub!(:read)
+      YAML.stub!(:load).and_return(@gem_list)
+      gem_resources = @provider.send(:gem_packages)
+      run4r = mock("Chef::Runner")
+      Chef::Runner.should_receive(:new).with(@node, an_instance_of(Chef::ResourceCollection)).and_return(run4r)
+      run4r.should_receive(:converge)
+      @provider.send(:install_gems)
     end
     
   end

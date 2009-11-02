@@ -28,7 +28,7 @@ class Chef
     
     attr_accessor :node, :new_resource, :current_resource
     
-    def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
+    def initialize(node, new_resource, collection=nil, definitions={}, cookbook_loader=nil)
       @node = node
       @new_resource = new_resource
       @current_resource = nil
@@ -46,6 +46,19 @@ class Chef
       Chef::Log.debug("Doing nothing for #{@new_resource.to_s}")
       true
     end
+    
+    protected
+    
+    def recipe_eval(*args, &block)
+      provider_collection, @collection = @collection, Chef::ResourceCollection.new
+      
+      instance_eval(*args, &block)
+      Chef::Runner.new(@node, @collection).converge
+      
+      @collection = provider_collection
+    end
+    
+    public
     
     class << self
       include Chef::Mixin::ConvertToClassName

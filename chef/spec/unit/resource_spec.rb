@@ -18,6 +18,10 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
+class ResourceTestHarness < Chef::Resource
+  provider_base Chef::Provider::Package
+end
+
 describe Chef::Resource do
   before(:each) do
     @resource = Chef::Resource.new("funk")
@@ -209,6 +213,18 @@ describe Chef::Resource do
       @resource.epic_fail(true)
       @resource.epic_fail.should == true
     end
+  end
+  
+  describe "setting the base provider class for the resource" do
+    
+    it "defaults to Chef::Provider for the base class" do
+      Chef::Resource.provider_base.should == Chef::Provider
+    end
+    
+    it "allows the base provider to be overriden by a " do
+      ResourceTestHarness.provider_base.should == Chef::Provider::Package
+    end
+    
   end
   
 end

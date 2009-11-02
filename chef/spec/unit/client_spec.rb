@@ -38,7 +38,10 @@ describe Chef::Client, "run" do
       :sync_definitions,
       :sync_recipes,
       :save_node,
-      :save_node
+      :save_node,
+      :run_ohai,
+      :safe_name,
+      :node_name
     ]
     to_stub.each do |method|
       @client.stub!(method).and_return(true)
@@ -120,7 +123,9 @@ end
 describe Chef::Client, "run_solo" do
   before(:each) do
     @client = Chef::Client.new
-    @client.stub!(:build_node).and_return(true)
+    [:run_ohai, :safe_name, :node_name, :build_node].each do |method|
+      @client.stub!(method).and_return(true)
+    end
     Chef::Compile.stub!(:new).and_return(mock("Chef::Compile", :null_object => true))
     Chef::Runner.stub!(:new).and_return(mock("Chef::Runner", :null_object => true))
   end

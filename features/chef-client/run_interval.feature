@@ -1,4 +1,4 @@
-@client
+@client @client_run_interval
 Feature: Run chef-client at periodic intervals 
   In order to ensure a system is always correctly configured 
   As an Administrator

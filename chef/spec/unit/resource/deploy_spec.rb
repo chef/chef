@@ -73,7 +73,6 @@ describe Chef::Resource::Deploy do
   resource_has_a_boolean_attribute(:migrate, :defaults_to=>false)
   resource_has_a_boolean_attribute(:enable_submodules, :defaults_to=>false)
   resource_has_a_boolean_attribute(:shallow_clone, :defaults_to=>false)
-  resource_has_a_boolean_attribute(:force_deploy, :defaults_to=>false)
   
   it "uses the first argument as the deploy directory" do
     @resource.deploy_to.should eql("/my/deploy/dir")
@@ -175,6 +174,25 @@ describe Chef::Resource::Deploy do
     restart_like_this = lambda {p :noop}
     @resource.restart(&restart_like_this)
     @resource.restart.should == restart_like_this
+  end
+  
+  it "defaults to using the Deploy::Timestamped provider" do
+    @resource.provider.should == Chef::Provider::Deploy::Timestamped
+  end
+  
+  it "allows providers to be set with a full class name" do
+    @resource.provider Chef::Provider::Deploy::Timestamped
+    @resource.provider.should == Chef::Provider::Deploy::Timestamped
+  end
+  
+  it "allows deploy providers to be set via symbol" do
+    @resource.provider :revision
+    @resource.provider.should == Chef::Provider::Deploy::Revision
+  end
+  
+  it "allows deploy providers to be set via string" do
+    @resource.provider "revision"
+    @resource.provider.should == Chef::Provider::Deploy::Revision
   end
   
 end

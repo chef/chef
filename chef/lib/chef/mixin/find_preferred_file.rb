@@ -74,6 +74,8 @@ class Chef
         ]
         
         file_list_str = file_list.keys.join("\n")
+        Chef::Log.debug("Searching for preferred file in\n#{file_list_str}")
+        
         preferences.each do |pref|
           Chef::Log.debug("Looking for #{pref}")
           matcher = /^(.+#{pref})$/

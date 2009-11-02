@@ -100,7 +100,7 @@ class Chef
             src = "  --source=#{@new_resource.source} --source=http://gems.rubyforge.org"
           end  
           run_command_with_systems_locale(
-            :command => "#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}"
+            :command => "#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}"
           )
         end
       
@@ -122,6 +122,12 @@ class Chef
       
         def purge_package(name, version)
           remove_package(name, version)
+        end
+        
+        private
+        
+        def opts
+          expand_options(@new_resource.options)
         end
       
       end
