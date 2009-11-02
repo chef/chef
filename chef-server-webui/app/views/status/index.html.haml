@@ -15,22 +15,24 @@
             %tr
               %td{:colspan => 7}= "You appear to have no nodes - try connecting one, or creating or editing a #{link_to('client', slice_url(:clients))}"
           - else
-            - @status.each_with_index do |node, index|
+            - @status.sort.each_with_index do |node, index|
               %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-                %td= link_to(node["name"], slice_url(:node, escape_node_id(node["name"])))
-                %td= "#{node["platform"]} #{node["platform_version"]}"
-                %td= node["fqdn"]
-                %td= node["ipaddress"]
+                %td= link_to(node[1].name, slice_url(:node, escape_node_id(node[1].name)))
+                %td= "#{node[1]["platform"]} #{node[1]["platform_version"]}"
+                %td= node[1]["fqdn"]
+                %td= node[1]["ipaddress"]
                 %td
                   .accordion
-                    = link_to(node["uptime"].split(" ")[0..1].join(" ") , "#", :class => 'tooltip')
-                    .tooltip
-                      %table.table.tooltip
-                        %tr
-                          %td= node["uptime"]
-                - if node["ohai_time"].to_s != "Undefined"
+                    -unless node[1]["uptime"].nil?
+                      = link_to(node[1]["uptime"].split(" ")[0..1].join(" ") , "#", :class => 'tooltip')
+                      .tooltip
+                        %table.table.tooltip
+                          %tr
+                            %td= node[1]["uptime"]
+                            
+                - unless node[1]["ohai_time"].nil?
                   - current_time = DateTime.now
-                  - date = DateTime.parse(Time.at(node["ohai_time"]).to_s)
+                  - date = DateTime.parse(Time.at(node[1]["ohai_time"]).to_s)
                   - hours, minutes, seconds, frac = DateTime.day_fraction_to_time(current_time - date)
                   - hours_text   = "#{hours} hour#{hours == 1 ? '' : 's'}"
                   - minutes_text = "#{minutes} minute#{minutes == 1 ? '' : 's'}"
@@ -62,8 +64,8 @@
                                   - else
                                     = "#{hours_text}, #{minutes_text} ago"
                 - else
-                  %td Undefined
-                - if node["run_list"] != "Undefined"
+                  %td Not Checked In
+                - unless node[1].run_list.nil?
                   %td
                     .accordion
                       = link_to("Run List", "#", :class => 'tooltip')
@@ -73,16 +75,16 @@
                             %th.first Position
                             %th Name
                             %th.last Type
-                            - if node['run_list'].empty?
+                            - if node[1].run_list.empty?
                               %tr
                                 %td{:colspan => 2} This node has no roles or recipes applied.
                             - else
                               - rl = Chef::RunList.new
-                              - rl.reset(node["run_list"])
+                              - rl.reset(node[1].run_list)
                               -rl.each_index do |i|
                                 - type, name, fname = rl.parse_entry(rl[i])
                                 %tr
                                   %td.position= i
                                   %td= name 
-                                  %td= type 
+                                  %td= type   
 

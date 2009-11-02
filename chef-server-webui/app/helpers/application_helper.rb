@@ -145,6 +145,10 @@ module Merb
           params[:id] 
         end 
       end 
+      
+      def get_databag_item_name(uri)
+        uri.split("/").last
+      end 
 
       # Recursively build a tree of lists.
       #def build_tree(node)

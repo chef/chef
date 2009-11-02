@@ -179,8 +179,16 @@ class Chef
       end
       self
     end
+    
+    #create a data bag via RESTful API
+    def create
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.post_rest("data", self)
+      self
+    end
 
-    # List all the items in this Bag
+    # List all the items in this Bag from CouchDB
+    # The self.load method does this through the REST API
     def list(inflate=false)
       rs = nil 
       if inflate

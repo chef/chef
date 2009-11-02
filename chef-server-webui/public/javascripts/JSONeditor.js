@@ -86,7 +86,7 @@ JSONeditor.treeBuilder={
 		folderNodeOpenFirst:'',
 		folderNodeLastFirst:'',
 		folderNodeOpenLastFirst:'',
-		path:'../../images/treeBuilderImages/',
+		path:'../../../images/treeBuilderImages/',
 		nodeWidth:16
 	},
 	$:function(x){return document.getElementById(x)},

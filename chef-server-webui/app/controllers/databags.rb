@@ -23,6 +23,23 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
   provides :html, :json
   before :login_required 
   
+  def new
+    @databag = Chef::DataBag.new
+    render
+  end 
+  
+  def create
+    begin
+      @databag = Chef::DataBag.new
+      @databag.name params[:name]
+      @databag.create
+      redirect(slice_url(:databags), :message => { :notice => "Created Databag #{@databag.name}" })
+    rescue StandardError => e
+      @_message = { :error => $! } 
+      render :new
+    end 
+  end
+  
   def index
     r = Chef::REST.new(Chef::Config[:chef_server_url])
     @databags = r.get_rest("data")

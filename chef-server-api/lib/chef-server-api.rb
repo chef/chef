@@ -132,7 +132,8 @@ if defined?(Merb::Plugins)
 
       # Data
       scope.match("/data/:data_bag_id/:id", :method => 'get').to(:controller => "data_item", :action => "show").name("data_bag_item")
-      scope.match("/data/:data_bag_id/:id", :method => 'put').to(:controller => "data_item", :action => "create").name("create_data_bag_item")
+      scope.match("/data/:data_bag_id", :method => 'post').to(:controller => "data_item", :action => "create").name("create_data_bag_item")
+      scope.match("/data/:data_bag_id/:id", :method => 'put').to(:controller => "data_item", :action => "update").name("update_data_bag_item")
       scope.match("/data/:data_bag_id/:id", :method => 'delete').to(:controller => "data_item", :action => "destroy").name("destroy_data_bag_item")
       scope.resources :data
 

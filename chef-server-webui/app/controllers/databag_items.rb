@@ -59,10 +59,6 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
     render
   end 
   
-  def index
-    render redirect(slice_url(:databag, :id=> params[:databag_id]))
-  end 
-  
   def create
     begin   
       @databag_name = params[:databag_id]   
