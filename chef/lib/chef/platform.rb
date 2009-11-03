@@ -63,7 +63,7 @@ class Chef
       },
        :suse   => {
         :default => {
-#          :service => Chef::Provider::Service::Zypper,
+          :service => Chef::Provider::Service::Redhat,
           :cron => Chef::Provider::Cron,
           :package => Chef::Provider::Package::Zypper
         }
