@@ -17,8 +17,8 @@ prog="chef-indexer"
 pidfile=${PIDFILE-/var/run/chef/indexer.pid}
 lockfile=${LOCKFILE-/var/lock/subsys/$prog}
 config=${CONFIG-/etc/chef/indexer.rb}
-user=${USER-root}
-group=${GROUP-root}
+user=${USER-chef}
+group=${GROUP-chef}
 logfile=${LOGFILE-/var/log/chef/indexer.log}
 options=${OPTIONS-}
 
