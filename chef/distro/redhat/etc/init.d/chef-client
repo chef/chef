@@ -17,11 +17,16 @@ prog="chef-client"
 pidfile=${PIDFILE-/var/run/chef/client.pid}
 lockfile=${LOCKFILE-/var/lock/subsys/$prog}
 config=${CONFIG-/etc/chef/client.rb}
-options=${OPTIONS--i 1800 -s 20}
+user=${USER-root}
+group=${GROUP-root}
+interval=${INTERVAL-1800}
+splay=${SPLAY-20}
+logfile=${LOGFILE-/var/log/chef/client.log}
+options=${OPTIONS-}
 
 start() {
     echo -n "Starting $prog:"
-    daemon chef-client -d -c "$config" "$options" ">/dev/null"
+    daemon chef-client -d -c "$config" -i "$interval" -s "$splay" -L "$logfile" "$options" ">/dev/null"
     RETVAL=$?
     echo
     [ $RETVAL -eq 0 ] && touch ${lockfile}

@@ -5,21 +5,26 @@
 # description: Server component of the Chef systems integration framework.
 # processname: chef-indexer
 #
+# config: /etc/sysconfig/chef-indexer
 # pidfile: /var/run/chef/chef-indexer.pid
 
 # Source function library
 . /etc/init.d/functions
 
+[ -f /etc/sysconfig/chef-indexer ] && . /etc/sysconfig/chef-indexer
+
 prog="chef-indexer"
-pidfile=/var/run/chef/indexer.pid
-lockfile=/var/lock/subsys/$prog
-config=/etc/chef/indexer.rb
-user="root"
-group="root"
+pidfile=${PIDFILE-/var/run/chef/indexer.pid}
+lockfile=${LOCKFILE-/var/lock/subsys/$prog}
+config=${CONFIG-/etc/chef/indexer.rb}
+user=${USER-root}
+group=${GROUP-root}
+logfile=${LOGFILE-/var/log/chef/indexer.log}
+options=${OPTIONS-}
 
 start() {
     echo -n "Starting $prog:"
-    daemon chef-indexer -d -c "$config" -u "$user" -g "$group" -L /var/log/chef/indexer.log "&>/dev/null"
+    daemon chef-indexer -d -c "$config" -u "$user" -g "$group" -L "$logfile" "$options" ">/dev/null"
     RETVAL=$?
     echo
     [ $RETVAL -eq 0 ] && touch ${lockfile}
@@ -69,4 +74,3 @@ case "$1" in
 esac
 
 exit $RETVAL
-
