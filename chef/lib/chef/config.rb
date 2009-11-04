@@ -132,6 +132,7 @@ class Chef
     ssl_client_key ""
     ssl_verify_mode :verify_none
     template_url "http://localhost:4000"
+    umask 0022
     user nil
     validation_token nil
     role_path "/var/chef/roles"
