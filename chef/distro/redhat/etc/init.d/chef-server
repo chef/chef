@@ -26,7 +26,7 @@ options=${OPTIONS-}
 
 start() {
     echo -n "Starting $prog:"
-    daemon chef-server -d -c "$cluster_nodes" -C "$config" -u "$user" -G "$group" -L "$logfile" -P "$childpidfiles" "$options" ">/dev/null"
+    daemon chef-server -d -c "$cluster_nodes" -C "$config" -u "$user" -G "$group" -L "$logfile" -P "$childpidfiles" "$options" "&>/dev/null"
     RETVAL=$?
     echo
     [ $RETVAL -eq 0 ] && touch ${lockfile}

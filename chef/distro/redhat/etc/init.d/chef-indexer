@@ -24,7 +24,7 @@ options=${OPTIONS-}
 
 start() {
     echo -n "Starting $prog:"
-    daemon chef-indexer -d -c "$config" -u "$user" -g "$group" -L "$logfile" "$options" ">/dev/null"
+    daemon chef-indexer -d -c "$config" -u "$user" -g "$group" -L "$logfile" "$options" "&>/dev/null"
     RETVAL=$?
     echo
     [ $RETVAL -eq 0 ] && touch ${lockfile}
