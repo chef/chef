@@ -44,7 +44,7 @@ $(document).ready(function(){
     }
     form.append($('input#node_name')).css('display', 'none');
     form.append('<input type="hidden" id="attributes" name="attributes"/>');
-    $('input#attributes').attr('value', JSONeditor.treeBuilder.JSONstring.make(JSONeditor.treeBuilder.json))
+    $('input#attributes').attr('value', BCJTEP.save());
     jQuery.each(to_node, function(i, field) {
       form.append('<input type="hidden" name="for_node[]" value="' + field + '"/>');
     });
