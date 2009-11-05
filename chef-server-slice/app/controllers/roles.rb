@@ -103,7 +103,7 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
 
     if params.has_key?("inflated_object")
       @role.description(params["inflated_object"].description)
-      @role.recipes(params["inflated_object"].recipes)
+      @role.recipes(params["inflated_object"].recipes ? params["inflated_object"].recipes : [])
       @role.default_attributes(params["inflated_object"].default_attributes)
       @role.override_attributes(params["inflated_object"].override_attributes)
       @role.save
@@ -111,7 +111,7 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
       display(@role)
     else
       begin
-        @role.recipes(params[:for_role])
+        @role.recipes(params[:for_role] ? params[:for_role] : [])
         @role.description(params[:description]) if params[:description] != ''
         @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
         @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
