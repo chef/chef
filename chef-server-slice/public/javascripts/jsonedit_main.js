@@ -283,31 +283,32 @@ var BCJTE = function(){
 			var cid = this.cli ? this.cli.id : null;
 			var nObj = null;
 			try {
-        $$("jsonmode").innerHTML = "Mode: " + ($$("autodetect").checked ? "Automatic" : "Standard");
-        $$("jsonname").readonly=null;
-				//what type are we creating?
-				if (t === undefined){ t = this.strIsTypeOf(this.isTypeOf(nv));}
-				switch(t){
-					case 'string': nObj = nv; break;
-					case 'object': case 'boolean': case 'function': case 'number': nObj = JSON.parse(nv); break;
-					case 'array': nObj = JSON.parse(""+Array(nv)); break;
-					default: nObj = null; break;
-				}
-				//what is the current type?
-				switch (objType) {
-					case 'object':
-					    obj[nn] = nObj;
-						break;
-					case 'array': 
-						obj.push(nObj);
-						break;
-					default: throw "Unable to add a child to type: " + objType;
-				}
-			} catch (e) {
-				$$("log").innerHTML = e;
-				$$("console").style.display = "block";
+        		$$("jsonmode").innerHTML = "Mode: " + ($$("autodetect").checked ? "Automatic" : "Standard");
+        		$$("jsonname").readonly=null;
+
+			//what type are we creating?
+			if (t === undefined){ t = this.strIsTypeOf(this.isTypeOf(nv));}
+			switch(t){
+				case 'string': nObj = nv; break;
+				case 'object': case 'boolean': case 'function': case 'number': nObj = JSON.parse(nv); break;
+				case 'array': nObj = JSON.parse(""+Array(nv)); break;
+				default: nObj = null; break;
 			}
-			this.reloadTree();
+			//what is the current type?
+			switch (objType) {
+				case 'object':
+				    obj[nn] = nObj;
+				    break;
+				case 'array': 
+				    obj.push(nObj);
+				    break;
+				default: throw "Unable to add a child to type: " + objType;
+			}
+		} catch (e) {
+			$$("log").innerHTML = e;
+			$$("console").style.display = "block";
+		}
+		this.reloadTree();
 			if (this.mktree){
 				var liid = BCJT.mktree.expandCollapseList(document.getElementById("tree"+this.index), this.cli.id);
 				this.ca = null;
@@ -581,8 +582,10 @@ BCJTEP.prototype = function(){
 				if ($$("autodetect").checked){
 					BCJTEP.selectType( $$("jsontypes"), BCJTEP.uType($$("jsonvalue").value) );
 				}
+
 				var obj = BCJT.tree.forest[0];
 				var listtype = $$("jsontypes").options[$$("jsontypes").selectedIndex].text;
+
 				obj.addNode($$("jsonname").value,$$("jsonvalue").value,listtype);
 			});
 		/*
@@ -612,6 +615,22 @@ BCJTEP.prototype = function(){
 			$$("jsonnameinput").style.display = "inline";
 			$$("jsonvalue").value = "";
 			$$("jsontypes").selectedIndex = 0;
+			
+			var objTree = BCJT.tree.forest[0];	
+			var obj = eval(BCJTEP.escapeslashes(objTree.cp));
+			var objType = objTree.strIsTypeOf(objTree.isTypeOf(obj));
+
+			var jsonmode = $$("autodetect").checked ? "Automatic" : "Standard";
+			$$("jsonmode").innerHTML = "Mode: " + jsonmode;
+
+			if (objType == "array") {
+			  $$("jsonname").value = "Array Index";
+			  $$("jsonname").disabled = true;
+			} else {
+			  $$("jsonname").value = "";
+			  $$("jsonname").disabled = false;
+			}
+
 		});
 		addE($$("add"), "mouseup", function(){
 			$$("add").className = "button";
@@ -623,13 +642,6 @@ BCJTEP.prototype = function(){
 				var jsonmode = $$("autodetect").checked ? "Automatic" : "Standard";
         if (listtype == "object" || listtype == "array") {
 				  jsonmode = "<b>NATIVE JSON</b>";
-        }
-        if (listtype == "array") {
-          $$("jsonname").value = "Array Index";
-          $$("jsonname").disabled = true;
-        } else if ($$("jsonname").disabled) {
-          $$("jsonname").value = "";
-          $$("jsonname").disabled = false;
         }
         $$("jsonmode").innerHTML = "Mode: " + jsonmode;
 
