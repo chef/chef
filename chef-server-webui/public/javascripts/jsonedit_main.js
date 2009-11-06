@@ -283,6 +283,8 @@ var BCJTE = function(){
 			var cid = this.cli ? this.cli.id : null;
 			var nObj = null;
 			try {
+        $$("jsonmode").innerHTML = "Mode: " + ($$("autodetect").checked ? "Automatic" : "Standard");
+        $$("jsonname").readonly=null;
 				//what type are we creating?
 				if (t === undefined){ t = this.strIsTypeOf(this.isTypeOf(nv));}
 				switch(t){
@@ -317,6 +319,7 @@ var BCJTE = function(){
 				$$("jsonvalue").value = "";
 				$$("jsontypes").selectedIndex= 0;
 				$$("jsonpath").innerHTML = "";
+				$$("jsonmode").innerHTML = "";
 				$$("jsonnameinput").style.display = "none";
 				$$("addbutton").style.display = "none";
 				$$("savebutton").style.display = "inline";
@@ -473,8 +476,13 @@ var BCJTEP = function(){
 		else{return x;}
 	}
 	return{
-		save: function(){
-			return JSON.stringify(BCJT.tree.forest[0].json);	
+		save: function(jsonPath){
+      if (jsonPath) {
+        var jsval = eval("BCJT.tree.forest[0]." + BCJTEP.escapeslashes(jsonPath));
+			  return JSON.stringify(jsval);	
+      } else {
+			  return JSON.stringify(BCJT.tree.forest[0].json);	
+      }
 		},
 		build: function(){
 			var jsonstr = $$("jsonstr").value;
@@ -484,6 +492,7 @@ var BCJTEP = function(){
 				$$("jsonname").value = "";
 				$$("jsonvalue").value = "";
 				$$("jsonpath").innerHTML = "";
+				$$("jsonmode").innerHTML = "";
 				$$("jsontypes").selectedIndex= 0;
 				$$("jsonnameinput").style.display = "none";
 				$$("addbutton").style.display = "none";
@@ -492,10 +501,10 @@ var BCJTEP = function(){
 				$$("deletedstatus").style.display = "none";
 				
 				if ("json" == unescape(p.jsonPath)){
-					tabber1.show(1);
+					tabber1.show(3);
 					$$("jsonstr").value = p.jsonValue;
 				}else{
-					if ($$("tab1").style.display == "block"){tabber1.show(2);}
+					if ($$("tab2").style.display != "block"){tabber1.show(2);}
 					/*
 					alert("type: " + p.jsonType + "\n" +
 					  "value: " + p.jsonValue + "\n" +
@@ -509,7 +518,8 @@ var BCJTEP = function(){
 					  } else {
 					     $$("jsonvalue").value = BCJTEP.stripslashes(p.jsonValue);
 					  }
-					  $$("jsonpath").innerHTML = "Path: " + unescape(p.jsonPath) + "<p />Mode: " + jsonmode;
+					  $$("jsonpath").innerHTML = "Path: " + unescape(p.jsonPath);
+            $$("jsonmode").innerHTML = "Mode: " + jsonmode;
 					  selectType($$("jsontypes"),p.jsonType); 
 				}
 			}});
@@ -548,6 +558,7 @@ BCJTEP.prototype = function(){
 		addE($$("buildbutton"), "click", function(){
 			if (BCJTEP.build()){
 				$$("results").innerHTML = "&nbsp;";
+				$$("sourcetab").className = "show";
 				$$("editortab").className = "show";
 				$$("searchtab").className = "show";
 			}
@@ -606,6 +617,23 @@ BCJTEP.prototype = function(){
 			$$("add").className = "button";
 			$$("add").style.backgroundPosition = "center center";
 		});	
+		
+    addE($$("jsontypes"), "change", function(){
+				var listtype = $$("jsontypes").options[$$("jsontypes").selectedIndex].text;
+				var jsonmode = $$("autodetect").checked ? "Automatic" : "Standard";
+        if (listtype == "object" || listtype == "array") {
+				  jsonmode = "<b>NATIVE JSON</b>";
+        }
+        if (listtype == "array") {
+          $$("jsonname").value = "Array Index";
+          $$("jsonname").disabled = true;
+        } else if ($$("jsonname").disabled) {
+          $$("jsonname").value = "";
+          $$("jsonname").disabled = false;
+        }
+        $$("jsonmode").innerHTML = "Mode: " + jsonmode;
+
+			});
 		
 		addE($$("delete"), "mousedown", function(){
 			$$("delete").className = "button buttondown";

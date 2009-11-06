@@ -42,86 +42,8 @@
 
     %div.group.form{:style => "position:relative;"}
       %label.label Attributes 
-      //%div.editor
-      //  %div#tree
-      //  %div#jform
-      //  %div.clear
-      //  %script= "$(document).ready(function() { JSONeditor.start('tree', 'jform', #{@node.attribute.to_json}, false); });"
-      %script= "$(document).ready(function() { $$(\"jsonstr\").value = JSON.stringify(#{@node.attribute.to_json}); if (BCJTEP.build()) { $$(\"results\").innerHTML = \"&nbsp;\"; $$(\"editortab\").className = \"show\"; $$(\"searchtab\").className = \"show\"; }});"
-      %div#treecontainer
-        %div#div1
-      %div#tabcontainer
-        %div#tab-container-1.tablayout
-          %ul#tab-container-1-nav.tablayout
-            %li
-              %a{ :href => "#tab1"} source
-            %li#editortab.noshow
-              %a{ :href => "#tab2"} editor
-            %li#searchtab.noshow
-              %a{ :href => "#tab3"} search
-          %div#tab1.tab
-            %div#tab-container-2.tablayout.nested
-              %ul#tab-container-2-nav.tablayout
-                %li
-                  %a{ :href => "#tab1a" } json
-              %div#tab1a.tabn
-                %table.icanhastable
-                  %tr
-                    %td
-                      %div#refresh.button{:title => "Reload JSON from Tree"}
-                      %div#buildbutton.button{:title => "Load JSON from Source"}
-                  %tr
-                    %td
-                      %textarea#jsonstr{:wrap => "virtual", :cols => "55", :rows => "10", :class => ""}
-          %div#tab2.tab
-            %table.icanhastable
-              %tr
-                %td
-                  %div#add.button{:title => "Add a new attribute"}
-                  %div#delete.button{:title => "Delete current attribute"}
-                  %div#savedstatus{:style => "display:none;"}
-                    %img{ :src=> "/images/jsonedit/saved.png"}
-                    %span Saved!
-                  %div#deletedstatus{:style => "display:none;"}
-                    %img{ :src=> "/images/jsonedit/deleted.png"}
-                    %span Deleted!
-                %td
-                  type :
-                  %select#jsontypes
-                    %option Select Type
-              %tr
-                %td{:colspan => "2"}
-                  %div#jsonnameinput
-                    name :
-                    %input#jsonname{:type => "text", :size=>"55", :class => ""}
-              %tr
-                %td{:colspan => "2"}
-                  %textarea#jsonvalue{:wrap => "virtual", :cols => "55", :rows => "5", :class => ""}
-                  %div#jsonpath &nbsp;
-              %tr
-                %td{:style => "text-align:left !important"}
-                  %input#autodetect{:type => "checkbox", :checked=> "true"}
-                  %label{:for => "autodetect"} Autodetect type of attribute?
-                %td
-                  %input#savebutton{:type => "button", :value => "Save Attribute"} 
-                  %input#addbutton{:type => "button", :value => "Add Attribute"} 
-          %div#tab3.tab
-            %table.icanhastable
-              %tr
-                %td
-                  %span search : 
-                  %input#keyword{:type => "text"}
-                  %input#search{:type => "button", :value => "Find"}
-              %tr
-                %td
-                  %div#results &nbsp;
-          %div#console
-            %div#bar
-              %a#consolebar Error Console
-            %div#log
-
+      = partial '../layout/jsonedit', :json =>@node.attribute.to_json
     %div.group.form
-      %label.label Actions
       %span.description A JSON hash for default attributes for nodes of this node.  These attributes will only be applied if the node does not already have a value for the attributes.
 
     = form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do
