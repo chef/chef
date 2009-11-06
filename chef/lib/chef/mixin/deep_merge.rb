@@ -26,7 +26,7 @@ class Chef
         second = Mash.new(second).to_hash unless second.kind_of?(Mash)
         second = second.to_hash
 
-        Mash.new(first.deep_merge!(second))
+        Mash.new(first.ko_deep_merge!(second, {:knockout_prefix => '!merge:'}))
       end
     end
   end
