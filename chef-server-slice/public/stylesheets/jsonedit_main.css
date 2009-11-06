@@ -26,12 +26,15 @@
 
 }
 
+#jsoneditor {
+  height: 350px;
+}
+
 #treecontainer{
 	border:1px solid #ccc;
-	position: relative;
+	position: absolute;
 	width:300px;
-	min-height: 350px;
-	max-height: 500px;
+	height: 350px;
 	overflow: auto;
 	margin-right:4px;
 }
@@ -50,6 +53,7 @@
 	position: absolute;
 	left: 310px;
 	top: 19px;
+	overflow: hidden;
 }
 #tabcontainer #console{
 	margin-top:4px;
@@ -250,21 +254,27 @@ ul.tablayout a.active {
 	font: 10px Arial;
 	letter-spacing:1px;
 }
-#tab3 .icanhastable td{text-align: left;}
-#tab3 .icanhastable #results{
+#tab2 #jsonmode{
+	text-align: left;
+	margin-left: 4px;
+	font: 11px Arial;
+	letter-spacing:1px;
+}
+#tab1 .icanhastable td{text-align: left;}
+#tab1 .icanhastable #results{
 	border: 1px solid #CCCCCC;
-	max-height:432px;
+	max-height:283px;
 	overflow:auto;
 }
-#tab3 .icanhastable #results table td{
+#tab1 .icanhastable #results table td{
 	background-color: #ffffcc;
 }
-#tab3 .icanhastable #results table td a{
+#tab1 .icanhastable #results table td a{
 	color: #0000cc;
 }
-#tab3 .icanhastable #results table td a:hover{
+#tab1 .icanhastable #results table td a:hover{
 	text-decoration: underline;
 }
-#tab3 .icanhastable #results table .path{
+#tab1 .icanhastable #results table .path{
 	font-size: 10px;
 }
