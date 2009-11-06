@@ -191,17 +191,17 @@ class Chef
    
     # 
     # === Returns
-    # true:: Always returns true
+    # rest<Chef::REST>:: returns Chef::REST connection object
     def register
-      if File.exists?(Chef::Config[:validation_key])
+      if File.exists?(Chef::Config[:client_key])
+        Chef::Log.debug("Client key #{Chef::Config[:client_key]} is present - skipping registration")
+      else
         @vr = Chef::REST.new(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
         @vr.register(@node_name, Chef::Config[:client_key])
-      else
-        Chef::Log.debug("Validation key #{Chef::Config[:validation_key]} is not present - skipping registration")
+        Chef::Log.debug("Client key #{Chef::Config[:client_key]} is not present - registering")
       end
       # We now have the client key, and should use it from now on.
       @rest = Chef::REST.new(Chef::Config[:chef_server_url])
-      true
     end
     
     # Update the file caches for a given cache segment.  Takes a segment name
