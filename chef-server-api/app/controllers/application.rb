@@ -231,6 +231,10 @@ class ChefServerApi::Application < Merb::Controller
 
         if segment == :templates || segment == :files
           mo = sf.match("cookbooks/#{cookbook.name}/#{segment}/(.+?)/(.+)")
+          unless mo
+            Chef::Log.debug("Skipping file #{sf}, as it doesn't have a proper segment.")
+            next
+          end
           specificity = mo[1]
           file_name = mo[2]
           url_options = { :cookbook_id => cookbook.name.to_s, :segment => segment, :id => file_name }

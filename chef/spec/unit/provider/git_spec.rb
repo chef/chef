@@ -181,7 +181,7 @@ describe Chef::Provider::Git do
   end
   
   it "runs a sync command with default options" do
-    expected_cmd = "git fetch origin && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
+    expected_cmd = "git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:run_command).with(:command=>expected_cmd, :cwd=> "/my/deploy/dir")
     @provider.sync
   end
@@ -190,7 +190,7 @@ describe Chef::Provider::Git do
     @resource.remote "opscode"
     expected_cmd =  "git config remote.opscode.url git://github.com/opscode/chef.git && " +
                     "git config remote.opscode.fetch +refs/heads/*:refs/remotes/opscode/* && " +
-                    "git fetch opscode && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
+                    "git fetch opscode --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir")
     @provider.sync
   end
