@@ -169,7 +169,7 @@ class Chef
           FileUtils.cp(file, backup_filename)
           
           # Clean up after the number of backups
-          slice_number = @new_resource.backup - 1
+          slice_number = @new_resource.backup
           backup_files = Dir["#{@new_resource.path}.chef-*"].sort { |a,b| b <=> a }
           if backup_files.length >= @new_resource.backup
             remainder = backup_files.slice(slice_number..-1)
