@@ -70,8 +70,6 @@ class Chef
     # === Returns
     # true:: Always returns true
     def load_attributes()
-      recipes, default_attrs, override_attrs = expand_node
-
       @cookbook_loader.each do |cookbook|
         cookbook.load_attributes(@node)
       end
