@@ -39,6 +39,9 @@ class ChefServerApi::Nodes < ChefServerApi::Application
       raise NotFound, "Cannot load node #{params[:id]}"
     end
     @node.couchdb_rev = nil
+    recipes, default, override = @node.run_list.expand("couchdb")
+    @node.default_attrs = default
+    @node.override_attrs = override
     display @node
   end
 
@@ -66,6 +69,8 @@ class ChefServerApi::Nodes < ChefServerApi::Application
     updated = params['inflated_object']
     @node.run_list.reset(updated.run_list)
     @node.attribute = updated.attribute
+    @node.override_attrs = updated.override_attrs
+    @node.default_attrs = updated.default_attrs
     @node.cdb_save
     @node.couchdb_rev = nil
     display(@node)

@@ -161,8 +161,8 @@ class Chef
 
     def expand_node
       @recipes, @default_attributes, @override_attributes = @node.run_list.expand
-      @node.default = @default_attributes
-      @node.override = @override_attributes
+      @node.default_attrs = @default_attributes
+      @node.override_attrs = @override_attributes
       return @recipes, @default_attributes, @override_attributes
     end
     

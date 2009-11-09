@@ -103,6 +103,17 @@ Feature: Search data via the REST API
       And the inflated responses key 'start' should be the integer '0'
       And the inflated responses key 'total' should be the integer '1' 
 
+  Scenario: Search for a node 
+    Given a 'registration' named 'bobo' exists
+      And a 'node' named 'searchman' exists
+      And I wait for '10' seconds
+     When I authenticate as 'bobo'
+      And I 'GET' the path '/search/node?q=recipe:oracle'
+     Then the inflated responses key 'rows' item '0' should be a kind of 'Chef::Node'
+      And the inflated responses key 'rows' item '0' key 'one' should be 'five'
+      And the inflated responses key 'rows' item '0' key 'three' should be 'four'
+      And the inflated responses key 'rows' item '0' key 'walking' should be 'tall'
+
   Scenario: Search for a type of object that does not exist 
     Given a 'registration' named 'bobo' exists
      When I authenticate as 'bobo'

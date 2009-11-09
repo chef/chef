@@ -241,6 +241,27 @@ describe Chef::Node do
     end
   end
 
+  describe "to_hash" do
+    it "should serialize itself as a hash" do
+      @node.default_attrs = { "one" => { "two" => "three", "four" => "five", "eight" => "nine" } }
+      @node.override_attrs = { "one" => { "two" => "three", "four" => "six" } }
+      @node.set["one"]["two"] = "seven"
+      @node.run_list << "role[marxist]"
+      @node.run_list << "role[leninist]"
+      @node.run_list << "recipe[stalinist]"
+      h = @node.to_hash
+      h["one"]["two"].should == "seven"
+      h["one"]["four"].should == "six"
+      h["one"]["eight"].should == "nine"
+      h["recipe"].should be_include("stalinist")
+      h["role"].should be_include("marxist")
+      h["role"].should be_include("leninist")
+      h["run_list"].should be_include("role[marxist]")
+      h["run_list"].should be_include("role[leninist]")
+      h["run_list"].should be_include("recipe[stalinist]")
+    end
+  end
+
   describe "json" do
     it "should serialize itself as json" do
       @node.find_file("test.example.com")
@@ -248,6 +269,8 @@ describe Chef::Node do
       json.should =~ /json_class/
       json.should =~ /name/
       json.should =~ /attributes/
+      json.should =~ /overrides/
+      json.should =~ /defaults/
       json.should =~ /run_list/
     end
     
