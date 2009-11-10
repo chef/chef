@@ -14,27 +14,28 @@
 [ -f /etc/sysconfig/chef-server ] && . /etc/sysconfig/chef-server
 
 prog="chef-server"
-PIDFILE=/var/run/chef/chef-server.pid
-LOCKFILE=/var/lock/subsys/$prog
-CONFIG=/etc/chef/server.rb
-USER="chef"
-GROUP="chef"
-CLUSTER_NODES=2
-LOGFILE=/var/log/chef/chef-server-merb.log
-OPTIONS=
+childpidfiles=${CHILDPIDFILES-/var/run/chef/server.%s.pid}
+pidfile=${PIDFILE-/var/run/chef/server.main.pid}
+lockfile=${LOCKFILE-/var/lock/subsys/$prog}
+config=${CONFIG-/etc/chef/server.rb}
+user=${USER-chef}
+group=${GROUP-chef}
+cluster_nodes=${CLUSTER_NODES-2}
+logfile=${LOGFILE-/var/log/chef/merb.%s.log}
+options=${OPTIONS-}
 
 start() {
     echo -n "Starting $prog:"
-    daemon chef-server -d -c "$CLUSTER_NODES" -C "$CONFIG" -u "$USER" -G "$GROUP" -L "$LOGFILE" -P "$PIDFILE" "$OPTIONS" ">/dev/null"
+    daemon chef-server -d -c "$cluster_nodes" -C "$config" -u "$user" -G "$group" -L "$logfile" -P "$childpidfiles" "$options" "&>/dev/null"
     RETVAL=$?
     echo
-    [ $RETVAL -eq 0 ] && touch ${LOCKFILE}
+    [ $RETVAL -eq 0 ] && touch ${lockfile}
     return $RETVAL
 }
 
 stop() {
     echo -n "Stopping $prog: "
-    if [ -f $PIDFILE ]; then
+    if [ -f $pidfile ]; then
         killproc chef-server
         RETVAL=$?
         if [ $RETVAL -ne 0 ]; then
@@ -44,7 +45,7 @@ stop() {
         RETVAL=1
         failure;
     fi
-    rm -f $LOCKFILE
+    rm -f $lockfile
     echo
     return $RETVAL
 }
@@ -61,7 +62,7 @@ case "$1" in
         start
         ;;
   condrestart)
-        if [ -f $LOCKFILE ]; then
+        if [ -f $lockfile ]; then
             stop
             start
         fi

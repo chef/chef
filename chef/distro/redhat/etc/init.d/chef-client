@@ -14,15 +14,19 @@
 [ -f /etc/sysconfig/chef-client ] && . /etc/sysconfig/chef-client
 
 prog="chef-client"
-pidfile=${PIDFILE-/var/run/chef/chef-client.pid}
+pidfile=${PIDFILE-/var/run/chef/client.pid}
 lockfile=${LOCKFILE-/var/lock/subsys/$prog}
 config=${CONFIG-/etc/chef/client.rb}
-logfile=${LOGFILE-/var/log/chef/chef-client.log}
-OPTIONS=
+user=${USER-root}
+group=${GROUP-root}
+interval=${INTERVAL-1800}
+splay=${SPLAY-20}
+logfile=${LOGFILE-/var/log/chef/client.log}
+options=${OPTIONS-}
 
 start() {
     echo -n "Starting $prog:"
-    daemon chef-client -d -c "$config" -L "$logfile" "$OPTIONS" ">/dev/null"
+    daemon chef-client -d -c "$config" -i "$interval" -s "$splay" -L "$logfile" "$options" "&>/dev/null"
     RETVAL=$?
     echo
     [ $RETVAL -eq 0 ] && touch ${lockfile}

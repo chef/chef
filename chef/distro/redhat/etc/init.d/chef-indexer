@@ -1,5 +1,5 @@
 #!/bin/bash
-# Startup script for chef-indexer
+# Startup script for chef-indexer.
 #
 # chkconfig: - 75 25
 # description: Server component of the Chef systems integration framework.
@@ -14,26 +14,26 @@
 [ -f /etc/sysconfig/chef-indexer ] && . /etc/sysconfig/chef-indexer
 
 prog="chef-indexer"
-PIDFILE=/var/run/chef/chef-indexer.pid
-LOCKFILE=/var/lock/subsys/$prog
-CONFIG=/etc/chef/indexer.rb
-USER="chef"
-GROUP="chef"
-LOGFILE=/var/log/chef/chef-indexer.log
-OPTIONS=
+pidfile=${PIDFILE-/var/run/chef/indexer.pid}
+lockfile=${LOCKFILE-/var/lock/subsys/$prog}
+config=${CONFIG-/etc/chef/indexer.rb}
+user=${USER-chef}
+group=${GROUP-chef}
+logfile=${LOGFILE-/var/log/chef/indexer.log}
+options=${OPTIONS-}
 
 start() {
     echo -n "Starting $prog:"
-    daemon chef-indexer -d -c "$CONFIG" -u "$USER" -g "$GROUP" -L "$LOGFILE" "$OPTIONS" ">/dev/null"
+    daemon chef-indexer -d -c "$config" -u "$user" -g "$group" -L "$logfile" "$options" "&>/dev/null"
     RETVAL=$?
     echo
-    [ $RETVAL -eq 0 ] && touch ${LOCKFILE}
+    [ $RETVAL -eq 0 ] && touch ${lockfile}
     return $RETVAL
 }
 
 stop() {
     echo -n "Stopping $prog: "
-    if [ -f $PIDFILE ]; then
+    if [ -f $pidfile ]; then
         killproc chef-indexer
         RETVAL=$?
         if [ $RETVAL -ne 0 ]; then
@@ -43,7 +43,7 @@ stop() {
         RETVAL=1
         failure;
     fi
-    rm -f $LOCKFILE
+    rm -f $lockfile
     echo
     return $RETVAL
 }
@@ -60,7 +60,7 @@ case "$1" in
         start
         ;;
   condrestart)
-        if [ -f $LOCKFILE ]; then
+        if [ -f $lockfile ]; then
             stop
             start
         fi

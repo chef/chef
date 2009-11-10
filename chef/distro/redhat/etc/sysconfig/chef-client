@@ -1,0 +1,10 @@
+# Configuration file for the chef-client service
+
+#PIDFILE=/var/run/chef/client.pid
+#CONFIG=/etc/chef/client.rb
+#USER=root
+#GROUP=root
+#INTERVAL=1800
+#SPLAY=20
+#LOGFILE=/var/log/chef/client.log
+#OPTIONS=

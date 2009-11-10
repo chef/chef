@@ -1,0 +1,8 @@
+# Configuration file for the chef-server service
+
+#PIDFILE=/var/run/chef/indexer.pid
+#CONFIG=/etc/chef/indexer.rb
+#USER=chef
+#GROUP=chef
+#LOGFILE=/var/log/chef/indexer.log
+#OPTIONS=
