@@ -6,6 +6,8 @@ unless defined?(Chef)
   require 'chef'  
 end
 
+File.umask Chef::Config[:umask]
+
 use_test :rspec
 use_template_engine :haml
 
