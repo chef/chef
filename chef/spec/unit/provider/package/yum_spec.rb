@@ -105,7 +105,7 @@ describe Chef::Provider::Package::Yum, "install_package" do
   
   it "should run yum install with the package name and version" do
     @provider.should_receive(:run_command_with_systems_locale).with({
-      :command => "yum -q -y install emacs-1.0"
+      :command => "yum -d0 -e0 -y install emacs-1.0"
     })
     @provider.install_package("emacs", "1.0")
   end
@@ -144,7 +144,7 @@ describe Chef::Provider::Package::Yum, "upgrade_package" do
   
   it "should run yum update if the package is installed" do
     @provider.should_receive(:run_command_with_systems_locale).with({
-      :command => "yum -q -y update emacs-11"
+      :command => "yum -d0 -e0 -y update emacs-11"
     })
     @provider.upgrade_package(@new_resource.name, @provider.candidate_version)
   end
@@ -152,7 +152,7 @@ describe Chef::Provider::Package::Yum, "upgrade_package" do
   it "should run yum install if the package is not installed" do
     @current_resource.stub!(:version).and_return(nil)
     @provider.should_receive(:run_command_with_systems_locale).with({
-      :command => "yum -q -y install emacs-11"
+      :command => "yum -d0 -e0 -y install emacs-11"
     })
     @provider.upgrade_package(@new_resource.name, @provider.candidate_version)
   end
@@ -181,7 +181,7 @@ describe Chef::Provider::Package::Yum, "remove_package" do
   
   it "should run yum remove with the package name" do
     @provider.should_receive(:run_command_with_systems_locale).with({
-      :command => "yum -q -y remove emacs-1.0"
+      :command => "yum -d0 -e0 -y remove emacs-1.0"
     })
     @provider.remove_package("emacs", "1.0")
   end
@@ -210,7 +210,7 @@ describe Chef::Provider::Package::Yum, "purge_package" do
   
   it "should run yum remove with the package name" do
     @provider.should_receive(:run_command_with_systems_locale).with({
-      :command => "yum -q -y remove emacs-1.0"    
+      :command => "yum -d0 -e0 -y remove emacs-1.0"    
     })
     @provider.purge_package("emacs", "1.0")
   end
