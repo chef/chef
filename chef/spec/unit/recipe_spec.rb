@@ -22,6 +22,7 @@ describe Chef::Recipe do
   before(:each) do
     @node = Chef::Node.new
     @recipe = Chef::Recipe.new("hjk", "test", @node)
+    @recipe.stub!(:pp)
     @recipe.node[:tags] = Array.new
   end
  

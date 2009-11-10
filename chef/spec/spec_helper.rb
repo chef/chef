@@ -16,6 +16,12 @@
 # limitations under the License.
 #
 
+# Abuse ruby's constant lookup to avoid undefined constant errors
+module Shef
+  JUST_TESTING_MOVE_ALONG = true unless defined? JUST_TESTING_MOVE_ALONG
+  IRB = nil unless defined? IRB
+end
+
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 $:.unshift(File.join(File.dirname(__FILE__), "..", "..", "chef-server", "lib"))
 
