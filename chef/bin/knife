@@ -267,6 +267,13 @@ class Knife < Thor
     puts "Done."
   end
 
+  desc "delete cookbooks", "Delete *all* cookbooks"
+  def delete_cookbooks
+    setup
+    destroy_cookbooks(get_list("cookbooks"))
+    puts "Done."
+  end
+
 
   #############
   # Cookbooks #
@@ -677,6 +684,17 @@ class Knife < Thor
 
     def get_cookbook
       @rest.get_rest("cookbooks/#{options[:cookbook]}")
+    end
+
+     def destroy_cookbooks(cookbooklist)
+       cookbooklist.each do |cookbook|
+         begin
+           @rest.delete_rest("cookbooks/#{cookbook}") unless cookbook =~ /-validator$/
+         rescue Net::HTTPServerException
+           raise unless ($!.message =~ /Not Found/ or $!.message =~ /Forbidden/)
+           puts "Cookbook: #{cookbook}, Exception! #{$!.message}"
+        end
+      end
     end
 
     def add_to_run_list(node, new_value, after=nil)

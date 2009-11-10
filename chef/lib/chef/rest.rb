@@ -211,7 +211,7 @@ class Chef
         raise ArgumentError, "You must provide :GET, :PUT, :POST or :DELETE as the method"
       end
 
-      Chef::Log.debug("Sending HTTP Request via #{req.method} to #{url.host}:#{url.port}/#{req.path}")
+      Chef::Log.debug("Sending HTTP Request via #{req.method} to #{url.host}:#{url.port}#{req.path}")
       
       # Optionally handle HTTP Basic Authentication
       req.basic_auth(url.user, url.password) if url.user
