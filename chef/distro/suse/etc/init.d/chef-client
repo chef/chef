@@ -1,0 +1,121 @@
+#! /bin/sh
+# Copyright (c) 1995-2003 SuSE Linux AG, Nuernberg, Germany.
+# All rights reserved.
+#
+# Author: Mario Giammarco
+#
+### BEGIN INIT INFO
+# Provides:       chef-client
+# Required-Start: $remote_fs $syslog $named
+# Required-Stop:  $remote_fs $syslog
+# Default-Start:  3 5
+# Default-Stop:   0 1 2 6
+# Short-Description: Chef client
+# Description:    Starts chef client
+### END INIT INFO
+
+# First reset status of this service
+. /etc/rc.status
+rc_reset
+
+# Return values acc. to LSB for all commands but status:
+# 0 - success
+# 1 - generic or unspecified error
+# 2 - invalid or excess argument(s)
+# 3 - unimplemented feature (e.g. "reload")
+# 4 - insufficient privilege
+# 5 - program is not installed
+# 6 - program is not configured
+# 7 - program is not running
+
+# set default options
+CHEF_CONF="/etc/chef/client.rb"
+if [ ! -f ${CHEF_CONF} ]; then
+  echo -n "Chef client configuration file, ${CHEF_CONF} does not exist."
+  # Tell the user this has skipped
+  rc_status -s
+  exit 6
+fi
+
+CHEF_BIN="/usr/bin/chef-client"
+if [ ! -x ${CHEF_BIN} ]; then
+  echo -n "Chef client, ${CHEF_BIN} not installed!"
+  rc_status -s
+  exit 5
+fi
+
+CHEF_LOGFILE=/var/log/chef/chef-client.log
+CHEF_OPTIONS=""
+
+# set default PID variables
+CHEF_PID="/var/run/chef/chef-client.pid"
+CHEF_PID_NOPREFIX="/var/run/chef/chef-client.pid"
+
+function chef_is_running() {
+  $0 status >/dev/null
+}
+
+case "$1" in
+  start)
+
+    echo -n "Starting chef-client"
+
+    startproc $CHEF_BIN -d -c "$CHEF_CONF" -L "$CHEF_LOGFILE" "$CHEF_OPTIONS" ">/dev/null"
+
+    rc_status -v
+  ;;
+  stop)
+    echo -n "Shutting down chef client"
+    killproc -p ${CHEF_PID} -TERM $CHEF_BIN
+    rc_status -v
+    rm -f ${CHEF_PID} 2>/dev/null
+  ;;
+  try-restart)
+    $0 status
+    if test $? = 0; then
+      $0 restart $2
+    else
+      rc_reset        # Not running is not a failure.
+    fi
+    # Remember status and be quiet
+    rc_status
+  ;;
+  restart)
+    $0 stop
+    $0 start $2
+    rc_status
+  ;;
+  try-restart-iburst)
+    $0 status
+    if test $? = 0; then
+      $0 stop
+      $0 start iburst
+    else
+      rc_reset        # Not running is not a failure.
+    fi
+    # Remember status and be quiet
+    rc_status
+  ;;
+  force-reload)
+    # Does not support signalling to reload
+    $0 try-restart
+    rc_status
+  ;;
+  reload)
+    echo -n "Reload chef-client"
+    # Does not support signalling to reload
+    rc_failed 3
+    rc_status -v
+  ;;
+  status)
+    checkproc -p ${CHEF_PID} $CHEF_BIN
+    echo -n "Checking for chef-client "
+    checkproc -p ${CHEF_PID} $CHEF_BIN
+    rc_status -v
+  ;;
+  *)
+    echo "Usage: $0 {start|stop|status|try-restart|restart|try-restart-iburst|force-reload|reload|addserver|ntptimeset}"
+    exit 1
+  ;;
+esac
+rc_exit
