@@ -163,7 +163,7 @@ class Chef
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:role) do |n|
-          response[n.name] = n
+          response[n.name] = n unless n.nil?
         end
         response
       else

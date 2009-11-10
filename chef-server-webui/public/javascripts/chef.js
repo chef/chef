@@ -50,6 +50,23 @@ $(document).ready(function(){
     });
   });
 
+  $('form#edit_databag_item, form#create_databag_item').submit(function(event) {
+    var form = $(this);
+    if (form.attr('id') == 'edit_databag_item') {
+      form.append('<input type="hidden" name="_method" value="put">');
+    }
+    form.append('<input type="hidden" id="json_data" name="json_data"/>');
+    form.append($('input#json_data').attr('value', JSONeditor.treeBuilder.JSONstring.make(JSONeditor.treeBuilder.json)))
+  });
+
+	$('form#edit_databag, form#create_databag').submit(function(event) {
+    var form = $(this);
+    if (form.attr('id') == 'edit_databag') {
+      form.append('<input type="hidden" name="_method" value="put">');
+    }
+    form.append($('input#databag_name')).css('display', 'none');
+  });
+
   $('form#edit_client, form#create_client').submit(function(event) {
     var form = $(this);
     if (form.attr('id') == 'edit_client') {

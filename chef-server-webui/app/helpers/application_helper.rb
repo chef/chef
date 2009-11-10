@@ -134,6 +134,21 @@ module Merb
       def str_to_bool(str)
         str =~ /true/ ? true : false
       end
+      
+      #for showing search result
+      def determine_name(type, object)
+        if type == :node
+          object.name.gsub(/\./, '_')
+        elsif type == :role
+          object.name
+        else
+          params[:id] 
+        end 
+      end 
+      
+      def get_databag_item_name(uri)
+        uri.split("/").last
+      end 
 
       # Recursively build a tree of lists.
       #def build_tree(node)

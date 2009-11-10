@@ -177,9 +177,9 @@ class Chef
       removed
     end
     
-    def destroy(data_bag=data_bag)
+    def destroy(data_bag=data_bag, databag_item=name)
       r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.delete_rest("data/#{data_bag}/#{@name}")
+      r.delete_rest("data/#{data_bag}/#{databag_item}")
     end
      
     # Save this Data Bag Item to CouchDB
@@ -188,10 +188,11 @@ class Chef
       @couchdb_rev = results["rev"]
     end
     
-    def save
+    # Save this Data Bag Item via RESTful API
+    def save(item_id=@raw_data['id'])
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       begin
-        r.put_rest("data/#{data_bag}/#{@raw_data['id']}", @raw_data)
+        r.put_rest("data/#{data_bag}/#{item_id}", @raw_data)
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
           r.post_rest("data/#{data_bag}", @raw_data) 
@@ -201,6 +202,13 @@ class Chef
       end
       self
     end
+    
+    # Create this Data Bag Item via RESTful API
+    def create
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.post_rest("data/#{data_bag}", @raw_data) 
+      self
+    end 
     
     # Set up our CouchDB design document
     def self.create_design_document

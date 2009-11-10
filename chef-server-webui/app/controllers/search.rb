@@ -1,7 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Nuo Yan (<nuo@opscode.com>)
+# Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +16,7 @@
 # limitations under the License.
 #
 
-#require 'chef' / 'search'
-#require 'chef' / 'queue'
+require 'chef' / 'search' / 'query'
 
 class ChefServerWebui::Search < ChefServerWebui::Application
   
@@ -26,29 +24,32 @@ class ChefServerWebui::Search < ChefServerWebui::Application
   before :login_required 
     
   def index
-    @s = Chef::Search.new
+    @s = Chef::Search::Query.new
     @search_indexes = @s.list_indexes
     render
   end
 
   def show
-    @s = Chef::Search.new
-    
-    query = params[:q].nil? ? "*" : (params[:q].empty? ? "*" : params[:q])
-    attributes = params[:a].nil? ? [] : params[:a].split(",").collect { |a| a.to_sym }
-    @results = @s.search(params[:id], query, attributes)
-   
-    render
-  end
-
-  def destroy
-    @s = Chef::Search.new
-    @entries = @s.search(params[:id], "*")
-    @entries.each do |entry|
-      Chef::Queue.send_msg(:queue, :remove, entry)
-    end
-    @status = 202
-    redirect url(:search)
+    begin
+      @s = Chef::Search::Query.new
+      query = params[:q].nil? ? "*:*" : (params[:q].empty? ? "*:*" : params[:q])
+      @results = @s.search(params[:id], query)      
+      @type = if params[:id].to_s == "node" || params[:id].to_s == "role" 
+                params[:id]
+              else 
+                "databag" 
+              end               
+      @results = @results - @results.last(2)
+      @results.each do |result|
+        result.delete(nil)
+      end
+      @results
+      render
+    rescue StandardError => e
+      @_message = { :error => "Unable to find the #{params[:id]}. (#{$!})" }
+      @search_indexes = @s.list_indexes
+      render :index
+    end  
   end
   
 end

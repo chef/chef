@@ -129,14 +129,6 @@ div.editor {
 
 #node_available_roles li, #node_available_recipes li, #for_node li, #for_role li, #available_recipes li { margin: 0 5px 5px 5px; padding: 5px; width: 175px; }
 
-#for_client {
-	list-style-type: none; margin: 0; padding: 0; float: left; margin-right: 10px; background: #eee; padding: 5px; width: 200px;
-}
-
-#for_client li {
-	margin: 0 5px 5px 5px; padding: 5px; width: 175px;
-}
-
 #sidebar_block {
   display: none;
 }

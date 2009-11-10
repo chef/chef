@@ -1,55 +1,40 @@
 .block#block-text
   .content
-    %h2.title= "Cookbook #{h @cookbook.name}"
+    %h2.title= "Cookbook: #{h @cookbook["name"]}"
     .inner
       .accordion
-        - unless @cookbook.lib_files.empty?
+        - unless @cookbook["libraries"].empty?
           %h2.head= link_to "Library Files", "#"
           .files
-            - @cookbook.lib_files.each do |f|
+            - @cookbook["libraries"].each do |f|
               .code
-                %h4.head= link_to File.basename(f), "#"
-                %pre.ruby= syntax_highlight(f)      
-        - unless @cookbook.attribute_files.empty?
+                %h4.head= link_to File.basename(f["name"]), "#"
+                %pre.ruby= syntax_highlight(get_file(f["uri"]))      
+        - unless @cookbook["attributes"].empty?
           %h2.head= link_to "Attribute Files", "#"
           .files
-            - @cookbook.attribute_files.each do |f|
+            - @cookbook["attributes"].each do |f|
               .code
-                %h4.head= link_to File.basename(f), "#"
-                %pre.ruby= syntax_highlight(f)  
-        - unless @cookbook.definition_files.empty?
+                %h4.head= link_to File.basename(f["name"]), "#"
+                %pre.ruby= syntax_highlight(get_file(f["uri"]))  
+        - unless @cookbook["definitions"].empty?
           %h2.head= link_to "Definition Files", "#"
           .files
-            - @cookbook.definition_files.each do |f|
+            - @cookbook["definitions"].each do |f|
               .code
-                %h4.head= link_to File.basename(f), "#"
-                %pre.ruby= syntax_highlight(f)
-        - unless @cookbook.recipe_files.empty?
+                %h4.head= link_to File.basename(f["name"]), "#"
+                %pre.ruby= syntax_highlight(get_file(f["uri"]))
+        - unless @cookbook["recipes"].empty?
           %h2.head= link_to "Recipe Files", "#"
           .files
-            - @cookbook.recipe_files.each do |f|
+            - @cookbook["recipes"].each do |f|
               .code
-                %h4.head= link_to File.basename(f), "#"
-                %pre.ruby= syntax_highlight(f)
-        - unless @cookbook.resource_files.empty?
-          %h2.head= link_to "Resource Files", "#"
-          .files
-            - @cookbook.resource_files.each do |f|
-              .code
-                %h4.head= link_to File.basename(f), "#"
-                %pre.ruby= syntax_highlight(f)
-        - unless @cookbook.provider_files.empty?
-          %h2.head= link_to "Provider Files", "#"
-          .files
-            - @cookbook.provider_files.each do |f|
-              .code
-                %h4.head= link_to File.basename(f), "#"
-                %pre.ruby= syntax_highlight(f)
-        - unless @cookbook.template_files.empty?
+                %h4.head= link_to File.basename(f["name"]), "#"
+                %pre.ruby= syntax_highlight(get_file(f["uri"]))
+        - unless @cookbook["templates"].empty?
           %h2.head= link_to "Template Files", "#"
           .files
-            - @cookbook.template_files.each do |f|
-              - rel = f.split('templates/',2)[1]
+            - @cookbook["templates"].each do |f|
               .code
-                %h4.head= link_to rel, "#"
-                %pre.ruby= syntax_highlight(f)
+                %h4.head= link_to File.basename(f["name"]), "#"
+                %pre.ruby= syntax_highlight(get_file(f["uri"]))

@@ -1,0 +1,15 @@
+.content
+  .inner
+    %div.group.form
+      %label.label Data
+      %div.editor
+        %div#tree
+        %div#jform
+        %div.clear
+        %script= "$(document).ready(function() { JSONeditor.start('tree', 'jform', #{@default_data.to_json} , false); });"
+
+    = form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do
+      %div.group
+        .actions-bar
+          .actions= submit submit_name, :id => submit_id, :class => 'button'
+
