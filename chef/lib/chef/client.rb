@@ -196,9 +196,9 @@ class Chef
       if File.exists?(Chef::Config[:client_key])
         Chef::Log.debug("Client key #{Chef::Config[:client_key]} is present - skipping registration")
       else
+        Chef::Log.info("Client key #{Chef::Config[:client_key]} is not present - registering")
         @vr = Chef::REST.new(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
         @vr.register(@node_name, Chef::Config[:client_key])
-        Chef::Log.debug("Client key #{Chef::Config[:client_key]} is not present - registering")
       end
       # We now have the client key, and should use it from now on.
       @rest = Chef::REST.new(Chef::Config[:chef_server_url])
