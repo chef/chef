@@ -24,7 +24,7 @@ class ChefServerWebui::Status < ChefServerWebui::Application
   before :login_required 
 
   def index
-    @status = Chef::CouchDB.new(nil, "chef_integration").get_view("nodes", "status")["rows"].inject([]) do |result, item| 
+    @status = Chef::CouchDB.new(nil, Chef::Config[:couchdb_database]).get_view("nodes", "status")["rows"].inject([]) do |result, item| 
       result << item["value"]
       result
     end
