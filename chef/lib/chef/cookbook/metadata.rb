@@ -336,7 +336,7 @@ class Chef
             :default => { :kind_of => [ String, Array, Hash ] }
           }
         )
-        options["required"] = remap_required_attribute(options[:required])
+        options[:required] = remap_required_attribute(options[:required]) unless options[:required].nil?
         validate_string_array(options[:choice])
         validate_calculated_default_rule(options)
         validate_choice_default_rule(options)
