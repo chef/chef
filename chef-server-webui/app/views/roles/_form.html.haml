@@ -34,13 +34,9 @@
               Drag recipes from the list of Available Recipes section on the left, and drop them
               in the "Recipes for this Role" section on the right.  Then sort the recipes for this role list to the order you would like to see the recipes applied.
 
-    %div.group.form
+    %div.group.form{:style => "position:relative;"}
       %label.label Default and Override Attributes 
-      %div.editor
-        %div#tree
-        %div#jform
-        %div.clear
-          %script= "$(document).ready(function() { JSONeditor.start('tree', 'jform', #{ { :defaults => @role.default_attributes, :overrides => @role.override_attributes }.to_json }, false); });"
+      = partial '../layout/jsonedit', :json => { :defaults => @role.default_attributes, :overrides => @role.override_attributes }.to_json
       %span.description A JSON hash for default attributes for nodes of this role.  These attributes will only be applied if the node does not already have a value for the attributes.
     = form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do
       %div.group
