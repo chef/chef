@@ -330,20 +330,20 @@ task :metadata do
   end
 end
 
-desc "Build roles from roles/role_name.json from role_name.rb"
-task :roles do
+rule(%r{\broles/\S+\.json\Z} => [ proc { |task_name| task_name.sub(/\.[^.]+$/, '.rb') } ]) do |t|
   Chef::Config[:role_path] = File.join(TOPDIR, 'roles')
-  Dir[File.join(TOPDIR, 'roles', '**', '*.rb')].each do |role_file|
-    short_name = File.basename(role_file, '.rb')
-    puts "Generating role JSON for #{short_name}"
-    role = Chef::Role.new
-    role.name(short_name)
-    role.from_file(role_file)
-    File.open(File.join(TOPDIR, 'roles', "#{short_name}.json"), "w") do |f|
-      f.write(JSON.pretty_generate(role))
-    end
+  short_name = File.basename(t.source, '.rb')
+  puts "Generating role JSON for #{short_name}"
+  role = Chef::Role.new
+  role.name(short_name)
+  role.from_file(t.source)
+  File.open(t.name, "w") do |f|
+    f.write(JSON.pretty_generate(role))
   end
 end
+
+desc "Build roles from roles/role_name.json from role_name.rb"
+task :roles  => FileList[File.join(TOPDIR, 'roles', '**', '*.rb')].pathmap('%X.json')
 
 desc "Upload all cookbooks"
 task :upload_cookbooks => [ :metadata ]
