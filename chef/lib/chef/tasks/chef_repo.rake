@@ -307,28 +307,21 @@ EOH
   sh("(cd #{CADIR} && chmod 644 #{fqdn}.pem)")
 end
 
-desc "Build cookbook metadata.json from metadata.rb"
-task :metadata do
+@cookbook_loader = nil
+rule(%r{\b(?:site-)?cookbooks/[^/]+/metadata\.json\Z} => [ proc { |task_name| task_name.sub(/\.[^.]+$/, '.rb') } ]) do |t|
   Chef::Config[:cookbook_path] = [ File.join(TOPDIR, 'cookbooks'), File.join(TOPDIR, 'site-cookbooks') ]
-  cl = Chef::CookbookLoader.new
-  cl.each do |cookbook|
-    if ENV['COOKBOOK']
-      next unless cookbook.name.to_s == ENV['COOKBOOK']
-    end
-    cook_meta = Chef::Cookbook::Metadata.new(cookbook)
-    Chef::Config.cookbook_path.each do |cdir|
-      metadata_rb_file = File.join(cdir, cookbook.name.to_s, 'metadata.rb')
-      metadata_json_file = File.join(cdir, cookbook.name.to_s, 'metadata.json')
-      if File.exists?(metadata_rb_file)
-        puts "Generating metadata for #{cookbook.name}"
-        cook_meta.from_file(metadata_rb_file)
-        File.open(metadata_json_file, "w") do |f| 
-          f.write(JSON.pretty_generate(cook_meta))
-        end
-      end
-    end
+  @cookbook_loader ||= Chef::CookbookLoader.new
+  cookbook = @cookbook_loader[t.source[%r{\bcookbooks/([^/]+)/metadata\.rb\Z}, 1]]
+  cook_meta = Chef::Cookbook::Metadata.new(cookbook)
+  puts "Generating metadata for #{cookbook.name}"
+  cook_meta.from_file(t.source)
+  File.open(t.name, "w") do |f|
+    f.write(JSON.pretty_generate(cook_meta))
   end
 end
+
+desc "Build cookbook metadata.json from metadata.rb"
+task :metadata => FileList[File.join(TOPDIR, '*cookbooks', ENV['COOKBOOK'] || '*', 'metadata.rb')].pathmap('%X.json')
 
 rule(%r{\broles/\S+\.json\Z} => [ proc { |task_name| task_name.sub(/\.[^.]+$/, '.rb') } ]) do |t|
   Chef::Config[:role_path] = File.join(TOPDIR, 'roles')
