@@ -38,7 +38,7 @@ class Chef
 
           if( ::File.exists?(catdir) )
             Dir.entries(catdir).each do |entry|
-              if(entry =~ /^#{Regexp.escape(pkg)}\-(.+)/)
+              if(entry =~ /^#{Regexp.escape(pkg)}\-(\d[\.\d]*((_(alpha|beta|pre|rc|p)\d*)*)?)/)
                 @current_resource.version($1)
                 Chef::Log.debug("Got current version #{$1}")
                 break

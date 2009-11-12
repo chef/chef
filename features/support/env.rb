@@ -33,8 +33,8 @@ require 'chef/certificate'
 require 'tmpdir'
 require 'merb-core'
 require 'merb_cucumber/world/webrat'
-require 'opscode/audit'
 require 'chef/streaming_cookbook_uploader'
+require 'webrick'
 
 def Spec.run? ; true; end
 
@@ -136,7 +136,9 @@ Chef::Log.info("Ready to run tests")
 ###
 module ChefWorld
 
-  attr_accessor :recipe, :cookbook, :response, :inflated_response, :log_level, :chef_args, :config_file, :stdout, :stderr, :status, :exception
+  attr_accessor :recipe, :cookbook, :response, :inflated_response, :log_level,
+                :chef_args, :config_file, :stdout, :stderr, :status, :exception,
+                :gemserver_thread
 
   def client
     @client ||= Chef::Client.new
@@ -166,6 +168,16 @@ module ChefWorld
     @stash ||= Hash.new
   end
   
+  def gemserver
+    @gemserver ||= WEBrick::HTTPServer.new(
+      :Port         => 8000,
+      :DocumentRoot => datadir + "/gems/",
+      # Make WEBrick STFU
+      :Logger       => Logger.new(StringIO.new),
+      :AccessLog    => [ StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT ]
+    )
+  end
+  
 end
 
 World(ChefWorld)
@@ -188,6 +200,9 @@ After do
   s = Chef::Solr.new
   s.solr_delete_by_query("*:*")
   s.solr_commit
+  gemserver.shutdown
+  gemserver_thread && gemserver_thread.join
+  
   cleanup_files.each do |file|
     system("rm #{file}")
   end

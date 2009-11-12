@@ -34,6 +34,8 @@ import yum
 
 from yum import Errors
 
+PIDFILE='/var/run/yum.pid'
+
 # Seconds to wait for exclusive access to yum
 lock_timeout = 10
 
@@ -54,7 +56,7 @@ try:
     countdown = lock_timeout
     while True:
       try:
-        y.doLock()
+        y.doLock(PIDFILE)
       except Errors.LockError, e:
         time.sleep(1)
         countdown -= 1 
@@ -80,7 +82,7 @@ try:
 # Ensure we clear the lock.
 finally:
   try:
-    y.doUnlock()
+    y.doUnlock(PIDFILE)
   # Keep Unlock from raising a second exception as it does with a yum.conf 
   # config error.
   except Errors.YumBaseError:

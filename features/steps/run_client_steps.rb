@@ -46,13 +46,13 @@ When /^I run the chef\-client with '(.+)' for '(.+)' seconds$/ do |args, run_for
 end
 
 When /^I run the chef\-client for '(.+)' seconds$/ do |run_for|
-  cid = fork { 
+  cid = Process.fork { 
     sleep run_for.to_i
-    client_pid = `ps ax | grep chef-client | grep -v grep | grep -v rake | grep -v cucumber | awk '{ print $1 }'`
-    Process.kill("INT", client_pid.to_i)
+    Process.kill("INT", /^(.+chef\-client.+\-i.*)$/.match(`ps -ef`).to_s.split[1].to_i)
+    exit
   } 
   When 'I run the chef-client'
-  Process.waitpid2(cid)
+  Process.wait2(cid)
 end
 
 When /^I run the chef\-client at log level '(.+)'$/ do |log_level|

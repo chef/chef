@@ -101,6 +101,7 @@ class Chef
         releases_to_nuke.each do |i|
           Chef::Log.info "Removing release: #{i}"
           FileUtils.rm_rf i 
+          release_deleted(i)
         end
         @new_resource.updated = true
       end
@@ -185,7 +186,7 @@ class Chef
       end
       
       def all_releases
-        Dir.glob(@new_resource.deploy_to + "/releases/*")
+        Dir.glob(@new_resource.deploy_to + "/releases/*").sort
       end
       
       def update_cached_repo

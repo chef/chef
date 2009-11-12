@@ -46,15 +46,8 @@ end
 describe Chef::Provider::Package::Rubygems, "install_package" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Package",
-      :null_object => true,
-      :name => "rspec",
-      :version => "1.2.2",
-      :package_name => "rspec",
-      :updated => nil,
-      :gem_binary => nil,
-      :source => nil
-    )
+    @new_resource = Chef::Resource::GemPackage.new("rspec")
+    @new_resource.version "1.2.2"
     @provider = Chef::Provider::Package::Rubygems.new(@node, @new_resource)
   end
 
@@ -65,6 +58,13 @@ describe Chef::Provider::Package::Rubygems, "install_package" do
         "LC_ALL" => nil
       }
     })
+    @provider.install_package("rspec", "1.2.2")
+  end
+  
+  it "installs gems with arbitrary options set by resource's options" do
+    @new_resource.options "-i /arbitrary/install/dir"
+    @provider.should_receive(:run_command_with_systems_locale).
+      with(:command => "gem install rspec -q --no-rdoc --no-ri -v \"1.2.2\" -i /arbitrary/install/dir")
     @provider.install_package("rspec", "1.2.2")
   end
 end
