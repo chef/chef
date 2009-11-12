@@ -96,6 +96,7 @@ class Chef
     executable_path ENV['PATH'] ? ENV['PATH'].split(File::PATH_SEPARATOR) : []
     file_cache_path "/var/chef/cache"
     file_store_path "/var/chef/store"
+    file_backup_path nil
     group nil
     http_retry_count 5
     http_retry_delay 5

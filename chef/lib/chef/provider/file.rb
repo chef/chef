@@ -24,6 +24,7 @@ require 'chef/mixin/generate_url'
 require 'chef/provider'
 require 'etc'
 require 'fileutils'
+require 'file'
 
 class Chef
   class Provider
@@ -165,6 +166,10 @@ class Chef
           time = Time.now
           savetime = time.strftime("%Y%m%d%H%M%S")
           backup_filename = "#{@new_resource.path}.chef-#{savetime}"
+          if Chef::Config[:file_backup_path]
+            FileUtils.mkdir_p(::File.dirname(Chef::Config[:file_backup_path] + backup_filename))
+            backup_filename = Chef::Config[:file_backup_path] + backup_filename
+          end
           Chef::Log.info("Backing up #{@new_resource} to #{backup_filename}")
           FileUtils.cp(file, backup_filename, :preserve => true)
           
