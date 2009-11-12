@@ -145,7 +145,7 @@ class ChefServerWebui::Users < ChefServerWebui::Application
   end
 
   def logout
-    [:user,:level].each { |n| session.delete(n) }
+    cleanup_session
     redirect slice_url(:top)
   end
   
@@ -165,8 +165,13 @@ class ChefServerWebui::Users < ChefServerWebui::Application
   private
   
     def set_user_and_redirect
-      @user = Chef::WebUIUser.load(session[:user])
-      redirect(slice_url(:users_show, :user_id => session[:user]), {:message => { :error => $! }, :permanent => true})
+      begin
+        @user = Chef::WebUIUser.load(session[:user]) rescue (raise NotFound, "Cannot find User #{session[:user]}, maybe it got deleted by an Administrator.")
+      rescue
+        logout_and_redirect_to_login
+      else  
+        redirect(slice_url(:users_show, :user_id => session[:user]), {:message => { :error => $! }, :permanent => true})
+      end 
     end 
   
     def redirect_to_list_users(message)

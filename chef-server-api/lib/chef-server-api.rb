@@ -77,6 +77,17 @@ if defined?(Merb::Plugins)
           
           Chef::Log.info('Loading roles')
           Chef::Role.sync_from_disk_to_couchdb
+          
+          # Create the default WebUI admin user "admin" if not already exists
+          begin
+            user = Chef::WebUIUser.load(Chef::Config[:web_ui_admin_user_name])
+          rescue
+            user = Chef::WebUIUser.new
+            user.name = Chef::Config[:web_ui_admin_user_name]
+            user.set_password(Chef::Config[:web_ui_admin_default_password])
+            user.admin = true
+            user.save
+          end
 
           # Create the signing key and certificate 
           Chef::Certificate.generate_signing_ca
@@ -141,9 +152,9 @@ if defined?(Merb::Plugins)
 
       scope.match('/').to(:controller => 'main', :action =>'index').name(:top)
     end
-
   end
   
+
   # Setup the slice layout for ChefServerApi
   #
   # Use ChefServerApi.push_path and ChefServerApi.push_app_path

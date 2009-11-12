@@ -63,14 +63,31 @@ class ChefServerWebui::Application < Merb::Controller
     arg.gsub(/\./, '_')
   end
   
+  # Check if the user is logged in and if the user still exists
   def login_required
    if session[:user]
-     return session[:user]
+     begin
+       Chef::WebUIUser.load(session[:user]) rescue (raise NotFound, "Cannot find User #{session[:user]}, maybe it got deleted by an Administrator.")
+     rescue   
+       logout_and_redirect_to_login
+     else 
+       return session[:user]
+     end 
    else  
      self.store_location
      throw(:halt, :access_denied)
    end
   end
+  
+  def cleanup_session
+    [:user,:level].each { |n| session.delete(n) }
+  end 
+  
+  def logout_and_redirect_to_login
+    cleanup_session
+    @user = Chef::WebUIUser.new
+    redirect(slice_url(:users_login), {:message => { :error => $! }, :permanent => true})
+  end 
   
   def authorized_node
   #  if session[:level] == :admin

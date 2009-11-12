@@ -111,7 +111,7 @@ class ChefServerWebui::OpenidConsumer < ChefServerWebui::Application
   end
 
   def logout
-    [:user,:level].each { |n| session.delete(n) }
+    cleanup_session
     redirect slice_url(:top)
   end
 
