@@ -11,6 +11,7 @@ if defined?(Merb::Plugins)
   require 'chef/data_bag'
   require 'chef/data_bag_item'
   require 'chef/api_client'
+  require 'chef/webui_user'
   require 'chef/nanite'
   require 'chef/certificate'
 
@@ -72,7 +73,8 @@ if defined?(Merb::Plugins)
           Chef::Role.create_design_document
           Chef::DataBag.create_design_document
           Chef::ApiClient.create_design_document
-
+          Chef::WebUIUser.create_design_document
+          
           Chef::Log.info('Loading roles')
           Chef::Role.sync_from_disk_to_couchdb
 
@@ -141,6 +143,7 @@ if defined?(Merb::Plugins)
     end
 
   end
+  
   # Setup the slice layout for ChefServerApi
   #
   # Use ChefServerApi.push_path and ChefServerApi.push_app_path

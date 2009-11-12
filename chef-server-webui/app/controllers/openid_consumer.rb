@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -53,10 +54,14 @@ class ChefServerWebui::OpenidConsumer < ChefServerWebui::Application
   end
 
   def login
-    oid = params[:openid_identifier]
-    raise(Unauthorized, "Sorry, #{oid} is not an authorized OpenID.") unless is_authorized_openid_identifier?(oid, Chef::Config[:authorized_openid_identifiers])
-    raise(Unauthorized, "Sorry, #{oid} is not an authorized OpenID Provider.") unless is_authorized_openid_provider?(oid, Chef::Config[:authorized_openid_providers])
-    start
+    if session[:user] 
+      redirect(slice_url(:nodes), :message => { :warning => "You've already logged in with user #{session[:user]}"  })
+    else
+      oid = params[:openid_identifier]
+      raise(Unauthorized, "Sorry, #{oid} is not an authorized OpenID.") unless is_authorized_openid_identifier?(oid, Chef::Config[:authorized_openid_identifiers])
+      raise(Unauthorized, "Sorry, #{oid} is not an authorized OpenID Provider.") unless is_authorized_openid_provider?(oid, Chef::Config[:authorized_openid_providers])
+      start
+    end
   end
 
   def complete
@@ -68,16 +73,32 @@ class ChefServerWebui::OpenidConsumer < ChefServerWebui::Application
       when OpenID::Consumer::FAILURE
         raise BadRequest, "Verification failed: #{oidresp.message}" + (oidresp.display_identifier ? " for identifier '#{oidresp.display_identifier}'" : "")
       when OpenID::Consumer::SUCCESS
-        session[:openid] = oidresp.identity_url
-        if oidresp.display_identifier =~ /openid\/server\/node\/(.+)$/
-          reg_name = $1
-          reg = Chef::OpenIDRegistration.load(reg_name)
-          Chef::Log.error("#{reg_name} is an admin #{reg.admin}")
-          session[:level] = reg.admin ? :admin : :node
-          session[:node_name] = $1
-        else
-          session[:level] = :admin
-        end
+        #session[:openid] = oidresp.identity_url
+        # The "if" condition no longer seems need to/can be reached, so I took it out. [nuo] 
+        #
+        # if oidresp.display_identifier =~ /openid\/server\/node\/(.+)$/
+        #   reg_name = $1
+        #   reg = Chef::OpenIDRegistration.load(reg_name)
+        #   Chef::Log.error("#{reg_name} is an admin #{reg.admin}")
+        #   session[:level] = reg.admin ? :admin : :node
+        #   session[:node_name] = $1
+        #else
+        users = Chef::WebUIUser.list
+        #TODO: This is expensive. Should think of a better way [nuo]
+        # Go through each user object and check if the current OpenID associates with the user
+        users.each do |u|
+          user = Chef::WebUIUser.load(u)
+          if user.openid == oidresp.identity_url
+            session[:user] = user.name
+            session[:level] = :admin              
+            break
+          end
+        end        
+        if session[:user].nil?
+          redirect(slice_url(:openid_consumer),  :message => { :error => "No user is associated with this OpenID." })
+          return "No user is associated with this OpenID."
+        end 
+        #end
         redirect_back_or_default(absolute_slice_url(:nodes))
         return "Verification of #{oidresp.display_identifier} succeeded."
       when OpenID::Consumer::SETUP_NEEDED
@@ -90,7 +111,7 @@ class ChefServerWebui::OpenidConsumer < ChefServerWebui::Application
   end
 
   def logout
-    [:openid,:level,:node_name].each { |n| session.delete(n) }
+    [:user,:level].each { |n| session.delete(n) }
     redirect slice_url(:top)
   end
 

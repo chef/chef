@@ -64,12 +64,12 @@ class ChefServerWebui::Application < Merb::Controller
   end
   
   def login_required
-  #  if session[:openid]
-  #    return session[:openid]
-  #  else  
-  #    self.store_location
-  #    throw(:halt, :access_denied)
-  #  end
+   if session[:user]
+     return session[:user]
+   else  
+     self.store_location
+     throw(:halt, :access_denied)
+   end
   end
   
   def authorized_node
@@ -92,6 +92,16 @@ class ChefServerWebui::Application < Merb::Controller
   #  end
   end
   
+  def authorized_user
+    if session[:level] == :admin
+      Chef::Log.debug("Authorized as Administrator")
+      true
+    else
+      Chef::Log.debug("Unauthorized")
+      raise Unauthorized, "The current user is not an Administrator, you can only Show and Edit the user itself. To control other users, login as an Administrator."
+    end 
+  end 
+  
   # Store the URI of the current request in the session.
   #
   # We can return to this location by calling #redirect_back_or_default.
@@ -111,7 +121,7 @@ class ChefServerWebui::Application < Merb::Controller
     case content_type
     when :html
       store_location
-      redirect slice_url(:openid_consumer), :message => { :error => "You don't have access to that, please login."}
+      redirect slice_url(:users_login), :message => { :error => "You don't have access to that, please login."}
     else
       raise Unauthorized, "You must authenticate first!"
     end

@@ -74,13 +74,11 @@ class ChefServerApi::DataItem < ChefServerApi::Application
     raw_data = nil
     if params.has_key?("inflated_object")
       raw_data = params["inflated_object"].raw_data
-      STDERR.puts "in inflated"
     else
       raw_data = params
       raw_data.delete(:action)
       raw_data.delete(:controller)
       raw_data.delete(:data_bag_id)
-      STDERR.puts "in else"
     end
         
     begin 

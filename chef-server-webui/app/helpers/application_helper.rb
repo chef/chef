@@ -128,7 +128,9 @@ module Merb
         content = r.get_rest(uri)
         a = Tempfile.new("cookbook_temp_file")
         File.open(a.path, 'w'){|f| f.write(content)}
-        a.path
+        path = a.path
+        a.close
+        path
       end
       
       def str_to_bool(str)

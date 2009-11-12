@@ -6,16 +6,18 @@ if defined?(Merb::Plugins)
   dependency 'merb-slices', :immediate => true
   dependency 'chef', :immediate=>true unless defined?(Chef)
   require 'chef/role'
+  require 'chef/webui_user'
 
   require 'syntax/convertors/html'
 
   Merb::Plugins.add_rakefiles "chef-server-webui/merbtasks", "chef-server-webui/slicetasks", "chef-server-webui/spectasks"
 
+  
   # Register the Slice for the current host application
   Merb::Slices::register(__FILE__)
 
   Merb.disable :json
-
+  
   # Slice configuration - set this in a before_app_loads callback.
   # By default a Slice uses its own layout, so you can switch to
   # the main application layout or no layout at all if needed.
@@ -24,6 +26,7 @@ if defined?(Merb::Plugins)
   # :layout - the layout to use; defaults to :chefserverslice
   # :mirror - which path component types to use on copy operations; defaults to all
   Merb::Slices::config[:chef_server_webui][:layout] ||= :chef_server_webui
+  
 
   # All Slice code is expected to be namespaced inside a module
   module ChefServerWebui
@@ -61,11 +64,10 @@ if defined?(Merb::Plugins)
     # @note prefix your named routes with :chefserverslice_
     #   to avoid potential conflicts with global named routes.
     def self.setup_router(scope)
-
-      scope.resources :users
+          
       scope.resources :nodes
       scope.resources :roles  
-
+      
       scope.match("/status").to(:controller => "status", :action => "index").name(:status)
 
       scope.resources :searches, :path => "search", :controller => "search"
@@ -90,47 +92,54 @@ if defined?(Merb::Plugins)
 
       scope.resources :cookbooks
       scope.resources :clients
-      
+    
       scope.match("/databags/:databag_id/databag_items", :method => 'get').to(:controller => "databags", :action => "show", :id=>":databag_id")
-      
+    
       scope.resources :databags do |s|
         s.resources :databag_items
-        
       end 
-      
-      
-      # scope.match("/data/:data_bag_id/:id", :method => 'get').to(:controller => "data_item", :action => "show").name("data_bag_item")
-      #    scope.match("/data/:data_bag_id/:id", :method => 'put').to(:controller => "data_item", :action => "create").name("create_data_bag_item")
-      #    scope.match("/data/:data_bag_id/:id", :method => 'delete').to(:controller => "data_item", :action => "destroy").name("destroy_data_bag_item")
-      #    
-      
-      # scope.resources :registrations, :controller => "openid_register"
-      # scope.resources :registrations, :controller => "openid_register", :member => { :validate => :post }
-      # scope.resources :registrations, :controller => "openid_register", :member => { :admin => :post }
 
-      scope.match("/openid/server").to(:controller => "openid_server", :action => "index").name(:openid_server)
-      scope.match("/openid/server/server/xrds").
-        to(:controller => "openid_server", :action => 'idp_xrds').name(:openid_server_xrds)
-      scope.match("/openid/server/node/:id").
-        to(:controller => "openid_server", :action => 'node_page').name(:openid_node)
-      scope.match('/openid/server/node/:id/xrds').
-        to(:controller => 'openid_server', :action => 'node_xrds').name(:openid_node_xrds)
-      scope.match('/openid/server/decision').to(:controller => "openid_server", :action => "decision").name(:openid_server_decision)
-      scope.match('/login').to(:controller=>'openid_consumer', :action=>'index').name(:openid_consumer)
-      scope.match('/logout').to(:controller => 'openid_consumer', :action => 'logout').name(:openid_consumer_logout)
       scope.match('/openid/consumer').to(:controller => 'openid_consumer', :action => 'index').name(:openid_consumer)
       scope.match('/openid/consumer/start').to(:controller => 'openid_consumer', :action => 'start').name(:openid_consumer_start)
       scope.match('/openid/consumer/login').to(:controller => 'openid_consumer', :action => 'login').name(:openid_consumer_login)
       scope.match('/openid/consumer/complete').to(:controller => 'openid_consumer', :action => 'complete').name(:openid_consumer_complete)
       scope.match('/openid/consumer/logout').to(:controller => 'openid_consumer', :action => 'logout').name(:openid_consumer_logout)
+      
+      scope.match('/login').to(:controller=>'users', :action=>'login').name(:users_login)
+      scope.match('/logout').to(:controller => 'users', :action => 'logout').name(:users_logout)
 
+      scope.match('/users').to(:controller => 'users', :action => 'index').name(:users)
+      scope.match('/users/create').to(:controller => 'users', :action => 'create').name(:users_create)
+      scope.match('/users/start').to(:controller => 'users', :action => 'start').name(:users_start)
+      
+      scope.match('/users/login').to(:controller => 'users', :action => 'login').name(:users_login)
+      scope.match('/users/login_exec').to(:controller => 'users', :action => 'login_exec').name(:users_login_exec)
+      scope.match('/users/complete').to(:controller => 'users', :action => 'complete').name(:users_complete)
+      scope.match('/users/logout').to(:controller => 'users', :action => 'logout').name(:users_logout)
+      scope.match('/users/new').to(:controller => 'users', :action => 'new').name(:users_new)
+      scope.match('/users/:user_id/edit').to(:controller => 'users', :action => 'edit').name(:users_edit)
+      scope.match('/users/:user_id/show').to(:controller => 'users', :action => 'show').name(:users_show)
+      scope.match('/users/:user_id/delete', :method => 'delete').to(:controller => 'users', :action => 'destroy').name(:users_delete)
+      scope.match('/users/:user_id/update', :method => 'put').to(:controller => 'users', :action => 'update').name(:users_update)      
+      
       scope.match('/').to(:controller => 'nodes', :action =>'index').name(:top)
+
       # enable slice-level default routes by default
       # scope.default_routes
     end
-
+    
+    # Create the default admin user "admin" if not already exists
+    begin
+      user = Chef::WebUIUser.load(Chef::Config[:web_ui_admin_user_name])
+    rescue Chef::Exceptions::CouchDBNotFound => e
+      user = Chef::WebUIUser.new
+      user.name = Chef::Config[:web_ui_admin_user_name]
+      user.set_password(Chef::Config[:web_ui_admin_default_password])
+      user.admin = true
+      user.save
+    end
+      
   end
-
 
   # Setup the slice layout for ChefServerWebui
   #

@@ -104,7 +104,7 @@ class Chef
       )
     end
 
-    # Gets or sets the public key.
+    # Gets or sets the private key.
     # 
     # @params [Optional String] The string representation of the private key.
     # @return [String] The current value.

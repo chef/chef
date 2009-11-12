@@ -75,6 +75,24 @@ $(document).ready(function(){
     form.append($('input#client_name')).css('display', 'none');
     form.append($('input#client_admin')).css('display', 'none');
     form.append($('input#client_private_key')).css('display', 'none');
+    form.append($('input#regen_private_key')).css('display', 'none');
+
+  });
+
+
+  $('form#edit_user, form#login').submit(function(event) {
+    var form = $(this);
+    if (form.attr('id') == 'edit_user') {
+      form.append('<input type="hidden" name="_method" value="put">');
+    	form.append($('input#user_new_password')).css('display', 'none');
+    	form.append($('input#user_admin')).css('display', 'none');
+    	form.append($('input#user_confirm_new_password')).css('display', 'none');
+			form.append($('input#openid')).css('display', 'none');
+		}
+		if (form.attr('id') == 'login') {
+			form.append($('input#user_name')).css('display', 'none');
+			form.append($('input#password')).css('display', 'none');
+  	}
   });
 
   // livequery hidden form for link_to ajax magic
