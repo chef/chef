@@ -81,7 +81,7 @@ if defined?(Merb::Plugins)
           # Create the default WebUI admin user "admin" if not already exists
           begin
             user = Chef::WebUIUser.load(Chef::Config[:web_ui_admin_user_name])
-          rescue
+          rescue Chef::Exceptions::CouchDBNotFound => e
             user = Chef::WebUIUser.new
             user.name = Chef::Config[:web_ui_admin_user_name]
             user.set_password(Chef::Config[:web_ui_admin_default_password])
