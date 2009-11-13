@@ -109,4 +109,10 @@ describe Chef::Config do
       Chef::Config.openid_providers = %w{opscode.com junglist.gen.nz}
     end
   end
+
+  describe "default values" do
+    it "Chef::Config[:file_backup_path] defaults to nil" do
+      Chef::Config[:file_backup_path].should be_nil
+    end
+  end
 end
