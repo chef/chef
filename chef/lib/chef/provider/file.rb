@@ -24,7 +24,6 @@ require 'chef/mixin/generate_url'
 require 'chef/provider'
 require 'etc'
 require 'fileutils'
-require 'file'
 
 class Chef
   class Provider
