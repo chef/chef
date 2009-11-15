@@ -102,7 +102,7 @@ describe Chef::Provider::Git do
     end
     
     it "raises a runtime error if you try to deploy from ``origin''" do
-      @resource.revision("origin")
+      @resource.revision("origin/")
       lambda {@provider.revision_sha}.should raise_error(RuntimeError)
     end
   
