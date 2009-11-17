@@ -56,7 +56,7 @@ $(document).ready(function(){
       form.append('<input type="hidden" name="_method" value="put">');
     }
     form.append('<input type="hidden" id="json_data" name="json_data"/>');
-    form.append($('input#json_data').attr('value', JSONeditor.treeBuilder.JSONstring.make(JSONeditor.treeBuilder.json)))
+    form.append($('input#json_data').attr('value', BCJTEP.save()));
   });
 
 	$('form#edit_databag, form#create_databag').submit(function(event) {

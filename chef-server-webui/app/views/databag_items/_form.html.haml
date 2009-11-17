@@ -2,11 +2,10 @@
   .inner
     %div.group.form
       %label.label Data
-      %div.editor
-        %div#tree
-        %div#jform
-        %div.clear
-        %script= "$(document).ready(function() { JSONeditor.start('tree', 'jform', #{@default_data.to_json} , false); });"
+    %div.group.form{:style => "position:relative;"}
+      %label.label Attributes 
+      = partial '../layout/jsonedit', :json =>@default_data.to_json
+
 
     = form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do
       %div.group
