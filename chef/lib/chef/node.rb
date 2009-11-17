@@ -320,10 +320,10 @@ class Chef
         node[k] = v
       end
       if o.has_key?("defaults")
-        node.default_attrs = o["defaults"]
+        node.default_attrs = Mash.new(o["defaults"])
       end
       if o.has_key?("overrides")
-        node.override_attrs = o["overrides"]
+        node.override_attrs = Mash.new(o["overrides"])
       end
       if o.has_key?("run_list")
         node.run_list.reset(o["run_list"])
