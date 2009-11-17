@@ -40,13 +40,10 @@
                   %li{ :id => "recipe[#{recipe}]", :class => 'ui-state-default' }= h recipe 
 
 
-    %div.group.form
+    %div.group.form{:style => "position:relative;"}
       %label.label Attributes 
-      %div.editor
-        %div#tree
-        %div#jform
-        %div.clear
-        %script= "$(document).ready(function() { JSONeditor.start('tree', 'jform', #{@node.attribute.to_json}, false); });"
+      = partial '../layout/jsonedit', :json =>@node.attribute.to_json
+    %div.group.form
       %span.description A JSON hash for default attributes for nodes of this node.  These attributes will only be applied if the node does not already have a value for the attributes.
 
     = form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do

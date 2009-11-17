@@ -341,6 +341,7 @@ class Chef
                   channels_to_watch << stderr if !stderr_finished
                   ready = IO.select(channels_to_watch, nil, nil, 1.0)
                 rescue Errno::EAGAIN
+                ensure
                   results = Process.waitpid2(cid, Process::WNOHANG)
                   if results
                     stdout_finished = true
@@ -365,11 +366,11 @@ class Chef
                   end
                 end
               end
-              results = Process.waitpid2(cid).last unless results
+              results = Process.waitpid2(cid) unless results
               o.rewind
               e.rewind
               b[cid, pi[0], o, e]
-              results
+              results.last
             end
           ensure
             pi.each{|fd| fd.close unless fd.closed?}

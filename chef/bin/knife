@@ -10,6 +10,7 @@ require 'chef/role'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
 require 'chef/rest'
+require 'chef/search/query'
 require 'tmpdir'
 require 'uri'
 
@@ -19,6 +20,8 @@ Mixlib::Authentication::Log.logger = Chef::Log.logger
 
 API_OPSCODE_USER=ENV['OPSCODE_USER']
 API_OPSCODE_KEY=ENV['OPSCODE_KEY']
+Chef::Config[:node_name] = API_OPSCODE_USER
+Chef::Config[:client_key] = API_OPSCODE_KEY
 
 raise StandardError, "Please set OPSCODE_USER and OPSCODE_KEY" unless ENV['OPSCODE_USER'] && ENV['OPSCODE_KEY']
 
@@ -267,6 +270,13 @@ class Knife < Thor
     puts "Done."
   end
 
+  desc "delete cookbooks", "Delete *all* cookbooks"
+  def delete_cookbooks
+    setup
+    destroy_cookbooks(get_list("cookbooks"))
+    puts "Done."
+  end
+
 
   #############
   # Cookbooks #
@@ -480,35 +490,48 @@ class Knife < Thor
   method_options :i => :required, :q => :required, :sort => :string, :start => :string, :rows => :string, :attribute => :string, :raw => :string, :id_only => :string
   def search
     setup
-    opts = { :q => options[:q] }
+    opts = {
+      :sort => nil,
+      :start => 0,
+      :rows => 20
+    }
     [ :sort, :start, :rows ].each do |o|
       opts[o] = options[o] if options.has_key?(o)
     end
-    results = @rest.get_rest("search/#{options[:i]}?#{make_query_params(opts)}")
-    display = results
-    unless options[:raw]
-      display = { :total => results["total"], :start => results["start"], :rows => [ ] }
-      results["rows"].each do |item|
-        is_dbi = false
-        if item.kind_of?(Chef::DataBagItem)
-          is_dbi = true
-          data = item.raw_data
+    q = Chef::Search::Query.new
+
+    display = { :total => 0, :start => 0, :rows => [ ] }
+    q.search(options[:i], options[:q], opts[:sort], opts[:start], opts[:rows]) do |item|
+      is_dbi = false
+      if item.kind_of?(Chef::DataBagItem)
+        is_dbi = true
+        data = item.raw_data
+      else
+        data = item
+      end
+
+      if options[:attribute]
+        options[:attribute].split(".").each do |attr|
+          data = data[attr]
+        end
+      end
+
+      if options[:id_only]
+        if options[:attribute]
+          display[:rows] << data
         else
-          data = item
+          display[:rows] << item.name
         end
-
-        if options[:id_only]
-
-        elsif options[:attribute]
-          options[:attribute].split(".").each do |attr|
-            data = data[attr]
-          end
-        end
-
+      else
         display[:rows] << { :id => is_dbi ? item["id"] : item.name, options[:attribute] => data }
       end
     end
-    puts JSON.pretty_generate(display)
+
+    if options[:id_only]
+      puts display[:rows].join("\n")
+    else
+      puts JSON.pretty_generate(display)
+    end
   end
 
   #######
@@ -677,6 +700,17 @@ class Knife < Thor
 
     def get_cookbook
       @rest.get_rest("cookbooks/#{options[:cookbook]}")
+    end
+
+     def destroy_cookbooks(cookbooklist)
+       cookbooklist.each do |cookbook|
+         begin
+           @rest.delete_rest("cookbooks/#{cookbook}") unless cookbook =~ /-validator$/
+         rescue Net::HTTPServerException
+           raise unless ($!.message =~ /Not Found/ or $!.message =~ /Forbidden/)
+           puts "Cookbook: #{cookbook}, Exception! #{$!.message}"
+        end
+      end
     end
 
     def add_to_run_list(node, new_value, after=nil)

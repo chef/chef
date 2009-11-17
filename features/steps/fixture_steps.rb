@@ -107,6 +107,15 @@ Before do
         n.just "kidding - who uses oracle?"
         n
       end,
+      'searchman' => Proc.new do
+        n = Chef::Node.new
+        n.name 'searchman'
+        n.run_list << "oracle"
+        n.default_attrs = { "one" => "two", "three" => "four" }
+        n.override_attrs = { "one" => "five" }
+        n.set["walking"] = "tall"
+        n
+      end,
       'sync' => Proc.new do
         n = Chef::Node.new
         n.name 'sync'

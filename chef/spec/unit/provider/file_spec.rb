@@ -23,7 +23,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::File do
   before(:each) do
     @resource = Chef::Resource::File.new("seattle")
-    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
+    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "seattle.txt"))
     @node = Chef::Node.new
     @node.name "latte"
     @provider = Chef::Provider::File.new(@node, @resource)
@@ -53,7 +53,7 @@ describe Chef::Provider::File do
   
   it "should load a mostly blank current resource if the file specified in new_resource doesn't exist/isn't readable" do
     resource = Chef::Resource::File.new("seattle")
-    resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "woot.txt"))
+    resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "woot.txt"))
     node = Chef::Node.new
     node.name "latte"
     provider = Chef::Provider::File.new(node, resource)
@@ -224,13 +224,24 @@ describe Chef::Provider::File do
     File.stub!(:chmod).and_return(1)
     @provider.action_touch
   end
+
+  it "should keep 1 backup copy if specified" do
+    @provider.load_current_resource
+    @provider.new_resource.stub!(:path).and_return("/tmp/s-20080705111233")
+    @provider.new_resource.stub!(:backup).and_return(1)
+    Dir.stub!(:[]).and_return([ "/tmp/s-20080705111233", "/tmp/s-20080705111232", "/tmp/s-20080705111223"])
+    FileUtils.should_receive(:rm).with("/tmp/s-20080705111223").once.and_return(true)
+    FileUtils.should_receive(:rm).with("/tmp/s-20080705111232").once.and_return(true)
+    FileUtils.stub!(:cp).and_return(true)
+    File.stub!(:exist?).and_return(true)
+    @provider.backup
+  end
   
   it "should backup a file no more than :backup times" do
     @provider.load_current_resource
     @provider.new_resource.stub!(:path).and_return("/tmp/s-20080705111233")
     @provider.new_resource.stub!(:backup).and_return(2)
     Dir.stub!(:[]).and_return([ "/tmp/s-20080705111233", "/tmp/s-20080705111232", "/tmp/s-20080705111223"])
-    FileUtils.should_receive(:rm).with("/tmp/s-20080705111232").once.and_return(true)
     FileUtils.should_receive(:rm).with("/tmp/s-20080705111223").once.and_return(true)
     FileUtils.stub!(:cp).and_return(true)
     File.stub!(:exist?).and_return(true)
@@ -251,7 +262,7 @@ end
 describe Chef::Provider::File, "action_create_if_missing" do
   before(:each) do
     @resource = Chef::Resource::File.new("seattle")
-    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
+    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "seattle.txt"))
     @node = Chef::Node.new
     @node.name "latte"
     @provider = Chef::Provider::File.new(@node, @resource)

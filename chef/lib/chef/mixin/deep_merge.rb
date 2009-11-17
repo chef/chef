@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'deep_merge'
+
 class Chef
   module Mixin
     class DeepMerge
@@ -23,13 +25,8 @@ class Chef
         first = first.to_hash
         second = Mash.new(second).to_hash unless second.kind_of?(Mash)
         second = second.to_hash
-        # Originally From: http://www.ruby-forum.com/topic/142809
-        # Author: Stefan Rusterholz
-        merger = proc do |key,v1,v2| 
-            v1.respond_to?(:keys) && v2.respond_to?(:keys) ? v1.merge(v2, &merger) : v2 
-          end
 
-        Mash.new(first.merge(second, &merger))
+        Mash.new(first.ko_deep_merge!(second, {:knockout_prefix => '!merge:'}))
       end
     end
   end

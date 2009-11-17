@@ -37,6 +37,17 @@ describe Chef::Client, "run" do
     to_stub.each do |method|
       @client.stub!(method).and_return(true)
     end
+    
+    @mock_ohai = {
+      :fqdn => "foo.bar.com",
+      :hostname => "foo"
+    }
+    @mock_ohai.stub!(:refresh_plugins).and_return(true)
+    Ohai::System.stub!(:new).and_return(@mock_ohai)
+    
+    @client.stub!(:run_ohai)
+    @client.stub!(:ohai).and_return(@mock_ohai)
+    
     time = Time.now
     Time.stub!(:now).and_return(time)
     Chef::Compile.stub!(:new).and_return(mock("Chef::Compile", :null_object => true))

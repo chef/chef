@@ -28,9 +28,9 @@ $(document).ready(function(){
     form.append($('input#role_name')).css('display', 'none');
     form.append($('textarea#role_description')).css('display', 'none');
     form.append('<input type="hidden" id="default_attributes" name="default_attributes"/>');
-    $('input#default_attributes').attr('value', JSONeditor.treeBuilder.JSONstring.make(JSONeditor.treeBuilder.json.defaults))
+    $('input#default_attributes').attr('value', BCJTEP.save('json["defaults"]'))
     form.append('<input type="hidden" id="override_attributes" name="override_attributes"/>');
-    $('input#override_attributes').attr('value', JSONeditor.treeBuilder.JSONstring.make(JSONeditor.treeBuilder.json.overrides));
+    $('input#override_attributes').attr('value', BCJTEP.save('json["overrides"]'));
     jQuery.each(to_role, function(i, field) {
       form.append('<input type="hidden" name="for_role[]" value="' + field + '"/>');
     });
@@ -44,7 +44,7 @@ $(document).ready(function(){
     }
     form.append($('input#node_name')).css('display', 'none');
     form.append('<input type="hidden" id="attributes" name="attributes"/>');
-    $('input#attributes').attr('value', JSONeditor.treeBuilder.JSONstring.make(JSONeditor.treeBuilder.json))
+    $('input#attributes').attr('value', BCJTEP.save());
     jQuery.each(to_node, function(i, field) {
       form.append('<input type="hidden" name="for_node[]" value="' + field + '"/>');
     });
@@ -128,17 +128,6 @@ $(document).ready(function(){
 	// global facebox callback
 	$('a[rel*=facebox]').facebox();
 	
-	/*
-  JSONEditor.prototype.ADD_IMG = '/images/add.png';
-  JSONEditor.prototype.DELETE_IMG = '/images/delete.png';
-  var attrib_editor = new JSONEditor($("#attrib_json_edit"), 400, 300);
-  attrib_editor.doTruncation(true);
-  attrib_editor.showFunctionButtons();
-  
-  var recipe_editor = new JSONEditor($("#recipe_json_edit"), 400, 300);
-  recipe_editor.doTruncation(true);
-  recipe_editor.showFunctionButtons();
-  */
 
   $('.connectedSortable').sortable({
     placeholder: 'ui-state-highlight',
