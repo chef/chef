@@ -487,7 +487,7 @@ class Knife < Thor
   end
 
   desc "search", "Search an index"
-  method_options :i => :required, :q => :required, :sort => :string, :start => :string, :rows => :string, :attribute => :string, :raw => :string, :id_only => :string
+  method_options :i => :required, :q => :required, :sort => :string, :start => :string, :rows => :string, :attribute => :string, :raw => :string, :id_only => :string, :run_list => :string
   def search
     setup
     opts = {
@@ -516,14 +516,25 @@ class Knife < Thor
         end
       end
 
+      if options[:run_list]
+        data = data.run_list.to_s
+      end
+
       if options[:id_only]
-        if options[:attribute]
+        if options[:attribute] || options[:run_list]
           display[:rows] << data
         else
           display[:rows] << item.name
         end
       else
-        display[:rows] << { :id => is_dbi ? item["id"] : item.name, options[:attribute] => data }
+        if options[:attribute]
+          data_key = options[:attribute]
+        elsif options[:run_list]
+          data_key = "run_list"
+        else
+          data_key = "data"
+        end
+        display[:rows] << { :id => is_dbi ? item["id"] : item.name, data_key => data }
       end
     end
 
