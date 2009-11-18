@@ -71,13 +71,23 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
         @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
         @role.save
         redirect(slice_url(:roles), :message => { :notice => "Created Role #{@role.name}" })
-      rescue ArgumentError 
+      rescue ArgumentError => ae
+        Chef::Log.error("Exception creating role: #{ae.message}")
         @available_recipes = get_available_recipes 
         @role = Chef::Role.new
         @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
         @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
         @current_recipes = params[:for_role] ? params[:for_role] : []
         @_message = { :error => $! }
+        render :new
+      rescue Exception => e
+        Chef::Log.error("Exception creating role: #{e.message}")
+        @available_recipes = get_available_recipes 
+        @role = Chef::Role.new
+        @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
+        @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
+        @current_recipes = params[:for_role] ? params[:for_role] : []
+        @_message = { :error => "Exception raised creating role, please check logs for details" }
         render :new
       end
     end
@@ -108,11 +118,13 @@ class ChefServerSlice::Roles < ChefServerSlice::Application
         @role.save
         @_message = { :notice => "Updated Role" }
         render :show
-      rescue ArgumentError
+      rescue Exception => e
+        Chef::Log.error("Exception updating role: #{e.message}")
         @available_recipes = get_available_recipes 
         @current_recipes = params[:for_role] ? params[:for_role] : []
         @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
         @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
+        @_message = { :error => "Exception raised updating role, please check logs for details" }
         render :edit
       end
 
