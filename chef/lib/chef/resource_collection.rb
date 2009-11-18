@@ -18,15 +18,22 @@
 #
 
 require 'chef/resource'
+require 'chef/resource_collection/stepable_iterator'
 
 class Chef
   class ResourceCollection
     include Enumerable
+    
+    attr_reader :iterator
 
     def initialize
       @resources = Array.new
       @resources_by_name = Hash.new
       @insert_after_idx = nil
+    end
+    
+    def all_resources
+      @resources
     end
     
     def [](index)
