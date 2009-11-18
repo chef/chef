@@ -18,54 +18,19 @@
 class Chef
   class ResourceCollection
     class StepableIterator
-      include Singleton
       
       def self.for_collection(new_collection)
-        instance.reset!
-        instance.collection = new_collection
-        instance
-      end
-      
-      def self.pause
-        instance.pause
-        instance
-      end
-      
-      def self.resume
-        instance.resume
-        instance
-      end
-      
-      def self.rewind
-        instance.rewind
-        instance
-      end
-      
-      def self.skip_back(*args)
-        instance.skip_back(*args)
-        instance
-      end
-      
-      def self.skip_forward(*args)
-        instance.skip_forward(*args)
-        instance
-      end
-      
-      def self.step
-        instance.step
+        instance = new(new_collection)
         instance
       end
       
       attr_accessor :collection
       attr_reader :position
       
-      def initialize
-        reset!
-      end
-      
-      def reset!
+      def initialize(collection=[])
+        @position = 0
         @paused = false
-        @collection = []
+        @collection = collection
       end
       
       def size
@@ -118,6 +83,11 @@ class Chef
       def step
         call_iterator_block
         @position += 1
+      end
+      
+      def iterate_on(iteration_type, &block)
+        @iterator_type = iteration_type
+        @iterator_block = block
       end
       
       private

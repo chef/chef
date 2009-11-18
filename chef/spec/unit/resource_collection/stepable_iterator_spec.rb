@@ -20,12 +20,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::ResourceCollection::StepableIterator do
   CRSI = Chef::ResourceCollection::StepableIterator
   
-  before do
-    CRSI.instance.reset!
-  end
-  
   it "has an empty array for its collection by default" do
-    CRSI.instance.collection.should == []
+    CRSI.new.collection.should == []
   end
   
   describe "doing basic iteration" do
@@ -72,7 +68,7 @@ describe Chef::ResourceCollection::StepableIterator do
       @collection = []
       @snitch_var = nil
       @collection << lambda { @snitch_var = 23 }
-      @collection << lambda { CRSI.pause }
+      @collection << lambda { @iterator.pause }
       @collection << lambda { @snitch_var = 42 }
       
       @iterator = CRSI.for_collection(@collection)
@@ -119,9 +115,18 @@ describe Chef::ResourceCollection::StepableIterator do
       @snitch_var.should == 23
     end
     
+    it "allows the iteration to start by being stepped" do
+      @snitch_var = nil
+      @iterator = CRSI.for_collection(@collection)
+      @iterator.iterate_on(:element) { |proc| proc.call }
+      @iterator.step
+      @iterator.position.should == 1
+      @snitch_var.should == 23
+    end
+    
     it "should work correctly when elements are added to the collection during iteration" do
       @collection.insert(2, lambda { @snitch_var = 815})
-      @collection.insert(3, lambda { CRSI.pause })
+      @collection.insert(3, lambda { @iterator.pause })
       @iterator.resume
       @snitch_var.should == 815
       @iterator.resume
