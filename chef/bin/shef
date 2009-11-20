@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 #
-# ./chef-solo - Run the chef client, in stand-alone mode
+# ./shef - Run the shef REPL
 #
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Copyright:: Copyright (c) 2009
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-libdir  = File.join(File.dirname(__FILE__), "..", "lib")
-init    = File.join(libdir, "chef", "shef", "init.rb")
+# TODO::EVIL
+require "rubygems"
+require "mixlib/cli"
 
-exec "irb -rirb/completion -r#{libdir}/chef/shef -r#{libdir}/chef/shef/ext -r#{init}"
+require "irb"
+require "irb/completion"
+
+# TODO::EVIL
+require "#{File.dirname(__FILE__)}/../lib/chef"
+require "chef/shef"
+
+# dirty hack to make IRB initialize shef
+module IRB
+  class << self
+    alias :run_original_config :run_config
+  
+    def run_config
+      run_original_config
+      Shef.init
+    end
+  end
+end
+
+Shef.parse_opts
+IRB.start
