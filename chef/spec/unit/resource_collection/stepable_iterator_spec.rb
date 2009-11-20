@@ -115,6 +115,12 @@ describe Chef::ResourceCollection::StepableIterator do
       @snitch_var.should == 23
     end
     
+    it "doesn't step if there are no more steps" do
+      @iterator.step.should == 3
+      lambda {@iterator.step}.should_not raise_error
+      @iterator.step.should be_nil
+    end
+    
     it "allows the iteration to start by being stepped" do
       @snitch_var = nil
       @iterator = CRSI.for_collection(@collection)
