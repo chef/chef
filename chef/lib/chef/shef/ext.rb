@@ -190,31 +190,30 @@ class Object
   alias :halp :shef_help
   
   desc "prints information about chef"
-  def chef
+  def version
     puts  "This is shef, the Chef shell.\n" + 
           " Chef Version: #{::Chef::VERSION}\n" +
           " http://www.opscode.com/chef\n" +
           " http://wiki.opscode.com/display/chef/Home"
     :ucanhaz_automation
   end
-  alias :version :chef
-  alias :shef :chef
+  alias :shef :version
   
   desc "switch to recipe mode"
   def recipe
-    find_or_create_session_for Shef.client[:recipe]
+    find_or_create_session_for Shef.client.recipe
     :recipe
   end
   
   desc "switch to attributes mode"
   def attributes
-    find_or_create_session_for Shef.client[:node]
+    find_or_create_session_for Shef.client.node
     :attributes
   end
   
   desc "returns the current node (i.e., this host)"
   def node
-    Shef.client[:node]
+    Shef.client.node
   end
   
   desc "pretty print the node's attributes"

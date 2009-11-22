@@ -16,8 +16,16 @@
 #
 
 module Shef
-  class ShefClient < Hash
+  class ShefClient
     include Singleton
+    
+    attr_accessor :node, :compile, :recipe
+    attr_reader :node_attributes
+    
+    def node_attributes=(attrs)
+      @node_attributes = attrs
+      @node.consume_attributes(@node_attributes)
+    end
     
     def initialize
       @node_built = false
@@ -28,27 +36,18 @@ module Shef
     end
     
     def reset!
-      loading = true
-      dots = Thread.new do
-        print "Loading"
-        while loading
-          print "."
-          sleep 0.5
-        end
-        print "done.\n\n"
-      end
+      loading
 
       rebuild_node
       
-      node = self[:node] = self[:client].node
-      def node.inspect
+      @node = @client.node
+      def @node.inspect
         "<Chef::Node:0x#{self.object_id.to_s(16)} @name=\"#{self.name}\">"
       end
       
-      self[:recipe] = Chef::Recipe.new(nil, nil, self[:node])
+      @recipe = Chef::Recipe.new(nil, nil, @node)
       @node_built = true
-      loading = false
-      dots.join
+      loading_complete
     end
     
     def collection
@@ -73,6 +72,23 @@ module Shef
     
     private
     
+    def loading
+      @loading = true
+      @dot_printer = Thread.new do
+        print "Loading"
+        while @loading
+          print "."
+          sleep 0.5
+        end
+        print "done.\n\n"
+      end
+    end
+    
+    def loading_complete
+      @loading = false
+      @dot_printer && @dot_printer.join
+    end
+    
     def rebuild_node
       raise "Not Implemented! :rebuild_node should be implemented by subclasses"
     end
@@ -82,15 +98,15 @@ module Shef
   class StandAloneClient < ShefClient
     
     def rebuild_collection
-      @collection = self[:recipe].collection
+      @collection = @recipe.collection
     end
     
     private
     
     def rebuild_node
-      self[:client] = Chef::Client.new
-      self[:client].determine_node_name
-      self[:client].build_node(self[:client].node_name, true)
+      @client = Chef::Client.new
+      @client.determine_node_name
+      @client.build_node(@client.node_name, true)
     end
     
   end
@@ -98,28 +114,27 @@ module Shef
   class SoloClient < ShefClient
     
     def definitions
-      self[:compile].definitions
+      @compile.definitions
     end
     
     def cookbook_loader
-      self[:compile].cookbook_loader
+      @compile.cookbook_loader
     end
     
     def rebuild_collection
-      @collection = self[:compile].collection
-      @collection << self[:recipe].collection.all_resources
+      @compile = Chef::Compile.new(@client.node)
+      
+      @collection = @compile.collection
+      @collection << @recipe.collection.all_resources
       @collection
     end
     
     private
     
     def rebuild_node
-      self[:client] = Chef::Client.new
-      self[:client].determine_node_name
-      self[:client].build_node(self[:client].node_name, true)
-      
-      self[:compile] = Chef::Compile.new(self[:client].node)
-      
+      @client = Chef::Client.new
+      @client.determine_node_name
+      @client.build_node(@client.node_name, true)
     end
     
   end
@@ -127,19 +142,17 @@ module Shef
   class ServerClient < SoloClient
     
     def save_node
-      self[:client].save_node
+      @client.save_node
     end
     
     private
 
     def rebuild_node
-      self[:client] = Chef::Client.new
-      self[:client].determine_node_name
-      self[:client].build_node(self[:client].node_name, true)
+      @client = Chef::Client.new
+      @client.determine_node_name
+      @client.build_node(@client.node_name, true)
       
-      self[:client].sync_cookbooks
-      
-      self[:compile] = Chef::Compile.new(self[:client].node)
+      @client.sync_cookbooks
     end
 
   end

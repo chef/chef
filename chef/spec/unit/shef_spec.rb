@@ -30,6 +30,26 @@ class TestJobManager
   attr_accessor :jobs
 end
 
+class TestableClient < Shef::ShefClient
+  
+  def rebuild_node
+    nil
+  end
+  
+  def rebuild_collection
+    nil
+  end
+  
+  def loading
+    nil
+  end
+  
+  def loading_complete
+    nil
+  end
+  
+end
+
 describe Shef::ShefClient do
   
   it "is a singleton object" do
@@ -152,6 +172,8 @@ describe Shef do
   describe "extending object for top level methods" do
     
     before do
+      @shef_client = TestableClient.instance
+      Shef.stub!(:client).and_return(@shef_client)
       @job_manager = TestJobManager.new
       @root_context = ObjectTestHarness.new
       @root_context.conf = mock("irbconf")
@@ -188,15 +210,15 @@ describe Shef do
     
     it "switches to recipe context" do
       @root_context.should respond_to(:recipe)
-      Shef.stub!(:client).and_return({:recipe => :monkeyTime})
+      @shef_client.recipe = :monkeyTime
       @root_context.should_receive(:find_or_create_session_for).with(:monkeyTime)
       @root_context.recipe
     end
     
     it "switches to attribute context" do
       @root_context.should respond_to(:attributes)
-      Shef.stub!(:client).and_return({:node => :monkeyNodeTime})
-      @root_context.should_receive(:find_or_create_session_for).with(:monkeyNodeTime)
+      @shef_client.node = "monkeyNodeTime"
+      @root_context.should_receive(:find_or_create_session_for).with("monkeyNodeTime")
       @root_context.attributes
     end
     
@@ -222,7 +244,7 @@ describe Shef do
     
     it "prints node attributes" do
       node = mock("node", :attribute => {:foo => :bar})
-      Shef.stub!(:client).and_return(:node => node)
+      @shef_client.node = node
       @root_context.should_receive(:pp).with({:foo => :bar})
       @root_context.ohai
       @root_context.should_receive(:pp).with(:bar)
@@ -230,8 +252,7 @@ describe Shef do
     end
     
     it "resets the recipe and reloads ohai data" do
-      Shef.client_type = Shef::StandAloneClient
-      Shef::StandAloneClient.instance.should_receive(:reset!).twice
+      @shef_client.should_receive(:reset!)
       @root_context.reset
     end
     
@@ -278,8 +299,8 @@ describe Shef do
   describe Shef::StandAloneClient do
     before do
       @client = Shef::StandAloneClient.instance
-      @node = @client[:client] = Chef::Node.new
-      @recipe = @client[:recipe] = Chef::Recipe.new(nil, nil, @node)
+      @node = @client.node = Chef::Node.new
+      @recipe = @client.recipe = Chef::Recipe.new(nil, nil, @node)
     end
     
     it "returns a collection based on it's standalone recipe file" do
@@ -311,9 +332,12 @@ describe Shef do
     before do
       Chef::Config[:solo] = true
       @client = Shef::SoloClient.instance
-      @node = @client[:client] = Chef::Node.new
-      @compile = @client[:compile] = Chef::Compile.new(@node)
-      @recipe = @client[:recipe] = Chef::Recipe.new(nil, nil, @node)
+      @node = Chef::Node.new
+      @client.node = @node
+      @compile = @client.compile = Chef::Compile.new(@node)
+      # prevent dynamic re-compilation from raining on the parade
+      Chef::Compile.stub!(:new).and_return(@compile)
+      @recipe = @client.recipe = Chef::Recipe.new(nil, nil, @node)
     end
     
     after do
@@ -321,7 +345,7 @@ describe Shef do
     end
     
     it "returns a collection based on it's compilation object and the extra recipe provided by shef" do
-      @client.collection.should == @compile.collection
+      @client.stub!(:node_built?).and_return(true)
       kitteh = Chef::Resource::Cat.new("keyboard")
       @recipe.collection << kitteh
       @client.rebuild_collection
@@ -336,7 +360,14 @@ describe Shef do
       @client.cookbook_loader.should == @compile.cookbook_loader
     end
     
+    it "keeps json attribs and passes them to the node for consumption" do
+      @client.node_attributes = {"besnard_lakes" => "are_the_dark_horse"}
+      @client.node.besnard_lakes.should == "are_the_dark_horse"
+      #pending "1) keep attribs in an ivar 2) pass them to the node 3) feed them to the node on reset"
+    end
+    
     it "generates it's resource collection from the compiled cookbooks and the ad hoc recipe" do
+      @client.stub!(:node_built?).and_return(true)
       kitteh_cat = Chef::Resource::Cat.new("kitteh")
       @compile.collection << kitteh_cat
       keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
@@ -350,7 +381,7 @@ describe Shef do
       Chef::Log.stub!(:level)
       chef_runner = mock("Chef::Runner.new", :converge => :converged)
       Chef::Runner.should_receive(:new).
-                    with(@client.node, an_instance_of(Chef::ResourceCollection), @client.definitions, @client.cookbook_loader).
+                    with(@client.node, an_instance_of(Chef::ResourceCollection), @client.definitions, an_instance_of(Chef::CookbookLoader)).
                     and_return(chef_runner)
       @root_context.run_chef.should == :converged
     end

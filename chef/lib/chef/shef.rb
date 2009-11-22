@@ -143,7 +143,6 @@ module Shef
     option :config_file, 
       :short => "-c CONFIG",
       :long  => "--config CONFIG",
-      :default => "/etc/chef/client.rb",
       :description => "The configuration file to use"
 
     option :help,
@@ -159,6 +158,7 @@ module Shef
       :short        => "-a",
       :long         => "--standalone",
       :description  => "standalone shef session",
+      :default      => true,
       :boolean      => true
 
     option :solo,
@@ -207,13 +207,24 @@ module Shef
       :exit         => 0
 
     def self.setup!
-      self.new.set_options
+      self.new.parse_opts
     end
 
     def parse_opts
       parse_options
+      config[:config_file] = config_file_for_shef_mode
+      puts "attempting to load config file from #{config[:config_file]}"
       Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exists?(config[:config_file]) && File.readable?(config[:config_file])
       Chef::Config.merge!(config)
+    end
+    
+    private
+    
+    def config_file_for_shef_mode
+      return config[:config_file] if config[:config_file]
+      return "/etc/chef/solo.rb" if config[:solo]
+      return "/etc/chef/client.rb" if config[:client]
+      nil
     end
 
   end
