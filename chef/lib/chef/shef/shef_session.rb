@@ -16,7 +16,7 @@
 #
 
 module Shef
-  class ShefClient
+  class ShefSession
     include Singleton
     
     attr_accessor :node, :compile, :recipe
@@ -95,7 +95,7 @@ module Shef
  
   end
   
-  class StandAloneClient < ShefClient
+  class StandAloneSession < ShefSession
     
     def rebuild_collection
       @collection = @recipe.collection
@@ -111,7 +111,7 @@ module Shef
     
   end
   
-  class SoloClient < ShefClient
+  class SoloSession < ShefSession
     
     def definitions
       @compile.definitions
@@ -139,7 +139,7 @@ module Shef
     
   end
   
-  class ServerClient < SoloClient
+  class ClientSession < SoloSession
     
     def save_node
       @client.save_node

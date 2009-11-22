@@ -23,7 +23,7 @@ require "mixlib/cli"
 require "chef/client"
 require "chef/config"
 
-require "chef/shef/shef_client"
+require "chef/shef/shef_session"
 require "chef/shef/ext"
 
 
@@ -126,9 +126,9 @@ module Shef
   end
   
   def self.client_type
-    type = Shef::StandAloneClient
-    type = Shef::SoloClient   if Chef::Config[:solo]
-    type = Shef::ServerClient if Chef::Config[:client]
+    type = Shef::StandAloneSession
+    type = Shef::SoloSession   if Chef::Config[:solo]
+    type = Shef::ClientSession if Chef::Config[:client]
     type
   end
   

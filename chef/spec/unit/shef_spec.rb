@@ -30,7 +30,7 @@ class TestJobManager
   attr_accessor :jobs
 end
 
-class TestableClient < Shef::ShefClient
+class TestableShefSession < Shef::ShefSession
   
   def rebuild_node
     nil
@@ -50,10 +50,10 @@ class TestableClient < Shef::ShefClient
   
 end
 
-describe Shef::ShefClient do
+describe Shef::ShefSession do
   
   it "is a singleton object" do
-    Shef::ShefClient.should include(Singleton)
+    Shef::ShefSession.should include(Singleton)
   end
   
 end
@@ -63,7 +63,7 @@ describe Shef do
   
   before do
     Shef.irb_conf = {}
-    Shef::ShefClient.instance.stub!(:reset!)
+    Shef::ShefSession.instance.stub!(:reset!)
   end
   
   describe "reporting its status" do
@@ -172,7 +172,7 @@ describe Shef do
   describe "extending object for top level methods" do
     
     before do
-      @shef_client = TestableClient.instance
+      @shef_client = TestableShefSession.instance
       Shef.stub!(:client).and_return(@shef_client)
       @job_manager = TestJobManager.new
       @root_context = ObjectTestHarness.new
@@ -268,7 +268,7 @@ describe Shef do
     end
     
     it "gives access to the stepable iterator" do
-      Shef::StandAloneClient.instance.stub!(:reset!)
+      Shef::StandAloneSession.instance.stub!(:reset!)
       collection = mock("collection", :iterator => :ohai2u)
       Shef.client.stub!(:collection).and_return(collection)
       @root_context.chef_run.should == :ohai2u
@@ -296,9 +296,9 @@ describe Shef do
     
   end
   
-  describe Shef::StandAloneClient do
+  describe Shef::StandAloneSession do
     before do
-      @client = Shef::StandAloneClient.instance
+      @client = Shef::StandAloneSession.instance
       @node = @client.node = Chef::Node.new
       @recipe = @client.recipe = Chef::Recipe.new(nil, nil, @node)
     end
@@ -328,10 +328,10 @@ describe Shef do
     
   end
   
-  describe Shef::SoloClient do
+  describe Shef::SoloSession do
     before do
       Chef::Config[:solo] = true
-      @client = Shef::SoloClient.instance
+      @client = Shef::SoloSession.instance
       @node = Chef::Node.new
       @client.node = @node
       @compile = @client.compile = Chef::Compile.new(@node)
