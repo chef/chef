@@ -77,11 +77,12 @@ module Shef
   end
   
   def self.init
-    raise "TODO: implement node building with json as in Chef::Client"
     parse_json
     configure_irb
 
     client # trigger ohai run + client load
+    
+    client[:node].consume_attributes(@json_attribs)
 
     greeting = begin
         " #{Etc.getlogin}@#{Shef.client[:node].name}"
@@ -112,7 +113,7 @@ module Shef
       end
 
       begin
-        @chef_solo_json = JSON.parse(json_io.read)
+        @json_attribs = JSON.parse(json_io.read)
       rescue JSON::ParserError => error
         fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
       end
@@ -172,12 +173,11 @@ module Shef
       :description  => "chef-client shef session",
       :boolean      => true
 
-    # not supported right now
-    # option :json_attribs,
-    #   :short => "-j JSON_ATTRIBS",
-    #   :long => "--json-attributes JSON_ATTRIBS",
-    #   :description => "Load attributes from a JSON file or URL",
-    #   :proc => nil
+    option :json_attribs,
+      :short => "-j JSON_ATTRIBS",
+      :long => "--json-attributes JSON_ATTRIBS",
+      :description => "Load attributes from a JSON file or URL",
+      :proc => nil
 
     # not supported right now
     # option :node_name,
