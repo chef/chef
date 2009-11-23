@@ -71,7 +71,7 @@ module Shef
     end
   end
   
-  def self.client
+  def self.session
     client_type.instance.reset! unless client_type.instance.node_built?
     client_type.instance
   end
@@ -80,12 +80,12 @@ module Shef
     parse_json
     configure_irb
 
-    client # trigger ohai run + client load
+    session # trigger ohai run + session load
     
-    client[:node].consume_attributes(@json_attribs)
+    session.node.consume_attributes(@json_attribs)
 
     greeting = begin
-        " #{Etc.getlogin}@#{Shef.client[:node].name}"
+        " #{Etc.getlogin}@#{Shef.session.node.name}"
       rescue NameError
         ""
       end

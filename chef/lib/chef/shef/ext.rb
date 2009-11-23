@@ -201,19 +201,19 @@ class Object
   
   desc "switch to recipe mode"
   def recipe
-    find_or_create_session_for Shef.client.recipe
+    find_or_create_session_for Shef.session.recipe
     :recipe
   end
   
   desc "switch to attributes mode"
   def attributes
-    find_or_create_session_for Shef.client.node
+    find_or_create_session_for Shef.session.node
     :attributes
   end
   
   desc "returns the current node (i.e., this host)"
   def node
-    Shef.client.node
+    Shef.session.node
   end
   
   desc "pretty print the node's attributes"
@@ -224,9 +224,9 @@ class Object
   desc "run chef using the current recipe"
   def run_chef
     Chef::Log.level(:debug)
-    client = Shef.client
-    client.rebuild_collection
-    runrun = Chef::Runner.new(node, client.collection, client.definitions, client.cookbook_loader).converge
+    session = Shef.session
+    session.rebuild_collection
+    runrun = Chef::Runner.new(node, session.collection, session.definitions, session.cookbook_loader).converge
     Chef::Log.level(:info)
     runrun
   end
@@ -237,12 +237,12 @@ class Object
               :skip_back    => "move back in the run list",
               :skip_forward => "move forward in the run list"
   def chef_run
-    Shef.client.collection.iterator
+    Shef.session.collection.iterator
   end
   
   desc "resets the current recipe"
   def reset
-    Shef.client.reset!
+    Shef.session.reset!
   end
   
   desc "turns printout of return values on or off"

@@ -173,7 +173,7 @@ describe Shef do
     
     before do
       @shef_client = TestableShefSession.instance
-      Shef.stub!(:client).and_return(@shef_client)
+      Shef.stub!(:session).and_return(@shef_client)
       @job_manager = TestJobManager.new
       @root_context = ObjectTestHarness.new
       @root_context.conf = mock("irbconf")
@@ -270,7 +270,7 @@ describe Shef do
     it "gives access to the stepable iterator" do
       Shef::StandAloneSession.instance.stub!(:reset!)
       collection = mock("collection", :iterator => :ohai2u)
-      Shef.client.stub!(:collection).and_return(collection)
+      Shef.session.stub!(:collection).and_return(collection)
       @root_context.chef_run.should == :ohai2u
     end
     

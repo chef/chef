@@ -20,12 +20,7 @@ module Shef
     include Singleton
     
     attr_accessor :node, :compile, :recipe
-    attr_reader :node_attributes
-    
-    def node_attributes=(attrs)
-      @node_attributes = attrs
-      @node.consume_attributes(@node_attributes)
-    end
+    attr_reader :node_attributes, :client
     
     def initialize
       @node_built = false
@@ -36,18 +31,19 @@ module Shef
     end
     
     def reset!
-      loading
-
-      rebuild_node
-      
-      @node = @client.node
-      def @node.inspect
-        "<Chef::Node:0x#{self.object_id.to_s(16)} @name=\"#{self.name}\">"
+      loading do 
+        rebuild_node
+        @node = client.node
+        node.consume_attributes(node_attributes) if node_attributes
+        shorten_node_inspect
+        @recipe = Chef::Recipe.new(nil, nil, @node)
+        @node_built = true
       end
-      
-      @recipe = Chef::Recipe.new(nil, nil, @node)
-      @node_built = true
-      loading_complete
+    end
+    
+    def node_attributes=(attrs)
+      @node_attributes = attrs
+      @node.consume_attributes(@node_attributes)
     end
     
     def collection
@@ -73,20 +69,30 @@ module Shef
     private
     
     def loading
-      @loading = true
-      @dot_printer = Thread.new do
+      loading = true
+      dot_printer = Thread.new do
         print "Loading"
-        while @loading
+        while loading
           print "."
           sleep 0.5
         end
         print "done.\n\n"
       end
+      begin
+        yield
+      ensure
+        loading = false
+        dot_printer && dot_printer.join
+      end
     end
     
     def loading_complete
-      @loading = false
-      @dot_printer && @dot_printer.join
+    end
+    
+    def shorten_node_inspect
+      def @node.inspect
+        "<Chef::Node:0x#{self.object_id.to_s(16)} @name=\"#{self.name}\">"
+      end
     end
     
     def rebuild_node
