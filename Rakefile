@@ -4,8 +4,10 @@ require 'cucumber/rake/task'
 
 desc "Build the chef gems"
 task :gem do
+  build_commands = Hash.new("rake package")
+  build_commands['chef-solr'] = 'rake build'
   gems.each do |dir|
-    Dir.chdir(dir) { sh "rake package" }
+      Dir.chdir(dir) { sh build_commands[dir] }
   end
 end
  
