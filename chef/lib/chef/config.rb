@@ -116,7 +116,7 @@ class Chef
     node_name nil
     node_path "/var/chef/node"
     openid_cstore_couchdb false
-    openid_cstore_path "/var/chef/openid/cstore"
+    openid_cstore_path "/var/chef/openid/cstore"    
     openid_providers nil
     openid_store_couchdb false
     openid_store_path "/var/chef/openid/db"
@@ -168,6 +168,8 @@ class Chef
     validation_client_name "chef-validator"
     web_ui_client_name "chef-webui"
     web_ui_key "/etc/chef/webui.pem"
+    web_ui_admin_user_name  "admin"
+    web_ui_admin_default_password "p@ssw0rd1"
 
     # Server Signing CA
     #

@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -24,9 +25,9 @@ require 'rubygems'
 require 'json'
 
 class Chef
-  class OpenIDRegistration
+  class WebUIUser
     
-    attr_accessor :name, :salt, :validated, :password, :couchdb_rev, :admin
+    attr_accessor :name, :salt, :validated, :password, :couchdb_rev, :admin, :openid
     
     include Chef::Mixin::ParamsValidate
     
@@ -37,7 +38,7 @@ class Chef
         "all" => {
           "map" => <<-EOJS
             function(doc) {
-              if (doc.chef_type == "openid_registration") {
+              if (doc.chef_type == "webui_user") {
                 emit(doc.name, doc);
               }
             }
@@ -46,30 +47,8 @@ class Chef
         "all_id" => {
           "map" => <<-EOJS
           function(doc) {
-            if (doc.chef_type == "openid_registration") {
+            if (doc.chef_type == "webui_user") {
               emit(doc.name, doc.name);
-            }
-          }
-          EOJS
-        },
-        "validated" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "openid_registration") {
-              if (doc.validated == true) {
-                emit(doc.name, doc);
-              }
-            }
-          }
-          EOJS
-        },
-        "unvalidated" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "openid_registration") {
-              if (doc.validated == false) {
-                emit(doc.name, doc);
-              }
             }
           }
           EOJS
@@ -77,13 +56,13 @@ class Chef
       },
     }
     
-    # Create a new Chef::OpenIDRegistration object.
+    # Create a new Chef::WebUIUser object.
     def initialize()
       @name = nil
       @salt = nil
       @password = nil
-      @validated = false
       @admin = false
+      @openid = nil
       @couchdb_rev = nil
       @couchdb = Chef::CouchDB.new
     end
@@ -94,9 +73,18 @@ class Chef
     
     # Set the password for this object.
     def set_password(password) 
+      raise ArgumentError, "Password must be a minimum of 6 characters" if password.length < 6
       @salt = generate_salt
       @password = encrypt_password(@salt, password)      
     end
+    
+    def set_openid(given_openid)
+      @openid = given_openid
+    end 
+    
+    def verify_password(given_password)
+      encrypt_password(@salt, given_password) == @password ? true : false
+    end 
     
     # Serialize this object as a hash 
     def to_json(*a)
@@ -107,9 +95,9 @@ class Chef
         'json_class' => self.class.name,
         'salt' => @salt,
         'password' => @password,
-        'validated' => @validated,
+        'openid' => @openid,
         'admin' => @admin,
-        'chef_type' => 'openid_registration',
+        'chef_type' => 'webui_user',
       }
       result["_rev"] = @couchdb_rev if @couchdb_rev
       result.to_json(*a)
@@ -121,16 +109,16 @@ class Chef
       me.name = o["name"]
       me.salt = o["salt"]
       me.password = o["password"]
-      me.validated = o["validated"]
+      me.openid = o["openid"]
       me.admin = o["admin"]
       me.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       me
     end
     
-    # List all the Chef::OpenIDRegistration objects in the CouchDB.  If inflate is set to true, you will get
+    # List all the Chef::WebUIUser objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all registration objects.  Otherwise, you'll just get the IDs
     def self.list(inflate=false)
-      rs = Chef::CouchDB.new.list("registrations", inflate)
+      rs = Chef::CouchDB.new.list("users", inflate)
       if inflate
         rs["rows"].collect { |r| r["value"] }
       else
@@ -138,30 +126,30 @@ class Chef
       end
     end
     
-    # Load an OpenIDRegistration by name from CouchDB
+    # Load an WebUIUser by name from CouchDB
     def self.load(name)
-      Chef::CouchDB.new.load("openid_registration", name)
+      Chef::CouchDB.new.load("webui_user", name)
     end
     
-    # Whether or not there is an OpenID Registration with this key.
+    # Whether or not there is an WebUIUser with this key.
     def self.has_key?(name)
-      Chef::CouchDB.new.has_key?("openid_registration", name)
+      Chef::CouchDB.new.has_key?("webui_user", name)
     end
     
-    # Remove this OpenIDRegistration from the CouchDB
+    # Remove this WebUIUser from the CouchDB
     def destroy
-      @couchdb.delete("openid_registration", @name, @couchdb_rev)
+      @couchdb.delete("webui_user", @name, @couchdb_rev)
     end
     
-    # Save this OpenIDRegistration to the CouchDB
+    # Save this WebUIUser to the CouchDB
     def save
-      results = @couchdb.store("openid_registration", @name, self)
+      results = @couchdb.store("webui_user", @name, self)
       @couchdb_rev = results["rev"]
     end
     
     # Set up our CouchDB design document
     def self.create_design_document
-      Chef::CouchDB.new.create_design_document("registrations", DESIGN_DOCUMENT)
+      Chef::CouchDB.new.create_design_document("users", DESIGN_DOCUMENT)
     end
     
     protected
