@@ -69,24 +69,33 @@ module Shef
     private
     
     def loading
-      loading = true
-      dot_printer = Thread.new do
-        print "Loading"
-        while loading
-          print "."
-          sleep 0.5
-        end
-        print "done.\n\n"
-      end
+      show_loading_progress
       begin
         yield
-      ensure
-        loading = false
-        dot_printer && dot_printer.join
+      rescue => e
+        loading_complete(false)
+        raise e
+      else
+        loading_complete(true)
       end
     end
     
-    def loading_complete
+    def show_loading_progress
+      print "Loading"
+      @loading = true
+      @dot_printer = Thread.new do
+        while @loading
+          print "."
+          sleep 0.5
+        end
+      end
+    end
+    
+    def loading_complete(success)
+      @loading = false
+      @dot_printer.join
+      msg = success ? "done.\n\n" : "epic fail!\n\n"
+      print msg
     end
     
     def shorten_node_inspect

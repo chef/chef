@@ -179,23 +179,10 @@ module Shef
       :description => "Load attributes from a JSON file or URL",
       :proc => nil
 
-    # not supported right now
-    # option :node_name,
-    #   :short => "-N NODE_NAME",
-    #   :long => "--node-name NODE_NAME",
-    #   :description => "The node name for this client",
-    #   :proc => nil
-
     option :chef_server_url,
       :short => "-S CHEFSERVERURL",
       :long => "--server CHEFSERVERURL",
       :description => "The chef server URL",
-      :proc => nil
-
-    option :validation_token,
-      :short => "-t TOKEN",
-      :long => "--token TOKEN",
-      :description => "Set the openid validation token",
       :proc => nil
 
     option :version,
@@ -213,7 +200,8 @@ module Shef
     def parse_opts
       parse_options
       config[:config_file] = config_file_for_shef_mode
-      puts "attempting to load config file from #{config[:config_file]}"
+      config_msg = config[:config_file] || "none (standalone shef session)"
+      puts "loading configuration: #{config_msg}"
       Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exists?(config[:config_file]) && File.readable?(config[:config_file])
       Chef::Config.merge!(config)
     end
