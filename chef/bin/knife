@@ -693,7 +693,7 @@ class Knife < Thor
       tf.sync = true
       tf.puts JSON.pretty_generate(data)
       tf.close
-      system("#{ENV["EDITOR"]} #{tf.path}")
+      raise "Please set EDITOR environment variable" unless system("#{ENV["EDITOR"] || "vi"} #{tf.path}") 
       tf = File.open(filename, "r")
       output = tf.gets(nil)
       tf.close
