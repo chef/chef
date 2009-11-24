@@ -152,6 +152,18 @@ class Chef
       Chef::CouchDB.new.create_design_document("users", DESIGN_DOCUMENT)
     end
     
+    #return true if an admin user exists. this is pretty expensive (O(n)), should think of a better way (nuo)
+    def self.admin_exist
+      users = self.list
+      users.each do |u|
+        user = self.load(u)
+        if user.admin
+          return user.name
+        end
+      end
+      nil
+    end
+    
     protected
     
       def generate_salt

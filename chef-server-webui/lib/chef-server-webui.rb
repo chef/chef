@@ -132,11 +132,13 @@ if defined?(Merb::Plugins)
     begin
       user = Chef::WebUIUser.load(Chef::Config[:web_ui_admin_user_name])
     rescue Chef::Exceptions::CouchDBNotFound => e
-      user = Chef::WebUIUser.new
-      user.name = Chef::Config[:web_ui_admin_user_name]
-      user.set_password(Chef::Config[:web_ui_admin_default_password])
-      user.admin = true
-      user.save
+      unless Chef::WebUIUser.admin_exist
+        user = Chef::WebUIUser.new
+        user.name = Chef::Config[:web_ui_admin_user_name]
+        user.set_password(Chef::Config[:web_ui_admin_default_password])
+        user.admin = true
+        user.save
+      end 
     end
       
   end

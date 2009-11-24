@@ -151,7 +151,7 @@ class ChefServerWebui::Users < ChefServerWebui::Application
   
   def destroy
     begin
-      raise Forbidden, "The default admin user cannot be deleted" if params[:user_id] == Chef::Config[:web_ui_admin_user_name]
+      raise Forbidden, "The last admin user cannot be deleted" if (is_admin(params[:user_id]) && is_last_admin)
       raise Forbidden, "A non-admin user can only delete itself" if (params[:user_id] != session[:user] && session[:level] != :admin)
       @user = Chef::WebUIUser.load(params[:user_id])
       @user.destroy
