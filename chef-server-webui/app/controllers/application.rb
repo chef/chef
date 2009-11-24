@@ -93,13 +93,13 @@ class ChefServerWebui::Application < Merb::Controller
   def is_admin(name)
     user = Chef::WebUIUser.load(name)
     return user.admin
-  end 
+  end
   
   #return true if there is only one admin left, false otehrwise
   def is_last_admin
     count = 0
     users = Chef::WebUIUser.list
-    users.each do |u|
+    users.each do |u, url|
       user = Chef::WebUIUser.load(u)
       if user.admin
         count = count + 1
@@ -108,6 +108,11 @@ class ChefServerWebui::Application < Merb::Controller
     end
     true
   end
+  
+  #whether or not the user should be able to edit a user's admin status
+  def edit_admin
+    is_admin(params[:user_id]) ? (!is_last_admin) : true
+  end 
   
   def authorized_node
   #  if session[:level] == :admin

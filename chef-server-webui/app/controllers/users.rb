@@ -52,8 +52,8 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       raise Forbidden, "The current user is not an Administrator, you can only Show and Edit the user itself. To control other users, login as an Administrator." unless params[:user_id] == session[:user] unless session[:level] == :admin
       begin
         @user = Chef::WebUIUser.load(params[:user_id])
-      rescue Chef::Exceptions::CouchDBNotFound => e
-        raise NotFound, "Cannot found user #{params[:user_id]}"
+      rescue Net::HTTPServerException => e
+        raise NotFound, "Cannot find user #{params[:user_id]}"
       end
       render
     rescue 
@@ -66,12 +66,12 @@ class ChefServerWebui::Users < ChefServerWebui::Application
     begin
       begin
         @user = Chef::WebUIUser.load(params[:user_id])
-      rescue Chef::Exceptions::CouchDBNotFound => e
-        raise NotFound, "Cannot found user #{params[:user_id]}"
+      rescue Net::HTTPServerException => e
+        raise NotFound, "Cannot find user #{params[:user_id]}"
       end
-      @user.admin = str_to_bool(params[:admin]) unless params[:user_id] == Chef::Config[:web_ui_admin_user_name]  
-      raise Forbidden, "Passwords do not match." unless params[:new_password] == params[:confirm_new_password]
-      @user.set_password(params[:new_password]) unless (params[:new_password].nil? || params[:new_password].length == 0)      
+      @user.admin = str_to_bool(params[:admin]) if ['true','false'].include?params[:admin]
+      session[:level] = :user if params[:user_id] == session[:user] && params[:admin] == 'false'
+      @user.set_password(params[:new_password], params[:confirm_new_password]) unless (params[:new_password].nil? || params[:new_password].length == 0)      
       (params[:openid].length == 0 || params[:openid].nil?) ? @user.set_openid(nil) : @user.set_openid(URI.parse(params[:openid]).normalize.to_s)
       @user.save
       @_message = { :notice => "Updated User #{@user.name}" }       
@@ -95,22 +95,21 @@ class ChefServerWebui::Users < ChefServerWebui::Application
   def create
     begin
       authorized_user
-      begin
-        @user = Chef::WebUIUser.load(params[:name])
-      rescue Chef::Exceptions::CouchDBNotFound
-        raise ArgumentError, "Password cannot be blank" if (params[:password].nil? || params[:password].length==0)
-        raise ArgumentError, "Passwords do not match" unless params[:password] == params[:password2]
-        @user = Chef::WebUIUser.new
-      else 
-        raise StandardError, "User #{params[:username]} already exists"
-      end       
-
+      @user = Chef::WebUIUser.new
       @user.name = params[:name]
-      @user.set_password(params[:password])
+      @user.set_password(params[:password], params[:password2])
       @user.admin = true if params[:admin]
       (params[:openid].length == 0 || params[:openid].nil?) ? @user.set_openid(nil) : @user.set_openid(URI.parse(params[:openid]).normalize.to_s)
-      @user.save
-      redirect(slice_url(:users), :message => { :notice => "Created User #{@user.name}" })
+      begin
+        @user.create
+      rescue Net::HTTPServerException => e
+        if e.message =~ /403/ 
+          raise ArgumentError, "User already exists" 
+        else 
+          raise e
+        end 
+      end
+      redirect(slice_url(:users), :message => { :notice => "Created User #{params[:name]}" })
     rescue
       @_message = { :error => $! }
       session[:level] != :admin ? set_user_and_redirect : (render :new)
@@ -126,7 +125,7 @@ class ChefServerWebui::Users < ChefServerWebui::Application
     begin
       begin
         @user = Chef::WebUIUser.load(params[:name])
-      rescue Chef::Exceptions::CouchDBNotFound 
+      rescue Net::HTTPServerException => e
         raise NotFound, "Cannot find user #{params[:name]}"
       end 
       raise(Unauthorized, "Wrong username or password.") unless @user.verify_password(params[:password])
@@ -141,7 +140,7 @@ class ChefServerWebui::Users < ChefServerWebui::Application
   def complete    
     session[:user] = params[:name]
     session[:level] = (@user.admin == true ? :admin : :user)
-    @user.verify_password(Chef::Config[:web_ui_admin_default_password]) ? redirect(slice_url(:users_edit, :user_id => @user.name), :message => { :warning => "Please change default password!!!" }) : redirect_back_or_default(absolute_slice_url(:nodes))
+    (@user.name == Chef::Config[:web_ui_admin_user_name] && @user.verify_password(Chef::Config[:web_ui_admin_default_password])) ? redirect(slice_url(:users_edit, :user_id => @user.name), :message => { :warning => "Please change default password!!!" }) : redirect_back_or_default(absolute_slice_url(:nodes))
   end
 
   def logout

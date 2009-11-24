@@ -22,7 +22,7 @@
         = password_field :id=>"user_confirm_new_password", :name => "confirm_new_password", :class =>"password_field"
         %span.description Confirm new password for the User. Keep blank if you do not want to change password.
 
-      - if session[:level] == :admin && @user.name != Chef::Config[:web_ui_admin_user_name]  
+      - if session[:level] == :admin && edit_admin
         %div.group.form
           %label.label Admin
           = text_field :id => "user_admin", :name => "admin", :class => "text_field", :value => @user.admin

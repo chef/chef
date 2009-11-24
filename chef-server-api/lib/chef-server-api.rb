@@ -104,6 +104,9 @@ if defined?(Merb::Plugins)
     # @note prefix your named routes with :chefserverslice_
     #   to avoid potential conflicts with global named routes.
     def self.setup_router(scope)
+      # Users
+      scope.resources :users
+      
       # Nodes
       scope.match('/nodes/:id/cookbooks', :method => 'get').to(:controller => "nodes", :action => "cookbooks")
       scope.resources :nodes
