@@ -30,10 +30,30 @@ class TestJobManager
   attr_accessor :jobs
 end
 
-describe Shef::ShefClient do
+class TestableShefSession < Shef::ShefSession
+  
+  def rebuild_node
+    nil
+  end
+  
+  def rebuild_collection
+    nil
+  end
+  
+  def loading
+    nil
+  end
+  
+  def loading_complete
+    nil
+  end
+  
+end
+
+describe Shef::ShefSession do
   
   it "is a singleton object" do
-    Shef::ShefClient.should include(Singleton)
+    Shef::ShefSession.should include(Singleton)
   end
   
 end
@@ -43,7 +63,15 @@ describe Shef do
   
   before do
     Shef.irb_conf = {}
-    Shef::ShefClient.instance.stub!(:reset!)
+    Shef::ShefSession.instance.stub!(:reset!)
+  end
+  
+  describe "reporting its status" do
+    
+    it "alway says it is running" do
+      Shef.should be_running
+    end
+    
   end
   
   describe "configuring IRB" do
@@ -113,6 +141,28 @@ describe Shef do
       ObjectTestHarness.help_descriptions.should == [["rspec_method", "rspecin'"],["baz", "foo2the Bar"]]
     end
     
+    it "adds help text for subcommands" do
+      describe_define =<<-EVAL
+        subcommands :baz_obj_command => "something you can do with baz.baz_obj_command"
+        def baz
+        end
+      EVAL
+      ObjectTestHarness.class_eval describe_define
+      expected_help_text_fragments = [["rspec_method", "rspecin'"],["baz", "foo2the Bar"]]
+      expected_help_text_fragments << ["baz.baz_obj_command", "something you can do with baz.baz_obj_command"]
+      ObjectTestHarness.help_descriptions.should == expected_help_text_fragments
+    end
+    
+    it "doesn't add previous subcommand help to commands defined afterward" do
+      describe_define =<<-EVAL
+        desc "swingFromTree"
+        def monkey_time
+        end
+      EVAL
+      ObjectTestHarness.class_eval describe_define
+      ObjectTestHarness.help_descriptions.should_not include(["monkey_time.baz_obj_command", "something you can do with baz.baz_obj_command"])
+    end
+    
     it "creates a help banner with the command descriptions" do
       @chef_object.help_banner.should match(/^\|\ Command[\s]+\|\ Description[\s]*$/)
       @chef_object.help_banner.should match(/^\|\ rspec_method[\s]+\|\ rspecin\'[\s]*$/)
@@ -122,6 +172,8 @@ describe Shef do
   describe "extending object for top level methods" do
     
     before do
+      @shef_client = TestableShefSession.instance
+      Shef.stub!(:session).and_return(@shef_client)
       @job_manager = TestJobManager.new
       @root_context = ObjectTestHarness.new
       @root_context.conf = mock("irbconf")
@@ -158,15 +210,15 @@ describe Shef do
     
     it "switches to recipe context" do
       @root_context.should respond_to(:recipe)
-      Shef.stub!(:client).and_return({:recipe => :monkeyTime})
+      @shef_client.recipe = :monkeyTime
       @root_context.should_receive(:find_or_create_session_for).with(:monkeyTime)
       @root_context.recipe
     end
     
     it "switches to attribute context" do
       @root_context.should respond_to(:attributes)
-      Shef.stub!(:client).and_return({:node => :monkeyNodeTime})
-      @root_context.should_receive(:find_or_create_session_for).with(:monkeyNodeTime)
+      @shef_client.node = "monkeyNodeTime"
+      @root_context.should_receive(:find_or_create_session_for).with("monkeyNodeTime")
       @root_context.attributes
     end
     
@@ -192,26 +244,15 @@ describe Shef do
     
     it "prints node attributes" do
       node = mock("node", :attribute => {:foo => :bar})
-      Shef.stub!(:client).and_return(:node => node)
+      @shef_client.node = node
       @root_context.should_receive(:pp).with({:foo => :bar})
       @root_context.ohai
       @root_context.should_receive(:pp).with(:bar)
       @root_context.ohai(:foo)
     end
     
-    it "runs chef with the current recipe" do
-      @root_context.stub!(:node).and_return(:teh_node)
-      recipe = mock("recipe", :collection => :foobarbaz)
-      Shef.stub!(:client).and_return(:recipe => recipe)
-      Chef::Log.stub!(:level)
-      chef_runner = mock("Chef::Runner.new", :converge => :converged)
-      Chef::Runner.should_receive(:new).with(:teh_node, :foobarbaz).and_return(chef_runner)
-      @root_context.run_chef.should == :converged
-    end
-    
     it "resets the recipe and reloads ohai data" do
-      @root_context.should respond_to(:reset)
-      Shef::ShefClient.instance.should_receive(:reset!)
+      @shef_client.should_receive(:reset!)
       @root_context.reset
     end
     
@@ -226,6 +267,19 @@ describe Shef do
       @root_context.echo?
     end
     
+    it "gives access to the stepable iterator" do
+      Shef::StandAloneSession.instance.stub!(:reset!)
+      collection = mock("collection", :iterator => :ohai2u)
+      Shef.session.stub!(:collection).and_return(collection)
+      @root_context.chef_run.should == :ohai2u
+    end
+    
+    it "lists directory contents" do
+      entries = %w{. .. someFile}
+      Dir.should_receive(:entries).with("/tmp").and_return(entries)
+      @root_context.ls "/tmp"
+    end
+    
   end
   
   describe "extending the recipe object" do
@@ -238,6 +292,98 @@ describe Shef do
       resource = @recipe_object.file("foo")
       @recipe_object.should_receive(:pp).with(["file[foo]"])
       @recipe_object.resources
+    end
+    
+  end
+  
+  describe Shef::StandAloneSession do
+    before do
+      @client = Shef::StandAloneSession.instance
+      @node = @client.node = Chef::Node.new
+      @recipe = @client.recipe = Chef::Recipe.new(nil, nil, @node)
+    end
+    
+    it "returns a collection based on it's standalone recipe file" do
+      @client.collection.should == @recipe.collection
+    end
+    
+    it "gives nil for the definitions (for now)" do
+      @client.definitions.should be_nil
+    end
+    
+    it "gives nil for the cookbook_loader" do
+      @client.cookbook_loader.should be_nil
+    end
+    
+    it "runs chef with the standalone recipe" do
+      @client.stub!(:node_built?).and_return(true)
+      Chef::Log.stub!(:level)
+      chef_runner = mock("Chef::Runner.new", :converge => :converged)
+      # pre-heat resource collection cache
+      @client.collection
+      
+      Chef::Runner.should_receive(:new).with(@client.node, @recipe.collection, nil,nil).and_return(chef_runner)
+      @root_context.run_chef.should == :converged
+    end
+    
+  end
+  
+  describe Shef::SoloSession do
+    before do
+      Chef::Config[:solo] = true
+      @client = Shef::SoloSession.instance
+      @node = Chef::Node.new
+      @client.node = @node
+      @compile = @client.compile = Chef::Compile.new(@node)
+      # prevent dynamic re-compilation from raining on the parade
+      Chef::Compile.stub!(:new).and_return(@compile)
+      @recipe = @client.recipe = Chef::Recipe.new(nil, nil, @node)
+    end
+    
+    after do
+      Chef::Config[:solo] = nil
+    end
+    
+    it "returns a collection based on it's compilation object and the extra recipe provided by shef" do
+      @client.stub!(:node_built?).and_return(true)
+      kitteh = Chef::Resource::Cat.new("keyboard")
+      @recipe.collection << kitteh
+      @client.rebuild_collection
+      @client.collection.should include(kitteh)
+    end
+    
+    it "returns definitions from it's compilation object" do
+      @client.definitions.should == @compile.definitions
+    end
+    
+    it "returns the cookbook_loader from it's compilation object" do
+      @client.cookbook_loader.should == @compile.cookbook_loader
+    end
+    
+    it "keeps json attribs and passes them to the node for consumption" do
+      @client.node_attributes = {"besnard_lakes" => "are_the_dark_horse"}
+      @client.node.besnard_lakes.should == "are_the_dark_horse"
+      #pending "1) keep attribs in an ivar 2) pass them to the node 3) feed them to the node on reset"
+    end
+    
+    it "generates it's resource collection from the compiled cookbooks and the ad hoc recipe" do
+      @client.stub!(:node_built?).and_return(true)
+      kitteh_cat = Chef::Resource::Cat.new("kitteh")
+      @compile.collection << kitteh_cat
+      keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
+      @recipe.collection << keyboard_cat
+      @client.rebuild_collection
+      @client.collection.should include(kitteh_cat, keyboard_cat)
+    end
+    
+    it "runs chef with a resource collection from the compiled cookbooks" do
+      @client.stub!(:node_built?).and_return(true)
+      Chef::Log.stub!(:level)
+      chef_runner = mock("Chef::Runner.new", :converge => :converged)
+      Chef::Runner.should_receive(:new).
+                    with(@client.node, an_instance_of(Chef::ResourceCollection), @client.definitions, an_instance_of(Chef::CookbookLoader)).
+                    and_return(chef_runner)
+      @root_context.run_chef.should == :converged
     end
     
   end

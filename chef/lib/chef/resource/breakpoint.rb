@@ -1,5 +1,6 @@
+#
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,24 +16,20 @@
 # limitations under the License.
 #
 
-require File.dirname(__FILE__) + "/../../chef"
-require File.dirname(__FILE__) + "/../../chef/client"
 
-unless defined?(Shef::JUST_TESTING_MOVE_ALONG) && Shef::JUST_TESTING_MOVE_ALONG
-  Shef.configure_irb
+require 'chef/resource'
 
-  Shef.client
-
-  Shef::GREETING = begin
-      " #{Etc.getlogin}@#{Shef.client[:node].name}"
-    rescue NameError
-      ""
+class Chef
+  class Resource
+    class Breakpoint < Chef::Resource
+      
+      def initialize(action="break", *args)
+        @name = caller.first
+        super(@name, *args)
+        @action = "break"
+        @allowed_actions << :break
+        @provider = Chef::Provider::Breakpoint
+      end
     end
-  
-  version
-  puts
-
-  puts "run ``help'' for help, ``exit'' or ^D to quit."
-  puts
-  puts "Ohai2u#{Shef::GREETING}!"
+  end
 end

@@ -161,22 +161,9 @@ class Chef
         @node ||= Chef::Node.new
         @node.name(node_name)
       end
-      if @json_attribs
-        Chef::Log.debug("Adding JSON Attributes")
-        @json_attribs.each do |key, value|
-          if key == "recipes" || key == "run_list"
-            value.each do |recipe|
-              unless @node.recipes.detect { |r| r == recipe }
-                Chef::Log.debug("Adding recipe #{recipe}")
-                @node.recipes << recipe
-              end
-            end
-          else
-            Chef::Log.debug("JSON Attribute: #{key} - #{value.inspect}")
-            @node[key] = value
-          end
-        end
-      end
+      
+      @node.consume_attributes(@json_attribs)
+      
       ohai.each do |field, value|
         Chef::Log.debug("Ohai Attribute: #{field} - #{value.inspect}")
         @node[field] = value
@@ -185,7 +172,6 @@ class Chef
       Chef::Log.debug("Platform is #{platform} version #{version}")
       @node[:platform] = platform
       @node[:platform_version] = version
-      @node[:tags] = Array.new unless @node.attribute?(:tags)
       @node
     end
    

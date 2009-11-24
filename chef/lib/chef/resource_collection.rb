@@ -18,15 +18,22 @@
 #
 
 require 'chef/resource'
+require 'chef/resource_collection/stepable_iterator'
 
 class Chef
   class ResourceCollection
     include Enumerable
+    
+    attr_reader :iterator
 
     def initialize
       @resources = Array.new
       @resources_by_name = Hash.new
       @insert_after_idx = nil
+    end
+    
+    def all_resources
+      @resources
     end
     
     def [](index)
@@ -67,23 +74,24 @@ class Chef
     end
     
     def push(*args)
-      args.flatten.each do |a|
-        is_chef_resource(a)
-        @resources.push(a)
-        @resources_by_name[a.to_s] = @resources.length - 1
+      args.flatten.each do |arg|
+        is_chef_resource(arg)
+        @resources.push(arg)
+        @resources_by_name[arg.to_s] = @resources.length - 1
       end
     end
   
     def each
-      @resources.each do |r|
-        yield r
+      @resources.each do |resource|
+        yield resource
       end
     end
 
-    def execute_each_resource
-      @resources.each_with_index do |r, idx|
+    def execute_each_resource(&resource_exec_block)
+      @iterator = StepableIterator.for_collection(@resources)
+      @iterator.each_with_index do |resource, idx|
         @insert_after_idx = idx
-        yield r
+        yield resource
       end
     end
     

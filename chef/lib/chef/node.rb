@@ -190,6 +190,10 @@ class Chef
       attrs = Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)
       attrs[attrib] = value
     end
+    
+    def store(attrib, value)
+      self[attrib] = value
+    end
 
     # Set an attribute of this node, but auto-vivifiy any Mashes that might
     # be missing
@@ -281,6 +285,21 @@ class Chef
     # Returns true if this Node expects a given role, false if not.
     def run_list?(item)
       @run_list.detect { |r| r == item } ? true : false
+    end
+    
+    def consume_attributes(attrs)
+      attrs ||= {}
+      Chef::Log.debug("Adding JSON Attributes")
+      attrs.each do |key, value|
+        if ["recipes", "run_list"].include?(key)
+          append_recipes(value)
+        else
+          Chef::Log.debug("JSON Attribute: #{key} - #{value.inspect}")
+          store(key, value)
+        end
+      end
+      self[:tags] = Array.new unless attribute?(:tags)
+      
     end
     
     # Transform the node to a Hash
@@ -423,10 +442,19 @@ class Chef
     end
 
     private
-   
-      def self.escape_node_id(arg=nil)
-        arg.gsub(/\./, '_')
-      end
     
+    def append_recipes(recipes_to_append=[])
+      recipes_to_append.each do |recipe|
+        unless recipes.include?(recipe)
+          Chef::Log.debug("Adding recipe #{recipe}")
+          recipes << recipe
+        end
+      end
+    end
+ 
+    def self.escape_node_id(arg=nil)
+      arg.gsub(/\./, '_')
+    end
+  
   end
 end

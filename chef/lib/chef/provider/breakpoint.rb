@@ -1,9 +1,6 @@
-#!/usr/bin/env ruby
-#
-# ./shef - Run the shef REPL
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009
+# Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,29 +14,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-# TODO::EVIL
-require "rubygems"
-require "mixlib/cli"
-
-require "irb"
-require "irb/completion"
-
-# TODO::EVIL
-require "#{File.dirname(__FILE__)}/../lib/chef"
-require "chef/shef"
-
-# dirty hack to make IRB initialize shef
-module IRB
-  class << self
-    alias :run_original_config :run_config
-  
-    def run_config
-      run_original_config
-      Shef.init
+class Chef
+  class Provider
+    class Breakpoint < Chef::Provider
+      
+      def load_current_resource
+      end
+      
+      def action_break
+        if defined?(Shef) && Shef.running?
+          @collection.iterator.pause
+          @new_resource.updated = true
+          @collection.iterator
+        end
+      end
+      
     end
   end
 end
-
-Shef.parse_opts
-IRB.start
