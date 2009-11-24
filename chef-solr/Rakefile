@@ -10,6 +10,12 @@ begin
     gem.homepage = "http://github.com/adamhjk/chef-solr"
     gem.authors = ["Adam Jacob"]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.files = [
+      "README.rdoc",
+      "Rakefile",
+      "VERSION"
+    ]
+    gem.files.include %w{ bin/* lib/**/* solr/* spec/**/* }
   end
 
 rescue LoadError

@@ -279,12 +279,13 @@ task :ssl_cert do
   fqdn =~ /^(.+?)\.(.+)$/
   hostname = $1
   domain = $2
+  keyfile = fqdn.gsub("*", "wildcard")
   raise "Must provide FQDN!" unless fqdn && hostname && domain
   puts "** Creating self signed SSL Certificate for #{fqdn}"
-  sh("(cd #{CADIR} && openssl genrsa 2048 > #{fqdn}.key)")
-  sh("(cd #{CADIR} && chmod 644 #{fqdn}.key)")
+  sh("(cd #{CADIR} && openssl genrsa 2048 > #{keyfile}.key)")
+  sh("(cd #{CADIR} && chmod 644 #{keyfile}.key)")
   puts "* Generating Self Signed Certificate Request"
-  tf = Tempfile.new("#{fqdn}.ssl-conf")
+  tf = Tempfile.new("#{keyfile}.ssl-conf")
   ssl_config = <<EOH
 [ req ]
 distinguished_name = req_distinguished_name
@@ -301,10 +302,10 @@ emailAddress           = #{SSL_EMAIL_ADDRESS}
 EOH
   tf.puts(ssl_config)
   tf.close
-  sh("(cd #{CADIR} && openssl req -config '#{tf.path}' -new -x509 -nodes -sha1 -days 3650 -key #{fqdn}.key > #{fqdn}.crt)")
-  sh("(cd #{CADIR} && openssl x509 -noout -fingerprint -text < #{fqdn}.crt > #{fqdn}.info)")
-  sh("(cd #{CADIR} && cat #{fqdn}.crt #{fqdn}.key > #{fqdn}.pem)")
-  sh("(cd #{CADIR} && chmod 644 #{fqdn}.pem)")
+  sh("(cd #{CADIR} && openssl req -config '#{tf.path}' -new -x509 -nodes -sha1 -days 3650 -key #{keyfile}.key > #{keyfile}.crt)")
+  sh("(cd #{CADIR} && openssl x509 -noout -fingerprint -text < #{keyfile}.crt > #{keyfile}.info)")
+  sh("(cd #{CADIR} && cat #{keyfile}.crt #{keyfile}.key > #{keyfile}.pem)")
+  sh("(cd #{CADIR} && chmod 644 #{keyfile}.pem)")
 end
 
 desc "Build cookbook metadata.json from metadata.rb"

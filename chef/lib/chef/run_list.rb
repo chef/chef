@@ -60,6 +60,10 @@ class Chef
       true
     end
 
+    def to_s
+      @run_list.join(", ")
+    end
+
     def empty?
       @run_list.length == 0 ? true : false
     end

@@ -31,21 +31,13 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
 
   # GET /clients/:id
   def show
-    begin
-      @client = Chef::ApiClient.load(params[:id])
-    rescue Net::HTTPServerException => e      
-      raise NotFound, "Cannot load client #{params[:id]}"
-    end
+    load_client
     render
   end
 
   # GET /clients/:id/edit
   def edit
-    begin
-      @client = Chef::ApiClient.load(params[:id])
-    rescue Net::HTTPServerException => e
-      raise NotFound, "Cannot load client #{params[:id]}"
-    end
+    load_client
     render 
   end
 
@@ -61,7 +53,6 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
       @client = Chef::ApiClient.new
       @client.name(params[:name])
       @client.admin(str_to_bool(params[:admin])) if params[:admin]
-      raise ArgumentError, "Client validation key location is required" if params[:private_key_location].empty?
       begin
         response = @client.create
       rescue Net::HTTPServerException => e
@@ -71,13 +62,10 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
           raise e
         end 
       end 
-      client_key_path = params[:private_key_location]
-      FileUtils.mkdir_p(File.dirname(client_key_path))
-      private_key = OpenSSL::PKey::RSA.new(response["private_key"])
-      File.open("#{client_key_path}", "w") {|f| f.print(private_key)}
-  
-      redirect(slice_url(:clients), :message => { :notice => "Created Client #{@client.name}" })
-    
+      @private_key = OpenSSL::PKey::RSA.new(response["private_key"])
+      @_message = { :notice => "Created Client #{@client.name}. Please copy the following private key as the client's validation key." }
+      load_client(params[:name])
+      render :show    
     rescue StandardError => e
       @_message = { :error => $! }
       render :new
@@ -87,14 +75,14 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
   # PUT /clients/:id
   def update
     begin
-      @client = Chef::ApiClient.load(params[:id])
-    rescue Net::HTTPServerException => e
-      raise NotFound, "Cannot load client #{params[:id]}"
-    end
-    begin
+      load_client
+      if params[:regen_private_key]
+        @client.create_keys
+        @private_key = @client.private_key
+      end 
       @client.admin(str_to_bool(params[:admin])) unless params[:admin].nil?
       @client.save
-      @_message = { :notice => "Updated Client" }
+      @_message = @private_key.nil? ? { :notice => "Updated Client" } : { :notice => "Created Client #{@client.name}. Please copy the following private key as the client's validation key." }
       render :show
     rescue
       @_message = { :error => $! }
@@ -104,14 +92,20 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
 
   # DELETE /clients/:id
   def destroy
-    begin
-      @client = Chef::ApiClient.load(params[:id])
-    rescue Net::HTTPServerException => e
-      raise NotFound, "Cannot load client #{params[:id]}"
-    end
+    load_client
     @client.destroy
     redirect(absolute_slice_url(:clients), {:message => { :notice => "Client #{params[:id]} deleted successfully" }, :permanent => true})
   end
+  
+  private
+  
+  def load_client(name=params[:id])
+    begin
+      @client = Chef::ApiClient.load(name)
+    rescue Net::HTTPServerException => e
+      raise NotFound, "Cannot load client #{name}"
+    end
+  end 
 
 end
 
