@@ -98,6 +98,7 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       begin
         @user = Chef::WebUIUser.load(params[:name])
       rescue Chef::Exceptions::CouchDBNotFound
+        raise ArgumentError, "Username cannot be blank" if (params[:name].nil? || params[:name].length==0)
         raise ArgumentError, "Password cannot be blank" if (params[:password].nil? || params[:password].length==0)
         raise ArgumentError, "Passwords do not match" unless params[:password] == params[:password2]
         @user = Chef::WebUIUser.new
