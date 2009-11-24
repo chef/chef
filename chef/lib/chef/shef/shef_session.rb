@@ -165,7 +165,8 @@ module Shef
     def rebuild_node
       @client = Chef::Client.new
       @client.determine_node_name
-      @client.build_node(@client.node_name, true)
+      @client.register
+      @client.build_node(@client.node_name, false)
       
       @client.sync_cookbooks
     end
