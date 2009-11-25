@@ -105,7 +105,6 @@ class Chef
     delay 0
     executable_path ENV['PATH'] ? ENV['PATH'].split(File::PATH_SEPARATOR) : []
     file_cache_path "/var/chef/cache"
-    file_store_path "/var/chef/store"
     file_backup_path nil
     group nil
     http_retry_count 5
@@ -183,6 +182,11 @@ class Chef
     signing_ca_org "Chef User"
     signing_ca_domain "opensource.opscode.com"
     signing_ca_email "opensource-cert@opscode.com"
+
+    # Checksum Cache
+    # Uses Moneta on the back-end
+    cache_type "BasicFile"
+    cache_options({ :path => "/var/chef/cache/checksums", :skip_expires => true })
 
   end
 end

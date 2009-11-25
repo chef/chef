@@ -36,3 +36,5 @@ solr_home_path File.join(supportdir, "solr", "home")
 solr_heap_size "256M"
 
 Chef::Log::Formatter.show_time = true
+
+cache_options({ :path => File.join(tmpdir, "server-checksums") })

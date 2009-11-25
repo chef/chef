@@ -17,4 +17,5 @@ validation_client_name "validator"
 systmpdir = File.expand_path(File.join(Dir.tmpdir, "chef_integration"))
 validation_key   File.join(systmpdir, "validation.pem")
 client_key       File.join(systmpdir, "client.pem")
-
+cache_type "Memory"
+cache_options({})
