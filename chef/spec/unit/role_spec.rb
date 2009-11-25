@@ -64,9 +64,6 @@ describe Chef::Role do
       @role.recipes.should == [ "one" ]
     end
 
-    it "should throw an ArgumentError if you feed it anything but an array" do
-      lambda { @role.recipes Hash.new }.should raise_error(ArgumentError)
-    end
   end
 
   describe "run_list" do
