@@ -83,7 +83,8 @@ class Chef
       end
 
       def data_bag(bag)
-        Chef::DataBag.load(bag)
+        rbag = Chef::DataBag.load(bag)
+        rbag.keys
       end
 
       def data_bag_item(bag, item)
