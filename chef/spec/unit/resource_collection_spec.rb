@@ -225,7 +225,7 @@ describe Chef::ResourceCollection do
   
   describe "provides access to the raw resources array" do
     it "returns the resources via the all_resources method" do
-      @rc.all_resources.should equal @rc.instance_variable_get(:@resources)
+      @rc.all_resources.should equal(@rc.instance_variable_get(:@resources))
     end
   end
   

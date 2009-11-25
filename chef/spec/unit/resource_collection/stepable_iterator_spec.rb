@@ -31,7 +31,7 @@ describe Chef::ResourceCollection::StepableIterator do
     end
     
     it "re-initializes the instance with a collection" do
-      @iterator.collection.should equal @simple_collection
+      @iterator.collection.should equal(@simple_collection)
       @iterator.size.should == 4
     end
 
@@ -49,7 +49,7 @@ describe Chef::ResourceCollection::StepableIterator do
         collected_by_index << @simple_collection[idx]
       end
       collected_by_index.should == @simple_collection
-      collected_by_index.should_not equal @simple_collection
+      collected_by_index.should_not equal(@simple_collection)
     end
     
     it "iterates over the collection with index and element" do
