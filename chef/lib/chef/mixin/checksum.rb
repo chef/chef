@@ -24,27 +24,7 @@ class Chef
     module Checksum
 
       def checksum(file)
-        stat = File.stat(file) 
-        cache = Chef::Cache.new
-
-        cache_key = "chef-file#{file.gsub(/(#{File::SEPARATOR}|\.)/, '-')}"
-
-        cstat = cache.fetch(cache_key)
-        
-        if (!cstat.nil? && cstat["mtime"] == stat.mtime.to_f)
-          cstat["checksum"]
-        else
-          digest = Digest::SHA256.new
-          fh = ::File.open(file)
-          fh.each do |line|
-            digest.update(line)
-          end
-          fh.close
-
-          fdigest = digest.hexdigest
-          cache.store(cache_key, { "mtime" => stat.mtime.to_f, "checksum" => fdigest })
-          fdigest
-        end
+        Chef::ChecksumCache.checksum_for_file(file)
       end
       
     end
