@@ -67,6 +67,14 @@ class Chef
         )
       end
       
+      def group(arg=nil)
+        set_or_return(
+          :group,
+          arg,
+          :kind_of => [String, Integer]
+        )
+      end
+      
       def svn_username(arg=nil)
         set_or_return(
           :svn_username,

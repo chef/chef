@@ -186,6 +186,15 @@ describe Chef::Provider::Git do
     @provider.sync
   end
   
+  it "runs a sync command with the user and group specified in the resource" do
+    @resource.user("whois")
+    @resource.group("thisis")
+    expected_cmd = "git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
+    @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir",
+                                                :user => "whois", :group => "thisis")
+    @provider.sync
+  end
+  
   it "compiles a sync command using remote tracking branches when remote is not ``origin''" do
     @resource.remote "opscode"
     expected_cmd =  "git config remote.opscode.url git://github.com/opscode/chef.git && " +
