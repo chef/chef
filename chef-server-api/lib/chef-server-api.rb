@@ -60,11 +60,12 @@ if defined?(Merb::Plugins)
     def self.activate
       Mixlib::Authentication::Log.logger = Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 
 
+      Chef::Nanite.in_event { Chef::Log.info("Nanite is ready") }
+
       Thread.new do
         until EM.reactor_running?
           sleep 1
         end
-        Chef::Nanite.in_event { Chef::Log.info("Nanite is ready") }
 
         unless Merb::Config.environment == "test"
           # create the couch design docs for nodes, roles, and databags
