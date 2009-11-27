@@ -72,6 +72,12 @@ describe Chef::Provider::Deploy do
     @provider.action_deploy
   end
   
+  it "runs action svn_force_export when new_resource.svn_force_export is true" do
+    @resource.svn_force_export true
+    @provider.scm_provider.should_receive(:action_force_export)
+    @provider.svn_force_export
+  end
+  
   it "Removes the old release before deploying when force deploying over it" do
     @provider.stub!(:all_releases).and_return([@expected_release_dir])
     FileUtils.should_receive(:rm_rf).with(@expected_release_dir)
