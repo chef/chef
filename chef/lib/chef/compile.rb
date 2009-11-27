@@ -22,11 +22,14 @@ require 'chef/node'
 require 'chef/role'
 require 'chef/log'
 require 'chef/mixin/deep_merge'
+require 'chef/mixin/language_include'
 
 class Chef
   class Compile
       
     attr_accessor :node, :cookbook_loader, :collection, :definitions
+
+    include Chef::Mixin::LanguageInclude
     
     # Creates a new Chef::Compile object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
@@ -138,21 +141,7 @@ class Chef
     def load_recipes
       expand_node
       @recipes.each do |recipe|
-        if @node.run_state[:seen_recipes].has_key?(recipe)
-          Chef::Log.debug("I am not loading #{recipe}, because I have already seen it.")
-          next
-        end
-        Chef::Log.debug("Loading Recipe #{recipe}")
-        @node.run_state[:seen_recipes][recipe] = true
-
-        rmatch = recipe.match(/(.+?)::(.+)/)
-        if rmatch
-         cookbook = @cookbook_loader[rmatch[1]]
-         cookbook.load_recipe(rmatch[2], @node, @collection, @definitions, @cookbook_loader)
-        else
-         cookbook = @cookbook_loader[recipe]
-         cookbook.load_recipe("default", @node, @collection, @definitions, @cookbook_loader)
-        end
+        include_recipe(recipe)
       end
       true
     end

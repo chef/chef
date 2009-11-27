@@ -132,7 +132,7 @@ class Chef
         yield @cookbook[cname]
       end
     end
-    
+
     private
     
       def load_ignore_file(ignore_file)

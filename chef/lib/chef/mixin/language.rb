@@ -90,7 +90,7 @@ class Chef
       def data_bag_item(bag, item)
         Chef::DataBagItem.load(bag, item)
       end
-      
+
     end
   end
 end
