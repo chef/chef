@@ -338,6 +338,10 @@ namespace :features do
     Cucumber::Rake::Task.new(:run_interval) do |t|
       t.profile = "client_run_interval"
     end
+
+    Cucumber::Rake::Task.new(:cookbook_sync) do |t|
+      t.profile = "client_cookbook_sync"
+    end
   end
 
   desc "Run cucumber tests for the cookbooks"

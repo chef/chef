@@ -27,6 +27,12 @@ Given /^we have an empty file named '(.+)'$/ do |filename|
   filename.close
 end
 
+Given /^we have an empty file named '(.+)' in the client cache$/ do |filename|
+  cache_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "tmp", "cache"))
+  filename = File.new(File.join(cache_dir, filename), 'w')
+  filename.close
+end
+
 Given /^we have the atime\/mtime of '(.+)'$/ do |filename|
   @mtime = File.mtime(File.join(tmpdir, filename))
   @atime = File.atime(File.join(tmpdir, filename))

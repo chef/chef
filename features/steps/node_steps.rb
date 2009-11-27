@@ -32,6 +32,12 @@ Given /^it includes the recipe '(.+)'$/ do |recipe|
   client.save_node
 end
 
+Given /^it includes no recipes$/ do 
+  self.recipe = "" 
+  client.node.run_list.reset
+  client.save_node
+end
+
 Given /^it includes the role '(.+)'$/ do |role|
   self.recipe = "role[#{role}]"
   client.node.run_list << "role[#{role}]" 
