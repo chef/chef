@@ -36,14 +36,16 @@ class Chef
           end
 
           Chef::Log.debug("Loading Attribute #{attrib}")
-          node.run_state[:seen_attributes][recipe] = true
+          node.run_state[:seen_attributes][attrib] = true
 
-          amatch = attrib.match(/(.+?)::(.+)/)
-          if amatch
-            cookbook = @cookbook_loader[amatch[1]]
+          @cookbook_loader = Chef::CookbookLoader.new
+          @cookbook_loader.load_cookbooks
+
+          if amatch = attrib.match(/(.+?)::(.+)/)
+            cookbook = @cookbook_loader[amatch[1].to_sym]
             cookbook.load_attribute(amatch[2], node)
           else
-            cookbook = @cookbook_loader[amatch[1]]
+            cookbook = @cookbook_loader[amatch[1].to_sym]
             cookbook.load_attribute("default", node)
           end
         end

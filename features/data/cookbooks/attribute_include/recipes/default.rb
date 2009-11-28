@@ -18,6 +18,6 @@
 #
 
 execute "append to #{node[:tmpdir]}/mars_volta" do
-  command "echo '#{node[:mars_volta]} is #{node[:mavolta_is]}' >> #{node[:tmpdir]}/mars_volta"
+  command "echo '#{node.mars_volta} is #{node.mars_volta_is}' >> #{node[:tmpdir]}/mars_volta"
 end
 
