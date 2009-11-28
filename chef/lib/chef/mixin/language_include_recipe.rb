@@ -1,6 +1,5 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -21,7 +20,7 @@ require 'chef/log'
 
 class Chef
   module Mixin
-    module LanguageInclude
+    module LanguageIncludeRecipe
 
       def include_recipe(*args)
         args.flatten.each do |recipe|

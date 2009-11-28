@@ -367,6 +367,9 @@ namespace :features do
     Cucumber::Rake::Task.new(:recipe_include) do |t|
       t.profile = "recipe_inclusion"
     end
+    Cucumber::Rake::Task.new(:attribute_include) do |t|
+      t.profile = "attribute_inclusion"
+    end
   end
   
   Cucumber::Rake::Task.new(:lwrp) do |t|

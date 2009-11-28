@@ -22,14 +22,14 @@ require 'chef/node'
 require 'chef/role'
 require 'chef/log'
 require 'chef/mixin/deep_merge'
-require 'chef/mixin/language_include'
+require 'chef/mixin/language_include_recipe'
 
 class Chef
   class Compile
       
     attr_accessor :node, :cookbook_loader, :collection, :definitions
 
-    include Chef::Mixin::LanguageInclude
+    include Chef::Mixin::LanguageIncludeRecipe
     
     # Creates a new Chef::Compile object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.

@@ -21,7 +21,7 @@ require 'chef/resource'
 Dir[File.join(File.dirname(__FILE__), 'resource/**/*.rb')].sort.each { |lib| require lib }
 require 'chef/mixin/from_file'
 require 'chef/mixin/language'
-require 'chef/mixin/language_include'
+require 'chef/mixin/language_include_recipe'
 require 'chef/mixin/recipe_definition_dsl_core'
 require 'chef/resource_collection'
 require 'chef/cookbook_loader'
@@ -32,7 +32,7 @@ class Chef
     
     include Chef::Mixin::FromFile
     include Chef::Mixin::Language
-    include Chef::Mixin::LanguageInclude
+    include Chef::Mixin::LanguageIncludeRecipe
     include Chef::Mixin::RecipeDefinitionDSLCore
     
     attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :collection, 

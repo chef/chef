@@ -1,6 +1,6 @@
 #
-# Cookbook Name:: attribute_include
-# Recipe:: default
+# Cookbook Name:: recipe_include
+# Recipe:: second 
 #
 # Copyright 2009, Opscode
 #
@@ -17,5 +17,7 @@
 # limitations under the License.
 #
 
-include_recipe "recipe_include::second"
+execute "append to #{node[:tmpdir]}/mars_volta" do
+  command "echo '#{node[:mars_volta]} is #{node[:mavolta_is]}' >> #{node[:tmpdir]}/mars_volta"
+end
 
