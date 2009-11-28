@@ -38,8 +38,7 @@ class Chef
           Chef::Log.debug("Loading Attribute #{attrib}")
           node.run_state[:seen_attributes][attrib] = true
 
-          @cookbook_loader = Chef::CookbookLoader.new
-          @cookbook_loader.load_cookbooks
+          @cookbook_loader ||= (cl = CookbookLoader.new; cl.load_cookbooks; cl)
 
           if amatch = attrib.match(/(.+?)::(.+)/)
             cookbook = @cookbook_loader[amatch[1].to_sym]
