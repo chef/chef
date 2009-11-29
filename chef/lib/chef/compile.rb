@@ -39,6 +39,7 @@ class Chef
     def initialize(node=nil)
       @node = node 
       @cookbook_loader = Chef::CookbookLoader.new
+      @node.cookbook_loader = @cookbook_loader
       @collection = Chef::ResourceCollection.new
       @definitions = Hash.new
       @recipes = Array.new
