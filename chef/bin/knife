@@ -182,7 +182,7 @@ class Knife < Thor
       role = {
         "name" => options[:role],
         "description" => options[:description] || "DESCRIPTION",
-        "recipes" => [],
+        "run_list" => [],
         "default_attributes" => { },
         "override_attributes" => { },
         "chef_type" => "role",

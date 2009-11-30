@@ -59,9 +59,23 @@ describe Chef::Role do
       @role.recipes.should == [ "one", "two" ]
     end
 
-    it "should throw an ArgumentError if you feed it anything but an array" do
-      lambda { @role.recipes Hash.new }.should raise_error(ArgumentError)
+    it "should not list roles in the recipe array" do
+      @role.run_list([ "one", "role[two]"])
+      @role.recipes.should == [ "one" ]
     end
+
+  end
+
+  describe "run_list" do
+    it "should let you set the run list" do
+      @role.run_list([ "one", "role[two]"]).should == [ "one", "role[two]"]
+    end
+
+    it "should let you return the run list" do
+      @role.run_list([ "one", "role[two]"])
+      @role.run_list.should == [ "one", "role[two]"]
+    end
+
   end
 
   describe "default_attributes" do
@@ -98,7 +112,7 @@ describe Chef::Role do
     before(:each) do
       @role.name('mars_volta')
       @role.description('Great band!')
-      @role.recipes('one', 'two')
+      @role.run_list('one', 'two', 'role[a]')
       @role.default_attributes({ :el_groupo => 'nuevo' })
       @role.override_attributes({ :deloused => 'in the comatorium' })
       @serial = @role.to_json
@@ -128,13 +142,16 @@ describe Chef::Role do
     it "should include 'recipes'" do
       @serial.should =~ /"recipes":\["one","two"\]/
     end
+    it "should include 'run_list'" do
+      @serial.should =~ /"run_list":\["recipe\[one\]","recipe\[two\]","role\[a\]"\]/
+    end
   end
 
   describe "deserialize" do
     before(:each) do
       @role.name('mars_volta')
       @role.description('Great band!')
-      @role.recipes('one', 'two')
+      @role.run_list('one', 'two', 'role[a]')
       @role.default_attributes({ 'el_groupo' => 'nuevo' })
       @role.override_attributes({ 'deloused' => 'in the comatorium' })
       @deserial = JSON.parse(@role.to_json)
@@ -149,7 +166,7 @@ describe Chef::Role do
       description
       default_attributes
       override_attributes
-      recipes
+      run_list
     }.each do |t| 
       it "should match '#{t}'" do
         @deserial.send(t.to_sym).should == @role.send(t.to_sym)
