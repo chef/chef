@@ -26,6 +26,7 @@ class Chef
         super(name, collection, node)
         @resource_name = :subversion
         @provider = Chef::Provider::Subversion
+        allowed_actions << :force_export
       end
       
     end

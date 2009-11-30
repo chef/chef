@@ -191,8 +191,21 @@ class Chef
       end
       
       def update_cached_repo
+        if @new_resource.svn_force_export
+          svn_force_export
+        else
+          run_scm_sync
+        end
+      end
+      
+      def run_scm_sync
         Chef::Log.info "updating the cached checkout"
         @scm_provider.action_sync
+      end
+      
+      def svn_force_export
+        Chef::Log.info "exporting source repository to #{@new_resource.destination}"
+        @scm_provider.action_force_export
       end
       
       def copy_cached_repo
