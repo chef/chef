@@ -1,6 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2009 Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,37 +20,79 @@
 
 require 'chef/log'
 require 'chef/config'
+require 'chef/mixin/convert_to_class_name'
+require 'singleton'
 require 'moneta'
 
 class Chef 
   class Cache
-
+    include Chef::Mixin::ConvertToClassName
+    include ::Singleton
+    
     attr_reader :moneta
-
-    def initialize(type=nil, options=nil)
-      type ||= Chef::Config[:cache_type]
+    
+    def initalize(*args)
+      reset!(*args)
+    end
+    
+    def reset!(backend=nil, options=nil)
+      backend ||= Chef::Config[:cache_type]
       options ||= Chef::Config[:cache_options]
-
-      if type == "BasicFile"
-        require_type = "basic_file"
-      else
-        require_type = type.downcase
-      end
-
+      
       begin
-        require "moneta/#{require_type}"
-      rescue LoadError
-        raise LoadError, "Cannot find a Moneta adaptor named #{require_type}!"
+        require "moneta/#{convert_to_snake_case(backend, 'Moneta')}"
+      rescue LoadError => e
+        Chef::Log.fatal("Could not load Moneta back end #{backend.inspect}")
+        raise e
       end
-
-      m = Moneta.const_get(type)
-      @moneta = m.new(options)
+      
+      @moneta = Moneta.const_get(backend).new(options)
     end
 
-    def method_missing(method, *args)
-      @moneta.send(method, *args)
+  end
+  
+  class ChecksumCache < Cache
+    
+    def self.checksum_for_file(*args)
+      instance.checksum_for_file(*args)
     end
-
+    
+    def checksum_for_file(file)
+      key, fstat = filename_to_key(file), File.stat(file)
+      lookup_checksum(key, fstat) || generate_checksum(key, file, fstat)
+    end
+    
+    def lookup_checksum(key, fstat)
+      cached = moneta.fetch(key)
+      if cached && file_unchanged?(cached, fstat)
+        cached["checksum"]
+      else
+        nil
+      end
+    end
+    
+    def generate_checksum(key, file, fstat)
+      checksum = checksum_file(file)
+      moneta.store(key, {"mtime" => fstat.mtime.to_f, "checksum" => checksum})
+      checksum
+    end
+    
+    private
+    
+    def file_unchanged?(cached, fstat)
+      cached["mtime"].to_f == fstat.mtime.to_f
+    end
+    
+    def checksum_file(file)
+      digest = Digest::SHA256.new
+      IO.foreach(file) {|line| digest.update(line) }
+      digest.hexdigest
+    end
+    
+    def filename_to_key(file)
+      "chef-file-#{file.gsub(/(#{File::SEPARATOR}|\.)/, '-')}"
+    end
+    
   end
 end
 
