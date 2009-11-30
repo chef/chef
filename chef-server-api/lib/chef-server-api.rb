@@ -62,12 +62,6 @@ if defined?(Merb::Plugins)
 
 
       Thread.new do
-        until EM.reactor_running?
-          sleep 1
-        end
-        
-        Chef::Nanite.in_event { Chef::Log.info("Nanite is ready") }
-
         unless Merb::Config.environment == "test"
           # create the couch design docs for nodes, roles, and databags
           Chef::CouchDB.new.create_id_map
@@ -100,6 +94,12 @@ if defined?(Merb::Plugins)
           # Generate the Web UI Key 
           Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
         end
+
+        until EM.reactor_running?
+          sleep 1
+        end
+
+        Chef::Nanite.in_event { Chef::Log.info("Nanite is ready") }
       end
     end
 
