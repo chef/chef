@@ -95,11 +95,11 @@ if defined?(Merb::Plugins)
           Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
         end
 
+        Chef::Nanite.in_event { Chef::Log.info("Nanite is ready") }
         until EM.reactor_running?
           sleep 1
         end
 
-        Chef::Nanite.in_event { Chef::Log.info("Nanite is ready") }
       end
     end
 
