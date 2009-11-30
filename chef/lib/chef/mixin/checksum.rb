@@ -17,14 +17,14 @@
 #
 
 require 'digest/sha2'
-require 'chef/cache'
+require 'chef/cache/checksum'
 
 class Chef
   module Mixin
     module Checksum
 
       def checksum(file)
-        Chef::ChecksumCache.checksum_for_file(file)
+        Chef::Cache::Checksum.checksum_for_file(file)
       end
       
     end

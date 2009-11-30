@@ -31,8 +31,8 @@ class Chef
     
     attr_reader :moneta
     
-    def initalize(*args)
-      reset!(*args)
+    def initialize(*args)
+      self.reset!(*args)
     end
     
     def reset!(backend=nil, options=nil)
@@ -45,54 +45,10 @@ class Chef
         Chef::Log.fatal("Could not load Moneta back end #{backend.inspect}")
         raise e
       end
-      
+     
       @moneta = Moneta.const_get(backend).new(options)
     end
 
-  end
-  
-  class ChecksumCache < Cache
-    
-    def self.checksum_for_file(*args)
-      instance.checksum_for_file(*args)
-    end
-    
-    def checksum_for_file(file)
-      key, fstat = filename_to_key(file), File.stat(file)
-      lookup_checksum(key, fstat) || generate_checksum(key, file, fstat)
-    end
-    
-    def lookup_checksum(key, fstat)
-      cached = moneta.fetch(key)
-      if cached && file_unchanged?(cached, fstat)
-        cached["checksum"]
-      else
-        nil
-      end
-    end
-    
-    def generate_checksum(key, file, fstat)
-      checksum = checksum_file(file)
-      moneta.store(key, {"mtime" => fstat.mtime.to_f, "checksum" => checksum})
-      checksum
-    end
-    
-    private
-    
-    def file_unchanged?(cached, fstat)
-      cached["mtime"].to_f == fstat.mtime.to_f
-    end
-    
-    def checksum_file(file)
-      digest = Digest::SHA256.new
-      IO.foreach(file) {|line| digest.update(line) }
-      digest.hexdigest
-    end
-    
-    def filename_to_key(file)
-      "chef-file-#{file.gsub(/(#{File::SEPARATOR}|\.)/, '-')}"
-    end
-    
   end
 end
 
