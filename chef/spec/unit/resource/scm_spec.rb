@@ -65,6 +65,17 @@ describe Chef::Resource::Scm do
     @resource.user.should eql(0)
   end
   
+  it "takes a string for the group to run as, defaulting to nil" do
+    @resource.group.should be_nil
+    @resource.group "opsdevs"
+    @resource.group.should == "opsdevs"
+  end
+  
+  it "also takes an integer for the group to run as" do
+    @resource.group 23
+    @resource.group.should == 23
+  end
+  
   it "has a svn_username String attribute" do
     @resource.svn_username "moartestsplz"
     @resource.svn_username.should eql("moartestsplz")
