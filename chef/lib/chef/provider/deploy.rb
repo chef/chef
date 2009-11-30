@@ -143,9 +143,10 @@ class Chef
       end
       
       def migrate
+        run_symlinks_before_migrate
+        
         if @new_resource.migrate
           enforce_ownership
-          link_shared_db_config_to_current_release
           
           environment = @new_resource.environment
           env_info = environment && environment.map do |key_and_val| 
@@ -213,7 +214,7 @@ class Chef
         enforce_ownership
       end
       
-      def link_shared_db_config_to_current_release
+      def run_symlinks_before_migrate
         links_info = @new_resource.symlink_before_migrate.map { |src, dst| "#{src} => #{dst}" }.join(", ")
         Chef::Log.info "Making pre-migration symlinks: #{links_info}"
         @new_resource.symlink_before_migrate.each do |src, dest|
@@ -231,7 +232,7 @@ class Chef
         @new_resource.symlinks.each do |src, dest|
           FileUtils.ln_sf(@new_resource.shared_path + "/#{src}",  release_path + "/#{dest}")
         end
-        link_shared_db_config_to_current_release
+        run_symlinks_before_migrate
         enforce_ownership
       end
       

@@ -211,9 +211,10 @@ describe Chef::Provider::Deploy do
     @provider.enforce_ownership
   end
   
-  it "skips the migration when resource.migrate => false" do
+  it "skips the migration when resource.migrate => false but runs symlinks before migration" do
     @resource.migrate false
     @provider.should_not_receive :run_command
+    @provider.should_receive :run_symlinks_before_migrate
     @provider.migrate
   end
   
@@ -337,7 +338,7 @@ describe Chef::Provider::Deploy do
   
   it "shouldn't give a no method error on migrate if the environment is nil" do
     @provider.stub!(:enforce_ownership)
-    @provider.stub!(:link_shared_db_config_to_current_release)
+    @provider.stub!(:run_symlinks_before_migrate)
     @provider.stub!(:run_command)
     @provider.migrate
   end
