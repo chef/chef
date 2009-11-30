@@ -6,6 +6,7 @@ if defined?(Merb::Plugins)
   dependency 'merb-slices', :immediate => true
   dependency 'chef', :immediate=>true unless defined?(Chef)
   dependency 'nanite', :immediate=>true 
+  dependency 'uuidtools', :immediate=>true 
 
   require 'chef/role'
   require 'chef/data_bag'
