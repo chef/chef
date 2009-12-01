@@ -120,10 +120,8 @@ module Merb
             value.each_index { |i| as_hash[i] = value[i] }
             p = count
             to_send << Proc.new { append_tree(name, html, as_hash, count, p, override) }
-          when String,Symbol
-            local_html << "<td><div class='json-attr'>#{value}</div></td>"
           else
-            local_html << "<td>#{JSON.pretty_generate(value)}</td>"
+            local_html << "<td><div class='json-attr'>#{value}</div></td>"
           end
           local_html << "</tr>"
           local_html.sub!(/class='collapsed/, 'class=\'collapsed parent') if is_parent
