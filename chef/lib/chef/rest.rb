@@ -278,6 +278,10 @@ class Chef
         end
         run_request(:GET, create_url(res['location']), {}, false, limit - 1, raw)
       else
+        if res['content-type'] =~ /json/
+          exception = JSON.parse(res.body)
+          Chef::Log.error("HTTP Request Error #{res.code} #{res.message}: #{exception["error"].join(", ")}")
+        end
         res.error!
       end
     end
