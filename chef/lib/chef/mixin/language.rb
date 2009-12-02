@@ -79,7 +79,18 @@ class Chef
       end
 
       def search(*args, &block)
-        Chef::Search::Query.new.search(*args, &block)
+        # If you pass a block, or have at least the start argument, do raw result parsing
+        # 
+        # Otherwise, do the iteration for the end user
+        if Kernel.block_given? || args.length >= 4 
+          Chef::Search::Query.new.search(*args, &block)
+        else 
+          results = Array.new
+          Chef::Search::Query.new.search(*args) do |o|
+            results << o 
+          end
+          results
+        end
       end
 
       def data_bag(bag)

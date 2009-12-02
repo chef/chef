@@ -24,9 +24,10 @@
 
 
 sleep 10
-objects = search(:users, "*:*")
+objects, start, total = search(:users, "*:*", nil, 0, 10) 
 
 objects.each do |entry|
   file "#{node[:tmpdir]}/#{entry["id"]}"
 end
+
 
