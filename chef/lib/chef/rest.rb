@@ -280,7 +280,7 @@ class Chef
       else
         if res['content-type'] =~ /json/
           exception = JSON.parse(res.body)
-          Chef::Log.error("HTTP Request Error #{res.code} #{res.message}: #{exception["error"].join(", ")}")
+          Chef::Log.warn("HTTP Request Returned #{res.code} #{res.message}: #{exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"]}")
         end
         res.error!
       end
