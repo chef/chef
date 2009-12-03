@@ -47,3 +47,8 @@ Chef::Config[:cache_options] = { }
 Chef::Log.level(Chef::Config.log_level)
 Chef::Config.solo(false)
 
+def redefine_argv(value)
+  Object.send(:remove_const, :ARGV)
+  Object.send(:const_set, :ARGV, value)
+end
+
