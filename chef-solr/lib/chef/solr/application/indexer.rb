@@ -24,6 +24,7 @@ require 'chef/solr/index'
 require 'chef/solr/index_actor'
 require 'chef/daemon'
 require 'chef/nanite'
+require 'chef/webui_user'
 require 'nanite'
 require 'eventmachine'
 
