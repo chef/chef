@@ -98,7 +98,8 @@ class Chef
 
     authorized_openid_identifiers nil
     authorized_openid_providers nil
-    cookbook_path [ "/var/chef/site-cookbooks", "/var/chef/cookbooks" ]
+    cookbook_path [ "/var/chef/cookbooks", "/var/chef/site-cookbooks" ]
+    cookbook_tarballs_path "/var/chef/cookbook-tarballs"
     couchdb_database "chef"
     couchdb_url "http://localhost:5984"
     couchdb_version nil
