@@ -10,11 +10,11 @@
             = @client.admin
           .left
             %h3 Public Key
-            = @client.public_key
+            %pre= @client.public_key
           -unless @private_key.nil?
             .left
               %h3 Private Key (Will not show again, Please copy!)
               %h4.bold Please copy and save as the client's validation key (e.g. client.pem)
-              = @private_key.to_s
+              %pre= @private_key.to_s
           
 
