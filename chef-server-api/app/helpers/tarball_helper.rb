@@ -27,7 +27,7 @@ module Merb
         raise FileParameterException, "invalid parameter: file must be a File" unless file_param.respond_to?(:has_key?) && file_param[:tempfile].respond_to?(:read)
         tarball_path = file_param[:tempfile].path
         raise FileParameterException, "invalid tarball: (try creating with 'tar czf cookbook.tar.gz cookbook/')" unless system("tar", "tzf", tarball_path)
-        entry_roots = `tar tzf #{tarball_path}`.split("\n").map{|e|e.split('/').first}.uniq
+        entry_roots = `tar tzf #{tarball_path}`.split("\n").map{|e|(e.split('/')-['.']).first}.uniq
         raise FileParameterException, "invalid tarball: tarball root must contain #{cookbook_name}" unless entry_roots.include?(cookbook_name)
       end
 
