@@ -194,12 +194,25 @@ describe Chef::Provider::Git do
     @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir")
     @provider.sync
   end
-  
+ 
   it "does a checkout running the clone command then running the after clone command from the destination dir" do
+    ::File.stub!(:exist?).with("/my/deploy/dir").and_return(false)
+    ::Dir.stub!(:entries).with("/my/deploy/dir").and_return(['.','..'])
     @provider.should_receive(:clone)
     @provider.should_receive(:checkout)
     @provider.should_receive(:enable_submodules)
     @resource.should_receive(:updated=).at_least(1).times.with(true)
+    @provider.action_checkout
+  end
+
+  it "should not checkout if the destination exists or is a non empty directory" do
+    ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
+    ::Dir.stub!(:entries).with("/my/deploy/dir").and_return(['.','..','foo','bar'])
+    @provider.should_not_receive(:clone)
+    @provider.should_not_receive(:checkout)
+    @provider.should_not_receive(:enable_submodules)
+    @resource.should_not_receive(:updated=)
+    Chef::Log.should_receive(:info).with("Taking no action, checkout destination /my/deploy/dir already exists or is a non-empty directory")
     @provider.action_checkout
   end
 

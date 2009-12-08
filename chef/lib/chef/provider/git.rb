@@ -36,10 +36,15 @@ class Chef
       end
       
       def action_checkout
-        clone
-        checkout
-        enable_submodules
-        @new_resource.updated = true
+        if !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination) == ['.','..']
+          clone
+          checkout
+          enable_submodules
+          @new_resource.updated = true
+        else
+          Chef::Log.info "Taking no action, checkout destination " +
+          "#{@new_resource.destination} already exists or is a non-empty directory"
+        end
       end
       
       def action_export
