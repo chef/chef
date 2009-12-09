@@ -43,7 +43,8 @@ describe Chef::Provider::User::Useradd, "set_options" do
       :password => "abracadabra",
       :updated => nil
     )
-    @new_resource.stub!(:supports).and_return({:manage_home => false})
+    @new_resource.stub!(:supports).and_return({:manage_home => false,
+                                                :non_unique => false})
     @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
   end
@@ -68,7 +69,8 @@ describe Chef::Provider::User::Useradd, "set_options" do
     end
     
     it "should set the option for #{attribute} if the new resources #{attribute} is not null, without homedir management" do
-      @new_resource.stub!(:supports).and_return({:manage_home => false})
+      @new_resource.stub!(:supports).and_return({:manage_home => false,
+                                                  :non_unique => false})
       @new_resource.stub!(attribute).and_return("hola")
       @provider.set_options.should eql(" #{option} '#{@new_resource.send(attribute)}' #{@new_resource.username}")
     end
@@ -87,11 +89,23 @@ describe Chef::Provider::User::Useradd, "set_options" do
   describe "when the resource has a different home directory and supports home directory management" do
     before do
       @new_resource.stub!(:home).and_return("/wowaweea")
-      @new_resource.stub!(:supports).and_return({:manage_home => true})
+      @new_resource.stub!(:supports).and_return({:manage_home => true,
+                                                :non_unique => false})
     end
     
     it "should set -d /homedir -m" do    
       @provider.set_options.should eql(" -d '/wowaweea' -m adam")
+    end
+  end
+
+  describe "when the resource supports non_unique ids" do
+    before do
+      @new_resource.stub!(:supports).and_return({:manage_home => false,
+                                                 :non_unique => true})
+    end
+    
+    it "should set -m -o" do    
+      @provider.set_options.should eql(" -o adam")
     end
   end
 end
@@ -130,7 +144,8 @@ describe Chef::Provider::User::Useradd, "remove_user" do
     @new_resource = mock("Chef::Resource::User", 
       :null_object => true,
       :username => "adam",
-      :supports => { :manage_home => false }
+      :supports => { :manage_home => false,
+                     :non_unique => false}
     )
     @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
   end
@@ -141,8 +156,16 @@ describe Chef::Provider::User::Useradd, "remove_user" do
   end
   
   it "should run userdel with the new resources user name and -r if manage_home is true" do
-    @new_resource.stub!(:supports).and_return({ :manage_home => true })
+    @new_resource.stub!(:supports).and_return({ :manage_home => true,
+                                                :non_unique => false})
     @provider.should_receive(:run_command).with({ :command => "userdel -r #{@new_resource.username}"}).and_return(true)
+    @provider.remove_user
+  end
+
+  it "should run userdel with the new resources user name if non_unique is true" do
+    @new_resource.stub!(:supports).and_return({ :manage_home => false,
+                                                :non_unique => true})
+    @provider.should_receive(:run_command).with({ :command => "userdel #{@new_resource.username}"}).and_return(true)
     @provider.remove_user
   end
 end

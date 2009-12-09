@@ -50,6 +50,10 @@ describe Chef::Resource::User, "initialize" do
     @resource.supports[:manage_home].should eql(false)
   end
   
+  it "should set supports[:non_unique] to false" do
+    @resource.supports[:non_unique].should eql(false)
+  end
+  
   %w{create remove modify manage lock unlock}.each do |action|
     it "should allow action #{action}" do
       @resource.allowed_actions.detect { |a| a == action.to_sym }.should eql(action.to_sym)
