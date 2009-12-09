@@ -37,12 +37,11 @@ class Chef
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
     
-    attr_accessor :node, :registration, :safe_name, :json_attribs, :validation_token, :node_name, :ohai
+    attr_accessor :node, :registration, :json_attribs, :validation_token, :node_name, :ohai
     
     # Creates a new Chef::Client.
     def initialize()
       @node = nil
-      @safe_name = nil
       @validation_token = nil
       @registration = nil
       @json_attribs = nil
@@ -125,14 +124,13 @@ class Chef
 
     def determine_node_name
       run_ohai      
-      unless safe_name && node_name
+      unless node_name
         if Chef::Config[:node_name]
           @node_name = Chef::Config[:node_name]
         else
           @node_name ||= ohai[:fqdn] ? ohai[:fqdn] : ohai[:hostname]
           Chef::Config[:node_name] = @node_name
         end
-        @safe_name = @node_name.gsub(/\./, '_')
       end
       @node_name
     end
@@ -148,10 +146,10 @@ class Chef
     def build_node(node_name=nil, solo=false)
       node_name ||= determine_node_name
       raise RuntimeError, "Unable to determine node name from ohai" unless node_name
-      Chef::Log.debug("Building node object for #{@safe_name}")
+      Chef::Log.debug("Building node object for #{@node_name}")
       unless solo
         begin
-          @node = @rest.get_rest("nodes/#{@safe_name}")
+          @node = @rest.get_rest("nodes/#{@node_name}")
         rescue Net::HTTPServerException => e
           unless e.message =~ /^404/
             raise e
@@ -272,7 +270,7 @@ class Chef
     # true:: Always returns true
     def sync_cookbooks
       Chef::Log.debug("Synchronizing cookbooks")
-      cookbook_hash = @rest.get_rest("nodes/#{@safe_name}/cookbooks")
+      cookbook_hash = @rest.get_rest("nodes/#{@node_name}/cookbooks")
       Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
       Chef::FileCache.list.each do |cache_file|
         if cache_file =~ /^cookbooks\/(.+?)\//
@@ -292,9 +290,9 @@ class Chef
     # === Returns
     # true:: Always returns true
     def save_node
-      Chef::Log.debug("Saving the current state of node #{@safe_name}")
+      Chef::Log.debug("Saving the current state of node #{@node_name}")
       if @node_exists
-        @node = @rest.put_rest("nodes/#{@safe_name}", @node)
+        @node = @rest.put_rest("nodes/#{@node_name}", @node)
       else
         result = @rest.post_rest("nodes", @node)
         @node = @rest.get_rest(result['uri'])
@@ -309,13 +307,13 @@ class Chef
     # === Returns
     # true:: Always returns true
     def converge(solo=false)
-      Chef::Log.debug("Compiling recipes for node #{@safe_name}")
+      Chef::Log.debug("Compiling recipes for node #{@node_name}")
       unless solo
         Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
       end
       compile = Chef::Compile.new(@node)
       
-      Chef::Log.debug("Converging node #{@safe_name}")
+      Chef::Log.debug("Converging node #{@node_name}")
       cr = Chef::Runner.new(@node, compile.collection, compile.definitions, compile.cookbook_loader)
       cr.converge
       true

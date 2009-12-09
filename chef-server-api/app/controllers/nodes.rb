@@ -24,12 +24,13 @@ class ChefServerApi::Nodes < ChefServerApi::Application
   provides :json
   
   before :authenticate_every 
-  before :fix_up_node_id
   before :is_correct_node, :only => [ :update, :destroy, :cookbooks ]
   
   def index
     @node_list = Chef::Node.cdb_list 
-    display(@node_list.inject({}) { |r,n| r[n] = absolute_slice_url(:node, escape_node_id(n)); r })
+    display(@node_list.inject({}) do |r,n|
+      r[n] = absolute_slice_url(:node, n); r
+    end)
   end
 
   def show
@@ -56,7 +57,7 @@ class ChefServerApi::Nodes < ChefServerApi::Application
     raise Forbidden, "Node already exists" if exists
     self.status = 201
     @node.cdb_save
-    display({ :uri => absolute_slice_url(:node, escape_node_id(@node.name)) })
+    display({ :uri => absolute_slice_url(:node, @node.name) })
   end
 
   def update

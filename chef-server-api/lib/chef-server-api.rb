@@ -100,9 +100,11 @@ if defined?(Merb::Plugins)
       scope.resources :users
       
       # Nodes
-      scope.match('/nodes/:id/cookbooks', :method => 'get').to(:controller => "nodes", :action => "cookbooks")
-      scope.resources :nodes
-
+      scope.resources :nodes, :id => /[^\/]+/
+      scope.match('/nodes/:id/cookbooks',
+                  :id => /[^\/]+/,
+                  :method => 'get').
+                  to(:controller => "nodes", :action => "cookbooks")
       # Roles
       scope.resources :roles
 
