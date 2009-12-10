@@ -122,6 +122,30 @@ Before do
         n.run_list << "node_cookbook_sync"
         n
       end
+    },
+    'hash' => {
+      'nothing'   => Hash.new,
+      'name only' => { :name => 'test_cookbook' }
+    },
+    'file' => {
+      'blank file parameter' => {
+        :file => nil
+      },
+      'string file parameter' => {
+        :file => "just some text"
+      },
+      'original cookbook tarball' => {
+        :file => File.new(File.join(datadir, "cookbook_tarballs", "original.tar.gz"), 'rb')
+      },
+      'new cookbook tarball' => {
+        :file => File.new(File.join(datadir, "cookbook_tarballs", "new.tar.gz"), 'rb')
+      },
+      'not a tarball' => {
+        :file => File.new(File.join(datadir, "cookbook_tarballs", "not_a_tarball.txt"), 'rb')
+      },
+      'empty tarball' => {
+        :file => File.new(File.join(datadir, "cookbook_tarballs", "empty_tarball.tar.gz"), 'rb')
+      }
     }
   }
   @stash = {}

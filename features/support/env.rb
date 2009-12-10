@@ -151,6 +151,10 @@ module ChefWorld
   def tmpdir
     @tmpdir ||= File.join(Dir.tmpdir, "chef_integration")
   end
+
+  def server_tmpdir
+    @server_tmpdir ||= File.expand_path(File.join(datadir, "tmp"))
+  end
   
   def datadir
     @datadir ||= File.join(File.dirname(__FILE__), "..", "data")

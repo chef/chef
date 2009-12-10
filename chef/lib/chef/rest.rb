@@ -36,14 +36,15 @@ class Chef
       include Singleton
     end
     
-    attr_accessor :url, :cookies, :signing_key
+    attr_accessor :url, :cookies, :client_name, :signing_key, :signing_key_filename
     
-    def initialize(url, client_name=Chef::Config[:node_name], signing_key=Chef::Config[:client_key])
+    def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key])
       @url = url
       @cookies = CookieJar.instance
       @client_name = client_name
-      if signing_key
-        @signing_key = load_signing_key(signing_key) 
+      if signing_key_filename
+        @signing_key_filename = signing_key_filename
+        @signing_key = load_signing_key(signing_key_filename) 
       else
         @signing_key = nil
       end
