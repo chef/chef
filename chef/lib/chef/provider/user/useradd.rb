@@ -97,6 +97,7 @@ class Chef
               opts << " -d '#{@new_resource.home}'"
             end
           end
+          opts << " -o" if @new_resource.supports[:non_unique]
           opts << " #{@new_resource.username}"
           opts
         end
