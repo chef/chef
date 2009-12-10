@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<haml>, [">= 0"])
       s.add_dependency(%q<ruby-openid>, [">= 0"])
       s.add_dependency(%q<json>, [">= 0"])
-      s.add_dependency(%q<syntax>, [">= 0"])
+      s.add_dependency(%q<coderay>, [">= 0"])
     end
   else
     s.add_dependency(%q<stomp>, [">= 0"])

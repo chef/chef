@@ -8,7 +8,7 @@ if defined?(Merb::Plugins)
   require 'chef/role'
   require 'chef/webui_user'
 
-  require 'syntax/convertors/html'
+  require 'coderay'
 
   Merb::Plugins.add_rakefiles "chef-server-webui/merbtasks", "chef-server-webui/slicetasks", "chef-server-webui/spectasks"
 
