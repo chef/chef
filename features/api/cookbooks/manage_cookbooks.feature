@@ -38,34 +38,28 @@ Feature: CRUD cookbook tarballs
      Then the response code should be '400'
       And the inflated responses key 'error' should include 'cookbook already exists'
 
-  # TODO: when CHEF-780 is resolved, uncomment the 400 response expectation and remove the 401 expectation. Note: when authenticate_every is commented out and the 400 is expected, it behaves properly
   Scenario: Should not be able to create a cookbook without a file parameter
     Given a 'registration' named 'bobo' exists
       And a 'hash' named 'nothing'
      When I create a cookbook named 'test_cookbook' with 'nothing'
-#     Then the response code should be '400'
-#      And the inflated responses key 'error' should include 'missing required parameter: file'
-     Then the response code should be '401'
+     Then the response code should be '400'
+      And the inflated responses key 'error' should include 'missing required parameter: file'
 
-  # TODO: when CHEF-780 is resolved, uncomment the 400 response expectation and remove the 401 expectation. Note: when authenticate_every is commented out and the 400 is expected, it behaves properly
 @manage_cookbook_tarballs_blank_file
   Scenario: Should not be able to create a cookbook with a blank file parameter
     Given a 'registration' named 'bobo' exists
       And a 'file' named 'blank file parameter'
      When I create a cookbook named 'test_cookbook' with 'blank file parameter'
-#     Then the response code should be '400'
-#      And the inflated responses key 'error' should include 'invalid parameter: file must be a File'
-     Then the response code should be '401'
+     Then the response code should be '400'
+      And the inflated responses key 'error' should include 'invalid parameter: file must be a File'
 
-  # TODO: when CHEF-780 is resolved, uncomment the 400 response expectation and remove the 401 expectation. Note: when authenticate_every is commented out and the 400 is expected, it behaves properly
 @manage_cookbook_tarballs_string_file
   Scenario: Should not be able to create a cookbook with a string file parameter
     Given a 'registration' named 'bobo' exists
       And a 'file' named 'string file parameter'
      When I create a cookbook named 'test_cookbook' with 'string file parameter'
-#     Then the response code should be '400'
-#      And the inflated responses key 'error' should include 'invalid parameter: file must be a File'
-     Then the response code should be '401'
+     Then the response code should be '400'
+      And the inflated responses key 'error' should include 'invalid parameter: file must be a File'
 
   Scenario: Should not be able to create a cookbook with an invalid tarball
     Given a 'registration' named 'bobo' exists
@@ -137,27 +131,23 @@ Feature: CRUD cookbook tarballs
      Then the response code should be '400'
       And the inflated responses key 'error' should include 'missing required parameter: file'
 
-  # TODO: when CHEF-780 is resolved, uncomment the 400 response expectation and remove the 401 expectation. Note: when authenticate_every is commented out and the 400 is expected, it behaves properly
   Scenario: Should not be able to update a cookbook with a blank file parameter
     Given a 'registration' named 'bobo' exists
       And a 'file' named 'original cookbook tarball'
       And a 'file' named 'blank file parameter'
       And a cookbook named 'test_cookbook' is created with 'original cookbook tarball'
      When I upload 'blank file parameter' to cookbook 'test_cookbook'
-#     Then the response code should be '400'
-#      And the inflated responses key 'error' should include 'invalid parameter: file must be a File'
-     Then the response code should be '401'
+     Then the response code should be '400'
+      And the inflated responses key 'error' should include 'invalid parameter: file must be a File'
 
-  # TODO: when CHEF-780 is resolved, uncomment the 400 response expectation and remove the 401 expectation. Note: when authenticate_every is commented out and the 400 is expected, it behaves properly
   Scenario: Should not be able to update a cookbook with a string file parameter
     Given a 'registration' named 'bobo' exists
       And a 'file' named 'original cookbook tarball'
       And a 'file' named 'string file parameter'
       And a cookbook named 'test_cookbook' is created with 'original cookbook tarball'
      When I upload 'string file parameter' to cookbook 'test_cookbook'
-#     Then the response code should be '400'
-#      And the inflated responses key 'error' should include 'invalid parameter: file must be a File'
-     Then the response code should be '401'
+     Then the response code should be '400'
+      And the inflated responses key 'error' should include 'invalid parameter: file must be a File'
 
   Scenario: Should not be able to update a cookbook with an invalid tarball
     Given a 'registration' named 'bobo' exists
