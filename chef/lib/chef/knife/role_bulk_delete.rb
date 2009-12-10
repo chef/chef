@@ -22,9 +22,9 @@ require 'json'
 
 class Chef
   class Knife
-    class NodeBulkDelete < Knife
+    class RoleBulkDelete < Knife
 
-      banner "Sub-Command: node bulk delete (options)"
+      banner "Sub-Command: role bulk delete (options)"
 
       option :regex,
         :short => "-r [REGEX]",
@@ -32,12 +32,13 @@ class Chef
         :description => "Narrow the operation via regular expression"
 
       def run 
-        bulk_delete(Chef::Node, "node")
+        bulk_delete(Chef::Role, "role")
       end
 
     end
   end
 end
+
 
 
 

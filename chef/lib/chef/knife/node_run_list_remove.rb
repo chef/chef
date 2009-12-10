@@ -22,23 +22,24 @@ require 'json'
 
 class Chef
   class Knife
-    class NodeBulkDelete < Knife
+    class NodeRunListRemove < Knife
 
-      banner "Sub-Command: node bulk delete (options)"
-
-      option :regex,
-        :short => "-r [REGEX]",
-        :long  => "--regex [REGEX]",
-        :description => "Narrow the operation via regular expression"
+      banner "Sub-Command: node run_list remove [NODE] [ENTRY] (options)"
 
       def run 
-        bulk_delete(Chef::Node, "node")
+        node = Chef::Node.load(@name_args[0])
+        entry = @name_args[1]
+
+        node.run_list.remove(entry)
+
+        node.save
+
+        config[:run_list] = true
+
+        json_pretty_print(format_for_display(node)) 
       end
 
     end
   end
 end
-
-
-
 

@@ -22,23 +22,18 @@ require 'json'
 
 class Chef
   class Knife
-    class NodeBulkDelete < Knife
+    class NodeCreate < Knife
 
-      banner "Sub-Command: node bulk delete (options)"
-
-      option :regex,
-        :short => "-r [REGEX]",
-        :long  => "--regex [REGEX]",
-        :description => "Narrow the operation via regular expression"
+      banner "Sub-Command: node create NODE (options)"
 
       def run 
-        bulk_delete(Chef::Node, "node")
+        node = Chef::Node.new
+        node.name(@name_args[0])
+        create_object(node)
       end
-
     end
   end
 end
-
 
 
 

@@ -64,14 +64,9 @@ class Chef
         raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?" unless File.writable?(destination)
       end
 
-      # First, try and create a new registration
-      begin
-        Chef::Log.info("Registering API Client #{name}")
-        response = post_rest("clients", {:name => name})
-      rescue Net::HTTPServerException 
-        # If that fails, go ahead and try and update it
-        response = put_rest("clients/#{name}", { :name => name, :private_key => true }) 
-      end
+      nc = Chef::ApiClient.new
+      nc.name(name)
+      response = nc.save
 
       Chef::Log.debug("Registration response: #{response.inspect}")
 

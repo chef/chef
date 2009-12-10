@@ -22,23 +22,22 @@ require 'json'
 
 class Chef
   class Knife
-    class NodeBulkDelete < Knife
+    class RoleShow < Knife
 
-      banner "Sub-Command: node bulk delete (options)"
+      banner "Sub-Command: role show ROLE (options)"
 
-      option :regex,
-        :short => "-r [REGEX]",
-        :long  => "--regex [REGEX]",
-        :description => "Narrow the operation via regular expression"
+      option :attribute,
+        :short => "-a [ATTR]",
+        :long => "--attribute [ATTR]",
+        :description => "Show only one attribute"
 
       def run 
-        bulk_delete(Chef::Node, "node")
+        role = Chef::Role.load(@name_args[0])
+        json_pretty_print(format_for_display(role))
       end
 
     end
   end
 end
-
-
 
 

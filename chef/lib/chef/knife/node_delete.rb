@@ -27,19 +27,10 @@ class Chef
       banner "Sub-Command: node delete NODE (options)"
 
       def run 
-        confirm("Do you really want to delete #{@name_args[0]}")
-       
-        node = Chef::Node.load(@name_args[0])
-        node.destroy
-        
-        json_pretty_print(format_for_display(node)) if config[:print_after]
-
-        Chef::Log.warn("Deleted node #{@name_args[0]}!")
+        delete_object(Chef::Node, @name_args[0])
       end
 
     end
   end
 end
-
-
 

@@ -17,28 +17,39 @@
 #
 
 require 'chef/knife'
-require 'chef/node'
+require 'chef/api_client'
 require 'json'
 
 class Chef
   class Knife
-    class NodeBulkDelete < Knife
+    class ClientCreate < Knife
 
-      banner "Sub-Command: node bulk delete (options)"
+      option :file,
+        :short => "-f FILE",
+        :long  => "--file FILE",
+        :description => "Write the key to a file"
 
-      option :regex,
-        :short => "-r [REGEX]",
-        :long  => "--regex [REGEX]",
-        :description => "Narrow the operation via regular expression"
+      banner "Sub-Command: client create CLIENT (options)"
 
       def run 
-        bulk_delete(Chef::Node, "node")
-      end
+        client = Chef::ApiClient.new
+        client.name(@name_args[0])
+        
+        output = edit_data(client)
 
+        key = output.save
+
+        Chef::Log.info("Created (or updated) #{output}")
+        
+        if config[:file]
+          File.open(config[:file], "w") do |f|
+            f.print(key['private_key'])
+          end
+        else
+          puts key['private_key']
+        end
+      end
     end
   end
 end
-
-
-
 

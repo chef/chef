@@ -17,28 +17,28 @@
 #
 
 require 'chef/knife'
-require 'chef/node'
+require 'chef/role'
 require 'json'
 
 class Chef
   class Knife
-    class NodeBulkDelete < Knife
+    class RoleCreate < Knife
 
-      banner "Sub-Command: node bulk delete (options)"
+      banner "Sub-Command: role create ROLE (options)"
 
-      option :regex,
-        :short => "-r [REGEX]",
-        :long  => "--regex [REGEX]",
-        :description => "Narrow the operation via regular expression"
+      option :description,
+        :short => "-d",
+        :long => "--description",
+        :description => "The role description"
 
       def run 
-        bulk_delete(Chef::Node, "node")
+        role = Chef::Role.new
+        role.name(@name_args[0])
+        role.description(config[:description]) if config[:description]
+        create_object(role)
       end
-
     end
   end
 end
-
-
 
 

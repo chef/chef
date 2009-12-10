@@ -115,7 +115,11 @@ class Chef
 
       if config[:attribute]
         config[:attribute].split(".").each do |attr|
-          data = data[attr]
+          if data.respond_to?(:[])
+            data = data[attr]
+          else
+            data = data.send(attr.to_sym)
+          end
         end
         { config[:attribute] => data.kind_of?(Chef::Node::Attribute) ? data.to_hash: data }
       elsif config[:run_list]
@@ -163,6 +167,93 @@ class Chef
       end
     end
 
+    def load_from_file(klass, from_file) 
+      from_file = @name_args[0]
+      relative_file = File.expand_path(File.join(Dir.pwd, 'roles', from_file))
+      filename = nil
+
+      if file_exists_and_is_readable?(from_file)
+        filename = from_file
+      elsif file_exists_and_is_readable?(relative_file) 
+        filename = relative_file 
+      else
+        Chef::Log.fatal("Cannot find file #{from_file}")
+        exit 30
+      end
+
+      case from_file
+      when /\.(js|json)$/
+        JSON.parse(IO.read(filename))
+      when /\.rb$/
+        r = klass.new
+        r.from_file(filename)
+        r
+      else
+        Chef::Log.fatal("File must end in .js, .json, or .rb")
+        exit 30
+      end
+    end
+
+    def file_exists_and_is_readable?(file)
+      File.exists?(file) && File.readable?(file)
+    end
+
+    def edit_object(klass, name)
+      object = klass.load(name)
+
+      output = edit_data(object)
+      
+      output.save
+
+      Chef::Log.info("Saved #{output}")
+
+      json_pretty_print(format_for_display(object)) if config[:print_after]
+    end
+
+    def create_object(object)
+      output = edit_data(object)
+
+      output.save
+
+      Chef::Log.info("Created (or updated) #{output}")
+      
+      json_pretty_print(output) if config[:print_after]
+    end
+
+    def delete_object(klass, name)
+      confirm("Do you really want to delete #{@name_args[0]}")
+
+      object = klass.load(@name_args[0])
+      object.destroy
+
+      json_pretty_print(format_for_display(object)) if config[:print_after]
+
+      Chef::Log.warn("Deleted #{object}!")
+    end
+
+    def bulk_delete(klass, fancy_name)
+      object_list = klass.list(true)
+
+      if config[:regex]
+        to_delete = Hash.new
+        object_list.each_key do |object|
+          next if config[:regex] && object !~ /#{config[:regex]}/
+          to_delete[object] = object_list[object]
+        end
+      else
+        to_delete = object_list
+      end
+
+      json_pretty_print(format_list_for_display(to_delete))
+
+      confirm("Do you really want to delete the above items")
+
+      to_delete.each do |name, object|
+        object.destroy
+        json_pretty_print(format_for_display(object)) if config[:print_after]
+        Chef::Log.warn("Deleted #{fancy_name} #{name}")
+      end
+    end
   end
 end
 

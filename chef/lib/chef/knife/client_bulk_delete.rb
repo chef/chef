@@ -17,14 +17,14 @@
 #
 
 require 'chef/knife'
-require 'chef/node'
+require 'chef/api_client'
 require 'json'
 
 class Chef
   class Knife
-    class NodeBulkDelete < Knife
+    class ClientBulkDelete < Knife
 
-      banner "Sub-Command: node bulk delete (options)"
+      banner "Sub-Command: client bulk delete (options)"
 
       option :regex,
         :short => "-r [REGEX]",
@@ -32,13 +32,10 @@ class Chef
         :description => "Narrow the operation via regular expression"
 
       def run 
-        bulk_delete(Chef::Node, "node")
+        bulk_delete(Chef::ApiClient, "client")
       end
 
     end
   end
 end
-
-
-
 

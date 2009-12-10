@@ -197,7 +197,14 @@ class Chef
     # Load a client by name via the API
     def self.load(name)
       r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.get_rest("clients/#{name}")
+      response = r.get_rest("clients/#{name}")
+      if response.kind_of?(Chef::ApiClient)
+        response
+      else
+        client = Chef::ApiClient.new
+        client.name(response['clientname'])
+        client
+      end
     end
     
     # Remove this client from the CouchDB
@@ -223,16 +230,18 @@ class Chef
     # Save this client via the REST API, returns a hash including the private key
     def save
       r = Chef::REST.new(Chef::Config[:chef_server_url])
-      res = begin
-              r.put_rest("clients/#{@name}", self)
-            rescue Net::HTTPServerException => e
-              if e.response.code == "404"
-                r.post_rest("clients", self)
-              else
-                raise e
-              end
-            end
-    end
+      # First, try and create a new registration
+      begin
+        r.post_rest("clients", {:name => self.name})
+      rescue Net::HTTPServerException => e
+        # If that fails, go ahead and try and update it
+        if e.response.code == "403"
+          r.put_rest("clients/#{name}", { :name => self.name, :private_key => true }) 
+        else
+          raise e
+        end
+      end
+    end 
     
     # Create the client via the REST API
     def create

@@ -26,41 +26,8 @@ class Chef
 
       banner "Sub-Command: node edit NODE (options)"
 
-      option :attribute,
-        :short => "-a [ATTR]",
-        :long => "--attribute [ATTR]",
-        :description => "Edit only one attribute"
-
       def run 
-        node = Chef::Node.load(@name_args[0])
-
-        if config[:attribute]
-          attr_bits = config[:attribute].split(".")
-          to_edit = node
-          attr_bits.each do |attr|
-            to_edit = to_edit[attr]
-          end
-
-          edited_data = edit_data(to_edit)
-
-          walker = node
-          attr_bits.each_index do |i|
-            if (attr_bits.length - 1) == i
-              walker[attr_bits[i]] = edited_data
-            else
-              walker = walker[attr_bits[i]]
-            end
-          end
-          new_node = node
-        else
-          new_node = edit_data(node)
-        end
-        
-        new_node.save
-
-        Chef::Log.info("Saved #{new_node}")
-
-        json_pretty_print(format_for_display(node)) if config[:print_after]
+        edit_object(Chef::Node, @name_args[0])
       end
     end
   end

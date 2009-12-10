@@ -22,23 +22,19 @@ require 'json'
 
 class Chef
   class Knife
-    class NodeBulkDelete < Knife
+    class RoleList < Knife
 
-      banner "Sub-Command: node bulk delete (options)"
+      banner "Sub-Command: role list (options)"
 
-      option :regex,
-        :short => "-r [REGEX]",
-        :long  => "--regex [REGEX]",
-        :description => "Narrow the operation via regular expression"
+      option :with_uri,
+        :short => "-w",
+        :long => "--with-uri",
+        :description => "Show corresponding URIs"
 
       def run 
-        bulk_delete(Chef::Node, "node")
+        json_pretty_print(format_list_for_display(Chef::Role.list))
       end
-
     end
   end
 end
-
-
-
 
