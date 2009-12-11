@@ -42,8 +42,7 @@ class Chef
           enable_submodules
           @new_resource.updated = true
         else
-          Chef::Log.info "Taking no action, checkout destination " +
-          "#{@new_resource.destination} already exists or is a non-empty directory"
+          Chef::Log.info "Taking no action, checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
         end
       end
       
