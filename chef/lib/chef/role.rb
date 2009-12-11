@@ -126,8 +126,7 @@ class Chef
         "default_attributes" => @default_attributes,
         "override_attributes" => @override_attributes,
         "chef_type" => "role",
-        "run_list" => @run_list.run_list,
-        "recipes" => @run_list.recipes,
+        "run_list" => @run_list.run_list
       }
       result["_rev"] = @couchdb_rev if @couchdb_rev
       result
