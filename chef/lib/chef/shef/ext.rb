@@ -223,11 +223,11 @@ class Object
   
   desc "run chef using the current recipe"
   def run_chef
-    Chef::Log.level(:debug)
+    Chef::Log.level = :debug
     session = Shef.session
     session.rebuild_collection
     runrun = Chef::Runner.new(node, session.collection, session.definitions, session.cookbook_loader).converge
-    Chef::Log.level(:info)
+    Chef::Log.level = :info
     runrun
   end
   

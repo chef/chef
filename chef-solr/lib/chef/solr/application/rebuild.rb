@@ -98,7 +98,7 @@ class Chef
         end
 
         def setup_application
-          Chef::Log.level(Chef::Config[:log_level])
+          Chef::Log.level = Chef::Config[:log_level]
           Chef::Log.warn("This operation is destructive!")
           Chef::Log.warn("I'm going to count to 20, and then delete your Solr index and rebuild it.")
           Chef::Log.warn("CTRL-C will, of course, stop this disaster.")
