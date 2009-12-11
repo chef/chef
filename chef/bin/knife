@@ -15,7 +15,7 @@ require 'tmpdir'
 require 'uri'
 
 Chef::Config.from_file("/etc/chef/client.rb")
-Chef::Log.level(ENV.has_key?("LOG_LEVEL") ? ENV["LOG_LEVEL"].to_sym : Chef::Config[:log_level])
+Chef::Log.level = (ENV.has_key?("LOG_LEVEL") ? ENV["LOG_LEVEL"].to_sym : Chef::Config[:log_level])
 Mixlib::Authentication::Log.logger = Chef::Log.logger
 
 API_OPSCODE_USER=ENV['OPSCODE_USER']
