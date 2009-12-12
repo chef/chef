@@ -228,7 +228,7 @@ class Chef
     end
     
     # Save this client via the REST API, returns a hash including the private key
-    def save
+    def save(new_key=false)
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       # First, try and create a new registration
       begin
@@ -236,7 +236,7 @@ class Chef
       rescue Net::HTTPServerException => e
         # If that fails, go ahead and try and update it
         if e.response.code == "403"
-          r.put_rest("clients/#{name}", { :name => self.name, :private_key => true }) 
+          r.put_rest("clients/#{name}", { :name => self.name, :private_key => new_key }) 
         else
           raise e
         end
