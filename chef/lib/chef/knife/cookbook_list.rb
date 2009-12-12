@@ -17,7 +17,6 @@
 #
 
 require 'chef/knife'
-require 'chef/node'
 require 'json'
 
 class Chef
@@ -32,7 +31,7 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run 
-        json_pretty_print(format_list_for_display(Chef::Node.list))
+        json_pretty_print(format_list_for_display(rest.get_rest('cookbooks')))
       end
     end
   end

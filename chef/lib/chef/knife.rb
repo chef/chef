@@ -254,6 +254,11 @@ class Chef
         Chef::Log.warn("Deleted #{fancy_name} #{name}")
       end
     end
+
+    def rest
+      @rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
+    end
+
   end
 end
 

@@ -232,11 +232,11 @@ class Chef
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       # First, try and create a new registration
       begin
-        r.post_rest("clients", {:name => self.name})
+        r.post_rest("clients", {:name => self.name, :admin => self.admin })
       rescue Net::HTTPServerException => e
         # If that fails, go ahead and try and update it
         if e.response.code == "403"
-          r.put_rest("clients/#{name}", { :name => self.name, :private_key => new_key }) 
+          r.put_rest("clients/#{name}", { :name => self.name, :admin => self.admin, :private_key => new_key }) 
         else
           raise e
         end
