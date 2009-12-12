@@ -139,9 +139,6 @@ describe Chef::Role do
       @serial.should =~ /"override_attributes":\{"deloused":"in the comatorium"\}/
     end
 
-    it "should include 'recipes'" do
-      @serial.should =~ /"recipes":\["one","two"\]/
-    end
     it "should include 'run_list'" do
       @serial.should =~ /"run_list":\["recipe\[one\]","recipe\[two\]","role\[a\]"\]/
     end
