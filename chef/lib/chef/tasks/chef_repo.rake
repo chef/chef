@@ -373,7 +373,7 @@ end
 
 def upload_single_cookbook(cookbook_name, version=nil)
   require 'chef/streaming_cookbook_uploader'
-  Chef::Log.level(:error)
+  Chef::Log.level = :error
   Mixlib::Authentication::Log.logger = Chef::Log.logger
   raise ArgumentError, "OPSCODE_KEY must be set to your API Key" unless ENV.has_key?("OPSCODE_KEY")
   raise ArgumentError, "OPSCODE_USER must be set to your Username" unless ENV.has_key?("OPSCODE_USER")
