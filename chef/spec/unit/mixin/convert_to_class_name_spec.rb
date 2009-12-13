@@ -40,4 +40,8 @@ describe Chef::Mixin::ConvertToClassName do
     @convert.convert_to_snake_case("NameSpaced::Class::ThisIsWin", "NameSpaced::Class").should == "this_is_win"
   end
   
+  it "removes the base classes without explicitly naming them and returns snake case" do
+    @convert.snake_case_basename("NameSpaced::Class::ExtraWin").should == "extra_win"
+  end
+  
 end

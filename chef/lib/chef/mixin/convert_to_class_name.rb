@@ -20,6 +20,7 @@
 class Chef
   module Mixin
     module ConvertToClassName
+      extend self
 
       def convert_to_class_name(str)
         rname = nil
@@ -45,6 +46,11 @@ class Chef
         str.downcase!
         str.sub!(/^\_/, "")
         str
+      end
+      
+      def snake_case_basename(str)
+        with_namespace = convert_to_snake_case(str)
+        with_namespace.split("::").last.sub(/^_/, '')
       end
       
       def filename_to_qualified_string(base, filename)

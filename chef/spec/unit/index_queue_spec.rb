@@ -1,0 +1,192 @@
+#
+# Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Copyright:: Copyright (c) 2009 Daniel DeLeo
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
+
+class Chef
+  class IndexableTestHarness
+    include Chef::IndexQueue::Indexable
+  end
+end
+
+class IndexConsumerTestHarness
+  include Chef::IndexQueue::Consumer
+  
+  attr_reader :last_indexed_object
+  
+  def index_this(object_to_index)
+    @last_indexed_object = object_to_index
+  end
+end
+
+describe Chef::IndexQueue::Indexable do
+  def a_uuid
+    /[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/
+  end
+  
+  before do
+    Chef::IndexableTestHarness.reset_index_metadata!
+    @publisher      = Chef::IndexQueue::AmqpClient.instance
+    @indexable_obj  = Chef::IndexableTestHarness.new
+  end
+  
+  it "downcases the class name for the index_object_type when it's not explicitly set" do
+    @indexable_obj.index_object_type.should == "indexable_test_harness"
+  end
+  
+  it "uses an explicitly set index_object_type" do
+    Chef::IndexableTestHarness.index_object_type :a_weird_name
+    @indexable_obj.index_object_type.should == "a_weird_name"
+  end
+  
+  it "adds 'database', 'type', and 'id' (UUID) keys to the published object" do
+    with_metadata = @indexable_obj.with_indexer_metadata(:database => "foo")
+    with_metadata.should have(4).keys
+    with_metadata.keys.should include("type", "id", "item", "database")
+    with_metadata["type"].should      == "indexable_test_harness"
+    with_metadata["database"].should  == "foo"
+    with_metadata["item"].should      == @indexable_obj
+    with_metadata["id"].should match(a_uuid)
+  end
+  
+  it "sends ``add'' actions" do
+    @publisher.should_receive(:send_action).with(:add, {"item" => @indexable_obj, 
+                                                        "type" => "indexable_test_harness",
+                                                        "database" => "couchdb@localhost,etc.", 
+                                                        "id" => an_instance_of(String)})
+    @indexable_obj.add_to_index(:database => "couchdb@localhost,etc.")
+  end
+  
+  it "sends ``delete'' actions" do
+    @publisher.should_receive(:send_action).with(:delete, { "item" => @indexable_obj, 
+                                                            "type" => "indexable_test_harness",
+                                                            "database" => "couchdb2@localhost", 
+                                                            "id" => an_instance_of(String)})
+    @indexable_obj.delete_from_index(:database => "couchdb2@localhost")
+  end
+  
+end
+
+describe Chef::IndexQueue::Consumer do
+  before do
+    @amqp_client  = Chef::IndexQueue::AmqpClient.instance
+    @consumer     = IndexConsumerTestHarness.new
+  end
+  
+  
+  it "routes message payloads to the correct method" do
+    payload_json      = {"payload" => {"a_placeholder" => "object"}, "action" => "index_this"}.to_json
+    received_message  = {:payload => payload_json}
+    @consumer.call_action_for_message(received_message)
+    @consumer.last_indexed_object.should == {"a_placeholder" => "object"}
+  end
+  
+  it "subscribes to the queue for the indexer" do
+    payload_json  = {"payload" => {"a_placeholder" => "object"}, "action" => "index_this"}.to_json
+    message       = {:payload => payload_json}
+    queue = mock("Bunny::Queue")
+    @amqp_client.stub!(:queue).and_return(queue)
+    queue.should_receive(:subscribe).with(:ack => true).and_yield(message)
+    queue.should_receive(:ack)
+    @consumer.run
+    @consumer.last_indexed_object.should == {"a_placeholder" => "object"}
+  end
+  
+  it "sets traps for INT and TERM, terminating the amqp client when the signal is received" do
+    Kernel.should_receive(:trap).with("INT")
+    Kernel.should_receive(:trap).with("TERM")
+    @consumer.set_signal_traps
+  end
+  
+end
+
+
+describe Chef::IndexQueue::AmqpClient do
+  before do
+    Chef::Config[:amqp_host] = '4.3.2.1'
+    Chef::Config[:amqp_port] = '1337'
+    Chef::Config[:amqp_user] = 'teh_rspecz'
+    Chef::Config[:amqp_pass] = 'access_granted2rspec'
+    Chef::Config[:amqp_vhost] = '/chef-specz'
+    
+    @publisher    = Chef::IndexQueue::AmqpClient.instance
+    @exchange     = mock("Bunny::Exchange")
+    
+    @amqp_client  = mock("Bunny::Client", :start => true, :exchange => @exchange)
+    def @amqp_client.connected?; false; end # stubbing predicate methods not working?
+    Bunny.stub!(:new).and_return(@amqp_client)
+    
+    @publisher.reset!
+  end
+  
+  it "is a singleton" do
+    lambda {Chef::IndexQueue::Indexable::AmqpClient.new}.should raise_error
+  end
+  
+  it "creates an amqp client object on demand, starts a connection, and caches it" do
+    @amqp_client.should_receive(:start).once
+    @amqp_client.should_receive(:qos).with(:prefetch => 1)
+    ::Bunny.should_receive(:new).once.and_return(@amqp_client)
+    @publisher.amqp_client.should == @amqp_client
+    @publisher.amqp_client
+  end
+  
+  it "configures the amqp client with credentials from the config file" do
+    @publisher.reset!
+    Bunny.should_receive(:new).with(:spec => '08', :host => '4.3.2.1', :port => '1337', :user => "teh_rspecz",
+                                    :pass => "access_granted2rspec", :vhost => '/chef-specz').and_return(@amqp_client)
+    @amqp_client.should_receive(:qos).with(:prefetch => 1)
+    @publisher.amqp_client.should == @amqp_client
+  end
+  
+  it "creates an amqp exchange on demand and caches it" do
+    @amqp_client.stub!(:qos)
+    @publisher.exchange.should == @exchange
+    @amqp_client.should_not_receive(:exchange)
+    @publisher.exchange.should == @exchange
+  end
+  
+  it "publishes an action to the exchange" do
+    @amqp_client.stub!(:qos)
+    data = {"some_data" => "in_a_hash"}
+    @exchange.should_receive(:publish).with({"action" => "hot_chef_on_queue", "payload" => data}.to_json)
+    @publisher.send_action(:hot_chef_on_queue, data)
+  end
+  
+  it "creates a queue bound to its exchange" do
+    @amqp_client.stub!(:qos)
+    
+    a_queue_name = /chef\-indexer\-[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/
+    
+    @queue = mock("Bunny::Queue")
+    @amqp_client.should_receive(:queue).with(a_queue_name).and_return(@queue)
+    @queue.should_receive(:bind).with(@exchange)
+    @publisher.queue.should == @queue
+  end
+  
+  it "stops bunny and clears subscriptions" do
+    bunny_client  = mock("Bunny::Client")
+    queue         = mock("Bunny::Queue", :subscription => true)
+    @publisher.instance_variable_set(:@amqp_client, bunny_client)
+    @publisher.instance_variable_set(:@queue, queue)
+    bunny_client.should_receive(:stop)
+    queue.should_receive(:unsubscribe)
+    @publisher.stop
+  end
+  
+end
