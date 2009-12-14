@@ -44,7 +44,8 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
   def new
     @available_recipes = get_available_recipes 
     @role = Chef::Role.new
-    @current_recipes = @role.recipes
+    @available_roles = Chef::Role.list.keys.sort
+    @run_list = @role.run_list
     render
   end
 
@@ -56,7 +57,8 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
       raise NotFound, "Cannot load role #{params[:id]}"
     end
     @available_recipes = get_available_recipes 
-    @current_recipes = @role.recipes
+    @available_roles = Chef::Role.list.keys.sort
+    @run_list = @role.run_list
     render 
   end
 
@@ -65,7 +67,7 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
     begin
       @role = Chef::Role.new
       @role.name(params[:name])
-      @role.recipes(params[:for_role] ? params[:for_role] : [])
+      @role.run_list(params[:for_role] ? params[:for_role] : [])
       @role.description(params[:description]) if params[:description] != ''
       @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
       @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
@@ -84,7 +86,7 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
       @role = Chef::Role.new
       @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
       @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
-      @current_recipes = params[:for_role] ? params[:for_role] : []
+      @run_list = params[:for_role] ? params[:for_role] : []
       @_message = { :error => $! }
       render :new
     end
@@ -99,7 +101,7 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
     end
 
     begin
-      @role.recipes(params[:for_role] ? params[:for_role] : [])
+      @role.run_list(params[:for_role] ? params[:for_role] : [])
       @role.description(params[:description]) if params[:description] != ''
       @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
       @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
@@ -108,7 +110,7 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
       render :show
     rescue ArgumentError
       @available_recipes = get_available_recipes 
-      @current_recipes = params[:for_role] ? params[:for_role] : []
+      @run_list = params[:for_role] ? params[:for_role] : []
       @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
       @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
       render :edit

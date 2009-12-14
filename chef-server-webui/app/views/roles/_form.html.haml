@@ -14,25 +14,34 @@
       %table.sortable
         %tr
           %td 
-            %label.label Available Recipes
+            %label.label Available Roles
           %td
-            %label.label Recipes for this Role 
+            %label.label Run List 
         %tr
           %td
             %div.sortable
-              %ul#available_recipes.connectedSortable
-                - @available_recipes.each do |recipe|
-                  %li{ :id => h(recipe), :class => 'ui-state-highlight' }= h recipe 
-          %td
-            %div.sortable
+              %ul#node_available_roles.connectedSortable
+                - @available_roles.each do |role|
+                  %li{ :id => "role[#{role}]", :class => 'ui-state-highlight' }= h role 
+          %td{:rowspan => 3}
+            %div.sortable.run-list
               %ul#for_role.connectedSortable
-                - @current_recipes.each do |recipe|
-                  %li{ :id => h(recipe), :class => 'ui-state-highlight' }= h recipe 
-
+                - @run_list.each do |entry|
+                  - type, name, fname = @run_list.parse_entry(entry)
+                  %li{ :id => h(fname), :class => type == 'role' ? 'ui-state-highlight' : 'ui-state-default' }= h name 
           %td.help
             %span.description
               Drag recipes from the list of Available Recipes section on the left, and drop them
-              in the "Recipes for this Role" section on the right.  Then sort the recipes for this role list to the order you would like to see the recipes applied.
+              in the "Recipes for this node" section on the right.  Then sort the recipes for this node list to the order you would like to see the recipes applied.
+        %tr
+          %td
+            %label.label Available Recipes
+        %tr
+          %td
+            %div.sortable
+              %ul#node_available_recipes.connectedSortable
+                - @available_recipes.each do |recipe|
+                  %li{ :id => "recipe[#{recipe}]", :class => 'ui-state-default' }= h recipe
 
     %div.group.form{:style => "position:relative;"}
       %label.label Default and Override Attributes 
