@@ -36,7 +36,7 @@ class Chef
       include Singleton
     end
     
-    attr_accessor :url, :cookies, :signing_key
+    attr_accessor :url, :cookies, :signing_key, :sign_on_redirect, :sign_request
     
     def initialize(url, client_name=Chef::Config[:node_name], signing_key=Chef::Config[:client_key])
       @url = url
@@ -44,9 +44,12 @@ class Chef
       @client_name = client_name
       if signing_key
         @signing_key = load_signing_key(signing_key) 
+        @sign_request = true
       else
         @signing_key = nil
+        @sign_request = false
       end
+      @sign_on_redirect = true
     end
 
     def load_signing_key(key)
@@ -171,7 +174,7 @@ class Chef
 
       json_body = data ? data.to_json : nil 
 
-      if @signing_key
+      if @sign_request
         Chef::Log.debug("Signing the request as #{@client_name}")
         if json_body
           headers.merge!(sign_request(method, OpenSSL::PKey::RSA.new(@signing_key), @client_name, json_body, "#{url.host}:#{url.port}"))
@@ -271,6 +274,7 @@ class Chef
         if res['set-cookie']
           @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
         end
+        @sign_request = false if @sign_on_redirect == false
         run_request(:GET, create_url(res['location']), {}, false, limit - 1, raw)
       else
         if res['content-type'] =~ /json/
