@@ -21,11 +21,14 @@ class Chef
     module Consumer
       
       def run
-        AmqpClient.instance.queue.subscribe(:ack => true) do |message|
+        Chef::Log.debug("Starting Index Queue Consumer")
+        queue = AmqpClient.instance.queue
+        queue.subscribe(:ack => true, :timeout => false) do |message|
           call_action_for_message(message)
-          AmqpClient.instance.queue.ack
+          #queue.ack
         end
       end
+      alias :start :run
       
       def call_action_for_message(message)
         amqp_payload  = JSON.parse(message[:payload])
@@ -35,8 +38,20 @@ class Chef
       end
       
       def set_signal_traps
-        Kernel.trap("INT")  { AmqpClient.stop }
-        Kernel.trap("TERM") { AmqpClient.stop }
+        Kernel.trap("INT") do 
+          begin
+            AmqpClient.instance.stop
+          rescue Bunny::ProtocolError
+          rescue Bunny::ConnectionError
+          end
+        end
+        Kernel.trap("TERM") do 
+          begin
+            AmqpClient.instance.stop
+          rescue Bunny::ProtocolError
+          rescue Bunny::ConnectionError
+          end
+        end
       end
       
     end

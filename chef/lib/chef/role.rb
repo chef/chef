@@ -22,6 +22,7 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/run_list'
+require 'chef/index_queue'
 require 'extlib'
 require 'json'
 
@@ -30,6 +31,7 @@ class Chef
     
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
+    include IndexQueue::Indexable
     
     DESIGN_DOCUMENT = {
       "version" => 6,

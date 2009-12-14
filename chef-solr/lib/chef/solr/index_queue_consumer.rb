@@ -28,15 +28,15 @@ require 'chef/data_bag'
 require 'chef/data_bag_item'
 require 'chef/api_client'
 require 'chef/couchdb'
-require 'nanite/actor'
+require 'chef/index_queue'
 
 class Chef
   class Solr
-    class IndexActor
-      include ::Nanite::Actor
+    class IndexQueueConsumer
+      include Chef::IndexQueue::Consumer
 
-      expose :add, :delete, :commit, :optimize
-
+      #expose :add, :delete, :commit, :optimize
+      
       def add(payload)
         index = Chef::Solr::Index.new
 

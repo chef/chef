@@ -41,18 +41,18 @@ class Chef
         unless @amqp_client
           @amqp_client = Bunny.new(amqp_opts)
           @amqp_client.start
-          @amqp_client.qos(:prefetch => 1)
+          @amqp_client.qos(:prefetch_count => 1)
         end
         @amqp_client
       end
 
       def exchange
-        @exchange ||= amqp_client.exchange("chef-indexer")
+        @exchange ||= amqp_client.exchange("chef-indexer", :durable => true, :type => :fanout)
       end
       
       def queue
         unless @queue
-          @queue = amqp_client.queue("chef-indexer-" + UUIDTools::UUID.random_create.to_s)
+          @queue = amqp_client.queue("chef-index-consumer-" + UUIDTools::UUID.random_create.to_s)
           @queue.bind(exchange)
         end
         @queue

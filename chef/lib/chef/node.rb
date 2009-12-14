@@ -25,6 +25,7 @@ require 'chef/couchdb'
 require 'chef/rest'
 require 'chef/run_list'
 require 'chef/node/attribute'
+require 'chef/index_queue'
 require 'extlib'
 require 'json'
 
@@ -37,6 +38,7 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::LanguageIncludeAttribute
+    include IndexQueue::Indexable
     
     DESIGN_DOCUMENT = {
       "version" => 9,

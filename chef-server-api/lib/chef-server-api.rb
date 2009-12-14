@@ -5,7 +5,7 @@ if defined?(Merb::Plugins)
 
   dependency 'merb-slices', :immediate => true
   dependency 'chef', :immediate=>true unless defined?(Chef)
-  dependency 'nanite', :immediate=>true 
+  dependency 'bunny', :immediate=>true 
   dependency 'uuidtools', :immediate=>true 
 
   require 'chef/role'
@@ -13,7 +13,6 @@ if defined?(Merb::Plugins)
   require 'chef/data_bag_item'
   require 'chef/api_client'
   require 'chef/webui_user'
-  require 'chef/nanite'
   require 'chef/certificate'
 
   require 'mixlib/authentication'
@@ -21,7 +20,6 @@ if defined?(Merb::Plugins)
   require 'chef/data_bag'
   require 'chef/data_bag_item'
   require 'ohai'
-  require 'chef/nanite'
   require 'openssl'
 
   Merb::Plugins.add_rakefiles "chef-server-api/merbtasks", "chef-server-api/slicetasks", "chef-server-api/spectasks"
@@ -59,41 +57,39 @@ if defined?(Merb::Plugins)
 
     # Activation hook - runs after AfterAppLoads BootLoader
     def self.activate
-      Mixlib::Authentication::Log.logger = Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 
+      Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger 
 
-      Thread.new do
-        Chef::Log.level = :debug
-        # Okay, we're here because if you run this with the thin adaptor, you
-        # need to wait for EM to heat all the way up - and it won't, until
-        # after activate is finished.
-        sleep 1 
-        Chef::Nanite.in_event { Chef::Log.info("Nanite is ready") }
-
-        # This is because nanite needs to broadcast, and we don't know how long
-        # that will take.
-        20.downto(0) do |sleep_time|
-          Chef::Log.info("Waiting for Nanite to heat up.. #{sleep_time} seconds left")
-          sleep 1
+      unless Merb::Config.environment == "test"
+        # create the couch design docs for nodes, roles, and databags
+        Chef::CouchDB.new.create_id_map
+        Chef::Node.create_design_document
+        Chef::Role.create_design_document
+        Chef::DataBag.create_design_document
+        Chef::ApiClient.create_design_document
+        Chef::WebUIUser.create_design_document
+        
+        Chef::Log.info('Loading roles')
+        Chef::Role.sync_from_disk_to_couchdb
+        
+        # Create the default WebUI admin user "admin" if not already exists
+        begin
+          user = Chef::WebUIUser.load(Chef::Config[:web_ui_admin_user_name])
+        rescue Chef::Exceptions::CouchDBNotFound => e
+          user = Chef::WebUIUser.new
+          user.name = Chef::Config[:web_ui_admin_user_name]
+          user.set_password(Chef::Config[:web_ui_admin_default_password])
+          user.admin = true
+          user.save
         end
 
-        unless Merb::Config.environment == "test"
-          # create the couch design docs for nodes, roles, and databags
-          Chef::CouchDB.new.create_id_map
-          Chef::Node.create_design_document
-          Chef::Role.create_design_document
-          Chef::DataBag.create_design_document
-          Chef::ApiClient.create_design_document
-          Chef::WebUIUser.create_design_document
-          
-          # Create the signing key and certificate 
-          Chef::Certificate.generate_signing_ca
+        # Create the signing key and certificate 
+        Chef::Certificate.generate_signing_ca
 
-          # Generate the validation key
-          Chef::Certificate.gen_validation_key
+        # Generate the validation key
+        Chef::Certificate.gen_validation_key
 
-          # Generate the Web UI Key 
-          Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
-        end
+        # Generate the Web UI Key 
+        Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
       end
     end
 
