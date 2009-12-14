@@ -156,9 +156,29 @@ describe Chef::Provider::Subversion do
     @provider.export_command.should eql("svn export -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
   end
   
+  it "generates an export command with the --force option" do
+    expected = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
+    @provider.export_command(:force => true).should == expected
+  end
+  
+  it "runs an export with the --force option" do
+    expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
+    @provider.should_receive(:run_command).with(:command => expected_cmd)
+    @provider.action_force_export
+  end
+  
   it "runs the checkout command for action_checkout" do
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
+    @resource.should_receive(:updated=).at_least(1).times.with(true)
+    @provider.action_checkout
+  end
+  
+  it "runs commands with the user and group specified in the resource" do
+    @resource.user "whois"
+    @resource.group "thisis"
+    expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
+    @provider.should_receive(:run_command).with(:command => expected_cmd, :user => "whois", :group => "thisis")
     @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_checkout
   end

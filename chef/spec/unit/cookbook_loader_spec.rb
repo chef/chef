@@ -61,6 +61,15 @@ describe Chef::CookbookLoader do
       seen.should have_key(:openldap)
       seen.should have_key(:apache2)
     end
+
+    it "should iterate in alphabetical order" do
+      seen = Array.new 
+      @cl.each do |cb|
+        seen << cb.name
+      end
+      seen[0].should == :apache2
+      seen[1].should == :openldap
+    end
   end
   
   describe "load_cookbooks" do

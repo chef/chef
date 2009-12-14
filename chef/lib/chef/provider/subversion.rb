@@ -45,6 +45,11 @@ class Chef
         @new_resource.updated = true
       end
       
+      def action_force_export
+        run_command(run_options(:command => export_command(:force => true)))
+        @new_resource.updated = true
+      end
+      
       def action_sync
         if !::File.exist?(@new_resource.destination + "/.svn") || ::Dir.entries(@new_resource.destination) == ['.','..']
           action_checkout
@@ -65,10 +70,12 @@ class Chef
             "-r#{revision_int}", @new_resource.repository, @new_resource.destination
       end
       
-      def export_command
+      def export_command(opts={})
         Chef::Log.info "exporting #{@new_resource.repository} at revision #{@new_resource.revision} to #{@new_resource.destination}"
-        scm :export, @new_resource.svn_arguments, verbose, authentication,
-            "-r#{revision_int}", @new_resource.repository, @new_resource.destination
+        args = opts[:force] ? ["--force"] : []
+        args << @new_resource.svn_arguments << verbose << authentication <<
+            "-r#{revision_int}" << @new_resource.repository << @new_resource.destination
+        scm :export, *args
       end
       
       # If the specified revision isn't an integer ("HEAD" for example), look
@@ -102,6 +109,7 @@ class Chef
       
       def run_options(run_opts={})
         run_opts[:user] = @new_resource.user if @new_resource.user
+        run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts
       end
       

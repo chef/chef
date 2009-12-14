@@ -223,14 +223,15 @@ class Chef
             current_checksum = checksum(Chef::FileCache.load(cache_file, false))
           end
 
-          rf_url = generate_cookbook_url(
-            rf['name'], 
-            cookbook_name, 
-            segment, 
-            @node, 
-            current_checksum ? { 'checksum' => current_checksum } : nil
-          )
           if current_checksum != rf['checksum']
+            rf_url = generate_cookbook_url(
+              rf['name'], 
+              cookbook_name, 
+              segment, 
+              @node, 
+              current_checksum ? { 'checksum' => current_checksum } : nil
+            )
+
             changed = true
             begin
               raw_file = @rest.get_rest(rf_url, true)
@@ -250,15 +251,15 @@ class Chef
           end
         end
 
-        Chef::FileCache.list.each do |cache_file|
-          if cache_file =~ /^cookbooks\/(recipes|attributes|definitions|libraries)\//
-            unless file_canonical[cache_file]
-              Chef::Log.info("Removing #{cache_file} from the cache; it is no longer on the server.")
-              Chef::FileCache.delete(cache_file)
-            end
+      end
+
+      Chef::FileCache.list.each do |cache_file|
+        if cache_file =~ /^cookbooks\/#{cookbook_name}\/(recipes|attributes|definitions|libraries|resources|providers)\//
+          unless file_canonical[cache_file]
+            Chef::Log.info("Removing #{cache_file} from the cache; it is no longer on the server.")
+            Chef::FileCache.delete(cache_file)
           end
         end
-
       end
       
     end
@@ -271,6 +272,14 @@ class Chef
       Chef::Log.debug("Synchronizing cookbooks")
       cookbook_hash = @rest.get_rest("nodes/#{@safe_name}/cookbooks")
       Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
+      Chef::FileCache.list.each do |cache_file|
+        if cache_file =~ /^cookbooks\/(.+?)\//
+          unless cookbook_hash.has_key?($1)
+            Chef::Log.info("Removing #{cache_file} from the cache; it's cookbook is no longer needed on this client.")
+            Chef::FileCache.delete(cache_file) 
+          end
+        end
+      end
       cookbook_hash.each do |cookbook_name, parts|
         update_file_cache(cookbook_name, parts)
       end

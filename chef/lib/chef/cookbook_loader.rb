@@ -128,11 +128,11 @@ class Chef
     end
     
     def each
-      @cookbook.each_value do |cobject|
-        yield cobject
+      @cookbook.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |cname|
+        yield @cookbook[cname]
       end
     end
-    
+
     private
     
       def load_ignore_file(ignore_file)

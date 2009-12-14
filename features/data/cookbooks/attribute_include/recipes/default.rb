@@ -1,7 +1,8 @@
 #
-# Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Cookbook Name:: recipe_include
+# Recipe:: second 
+#
+# Copyright 2009, Opscode
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,19 +17,7 @@
 # limitations under the License.
 #
 
-require "chef/resource/scm"
-
-class Chef
-  class Resource
-    class Subversion < Chef::Resource::Scm
-      
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
-        @resource_name = :subversion
-        @provider = Chef::Provider::Subversion
-        allowed_actions << :force_export
-      end
-      
-    end
-  end
+execute "append to #{node[:tmpdir]}/mars_volta" do
+  command "echo '#{node.mars_volta} is #{node.mars_volta_is}' >> #{node[:tmpdir]}/mars_volta"
 end
+

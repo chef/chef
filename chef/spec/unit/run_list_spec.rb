@@ -199,7 +199,7 @@ describe Chef::RunList do
     it "should recurse into a child role" do
       dog = Chef::Role.new
       dog.name "dog"
-      dog.default_attributes :one => :five
+      dog.default_attributes :seven => :nine
       dog.run_list "three"
       @role.run_list << "role[dog]"
       Chef::Role.stub!(:from_disk).with("stubby").and_return(@role)
@@ -207,7 +207,7 @@ describe Chef::RunList do
 
       recipes, default, override = @run_list.expand('disk')
       recipes[2].should == "three"
-      default[:one].should == :five
+      default[:seven].should == :nine
     end
 
 

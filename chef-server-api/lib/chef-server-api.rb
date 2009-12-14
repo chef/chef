@@ -6,6 +6,7 @@ if defined?(Merb::Plugins)
   dependency 'merb-slices', :immediate => true
   dependency 'chef', :immediate=>true unless defined?(Chef)
   dependency 'nanite', :immediate=>true 
+  dependency 'uuidtools', :immediate=>true 
 
   require 'chef/role'
   require 'chef/data_bag'
@@ -61,10 +62,20 @@ if defined?(Merb::Plugins)
       Mixlib::Authentication::Log.logger = Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 
 
       Thread.new do
-        until EM.reactor_running?
+        # Okay, we're here because if you run this with the thin adaptor, you
+        # need to wait for EM to heat all the way up - and it won't, until
+        # after activate is finished.
+        sleep 1 
+        Chef::Nanite.in_event { Chef::Log.info("Nanite is ready") }
+
+        # This is because nanite needs to broadcast, and we don't know how long
+        # that will take.
+        sleep_time = 20
+        while sleep_time != 0
+          Chef::Log.debug("Waiting for Nanite to heat up.. #{sleep_time} seconds left")
+          sleep_time = sleep_time - 1
           sleep 1
         end
-        Chef::Nanite.in_event { Chef::Log.info("Nanite is ready") }
 
         unless Merb::Config.environment == "test"
           # create the couch design docs for nodes, roles, and databags

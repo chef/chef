@@ -1,6 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Daniel DeLeo (<dan@kallistec.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2009 Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,10 +24,11 @@ describe Chef::Cache do
   before(:each) do
     Chef::Config[:cache_type] = "Memory"
     Chef::Config[:cache_options] = { } 
-    @cache = Chef::Cache.new
+    @cache = Chef::Cache.instance
+    @cache.reset!
   end
 
-  describe "initialize" do
+  describe "loading the moneta backend" do
     it "should build a Chef::Cache object" do
       @cache.should be_a_kind_of(Chef::Cache)
     end
@@ -35,17 +38,12 @@ describe Chef::Cache do
     end
 
     it "should raise an exception if it cannot load the moneta adaptor" do
+      Chef::Log.should_receive(:fatal).with(/^Could not load Moneta back end/)
       lambda {
-        c = Chef::Cache.new('WTF')
+        c = Chef::Cache.instance.reset!('WTF')
       }.should raise_error(LoadError)
     end
   end
 
-  describe "method_missing" do
-    it "should proxy calls to the moneta object" do
-      @cache[:you] = "a monkey"
-      @cache[:you].should == "a monkey"
-    end
-  end
-
 end
+

@@ -54,10 +54,6 @@ describe Chef::Cookbook do
     node.smokey.should eql("robinson")
   end
   
-  it "should raise an ArgumentError if you don't pass a node object to load_attributes" do
-    lambda { @cookbook.load_attributes("snake oil") }.should raise_error(ArgumentError)    
-  end
-  
   it "should have a list of definition files" do
     @cookbook.definition_files.should be_a_kind_of(Array)
   end
@@ -129,6 +125,14 @@ describe Chef::Cookbook do
     node = Chef::Node.new
     node.name "Julia Child"
     lambda { @cookbook.load_recipe("smackdown", node) }.should raise_error(ArgumentError)
+  end
+
+  it "should allow you to load an attribute file by name via load_attribute" do
+    @cookbook.attribute_files = Dir[File.join(COOKBOOK_PATH, "attributes", "**", "*.rb")]
+    node = Chef::Node.new
+    node.name "Julia Child"
+    @cookbook.load_attribute("openldap::smokey", node)
+    node.smokey.should == "robinson"
   end
   
 end

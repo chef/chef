@@ -1,6 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2009 Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,35 +20,33 @@
 
 require 'chef/log'
 require 'chef/config'
+require 'chef/mixin/convert_to_class_name'
+require 'singleton'
 require 'moneta'
 
 class Chef 
   class Cache
-
+    include Chef::Mixin::ConvertToClassName
+    include ::Singleton
+    
     attr_reader :moneta
-
-    def initialize(type=nil, options=nil)
-      type ||= Chef::Config[:cache_type]
-      options ||= Chef::Config[:cache_options]
-
-      if type == "BasicFile"
-        require_type = "basic_file"
-      else
-        require_type = type.downcase
-      end
-
-      begin
-        require "moneta/#{require_type}"
-      rescue LoadError
-        raise LoadError, "Cannot find a Moneta adaptor named #{require_type}!"
-      end
-
-      m = Moneta.const_get(type)
-      @moneta = m.new(options)
+    
+    def initialize(*args)
+      self.reset!(*args)
     end
-
-    def method_missing(method, *args)
-      @moneta.send(method, *args)
+    
+    def reset!(backend=nil, options=nil)
+      backend ||= Chef::Config[:cache_type]
+      options ||= Chef::Config[:cache_options]
+      
+      begin
+        require "moneta/#{convert_to_snake_case(backend, 'Moneta')}"
+      rescue LoadError => e
+        Chef::Log.fatal("Could not load Moneta back end #{backend.inspect}")
+        raise e
+      end
+     
+      @moneta = Moneta.const_get(backend).new(options)
     end
 
   end

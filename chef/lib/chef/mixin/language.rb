@@ -17,6 +17,8 @@
 #
 
 require 'chef/search/query'
+require 'chef/data_bag'
+require 'chef/data_bag_item'
 
 class Chef
   module Mixin
@@ -79,7 +81,16 @@ class Chef
       def search(*args, &block)
         Chef::Search::Query.new.search(*args, &block)
       end
-      
+
+      def data_bag(bag)
+        rbag = Chef::DataBag.load(bag)
+        rbag.keys
+      end
+
+      def data_bag_item(bag, item)
+        Chef::DataBagItem.load(bag, item)
+      end
+
     end
   end
 end

@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Copyright:: Copyright (c) 2009 Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,23 +18,26 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-describe Chef::Resource::Subversion do
+class ConvertToClassTestHarness
+  include Chef::Mixin::ConvertToClassName
+end
+
+describe Chef::Mixin::ConvertToClassName do
   
   before do
-    @svn = Chef::Resource::Subversion.new("ohai, svn project!")
+    @convert = ConvertToClassTestHarness.new
   end
   
-  it "is a subclass of Resource::Scm" do
-    @svn.should be_an_instance_of(Chef::Resource::Subversion)
-    @svn.should be_a_kind_of(Chef::Resource::Scm)
+  it "converts a_snake_case_word to a CamelCaseWord" do
+    @convert.convert_to_class_name("now_camelized").should == "NowCamelized"
   end
   
-  it "uses the subversion provider" do
-    @svn.provider.should eql(Chef::Provider::Subversion)
+  it "converts a CamelCaseWord to a snake_case_word" do
+    @convert.convert_to_snake_case("NowImASnake").should == "now_im_a_snake"
   end
   
-  it "allows the force_export action" do
-    @svn.allowed_actions.should include(:force_export)
+  it "removes the base classes before snake casing" do
+    @convert.convert_to_snake_case("NameSpaced::Class::ThisIsWin", "NameSpaced::Class").should == "this_is_win"
   end
   
 end

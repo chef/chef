@@ -62,7 +62,7 @@ class Chef
       @couchdb_rev = nil
       @couchdb_id = nil
       @data_bag = nil
-      @raw_data = Hash.new
+      @raw_data = Mash.new
       @couchdb = Chef::CouchDB.new 
     end
 
@@ -150,7 +150,7 @@ class Chef
         bag_item.couchdb_id = o["_id"] 
         o.delete("_id")
       end
-      bag_item.raw_data = o["raw_data"]
+      bag_item.raw_data = Mash.new(o["raw_data"])
       bag_item
     end
 

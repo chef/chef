@@ -338,6 +338,10 @@ namespace :features do
     Cucumber::Rake::Task.new(:run_interval) do |t|
       t.profile = "client_run_interval"
     end
+
+    Cucumber::Rake::Task.new(:cookbook_sync) do |t|
+      t.profile = "client_cookbook_sync"
+    end
   end
 
   desc "Run cucumber tests for the cookbooks"
@@ -362,6 +366,9 @@ namespace :features do
   namespace :language do
     Cucumber::Rake::Task.new(:recipe_include) do |t|
       t.profile = "recipe_inclusion"
+    end
+    Cucumber::Rake::Task.new(:attribute_include) do |t|
+      t.profile = "attribute_inclusion"
     end
   end
   

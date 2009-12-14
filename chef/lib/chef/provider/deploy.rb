@@ -143,9 +143,10 @@ class Chef
       end
       
       def migrate
+        run_symlinks_before_migrate
+        
         if @new_resource.migrate
           enforce_ownership
-          link_shared_db_config_to_current_release
           
           environment = @new_resource.environment
           env_info = environment && environment.map do |key_and_val| 
@@ -190,8 +191,21 @@ class Chef
       end
       
       def update_cached_repo
+        if @new_resource.svn_force_export
+          svn_force_export
+        else
+          run_scm_sync
+        end
+      end
+      
+      def run_scm_sync
         Chef::Log.info "updating the cached checkout"
         @scm_provider.action_sync
+      end
+      
+      def svn_force_export
+        Chef::Log.info "exporting source repository to #{@new_resource.destination}"
+        @scm_provider.action_force_export
       end
       
       def copy_cached_repo
@@ -213,7 +227,7 @@ class Chef
         enforce_ownership
       end
       
-      def link_shared_db_config_to_current_release
+      def run_symlinks_before_migrate
         links_info = @new_resource.symlink_before_migrate.map { |src, dst| "#{src} => #{dst}" }.join(", ")
         Chef::Log.info "Making pre-migration symlinks: #{links_info}"
         @new_resource.symlink_before_migrate.each do |src, dest|
@@ -231,7 +245,7 @@ class Chef
         @new_resource.symlinks.each do |src, dest|
           FileUtils.ln_sf(@new_resource.shared_path + "/#{src}",  release_path + "/#{dest}")
         end
-        link_shared_db_config_to_current_release
+        run_symlinks_before_migrate
         enforce_ownership
       end
       

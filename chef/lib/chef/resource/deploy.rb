@@ -70,6 +70,7 @@ class Chef
         @enable_submodules = false
         @shallow_clone = false
         @scm_provider = Chef::Provider::Git
+        @svn_force_export = false
         @provider = Chef::Provider::Deploy::Timestamped
         @allowed_actions.push(:force_deploy, :deploy, :rollback)
       end
@@ -248,6 +249,14 @@ class Chef
           :scm_provider,
           arg,
           :kind_of => [ Class ]
+        )
+      end
+      
+      def svn_force_export(arg=nil)
+        set_or_return(
+          :svn_force_export,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
       

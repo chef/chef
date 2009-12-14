@@ -20,6 +20,7 @@ require 'chef/config'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
+require 'chef/mixin/language_include_attribute'
 require 'chef/couchdb'
 require 'chef/rest'
 require 'chef/run_list'
@@ -30,11 +31,12 @@ require 'json'
 class Chef
   class Node
     
-    attr_accessor :attribute, :recipe_list, :couchdb_rev, :couchdb_id, :run_state, :run_list, :override_attrs, :default_attrs
+    attr_accessor :attribute, :recipe_list, :couchdb_rev, :couchdb_id, :run_state, :run_list, :override_attrs, :default_attrs, :cookbook_loader
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
+    include Chef::Mixin::LanguageIncludeAttribute
     
     DESIGN_DOCUMENT = {
       "version" => 9,
@@ -134,7 +136,8 @@ class Chef
 
       @run_state = {
         :template_cache => Hash.new,
-        :seen_recipes => Hash.new
+        :seen_recipes => Hash.new,
+        :seen_attributes => Hash.new
       }
     end
     
