@@ -130,7 +130,7 @@ class Chef
           stdout_string, stderr_string = stdout.string.chomp, stderr.string.chomp
         end
         
-        args[:cwd] ||= Dir.tmpdir        
+        args[:cwd] ||= Dir.tmpdir
         unless File.directory?(args[:cwd])
           raise Chef::Exceptions::Exec, "#{args[:cwd]} does not exist or is not a directory"
         end
