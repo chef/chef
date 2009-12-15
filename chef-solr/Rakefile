@@ -19,7 +19,7 @@ begin
   end
 
 rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install gemcutter jeweler (installs jeweler from gemcutter)"  
+  puts "Jeweler (or a dependency) not available. Install it from gemcutter with: sudo gem install gemcutter jeweler"
 end
 
 require 'spec/rake/spectask'
