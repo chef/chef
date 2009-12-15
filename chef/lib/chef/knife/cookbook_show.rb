@@ -49,7 +49,7 @@ class Chef
           arguments[:platform] = config[:platform] if config.has_key?(:platform)
           arguments[:version] = config[:platform_version] if config.has_key?(:platform_version)
           result = rest.get_rest("cookbooks/#{@name_args[0]}/#{@name_args[1]}?#{make_query_params(arguments)}")
-          puts result
+          pretty_print(result)
         when 2 # We are showing a specific part of the cookbook
           result = rest.get_rest("cookbooks/#{@name_args[0]}")
           json_pretty_print(result[@name_args[1]])
@@ -59,11 +59,11 @@ class Chef
       end
 
       def make_query_params(req_opts)
-        query_part = ""
-        req_opts.each do |key, value|
-          query_part << "#{key}=#{URI.escape(value)}"
+        query_part = Array.new 
+        req_opts.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |key|
+          query_part << "#{key}=#{URI.escape(req_opts[key])}"
         end
-        query_part
+        query_part.join("&")
       end
 
     end
