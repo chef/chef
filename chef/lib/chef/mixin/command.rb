@@ -306,6 +306,9 @@ class Chef
           begin
             if args[:waitlast]
               b[cid, *pi]
+              # send EOF so that if the child process is reading from STDIN
+              # it will actually finish up and exit
+              pi[0].close_write
               Process.waitpid2(cid).last
             else
               # This took some doing.
