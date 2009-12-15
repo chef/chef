@@ -35,7 +35,7 @@ class Chef
     class IndexQueueConsumer
       include Chef::IndexQueue::Consumer
 
-      #expose :add, :delete, :commit, :optimize
+      expose :add, :delete
       
       def add(payload)
         index = Chef::Solr::Index.new

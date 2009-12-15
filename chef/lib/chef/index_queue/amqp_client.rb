@@ -39,9 +39,18 @@ class Chef
       
       def amqp_client
         unless @amqp_client
-          @amqp_client = Bunny.new(amqp_opts)
-          @amqp_client.start
-          @amqp_client.qos(:prefetch_count => 1)
+          begin
+            @amqp_client = Bunny.new(amqp_opts)
+            Chef::Log.debug "Starting AMQP connection with client settings: #{@amqp_client.inspect}"
+            @amqp_client.start
+            @amqp_client.qos(:prefetch_count => 1)
+          rescue Bunny::ServerDownError => e
+            Chef::Log.fatal "Could not connect to rabbitmq. Is it running, reachable, and configured correctly?"
+            raise e
+          rescue Bunny::ProtocolError => e
+            Chef::Log.fatal "Connection to rabbitmq refused. Check your rabbitmq configuration and chef's amqp* settings"
+            raise e
+          end
         end
         @amqp_client
       end
@@ -52,10 +61,15 @@ class Chef
       
       def queue
         unless @queue
-          @queue = amqp_client.queue("chef-index-consumer-" + UUIDTools::UUID.random_create.to_s)
+          @queue = amqp_client.queue("chef-index-consumer-" + consumer_id, :durable => durable_queue?)
           @queue.bind(exchange)
         end
         @queue
+      end
+      
+      def disconnected!
+        @amqp_client = nil
+        reset!
       end
 
       def send_action(action, data)
@@ -63,6 +77,14 @@ class Chef
       end
 
       private
+      
+      def durable_queue?
+        !!Chef::Config[:amqp_consumer_id]
+      end
+      
+      def consumer_id
+        Chef::Config[:amqp_consumer_id] || UUIDTools::UUID.random_create.to_s
+      end
 
       def amqp_opts
         { :spec   => '08',

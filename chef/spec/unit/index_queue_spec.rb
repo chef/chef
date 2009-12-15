@@ -94,12 +94,25 @@ describe Chef::IndexQueue::Consumer do
     @consumer     = IndexConsumerTestHarness.new
   end
   
+  it "keeps a whitelist of exposed methods" do
+    IndexConsumerTestHarness.exposed_methods.should == [:index_this]
+    IndexConsumerTestHarness.whitelisted?(:index_this).should be_true
+    IndexConsumerTestHarness.whitelisted?(:not_exposed).should be_false
+  end
+  
+  it "doesn't route non-whitelisted methods" do
+    payload_json      = {"payload" => {"a_placeholder" => "object"}, "action" => "not_exposed"}.to_json
+    received_message  = {:payload => payload_json}
+    lambda {@consumer.call_action_for_message(received_message)}.should raise_error(ArgumentError)
+    @consumer.unexposed_attr.should be_nil
+  end
   
   it "routes message payloads to the correct method" do
     payload_json      = {"payload" => {"a_placeholder" => "object"}, "action" => "index_this"}.to_json
     received_message  = {:payload => payload_json}
     @consumer.call_action_for_message(received_message)
     @consumer.last_indexed_object.should == {"a_placeholder" => "object"}
+    
   end
   
   it "subscribes to the queue for the indexer" do
@@ -112,22 +125,17 @@ describe Chef::IndexQueue::Consumer do
     @consumer.last_indexed_object.should == {"a_placeholder" => "object"}
   end
   
-  it "sets traps for INT and TERM, terminating the amqp client when the signal is received" do
-    Kernel.should_receive(:trap).with("INT")
-    Kernel.should_receive(:trap).with("TERM")
-    @consumer.set_signal_traps
-  end
-  
 end
 
 
 describe Chef::IndexQueue::AmqpClient do
   before do
-    Chef::Config[:amqp_host] = '4.3.2.1'
-    Chef::Config[:amqp_port] = '1337'
-    Chef::Config[:amqp_user] = 'teh_rspecz'
-    Chef::Config[:amqp_pass] = 'access_granted2rspec'
-    Chef::Config[:amqp_vhost] = '/chef-specz'
+    Chef::Config[:amqp_host]        = '4.3.2.1'
+    Chef::Config[:amqp_port]        = '1337'
+    Chef::Config[:amqp_user]        = 'teh_rspecz'
+    Chef::Config[:amqp_pass]        = 'access_granted2rspec'
+    Chef::Config[:amqp_vhost]       = '/chef-specz'
+    Chef::Config[:amqp_consumer_id] = nil
     
     @publisher    = Chef::IndexQueue::AmqpClient.instance
     @exchange     = mock("Bunny::Exchange")
@@ -173,13 +181,25 @@ describe Chef::IndexQueue::AmqpClient do
     @publisher.send_action(:hot_chef_on_queue, data)
   end
   
-  it "creates a queue bound to its exchange" do
+  it "creates a queue bound to its exchange with a temporary UUID" do
     @amqp_client.stub!(:qos)
     
     a_queue_name = /chef\-index-consumer\-[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/
     
     @queue = mock("Bunny::Queue")
-    @amqp_client.should_receive(:queue).with(a_queue_name).and_return(@queue)
+    @amqp_client.should_receive(:queue).with(a_queue_name, :durable => false).and_return(@queue)
+    @queue.should_receive(:bind).with(@exchange)
+    @publisher.queue.should == @queue
+  end
+  
+  it "creates a durable queue bound to the exchange when a UUID is configured" do
+    expected_queue_id   = "aaaaaaaa-bbbb-cccc-dddd-eeee-ffffffffffffffff"
+    expected_queue_name = "chef-index-consumer-#{expected_queue_id}"
+    Chef::Config[:amqp_consumer_id] = expected_queue_id
+    @amqp_client.stub!(:qos)
+    
+    @queue = mock("Bunny::Queue")
+    @amqp_client.should_receive(:queue).with(expected_queue_name, :durable => true).and_return(@queue)
     @queue.should_receive(:bind).with(@exchange)
     @publisher.queue.should == @queue
   end

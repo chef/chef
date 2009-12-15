@@ -163,6 +163,9 @@ class Chef
     amqp_user 'chef'
     amqp_pass 'testing'
     amqp_vhost '/chef'
+    # Setting this to a UUID string also makes the queue durable 
+    # (persist across rabbitmq restarts)
+    amqp_consumer_id nil
 
     client_key "/etc/chef/client.pem"
     validation_key "/etc/chef/validation.pem"

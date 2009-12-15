@@ -96,7 +96,19 @@ class Chef
           :description => "The amqp vhost"
         
         Signal.trap("INT") do
+          begin
+            AmqpClient.instance.stop
+          rescue Bunny::ProtocolError, Bunny::ConnectionError, Bunny::UnsubscribeError
+          end
           fatal!("SIGINT received, stopping", 2)
+        end
+        
+        Kernel.trap("TERM") do 
+          begin
+            AmqpClient.instance.stop
+          rescue Bunny::ProtocolError, Bunny::ConnectionError, Bunny::UnsubscribeError
+          end
+          fatal!("SIGTERM received, stopping", 1)
         end
         
         def initialize
@@ -116,7 +128,6 @@ class Chef
             Chef::Daemon.daemonize("chef-solr-indexer")
           end
           
-          @consumer.set_signal_traps
           @consumer.start
           
         end

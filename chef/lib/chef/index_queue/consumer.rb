@@ -19,13 +19,38 @@
 class Chef
   module IndexQueue
     module Consumer
+      module ClassMethods
+        def expose(*methods)
+          @exposed_methods = Array(@exposed_methods)
+          @exposed_methods += methods
+        end
+        
+        def exposed_methods
+          @exposed_methods || []
+        end
+        
+        def whitelisted?(method_name)
+          exposed_methods.include?(method_name)
+        end
+      end
+      
+      def self.included(including_class)
+        including_class.send(:extend, ClassMethods)
+      end
       
       def run
         Chef::Log.debug("Starting Index Queue Consumer")
-        queue = AmqpClient.instance.queue
-        queue.subscribe(:ack => true, :timeout => false) do |message|
-          call_action_for_message(message)
-          #queue.ack
+        AmqpClient.instance.queue # triggers connection setup
+        
+        begin
+          AmqpClient.instance.queue.subscribe(:ack => true, :timeout => false) do |message|
+            call_action_for_message(message)
+          end
+        rescue Bunny::ConnectionError, Errno::ECONNRESET, Bunny::ServerDownError
+          AmqpClient.instance.disconnected!
+          Chef::Log.warn "Connection to rabbitmq lost. attempting to reconnect"
+          sleep 1
+          retry
         end
       end
       alias :start :run
@@ -34,23 +59,15 @@ class Chef
         amqp_payload  = JSON.parse(message[:payload])
         action        = amqp_payload["action"].to_sym
         app_payload   = amqp_payload["payload"]
+        assert_method_whitelisted(action)
         send(action, app_payload)
       end
       
-      def set_signal_traps
-        Kernel.trap("INT") do 
-          begin
-            AmqpClient.instance.stop
-          rescue Bunny::ProtocolError
-          rescue Bunny::ConnectionError
-          end
-        end
-        Kernel.trap("TERM") do 
-          begin
-            AmqpClient.instance.stop
-          rescue Bunny::ProtocolError
-          rescue Bunny::ConnectionError
-          end
+      private
+      
+      def assert_method_whitelisted(method_name)
+        unless self.class.whitelisted?(method_name)
+          raise ArgumentError, "non-exposed method #{method_name} called via index queue"
         end
       end
       
