@@ -27,10 +27,16 @@ end
 class IndexConsumerTestHarness
   include Chef::IndexQueue::Consumer
   
-  attr_reader :last_indexed_object
+  attr_reader :last_indexed_object, :unexposed_attr
+  
+  expose :index_this
   
   def index_this(object_to_index)
     @last_indexed_object = object_to_index
+  end
+  
+  def not_exposed(arg)
+    @unexposed_attr = arg
   end
 end
 
@@ -101,8 +107,7 @@ describe Chef::IndexQueue::Consumer do
     message       = {:payload => payload_json}
     queue = mock("Bunny::Queue")
     @amqp_client.stub!(:queue).and_return(queue)
-    queue.should_receive(:subscribe).with(:ack => true).and_yield(message)
-    queue.should_receive(:ack)
+    queue.should_receive(:subscribe).with(:timeout => false, :ack => true).and_yield(message)
     @consumer.run
     @consumer.last_indexed_object.should == {"a_placeholder" => "object"}
   end
@@ -140,7 +145,7 @@ describe Chef::IndexQueue::AmqpClient do
   
   it "creates an amqp client object on demand, starts a connection, and caches it" do
     @amqp_client.should_receive(:start).once
-    @amqp_client.should_receive(:qos).with(:prefetch => 1)
+    @amqp_client.should_receive(:qos).with(:prefetch_count => 1)
     ::Bunny.should_receive(:new).once.and_return(@amqp_client)
     @publisher.amqp_client.should == @amqp_client
     @publisher.amqp_client
@@ -150,7 +155,7 @@ describe Chef::IndexQueue::AmqpClient do
     @publisher.reset!
     Bunny.should_receive(:new).with(:spec => '08', :host => '4.3.2.1', :port => '1337', :user => "teh_rspecz",
                                     :pass => "access_granted2rspec", :vhost => '/chef-specz').and_return(@amqp_client)
-    @amqp_client.should_receive(:qos).with(:prefetch => 1)
+    @amqp_client.should_receive(:qos).with(:prefetch_count => 1)
     @publisher.amqp_client.should == @amqp_client
   end
   
@@ -171,7 +176,7 @@ describe Chef::IndexQueue::AmqpClient do
   it "creates a queue bound to its exchange" do
     @amqp_client.stub!(:qos)
     
-    a_queue_name = /chef\-indexer\-[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/
+    a_queue_name = /chef\-index-consumer\-[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/
     
     @queue = mock("Bunny::Queue")
     @amqp_client.should_receive(:queue).with(a_queue_name).and_return(@queue)
