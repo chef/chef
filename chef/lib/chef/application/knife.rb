@@ -36,14 +36,13 @@ class Chef::Application::Knife < Chef::Application
   option :config_file, 
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => "/etc/chef/client.rb",
+    :default => File.join(ENV['HOME'], '.chef', 'knife.rb'),
     :description => "The configuration file to use"
 
   option :log_level, 
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
     :description  => "Set the log level (debug, info, warn, error, fatal)",
-    :default      => :info,
     :proc         => lambda { |l| l.to_sym }
 
   option :log_location,
@@ -70,14 +69,17 @@ class Chef::Application::Knife < Chef::Application
   option :node_name,
     :short => "-u USER",
     :long => "--user USER",
-    :description => "API Client Username, defaults to OPSCODE_USER",
-    :default => ENV['OPSCODE_USER']
+    :description => "API Client Username"
 
   option :client_key,
     :short => "-k KEY",
     :long => "--key KEY",
-    :description => "API Client Key, defaults to OPSCODE_KEY",
-    :default => ENV['OPSCODE_KEY']
+    :description => "API Client Key"
+
+  option :chef_server_url,
+    :short => "-s URL",
+    :long => "--server-url URL",
+    :description => "Chef Server URL"
 
   option :yes,
     :short => "-y",

@@ -63,11 +63,11 @@ class Chef
         non_dash_args << arg if arg =~ /^([[:alpha:]]|_)+$/
       end
 
-      to_try = non_dash_args.length
+      to_try = non_dash_args.length 
       klass_instance = nil
       cli_bits = nil 
 
-      while(to_try > 0)
+      while(to_try >= 0)
         cli_bits = non_dash_args[0..to_try]
         snake_case_class_name = cli_bits.join("_")
 
@@ -91,15 +91,30 @@ class Chef
       klass_instance
     end
 
+    def ask_question(q)
+      print q 
+      a = STDIN.readline
+      a.chomp!
+      a
+    end
+
     def configure_chef
-      Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exists?(config[:config_file]) && File.readable?(config[:config_file])
-      Chef::Config[:log_level] = config[:log_level] 
-      Chef::Config[:log_location] = config[:log_location] || STDOUT 
-      Chef::Config[:node_name] = config[:node_name]
-      Chef::Config[:client_key] = config[:client_key]
+      if !config[:config_file].nil? && File.exists?(config[:config_file]) && File.readable?(config[:config_file])
+        Chef::Config.from_file(config[:config_file]) 
+      end
+
+      Chef::Config[:log_level] = config[:log_level] if config[:log_level]
+      Chef::Config[:log_location] = config[:log_location] if config[:log_location]
+      Chef::Config[:node_name] = config[:node_name] if config[:node_name]
+      Chef::Config[:client_key] = config[:client_key] if config[:client_key]
+      Chef::Config[:chef_server_url] = config[:chef_server_url] if config[:chef_server_url]
       Chef::Log::Formatter.show_time = false
       Chef::Log.init(Chef::Config[:log_location])
       Chef::Log.level(Chef::Config[:log_level])
+    end
+
+    def pretty_print(data)
+      puts data
     end
 
     def json_pretty_print(data)
@@ -220,19 +235,24 @@ class Chef
       json_pretty_print(output) if config[:print_after]
     end
 
-    def delete_object(klass, name)
-      confirm("Do you really want to delete #{@name_args[0]}")
+    def delete_object(klass, name, delete_name=nil, &block)
+      confirm("Do you really want to delete #{name}")
 
-      object = klass.load(@name_args[0])
-      object.destroy
+      if Kernel.block_given?
+        object = block.call
+      else
+        object = klass.load(name)
+        object.destroy
+      end
 
       json_pretty_print(format_for_display(object)) if config[:print_after]
 
-      Chef::Log.warn("Deleted #{object}!")
+      obj_name = delete_name ? "#{delete_name}[#{name}]" : object
+      Chef::Log.warn("Deleted #{obj_name}!")
     end
 
-    def bulk_delete(klass, fancy_name)
-      object_list = klass.list(true)
+    def bulk_delete(klass, fancy_name, delete_name=nil, list=nil, &block)
+      object_list = list ? list : klass.list(true)
 
       if config[:regex]
         to_delete = Hash.new
@@ -249,7 +269,11 @@ class Chef
       confirm("Do you really want to delete the above items")
 
       to_delete.each do |name, object|
-        object.destroy
+        if Kernel.block_given?
+          block.call(name, object)
+        else
+          object.destroy
+        end
         json_pretty_print(format_for_display(object)) if config[:print_after]
         Chef::Log.warn("Deleted #{fancy_name} #{name}")
       end
