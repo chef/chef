@@ -47,11 +47,29 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
   end
 
   def show
-    @databag_name = params[:id]
-    r = Chef::REST.new(Chef::Config[:chef_server_url])
-    @databag = r.get_rest("data/#{params[:id]}")
-    raise NotFound unless @databag
-    display @databag
+    begin
+      @databag_name = params[:id]
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      @databag = r.get_rest("data/#{params[:id]}")
+      raise NotFound unless @databag
+      display @databag
+    rescue
+      @databags = Chef::DataBag.list
+      @_message =  { :error => $!}    
+      render :index
+    end 
+  end
+  
+  def destroy
+    begin
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r.delete_rest("data/#{params[:id]}")
+      redirect(absolute_slice_url(:databags), {:message => { :notice => "Data bag #{params[:id]} deleted successfully" }, :permanent => true})
+    rescue
+      @databags = Chef::DataBag.list
+      @_message =  { :error => $!}
+      render :index
+    end 
   end
   
 end
