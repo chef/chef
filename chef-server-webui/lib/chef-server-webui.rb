@@ -66,6 +66,7 @@ if defined?(Merb::Plugins)
     def self.setup_router(scope)
           
       scope.resources :nodes, :id => /[^\/]+/
+      scope.resources :clients, :id => /[^\/]+/
       scope.resources :roles  
       
       scope.match("/status").to(:controller => "status", :action => "index").name(:status)
