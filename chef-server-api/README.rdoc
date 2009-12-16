@@ -19,13 +19,11 @@ chef:
 *  stomp  
 *  ohai  
 
-chef-server and the chefserverslice (merb slice), same requires as chef above, plus:
+chef-server and the chef-server-api (merb slice), same requires as chef above, plus:
 
-*  stompserver 
-*  ferret 
 *  merb-core 
 *  merb-haml 
-*  mongrel 
+*  thin
 *  haml
 *  ruby-openid 
 *  syntax

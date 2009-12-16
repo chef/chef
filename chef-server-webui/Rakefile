@@ -25,18 +25,14 @@ spec = Gem::Specification.new do |s|
   s.homepage = HOMEPAGE
 
   ["merb-slices",
-  "stomp",
-  "stompserver",
-  "ferret",
-  "merb-core",
-  "merb-haml",
-  "merb-assets",
-  "merb-helpers",
-  "mongrel",
-  "haml",
-  "ruby-openid",
-  "json",
-  "syntax",].each { |g| s.add_dependency g}
+   "merb-core",
+   "merb-haml",
+   "merb-assets",
+   "merb-helpers",
+   "thin",
+   "haml",
+   "json",
+   "syntax",].each { |g| s.add_dependency g}
   
   s.require_path = 'lib'
   s.files = %w(LICENSE README.rdoc Rakefile) + Dir.glob("{config,lib,spec,app,public,stubs}/**/*")
