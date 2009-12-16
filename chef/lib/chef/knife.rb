@@ -60,7 +60,7 @@ class Chef
 
       non_dash_args = Array.new
       args.each do |arg|
-        non_dash_args << arg if arg =~ /^([[:alpha:]]|_)+$/
+        non_dash_args << arg if arg =~ /^([[:alnum:]]|_)+$/
       end
 
       to_try = non_dash_args.length 
@@ -140,6 +140,8 @@ class Chef
       elsif config[:run_list]
         data = data.run_list.run_list
         { "run_list" => data }
+      elsif config[:id_only]
+        data.respond_to?(:name) ? data.name : data["id"]
       else
         data
       end
@@ -225,12 +227,18 @@ class Chef
       json_pretty_print(format_for_display(object)) if config[:print_after]
     end
 
-    def create_object(object)
+    def create_object(object, pretty_name=nil, &block)
       output = edit_data(object)
 
-      output.save
+      if Kernel.block_given?
+        output = block.call(output)
+      else
+        output.save
+      end
 
-      Chef::Log.info("Created (or updated) #{output}")
+      pretty_name ||= output
+
+      Chef::Log.info("Created (or updated) #{pretty_name}")
       
       json_pretty_print(output) if config[:print_after]
     end

@@ -17,24 +17,33 @@
 #
 
 require 'chef/knife'
-require 'chef/data_bag'
+require 'chef/data_bag_item'
 
 class Chef
   class Knife
-    class DataBagShow < Knife
+    class DataBagEdit < Knife
 
-      banner "Sub-Command: data bag show BAG [ITEM] (options)"
+      banner "Sub-Command: data bag edit BAG ITEM (options)"
 
-      def run
-        display = case @name_args.length
-                  when 2
-                    format_for_display(Chef::DataBagItem.load(@name_args[0], @name_args[1]))
-                  else
-                    format_list_for_display(Chef::DataBag.load(@name_args[0]))
-                  end
-        json_pretty_print(display)
+      def run 
+        if @name_args.length != 2
+          Chef::Log.fatal("You must supply the data bag and an item to edit!")
+          exit 42
+        else
+          object = Chef::DataBagItem.load(@name_args[0], @name_args[1])
+
+          output = edit_data(object)
+
+          rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", output)
+
+          Chef::Log.info("Saved data_bag_item[#{@name_args[1]}]")
+
+          json_pretty_print(format_for_display(object)) if config[:print_after]
+        end
       end
     end
   end
 end
+
+
 

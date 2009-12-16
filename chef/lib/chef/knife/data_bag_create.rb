@@ -23,11 +23,17 @@ class Chef
   class Knife
     class DataBagCreate < Knife
 
-      banner "Sub-Command: data bag create BAG (options)"
+      banner "Sub-Command: data bag create BAG [ITEM] (options)"
 
       def run 
-        rest.post_rest("data", { "name" => @name_args[0] })
-        Chef::Log.info("Created data_bag[#{@name_args[0]}]")
+        if @name_args.length == 2
+          create_object({ "id" => @name_args[1] }, "data_bag_item[#{@name_args[1]}]") do |output|
+            rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", output)
+          end
+        else
+          rest.post_rest("data", { "name" => @name_args[0] })
+          Chef::Log.info("Created data_bag[#{@name_args[0]}]")
+        end
       end
     end
   end

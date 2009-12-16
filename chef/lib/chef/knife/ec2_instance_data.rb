@@ -17,22 +17,28 @@
 #
 
 require 'chef/knife'
-require 'chef/data_bag'
+require 'json'
 
 class Chef
   class Knife
-    class DataBagShow < Knife
+    class Ec2InstanceData < Knife
 
-      banner "Sub-Command: data bag show BAG [ITEM] (options)"
+      banner "Sub-Command: ec2 instance data [RUN LIST...] (options)"
 
-      def run
-        display = case @name_args.length
-                  when 2
-                    format_for_display(Chef::DataBagItem.load(@name_args[0], @name_args[1]))
-                  else
-                    format_list_for_display(Chef::DataBag.load(@name_args[0]))
-                  end
-        json_pretty_print(display)
+      option :edit,
+        :short => "-e",
+        :long => "--edit",
+        :description => "Edit the instance data"
+
+      def run 
+        data = {
+          "chef_server" => Chef::Config[:chef_server_url],
+          "validation_client_name" => Chef::Config[:validation_client_name],
+          "validation_key" => IO.read(Chef::Config[:validation_key]),
+          "attributes" => { "run_list" => @name_args } 
+        }
+        data = edit_data(data) if config[:edit]
+        json_pretty_print(data)
       end
     end
   end
