@@ -41,10 +41,10 @@ Dir[
 end
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
 
-Chef::Config.log_level(:fatal)
+Chef::Config[:log_level] = :fatal
 Chef::Config[:cache_type] = "Memory"
 Chef::Config[:cache_options] = { } 
-Chef::Log.level(Chef::Config.log_level)
+Chef::Log.level = Chef::Config.log_level
 Chef::Config.solo(false)
 
 def redefine_argv(value)

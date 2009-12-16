@@ -45,11 +45,11 @@ def setup_logging
   Merb.logger.auto_flush = true
   if ENV['DEBUG'] == 'true' || ENV['LOG_LEVEL'] == 'debug'
     Chef::Config[:log_level] = :debug
-    Chef::Log.level(:debug)
+    Chef::Log.level = :debug
     Merb.logger.set_log(STDOUT, :debug) 
   else
     Chef::Config[:log_level] = ENV['LOG_LEVEL'].to_sym 
-    Chef::Log.level(ENV['LOG_LEVEL'].to_sym)
+    Chef::Log.level = ENV['LOG_LEVEL'].to_sym
     Merb.logger.set_log(STDOUT, ENV['LOG_LEVEL'].to_sym)
   end
   Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 

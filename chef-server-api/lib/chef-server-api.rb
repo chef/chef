@@ -70,10 +70,8 @@ if defined?(Merb::Plugins)
 
         # This is because nanite needs to broadcast, and we don't know how long
         # that will take.
-        sleep_time = 20
-        while sleep_time != 0
+        20.downto(0) do |sleep_time|
           Chef::Log.debug("Waiting for Nanite to heat up.. #{sleep_time} seconds left")
-          sleep_time = sleep_time - 1
           sleep 1
         end
 

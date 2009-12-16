@@ -99,7 +99,7 @@ class Chef
 
         def initialize
           super
-          Chef::Log.level(Chef::Config[:log_level])
+          Chef::Log.level = Chef::Config[:log_level] 
         end
 
         def setup_application

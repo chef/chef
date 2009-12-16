@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Brown (<cb@opscode.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -20,6 +21,7 @@ require 'chef/log'
 require 'chef/config'
 require 'chef/api_client'
 require 'openssl'
+require 'fileutils'
 
 class Chef
   class Certificate
@@ -140,9 +142,7 @@ class Chef
           api_client.create_keys
           api_client.cdb_save
           key_dir = File.dirname(key_file)
-          unless File.directory?(key_dir)
-            system("mkdir -p #{key_dir}")
-          end
+          FileUtils.mkdir_p(key_dir) unless File.directory?(key_dir)
           File.open(key_file, "w") do |f|
             f.print(api_client.private_key)
           end

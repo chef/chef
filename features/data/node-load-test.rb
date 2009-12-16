@@ -19,7 +19,7 @@ json_attrs = Hash.new
 if ARGV[3]
   json_attrs = JSON.parse(IO.read(ARGV[3]))
 end
-Chef::Log.level(:info)
+Chef::Log.level = :info
 processes = Array.new
 STDOUT.sync = true
 STDERR.sync = true

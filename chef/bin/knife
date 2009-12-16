@@ -24,3 +24,4 @@ require 'rubygems'
 require 'chef/application/knife'
 
 Chef::Application::Knife.new.run
+
