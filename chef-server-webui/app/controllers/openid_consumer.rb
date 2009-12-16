@@ -86,7 +86,7 @@ class ChefServerWebui::OpenidConsumer < ChefServerWebui::Application
         users = Chef::WebUIUser.list
         #TODO: This is expensive. Should think of a better way [nuo]
         # Go through each user object and check if the current OpenID associates with the user
-        users.each do |u|
+        users.each do |u, url|
           user = Chef::WebUIUser.load(u)
           if user.openid == oidresp.identity_url
             session[:user] = user.name

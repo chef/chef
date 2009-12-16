@@ -115,12 +115,8 @@ module Merb
       end
       
       def syntax_highlight(code)
-        converter = Syntax::Convertors::HTML.for_syntax "ruby"
-        if File.exists?(code)
-          converter.convert(File.read(code), false)
-        else
-          converter.convert(code, false)
-        end
+        tokens = File.exists?(code) ? CodeRay.scan_file(code, :ruby) : CodeRay.scan(code, :ruby)
+        CodeRay.encode_tokens(tokens, :span)
       end
       
       def get_file(uri)

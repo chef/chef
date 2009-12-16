@@ -89,6 +89,31 @@ class ChefServerWebui::Application < Merb::Controller
     redirect(slice_url(:users_login), {:message => { :error => $! }, :permanent => true})
   end 
   
+  
+  def is_admin(name)
+    user = Chef::WebUIUser.load(name)
+    return user.admin
+  end
+  
+  #return true if there is only one admin left, false otehrwise
+  def is_last_admin
+    count = 0
+    users = Chef::WebUIUser.list
+    users.each do |u, url|
+      user = Chef::WebUIUser.load(u)
+      if user.admin
+        count = count + 1
+        return false if count == 2
+      end
+    end
+    true
+  end
+  
+  #whether or not the user should be able to edit a user's admin status
+  def edit_admin
+    is_admin(params[:user_id]) ? (!is_last_admin) : true
+  end 
+  
   def authorized_node
   #  if session[:level] == :admin
   #    Chef::Log.debug("Authorized as Administrator")

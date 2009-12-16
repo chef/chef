@@ -67,7 +67,7 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
       @node = Chef::Node.new
       @node.name params[:name]
       @node.attribute = JSON.parse(params[:attributes])
-      @node.run_list params[:for_node]
+      @node.run_list.reset(params[:for_node] ? params[:for_node] : [])
       begin
         @node.create
       rescue Net::HTTPServerException => e

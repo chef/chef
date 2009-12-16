@@ -8,7 +8,7 @@ if defined?(Merb::Plugins)
   require 'chef/role'
   require 'chef/webui_user'
 
-  require 'syntax/convertors/html'
+  require 'coderay'
 
   Merb::Plugins.add_rakefiles "chef-server-webui/merbtasks", "chef-server-webui/slicetasks", "chef-server-webui/spectasks"
 
@@ -128,16 +128,15 @@ if defined?(Merb::Plugins)
       # scope.default_routes
     end
     
-    # Create the default admin user "admin" if not already exists, this code is also in chef-server-api/lib/chef-server-api.rb
-    begin
-      user = Chef::WebUIUser.load(Chef::Config[:web_ui_admin_user_name])
-    rescue Chef::Exceptions::CouchDBNotFound => e
+    # Create the default admin user "admin" if no admin user exists  
+    unless Chef::WebUIUser.admin_exist
       user = Chef::WebUIUser.new
       user.name = Chef::Config[:web_ui_admin_user_name]
       user.set_password(Chef::Config[:web_ui_admin_default_password])
       user.admin = true
-      user.save
-    end
+      user.cdb_save
+    end 
+  
       
   end
 
