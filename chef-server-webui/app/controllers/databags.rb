@@ -41,9 +41,15 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
   end
   
   def index
-    r = Chef::REST.new(Chef::Config[:chef_server_url])
-    @databags = r.get_rest("data")
-    render
+    begin
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      @databags = r.get_rest("data")
+      render
+    rescue
+      @_message = { :error => $! } 
+      @databags = {}
+      render
+    end
   end
 
   def show

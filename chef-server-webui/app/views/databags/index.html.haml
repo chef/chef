@@ -13,6 +13,6 @@
               %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
                 %td= link_to databag[0], slice_url(:databag, { :id => databag[0] })
                 %td
-                  = link_to('Edit', slice_url(:edit_databag, :id => databag[0])) 
+                  = link_to('Edit', slice_url(:databag, :id => databag[0])) 
                   |
                   = link_to('Delete', slice_url(:databag, :id => databag[0]), :method => "delete", :confirm => "Really delete Databag #{databag[0]}?  There is no undo.")

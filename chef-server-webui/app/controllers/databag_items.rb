@@ -78,17 +78,25 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
   end
 
   def show
-    @databag_name = params[:databag_id]
-    @databag_item_name = params[:id]
-    r = Chef::REST.new(Chef::Config[:chef_server_url])
-    @databag_item = r.get_rest("data/#{params[:databag_id]}/#{params[:id]}")
-    display @databag_item
+    begin
+      @databag_name = params[:databag_id]
+      @databag_item_name = params[:id]
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      @databag_item = r.get_rest("data/#{params[:databag_id]}/#{params[:id]}")
+      display @databag_item
+    rescue
+      redirect(slice_url(:databag_databag_items), {:message => { :error => $! }, :permanent => true})
+    end 
   end
   
   def destroy(databag_id=params[:databag_id], item_id=params[:id])
-    @databag_item = Chef::DataBagItem.new
-    @databag_item.destroy(databag_id, item_id)
-    redirect(slice_url(:databag_databag_items), {:message => { :notice => "Databag Item #{params[:id]} deleted successfully" }, :permanent => true})
+    begin
+      @databag_item = Chef::DataBagItem.new
+      @databag_item.destroy(databag_id, item_id)
+      redirect(slice_url(:databag_databag_items), {:message => { :notice => "Databag Item #{params[:id]} deleted successfully" }, :permanent => true})
+    rescue
+      redirect(slice_url(:databag_databag_items), {:message => { :error => $! }, :permanent => true})
+    end 
   end 
   
 end
