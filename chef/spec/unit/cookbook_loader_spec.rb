@@ -21,8 +21,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::CookbookLoader do
   before(:each) do
     Chef::Config.cookbook_path [ 
-      File.join(File.dirname(__FILE__), "..", "data", "cookbooks"),
-      File.join(File.dirname(__FILE__), "..", "data", "kitchen") 
+      File.join(File.dirname(__FILE__), "..", "data", "kitchen"),
+      File.join(File.dirname(__FILE__), "..", "data", "cookbooks")
     ]
     @cl = Chef::CookbookLoader.new()
   end
@@ -60,6 +60,15 @@ describe Chef::CookbookLoader do
       end
       seen.should have_key(:openldap)
       seen.should have_key(:apache2)
+    end
+
+    it "should iterate in alphabetical order" do
+      seen = Array.new 
+      @cl.each do |cb|
+        seen << cb.name
+      end
+      seen[0].should == :apache2
+      seen[1].should == :openldap
     end
   end
   

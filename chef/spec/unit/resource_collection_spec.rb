@@ -222,6 +222,19 @@ describe Chef::ResourceCollection do
       s_rc[0].name.should eql(@resource.name)
     end
   end
+  
+  describe "provides access to the raw resources array" do
+    it "returns the resources via the all_resources method" do
+      @rc.all_resources.should equal(@rc.instance_variable_get(:@resources))
+    end
+  end
+  
+  describe "provides access to stepable iterator" do
+    it "returns the iterator object" do
+      @rc.instance_variable_set(:@iterator, :fooboar)
+      @rc.iterator.should == :fooboar
+    end
+  end
 
   def check_by_names(results, *names)
     names.each do |res_name|

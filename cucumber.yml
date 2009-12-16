@@ -1,6 +1,7 @@
 default: -f pretty features -r features/steps -r features/support 
 api: --tags @api --format pretty -r features/steps -r features/support features 
 api_cookbooks: --tags @api,@cookbooks --format pretty -r features/steps -r features/support features 
+api_cookbooks_tarballs: --tags @api,@cookbooks,@tarballs --format pretty -r features/steps -r features/support features 
 api_clients: --tags @api_clients --format pretty -r features/steps -r features/support features
 api_clients_create: --tags clients_create --format pretty -r features/steps -r features/support features
 api_clients_delete: --tags clients_delete --format pretty -r features/steps -r features/support features
@@ -28,6 +29,7 @@ api_search_list: --tags @api_search_list --format pretty -r features/steps -r fe
 api_search_show: --tags @api_search_show --format pretty -r features/steps -r features/support features 
 client: --tags @client --format pretty -r features/steps -r features/support features 
 client_roles: --tags client_roles --format pretty -r features/steps -r features/support features 
+client_cookbook_sync: --tags @client-cookbook-sync --format pretty -r features/steps -r features/support features 
 search: --tags @search --format pretty -r features/steps -r features/support features 
 provider: --tags @provider --format pretty -r features/steps -r features/support features 
 provider_directory: --tags @provider_directory --format pretty -r features/steps -r features/support features 
@@ -40,6 +42,7 @@ provider_package_macports: --tags @macports --format pretty -r features/steps -r
 language: --tags @language --format pretty -r features/steps -r features/support features 
 client_run_interval: --tags client_run_interval --format pretty -r features/steps -r features/support features
 recipe_inclusion: --tags recipe_inclusion --format pretty -r features/steps -r features/support features 
+attribute_inclusion: --tags @attribute_inclusion --format pretty -r features/steps -r features/support features 
 cookbooks: --tags @cookbooks --format pretty -r features/steps -r features/support features 
 provider_remote_file: --tags provider,remote_file --format pretty -r features/steps -r features/support features 
 provider_git: --tags provider,git --format pretty -r features/steps -r features/support features 

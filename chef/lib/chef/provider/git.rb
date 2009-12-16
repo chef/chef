@@ -36,10 +36,14 @@ class Chef
       end
       
       def action_checkout
-        clone
-        checkout
-        enable_submodules
-        @new_resource.updated = true
+        if !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination) == ['.','..']
+          clone
+          checkout
+          enable_submodules
+          @new_resource.updated = true
+        else
+          Chef::Log.info "Taking no action, checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
+        end
       end
       
       def action_export
@@ -155,6 +159,7 @@ class Chef
       
       def run_options(run_opts={})
         run_opts[:user] = @new_resource.user if @new_resource.user
+        run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts[:environment] = {"GIT_SSH" => @new_resource.ssh_wrapper} if @new_resource.ssh_wrapper
         run_opts
       end

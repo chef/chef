@@ -17,19 +17,14 @@
 #
 
 require 'digest/sha2'
+require 'chef/cache/checksum'
 
 class Chef
   module Mixin
     module Checksum
 
       def checksum(file)
-        digest = Digest::SHA256.new
-        fh = ::File.open(file)
-        fh.each do |line|
-          digest.update(line)
-        end
-        fh.close
-        digest.hexdigest
+        Chef::Cache::Checksum.checksum_for_file(file)
       end
       
     end

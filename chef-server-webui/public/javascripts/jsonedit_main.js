@@ -52,6 +52,7 @@ var BCJT = function() {
                             params.jsonType = strIsTypeOf(typ);
                             params.a = this.ca;
                             params.li = this.cli;
+			    $$("autodetect").checked = false;
                             this.nodeclick(params);
                         } catch (e) {
                             BCJT.tree.error = "Could not get value!<br />" + e;
@@ -620,7 +621,8 @@ BCJTEP.prototype = function(){
 			var obj = eval(BCJTEP.escapeslashes(objTree.cp));
 			var objType = objTree.strIsTypeOf(objTree.isTypeOf(obj));
 
-			var jsonmode = $$("autodetect").checked ? "Automatic" : "Standard";
+			var jsonmode = "Automatic";
+			$$("autodetect").checked = true;
 			$$("jsonmode").innerHTML = "Mode: " + jsonmode;
 
 			if (objType == "array") {

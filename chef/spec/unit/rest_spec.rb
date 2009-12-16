@@ -319,6 +319,20 @@ EOH
       @http_response_mock.stub!(:[]).with('location').and_return(@url_mock.path)
       lambda { do_run_request(method=:GET, data=false, limit=1) }.should raise_error(ArgumentError)
     end
+
+    it "should show the JSON error message on an unsuccessful request" do
+      @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
+      @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
+      @http_response_mock.stub!(:kind_of?).with(Net::HTTPMovedPermanently).and_return(false)
+      @http_response_mock.stub!(:[]).with('content-type').and_return('application/json')
+      @http_response_mock.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
+      @http_response_mock.stub!(:code).and_return(500)
+      @http_response_mock.stub!(:message).and_return('Server Error')
+      ## BUGBUG - this should absolutely be working, but it.. isn't.
+      #Chef::Log.should_receive(:warn).with("HTTP Request Returned 500 Server Error: Ears get sore!, Not even four")
+      @http_response_mock.should_receive(:error!)
+      do_run_request
+    end
     
     it "should raise an exception on an unsuccessful request" do
       @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)

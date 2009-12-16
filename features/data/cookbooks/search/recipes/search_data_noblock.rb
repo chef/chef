@@ -24,7 +24,7 @@
 
 
 sleep 10
-objects, start, rows = search(:users, "*:*") 
+objects = search(:users, "*:*")
 
 objects.each do |entry|
   file "#{node[:tmpdir]}/#{entry["id"]}"

@@ -33,4 +33,8 @@ describe Chef::Resource::Subversion do
     @svn.provider.should eql(Chef::Provider::Subversion)
   end
   
+  it "allows the force_export action" do
+    @svn.allowed_actions.should include(:force_export)
+  end
+  
 end

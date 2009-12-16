@@ -130,7 +130,7 @@ class Chef
           stdout_string, stderr_string = stdout.string.chomp, stderr.string.chomp
         end
         
-        args[:cwd] ||= Dir.tmpdir        
+        args[:cwd] ||= Dir.tmpdir
         unless File.directory?(args[:cwd])
           raise Chef::Exceptions::Exec, "#{args[:cwd]} does not exist or is not a directory"
         end
@@ -306,6 +306,9 @@ class Chef
           begin
             if args[:waitlast]
               b[cid, *pi]
+              # send EOF so that if the child process is reading from STDIN
+              # it will actually finish up and exit
+              pi[0].close_write
               Process.waitpid2(cid).last
             else
               # This took some doing.

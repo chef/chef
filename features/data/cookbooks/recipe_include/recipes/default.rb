@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: recipe_include
+# Cookbook Name:: attribute_include
 # Recipe:: default
 #
 # Copyright 2009, Opscode

@@ -102,7 +102,7 @@ describe Chef::Provider::Git do
     end
     
     it "raises a runtime error if you try to deploy from ``origin''" do
-      @resource.revision("origin")
+      @resource.revision("origin/")
       lambda {@provider.revision_sha}.should raise_error(RuntimeError)
     end
   
@@ -186,6 +186,15 @@ describe Chef::Provider::Git do
     @provider.sync
   end
   
+  it "runs a sync command with the user and group specified in the resource" do
+    @resource.user("whois")
+    @resource.group("thisis")
+    expected_cmd = "git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
+    @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir",
+                                                :user => "whois", :group => "thisis")
+    @provider.sync
+  end
+  
   it "compiles a sync command using remote tracking branches when remote is not ``origin''" do
     @resource.remote "opscode"
     expected_cmd =  "git config remote.opscode.url git://github.com/opscode/chef.git && " +
@@ -194,12 +203,25 @@ describe Chef::Provider::Git do
     @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir")
     @provider.sync
   end
-  
+ 
   it "does a checkout running the clone command then running the after clone command from the destination dir" do
+    ::File.stub!(:exist?).with("/my/deploy/dir").and_return(false)
+    ::Dir.stub!(:entries).with("/my/deploy/dir").and_return(['.','..'])
     @provider.should_receive(:clone)
     @provider.should_receive(:checkout)
     @provider.should_receive(:enable_submodules)
     @resource.should_receive(:updated=).at_least(1).times.with(true)
+    @provider.action_checkout
+  end
+
+  it "should not checkout if the destination exists or is a non empty directory" do
+    ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
+    ::Dir.stub!(:entries).with("/my/deploy/dir").and_return(['.','..','foo','bar'])
+    @provider.should_not_receive(:clone)
+    @provider.should_not_receive(:checkout)
+    @provider.should_not_receive(:enable_submodules)
+    @resource.should_not_receive(:updated=)
+    Chef::Log.should_receive(:info).with("Taking no action, checkout destination /my/deploy/dir already exists or is a non-empty directory")
     @provider.action_checkout
   end
 

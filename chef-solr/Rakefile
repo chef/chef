@@ -10,10 +10,16 @@ begin
     gem.homepage = "http://github.com/adamhjk/chef-solr"
     gem.authors = ["Adam Jacob"]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.files = [
+      "README.rdoc",
+      "Rakefile",
+      "VERSION"
+    ]
+    gem.files.include %w{ bin/* lib/**/* solr/* spec/**/* }
   end
 
 rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
+  puts "Jeweler (or a dependency) not available. Install it from gemcutter with: sudo gem install gemcutter jeweler"
 end
 
 require 'spec/rake/spectask'

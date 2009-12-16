@@ -16,6 +16,12 @@
 # limitations under the License.
 #
 
+# Abuse ruby's constant lookup to avoid undefined constant errors
+module Shef
+  JUST_TESTING_MOVE_ALONG = true unless defined? JUST_TESTING_MOVE_ALONG
+  IRB = nil unless defined? IRB
+end
+
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 $:.unshift(File.join(File.dirname(__FILE__), "..", "..", "chef-server", "lib"))
 
@@ -36,6 +42,13 @@ end
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
 
 Chef::Config.log_level(:fatal)
+Chef::Config[:cache_type] = "Memory"
+Chef::Config[:cache_options] = { } 
 Chef::Log.level(Chef::Config.log_level)
 Chef::Config.solo(false)
+
+def redefine_argv(value)
+  Object.send(:remove_const, :ARGV)
+  Object.send(:const_set, :ARGV, value)
+end
 

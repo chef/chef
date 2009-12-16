@@ -24,7 +24,7 @@ spec = Gem::Specification.new do |s|
   
   s.add_dependency "mixlib-config", ">= 1.0.12"
   s.add_dependency "ohai", ">= 0.3.6"
-  %w{mixlib-cli mixlib-log mixlib-authentication json erubis extlib amqp thor ruby-hmac deep_merge}.each { |gem| s.add_dependency gem }
+  %w{mixlib-cli mixlib-log mixlib-authentication json erubis extlib amqp thor ruby-hmac deep_merge moneta}.each { |gem| s.add_dependency gem }
   
   s.bindir       = "bin"
   s.executables  = %w( chef-client chef-solo knife )

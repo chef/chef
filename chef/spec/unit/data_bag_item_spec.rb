@@ -78,6 +78,10 @@ describe Chef::DataBagItem do
       @data_bag_item.raw_data = { "id" => "highway_of_emptiness" }
       @data_bag_item.raw_data.should == { "id" => "highway_of_emptiness" }
     end
+
+    it "should be a Mash by default" do
+      @data_bag_item.raw_data.should be_a_kind_of(Mash)
+    end
   end
 
   describe "object_name" do

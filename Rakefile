@@ -4,8 +4,10 @@ require 'cucumber/rake/task'
 
 desc "Build the chef gems"
 task :gem do
+  build_commands = Hash.new("rake package")
+  build_commands['chef-solr'] = 'rake build'
   gems.each do |dir|
-    Dir.chdir(dir) { sh "rake package" }
+      Dir.chdir(dir) { sh build_commands[dir] }
   end
 end
  
@@ -288,6 +290,10 @@ namespace :features do
       Cucumber::Rake::Task.new(:cookbooks) do |t|
         t.profile = "api_cookbooks"
       end
+
+      Cucumber::Rake::Task.new(:cookbook_tarballs) do |t|
+        t.profile = "api_cookbooks_tarballs"
+      end
     end
     
     namespace :data do    
@@ -336,6 +342,10 @@ namespace :features do
     Cucumber::Rake::Task.new(:run_interval) do |t|
       t.profile = "client_run_interval"
     end
+
+    Cucumber::Rake::Task.new(:cookbook_sync) do |t|
+      t.profile = "client_cookbook_sync"
+    end
   end
 
   desc "Run cucumber tests for the cookbooks"
@@ -360,6 +370,9 @@ namespace :features do
   namespace :language do
     Cucumber::Rake::Task.new(:recipe_include) do |t|
       t.profile = "recipe_inclusion"
+    end
+    Cucumber::Rake::Task.new(:attribute_include) do |t|
+      t.profile = "attribute_inclusion"
     end
   end
   

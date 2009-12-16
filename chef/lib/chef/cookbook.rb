@@ -27,9 +27,9 @@ class Chef
   class Cookbook
     include Chef::Mixin::ConvertToClassName
     
-    attr_accessor :attribute_files, :definition_files, :template_files, :remote_files, 
+    attr_accessor :definition_files, :template_files, :remote_files, 
                   :lib_files, :resource_files, :provider_files, :name
-    attr_reader :recipe_files
+    attr_reader :recipe_files, :attribute_files
     
     # Creates a new Chef::Cookbook object.  
     #
@@ -38,6 +38,7 @@ class Chef
     def initialize(name)
       @name = name
       @attribute_files = Array.new
+      @attribute_names = Hash.new
       @definition_files = Array.new
       @template_files = Array.new
       @remote_files = Array.new
@@ -71,13 +72,21 @@ class Chef
     # === Raises
     # <ArgumentError>:: If the argument is not a kind_of? <Chef::Node>
     def load_attributes(node)
-      unless node.kind_of?(Chef::Node)
-        raise ArgumentError, "You must pass a Chef::Node to load_attributes!"
-      end
       @attribute_files.each do |file|
-        Chef::Log.debug("Loading attributes from #{file}")
-        node.from_file(file)
+        load_attribute_file(file, node)
       end
+      node
+    end
+
+    def load_attribute_file(file, node)
+      Chef::Log.debug("Loading attributes from #{file}")
+      node.from_file(file)
+    end
+
+    def load_attribute(name, node)
+      attr_name = shorten_name(name)
+      file = @attribute_files[@attribute_names[attr_name]]
+      load_attribute_file(file, node)
       node
     end
     
@@ -119,19 +128,13 @@ class Chef
     end
     
     def recipe_files=(*args)
-      @recipe_files = args.flatten
-      @recipe_files.each_index do |i|
-        file = @recipe_files[i]
-        case file
-        when /(.+\/)(.+).rb$/
-          @recipe_names[$2] = i
-        when /(.+).rb$/
-          @recipe_names[$1] = i
-        else  
-          @recipe_names[file] = i
-        end
-      end
+      @recipe_files, @recipe_names = set_with_names(args.flatten)
       @recipe_files
+    end
+
+    def attribute_files=(*args)
+      @attribute_files, @attribute_names = set_with_names(args.flatten)
+      @attribute_files
     end
     
     def recipe?(name)
@@ -154,9 +157,7 @@ class Chef
     
     def load_recipe(name, node, collection=nil, definitions=nil, cookbook_loader=nil)
       cookbook_name = @name
-      recipe_name = nil
-      nmatch = name.match(/^(.+?)::(.+)$/)
-      recipe_name = nmatch ? nmatch[2] : name
+      recipe_name = shorten_name(name) 
       
       unless @recipe_names.has_key?(recipe_name)
         raise ArgumentError, "Cannot find a recipe matching #{recipe_name} in cookbook #{@name}"
@@ -167,6 +168,31 @@ class Chef
       recipe.from_file(@recipe_files[@recipe_names[recipe_name]])
       recipe
     end
+
+    private
+
+      def shorten_name(name)
+        short_name = nil
+        nmatch = name.match(/^(.+?)::(.+)$/)
+        short_name = nmatch ? nmatch[2] : name
+      end
+
+      def set_with_names(file_list)
+        files = file_list
+        names = Hash.new
+        files.each_index do |i|
+          file = files[i]
+          case file
+          when /(.+\/)(.+).rb$/
+            names[$2] = i
+          when /(.+).rb$/
+            names[$1] = i
+          else  
+            names[file] = i
+          end
+        end
+        [ files, names ]
+      end
     
   end
 end

@@ -276,14 +276,14 @@ describe Chef::Cookbook::Metadata do
       lambda {
         @meta.attribute("db/mysql/databases", :required => true)
       }.should_not raise_error(ArgumentError)
-      attrib = @meta.attributes["db/mysql/databases"][:required].should == "required"
+      #attrib = @meta.attributes["db/mysql/databases"][:required].should == "required"
     end
     
     it "should convert required false to optional" do
       lambda {
         @meta.attribute("db/mysql/databases", :required => false)
       }.should_not raise_error(ArgumentError)
-      attrib = @meta.attributes["db/mysql/databases"][:required].should == "optional"
+      #attrib = @meta.attributes["db/mysql/databases"][:required].should == "optional"
     end
 
     it "should set required to 'optional' by default" do

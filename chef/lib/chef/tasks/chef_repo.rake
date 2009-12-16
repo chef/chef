@@ -24,6 +24,20 @@ require 'chef/cookbook/metadata'
 require 'tempfile'
 require 'rake'
 
+# Allow REMOTE options to be overridden on the command line
+REMOTE_HOST = ENV["REMOTE_HOST"] if ENV["REMOTE_HOST"] != nil
+REMOTE_SUDO = ENV["REMOTE_SUDO"] if ENV["REMOTE_SUDO"] != nil
+if defined? REMOTE_HOST
+  REMOTE_PATH_PREFIX = "#{REMOTE_HOST}:"
+  REMOTE_EXEC_PREFIX = "ssh #{REMOTE_HOST}"
+  REMOTE_EXEC_PREFIX += " sudo" if defined? REMOTE_SUDO
+  LOCAL_EXEC_PREFIX = ""
+else
+  REMOTE_PATH_PREFIX = ""
+  REMOTE_EXEC_PREFIX = ""
+  LOCAL_EXEC_PREFIX = "sudo"
+end
+
 desc "Update your repository from source control"
 task :update do
   puts "** Updating your repository"
@@ -33,7 +47,6 @@ task :update do
     sh %{svn up}
   when :git
     pull = false
-    pull = true if File.join(TOPDIR, ".git", "remotes", "origin")
     IO.foreach(File.join(TOPDIR, ".git", "config")) do |line|
       pull = true if line =~ /\[remote "origin"\]/
     end
@@ -148,23 +161,23 @@ task :install => [ :update, :test, :metadata, :roles ] do
   ]
   puts "* Creating Directories"
   directories.each do |dir|
-    sh "sudo mkdir -p #{dir}"
-    sh "sudo chown root #{dir}"
+    sh "#{LOCAL_EXEC_PREFIX} #{REMOTE_EXEC_PREFIX} mkdir -p #{dir}"
+    sh "#{LOCAL_EXEC_PREFIX} #{REMOTE_EXEC_PREFIX} chown root #{dir}"
   end
   puts "* Installing new Cookbooks"
-  sh "sudo rsync -rlP --delete --exclude '.svn' --exclude '.git*' cookbooks/ #{COOKBOOK_PATH}"
+  sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' cookbooks/ #{REMOTE_PATH_PREFIX}#{COOKBOOK_PATH}"
   puts "* Installing new Site Cookbooks"
-  sh "sudo rsync -rlP --delete --exclude '.svn' --exclude '.git*' site-cookbooks/ #{SITE_COOKBOOK_PATH}"
+  sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' site-cookbooks/ #{REMOTE_PATH_PREFIX}#{SITE_COOKBOOK_PATH}"
   puts "* Installing new Node Roles"
-  sh "sudo rsync -rlP --delete --exclude '.svn' --exclude '.git*' roles/ #{ROLE_PATH}"
+  sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' roles/ #{REMOTE_PATH_PREFIX}#{ROLE_PATH}"
   
-  if File.exists?(File.join(File.dirname(__FILE__), "config", "server.rb"))
+  if File.exists?(File.join(TOPDIR, "config", "server.rb"))
     puts "* Installing new Chef Server Config"
-    sh "sudo cp config/server.rb #{CHEF_SERVER_CONFIG}"
+    sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' config/server.rb #{REMOTE_PATH_PREFIX}#{CHEF_SERVER_CONFIG}"
   end
-  if File.exists?(File.join(File.dirname(__FILE__), "config", "client.rb"))
+  if File.exists?(File.join(TOPDIR, "config", "client.rb"))
     puts "* Installing new Chef Client Config"
-    sh "sudo cp config/client.rb #{CHEF_CLIENT_CONFIG}"
+    sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' config/client.rb #{REMOTE_PATH_PREFIX}#{CHEF_CLIENT_CONFIG}"
   end
 end
 
@@ -279,12 +292,13 @@ task :ssl_cert do
   fqdn =~ /^(.+?)\.(.+)$/
   hostname = $1
   domain = $2
+  keyfile = fqdn.gsub("*", "wildcard")
   raise "Must provide FQDN!" unless fqdn && hostname && domain
   puts "** Creating self signed SSL Certificate for #{fqdn}"
-  sh("(cd #{CADIR} && openssl genrsa 2048 > #{fqdn}.key)")
-  sh("(cd #{CADIR} && chmod 644 #{fqdn}.key)")
+  sh("(cd #{CADIR} && openssl genrsa 2048 > #{keyfile}.key)")
+  sh("(cd #{CADIR} && chmod 644 #{keyfile}.key)")
   puts "* Generating Self Signed Certificate Request"
-  tf = Tempfile.new("#{fqdn}.ssl-conf")
+  tf = Tempfile.new("#{keyfile}.ssl-conf")
   ssl_config = <<EOH
 [ req ]
 distinguished_name = req_distinguished_name
@@ -301,49 +315,42 @@ emailAddress           = #{SSL_EMAIL_ADDRESS}
 EOH
   tf.puts(ssl_config)
   tf.close
-  sh("(cd #{CADIR} && openssl req -config '#{tf.path}' -new -x509 -nodes -sha1 -days 3650 -key #{fqdn}.key > #{fqdn}.crt)")
-  sh("(cd #{CADIR} && openssl x509 -noout -fingerprint -text < #{fqdn}.crt > #{fqdn}.info)")
-  sh("(cd #{CADIR} && cat #{fqdn}.crt #{fqdn}.key > #{fqdn}.pem)")
-  sh("(cd #{CADIR} && chmod 644 #{fqdn}.pem)")
+  sh("(cd #{CADIR} && openssl req -config '#{tf.path}' -new -x509 -nodes -sha1 -days 3650 -key #{keyfile}.key > #{keyfile}.crt)")
+  sh("(cd #{CADIR} && openssl x509 -noout -fingerprint -text < #{keyfile}.crt > #{keyfile}.info)")
+  sh("(cd #{CADIR} && cat #{keyfile}.crt #{keyfile}.key > #{keyfile}.pem)")
+  sh("(cd #{CADIR} && chmod 644 #{keyfile}.pem)")
+end
+
+@cookbook_loader = nil
+rule(%r{\b(?:site-)?cookbooks/[^/]+/metadata\.json\Z} => [ proc { |task_name| task_name.sub(/\.[^.]+$/, '.rb') } ]) do |t|
+  Chef::Config[:cookbook_path] = [ File.join(TOPDIR, 'cookbooks'), File.join(TOPDIR, 'site-cookbooks') ]
+  @cookbook_loader ||= Chef::CookbookLoader.new
+  cookbook = @cookbook_loader[t.source[%r{\bcookbooks/([^/]+)/metadata\.rb\Z}, 1]]
+  cook_meta = Chef::Cookbook::Metadata.new(cookbook)
+  puts "Generating metadata for #{cookbook.name}"
+  cook_meta.from_file(t.source)
+  File.open(t.name, "w") do |f|
+    f.write(JSON.pretty_generate(cook_meta))
+  end
 end
 
 desc "Build cookbook metadata.json from metadata.rb"
-task :metadata do
-  Chef::Config[:cookbook_path] = [ File.join(TOPDIR, 'cookbooks'), File.join(TOPDIR, 'site-cookbooks') ]
-  cl = Chef::CookbookLoader.new
-  cl.each do |cookbook|
-    if ENV['COOKBOOK']
-      next unless cookbook.name.to_s == ENV['COOKBOOK']
-    end
-    cook_meta = Chef::Cookbook::Metadata.new(cookbook)
-    Chef::Config.cookbook_path.each do |cdir|
-      metadata_rb_file = File.join(cdir, cookbook.name.to_s, 'metadata.rb')
-      metadata_json_file = File.join(cdir, cookbook.name.to_s, 'metadata.json')
-      if File.exists?(metadata_rb_file)
-        puts "Generating metadata for #{cookbook.name}"
-        cook_meta.from_file(metadata_rb_file)
-        File.open(metadata_json_file, "w") do |f| 
-          f.write(JSON.pretty_generate(cook_meta))
-        end
-      end
-    end
+task :metadata => FileList[File.join(TOPDIR, '*cookbooks', ENV['COOKBOOK'] || '*', 'metadata.rb')].pathmap('%X.json')
+
+rule(%r{\broles/\S+\.json\Z} => [ proc { |task_name| task_name.sub(/\.[^.]+$/, '.rb') } ]) do |t|
+  Chef::Config[:role_path] = File.join(TOPDIR, 'roles')
+  short_name = File.basename(t.source, '.rb')
+  puts "Generating role JSON for #{short_name}"
+  role = Chef::Role.new
+  role.name(short_name)
+  role.from_file(t.source)
+  File.open(t.name, "w") do |f|
+    f.write(JSON.pretty_generate(role))
   end
 end
 
 desc "Build roles from roles/role_name.json from role_name.rb"
-task :roles do
-  Chef::Config[:role_path] = File.join(TOPDIR, 'roles')
-  Dir[File.join(TOPDIR, 'roles', '**', '*.rb')].each do |role_file|
-    short_name = File.basename(role_file, '.rb')
-    puts "Generating role JSON for #{short_name}"
-    role = Chef::Role.new
-    role.name(short_name)
-    role.from_file(role_file)
-    File.open(File.join(TOPDIR, 'roles', "#{short_name}.json"), "w") do |f|
-      f.write(JSON.pretty_generate(role))
-    end
-  end
-end
+task :roles  => FileList[File.join(TOPDIR, 'roles', '**', '*.rb')].pathmap('%X.json')
 
 desc "Upload all cookbooks"
 task :upload_cookbooks => [ :metadata ]

@@ -137,6 +137,42 @@ describe Chef::Node do
       seen_attributes["canada"].should == "is a nice place"
     end
   end
+  
+  describe "consuming json" do
+    it "should add any json attributes to the node" do
+      @node.consume_attributes "one" => "two", "three" => "four"
+      @node.one.should eql("two")
+      @node.three.should eql("four")
+    end
+
+    it "should allow you to set recipes from the json attributes" do
+      @node.consume_attributes "recipes" => [ "one", "two", "three" ]
+      @node.recipes.should == [ "one", "two", "three" ]
+    end
+
+    it "should allow you to set a run_list from the json attributes" do
+      @node.consume_attributes "run_list" => [ "role[base]", "recipe[chef::server]" ]
+      @node.run_list.should == [ "role[base]", "recipe[chef::server]" ]
+    end
+
+    it "should not add duplicate recipes from the json attributes" do
+      @node.recipes << "one"
+      @node.consume_attributes "recipes" => [ "one", "two", "three" ]
+      @node.recipes.should  == [ "one", "two", "three" ]
+    end
+
+    it "should set the tags attribute to an empty array if it is not already defined" do
+      @node.consume_attributes "{}"
+      @node.tags.should eql([])
+    end
+
+    it "should not set the tags attribute to an empty array if it is already defined" do
+      @node[:tags] = [ "radiohead" ]
+      @node.consume_attributes "{}"
+      @node.tags.should eql([ "radiohead" ])
+    end
+    
+  end
 
   describe "recipes" do
     it "should have a RunList of recipes that should be applied" do

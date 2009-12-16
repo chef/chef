@@ -97,7 +97,7 @@ describe Chef::Mixin::FindPreferredFile do
     it "raises an error when no file can be found" do
       @finder.stub!(:load_cookbook_files).and_return(default_file_hash)
       args = %w{no_cookbook_id no_filetype mods/me_no_findy.erb nohost.example.com noplatform noversion}
-      lambda {@finder.find_preferred_file(*args)}.should raise_error Chef::Exceptions::FileNotFound
+      lambda { @finder.find_preferred_file(*args) }.should raise_error(Chef::Exceptions::FileNotFound)
     end
 
   end

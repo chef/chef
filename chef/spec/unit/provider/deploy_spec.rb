@@ -72,6 +72,12 @@ describe Chef::Provider::Deploy do
     @provider.action_deploy
   end
   
+  it "runs action svn_force_export when new_resource.svn_force_export is true" do
+    @resource.svn_force_export true
+    @provider.scm_provider.should_receive(:action_force_export)
+    @provider.svn_force_export
+  end
+  
   it "Removes the old release before deploying when force deploying over it" do
     @provider.stub!(:all_releases).and_return([@expected_release_dir])
     FileUtils.should_receive(:rm_rf).with(@expected_release_dir)
@@ -211,9 +217,10 @@ describe Chef::Provider::Deploy do
     @provider.enforce_ownership
   end
   
-  it "skips the migration when resource.migrate => false" do
+  it "skips the migration when resource.migrate => false but runs symlinks before migration" do
     @resource.migrate false
     @provider.should_not_receive :run_command
+    @provider.should_receive :run_symlinks_before_migrate
     @provider.migrate
   end
   
@@ -337,7 +344,7 @@ describe Chef::Provider::Deploy do
   
   it "shouldn't give a no method error on migrate if the environment is nil" do
     @provider.stub!(:enforce_ownership)
-    @provider.stub!(:link_shared_db_config_to_current_release)
+    @provider.stub!(:run_symlinks_before_migrate)
     @provider.stub!(:run_command)
     @provider.migrate
   end

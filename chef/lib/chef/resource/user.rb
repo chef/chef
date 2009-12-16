@@ -33,7 +33,10 @@ class Chef
         @shell = nil
         @password = nil
         @action = :create
-        @supports = { :manage_home => false }
+        @supports = { 
+          :manage_home => false,
+          :non_unique => false
+        }
         @allowed_actions.push(:create, :remove, :modify, :manage, :lock, :unlock)
       end
       

@@ -38,7 +38,7 @@ class Chef
     
     def load_cookbooks
       cookbook_settings = Hash.new
-      [Chef::Config.cookbook_path].flatten.reverse.each do |cb_path|
+      [Chef::Config.cookbook_path].flatten.each do |cb_path|
         Dir[File.join(cb_path, "*")].each do |cookbook|
           next unless File.directory?(cookbook)          
           cookbook_name = File.basename(cookbook).to_sym
@@ -128,11 +128,11 @@ class Chef
     end
     
     def each
-      @cookbook.each_value do |cobject|
-        yield cobject
+      @cookbook.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |cname|
+        yield @cookbook[cname]
       end
     end
-    
+
     private
     
       def load_ignore_file(ignore_file)
