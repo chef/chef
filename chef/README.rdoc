@@ -46,6 +46,7 @@ Install the following RubyGems.
 * webrat
 * merb-core
 * roman-merb_cucumber
+* thin
 
 Ohai is also by Opscode and available on GitHub, http://github.com/opscode/ohai/tree/master.
 
@@ -61,25 +62,25 @@ Once everything is installed, run the dev:features rake task. Since the features
 
 The dev:features task:
 
-* Installs chef, chef-server, chef-server-slice gems. It will fail if required gems above are missing.
-* Starts chef-server on ports 4000 and 4001.
-* Starts chef-indexer.
 * Starts CouchDB on port 5984.
-* Starts the stompserver on port 61613.
+* Starts rabbitmq
+* Starts solr
+* Starts chef-indexer.
+* Starts chef-server on port 4000
+
 
 You'll know its running when you see:
 
-   ~ Activating slice 'ChefServerSlice' ...
-  merb : worker (port 4000) ~ Starting Mongrel at port 4000
-  merb : worker (port 4000) ~ Successfully bound to port 4000
-  merb : worker (port 4001) ~ Starting Mongrel at port 4001
-  merb : worker (port 4001) ~ Successfully bound to port 4001
+~ Activating slice 'ChefServerApi' ...
+merb : worker (port 4000) ~ Starting Thin at port 4000
+merb : worker (port 4000) ~ Using Thin adapter on host 0.0.0.0 and port 4000.
+merb : worker (port 4000) ~ Successfully bound to port 4000
 
 You'll want to leave this terminal running the dev environment.
 
 == Web Interface:
 
-With the dev environment running, you can now access the web interface via http://localhost:4000/. Supply an OpenID to log in.
+With the dev environment running, you can now access the web interface via http://localhost:4000/.
 
 == Spec testing:
 

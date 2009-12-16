@@ -32,7 +32,7 @@ spec = Gem::Specification.new do |s|
   "merb-haml",
   "merb-assets",
   "merb-helpers",
-  "mongrel",
+  "thin",
   "haml",
   "ruby-openid",
   "json",
