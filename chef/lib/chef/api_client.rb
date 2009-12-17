@@ -232,7 +232,7 @@ class Chef
       if validation
         r = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
       else
-        r =Chef::REST.new(Chef::Config[:chef_server_url])
+        r = Chef::REST.new(Chef::Config[:chef_server_url])
       end
       # First, try and create a new registration
       begin
