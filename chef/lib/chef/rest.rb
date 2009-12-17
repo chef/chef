@@ -26,6 +26,7 @@ require 'json'
 require 'tempfile'
 require 'singleton'
 require 'mixlib/authentication/signedheaderauth'
+require 'chef/api_client'
 
 include Mixlib::Authentication::SignedHeaderAuth
 
@@ -70,7 +71,7 @@ class Chef
 
       nc = Chef::ApiClient.new
       nc.name(name)
-      response = nc.save
+      response = nc.save(true, true)
 
       Chef::Log.debug("Registration response: #{response.inspect}")
 
