@@ -19,6 +19,7 @@
 
 require 'chef/knife'
 require 'chef/streaming_cookbook_uploader'
+require 'chef/cache/checksum'
 
 class Chef
   class Knife
@@ -32,17 +33,55 @@ class Chef
         :description => "A colon-separated path to look for cookbooks in",
         :proc => lambda { |o| o.split(":") }
 
+      option :all,
+        :short => "-a",
+        :long => "--all",
+        :description => "Upload all cookbooks, rather than just a single cookbook"
+
       def run 
+        if config[:cookbook_path]
+          Chef::Config[:cookbook_path] = config[:cookbook_path]
+        else
+          config[:cookbook_path] = Chef::Config[:cookbook_path]
+        end
 
-        config[:cookbook_path] ||= Chef::Config[:cookbook_path]
+        if config[:all] 
+          cl = Chef::CookbookLoader.new
+          cl.each do |cookbook|
+            Chef::Log.info("** #{cookbook.name.to_s} **")
+            upload_cookbook(cookbook.name.to_s)
+          end
+        else
+          upload_cookbook(@name_args[0]) 
+        end
+      end
 
-        cookbook_name = @name_args[0]
+      def test_ruby(cookbook_dir)
+        Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
+          cc = Chef::Cache::Checksum.new
+          fstat = File.stat(ruby_file)
+          if cc.lookup_checksum(ruby_file, fstat) # we have the checksum, has not changed
+          else
+          end
+        end
+      end
+
+      def upload_cookbook(cookbook_name)
+
+        # First, generate metadata
+        kcm = Chef::Knife::CookbookMetadata.new
+        kcm.name_args = [ cookbook_name ]
+        kcm.run
+
+        # Second, test the cookbook
+
+
         if cookbook_name =~ /^#{File::SEPARATOR}/
           child_folders = cookbook_name 
           cookbook_name = File.basename(cookbook_name)
         else
           child_folders = config[:cookbook_path].reverse.inject([]) do |r, e| 
-            r << File.join(e, @name_args[0])
+            r << File.join(e, cookbook_name)
             r
           end
         end
