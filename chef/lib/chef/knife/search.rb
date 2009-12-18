@@ -35,14 +35,14 @@ class Chef
         :short => "-b ROW",
         :long => "--start ROW",
         :description => "The row to start returning results at",
-        :default => nil,
+        :default => 0,
         :proc => lambda { |i| i.to_i }
 
       option :rows, 
         :short => "-R INT",
         :long => "--rows INT",
         :description => "The number of rows to return",
-        :default => nil,
+        :default => 20,
         :proc => lambda { |i| i.to_i }
 
       option :attribute,
@@ -64,7 +64,7 @@ class Chef
         q = Chef::Search::Query.new
         display = { :total => 0, :start => config[:start] ? config[:start] : 0, :rows => [ ] }
 
-        q.search(@name_args[0], @name_args[1], config[:sort], config[:start], config[:rows]) do |item|
+        q.search(@name_args[0], @name_args[1], config[:sort], config[:start] ? config[:start] : 0, config[:rows] ? config[:rows] : 20) do |item|
           formatted_item = format_for_display(item)
           if formatted_item.respond_to?(:has_key?) && !formatted_item.has_key?('id')
             formatted_item['id'] = item.has_key?('id') ? item['id'] : item.name 

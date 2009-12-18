@@ -58,23 +58,19 @@ class Chef
 
       def test_ruby(cookbook_dir)
         Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
-          cc = Chef::Cache::Checksum.new
-          fstat = File.stat(ruby_file)
-          if cc.lookup_checksum(ruby_file, fstat) # we have the checksum, has not changed
-          else
-          end
+          Chef::Log.info("Testing #{ruby_file} for syntax errors...")
+          Chef::Mixin::Command.run_command(:command => "ruby -c #{ruby_file}")
+        end
+      end
+
+      def test_templates(cookbook_dir)
+        Dir[File.join(cookbook_dir, '**', '*.erb')].each do |erb_file|
+          Chef::Log.info("Testing template #{erb_file} for syntax errors...")
+          Chef::Mixin::Command.run_command(:command => "sh -c 'erubis -x #{erb_file} | ruby -c'")
         end
       end
 
       def upload_cookbook(cookbook_name)
-
-        # First, generate metadata
-        kcm = Chef::Knife::CookbookMetadata.new
-        kcm.name_args = [ cookbook_name ]
-        kcm.run
-
-        # Second, test the cookbook
-
 
         if cookbook_name =~ /^#{File::SEPARATOR}/
           child_folders = cookbook_name 
@@ -115,6 +111,15 @@ class Chef
           Chef::Log.fatal("Could not find cookbook #{cookbook_name}!")
           exit 17
         end
+
+        test_ruby(tmp_cookbook_dir)
+        test_templates(tmp_cookbook_dir)
+
+        # First, generate metadata
+        kcm = Chef::Knife::CookbookMetadata.new
+        kcm.config[:cookbook_path] = [ tmp_cookbook_dir ]
+        kcm.name_args = [ cookbook_name ]
+        kcm.run
 
         Chef::Log.info("Creating tarball at #{tarball_name}")
         Chef::Mixin::Command.run_command(
