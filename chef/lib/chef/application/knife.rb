@@ -62,9 +62,7 @@ class Chef::Application::Knife < Chef::Application
     :long         => "--help",
     :description  => "Show this message",
     :on           => :tail,
-    :boolean      => true,
-    :show_options => true,
-    :exit         => 0
+    :boolean      => true
     
   option :node_name,
     :short => "-u USER",
@@ -101,15 +99,16 @@ class Chef::Application::Knife < Chef::Application
 
   # Run knife 
   def run
+    self.parse_options
+
     if ARGV[0] =~ /^-/
-      self.parse_options
       Chef::Log.fatal("Sorry, you need to pass a sub-command first!") 
-      puts self.opt_parser
-      puts
-      Chef::Knife.list_commands
-      exit 2
+      config[:help] = true
     elsif ARGV.length == 0
-      self.parse_options
+      config[:help] = true
+    end
+
+    if config[:help]
       puts self.opt_parser
       puts
       Chef::Knife.list_commands
