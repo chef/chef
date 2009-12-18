@@ -19,6 +19,7 @@
 
 require 'chef/knife'
 require 'chef/streaming_cookbook_uploader'
+require 'chef/cache/checksum'
 
 class Chef
   class Knife
@@ -32,17 +33,51 @@ class Chef
         :description => "A colon-separated path to look for cookbooks in",
         :proc => lambda { |o| o.split(":") }
 
+      option :all,
+        :short => "-a",
+        :long => "--all",
+        :description => "Upload all cookbooks, rather than just a single cookbook"
+
       def run 
+        if config[:cookbook_path]
+          Chef::Config[:cookbook_path] = config[:cookbook_path]
+        else
+          config[:cookbook_path] = Chef::Config[:cookbook_path]
+        end
 
-        config[:cookbook_path] ||= Chef::Config[:cookbook_path]
+        if config[:all] 
+          cl = Chef::CookbookLoader.new
+          cl.each do |cookbook|
+            Chef::Log.info("** #{cookbook.name.to_s} **")
+            upload_cookbook(cookbook.name.to_s)
+          end
+        else
+          upload_cookbook(@name_args[0]) 
+        end
+      end
 
-        cookbook_name = @name_args[0]
+      def test_ruby(cookbook_dir)
+        Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
+          Chef::Log.info("Testing #{ruby_file} for syntax errors...")
+          Chef::Mixin::Command.run_command(:command => "ruby -c #{ruby_file}")
+        end
+      end
+
+      def test_templates(cookbook_dir)
+        Dir[File.join(cookbook_dir, '**', '*.erb')].each do |erb_file|
+          Chef::Log.info("Testing template #{erb_file} for syntax errors...")
+          Chef::Mixin::Command.run_command(:command => "sh -c 'erubis -x #{erb_file} | ruby -c'")
+        end
+      end
+
+      def upload_cookbook(cookbook_name)
+
         if cookbook_name =~ /^#{File::SEPARATOR}/
           child_folders = cookbook_name 
           cookbook_name = File.basename(cookbook_name)
         else
           child_folders = config[:cookbook_path].reverse.inject([]) do |r, e| 
-            r << File.join(e, @name_args[0])
+            r << File.join(e, cookbook_name)
             r
           end
         end
@@ -76,6 +111,15 @@ class Chef
           Chef::Log.fatal("Could not find cookbook #{cookbook_name}!")
           exit 17
         end
+
+        test_ruby(tmp_cookbook_dir)
+        test_templates(tmp_cookbook_dir)
+
+        # First, generate metadata
+        kcm = Chef::Knife::CookbookMetadata.new
+        kcm.config[:cookbook_path] = [ tmp_cookbook_dir ]
+        kcm.name_args = [ cookbook_name ]
+        kcm.run
 
         Chef::Log.info("Creating tarball at #{tarball_name}")
         Chef::Mixin::Command.run_command(
