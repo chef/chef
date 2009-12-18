@@ -27,6 +27,7 @@ class Chef
       @run_list = Array.new
       @recipes = Array.new
       @roles = Array.new
+      @seen_roles = Array.new
     end
 
     def <<(item)
@@ -127,6 +128,7 @@ class Chef
           recipes << name unless recipes.include?(name)
         when 'role'
           role = nil
+          next if @seen_roles.include?(name)
           if from == 'disk' || Chef::Config[:solo]
             # Load the role from disk
             role = Chef::Role.from_disk("#{name}")
@@ -138,6 +140,7 @@ class Chef
             # Load the role from couchdb
             role = Chef::Role.cdb_load(name)
           end
+          @seen_roles << name
           rec, d, o = role.run_list.expand(from)
           rec.each { |r| recipes <<  r unless recipes.include?(r) }
           default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, Chef::Mixin::DeepMerge.merge(role.default_attributes,d))
