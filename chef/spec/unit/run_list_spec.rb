@@ -210,6 +210,22 @@ describe Chef::RunList do
       default[:seven].should == :nine
     end
 
+    it "should not recurse infinitely" do
+      dog = Chef::Role.new
+      dog.name "dog"
+      dog.default_attributes :seven => :nine
+      dog.run_list "role[dog]", "three"
+      @role.run_list << "role[dog]"
+      Chef::Role.stub!(:from_disk).with("stubby").and_return(@role)
+      Chef::Role.should_receive(:from_disk).with("dog").once.and_return(dog)
+
+      recipes, default, override = @run_list.expand('disk')
+      recipes[2].should == "three"
+      recipes[3].should == "kitty"
+      default[:seven].should == :nine
+    end
+
+
 
   end
 end
