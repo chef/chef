@@ -62,6 +62,7 @@ if defined?(Merb::Plugins)
       Mixlib::Authentication::Log.logger = Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 
 
       Thread.new do
+        Chef::Log.level = :debug
         # Okay, we're here because if you run this with the thin adaptor, you
         # need to wait for EM to heat all the way up - and it won't, until
         # after activate is finished.
@@ -71,7 +72,7 @@ if defined?(Merb::Plugins)
         # This is because nanite needs to broadcast, and we don't know how long
         # that will take.
         20.downto(0) do |sleep_time|
-          Chef::Log.debug("Waiting for Nanite to heat up.. #{sleep_time} seconds left")
+          Chef::Log.info("Waiting for Nanite to heat up.. #{sleep_time} seconds left")
           sleep 1
         end
 
@@ -84,9 +85,6 @@ if defined?(Merb::Plugins)
           Chef::ApiClient.create_design_document
           Chef::WebUIUser.create_design_document
           
-          Chef::Log.info('Loading roles')
-          Chef::Role.sync_from_disk_to_couchdb
-
           # Create the signing key and certificate 
           Chef::Certificate.generate_signing_ca
 
