@@ -130,7 +130,7 @@ class Chef
           # YAML doesn't appreciate input like "svn: '/tmp/deploydir' is not a working copy\n"
           return nil
         end
-        raise "tried to run `#{command}' and got unexpected result #{result.inspect}" unless repo_attrs.kind_of?(Hash)
+        raise "Could not parse `svn info` data: #{svn_info}" unless repo_attrs.kind_of?(Hash)
         rev = (repo_attrs['Last Changed Rev'] || repo_attrs['Revision']).to_s
         Chef::Log.debug "Resolved revision #{@new_resource.revision} to #{rev}"
         rev
