@@ -194,6 +194,36 @@ EOH
       do_run_request
     end
     
+    describe "with OpenSSL Verify Mode set to :verify peer" do
+      before(:each) do
+        Chef::Config[:ssl_verify_mode] = :verify_peer
+        @url_mock.should_receive(:scheme).and_return("https")
+      end
+
+      after(:each) do
+        Chef::Config[:ssl_verify_mode] = :verify_none
+      end
+
+      it "should set the OpenSSL Verify Mode to verify_peer if requested" do
+        @http_mock.should_receive(:verify_mode=).with(OpenSSL::SSL::VERIFY_PEER).and_return(true)
+        do_run_request
+      end
+
+      it "should set the CA path if that is set in the configuration" do
+        Chef::Config[:ssl_ca_path] = File.join(File.dirname(__FILE__), "..", "data", "ssl")
+        @http_mock.should_receive(:ca_path=).with(Chef::Config[:ssl_ca_path]).and_return(true)
+        do_run_request
+        Chef::Config[:ssl_ca_path] = nil
+      end
+
+      it "should set the CA file if that is set in the configuration" do
+        Chef::Config[:ssl_ca_file] = File.join(File.dirname(__FILE__), "..", "data", "ssl", "5e707473.0")
+        @http_mock.should_receive(:ca_file=).with(Chef::Config[:ssl_ca_file]).and_return(true)
+        do_run_request
+        Chef::Config[:ssl_ca_file] = nil
+      end
+    end
+
     describe "with a client SSL cert" do
       before(:each) do
         Chef::Config[:ssl_client_cert] = "/etc/chef/client-cert.pem"

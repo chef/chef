@@ -155,6 +155,13 @@ class Chef
         http.use_ssl = true 
         if Chef::Config[:ssl_verify_mode] == :verify_none
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        elsif Chef::Config[:ssl_verify_mode] == :verify_peer
+          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        end
+        if Chef::Config[:ssl_ca_path] and File.exists?(Chef::Config[:ssl_ca_path])
+          http.ca_path = Chef::Config[:ssl_ca_path]
+        elsif Chef::Config[:ssl_ca_file] and File.exists?(Chef::Config[:ssl_ca_file])
+          http.ca_file = Chef::Config[:ssl_ca_file]
         end
         if Chef::Config[:ssl_client_cert] && File.exists?(Chef::Config[:ssl_client_cert])
           http.cert = OpenSSL::X509::Certificate.new(File.read(Chef::Config[:ssl_client_cert]))
