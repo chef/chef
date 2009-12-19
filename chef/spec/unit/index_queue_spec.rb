@@ -147,6 +147,10 @@ describe Chef::IndexQueue::AmqpClient do
     @publisher.reset!
   end
   
+  after do
+    @publisher.disconnected!
+  end
+  
   it "is a singleton" do
     lambda {Chef::IndexQueue::Indexable::AmqpClient.new}.should raise_error
   end
@@ -174,11 +178,35 @@ describe Chef::IndexQueue::AmqpClient do
     @publisher.exchange.should == @exchange
   end
   
-  it "publishes an action to the exchange" do
-    @amqp_client.stub!(:qos)
-    data = {"some_data" => "in_a_hash"}
-    @exchange.should_receive(:publish).with({"action" => "hot_chef_on_queue", "payload" => data}.to_json)
-    @publisher.send_action(:hot_chef_on_queue, data)
+  describe "publishing" do
+    before do
+      @amqp_client.stub!(:qos)
+      @data = {"some_data" => "in_a_hash"}
+    end
+  
+    it "publishes an action to the exchange" do
+      @exchange.should_receive(:publish).with({"action" => "hot_chef_on_queue", "payload" => @data}.to_json)
+      @publisher.send_action(:hot_chef_on_queue, @data)
+    end
+  
+    it "resets the client upon a Bunny::ServerDownError when publishing" do
+      @exchange.should_receive(:publish).and_raise(Bunny::ServerDownError)
+      @publisher.should_receive(:disconnected!).twice
+      lambda {@publisher.send_action(:hot_chef_on_queue, @data)}.should raise_error(Bunny::ServerDownError)
+    end
+    
+    it "resets the client upon a Bunny::ConnectionError when publishing" do
+      @exchange.should_receive(:publish).and_raise(Bunny::ConnectionError)
+      @publisher.should_receive(:disconnected!).twice
+      lambda {@publisher.send_action(:hot_chef_on_queue, @data)}.should raise_error(Bunny::ConnectionError)
+    end
+    
+    it "resets the client upon a Errno::ECONNRESET when publishing" do
+      @exchange.should_receive(:publish).and_raise(Errno::ECONNRESET)
+      @publisher.should_receive(:disconnected!).twice
+      lambda {@publisher.send_action(:hot_chef_on_queue, @data)}.should raise_error(Errno::ECONNRESET)
+    end
+    
   end
   
   it "creates a queue bound to its exchange with a temporary UUID" do

@@ -73,7 +73,13 @@ class Chef
       end
 
       def send_action(action, data)
-        exchange.publish({"action" => action.to_s, "payload" => data}.to_json)
+        begin
+          exchange.publish({"action" => action.to_s, "payload" => data}.to_json)
+        rescue Bunny::ServerDownError, Bunny::ConnectionError, Errno::ECONNRESET => e
+          Chef::Log.error("Disconnected from the AMQP Broker, cannot queue data to the indexer")
+          disconnected!
+          raise e
+        end
       end
 
       private
