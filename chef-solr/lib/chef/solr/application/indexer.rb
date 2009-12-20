@@ -124,12 +124,8 @@ class Chef
         end
 
         def run_application
-          if Chef::Config[:daemonize]
-            Chef::Daemon.daemonize("chef-solr-indexer")
-          end
-          
+          Chef::Daemon.daemonize("chef-solr-indexer") if Chef::Config[:daemonize]
           @consumer.start
-          
         end
       end
     end
