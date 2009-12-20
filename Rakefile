@@ -102,7 +102,7 @@ def start_chef_solr_indexer(type="normal")
 end
 
 def start_chef_server(type="normal")
-  puts "Staring #{type} chef development server"
+  puts "Starting #{type} chef development server"
   @chef_server_pid     = nil
   mcid = fork
   if mcid # parent
