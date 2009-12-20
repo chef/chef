@@ -140,6 +140,10 @@ class Chef
       end
     end
     
+    def self.cdb_list(*args)
+      list(*args)
+    end
+    
     # Load an OpenIDRegistration by name from CouchDB
     def self.load(name)
       Chef::CouchDB.new.load("openid_registration", name)
