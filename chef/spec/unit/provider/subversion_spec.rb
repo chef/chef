@@ -125,6 +125,19 @@ describe Chef::Provider::Subversion do
       @provider.revision_int.should eql("11410")
     end
     
+    it "returns a helpful message if data from `svn info` can't be parsed" do
+      example_svn_info =  "some random crap from an error message\n" 
+      exitstatus = mock("exitstatus")
+      exitstatus.stub!(:exitstatus).and_return(0)
+      @resource.revision "HEAD"
+      @stdout.stub!(:string).and_return(example_svn_info)
+      @stderr.stub!(:string).and_return("")
+      @provider.should_receive(:popen4).and_yield("no-pid","no-stdin",@stdout,@stderr).
+                                        and_return(exitstatus)
+      lambda {@provider.revision_int}.should raise_error(RuntimeError, "Could not parse `svn info` data: some random crap from an error message")
+      
+    end
+    
     it "responds to :revision_slug as an alias for revision_sha" do
       @provider.should respond_to(:revision_slug)
     end
