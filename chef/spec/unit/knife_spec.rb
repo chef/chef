@@ -21,6 +21,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::Knife do
   before(:each) do
     @knife = Chef::Knife.new
+    @knife.stub!(:puts)
+    @knife.stub!(:print)
+    Chef::Knife.stub!(:puts)
   end
 
   describe "class method" do
@@ -94,6 +97,7 @@ describe Chef::Knife do
 
       it "should exit 10 if the sub command is not found" do
         Chef::Knife.stub!(:list_commands).and_return(true)
+        Chef::Log.should_receive(:fatal)
         lambda { 
           Chef::Knife.find_command([ "monkey", "man" ]) 
         }.should raise_error(SystemExit) { |e| e.status.should == 10 }

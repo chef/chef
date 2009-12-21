@@ -52,3 +52,13 @@ def redefine_argv(value)
   Object.send(:const_set, :ARGV, value)
 end
 
+def with_argv(*argv)
+  original_argv = ARGV
+  redefine_argv(argv.flatten)
+  begin
+    yield
+  ensure
+    redefine_argv(original_argv)
+  end
+end
+

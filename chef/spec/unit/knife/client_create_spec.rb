@@ -28,6 +28,7 @@ describe Chef::Knife::ClientCreate do
     @client = Chef::ApiClient.new
     @client.stub!(:save).and_return({ 'private_key' => '' })
     @knife.stub!(:edit_data).and_return(@client)
+    @knife.stub!(:puts)
     Chef::ApiClient.stub!(:new).and_return(@client)
   end
 

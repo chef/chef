@@ -20,29 +20,30 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Application::Knife do
   before(:each) do
     @knife = Chef::Application::Knife.new
-    @orig_argv ||= ARGV
-    redefine_argv([])
-  end
-
-  after(:each) do
-    redefine_argv(@orig_argv)
+    @knife.stub!(:puts)
+    Chef::Knife.stub!(:list_commands)
   end
 
   describe "run" do
     it "should exit 1 and print the options if no arguments are given at all" do
-      lambda { @knife.run }.should raise_error(SystemExit) { |e| e.status.should == 1 }
+      with_argv([]) do
+        lambda { @knife.run }.should raise_error(SystemExit) { |e| e.status.should == 1 }
+      end
     end
 
     it "should exit 2 if run without a sub command" do
-      redefine_argv([ "--user", "adam" ])
-      lambda { @knife.run }.should raise_error(SystemExit) { |e| e.status.should == 2 }
+      with_argv("--user", "adam") do
+        Chef::Log.should_receive(:fatal).with(/you need to pass a sub\-command/)
+        lambda { @knife.run }.should raise_error(SystemExit) { |e| e.status.should == 2 }
+      end
     end
 
     it "should run a sub command with the applications command line option prototype" do
-      redefine_argv([ "node", "show", "latte.local" ])
-      knife = mock(Chef::Knife, :null_object => true)
-      Chef::Knife.should_receive(:find_command).with(ARGV, Chef::Application::Knife.options).and_return(knife)
-      @knife.run
+      with_argv("node", "show", "latte.local") do
+        knife = mock(Chef::Knife, :null_object => true)
+        Chef::Knife.should_receive(:find_command).with(ARGV, Chef::Application::Knife.options).and_return(knife)
+        @knife.run
+      end
     end
   end
 end
