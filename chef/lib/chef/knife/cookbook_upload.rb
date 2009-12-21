@@ -76,7 +76,7 @@ class Chef
           child_folders = cookbook_name 
           cookbook_name = File.basename(cookbook_name)
         else
-          child_folders = config[:cookbook_path].reverse.inject([]) do |r, e| 
+          child_folders = config[:cookbook_path].inject([]) do |r, e| 
             r << File.join(e, cookbook_name)
             r
           end
@@ -92,7 +92,7 @@ class Chef
         tmp_cookbook_dir = tmp_cookbook_path.path
         File.unlink(tmp_cookbook_dir)
         FileUtils.mkdir_p(tmp_cookbook_dir)
-        
+
         Chef::Log.debug("Staging at #{tmp_cookbook_dir}")
 
         found_cookbook = false 
@@ -101,7 +101,7 @@ class Chef
           if File.directory?(file_path)
             found_cookbook = true 
             Chef::Log.info("Copying from #{file_path} to #{tmp_cookbook_dir}")
-            FileUtils.cp_r(file_path, tmp_cookbook_dir)
+            FileUtils.cp_r(file_path, tmp_cookbook_dir, :remove_destination => true)
           else
             Chef::Log.info("Nothing to copy from #{file_path}")
           end
