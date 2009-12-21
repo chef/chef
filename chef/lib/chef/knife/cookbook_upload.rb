@@ -76,7 +76,7 @@ class Chef
           child_folders = cookbook_name 
           cookbook_name = File.basename(cookbook_name)
         else
-          child_folders = config[:cookbook_path].inject([]) do |r, e| 
+          child_folders = config[:cookbook_path].reverse.inject([]) do |r, e| 
             r << File.join(e, cookbook_name)
             r
           end
