@@ -21,6 +21,7 @@ require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
+require 'chef/run_list'
 require 'extlib'
 require 'json'
 
@@ -63,7 +64,7 @@ class Chef
       @description = '' 
       @default_attributes = Mash.new
       @override_attributes = Mash.new
-      @recipes = Array.new 
+      @run_list = Chef::RunList.new 
       @couchdb_rev = nil
       @couchdb_id = nil
       @couchdb = Chef::CouchDB.new 
@@ -85,15 +86,19 @@ class Chef
       )
     end
 
-    def recipes(*arg) 
-      arg.flatten!
-      if arg.length == 0
-        @recipes
+    def run_list(*args)
+      if args.length > 0
+        @run_list.reset(args)
       else
-        arg.each do |entry|
-          raise ArgumentError, 'Recipes must be strings!' unless entry.kind_of?(String)
-        end
-        @recipes = arg
+        @run_list
+      end
+    end
+        
+    def recipes(*args) 
+      if args.length > 0
+        @run_list.reset(args)
+      else
+        @run_list.recipes
       end
     end
 
@@ -121,7 +126,7 @@ class Chef
         "default_attributes" => @default_attributes,
         "override_attributes" => @override_attributes,
         "chef_type" => "role",
-        "recipes" => @recipes,
+        "run_list" => @run_list.run_list
       }
       result["_rev"] = @couchdb_rev if @couchdb_rev
       result
@@ -139,7 +144,11 @@ class Chef
       role.description(o["description"])
       role.default_attributes(o["default_attributes"])
       role.override_attributes(o["override_attributes"])
-      role.recipes(o["recipes"])
+      if o.has_key?("run_list")
+        role.run_list(o["run_list"]) if o.has_key?("run_list")
+      else
+        role.run_list(o["recipes"]) 
+      end
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       role.couchdb_id = o["_id"] if o.has_key?("_id")
       role 

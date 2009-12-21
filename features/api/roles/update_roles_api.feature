@@ -17,6 +17,7 @@ Feature: Update a role
       | method       | updated_value    |
       | description  | gorilla          |
       | recipes      | [ "one", "two" ] |
+      | run_list      | [ "recipe[one]", "recipe[two]", "role[a]" ] |
       | default_attributes | { "a": "d" } |
       | override_attributes | { "c": "e" } |
       
