@@ -143,6 +143,8 @@ class Chef
     ssl_client_cert ""
     ssl_client_key ""
     ssl_verify_mode :verify_none
+    ssl_ca_path nil
+    ssl_ca_file nil
     template_url "http://localhost:4000"
     umask 0022
     user nil

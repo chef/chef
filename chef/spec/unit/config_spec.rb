@@ -114,5 +114,17 @@ describe Chef::Config do
     it "Chef::Config[:file_backup_path] defaults to nil" do
       Chef::Config[:file_backup_path].should be_nil
     end
+
+    it "Chef::Config[:ssl_verify_mode] defaults to :verify_none" do
+      Chef::Config[:ssl_verify_mode].should == :verify_none
+    end
+
+    it "Chef::Config[:ssl_ca_path] defaults to nil" do
+      Chef::Config[:ssl_ca_path].should be_nil
+    end
+
+    it "Chef::Config[:ssl_ca_file] defaults to nil" do
+      Chef::Config[:ssl_ca_file].should be_nil
+    end
   end
 end
