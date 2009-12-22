@@ -118,6 +118,7 @@ if defined?(Merb::Plugins)
 
       # Search
       scope.resources :search
+      scope.match('/search/reindex', :method => 'post').to(:controller => "search", :action => "reindex")
 
       # Cookbooks        
       scope.match('/nodes/:id/cookbooks', :method => 'get').to(:controller => "nodes", :action => "cookbooks")

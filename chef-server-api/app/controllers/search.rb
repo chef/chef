@@ -52,5 +52,9 @@ class ChefServerApi::Search < ChefServerApi::Application
       "total" => total
     })
   end
+  
+  def reindex
+    Chef::Solr.new.rebuild_index
+  end
 
 end
