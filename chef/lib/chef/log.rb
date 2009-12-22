@@ -23,7 +23,7 @@ require 'mixlib/log'
 class Chef
   class Log
     extend Mixlib::Log
-
+    
     class << self
       attr_accessor :verbose
       attr_reader :verbose_logger
