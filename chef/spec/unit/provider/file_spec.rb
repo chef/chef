@@ -271,6 +271,22 @@ describe Chef::Provider::File do
     File.stub!(:exist?).and_return(true)
     @provider.backup
   end
+
+  it "should keep the same ownership on backed up files" do
+    @provider.load_current_resource
+    @provider.new_resource.stub!(:path).and_return("/tmp/s-20080705111233")
+    @provider.new_resource.stub!(:backup).and_return(1)
+    Chef::Config.stub!(:[]).with(:file_backup_path).and_return("/some_prefix")
+    Dir.stub!(:[]).and_return([ "/some_prefix/tmp/s-20080705111233", "/some_prefix/tmp/s-20080705111232", "/some_prefix/tmp/s-20080705111223"])
+    FileUtils.stub!(:mkdir_p).and_return(true)
+    FileUtils.stub!(:rm).and_return(true)
+    File.stub!(:exist?).and_return(true)
+    time_becomes_a_loop = mock(Time, :strftime => "wakawaka")
+    Time.stub!(:now).and_return(time_becomes_a_loop)
+    FileUtils.should_receive(:cp).with("/tmp/s-20080705111233", "/some_prefix/tmp/s-20080705111233.chef-wakawaka", {:preserve => true}).and_return(true)
+    @provider.backup
+  end
+
 end
 
 describe Chef::Provider::File, "action_create_if_missing" do

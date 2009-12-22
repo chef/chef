@@ -170,7 +170,7 @@ class Chef
             FileUtils.mkdir_p(::File.dirname(Chef::Config[:file_backup_path] + backup_filename))
           end
           Chef::Log.info("Backing up #{@new_resource} to #{backup_filename}")
-          FileUtils.cp(file, prefix + backup_filename)
+          FileUtils.cp(file, prefix + backup_filename, :preserve => true)
           
           # Clean up after the number of backups
           slice_number = @new_resource.backup
