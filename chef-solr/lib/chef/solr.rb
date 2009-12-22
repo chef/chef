@@ -61,6 +61,7 @@ class Chef
     end
 
     def post_to_solr(doc)
+      #Chef::Log.debug("POSTing document to SOLR:\n#{doc}")
       req = Net::HTTP::Post.new("/solr/update", "Content-Type" => "text/xml")
       req.body = doc.to_s
       res = @http.request(req)
@@ -71,8 +72,9 @@ class Chef
     end
 
     def solr_add(data)
-      data = [data] unless data.is_a?(Array)
-
+      data = [data] unless data.kind_of?(Array)
+      
+      Chef::Log.debug("adding to SOLR: #{data.inspect}")
       xml_document = LibXML::XML::Document.new
       xml_add = LibXML::XML::Node.new("add")
       data.each do |doc|
@@ -113,22 +115,29 @@ class Chef
     end
 
     def rebuild_index(url=Chef::Config[:couchdb_url], db=Chef::Config[:couchdb_database])
-      solr_delete_by_query("X_CHEF_database_CHEF_X:#{db}")
-      couchdb = Chef::CouchDB.new(url, db)
+      solr_delete_by_query("*:*")
+      solr_commit
+      sleep 5
+      
       results = {}
       [Chef::ApiClient, Chef::Node, Chef::OpenIDRegistration, Chef::Role, Chef::WebUIUser].each do |klass|
         results[klass.name] = reindex_all(klass) ? "success" : "failed"
       end
-      Chef::DataBag.cdb_list(true).each { |i| i.add_to_index; i.list(true).each { |x| x.add_to_index } } 
+      databags = Chef::DataBag.cdb_list(true)
+      Chef::Log.info("Reloading #{databags.size.to_s} #{Chef::DataBag} objects into the indexer")
+      databags.each { |i| i.add_to_index; i.list(true).each { |x| x.add_to_index } } 
       results[Chef::DataBag.name] = "success" 
+      #Chef::IndexQueue::AmqpClient.instance.send_action(:commit, nil)
       results
     end
 
     private
     
-    def reindex_all(klass)
+    def reindex_all(klass, metadata={})
       begin
-        klass.cdb_list(true).each { |i| i.add_to_index }
+        items = klass.cdb_list(true)
+        Chef::Log.info("Reloading #{items.size.to_s} #{klass.name} objects into the indexer")
+        items.each { |i| i.add_to_index }
       rescue Net::HTTPServerException => e
         # 404s are okay, there might not be any of that kind of object...
         if e.message =~ /Not Found/
