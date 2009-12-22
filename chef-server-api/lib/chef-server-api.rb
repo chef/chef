@@ -62,7 +62,6 @@ if defined?(Merb::Plugins)
       Mixlib::Authentication::Log.logger = Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 
 
       Thread.new do
-        Chef::Log.level = :debug
         # Okay, we're here because if you run this with the thin adaptor, you
         # need to wait for EM to heat all the way up - and it won't, until
         # after activate is finished.
