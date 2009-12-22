@@ -49,16 +49,18 @@ class Chef
         
         with_metadata["type"]     ||= index_object_type
         with_metadata["id"]       ||= UUIDTools::UUID.random_create.to_s
-        with_metadata["database"] ||= ""
+        with_metadata["database"] ||= Chef::Config[:couchdb_database]
         with_metadata["item"]       = self
         with_metadata
       end
       
       def add_to_index(metadata={})
+        Chef::Log.debug("pushing item to index queue for addition: #{self.with_indexer_metadata(metadata)}")
         AmqpClient.instance.send_action(:add, self.with_indexer_metadata(metadata))
       end
 
       def delete_from_index(metadata={})
+        Chef::Log.debug("pushing item to index queue for deletion: #{self.with_indexer_metadata(metadata)}")
         AmqpClient.instance.send_action(:delete, self.with_indexer_metadata(metadata))
       end
       

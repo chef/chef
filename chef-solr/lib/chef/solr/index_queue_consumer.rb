@@ -39,6 +39,8 @@ class Chef
       
       def add(payload)
         index = Chef::Solr::Index.new
+        
+        Chef::Log.debug("Dequeued item for indexing: #{payload.inspect}")
 
         pitem = nil
         if payload["item"].respond_to?(:keys)
@@ -58,19 +60,7 @@ class Chef
         generate_response { index.delete(payload["id"]) }
         Chef::Log.info("Removed #{payload["id"]} from the index")
       end
-
-      def commit(payload)
-        index = Chef::Solr::Index.new
-        generate_response { index.solr_commit }
-        Chef::Log.info("Committed the index")
-      end
-
-      def optimize(payload)
-        index = Chef::Solr::Index.new
-        generate_response { index.solr_optimize }
-        Chef::Log.info("Optimized the index")
-      end
-
+      
       private
         def generate_response(&block)
           response = {}

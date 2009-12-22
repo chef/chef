@@ -127,7 +127,6 @@ class Chef
       Chef::Log.info("Reloading #{databags.size.to_s} #{Chef::DataBag} objects into the indexer")
       databags.each { |i| i.add_to_index; i.list(true).each { |x| x.add_to_index } } 
       results[Chef::DataBag.name] = "success" 
-      #Chef::IndexQueue::AmqpClient.instance.send_action(:commit, nil)
       results
     end
 
