@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Brown (<cb@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -80,13 +81,6 @@ EOH
       }.should raise_error(Chef::Exceptions::PrivateKeyMissing)
     end
 
-    it "should raise a Chef::Exceptions::PrivateKeyMissing exception if the key cannot be read" do
-      File.stub!(:exists?).and_return(true)
-      File.stub!(:readable?).and_return(false)
-      lambda {
-        @rest.load_signing_key("/tmp/keyfile.pem")
-      }.should raise_error(Chef::Exceptions::PrivateKeyMissing)
-    end
   end
 
   describe "get_rest" do

@@ -12,7 +12,6 @@ HOMEPAGE = "http://wiki.opscode.com/display/chef"
 SUMMARY = "A systems integration framework, built to bring the benefits of configuration management to your entire infrastructure."
 
 spec = Gem::Specification.new do |s|
-  s.rubyforge_project = 'chef'
   s.name = GEM_NAME
   s.version = CHEF_SERVER_VERSION
   s.platform = Gem::Platform::RUBY

@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Christopher Brown (<cb@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -46,7 +47,8 @@ class Chef
       @registration = nil
       @json_attribs = nil
       @node_name = nil
-      @node_exists = true 
+      @node_exists = true
+      Chef::Log.verbose = Chef::Config[:verbose_logging]
       Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger
       @ohai = Ohai::System.new
       @ohai_has_run = false
