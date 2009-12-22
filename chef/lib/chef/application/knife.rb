@@ -56,7 +56,13 @@ class Chef::Application::Knife < Chef::Application
     :long         => "--editor EDITOR",
     :description  => "Set the editor to use for interactive commands",
     :default      => ENV['EDITOR']
-
+  
+  option :no_editor,
+    :short        => "-n",
+    :long         => "--no-editor",
+    :description  => "Do not open EDITOR, just accept the data as is",
+    :boolean      => true
+  
   option :help,
     :short        => "-h",
     :long         => "--help",

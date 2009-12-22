@@ -28,12 +28,19 @@ class Chef
         :short => "-f FILE",
         :long  => "--file FILE",
         :description => "Write the key to a file"
+      
+      option :admin,
+        :short => "-a",
+        :long  => "--admin",
+        :description => "Create the client as an admin",
+        :boolean => true
 
       banner "Sub-Command: client create CLIENT (options)"
 
       def run 
         client = Chef::ApiClient.new
         client.name(@name_args[0])
+        client.admin(config[:admin])
         
         output = edit_data(client)
 
