@@ -1,3 +1,10 @@
+Given /^I dump the contents of the search index$/ do
+  rest.get_rest("/search/").each do |index_name, index_url|
+    puts "INDEX NAME: `#{index_name}'"
+    pp rest.get_rest(index_url.sub("http://127.0.0.1:4000", ''))
+  end
+end
+
 When /^I '([^']*)' (?:to )?the path '([^']*)'$/ do |http_method, request_uri|
   begin
     self.response = rest.send("#{http_method}_rest".downcase.to_sym, request_uri)
@@ -6,10 +13,6 @@ When /^I '([^']*)' (?:to )?the path '([^']*)'$/ do |http_method, request_uri|
     Chef::Log.debug("Caught exception in request: #{$!.message}")
     self.exception = $!
   end
-end
-
-When /^I '([^']*)' to the path '(.+)'$/ do |http_method, request_uri|
-  When "I '#{http_method}' the path '#{request_uri}'"
 end
 
 When /^I '(.+)' the path '(.+)' using a wrong private key$/ do |http_method, request_uri|
@@ -58,8 +61,10 @@ When /^I authenticate as '(.+)'$/ do |reg|
   end
 end
 
-
-
+#When /^I dump the contents of the search index$/ do
+#  Given "I dump the contents of the search index"
+#end
+#
 
 # When /^I '(.+)' the path '(.+)'$/ do |http_method, request_uri|
 #   begin

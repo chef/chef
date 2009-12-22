@@ -323,6 +323,10 @@ namespace :features do
       Cucumber::Rake::Task.new(:show) do |t|
         t.profile = "api_search_show"
       end
+      desc "Run cucumber tests for searching via the REST API"
+      Cucumber::Rake::Task.new(:reindex) do |t|
+        t.profile = "api_search_reindex"
+      end
     end
   end
 

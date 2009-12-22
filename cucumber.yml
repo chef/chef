@@ -27,6 +27,7 @@ api_data_item: --tags @api_data_item --format pretty -r features/steps -r featur
 api_search: --tags @api_search --format pretty -r features/steps -r features/support features 
 api_search_list: --tags @api_search_list --format pretty -r features/steps -r features/support features 
 api_search_show: --tags @api_search_show --format pretty -r features/steps -r features/support features 
+api_search_reindex:  --tags @api_search_reindex --format pretty -r features/steps -r features/support features 
 client: --tags @client --format pretty -r features/steps -r features/support features 
 client_roles: --tags client_roles --format pretty -r features/steps -r features/support features 
 client_cookbook_sync: --tags @client-cookbook-sync --format pretty -r features/steps -r features/support features 
