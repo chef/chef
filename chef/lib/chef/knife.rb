@@ -86,6 +86,10 @@ class Chef
       end
 
       extra = klass_instance.parse_options(args)
+      if klass_instance.config[:help]
+        puts klass_instance.opt_parser
+        exit 1
+      end
       klass_instance.name_args = (extra - cli_bits) || []
       klass_instance.configure_chef
       klass_instance

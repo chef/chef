@@ -111,10 +111,6 @@ class Chef::Application::Knife < Chef::Application
     # mangles ARGV in some situations
     print_help_and_exit(2, "Sorry, you need to pass a sub-command first!") if no_subcommand_given?
     print_help_and_exit if no_command_given?
-    
-    self.parse_options
-
-    print_help_and_exit if config[:help]
   end
   
   def no_subcommand_given?
@@ -127,7 +123,12 @@ class Chef::Application::Knife < Chef::Application
   
   def print_help_and_exit(exitcode=1, fatal_message=nil)
     Chef::Log.fatal(fatal_message) if fatal_message
-    
+  
+    begin
+      self.parse_options
+    rescue OptionParser::InvalidOption => e
+      puts "#{e}\n"
+    end
     puts self.opt_parser
     puts
     Chef::Knife.list_commands
