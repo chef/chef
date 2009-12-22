@@ -1,3 +1,11 @@
+Tue Dec 22 14:55:25 PST 2009
+
+Release Notes - Chef - Version 0.7.16
+
+** Bug
+    * [CHEF-686] - chef-{server,client,indexer} creating world writable files and directories
+    * [CHEF-812] - file backup permissions less secure than file
+
 Mon Sep 27 6:22:00 NZST 2009
 
 Release Notes - Chef - Version 0.7.14
