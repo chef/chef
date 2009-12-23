@@ -54,7 +54,7 @@ class ChefServerApi::Search < ChefServerApi::Application
   end
   
   def reindex
-    Chef::Solr.new.rebuild_index
+    display(Chef::Solr.new.rebuild_index)
   end
 
 end
