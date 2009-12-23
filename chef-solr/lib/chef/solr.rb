@@ -115,7 +115,7 @@ class Chef
     end
 
     def rebuild_index(url=Chef::Config[:couchdb_url], db=Chef::Config[:couchdb_database])
-      solr_delete_by_query("*:*")
+      solr_delete_by_query("X_CHEF_database_CHEF_X:#{db}")
       solr_commit
       
       results = {}
