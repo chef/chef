@@ -229,6 +229,7 @@ namespace :dev do
     desc "Start RabbitMQ"
     task :rabbitmq do
       start_rabbitmq
+      configure_rabbitmq
       wait_for_ctrlc
     end
 
