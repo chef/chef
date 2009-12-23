@@ -20,7 +20,6 @@
 #
 
 require 'chef/mixin/params_validate'
-require 'chef/openid_registration'
 require 'net/https'
 require 'uri'
 require 'json'
@@ -265,6 +264,7 @@ class Chef
         retry if (http_retries += 1) < http_retry_count
         raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       end
+      
       
       if res.kind_of?(Net::HTTPSuccess)
         if res['set-cookie']

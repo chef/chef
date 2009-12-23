@@ -46,10 +46,10 @@ class Chef::Application::Client < Chef::Application
     :proc         => nil
 
   option :verbose_logging,
-    :short        => "-V true | false",
-    :long         => "--verbose true|false",
+    :short        => "-V",
+    :long         => "--verbose",
     :description  => "Ensures logging goes to STDOUT as well as to other configured log location(s).",
-    :proc         => lambda { |l| l.to_sym}
+    :proc         => lambda { |p| true }
 
   option :help,
     :short        => "-h",

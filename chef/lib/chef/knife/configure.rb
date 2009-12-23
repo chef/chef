@@ -35,7 +35,7 @@ class Chef
           confirm("Overwrite #{config[:config_file]}")
         end
 
-        Chef::Log::Formatter.show_time = false
+        Mixlib::Log::Formatter.show_time = false
         Chef::Log.init(STDOUT)
         Chef::Log.level(:info)
 

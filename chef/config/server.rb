@@ -12,4 +12,4 @@ search_index_path File.join(File.dirname(__FILE__), "..", "examples", "search_in
 
 # openid_providers [ "localhost:4001", "openid.hjksolutions.com" ]
 
-Chef::Log::Formatter.show_time = false
+Mixlib::Log::Formatter.show_time = false

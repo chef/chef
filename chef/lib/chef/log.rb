@@ -37,6 +37,7 @@ class Chef
         if value
           @verbose_logger ||= Logger.new(STDOUT)
           @verbose_logger.level = self.logger.level
+          @verbose_logger.formatter = self.logger.formatter
         else
           @verbose_logger = nil
         end
