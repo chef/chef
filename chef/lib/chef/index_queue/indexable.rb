@@ -48,8 +48,8 @@ class Chef
         end
         
         with_metadata["type"]     ||= index_object_type
-        with_metadata["id"]       ||= UUIDTools::UUID.random_create.to_s
         with_metadata["database"] ||= Chef::Config[:couchdb_database]
+        with_metadata["id"]         = couchdb_id || UUIDTools::UUID.random_create.to_s
         with_metadata["item"]       = self
         with_metadata
       end

@@ -61,7 +61,7 @@ class Chef
     end
 
     def post_to_solr(doc)
-      #Chef::Log.debug("POSTing document to SOLR:\n#{doc}")
+      Chef::Log.debug("POSTing document to SOLR:\n#{doc}")
       req = Net::HTTP::Post.new("/solr/update", "Content-Type" => "text/xml")
       req.body = doc.to_s
       res = @http.request(req)
@@ -117,7 +117,6 @@ class Chef
     def rebuild_index(url=Chef::Config[:couchdb_url], db=Chef::Config[:couchdb_database])
       solr_delete_by_query("*:*")
       solr_commit
-      sleep 5
       
       results = {}
       [Chef::ApiClient, Chef::Node, Chef::OpenIDRegistration, Chef::Role, Chef::WebUIUser].each do |klass|

@@ -20,6 +20,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 class Chef
   class IndexableTestHarness
+    attr_accessor :couchdb_id
+    
     include Chef::IndexQueue::Indexable
   end
 end
@@ -68,6 +70,20 @@ describe Chef::IndexQueue::Indexable do
     with_metadata["database"].should  == "foo"
     with_metadata["item"].should      == @indexable_obj
     with_metadata["id"].should match(a_uuid)
+  end
+  
+  it "defaults to the couchdb_database defined in the configuration" do
+    expected_database = "chef_exquisite_cupcake"
+    Chef::Config.stub(:[]).with(:couchdb_database).and_return(expected_database)
+    actual_database = @indexable_obj.with_indexer_metadata["database"]
+    actual_database.should == expected_database
+  end
+  
+  it "uses the couchdb_id if available" do
+    expected_uuid = "0000000-1111-2222-3333-444444444444"
+    @indexable_obj.couchdb_id = expected_uuid
+    metadata_id = @indexable_obj.with_indexer_metadata["id"]
+    metadata_id.should == expected_uuid
   end
   
   it "sends ``add'' actions" do
