@@ -8,9 +8,9 @@ Feature: Trigger a reindex via the REST API
 	  Given a 'registration' named 'bobo' exists
 	    And a 'data_bag' named 'users' exists
 	    And a 'data_bag_item' named 'francis' exists
-	    And I wait for '10' seconds
+	    And I wait for '15' seconds
 	   When I 'POST' the 'data_bag' to the path '/search/reindex'
-	    And I wait for '10' seconds
+	    And I wait for '15' seconds
 	    And I 'GET' the path '/search/users?sort=id+desc' 
 	   Then the inflated responses key 'rows' item '0' should be a kind of 'Chef::DataBagItem'
 	    And the inflated responses key 'rows' item '0' key 'id' should be 'francis'
