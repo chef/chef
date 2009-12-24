@@ -115,6 +115,10 @@ class Chef
       Chef::Log::Formatter.show_time = false
       Chef::Log.init(Chef::Config[:log_location])
       Chef::Log.level(Chef::Config[:log_level])
+
+      if Chef::Config[:node_name].nil?
+        raise ArgumentError, "No user specified, pass via -u or specifiy 'node_name' in #{config[:config_file] ? config[:config_file] : "~/.chef/knife.rb"}"
+      end
     end
 
     def pretty_print(data)
