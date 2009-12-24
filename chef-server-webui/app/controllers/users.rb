@@ -140,7 +140,7 @@ class ChefServerWebui::Users < ChefServerWebui::Application
   def complete    
     session[:user] = params[:name]
     session[:level] = (@user.admin == true ? :admin : :user)
-    (@user.name == Chef::Config[:web_ui_admin_user_name] && @user.verify_password(Chef::Config[:web_ui_admin_default_password])) ? redirect(slice_url(:users_edit, :user_id => @user.name), :message => { :warning => "Please change default password!!!" }) : redirect_back_or_default(absolute_slice_url(:nodes))
+    (@user.name == Chef::Config[:web_ui_admin_user_name] && @user.verify_password(Chef::Config[:web_ui_admin_default_password])) ? redirect(slice_url(:users_edit, :user_id => @user.name), :message => { :warning => "Please change the default password" }) : redirect_back_or_default(absolute_slice_url(:nodes))
   end
 
   def logout
