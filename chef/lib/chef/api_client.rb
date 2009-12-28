@@ -30,7 +30,7 @@ class Chef
     
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-    include IndexQueue::Indexable
+    include Chef::IndexQueue::Indexable
     
     
     DESIGN_DOCUMENT = {

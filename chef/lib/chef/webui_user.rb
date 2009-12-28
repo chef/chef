@@ -31,7 +31,7 @@ class Chef
     attr_accessor :name, :salt, :validated, :password, :couchdb_rev, :admin, :openid
     
     include Chef::Mixin::ParamsValidate
-    include IndexQueue::Indexable
+    include Chef::IndexQueue::Indexable
     
     DESIGN_DOCUMENT = {
       "version" => 3,
