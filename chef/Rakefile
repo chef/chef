@@ -41,11 +41,11 @@ Rake::RDocTask.new do |rd|
 end
 
 task :install => :package do
-  sh %{sudo gem install pkg/#{GEM}-#{CHEF_VERSION} --no-rdoc --no-ri}
+  sh %{gem install pkg/#{GEM}-#{CHEF_VERSION} --no-rdoc --no-ri}
 end
 
 task :uninstall do
-  sh %{sudo gem uninstall #{GEM} -x -v #{CHEF_VERSION} }
+  sh %{gem uninstall #{GEM} -x -v #{CHEF_VERSION} }
 end
 
 desc "create a gemspec file"

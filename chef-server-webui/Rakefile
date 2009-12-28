@@ -44,12 +44,12 @@ end
 
 desc "Install the gem"
 task :install => :package do
-  sh %{sudo gem install pkg/#{GEM_NAME}-#{CHEF_SERVER_VERSION} --no-rdoc --no-ri}
+  sh %{gem install pkg/#{GEM_NAME}-#{CHEF_SERVER_VERSION} --no-rdoc --no-ri}
 end
 
 desc "Uninstall the gem"
 task :uninstall do
-  sh %{sudo gem uninstall #{GEM_NAME} -x -v #{CHEF_SERVER_VERSION} }
+  sh %{gem uninstall #{GEM_NAME} -x -v #{CHEF_SERVER_VERSION} }
 end
 
 desc "Create a gemspec file"
