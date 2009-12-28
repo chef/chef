@@ -82,7 +82,9 @@ class Chef
       if location.respond_to? :sync=
         location
       elsif location.respond_to? :to_str
-        File.new(location.to_str, "a")
+        f = File.new(location.to_str, "a")
+        f.sync = true
+        f
       end
     end
 
