@@ -1,5 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@opscode.com)
+# Author:: Christopher Brown (<cb@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -43,6 +44,12 @@ class Chef::Application::Client < Chef::Application
     :long         => "--logfile LOGLOCATION",
     :description  => "Set the log file location, defaults to STDOUT - recommended for daemonizing",
     :proc         => nil
+
+  option :verbose_logging,
+    :short        => "-V",
+    :long         => "--verbose",
+    :description  => "Ensures logging goes to STDOUT as well as to other configured log location(s).",
+    :proc         => lambda { |p| true }
 
   option :help,
     :short        => "-h",

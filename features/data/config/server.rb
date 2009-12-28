@@ -31,10 +31,9 @@ web_ui_client_name "chef-webui"
 web_ui_key File.join(systmpdir, "webui.pem")
 
 solr_jetty_path File.join(supportdir, "solr", "jetty")
-solr_heap_size "250M"
 solr_data_path File.join(supportdir, "solr", "data")
 solr_home_path File.join(supportdir, "solr", "home")
-solr_heap_size "256M"
+solr_heap_size "250M"
 
 amqp_host '0.0.0.0'
 amqp_port '5672'
@@ -43,6 +42,6 @@ amqp_pass 'testing'
 amqp_vhost '/chef'
 amqp_consumer_id "aaaaaaaa-bbbb-cccc-dddd-eeee-ffffffffffffffff"
 
-Chef::Log::Formatter.show_time = true
+Mixlib::Log::Formatter.show_time = true
 
 cache_options({ :path => File.join(tmpdir, "server-checksums") })

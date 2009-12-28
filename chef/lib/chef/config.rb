@@ -116,6 +116,7 @@ class Chef
     json_attribs nil
     log_level :info
     log_location STDOUT
+    verbose_logging nil
     node_name nil
     node_path "/var/chef/node"
     openid_cstore_couchdb false

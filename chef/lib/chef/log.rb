@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: AJ Christensen (<@aj@opsocde.com>)
+# Author:: AJ Christensen (<@aj@opscode.com>)
+# Author:: Christopher Brown (<cb@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -22,18 +23,33 @@ require 'mixlib/log'
 class Chef
   class Log
     extend Mixlib::Log
-
-    # This is here for compatability, before we moved to
-    # Mixlib::Log.
-    class Formatter
-      def self.show_time=(arg)
-        Mixlib::Log::Formatter.show_time = arg
+    
+    class << self
+      attr_accessor :verbose
+      attr_reader :verbose_logger
+      protected :verbose_logger
+      
+      def verbose
+        !(@verbose_logger.nil?)
       end
 
-      def self.show_time
-        Mixlib::Log::Formatter.show_time
+      def verbose=(value)
+        if value
+          @verbose_logger ||= Logger.new(STDOUT)
+          @verbose_logger.level = self.logger.level
+          @verbose_logger.formatter = self.logger.formatter
+        else
+          @verbose_logger = nil
+        end
+        self.verbose
       end
-    end
+      
+      def method_missing(method_symbol, *args)
+        self.verbose_logger.send(method_symbol, *args) if self.verbose
+        logger.send(method_symbol, *args)
+      end
+    end  
+    
   end
 end
 

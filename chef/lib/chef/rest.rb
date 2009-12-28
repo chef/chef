@@ -2,6 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Thom May (<thom@clearairturbulence.org>)
 # Author:: Nuo Yan (<nuo@opscode.com>)
+# Author:: Christopher Brown (<cb@opscode.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -19,7 +20,6 @@
 #
 
 require 'chef/mixin/params_validate'
-require 'chef/openid_registration'
 require 'net/https'
 require 'uri'
 require 'json'
@@ -55,7 +55,7 @@ class Chef
     end
 
     def load_signing_key(key)
-      if File.exists?(key) && File.readable?(key)
+      if File.exists?(key)
         IO.read(key)
       else
         raise Chef::Exceptions::PrivateKeyMissing, "I cannot find #{key}, which you told me to use to sign requests!"
@@ -264,6 +264,7 @@ class Chef
         retry if (http_retries += 1) < http_retry_count
         raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       end
+      
       
       if res.kind_of?(Net::HTTPSuccess)
         if res['set-cookie']
