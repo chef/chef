@@ -9,16 +9,41 @@
             %h3 Description
             = @role.description
 
-          .left 
-            %h3 Recipes
-            %table#recipes.table
+          .left
+            %h3 Run List
+            %table.table
               %tr
                 %th.first Position
-                %th.last Name
-              - @role.recipes.each_index do |i|
+                %th Name
+                %th.last Type
+                - if @role.run_list.empty?
+                  %tr
+                    %td{:colspan => 2} This role does not include any roles or recipes.
+                - else
+                  -@role.run_list.each_index do |i|
+                    - type, name, fname = @role.run_list.parse_entry(@role.run_list[i])
+                    %tr
+                      %td.position= i
+                      %td= name 
+                      %td= type 
+          .left.accordion
+            %h3.head= link_to("Recipes", "#")
+            - full_recipe_list, default_attrs, override_attrs = @role.run_list.expand()
+            %div
+              %span.description.form.help
+                This is the list of recipes, fully expanded, as they will be applied to the node in question.  
+              %table#recipes.table
                 %tr
-                  %td.position= i
-                  %td= @role.recipes[i]
+                  %th.first Position
+                  %th.last Name
+                - if @role.run_list.empty?
+                  %tr
+                    %td{:colspan => 2} This node has no recipes applied.
+                - else
+                  - full_recipe_list.each_index do |i|
+                    %tr
+                      %td.position= i
+                      %td= full_recipe_list[i]
           .left 
             %h3 Default Attributes
             = build_tree('defattrs', @role.default_attributes)
