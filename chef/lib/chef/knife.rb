@@ -152,19 +152,23 @@ class Chef
     end
 
     def edit_data(data, parse_output=true)
-      filename = "knife-edit-"
-      0.upto(20) { filename += rand(9).to_s }
-      filename << ".js"
-      filename = File.join(Dir.tmpdir, filename)
-      tf = File.open(filename, "w")
-      tf.sync = true
-      tf.puts JSON.pretty_generate(data)
-      tf.close
-      raise "Please set EDITOR environment variable" unless system("#{config[:editor]} #{tf.path}") 
-      tf = File.open(filename, "r")
-      output = tf.gets(nil)
-      tf.close
-      File.unlink(filename)
+      output = JSON.pretty_generate(data)
+      
+      if (!config[:no_editor])
+        filename = "knife-edit-"
+        0.upto(20) { filename += rand(9).to_s }
+        filename << ".js"
+        filename = File.join(Dir.tmpdir, filename)
+        tf = File.open(filename, "w")
+        tf.sync = true
+        tf.puts output
+        tf.close
+        raise "Please set EDITOR environment variable" unless system("#{config[:editor]} #{tf.path}") 
+        tf = File.open(filename, "r")
+        output = tf.gets(nil)
+        tf.close
+        File.unlink(filename)
+      end
 
       parse_output ? JSON.parse(output) : output
     end
