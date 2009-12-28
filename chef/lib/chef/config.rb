@@ -160,13 +160,14 @@ class Chef
     solr_home_path "/var/chef/solr"
     solr_heap_size "256M"
     solr_java_opts nil
-    nanite_host '0.0.0.0'
-    nanite_port '5672'
-    nanite_user 'nanite'
-    nanite_pass 'testing'
-    nanite_vhost '/nanite'
-    nanite_identity nil
-    nanite_persistent_mapper false
+    amqp_host '0.0.0.0'
+    amqp_port '5672'
+    amqp_user 'chef'
+    amqp_pass 'testing'
+    amqp_vhost '/chef'
+    # Setting this to a UUID string also makes the queue durable 
+    # (persist across rabbitmq restarts)
+    amqp_consumer_id nil
 
     client_key "/etc/chef/client.pem"
     validation_key "/etc/chef/validation.pem"

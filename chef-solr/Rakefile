@@ -7,8 +7,10 @@ begin
     gem.name = "chef-solr"
     gem.summary = %Q{Search indexing for Chef}
     gem.email = "adam@opscode.com"
-    gem.homepage = "http://github.com/adamhjk/chef-solr"
+    gem.homepage = "http://wiki.opscode.com/display/chef"
     gem.authors = ["Adam Jacob"]
+    gem.add_dependency "libxml-ruby", ">=1.1.3"
+    gem.add_dependency "chef", IO.read("VERSION").strip
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
     gem.files = [
       "README.rdoc",

@@ -21,7 +21,6 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::Node do
   before(:each) do
     Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
-    Nanite.stub!(:request).and_return(true)
     @node = Chef::Node.new()
   end
  

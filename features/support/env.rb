@@ -52,14 +52,7 @@ def setup_logging
     Chef::Log.level = ENV['LOG_LEVEL'].to_sym
     Merb.logger.set_log(STDOUT, ENV['LOG_LEVEL'].to_sym)
   end
-  Nanite::Log.logger = Ohai::Log.logger = Chef::Log.logger 
-end
-
-def setup_nanite
-  Chef::Config[:nanite_identity] = "chef-integration-test"
-  Chef::Nanite.in_event { Chef::Log.debug("Nanite is up!") } 
-  Chef::Log.debug("Waiting for Nanites to register with us as a mapper")
-  sleep 10
+  Ohai::Log.logger = Chef::Log.logger 
 end
 
 def delete_databases
@@ -117,7 +110,6 @@ Merb.start_environment(
 # Pre-testing setup
 ###
 setup_logging
-setup_nanite
 cleanup
 delete_databases
 create_databases

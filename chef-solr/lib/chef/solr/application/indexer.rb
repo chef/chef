@@ -21,12 +21,9 @@ require 'chef/config'
 require 'chef/application'
 require 'chef/solr'
 require 'chef/solr/index'
-require 'chef/solr/index_actor'
+require 'chef/solr/index_queue_consumer'
 require 'chef/daemon'
-require 'chef/nanite'
 require 'chef/webui_user'
-require 'nanite'
-require 'eventmachine'
 
 class Chef
   class Solr
@@ -78,62 +75,57 @@ class Chef
           :description => "Daemonize the process",
           :proc => lambda { |p| true }
 
-        option :nanite_identity,
-          :long => "--nanite-identity ID",
-          :description => "The nanite identity"
+        option :amqp_host,
+          :long => "--amqp-host HOST",
+          :description => "The amqp host"
 
-        option :nanite_host,
-          :long => "--nanite-host HOST",
-          :description => "The nanite host"
+        option :amqp_port,
+          :long => "--amqp-port PORT",
+          :description => "The amqp port"
 
-        option :nanite_port,
-          :long => "--nanite-port PORT",
-          :description => "The nanite port"
+        option :amqp_user,
+          :long => "--amqp-user USER",
+          :description => "The amqp user"
 
-        option :nanite_user,
-          :long => "--nanite-user USER",
-          :description => "The nanite user"
+        option :amqp_pass,
+          :long => "--amqp-pass PASS",
+          :description => "The amqp password"
 
-        option :nanite_pass,
-          :long => "--nanite-pass PASS",
-          :description => "The nanite password"
-
-        option :nanite_vhost,
-          :long => "--nanite-vhost VHOST",
-          :description => "The nanite vhost"
-
+        option :amqp_vhost,
+          :long => "--amqp-vhost VHOST",
+          :description => "The amqp vhost"
+        
+        Signal.trap("INT") do
+          begin
+            AmqpClient.instance.stop
+          rescue Bunny::ProtocolError, Bunny::ConnectionError, Bunny::UnsubscribeError
+          end
+          fatal!("SIGINT received, stopping", 2)
+        end
+        
+        Kernel.trap("TERM") do 
+          begin
+            AmqpClient.instance.stop
+          rescue Bunny::ProtocolError, Bunny::ConnectionError, Bunny::UnsubscribeError
+          end
+          fatal!("SIGTERM received, stopping", 1)
+        end
+        
         def initialize
           super
 
           @index = Chef::Solr::Index.new
-          ::Nanite::Log.logger = Chef::Log.logger
+          @consumer = Chef::Solr::IndexQueueConsumer.new
         end
 
         def setup_application
           Chef::Daemon.change_privilege
-          identity = Chef::Config[:nanite_identity] ? Chef::Config[:nanite_identity] : Chef::Nanite.get_identity("solr-indexer")
-          @nanite_config = { 
-            :host => Chef::Config[:nanite_host],
-            :port => 5672,
-            :user => Chef::Config[:nanite_user],
-            :pass => Chef::Config[:nanite_pass],
-            :vhost => Chef::Config[:nanite_vhost],
-            :identity => identity, 
-            :format => :json
-          }
           Chef::Log.level = Chef::Config[:log_level]
         end
 
         def run_application
-          if Chef::Config[:daemonize]
-            Chef::Daemon.daemonize("chef-solr-indexer")
-          end
-
-          EM.run do
-            agent = ::Nanite::Agent.start(@nanite_config)
-            agent.register(Chef::Solr::IndexActor.new, 'index')
-            agent.send :advertise_services
-          end
+          Chef::Daemon.daemonize("chef-solr-indexer") if Chef::Config[:daemonize]
+          @consumer.start
         end
       end
     end

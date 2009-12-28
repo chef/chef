@@ -21,7 +21,6 @@ require 'chef/rest'
 require 'chef/log'
 require 'digest/sha2'
 require 'json'
-require 'chef/nanite'
 
 # We want to fail on create if uuidtools isn't installed
 begin
@@ -112,27 +111,16 @@ class Chef
           :object => { :respond_to => :to_json },
         }
       )
-      r = get_view("id_map", "name_to_id", :key => [ obj_type, name ])
-      uuid = nil
-      if r["rows"].length == 1
-        uuid = r["rows"][0]["id"]
-      else
-        uuid = UUIDTools::UUID.random_create.to_s
-      end
-        
-      r = @rest.put_rest("#{couchdb_database}/#{uuid}", object)
-      Chef::Log.info("Sending #{uuid} to Nanite for indexing..")
-      n = Chef::Nanite.push(
-        "/index/add",
-        { 
-          :id => uuid,
-          :database => couchdb_database,
-          :type => obj_type,
-          :item => object
-        },
-        :persistent => true
-      )
-      r
+      response = get_view("id_map", "name_to_id", :key => [ obj_type, name ])
+      uuid    = response["rows"].empty? ? nil : response["rows"].first.fetch("id")
+      uuid  ||= UUIDTools::UUID.random_create.to_s
+      
+      db_put_response = @rest.put_rest("#{couchdb_database}/#{uuid}", object)
+      
+      Chef::Log.info("Sending #{obj_type}(#{uuid}) to the index queue for addition.")
+      object.add_to_index(:database => couchdb_database, :id => uuid, :type => obj_type)
+      
+      db_put_response
     end
 
     def load(obj_type, name)
@@ -163,27 +151,21 @@ class Chef
         }
       )
       del_id = nil 
-      last_obj, obj_id = find_by_name(obj_type, name, true)
+      object, uuid = find_by_name(obj_type, name, true)
       unless rev
-        if last_obj.respond_to?(:couchdb_rev)
-          rev = last_obj.couchdb_rev
+        if object.respond_to?(:couchdb_rev)
+          rev = object.couchdb_rev
         else
-          rev = last_obj['_rev']
+          rev = object['_rev']
         end
       end
-      r = @rest.delete_rest("#{couchdb_database}/#{obj_id}?rev=#{rev}")
-      r.couchdb = self if r.respond_to?(:couchdb)
-      Chef::Log.info("Sending #{obj_id} to Nanite for deletion..")
-      n = Chef::Nanite.push(
-        "/index/delete",
-        { 
-          :id => obj_id,
-          :database => couchdb_database,
-          :type => obj_type
-        },
-        :persistent => true
-      )
-      r
+      response = @rest.delete_rest("#{couchdb_database}/#{uuid}?rev=#{rev}")
+      response.couchdb = self if response.respond_to?(:couchdb=)
+      Chef::Log.info("Sending #{obj_type}(#{uuid}) to the index queue for deletion..")
+      
+      object.delete_from_index(:database => couchdb_database, :id => uuid, :type => obj_type)
+
+      response
     end
   
     def list(view, inflate=false)

@@ -25,9 +25,6 @@ describe Chef::CouchDB do
     @mock_rest.stub!(:url).and_return("http://localhost:5984")
     Chef::REST.stub!(:new).and_return(@mock_rest)
     @couchdb = Chef::CouchDB.new
-    Chef::Nanite.stub!(:push).and_return(true)
-    Chef::Nanite.stub!(:in_event).and_return(true)
-    Chef::Nanite.stub!(:start_mapper).and_return(true)
   end
 
   describe "new" do
@@ -142,22 +139,22 @@ describe Chef::CouchDB do
     end
 
     it "should put the object into couchdb with a pre-existing GUID" do
-      @mock_rest.should_receive(:put_rest).with("chef/#{@mock_results["rows"][0]["id"]}", {}).and_return(true)
-      @couchdb.store("node", "bob", {})
+      item_to_store = {}
+      item_to_store.should_receive(:add_to_index)
+      @mock_rest.should_receive(:put_rest).with("chef/#{@mock_results["rows"][0]["id"]}", item_to_store).and_return(true)
+      @couchdb.store("node", "bob", item_to_store)
     end
 
     it "should put the object into couchdb with a new GUID" do
       @mock_results = { "rows" => [] }
+      item_to_store = {}
+      item_to_store.should_receive(:add_to_index).with(:database => "chef", :id => "aaaaaaaa-xxxx-xxxx-xxxx-xxxxxxxxxxx", :type => "node")
       @couchdb.stub!(:get_view).with("id_map", "name_to_id", :key => [ "node", "bob" ]).and_return(@mock_results)
       UUIDTools::UUID.stub!(:random_create).and_return("aaaaaaaa-xxxx-xxxx-xxxx-xxxxxxxxxxx")
-      @mock_rest.should_receive(:put_rest).with("chef/aaaaaaaa-xxxx-xxxx-xxxx-xxxxxxxxxxx", {}).and_return(true)
-      @couchdb.store("node", "bob", {})
+      @mock_rest.should_receive(:put_rest).with("chef/aaaaaaaa-xxxx-xxxx-xxxx-xxxxxxxxxxx", item_to_store).and_return(true)
+      @couchdb.store("node", "bob", item_to_store)
     end
 
-    it "should send the object to nanite for indexing" do
-      Chef::Nanite.should_receive(:push)
-      @couchdb.store("node", "bob", {})
-    end
   end
 
   describe "load" do
@@ -180,10 +177,10 @@ describe Chef::CouchDB do
       }
       @mock_rest.stub!(:get_rest).and_return(@mock_current)
       @mock_rest.stub!(:delete_rest).and_return(true)
-      @mock_node = Chef::Node.new()
-      @mock_node.name("bob")
-      @mock_node.couchdb_rev = 15
-      @couchdb.stub!(:find_by_name).with("node", "bob", true).and_return([ @mock_node, "ax" ])
+      @node = Chef::Node.new()
+      @node.name("bob")
+      @node.couchdb_rev = 15
+      @couchdb.stub!(:find_by_name).with("node", "bob", true).and_return([ @node, "ax" ])
     end
     
     def do_delete(rev=nil)
@@ -191,11 +188,13 @@ describe Chef::CouchDB do
     end
     
     it "should remove the object from couchdb with a specific revision" do
+      @node.should_receive(:delete_from_index)
       @mock_rest.should_receive(:delete_rest).with("chef/ax?rev=1")
       do_delete(1)  
     end
     
     it "should remove the object from couchdb based on the couchdb_rev of the current obj" do
+      @node.should_receive(:delete_from_index)
       @mock_rest.should_receive(:delete_rest).with("chef/ax?rev=15")
       do_delete
     end

@@ -28,17 +28,19 @@ require 'chef/data_bag'
 require 'chef/data_bag_item'
 require 'chef/api_client'
 require 'chef/couchdb'
-require 'nanite/actor'
+require 'chef/index_queue'
 
 class Chef
   class Solr
-    class IndexActor
-      include ::Nanite::Actor
+    class IndexQueueConsumer
+      include Chef::IndexQueue::Consumer
 
-      expose :add, :delete, :commit, :optimize
-
+      expose :add, :delete
+      
       def add(payload)
         index = Chef::Solr::Index.new
+        
+        Chef::Log.debug("Dequeued item for indexing: #{payload.inspect}")
 
         pitem = nil
         if payload["item"].respond_to?(:keys)
@@ -58,19 +60,7 @@ class Chef
         generate_response { index.delete(payload["id"]) }
         Chef::Log.info("Removed #{payload["id"]} from the index")
       end
-
-      def commit(payload)
-        index = Chef::Solr::Index.new
-        generate_response { index.solr_commit }
-        Chef::Log.info("Committed the index")
-      end
-
-      def optimize(payload)
-        index = Chef::Solr::Index.new
-        generate_response { index.solr_optimize }
-        Chef::Log.info("Optimized the index")
-      end
-
+      
       private
         def generate_response(&block)
           response = {}

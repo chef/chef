@@ -19,6 +19,7 @@
 require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/couchdb'
+require 'chef/index_queue'
 require 'digest/sha1'
 require 'rubygems'
 require 'json'
@@ -29,6 +30,7 @@ class Chef
     attr_accessor :name, :salt, :validated, :password, :couchdb_rev, :admin
     
     include Chef::Mixin::ParamsValidate
+    include IndexQueue::Indexable
     
     DESIGN_DOCUMENT = {
       "version" => 3,
@@ -136,6 +138,10 @@ class Chef
       else
         rs["rows"].collect { |r| r["key"] }
       end
+    end
+    
+    def self.cdb_list(*args)
+      list(*args)
     end
     
     # Load an OpenIDRegistration by name from CouchDB

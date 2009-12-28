@@ -21,8 +21,6 @@ require 'chef/config'
 require 'chef/application'
 require 'chef/solr'
 require 'chef/solr/index'
-require 'nanite'
-require 'eventmachine'
 
 class Chef
   class Solr
@@ -94,16 +92,14 @@ class Chef
           super
 
           @index = Chef::Solr::Index.new
-          ::Nanite::Log.logger = Chef::Log.logger
         end
 
         def setup_application
           Chef::Log.level = Chef::Config[:log_level]
           Chef::Log.warn("This operation is destructive!")
-          Chef::Log.warn("I'm going to count to 20, and then delete your Solr index and rebuild it.")
+          Chef::Log.warn("I'm going to count to 10, and then delete your Solr index and rebuild it.")
           Chef::Log.warn("CTRL-C will, of course, stop this disaster.")
-          Chef::Nanite.in_event { }
-          0.upto(20) do |num|
+          0.upto(10) do |num|
             Chef::Log.warn("... #{num}")
             sleep 1
           end

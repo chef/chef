@@ -20,6 +20,7 @@
 require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/couchdb'
+require 'chef/index_queue'
 require 'digest/sha1'
 require 'rubygems'
 require 'json'
@@ -30,6 +31,7 @@ class Chef
     attr_accessor :name, :salt, :validated, :password, :couchdb_rev, :admin, :openid
     
     include Chef::Mixin::ParamsValidate
+    include IndexQueue::Indexable
     
     DESIGN_DOCUMENT = {
       "version" => 3,

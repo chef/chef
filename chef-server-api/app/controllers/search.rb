@@ -23,6 +23,7 @@ class ChefServerApi::Search < ChefServerApi::Application
   provides :json
  
   before :authenticate_every
+  before :is_admin, :only => [:reindex]
   
   def index
     indexes = valid_indexes
@@ -51,6 +52,10 @@ class ChefServerApi::Search < ChefServerApi::Application
       "start" => start,
       "total" => total
     })
+  end
+  
+  def reindex
+    display(Chef::Solr.new.rebuild_index)
   end
 
 end
