@@ -166,7 +166,7 @@ class Chef
           savetime = time.strftime("%Y%m%d%H%M%S")
           backup_filename = "#{@new_resource.path}.chef-#{savetime}"
           Chef::Log.info("Backing up #{@new_resource} to #{backup_filename}")
-          FileUtils.cp(file, backup_filename)
+          FileUtils.cp(file, backup_filename, :preserve => true)
           
           # Clean up after the number of backups
           slice_number = @new_resource.backup - 1
