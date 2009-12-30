@@ -12,12 +12,13 @@ begin
     gem.add_dependency "libxml-ruby", ">=1.1.3"
     gem.add_dependency "chef", IO.read("VERSION").strip
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.executables = [ 'chef-solr', 'chef-solr-indexer', 'chef-solr-rebuild' ]
     gem.files = [
       "README.rdoc",
       "Rakefile",
       "VERSION"
     ]
-    gem.files.include %w{ bin/* lib/**/* solr/* spec/**/* }
+    gem.files.include %w{ README.rdoc Rakefile VERSION bin/* lib/**/* solr/* spec/**/* }
   end
 
 rescue LoadError
