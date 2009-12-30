@@ -134,9 +134,8 @@ if defined?(Merb::Plugins)
       user.name = Chef::Config[:web_ui_admin_user_name]
       user.set_password(Chef::Config[:web_ui_admin_default_password])
       user.admin = true
-      user.cdb_save
+      user.save
     end 
-  
       
   end
 

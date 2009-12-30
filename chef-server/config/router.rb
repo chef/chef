@@ -33,7 +33,7 @@ Merb::Router.prepare do
   # Adds the required routes for merb-auth using the password slice
   # slice(:merb_auth_slice_password, :name_prefix => nil, :path_prefix => "")
 
-  slice(:chef_server_api)
-  # slice(:chef_server_webui, :path_prefix => "html")
+  slice(:chef_server_api, :path_prefix => "") if defined?(ChefServerApi)
+  slice(:chef_server_webui, :path_prefix => "") if defined?(ChefServerWebui)
 
 end

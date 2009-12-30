@@ -35,8 +35,7 @@ use_template_engine :haml
 Merb::Config.use do |c|
   # BUGBUG [cb] For some reason, this next line
   # causes a merb slice to vomit around openid
-  #  c[:fork_for_class_load] = false
-  
+  #c[:fork_for_class_load] = false
   c[:session_id_key] = '_chef_server_session_id'
   c[:session_secret_key]  = Chef::Config.manage_secret_key
   c[:session_store] = 'cookie'
