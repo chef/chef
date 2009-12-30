@@ -245,11 +245,5 @@ class Chef
       end
     end
     
-    private
-    
-      def safe_name(name)
-        name.gsub(/\./, "_")
-      end
-
   end
 end
