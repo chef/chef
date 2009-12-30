@@ -49,7 +49,10 @@ class Chef
         else
           Chef::Log.debug("Doing a remote recursive directory transfer for #{@new_resource}")
           r = Chef::REST.new(Chef::Config[:remotefile_url])
-          files_to_transfer = r.get_rest(generate_url(@new_resource.source, "files", { :recursive => "true" }))
+          #   how remote_file rollz:
+          # url = generate_url(source, "files", :checksum => current_checksum)
+          # r.get_rest(url, true).open
+          puts files_to_transfer = r.get_rest(generate_url(@new_resource.source, "files", { :recursive => "true" }))
         end        
 
         files_to_transfer.each do |remote_file_source|
@@ -66,8 +69,9 @@ class Chef
         end
 
         remote_file = Chef::Resource::RemoteFile.new(full_path, nil, @node)
-        remote_file.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name           
+        remote_file.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
         remote_file.source(::File.join(@new_resource.source, remote_file_source))
+        #remote_file.source(remote_file_source)
         remote_file.mode(@new_resource.files_mode) if @new_resource.files_mode
         remote_file.group(@new_resource.files_group) if @new_resource.files_group
         remote_file.owner(@new_resource.files_owner) if @new_resource.files_owner

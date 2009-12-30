@@ -65,7 +65,11 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
     if params[:id]
       case params[:segment]
       when "templates","files"
-        serve_segment_preferred(cookbook, params[:segment], cookbook_files[params[:segment].to_sym])
+        if params[:recursive]
+          serve_directory_preferred(cookbook, params[:segment], cookbook_files[params[:segment].to_sym])
+        else
+          serve_segment_preferred(cookbook, params[:segment], cookbook_files[params[:segment].to_sym])
+        end
       else
         serve_segment_file(cookbook, params[:segment], cookbook_files[params[:segment].to_sym])
       end
@@ -78,12 +82,6 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
 
     to_send = nil
 
-    preferences = [
-      "host-#{params[:fqdn]}",
-      "#{params[:platform]}-#{params[:version]}",
-      "#{params[:platform]}",
-      "default"
-    ]
 
     preferences.each do |pref|
       unless to_send
@@ -91,7 +89,7 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
       end
     end
 
-    raise NotFound, "Cannot find a suitable #{segment} file!" unless to_send 
+    raise NotFound, "Cannot find a suitable #{segment} file for #{params[:id]}!" unless to_send 
     current_checksum = to_send[:checksum] 
     Chef::Log.debug("#{to_send[:name]} Client Checksum: #{params[:checksum]}, Server Checksum: #{current_checksum}") 
     if current_checksum == params[:checksum]
@@ -107,6 +105,25 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
       raise NotFound, "Cannot find the real file for #{to_send[:specificity]} #{to_send[:name]} - this is a 42 error (shouldn't ever happen)" unless file_name
       send_file(file_name)
     end
+  end
+  
+  def serve_directory_preferred(cookbook, segment, files)
+    preferred_dir_contents = []
+    preferences.each do |preference|
+      preferred_dir_contents = files.select { |file| file[:name] =~ /^#{params[:id]}/ && file[:specificity] == preference  }
+      break unless preferred_dir_contents.empty?
+    end
+    
+    raise NotFound, "Cannot find a suitable directory for #{params[:id]}" if preferred_dir_contents.empty?
+    
+    display preferred_dir_contents.map { |file| file[:name] }
+  end
+  
+  def preferences
+    ["host-#{params[:fqdn]}",
+    "#{params[:platform]}-#{params[:version]}",
+    "#{params[:platform]}",
+    "default"]
   end
 
   def serve_segment_file(cookbook, segment, files)
