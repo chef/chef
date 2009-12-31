@@ -25,7 +25,7 @@ describe Chef::Runner do
     @node.platform "mac_os_x"
     @node.platform_version "10.5.1"
     @collection = Chef::ResourceCollection.new()
-    @collection << Chef::Resource::Cat.new("loulou", @collection)
+    @collection << Chef::Resource::Cat.new("loulou1", @collection)
     Chef::Platform.set(
       :resource => :cat,
       :provider => Chef::Provider::SnakeOil
@@ -155,17 +155,24 @@ describe Chef::Runner do
     @runner.converge
   end
   
-  it "should collapse delayed actions on changed resources" do
+  it "should collapse delayed actions on changed resources and execute them in the order they were encountered" do
     Chef::Platform.stub!(:find_provider_for_node).and_return(Chef::Provider::SnakeOil)
     provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
-    Chef::Provider::SnakeOil.stub!(:new).and_return(provider)   
+    Chef::Provider::SnakeOil.stub!(:new).and_return(provider)
     cat = Chef::Resource::Cat.new("peanut", @collection)
     cat.notifies :buy, @collection[0], :delayed
     cat.updated = true
     @collection << cat
     @collection << cat
-    provider.should_receive(:action_buy).once.and_return(true)
+    cat2 = Chef::Resource::Cat.new("snickers", @collection)
+    cat2.notifies :pur, @collection[1], :delayed
+    cat2.notifies :pur, @collection[1], :delayed
+    cat2.updated = true
+    @collection << cat2
+    provider.should_receive(:action_buy).once.ordered
+    provider.should_receive(:action_pur).once.ordered
     @runner.converge
   end
+  
 
 end
