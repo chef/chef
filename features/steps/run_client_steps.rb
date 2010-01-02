@@ -153,3 +153,7 @@ Then /^'(.+)' should appear on '(.+)' '(.+)' times$/ do |to_match, which, count|
   end
   seen_count.should == count.to_i
 end
+
+Then /^I inspect the contents of the features tmpdir$/ do
+  puts `ls -halpR #{tmpdir}`
+end

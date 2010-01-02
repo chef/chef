@@ -71,7 +71,6 @@ class Chef
         remote_file = Chef::Resource::RemoteFile.new(full_path, nil, @node)
         remote_file.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
         remote_file.source(::File.join(@new_resource.source, remote_file_source))
-        #remote_file.source(remote_file_source)
         remote_file.mode(@new_resource.files_mode) if @new_resource.files_mode
         remote_file.group(@new_resource.files_group) if @new_resource.files_group
         remote_file.owner(@new_resource.files_owner) if @new_resource.files_owner

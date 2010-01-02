@@ -82,10 +82,15 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
 
     to_send = nil
 
-
+    
     preferences.each do |pref|
       unless to_send
-        to_send = files.detect { |file| Chef::Log.debug("#{pref.inspect} #{file.inspect}"); file[:name] == params[:id] && file[:specificity] == pref }
+        Chef::Log.debug("Looking for a file with name `#{params[:id]}' and specificity #{pref}")
+        to_send = files.detect do |file| 
+          Chef::Log.debug("#{pref.inspect} #{file.inspect}")
+          file[:name] == params[:id] && file[:specificity] == pref
+          
+        end
       end
     end
 
@@ -116,7 +121,7 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
     
     raise NotFound, "Cannot find a suitable directory for #{params[:id]}" if preferred_dir_contents.empty?
     
-    display preferred_dir_contents.map { |file| file[:name] }
+    display preferred_dir_contents.map { |file| file[:name].sub(/^#{params[:id]}/, '') }
   end
   
   def preferences
