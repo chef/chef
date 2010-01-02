@@ -59,9 +59,9 @@ class Chef
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
 
+          # Get running/stopped state
           # We do not support searching for a service via ps when using upstart since status is a native
           # upstart function. We will however support status_command in case someone wants to do something special.
-
           if @new_resource.status_command
             Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
 
@@ -81,6 +81,18 @@ class Chef
             rescue Chef::Exceptions::Exec
               @current_resource.running false
               nil
+            end
+          end
+
+          # Get enabled/disabled state
+          if ::File.exists?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}",'r') do |file|
+              while line = file.gets
+                case line
+                when /^starts on/
+                  @current_resource.enabled true
+                end
+              end
             end
           end
         end
@@ -130,17 +142,21 @@ class Chef
           end
         end
 
+        # https://bugs.launchpad.net/upstart/+bug/94065
+
         def enable_service
           Chef::Log.warn("#{@new_resource}: upstart lacks inherent support for enabling services, editing job config file")
           conf = Chef::Util::FileEdit.new("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-          conf.search_file_replace_line(/start on/, "start on filesystem")
+          conf.search_file_replace(/^#start on/, "start on")
+          conf.search_file_replace(/^#stop on/, "start on")
           conf.write_file
         end
 
         def disable_service
           Chef::Log.warn("#{@new_resource}: upstart lacks inherent support for disabling services, editing job config file")
           conf = Chef::Util::FileEdit.new("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-          conf.search_file_replace_line(/stop on/, "stop on runlevel [06]")
+          conf.search_file_replace(/^start on/, "#start on")
+          conf.search_file_replace(/^stop on/, "#start on")
           conf.write_file
         end
 
