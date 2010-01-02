@@ -49,7 +49,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
 
             begin
-              if run_command(:command => @new_resource.status_command) == 0
+              if run_command_with_systems_locale(:command => @new_resource.status_command) == 0
                 @current_resource.running true
               end
             rescue Chef::Exceptions::Exec
@@ -58,7 +58,7 @@ class Chef
             end
           else
             begin
-              if run_command(:command => "/sbin/status #{@current_resource.service_name}") == 0
+              if run_command_with_systems_locale(:command => "/sbin/status #{@current_resource.service_name}") == 0
                 @current_resource.running true
               end
             rescue Chef::Exceptions::Exec
@@ -77,7 +77,7 @@ class Chef
             if @new_resource.start_command
               super
             else
-              run_command(:command => "/sbin/start #{@new_resource.service_name}")
+              run_command_with_systems_locale(:command => "/sbin/start #{@new_resource.service_name}")
             end
           end
         end
@@ -91,7 +91,7 @@ class Chef
             if @new_resource.stop_command
               super
             else
-              run_command(:command => "/sbin/stop #{@new_resource.service_name}")
+              run_command_with_systems_locale(:command => "/sbin/stop #{@new_resource.service_name}")
             end
           end
         end
@@ -100,7 +100,7 @@ class Chef
           if @new_resource.restart_command
             super
           else
-            run_command(:command => "/sbin/restart #{@new_resource.service_name}")
+            run_command_with_systems_locale(:command => "/sbin/restart #{@new_resource.service_name}")
           end
         end
 
@@ -109,7 +109,7 @@ class Chef
             super
           else
             # upstart >= 0.6.3-4 supports reload (HUP)
-            run_command(:command => "/sbin/reload #{@new_resource.service_name}")
+            run_command_with_systems_locale(:command => "/sbin/reload #{@new_resource.service_name}")
           end
         end
       end
