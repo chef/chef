@@ -19,7 +19,7 @@
 require 'chef/provider/service'
 require 'chef/provider/service/simple'
 require 'chef/mixin/command'
-require 'chef/utils/file_edit'
+require 'chef/util/file_edit'
 
 class Chef
   class Provider
