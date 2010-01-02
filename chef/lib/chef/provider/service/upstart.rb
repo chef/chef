@@ -19,6 +19,7 @@
 require 'chef/provider/service'
 require 'chef/provider/service/simple'
 require 'chef/mixin/command'
+require 'chef/utils/file_edit'
 
 class Chef
   class Provider
@@ -36,6 +37,22 @@ class Chef
 
         def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
           super(node, new_resource, collection, definitions, cookbook_loader)
+
+          platform, version = Chef::Platform.find_platform_and_version(node)
+          case platform
+          when "ubuntu"
+            case version
+            when /8.04/,/8.10/,/9.04/
+              @upstart_job_dir = "/etc/event.d"
+              @upstart_conf_suffix = ""
+            else
+              @upstart_job_dir = "/etc/init"
+              @upstart_conf_suffix = ".conf"
+            end
+          else
+            @upstart_job_dir = "/etc/init"
+            @upstart_conf_suffix = ".conf"
+          end
         end
 
         def load_current_resource
@@ -58,7 +75,7 @@ class Chef
             end
           else
             begin
-              if run_command_with_systems_locale(:command => "/sbin/status #{@current_resource.service_name}") == 0
+              if upstart_state == "running"
                 @current_resource.running true
               end
             rescue Chef::Exceptions::Exec
@@ -112,6 +129,34 @@ class Chef
             run_command_with_systems_locale(:command => "/sbin/reload #{@new_resource.service_name}")
           end
         end
+
+        def enable_service
+          Chef::Log.warn("#{@new_resource}: upstart lacks inherent support for enabling services, editing job config file")
+          conf = Chef::Util::FileEdit.new("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+          conf.search_file_replace_line(/start on/, "start on filesystem")
+          conf.write_file
+        end
+
+        def disable_service
+          Chef::Log.warn("#{@new_resource}: upstart lacks inherent support for disabling services, editing job config file")
+          conf = Chef::Util::FileEdit.new("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+          conf.search_file_replace_line(/stop on/, "stop on runlevel [06]")
+          conf.write_file
+        end
+
+        def upstart_state
+          command = "/sbin/status #{@new_resource.service_name}"
+          status = popen4(command) do |pid, stdin, stdout, stderr|
+            stdout.each do |line|
+              # rsyslog stop/waiting
+              # service goal/state
+              line =~ /\w+ (\w+)\/(\w+)/
+              data = Regexp.last_match
+              return data[2]
+            end
+          end
+        end
+
       end
     end
   end
