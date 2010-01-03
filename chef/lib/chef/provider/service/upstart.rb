@@ -84,16 +84,26 @@ class Chef
             end
           end
 
-          # Get enabled/disabled state
+          # Get enabled/disabled state by reading job configuration file
           if ::File.exists?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+            Chef::Log.debug("#{@new_resource}: found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}",'r') do |file|
               while line = file.gets
                 case line
-                when /^starts on/
+                when /^start on/
+                  Chef::Log.debug("#{@new_resource}: enabled: #{line.chomp}")
                   @current_resource.enabled true
+                  break
+                when /^#start on/
+                  Chef::Log.debug("#{@new_resource}: disabled: #{line.chomp}")
+                  @current_resource.enabled false
+                  break
                 end
               end
             end
+          else
+            Chef::Log.debug("#{@new_resource}: did not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+            @current_resource.enabled false
           end
         end
 
@@ -148,7 +158,6 @@ class Chef
           Chef::Log.warn("#{@new_resource}: upstart lacks inherent support for enabling services, editing job config file")
           conf = Chef::Util::FileEdit.new("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
           conf.search_file_replace(/^#start on/, "start on")
-          conf.search_file_replace(/^#stop on/, "start on")
           conf.write_file
         end
 
@@ -156,7 +165,6 @@ class Chef
           Chef::Log.warn("#{@new_resource}: upstart lacks inherent support for disabling services, editing job config file")
           conf = Chef::Util::FileEdit.new("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
           conf.search_file_replace(/^start on/, "#start on")
-          conf.search_file_replace(/^stop on/, "#start on")
           conf.write_file
         end
 
