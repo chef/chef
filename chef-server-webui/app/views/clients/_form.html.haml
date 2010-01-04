@@ -14,9 +14,8 @@
         
     %div.group.form
       %label.label Admin
-      = text_field :id => "client_admin", :name => "admin", :class => "text_field", :value => @client.admin
-      %span.description Whether or not the Client is an admin
-      
+      = check_box :id => "client_admin", :name => "admin", :value => "true", :label => "Whether or not the Client is an admin", :checked => @client.admin
+
     = form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do
       %div.group
         .actions-bar
