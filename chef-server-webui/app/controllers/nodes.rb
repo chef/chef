@@ -24,7 +24,6 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
   
   provides :html
   
-  before :fix_up_node_id
   before :login_required
   before :authorized_node, :only => [ :update, :destroy ]
   

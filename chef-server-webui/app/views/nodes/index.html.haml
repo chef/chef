@@ -16,10 +16,10 @@
           - else
             - @node_list.each do |node, node_url|
               %tr{:class => even ? "even": "odd" }
-                %td{:colspan => 2}= link_to node, slice_url(:node, { :id => escape_node_id(node) } )
+                %td{:colspan => 2}= link_to node, slice_url(:node, { :id => node } )
                 %td
-                  = link_to('Edit', slice_url(:edit_node, escape_node_id(node))) 
+                  = link_to('Edit', slice_url(:edit_node, node)) 
                   |
-                  = link_to('Delete', slice_url(:node, escape_node_id(node)), :method => "delete", :confirm => "Really delete Node #{node}?  There is no undo.")
+                  = link_to('Delete', slice_url(:node, node), :method => "delete", :confirm => "Really delete Node #{node}?  There is no undo.")
                 - even ? even = false: even = true
 

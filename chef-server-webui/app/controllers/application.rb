@@ -50,19 +50,6 @@ class ChefServerWebui::Application < Merb::Controller
     protocol + "://" + host + slice_url(slice_name,*args)
   end
   
-  def fix_up_node_id
-    if params.has_key?(:id)
-      params[:id].gsub!(/_/, '.')
-    end
-  end
-  
-  def escape_node_id(arg=nil)
-    unless arg
-      arg = params[:id] if params.has_key?(:id)
-    end
-    arg.gsub(/\./, '_')
-  end
-  
   # Check if the user is logged in and if the user still exists
   def login_required
    if session[:user]

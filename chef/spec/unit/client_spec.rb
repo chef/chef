@@ -90,7 +90,7 @@ end
 describe Chef::Client, "run_solo" do
   before(:each) do
     @client = Chef::Client.new
-    [:run_ohai, :safe_name, :node_name, :build_node].each do |method|
+    [:run_ohai, :node_name, :build_node].each do |method|
       @client.stub!(method).and_return(true)
     end
     Chef::Compile.stub!(:new).and_return(mock("Chef::Compile", :null_object => true))
@@ -196,7 +196,6 @@ describe Chef::Client, "register" do
     @mock_rest.stub!(:register).and_return(true)
     Chef::REST.stub!(:new).and_return(@mock_rest)
     @chef_client = Chef::Client.new
-    @chef_client.safe_name = "testnode"
     @chef_client.node_name = "testnode"
     @chef_client.stub!(:determine_node_name).and_return(true)
     File.stub!(:exists?).and_return(false)

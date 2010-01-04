@@ -65,7 +65,8 @@ if defined?(Merb::Plugins)
     #   to avoid potential conflicts with global named routes.
     def self.setup_router(scope)
           
-      scope.resources :nodes
+      scope.resources :nodes, :id => /[^\/]+/
+      scope.resources :clients, :id => /[^\/]+/
       scope.resources :roles  
       
       scope.match("/status").to(:controller => "status", :action => "index").name(:status)

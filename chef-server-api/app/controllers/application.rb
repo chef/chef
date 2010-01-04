@@ -54,19 +54,6 @@ class ChefServerApi::Application < Merb::Controller
     protocol + "://" + host + slice_url(slice_name, *args)
   end
   
-  def fix_up_node_id
-    if params.has_key?(:id)
-      params[:id].gsub!(/_/, '.')
-    end
-  end
-  
-  def escape_node_id(arg=nil)
-    unless arg
-      arg = params[:id] if params.has_key?(:id)
-    end
-    arg.gsub(/\./, '_')
-  end
-
   def authenticate_every
     authenticator = Mixlib::Authentication::SignatureVerification.new
 

@@ -133,13 +133,12 @@ module Merb
       
       #for showing search result
       def determine_name(type, object)
-        if type == :node
-          object.name.gsub(/\./, '_')
-        elsif type == :role
+        case type
+        when :node, :role
           object.name
         else
-          params[:id] 
-        end 
+          params[:id]
+        end
       end 
       
       def get_databag_item_name(uri)

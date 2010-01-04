@@ -30,10 +30,6 @@ module Merb
         html
       end
 
-      def node_escape(node)
-        node.gsub(/\./, '_')
-      end
-                
     end
   end
 end

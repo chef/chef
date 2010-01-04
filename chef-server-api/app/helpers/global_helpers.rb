@@ -20,11 +20,6 @@ module Merb
   module ChefServerApi
 
     module GlobalHelpers
-      # helpers defined here available to all views.
-      def node_escape(node)
-        node.gsub(/\./, '_')
-      end
-                
     end
   end
 end
