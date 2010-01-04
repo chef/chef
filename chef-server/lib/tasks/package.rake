@@ -18,7 +18,7 @@ spec = Gem::Specification.new do |s|
     ruby-openid json coderay}.each { |gem| s.add_dependency gem }
   
   s.bindir       = "bin"
-  s.executables  = %w( chef-server chef-indexer chef-server-webui )  
+  s.executables  = %w( chef-server chef-server-webui )  
   s.files = %w(LICENSE README.rdoc config.ru config-webui.ru) + Dir.glob("{app,bin,config,lib,public}/**/*")
 end
 
