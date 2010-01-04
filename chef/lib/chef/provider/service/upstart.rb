@@ -97,6 +97,8 @@ class Chef
               end
             end
           end
+
+          @current_resource
         end
 
         def start_service
