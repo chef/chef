@@ -45,7 +45,7 @@ client_run_interval: --tags client_run_interval --format pretty -r features/step
 recipe_inclusion: --tags recipe_inclusion --format pretty -r features/steps -r features/support features 
 attribute_inclusion: --tags @attribute_inclusion --format pretty -r features/steps -r features/support features 
 cookbooks: --tags @cookbooks --format pretty -r features/steps -r features/support features 
-provider_remote_file: --tags provider,remote_file --format pretty -r features/steps -r features/support features 
+provider_remote_directory: --tags @remote_directory --format pretty -r features/steps -r features/support features 
 provider_git: --tags provider,git --format pretty -r features/steps -r features/support features 
 provider_template: --tags template --format pretty -r features/steps -r features/support features
 provider_package_macports: --tags macports --format pretty -r features/steps -r features/support features 

@@ -419,6 +419,10 @@ namespace :features do
       t.profile = "provider_template"
     end
     
+    Cucumber::Rake::Task.new(:remote_directory) do |t|
+      t.profile = "provider_remote_directory"
+    end
+    
     Cucumber::Rake::Task.new(:git) do |t|
       t.profile = "provider_git"
     end

@@ -19,6 +19,14 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Platform do
+  before :all do
+    @original_platform_map = Chef::Platform.platforms
+  end
+  
+  after :all do ||
+    Chef::Platform.platforms = @original_platform_map
+  end
+  
   before(:each) do
     Chef::Platform.platforms = {
       :darwin => {
