@@ -107,6 +107,8 @@ class Chef
             Chef::Log.debug("#{@new_resource}: did not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             @current_resource.enabled false
           end
+
+          @current_resource
         end
 
         def start_service
