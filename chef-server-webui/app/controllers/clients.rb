@@ -80,7 +80,7 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
         @client.create_keys
         @private_key = @client.private_key
       end 
-      @client.admin(str_to_bool(params[:admin])) unless params[:admin].nil?
+      params[:admin] ? @client.admin(true) : @client.admin(false)
       @client.save
       @_message = @private_key.nil? ? { :notice => "Updated Client" } : { :notice => "Created Client #{@client.name}. Please copy the following private key as the client's validation key." }
       render :show
