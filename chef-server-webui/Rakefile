@@ -33,8 +33,6 @@ spec = Gem::Specification.new do |s|
    "json",
    "syntax",].each { |g| s.add_dependency g}
   
-  s.bindir       = "bin"
-  s.executables  = %w( chef-server-webui )
   s.require_path = 'lib'
   s.files = %w(LICENSE README.rdoc Rakefile config.ru) + Dir.glob("{bin,config,lib,spec,app,public,stubs}/**/*")
 end
