@@ -53,6 +53,9 @@ end
 unless %w[-a --adapter -i --irb-console -r --script-runner].any? { |o| ARGV.index(o) }
   ARGV.push *%w[-a thin]
 end
+unless %w[-p --port].any? { |o| ARGV.index(o) }
+  ARGV.push *%w[-p 4040]
+end
 ARGV.push *[ "-I", File.join(__DIR__, "config", "init-webui.rb") ]
 ARGV.push *[ "-m", __DIR__]
 
