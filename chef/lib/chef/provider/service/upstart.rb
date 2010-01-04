@@ -77,6 +77,8 @@ class Chef
             begin
               if upstart_state == "running"
                 @current_resource.running true
+              else
+                @current_resource.running false
               end
             rescue Chef::Exceptions::Exec
               @current_resource.running false
