@@ -82,14 +82,10 @@ describe Chef::Provider::Service::Upstart, "load_current_resource" do
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
 
-    ::File.stub!(:exists?).and_return(false)
-    ::File.stub!(:exists?).with("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}").and_return(true)
-    @lines = mock("lines")
-    @lines.stub!(:each).and_yield("start on filesystem")
-    ::File.stub!(:open).and_return(@lines)
-
+    ::File.stub!(:exists?).and_return(true)
+    ::File.stub!(:open).and_return(true)
   end
-  
+
   it "should create a current resource with the name of the new resource" do
     Chef::Resource::Service.should_receive(:new).and_return(@current_resource)
     @provider.load_current_resource
@@ -121,6 +117,26 @@ describe Chef::Provider::Service::Upstart, "load_current_resource" do
 
   it "should set running to false if it catches a Chef::Exceptions::Exec" do
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_raise(Chef::Exceptions::Exec)
+    @current_resource.should_receive(:running).with(false)
+    @provider.load_current_resource
+  end
+
+  it "should set enabled to true when it finds 'starts on'" do
+    @lines = mock("start on filesystem", :gets => "start on filesystem")
+    ::File.stub!(:open).and_yield(@lines)
+    @current_resource.should_receive(:running).with(false)
+    @provider.load_current_resource
+  end
+  
+  it "should set enabled to false when it finds '#starts on'" do
+    @lines = mock("start on filesystem", :gets => "#start on filesystem")
+    ::File.stub!(:open).and_yield(@lines)
+    @current_resource.should_receive(:running).with(false)
+    @provider.load_current_resource
+  end
+  
+  it "should assume disable when no job configuration file is found" do
+    ::File.stub!(:exists?).and_return(false)
     @current_resource.should_receive(:running).with(false)
     @provider.load_current_resource
   end
