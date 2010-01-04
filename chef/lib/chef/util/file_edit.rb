@@ -71,19 +71,17 @@ class Chef
 			def write_file
 				
 				# file_edited is false when there was no match in the whole file and thus no contents have changed.
-				if file_edited
-					backup_pathname = original_pathname + ".old"
-					File.copy(original_pathname, backup_pathname)
-					Tempfile.open("w") do |newfile|
-						contents.each do |line|
-							newfile.puts(line)
-						end
-						newfile.flush
-						FileUtils.mv(newfile.path, original_pathname)
-					end
-				end
-				self.file_edited = false
-
+        if file_edited
+          backup_pathname = original_pathname + ".old"
+          FileUtils.cp(original_pathname, backup_pathname, :preserve => true)
+          File.open(original_pathname, "w") do |newfile|
+            contents.each do |line|
+              newfile.puts(line)
+            end
+            newfile.flush
+          end
+        end
+        self.file_edited = false
 			end
 			
 			private
