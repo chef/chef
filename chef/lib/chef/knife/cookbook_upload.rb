@@ -129,10 +129,16 @@ class Chef
         begin
           cb = rest.get_rest("cookbooks/#{cookbook_name}")
           cookbook_uploaded = true
-        rescue Net::HTTPServerException
-          cookbook_uploaded = false
+        rescue Net::HTTPServerException => e
+          case e.response.code
+          when "404"
+            cookbook_uploaded = false
+          when "401"
+            Chef::Log.fatal "Failed to fetch remote cookbook '#{cookbook_name}' due to authentication failure (#{e}), check your client configuration (username, key)"
+            exit 18
+          end
         end
-        Chef::Log.info("Uploading #{cookbook_name} (#{cookbook_uploaded ? 'new version' : 'first time'})")
+
         if cookbook_uploaded
           Chef::StreamingCookbookUploader.put(
             "#{Chef::Config[:chef_server_url]}/cookbooks/#{cookbook_name}/_content", 

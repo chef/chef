@@ -266,8 +266,9 @@ class Chef
         raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       end
       
-      
-      if res.kind_of?(Net::HTTPSuccess)
+     
+      case res
+      when Net::HTTPSuccess
         if res['set-cookie']
           @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
         end
@@ -281,7 +282,7 @@ class Chef
             res.body
           end
         end
-      elsif res.kind_of?(Net::HTTPFound) or res.kind_of?(Net::HTTPMovedPermanently)
+      when Net::HTTPFound, Net::HTTPMovedPermanently
         if res['set-cookie']
           @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
         end
