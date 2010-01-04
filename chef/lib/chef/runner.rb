@@ -49,6 +49,7 @@ class Chef
     
     def build_provider(resource)
       provider_klass = resource.provider
+      provider_klass ||= Chef::Provider.const_get(resource.class.to_s.split('::').last) rescue nil
       provider_klass ||= Chef::Platform.find_provider_for_node(@node, resource)
       Chef::Log.debug("#{resource} using #{provider_klass.to_s}")
       provider = provider_klass.new(@node, resource, @collection, @definitions, @cookbook_loader)

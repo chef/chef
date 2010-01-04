@@ -9,15 +9,16 @@ Feature: Light-weight resources and providers
       And 'stdout' should have '<message>'
 
     Examples:
-      | recipe                                    | message                          |
-      | default_everything                        | Default everything               |
-      | non_default_provider                      | Non-default provider             |
-      | non_default_resource                      | Non-default resource             |
-      | overridden_resource_initialize            | Overridden initialize            |
-      | overridden_provider_load_current_resource | Overridden load_current_resource |
-      | provider_is_a_string                      | Provider is a string             |
-      | provider_is_a_symbol                      | Provider is a symbol             |
-      | provider_is_a_class                       | Provider is a class              |
+      | recipe                                    | message                                                                          |
+      | default_everything                        | Default everything                                                               |
+      | non_default_provider                      | Non-default provider                                                             |
+      | non_default_resource                      | Non-default resource                                                             |
+      | overridden_resource_initialize            | Overridden initialize                                                            |
+      | overridden_provider_load_current_resource | Overridden load_current_resource                                                 |
+      | provider_is_a_string                      | Provider is a string                                                             |
+      | provider_is_a_symbol                      | Provider is a symbol                                                             |
+      | provider_is_a_class                       | Provider is a class                                                              |
+      | provider_is_omitted                       | P=Chef::Provider::LwrpProviderIsOmitted, R=Chef::Resource::LwrpProviderIsOmitted |
 
   @solo
   Scenario: Chef solo properly handles providers that invoke resources in their action definitions
@@ -35,15 +36,16 @@ Feature: Light-weight resources and providers
       And 'stdout' should have '<message>'
 
     Examples:
-      | recipe                                    | message                          |
-      | default_everything                        | Default everything               |
-      | non_default_provider                      | Non-default provider             |
-      | non_default_resource                      | Non-default resource             |
-      | overridden_resource_initialize            | Overridden initialize            |
-      | overridden_provider_load_current_resource | Overridden load_current_resource |
-      | provider_is_a_string                      | Provider is a string             |
-      | provider_is_a_symbol                      | Provider is a symbol             |
-      | provider_is_a_class                       | Provider is a class              |
+      | recipe                                    | message                                                                          |
+      | default_everything                        | Default everything                                                               |
+      | non_default_provider                      | Non-default provider                                                             |
+      | non_default_resource                      | Non-default resource                                                             |
+      | overridden_resource_initialize            | Overridden initialize                                                            |
+      | overridden_provider_load_current_resource | Overridden load_current_resource                                                 |
+      | provider_is_a_string                      | Provider is a string                                                             |
+      | provider_is_a_symbol                      | Provider is a symbol                                                             |
+      | provider_is_a_class                       | Provider is a class                                                              |
+      | provider_is_omitted                       | P=Chef::Provider::LwrpProviderIsOmitted, R=Chef::Resource::LwrpProviderIsOmitted |
 
   @client @api
   Scenario: Chef-client properly handles providers that invoke resources in their action definitions
