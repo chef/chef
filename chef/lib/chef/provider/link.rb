@@ -114,7 +114,7 @@ class Chef
       end
       
       def action_create
-        if @current_resource.to != @new_resource.to
+        if @current_resource.to != ::File.expand_path(@new_resource.to, @new_resource.target_file)
           Chef::Log.info("Creating a #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file} for #{@new_resource}")
           if @new_resource.link_type == :symbolic
             run_command(

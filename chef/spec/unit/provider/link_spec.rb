@@ -248,6 +248,18 @@ describe Chef::Provider::Link, "action_create" do
       )
     )
  end
+
+  describe "when the source for the link contains expandable pieces" do
+    before do
+      @new_resource.stub!(:target_file).and_return("/etc/chef")
+      @new_resource.stub!(:to).and_return("../foo")
+    end
+
+    it "should expand the path" do
+      ::File.should_receive(:expand_path).with("../foo", "/etc/chef").and_return("/etc/foo")
+      @provider.action_create
+    end
+  end
   
   describe "when the source for the link doesn't match" do
     before do
