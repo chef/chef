@@ -26,7 +26,11 @@ require "irb"
 require "irb/completion"
 
 # TODO::EVIL
-require "#{File.dirname(__FILE__)}/../lib/chef"
+begin
+  require "#{File.dirname(__FILE__)}/../lib/chef"
+rescue LoadError
+  # the bin got moved, e.g., by rubygems
+end
 require "chef/shef"
 
 # dirty hack to make IRB initialize shef
