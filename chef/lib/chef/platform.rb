@@ -148,23 +148,6 @@ class Chef
         provider_map
       end
 
-      def find_provider(platform, version, resource_type)
-        pmap = Chef::Platform.find(platform, version)
-        rtkey = resource_type
-        if resource_type.kind_of?(Chef::Resource)
-          return resource_type.provider if resource_type.provider
-          rtkey = resource_type.resource_name.to_sym
-        end
-        if pmap.has_key?(rtkey)
-          pmap[rtkey]
-        else
-          raise(
-            ArgumentError,
-            "Cannot find a provider for #{resource_type} on #{platform} version #{version}"
-          )
-        end
-      end
-
       def find_platform_and_version(node)
         platform = nil
         version = nil
@@ -261,6 +244,41 @@ class Chef
           end
         end
       end
+
+      def find_provider(platform, version, resource_type)
+        pmap = Chef::Platform.find(platform, version)
+        provider_klass = explicit_provider(platform, version, resource_type) || 
+                         platform_provider(platform, version, resource_type) || 
+                         resource_matching_provider(platform, version, resource_type)
+
+        raise ArgumentError, "Cannot find a provider for #{resource_type} on #{platform} version #{version}" if provider_klass.nil?
+
+        provider_klass
+      end
+
+      private
+
+        def explicit_provider(platform, version, resource_type)
+          resource_type.kind_of?(Chef::Resource) ? resource_type.provider : nil
+        end
+
+        def platform_provider(platform, version, resource_type)
+          pmap = Chef::Platform.find(platform, version)
+          rtkey = resource_type.kind_of?(Chef::Resource) ? resource_type.resource_name.to_sym : resource_type
+          pmap.has_key?(rtkey) ? pmap[rtkey] : nil
+        end
+
+        def resource_matching_provider(platform, version, resource_type)
+          if resource_type.kind_of?(Chef::Resource)
+            begin
+              Chef::Provider.const_get(resource_type.class.to_s.split('::').last) 
+            rescue NameError 
+              nil
+            end
+          else
+            nil
+          end
+        end
 
     end
 

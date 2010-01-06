@@ -106,6 +106,27 @@ describe Chef::Platform do
     node.platform_version("9.2.2")
     Chef::Platform.find_provider_for_node(node, kitty).should eql("nice")
   end
+
+  it "should prefer an explicit provider" do
+    kitty = Chef::Resource::Cat.new("loulou")    
+    kitty.stub!(:provider).and_return(Chef::Provider::File)
+    node = Chef::Node.new
+    node.name("Intel")
+    node.platform("mac_os_x")
+    node.platform_version("9.2.2")
+    Chef::Platform.find_provider_for_node(node, kitty).should eql(Chef::Provider::File)
+  end
+
+  it "should look up a provider based on the resource name if nothing else matches" do
+    kitty = Chef::Resource::Cat.new("loulou")
+    class Chef::Provider::Cat < Chef::Provider; end
+    Chef::Platform.platforms[:default].delete(:cat)
+    node = Chef::Node.new
+    node.name("Intel")
+    node.platform("mac_os")
+    node.platform_version("8.5")
+    Chef::Platform.find_provider_for_node(node, kitty).should eql(Chef::Provider::Cat)
+  end
   
   it "should return a provider object given the node and a Chef::Resource object" do
     file = Chef::Resource::File.new("whateva")

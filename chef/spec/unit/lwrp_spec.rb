@@ -64,6 +64,8 @@ describe Chef::Provider do
 
   it "should insert resources embedded in the provider into the middle of the resource collection" do
     node = Chef::Node.new
+    node.platform(:ubuntu)
+    node.platform_version('8.10')
     rc = Chef::ResourceCollection.new
     
     injector = Chef::Resource::LwrpFoo.new("morpheus")
@@ -84,6 +86,8 @@ describe Chef::Provider do
   
   it "should insert embedded resources from multiple providers, including from the last position, properly into the resource collection" do
     node = Chef::Node.new
+    node.platform(:ubuntu)
+    node.platform_version('8.10')
     rc = Chef::ResourceCollection.new
     
     injector = Chef::Resource::LwrpFoo.new("morpheus")
@@ -112,6 +116,8 @@ describe Chef::Provider do
 
   it "should properly handle a new_resource reference" do
     node = Chef::Node.new
+    node.platform(:ubuntu)
+    node.platform_version('8.10')
     rc = Chef::ResourceCollection.new
     
     res = Chef::Resource::LwrpFoo.new("morpheus")
@@ -127,6 +133,8 @@ describe Chef::Provider do
 
   it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
     node = Chef::Node.new
+    node.platform(:ubuntu)
+    node.platform_version('8.10')
     rc = Chef::ResourceCollection.new
     
     res = Chef::Resource::LwrpFoo.new("morpheus")
