@@ -31,7 +31,7 @@ spec = Gem::Specification.new do |s|
    "thin",
    "haml",
    "json",
-   "syntax",].each { |g| s.add_dependency g}
+   "coderay",].each { |g| s.add_dependency g}
   
   s.require_path = 'lib'
   s.files = %w(LICENSE README.rdoc Rakefile config.ru) + Dir.glob("{bin,config,lib,spec,app,public,stubs}/**/*")
