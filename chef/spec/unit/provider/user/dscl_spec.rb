@@ -325,6 +325,8 @@ describe Chef::Provider::User::Dscl, "modify_home" do
       File.stub!(:exists?).and_return(true,false)
       Dir.stub!(:glob).and_return(["/old/home/adam/.dotfile","/old/home/adam/file"])
       FileUtils.stub!(:mv).and_return(true)
+      FileUtils.stub!(:mkdir_p).and_return(true)
+      FileUtils.stub!(:rmdir).and_return(true)
       
       File.should_receive(:exists?).and_return(true,false)
       Dir.should_receive(:glob).and_return(["/old/home/adam/.dotfile","/old/home/adam/file"])
