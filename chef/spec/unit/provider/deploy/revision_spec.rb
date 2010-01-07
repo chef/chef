@@ -34,7 +34,8 @@ describe Chef::Provider::Deploy::Revision do
   
   after do
     # Make sure we don't keep any state in our tests
-    FileUtils.rm_rf Chef::FileCache.create_cache_path('revision-deploys',false)
+    FileUtils.rspec_reset
+    FileUtils.rm_rf '/tmp/foo' if File.directory?("/tmp/foo")
   end
   
   
@@ -64,7 +65,7 @@ describe Chef::Provider::Deploy::Revision do
     end
     @provider.all_releases.should == %w{first second third fourth fifth latest}
     
-    FileUtils.stub(:rm_rf)
+    FileUtils.stub!(:rm_rf)
     @provider.cleanup!
     @provider.all_releases.should == %w{second third fourth fifth latest}
   end
