@@ -29,6 +29,19 @@ class Chef
         :long => "--repository REPO",
         :description => "The path to your chef-repo"
 
+      option :initial,
+        :short => "-i",
+        :long => "--initial",
+        :boolean => true,
+        :description => "Create an initial API Client"
+
+      def configure_chef
+        # We are just faking out the system so that you can do this without a key specified
+        Chef::Config[:node_name] = 'woot' 
+        super
+        Chef::Config[:node_name] = nil
+      end
+
       def run 
         config[:config_file] ||= ask_question("Where should I put the config file? ") 
         if File.exists?(config[:config_file]) 
@@ -44,9 +57,8 @@ class Chef
 
         chef_server = config[:chef_server_url] || ask_question("Your chef server URL? ")
         opscode_user = config[:node_name] || ask_question("Your client user name? ")
-        opscode_key = config[:client_key] || File.join(chef_config_path, 'key.pem')
-
-        chef_repo = config[:repository] || ask_question("Path to a chef repostiory (or leave blank)? ")
+        opscode_key = config[:client_key] || File.join(chef_config_path, "#{opscode_user}.pem")
+        chef_repo = config[:repository] || ask_question("Path to a chef repository (or leave blank)? ")
 
         File.open(config[:config_file], "w") do |f|
           f.puts <<EOH
@@ -63,12 +75,26 @@ EOH
           end 
         end
 
-        Chef::Log.warn("*****")
-        Chef::Log.warn("You must place your client key in:") 
-        Chef::Log.warn("  #{opscode_key}")
-        Chef::Log.warn("Before running commands with Knife!")
-        Chef::Log.warn("*****")
-        Chef::Log.warn("")
+        if config[:initial]
+          Chef::Log.warn("Creating initial API user...")
+          Chef::Config[:chef_server_url] = chef_server
+          Chef::Config[:node_name] = 'chef-webui'
+          Chef::Config[:client_key] = '/etc/chef/webui.pem'
+          client_create = Chef::Knife::ClientCreate.new
+          client_create.name_args = [ opscode_user ]
+          client_create.config[:admin] = true
+          client_create.config[:file] = opscode_key
+          client_create.config[:yes] = true
+          client_create.config[:no_editor] = true
+          client_create.run
+        else
+          Chef::Log.warn("*****")
+          Chef::Log.warn("You must place your client key in:")
+          Chef::Log.warn("  #{opscode_key}")
+          Chef::Log.warn("Before running commands with Knife!")
+          Chef::Log.warn("*****")
+        end
+
         Chef::Log.warn("Configuration file written to #{config[:config_file]}")
       end
 
