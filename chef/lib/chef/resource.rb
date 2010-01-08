@@ -33,7 +33,7 @@ class Chef
     include Chef::Mixin::ConvertToClassName
     
     attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name, :enclosing_provider
-    attr_reader :resource_name, :source_line, :node
+    attr_reader :resource_name, :source_line, :node, :not_if_args, :only_if_args
     
     def initialize(name, collection=nil, node=nil)
       @name = name
@@ -54,7 +54,9 @@ class Chef
       @supports = {}
       @ignore_failure = false
       @not_if = nil
+      @not_if_args = {}
       @only_if = nil
+      @only_if_args = {}
       sline = caller(4).shift
       if sline
         @source_line = sline.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
@@ -219,20 +221,24 @@ class Chef
       instance_vars
     end
     
-    def only_if(arg=nil, &blk)
+    def only_if(arg=nil, args = {}, &blk)
       if Kernel.block_given?
         @only_if = blk
+        @only_if_args = args
       else
         @only_if = arg if arg
+        @only_if_args = args if arg
       end
       @only_if
     end
     
-    def not_if(arg=nil, &blk)
+    def not_if(arg=nil, args = {}, &blk)
       if Kernel.block_given?
         @not_if = blk
+        @not_if_args = args
       else
         @not_if = arg if arg
+        @not_if_args = args if arg
       end
       @not_if
     end

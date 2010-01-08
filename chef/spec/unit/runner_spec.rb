@@ -86,18 +86,32 @@ describe Chef::Runner do
   
   it "should send a resources only_if to Chef::Mixin::Command.only_if" do
     @collection[0].should_receive(:only_if).twice.and_return(true)
-    Chef::Mixin::Command.should_receive(:only_if).with(true).and_return(false)
+    Chef::Mixin::Command.should_receive(:only_if).with(true, {}).and_return(false)
+    @runner.converge
+  end
+  
+  it "should change to the directory specified in cwd for only_if" do
+    @collection[0].should_receive(:only_if).twice.and_return("/bin/true")
+    @collection[0].should_receive(:only_if_args).and_return({:cwd => "/tmp"})
+    Chef::Mixin::Command.should_receive(:only_if).with("/bin/true", {:cwd => "/tmp"}).and_return(true)
     @runner.converge
   end
   
   it "should send a resources not_if to Chef::Mixin::Command.not_if" do
     @collection[0].should_receive(:not_if).twice.and_return(true)
-    Chef::Mixin::Command.should_receive(:not_if).with(true).and_return(false)
+    Chef::Mixin::Command.should_receive(:not_if).with(true, {}).and_return(false)
     @runner.converge
   end
   
   it "should check a resources not_if, if it is provided" do
     @collection[0].should_receive(:not_if).and_return(nil)
+    @runner.converge
+  end
+  
+  it "should change to the directory specified in cwd for not_if" do
+    @collection[0].should_receive(:not_if).twice.and_return("/bin/true")
+    @collection[0].should_receive(:not_if_args).and_return({:cwd => "/tmp"})
+    Chef::Mixin::Command.should_receive(:not_if).with("/bin/true", {:cwd => "/tmp"}).and_return(true)
     @runner.converge
   end
   

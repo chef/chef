@@ -39,14 +39,16 @@ class Chef
       # === Returns
       # true:: Returns true if the block is true, or if the command returns 0
       # false:: Returns false if the block is false, or if the command returns a non-zero exit code.
-      def only_if(command)
+      def only_if(command, args = {})
         if command.kind_of?(Proc)
-          res = command.call
-          unless res
-            return false
+          chdir_or_tmpdir(args[:cwd]) do
+            res = command.call
+            unless res
+              return false
+            end
           end
         else  
-          status = run_command(:command => command, :ignore_failure => true)
+          status = run_command({:command => command, :ignore_failure => true}.merge(args))
           if status.exitstatus != 0
             return false
           end
@@ -68,14 +70,16 @@ class Chef
       # === Returns
       # true:: Returns true if the block is false, or if the command returns a non-zero exit status.
       # false:: Returns false if the block is true, or if the command returns a 0 exit status.
-      def not_if(command)
+      def not_if(command, args = {})
         if command.kind_of?(Proc)
-          res = command.call
-          if res
-            return false
+          chdir_or_tmpdir(args[:cwd]) do
+            res = command.call
+            if res
+              return false
+            end
           end
         else  
-          status = run_command(:command => command, :ignore_failure => true)
+          status = run_command({:command => command, :ignore_failure => true}.merge(args))
           if status.exitstatus == 0
             return false
           end
@@ -385,6 +389,17 @@ class Chef
       
       module_function :popen4
 
+      def chdir_or_tmpdir(dir, &block)
+        dir ||= Dir.tmpdir
+        unless File.directory?(dir)
+          raise Chef::Exceptions::Exec, "#{dir} does not exist or is not a directory"
+        end
+        Dir.chdir(dir) do
+          block.call
+        end
+      end
+
+      module_function :chdir_or_tmpdir
     end
   end
 end
