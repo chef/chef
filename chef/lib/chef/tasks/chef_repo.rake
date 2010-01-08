@@ -24,6 +24,20 @@ require 'chef/cookbook/metadata'
 require 'tempfile'
 require 'rake'
 
+# Allow REMOTE options to be overridden on the command line
+REMOTE_HOST = ENV["REMOTE_HOST"] if ENV["REMOTE_HOST"] != nil
+REMOTE_SUDO = ENV["REMOTE_SUDO"] if ENV["REMOTE_SUDO"] != nil
+if defined? REMOTE_HOST
+  REMOTE_PATH_PREFIX = "#{REMOTE_HOST}:"
+  REMOTE_EXEC_PREFIX = "ssh #{REMOTE_HOST}"
+  REMOTE_EXEC_PREFIX += " sudo" if defined? REMOTE_SUDO
+  LOCAL_EXEC_PREFIX = ""
+else
+  REMOTE_PATH_PREFIX = ""
+  REMOTE_EXEC_PREFIX = ""
+  LOCAL_EXEC_PREFIX = "sudo"
+end
+
 desc "Update your repository from source control"
 task :update do
   puts "** Updating your repository"
@@ -147,23 +161,23 @@ task :install => [ :update, :test, :metadata, :roles ] do
   ]
   puts "* Creating Directories"
   directories.each do |dir|
-    sh "sudo mkdir -p #{dir}"
-    sh "sudo chown root #{dir}"
+    sh "#{LOCAL_EXEC_PREFIX} #{REMOTE_EXEC_PREFIX} mkdir -p #{dir}"
+    sh "#{LOCAL_EXEC_PREFIX} #{REMOTE_EXEC_PREFIX} chown root #{dir}"
   end
   puts "* Installing new Cookbooks"
-  sh "sudo rsync -rlP --delete --exclude '.svn' --exclude '.git*' cookbooks/ #{COOKBOOK_PATH}"
+  sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' cookbooks/ #{REMOTE_PATH_PREFIX}#{COOKBOOK_PATH}"
   puts "* Installing new Site Cookbooks"
-  sh "sudo rsync -rlP --delete --exclude '.svn' --exclude '.git*' site-cookbooks/ #{SITE_COOKBOOK_PATH}"
+  sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' site-cookbooks/ #{REMOTE_PATH_PREFIX}#{SITE_COOKBOOK_PATH}"
   puts "* Installing new Node Roles"
-  sh "sudo rsync -rlP --delete --exclude '.svn' --exclude '.git*' roles/ #{ROLE_PATH}"
+  sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' roles/ #{REMOTE_PATH_PREFIX}#{ROLE_PATH}"
   
-  if File.exists?(File.join(File.dirname(__FILE__), "config", "server.rb"))
+  if File.exists?(File.join(TOPDIR, "config", "server.rb"))
     puts "* Installing new Chef Server Config"
-    sh "sudo cp config/server.rb #{CHEF_SERVER_CONFIG}"
+    sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' config/server.rb #{REMOTE_PATH_PREFIX}#{CHEF_SERVER_CONFIG}"
   end
-  if File.exists?(File.join(File.dirname(__FILE__), "config", "client.rb"))
+  if File.exists?(File.join(TOPDIR, "config", "client.rb"))
     puts "* Installing new Chef Client Config"
-    sh "sudo cp config/client.rb #{CHEF_CLIENT_CONFIG}"
+    sh "#{LOCAL_EXEC_PREFIX} rsync -rlt --delete --exclude '.svn' --exclude '.git*' config/client.rb #{REMOTE_PATH_PREFIX}#{CHEF_CLIENT_CONFIG}"
   end
 end
 
