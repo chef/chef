@@ -33,6 +33,7 @@ class Chef
   class Node
     
     attr_accessor :attribute, :recipe_list, :couchdb_rev, :couchdb_id, :run_state, :run_list, :override_attrs, :default_attrs, :cookbook_loader
+    attr_reader :node
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
@@ -126,6 +127,7 @@ class Chef
     # Create a new Chef::Node object.
     def initialize
       @name = nil
+      @node = self
 
       @attribute = Mash.new
       @override_attrs = Mash.new
