@@ -1,3 +1,14 @@
+
+Release Notes - Chef - Version 0.7.16.2
+
+** This is an unofficial release ** 
+** Bryan McLellan <btm@loftninjas.org> **
+
+** Bug
+    * [CHEF-684] - Should be possible for roles to be created without anything in the run_list
+    * [CHEF-454] - Centos4 yum provider failure
+    * [CHEF-642] - Services will always issue a WARN when status is not present
+
 Tue, 29 Dec 2009 19:51:02 +0000
 
 Release Notes - Chef - Version 0.7.16wt1
