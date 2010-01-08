@@ -1,13 +1,27 @@
 
+Thu, 07 Jan 2010 16:45:14 -0800
+
 Release Notes - Chef - Version 0.7.16.2
 
 ** This is an unofficial release ** 
 ** Bryan McLellan <btm@loftninjas.org> **
 
 ** Bug
-    * [CHEF-684] - Should be possible for roles to be created without anything in the run_list
     * [CHEF-454] - Centos4 yum provider failure
+    * [CHEF-616] - rake install in chef-repo breaks if there is no git origin
+    * [CHEF-637] - duplicate copies of FileEdit: file_edit.rb & fileedit.rb
+    * [CHEF-639] - git resource fails on subsequent checkouts of the same repostiry
     * [CHEF-642] - Services will always issue a WARN when status is not present
+    * [CHEF-684] - Should be possible for roles to be created without anything in the run_list
+    * [CHEF-704] - Ruby block device does not have a default action
+    * [CHEF-722] - Link provider doesn't understand paths requiring expansion
+    * [CHEF-843] - FileEdit permission issues
+
+** Improvement
+    * [CHEF-598] - Upstart service provider
+    * [CHEF-617] - Install to chef repository on a remote machine
+    * [CHEF-709] - Support for backup up files in another directory than the original file
+    * [CHEF-752] - No way to pass parameters to useradd provider
 
 Tue, 29 Dec 2009 19:51:02 +0000
 
