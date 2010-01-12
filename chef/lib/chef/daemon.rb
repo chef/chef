@@ -44,7 +44,7 @@ class Chef
             File.umask Chef::Config[:umask]
             $stdin.reopen("/dev/null")
             $stdout.reopen("/dev/null", "a")
-            $stdout.reopen($stdout)
+            $stderr.reopen($stdout)
             save_pid_file
             at_exit { remove_pid_file }
           rescue NotImplementedError => e
