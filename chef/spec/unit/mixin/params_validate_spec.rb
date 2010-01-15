@@ -328,16 +328,16 @@ describe Chef::Mixin::ParamsValidate do
     }.should raise_error(ArgumentError)
   end
 
-  it "should set and return, then return, a value" do
+  it "should set and return a value, then return the same value" do
     value = "meow"
     @vo.set_or_return(:test, value, {}).object_id.should == value.object_id
-    @vo.set_or_return(:test, value, {}).object_id.should == value.object_id
+    @vo.set_or_return(:test, nil, {}).object_id.should == value.object_id
   end
 
-  it "should set and return, then return, a default value when argument is nil" do
+  it "should set and return a default value when the argument is nil, then return the same value" do
     value = "meow"
     @vo.set_or_return(:test, nil, { :default => value }).object_id.should == value.object_id
-    @vo.set_or_return(:test, nil, { :default => value }).object_id.should == value.object_id
+    @vo.set_or_return(:test, nil, {}).object_id.should == value.object_id
   end
 
   it "should raise an ArgumentError when argument is nil and required is true" do
