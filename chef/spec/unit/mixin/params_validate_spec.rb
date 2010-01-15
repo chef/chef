@@ -351,5 +351,11 @@ describe Chef::Mixin::ParamsValidate do
       @vo.set_or_return(:test, nil, { :required => false })
     }.should_not raise_error(ArgumentError)
   end
+
+  it "should set and return @name, then return @name for foo when argument is nil" do
+    value = "meow"
+    @vo.set_or_return(:name, value, { }).object_id.should == value.object_id
+    @vo.set_or_return(:foo, nil, { :name_attribute => true }).object_id.should == value.object_id
+  end
   
 end
