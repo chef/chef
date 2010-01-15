@@ -62,7 +62,7 @@ class Chef
             when /^HOME=(\S*)/
               @current_resource.home($1) if cron_found
               next
-            when /([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*(.*)/
+            when /([0-9\*\,\-\/]+)\s*([0-9\*\,\-\/]+)\s*([0-9\*\,\-\/]+)\s*([0-9\*\,\-\/]+)\s*([0-9\*\,\-\/]+)\s*(.*)/
               if cron_found
                 @current_resource.minute($1) 
                 @current_resource.hour($2) 
