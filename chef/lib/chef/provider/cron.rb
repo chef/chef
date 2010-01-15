@@ -161,7 +161,7 @@ class Chef
               when /^# Chef Name: #{@new_resource.name}\n/
                 cron_found = true
                 next
-              when /([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*(.*)/
+              when CRON_PATTERN
                 if cron_found
                   cron_found = false
                   next
