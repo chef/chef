@@ -69,6 +69,13 @@ describe Chef::Provider::Template do
       do_action_create
     end
   
+    it "should use the cookbook name if defined in the template resource" do
+      @resource.cookbook "jane"
+      @resource.source "template.erb"
+      @provider.should_receive(:fetch_template_via_rest).with("cookbooks/jane/templates/default/template.erb", "jane_template.erb")
+      do_action_create
+    end
+    
     it "should set the checksum of the new resource to the value of the returned template" do
       @resource.should_receive(:checksum).with("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa").once
       @resource.should_receive(:checksum).twice
