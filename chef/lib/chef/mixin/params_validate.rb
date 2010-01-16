@@ -195,6 +195,15 @@ class Chef
             end
           end
         end
+
+        # Allow a parameter to default to @name
+        def _pv_name_attribute(opts, key, is_name_attribute=true)
+          if is_name_attribute
+            if opts[key] == nil
+              opts[key] = self.instance_variable_get("@name")
+            end
+          end
+        end
     end
   end
 end
