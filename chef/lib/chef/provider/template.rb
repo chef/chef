@@ -105,7 +105,7 @@ class Chef
       end
       
       def cookbook_name
-        @cookbook_name ||= (@new_resource.cookbook || @new_resource.cookbook_name)
+        @cookbook_name = (@new_resource.cookbook || @new_resource.cookbook_name)
       end
       
       def render_with_context(cache_file_name)

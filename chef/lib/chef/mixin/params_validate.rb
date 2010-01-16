@@ -80,11 +80,12 @@ class Chef
         map = {
           symbol => validation
         }
-        if arg == nil
+
+        if arg == nil && self.instance_variable_defined?(iv_symbol) == true
           self.instance_variable_get(iv_symbol)
         else
-          validate({ symbol => arg }, { symbol => validation })
-          self.instance_variable_set(iv_symbol, arg)
+          opts = validate({ symbol => arg }, { symbol => validation })
+          self.instance_variable_set(iv_symbol, opts[symbol])
         end
       end
             
@@ -104,7 +105,8 @@ class Chef
         # Raise an exception if the parameter is not found.
         def _pv_required(opts, key, is_required=true)
           if is_required
-            if opts.has_key?(key.to_s) || opts.has_key?(key.to_sym)
+            if (opts.has_key?(key.to_s) && opts[key.to_s] != nil) ||
+                (opts.has_key?(key.to_sym) && opts[key.to_sym] != nil)
               true
             else
               raise ArgumentError, "Required argument #{key} is missing!"
@@ -166,16 +168,18 @@ class Chef
         # Check a parameter against a regular expression.
         def _pv_regex(opts, key, regex)
           value = _pv_opts_lookup(opts, key)
-          passes = false
-          [ regex ].flatten.each do |r|
-            if value != nil
-              if r.match(value.to_s)
-                passes = true
+          if value != nil
+            passes = false
+            [ regex ].flatten.each do |r|
+              if value != nil
+                if r.match(value.to_s)
+                  passes = true
+                end
               end
             end
-          end
-          unless passes
-            raise ArgumentError, "Option #{key}'s value #{value} does not match regular expression #{regex.to_s}"
+            unless passes
+              raise ArgumentError, "Option #{key}'s value #{value} does not match regular expression #{regex.to_s}"
+            end
           end
         end
         
@@ -188,6 +192,15 @@ class Chef
               if zeproc.call(value) != true
                 raise ArgumentError, "Option #{key}'s value #{value} #{message}!"
               end
+            end
+          end
+        end
+
+        # Allow a parameter to default to @name
+        def _pv_name_attribute(opts, key, is_name_attribute=true)
+          if is_name_attribute
+            if opts[key] == nil
+              opts[key] = self.instance_variable_get("@name")
             end
           end
         end
