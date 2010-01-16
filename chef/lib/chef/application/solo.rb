@@ -20,8 +20,7 @@ require 'chef/client'
 require 'chef/config'
 require 'chef/daemon'
 require 'chef/log'
-require 'net/http'
-require 'open-uri'
+require 'chef/rest'
 require 'fileutils'
 
 class Chef::Application::Solo < Chef::Application
@@ -132,7 +131,13 @@ class Chef::Application::Solo < Chef::Application
     
     if Chef::Config[:json_attribs]
       begin
-          json_io = open(Chef::Config[:json_attribs])
+        json_io = case Chef::Config[:json_attribs]
+                  when /^(http|https):\/\//
+                    @rest = Chef::REST.new(Chef::Config[:json_attribs], nil, nil)
+                    @rest.get_rest(Chef::Config[:json_attribs], true).open
+                  else
+                    open(Chef::Config[:json_attribs])
+                  end
       rescue SocketError => error
         Chef::Application.fatal!("I cannot connect to #{Chef::Config[:json_attribs]}", 2)
       rescue Errno::ENOENT => error
@@ -145,6 +150,7 @@ class Chef::Application::Solo < Chef::Application
 
       begin
         @chef_solo_json = JSON.parse(json_io.read)
+        json_io.close unless json_io.closed?
       rescue JSON::ParserError => error
         Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
       end
