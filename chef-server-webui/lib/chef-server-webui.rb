@@ -119,7 +119,7 @@ if defined?(Merb::Plugins)
       scope.match('/users/logout').to(:controller => 'users', :action => 'logout').name(:users_logout)
       scope.match('/users/new').to(:controller => 'users', :action => 'new').name(:users_new)
       scope.match('/users/:user_id/edit').to(:controller => 'users', :action => 'edit').name(:users_edit)
-      scope.match('/users/:user_id/show').to(:controller => 'users', :action => 'show').name(:users_show)
+      scope.match('/users/:user_id').to(:controller => 'users', :action => 'show').name(:users_show)
       scope.match('/users/:user_id/delete', :method => 'delete').to(:controller => 'users', :action => 'destroy').name(:users_delete)
       scope.match('/users/:user_id/update', :method => 'put').to(:controller => 'users', :action => 'update').name(:users_update)      
       
@@ -131,6 +131,9 @@ if defined?(Merb::Plugins)
     
     # Create the default admin user "admin" if no admin user exists  
     unless Chef::WebUIUser.admin_exist
+      # Needed to set these here because this is blog is executed before self.loaded 
+      Chef::Config[:node_name] = Chef::Config[:web_ui_client_name]
+      Chef::Config[:client_key] = Chef::Config[:web_ui_key]
       user = Chef::WebUIUser.new
       user.name = Chef::Config[:web_ui_admin_user_name]
       user.set_password(Chef::Config[:web_ui_admin_default_password])
