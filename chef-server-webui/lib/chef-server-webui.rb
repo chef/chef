@@ -131,7 +131,7 @@ if defined?(Merb::Plugins)
     
     # Create the default admin user "admin" if no admin user exists  
     unless Chef::WebUIUser.admin_exist
-      # Needed to set these here because this is blog is executed before self.loaded 
+      # Needed to set these here because this blok is executed before self.loaded 
       Chef::Config[:node_name] = Chef::Config[:web_ui_client_name]
       Chef::Config[:client_key] = Chef::Config[:web_ui_key]
       user = Chef::WebUIUser.new
