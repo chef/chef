@@ -57,7 +57,7 @@ class Chef
       }
     }
 
-    attr_accessor :couchdb_rev, :raw_data, :couchdb_id
+    attr_accessor :couchdb_rev, :raw_data, :couchdb_id, :couchdb
     
     # Create a new Chef::DataBagItem
     def initialize(couchdb=nil)
@@ -65,7 +65,7 @@ class Chef
       @couchdb_id = nil
       @data_bag = nil
       @raw_data = Mash.new
-      @couchdb = Chef::CouchDB.new 
+      @couchdb = couchdb ? couchdb : Chef::CouchDB.new
     end
 
     def raw_data
@@ -162,8 +162,8 @@ class Chef
     end
     
     # Load a Data Bag Item by name from CouchDB
-    def self.cdb_load(data_bag, name)
-      couchdb = Chef::CouchDB.new
+    def self.cdb_load(data_bag, name, couchdb=nil)
+      couchdb = couchdb ? couchdb : Chef::CouchDB.new
       couchdb.load("data_bag_item", object_name(data_bag, name))
     end
     

@@ -32,7 +32,7 @@ require 'json'
 class Chef
   class Node
     
-    attr_accessor :attribute, :recipe_list, :couchdb_rev, :couchdb_id, :run_state, :run_list, :override_attrs, :default_attrs, :cookbook_loader
+    attr_accessor :attribute, :recipe_list, :couchdb, :couchdb_rev, :couchdb_id, :run_state, :run_list, :override_attrs, :default_attrs, :cookbook_loader
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
@@ -124,7 +124,7 @@ class Chef
     }
     
     # Create a new Chef::Node object.
-    def initialize
+    def initialize(couchdb=nil)
       @name = nil
 
       @attribute = Mash.new
@@ -134,7 +134,7 @@ class Chef
 
       @couchdb_rev = nil
       @couchdb_id = nil
-      @couchdb = Chef::CouchDB.new
+      @couchdb = couchdb ? couchdb : Chef::CouchDB.new
 
       @run_state = {
         :template_cache => Hash.new,
@@ -361,8 +361,8 @@ class Chef
     
     # List all the Chef::Node objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Nodes, fully inflated.
-    def self.cdb_list(inflate=false)
-      couchdb = Chef::CouchDB.new
+    def self.cdb_list(inflate=false, couchdb=nil)
+      couchdb = couchdb ? couchdb : Chef::CouchDB.new
       rs = couchdb.list("nodes", inflate)
       if inflate
         rs["rows"].collect { |r| r["value"] }
@@ -385,8 +385,8 @@ class Chef
     end
     
     # Load a node by name from CouchDB
-    def self.cdb_load(name)
-      couchdb = Chef::CouchDB.new
+    def self.cdb_load(name, couchdb=nil)
+      couchdb = couchdb ? couchdb : Chef::CouchDB.new
       couchdb.load("node", name)
     end
 

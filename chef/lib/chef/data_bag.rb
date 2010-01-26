@@ -67,14 +67,14 @@ class Chef
       }
     }
 
-    attr_accessor :couchdb_rev, :couchdb_id
+    attr_accessor :couchdb_rev, :couchdb_id, :couchdb
     
     # Create a new Chef::DataBag
-    def initialize
+    def initialize(couchdb=nil)
       @name = '' 
       @couchdb_rev = nil
       @couchdb_id = nil
-      @couchdb = Chef::CouchDB.new 
+      @couchdb = couchdb ? couchdb : Chef::CouchDB.new
     end
 
     def name(arg=nil) 
@@ -111,8 +111,8 @@ class Chef
     
     # List all the Chef::DataBag objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Roles, fully inflated.
-    def self.cdb_list(inflate=false)
-      couchdb = Chef::CouchDB.new
+    def self.cdb_list(inflate=false, couchdb=nil)
+      couchdb = couchdb ? couchdb : Chef::CouchDB.new
       rs = couchdb.list("data_bags", inflate)
       if inflate
         rs["rows"].collect { |r| r["value"] }
@@ -135,8 +135,8 @@ class Chef
     end
     
     # Load a Data Bag by name from CouchDB
-    def self.cdb_load(name)
-      couchdb = Chef::CouchDB.new
+    def self.cdb_load(name, couchdb=nil)
+      couchdb = couchdb ? couchdb : Chef::CouchDB.new
       couchdb.load("data_bag", name)
     end
     

@@ -58,17 +58,17 @@ class Chef
       }
     }
 
-    attr_accessor :couchdb_rev, :couchdb_id
+    attr_accessor :couchdb_rev, :couchdb_id, :couchdb
     
     # Create a new Chef::ApiClient object.
-    def initialize
+    def initialize(couchdb=nil)
       @name = '' 
       @public_key = nil
       @private_key = nil
       @couchdb_rev = nil
       @couchdb_id = nil
       @admin = false
-      @couchdb = Chef::CouchDB.new 
+      @couchdb = couchdb ? couchdb : Chef::CouchDB.new
     end
 
     # Gets or sets the client name.
@@ -165,8 +165,8 @@ class Chef
     
     # List all the Chef::ApiClient objects in the CouchDB.  If inflate is set
     # to true, you will get the full list of all ApiClients, fully inflated.
-    def self.cdb_list(inflate=false)
-      couchdb = Chef::CouchDB.new
+    def self.cdb_list(inflate=false, couchdb=nil)
+      couchdb = couchdb ? couchdb : Chef::CouchDB.new
       rs = couchdb.list("clients", inflate)
       if inflate
         rs["rows"].collect { |r| r["value"] }
@@ -192,8 +192,8 @@ class Chef
     # 
     # @params [String] The name of the client to load
     # @return [Chef::ApiClient] The resulting Chef::ApiClient object
-    def self.cdb_load(name)
-      couchdb = Chef::CouchDB.new
+    def self.cdb_load(name, couchdb=nil)
+      couchdb = couchdb ? couchdb : Chef::CouchDB.new
       couchdb.load("client", name)
     end
     
