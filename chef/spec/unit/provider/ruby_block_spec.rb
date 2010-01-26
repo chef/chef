@@ -30,19 +30,6 @@ describe Chef::Provider::RubyBlock, "initialize" do
   end
 end
 
-describe Chef::Provider::RubyBlock, "load_current_resource" do
-  before do
-    Chef::Log.stub!(:debug).and_return(true)
-    @n = mock("Chef::Node", :null_object => true)
-    @nr = mock("Chef::Resource::RubyBlock", :null_object => true, :inspect => "lol")
-    @p = Chef::Provider::RubyBlock.new(@n, @nr)
-  end
-  it "should log a debug message inspecting the new resource" do
-    Chef::Log.should_receive(:debug).with("lol").and_return("lol")
-    @p.load_current_resource
-  end
-end
-
 describe Chef::Provider::RubyBlock, "action_create" do  
   before(:each) do
     @n = mock("Chef::Node", :null_object => true)
