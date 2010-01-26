@@ -160,7 +160,7 @@ class Chef::Provider::Route < Chef::Provider
                 end
             end
             conf.each do |k, v|
-               network_file = ::File.new("/etc/sysconfig/network-scripts/route.#{k}", "w")
+               network_file = ::File.new("/etc/sysconfig/network-scripts/route-#{k}", "w")
                network_file.puts(conf[k])
                Chef::Log.debug("writing route.#{k}\n#{conf[k]}")
                network_file.close
