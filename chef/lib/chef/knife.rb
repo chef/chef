@@ -91,7 +91,7 @@ class Chef
         puts klass_instance.opt_parser
         exit 1
       end
-      klass_instance.name_args = (extra - cli_bits) || []
+      klass_instance.name_args = extra.inject([]) { |c, i| cli_bits.include?(i) ? cli_bits.delete(i) : c << i; c } 
       klass_instance.configure_chef
       klass_instance
     end

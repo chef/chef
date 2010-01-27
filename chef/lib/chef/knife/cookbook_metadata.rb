@@ -56,7 +56,7 @@ class Chef
       def generate_metadata(cookbook)
         Chef::Log.info("Generating metadata for #{cookbook}")
         config[:cookbook_path].reverse.each do |path|
-          file = File.join(path, cookbook, 'metadata.rb')
+          file = File.expand_path(File.join(path, cookbook, 'metadata.rb'))
           if File.exists?(file)
             Chef::Log.info("Generating from #{file}")
             md = Chef::Cookbook::Metadata.new

@@ -37,15 +37,21 @@ Given /^a local cookbook named '(.+)'$/ do |cb|
   cleanup_dirs << "#{tmpdir}/cookbooks_dir"
 end
 
-When /^I run the rake task to generate cookbook metadata for '(.+)'$/ do |cb|
+When /^I run the task to generate cookbook metadata for '(.+)'$/ do |cb|
   self.cookbook = cb
-  When('I run the rake task to generate cookbook metadata')
+  When('I run the task to generate cookbook metadata')
 end
 
-When /^I run the rake task to generate cookbook metadata$/ do
-  to_run = "rake metadata"
-  to_run += " COOKBOOK=#{cookbook}" if cookbook
-  Dir.chdir(File.join(tmpdir, 'cookbooks_dir')) do
+When /^I run the task to generate cookbook metadata$/ do
+  knife_cmd = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "knife"))
+  to_run = "#{knife_cmd} cookbook metadata"
+  if cookbook
+    to_run += " #{cookbook}" 
+  else
+    to_run += " -a"
+  end
+  to_run += " -o #{File.join(tmpdir, 'cookbooks_dir', 'cookbooks')}"
+  Dir.chdir(File.join(tmpdir, 'cookbooks_dir', 'cookbooks')) do
     self.status = Chef::Mixin::Command.popen4(to_run) do |p, i, o, e|
       self.stdout = o.gets(nil)
       self.stderr = o.gets(nil)

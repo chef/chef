@@ -355,6 +355,14 @@ namespace :features do
     t.profile = "cookbooks"
   end
 
+  namespace :cookbook do
+
+    desc "Run cucumber tests for the cookbook metadata"
+    Cucumber::Rake::Task.new(:metadata) do |t|
+      t.profile = "cookbook_metadata"
+    end
+  end
+
   desc "Run cucumber tests for the recipe language"
   Cucumber::Rake::Task.new(:language) do |t|
     t.profile = "language"
