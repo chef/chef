@@ -25,6 +25,8 @@ class Chef
     class Cron < Chef::Provider
       include Chef::Mixin::Command
 
+      CRON_PATTERN = /([0-9\*\-\,\/]+)\s*([0-9\*\-\,\/]+)\s*([0-9\*\-\,\/]+)\s*([0-9\*\-\,\/]+)\s*([0-9\*\-\,\/]+)\s*(.*)/
+
       def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
         super(node, new_resource, collection, definitions, cookbook_loader)
         @cron_exists = false
@@ -62,7 +64,7 @@ class Chef
             when /^HOME=(\S*)/
               @current_resource.home($1) if cron_found
               next
-            when /([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*(.*)/
+            when CRON_PATTERN
               if cron_found
                 @current_resource.minute($1) 
                 @current_resource.hour($2) 
@@ -114,7 +116,7 @@ class Chef
               when /^# Chef Name: #{@new_resource.name}\n/
                 cron_found = true
                 next
-              when /([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*(.*)/
+              when CRON_PATTERN
                 if cron_found
                   cron_found = false
                   crontab << newcron
@@ -159,7 +161,7 @@ class Chef
               when /^# Chef Name: #{@new_resource.name}\n/
                 cron_found = true
                 next
-              when /([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*([0-9\*]+)\s*(.*)/
+              when CRON_PATTERN
                 if cron_found
                   cron_found = false
                   next
