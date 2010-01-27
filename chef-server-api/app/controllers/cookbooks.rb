@@ -81,7 +81,6 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
   def serve_segment_preferred(cookbook, segment, files)
 
     to_send = nil
-
     
     preferences.each do |pref|
       unless to_send
