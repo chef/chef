@@ -9,7 +9,7 @@ Feature: Create a data bag item via the REST API
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis'
      When I authenticate as 'bobo'
-      And I 'PUT' the 'data_bag_item' to the path '/data/users/francis' 
+      And I 'POST' the 'data_bag_item' to the path '/data/users' 
      Then the inflated responses key 'id' should match '^francis$'
 
   Scenario: Update a data bag item that already exists
