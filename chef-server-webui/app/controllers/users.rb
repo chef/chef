@@ -69,18 +69,31 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       rescue Net::HTTPServerException => e
         raise NotFound, "Cannot find user #{params[:user_id]}"
       end
-      @user.admin = str_to_bool(params[:admin]) if ['true','false'].include?params[:admin]
-      session[:level] = :user if params[:user_id] == session[:user] && params[:admin] == 'false'
-      @user.set_password(params[:new_password], params[:confirm_new_password]) unless (params[:new_password].nil? || params[:new_password].length == 0)      
-      (params[:openid].length == 0 || params[:openid].nil?) ? @user.set_openid(nil) : @user.set_openid(URI.parse(params[:openid]).normalize.to_s)
+      if session[:level] == :admin and ['true','false'].include? params[:admin]
+        @user.admin = str_to_bool(params[:admin])
+      end
+
+      if params[:user_id] == session[:user] && params[:admin] == 'false'
+        session[:level] = :user
+      end
+
+      if not params[:new_password].nil? and not params[:new_password].length == 0
+        @user.set_password(params[:new_password], params[:confirm_new_password])
+      end
+
+      if params[:openid].length == 0 or params[:openid].nil?
+        @user.set_openid(nil)
+      else
+        @user.set_openid(URI.parse(params[:openid]).normalize.to_s)
+      end
       @user.save
-      @_message = { :notice => "Updated User #{@user.name}" }       
+      @_message = { :notice => "Updated User #{@user.name}" }
       render :show
-    rescue   
+    rescue
       @_message = { :error => $! }
       render :edit
-    end 
-  end 
+    end
+  end
   
   def new
     begin
