@@ -149,6 +149,12 @@ describe Chef::Node do
       @node.recipes.should == [ "one", "two", "three" ]
     end
 
+    it "should overwrite the run list if you set recipes twice" do
+      @node.consume_attributes "recipes" => [ "one", "two" ]
+      @node.consume_attributes "recipes" => [ "three" ]
+      @node.recipes.should == [ "three" ]
+    end
+
     it "should allow you to set a run_list from the json attributes" do
       @node.consume_attributes "run_list" => [ "role[base]", "recipe[chef::server]" ]
       @node.run_list.should == [ "role[base]", "recipe[chef::server]" ]

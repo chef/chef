@@ -264,16 +264,6 @@ class Chef
       end
     end
     
-    # Returns an Array of recipes.  If you call it with arguments, they will become the new
-    # list of recipes.
-    def recipes(*args)
-      if args.length > 0
-        @run_list.reset(args)
-      else
-        @run_list
-      end
-    end
-
     # Returns true if this Node expects a given role, false if not.
     def role?(role_name)
       @run_list.include?("role[#{role_name}]")
@@ -289,6 +279,8 @@ class Chef
       end
     end
 
+    alias_method :recipes, :run_list
+
     # Returns true if this Node expects a given role, false if not.
     def run_list?(item)
       @run_list.detect { |r| r == item } ? true : false
@@ -299,7 +291,7 @@ class Chef
       Chef::Log.debug("Adding JSON Attributes")
       attrs.each do |key, value|
         if ["recipes", "run_list"].include?(key)
-          append_recipes(value)
+          run_list(value)
         else
           Chef::Log.debug("JSON Attribute: #{key} - #{value.inspect}")
           store(key, value)
@@ -446,17 +438,6 @@ class Chef
     # As a string
     def to_s
       "node[#{@name}]"
-    end
-
-    private
-    
-    def append_recipes(recipes_to_append=[])
-      recipes_to_append.each do |recipe|
-        unless recipes.include?(recipe)
-          Chef::Log.debug("Adding recipe #{recipe}")
-          recipes << recipe
-        end
-      end
     end
 
   end
