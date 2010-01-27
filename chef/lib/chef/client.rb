@@ -47,9 +47,9 @@ class Chef
       @json_attribs = nil
       @node_name = nil
       @node_exists = true
+      @ohai = Ohai::System.new
       Chef::Log.verbose = Chef::Config[:verbose_logging]
       Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger
-      @ohai = Ohai::System.new
       @ohai_has_run = false
       if File.exists?(Chef::Config[:client_key])
         @rest = Chef::REST.new(Chef::Config[:chef_server_url])
