@@ -245,9 +245,14 @@ class Chef
       end
       
       def scm_provider(arg=nil)
+        klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
+                  lookup_provider_constant(arg)
+                else
+                  arg
+                end
         set_or_return(
           :scm_provider,
-          arg,
+          klass,
           :kind_of => [ Class ]
         )
       end
