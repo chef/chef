@@ -26,40 +26,67 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
   
   # GET /roles
   def index
-    @role_list = Chef::Role.list()
-    render
+    begin
+      @role_list = Chef::Role.list()
+      render
+    rescue
+      @role_list = {}
+      @_message = {:error => $!}
+      render
+    end 
   end
 
   # GET /roles/:id
   def show
     begin
-      @role = Chef::Role.load(params[:id])
-    rescue Net::HTTPServerException => e
-      raise NotFound, "Cannot load role #{params[:id]}"
-    end
-    render
+      begin
+        @role = Chef::Role.load(params[:id])
+      rescue Net::HTTPServerException => e
+        raise NotFound, "Cannot load role #{params[:id]}"
+      end
+      render
+    rescue
+      @role = Chef::Role.new
+      @_message = {:error => $!}
+      render
+    end 
   end
 
   # GET /roles/new
   def new
-    @available_recipes = get_available_recipes 
-    @role = Chef::Role.new
-    @available_roles = Chef::Role.list.keys.sort
-    @run_list = @role.run_list
-    render
+    begin
+      @available_recipes = get_available_recipes 
+      @role = Chef::Role.new
+      @available_roles = Chef::Role.list.keys.sort
+      @run_list = @role.run_list
+      render
+    rescue
+      @role_list = Chef::Role.list()
+      @_message = {:error => $!}
+      render :index
+    end 
   end
 
   # GET /roles/:id/edit
   def edit
     begin
-      @role = Chef::Role.load(params[:id])
-    rescue Net::HTTPServerException => e
-      raise NotFound, "Cannot load role #{params[:id]}"
-    end
-    @available_recipes = get_available_recipes 
-    @available_roles = Chef::Role.list.keys.sort
-    @run_list = @role.run_list
-    render 
+      begin
+        @role = Chef::Role.load(params[:id])
+      rescue Net::HTTPServerException => e
+        raise NotFound, "Cannot load role #{params[:id]}"
+      end
+      @available_recipes = get_available_recipes 
+      @available_roles = Chef::Role.list.keys.sort
+      @run_list = @role.run_list
+      render 
+    rescue
+      @role = Chef::Role.new
+      @available_recipes = []
+      @available_roles = []
+      @run_list = []
+      @_message = {:error => $!}
+      render
+    end 
   end
 
   # POST /roles
@@ -120,13 +147,18 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
   # DELETE /roles/:id
   def destroy
     begin
-      @role = Chef::Role.load(params[:id])
-    rescue Net::HTTPServerException => e
-      raise NotFound, "Cannot load role #{params[:id]}"
-    end
-    @role.destroy
-    
-    redirect(absolute_slice_url(:roles), :message => { :notice => "Role #{@role.name} deleted successfully." }, :permanent => true)
+      begin
+        @role = Chef::Role.load(params[:id])
+      rescue Net::HTTPServerException => e
+        raise NotFound, "Cannot load role #{params[:id]}"
+      end
+      @role.destroy
+      redirect(absolute_slice_url(:roles), :message => { :notice => "Role #{@role.name} deleted successfully." }, :permanent => true)
+    rescue
+      @role_list = Chef::Role.list()
+      @_message = {:error => $!}
+      render :index
+    end 
   end
 
 end

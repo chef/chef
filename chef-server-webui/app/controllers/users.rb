@@ -18,11 +18,13 @@
 
 require 'chef'/'webui_user'
 require 'uri'
+require 'merb-param-protection'
 
 class ChefServerWebui::Users < ChefServerWebui::Application
 
   provides :html
   before :login_required, :exclude => [:login, :login_exec, :complete]
+  log_params_filtered :password, :password2, :new_password, :confirm_new_password
     
   # List users, only if the user is admin.
   def index

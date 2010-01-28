@@ -25,20 +25,38 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
   
   # GET /clients
   def index
-    @clients_list = Chef::ApiClient.list()
-    render
+    begin
+      @clients_list = Chef::ApiClient.list()
+      render
+    rescue
+      @clients_list = {}
+      @_message = {:error => $!}
+      render
+    end 
   end
 
   # GET /clients/:id
   def show
-    load_client
-    render
+    begin
+      load_client
+      render
+    rescue => e
+      @client = Chef::ApiClient.new
+      @_message = e.message =~ /not found/ ?  {:error => "Cannot find client '#{params[:id]}'"} : { :error => $!}
+      render
+    end 
   end
 
   # GET /clients/:id/edit
   def edit
-    load_client
-    render 
+    begin
+      load_client
+      render
+    rescue
+      @client = Chef::ApiClient.new
+      @_message = e.message =~ /not found/ ?  {:error => "Cannot find client '#{params[:id]}'"} : { :error => $!}
+      render
+    end  
   end
 
   # GET /clients/new
@@ -92,9 +110,15 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
 
   # DELETE /clients/:id
   def destroy
-    load_client
-    @client.destroy
-    redirect(absolute_slice_url(:clients), {:message => { :notice => "Client #{params[:id]} deleted successfully" }, :permanent => true})
+    begin
+      load_client
+      @client.destroy
+      redirect(absolute_slice_url(:clients), {:message => { :notice => "Client #{params[:id]} deleted successfully" }, :permanent => true})
+    rescue
+      @_message = {:error => $!}
+      @clients_list = Chef::ApiClient.list()
+      render :index
+    end 
   end
   
   private

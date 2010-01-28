@@ -17,7 +17,7 @@
           - else
             - @status.sort.each_with_index do |node, index|
               %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-                %td= link_to(node[1].name, slice_url(:node, escape_node_id(node[1].name)))
+                %td= link_to(node[1].name, slice_url(:node, node[1].name))
                 %td= "#{node[1]["platform"]} #{node[1]["platform_version"]}"
                 %td= node[1]["fqdn"]
                 %td= node[1]["ipaddress"]

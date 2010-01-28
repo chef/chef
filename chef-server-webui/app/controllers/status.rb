@@ -25,8 +25,14 @@ class ChefServerWebui::Status < ChefServerWebui::Application
   before :login_required 
 
   def index
-    @status = Chef::Node.list(true)
-    render
+    begin
+      @status = Chef::Node.list(true)
+      render
+    rescue
+      @status = {}
+      @_message = {:error => $!}
+      render
+    end 
   end
 
 end

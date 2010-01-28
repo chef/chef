@@ -24,9 +24,15 @@ class ChefServerWebui::Search < ChefServerWebui::Application
   before :login_required 
     
   def index
-    @s = Chef::Search::Query.new
-    @search_indexes = @s.list_indexes
-    render
+    begin
+      @s = Chef::Search::Query.new
+      @search_indexes = @s.list_indexes
+      render
+    rescue
+      @search_indexes = {}
+      @_message = {:error => $!}
+      render
+    end 
   end
 
   def show
