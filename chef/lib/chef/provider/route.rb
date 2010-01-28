@@ -113,10 +113,12 @@ class Chef::Provider::Route < Chef::Provider
             
             Chef::Log.info("Adding route: #{command} ")  
             run_command( :command => command )
+            @new_resource.updated = true
         end
         
         #for now we always write the file (ugly but its what it is)
         generate_config
+
     end
 
     def action_delete
@@ -127,10 +129,10 @@ class Chef::Provider::Route < Chef::Provider
             
             Chef::Log.info("Removing route: #{command}")  
             run_command( :command => command )
+            @new_resource.updated = true
         else
             Chef::Log.debug("Route #{@new_resource.name} does not exist")
         end
-
     end
 
     def generate_config
