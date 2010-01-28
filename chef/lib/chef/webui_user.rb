@@ -24,11 +24,13 @@ require 'chef/index_queue'
 require 'digest/sha1'
 require 'rubygems'
 require 'json'
+  
 
 class Chef
   class WebUIUser
     
-    attr_accessor :name, :salt, :validated, :password, :couchdb_rev, :admin, :openid
+    attr_accessor :name, :validated, :admin, :openid, :couchdb
+    attr_reader   :password, :salt, :couchdb_id, :couchdb_rev
     
     include Chef::Mixin::ParamsValidate
     include Chef::IndexQueue::Indexable
@@ -59,13 +61,10 @@ class Chef
     }
     
     # Create a new Chef::WebUIUser object.
-    def initialize()
-      @name = nil
-      @salt = nil
-      @password = nil
+    def initialize(opts={})
+      @name, @salt, @password = opts['name'], opts['salt'], opts['password']
+      @openid, @couchdb_rev, @couchdb_id = opts['openid'], opts['_rev'], opts['_id']
       @admin = false
-      @openid = nil
-      @couchdb_rev = nil
       @couchdb = Chef::CouchDB.new
     end
     
@@ -73,13 +72,17 @@ class Chef
       @name = n.gsub(/\./, '_')
     end
     
+    def admin?
+      admin
+    end
+    
     # Set the password for this object.
     def set_password(password, confirm_password=password) 
       raise ArgumentError, "Passwords do not match" unless password == confirm_password
       raise ArgumentError, "Password cannot be blank" if (password.nil? || password.length==0)
       raise ArgumentError, "Password must be a minimum of 6 characters" if password.length < 6
-      @salt = generate_salt
-      @password = encrypt_password(@salt, password)      
+      generate_salt
+      @password = encrypt_password(password)      
     end
     
     def set_openid(given_openid)
@@ -87,7 +90,7 @@ class Chef
     end 
     
     def verify_password(given_password)
-      encrypt_password(@salt, given_password) == @password ? true : false
+      encrypt_password(given_password) == @password
     end 
     
     # Serialize this object as a hash 
@@ -95,27 +98,23 @@ class Chef
       attributes = Hash.new
       recipes = Array.new
       result = {
-        'name' => @name,
+        'name' => name,
         'json_class' => self.class.name,
-        'salt' => @salt,
-        'password' => @password,
-        'openid' => @openid,
-        'admin' => @admin,
+        'salt' => salt,
+        'password' => password,
+        'openid' => openid,
+        'admin' => admin,
         'chef_type' => 'webui_user',
       }
+      result["_id"]  = @couchdb_id if @couchdb_id  
       result["_rev"] = @couchdb_rev if @couchdb_rev
       result.to_json(*a)
     end
     
     # Create a Chef::WebUIUser from JSON
     def self.json_create(o)
-      me = new
-      me.name = o["name"]
-      me.salt = o["salt"]
-      me.password = o["password"]
-      me.openid = o["openid"]
+      me = new(o)
       me.admin = o["admin"]
-      me.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       me
     end
     
@@ -162,7 +161,7 @@ class Chef
     
     # Remove this WebUIUser from the CouchDB
     def cdb_destroy
-      @couchdb.delete("webui_user", @name, @couchdb_rev)
+      couchdb.delete("webui_user", @name, @couchdb_rev)
     end
     
     # Remove this WebUIUser via the REST API
@@ -173,7 +172,7 @@ class Chef
     
     # Save this WebUIUser to the CouchDB
     def cdb_save
-      results = @couchdb.store("webui_user", @name, self)
+      results = couchdb.store("webui_user", @name, self)
       @couchdb_rev = results["rev"]
     end
     
@@ -219,13 +218,13 @@ class Chef
     protected
     
       def generate_salt
-        salt = Time.now.to_s
+        @salt = Time.now.to_s
         chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
-        1.upto(30) { |i| salt << chars[rand(chars.size-1)] }
-        salt
+        1.upto(30) { |i| @salt << chars[rand(chars.size-1)] }
+        @salt
       end
     
-      def encrypt_password(salt, password)
+      def encrypt_password(password)
         Digest::SHA1.hexdigest("--#{salt}--#{password}--")
       end
     
