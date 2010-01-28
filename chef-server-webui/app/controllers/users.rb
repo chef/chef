@@ -141,7 +141,7 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       begin
         @user = Chef::WebUIUser.load(params[:name])
       rescue Net::HTTPServerException => e
-        raise NotFound, "Cannot find user #{params[:name]}"
+        raise(Unauthorized, "Wrong username or password.")
       end 
       raise(Unauthorized, "Wrong username or password.") unless @user.verify_password(params[:password])
       complete
