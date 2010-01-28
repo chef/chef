@@ -10,6 +10,7 @@ begin
     gem.homepage = "http://wiki.opscode.com/display/chef"
     gem.authors = ["Adam Jacob"]
     gem.add_dependency "libxml-ruby", ">=1.1.3"
+    gem.add_dependency "uuidtools", ">=2.0.0"
     gem.add_dependency "chef", IO.read("VERSION").strip
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
     gem.executables = [ 'chef-solr', 'chef-solr-indexer', 'chef-solr-rebuild' ]
