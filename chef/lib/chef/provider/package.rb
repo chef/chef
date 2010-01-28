@@ -47,7 +47,7 @@ class Chef
         end
 
         unless install_version
-          raise(Chef::Exceptions::Package, "No version specified, and no candidate version available!")
+          raise(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{@new_resource.package_name}")
         end
 
         Chef::Log.info("Installing #{@new_resource} version #{install_version}")
