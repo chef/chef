@@ -211,7 +211,7 @@ class Chef
       def copy_cached_repo
         Chef::Log.info "copying the cached checkout to #{release_path}"
         FileUtils.mkdir_p(@new_resource.deploy_to + "/releases")
-        FileUtils.cp_r("#{@new_resource.destination}.", release_path, :preserve => true)
+        FileUtils.cp_r(::File.join(@new_resource.destination, "."), release_path, :preserve => true)
         release_created(release_path)
       end
       

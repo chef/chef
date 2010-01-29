@@ -77,7 +77,7 @@ class Chef
       
       # where the checked out/cloned code goes
       def destination
-        @destination ||= shared_path + "/#{@repository_cache}/"
+        @destination ||= shared_path + "/#{@repository_cache}"
       end
       
       # where shared stuff goes, i.e., logs, tmp, etc. goes here

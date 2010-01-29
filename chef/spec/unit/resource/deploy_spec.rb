@@ -122,7 +122,7 @@ describe Chef::Resource::Deploy do
   end
   
   it "sets destination to $deploy_to/shared/$repository_cache" do
-    @resource.destination.should eql("/my/deploy/dir/shared/cached-copy/")
+    @resource.destination.should eql("/my/deploy/dir/shared/cached-copy")
   end
   
   it "sets shared_path to $deploy_to/shared" do

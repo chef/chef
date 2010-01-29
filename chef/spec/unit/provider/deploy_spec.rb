@@ -187,7 +187,7 @@ describe Chef::Provider::Deploy do
   
   it "gets a SCM provider as specified by its resource" do
     @provider.scm_provider.should be_an_instance_of(Chef::Provider::Git)
-    @provider.scm_provider.new_resource.destination.should eql("/my/deploy/dir/shared/cached-copy/")
+    @provider.scm_provider.new_resource.destination.should eql("/my/deploy/dir/shared/cached-copy")
   end
   
   it "syncs the cached copy of the repo" do
