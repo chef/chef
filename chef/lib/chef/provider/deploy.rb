@@ -66,8 +66,11 @@ class Chef
             action_rollback
           end
         else
-          deploy
-          @new_resource.updated_by_last_action(true)
+
+          with_rollback_on_error do
+            deploy
+            @new_resource.updated_by_last_action(true)
+          end
         end
       end
 
@@ -77,8 +80,11 @@ class Chef
           FileUtils.rm_rf(release_path)
           Chef::Log.info("#{@new_resource} forcing deploy of already deployed app at #{release_path}")
         end
-        deploy
-        @new_resource.updated_by_last_action(true)
+
+        with_rollback_on_error do
+          deploy
+          @new_resource.updated_by_last_action(true)
+        end
       end
 
       def action_rollback
@@ -93,10 +99,8 @@ class Chef
           releases_to_nuke = [ all_releases.last ]
         end
 
-        Chef::Log.info "#{@new_resource} rolling back to previous release #{release_path}"
-        symlink
-        Chef::Log.info "#{@new_resource} restarting with previous release"
-        restart
+        rollback
+
         releases_to_nuke.each do |i|
           Chef::Log.info "#{@new_resource} removing release: #{i}"
           FileUtils.rm_rf i
@@ -121,6 +125,13 @@ class Chef
         callback(:after_restart, @new_resource.after_restart)
         cleanup!
         Chef::Log.info "#{@new_resource} deployed to #{@new_resource.deploy_to}"
+      end
+
+      def rollback
+        Chef::Log.info "#{@new_resource} rolling back to previous release #{release_path}"
+        symlink
+        Chef::Log.info "#{@new_resource} restarting with previous release"
+        restart
       end
 
       def callback(what, callback_code=nil)
@@ -364,12 +375,30 @@ class Chef
         end
       end
 
+      def with_rollback_on_error
+        previous_release = all_releases.last
+        begin 
+          yield
+        rescue ::Exception => e
+          failed_release = release_path
+          if previous_release
+            @release_path = previous_release
+            rollback
+          end
+          Chef::Log.info "Removing failed deploy: #{failed_release}"
+          FileUtils.rm_rf failed_release
+
+          raise
+        end
+      end
+
       def deployed?(release)
         all_releases.include?(release)
       end
 
       def current_release?(release)
-        all_releases[-1] == release
+        ::File.exist?(@new_resource.current_path) && 
+          ::File.readlink(@new_resource.current_path) == release
       end
     end
   end
