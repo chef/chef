@@ -59,8 +59,8 @@ class Chef
       end
 
       def action_deploy
-        if all_releases.include?(release_path)
-          if all_releases[-1] == release_path
+        if deployed?(release_path)
+          if current_release?(release_path) 
             Chef::Log.debug("#{@new_resource} is the latest version")
           else
             action_rollback
@@ -72,7 +72,8 @@ class Chef
       end
 
       def action_force_deploy
-        if all_releases.include?(release_path)
+        if deployed?(release_path)
+          Chef::Log.info("Already deployed app at #{release_path}, forcing.")
           FileUtils.rm_rf(release_path)
           Chef::Log.info("#{@new_resource} forcing deploy of already deployed app at #{release_path}")
         end
@@ -363,6 +364,13 @@ class Chef
         end
       end
 
+      def deployed?(release)
+        all_releases.include?(release)
+      end
+
+      def current_release?(release)
+        all_releases[-1] == release
+      end
     end
   end
 end
