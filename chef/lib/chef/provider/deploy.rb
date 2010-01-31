@@ -376,22 +376,33 @@ class Chef
       end
 
       def with_rollback_on_error
-        previous_release = all_releases.last
-        begin 
-          yield
-        rescue ::Exception => e
-          failed_release = release_path
-          if previous_release
-            @release_path = previous_release
-            rollback
-          end
-          Chef::Log.info "Removing failed deploy: #{failed_release}"
-          FileUtils.rm_rf failed_release
-
-          raise
+        yield
+      rescue ::Exception => e
+        Chef::Log.warn "Error on deploying #{release_path}: #{e.message}" 
+        failed_release = release_path
+        previous_release = release_for_rollback
+        if previous_release
+          @release_path = previous_release
+          rollback
         end
+        Chef::Log.info "Removing failed deploy #{failed_release}"
+        FileUtils.rm_rf failed_release
+        
+        raise
       end
 
+      def release_for_rollback
+        previous_release = nil
+        all_releases.reverse_each{|release|
+          if release != release_path
+            previous_release = release
+            break
+          end
+        }
+
+        previous_release
+      end
+    
       def deployed?(release)
         all_releases.include?(release)
       end
