@@ -28,7 +28,7 @@ class Chef
       include Chef::Mixin::FromFile
       include Chef::Mixin::Command
 
-      attr_reader :scm_provider, :release_path
+      attr_reader :scm_provider, :release_path, :previous_release_path
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
@@ -59,6 +59,8 @@ class Chef
       end
 
       def action_deploy
+        save_release_state
+
         if deployed?(release_path)
           if current_release?(release_path) 
             Chef::Log.debug("#{@new_resource} is the latest version")
@@ -75,6 +77,8 @@ class Chef
       end
 
       def action_force_deploy
+        save_release_state
+
         if deployed?(release_path)
           Chef::Log.info("Already deployed app at #{release_path}, forcing.")
           FileUtils.rm_rf(release_path)
@@ -380,36 +384,32 @@ class Chef
       rescue ::Exception => e
         Chef::Log.warn "Error on deploying #{release_path}: #{e.message}" 
         failed_release = release_path
-        previous_release = release_for_rollback
-        if previous_release
-          @release_path = previous_release
+        
+        if previous_release_path
+          @release_path = previous_release_path
           rollback
         end
+
         Chef::Log.info "Removing failed deploy #{failed_release}"
         FileUtils.rm_rf failed_release
+        release_deleted(failed_release)
         
         raise
       end
 
-      def release_for_rollback
-        previous_release = nil
-        all_releases.reverse_each{|release|
-          if release != release_path
-            previous_release = release
-            break
-          end
-        }
-
-        previous_release
+      def save_release_state
+        if ::File.exists?(@new_resource.current_path)
+          release = ::File.readlink(@new_resource.current_path)
+          @previous_release_path = release if ::File.exists?(release)
+        end
       end
-    
+
       def deployed?(release)
         all_releases.include?(release)
       end
 
       def current_release?(release)
-        ::File.exist?(@new_resource.current_path) && 
-          ::File.readlink(@new_resource.current_path) == release
+        @previous_release == release
       end
     end
   end

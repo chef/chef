@@ -120,19 +120,22 @@ describe Chef::Provider::Deploy do
   it "rollbacks to previous release if error happens on deploy" do
     @provider.stub!(:all_releases).and_return(['previous_release'])
     @provider.stub!(:deploy).and_return{ raise "Unexpected error" }
+    @provider.stub!(:previous_release_path).and_return('previous_release')
     @provider.should_receive(:rollback)
     lambda { 
+      p 'start action deploy'
       @provider.action_deploy
-    }.should raise_exception(RuntimeError)
+    }.should raise_exception(RuntimeError, "Unexpected error")
   end
 
   it "rollbacks to previous release if error happens on force deploy" do
     @provider.stub!(:all_releases).and_return(['previous_release'])
     @provider.stub!(:deploy).and_return{ raise "Unexpected error" }
+    @provider.stub!(:previous_release_path).and_return('previous_release')
     @provider.should_receive(:rollback)
     lambda { 
       @provider.action_force_deploy
-    }.should raise_exception(RuntimeError)
+    }.should raise_exception(RuntimeError, "Unexpected error")
   end
  
   describe "on systems without broken Dir.glob results" do
