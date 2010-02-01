@@ -77,18 +77,19 @@ class Chef
       end
 
       def action_force_deploy
-        save_release_state
-
         if deployed?(release_path)
           Chef::Log.info("Already deployed app at #{release_path}, forcing.")
           FileUtils.rm_rf(release_path)
           Chef::Log.info("#{@new_resource} forcing deploy of already deployed app at #{release_path}")
         end
 
-        with_rollback_on_error do
-          deploy
-          @new_resource.updated_by_last_action(true)
-        end
+        # Alternatives:
+        # * Move release_path directory before deploy and move it back when error occurs
+        # * Rollback to previous commit
+        # * Do nothing - because deploy is force, it will be retried in short time
+        # Because last is simpliest, keep it
+        deploy
+        @new_resource.updated_by_last_action(true)
       end
 
       def action_rollback
