@@ -199,8 +199,9 @@ class Chef
     end
     
     # Set up our CouchDB design document
-    def self.create_design_document
-      Chef::CouchDB.new.create_design_document("users", DESIGN_DOCUMENT)
+    def self.create_design_document(couchdb=nil)
+      couchdb ||= Chef::Couchdb.new
+      couchdb.create_design_document("users", DESIGN_DOCUMENT)
     end
     
     #return true if an admin user exists. this is pretty expensive (O(n)), should think of a better way (nuo)

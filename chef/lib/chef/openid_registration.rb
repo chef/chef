@@ -166,8 +166,9 @@ class Chef
     end
     
     # Set up our CouchDB design document
-    def self.create_design_document
-      Chef::CouchDB.new.create_design_document("registrations", DESIGN_DOCUMENT)
+    def self.create_design_document(couchdb=nil)
+      couchdb ||= Chef::CouchDB.new
+      couchdb.create_design_document("registrations", DESIGN_DOCUMENT)
     end
     
     protected

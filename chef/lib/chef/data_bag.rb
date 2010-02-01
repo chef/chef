@@ -203,8 +203,8 @@ class Chef
     end
     
     # Set up our CouchDB design document
-    def self.create_design_document
-      couchdb = Chef::CouchDB.new
+    def self.create_design_document(couchdb=nil)
+      couchdb ||= Chef::CouchDB.new
       couchdb.create_design_document("data_bags", DESIGN_DOCUMENT)
     end
     
