@@ -124,11 +124,11 @@ end
 def store_response(resp)
   self.response = resp
   
-  STDERR.puts "store response: #{resp.inspect}, #{resp.to_s}"# if ENV['DEBUG']=='true'
+  Chef::Log.debug "store response: #{resp.inspect}, #{resp.to_s}"
   begin
-    STDERR.puts resp.to_s
+    Chef::Log.debug resp.to_s
     self.inflated_response = JSON.parse(resp.to_s)
   rescue
-    STDERR.puts "failed to convert response to JSON: #{$!.message}" if ENV['DEBUG']=='true'
+    Chef::Log.debue "failed to convert response to JSON: #{$!.message}"
   end
 end

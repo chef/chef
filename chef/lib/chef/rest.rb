@@ -123,11 +123,12 @@ class Chef
       end
     end
     
-    def sign_request(http_method, private_key, user_id, body = "", host="localhost")
+    def sign_request(http_method, path, private_key, user_id, body = "", host="localhost")
       #body = "" if body == false
       timestamp = Time.now.utc.iso8601
       sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
                                                          :http_method=>http_method,
+                                                         :path => path,
                                                          :body=>body,
                                                          :user_id=>user_id,
                                                          :timestamp=>timestamp)
@@ -188,9 +189,9 @@ class Chef
         raise ArgumentError, "Cannot sign the request without a client name, check that :node_name is assigned" if @client_name.nil?
         Chef::Log.debug("Signing the request as #{@client_name}")
         if json_body
-          headers.merge!(sign_request(method, OpenSSL::PKey::RSA.new(@signing_key), @client_name, json_body, "#{url.host}:#{url.port}"))
+          headers.merge!(sign_request(method, url.path, OpenSSL::PKey::RSA.new(@signing_key), @client_name, json_body, "#{url.host}:#{url.port}"))
         else
-          headers.merge!(sign_request(method, OpenSSL::PKey::RSA.new(@signing_key), @client_name, "", "#{url.host}:#{url.port}"))
+          headers.merge!(sign_request(method, url.path, OpenSSL::PKey::RSA.new(@signing_key), @client_name, "", "#{url.host}:#{url.port}"))
         end
       end
      
