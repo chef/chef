@@ -21,6 +21,7 @@ require 'chef/config'
 require 'chef/daemon'
 require 'chef/log'
 require 'chef/rest'
+require 'open-uri'
 require 'fileutils'
 
 class Chef::Application::Solo < Chef::Application
