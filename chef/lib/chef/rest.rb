@@ -3,7 +3,8 @@
 # Author:: Thom May (<thom@clearairturbulence.org>)
 # Author:: Nuo Yan (<nuo@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -253,46 +254,58 @@ class Chef
           end
           response
         end
-
-      rescue Errno::ECONNREFUSED => e
+        
+        if res.kind_of?(Net::HTTPSuccess)
+          if res['set-cookie']
+            @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
+          end
+          if res['content-type'] =~ /json/
+            response_body = res.body.chomp
+            JSON.parse(response_body)
+          else
+            if raw
+              tf
+            else
+              res.body
+            end
+          end
+        elsif res.kind_of?(Net::HTTPFound) or res.kind_of?(Net::HTTPMovedPermanently)
+          if res['set-cookie']
+            @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
+          end
+          @sign_request = false if @sign_on_redirect == false
+          run_request(:GET, create_url(res['location']), {}, false, limit - 1, raw)
+        else
+          if res['content-type'] =~ /json/
+            exception = JSON.parse(res.body)
+            Chef::Log.warn("HTTP Request Returned #{res.code} #{res.message}: #{exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"]}")
+          end
+          res.error!
+        end
+      
+      rescue Errno::ECONNREFUSED
         Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path} #{http_retries}/#{http_retry_count}")
-        sleep(http_retry_delay)
-        retry if (http_retries += 1) < http_retry_count
+        if (http_retries += 1) < http_retry_count
+          sleep(http_retry_delay)
+          retry
+        end
         raise Errno::ECONNREFUSED, "Connection refused connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       rescue Timeout::Error
         Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
-        sleep(http_retry_delay)
-        retry if (http_retries += 1) < http_retry_count
-        raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
-      end
-      
-    
-      if res.kind_of?(Net::HTTPSuccess)
-        if res['set-cookie']
-          @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
+        if (http_retries += 1) < http_retry_count
+          sleep(http_retry_delay)
+          retry
         end
-        if res['content-type'] =~ /json/
-          response_body = res.body.chomp
-          JSON.parse(response_body)
-        else
-          if raw
-            tf
-          else
-            res.body
+        raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
+      rescue Net::HTTPServerException
+        if res.kind_of?(Net::HTTPForbidden)
+          Chef::Log.error("Received 403 Forbidden against #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
+          if (http_retries += 1) < http_retry_count
+            sleep(http_retry_delay)
+            retry
           end
         end
-      elsif res.kind_of?(Net::HTTPFound) or res.kind_of?(Net::HTTPMovedPermanently)
-        if res['set-cookie']
-          @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
-        end
-        @sign_request = false if @sign_on_redirect == false
-        run_request(:GET, create_url(res['location']), {}, false, limit - 1, raw)
-      else
-        if res['content-type'] =~ /json/
-          exception = JSON.parse(res.body)
-          Chef::Log.warn("HTTP Request Returned #{res.code} #{res.message}: #{exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"]}")
-        end
-        res.error!
+        raise
       end
     end
     
