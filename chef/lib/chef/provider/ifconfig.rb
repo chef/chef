@@ -19,6 +19,7 @@
 require 'chef/log'
 require 'chef/mixin/command'
 require 'chef/provider'
+require 'erb'
 
 class Chef
   class Provider
