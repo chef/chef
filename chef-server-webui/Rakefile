@@ -28,6 +28,7 @@ spec = Gem::Specification.new do |s|
    "merb-haml",
    "merb-assets",
    "merb-helpers",
+   "merb-param-protection",
    "thin",
    "haml",
    "json",
