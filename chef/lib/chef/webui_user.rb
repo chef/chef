@@ -200,7 +200,7 @@ class Chef
     
     # Set up our CouchDB design document
     def self.create_design_document(couchdb=nil)
-      couchdb ||= Chef::Couchdb.new
+      couchdb ||= Chef::CouchDB.new
       couchdb.create_design_document("users", DESIGN_DOCUMENT)
     end
     
