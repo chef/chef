@@ -60,6 +60,7 @@ describe Chef::Provider::Route, "action_add" do
 
   it "should not add the route if it exists" do
     @provider.stub!(:run_command).and_return(true)
+    @provider.stub!(:is_running).and_return(true)
     @new_resource.should_not_receive(:updated=).with(true)
     @provider.action_add
   end
@@ -88,6 +89,7 @@ describe Chef::Provider::Route, "action_delete" do
   it "should delete the route if it exists" do
     @provider.stub!(:run_command).and_return(true)
     @new_resource.should_receive(:updated=).with(true)
+    @provider.stub!(:is_running).and_return(true)
     @provider.action_delete
   end
 

@@ -23,6 +23,8 @@ require 'ipaddr'
 
 class Chef::Provider::Route < Chef::Provider
     include Chef::Mixin::Command
+
+    attr_accessor :is_running
     
     MASK = { 
         '0.0.0.0'          => '0',  
@@ -61,7 +63,7 @@ class Chef::Provider::Route < Chef::Provider
     } 
 
     def load_current_resource
-        @is_running = nil
+        is_running = nil
         
         Chef::Log.debug("Configuring Route #{@new_resource.name}")
 
@@ -95,7 +97,7 @@ class Chef::Provider::Route < Chef::Provider
                 #
                 running_ip = IPAddr.new("#{destination}/#{mask}")
                 Chef::Log.debug( "new ip: #{new_ip.inspect} running ip: #{running_ip.inspect} ")
-                @is_running = true if running_ip == new_ip 
+                is_running = true if running_ip == new_ip 
             end
             route_file.close
         end
@@ -103,7 +105,7 @@ class Chef::Provider::Route < Chef::Provider
 
     def action_add
         # check to see if load_current_resource found the route
-        if  @is_running
+        if  is_running
             Chef::Log.debug("Route #{@new_resource.name} already active ")
         else
             command =  "ip route replace #{@new_resource.target}"
@@ -122,7 +124,7 @@ class Chef::Provider::Route < Chef::Provider
     end
 
     def action_delete
-        if @is_running
+        if is_running
             command = "ip route delete #{@new_resource.target}"
             command << "/#{MASK[@new_resource.netmask.to_s]}" if @new_resource.netmask 
             command << " via #{@new_resource.gateway} " 
