@@ -28,12 +28,8 @@ spec = Gem::Specification.new do |s|
    "merb-assets",
    "merb-helpers",
    "thin",
-   "haml",
    "json", 
-   "uuidtools",
-   "ruby-openid",
-   "coderay",
-   "nanite"
+   "uuidtools"
   ].each { |g| s.add_dependency g}
   
   s.require_path = 'lib'
