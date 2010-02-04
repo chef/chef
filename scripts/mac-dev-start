@@ -15,7 +15,7 @@ BASE_CMD = case ARGV[0]
            else
              "cd #{SRCDIR} && sudo rake dev:start:"
            end
-SERVICES = ["couchdb","rabbitmq","chef_solr","chef_solr_indexer","chef_server"]
+SERVICES = ["couchdb","rabbitmq","chef_solr","chef_solr_indexer","chef_server","chef_webui"]
 
 def auth_up
   system("sudo echo")  
@@ -46,7 +46,6 @@ def start_services
     start_service_in_last_tab(window,service)
   end
 end
-
 
 if __FILE__ == $0
   start_services

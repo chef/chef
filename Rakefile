@@ -119,6 +119,24 @@ def start_chef_server(type="normal")
   end
 end
 
+def start_chef_webui(type="normal")
+  puts "Starting #{type} chef development server webui"
+  @chef_webui_pid     = nil
+  mcid = fork
+  if mcid # parent
+    @chef_webui_pid = mcid
+  else # child
+    case type
+    when "normal"
+      puts "Starting chef webui for development with './chef-server/bin/chef-server-webui -a thin -l debug -N'"
+      exec("./chef-server/bin/chef-server-webui -a thin -l debug -N")
+    when "features"
+      puts "Starting chef server webui for features with #{["./chef-server/bin/chef-server-webui -a thin -C #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug -N"].join(' ')}"
+      exec("./chef-server/bin/chef-server-webui -a thin -C #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug -N")
+    end
+  end
+end
+
 def start_dev_environment(type="normal")
   start_couchdb(type)
   start_rabbitmq(type)
@@ -126,14 +144,20 @@ def start_dev_environment(type="normal")
   start_chef_solr(type)
   start_chef_solr_indexer(type)
   start_chef_server(type)
+  start_chef_webui(type)
   puts "Running CouchDB at #{@couchdb_server_pid}"
   puts "Running RabbitMQ at #{@rabbitmq_server_pid}"
   puts "Running Chef Solr at #{@chef_solr_pid}"
   puts "Running Chef Solr Indexer at #{@chef_solr_indexer_pid}"
   puts "Running Chef at #{@chef_server_pid}"
+  puts "Running Chef Web UI at #{@chef_webui_pid}"
 end
 
 def stop_dev_environment
+  if @chef_webui_pid
+    puts "Stopping Chef Web UI"
+    Process.kill("KILL", @chef_webui_pid)
+  end
   if @chef_server_pid
     puts "Stopping Chef"
     Process.kill("KILL", @chef_server_pid)
@@ -216,6 +240,12 @@ namespace :dev do
         wait_for_ctrlc
       end
 
+      desc "Start Chef Web UI for testing"
+      task :chef_webui do
+        start_chef_webui("features")
+        wait_for_ctrlc
+      end
+
     end
   end
 
@@ -248,6 +278,12 @@ namespace :dev do
     desc "Start Chef Server"
     task :chef_server do
       start_chef_server
+      wait_for_ctrlc
+    end
+
+    desc "Start Chef Web UI"
+    task :chef_webui do
+      start_chef_webui
       wait_for_ctrlc
     end
   end
