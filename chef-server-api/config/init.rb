@@ -25,14 +25,11 @@ $: << File.join(File.dirname(__FILE__), "..", "..", "chef", "lib")
 require 'chef'
 
 merb_gems_version = " > 1.0"
-dependency "merb-haml", merb_gems_version
 dependency "merb-assets", merb_gems_version
 dependency "merb-helpers", merb_gems_version
 dependency "chef", :immediate=>true unless defined?(Chef)
 
 require 'rubygems'
-
-use_template_engine :haml
 
 Merb::Config.use do |c|
   c[:session_id_key] = '_chef_server_session_id'
