@@ -131,7 +131,7 @@ describe Chef::RunList do
     it "should reset the run_list based on the array you pass" do
       @run_list << "chromeo"
       list = %w{camp chairs snakes clowns}
-      @run_list.reset(list)
+      @run_list.reset!(list)
       list.each { |i| @run_list.should be_include(i) }
       @run_list.include?("chromeo").should == false
     end

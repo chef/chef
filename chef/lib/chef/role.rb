@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Nuo Yan (<nuo@opscode.com>)
+# Author:: Christopher Brown (<cb@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -59,6 +60,7 @@ class Chef
     }
 
     attr_accessor :couchdb_rev, :couchdb_id, :couchdb
+    attr_reader :chef_server_rest
     
     # Create a new Chef::Role object.
     def initialize(couchdb=nil)
@@ -69,7 +71,8 @@ class Chef
       @run_list = Chef::RunList.new 
       @couchdb_rev = nil
       @couchdb_id = nil
-      @couchdb = couchdb ? couchdb : Chef::CouchDB.new
+      @couchdb = couchdb || Chef::CouchDB.new
+      @chef_server_rest = Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     def name(arg=nil) 
@@ -89,21 +92,14 @@ class Chef
     end
 
     def run_list(*args)
-      if args.length > 0
-        @run_list.reset(args)
-      else
-        @run_list
-      end
-    end
-        
-    def recipes(*args) 
-      if args.length > 0
-        @run_list.reset(args)
-      else
-        @run_list.recipes
-      end
+      (args.length > 0) ? @run_list.reset!(args) : @run_list
     end
 
+    def recipes(*args)
+      Chef::Log.warn "Chef::Role#recipes method is deprecated.  Please use Chef::Role#run_list"
+      run_list(*args)
+    end
+        
     def default_attributes(arg=nil)
       set_or_return(
         :default_attributes,
@@ -130,7 +126,7 @@ class Chef
         "chef_type" => "role",
         "run_list" => @run_list.run_list
       }
-      result["_rev"] = @couchdb_rev if @couchdb_rev
+      result["_rev"] = couchdb_rev if couchdb_rev
       result
     end
 
@@ -159,18 +155,13 @@ class Chef
     # List all the Chef::Role objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Roles, fully inflated.
     def self.cdb_list(inflate=false, couchdb=nil)
-      couchdb = couchdb ? couchdb : Chef::CouchDB.new
-      rs = couchdb.list("roles", inflate)
-      if inflate
-        rs["rows"].collect { |r| r["value"] }
-      else
-        rs["rows"].collect { |r| r["key"] }
-      end
+      rs = (couchdb || Chef::CouchDB.new).list("roles", inflate)
+      lookup = (inflate ? "value" : "key")
+      rs["rows"].collect { |r| r[lookup] }            
     end
 
     # Get the list of all roles from the API.
     def self.list(inflate=false)
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:role) do |n|
@@ -178,28 +169,26 @@ class Chef
         end
         response
       else
-        r.get_rest("roles")
+        chef_server_rest.get_rest("roles")
       end
     end
     
     # Load a role by name from CouchDB
     def self.cdb_load(name, couchdb=nil)
-      couchdb = couchdb ? couchdb : Chef::CouchDB.new
-      couchdb.load("role", name)
+      (couchdb || Chef::CouchDB.new).load("role", name)
     end
     
     # Load a role by name from the API
     def self.load(name)
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.get_rest("roles/#{name}")
+      chef_server_rest.get_rest("roles/#{name}")
     end
     
     # Remove this role from the CouchDB
     def cdb_destroy
-      @couchdb.delete("role", @name, @couchdb_rev)
+      couchdb.delete("role", @name, couchdb_rev)
 
       if Chef::Config[:couchdb_version] == 0.9
-        rs = @couchdb.get_view("nodes", "by_run_list", :startkey => "role[#{@name}]", :endkey => "role[#{@name}]", :include_docs => true)
+        rs = couchdb.get_view("nodes", "by_run_list", :startkey => "role[#{@name}]", :endkey => "role[#{@name}]", :include_docs => true)
         rs["rows"].each do |row| 
           node = row["doc"]
           node.run_list.remove("role[#{@name}]")
@@ -216,8 +205,7 @@ class Chef
     
     # Remove this role via the REST API
     def destroy
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.delete_rest("roles/#{@name}")
+      chef_server_rest.delete_rest("roles/#{@name}")
       
       Chef::Node.list.each do |node|
         n = Chef::Node.load(node[0])
@@ -229,36 +217,29 @@ class Chef
     
     # Save this role to the CouchDB
     def cdb_save
-      results = @couchdb.store("role", @name, self)
-      @couchdb_rev = results["rev"]
+      self.couchdb_rev = couchdb.store("role", @name, self)["rev"]
     end
     
     # Save this role via the REST API
     def save
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
       begin
-        r.put_rest("roles/#{@name}", self)
+        chef_server_rest.put_rest("roles/#{@name}", self)
       rescue Net::HTTPServerException => e
-        if e.response.code == "404"
-          r.post_rest("roles", self)
-        else
-          raise e
-        end
+        raise e unless e.response.code == "404"
+        chef_server_rest.post_rest("roles", self)
       end
       self
     end
     
     # Create the role via the REST API
     def create
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.post_rest("roles", self)
+      chef_server_rest.post_rest("roles", self)
       self
     end 
     
     # Set up our CouchDB design document
     def self.create_design_document(couchdb=nil)
-      couchdb ||= Chef::CouchDB.new
-      couchdb.create_design_document("roles", DESIGN_DOCUMENT)
+      (couchdb || Chef::CouchDB.new).create_design_document("roles", DESIGN_DOCUMENT)
     end
     
     # As a string

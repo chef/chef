@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Brown (<cb@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -33,7 +34,7 @@ class Chef
   class Node
     
     attr_accessor :attribute, :recipe_list, :couchdb, :couchdb_rev, :couchdb_id, :run_state, :run_list, :override_attrs, :default_attrs, :cookbook_loader
-    attr_reader :node
+    attr_reader :node, :chef_server_rest
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
@@ -136,15 +137,16 @@ class Chef
 
       @couchdb_rev = nil
       @couchdb_id = nil
-      @couchdb = couchdb ? couchdb : Chef::CouchDB.new
+      @couchdb = couchdb || Chef::CouchDB.new
 
       @run_state = {
         :template_cache => Hash.new,
         :seen_recipes => Hash.new,
         :seen_attributes => Hash.new
       }
+      @chef_server_rest = Chef::REST.new(Chef::Config[:chef_server_url])       
     end
-    
+
     # Find a recipe for this Chef::Node by fqdn.  Will search first for 
     # Chef::Config["node_path"]/fqdn.rb, then hostname.rb, then default.rb.
     # 
@@ -152,21 +154,15 @@ class Chef
     #
     # Raises an ArgumentError if it cannot find the node. 
     def find_file(fqdn)
-      node_file = nil
       host_parts = fqdn.split(".")
       hostname = host_parts[0]
-
-      if File.exists?(File.join(Chef::Config[:node_path], "#{fqdn}.rb"))
-        node_file = File.join(Chef::Config[:node_path], "#{fqdn}.rb")
-      elsif File.exists?(File.join(Chef::Config[:node_path], "#{hostname}.rb"))
-        node_file = File.join(Chef::Config[:node_path], "#{hostname}.rb")
-      elsif File.exists?(File.join(Chef::Config[:node_path], "default.rb"))
-        node_file = File.join(Chef::Config[:node_path], "default.rb")
-      end
-      unless node_file
-        raise ArgumentError, "Cannot find a node matching #{fqdn}, not even with default.rb!" 
-      end
-      self.from_file(node_file)
+      
+      [fqdn, hostname, "default"].each { |fname|
+       node_file = File.join(Chef::Config[:node_path], "#{fname.to_s}.rb")        
+       return self.from_file(node_file) if File.exists?(node_file)
+     }
+      
+      raise ArgumentError, "Cannot find a node matching #{fqdn}, not even with default.rb!" 
     end
     
     # Set the name of this Node, or return the current name.
@@ -188,14 +184,12 @@ class Chef
     
     # Return an attribute of this node.  Returns nil if the attribute is not found.
     def [](attrib)
-      attrs = Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)
-      attrs[attrib] 
+      Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)[attrib]
     end
     
     # Set an attribute of this node
     def []=(attrib, value)
-      attrs = Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)
-      attrs[attrib] = value
+      Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)[attrib] = value
     end
     
     def store(attrib, value)
@@ -227,41 +221,29 @@ class Chef
     # Only works on the top level. Preferred way is to use the normal [] style
     # lookup and call attribute?()
     def attribute?(attrib)
-      attrs = Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)
-      attrs.attribute?(attrib)
+      Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs).attribute?(attrib)
     end
   
     # Yield each key of the top level to the block. 
     def each(&block)
-      attrs = Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)
-      attrs.each(&block)
+      Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs).each(&block)
     end
     
     # Iterates over each attribute, passing the attribute and value to the block.
     def each_attribute(&block)
-      attrs = Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)
-      attrs.each_attribute(&block)
+      Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs).each_attribute(&block)
     end
 
     # Set an attribute based on the missing method.  If you pass an argument, we'll use that
     # to set the attribute values.  Otherwise, we'll wind up just returning the attributes
     # value.
     def method_missing(symbol, *args)
-      attrs = Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)
-      attrs.send(symbol, *args)
+      Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs).send(symbol, *args)
     end
     
     # Returns true if this Node expects a given recipe, false if not.
     def recipe?(recipe_name)
-      if @run_list.include?(recipe_name)
-        true
-      else
-        if @run_state[:seen_recipes].include?(recipe_name)
-          true
-        else
-          false
-        end
-      end
+      @run_list.include?(recipe_name) || @run_state[:seen_recipes].include?(recipe_name)
     end
     
     # Returns true if this Node expects a given role, false if not.
@@ -272,14 +254,13 @@ class Chef
     # Returns an Array of roles and recipes, in the order they will be applied.
     # If you call it with arguments, they will become the new list of roles and recipes. 
     def run_list(*args)
-      if args.length > 0
-        @run_list.reset(args)
-      else
-        @run_list
-      end
+      args.length > 0 ? @run_list.reset!(args) : @run_list
     end
-
-    alias_method :recipes, :run_list
+    
+    def recipes(*args)
+      Chef::Log.warn "Chef::Node#recipes method is deprecated.  Please use Chef::Node#run_list"
+      run_list(*args)
+    end
 
     # Returns true if this Node expects a given role, false if not.
     def run_list?(item)
@@ -334,15 +315,11 @@ class Chef
     def self.json_create(o)
       node = new
       node.name(o["name"])
-      o["attributes"].each do |k,v|
-        node[k] = v
-      end
-      if o.has_key?("defaults")
-        node.default_attrs = Mash.new(o["defaults"])
-      end
-      if o.has_key?("overrides")
-        node.override_attrs = Mash.new(o["overrides"])
-      end
+      o["attributes"].each { |k,v| node[k] = v }
+      
+      node.default_attrs = Mash.new(o["defaults"]) if o.has_key?("defaults")
+      node.override_attrs = Mash.new(o["overrides"]) if o.has_key?("overrides")
+
       if o.has_key?("run_list")
         node.run_list.reset(o["run_list"])
       else
@@ -356,17 +333,12 @@ class Chef
     # List all the Chef::Node objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Nodes, fully inflated.
     def self.cdb_list(inflate=false, couchdb=nil)
-      couchdb = couchdb ? couchdb : Chef::CouchDB.new
-      rs = couchdb.list("nodes", inflate)
-      if inflate
-        rs["rows"].collect { |r| r["value"] }
-      else
-        rs["rows"].collect { |r| r["key"] }
-      end
+      rs =(couchdb || Chef::CouchDB.new).list("nodes", inflate)
+      lookup = (inflate ? "value" : "key")
+      rs["rows"].collect { |r| r[lookup] }
     end
 
     def self.list(inflate=false)
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:node) do |n|
@@ -374,20 +346,18 @@ class Chef
         end
         response
       else
-        r.get_rest("nodes")
+        chef_server_rest.get_rest("nodes")
       end
     end
     
     # Load a node by name from CouchDB
     def self.cdb_load(name, couchdb=nil)
-      couchdb = couchdb ? couchdb : Chef::CouchDB.new
-      couchdb.load("node", name)
+      (couchdb || Chef::CouchDB.new).load("node", name)      
     end
 
     # Load a node by name
     def self.load(name)
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.get_rest("nodes/#{name}")
+      chef_server_rest.get_rest("nodes/#{name}")
     end
     
     # Remove this node from the CouchDB
@@ -397,42 +367,34 @@ class Chef
 
     # Remove this node via the REST API
     def destroy
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.delete_rest("nodes/#{@name}")
+      chef_server_rest.delete_rest("nodes/#{@name}")
     end
     
     # Save this node to the CouchDB
     def cdb_save
-      results = @couchdb.store("node", @name, self)
-      @couchdb_rev = results["rev"]
+      @couchdb_rev = @couchdb.store("node", @name, self)["rev"]
     end
 
     # Save this node via the REST API
     def save
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
       begin
-        r.put_rest("nodes/#{@name}", self)
+        chef_server_rest.put_rest("nodes/#{@name}", self)
       rescue Net::HTTPServerException => e
-        if e.response.code == "404"
-          r.post_rest("nodes", self)
-        else
-          raise e
-        end
+        raise e unless e.response.code == "404"
+        chef_server_rest.post_rest("nodes", self)
       end
       self
     end
     
     # Create the node via the REST API
     def create
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.post_rest("nodes", self)
+      chef_server_rest.post_rest("nodes", self)
       self
     end 
 
     # Set up our CouchDB design document
     def self.create_design_document(couchdb=nil)
-      couchdb = couchdb ? couchdb : Chef::CouchDB.new
-      couchdb.create_design_document("nodes", DESIGN_DOCUMENT)
+      (couchdb || Chef::CouchDB.new).create_design_document("nodes", DESIGN_DOCUMENT)
     end
     
     # As a string
