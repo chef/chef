@@ -49,8 +49,10 @@ class Chef
       def configure_session
         q = Chef::Search::Query.new
         q.search(:node, @name_args[0]) do |item|
-          session.use item[config[:attribute]] 
-          @longest = item[config[:attribute]].length if item[config[:attribute]].length > @longest
+          data = format_for_display(item)
+          Chef::Log.debug("Adding #{data[config[:attribute]]}")
+          session.use data[config[:attribute]]
+          @longest = data[config[:attribute]].length if data[config[:attribute]].length > @longest
         end
       end
 
