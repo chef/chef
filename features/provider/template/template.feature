@@ -13,7 +13,7 @@ Feature: Templates
 
 	Scenario: Render a template accessing the node directly
 	  Given a validated node
-	And	it includes the recipe 'template::render_node_attrs'
+	And it includes the recipe 'template::render_node_attrs'
 	  When I run the chef-client
 	  Then the run should exit '0'
 	And a file named 'node.txt' should contain 'bawt is fujins bot'
