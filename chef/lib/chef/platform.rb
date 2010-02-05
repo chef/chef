@@ -113,7 +113,8 @@ class Chef
         :route => Chef::Provider::Route,
         :ifconfig => Chef::Provider::Ifconfig,
         :ruby_block => Chef::Provider::RubyBlock,
-        :erl_call => Chef::Provider::ErlCall
+        :erl_call => Chef::Provider::ErlCall,
+        :log => Chef::Provider::Log::ChefLog
       }
     }
 
