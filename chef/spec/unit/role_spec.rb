@@ -1,5 +1,5 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+7# Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -61,7 +61,7 @@ describe Chef::Role do
 
     it "should not list roles in the recipe array" do
       @role.run_list([ "one", "role[two]"])
-      @role.recipes.should == [ "one" ]
+      @role.recipes.should == [ "recipe[one]", "role[two]" ]
     end
 
   end

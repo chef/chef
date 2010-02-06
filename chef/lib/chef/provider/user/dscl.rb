@@ -76,53 +76,50 @@ class Chef
         end
 
         def modify_home
-          if [nil,""].include?(@new_resource.home)
-            safe_dscl("delete /Users/#{@new_resource.username} NFSHomeDirectory")
-          else
-            if @new_resource.supports[:manage_home]
-              unless @new_resource.home =~ /^\//
-                raise(Chef::Exceptions::User,"invalid path spec for User: '#{@new_resource.username}', home directory: '#{@new_resource.home}'") 
-              end
+          return safe_dscl("delete /Users/#{@new_resource.username} NFSHomeDirectory") if (@new_resource.home.nil? || @new_resource.home.empty?)
+          if @new_resource.supports[:manage_home]
+            unless @new_resource.home =~ /^\//
+              raise(Chef::Exceptions::User,"invalid path spec for User: '#{@new_resource.username}', home directory: '#{@new_resource.home}'") 
+            end
 
-              ch_eq_nh = ( @current_resource.home ==  @new_resource.home )
-              cur_home_exists = ::File.exists?("#{@current_resource.home}")
-              new_home_exists = ::File.exists?("#{@new_resource.home}")
-              ditto = false
-              move = false
-              
-              if ch_eq_nh
+            ch_eq_nh = ( @current_resource.home ==  @new_resource.home )
+            cur_home_exists = ::File.exists?("#{@current_resource.home}")
+            new_home_exists = ::File.exists?("#{@new_resource.home}")
+            ditto = false
+            move = false
+            
+            if ch_eq_nh
+              if !new_home_exists
+                ditto = true
+              end
+            else
+              if !cur_home_exists
                 if !new_home_exists
                   ditto = true
                 end
-              else
-                if !cur_home_exists
-                  if !new_home_exists
-                    ditto = true
-                  end
-                elsif cur_home_exists
-                  move = true
-                end
-              end
-
-              if ditto
-                skel = "/System/Library/User Template/English.lproj"
-                raise(Chef::Exceptions::User,"can't find skel at: #{skel}") unless ::File.exists?(skel)
-                run_command(:command => "ditto '#{skel}' '#{@new_resource.home}'")
-                ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
-              end
-
-              if move
-                src = @current_resource.home
-                FileUtils.mkdir_p(@new_resource.home)
-                files = ::Dir.glob("#{src}/*", ::File::FNM_DOTMATCH) - ["#{src}/.","#{src}/.."]
-                ::FileUtils.mv(files,@new_resource.home, :force => true)
-                ::FileUtils.rmdir(src)
-                ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
+              elsif cur_home_exists
+                move = true
               end
             end
-            safe_dscl("create /Users/#{@new_resource.username} NFSHomeDirectory '#{@new_resource.home}'")
+
+            if ditto
+              skel = "/System/Library/User Template/English.lproj"
+              raise(Chef::Exceptions::User,"can't find skel at: #{skel}") unless ::File.exists?(skel)
+              run_command(:command => "ditto '#{skel}' '#{@new_resource.home}'")
+              ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
+            end
+
+            if move
+              src = @current_resource.home
+              FileUtils.mkdir_p(@new_resource.home)
+              files = ::Dir.glob("#{src}/*", ::File::FNM_DOTMATCH) - ["#{src}/.","#{src}/.."]
+              ::FileUtils.mv(files,@new_resource.home, :force => true)
+              ::FileUtils.rmdir(src)
+              ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
+            end
           end
-        end
+          safe_dscl("create /Users/#{@new_resource.username} NFSHomeDirectory '#{@new_resource.home}'")
+      end
 
         def osx_shadow_hash?(string)
           return !! ( string =~ /^[[:xdigit:]]{1240}$/ )

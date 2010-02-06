@@ -310,7 +310,7 @@ describe Chef::Provider::User::Dscl, "modify_home" do
           :null_object => true,
           :username => "adam",
           :home => "a path with no leading slash",
-          :supports => { :manage_home => false }
+          :supports => { :manage_home => true }
         )
         @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
         @provider.current_resource = @current_resource

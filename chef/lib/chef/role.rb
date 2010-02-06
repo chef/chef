@@ -60,7 +60,6 @@ class Chef
     }
 
     attr_accessor :couchdb_rev, :couchdb_id, :couchdb
-    attr_reader :chef_server_rest
     
     # Create a new Chef::Role object.
     def initialize(couchdb=nil)
@@ -72,7 +71,10 @@ class Chef
       @couchdb_rev = nil
       @couchdb_id = nil
       @couchdb = couchdb || Chef::CouchDB.new
-      @chef_server_rest = Chef::REST.new(Chef::Config[:chef_server_url])
+    end
+    
+    def chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     def name(arg=nil) 
@@ -95,10 +97,12 @@ class Chef
       (args.length > 0) ? @run_list.reset!(args) : @run_list
     end
 
-    def recipes(*args)
-      Chef::Log.warn "Chef::Role#recipes method is deprecated.  Please use Chef::Role#run_list"
-      run_list(*args)
-    end
+    alias_method :recipes, :run_list
+
+#     def recipes(*args)
+#       Chef::Log.warn "Chef::Role#recipes method is deprecated.  Please use Chef::Role#run_list"
+#       run_list(*args)
+#     end
         
     def default_attributes(arg=nil)
       set_or_return(

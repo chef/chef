@@ -34,7 +34,7 @@ class Chef
   class Node
     
     attr_accessor :attribute, :recipe_list, :couchdb, :couchdb_rev, :couchdb_id, :run_state, :run_list, :override_attrs, :default_attrs, :cookbook_loader
-    attr_reader :node, :chef_server_rest
+    attr_reader :node
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
@@ -133,7 +133,7 @@ class Chef
       @attribute = Mash.new
       @override_attrs = Mash.new
       @default_attrs = Mash.new
-      @run_list = Chef::RunList.new 
+      @run_list = Chef::RunList.new
 
       @couchdb_rev = nil
       @couchdb_id = nil
@@ -144,7 +144,10 @@ class Chef
         :seen_recipes => Hash.new,
         :seen_attributes => Hash.new
       }
-      @chef_server_rest = Chef::REST.new(Chef::Config[:chef_server_url])       
+    end
+
+    def chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])      
     end
 
     # Find a recipe for this Chef::Node by fqdn.  Will search first for 
@@ -321,7 +324,7 @@ class Chef
       node.override_attrs = Mash.new(o["overrides"]) if o.has_key?("overrides")
 
       if o.has_key?("run_list")
-        node.run_list.reset(o["run_list"])
+        node.run_list.reset!(o["run_list"])
       else
         o["recipes"].each { |r| node.recipes << r }
       end
@@ -346,7 +349,7 @@ class Chef
         end
         response
       else
-        chef_server_rest.get_rest("nodes")
+        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes")
       end
     end
     
@@ -357,7 +360,7 @@ class Chef
 
     # Load a node by name
     def self.load(name)
-      chef_server_rest.get_rest("nodes/#{name}")
+      Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes/#{name}")
     end
     
     # Remove this node from the CouchDB

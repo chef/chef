@@ -56,10 +56,11 @@ class Chef
     end
 
     def load_signing_key(key)
-      if File.exists?(key)
+      begin
         IO.read(key)
-      else
-        raise Chef::Exceptions::PrivateKeyMissing, "I cannot find #{key}, which you told me to use to sign requests!"
+      rescue StandardError=>se
+        Chef::Log.error "Failed to read the private key #{key}: #{se.inspect}, #{se.backtrace}"
+        raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key}, which you told me to use to sign requests!"
       end
     end
     
