@@ -24,14 +24,12 @@
 
 class Chef
   module Mixin
-    class DeepMerge
+    module DeepMerge
       def self.merge(first, second)
-        first = Mash.new(first).to_hash unless second.kind_of?(Mash)
-        first = first.to_hash
-        second = Mash.new(second).to_hash unless second.kind_of?(Mash)
-        second = second.to_hash
+        first  = Mash.new(first)  unless first.kind_of?(Mash)
+        second = Mash.new(second) unless second.kind_of?(Mash)
 
-        Mash.new(first.ko_deep_merge!(second, {:knockout_prefix => '!merge:'}))
+        DeepMerge.deep_merge!(second, first, {:knockout_prefix => "!merge:", :preserve_unmergeables => false})
       end
     
       class InvalidParameter < StandardError; end
@@ -219,33 +217,8 @@ class Chef
       end
      
     end
-        
-
-    module DeepMergeHash
-      # ko_hash_merge! will merge and knockout elements prefixed with DEFAULT_FIELD_KNOCKOUT_PREFIX
-      def ko_deep_merge!(source, options = {})
-        default_opts = {:knockout_prefix => "--", :preserve_unmergeables => false}
-        DeepMerge::deep_merge!(source, self, default_opts.merge(options))
-      end
-   
-      # deep_merge! will merge and overwrite any unmergeables in destination hash
-      def deep_merge!(source, options = {})
-        default_opts = {:preserve_unmergeables => false}
-        DeepMerge::deep_merge!(source, self, default_opts.merge(options))
-      end
-   
-      # deep_merge will merge and skip any unmergeables in destination hash
-      def deep_merge(source, options = {})
-        default_opts = {:preserve_unmergeables => true}
-        DeepMerge::deep_merge!(source, self, default_opts.merge(options))
-      end
-   
-    end # DeepMergeHashExt
-      
+     
   end
 end
 
-class Hash
-  include Chef::Mixin::DeepMergeHash
-end
 
