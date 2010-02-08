@@ -17,10 +17,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-#TODO: 1) Is adding the original author (Steve Midgley) to the Author and Copyright sections at the top of this file
-#      the correct way to handle the import of his code?
-#      2) What about his lack of a public email address? 
+# Notice:
+# This code is imported from deep_merge by Steve Midgley. deep_merge is available under the MIT license
+# from http://trac.misuse.org/science/wiki/DeepMerge
 
 class Chef
   module Mixin
