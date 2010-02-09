@@ -53,8 +53,7 @@ class Chef
         def load_cache
           begin
             JSON.parse(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
-          rescue
-            Chef::Exceptions::FileNotFound
+          rescue Chef::Exceptions::FileNotFound
             save_cache([])
           end
         end
