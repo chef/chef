@@ -17,6 +17,7 @@
 #
 
 require 'rubygems'
+require 'chef/mixin/xml_escape'
 require 'chef/log'
 require 'chef/config'
 require 'chef/couchdb'
@@ -33,6 +34,7 @@ require 'uri'
 
 class Chef
   class Solr
+    include Chef::Mixin::XMLEscape
 
     attr_accessor :solr_url, :http
 
@@ -84,7 +86,7 @@ class Chef
           values.each do |v|
             xml_field = LibXML::XML::Node.new("field")
             xml_field["name"] = field
-            xml_field.content = v.to_s
+            xml_field.content = xml_escape(v.to_s)
             xml_doc << xml_field
           end
         end
@@ -154,7 +156,7 @@ class Chef
     def generate_single_element(elem, opts={})
       xml_document = LibXML::XML::Document.new
       xml_elem = LibXML::XML::Node.new(elem)
-      opts.each { |k,v| xml_elem[k.to_s] = v.to_s }
+      opts.each { |k,v| xml_elem[k.to_s] = xml_escape(v.to_s) }
       xml_document.root = xml_elem
       xml_document.to_s(:indent => false)
     end

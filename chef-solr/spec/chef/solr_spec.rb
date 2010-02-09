@@ -97,6 +97,13 @@ describe Chef::Solr do
       @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<add><doc><field name=\"foo\">bar</field></doc></add>\n")
       @solr.solr_add(@data)
     end
+
+    it "XML escapes content before sending to SOLR" do
+      @data["foo"] = "<&>"
+      @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<add><doc><field name=\"foo\">&lt;&amp;&gt;</field></doc></add>\n")
+
+      @solr.solr_add(@data)
+    end
   end
 
   describe "solr_commit" do
