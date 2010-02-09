@@ -37,7 +37,7 @@ class Chef
   
       def convert_group_name
         if @new_resource.gid.is_a? String
-          @new_resource.gid Etc.getgrnam(@new_resource.gid).gid
+          @new_resource.gid(Etc.getgrnam(@new_resource.gid).gid)
         end
       rescue ArgumentError => e
         raise Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"

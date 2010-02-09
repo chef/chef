@@ -431,9 +431,9 @@ end
 describe Chef::Provider::User, "convert_group_name" do
   before do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User", :null_object => true, :gid => "lololo")
-    @new_resource.stub!(:to_s).and_return("user[lololo]")
-    @current_resource = mock("Chef::Resource::User", :null_object => true)
+    @new_resource = Chef::Resource::User.new("user_spec_guy") 
+    @new_resource.gid("lololo")
+    @current_resource = Chef::Resource::User.new("user_spec_current_resource_guy")
     @provider = Chef::Provider::User.new(@node, @new_resource)
     @provider.current_resource = @current_resource
     @group = mock("Struct::Group", :null_object => true, :gid => 999)
@@ -441,8 +441,8 @@ describe Chef::Provider::User, "convert_group_name" do
   end
   
   it "should lookup the group name locally" do
-    Etc.should_receive(:getgrnam).with("lololo")
-    @provider.convert_group_name
+    Etc.should_receive(:getgrnam).with("lololo").and_return(@group)
+    @provider.convert_group_name.should == 999
   end
   
   it "should raise an error if we can't translate the group name" do
@@ -451,7 +451,7 @@ describe Chef::Provider::User, "convert_group_name" do
   end
   
   it "should set the new resources gid to the integerized version if available" do
-    @new_resource.should_receive(:gid).with(999)
     @provider.convert_group_name
+    @new_resource.gid.should == 999
   end
 end
