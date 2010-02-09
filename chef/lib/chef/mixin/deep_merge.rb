@@ -18,8 +18,9 @@
 # limitations under the License.
 
 # Notice:
-# This code is imported from deep_merge by Steve Midgley. deep_merge is available under the MIT license
-# from http://trac.misuse.org/science/wiki/DeepMerge
+# This code is imported from deep_merge by Steve Midgley. deep_merge is
+# available under the MIT license from
+# http://trac.misuse.org/science/wiki/DeepMerge
 
 class Chef
   module Mixin
