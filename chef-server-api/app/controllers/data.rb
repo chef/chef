@@ -38,7 +38,7 @@ class ChefServerApi::Data < ChefServerApi::Application
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load data bag #{params[:id]}"
     end
-    display(@data_bag.list.collect { |i| absolute_slice_url(:data_bag_item, :data_bag_id => @data_bag.name, :id => i) })
+    display(@data_bag.list.inject({}) { |res, i| res[i] = absolute_slice_url(:data_bag_item, :data_bag_id => @data_bag.name, :id => i); res })
   end
 
   def create

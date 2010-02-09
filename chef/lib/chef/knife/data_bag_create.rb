@@ -28,7 +28,7 @@ class Chef
       def run 
         if @name_args.length == 2
           create_object({ "id" => @name_args[1] }, "data_bag_item[#{@name_args[1]}]") do |output|
-            rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", output)
+            rest.post_rest("data/#{@name_args[0]}", output)
           end
         else
           rest.post_rest("data", { "name" => @name_args[0] })
