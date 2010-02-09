@@ -1,7 +1,7 @@
 default: -f pretty features -r features/steps -r features/support 
 api: --tags @api --format pretty -r features/steps -r features/support features 
-api_cookbooks: --tags @api,@cookbooks --format pretty -r features/steps -r features/support features 
-api_cookbooks_tarballs: --tags @api,@cookbooks,@tarballs --format pretty -r features/steps -r features/support features 
+api_cookbooks: --tags @api --tags @cookbooks --format pretty -r features/steps -r features/support features 
+api_cookbooks_tarballs: --tags @api --tags @cookbooks --tags @tarballs --format pretty -r features/steps -r features/support features 
 api_clients: --tags @api_clients --format pretty -r features/steps -r features/support features
 api_clients_create: --tags clients_create --format pretty -r features/steps -r features/support features
 api_clients_delete: --tags clients_delete --format pretty -r features/steps -r features/support features
@@ -47,7 +47,7 @@ attribute_inclusion: --tags @attribute_inclusion --format pretty -r features/ste
 cookbooks: --tags @cookbooks --format pretty -r features/steps -r features/support features 
 cookbook_metadata: --tags @cookbook_metadata --format pretty -r features/steps -r features/support features 
 provider_remote_directory: --tags @remote_directory --format pretty -r features/steps -r features/support features 
-provider_git: --tags provider,git --format pretty -r features/steps -r features/support features 
+provider_git: --tags provider --tags git --format pretty -r features/steps -r features/support features 
 provider_template: --tags template --format pretty -r features/steps -r features/support features
 provider_package_macports: --tags macports --format pretty -r features/steps -r features/support features 
 provider_package_rubygems: --tags rubygems --format pretty -r features/steps -r features/support features 
