@@ -18,6 +18,8 @@
 class Chef
   module Mixin
     module XMLEscape
+      extend self
+
       CP1252 = {
         128 => 8364, # euro sign
         130 => 8218, # single low-9 quotation mark
