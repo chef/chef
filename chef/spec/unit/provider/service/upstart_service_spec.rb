@@ -191,6 +191,8 @@ describe Chef::Provider::Service::Upstart, "enable and disable service" do
   end
 
   it "should enable the service if it is not enabled" do
+    @file = Object.new
+    Chef::Util::FileEdit.stub!(:new).and_return(@file)
     @current_resource.stub!(:enabled).and_return(false)
     @file.should_receive(:search_file_replace)
     @file.should_receive(:write_file)
@@ -198,6 +200,8 @@ describe Chef::Provider::Service::Upstart, "enable and disable service" do
   end
   
   it "should disable the service if it is enabled" do
+    @file = Object.new
+    Chef::Util::FileEdit.stub!(:new).and_return(@file)
     @current_resource.stub!(:enabled).and_return(true)
     @file.should_receive(:search_file_replace)
     @file.should_receive(:write_file)
