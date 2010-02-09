@@ -22,15 +22,8 @@ describe Chef::Compile do
   before(:each) do
     Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "compile", "nodes"))
     Chef::Config.cookbook_path(File.join(File.dirname(__FILE__), "..", "data", "compile", "cookbooks"))
-    node = Chef::Node.new
-    node.stub!(:determine_node_name).and_return(true)
-    node.stub!(:load_libraries).and_return(true)
-    node.stub!(:load_providers).and_return(true)
-    node.stub!(:load_resources).and_return(true)
-    node.stub!(:load_attributes).and_return(true)
-    node.stub!(:load_definitions).and_return(true)
-    node.stub!(:load_recipes).and_return(true)
-    @compile = Chef::Compile.new(node)
+    @node = Chef::Node.new
+    @compile = Chef::Compile.new(@node)
   end
   
   it "should create a new Chef::Compile" do
@@ -74,6 +67,13 @@ describe Chef::Compile do
     @compile.collection[2].to_s.should == "cat[birthday]"
     @compile.collection[3].to_s.should == "cat[peanut]"
     @compile.collection[4].to_s.should == "cat[fat peanut]"
+  end
+
+  it "should not clobber default and overrides at expansion" do
+    @node.set[:monkey] = [ {}, {} ]
+    @node[:monkey].each { |m| m[:name] = "food" }
+    @compile.expand_node
+    @node[:monkey].should == [ { "name" => "food" }, { "name" => "food" } ]
   end
 
 end

@@ -43,8 +43,8 @@ class Chef
       @collection = Chef::ResourceCollection.new
       @definitions = Hash.new
       @recipes = Array.new
-      @default_attributes = Array.new
-      @override_attributes = Array.new
+      @default_attributes = Hash.new 
+      @override_attributes = Hash.new
 
       load_libraries
       load_providers
@@ -149,8 +149,8 @@ class Chef
 
     def expand_node
       @recipes, @default_attributes, @override_attributes = @node.run_list.expand
-      @node.default_attrs = @default_attributes
-      @node.override_attrs = @override_attributes
+      @node.default_attrs = Chef::Mixin::DeepMerge.merge(@node.default_attrs, @default_attributes)
+      @node.override_attrs = Chef::Mixin::DeepMerge.merge(@node.override_attrs, @override_attributes)
       return @recipes, @default_attributes, @override_attributes
     end
     
