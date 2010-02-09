@@ -1,6 +1,8 @@
 #
+# Author:: Sam Ruby
 # Author:: Daniel DeLeo (<dan@opscode.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2005 Sam Ruby
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +16,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# Code adapted from Sam Ruby's xchar.rb http://intertwingly.net/stories/2005/09/28/xchar.rb
+# Thanks, Sam!
 
 class Chef
   module Mixin
