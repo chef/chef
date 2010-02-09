@@ -281,7 +281,7 @@ describe Chef::Provider::File do
     FileUtils.stub!(:mkdir_p).and_return(true)
     FileUtils.stub!(:rm).and_return(true)
     File.stub!(:exist?).and_return(true)
-    time_becomes_a_loop = mock(Time, :strftime => "wakawaka", :null_object => true)
+    time_becomes_a_loop = mock(Time, :strftime => "wakawaka", :null_object => true, :to_i => 23)
     Time.stub!(:now).and_return(time_becomes_a_loop)
     FileUtils.should_receive(:cp).with("/tmp/s-20080705111233", "/some_prefix/tmp/s-20080705111233.chef-wakawaka", {:preserve => true}).and_return(true)
     @provider.backup
