@@ -358,6 +358,14 @@ class Chef
       (couchdb || Chef::CouchDB.new).load("node", name)      
     end
 
+    def self.exists?(nodename, couchdb)
+      begin
+        self.cdb_load(nodename, couchdb)
+      rescue Chef::Exceptions::CouchDBNotFound
+        nil
+      end
+    end
+    
     # Load a node by name
     def self.load(name)
       Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes/#{name}")
