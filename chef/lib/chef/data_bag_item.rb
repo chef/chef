@@ -119,7 +119,6 @@ class Chef
 
     # Serialize this object as a hash 
     def to_json(*a)
-      Chef::Log.debug "to_json: #{self.inspect}"
       result = {
         "name" => self.object_name,
         "json_class" => self.class.name,
@@ -133,7 +132,6 @@ class Chef
     
     # Create a Chef::DataBagItem from JSON
     def self.json_create(o)
-      Chef::Log.debug "json_create: #{o.inspect}"
       bag_item = new
       bag_item.data_bag(o["data_bag"])
       o.delete("data_bag")
@@ -169,6 +167,7 @@ class Chef
     
     # Remove this Data Bag Item from CouchDB
     def cdb_destroy
+      Chef::Log.debug "destroying data bag item: #{self.inspect}"
       @couchdb.delete("data_bag_item", object_name, @couchdb_rev)
     end
     
