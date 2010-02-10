@@ -34,7 +34,7 @@ class Chef
     
       class InvalidParameter < StandardError; end
       
-      DEFAULT_FIELD_KNOCKOUT_PREFIX = '--'
+      DEFAULT_FIELD_KNOCKOUT_PREFIX = '--' unless defined?(DEFAULT_FIELD_KNOCKOUT_PREFIX)
      
       # Deep Merge core documentation.
       # deep_merge! method permits merging of arbitrary child elements. The two top level
