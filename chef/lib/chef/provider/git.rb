@@ -121,7 +121,7 @@ class Chef
         end
 
         # since we're in a local branch already, just reset to specified revision rather than merge
-        sync_command << "#{git} fetch && #{git} fetch #{@new_resource.remote} --tags && #{git} reset --hard #{revision}"
+        sync_command << "#{git} fetch #{@new_resource.remote} && #{git} fetch #{@new_resource.remote} --tags && #{git} reset --hard #{revision}"
         Chef::Log.info "Fetching updates from #{new_resource.remote} and resetting to revison #{revision}"
         run_command(run_options(:command => sync_command.join(" && "), :cwd => @new_resource.destination))
       end
