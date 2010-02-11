@@ -61,7 +61,7 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
   
   def create
     begin   
-      @databag_name = params[:databag_id]   
+      @databag_name = params[:databag_id] 
       @databag_item = Chef::DataBagItem.new
       @databag_item.data_bag @databag_name
       @databag_item.raw_data = JSON.parse(params[:json_data])
