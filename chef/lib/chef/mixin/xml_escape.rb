@@ -52,17 +52,19 @@ class Chef
         155 => 8250, # single right-pointing angle quotation mark
         156 =>  339, # latin small ligature oe
         158 =>  382, # latin small letter z with caron
-        159 =>  376} # latin capital letter y with diaeresis
+        159 =>  376 # latin capital letter y with diaeresis
+      } unless defined?(CP1252)
 
       # http://www.w3.org/TR/REC-xml/#dt-chardata
       PREDEFINED = {
         38 => '&amp;', # ampersand
         60 => '&lt;',  # left angle bracket
-        62 => '&gt;'}  # right angle bracket
+        62 => '&gt;'  # right angle bracket
+      } unless defined?(PREDEFINED)
 
       # http://www.w3.org/TR/REC-xml/#charsets
       VALID = [[0x9, 0xA, 0xD], (0x20..0xD7FF), 
-        (0xE000..0xFFFD), (0x10000..0x10FFFF)]
+        (0xE000..0xFFFD), (0x10000..0x10FFFF)] unless defined?(VALID)
 
       def xml_escape(unescaped_str)
         begin
