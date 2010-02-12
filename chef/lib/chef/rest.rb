@@ -286,23 +286,23 @@ class Chef
         end
       
       rescue Errno::ECONNREFUSED
-        Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path} #{http_retries}/#{http_retry_count}")
         if (http_retries += 1) < http_retry_count
+          Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path} #{http_retries}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
         raise Errno::ECONNREFUSED, "Connection refused connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       rescue Timeout::Error
-        Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
         if (http_retries += 1) < http_retry_count
+          Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       rescue Net::HTTPServerException
         if res.kind_of?(Net::HTTPForbidden)
-          Chef::Log.error("Received 403 Forbidden against #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
           if (http_retries += 1) < http_retry_count
+            Chef::Log.error("Received 403 Forbidden against #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
             sleep(http_retry_delay)
             retry
           end
