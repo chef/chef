@@ -32,8 +32,7 @@ class ChefServerApi::Search < ChefServerApi::Application
 
   def valid_indexes
     indexes = Chef::DataBag.cdb_list(false)
-    indexes << "role"
-    indexes << "node"
+    indexes += %w{ role node client }
   end
 
   def show
