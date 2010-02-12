@@ -149,6 +149,7 @@ class Chef
       removed = @couchdb.delete("data_bag", @name, @couchdb_rev)
       rs = @couchdb.get_view("data_bags", "entries", :include_docs => true, :startkey => @name, :endkey => @name)
       rs["rows"].each do |row|
+        row["doc"].couchdb = couchdb
         row["doc"].cdb_destroy
       end
       removed
