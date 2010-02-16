@@ -186,6 +186,14 @@ class Chef
     def self.load(name)
       chef_server_rest.get_rest("roles/#{name}")
     end
+
+    def self.exists?(rolename, couchdb)
+      begin
+        self.cdb_load(rolename, couchdb)
+      rescue Chef::Exceptions::CouchDBNotFound
+        nil
+      end
+    end
     
     # Remove this role from the CouchDB
     def cdb_destroy
