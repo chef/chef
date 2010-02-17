@@ -2,8 +2,8 @@
 
 #PIDFILE=/var/run/chef/solr.pid
 #CONFIG=/etc/chef/server.rb
-#USER=chef
-#GROUP=chef
+#CHEF_USER=chef
+#CHEF_GROUP=chef
 #LOGFILE=/var/log/chef/solr.log
 # options for Java.
 #OPTIONS=

@@ -17,8 +17,8 @@ prog="chef-solr-indexer"
 pidfile=${PIDFILE-/var/run/chef/solr-indexer.pid}
 lockfile=${LOCKFILE-/var/lock/subsys/$prog}
 config=${CONFIG-/etc/chef/server.rb}
-user=${USER-chef}
-group=${GROUP-chef}
+user=${CHEF_USER-chef}
+group=${CHEF_GROUP-chef}
 logfile=${LOGFILE-/var/log/chef/solr-indexer.log}
 
 start() {

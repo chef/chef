@@ -2,8 +2,8 @@
 
 #PIDFILE=/var/run/chef/client.pid
 #CONFIG=/etc/chef/client.rb
-#USER=root
-#GROUP=root
+#CHEF_USER=root
+#CHEF_GROUP=root
 #INTERVAL=1800
 #SPLAY=20
 #LOGFILE=/var/log/chef/client.log
