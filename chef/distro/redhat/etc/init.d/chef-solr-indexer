@@ -1,32 +1,29 @@
 #!/bin/bash
-# Startup script for chef-server
+# Startup script for chef-solr-indexer
 #
-# chkconfig: - 65 35
-# description: Server component of the Chef systems integration framework.
-# processname: chef-server
+# chkconfig: - 66 34
+# description: Search indexer component of Chef Server.
+# processname: chef-solr-indexer
 #
-# config: /etc/sysconfig/chef-server
-# pidfile: /var/run/chef/chef-server.pid
+# config: /etc/sysconfig/chef-solr-indexer
+# pidfile: /var/run/chef/chef-solr-indexer.pid
 
 # Source function library
 . /etc/init.d/functions
 
-[ -f /etc/sysconfig/chef-server ] && . /etc/sysconfig/chef-server
+[ -f /etc/sysconfig/chef-solr-indexer ] && . /etc/sysconfig/chef-solr-indexer
 
-prog="chef-server"
-childpidfiles=${CHILDPIDFILES-/var/run/chef/server.%s.pid}
-pidfile=${PIDFILE-/var/run/chef/server.main.pid}
+prog="chef-solr-indexer"
+pidfile=${PIDFILE-/var/run/chef/solr-indexer.pid}
 lockfile=${LOCKFILE-/var/lock/subsys/$prog}
 config=${CONFIG-/etc/chef/server.rb}
 user=${USER-chef}
 group=${GROUP-chef}
-cluster_nodes=${CLUSTER_NODES-1}
-logfile=${LOGFILE-/var/log/chef/merb.%s.log}
-options=${OPTIONS-}
+logfile=${LOGFILE-/var/log/chef/solr-indexer.log}
 
 start() {
     echo -n "Starting $prog:"
-    daemon $prog -d -c "$cluster_nodes" -C "$config" -u "$user" -G "$group" -L "$logfile" -P "$childpidfiles" "$options" "&>/dev/null"
+    daemon $prog -d -c "$config" -u "$user" -g "$group" -L "$logfile" "&>/dev/null"
     RETVAL=$?
     echo
     [ $RETVAL -eq 0 ] && touch ${lockfile}

@@ -5,6 +5,6 @@
 #CONFIG=/etc/chef/server.rb
 #USER=chef
 #GROUP=chef
-#CLUSTER_NODES=2
+#CLUSTER_NODES=1
 #LOGFILE=/var/log/chef/merb.%s.log
 #OPTIONS=
