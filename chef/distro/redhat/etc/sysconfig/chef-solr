@@ -5,5 +5,5 @@
 #CHEF_USER=chef
 #CHEF_GROUP=chef
 #LOGFILE=/var/log/chef/solr.log
-# options for Java.
-#OPTIONS=
+# options for Java. Need to start with -j followed by options..
+#OPTIONS="-j "
