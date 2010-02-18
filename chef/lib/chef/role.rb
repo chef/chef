@@ -59,7 +59,8 @@ class Chef
       }
     }
 
-    attr_accessor :couchdb_rev, :couchdb_id, :couchdb
+    attr_accessor :couchdb_rev, :couchdb
+    attr_reader :couchdb_id
     
     # Create a new Chef::Role object.
     def initialize(couchdb=nil)
@@ -72,7 +73,12 @@ class Chef
       @couchdb_id = nil
       @couchdb = couchdb || Chef::CouchDB.new
     end
-    
+
+    def couchdb_id=(value)
+      @couchdb_id = value
+      self.index_id = value
+    end
+
     def chef_server_rest
       Chef::REST.new(Chef::Config[:chef_server_url])
     end
@@ -146,11 +152,11 @@ class Chef
       role.description(o["description"])
       role.default_attributes(o["default_attributes"])
       role.override_attributes(o["override_attributes"])
-      if o.has_key?("run_list")
-        role.run_list(o["run_list"]) if o.has_key?("run_list")
-      else
-        role.run_list(o["recipes"]) 
-      end
+      role.run_list(if o.has_key?("run_list")
+                      o["run_list"]
+                    else
+                      o["recipes"]
+                    end)
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       role.couchdb_id = o["_id"] if o.has_key?("_id")
       role 

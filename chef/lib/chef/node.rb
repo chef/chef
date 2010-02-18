@@ -33,8 +33,9 @@ require 'json'
 class Chef
   class Node
     
-    attr_accessor :attribute, :recipe_list, :couchdb, :couchdb_rev, :couchdb_id, :run_state, :run_list, :override_attrs, :default_attrs, :cookbook_loader
+    attr_accessor :attribute, :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list, :override_attrs, :default_attrs, :cookbook_loader
     attr_reader :node
+    attr_reader :couchdb_id
     
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
@@ -144,6 +145,11 @@ class Chef
         :seen_recipes => Hash.new,
         :seen_attributes => Hash.new
       }
+    end
+
+    def couchdb_id=(value)
+      @couchdb_id = value
+      self.index_id = value
     end
 
     def chef_server_rest

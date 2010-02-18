@@ -80,7 +80,7 @@
                                 %td{:colspan => 2} This node has no roles or recipes applied.
                             - else
                               - rl = Chef::RunList.new
-                              - rl.reset(node[1].run_list)
+                              - rl.reset!(node[1].run_list)
                               -rl.each_index do |i|
                                 - type, name, fname = rl.parse_entry(rl[i])
                                 %tr

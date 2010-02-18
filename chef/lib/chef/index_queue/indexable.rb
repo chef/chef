@@ -38,18 +38,20 @@ class Chef
         including_class.send(:extend, ClassMethods)
       end
       
+      attr_accessor :index_id
+      
       def index_object_type
         self.class.index_object_type || Mixin::ConvertToClassName.snake_case_basename(self.class.name)
       end
       
       def with_indexer_metadata(with_metadata={})
+        # changing input param symbol keys to strings, as the keys in hash that goes to solr are expected to be strings [cb]
         with_metadata.each do |key,value|
           with_metadata[key.to_s] = with_metadata.delete(key)
         end
         
         with_metadata["type"]     ||= index_object_type
-        with_metadata["database"] ||= Chef::Config[:couchdb_database]
-        with_metadata["id"]       ||= (couchdb_id || UUIDTools::UUID.random_create.to_s)
+        with_metadata["id"]       ||= (self.index_id || UUIDTools::UUID.random_create.to_s)
         with_metadata["item"]       = self
         with_metadata
       end

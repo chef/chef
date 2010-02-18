@@ -37,7 +37,7 @@ class Chef
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
     
-    attr_accessor :node, :registration, :json_attribs, :validation_token, :node_name, :ohai
+    attr_accessor :node, :registration, :json_attribs, :validation_token, :node_name, :ohai, :rest
     
     # Creates a new Chef::Client.
     def initialize()
@@ -51,11 +51,11 @@ class Chef
       Chef::Log.verbose = Chef::Config[:verbose_logging]
       Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger
       @ohai_has_run = false
-      if File.exists?(Chef::Config[:client_key])
-        @rest = Chef::REST.new(Chef::Config[:chef_server_url])
-      else
-        @rest = Chef::REST.new(Chef::Config[:chef_server_url], nil, nil)
-      end
+      @rest = if File.exists?(Chef::Config[:client_key])
+                Chef::REST.new(Chef::Config[:chef_server_url])
+              else
+                Chef::REST.new(Chef::Config[:chef_server_url], nil, nil)
+              end
     end
     
     # Do a full run for this Chef::Client.  Calls:
@@ -147,15 +147,15 @@ class Chef
       node_name ||= determine_node_name
       raise RuntimeError, "Unable to determine node name from ohai" unless node_name
       Chef::Log.debug("Building node object for #{@node_name}")
+
       unless solo
-        begin
-          @node = @rest.get_rest("nodes/#{@node_name}")
-        rescue Net::HTTPServerException => e
-          unless e.message =~ /^404/
-            raise e
-          end
-        end
+        @node = begin
+                  rest.get_rest("nodes/#{@node_name}")
+                rescue Net::HTTPServerException => e
+                  raise unless e.message =~ /^404/
+                end
       end
+      
       unless @node
         @node_exists = false
         @node ||= Chef::Node.new
@@ -183,11 +183,10 @@ class Chef
         Chef::Log.debug("Client key #{Chef::Config[:client_key]} is present - skipping registration")
       else
         Chef::Log.info("Client key #{Chef::Config[:client_key]} is not present - registering")
-        @vr = Chef::REST.new(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
-        @vr.register(@node_name, Chef::Config[:client_key])
+        Chef::REST.new(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).register(@node_name, Chef::Config[:client_key])
       end
       # We now have the client key, and should use it from now on.
-      @rest = Chef::REST.new(Chef::Config[:chef_server_url])
+      self.rest = Chef::REST.new(Chef::Config[:chef_server_url])
     end
     
     # Update the file caches for a given cache segment.  Takes a segment name
@@ -234,7 +233,7 @@ class Chef
 
             changed = true
             begin
-              raw_file = @rest.get_rest(rf_url, true)
+              raw_file = rest.get_rest(rf_url, true)
             rescue Net::HTTPRetriableError => e
               if e.response.kind_of?(Net::HTTPNotModified)
                 changed = false
@@ -270,7 +269,7 @@ class Chef
     # true:: Always returns true
     def sync_cookbooks
       Chef::Log.debug("Synchronizing cookbooks")
-      cookbook_hash = @rest.get_rest("nodes/#{@node_name}/cookbooks")
+      cookbook_hash = rest.get_rest("nodes/#{@node_name}/cookbooks")
       Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
       Chef::FileCache.list.each do |cache_file|
         if cache_file =~ /^cookbooks\/(.+?)\//
@@ -291,14 +290,17 @@ class Chef
     # true:: Always returns true
     def save_node
       Chef::Log.debug("Saving the current state of node #{@node_name}")
-      if @node_exists
-        @node = @rest.put_rest("nodes/#{@node_name}", @node)
-      else
-        result = @rest.post_rest("nodes", @node)
-        @node = @rest.get_rest(result['uri'])
-        @node_exists = true
-      end
-      true
+      @node = begin
+                if @node_exists
+                  rest.put_rest("nodes/#{@node_name}", @node)
+                else
+                  result = rest.post_rest("nodes", @node)
+                  @node_exists = true
+                  rest.get_rest(result['uri'])
+                end
+              rescue
+                nil
+              end
     end
     
     # Compiles the full list of recipes for the server, and passes it to an instance of
@@ -314,8 +316,7 @@ class Chef
       compile = Chef::Compile.new(@node)
       
       Chef::Log.debug("Converging node #{@node_name}")
-      cr = Chef::Runner.new(@node, compile.collection, compile.definitions, compile.cookbook_loader)
-      cr.converge
+      Chef::Runner.new(@node, compile.collection, compile.definitions, compile.cookbook_loader).converge
       true
     end
 
