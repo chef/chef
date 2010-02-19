@@ -412,7 +412,7 @@ describe Chef::Provider::Deploy do
     
     before do
       ::File.stub!(:exist?).with("#{@expected_release_dir}/gems.yml").and_return(true)
-      @gem_list = [{:name=>"ezmobius-nanite",:version=>"0.4.1.2"},{:name=>"eventmachine", :version=>"0.12.9"}]
+      @gem_list = [{:name=>"eventmachine", :version=>"0.12.9"}]
     end
     
     it "reads a gems.yml file, creating gem providers for each with action :upgrade" do
@@ -422,7 +422,7 @@ describe Chef::Provider::Deploy do
       gems = @provider.send(:gem_packages)
       
       gems.map { |g| g.action }.should == [[:install], [:install]]
-      gems.map { |g| g.name }.should == %w{ezmobius-nanite eventmachine}
+      gems.map { |g| g.name }.should == %w{eventmachine}
       gems.map { |g| g.version }.should == %w{0.4.1.2 0.12.9}
     end
     
