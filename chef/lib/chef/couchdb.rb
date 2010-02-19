@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Christopher Brown (<cb@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -39,11 +40,7 @@ class Chef
     end
 
     def couchdb_database(args=nil)
-      if args
-        @db = args
-      else
-        @db
-      end
+      @db = args || @db
     end
 
     def create_id_map
@@ -111,9 +108,8 @@ class Chef
           :object => { :respond_to => :to_json },
         }
       )
-      response = get_view("id_map", "name_to_id", :key => [ obj_type, name ])
-      uuid    = response["rows"].empty? ? nil : response["rows"].first.fetch("id")
-      uuid  ||= UUIDTools::UUID.random_create.to_s
+      rows = get_view("id_map", "name_to_id", :key => [ obj_type, name ])["rows"]
+      uuid    = rows.empty? ? UUIDTools::UUID.random_create.to_s : rows.first.fetch("id")
       
       db_put_response = @rest.put_rest("#{couchdb_database}/#{uuid}", object)
       
@@ -133,7 +129,7 @@ class Chef
           :obj_type => { :kind_of => String },
           :name => { :kind_of => String },
         }
-      )
+               )
       doc = find_by_name(obj_type, name)
       doc.couchdb = self if doc.respond_to?(:couchdb)
       doc 

@@ -53,10 +53,13 @@ class Chef
         
         timestamp = Time.now.utc.iso8601
         
-        Chef::Log.logger.debug("Signing: method: #{http_verb}, file: #{content_file}, User-id: #{user_id}, Timestamp: #{timestamp}")
+        url = URI.parse(to_url)
+        
+        Chef::Log.logger.debug("Signing: method: #{http_verb}, path: #{url.path}, file: #{content_file}, User-id: #{user_id}, Timestamp: #{timestamp}")
         
         signing_options = {
           :http_method=>http_verb,
+          :path=>url.path,
           :user_id=>user_id,
           :timestamp=>timestamp}
         (content_file && signing_options[:file] = content_file) || (signing_options[:body] = (content_body || ""))
@@ -68,7 +71,6 @@ class Chef
         # net/http doesn't like symbols for header keys, so we'll to_s each one just in case
         headers = DefaultHeaders.merge(Hash[*headers.map{ |k,v| [k.to_s, v] }.flatten])
 
-        url = URI.parse(to_url)
         req = case http_verb
               when :put
                 Net::HTTP::Put.new(url.path, headers)

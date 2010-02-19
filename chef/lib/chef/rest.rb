@@ -56,10 +56,11 @@ class Chef
     end
 
     def load_signing_key(key)
-      if File.exists?(key)
+      begin
         IO.read(key)
-      else
-        raise Chef::Exceptions::PrivateKeyMissing, "I cannot find #{key}, which you told me to use to sign requests!"
+      rescue StandardError=>se
+        Chef::Log.error "Failed to read the private key #{key}: #{se.inspect}, #{se.backtrace}"
+        raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key}, which you told me to use to sign requests!"
       end
     end
     
@@ -123,11 +124,12 @@ class Chef
       end
     end
     
-    def sign_request(http_method, private_key, user_id, body = "", host="localhost")
+    def sign_request(http_method, path, private_key, user_id, body = "", host="localhost")
       #body = "" if body == false
       timestamp = Time.now.utc.iso8601
       sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
                                                          :http_method=>http_method,
+                                                         :path => path,
                                                          :body=>body,
                                                          :user_id=>user_id,
                                                          :timestamp=>timestamp)
@@ -190,9 +192,9 @@ class Chef
         raise ArgumentError, "Cannot sign the request without a client name, check that :node_name is assigned" if @client_name.nil?
         Chef::Log.debug("Signing the request as #{@client_name}")
         if json_body
-          headers.merge!(sign_request(method, OpenSSL::PKey::RSA.new(@signing_key), @client_name, json_body, "#{url.host}:#{url.port}"))
+          headers.merge!(sign_request(method, url.path, OpenSSL::PKey::RSA.new(@signing_key), @client_name, json_body, "#{url.host}:#{url.port}"))
         else
-          headers.merge!(sign_request(method, OpenSSL::PKey::RSA.new(@signing_key), @client_name, "", "#{url.host}:#{url.port}"))
+          headers.merge!(sign_request(method, url.path, OpenSSL::PKey::RSA.new(@signing_key), @client_name, "", "#{url.host}:#{url.port}"))
         end
       end
      
@@ -286,23 +288,23 @@ class Chef
         end
       
       rescue Errno::ECONNREFUSED
-        Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path} #{http_retries}/#{http_retry_count}")
         if (http_retries += 1) < http_retry_count
+          Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path} #{http_retries}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
         raise Errno::ECONNREFUSED, "Connection refused connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       rescue Timeout::Error
-        Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
         if (http_retries += 1) < http_retry_count
+          Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       rescue Net::HTTPServerException
         if res.kind_of?(Net::HTTPForbidden)
-          Chef::Log.error("Received 403 Forbidden against #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
           if (http_retries += 1) < http_retry_count
+            Chef::Log.error("Received 403 Forbidden against #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
             sleep(http_retry_delay)
             retry
           end

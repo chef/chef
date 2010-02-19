@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Nuo Yan (<nuo@opscode.com>)
+# Author:: Christopher Brown (<cb@opscode.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -74,7 +75,7 @@ class Chef
       @name = '' 
       @couchdb_rev = nil
       @couchdb_id = nil
-      @couchdb = couchdb ? couchdb : Chef::CouchDB.new
+      @couchdb = (couchdb || Chef::CouchDB.new)
     end
 
     def name(arg=nil) 
@@ -99,6 +100,10 @@ class Chef
     def to_json(*a)
       to_hash.to_json(*a)
     end
+
+    def chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])
+    end
     
     # Create a Chef::Role from JSON
     def self.json_create(o)
@@ -112,17 +117,12 @@ class Chef
     # List all the Chef::DataBag objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Roles, fully inflated.
     def self.cdb_list(inflate=false, couchdb=nil)
-      couchdb = couchdb ? couchdb : Chef::CouchDB.new
-      rs = couchdb.list("data_bags", inflate)
-      if inflate
-        rs["rows"].collect { |r| r["value"] }
-      else
-        rs["rows"].collect { |r| r["key"] }
-      end
+      rs = (couchdb || Chef::CouchDB.new).list("data_bags", inflate)
+      lookup = (inflate ? "value" : "key")
+      rs["rows"].collect { |r| r[lookup] }
     end
     
     def self.list(inflate=false)
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:data) do |n|
@@ -130,20 +130,18 @@ class Chef
         end
         response
       else
-        r.get_rest("data")
+        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
       end
     end
     
     # Load a Data Bag by name from CouchDB
     def self.cdb_load(name, couchdb=nil)
-      couchdb = couchdb ? couchdb : Chef::CouchDB.new
-      couchdb.load("data_bag", name)
+      (couchdb || Chef::CouchDB.new).load("data_bag", name)
     end
     
     # Load a Data Bag by name via the RESTful API
     def self.load(name)
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.get_rest("data/#{name}")
+      Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{name}")
     end
     
     # Remove this Data Bag from CouchDB
@@ -151,14 +149,14 @@ class Chef
       removed = @couchdb.delete("data_bag", @name, @couchdb_rev)
       rs = @couchdb.get_view("data_bags", "entries", :include_docs => true, :startkey => @name, :endkey => @name)
       rs["rows"].each do |row|
+        row["doc"].couchdb = couchdb
         row["doc"].cdb_destroy
       end
       removed
     end
     
     def destroy
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.delete_rest("data/#{@name}")
+      chef_server_rest.delete_rest("data/#{@name}")
     end
     
     # Save this Data Bag to the CouchDB
@@ -169,23 +167,18 @@ class Chef
     
     # Save the Data Bag via RESTful API
     def save
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
       begin
-        r.put_rest("data/#{@name}", self)
+        chef_server_rest.put_rest("data/#{@name}", self)
       rescue Net::HTTPServerException => e
-        if e.response.code == "404"
-          r.post_rest("data", self)
-        else
-          raise e
-        end
+        raise e unless e.response.code == "404"
+        chef_server_rest.post_rest("data", self)
       end
       self
     end
     
     #create a data bag via RESTful API
     def create
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.post_rest("data", self)
+      chef_server_rest.post_rest("data", self)
       self
     end
 
@@ -204,8 +197,7 @@ class Chef
     
     # Set up our CouchDB design document
     def self.create_design_document(couchdb=nil)
-      couchdb ||= Chef::CouchDB.new
-      couchdb.create_design_document("data_bags", DESIGN_DOCUMENT)
+      (couchdb || Chef::CouchDB.new).create_design_document("data_bags", DESIGN_DOCUMENT)
     end
     
     # As a string

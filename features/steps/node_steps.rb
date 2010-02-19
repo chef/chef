@@ -34,7 +34,7 @@ end
 
 Given /^it includes no recipes$/ do 
   self.recipe = "" 
-  client.node.run_list.reset
+  client.node.run_list.reset!
   client.save_node
 end
 

@@ -53,7 +53,7 @@ class Chef
               nlist << new_value
             end
           end
-          node.run_list.reset(nlist)
+          node.run_list.reset!(nlist)
         else
           node.run_list << new_value
         end

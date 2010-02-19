@@ -91,7 +91,7 @@ class Chef
       @run_list.include?(fentry)
     end
 
-    def reset(*args)
+    def reset!(*args)
       @run_list = Array.new
       @recipes = Array.new
       @roles = Array.new

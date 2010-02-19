@@ -27,12 +27,6 @@ describe Chef::REST do
     @rest = Chef::REST.new("url", nil, nil)
   end
 
-  describe "initialize" do
-    it "should create a new Chef::REST" do
-      @rest.should be_kind_of(Chef::REST)
-    end
-  end
-
   describe "load_signing_key" do
     before(:each) do
       @private_key = <<EOH
@@ -74,8 +68,7 @@ EOH
     end
 
     it "should raise a Chef::Exceptions::PrivateKeyMissing exception if the key cannot be found" do
-      File.stub!(:exists?).and_return(false)
-      File.stub!(:readable?).and_return(true) #42!
+      IO.stub!(:read).and_raise(IOError)
       lambda {
         @rest.load_signing_key("/tmp/keyfile.pem")
       }.should raise_error(Chef::Exceptions::PrivateKeyMissing)
