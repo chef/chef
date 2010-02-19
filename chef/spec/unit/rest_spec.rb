@@ -172,6 +172,13 @@ EOH
       Net::HTTP.stub!(:new).and_return(@http_mock)
       @rest.run_request(method, @url_mock, {}, data, limit, raw)
     end
+
+    it "should always include the X-Chef-Version header" do
+      Net::HTTP::Get.should_receive(:new).with("/?foo=bar", 
+        { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
+      ).and_return(@request_mock)
+      do_run_request
+    end
     
     it "should raise an exception if the redirect limit is 0" do
       lambda { @rest.run_request(:GET, "/", {}, false, 0)}.should raise_error(ArgumentError)
@@ -276,7 +283,7 @@ EOH
     it "should set the cookie for this request if one exists for the given host:port" do
       @rest.cookies = { "#{@url_mock.host}:#{@url_mock.port}" => "cookie monster" }
       Net::HTTP::Get.should_receive(:new).with("/?foo=bar", 
-        { 'Accept' => 'application/json', 'Cookie' => 'cookie monster' }
+        { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION, 'Cookie' => 'cookie monster' }
       ).and_return(@request_mock)
       do_run_request
       @rest.cookies = Hash.new
@@ -284,28 +291,28 @@ EOH
     
     it "should build a new HTTP GET request" do
       Net::HTTP::Get.should_receive(:new).with("/?foo=bar", 
-        { 'Accept' => 'application/json' }
+        { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
       ).and_return(@request_mock)
       do_run_request
     end
     
     it "should build a new HTTP POST request" do
       Net::HTTP::Post.should_receive(:new).with("/?foo=bar", 
-        { 'Accept' => 'application/json', "Content-Type" => 'application/json' }
+        { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION }
       ).and_return(@request_mock)
       do_run_request(:POST, @data_mock)
     end
     
     it "should build a new HTTP PUT request" do
       Net::HTTP::Put.should_receive(:new).with("/?foo=bar", 
-        { 'Accept' => 'application/json', "Content-Type" => 'application/json' }
+        { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION }
       ).and_return(@request_mock)
       do_run_request(:PUT, @data_mock)
     end
     
     it "should build a new HTTP DELETE request" do
       Net::HTTP::Delete.should_receive(:new).with("/?foo=bar", 
-        { 'Accept' => 'application/json' }
+        { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
       ).and_return(@request_mock)
       do_run_request(:DELETE)
     end
@@ -367,7 +374,7 @@ EOH
     end
     
     it "should build a new HTTP GET request without the application/json accept header for raw reqs" do
-      Net::HTTP::Get.should_receive(:new).with("/?foo=bar", {}).and_return(@request_mock)
+      Net::HTTP::Get.should_receive(:new).with("/?foo=bar", {'X-Chef-Version' => Chef::VERSION}).and_return(@request_mock)
       do_run_request(:GET, false, 10, true)
     end
     
