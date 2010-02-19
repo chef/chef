@@ -90,6 +90,14 @@ class Chef
           :mdadm => Chef::Provider::Mdadm
         }
       },
+      :arch   => {
+        :default => {
+          :package => Chef::Provider::Package::Pacman,
+          :service => Chef::Provider::Service::Arch,
+          :cron => Chef::Provider::Cron,
+          :mdadm => Chef::Provider::Mdadm
+        }
+      },
       :solaris  => {},
       :default  => {
         :file => Chef::Provider::File,
