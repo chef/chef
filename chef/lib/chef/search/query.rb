@@ -17,10 +17,6 @@
 #
 
 require 'chef/config'
-require 'chef/node'
-require 'chef/role'
-require 'chef/data_bag'
-require 'chef/data_bag_item'
 require 'uri'
 
 class Chef
@@ -30,17 +26,14 @@ class Chef
       attr_accessor :rest
 
       def initialize(url=nil)
-        url ||= Chef::Config[:search_url]
-        @rest = Chef::REST.new(url)
+        @rest = Chef::REST.new(url ||Chef::Config[:search_url])
       end
 
       # Search Solr for objects of a given type, for a given query. If you give
       # it a block, it will handle the paging for you dynamically.
       def search(type, query="*:*", sort=nil, start=0, rows=20, &block)
-        unless type.kind_of?(String) || type.kind_of?(Symbol)
-          raise ArgumentError, "Type must be a string or a symbol!" 
-        end
-
+        raise ArgumentError, "Type must be a string or a symbol!" unless (type.kind_of?(String) || type.kind_of?(Symbol))
+        
         response = @rest.get_rest("search/#{type}?q=#{escape(query)}&sort=#{escape(sort)}&start=#{escape(start)}&rows=#{escape(rows)}")
         if block
           response["rows"].each { |o| block.call(o) unless o.nil?}
@@ -60,11 +53,7 @@ class Chef
 
       private
         def escape(s)
-          if s
-            URI.escape(s.to_s) 
-          else
-            s
-          end
+          s || URI.escape(s.to_s) 
         end
     end
   end

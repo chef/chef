@@ -42,21 +42,21 @@ class Chef
       #
       # You'll wind up having to page things yourself.
       def raw(type, options={})
-        case type
-        when "role",:role,"node",:node,"client",:client
-          qtype = type
-        else
-          qtype = [ "data_bag_item", type ]
-        end
-        Chef::Log.debug("Searching #{@database} #{qtype.inspect} for #{options.inspect}")
+        qtype = case type
+                when "role",:role,"node",:node,"client",:client
+                  type
+                else
+                  [ "data_bag_item", type ]
+                end
         results = solr_select(@database, qtype, options)
-        if results["response"]["docs"].length > 0
-          objects = @couchdb.bulk_get(
-            results["response"]["docs"].collect { |d| d["X_CHEF_id_CHEF_X"] }
-          )
-        else
-          objects = []
-        end
+        Chef::Log.debug("Searching #{@database} #{qtype.inspect} for #{options.inspect} with results:\n#{results.inspect}") 
+        objects = if results["response"]["docs"].length > 0
+                    bulk_objects = @couchdb.bulk_get( results["response"]["docs"].collect { |d| d["X_CHEF_id_CHEF_X"] } )
+                    Chef::Log.debug("bulk get of objects: #{bulk_objects.inspect}")
+                    bulk_objects
+                  else
+                    []
+                  end
         [ objects, results["response"]["start"], results["response"]["numFound"], results["responseHeader"] ] 
       end
 

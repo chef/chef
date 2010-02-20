@@ -39,26 +39,23 @@ class Chef
       
       def add(payload)
         index = Chef::Solr::Index.new
-        
         Chef::Log.debug("Dequeued item for indexing: #{payload.inspect}")
 
-        pitem = nil
-        if payload["item"].respond_to?(:keys)
-          pitem = payload["item"]
-        elsif payload["item"].respond_to?(:to_hash)
-          pitem = payload["item"].to_hash
-        else
-          return generate_response() { raise ArgumentError, "Payload item does not respond to :keys or :to_hash, cannot index!" }
-        end
-        response = generate_response { index.add(payload["id"], payload["database"], payload["type"], pitem) }
+        response = begin
+                     pitem = payload["item"].to_hash                  
+                     generate_response { index.add(payload["id"], payload["database"], payload["type"], pitem) }                  
+                   rescue NoMethodError
+                     generate_response() { raise ArgumentError, "Payload item does not respond to :keys or :to_hash, cannot index!" }
+                   end
+        
         Chef::Log.info("Indexing #{payload["type"]} #{payload["id"]} from #{payload["database"]} status #{response[:status]}#{response[:status] == :error ? ' ' + response[:error] : ''}")
         response 
       end
 
       def delete(payload)
-        index = Chef::Solr::Index.new
-        generate_response { index.delete(payload["id"]) }
+        response = generate_response { Chef::Solr::Index.new.delete(payload["id"]) }
         Chef::Log.info("Removed #{payload["id"]} from the index")
+        response
       end
       
       private

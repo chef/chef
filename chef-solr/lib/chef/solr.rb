@@ -47,18 +47,16 @@ class Chef
     def solr_select(database, type, options={})
       options[:wt] = :ruby
       options[:indent] = "off"
-      if type.kind_of?(Array)
-        options[:fq] = "+X_CHEF_database_CHEF_X:#{database} +X_CHEF_type_CHEF_X:#{type[0]} +data_bag:#{type[1]}"
-      else
-        options[:fq] = "+X_CHEF_database_CHEF_X:#{database} +X_CHEF_type_CHEF_X:#{type}"
-      end
+      options[:fq] = if type.kind_of?(Array)
+                       "+X_CHEF_database_CHEF_X:#{database} +X_CHEF_type_CHEF_X:#{type[0]} +data_bag:#{type[1]}"
+                     else
+                       "+X_CHEF_database_CHEF_X:#{database} +X_CHEF_type_CHEF_X:#{type}"
+                     end
       select_url = "/solr/select?#{to_params(options)}"
       Chef::Log.debug("Sending #{select_url} to Solr")
       req = Net::HTTP::Get.new(select_url)
       res = @http.request(req)
-      unless res.kind_of?(Net::HTTPSuccess)
-        res.error!
-      end
+      res.error! unless res.kind_of?(Net::HTTPSuccess)
       eval(res.body)
     end
 
