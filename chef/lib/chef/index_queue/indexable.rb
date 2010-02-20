@@ -51,10 +51,10 @@ class Chef
         end
 
         with_metadata["type"]     ||= self.index_object_type
-        with_metadata["id"]       ||= self.index_id
+        with_metadata["id"]       ||= (self.index_id || UUIDTools::UUID.random_create.to_s)
         with_metadata["item"]     ||= self
 
-        raise ArgumentError, "Must supply type and id to index object" if (with_metadata["id"].nil? or with_metadata["type"].nil?)
+        Chef::Log.warn("Type or Id missing in index operation") if (with_metadata["id"].nil? or with_metadata["type"].nil?)
         with_metadata        
       end
       
