@@ -54,7 +54,7 @@ class ChefServerApi::Nodes < ChefServerApi::Application
     rescue Chef::Exceptions::CouchDBNotFound
       exists = false
     end
-    raise Forbidden, "Node already exists" if exists
+    raise Conflict, "Node already exists" if exists
     self.status = 201
     @node.cdb_save
     display({ :uri => absolute_slice_url(:node, @node.name) })

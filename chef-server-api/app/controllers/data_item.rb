@@ -63,7 +63,7 @@ class ChefServerApi::DataItem < ChefServerApi::Application
       @data_bag_item = Chef::DataBagItem.new
       @data_bag_item.data_bag(@data_bag.name)
     else 
-      raise Forbidden, "Databag Item #{params[:id]} already exists" if @data_bag_item
+      raise Conflict, "Databag Item #{params[:id]} already exists" if @data_bag_item
     end
     @data_bag_item.raw_data = raw_data
     @data_bag_item.cdb_save

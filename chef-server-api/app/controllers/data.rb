@@ -55,7 +55,7 @@ class ChefServerApi::Data < ChefServerApi::Application
     rescue Chef::Exceptions::CouchDBNotFound
       exists = false
     end
-    raise Forbidden, "Data bag already exists" if exists
+    raise Conflict, "Data bag already exists" if exists
     self.status = 201
     @data_bag.cdb_save
     display({ :uri => absolute_slice_url(:datum, :id => @data_bag.name) })

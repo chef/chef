@@ -22,7 +22,7 @@ Feature: Create a client via the REST API
       And an 'client' named 'isis'
      When I 'POST' the 'client' to the path '/clients' 
       And I 'POST' the 'client' to the path '/clients' 
-     Then I should get a '403 "Forbidden"' exception
+     Then I should get a '409 "Conflict"' exception
 
   Scenario: Create a new client with a wrong private key
     Given a 'registration' named 'bobo' exists

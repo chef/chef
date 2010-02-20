@@ -56,7 +56,7 @@ class ChefServerApi::Clients < ChefServerApi::Application
     rescue Chef::Exceptions::CouchDBNotFound
       exists = false 
     end
-    raise Forbidden, "Client already exists" if exists
+    raise Conflict, "Client already exists" if exists
 
     @client = Chef::ApiClient.new
     @client.name(params[:name])

@@ -32,7 +32,7 @@ class ChefServerApi::Roles < ChefServerApi::Application
     rescue Chef::Exceptions::CouchDBNotFound
       exists = false 
     end
-    raise Forbidden, "Role already exists" if exists
+    raise Conflict, "Role already exists" if exists
 
     @role.cdb_save
     

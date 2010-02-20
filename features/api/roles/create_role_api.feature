@@ -15,7 +15,7 @@ Feature: Create a role via the REST API
       And an 'role' named 'webserver'
      When I 'POST' the 'role' to the path '/roles' 
       And I 'POST' the 'role' to the path '/roles' 
-     Then I should get a '403 "Forbidden"' exception
+     Then I should get a '409 "Conflict"' exception
 
   Scenario: Create a new role with a wrong private key
     Given a 'registration' named 'bobo' exists

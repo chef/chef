@@ -60,7 +60,7 @@ class ChefServerApi::Users < ChefServerApi::Application
       @user.cdb_save
       self.status = 201
     else
-      raise Forbidden, "User already exists" 
+      raise Conflict, "User already exists" 
     end
     display({ :uri => absolute_slice_url(:user, @user.name) })
   end 

@@ -17,7 +17,7 @@ Feature: Create a data bag via the REST API
      When I authenticate as 'bobo'
       And I 'POST' the 'data_bag' to the path '/data' 
       And I 'POST' the 'data_bag' to the path '/data' 
-     Then I should get a '403 "Forbidden"' exception
+     Then I should get a '409 "Conflict"' exception
 
   Scenario: Create a new data bag without authenticating
     Given a 'data_bag' named 'webserver'

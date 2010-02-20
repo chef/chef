@@ -15,7 +15,7 @@ Feature: Create a node via the REST API
       And an 'node' named 'webserver'
      When I 'POST' the 'node' to the path '/nodes' 
       And I 'POST' the 'node' to the path '/nodes' 
-     Then I should get a '403 "Forbidden"' exception
+     Then I should get a '409 "Conflict"' exception
   
   Scenario: Create a node with a wrong private key
     Given a 'registration' named 'bobo' exists
