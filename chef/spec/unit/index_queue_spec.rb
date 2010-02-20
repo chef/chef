@@ -69,7 +69,7 @@ describe Chef::IndexQueue::Indexable do
   end
   
   it "adds 'database', 'type', and 'id' (UUID) keys to the published object" do
-    with_metadata = @indexable_obj.with_indexer_metadata(:database => "foo")
+    with_metadata = @indexable_obj.with_indexer_metadata(:database => "foo", :id=>UUIDTools::UUID.random_create.to_s)
     with_metadata.should have(4).keys
     with_metadata.keys.should include("type", "id", "item", "database")
     with_metadata["type"].should      == "indexable_test_harness"
@@ -90,7 +90,7 @@ describe Chef::IndexQueue::Indexable do
                                                         "type" => "indexable_test_harness",
                                                         "database" => "couchdb@localhost,etc.", 
                                                         "id" => an_instance_of(String)})
-    @indexable_obj.add_to_index(:database => "couchdb@localhost,etc.")
+    @indexable_obj.add_to_index(:database => "couchdb@localhost,etc.", :id=>UUIDTools::UUID.random_create.to_s)
   end
   
   it "sends ``delete'' actions" do
@@ -98,7 +98,7 @@ describe Chef::IndexQueue::Indexable do
                                                             "type" => "indexable_test_harness",
                                                             "database" => "couchdb2@localhost", 
                                                             "id" => an_instance_of(String)})
-    @indexable_obj.delete_from_index(:database => "couchdb2@localhost")
+    @indexable_obj.delete_from_index(:database => "couchdb2@localhost", :id=>UUIDTools::UUID.random_create.to_s)
   end
   
 end

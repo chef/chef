@@ -53,7 +53,7 @@ class Chef
 
       private
         def escape(s)
-          s || URI.escape(s.to_s) 
+          s && URI.escape(s.to_s) 
         end
     end
   end
