@@ -160,6 +160,7 @@ class Chef
       client.admin(o["admin"])
       client.couchdb_rev = o["_rev"]
       client.couchdb_id = o["_id"]
+      client.index_id = client.couchdb_id
       client
     end
     

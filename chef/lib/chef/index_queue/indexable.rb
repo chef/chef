@@ -51,10 +51,11 @@ class Chef
         end
 
         with_metadata["type"]     ||= self.index_object_type
-        with_metadata["id"]       ||= (self.index_id || UUIDTools::UUID.random_create.to_s)
+        with_metadata["id"]       ||= self.index_id
+        with_metadata["database"] ||= Chef::Config[:couchdb_database]
         with_metadata["item"]     ||= self
 
-        Chef::Log.warn("Type or Id missing in index operation") if (with_metadata["id"].nil? or with_metadata["type"].nil?)
+        raise ArgumentError, "Type, Id, or Database missing in index operation: #{with_metadata.inspect}" if (with_metadata["id"].nil? or with_metadata["type"].nil?)
         with_metadata        
       end
       

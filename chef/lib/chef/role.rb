@@ -158,6 +158,7 @@ class Chef
                       o["recipes"]
                     end)
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
+      role.index_id = role.couchdb_id
       role.couchdb_id = o["_id"] if o.has_key?("_id")
       role 
     end

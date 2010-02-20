@@ -111,6 +111,7 @@ class Chef
       bag.name(o["name"])
       bag.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       bag.couchdb_id = o["_id"] if o.has_key?("_id")
+      bag.index_id = bag.couchdb_id
       bag
     end
     

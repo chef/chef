@@ -143,7 +143,8 @@ class Chef
         o.delete("_rev")
       end
       if o.has_key?("_id")
-        bag_item.couchdb_id = o["_id"] 
+        bag_item.couchdb_id = o["_id"]
+        bag_item.index_id = bag_item.couchdb_id
         o.delete("_id")
       end
       bag_item.raw_data = Mash.new(o["raw_data"])

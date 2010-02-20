@@ -336,6 +336,7 @@ class Chef
       end
       node.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       node.couchdb_id = o["_id"] if o.has_key?("_id")
+      node.index_id = node.couchdb_id
       node
     end
     
