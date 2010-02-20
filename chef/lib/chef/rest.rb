@@ -179,6 +179,8 @@ class Chef
           'Accept' => "application/json",
         })
       end
+
+      headers['X-Chef-Version'] = ::Chef::VERSION
       
       if @cookies.has_key?("#{url.host}:#{url.port}")
         headers['Cookie'] = @cookies["#{url.host}:#{url.port}"]

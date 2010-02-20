@@ -54,30 +54,6 @@ class Chef
           :show_options => true,
           :exit         => 0
 
-        option :nanite_identity,
-          :long => "--nanite-identity ID",
-          :description => "The nanite identity"
-
-        option :nanite_host,
-          :long => "--nanite-host HOST",
-          :description => "The nanite host"
-
-        option :nanite_port,
-          :long => "--nanite-port PORT",
-          :description => "The nanite port"
-
-        option :nanite_user,
-          :long => "--nanite-user USER",
-          :description => "The nanite user"
-
-        option :nanite_pass,
-          :long => "--nanite-pass PASS",
-          :description => "The nanite password"
-
-        option :nanite_vhost,
-          :long => "--nanite-vhost VHOST",
-          :description => "The nanite vhost"
-
         option :couchdb_database,
           :short => "-d DB",
           :long => "--couchdb-database DB",
