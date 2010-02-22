@@ -102,6 +102,10 @@ class Chef
     end
 
     def chef_server_rest
+      self.class.chef_server_rest
+    end
+    
+    def self.chef_server_rest
       Chef::REST.new(Chef::Config[:chef_server_url])
     end
     
@@ -131,7 +135,7 @@ class Chef
         end
         response
       else
-        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
+        chef_server_rest.get_rest("data")
       end
     end
     
@@ -142,7 +146,7 @@ class Chef
     
     # Load a Data Bag by name via the RESTful API
     def self.load(name)
-      Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{name}")
+      chef_server_rest.get_rest("data/#{name}")
     end
     
     # Remove this Data Bag from CouchDB

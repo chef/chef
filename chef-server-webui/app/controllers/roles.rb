@@ -122,12 +122,11 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
   # PUT /roles/:id
   def update
     begin
-      @role = Chef::Role.load(params[:id])
-    rescue Net::HTTPServerException => e
-      raise NotFound, "Cannot load role #{params[:id]}"
-    end
-
-    begin
+      begin
+        @role = Chef::Role.load(params[:id])
+      rescue Net::HTTPServerException => e
+        raise NotFound, "Cannot load role #{params[:id]}"
+      end
       @role.run_list(params[:for_role] ? params[:for_role] : [])
       @role.description(params[:description]) if params[:description] != ''
       @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''

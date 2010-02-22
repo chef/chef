@@ -72,6 +72,14 @@ class Chef
       @name = n.gsub(/\./, '_')
     end
     
+    def chef_server_rest
+      self.class.chef_server_rest
+    end
+    
+    def self.chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])
+    end
+    
     def admin?
       admin
     end
@@ -130,7 +138,7 @@ class Chef
     end
     
     def self.list(inflate=false)
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r = chef_server_rest
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:user) do |n|
@@ -149,8 +157,7 @@ class Chef
     
     # Load a User by name
     def self.load(name)
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.get_rest("users/#{name}")
+      chef_server_rest.get_rest("users/#{name}")
     end
     
     
@@ -166,8 +173,7 @@ class Chef
     
     # Remove this WebUIUser via the REST API
     def destroy
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.delete_rest("users/#{@name}")
+      chef_server_rest.delete_rest("users/#{@name}")
     end
     
     # Save this WebUIUser to the CouchDB
@@ -178,7 +184,7 @@ class Chef
     
     # Save this WebUIUser via the REST API
     def save
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      r = chef_server_rest
       begin
         r.put_rest("users/#{@name}", self)
       rescue Net::HTTPServerException => e
@@ -193,8 +199,7 @@ class Chef
     
     # Create the WebUIUser via the REST API
     def create
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.post_rest("users", self)
+      chef_server_rest.post_rest("users", self)
       self
     end
     

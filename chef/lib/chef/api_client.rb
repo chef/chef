@@ -70,6 +70,14 @@ class Chef
       @admin = false
       @couchdb = (couchdb || Chef::CouchDB.new)
     end
+    
+    def chef_server_rest
+      self.class.chef_server_rest
+    end
+    
+    def self.chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])
+    end
 
     # Gets or sets the client name.
     #
@@ -181,7 +189,7 @@ class Chef
         end
         response
       else
-        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("clients")
+        chef_server_rest.get_rest("clients")
       end
     end
     
@@ -195,7 +203,7 @@ class Chef
     
     # Load a client by name via the API
     def self.load(name)
-      response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("clients/#{name}")
+      response = chef_server_rest.get_rest("clients/#{name}")
       if response.kind_of?(Chef::ApiClient)
         response
       else
@@ -215,7 +223,7 @@ class Chef
     
     # Remove this client via the REST API
     def destroy
-      Chef::REST.new(Chef::Config[:chef_server_url]).delete_rest("clients/#{@name}")
+      chef_server_rest.delete_rest("clients/#{@name}")
     end
     
     # Save this client to the CouchDB
@@ -228,14 +236,14 @@ class Chef
       if validation
         r = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
       else
-        r = Chef::REST.new(Chef::Config[:chef_server_url])
+        r = chef_server_rest
       end
       # First, try and create a new registration
       begin
         r.post_rest("clients", {:name => self.name, :admin => self.admin })
       rescue Net::HTTPServerException => e
         # If that fails, go ahead and try and update it
-        if e.response.code == "403"
+        if e.response.code == "409"
           r.put_rest("clients/#{name}", { :name => self.name, :admin => self.admin, :private_key => new_key }) 
         else
           raise e
@@ -245,7 +253,7 @@ class Chef
     
     # Create the client via the REST API
     def create
-      Chef::REST.new(Chef::Config[:chef_server_url]).post_rest("clients", self)
+      chef_server_rest.post_rest("clients", self)
     end
     
     # Set up our CouchDB design document

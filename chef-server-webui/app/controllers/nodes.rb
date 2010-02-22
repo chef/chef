@@ -118,12 +118,11 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
 
   def update
     begin
-      @node = Chef::Node.load(params[:id])
-    rescue Net::HTTPServerException => e
-      raise NotFound, "Cannot load node #{params[:id]}"
-    end
-
-    begin
+      begin
+        @node = Chef::Node.load(params[:id])
+      rescue Net::HTTPServerException => e
+        raise NotFound, "Cannot load node #{params[:id]}"
+      end
       @node.run_list.reset!(params[:for_node] ? params[:for_node] : [])
       @node.attribute = JSON.parse(params[:attributes])
       @node.save
