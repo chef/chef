@@ -24,15 +24,15 @@ class ChefServerWebui::Search < ChefServerWebui::Application
   before :login_required 
     
   def index
-    begin
-      @s = Chef::Search::Query.new
-      @search_indexes = @s.list_indexes
-      render
-    rescue
-      @search_indexes = {}
-      @_message = {:error => $!}
-      render
-    end 
+    @s = Chef::Search::Query.new
+    @search_indexes = begin
+                        @s.list_indexes
+                      rescue => e
+                        Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+                        @_message = {:error => $!}
+                        {}
+                      end 
+    render
   end
 
   def show
@@ -51,7 +51,8 @@ class ChefServerWebui::Search < ChefServerWebui::Application
       end
       @results
       render
-    rescue StandardError => e
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @_message = { :error => "Unable to find the #{params[:id]}. (#{$!})" }
       @search_indexes = @s.list_indexes
       render :index

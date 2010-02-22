@@ -25,38 +25,38 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
   
   # GET /clients
   def index
-    begin
-      @clients_list = Chef::ApiClient.list()
-      render
-    rescue
-      @clients_list = {}
-      @_message = {:error => $!}
-      render
-    end 
+     @clients_list =  begin
+                        Chef::ApiClient.list()
+                      rescue => e
+                        Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+                        @_message = {:error => "Could not list clients"}
+                        {}
+                      end 
+     render
   end
 
   # GET /clients/:id
   def show
-    begin
-      load_client
-      render
-    rescue => e
-      @client = Chef::ApiClient.new
-      @_message = e.message =~ /not found/ ?  {:error => "Cannot find client '#{params[:id]}'"} : { :error => $!}
-      render
-    end 
+    @client = begin
+                @client = Chef::ApiClient.load(params[:id])
+              rescue => e
+                Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+                @_message = { :error => "Could not load client #{params[:id]}"}
+                Chef::ApiClient.new
+              end 
+    render
   end
 
   # GET /clients/:id/edit
   def edit
-    begin
-      load_client
-      render
-    rescue
-      @client = Chef::ApiClient.new
-      @_message = e.message =~ /not found/ ?  {:error => "Cannot find client '#{params[:id]}'"} : { :error => $!}
-      render
-    end  
+    @client = begin
+                Chef::ApiClient.load(params[:id])
+              rescue => e
+                Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+                @_message = { :error => "Could not load client #{params[:id]}"}
+                Chef::ApiClient.new
+              end  
+    render
   end
 
   # GET /clients/new
@@ -71,21 +71,14 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
       @client = Chef::ApiClient.new
       @client.name(params[:name])
       @client.admin(str_to_bool(params[:admin])) if params[:admin]
-      begin
-        response = @client.create
-      rescue Net::HTTPServerException => e
-        if e.message =~ /403/ 
-          raise ArgumentError, "Client already exists" 
-        else 
-          raise e
-        end 
-      end 
+      response = @client.create
       @private_key = OpenSSL::PKey::RSA.new(response["private_key"])
       @_message = { :notice => "Created Client #{@client.name}. Please copy the following private key as the client's validation key." }
-      load_client(params[:name])
+      @client = Chef::ApiClient.load(params[:name])
       render :show    
-    rescue StandardError => e
-      @_message = { :error => $! }
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = { :error => "Could not create client" }
       render :new
     end 
   end
@@ -93,7 +86,7 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
   # PUT /clients/:id
   def update
     begin
-      load_client
+      @client = Chef::ApiClient.load(params[:id])
       if params[:regen_private_key]
         @client.create_keys
         @private_key = @client.private_key
@@ -102,8 +95,9 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
       @client.save
       @_message = @private_key.nil? ? { :notice => "Updated Client" } : { :notice => "Created Client #{@client.name}. Please copy the following private key as the client's validation key." }
       render :show
-    rescue
-      @_message = { :error => $! }
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = { :error => "Could not update client" }
       render :edit
     end
   end
@@ -111,25 +105,16 @@ class ChefServerWebui::Clients < ChefServerWebui::Application
   # DELETE /clients/:id
   def destroy
     begin
-      load_client
+      @client = Chef::ApiClient.load(params[:id])
       @client.destroy
       redirect(absolute_slice_url(:clients), {:message => { :notice => "Client #{params[:id]} deleted successfully" }, :permanent => true})
-    rescue
-      @_message = {:error => $!}
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = {:error => "Could not delete client #{params[:id]}" }
       @clients_list = Chef::ApiClient.list()
       render :index
     end 
   end
-  
-  private
-  
-  def load_client(name=params[:id])
-    begin
-      @client = Chef::ApiClient.load(name)
-    rescue Net::HTTPServerException => e
-      raise NotFound, "Cannot load client #{name}"
-    end
-  end 
 
 end
 
