@@ -231,9 +231,11 @@ class Chef
 
       res = nil
       tf = nil
-      http_retries = 1
+      http_attempts = 0
 
       begin
+        http_attempts += 1
+        
         res = http.request(req) do |response|
           if raw
             tf = Tempfile.new("chef-rest") 
@@ -288,23 +290,23 @@ class Chef
         end
       
       rescue Errno::ECONNREFUSED
-        if (http_retries += 1) < http_retry_count
-          Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path} #{http_retries}/#{http_retry_count}")
+        if http_retry_count - http_attempts + 1 > 0
+          Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
         raise Errno::ECONNREFUSED, "Connection refused connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       rescue Timeout::Error
-        if (http_retries += 1) < http_retry_count
-          Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
+        if http_retry_count - http_attempts + 1 > 0
+          Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
       rescue Net::HTTPServerException
         if res.kind_of?(Net::HTTPForbidden)
-          if (http_retries += 1) < http_retry_count
-            Chef::Log.error("Received 403 Forbidden against #{url.host}:#{url.port} for #{req.path}, retry #{http_retries}/#{http_retry_count}")
+          if http_retry_count - http_attempts + 1 > 0
+            Chef::Log.error("Received 403 Forbidden against #{url.host}:#{url.port} for #{req.path}, retry #{http_attempts}/#{http_retry_count}")
             sleep(http_retry_delay)
             retry
           end
