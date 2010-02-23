@@ -28,24 +28,27 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
   before :authorized_node, :only => [ :update, :destroy ]
   
   def index
-    @node_list =  begin
-                    Chef::Node.list 
-                  rescue => e
-                    Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                    @_message = {:error => $!}
-                    {}
-                  end 
-    render
+    begin
+      @node_list = Chef::Node.list 
+      render
+    rescue
+      @node_list = {}
+      @_message = {:error => $!}
+      render
+    end 
   end
 
   def show
-    @node = begin      
-              Chef::Node.load(params[:id])
-            rescue => e
-              Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-              @_message = {:error => "Could not load node #{params[:id]}"}
-              Chef::Node.new
-            end 
+    begin
+      begin
+        @node = Chef::Node.load(params[:id])
+      rescue Net::HTTPServerException => e
+        raise NotFound, "Cannot load node #{params[:id]}"
+      end
+    rescue
+      @node = Chef::Node.new
+      @_message = {:error => $!}
+    end 
     render
   end
 
@@ -56,8 +59,7 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
       @available_roles = Chef::Role.list.keys.sort
       @run_list = @node.run_list
       render
-    rescue => e
-      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+    rescue
       @node_list = Chef::Node.list()
       @_message = {:error => $!}
       render :index
@@ -66,18 +68,21 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
 
   def edit
     begin
-      @node = Chef::Node.load(params[:id])
+      begin
+        @node = Chef::Node.load(params[:id])
+      rescue Net::HTTPServerException => e
+        raise NotFound, "Cannot load node #{params[:id]}"
+      end
       @available_recipes = get_available_recipes 
       @available_roles = Chef::Role.list.keys.sort
       @run_list = @node.run_list
       render
-    rescue => e
-      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+    rescue
       @node = Chef::Node.new
       @available_recipes = []
       @available_roles = []
       @run_list = []
-      @_message = {:error => "Could not load node #{params[:id]}"}
+      @_message = {:error => $!}
       render
     end 
   end
@@ -89,10 +94,18 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
       @node.attribute = JSON.parse(params[:attributes])
       @node.run_list.reset!(params[:for_node] ? params[:for_node] : [])
       raise ArgumentError, "Node name cannot be blank" if (params[:name].nil? || params[:name].length==0)
-      @node.create
+      begin
+        @node.create
+      rescue Net::HTTPServerException => e
+        if e.message =~ /403/ 
+          raise ArgumentError, "Node already exists" 
+        else 
+          raise e
+        end 
+      end
       redirect(slice_url(:nodes), :message => { :notice => "Created Node #{@node.name}" })
-    rescue => e
-      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+    rescue StandardError => e
+      Chef::Log.error("StandardError creating node: #{e.message}")
       @node.attribute = JSON.parse(params[:attributes])
       @available_recipes = get_available_recipes 
       @available_roles = Chef::Role.list.keys.sort
@@ -105,14 +118,18 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
 
   def update
     begin
-      @node = Chef::Node.load(params[:id])
+      begin
+        @node = Chef::Node.load(params[:id])
+      rescue Net::HTTPServerException => e
+        raise NotFound, "Cannot load node #{params[:id]}"
+      end
       @node.run_list.reset!(params[:for_node] ? params[:for_node] : [])
       @node.attribute = JSON.parse(params[:attributes])
       @node.save
       @_message = { :notice => "Updated Node" }
       render :show
-    rescue => e
-      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+    rescue Exception => e
+      Chef::Log.error("Exception updating node: #{e.message}")
       @available_recipes = get_available_recipes 
       @available_roles = Chef::Role.list.keys.sort
       @run_list = Chef::RunList.new
@@ -124,13 +141,16 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
 
   def destroy
     begin
-      @node = Chef::Node.load(params[:id])
+      begin
+        @node = Chef::Node.load(params[:id])
+      rescue Net::HTTPServerException => e 
+        raise NotFound, "Cannot load node #{params[:id]}"
+      end
       @node.destroy
       redirect(absolute_slice_url(:nodes), {:message => { :notice => "Node #{params[:id]} deleted successfully" }, :permanent => true})
-    rescue => e
-      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+    rescue
       @node_list = Chef::Node.list()
-      @_message = {:error => "Could not delete the node"}
+      @_message = {:error => $!}
       render :index
     end 
   end
