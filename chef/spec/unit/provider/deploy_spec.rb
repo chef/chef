@@ -421,9 +421,9 @@ describe Chef::Provider::Deploy do
       
       gems = @provider.send(:gem_packages)
       
-      gems.map { |g| g.action }.should == [[:install], [:install]]
+      gems.map { |g| g.action }.should == [[:install]]
       gems.map { |g| g.name }.should == %w{eventmachine}
-      gems.map { |g| g.version }.should == %w{0.4.1.2 0.12.9}
+      gems.map { |g| g.version }.should == %w{0.12.9}
     end
     
     it "takes a list of gem providers converges them" do
