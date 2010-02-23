@@ -666,6 +666,35 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     DM.deep_merge!(hash_src, hash_dst)
     hash_dst.should == {"item" => [{"3" => "5"}, {"1" => "3"}, {"2" => "4"}]}
   end
+
+  # Additions since import
+  it "should overwrite true with false when merging boolean values" do
+    hash_src = {"valid" => false}
+    hash_dst = {"valid" => true}
+    DM.deep_merge!(hash_src, hash_dst)
+    hash_dst.should == {"valid" => false}
+  end
+
+  it "should overwrite false with true when merging boolean values" do
+    hash_src = {"valid" => true}
+    hash_dst = {"valid" => false}
+    DM.deep_merge!(hash_src, hash_dst)
+    hash_dst.should == {"valid" => true}
+  end
+
+  it "should overwrite a string with an empty string when merging string values" do
+    hash_src = {"item" => " "}
+    hash_dst = {"item" => "orange"}
+    DM.deep_merge!(hash_src, hash_dst)
+    hash_dst.should == {"item" => " "}
+  end
+
+  it "should overwrite an empty string with a string when merging string values" do
+    hash_src = {"item" => "orange"}
+    hash_dst = {"item" => " "}
+    DM.deep_merge!(hash_src, hash_dst)
+    hash_dst.should == {"item" => "orange"}
+  end
 end # deep_merge!
 
 # Chef specific
