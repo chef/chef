@@ -116,7 +116,7 @@ class Chef
       self
     end
 
-    def expand(from='server', couchdb=nil, chef_server_uri=nil, username=nil, org_name=nil, client_key=nil, headers={})
+    def expand(from='server', couchdb=nil)
       couchdb = couchdb ? couchdb : Chef::CouchDB.new
       recipes = Array.new
       default_attrs = Mash.new
@@ -135,11 +135,8 @@ class Chef
             role = Chef::Role.from_disk("#{name}")
           elsif from == 'server'
             # Load the role from the server
-            role =  if username.nil? || org_name.nil? || client_key.nil? || headers.empty?
-                      Chef::REST.new(Chef::Config[:role_url]).get_rest("roles/#{name}", false, headers)
-                    else
-                      Chef::REST.new(chef_server_uri, username, client_key).get_rest("/organizations/#{org_name}/roles/#{name}", false, headers)
-                    end
+            r = Chef::REST.new(Chef::Config[:role_url])
+            role = r.get_rest("roles/#{name}")
           elsif from == 'couchdb'
             # Load the role from couchdb
             role = Chef::Role.cdb_load(name, couchdb)
