@@ -29,7 +29,7 @@ class ChefServerWebui::Search < ChefServerWebui::Application
                         @s.list_indexes
                       rescue => e
                         Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                        @_message = {:error => $!}
+                        @_message = {:error => "Could not list search indexes"}
                         {}
                       end 
     render

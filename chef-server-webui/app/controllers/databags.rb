@@ -36,7 +36,7 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
       redirect(slice_url(:databags), :message => { :notice => "Created Databag #{@databag.name}" })
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => $! } 
+      @_message = { :error => "Could not create databag" } 
       render :new
     end 
   end
@@ -46,7 +46,7 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
                   Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
                 rescue => e
                   Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                  @_message = { :error => $! } 
+                  @_message = { :error => "Could not list databags" } 
                   {}
                 end
     render
@@ -62,7 +62,7 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @databags = Chef::DataBag.list
-      @_message =  { :error => $!}    
+      @_message =  { :error => "Could not load databag"}    
       render :index
     end 
   end
@@ -75,7 +75,7 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @databags = Chef::DataBag.list
-      @_message =  { :error => $!}
+      @_message =  { :error => "Could not delete databag"}
       render :index
     end 
   end

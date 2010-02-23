@@ -30,7 +30,7 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
                    Chef::Role.list()
                   rescue => e
                     Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                    @_message = {:error => $!}
+                    @_message = {:error => "Could not list roles"}
                     {}
                   end 
     render

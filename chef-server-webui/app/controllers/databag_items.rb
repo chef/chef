@@ -29,7 +29,7 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
       @default_data = @databag_item
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => $! }   
+      @_message = { :error => "Could not load the databag item" }   
     end 
     render
   end 
@@ -44,7 +44,7 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
       redirect(slice_url(:databag_databag_items, :databag_id => params[:databag_id], :id => @databag_item.name), :message => { :notice => "Updated Databag Item #{@databag_item.name}" })
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => $! }
+      @_message = { :error => "Could not update the databag item" }
       @databag_item = Chef::DataBagItem.load(params[:databag_id], params[:id])
       @default_data = @databag_item
       render :edit 
@@ -63,10 +63,10 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
       @databag_item.data_bag @databag_name
       @databag_item.raw_data = JSON.parse(params[:json_data])
       @databag_item.create
-      redirect(slice_url(:databag_databag_items, :databag_id => @databag_name), :message => { :notice => "Created Databag Item #{@databag_item.name}" })
+      redirect(slice_url(:databag_databag_items, :databag_id => @databag_name), :message => { :notice => "Databag item created successfully" })
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => $! } 
+      @_message = { :error => "Could not create databag item" } 
       render :new
     end
   end
@@ -84,7 +84,7 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
       display @databag_item
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      redirect(slice_url(:databag_databag_items), {:message => { :error => $! }, :permanent => true})
+      redirect(slice_url(:databag_databag_items), {:message => { :error => "Could not show the databag item" }, :permanent => true})
     end 
   end
   
@@ -92,10 +92,10 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
     begin
       @databag_item = Chef::DataBagItem.new
       @databag_item.destroy(databag_id, item_id)
-      redirect(slice_url(:databag_databag_items), {:message => { :notice => "Databag Item #{params[:id]} deleted successfully" }, :permanent => true})
+      redirect(slice_url(:databag_databag_items), {:message => { :notice => "Databag item deleted successfully" }, :permanent => true})
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      redirect(slice_url(:databag_databag_items), {:message => { :error => $! }, :permanent => true})
+      redirect(slice_url(:databag_databag_items), {:message => { :error => "Could not delete databag item" }, :permanent => true})
     end 
   end 
   

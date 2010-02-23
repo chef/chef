@@ -31,7 +31,7 @@ class ChefServerWebui::Status < ChefServerWebui::Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @status = {}
-      @_message = {:error => $!}
+      @_message = {:error => "Could not list status"}
       render
     end 
   end

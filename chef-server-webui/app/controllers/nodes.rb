@@ -32,7 +32,7 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
                     Chef::Node.list 
                   rescue => e
                     Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                    @_message = {:error => $!}
+                    @_message = {:error => "Could not list nodes"}
                     {}
                   end 
     render
@@ -59,7 +59,7 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @node_list = Chef::Node.list()
-      @_message = {:error => $!}
+      @_message = {:error => "Could not load available recipes, roles, or the run list"}
       render :index
     end 
   end
