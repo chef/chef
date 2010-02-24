@@ -80,9 +80,9 @@ class Chef
     end
 
     def chef_server_rest
-      self.class.chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])
     end
-    
+
     def self.chef_server_rest
       Chef::REST.new(Chef::Config[:chef_server_url])
     end

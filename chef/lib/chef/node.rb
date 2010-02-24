@@ -153,11 +153,11 @@ class Chef
     end
 
     def chef_server_rest
-      self.class.chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])      
     end
-    
+
     def self.chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
+      Chef::REST.new(Chef::Config[:chef_server_url])      
     end
 
     # Find a recipe for this Chef::Node by fqdn.  Will search first for 
@@ -360,7 +360,7 @@ class Chef
         end
         response
       else
-        chef_server_rest.get_rest("nodes")
+        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes")
       end
     end
     
@@ -379,7 +379,7 @@ class Chef
     
     # Load a node by name
     def self.load(name)
-      chef_server_rest.get_rest("nodes/#{name}")
+      Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes/#{name}")
     end
     
     # Remove this node from the CouchDB

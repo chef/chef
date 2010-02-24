@@ -26,23 +26,24 @@ class ChefServerWebui::Cookbooks < ChefServerWebui::Application
   before :login_required 
   
   def index
-    @cl = begin
-            Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks")
-          rescue => e
-            Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-            @_message = {:error => $!}
-            {}
-          end 
-    render
+    begin
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      @cl = r.get_rest("cookbooks")
+      render
+    rescue
+      @_message = {:error => $!}
+      @cl = {}
+      render
+    end 
   end
 
   def show
     begin
-      @cookbook = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks/#{params[:id]}")
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      @cookbook = r.get_rest("cookbooks/#{params[:id]}")
       raise NotFound unless @cookbook
       display @cookbook
-    rescue => e
-      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+    rescue
       @_message = {:error => $!}
       @cl = {}
       render :index
