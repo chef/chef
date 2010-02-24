@@ -49,6 +49,12 @@ class Chef
         logger.send(method_symbol, *args)
       end
     end  
+
+    class Formatter
+      def self.show_time=(*args)
+        Mixlib::Log::Formatter.show_time = *args
+      end
+    end
     
   end
 end
