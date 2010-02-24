@@ -58,16 +58,21 @@ class Chef
         chef_server = config[:chef_server_url] || ask_question("Your chef server URL? ")
         opscode_user = config[:node_name] || ask_question("Your client user name? ")
         opscode_key = config[:client_key] || File.join(chef_config_path, "#{opscode_user}.pem")
+        validation_user = config[:validation_client_name] || ask_question("Your validation client user name? ")
+        validation_key = config[:validation_key] || File.join(chef_config_path, "#{validation_user}.pem")
         chef_repo = config[:repository] || ask_question("Path to a chef repository (or leave blank)? ")
+        
 
         File.open(config[:config_file], "w") do |f|
           f.puts <<EOH
-log_level        :info
-log_location     STDOUT
-node_name        '#{opscode_user}'
-client_key       '#{opscode_key}'
-chef_server_url  '#{chef_server}'  
-cache_type       'BasicFile'
+log_level                :info
+log_location             STDOUT
+node_name                '#{opscode_user}'
+client_key               '#{opscode_key}'
+validation_client_name   '#{validation_user}'
+validation_key           '#{validation_key}'
+chef_server_url          '#{chef_server}'  
+cache_type               'BasicFile'
 cache_options( :path => '#{File.join(chef_config_path, "checksums")}' )
 EOH
           unless chef_repo == ""
@@ -89,9 +94,17 @@ EOH
           client_create.run
         else
           Chef::Log.warn("*****")
+          Chef::Log.warn("")
           Chef::Log.warn("You must place your client key in:")
           Chef::Log.warn("  #{opscode_key}")
           Chef::Log.warn("Before running commands with Knife!")
+          Chef::Log.warn("")
+          Chef::Log.warn("*****")
+          Chef::Log.warn("")
+          Chef::Log.warn("You must place your validation key in:")
+          Chef::Log.warn("  #{validation_key}")
+          Chef::Log.warn("Before generating instance data with Knife!")
+          Chef::Log.warn("")
           Chef::Log.warn("*****")
         end
 
