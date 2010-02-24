@@ -156,6 +156,10 @@ class Chef
       Chef::REST.new(Chef::Config[:chef_server_url])      
     end
 
+    def self.chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])      
+    end
+
     # Find a recipe for this Chef::Node by fqdn.  Will search first for 
     # Chef::Config["node_path"]/fqdn.rb, then hostname.rb, then default.rb.
     # 
