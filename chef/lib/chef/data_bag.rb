@@ -104,6 +104,10 @@ class Chef
     def chef_server_rest
       Chef::REST.new(Chef::Config[:chef_server_url])
     end
+
+    def self.chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])
+    end
     
     # Create a Chef::Role from JSON
     def self.json_create(o)

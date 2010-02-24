@@ -74,6 +74,10 @@ class Chef
       Chef::REST.new(Chef::Config[:chef_server_url])      
     end
 
+    def self.chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])      
+    end
+
     def raw_data
       @raw_data
     end
