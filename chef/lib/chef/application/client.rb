@@ -77,6 +77,12 @@ class Chef::Application::Client < Chef::Application
     :description => "Daemonize the process",
     :proc => lambda { |p| true }
 
+  option :pid_file,
+    :short        => "-P PID_FILE",
+    :long         => "--pid PIDFILE",
+    :description  => "Set the PID file location, defaults to /tmp/chef-client.pid",
+    :proc         => nil
+
   option :interval,
     :short => "-i SECONDS",
     :long => "--interval SECONDS",
