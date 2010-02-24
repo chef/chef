@@ -143,7 +143,7 @@ class Chef
           api_client.cdb_save
           key_dir = File.dirname(key_file)
           FileUtils.mkdir_p(key_dir) unless File.directory?(key_dir)
-          File.open(key_file, "w") do |f|
+          File.open(key_file, File::WRONLY|File::EXCL|File::CREAT, 0600) do |f|
             f.print(api_client.private_key)
           end
         end
