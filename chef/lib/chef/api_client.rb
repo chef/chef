@@ -235,7 +235,7 @@ class Chef
         r.post_rest("clients", {:name => self.name, :admin => self.admin })
       rescue Net::HTTPServerException => e
         # If that fails, go ahead and try and update it
-        if e.response.code == "403"
+        if e.response.code == "409"
           r.put_rest("clients/#{name}", { :name => self.name, :admin => self.admin, :private_key => new_key }) 
         else
           raise e
