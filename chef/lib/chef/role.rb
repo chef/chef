@@ -83,6 +83,10 @@ class Chef
       Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
+    def self.chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])
+    end
+
     def name(arg=nil) 
       set_or_return(
         :name,
