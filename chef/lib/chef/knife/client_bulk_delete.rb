@@ -24,17 +24,16 @@ class Chef
   class Knife
     class ClientBulkDelete < Knife
 
-      banner "Sub-Command: client bulk delete (options)"
-
-      option :regex,
-        :short => "-r [REGEX]",
-        :long  => "--regex [REGEX]",
-        :description => "Narrow the operation via regular expression"
+      banner "Sub-Command: client bulk delete REGEX (options)"
 
       def run 
-        bulk_delete(Chef::ApiClient, "client")
+        if @name_args.length < 1
+          Chef::Log.fatal("You must supply a regular expression to match the results against")
+          exit 42
+        else
+          bulk_delete(Chef::ApiClient, "client", nil, nil, @name_args[0])
+        end
       end
-
     end
   end
 end

@@ -22,19 +22,18 @@ class Chef
   class Knife
     class CookbookBulkDelete < Knife
 
-      banner "Sub-Command: cookbook bulk delete COOKBOOK (options)"
-
-      option :regex,
-        :short => "-r [REGEX]",
-        :long  => "--regex [REGEX]",
-        :description => "Narrow the operation via regular expression"
+      banner "Sub-Command: cookbook bulk delete REGEX (options)"
 
       def run 
-        bulk_delete(Chef::Cookbook, "cookbook", "cookbook", rest.get_rest("cookbooks")) do |item, uri|
-          rest.delete_rest(uri)
+        if @name_args.length < 1
+          Chef::Log.fatal("You must supply a regular expression to match the results against")
+          exit 42
+        else
+          bulk_delete(Chef::Cookbook, "cookbook", "cookbook", rest.get_rest("cookbooks"), @name_args[0]) do |item, uri|
+            rest.delete_rest(uri)
+          end
         end
       end
-
     end
   end
 end

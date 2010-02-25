@@ -24,17 +24,16 @@ class Chef
   class Knife
     class NodeBulkDelete < Knife
 
-      banner "Sub-Command: node bulk delete (options)"
-
-      option :regex,
-        :short => "-r [REGEX]",
-        :long  => "--regex [REGEX]",
-        :description => "Narrow the operation via regular expression"
+      banner "Sub-Command: node bulk delete REGEX (options)"
 
       def run 
-        bulk_delete(Chef::Node, "node")
+        if @name_args.length < 1
+          Chef::Log.fatal("You must supply a regular expression to match the results against")
+          exit 42
+        else
+          bulk_delete(Chef::Node, "node", nil, nil, @name_args[0])
+        end
       end
-
     end
   end
 end
