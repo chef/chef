@@ -272,13 +272,13 @@ class Chef
       Chef::Log.warn("Deleted #{obj_name}!")
     end
 
-    def bulk_delete(klass, fancy_name, delete_name=nil, list=nil, &block)
+    def bulk_delete(klass, fancy_name, delete_name=nil, list=nil, regex=nil, &block)
       object_list = list ? list : klass.list(true)
 
-      if config[:regex]
+      if regex
         to_delete = Hash.new
         object_list.each_key do |object|
-          next if config[:regex] && object !~ /#{config[:regex]}/
+          next if regex && object !~ /#{regex}/
           to_delete[object] = object_list[object]
         end
       else
