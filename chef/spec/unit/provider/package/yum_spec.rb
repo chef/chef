@@ -142,9 +142,16 @@ describe Chef::Provider::Package::Yum, "upgrade_package" do
     @provider.current_resource = @current_resource
   end
   
-  it "should run yum update if the package is installed" do
+  it "should run yum update if the package is installed and no version is given" do
     @provider.should_receive(:run_command_with_systems_locale).with({
-      :command => "yum -d0 -e0 -y update emacs-11"
+      :command => "yum -d0 -e0 -y update emacs"
+    })
+    @provider.upgrade_package(@new_resource.name, nil)
+  end
+  
+  it "should run yum install if the package is installed and a version is given" do
+    @provider.should_receive(:run_command_with_systems_locale).with({
+      :command => "yum -d0 -e0 -y install emacs-11"
     })
     @provider.upgrade_package(@new_resource.name, @provider.candidate_version)
   end
