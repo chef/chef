@@ -140,10 +140,11 @@ class Chef
         end
       
         def upgrade_package(name, version)
-          # If we have a version, we can upgrade - otherwise, install
-          if @current_resource.version
+          # If we're not given a version, running update is the correct
+          # option. If we are, then running install_package is right.
+          unless version
             run_command_with_systems_locale(
-              :command => "yum -d0 -e0 -y update #{name}-#{version}"
+              :command => "yum -d0 -e0 -y update #{name}"
             )   
             @yum.flush
           else
