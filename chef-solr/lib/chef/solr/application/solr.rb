@@ -150,7 +150,7 @@ class Chef
           end
           Dir.chdir(Chef::Config[:solr_jetty_path]) do
             command = "java -Xmx#{Chef::Config[:solr_heap_size]} -Xms#{Chef::Config[:solr_heap_size]}"
-            command << " -Dsolr.solr.data=#{Chef::Config[:solr_data_path]}"
+            command << " -Dsolr.data.dir=#{Chef::Config[:solr_data_path]}"
             command << " -Dsolr.solr.home=#{Chef::Config[:solr_home_path]}"
             command << " #{Chef::Config[:solr_java_opts]}" if Chef::Config[:solr_java_opts]
             command << " -jar #{File.join(Chef::Config[:solr_jetty_path], 'start.jar')}"
