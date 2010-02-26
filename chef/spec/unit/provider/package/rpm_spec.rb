@@ -110,7 +110,15 @@ describe Chef::Provider::Package::Rpm, "install and upgrade" do
       :updated => nil,
       :source => "/tmp/emacs-21.4-20.el5.i386.rpm"
     )
+    @current_resource = mock("Chef::Resource::Package",
+      :null_object => true,
+      :name => "emacs",
+      :version => nil,
+      :package_name => nil,
+      :updated => nil
+    )
     @provider = Chef::Provider::Package::Rpm.new(@node, @new_resource)
+    @provider.current_resource = @current_resource
   end
   
   it "should run rpm -i with the package source to install" do
@@ -121,6 +129,7 @@ describe Chef::Provider::Package::Rpm, "install and upgrade" do
   end
   
   it "should run rpm -U with the package source to upgrade" do
+    @current_resource.stub!(:version).and_return("21.4-19.el5")
     @provider.should_receive(:run_command_with_systems_locale).with({
       :command => "rpm -U /tmp/emacs-21.4-20.el5.i386.rpm"
     })
