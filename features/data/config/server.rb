@@ -17,7 +17,6 @@ cookbook_path          [File.join(tmpdir, "cookbooks"), File.join(supportdir, "c
 cookbook_tarball_path  File.join(tmpdir, "cookbook-tarballs")
 openid_store_path      File.join(tmpdir, "openid", "store")
 openid_cstore_path     File.join(tmpdir, "openid", "cstore")
-search_index_path      File.join(tmpdir, "search_index")
 role_path              File.join(supportdir, "roles")
 signing_ca_path        File.join(tmpdir, "ca")
 couchdb_database       'chef_integration'
