@@ -81,7 +81,7 @@ class Chef
 
       begin
         # Write out the private key
-        file = File.open(destination, "w")
+        file = File.open(destination, File::WRONLY|File::EXCL|File::CREAT, 0600)
         file.print(response["private_key"])
         file.close
       rescue 
