@@ -69,16 +69,18 @@ class Chef
         end
         
         def install_package(name, version)
-          run_command_with_systems_locale(
-            :command => "rpm -i #{@new_resource.source}"
-          )
+          unless @current_resource.version
+            run_command_with_systems_locale(
+              :command => "rpm -i #{@new_resource.source}"
+            )
+          else
+            run_command_with_systems_locale(
+              :command => "rpm -U #{@new_resource.source}"
+            )
+          end
         end
         
-        def upgrade_package(name, version)
-          run_command_with_systems_locale(
-            :command => "rpm -U #{@new_resource.source}"
-          )
-        end
+        alias_method :upgrade_package, :install_package
         
         def remove_package(name, version)
           if version
