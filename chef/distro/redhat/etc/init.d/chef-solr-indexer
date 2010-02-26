@@ -1,32 +1,29 @@
 #!/bin/bash
-# Startup script for chef-client
+# Startup script for chef-solr-indexer
 #
-# chkconfig: - 98 02
-# description: Client component of the Chef systems integration framework.
-# processname: chef-client
+# chkconfig: - 66 34
+# description: Search indexer component of Chef Server.
+# processname: chef-solr-indexer
 #
-# config: /etc/sysconfig/chef-client
-# pidfile: /var/run/chef/chef-client.pid
+# config: /etc/sysconfig/chef-solr-indexer
+# pidfile: /var/run/chef/chef-solr-indexer.pid
 
 # Source function library
 . /etc/init.d/functions
 
-[ -f /etc/sysconfig/chef-client ] && . /etc/sysconfig/chef-client
+[ -f /etc/sysconfig/chef-solr-indexer ] && . /etc/sysconfig/chef-solr-indexer
 
-prog="chef-client"
-pidfile=${PIDFILE-/var/run/chef/client.pid}
+prog="chef-solr-indexer"
+pidfile=${PIDFILE-/var/run/chef/solr-indexer.pid}
 lockfile=${LOCKFILE-/var/lock/subsys/$prog}
-config=${CONFIG-/etc/chef/client.rb}
-user=${CHEF_USER-root}
-group=${CHEF_GROUP-root}
-interval=${INTERVAL-1800}
-splay=${SPLAY-20}
-logfile=${LOGFILE-/var/log/chef/client.log}
-options=${OPTIONS-}
+config=${CONFIG-/etc/chef/server.rb}
+user=${CHEF_USER-chef}
+group=${CHEF_GROUP-chef}
+logfile=${LOGFILE-/var/log/chef/solr-indexer.log}
 
 start() {
     echo -n "Starting $prog:"
-    daemon chef-client -d -c "$config" -i "$interval" -s "$splay" -L "$logfile" "$options" "&>/dev/null"
+    daemon $prog -d -c "$config" -u "$user" -g "$group" -L "$logfile" "&>/dev/null"
     RETVAL=$?
     echo
     [ $RETVAL -eq 0 ] && touch ${lockfile}
@@ -36,7 +33,7 @@ start() {
 stop() {
     echo -n "Stopping $prog: "
     if [ -f $pidfile ]; then
-        killproc chef-client
+        killproc $prog
         RETVAL=$?
         if [ $RETVAL -ne 0 ]; then
             failure;
@@ -68,7 +65,7 @@ case "$1" in
         fi
         ;;
   status)
-        status chef-client
+        status $prog
         ;;
   *)
     echo "Usage: $0 {start|stop|restart|condrestart|status}"

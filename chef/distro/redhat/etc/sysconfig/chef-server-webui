@@ -1,0 +1,10 @@
+# Configuration file for the chef-server-webui service
+
+#CHILDPIDFILES=/var/run/chef/server-webui.%s.pid
+#PIDFILE=/var/run/chef/server-webui.pid
+#CONFIG=/etc/chef/server.rb
+#CHEF_USER=chef
+#CHEF_GROUP=chef
+#CLUSTER_NODES=1
+#LOGFILE=/var/log/chef/merb-webui.%s.log
+#OPTIONS=

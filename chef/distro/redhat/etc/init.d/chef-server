@@ -18,15 +18,15 @@ childpidfiles=${CHILDPIDFILES-/var/run/chef/server.%s.pid}
 pidfile=${PIDFILE-/var/run/chef/server.main.pid}
 lockfile=${LOCKFILE-/var/lock/subsys/$prog}
 config=${CONFIG-/etc/chef/server.rb}
-user=${USER-chef}
-group=${GROUP-chef}
-cluster_nodes=${CLUSTER_NODES-2}
+user=${CHEF_USER-chef}
+group=${CHEF_GROUP-chef}
+cluster_nodes=${CLUSTER_NODES-1}
 logfile=${LOGFILE-/var/log/chef/merb.%s.log}
 options=${OPTIONS-}
 
 start() {
     echo -n "Starting $prog:"
-    daemon chef-server -d -c "$cluster_nodes" -C "$config" -u "$user" -G "$group" -L "$logfile" -P "$childpidfiles" "$options" "&>/dev/null"
+    daemon $prog -d -c "$cluster_nodes" -C "$config" -u "$user" -G "$group" -L "$logfile" -P "$childpidfiles" "$options" "&>/dev/null"
     RETVAL=$?
     echo
     [ $RETVAL -eq 0 ] && touch ${lockfile}
@@ -36,7 +36,7 @@ start() {
 stop() {
     echo -n "Stopping $prog: "
     if [ -f $pidfile ]; then
-        killproc chef-server
+        killproc $prog
         RETVAL=$?
         if [ $RETVAL -ne 0 ]; then
             failure;
@@ -68,7 +68,7 @@ case "$1" in
         fi
         ;;
   status)
-        status chef-server
+        status $prog
         ;;
   *)
     echo "Usage: $0 {start|stop|restart|condrestart|status}"

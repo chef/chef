@@ -3,8 +3,8 @@
 #CHILDPIDFILES=/var/run/chef/server.%s.pid
 #PIDFILE=/var/run/chef/server.pid
 #CONFIG=/etc/chef/server.rb
-#USER=chef
-#GROUP=chef
-#CLUSTER_NODES=2
+#CHEF_USER=chef
+#CHEF_GROUP=chef
+#CLUSTER_NODES=1
 #LOGFILE=/var/log/chef/merb.%s.log
 #OPTIONS=
