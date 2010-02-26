@@ -61,14 +61,17 @@ describe Chef::Knife::NodeBulkDelete do
       @knife.run
     end
 
-    describe "with -r or --regex" do
-      it "should only delete nodes that match the regex" do
-        @knife.name_args = ['adam']
-        @nodes['adam'].should_receive(:destroy)
-        @nodes['brent'].should_not_receive(:destroy)
-        @nodes['jacob'].should_not_receive(:destroy)
-        @knife.run
-      end
+    it "should only delete nodes that match the regex" do
+      @knife.name_args = ['adam']
+      @nodes['adam'].should_receive(:destroy)
+      @nodes['brent'].should_not_receive(:destroy)
+      @nodes['jacob'].should_not_receive(:destroy)
+      @knife.run
+    end
+
+    it "should exit with 42 if the regex is not matched" do
+      @knife.name_args = []
+      lambda { @knife.run }.should raise_error(SystemExit)
     end
 
     describe "with -p or --print-after" do
