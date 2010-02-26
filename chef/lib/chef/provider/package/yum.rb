@@ -115,6 +115,23 @@ class Chef
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
         
+          if @new_resource.source
+            unless ::File.exists?(@new_resource.source)
+              raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
+            end
+
+            Chef::Log.debug("Checking rpm status for  #{@new_resource.package_name}")
+            status = popen4("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}") do |pid, stdin, stdout, stderr|
+              stdout.each do |line|
+                case line
+                when /([\w\d_.-]+)\s([\w\d_.-]+)/
+                  @current_resource.package_name($1)
+                  @new_resource.version($2)
+                end
+              end
+            end
+          end
+
           Chef::Log.debug("Checking yum info for #{@new_resource.package_name}")
     
           @yum.refresh
@@ -133,9 +150,15 @@ class Chef
         end
 
         def install_package(name, version)
-          run_command_with_systems_locale(
-            :command => "yum -d0 -e0 -y install #{name}-#{version}"
-          )
+          if @new_resource.source 
+            run_command_with_systems_locale(
+              :command => "yum -d0 -e0 -y localinstall #{@new_resource.source}"
+            )
+          else
+            run_command_with_systems_locale(
+              :command => "yum -d0 -e0 -y install #{name}-#{version}"
+            )
+          end
           @yum.flush
         end
       
