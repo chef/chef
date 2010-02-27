@@ -137,7 +137,7 @@ class Chef
     registration_url "http://localhost:4000"
     client_url "http://localhost:4042"
     remotefile_url "http://localhost:4000"
-    rest_timeout 60
+    rest_timeout 300
     run_command_stderr_timeout 120
     run_command_stdout_timeout 120
     search_url "http://localhost:4000"
