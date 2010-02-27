@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Stephen Delano (<stephen@opscode.com>)
+# Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,54 +18,54 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-describe Chef::Knife::NodeBulkDelete do
+describe Chef::Knife::ClientBulkDelete do
   before(:each) do
-    @knife = Chef::Knife::NodeBulkDelete.new
+    @knife = Chef::Knife::ClientBulkDelete.new
     @knife.config = {
       :print_after => nil
     }
-    @knife.name_args = ["."] 
-    @knife.stub!(:json_pretty_print).and_return(true)
+    @knife.name_args = ["."]
+    @knife.stub!(:json_pretty_print).and_return(:true)
     @knife.stub!(:confirm).and_return(true)
-    @nodes = Hash.new
-    %w{adam brent jacob}.each do |node_name|
-      node = Chef::Node.new() 
-      node.name(node_name)
-      node.stub!(:destroy).and_return(true)
-      @nodes[node_name] = node
+    @clients = Hash.new
+    %w{tim dan stephen}.each do |client_name|
+      client = Chef::ApiClient.new()
+      client.name(client_name)
+      client.stub!(:destroy).and_return(true)
+      @clients[client_name] = client
     end
-    Chef::Node.stub!(:list).and_return(@nodes)
+    Chef::ApiClient.stub!(:list).and_return(@clients)
   end
-
+  
   describe "run" do
-
-    it "should get the list of inflated nodes" do
-      Chef::Node.should_receive(:list).and_return(@nodes)
+    
+    it "should get the list of the clients" do
+      Chef::ApiClient.should_receive(:list).and_return(@clients)
       @knife.run
     end
-
-    it "should print the nodes you are about to delete" do
-      @knife.should_receive(:json_pretty_print).with(@knife.format_list_for_display(@nodes))
+    
+    it "should print the clients you are about to delete" do
+      @knife.should_receive(:json_pretty_print).with(@knife.format_list_for_display(@clients))
       @knife.run
     end
-
+    
     it "should confirm you really want to delete them" do
       @knife.should_receive(:confirm)
       @knife.run
     end
-
-    it "should delete each node" do
-      @nodes.each_value do |n|
-        n.should_receive(:destroy)
+    
+    it "should delete each client" do
+      @clients.each_value do |c|
+        c.should_receive(:destroy)
       end
       @knife.run
     end
-
-    it "should only delete nodes that match the regex" do
-      @knife.name_args = ['adam']
-      @nodes['adam'].should_receive(:destroy)
-      @nodes['brent'].should_not_receive(:destroy)
-      @nodes['jacob'].should_not_receive(:destroy)
+    
+    it "should only delete clients that match the regex" do
+      @knife.name_args = ["tim"]
+      @clients["tim"].should_receive(:destroy)
+      @clients["stephen"].should_not_receive(:destroy)
+      @clients["dan"].should_not_receive(:destroy)
       @knife.run
     end
 
@@ -74,10 +74,10 @@ describe Chef::Knife::NodeBulkDelete do
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
-    describe "with -p or --print-after" do
-      it "should pretty print the node, formatted for display" do
+    describe "with -p or --print_after" do
+      it "should pretty_print the client, formatted for display" do
         @knife.config[:print_after] = true
-        @nodes.each_value do |n|
+        @clients.each_value do |n|
           @knife.should_receive(:json_pretty_print).with(@knife.format_for_display(n))
         end
         @knife.run
@@ -85,6 +85,3 @@ describe Chef::Knife::NodeBulkDelete do
     end
   end
 end
-
-
-
