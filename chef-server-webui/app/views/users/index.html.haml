@@ -7,14 +7,14 @@
       .inner
         %table.table
           %tr
-            %th.first User Name
-            %th.last
-              - even = false
-              - @users.sort.each do |user, user_url|
-                %tr{:class => even ? "even": "odd" }
-                  %td= link_to user, slice_url(:users_show, :user_id => user)
-                  %td
-                    = link_to('Edit', slice_url(:users_edit, :user_id => user)) 
-                    |
-                    = link_to('Delete', slice_url(:users_delete, :user_id => user), :method => "delete", :confirm => "Really delete User #{user}?  There is no undo.")
-      
+            %th.first{:colspan => 2} Username
+            %th &nbsp;
+            %th.last &nbsp;
+          - even = false
+          - @users.sort.each do |user, user_url|
+            %tr{:class => even ? "even": "odd" }
+              %td{:colspan => 2}= link_to user, slice_url(:users_show, :user_id => user)
+              %td
+                = link_to('Edit', slice_url(:users_edit, :user_id => user)) 
+                |
+                = link_to('Delete', slice_url(:users_delete, :user_id => user), :method => "delete", :confirm => "Really delete User #{user}?  There is no undo.")

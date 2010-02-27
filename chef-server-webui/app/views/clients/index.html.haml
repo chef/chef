@@ -7,12 +7,13 @@
       .inner
         %table.table
           %tr
-            %th.first Name
+            %th.first{:colspan => 2} Name
+            %th &nbsp;
             %th.last &nbsp;
           - even = false;
           - @clients_list.each do |client|
             %tr{ :class => even ? "even" : "odd" }
-              %td= link_to(client[0], slice_url(:client, client[0]))
+              %td{:colspan => 2}= link_to(client[0], slice_url(:client, client[0]))
               %td
                 = link_to('Edit', slice_url(:edit_client, client[0])) 
                 |

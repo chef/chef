@@ -134,7 +134,7 @@ module Merb
       #for showing search result
       def determine_name(type, object)
         case type
-        when :node, :role
+        when :node, :role, :client
           object.name
         else
           params[:id]
