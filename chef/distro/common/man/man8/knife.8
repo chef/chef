@@ -29,6 +29,9 @@ Set the log level (debug, info, warn, error, fatal)
 \fB\-L\fR, \fB\-\-logfile\fR LOGLOCATION
 Set the log file location, defaults to STDOUT
 .TP
+\fB\-n\fR, \fB\-\-no\-editor\fR
+Do not open EDITOR, just accept the data as is
+.TP
 \fB\-u\fR, \fB\-\-user\fR USER
 API Client Username
 .TP
@@ -49,13 +52,12 @@ Knife sub-commands are structured as "NOUN verb NOUN (options)". The sub-command
 .TP
 Sub-commands related to working with clients, which are registered entities that access the Chef server.
 .TP
-.B client bulk delete \fI(options)\fR
+.B client bulk delete REGEX \fI(options)\fR
+.PP
+Delete clients on the Chef server based on a regular expression.
+.PP
+The regular expression (REGEX) here should be in quotes, not //'s.
 .TP
-\fB\-r\fR, \fB\-\-regex\fR [REGEX]
-Narrow the operation via regular expression
-.PP
-Delete all the clients on the Chef server, or only certain clients based on a regular expression.
-.PP
 .B client create CLIENT (options)
 .TP
 \fB\-f\fR, \fB\-\-file\fR FILE
@@ -95,12 +97,11 @@ Show a client.
 .TP
 Cookbooks are the fundamental unit of distribution in Chef. They encapsulate all the recipes of resources and the assets used to configure a particular aspect of the infrastructure.
 .PP
-.B cookbook bulk delete COOKBOOK (options)
-.TP
-\fB\-r\fR, \fB\-\-regex\fR [REGEX]
-Narrow the operation via regular expression
+.B cookbook bulk delete COOKBOOK REGEX (options)
 .PP
-Delete all the cookbooks on the Chef server, or use a regular expression to only delete certain cookbooks.
+Delete cookbooks based on a regular expression.
+.PP
+The regular expression (REGEX) here should be in quotes, not //'s.
 .PP
 .B cookbook delete COOKBOOK (options)
 .PP
@@ -143,7 +144,7 @@ The platform version to see the file for
 .PP
 Show the particular part of a COOKBOOK. PART can be one of:
 .TP
-\fIattribute definition file provider recipe resource template\fR
+\fIattributes definitions files libraries providers recipes resources templates\fR
 .PP
 .B cookbook upload COOKBOOK (options)
 .TP
@@ -184,12 +185,11 @@ Show a specific data bag or an item in a data bag.
 .PP
 Nodes are the entities which are configured with Chef, typically servers or workstations. Nodes are registered as a client, typcially of the same name, but a single client might represent one or more nodes.
 .PP
-.B node bulk delete (options)
+.B node bulk delete REGEX (options)
 .TP
-\fB\-r\fR, \fB\-\-regex\fR [REGEX]
-Narrow the operation via regular expression
+Delete nodes based on a regular expression.
 .PP
-Delete all nodes, or only certain nodes based on a regular expression.
+The regular expression (REGEX) here should be in quotes, not //'s.
 .PP
 .B node create NODE (options)
 .PP
@@ -238,12 +238,11 @@ Show a node.
 .PP
 Roles provide a mechanism to apply a set of recipes and attributes to nodes. For example, the 'webserver' role might instruct Chef to add a recipe for Apache, and specify a default domain to use.
 .PP
-.B role bulk delete (options)
+.B role bulk delete REGEX (options)
 .TP
-\fB\-r\fR, \fB\-\-regex\fR [REGEX]
-Narrow the operation via regular expression
+Delete roles based on a regular expression.
 .PP
-Delete all roles, or only certain roles based on a regular expression.
+The regular expression (REGEX) here should be in quotes, not //'s.
 .PP
 .B role create ROLE (options)
 .TP
@@ -315,6 +314,17 @@ The order to sort the results in
 The row to start returning results at
 .PP
 Search indexes are a powerful feature of the Chef server and the search subcommand allows searching any of the available indexes using the SOLR query syntax.
+.PP
+.B ssh QUERY COMMAND (options)
+.TP
+\fB\-a\fR, \fB\-\-attribute\fR ATTR
+The attribute to use for opening the connection \- default is fqdn
+.TP
+\fB\-C\fR, \fB\-\-concurrency\fR NUM
+The number of concurrent connections
+.PP
+The ssh sub-command requires the net-ssh-multi Ruby library.
+.PP
 .SH CONFIGURATION
 The knife configuration file is a Ruby DSL. If it exists, knife uses the settings for \fBGENERAL OPTIONS\fR defaults.
 .TP
@@ -338,6 +348,12 @@ The type of cache to use. Default is \fIBasicFile\fR. This can be any type of Ca
 .TP
 .B cache_options
 Specifies various options to use for caching. Default reads the Chef client configuration (/etc/chef/checksums).
+.TP
+.B validation_client_name
+Specifies the name of the client used to validate new clients. This is requested from the user when running the configuration sub-command.
+.TP
+.B validation_key
+Specifies the private key file to use for generating ec2 instance data for validating new clients. This is implied from the validation_client_name.
 .SH FILES
 .PP
 \fI~/.chef/knife.rb\fR
