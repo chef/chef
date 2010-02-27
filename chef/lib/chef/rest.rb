@@ -73,7 +73,7 @@ class Chef
 
       catch(:done) do
         retries = Chef::Config[:client_registration_retries] || 5
-        retries.downto(0) do
+        0.upto(retries) do |n|
           begin
             response = nc.save(true, true)
             Chef::Log.debug("Registration response: #{response.inspect}")
@@ -86,6 +86,7 @@ class Chef
           rescue IOError
             raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination}"
           rescue Net::HTTPFatalError => e
+            Chef::Log.warn("Failed attempt #{n} of #{retries+1} on client creation")
             raise unless e.response.code == "500"
           end
         end
