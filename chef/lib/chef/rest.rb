@@ -66,26 +66,29 @@ class Chef
     
     # Register the client 
     def register(name=Chef::Config[:node_name], destination=Chef::Config[:client_key])
-
-      if File.exists?(destination)
-        raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?" unless File.writable?(destination)
-      end
+      raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?" if (File.exists?(destination) &&  !File.writable?(destination))
 
       nc = Chef::ApiClient.new
       nc.name(name)
-      response = nc.save(true, true)
 
-      Chef::Log.debug("Registration response: #{response.inspect}")
-
-      raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
-
-      begin
-        # Write out the private key
-        file = File.open(destination, File::WRONLY|File::EXCL|File::CREAT, 0600)
-        file.print(response["private_key"])
-        file.close
-      rescue 
-        raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination}"
+      catch(:done) do
+        retries = Chef::Config[:client_registration_retries] || 5
+        retries.downto(0) do
+          begin
+            response = nc.save(true, true)
+            Chef::Log.debug("Registration response: #{response.inspect}")
+            raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
+            # Write out the private key
+            file = File.open(destination, "w")
+            file.print(response["private_key"])
+            file.close
+            throw :done
+          rescue IOError
+            raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination}"
+          rescue Net::HTTPFatalError => e
+            raise unless e.response.code == "500"
+          end
+        end
       end
 
       true

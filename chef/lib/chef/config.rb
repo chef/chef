@@ -100,6 +100,7 @@ class Chef
 
     authorized_openid_identifiers nil
     authorized_openid_providers nil
+    client_registration_retries 5
     cookbook_path [ "/var/chef/cookbooks", "/var/chef/site-cookbooks" ]
     cookbook_tarball_path "/var/chef/cookbook-tarballs"
     couchdb_database "chef"
