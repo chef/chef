@@ -34,22 +34,22 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
       @databag.name params[:name]
       @databag.create
       redirect(slice_url(:databags), :message => { :notice => "Created Databag #{@databag.name}" })
-    rescue StandardError => e
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @_message = { :error => $! } 
       render :new
     end 
   end
   
   def index
-    begin
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      @databags = r.get_rest("data")
-      render
-    rescue
-      @_message = { :error => $! } 
-      @databags = {}
-      render
-    end
+    @databags = begin
+                  Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
+                rescue => e
+                  Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+                  @_message = { :error => $! } 
+                  {}
+                end
+    render
   end
 
   def show
@@ -59,7 +59,8 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
       @databag = r.get_rest("data/#{params[:id]}")
       raise NotFound unless @databag
       display @databag
-    rescue
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @databags = Chef::DataBag.list
       @_message =  { :error => $!}    
       render :index
@@ -71,7 +72,8 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       r.delete_rest("data/#{params[:id]}")
       redirect(absolute_slice_url(:databags), {:message => { :notice => "Data bag #{params[:id]} deleted successfully" }, :permanent => true})
-    rescue
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @databags = Chef::DataBag.list
       @_message =  { :error => $!}
       render :index
