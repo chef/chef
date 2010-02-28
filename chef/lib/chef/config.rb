@@ -100,6 +100,7 @@ class Chef
 
     authorized_openid_identifiers nil
     authorized_openid_providers nil
+    client_registration_retries 5
     cookbook_path [ "/var/chef/cookbooks", "/var/chef/site-cookbooks" ]
     cookbook_tarball_path "/var/chef/cookbook-tarballs"
     couchdb_database "chef"
@@ -136,7 +137,7 @@ class Chef
     registration_url "http://localhost:4000"
     client_url "http://localhost:4042"
     remotefile_url "http://localhost:4000"
-    rest_timeout 60
+    rest_timeout 300
     run_command_stderr_timeout 120
     run_command_stdout_timeout 120
     search_url "http://localhost:4000"
