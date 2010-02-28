@@ -79,7 +79,7 @@ class Chef
             Chef::Log.debug("Registration response: #{response.inspect}")
             raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
             # Write out the private key
-            file = File.open(destination, "w")
+            file = File.open(destination, File::WRONLY|File::EXCL|File::CREAT, 0600) 
             file.print(response["private_key"])
             file.close
             throw :done
