@@ -18,7 +18,7 @@ require 'chef' unless defined?(Chef)
 include FileUtils
 
 GEM = "chef-server"
-CHEF_SERVER_VERSION = "0.8.0"
+CHEF_SERVER_VERSION = "0.8.2"
 AUTHOR = "Opscode"
 EMAIL = "chef@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"
