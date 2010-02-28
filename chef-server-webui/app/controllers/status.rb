@@ -28,9 +28,10 @@ class ChefServerWebui::Status < ChefServerWebui::Application
     begin
       @status = Chef::Node.list(true)
       render
-    rescue
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @status = {}
-      @_message = {:error => $!}
+      @_message = {:error => "Could not list status"}
       render
     end 
   end

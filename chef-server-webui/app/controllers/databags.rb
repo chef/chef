@@ -34,22 +34,22 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
       @databag.name params[:name]
       @databag.create
       redirect(slice_url(:databags), :message => { :notice => "Created Databag #{@databag.name}" })
-    rescue StandardError => e
-      @_message = { :error => $! } 
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = { :error => "Could not create databag" } 
       render :new
     end 
   end
   
   def index
-    begin
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      @databags = r.get_rest("data")
-      render
-    rescue
-      @_message = { :error => $! } 
-      @databags = {}
-      render
-    end
+    @databags = begin
+                  Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
+                rescue => e
+                  Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+                  @_message = { :error => "Could not list databags" } 
+                  {}
+                end
+    render
   end
 
   def show
@@ -59,9 +59,10 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
       @databag = r.get_rest("data/#{params[:id]}")
       raise NotFound unless @databag
       display @databag
-    rescue
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @databags = Chef::DataBag.list
-      @_message =  { :error => $!}    
+      @_message =  { :error => "Could not load databag"}    
       render :index
     end 
   end
@@ -71,9 +72,10 @@ class ChefServerWebui::Databags < ChefServerWebui::Application
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       r.delete_rest("data/#{params[:id]}")
       redirect(absolute_slice_url(:databags), {:message => { :notice => "Data bag #{params[:id]} deleted successfully" }, :permanent => true})
-    rescue
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @databags = Chef::DataBag.list
-      @_message =  { :error => $!}
+      @_message =  { :error => "Could not delete databag"}
       render :index
     end 
   end

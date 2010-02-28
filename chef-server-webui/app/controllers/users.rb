@@ -32,7 +32,8 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       authorized_user
       @users = Chef::WebUIUser.list 
       render
-    rescue
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       set_user_and_redirect
     end 
   end
@@ -43,7 +44,8 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       raise Forbidden, "The current user is not an Administrator, you can only Show and Edit the user itself. To control other users, login as an Administrator." unless params[:user_id] == session[:user] unless session[:level] == :admin
       @user = Chef::WebUIUser.load(params[:user_id])
       render
-    rescue
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       set_user_and_redirect
     end 
   end 
@@ -52,13 +54,10 @@ class ChefServerWebui::Users < ChefServerWebui::Application
   def show
     begin
       raise Forbidden, "The current user is not an Administrator, you can only Show and Edit the user itself. To control other users, login as an Administrator." unless params[:user_id] == session[:user] unless session[:level] == :admin
-      begin
-        @user = Chef::WebUIUser.load(params[:user_id])
-      rescue Net::HTTPServerException => e
-        raise NotFound, "Cannot find user #{params[:user_id]}"
-      end
+      @user = Chef::WebUIUser.load(params[:user_id])
       render
-    rescue 
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       set_user_and_redirect
     end 
   end 
@@ -66,11 +65,8 @@ class ChefServerWebui::Users < ChefServerWebui::Application
   # PUT to /users/:user_id/update
   def update
     begin
-      begin
-        @user = Chef::WebUIUser.load(params[:user_id])
-      rescue Net::HTTPServerException => e
-        raise NotFound, "Cannot find user #{params[:user_id]}"
-      end
+      @user = Chef::WebUIUser.load(params[:user_id])
+      
       if session[:level] == :admin and ['true','false'].include? params[:admin]
         @user.admin = str_to_bool(params[:admin])
       end
@@ -91,8 +87,9 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       @user.save
       @_message = { :notice => "Updated User #{@user.name}" }
       render :show
-    rescue
-      @_message = { :error => $! }
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = { :error => "Could not update user" }
       render :edit
     end
   end
@@ -102,7 +99,8 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       authorized_user
       @user = Chef::WebUIUser.new
       render
-    rescue
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       set_user_and_redirect
     end 
   end 
@@ -115,18 +113,11 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       @user.set_password(params[:password], params[:password2])
       @user.admin = true if params[:admin]
       (params[:openid].length == 0 || params[:openid].nil?) ? @user.set_openid(nil) : @user.set_openid(URI.parse(params[:openid]).normalize.to_s)
-      begin
-        @user.create
-      rescue Net::HTTPServerException => e
-        if e.message =~ /403/ 
-          raise ArgumentError, "User already exists" 
-        else 
-          raise e
-        end 
-      end
+      @user.create
       redirect(slice_url(:users), :message => { :notice => "Created User #{params[:name]}" })
-    rescue
-      @_message = { :error => $! }
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = { :error => "Could not create user" }
       session[:level] != :admin ? set_user_and_redirect : (render :new)
     end
   end 
@@ -138,16 +129,13 @@ class ChefServerWebui::Users < ChefServerWebui::Application
   
   def login_exec
     begin
-      begin
-        @user = Chef::WebUIUser.load(params[:name])
-      rescue Net::HTTPServerException => e
-        raise(Unauthorized, "Wrong username or password.")
-      end 
+      @user = Chef::WebUIUser.load(params[:name])
       raise(Unauthorized, "Wrong username or password.") unless @user.verify_password(params[:password])
       complete
-    rescue
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @user = Chef::WebUIUser.new
-      @_message = { :error => $! }
+      @_message = { :error => "Could not complete logging in." }
       render :login
     end   
   end
@@ -171,7 +159,8 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       @user.destroy
       logout if params[:user_id] == session[:user]
       redirect(absolute_slice_url(:users), {:message => { :notice => "User #{params[:user_id]} deleted successfully" }, :permanent => true})
-    rescue
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       session[:level] != :admin ? set_user_and_redirect : redirect_to_list_users({ :error => $! })
     end 
   end 

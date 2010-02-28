@@ -25,14 +25,11 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
   
   def edit
     begin
-      begin
-        @databag_item = Chef::DataBagItem.load(params[:databag_id], params[:id])
-      rescue Net::HTTPServerException => e
-        raise NotFound, "Cannot load Databag Item #{params[:id]}"
-      end
+      @databag_item = Chef::DataBagItem.load(params[:databag_id], params[:id])
       @default_data = @databag_item
-    rescue StandardError => e
-      @_message = { :error => $! }   
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = { :error => "Could not load the databag item" }   
     end 
     render
   end 
@@ -45,14 +42,14 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
       raise ArgumentError, "Updating id is not allowed" unless @databag_item.raw_data['id'] == params[:id] #to be consistent with other objects, changing id is not allowed.
       @databag_item.save
       redirect(slice_url(:databag_databag_items, :databag_id => params[:databag_id], :id => @databag_item.name), :message => { :notice => "Updated Databag Item #{@databag_item.name}" })
-    rescue
-      @_message = { :error => $! }
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = { :error => "Could not update the databag item" }
       @databag_item = Chef::DataBagItem.load(params[:databag_id], params[:id])
       @default_data = @databag_item
       render :edit 
     end         
   end 
-  
   
   def new
     @default_data = {'id'=>''}
@@ -66,9 +63,10 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
       @databag_item.data_bag @databag_name
       @databag_item.raw_data = JSON.parse(params[:json_data])
       @databag_item.create
-      redirect(slice_url(:databag_databag_items, :databag_id => @databag_name), :message => { :notice => "Created Databag Item #{@databag_item.name}" })
-    rescue StandardError => e
-      @_message = { :error => $! } 
+      redirect(slice_url(:databag_databag_items, :databag_id => @databag_name), :message => { :notice => "Databag item created successfully" })
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = { :error => "Could not create databag item" } 
       render :new
     end
   end
@@ -84,8 +82,9 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       @databag_item = r.get_rest("data/#{params[:databag_id]}/#{params[:id]}")
       display @databag_item
-    rescue
-      redirect(slice_url(:databag_databag_items), {:message => { :error => $! }, :permanent => true})
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      redirect(slice_url(:databag_databag_items), {:message => { :error => "Could not show the databag item" }, :permanent => true})
     end 
   end
   
@@ -93,9 +92,10 @@ class ChefServerWebui::DatabagItems < ChefServerWebui::Application
     begin
       @databag_item = Chef::DataBagItem.new
       @databag_item.destroy(databag_id, item_id)
-      redirect(slice_url(:databag_databag_items), {:message => { :notice => "Databag Item #{params[:id]} deleted successfully" }, :permanent => true})
-    rescue
-      redirect(slice_url(:databag_databag_items), {:message => { :error => $! }, :permanent => true})
+      redirect(slice_url(:databag_databag_items), {:message => { :notice => "Databag item deleted successfully" }, :permanent => true})
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      redirect(slice_url(:databag_databag_items), {:message => { :error => "Could not delete databag item" }, :permanent => true})
     end 
   end 
   
