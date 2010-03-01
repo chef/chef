@@ -71,7 +71,7 @@ class Chef
           ca_cert.sign keypair, OpenSSL::Digest::SHA1.new
 
           File.open(ca_cert_file, "w") { |f| f.write ca_cert.to_pem }
-          File.open(ca_keypair_file, "w") { |f| f.write keypair.to_pem }
+          File.open(ca_keypair_file, File::WRONLY|File::EXCL|File::CREAT, 0600) { |f| f.write keypair.to_pem }
         end
         self
       end
