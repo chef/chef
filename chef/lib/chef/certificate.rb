@@ -41,7 +41,7 @@ class Chef
             FileUtils.mkdir_p ca_basedir
           end
 
-          keypair = OpenSSL::PKey::RSA.generate(1024)
+          keypair = OpenSSL::PKey::RSA.generate(4096)
 
           ca_cert = OpenSSL::X509::Certificate.new
           ca_cert.version = 3
@@ -71,7 +71,7 @@ class Chef
           ca_cert.sign keypair, OpenSSL::Digest::SHA1.new
 
           File.open(ca_cert_file, "w") { |f| f.write ca_cert.to_pem }
-          File.open(ca_keypair_file, "w") { |f| f.write keypair.to_pem }
+          File.open(ca_keypair_file, File::WRONLY|File::EXCL|File::CREAT, 0600) { |f| f.write keypair.to_pem }
         end
         self
       end
