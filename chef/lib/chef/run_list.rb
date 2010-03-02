@@ -142,7 +142,7 @@ class Chef
             role = Chef::Role.cdb_load(name, couchdb)
           end
           @seen_roles << name
-          rec, d, o = role.run_list.expand(from)
+          rec, d, o = role.run_list.expand(from, couchdb)
           rec.each { |r| recipes <<  r unless recipes.include?(r) }
           default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, Chef::Mixin::DeepMerge.merge(role.default_attributes,d))
           override_attrs = Chef::Mixin::DeepMerge.merge(override_attrs, Chef::Mixin::DeepMerge.merge(role.override_attributes, o))
