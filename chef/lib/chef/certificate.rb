@@ -41,7 +41,7 @@ class Chef
             FileUtils.mkdir_p ca_basedir
           end
 
-          keypair = OpenSSL::PKey::RSA.generate(4096)
+          keypair = OpenSSL::PKey::RSA.generate(1024)
 
           ca_cert = OpenSSL::X509::Certificate.new
           ca_cert.version = 3
