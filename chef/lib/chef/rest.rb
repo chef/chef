@@ -40,10 +40,11 @@ class Chef
     
     attr_accessor :url, :cookies, :client_name, :signing_key, :signing_key_filename, :sign_on_redirect, :sign_request
     
-    def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key])
+    def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
       @url = url
       @cookies = CookieJar.instance
       @client_name = client_name
+      @default_headers = options[:headers] || {}
       if signing_key_filename
         @signing_key_filename = signing_key_filename
         @signing_key = load_signing_key(signing_key_filename) 
@@ -177,7 +178,9 @@ class Chef
       end
 
       http.read_timeout = Chef::Config[:rest_timeout]
-
+      
+      headers = @default_headers.merge(headers)
+      
       unless raw
         headers = headers.merge({ 
           'Accept' => "application/json",
