@@ -7,7 +7,7 @@ require 'openssl'
 class Chef
   class StreamingCookbookUploader
 
-    DefaultHeaders = { 'accept' => 'application/json' }
+    DefaultHeaders = { 'accept' => 'application/json', 'x-chef-version' => ::Chef::VERSION }
     
     class << self
 
