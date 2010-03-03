@@ -47,7 +47,7 @@ describe Chef::Certificate do
     end
 
     it "should generate an RSA private key" do
-      File.should_receive(:open).with(Chef::Config[:signing_ca_key], "w").and_yield(@ca_key)
+      File.should_receive(:open).with(Chef::Config[:signing_ca_key], File::WRONLY|File::EXCL|File::CREAT, 0600).and_yield(@ca_key)
       Chef::Certificate.generate_signing_ca
       @ca_key.data.should =~ /BEGIN RSA PRIVATE KEY/
     end
