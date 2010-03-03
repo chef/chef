@@ -25,7 +25,7 @@ class Chef
   class Knife
     class CookbookUpload < Knife
 
-      banner "Sub-Command: cookbook upload COOKBOOK (options)"
+      banner "Sub-Command: cookbook upload [COOKBOOKS...] (options)"
 
       option :cookbook_path,
         :short => "-o PATH:PATH",
@@ -52,17 +52,20 @@ class Chef
             upload_cookbook(cookbook.name.to_s)
           end
         else
-          upload_cookbook(@name_args[0]) 
+          @name_args.each do |cb|
+            Chef::Log.info("** #{cb} **")
+            upload_cookbook(cb)
+          end
         end
       end
-
+      
       def test_ruby(cookbook_dir)
         Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
           Chef::Log.info("Testing #{ruby_file} for syntax errors...")
           Chef::Mixin::Command.run_command(:command => "ruby -c #{ruby_file}")
         end
       end
-
+      
       def test_templates(cookbook_dir)
         Dir[File.join(cookbook_dir, '**', '*.erb')].each do |erb_file|
           Chef::Log.info("Testing template #{erb_file} for syntax errors...")
@@ -166,7 +169,7 @@ class Chef
         Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
         FileUtils.rm_rf tmp_cookbook_dir
       end
-
+      
     end
   end
 end
