@@ -18,7 +18,28 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
+describe "Chef::Platform supports" do
+  [
+    :mac_os_x,
+    :freebsd,
+    :ubuntu,
+    :debian,
+    :centos,
+    :fedora,
+    :suse,
+    :redhat,
+    :gentoo,
+    :arch, 
+    :solaris
+  ].each do |platform|
+    it "#{platform}" do
+      Chef::Platform.platforms.should have_key(platform)
+    end
+  end
+end
+
 describe Chef::Platform do
+
   before :all do
     @original_platform_map = Chef::Platform.platforms
   end
