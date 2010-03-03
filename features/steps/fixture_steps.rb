@@ -89,6 +89,13 @@ Before do
         r.default_attributes({ 'a' => 'bake' })
         r.override_attributes({ 'c' => 'down' })
         r 
+      end,
+      'role_not_exist' => Proc.new do
+        r = Chef::Role.new
+        r.name 'role_not_exist'
+        r.description "Non-existent nested role"
+        r.run_list << "role[not_exist]"
+        r
       end
     },
     'node' => {
@@ -120,6 +127,12 @@ Before do
         n = Chef::Node.new
         n.name 'sync'
         n.run_list << "node_cookbook_sync"
+        n
+      end, 
+      'role_not_exist' => Proc.new do
+        n = Chef::Node.new
+        n.name 'role_not_exist'
+        n.run_list << "role[not_exist]"
         n
       end
     },

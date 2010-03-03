@@ -128,21 +128,29 @@ class Chef
         when 'recipe'
           recipes << name unless recipes.include?(name)
         when 'role'
-          role = nil
-          next if @seen_roles.include?(name)
-          if from == 'disk' || Chef::Config[:solo]
-            # Load the role from disk
-            role = Chef::Role.from_disk("#{name}")
-          elsif from == 'server'
-            # Load the role from the server
-            rest ||= Chef::REST.new(Chef::Config[:role_url])
-            role = rest.get_rest("roles/#{name}")
-          elsif from == 'couchdb'
-            # Load the role from couchdb
-            role = Chef::Role.cdb_load(name, couchdb)
-          end
-          @seen_roles << name
-          rec, d, o = role.run_list.expand(from)
+          role = begin
+                   next if @seen_roles.include?(name)
+                   @seen_roles << name
+                   if from == 'disk' || Chef::Config[:solo]
+                     # Load the role from disk
+                     Chef::Role.from_disk("#{name}") || Chef::Exceptions::RoleNotFound
+                   elsif from == 'server'
+                     # Load the role from the server
+                     begin
+                       (rest || Chef::REST.new(Chef::Config[:role_url])).get_rest("roles/#{name}") 
+                     rescue Net::HTTPServerException
+                       raise Chef::Exceptions::RoleNotFound if $!.message == '404 "Not Found"'
+                       raise
+                     end
+                   elsif from == 'couchdb'
+                     # Load the role from couchdb
+                     Chef::Role.cdb_load(name, couchdb) rescue Chef::Exceptions::CouchDBNotFound raise Chef::Exceptions::RoleNotFound
+                   end
+                 rescue Chef::Exceptions::RoleNotFound
+                   Chef::Log.error("Role #{name} is in the runlist but does not exist. Skipping expand.")
+                   next
+                 end
+          rec, d, o = role.run_list.expand(from, couchdb, rest)
           rec.each { |r| recipes <<  r unless recipes.include?(r) }
           default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, Chef::Mixin::DeepMerge.merge(role.default_attributes,d))
           override_attrs = Chef::Mixin::DeepMerge.merge(override_attrs, Chef::Mixin::DeepMerge.merge(role.override_attributes, o))
