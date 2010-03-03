@@ -67,7 +67,15 @@ class Chef
           :mdadm => Chef::Provider::Mdadm
         }
       },
-       :suse   => {
+      :fedora   => {
+        :default => {
+          :service => Chef::Provider::Service::Redhat,
+          :cron => Chef::Provider::Cron,
+          :package => Chef::Provider::Package::Yum,
+          :mdadm => Chef::Provider::Mdadm
+        }
+      },
+      :suse     => {
         :default => {
           :service => Chef::Provider::Service::Redhat,
           :cron => Chef::Provider::Cron,
