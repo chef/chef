@@ -72,6 +72,8 @@ class Chef
         )
       end
       
+      alias_method :group, :gid
+      
       def home(arg=nil)
         set_or_return(
           :home,

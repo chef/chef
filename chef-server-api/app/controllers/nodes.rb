@@ -48,13 +48,11 @@ class ChefServerApi::Nodes < ChefServerApi::Application
 
   def create
     @node = params["inflated_object"]
-    exists = true 
     begin
-      Chef::Node.cdb_load(@node.name)
+      Chef::Node.cdb_load(@node.name) 
+      raise Conflict, "Node already exists"
     rescue Chef::Exceptions::CouchDBNotFound
-      exists = false
     end
-    raise Conflict, "Node already exists" if exists
     self.status = 201
     @node.cdb_save
     display({ :uri => absolute_slice_url(:node, @node.name) })
