@@ -72,6 +72,9 @@ class Chef
 
           File.open(ca_cert_file, "w") { |f| f.write ca_cert.to_pem }
           File.open(ca_keypair_file, File::WRONLY|File::EXCL|File::CREAT, 0600) { |f| f.write keypair.to_pem }
+          if (Chef::Config[:signing_ca_user] && Chef::Config[:signing_ca_group])
+            FileUtils.chown(Chef::Config[:signing_ca_user], Chef::Config[:signing_ca_group], ca_keypair_file)
+          end
         end
         self
       end

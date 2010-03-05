@@ -56,6 +56,14 @@ end
 ARGV.push *[ "-I", File.join(__DIR__, "config", "init.rb") ]
 ARGV.push *[ "-m", __DIR__]
 
+# attempt to find the user and group that this process will become. Fixes CHEF-1015
+if (index = ARGV.index("-u"))
+  Chef::Config[:signing_ca_user] = ARGV[index+1]
+end
+if (index = ARGV.index("-G"))
+  Chef::Config[:signing_ca_group] = ARGV[index+1]
+end
+
 if index = ARGV.index("-C")
   config = ARGV[index+1]
   ARGV.delete("-C")
