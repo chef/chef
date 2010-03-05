@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -76,7 +76,7 @@ class Chef
 
     def solr_add(data)
       data = [data] unless data.kind_of?(Array)
-      
+
       Chef::Log.debug("adding to SOLR: #{data.inspect}")
       xml_document = LibXML::XML::Document.new
       xml_add = LibXML::XML::Node.new("add")
@@ -100,19 +100,19 @@ class Chef
     def solr_commit(opts={})
       post_to_solr(generate_single_element("commit", opts))
     end
-    
+
     def solr_optimize(opts={})
       post_to_solr(generate_single_element("optimize", opts))
     end
-    
+
     def solr_rollback
       post_to_solr(generate_single_element("rollback"))
     end
-    
+
     def solr_delete_by_id(ids)
       post_to_solr(generate_delete_document("id", ids))
     end
-    
+
     def solr_delete_by_query(queries)
       post_to_solr(generate_delete_document("query", queries))
     end
@@ -120,20 +120,20 @@ class Chef
     def rebuild_index(url=Chef::Config[:couchdb_url], db=Chef::Config[:couchdb_database])
       solr_delete_by_query("X_CHEF_database_CHEF_X:#{db}")
       solr_commit
-      
+
       results = {}
       [Chef::ApiClient, Chef::Node, Chef::OpenIDRegistration, Chef::Role, Chef::WebUIUser].each do |klass|
         results[klass.name] = reindex_all(klass) ? "success" : "failed"
       end
       databags = Chef::DataBag.cdb_list(true)
       Chef::Log.info("Reloading #{databags.size.to_s} #{Chef::DataBag} objects into the indexer")
-      databags.each { |i| i.add_to_index; i.list(true).each { |x| x.add_to_index } } 
-      results[Chef::DataBag.name] = "success" 
+      databags.each { |i| i.add_to_index; i.list(true).each { |x| x.add_to_index } }
+      results[Chef::DataBag.name] = "success"
       results
     end
 
     private
-    
+
     def reindex_all(klass, metadata={})
       begin
         items = klass.cdb_list(true)
@@ -207,7 +207,7 @@ class Chef
     def escape(s)
       s.to_s.gsub(/([^ a-zA-Z0-9_.-]+)/n) {
         '%'+$1.unpack('H2'*$1.size).join('%').upcase
-      }.tr(' ', '+') 
+      }.tr(' ', '+')
     end
 
   end

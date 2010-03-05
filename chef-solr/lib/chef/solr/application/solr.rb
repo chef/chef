@@ -103,7 +103,7 @@ class Chef
           :long => "--version",
           :description => "Show chef-solr version",
           :boolean => true,
-          :proc => lambda {|v| puts "chef-solr: #{Chef::Solr::VERSION}"},
+          :proc => lambda {|v| puts "chef-solr: #{::Chef::Solr::VERSION}"},
           :exit => 0
 
         def initialize
