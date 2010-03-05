@@ -144,7 +144,7 @@ class Chef
                      end
                    elsif from == 'couchdb'
                      # Load the role from couchdb
-                     Chef::Role.cdb_load(name, couchdb) rescue Chef::Exceptions::CouchDBNotFound raise Chef::Exceptions::RoleNotFound
+                     Chef::Role.cdb_load(name, couchdb) rescue Chef::Exceptions::CouchDBNotFound raise(Chef::Exceptions::RoleNotFound)
                    end
                  rescue Chef::Exceptions::RoleNotFound
                    Chef::Log.error("Role #{name} is in the runlist but does not exist. Skipping expand.")

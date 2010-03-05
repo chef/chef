@@ -171,7 +171,7 @@ class Chef
           if status.exitstatus != args[:returns]
             # if the log level is not debug, through output of command when we fail
             output = ""
-            if Chef::Log.logger.level > 0
+            if Chef::Log.level == :debug
               output << "\n---- Begin output of #{args[:command]} ----\n"
               output << "#{command_output}"
               output << "---- End output of #{args[:command]} ----\n"
