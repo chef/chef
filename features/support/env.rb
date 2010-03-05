@@ -21,7 +21,7 @@ end
 Thread.abort_on_exception = true
 
 require 'rubygems'
-require 'spec'
+require 'spec/expectations'
 require 'chef'
 require 'chef/config'
 require 'chef/client'
@@ -31,26 +31,19 @@ require 'chef/api_client'
 require 'chef/solr'
 require 'chef/certificate'
 require 'tmpdir'
-require 'merb-core'
-require 'merb_cucumber/world/webrat'
 require 'chef/streaming_cookbook_uploader'
 require 'webrick'
-
-def Spec.run? ; true; end
 
 ENV['LOG_LEVEL'] ||= 'error'
 
 def setup_logging
   Chef::Config.from_file(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'server.rb'))
-  Merb.logger.auto_flush = true
   if ENV['DEBUG'] == 'true' || ENV['LOG_LEVEL'] == 'debug'
     Chef::Config[:log_level] = :debug
     Chef::Log.level = :debug
-    Merb.logger.set_log(STDOUT, :debug) 
   else
     Chef::Config[:log_level] = ENV['LOG_LEVEL'].to_sym 
     Chef::Log.level = ENV['LOG_LEVEL'].to_sym
-    Merb.logger.set_log(STDOUT, ENV['LOG_LEVEL'].to_sym)
   end
   Ohai::Log.logger = Chef::Log.logger 
 end
@@ -98,14 +91,6 @@ def cleanup
   end
 end
 
-Merb.start_environment(
-  :merb_root => File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "chef-server")), 
-  :testing => true, 
-  :adapter => 'runner',
-  :environment => ENV['MERB_ENV'] || 'test',
-  :session_store => 'memory'
-)
-
 ###
 # Pre-testing setup
 ###
@@ -114,12 +99,6 @@ cleanup
 delete_databases
 create_databases
 prepare_replicas
-
-Spec::Runner.configure do |config|
-  config.include(Merb::Test::ViewHelper)
-  config.include(Merb::Test::RouteHelper)
-  config.include(Merb::Test::ControllerHelper)
-end
 
 Chef::Log.info("Ready to run tests")
 
