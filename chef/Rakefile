@@ -26,7 +26,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "mixlib-cli", ">= 1.1.0"
   s.add_dependency "mixlib-log", ">= 1.1.0"
   s.add_dependency "mixlib-authentication", ">= 1.1.0"
-  s.add_dependency "ohai", ">= 0.4.0"
+  s.add_dependency "ohai", ">= 0.5.0"
 
   s.add_dependency "bunny", ">= 0.6.0"
   %w{json erubis extlib amqp moneta}.each { |gem| s.add_dependency gem }
