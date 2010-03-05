@@ -64,6 +64,14 @@ class Chef
           :long => "--couchdb-url URL",
           :description => "The CouchDB URL"
 
+        option :version,
+          :short => "-v",
+          :long => "--version",
+          :description => "Show chef-solr version",
+          :boolean => true,
+          :proc => lambda {|v| puts "chef-solr: #{Chef::Solr::VERSION}"},
+          :exit => 0
+
         def initialize
           super
 

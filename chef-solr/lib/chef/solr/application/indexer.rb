@@ -95,6 +95,14 @@ class Chef
           :long => "--amqp-vhost VHOST",
           :description => "The amqp vhost"
         
+        option :version,
+          :short => "-v",
+          :long => "--version",
+          :description => "Show chef-solr version",
+          :boolean => true,
+          :proc => lambda {|v| puts "chef-solr: #{Chef::Solr::VERSION}"},
+          :exit => 0
+
         Signal.trap("INT") do
           begin
             AmqpClient.instance.stop
