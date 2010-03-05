@@ -28,7 +28,7 @@ class Chef
         protected
         
         def release_created(release)
-          sorted_releases { |r| r << release }
+          sorted_releases {|r| r.delete(release); r << release }
         end
         
         def release_deleted(release)

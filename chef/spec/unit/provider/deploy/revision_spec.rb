@@ -59,6 +59,22 @@ describe Chef::Provider::Deploy::Revision do
     @provider.all_releases.should == [@expected_release_dir,second_release]
   end
   
+  it "removes a release from the file cache when it's used again in another release and append it to the end" do
+    FileUtils.stub!(:mkdir_p)
+    FileUtils.stub!(:cp_r)
+    @provider.copy_cached_repo
+    @provider.stub!(:release_slug).and_return("73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2")
+    @provider.load_current_resource
+    @provider.copy_cached_repo
+    second_release = "/my/deploy/dir/releases/73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2"
+    @provider.all_releases.should == [@expected_release_dir,second_release]
+    @provider.copy_cached_repo
+    @provider.stub!(:release_slug).and_return("8a3195bf3efa246f743c5dfa83683201880f935c")
+    @provider.load_current_resource
+    @provider.copy_cached_repo
+    @provider.all_releases.should == [second_release, @expected_release_dir]
+  end
+  
   it "removes a release from the file cache when it's deleted by :cleanup!" do
     %w{first second third fourth fifth latest}.each do |release_name|
       @provider.send(:release_created, release_name)
