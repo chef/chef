@@ -27,8 +27,8 @@ class Chef
       banner "Sub-Command: node run_list add [NODE] [ENTRY] (options)"
 
       option :after,
-        :short => "-a [ITEM]",
-        :long  => "--after [ITEM]",
+        :short => "-a ITEM",
+        :long  => "--after ITEM",
         :description => "Place the ENTRY in the run list after ITEM"
 
       def run 

@@ -27,8 +27,8 @@ class Chef
       banner "Sub-Command: role show ROLE (options)"
 
       option :attribute,
-        :short => "-a [ATTR]",
-        :long => "--attribute [ATTR]",
+        :short => "-a ATTR",
+        :long => "--attribute ATTR",
         :description => "Show only one attribute"
 
       def run 
