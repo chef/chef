@@ -34,6 +34,9 @@ require 'uri'
 
 class Chef
   class Solr
+
+    VERSION = "0.8.6"
+
     include Chef::Mixin::XMLEscape
 
     attr_accessor :solr_url, :http
