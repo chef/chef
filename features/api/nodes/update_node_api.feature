@@ -32,4 +32,13 @@ Feature: Update a node
       And sending the method 'run_list' to the 'node' with '[ "recipe[one]", "recipe[two]" ]'
      When I 'PUT' the 'node' to the path '/nodes/webserver'
      Then I should get a '401 "Unauthorized"' exception
+     
+   Scenario: Update a node with a role that does not exist
+     Given a 'registration' named 'bobo' exists
+       And a 'node' named 'webserver' exists
+       And sending the method 'run_list' to the 'node' with '["role[not_exist]"]'
+      When I 'PUT' the 'node' to the path '/nodes/webserver' 
+      Then the inflated response should respond to 'run_list' with '["role[not_exist]"]' 
+      When I 'GET' the path '/nodes/webserver'
+      Then the inflated response should respond to 'run_list' with '["role[not_exist]"]'
 

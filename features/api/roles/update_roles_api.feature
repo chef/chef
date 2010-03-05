@@ -35,3 +35,11 @@ Feature: Update a role
      When I 'PUT' the 'role' to the path '/roles/webserver' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
+  Scenario: Update a node with a role that does not exist
+    Given a 'registration' named 'bobo' exists
+      And a 'role' named 'webserver' exists
+      And sending the method 'run_list' to the 'role' with '["role[not_exist]"]'
+     When I 'PUT' the 'role' to the path '/roles/webserver' 
+     Then the inflated response should respond to 'run_list' with '["role[not_exist]"]' 
+     When I 'GET' the path '/roles/webserver'
+     Then the inflated response should respond to 'run_list' with '["role[not_exist]"]'
