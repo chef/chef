@@ -147,6 +147,20 @@ class Chef
         end
       end
 
+      def screen
+        tf = Tempfile.new("knife-ssh-screen")
+        tf.puts("hardstatus alwayslastline '%w'")
+        window = 0
+        session.servers_for.collect { |s| s.host }.each do |server|
+          tf.puts("screen -t \"#{server}\" #{window}")
+          tf.puts("stuff \"ssh #{server}\\012\"")
+
+          window += 1
+        end
+        tf.close
+        exec("screen -c #{tf.path}")
+      end
+
       def run 
         @longest = 0
 
@@ -156,8 +170,11 @@ class Chef
 
         configure_session
 
-        if @name_args[1] == "interactive"
+        case @name_args[1]
+        when "interactive"
           interactive 
+        when "screen"
+          screen
         else
           ssh_command(@name_args[1..-1].join(" "))
         end
