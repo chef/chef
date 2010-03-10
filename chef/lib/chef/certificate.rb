@@ -149,6 +149,9 @@ class Chef
           File.open(key_file, File::WRONLY|File::EXCL|File::CREAT, 0600) do |f|
             f.print(api_client.private_key)
           end
+          if (Chef::Config[:signing_ca_user] && Chef::Config[:signing_ca_group])
+            FileUtils.chown(Chef::Config[:signing_ca_user], Chef::Config[:signing_ca_group], key_file)
+          end
         end
       end
 
