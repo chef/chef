@@ -48,6 +48,13 @@ class Chef
           :description  => "Set the log file location, defaults to STDOUT - recommended for daemonizing",
           :proc         => nil
 
+        option :pid_file,
+          :short        => "-P PID_FILE",
+          :long         => "--pid PIDFILE",
+          :description  => "Set the PID file location, defaults to /tmp/chef-solr-indexer.pid",
+          :proc         => nil
+
+
         option :help,
           :short        => "-h",
           :long         => "--help",
