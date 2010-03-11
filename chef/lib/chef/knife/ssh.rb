@@ -37,6 +37,13 @@ class Chef
         :description => "The attribute to use for opening the connection - default is fqdn",
         :default => "fqdn" 
 
+      option :manual,
+        :short => "-m",
+        :long => "--manual-list",
+        :boolean => true,
+        :description => "QUERY is a space separated list of servers",
+        :default => false
+
       def session
         @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency])
       end
@@ -47,13 +54,27 @@ class Chef
       end
 
       def configure_session
-        q = Chef::Search::Query.new
-        q.search(:node, @name_args[0]) do |item|
-          data = format_for_display(item)
-          Chef::Log.debug("Adding #{data[config[:attribute]]}")
-          session.use data[config[:attribute]]
-          @longest = data[config[:attribute]].length if data[config[:attribute]].length > @longest
+        list = case config[:manual]
+               when true
+                 @name_args[0].split(" ")
+               when false
+                 r = Array.new
+                 q = Chef::Search::Query.new
+                 q.search(:node, @name_args[0]) do |item|
+                   r << format_for_display(item)[config[:attribute]]
+                 end
+                 r
+               end
+        session_from_list(list)
+      end
+
+      def session_from_list(list)
+        list.each do |item|
+          Chef::Log.debug("Adding #{item}")
+          session.use item 
+          @longest = item.length if item.length > @longest
         end
+        session
       end
 
       def fixup_sudo(command)
@@ -149,12 +170,11 @@ class Chef
 
       def screen
         tf = Tempfile.new("knife-ssh-screen")
-        tf.puts("hardstatus alwayslastline '%w'")
+        tf.puts("caption always '%w'")
+        tf.puts("hardstatus alwayslastline 'knife ssh #{@name_args[0]}'")
         window = 0
         session.servers_for.collect { |s| s.host }.each do |server|
-          tf.puts("screen -t \"#{server}\" #{window}")
-          tf.puts("stuff \"ssh #{server}\\012\"")
-
+          tf.puts("screen -t \"#{server}\" #{window} ssh #{server}")
           window += 1
         end
         tf.close
