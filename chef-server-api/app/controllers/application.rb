@@ -167,7 +167,7 @@ class ChefServerApi::Application < Merb::Controller
     else
       raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions, :remote_files, :template_files, :resources, :providers or :libraries"
     end
-    Chef::Log.error(files_list.inspect)
+    Chef::Log.debug(files_list.inspect)
     files_list
   end
 
