@@ -178,7 +178,10 @@ class Chef
             stdout.each do |line|
               # rsyslog stop/waiting
               # service goal/state
-              line =~ /\w+ (\w+)\/(\w+)/
+              # OR
+              # rsyslog (stop) waiting
+              # service (goal) state
+              line =~ /\w+ \(?(\w+)\)?[\/ ](\w+)/
               data = Regexp.last_match
               return data[2]
             end
