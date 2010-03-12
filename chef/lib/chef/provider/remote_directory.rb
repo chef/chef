@@ -73,9 +73,13 @@ class Chef
           raise NotFound, "Cannot find a suitable directory"
         end
 
+        file_list = Array.new
         Dir[::File.join(directory, '**', '*')].sort.reverse.select do |file|
-          file[/^#{directory}\/(.+)$/, 1] unless ::File.directory?(file)
+          unless ::File.directory?(file)
+            file_list << file[/^#{directory}\/(.+)$/, 1]
+          end
         end
+        file_list
       end
       
       def generate_client_file_list

@@ -109,9 +109,7 @@ describe Chef::Provider::RemoteDirectory do
       @provider.stub!(:find_preferred_file).and_return(@source_path)
       
       file_list = @provider.send(:generate_solo_file_list)
-      file_list.map! { |f| ::File.expand_path(f) }
       expected_file_list = %w{ remote_subdirectory/remote_subdir_file.txt remote_dir_file.txt }
-      expected_file_list.map! { |f| ::File.expand_path(::File.join(@source_path, f)) }
       file_list.should == expected_file_list
     end
     
