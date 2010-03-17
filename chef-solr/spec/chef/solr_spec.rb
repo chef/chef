@@ -170,5 +170,69 @@ describe Chef::Solr do
       @solr.solr_delete_by_query([ "foo:bar", "baz:bum" ])
     end
   end
+  
+  describe "rebuilding the index" do
+    before do
+      Chef::Config[:couchdb_database] = "chunky_bacon"
+    end
+    
+    it "deletes the index and commits" do
+      @solr.should_receive(:solr_delete_by_query).with("X_CHEF_database_CHEF_X:chunky_bacon")
+      @solr.should_receive(:solr_commit)
+      @solr.stub!(:reindex_all)
+      Chef::DataBag.stub!(:cdb_list).and_return([])
+      @solr.rebuild_index
+    end
+    
+    it "reindexes Chef::ApiClient, Chef::Node, and Chef::Role objects, reporting the results as a hash" do
+      @solr.stub!(:solr_delete_by_query).with("X_CHEF_database_CHEF_X:chunky_bacon")
+      @solr.stub!(:solr_commit)
+      @solr.should_receive(:reindex_all).with(Chef::ApiClient).and_return(true)
+      @solr.should_receive(:reindex_all).with(Chef::Node).and_return(true)
+      @solr.should_receive(:reindex_all).with(Chef::Role).and_return(true)
+      Chef::DataBag.stub!(:cdb_list).and_return([])
+      
+      result = @solr.rebuild_index
+      result["Chef::ApiClient"].should == "success"
+      result["Chef::Node"].should == "success"
+      result["Chef::Role"].should == "success"
+    end
+    
+    it "does not reindex Chef::OpenIDRegistration or Chef::WebUIUser objects" do
+      # hi there. the reason we're specifying this behavior is because these objects
+      # are not properly indexed in the first place and trying to reindex them
+      # tickles a bug in our CamelCase to snake_case code. See CHEF-1009.
+      @solr.stub!(:solr_delete_by_query).with("X_CHEF_database_CHEF_X:chunky_bacon")
+      @solr.stub!(:solr_commit)
+      @solr.stub!(:reindex_all).with(Chef::ApiClient)
+      @solr.stub!(:reindex_all).with(Chef::Node)
+      @solr.stub!(:reindex_all).with(Chef::Role)
+      @solr.should_not_receive(:reindex_all).with(Chef::OpenIDRegistration)
+      @solr.should_not_receive(:reindex_all).with(Chef::WebUIUser)
+      Chef::DataBag.stub!(:cdb_list).and_return([])
+      
+      @solr.rebuild_index
+    end
+    
+    it "reindexes databags" do
+      one_data_item = Chef::DataBagItem.new
+      one_data_item.raw_data = {"maybe"=>"snakes actually are evil", "id" => "just_sayin"}
+      two_data_item = Chef::DataBagItem.new
+      two_data_item.raw_data = {"tone_depth"=>"rumble_fish", "id" => "eff_yes"}
+      data_bag = Chef::DataBag.new
+      data_bag.stub!(:list).and_return([one_data_item, two_data_item])
+      
+      @solr.stub!(:solr_delete_by_query).with("X_CHEF_database_CHEF_X:chunky_bacon")
+      @solr.stub!(:solr_commit)
+      @solr.stub!(:reindex_all)
+      Chef::DataBag.stub!(:cdb_list).and_return([data_bag])
+      
+      data_bag.should_receive(:add_to_index)
+      one_data_item.should_receive(:add_to_index)
+      two_data_item.should_receive(:add_to_index)
+      
+      @solr.rebuild_index["Chef::DataBag"].should == "success"
+    end
+  end
 
 end
