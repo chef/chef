@@ -30,7 +30,7 @@ require 'spec/rake/spectask'
 Spec::Rake::SpecTask.new(:spec) do |spec|
   spec.libs << 'lib' << 'spec'
   spec.spec_files = FileList['spec/**/*_spec.rb']
-  spec.spec_opts = %w{-fs --color}
+  spec.spec_opts = ['--options', File.expand_path(File.dirname(__FILE__) + '/spec/spec.opts')]
 end
 
 Spec::Rake::SpecTask.new(:rcov) do |spec|
