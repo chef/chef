@@ -119,7 +119,7 @@ class Chef
       solr_commit
       
       results = {}
-      [Chef::ApiClient, Chef::Node, Chef::OpenIDRegistration, Chef::Role, Chef::WebUIUser].each do |klass|
+      [Chef::ApiClient, Chef::Node, Chef::Role].each do |klass|
         results[klass.name] = reindex_all(klass) ? "success" : "failed"
       end
       databags = Chef::DataBag.cdb_list(true)
