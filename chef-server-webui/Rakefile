@@ -5,7 +5,7 @@ require 'merb-core'
 require 'merb-core/tasks/merb'
 
 GEM_NAME = "chef-server-webui"
-CHEF_SERVER_VERSION="0.8.7"
+CHEF_SERVER_VERSION="0.8.8"
 AUTHOR = "Opscode"
 EMAIL = "chef@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"
