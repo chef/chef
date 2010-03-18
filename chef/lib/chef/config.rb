@@ -183,6 +183,8 @@ class Chef
     # In truth, these don't even have to change
     signing_ca_cert "/var/chef/ca/cert.pem"
     signing_ca_key "/var/chef/ca/key.pem"
+    signing_ca_user nil
+    signing_ca_group nil
     signing_ca_country "US"
     signing_ca_state "Washington"
     signing_ca_location "Seattle"

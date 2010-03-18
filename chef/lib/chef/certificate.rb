@@ -72,6 +72,9 @@ class Chef
 
           File.open(ca_cert_file, "w") { |f| f.write ca_cert.to_pem }
           File.open(ca_keypair_file, File::WRONLY|File::EXCL|File::CREAT, 0600) { |f| f.write keypair.to_pem }
+          if (Chef::Config[:signing_ca_user] && Chef::Config[:signing_ca_group])
+            FileUtils.chown(Chef::Config[:signing_ca_user], Chef::Config[:signing_ca_group], ca_keypair_file)
+          end
         end
         self
       end
@@ -145,6 +148,9 @@ class Chef
           FileUtils.mkdir_p(key_dir) unless File.directory?(key_dir)
           File.open(key_file, File::WRONLY|File::EXCL|File::CREAT, 0600) do |f|
             f.print(api_client.private_key)
+          end
+          if (Chef::Config[:signing_ca_user] && Chef::Config[:signing_ca_group])
+            FileUtils.chown(Chef::Config[:signing_ca_user], Chef::Config[:signing_ca_group], key_file)
           end
         end
       end
