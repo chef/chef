@@ -101,18 +101,36 @@ describe Chef::Provider::Service::Upstart, "load_current_resource" do
     @provider.load_current_resource
   end
 
-  it "should set running to true if the the status command returns 0" do
-    @stdout.stub!(:each).and_yield("rsyslog start/running")
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @current_resource.should_receive(:running).with(true)
-    @provider.load_current_resource
+  describe "when the status command uses the new format" do
+    it "should set running to true if the the status command returns 0" do
+      @stdout.stub!(:each).and_yield("rsyslog start/running")
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @current_resource.should_receive(:running).with(true)
+      @provider.load_current_resource
+    end
+
+    it "should set running to false if the status command returns anything except 0" do
+      @stdout.stub!(:each).and_yield("rsyslog stop/waiting")
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @current_resource.should_receive(:running).with(false)
+      @provider.load_current_resource
+    end
   end
 
-  it "should set running to false if the status command returns anything except 0" do
-    @stdout.stub!(:each).and_yield("rsyslog stop/waiting")
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @current_resource.should_receive(:running).with(false)
-    @provider.load_current_resource
+  describe "when the status command uses the old format" do
+    it "should set running to true if the the status command returns 0" do
+      @stdout.stub!(:each).and_yield("rsyslog (start) running, process 32225")
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @current_resource.should_receive(:running).with(true)
+      @provider.load_current_resource
+    end
+
+    it "should set running to false if the status command returns anything except 0" do
+      @stdout.stub!(:each).and_yield("rsyslog (stop) waiting")
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @current_resource.should_receive(:running).with(false)
+      @provider.load_current_resource
+    end
   end
 
   it "should set running to false if it catches a Chef::Exceptions::Exec" do
