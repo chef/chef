@@ -1,4 +1,5 @@
 #
+#
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
@@ -167,7 +168,6 @@ class ChefServerApi::Application < Merb::Controller
     else
       raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions, :remote_files, :template_files, :resources, :providers or :libraries"
     end
-    Chef::Log.debug(files_list.inspect)
     files_list
   end
 
