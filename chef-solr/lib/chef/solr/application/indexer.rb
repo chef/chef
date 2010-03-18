@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,14 +29,14 @@ class Chef
   class Solr
     class Application
       class Indexer < Chef::Application
-  
-        option :config_file, 
+
+        option :config_file,
           :short => "-c CONFIG",
           :long  => "--config CONFIG",
           :default => "/etc/chef/solr.rb",
           :description => "The configuration file to use"
 
-        option :log_level, 
+        option :log_level,
           :short        => "-l LEVEL",
           :long         => "--log_level LEVEL",
           :description  => "Set the log level (debug, info, warn, error, fatal)",
@@ -101,7 +101,15 @@ class Chef
         option :amqp_vhost,
           :long => "--amqp-vhost VHOST",
           :description => "The amqp vhost"
-        
+
+        option :version,
+          :short => "-v",
+          :long => "--version",
+          :description => "Show chef-solr-indexer version",
+          :boolean => true,
+          :proc => lambda {|v| puts "chef-solr-indexer: #{::Chef::Solr::VERSION}"},
+          :exit => 0
+
         Signal.trap("INT") do
           begin
             AmqpClient.instance.stop
@@ -109,15 +117,15 @@ class Chef
           end
           fatal!("SIGINT received, stopping", 2)
         end
-        
-        Kernel.trap("TERM") do 
+
+        Kernel.trap("TERM") do
           begin
             AmqpClient.instance.stop
           rescue Bunny::ProtocolError, Bunny::ConnectionError, Bunny::UnsubscribeError
           end
           fatal!("SIGTERM received, stopping", 1)
         end
-        
+
         def initialize
           super
 

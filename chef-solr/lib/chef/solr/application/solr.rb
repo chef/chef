@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,19 +21,20 @@ require 'chef/config'
 require 'chef/application'
 require 'chef/daemon'
 require 'chef/client'
+require 'chef/solr'
 
 class Chef
   class Solr
     class Application
       class Solr < Chef::Application
-  
-        option :config_file, 
+
+        option :config_file,
           :short => "-c CONFIG",
           :long  => "--config CONFIG",
           :default => "/etc/chef/solr.rb",
           :description => "The configuration file to use"
 
-        option :log_level, 
+        option :log_level,
           :short        => "-l LEVEL",
           :long         => "--log_level LEVEL",
           :description  => "Set the log level (debug, info, warn, error, fatal)",
@@ -101,11 +102,19 @@ class Chef
         option :solr_java_opts,
           :short => "-j OPTS",
           :long => "--java-opts OPTS",
-          :description => "Raw options passed to Java" 
+          :description => "Raw options passed to Java"
+
+        option :version,
+          :short => "-v",
+          :long => "--version",
+          :description => "Show chef-solr version",
+          :boolean => true,
+          :proc => lambda {|v| puts "chef-solr: #{::Chef::Solr::VERSION}"},
+          :exit => 0
 
         def initialize
           super
-          Chef::Log.level = Chef::Config[:log_level] 
+          Chef::Log.level = Chef::Config[:log_level]
         end
 
         def setup_application
@@ -119,7 +128,7 @@ class Chef
 
           # Create the Jetty container
           unless File.directory?(Chef::Config[:solr_jetty_path])
-            Chef::Log.warn("Initializing the Jetty container") 
+            Chef::Log.warn("Initializing the Jetty container")
             solr_jetty_dir = Chef::Resource::Directory.new(Chef::Config[:solr_jetty_path], nil, c.node)
             solr_jetty_dir.recursive(true)
             solr_jetty_dir.run_action(:create)
@@ -131,7 +140,7 @@ class Chef
 
           # Create the solr home
           unless File.directory?(Chef::Config[:solr_home_path])
-            Chef::Log.warn("Initializing Solr home directory") 
+            Chef::Log.warn("Initializing Solr home directory")
             solr_home_dir = Chef::Resource::Directory.new(Chef::Config[:solr_home_path], nil, c.node)
             solr_home_dir.recursive(true)
             solr_home_dir.run_action(:create)
@@ -141,7 +150,7 @@ class Chef
             solr_jetty_untar.run_action(:run)
           end
 
-          # Create the solr data path 
+          # Create the solr data path
           unless File.directory?(Chef::Config[:solr_data_path])
             Chef::Log.warn("Initializing Solr data directory")
             solr_data_dir = Chef::Resource::Directory.new(Chef::Config[:solr_data_path], nil, c.node)
