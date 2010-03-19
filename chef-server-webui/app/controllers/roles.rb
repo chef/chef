@@ -96,6 +96,7 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @available_recipes = get_available_recipes 
+      @available_roles = Chef::Role.list.keys.sort
       @role = Chef::Role.new
       @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
       @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
@@ -119,6 +120,7 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @available_recipes = get_available_recipes 
+      @available_roles = Chef::Role.list.keys.sort
       @run_list = params[:for_role] ? params[:for_role] : []
       @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
       @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
