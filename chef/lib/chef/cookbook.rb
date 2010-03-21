@@ -98,9 +98,12 @@ class Chef
       results = Hash.new
       @definition_files.each do |file|
         Chef::Log.debug("Loading cookbook #{name}'s definitions from #{file}")
-        resourcedef = Chef::ResourceDefinition.new
-        resourcedef.from_file(file)
-        results[resourcedef.name] = resourcedef
+        resourcelist = Chef::ResourceDefinitionList.new
+        resourcelist.from_file(file)
+        results.merge!(resourcelist.defines) do |key, oldval, newval|
+          Chef::Log.info("Overriding duplicate definition #{key}, new found in #{file}")
+          newval
+        end
       end
       results
     end

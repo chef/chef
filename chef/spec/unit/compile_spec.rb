@@ -54,6 +54,8 @@ describe Chef::Compile do
   it "should load all the definitions" do
     lambda { @compile.load_definitions }.should_not raise_error
     @compile.definitions.should have_key(:new_cat)
+    @compile.definitions.should have_key(:new_badger)
+    @compile.definitions.should have_key(:new_dog)
   end
   
   it "should load all the recipes specified for this node" do
