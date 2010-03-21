@@ -75,7 +75,7 @@ class Chef
             cookbook_settings[cookbook_name][:lib_files]
           )
           load_cascading_files(
-            "*.erb",
+            "*",
             File.join(cookbook, "templates"),
             cookbook_settings[cookbook_name][:template_files]
           )
