@@ -42,7 +42,9 @@ class Chef
         cache_file_name = "cookbooks/#{cookbook_name}/templates/default/#{@new_resource.source}"
         template_cache_name = "#{cookbook_name}_#{@new_resource.source}"
         
-        if Chef::Config[:solo]
+        if @new_resource.local
+          cache_file_name = @new_resource.source
+        elsif Chef::Config[:solo]
           cache_file_name = solo_cache_file_name
         else
           raw_template_file = fetch_template_via_rest(cache_file_name, template_cache_name)
