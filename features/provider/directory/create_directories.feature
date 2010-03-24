@@ -17,6 +17,13 @@ Feature: Create Directories
      When I run the chef-client
      Then the run should exit '0'
       And the directory named 'isis' should be owned by 'nobody'
+
+  Scenario: Change the owner of a created directory 
+    Given a validated node
+      And it includes the recipe 'directory_provider::owner_update'
+     When I run the chef-client
+     Then the run should exit '0'
+      And the directory named 'isis' should be owned by 'root'
        
   Scenario: Set the accessibility of a created directory 
     Given a validated node
