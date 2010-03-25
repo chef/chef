@@ -112,7 +112,11 @@ class Chef
           if value.kind_of?(Array)
             fields[key] = Array.new
             value.each do |v|
-              fields[key] << v.to_s
+              if v.kind_of?(Hash)
+                flatten_and_expand(v, fields, key)
+              else
+                fields[key] << v.to_s
+              end    
             end
           else
             fields[key] = value.to_s
@@ -125,8 +129,11 @@ class Chef
         check_value(value)
         if value.kind_of?(Array)
           value.each do |v|
-            check_value(v)
-            fields[key] << v.to_s unless fields[key].include?(v.to_s)
+            if v.kind_of?(Hash)
+              flatten_and_expand(v, fields, key)
+            else
+              fields[key] << v.to_s unless fields[key].include?(v.to_s)
+            end    
           end
         else
           fields[key] << value.to_s unless fields[key].include?(value.to_s)

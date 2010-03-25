@@ -112,6 +112,26 @@ describe Chef::Solr::Index do
       end
     end
 
+    it "should call itself recursively for hashes nested in arrays" do
+      @index.flatten_and_expand({ :one => [ { :two => "three" }, { :four => { :five => "six" } } ] }, @fields)
+      {
+        "one_X_five" => "six",
+        "one_four" => "five",
+        "one_X" => [ "three", "five" ],
+        "two" => "three",
+        "one_four_X" => "six",
+        "X_four" => "five",
+        "X_four_five" => "six",
+        "one" => [ "two", "four" ],
+        "one_four_five" => "six",
+        "five" => "six",
+        "X_two" => "three",
+        "one_two" => "three"
+      }.each do |k, v|
+        @fields[k].should == v
+      end
+    end
+
   end
 
   describe "set_field_value" do
