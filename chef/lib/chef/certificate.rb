@@ -181,7 +181,7 @@ class Chef
         
         key_dir = File.dirname(key_file)
         FileUtils.mkdir_p(key_dir) unless File.directory?(key_dir)
-        File.open(key_file, File::WRONLY|File::EXCL|File::CREAT, 0600) do |f|
+        File.open(key_file, File::WRONLY|File::CREAT, 0600) do |f|
           f.print(api_client.private_key)
         end
         if (Chef::Config[:signing_ca_user] && Chef::Config[:signing_ca_group])
