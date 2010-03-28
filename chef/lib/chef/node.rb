@@ -182,13 +182,10 @@ class Chef
     def name(arg=nil)
       if arg != nil
         validate(
-          { :name => arg }, 
-          {
-            :name => {
-              :kind_of => String
-            }
-          }
-        )
+          {:name => arg }, 
+          {:name => { :kind_of => String,
+                      :cannot_be => :blank}
+          })
         @name = arg
       else
         @name
