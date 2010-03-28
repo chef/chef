@@ -66,8 +66,11 @@ Then /^the inflated response should be an empty hash$/ do
 end
 
 Then /^the inflated response should include '(.+)'$/ do |entry|
-  puts self.inflated_response.inspect
-  self.inflated_response.detect { |n| n =~ /#{entry}/ }.should be(true)
+  if inflated_response.size == 1
+    inflated_response.should match(/#{entry}/)
+  else
+    inflated_response.detect { |n| n =~ /#{entry}/ }.should_not be_empty
+  end
 end
 
 Then /^the inflated response should be '(.+)' items long$/ do |length|
@@ -83,7 +86,11 @@ Then /^the '(.+)' header should match '(.+)'$/ do |header, regex|
 end
 
 Then /^the inflated responses key '(.+)' should include '(.+)'$/ do |key, regex|
-  self.inflated_response[key].detect { |n| n =~ /#{regex}/ }.should be(true)
+  if self.inflated_response[key].size == 1
+    self.inflated_response[key].first.should match(/#{regex}/)
+  else
+    self.inflated_response[key].detect { |n| n =~ /#{regex}/ }.should_not be_empty
+  end
 end
 
 Then /^the inflated response should match the '(.+)'$/ do |stash_name|
