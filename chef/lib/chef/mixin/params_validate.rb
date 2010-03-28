@@ -16,6 +16,9 @@
 # limitations under the License.
 
 class Chef
+  class ValidationFailed < ArgumentError
+  end
+  
   module Mixin
     module ParamsValidate
       
@@ -105,26 +108,24 @@ class Chef
         # Raise an exception if the parameter is not found.
         def _pv_required(opts, key, is_required=true)
           if is_required
-            if (opts.has_key?(key.to_s) && opts[key.to_s] != nil) ||
-                (opts.has_key?(key.to_sym) && opts[key.to_sym] != nil)
+            if (opts.has_key?(key.to_s) && !opts[key.to_s].nil?) ||
+                (opts.has_key?(key.to_sym) && !opts[key.to_sym].nil?)
               true
             else
-              raise ArgumentError, "Required argument #{key} is missing!"
+              raise ValidationFailed, "Required argument #{key} is missing!"
             end
           end
         end
         
         def _pv_equal_to(opts, key, to_be)
           value = _pv_opts_lookup(opts, key)
-          if value != nil
+          unless value.nil?
             passes = false
-            [ to_be ].flatten.each do |tb|
-              if value == tb
-                passes = true
-              end
+            Array(to_be).each do |tb|
+              passes = true if value == tb
             end
             unless passes
-              raise ArgumentError, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
+              raise ValidationFailed, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
             end
           end
         end
@@ -132,15 +133,13 @@ class Chef
         # Raise an exception if the parameter is not a kind_of?(to_be)
         def _pv_kind_of(opts, key, to_be)
           value = _pv_opts_lookup(opts, key)
-          if value != nil
+          unless value.nil?
             passes = false
-            [ to_be ].flatten.each do |tb|
-              if value.kind_of?(tb)
-                passes = true
-              end
+            Array(to_be).each do |tb|
+              passes = true if value.kind_of?(tb)
             end
             unless passes
-              raise ArgumentError, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}."
+              raise ValidationFailed, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}."
             end
           end
         end
@@ -148,11 +147,29 @@ class Chef
         # Raise an exception if the parameter does not respond to a given set of methods.
         def _pv_respond_to(opts, key, method_name_list)
           value = _pv_opts_lookup(opts, key)
-          if value != nil
-            [ method_name_list ].flatten.each do |method_name|
+          unless value.nil?
+            Array(method_name_list).each do |method_name|
               unless value.respond_to?(method_name)
-                raise ArgumentError, "Option #{key} must have a #{method_name} method!"
+                raise ValidationFailed, "Option #{key} must have a #{method_name} method!"
               end
+            end
+          end
+        end
+        
+        # Assert that parameter returns false when passed a predicate method.
+        # For example, :cannot_be => :blank will raise a ValidationFailed
+        # error value.blank? returns a 'truthy' (not nil or false) value.
+        # 
+        # Note, this will *PASS* if the object doesn't respond to the method.
+        # So, to make sure a value is not nil and not blank, you need to do
+        # both :cannot_be => :blank *and* :cannot_be => :nil (or :required => true)
+        def _pv_cannot_be(opts, key, predicate_method_base_name)
+          value = _pv_opts_lookup(opts, key)
+          predicate_method = (predicate_method_base_name.to_s + "?").to_sym
+
+          if value.respond_to?(predicate_method)
+            if value.send(predicate_method)
+              raise ValidationFailed, "Option #{key} cannot be #{predicate_method_base_name}"
             end
           end
         end
@@ -178,7 +195,7 @@ class Chef
               end
             end
             unless passes
-              raise ArgumentError, "Option #{key}'s value #{value} does not match regular expression #{regex.to_s}"
+              raise ValidationFailed, "Option #{key}'s value #{value} does not match regular expression #{regex.to_s}"
             end
           end
         end
@@ -190,7 +207,7 @@ class Chef
           if value != nil
             callbacks.each do |message, zeproc|
               if zeproc.call(value) != true
-                raise ArgumentError, "Option #{key}'s value #{value} #{message}!"
+                raise ValidationFailed, "Option #{key}'s value #{value} #{message}!"
               end
             end
           end

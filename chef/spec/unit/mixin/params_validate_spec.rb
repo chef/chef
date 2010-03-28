@@ -328,6 +328,15 @@ describe Chef::Mixin::ParamsValidate do
     }.should raise_error(ArgumentError)
   end
 
+  it "asserts that a value returns false from a predicate method" do
+    lambda do
+      @vo.validate({:not_blank => "should pass"}, {:not_blank => {:cannot_be => :blank}})
+    end.should_not raise_error
+    lambda do
+      @vo.validate({:not_blank => ""}, {:not_blank => {:cannot_be => :blank}})
+    end.should raise_error(Chef::ValidationFailed)
+  end
+
   it "should set and return a value, then return the same value" do
     value = "meow"
     @vo.set_or_return(:test, value, {}).object_id.should == value.object_id
