@@ -155,11 +155,11 @@ class Chef
             end
           end
         end
-        
+
         # Assert that parameter returns false when passed a predicate method.
         # For example, :cannot_be => :blank will raise a ValidationFailed
         # error value.blank? returns a 'truthy' (not nil or false) value.
-        # 
+        #
         # Note, this will *PASS* if the object doesn't respond to the method.
         # So, to make sure a value is not nil and not blank, you need to do
         # both :cannot_be => :blank *and* :cannot_be => :nil (or :required => true)
