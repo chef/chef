@@ -20,6 +20,22 @@ require 'chef/mixin/from_file'
 require 'chef/mixin/params_validate'
 
 class Chef
+  class ResourceDefinitionList
+    include Chef::Mixin::FromFile
+
+    attr_accessor :defines
+
+    def initialize
+      @defines = Hash.new
+    end
+
+    def define(resource_name, prototype_params=nil, &block)
+      @defines[resource_name] = ResourceDefinition.new
+      @defines[resource_name].define(resource_name, prototype_params, &block)
+      true
+    end
+  end
+
   class ResourceDefinition
     
     include Chef::Mixin::FromFile
