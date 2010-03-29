@@ -19,7 +19,7 @@
 
 require 'chef/log'
 require 'chef/node'
-require 'chef/resource_definition'
+require 'chef/resource_definition_list'
 require 'chef/recipe'
 require 'chef/mixin/convert_to_class_name'
 
