@@ -163,6 +163,16 @@ class Chef
           if Chef::Config[:daemonize]
             Chef::Daemon.daemonize("chef-solr")
           end
+
+          # Need to redirect stdout and stderr so Java process inherits them.
+          # If -L wasn't specified, Chef::Config[:log_location] will be an IO
+          # object, otherwise it will be a String.
+          if Chef::Config[:log_location].kind_of?(String)
+            logfile = File.new(Chef::Config[:log_location], "w")
+            STDOUT.reopen(logfile)
+            STDERR.reopen(logfile)
+          end
+          
           Dir.chdir(Chef::Config[:solr_jetty_path]) do
             command = "java -Xmx#{Chef::Config[:solr_heap_size]} -Xms#{Chef::Config[:solr_heap_size]}"
             command << " -Dsolr.data.dir=#{Chef::Config[:solr_data_path]}"
