@@ -159,6 +159,12 @@ describe Chef::RunList do
         Chef::Role.should_receive(:from_disk).with("stubby")
         @run_list.expand("disk")
       end
+
+      it "should log a helpful error if the role is not available" do
+        Chef::Role.stub!(:from_disk).and_return(nil)
+        Chef::Log.should_receive(:error).with("Role stubby is in the runlist but does not exist. Skipping expand.")
+        @run_list.expand("disk")
+      end
     end
 
     describe "from the chef server" do

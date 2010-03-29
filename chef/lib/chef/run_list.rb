@@ -133,7 +133,7 @@ class Chef
                    @seen_roles << name
                    if from == 'disk' || Chef::Config[:solo]
                      # Load the role from disk
-                     Chef::Role.from_disk("#{name}") || Chef::Exceptions::RoleNotFound
+                     Chef::Role.from_disk("#{name}") || raise(Chef::Exceptions::RoleNotFound)
                    elsif from == 'server'
                      # Load the role from the server
                      begin
