@@ -23,13 +23,14 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
 
-  ["merb-slices",
-   "merb-core",
-   "merb-haml",
-   "merb-assets",
-   "merb-helpers",
-   "merb-param-protection",
-   "thin",
+  s.add_dependency "merb-core", "~> 1.0"
+  s.add_dependency "merb-slices", "~> 1.0"
+  s.add_dependency "merb-assets", "~> 1.0"
+  s.add_dependency "merb-helpers", "~> 1.0"
+  s.add_dependency "merb-haml", "~> 1.0"
+  s.add_dependency "merb-param-protection", "~> 1.0"
+  
+  ["thin",
    "haml",
    "json",
    "ruby-openid",

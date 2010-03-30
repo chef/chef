@@ -22,12 +22,12 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-
-  ["merb-slices",
-   "merb-core",
-   "merb-assets",
-   "merb-helpers",
-   "thin",
+  
+  s.add_dependency "merb-core", "~> 1.0"
+  s.add_dependency "merb-slices", "~> 1.0"
+  s.add_dependency "merb-assets", "~> 1.0"
+  s.add_dependency "merb-helpers", "~> 1.0"
+  ["thin",
    "json", 
    "uuidtools"
   ].each { |g| s.add_dependency g}
