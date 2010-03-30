@@ -77,6 +77,19 @@ describe Chef::Provider::Cron, "load_current_resource" do
     @provider.load_current_resource
   end
         
+  it "should not fail if there's an existing cron a numerical argument" do
+    @status = mock("Status", :exitstatus => 0)
+    @stdin = mock("STDIN", :null_object => true)
+    @stdout = mock("STDOUT", :null_object => true)    
+    @stderr = mock("STDERR", :null_object => true)
+    @pid = mock("PID", :null_object => true)
+    @stdout.stub!(:each).and_yield("# Chef Name: foo\n").
+      and_yield("21 */4 * * * some_prog 1234567\n")
+    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    lambda {
+      @provider.load_current_resource
+    }.should_not raise_error
+  end
 end
 
 describe Chef::Provider::Cron, "compare_cron" do
@@ -281,7 +294,6 @@ describe Chef::Provider::Cron, "action_create" do
     provider.should_receive(:compare_cron).once.and_return(true)
     provider.action_create
   end
-
 end
 
 describe Chef::Provider::Cron, "action_delete" do
