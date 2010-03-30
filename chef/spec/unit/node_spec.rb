@@ -55,7 +55,7 @@ describe Chef::Node do
     end
     
     it "cannot be blank" do
-      lambda { @node.name("")}.should raise_error(Chef::ValidationFailed)
+      lambda { @node.name("")}.should raise_error(Chef::Exceptions::ValidationFailed)
     end
   end
 

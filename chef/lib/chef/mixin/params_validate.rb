@@ -16,8 +16,6 @@
 # limitations under the License.
 
 class Chef
-  class ValidationFailed < ArgumentError
-  end
   
   module Mixin
     module ParamsValidate
@@ -112,7 +110,7 @@ class Chef
                 (opts.has_key?(key.to_sym) && !opts[key.to_sym].nil?)
               true
             else
-              raise ValidationFailed, "Required argument #{key} is missing!"
+              raise Exceptions::ValidationFailed, "Required argument #{key} is missing!"
             end
           end
         end
@@ -125,7 +123,7 @@ class Chef
               passes = true if value == tb
             end
             unless passes
-              raise ValidationFailed, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
+              raise Exceptions::ValidationFailed, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
             end
           end
         end
@@ -139,7 +137,7 @@ class Chef
               passes = true if value.kind_of?(tb)
             end
             unless passes
-              raise ValidationFailed, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}."
+              raise Exceptions::ValidationFailed, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}."
             end
           end
         end
@@ -150,14 +148,14 @@ class Chef
           unless value.nil?
             Array(method_name_list).each do |method_name|
               unless value.respond_to?(method_name)
-                raise ValidationFailed, "Option #{key} must have a #{method_name} method!"
+                raise Exceptions::ValidationFailed, "Option #{key} must have a #{method_name} method!"
               end
             end
           end
         end
 
         # Assert that parameter returns false when passed a predicate method.
-        # For example, :cannot_be => :blank will raise a ValidationFailed
+        # For example, :cannot_be => :blank will raise a Exceptions::ValidationFailed
         # error value.blank? returns a 'truthy' (not nil or false) value.
         #
         # Note, this will *PASS* if the object doesn't respond to the method.
@@ -169,7 +167,7 @@ class Chef
 
           if value.respond_to?(predicate_method)
             if value.send(predicate_method)
-              raise ValidationFailed, "Option #{key} cannot be #{predicate_method_base_name}"
+              raise Exceptions::ValidationFailed, "Option #{key} cannot be #{predicate_method_base_name}"
             end
           end
         end
@@ -195,7 +193,7 @@ class Chef
               end
             end
             unless passes
-              raise ValidationFailed, "Option #{key}'s value #{value} does not match regular expression #{regex.to_s}"
+              raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} does not match regular expression #{regex.to_s}"
             end
           end
         end
@@ -207,7 +205,7 @@ class Chef
           if value != nil
             callbacks.each do |message, zeproc|
               if zeproc.call(value) != true
-                raise ValidationFailed, "Option #{key}'s value #{value} #{message}!"
+                raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} #{message}!"
               end
             end
           end

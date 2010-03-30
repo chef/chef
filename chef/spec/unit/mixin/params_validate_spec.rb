@@ -334,7 +334,7 @@ describe Chef::Mixin::ParamsValidate do
     end.should_not raise_error
     lambda do
       @vo.validate({:not_blank => ""}, {:not_blank => {:cannot_be => :blank}})
-    end.should raise_error(Chef::ValidationFailed)
+    end.should raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "should set and return a value, then return the same value" do
