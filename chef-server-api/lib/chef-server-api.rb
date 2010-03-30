@@ -68,9 +68,6 @@ if defined?(Merb::Plugins)
         Chef::ApiClient.create_design_document
         Chef::WebUIUser.create_design_document
         
-        Chef::Log.info('Loading roles')
-        Chef::Role.sync_from_disk_to_couchdb
-        
         # Create the signing key and certificate 
         Chef::Certificate.generate_signing_ca
 
@@ -79,6 +76,9 @@ if defined?(Merb::Plugins)
 
         # Generate the Web UI Key 
         Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
+        
+        Chef::Log.info('Loading roles')
+        Chef::Role.sync_from_disk_to_couchdb
       end
     end
 

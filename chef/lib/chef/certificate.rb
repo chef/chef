@@ -130,28 +130,62 @@ class Chef
 
       def gen_validation_key(name=Chef::Config[:validation_client_name], key_file=Chef::Config[:validation_key])
         # Create the validation key
-        create_key = false 
+        api_client = Chef::ApiClient.new
+        api_client.name(name)
+        api_client.admin(true)
+        
         begin
-          c = Chef::ApiClient.cdb_load(name)
+          # If both the couch record and file exist, don't do anything. Otherwise,
+          # re-generate the validation key.
+          Chef::ApiClient.cdb_load(name)
+          
+          # The couch document was loaded successfully if we got to here; if we
+          # can't also load the file on the filesystem, we'll regenerate it all.
+          File.open(key_file, "r") do |file|
+          end
         rescue Chef::Exceptions::CouchDBNotFound
-          create_key = true
+          create_validation_key(api_client, key_file)
+        rescue
+          if $!.class.name =~ /Errno::/
+            Chef::Log.error("Error opening validation key: #{$!} -- destroying and regenerating")
+            begin
+              api_client.cdb_destroy
+            rescue Bunny::ServerDownError => e
+              # create_validation_key is gonna fail anyway, so let's just bail out.
+              Chef::Log.fatal("Could not de-index (to rabbitmq) previous validation key - rabbitmq is down! Start rabbitmq then restart chef-server to re-generate it")
+              raise
+            end
+            
+            create_validation_key(api_client, key_file)
+          else
+            raise
+          end
         end
+      end
+      
+      private
+      def create_validation_key(api_client, key_file)
+        Chef::Log.info("Creating validation key...")
 
-        if create_key
-          Chef::Log.info("Creating validation key...")
-          api_client = Chef::ApiClient.new
-          api_client.name(name)
-          api_client.admin(true)
-          api_client.create_keys
+        api_client.create_keys
+        begin
           api_client.cdb_save
-          key_dir = File.dirname(key_file)
-          FileUtils.mkdir_p(key_dir) unless File.directory?(key_dir)
-          File.open(key_file, File::WRONLY|File::EXCL|File::CREAT, 0600) do |f|
-            f.print(api_client.private_key)
-          end
-          if (Chef::Config[:signing_ca_user] && Chef::Config[:signing_ca_group])
-            FileUtils.chown(Chef::Config[:signing_ca_user], Chef::Config[:signing_ca_group], key_file)
-          end
+        rescue Bunny::ServerDownError => e
+          # If rabbitmq is down, the client will have been saved in CouchDB,
+          # but not in the index.
+          Chef::Log.fatal("Could not index (to rabbitmq) validation key - rabbitmq is down! Start rabbitmq then restart chef-server to re-generate it")
+
+          # re-raise so the error bubbles out and nukes chef-server
+          raise e
+        end
+        
+        key_dir = File.dirname(key_file)
+        FileUtils.mkdir_p(key_dir) unless File.directory?(key_dir)
+        File.open(key_file, File::WRONLY|File::CREAT, 0600) do |f|
+          f.print(api_client.private_key)
+        end
+        if (Chef::Config[:signing_ca_user] && Chef::Config[:signing_ca_group])
+          FileUtils.chown(Chef::Config[:signing_ca_user], Chef::Config[:signing_ca_group], key_file)
         end
       end
 
