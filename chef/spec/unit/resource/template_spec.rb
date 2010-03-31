@@ -65,5 +65,16 @@ describe Chef::Resource::Template do
       @resource.cookbook.should == nil
     end
   end
+
+  describe "local" do
+    it "should accept a boolean for whether a template is local or remote" do
+      @resource.local(true)
+      @resource.local.should == true
+    end
+
+    it "should default to false" do
+      @resource.local.should == false
+    end
+  end
   
 end
