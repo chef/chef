@@ -35,7 +35,7 @@ file "#{node[:tmpdir]}/deploy/shared/sqlite/production.sqlite3" do
 end
  
 timestamped_deploy "#{node[:tmpdir]}/deploy" do
-  repo "#{node[:tmpdir]}/gitrepo/typo/"
+  repo "#{node[:tmpdir]}/gitrepo/myapp/"
   environment "RAILS_ENV" => "production"
   revision "HEAD"
   action :deploy

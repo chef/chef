@@ -1,6 +1,22 @@
-Given /^I have a clone of typo in the data\/tmp dir$/ do
-  cmd = "git clone #{datadir}/typo.bundle #{tmpdir}/gitrepo/typo"
+# Given /^I have a clone of typo in the data\/tmp dir$/ do
+#   cmd = "git clone #{datadir}/typo.bundle #{tmpdir}/gitrepo/typo"
+#   `#{cmd}`
+# end
+def gem_installed?(gem_name, version)
+  cmd = "gem list -i #{gem_name} -v #{version}"
+  `#{cmd}`=~ /true/ ? true : false
+end
+
+
+Given /^I have a clone of the rails app in the data\/tmp dir$/ do
+  cmd = "git clone #{datadir}/myapp.bundle #{tmpdir}/gitrepo/myapp"
   `#{cmd}`
+end
+
+Given /^that I have '(.*)' '(.*)' installed$/ do |gem_name, version|
+  unless gem_installed?(gem_name, version)
+    pending "This Cucumber feature will not execute, as #{gem_name} #{version} is not installed."
+  end
 end
 
 Then /^I should hear about it$/ do
