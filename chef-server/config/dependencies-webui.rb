@@ -10,7 +10,7 @@ dependency "chef", :immediate=>true unless defined?(Chef)
 begin
   require 'chef'
   require 'chef-server-webui'
-rescue
+rescue LoadError
 end
   
 # For more information about each component, please read http://wiki.merbivore.com/faqs/merb_components
