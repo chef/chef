@@ -196,16 +196,14 @@ describe Chef::Provider::Deploy do
   end
   
   it "makes a copy of the cached repo in releases dir" do
-    FileUtils.should_receive(:mkdir_p).with("/my/deploy/dir/releases")
-    FileUtils.should_receive(:cp_r).with( "/my/deploy/dir/shared/cached-copy/.", 
-                                          @expected_release_dir, 
-                                          :preserve => true)
+    FileUtils.should_receive(:mkdir_p).with("/my/deploy/dir/releases")                                          
+    @provider.should_receive(:run_command).with({:command => "cp -RPp /my/deploy/dir/shared/cached-copy/. #{@expected_release_dir}"})
     @provider.copy_cached_repo
   end
   
   it "calls the internal callback :release_created when copying the cached repo" do
     FileUtils.stub!(:mkdir_p)
-    FileUtils.stub!(:cp_r)
+    @provider.stub!(:run_command).and_return(true)
     @provider.should_receive(:release_created)
     @provider.copy_cached_repo
   end
