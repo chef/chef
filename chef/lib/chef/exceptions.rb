@@ -36,7 +36,6 @@ class Chef
     class PrivateKeyMissing < RuntimeError; end
     class CannotWritePrivateKey < RuntimeError; end
     class RoleNotFound < RuntimeError; end
-    
     class ValidationFailed < ArgumentError; end
   end
 end
