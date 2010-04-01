@@ -35,7 +35,7 @@ require 'uri'
 class Chef
   class Solr
 
-    VERSION = "0.8.10"
+    VERSION = "0.8.11"
 
     include Chef::Mixin::XMLEscape
 

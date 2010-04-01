@@ -26,7 +26,7 @@
 require "rubygems"
 require "merb-core"
 
-CHEF_SERVER_VERSION = "0.8.10"
+CHEF_SERVER_VERSION = "0.8.11"
 
 [ 'chef', 'chef-server-api' ].each do |lib|
   $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "lib")))
