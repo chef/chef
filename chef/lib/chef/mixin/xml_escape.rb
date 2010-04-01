@@ -1,5 +1,4 @@
 #
-# Author:: Sam Ruby
 # Author:: Daniel DeLeo (<dan@opscode.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
 # Copyright:: Copyright (c) 2005 Sam Ruby
@@ -17,8 +16,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Code adapted from Sam Ruby's xchar.rb http://intertwingly.net/stories/2005/09/28/xchar.rb
+#
+# Portions of this code are adapted from Sam Ruby's xchar.rb
+# http://intertwingly.net/stories/2005/09/28/xchar.rb 
+#
+# Such code appears here under Sam's original MIT license, while portions of
+# this file are covered by the above Apache License.  For a completely MIT
+# licensed version, please see Sam's original.
+#
 # Thanks, Sam!
+# 
+# Copyright (c) 2005, Sam Ruby 
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
 
 class Chef
   module Mixin
