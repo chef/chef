@@ -114,11 +114,20 @@ class Chef
 
         def initialize
           super
-          Chef::Log.level = Chef::Config[:log_level]
         end
 
         def setup_application
+          # Need to redirect stdout and stderr so Java process inherits them.
+          # If -L wasn't specified, Chef::Config[:log_location] will be an IO
+          # object, otherwise it will be a String.
+          #
+          # Open this as a privileged user and hang onto it
+          if Chef::Config[:log_location].kind_of?(String)
+            @logfile = File.new(Chef::Config[:log_location], "a")
+          end
+
           Chef::Daemon.change_privilege
+          Chef::Log.level = Chef::Config[:log_level]
 
           # Build up a client
           c = Chef::Client.new
@@ -164,15 +173,6 @@ class Chef
             Chef::Daemon.daemonize("chef-solr")
           end
 
-          # Need to redirect stdout and stderr so Java process inherits them.
-          # If -L wasn't specified, Chef::Config[:log_location] will be an IO
-          # object, otherwise it will be a String.
-          if Chef::Config[:log_location].kind_of?(String)
-            logfile = File.new(Chef::Config[:log_location], "w")
-            STDOUT.reopen(logfile)
-            STDERR.reopen(logfile)
-          end
-          
           Dir.chdir(Chef::Config[:solr_jetty_path]) do
             command = "java -Xmx#{Chef::Config[:solr_heap_size]} -Xms#{Chef::Config[:solr_heap_size]}"
             command << " -Dsolr.data.dir=#{Chef::Config[:solr_data_path]}"
@@ -180,6 +180,17 @@ class Chef
             command << " #{Chef::Config[:solr_java_opts]}" if Chef::Config[:solr_java_opts]
             command << " -jar #{File.join(Chef::Config[:solr_jetty_path], 'start.jar')}"
             Chef::Log.info("Starting Solr with #{command}")
+
+            # Opened earlier before we dropped privileges
+            if @logfile 
+              # Don't need it anymore
+              Chef::Log.close
+
+              STDOUT.reopen(@logfile)
+              STDERR.reopen(@logfile)
+              @logfile.close
+            end
+
             Kernel.exec(command)
 
           end
