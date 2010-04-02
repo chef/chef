@@ -46,8 +46,8 @@ class Chef
         elsif status.exitstatus == 0
           cron_found = false
           crontab_lines.each do |line|
-            case line
-            when /^# Chef Name: #{@new_resource.name}/
+            case line.chomp
+            when "# Chef Name: #{@new_resource.name}"
               Chef::Log.debug("Found cron '#{@new_resource.name}'")
               cron_found = true
               @cron_exists = true
