@@ -382,7 +382,10 @@ describe Chef::Provider::Mount::Mount, "enable_fs" do
       :name => "/tmp/foo",
       :mount_point => "/tmp/foo",
       :fstype => "ext3",
-      :mounted => false
+      :mounted => false,
+      :options => ["defaults"],
+      :dump => 0,
+      :pass => 2
     )
     
     @provider = Chef::Provider::Mount::Mount.new(@node, @new_resource)
@@ -401,9 +404,25 @@ describe Chef::Provider::Mount::Mount, "enable_fs" do
     @provider.enable_fs
   end
   
-  it "should not enabled if enabled is true" do
+  it "should not enable if enabled is true and resources match" do
     @current_resource.stub!(:enabled).and_return(true)
+    @current_resource.stub!(:fstype).and_return("ext3")
+    @current_resource.stub!(:options).and_return(["defaults"])
+    @current_resource.stub!(:dump).and_return(0)
+    @current_resource.stub!(:pass).and_return(2)
     ::File.should_not_receive(:open).with("/etc/fstab", "a").and_yield(@fstab)
+    
+    @provider.enable_fs
+  end
+
+  it "should enable if enabled is true and resources do not match" do
+    @current_resource.stub!(:enabled).and_return(true)
+    @current_resource.stub!(:fstype).and_return("auto")
+    @current_resource.stub!(:options).and_return(["defaults"])
+    @current_resource.stub!(:dump).and_return(0)
+    @current_resource.stub!(:pass).and_return(2)
+    ::File.should_receive(:open).once.with("/etc/fstab", "w").and_yield(@fstab)
+    ::File.should_receive(:open).once.with("/etc/fstab", "a").and_yield(@fstab)
     
     @provider.enable_fs
   end
