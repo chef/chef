@@ -50,6 +50,7 @@ class Chef
         else
           begin
             # The remote filehandle
+            Chef::Log.info "Downloading remote file #{@new_resource.source}"
             raw_file = get_from_uri(source)    ||
                        get_from_server(source, @current_resource.checksum) ||
                        get_from_local_cookbook(source)
