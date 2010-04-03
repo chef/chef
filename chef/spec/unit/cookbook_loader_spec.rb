@@ -21,8 +21,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::CookbookLoader do
   before(:each) do
     Chef::Config.cookbook_path [ 
-      File.join(File.dirname(__FILE__), "..", "data", "kitchen"),
-      File.join(File.dirname(__FILE__), "..", "data", "cookbooks")
+      File.join(File.dirname(File.expand_path(__FILE__)), "..", "data", "kitchen"),
+      File.join(File.dirname(File.expand_path(__FILE__)), "..", "data", "cookbooks")
     ]
     @cl = Chef::CookbookLoader.new()
   end

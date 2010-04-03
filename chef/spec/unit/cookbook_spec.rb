@@ -19,7 +19,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Cookbook do
-  COOKBOOK_PATH = File.join(File.dirname(__FILE__), "..", "data", "cookbooks", "openldap")
+  COOKBOOK_PATH = File.join(File.dirname(File.expand_path(__FILE__)), "..", "data", "cookbooks", "openldap")
   
   before(:each) do
     @cookbook = Chef::Cookbook.new("openldap")

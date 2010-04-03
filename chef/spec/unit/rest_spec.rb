@@ -204,14 +204,14 @@ EOH
       end
 
       it "should set the CA path if that is set in the configuration" do
-        Chef::Config[:ssl_ca_path] = File.join(File.dirname(__FILE__), "..", "data", "ssl")
+        Chef::Config[:ssl_ca_path] = File.join(File.dirname(File.expand_path(__FILE__)), "..", "data", "ssl")
         @http_mock.should_receive(:ca_path=).with(Chef::Config[:ssl_ca_path]).and_return(true)
         do_run_request
         Chef::Config[:ssl_ca_path] = nil
       end
 
       it "should set the CA file if that is set in the configuration" do
-        Chef::Config[:ssl_ca_file] = File.join(File.dirname(__FILE__), "..", "data", "ssl", "5e707473.0")
+        Chef::Config[:ssl_ca_file] = File.join(File.dirname(File.expand_path(__FILE__)), "..", "data", "ssl", "5e707473.0")
         @http_mock.should_receive(:ca_file=).with(Chef::Config[:ssl_ca_file]).and_return(true)
         do_run_request
         Chef::Config[:ssl_ca_file] = nil

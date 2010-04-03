@@ -106,7 +106,7 @@ describe Chef::ResourceDefinition do
   end
   
   it "should load a description from a file" do
-    @def.from_file(File.join(File.dirname(__FILE__), "..", "data", "definitions", "test.rb"))
+    @def.from_file(File.join(File.dirname(File.expand_path(__FILE__)), "..", "data", "definitions", "test.rb"))
     @def.name.should eql(:rico_suave)
     @def.params[:rich].should eql("smooth")
   end  
