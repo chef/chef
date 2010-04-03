@@ -20,10 +20,16 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::Application, "initialize" do
   before do
     @app = Chef::Application.new
+    Dir.stub!(:chdir).and_return(0)
   end
   
   it "should create an instance of Chef::Application" do
     @app.should be_kind_of(Chef::Application)
+  end
+
+  it "should chdir to root" do
+    Dir.should_receive(:chdir).with("/").and_return(0)
+    Chef::Application.new
   end
 end
 
