@@ -30,6 +30,7 @@ class Chef
         @delete = false
         @action = :create
         @recursive = true
+        @purge = false
         @files_backup = 5
         @files_owner = nil
         @files_group = nil
@@ -51,6 +52,14 @@ class Chef
           :files_backup,
           arg,
           :kind_of => [ Integer, FalseClass ]
+        )
+      end
+      
+      def purge(arg=nil)
+        set_or_return(
+          :purge,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
       

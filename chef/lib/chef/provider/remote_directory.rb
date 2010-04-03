@@ -26,6 +26,7 @@ require 'chef/platform'
 require 'uri'
 require 'tempfile'
 require 'net/https'
+require 'set'
 
 class Chef
   class Provider
@@ -47,8 +48,22 @@ class Chef
           Chef::Log.debug("Doing a remote recursive directory transfer for #{@new_resource}")
         end
           
+        existing_files = Set.new Dir[::File.join(@new_resource.path, '**', '*')]
+
         files_to_transfer.each do |remote_file_source|
           fetch_remote_file(remote_file_source)
+          existing_files.delete(::File.join(@new_resource.path, remote_file_source))
+        end
+        if @new_resource.purge
+          existing_files.sort { |a,b| b <=> a }.each do |f|
+            if ::File.directory?(f)
+              Chef::Log.debug("Removing directory #{f}")
+              Dir::rmdir(f)
+            else
+              Chef::Log.debug("Deleting file #{f}")
+              ::File.delete(f)
+            end
+          end
         end
       end
       
