@@ -197,5 +197,7 @@ class Chef
     cache_type "BasicFile"
     cache_options({ :path => "/var/chef/cache/checksums", :skip_expires => true })
 
+    # Arbitrary knife configuration data
+    knife Hash.new
   end
 end

@@ -23,6 +23,8 @@ class Chef
   class Knife
     class Ssh < Knife
 
+      attr_writer :password
+
       banner "Sub-Command: ssh QUERY COMMAND (options)"
 
       option :concurrency,
@@ -48,6 +50,11 @@ class Chef
         :short => "-x USERNAME",
         :long => "--ssh-user USERNAME",
         :description => "The ssh username"
+
+      option :ssh_password,
+        :short => "-P PASSWORD",
+        :long => "--ssh-password PASSWORD",
+        :description => "The ssh password"
 
       def session
         @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency])
@@ -75,7 +82,12 @@ class Chef
       def session_from_list(list)
         list.each do |item|
           Chef::Log.debug("Adding #{item}")
-          session.use config[:ssh_user] ? "#{config[:ssh_user]}@#{item}" : item
+         
+          if config[:password]
+            session.use config[:ssh_user] ? "#{config[:ssh_user]}@#{item}" : item, :password => config[:password]
+          else
+            session.use config[:ssh_user] ? "#{config[:ssh_user]}@#{item}" : item
+          end
           @longest = item.length if item.length > @longest
         end
         session
