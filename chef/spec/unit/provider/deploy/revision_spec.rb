@@ -87,4 +87,13 @@ describe Chef::Provider::Deploy::Revision do
     @provider.all_releases.should == %w{second third fourth fifth latest}
   end
   
+  it "regenerates the file cache if it's not available" do
+    oldest = "/my/deploy/dir/releases/oldest"
+    latest = "/my/deploy/dir/releases/latest"
+    Dir.should_receive(:glob).with("/my/deploy/dir/releases/*").and_return([latest, oldest])
+    ::File.should_receive(:ctime).with(oldest).and_return(Time.now - 10)
+    ::File.should_receive(:ctime).with(latest).and_return(Time.now - 1)
+    @provider.all_releases.should == [oldest, latest]
+  end
+
 end
