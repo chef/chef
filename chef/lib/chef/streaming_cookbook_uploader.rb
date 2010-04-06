@@ -1,9 +1,15 @@
+# inspired by/cargo-culted from http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
+# On Apr 6, 2010, at 3:00 PM, Stanislav Vitvitskiy wrote:
+#
+# It's free to use / modify / distribute. No need to mention anything. Just copy/paste and use.
+#
+# Regards,
+# Stan
+
 require 'net/http'
 require 'mixlib/authentication/signedheaderauth'
 require 'openssl'
 
-# inspired by/cargo-culted from http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
-# TODO: confirm that code is public domain
 class Chef
   class StreamingCookbookUploader
 
