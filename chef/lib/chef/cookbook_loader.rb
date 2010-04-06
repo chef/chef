@@ -114,7 +114,12 @@ class Chef
         @cookbook[cookbook].provider_files = cookbook_settings[cookbook][:provider_files].values
         @metadata[cookbook] = Chef::Cookbook::Metadata.new(@cookbook[cookbook])
         cookbook_settings[cookbook][:metadata_files].each do |meta_json|
-          @metadata[cookbook].from_json(IO.read(meta_json))
+          begin
+            @metadata[cookbook].from_json(IO.read(meta_json))
+          rescue JSON::ParserError
+            puts "Couldn't parse JSON in " + meta_json
+            raise
+          end
         end
       end
     end
