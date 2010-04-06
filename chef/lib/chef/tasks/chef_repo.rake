@@ -72,8 +72,8 @@ task :install => [ :update, :roles, :upload_cookbooks ] do
   end
 end
 
-desc "By default, run rake test"
-task :default => [ :test ]
+desc "By default, run rake test_cookbooks"
+task :default => [ :test_cookbooks ]
 
 desc "Create a new cookbook (with COOKBOOK=name, optional CB_PREFIX=site-)"
 task :new_cookbook do
@@ -241,5 +241,15 @@ desc "Upload a single cookbook"
 task :upload_cookbook => [ :metadata ]
 task :upload_cookbook, :cookbook do |t, args|
   system("knife cookbook upload #{args.cookbook}")
+end
+
+desc "Test all cookbooks"
+task :test_cookbooks do
+  system("knife cookbook test --all")
+end
+
+desc "Test a single cookbook"
+task :test_cookbook, :cookbook do |t, args|
+  system("knife cookbook test #{args.cookbook}")
 end
 
