@@ -29,20 +29,10 @@ class Chef
 
       def run
         file = @name_args[0]
+        cookbook = File.basename(File.dirname(file))
 
-        if File.exists?(file)
-          Chef::Log.info("Generating from #{file}")
-          md = Chef::Cookbook::Metadata.new
-          md.name(File.basename(File.dirname(file)))
-          md.from_file(file)
-          json_file = File.join(File.dirname(file), 'metadata.json')
-          File.open(json_file, "w") do |f|
-            f.write(JSON.pretty_generate(md))
-          end
-          Chef::Log.info("Generated #{json_file}")
-        else
-          Chef::Log.debug("No #{file} found; skipping!")
-        end
+        @metadata = Chef::Knife::CookbookMetadata.new
+        @metadata.generate_metadata_from_file(cookbook, file)
       end
 
     end
