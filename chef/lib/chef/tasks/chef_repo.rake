@@ -213,7 +213,7 @@ EOH
 end
 
 rule(%r{\b(?:site-)?cookbooks/[^/]+/metadata\.json\Z} => [ proc { |task_name| task_name.sub(/\.[^.]+$/, '.rb') } ]) do |t|
-  system("knife cookbook metadata #{t.source}")
+  system("knife cookbook metadata from file #{t.source}")
 end
 
 desc "Build cookbook metadata.json from metadata.rb"
