@@ -28,8 +28,9 @@ class Chef
         instance.checksum_for_file(*args)
       end
       
-      def checksum_for_file(file)
-        key, fstat = filename_to_key(file), File.stat(file)
+      def checksum_for_file(file, key=nil)
+        key ||= generate_key(file)
+        fstat = File.stat(file)
         lookup_checksum(key, fstat) || generate_checksum(key, file, fstat)
       end
       
@@ -48,6 +49,10 @@ class Chef
         checksum
       end
       
+      def generate_key(file, group="chef")
+        "#{group}-file-#{file.gsub(/(#{File::SEPARATOR}|\.)/, '-')}"
+      end
+
       private
       
       def file_unchanged?(cached, fstat)
@@ -58,10 +63,6 @@ class Chef
         digest = Digest::SHA256.new
         IO.foreach(file) {|line| digest.update(line) }
         digest.hexdigest
-      end
-      
-      def filename_to_key(file)
-        "chef-file-#{file.gsub(/(#{File::SEPARATOR}|\.)/, '-')}"
       end
 
     end

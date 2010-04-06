@@ -61,15 +61,35 @@ class Chef
       
       def test_ruby(cookbook_dir)
         Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
-          Chef::Log.info("Testing #{ruby_file} for syntax errors...")
-          Chef::Mixin::Command.run_command(:command => "ruby -c #{ruby_file}")
+          cache = Chef::Cache::Checksum.instance
+          # can't have the dynamic tmpdir in the cache name
+          key = cache.generate_key(ruby_file.sub("#{cookbook_dir}/", ""), "chef-test")
+          fstat = File.stat(ruby_file)
+
+          if cache.lookup_checksum(key, fstat) 
+            Chef::Log.info("No change in checksum of #{ruby_file}")
+          else
+            cache.generate_checksum(key, ruby_file, fstat)
+            Chef::Log.info("Testing #{ruby_file} for syntax errors...")
+            Chef::Mixin::Command.run_command(:command => "ruby -c #{ruby_file}")
+          end
         end
       end
-      
+
       def test_templates(cookbook_dir)
         Dir[File.join(cookbook_dir, '**', '*.erb')].each do |erb_file|
-          Chef::Log.info("Testing template #{erb_file} for syntax errors...")
-          Chef::Mixin::Command.run_command(:command => "sh -c 'erubis -x #{erb_file} | ruby -c'")
+          cache = Chef::Cache::Checksum.instance
+          # can't have the dynamic tmpdir in the cache name
+          key = cache.generate_key(erb_file.sub("#{cookbook_dir}/", ""), "chef-test")
+          fstat = File.stat(erb_file)
+
+          if cache.lookup_checksum(key, fstat) 
+            Chef::Log.info("No change in checksum of #{erb_file}")
+          else
+            cache.generate_checksum(key, erb_file, fstat)
+            Chef::Log.info("Testing template #{erb_file} for syntax errors...")
+            Chef::Mixin::Command.run_command(:command => "sh -c 'erubis -x #{erb_file} | ruby -c'")
+          end
         end
       end
 
@@ -104,7 +124,7 @@ class Chef
           if File.directory?(file_path)
             found_cookbook = true 
             Chef::Log.info("Copying from #{file_path} to #{tmp_cookbook_dir}")
-            FileUtils.cp_r(file_path, tmp_cookbook_dir, :remove_destination => true)
+            FileUtils.cp_r(file_path, tmp_cookbook_dir, :remove_destination => true, :preserve => true)
           else
             Chef::Log.info("Nothing to copy from #{file_path}")
           end
