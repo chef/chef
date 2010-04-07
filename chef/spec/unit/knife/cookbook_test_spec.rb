@@ -60,7 +60,7 @@ describe Chef::Knife::CookbookTest do
 
     describe "syntax checks" do
       before(:each) do
-        @path = [ File.expand_path(File.join(File.dirname(File.expand_path(__FILE__)), "..", "..", "data", "cookbooks")) ]
+        @path = [ File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "cookbooks")) ]
         @knife.config[:cookbook_path] = @path
         @knife.name_args = ["openldap"]
 
