@@ -97,6 +97,7 @@ class Chef
       #   timeout<String>: How many seconds to wait for the command to execute before timing out
       #   returns<String>: The single exit value command is expected to return, otherwise causes an exception
       #   ignore_failure<Boolean>: Whether to raise an exception on failure, or just return the status
+      #   output_on_failure<Boolean>: Return output in raised exception regardless of Log.level
       # 
       #   user<String>: The UID or user name of the user to execute the command as
       #   group<String>: The GID or group name of the group to execute the command as
@@ -108,6 +109,7 @@ class Chef
         command_output = ""
         
         args[:ignore_failure] ||= false
+        args[:output_on_failure] ||= false
 
         if args.has_key?(:creates)
           if File.exists?(args[:creates])
@@ -171,7 +173,7 @@ class Chef
           if status.exitstatus != args[:returns]
             # if the log level is not debug, through output of command when we fail
             output = ""
-            if Chef::Log.level == :debug
+            if Chef::Log.level == :debug || args[:output_on_failure]
               output << "\n---- Begin output of #{args[:command]} ----\n"
               output << "#{command_output}"
               output << "---- End output of #{args[:command]} ----\n"

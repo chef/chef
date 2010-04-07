@@ -74,7 +74,7 @@ describe Chef::Knife::CookbookTest do
       it "should execute the ruby syntax check" do
         @knife.stub!(:test_templates).and_return(true)
         Dir[File.join(@path, 'openldap', '**', '*.rb')].each do |file|
-          Chef::Mixin::Command.should_receive(:run_command).with({:command =>"ruby -c #{file}"})
+          Chef::Mixin::Command.should_receive(:run_command).with({:command =>"ruby -c #{file}", :output_on_failure=>true})
         end
         @knife.run
       end
@@ -82,7 +82,7 @@ describe Chef::Knife::CookbookTest do
       it "should execute the erb template syntax check" do
         @knife.stub!(:test_ruby).and_return(true)
         Dir[File.join(@path, 'openldap', '**', '*.erb')].each do |file|
-          Chef::Mixin::Command.should_receive(:run_command).with({:command =>"sh -c 'erubis -x #{file} | ruby -c'"})
+          Chef::Mixin::Command.should_receive(:run_command).with({:command =>"sh -c 'erubis -x #{file} | ruby -c'", :output_on_failure=>true})
         end
         @knife.run
       end
