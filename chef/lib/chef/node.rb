@@ -33,7 +33,7 @@ require 'json'
 class Chef
   class Node
     
-    attr_accessor :attribute, :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list, :override_attrs, :default_attrs, :cookbook_loader
+    attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list, :override_attrs, :default_attrs, :normal_attrs, :cookbook_loader
     attr_reader :node
     attr_reader :couchdb_id
     
@@ -131,7 +131,7 @@ class Chef
       @name = nil
       @node = self
 
-      @attribute = Mash.new
+      @normal_attrs = Mash.new
       @override_attrs = Mash.new
       @default_attrs = Mash.new
       @run_list = Chef::RunList.new
@@ -191,39 +191,84 @@ class Chef
         @name
       end
     end
+
+    def attribute
+      Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
+    end
     
     # Return an attribute of this node.  Returns nil if the attribute is not found.
     def [](attrib)
-      Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)[attrib]
+      Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)[attrib]
     end
     
     # Set an attribute of this node
     def []=(attrib, value)
-      Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)[attrib] = value
+      Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)[attrib] = value
     end
     
     def store(attrib, value)
       self[attrib] = value
     end
 
-    # Set an attribute of this node, but auto-vivifiy any Mashes that might
-    # be missing
+    # Set a normal attribute of this node, but auto-vivifiy any Mashes that
+    # might be missing
     def set
-      attrs = Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)
+      attrs = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
+      attrs.set_type = :attribute
       attrs.auto_vivifiy_on_read = true
       attrs
     end
 
-    # Set an attribute of this node, auto-vivifiying any mashes that are
+    alias_method :normal, :set
+
+    # Set a normal attribute of this node, auto-vivifiying any mashes that are
     # missing, but if the final value already exists, don't set it
     def set_unless
-      attrs = Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs)
+      attrs = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
+      attrs.set_type = :attribute
+      attrs.auto_vivifiy_on_read = true
+      attrs.set_unless_value_present = true
+      attrs
+    end
+    alias_method :normal_unless, :set_unless
+  
+    # Set a default of this node, but auto-vivifiy any Mashes that might
+    # be missing
+    def default 
+      attrs = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
+      attrs.set_type = :default
+      attrs.auto_vivifiy_on_read = true
+      attrs
+    end
+
+    # Set a default attribute of this node, auto-vivifiying any mashes that are
+    # missing, but if the final value already exists, don't set it
+    def default_unless
+      attrs = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
+      attrs.set_type = :default
       attrs.auto_vivifiy_on_read = true
       attrs.set_unless_value_present = true
       attrs
     end
 
-    alias_method :default, :set_unless
+    # Set an override attribute of this node, but auto-vivifiy any Mashes that
+    # might be missing
+    def override 
+      attrs = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
+      attrs.set_type = :override
+      attrs.auto_vivifiy_on_read = true
+      attrs
+    end
+
+    # Set an override attribute of this node, auto-vivifiying any mashes that
+    # are missing, but if the final value already exists, don't set it
+    def override_unless
+      attrs = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
+      attrs.set_type = :override
+      attrs.auto_vivifiy_on_read = true
+      attrs.set_unless_value_present = true
+      attrs
+    end
 
     # Return true if this Node has a given attribute, false if not.  Takes either a symbol or
     # a string.
@@ -231,24 +276,24 @@ class Chef
     # Only works on the top level. Preferred way is to use the normal [] style
     # lookup and call attribute?()
     def attribute?(attrib)
-      Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs).attribute?(attrib)
+      Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs).attribute?(attrib)
     end
   
     # Yield each key of the top level to the block. 
     def each(&block)
-      Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs).each(&block)
+      Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs).each(&block)
     end
     
     # Iterates over each attribute, passing the attribute and value to the block.
     def each_attribute(&block)
-      Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs).each_attribute(&block)
+      Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs).each_attribute(&block)
     end
 
     # Set an attribute based on the missing method.  If you pass an argument, we'll use that
     # to set the attribute values.  Otherwise, we'll wind up just returning the attributes
     # value.
     def method_missing(symbol, *args)
-      Chef::Node::Attribute.new(@attribute, @default_attrs, @override_attrs).send(symbol, *args)
+      Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs).send(symbol, *args)
     end
     
     # Returns true if this Node expects a given recipe, false if not.
@@ -295,11 +340,11 @@ class Chef
     # Transform the node to a Hash
     def to_hash
       index_hash = Hash.new
-      self.each do |k, v|
-        index_hash[k] = v
-      end
       index_hash["chef_type"] = "node"
       index_hash["name"] = @name
+      index_hash["attributes"] = @normal_attrs
+      index_hash["defaults"] = @default_attrs
+      index_hash["overrides"] = @override_attrs
       index_hash["recipe"] = @run_list.recipes if @run_list.recipes.length > 0
       index_hash["role"] = @run_list.roles if @run_list.roles.length > 0
       index_hash["run_list"] = @run_list.run_list if @run_list.run_list.length > 0
@@ -311,7 +356,7 @@ class Chef
       result = {
         "name" => @name,
         'json_class' => self.class.name,
-        "attributes" => @attribute,
+        "attributes" => @normal_attrs,
         "chef_type" => "node",
         "defaults" => @default_attrs,
         "overrides" => @override_attrs,
@@ -325,8 +370,7 @@ class Chef
     def self.json_create(o)
       node = new
       node.name(o["name"])
-      o["attributes"].each { |k,v| node[k] = v }
-      
+      node.normal_attrs = Mash.new(o["attributes"]) if o.has_key?("attributes")
       node.default_attrs = Mash.new(o["defaults"]) if o.has_key?("defaults")
       node.override_attrs = Mash.new(o["overrides"]) if o.has_key?("overrides")
 

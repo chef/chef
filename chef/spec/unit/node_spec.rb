@@ -101,26 +101,58 @@ describe Chef::Node do
       @node.sunshine.should eql("is bright")
     end
 
-    it "should allow you to set an attribute with set, without pre-declaring a hash" do
-      @node.set[:snoopy][:is_a_puppy] = true
-      @node[:snoopy][:is_a_puppy].should == true
+    describe "normal attributes" do
+      it "should allow you to set an attribute with set, without pre-declaring a hash" do
+        @node.set[:snoopy][:is_a_puppy] = true
+        @node[:snoopy][:is_a_puppy].should == true
+      end
+
+      it "should allow you to set an attribute with set_unless" do
+        @node.set_unless[:snoopy][:is_a_puppy] = false 
+        @node[:snoopy][:is_a_puppy].should == false 
+      end
+
+      it "should not allow you to set an attribute with set_unless if it already exists" do
+        @node.set[:snoopy][:is_a_puppy] = true 
+        @node.set_unless[:snoopy][:is_a_puppy] = false 
+        @node[:snoopy][:is_a_puppy].should == true 
+      end
     end
 
-    it "should allow you to set an attribute with set_unless, without pre-declaring a hash, but only if the value is not already set" do
-      @node.set[:snoopy][:is_a_puppy] = true 
-      @node.set_unless[:snoopy][:is_a_puppy] = false 
-      @node[:snoopy][:is_a_puppy].should == true 
+    describe "default attributes" do
+      it "should be set with default, without pre-declaring a hash" do
+        @node.default[:snoopy][:is_a_puppy] = true
+        @node[:snoopy][:is_a_puppy].should == true
+      end
+
+      it "should allow you to set with default_unless without pre-declaring a hash" do
+        @node.default_unless[:snoopy][:is_a_puppy] = false 
+        @node[:snoopy][:is_a_puppy].should == false 
+      end
+
+      it "should not allow you to set an attribute with default_unless if it already exists" do
+        @node.default[:snoopy][:is_a_puppy] = true 
+        @node.default_unless[:snoopy][:is_a_puppy] = false 
+        @node[:snoopy][:is_a_puppy].should == true 
+      end
     end
 
-    it "should allow you to set an attribute with default, without pre-declaring a hash, but only if the value is not already set" do
-      @node.set[:snoopy][:is_a_puppy] = true
-      @node.default[:snoopy][:is_a_puppy] = false
-      @node[:snoopy][:is_a_puppy].should == true
-    end
+    describe "override attributes" do
+      it "should be set with override, without pre-declaring a hash" do
+        @node.override[:snoopy][:is_a_puppy] = true
+        @node[:snoopy][:is_a_puppy].should == true
+      end
 
-    it "should allow you to set an attribute with default, without pre-declaring a hash" do
-      @node.default[:snoopy][:is_a_puppy] = false
-      @node[:snoopy][:is_a_puppy].should == false
+      it "should allow you to set with override_unless without pre-declaring a hash" do
+        @node.override_unless[:snoopy][:is_a_puppy] = false 
+        @node[:snoopy][:is_a_puppy].should == false 
+      end
+
+      it "should not allow you to set an attribute with override_unless if it already exists" do
+        @node.override[:snoopy][:is_a_puppy] = true 
+        @node.override_unless[:snoopy][:is_a_puppy] = false 
+        @node[:snoopy][:is_a_puppy].should == true 
+      end
     end
     
     it "should raise an ArgumentError if you ask for an attribute that doesn't exist via method_missing" do
@@ -290,15 +322,14 @@ describe Chef::Node do
     it "should serialize itself as a hash" do
       @node.default_attrs = { "one" => { "two" => "three", "four" => "five", "eight" => "nine" } }
       @node.override_attrs = { "one" => { "two" => "three", "four" => "six" } }
-      @node.set["one"]["two"] = "seven"
+      @node.normal_attrs = { "one" => { "two" => "seven" } }
       @node.run_list << "role[marxist]"
       @node.run_list << "role[leninist]"
       @node.run_list << "recipe[stalinist]"
       h = @node.to_hash
-      h["one"]["two"].should == "seven"
-      h["one"]["four"].should == "six"
-      h["one"]["eight"].should == "nine"
-      h["recipe"].should be_include("stalinist")
+      h["defaults"].should == @node.default_attrs
+      h["overrides"].should == @node.override_attrs
+      h["attributes"].should == @node.normal_attrs
       h["role"].should be_include("marxist")
       h["role"].should be_include("leninist")
       h["run_list"].should be_include("role[marxist]")

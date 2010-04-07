@@ -34,6 +34,8 @@ class Chef
                     :set_unless_value_present,
                     :has_been_read
 
+      attr_writer :set_type
+
       include Enumerable
 
       def initialize(attribute, default, override, state=[])
@@ -46,7 +48,19 @@ class Chef
         @state = state
         @auto_vivifiy_on_read = false
         @set_unless_value_present = false
+        @set_type = :attribute
         @has_been_read = false
+      end
+
+      def set_type
+        case @set_type
+        when :attribute
+          @attribute
+        when :override
+          @override
+        when :default
+          @default
+        end
       end
 
       # Reset our internal state to the top of every tree
@@ -280,16 +294,8 @@ class Chef
 
       def []=(key, value)
         if set_unless_value_present
-          if get_value(@default, key) != nil
-            Chef::Log.debug("Not setting #{state.join("/")}/#{key} to #{value.inspect} because it has a default value already")
-            return false
-          end
-          if get_value(@attribute, key) != nil
-            Chef::Log.debug("Not setting #{state.join("/")}/#{key} to #{value.inspect} because it has a node attribute value already")
-            return false
-          end
-          if get_value(@override, key) != nil
-            Chef::Log.debug("Not setting #{state.join("/")}/#{key} to #{value.inspect} because it has an override value already")
+          if get_value(set_type, key) != nil
+            Chef::Log.debug("Not setting #{state.join("/")}/#{key} to #{value.inspect} because it has a #{@set_type} value already")
             return false
           end
         end
@@ -302,8 +308,7 @@ class Chef
         # supporting one more single-use style.
         @state.pop if @has_been_read && @state.last == key
 
-        set_value(@attribute, key, value)
-        set_value(@override, key, value)
+        set_value(set_type, key, value)
         value
       end
 
