@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Node do
   before(:each) do
-    Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    Chef::Config.node_path(File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "nodes")))
     @node = Chef::Node.new()
   end
  
@@ -244,7 +244,7 @@ describe Chef::Node do
 
   describe "from file" do
     it "should load a node from a ruby file" do
-      @node.from_file(File.join(File.dirname(__FILE__), "..", "data", "nodes", "test.rb"))
+      @node.from_file(File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "nodes", "test.rb")))
       @node.name.should eql("test.example.com short")
       @node.sunshine.should eql("in")
       @node.something.should eql("else")

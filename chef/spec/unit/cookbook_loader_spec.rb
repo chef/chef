@@ -21,8 +21,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::CookbookLoader do
   before(:each) do
     Chef::Config.cookbook_path [ 
-      File.join(File.dirname(File.expand_path(__FILE__)), "..", "data", "kitchen"),
-      File.join(File.dirname(File.expand_path(__FILE__)), "..", "data", "cookbooks")
+      File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "kitchen")),
+      File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
     ]
     @cl = Chef::CookbookLoader.new()
   end
@@ -74,7 +74,7 @@ describe Chef::CookbookLoader do
   
   describe "load_cookbooks" do
     it "should find all the cookbooks in the cookbook path" do
-      Chef::Config.cookbook_path << File.join(File.dirname(__FILE__), "..", "data", "hidden-cookbooks") 
+      Chef::Config.cookbook_path << File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "hidden-cookbooks"))
       @cl.load_cookbooks
       @cl.detect { |cb| cb.name == :openldap }.should_not eql(nil)
       @cl.detect { |cb| cb.name == :apache2 }.should_not eql(nil)

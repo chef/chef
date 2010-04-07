@@ -52,7 +52,7 @@ describe Chef::Cache::Checksum do
   end
   
   it "computes a checksum of a file" do
-    fixture_file = File.dirname(File.expand_path(__FILE__)) + "/../../data/checksum/random.txt"
+    fixture_file = File.expand_path(File.dirname(__FILE__) + "/../../data/checksum/random.txt")
     expected = "09ee9c8cc70501763563bcf9c218d71b2fbf4186bf8e1e0da07f0f42c80a3394"
     @cache.send(:checksum_file, fixture_file).should == expected
   end
@@ -65,7 +65,7 @@ describe Chef::Cache::Checksum do
   end
   
   it "returns a generated checksum if there is no cached value" do
-    fixture_file = File.dirname(File.expand_path(__FILE__)) + "/../../data/checksum/random.txt"
+    fixture_file = File.expand_path(File.dirname(__FILE__) + "/../../data/checksum/random.txt")
     expected = "09ee9c8cc70501763563bcf9c218d71b2fbf4186bf8e1e0da07f0f42c80a3394"
     @cache.checksum_for_file(fixture_file).should == expected
   end

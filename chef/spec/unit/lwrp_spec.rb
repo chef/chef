@@ -18,11 +18,11 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
-Dir[File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*")].each do |file|
+Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
   Chef::Resource.build_from_file("lwrp", file)
 end
 
-Dir[File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*")].each do |file|
+Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*"))].each do |file|
   Chef::Provider.build_from_file("lwrp", file)
 end
 

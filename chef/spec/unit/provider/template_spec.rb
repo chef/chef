@@ -27,7 +27,7 @@ describe Chef::Provider::Template do
     @rest.stub!(:get_rest).and_return(@tempfile)
     @resource = Chef::Resource::Template.new("seattle")
     @resource.cookbook_name = "foo"
-    @resource.path(File.join(File.dirname(File.expand_path(__FILE__)), "..", "..", "data", "templates", "seattle.txt"))
+    @resource.path(File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "seattle.txt")))
     @resource.source("http://foo")
     @node = Chef::Node.new
     @node.name "latte"

@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), '..', '..', "spec_helper")
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', "spec_helper"))
 
 module Home
-  PATH = File.dirname(File.expand_path(__FILE__))
+  PATH = File.expand_path(File.dirname(__FILE__))
   DATA = File.join(PATH, "..", "..", "data", "fileedit")
   HOSTS = File.join(DATA, "hosts")
   HOSTS_OLD = File.join(DATA, "hosts.old")
