@@ -22,8 +22,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Knife::CookbookMetadataFromFile do
   before(:each) do
-    @src = File.join(File.dirname(File.expand_path(__FILE__)), "..", "..", "data", "metadata", "quick_start", "metadata.rb")
-    @tgt = File.join(File.dirname(File.expand_path(__FILE__)), "..", "..", "data", "metadata", "quick_start", "metadata.json")
+    @src = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "metadata", "quick_start", "metadata.rb"))
+    @tgt = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "metadata", "quick_start", "metadata.json"))
     @knife = Chef::Knife::CookbookMetadataFromFile.new
     @knife.name_args = [ @src ]
     @knife.stub!(:json_pretty_generate).and_return(true)
