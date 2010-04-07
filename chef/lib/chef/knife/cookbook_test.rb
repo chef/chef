@@ -75,9 +75,9 @@ class Chef
           if cache.lookup_checksum(key, fstat) 
             Chef::Log.info("No change in checksum of #{ruby_file}")
           else
-            cache.generate_checksum(key, ruby_file, fstat)
             Chef::Log.info("Testing #{ruby_file} for syntax errors...")
             Chef::Mixin::Command.run_command(:command => "ruby -c #{ruby_file}")
+            cache.generate_checksum(key, ruby_file, fstat)
           end
         end
       end
@@ -91,9 +91,9 @@ class Chef
           if cache.lookup_checksum(key, fstat) 
             Chef::Log.info("No change in checksum of #{erb_file}")
           else
-            cache.generate_checksum(key, erb_file, fstat)
             Chef::Log.info("Testing template #{erb_file} for syntax errors...")
             Chef::Mixin::Command.run_command(:command => "sh -c 'erubis -x #{erb_file} | ruby -c'")
+            cache.generate_checksum(key, erb_file, fstat)
           end
         end
       end
