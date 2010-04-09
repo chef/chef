@@ -193,7 +193,7 @@ class Chef
               end
             end
             unless passes
-              raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} does not match regular expression #{regex.to_s}"
+              raise Exceptions::ValidationFailed, "Option #{key}'s value #{value} does not match regular expression #{regex.inspect}"
             end
           end
         end
