@@ -250,12 +250,12 @@ describe Chef::Provider::Group::Dscl, "set_members" do
     end
 
     it "should run safe_dscl with create /Groups/group GroupMembers to clear the Group's GUID list" do
-      @provider.should_receive(:safe_dscl).with("create /Groups/aj GroupMembers").and_return(true)
+      @provider.should_receive(:safe_dscl).with("create /Groups/aj GroupMembers ''").and_return(true)
       @provider.set_members
     end
 
     it "should run safe_dscl with create /Groups/group GroupMembership to clear the Group's UID list" do
-      @provider.should_receive(:safe_dscl).with("create /Groups/aj GroupMembership").and_return(true)
+      @provider.should_receive(:safe_dscl).with("create /Groups/aj GroupMembership ''").and_return(true)
       @provider.set_members
     end
   end
