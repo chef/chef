@@ -88,20 +88,26 @@ class Chef
     end
 
     attr_reader :auth_credentials
-    attr_accessor :url, :cookies, :client_name, :signing_key, :sign_on_redirect, :sign_request
+    attr_accessor :url, :cookies, :sign_on_redirect, :sign_request
 
     def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
       @url = url
       @cookies = CookieJar.instance
-      @client_name = client_name
       @default_headers = options[:headers] || {}
       @auth_credentials = AuthCredentials.new(client_name, signing_key_filename)
       @sign_on_redirect = true
     end
-    
+
     def signing_key_filename
-      # TODO: untested
       @auth_credentials.key_file
+    end
+
+    def client_name
+      @auth_credentials.client_name
+    end
+
+    def signing_key
+      @auth_credentials.raw_key
     end
 
     # Register the client
