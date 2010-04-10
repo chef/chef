@@ -20,7 +20,6 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/params_validate'
 require 'net/https'
 require 'uri'
 require 'json'
@@ -38,31 +37,71 @@ class Chef
       include Singleton
     end
 
-    attr_accessor :url, :cookies, :client_name, :signing_key, :signing_key_filename, :sign_on_redirect, :sign_request
+    class AuthCredentials
+      attr_reader :key_file, :client_name, :key, :raw_key
+
+      def initialize(client_name=nil, key_file=nil)
+        @client_name, @key_file = client_name, key_file
+        load_signing_key if sign_requests?
+      end
+
+      def sign_requests?
+        !!key_file
+      end
+
+      def signature_headers(request_params={})
+        raise ArgumentError, "Cannot sign the request without a client name, check that :node_name is assigned" if client_name.nil?
+        Chef::Log.debug("Signing the request as #{client_name}")
+
+        # params_in = {:http_method => :GET, :path => "/clients", :body => "", :host => "localhost"}
+        request_params             = request_params.dup
+        request_params[:timestamp] = Time.now.utc.iso8601
+        request_params[:user_id]   = client_name
+        host = request_params.delete(:host) || "localhost"
+
+        sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(request_params)
+        signed =  sign_obj.sign(key).merge({:host => host})
+        signed.inject({}){|memo, kv| memo["#{kv[0].to_s.upcase}"] = kv[1];memo}
+      end
+
+      private
+
+      def load_signing_key
+        begin
+          @raw_key = IO.read(key_file)
+        rescue SystemCallError, IOError => e
+          Chef::Log.fatal "Failed to read the private key #{key_file}: #{e.inspect}, #{e.backtrace}"
+          raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key_file}, which you told me to use to sign requests!"
+        end
+        assert_valid_key_format!(@raw_key)
+        @key = OpenSSL::PKey::RSA.new(@raw_key)
+      end
+
+      def assert_valid_key_format!(raw_key)
+        unless (raw_key =~ /\A-----BEGIN RSA PRIVATE KEY-----$/) && (raw_key =~ /^-----END RSA PRIVATE KEY-----\Z/)
+          msg = "The file #{key_file} does not contain a correctly formatted private key.\n"
+          msg << "The key file should begin with '-----BEGIN RSA PRIVATE KEY-----' and end with '-----END RSA PRIVATE KEY-----'"
+          raise Chef::Exceptions::InvalidPrivateKey, msg
+        end
+      end
+
+    end
+
+    attr_reader :auth_credentials
+    attr_accessor :url, :cookies, :client_name, :signing_key, :sign_on_redirect, :sign_request
 
     def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
       @url = url
       @cookies = CookieJar.instance
       @client_name = client_name
       @default_headers = options[:headers] || {}
-      if signing_key_filename
-        @signing_key_filename = signing_key_filename
-        @signing_key = load_signing_key(signing_key_filename)
-        @sign_request = true
-      else
-        @signing_key = nil
-        @sign_request = false
-      end
+      @auth_credentials = AuthCredentials.new(client_name, signing_key_filename)
       @sign_on_redirect = true
     end
-
-    def load_signing_key(key)
-      begin
-        IO.read(key)
-      rescue StandardError=>se
-        Chef::Log.error "Failed to read the private key #{key}: #{se.inspect}, #{se.backtrace}"
-        raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key}, which you told me to use to sign requests!"
-      end
+    
+    def signing_key_filename
+      # TODO: untested
+      @auth_credentials.key_file
     end
 
     # Register the client
@@ -73,14 +112,14 @@ class Chef
       nc.name(name)
 
       catch(:done) do
-        retries = Chef::Config[:client_registration_retries] || 5
+        retries = config[:client_registration_retries] || 5
         0.upto(retries) do |n|
           begin
             response = nc.save(true, true)
             Chef::Log.debug("Registration response: #{response.inspect}")
             raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
             # Write out the private key
-            file = File.open(destination, File::WRONLY|File::EXCL|File::CREAT, 0600)
+            file = ::File.open(destination, File::WRONLY|File::EXCL|File::CREAT, 0600)
             file.print(response["private_key"])
             file.close
             throw :done
@@ -129,17 +168,12 @@ class Chef
       end
     end
 
-    def sign_request(http_method, path, private_key, user_id, body = "", host="localhost")
-      #body = "" if body == false
-      timestamp = Time.now.utc.iso8601
-      sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
-                                                         :http_method=>http_method,
-                                                         :path => path,
-                                                         :body=>body,
-                                                         :user_id=>user_id,
-                                                         :timestamp=>timestamp)
-      signed =  sign_obj.sign(private_key).merge({:host => host})
-      signed.inject({}){|memo, kv| memo["#{kv[0].to_s.upcase}"] = kv[1];memo}
+    # def sign_request(http_method, path, body="", host="localhost")
+    #   auth_credentials.signature_headers(:http_method => http_method, :path => path, :body => body, :host => host)
+    # end
+
+    def sign_requests?
+      auth_credentials.sign_requests?
     end
 
     # Actually run an HTTP request.  First argument is the HTTP method,
@@ -161,11 +195,7 @@ class Chef
 
       headers = build_headers(headers, url, raw)
 
-      if @sign_request
-        raise ArgumentError, "Cannot sign the request without a client name, check that :node_name is assigned" if @client_name.nil?
-        Chef::Log.debug("Signing the request as #{@client_name}")
-        headers.merge!(authentication_headers(method, url, json_body))
-      end
+      headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
 
       req = http_request_for(url, method, headers, json_body)
 
@@ -178,7 +208,8 @@ class Chef
       begin
         http_attempts += 1
 
-        res = http.request(url, req) do |response|
+        # TODO: this method invocation is not tested ATM
+        res = http.request(req) do |response|
           if raw
             tf = stream_to_tempfile(url, response)
           else
@@ -239,19 +270,23 @@ class Chef
     end
 
     def authentication_headers(method, url, json_body=nil)
-      json_body ||= ""
-      sign_request(method, url.path, OpenSSL::PKey::RSA.new(@signing_key), @client_name, json_body, "#{url.host}:#{url.port}")
+      # TODO: this method is untested
+      request_params = {:http_method => method, :path => url.path, :body => json_body, :host => "#{url.host}:#{url.port}"}
+      request_params[:body] ||= ""
+      auth_credentials.signature_headers(request_params)
     end
 
     def http_retry_delay
-      Chef::Config[:http_retry_delay]
+      config[:http_retry_delay]
     end
 
     def http_retry_count
-      Chef::Config[:http_retry_count]
+      config[:http_retry_count]
     end
 
-    private
+    def config
+      Chef::Config
+    end
 
     def build_headers(headers, url, raw=false)
       headers = @default_headers.merge(headers)
@@ -274,26 +309,43 @@ class Chef
       http = Net::HTTP.new(url.host, url.port)
       if url.scheme == "https"
         http.use_ssl = true
-        if Chef::Config[:ssl_verify_mode] == :verify_none
+        if config[:ssl_verify_mode] == :verify_none
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        elsif Chef::Config[:ssl_verify_mode] == :verify_peer
+        elsif config[:ssl_verify_mode] == :verify_peer
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         end
-        if Chef::Config[:ssl_ca_path] and File.exists?(Chef::Config[:ssl_ca_path])
-          http.ca_path = Chef::Config[:ssl_ca_path]
-        elsif Chef::Config[:ssl_ca_file] and File.exists?(Chef::Config[:ssl_ca_file])
-          http.ca_file = Chef::Config[:ssl_ca_file]
+        if config[:ssl_ca_path]
+          unless ::File.exist?(config[:ssl_ca_path])
+            raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_path #{config[:ssl_ca_path]} does not exist"
+          end
+          http.ca_path = config[:ssl_ca_path]
+        elsif config[:ssl_ca_file]
+          unless ::File.exist?(config[:ssl_ca_file])
+            raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_file #{config[:ssl_ca_file]} does not exist"
+          end
+          http.ca_file = config[:ssl_ca_file]
         end
-        if Chef::Config[:ssl_client_cert] && File.exists?(Chef::Config[:ssl_client_cert])
-          http.cert = OpenSSL::X509::Certificate.new(File.read(Chef::Config[:ssl_client_cert]))
-          http.key = OpenSSL::PKey::RSA.new(File.read(Chef::Config[:ssl_client_key]))
+        if (config[:ssl_client_cert] || config[:ssl_client_key])
+          unless (config[:ssl_client_cert] && config[:ssl_client_key])
+            raise Chef::Exceptions::ConfigurationError, "You must configure ssl_client_cert and ssl_client_key together"
+          end
+          unless ::File.exists?(config[:ssl_client_cert])
+            raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_cert #{config[:ssl_client_cert]} does not exist"
+          end
+          unless ::File.exists?(config[:ssl_client_key])
+            raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_key #{config[:ssl_client_key]} does not exist"
+          end
+          http.cert = OpenSSL::X509::Certificate.new(::File.read(config[:ssl_client_cert]))
+          http.key = OpenSSL::PKey::RSA.new(::File.read(config[:ssl_client_key]))
         end
       end
 
-      http.read_timeout = Chef::Config[:rest_timeout]
+      http.read_timeout = config[:rest_timeout]
 
       http
     end
+
+    private
 
     def http_request_for(url, method, headers={}, body=nil)
       headers["Content-Type"] = 'application/json' if body
