@@ -276,6 +276,17 @@ describe Chef::Provider::Group::Dscl, "set_members" do
       @provider.set_members
     end
   end
+  
+  describe "with no members in the new resource" do
+    before do
+      @new_resource.stub!(:members).and_return([])
+    end
+
+    it "should not call safe_dscl" do
+      @provider.should_not_receive(:safe_dscl)
+      @provider.set_members
+    end
+  end
 end
 
 describe Chef::Provider::Group::Dscl, "load_current_resource" do
