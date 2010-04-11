@@ -27,7 +27,7 @@ Feature: Light-weight resources and providers
      Then the run should exit '0'
       And a file named 'lwrp_touch_file.txt' should exist
 
-  @client @api
+  @client @lwrp_api
   Scenario Outline: Chef-client handles light-weight resources and providers
     Given a validated node
       And it includes the recipe 'lwrp::<recipe>'
@@ -47,7 +47,7 @@ Feature: Light-weight resources and providers
       | provider_is_a_class                       | Provider is a class                                                              |
       | provider_is_omitted                       | P=Chef::Provider::LwrpProviderIsOmitted, R=Chef::Resource::LwrpProviderIsOmitted |
 
-  @client @api
+  @client @lwrp_api
   Scenario: Chef-client properly handles providers that invoke resources in their action definitions
     Given a validated node
       And it includes the recipe 'lwrp::provider_invokes_resource'
