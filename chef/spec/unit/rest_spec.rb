@@ -146,108 +146,108 @@ describe Chef::REST do
 
   end
 
-  describe "configuring the HTTP client" do
-    before do
-      @url = URI.parse("http://chef.example.com:4000")
-      @chef_config = {}
-      @rest.stub!(:config).and_return @chef_config
-    end
-
-    it "configures the HTTP client for the host and port" do
-      http_client = @rest.http_client_for(@url)
-      http_client.address.should == "chef.example.com"
-      http_client.port.should == 4000
-    end
-
-    it "configures the HTTP client with the read timeout set in the config file" do
-      @chef_config[:rest_timeout] = 9001
-      http_client = @rest.http_client_for(@url)
-      http_client.read_timeout.should == 9001
-    end
-
-    describe "for SSL" do
-      describe "when configured with :ssl_verify_mode set to :verify peer" do
-        before do
-          @url = URI.parse("https://chef.example.com:4443")
-          @chef_config[:ssl_verify_mode] = :verify_peer
-        end
-
-        it "configures the HTTP client to use SSL when given a URL with the https protocol" do
-          http_client = @rest.http_client_for(@url)
-          http_client.use_ssl?.should be_true
-        end
-
-        it "sets the OpenSSL verify mode to verify_peer" do
-          http_client = @rest.http_client_for(@url)
-          http_client.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
-        end
-
-        it "raises a ConfigurationError if :ssl_ca_path is set to a path that doesn't exist" do
-          @chef_config[:ssl_ca_path] = "/dev/null/nothing_here"
-          lambda {@rest.http_client_for(@url)}.should raise_error(Chef::Exceptions::ConfigurationError)
-        end
-
-        it "should set the CA path if that is set in the configuration" do
-          @chef_config[:ssl_ca_path] = File.join(CHEF_SPEC_DATA, "ssl")
-          http_client = @rest.http_client_for(@url)
-          http_client.ca_path.should == File.join(CHEF_SPEC_DATA, "ssl")
-        end
-
-        it "raises a ConfigurationError if :ssl_ca_file is set to a file that does not exist" do
-          @chef_config[:ssl_ca_file] = "/dev/null/nothing_here"
-          lambda {@rest.http_client_for(@url)}.should raise_error(Chef::Exceptions::ConfigurationError)
-        end
-
-        it "should set the CA file if that is set in the configuration" do
-          @chef_config[:ssl_ca_file] = CHEF_SPEC_DATA + '/ssl/5e707473.0'
-          http_client = @rest.http_client_for(@url)
-          http_client.ca_file.should == CHEF_SPEC_DATA + '/ssl/5e707473.0'
-        end
-      end
-
-      describe "when configured with :ssl_verify_mode set to :verify peer" do
-        before do
-          @url = URI.parse("https://chef.example.com:4443")
-          @chef_config[:ssl_verify_mode] = :verify_none
-        end
-
-        it "sets the OpenSSL verify mode to :verify_none" do
-          http_client = @rest.http_client_for(@url)
-          http_client.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
-        end
-      end
-
-      describe "when configured with a client certificate" do
-        before {@url = URI.parse("https://chef.example.com:4443")}
-
-        it "raises ConfigurationError if the certificate file doesn't exist" do
-          @chef_config[:ssl_client_cert] = "/dev/null/nothing_here"
-          @chef_config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
-          lambda {@rest.http_client_for(@url)}.should raise_error(Chef::Exceptions::ConfigurationError)
-        end
-
-        it "raises ConfigurationError if the certificate file doesn't exist" do
-          @chef_config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
-          @chef_config[:ssl_client_key]  = "/dev/null/nothing_here"
-          lambda {@rest.http_client_for(@url)}.should raise_error(Chef::Exceptions::ConfigurationError)
-        end
-
-        it "raises a ConfigurationError if one of :ssl_client_cert and :ssl_client_key is set but not both" do
-          @chef_config[:ssl_client_cert] = "/dev/null/nothing_here"
-          @chef_config[:ssl_client_key]  = nil
-          lambda {@rest.http_client_for(@url)}.should raise_error(Chef::Exceptions::ConfigurationError)
-        end
-
-        it "configures the HTTP client's cert and private key" do
-          @chef_config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
-          @chef_config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
-          http_client = @rest.http_client_for(@url)
-          http_client.cert.to_s.should == OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.cert')).to_s
-          http_client.key.to_s.should  == IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.key')
-        end
-      end
-    end
-  end
+  # describe "configuring the HTTP client" do
+  #   before do
+  #     @url = URI.parse("http://chef.example.com:4000")
+  #     @chef_config = {}
+  #     @rest.stub!(:config).and_return @chef_config
+  #   end
+  # 
+  #   it "configures the HTTP client for the host and port" do
+  #     http_client = @rest.http_client_for(@url)
+  #     http_client.address.should == "chef.example.com"
+  #     http_client.port.should == 4000
+  #   end
+  # 
+  #   it "configures the HTTP client with the read timeout set in the config file" do
+  #     @chef_config[:rest_timeout] = 9001
+  #     http_client = @rest.http_client_for(@url)
+  #     http_client.read_timeout.should == 9001
+  #   end
+  # 
+  #   describe "for SSL" do
+  #     describe "when configured with :ssl_verify_mode set to :verify peer" do
+  #       before do
+  #         @url = URI.parse("https://chef.example.com:4443")
+  #         @chef_config[:ssl_verify_mode] = :verify_peer
+  #       end
+  # 
+  #       it "configures the HTTP client to use SSL when given a URL with the https protocol" do
+  #         http_client = @rest.http_client_for(@url)
+  #         http_client.use_ssl?.should be_true
+  #       end
+  # 
+  #       it "sets the OpenSSL verify mode to verify_peer" do
+  #         http_client = @rest.http_client_for(@url)
+  #         http_client.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
+  #       end
+  # 
+  #       it "raises a ConfigurationError if :ssl_ca_path is set to a path that doesn't exist" do
+  #         @chef_config[:ssl_ca_path] = "/dev/null/nothing_here"
+  #         lambda {@rest.http_client_for(@url)}.should raise_error(Chef::Exceptions::ConfigurationError)
+  #       end
+  # 
+  #       it "should set the CA path if that is set in the configuration" do
+  #         @chef_config[:ssl_ca_path] = File.join(CHEF_SPEC_DATA, "ssl")
+  #         http_client = @rest.http_client_for(@url)
+  #         http_client.ca_path.should == File.join(CHEF_SPEC_DATA, "ssl")
+  #       end
+  # 
+  #       it "raises a ConfigurationError if :ssl_ca_file is set to a file that does not exist" do
+  #         @chef_config[:ssl_ca_file] = "/dev/null/nothing_here"
+  #         lambda {@rest.http_client_for(@url)}.should raise_error(Chef::Exceptions::ConfigurationError)
+  #       end
+  # 
+  #       it "should set the CA file if that is set in the configuration" do
+  #         @chef_config[:ssl_ca_file] = CHEF_SPEC_DATA + '/ssl/5e707473.0'
+  #         http_client = @rest.http_client_for(@url)
+  #         http_client.ca_file.should == CHEF_SPEC_DATA + '/ssl/5e707473.0'
+  #       end
+  #     end
+  # 
+  #     describe "when configured with :ssl_verify_mode set to :verify peer" do
+  #       before do
+  #         @url = URI.parse("https://chef.example.com:4443")
+  #         @chef_config[:ssl_verify_mode] = :verify_none
+  #       end
+  # 
+  #       it "sets the OpenSSL verify mode to :verify_none" do
+  #         http_client = @rest.http_client_for(@url)
+  #         http_client.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
+  #       end
+  #     end
+  # 
+  #     describe "when configured with a client certificate" do
+  #       before {@url = URI.parse("https://chef.example.com:4443")}
+  # 
+  #       it "raises ConfigurationError if the certificate file doesn't exist" do
+  #         @chef_config[:ssl_client_cert] = "/dev/null/nothing_here"
+  #         @chef_config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
+  #         lambda {@rest.http_client_for(@url)}.should raise_error(Chef::Exceptions::ConfigurationError)
+  #       end
+  # 
+  #       it "raises ConfigurationError if the certificate file doesn't exist" do
+  #         @chef_config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
+  #         @chef_config[:ssl_client_key]  = "/dev/null/nothing_here"
+  #         lambda {@rest.http_client_for(@url)}.should raise_error(Chef::Exceptions::ConfigurationError)
+  #       end
+  # 
+  #       it "raises a ConfigurationError if one of :ssl_client_cert and :ssl_client_key is set but not both" do
+  #         @chef_config[:ssl_client_cert] = "/dev/null/nothing_here"
+  #         @chef_config[:ssl_client_key]  = nil
+  #         lambda {@rest.http_client_for(@url)}.should raise_error(Chef::Exceptions::ConfigurationError)
+  #       end
+  # 
+  #       it "configures the HTTP client's cert and private key" do
+  #         @chef_config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
+  #         @chef_config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
+  #         http_client = @rest.http_client_for(@url)
+  #         http_client.cert.to_s.should == OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.cert')).to_s
+  #         http_client.key.to_s.should  == IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.key')
+  #       end
+  #     end
+  #   end
+  # end
 
   describe Chef::REST, "run_request method" do
     before(:each) do
@@ -498,6 +498,175 @@ describe Chef::REST::AuthCredentials do
       @auth_credentials.signature_headers(@request_params).should == expected
     end
   end
-
 end
 
+describe Chef::REST::RESTRequest do
+  def new_request(method=nil)
+    method ||= :POST
+    Chef::REST::RESTRequest.new(method, @url, @req_body, @headers)
+  end
+
+  before do
+    @auth_credentials = Chef::REST::AuthCredentials.new("client-name", CHEF_SPEC_DATA + '/ssl/private_key.pem')
+    @url = URI.parse("http://chef.example.com:4000/?q=chef_is_awesome")
+    @req_body = '{"json_data":"as_a_string"}'
+    @headers = {"Content-type" =>"application/json", "Accept"=>"application/json"}
+    @request = Chef::REST::RESTRequest.new(:POST, @url, @req_body, @headers)
+  end
+
+  it "stores the url it was created with" do
+    @request.url.should == @url
+  end
+
+  it "stores the HTTP method" do
+    @request.method.should == :POST
+  end
+
+  it "adds the chef version header" do
+    @request.headers.should == @headers.merge("X-Chef-Version" => ::Chef::VERSION)
+  end
+  
+  describe "configuring the HTTP request" do
+    it "configures GET requests" do
+      @req_body = nil
+      rest_req = new_request(:GET)
+      rest_req.http_request.should be_a_kind_of(Net::HTTP::Get)
+      rest_req.http_request.path.should == "/?q=chef_is_awesome"
+      rest_req.http_request.body.should be_nil
+    end
+    
+    it "configures POST requests, including the body" do
+      @request.http_request.should be_a_kind_of(Net::HTTP::Post)
+      @request.http_request.path.should == "/?q=chef_is_awesome"
+      @request.http_request.body.should == @req_body
+    end
+    
+    it "configures PUT requests, including the body" do
+      rest_req = new_request(:PUT)
+      rest_req.http_request.should be_a_kind_of(Net::HTTP::Put)
+      rest_req.http_request.path.should == "/?q=chef_is_awesome"
+      rest_req.http_request.body.should == @req_body
+    end
+    
+    it "configures DELETE requests" do
+      rest_req = new_request(:DELETE)
+      rest_req.http_request.should be_a_kind_of(Net::HTTP::Delete)
+      rest_req.http_request.path.should == "/?q=chef_is_awesome"
+      rest_req.http_request.body.should be_nil
+    end
+    
+    it "configures HTTP basic auth" do
+      @url = URI.parse("http://homie:theclown@chef.example.com:4000/?q=chef_is_awesome")
+      rest_req = new_request(:GET)
+      rest_req.http_request.to_hash["authorization"].should == ["Basic aG9taWU6dGhlY2xvd24="]
+    end
+  end
+
+  describe "configuring the HTTP client" do
+    it "configures the HTTP client for the host and port" do
+      http_client = new_request.http_client
+      http_client.address.should == "chef.example.com"
+      http_client.port.should == 4000
+    end
+
+    it "configures the HTTP client with the read timeout set in the config file" do
+      Chef::Config[:rest_timeout] = 9001
+      new_request.http_client.read_timeout.should == 9001
+    end
+
+    describe "for SSL" do
+      before do
+        Chef::Config[:ssl_client_cert] = nil
+        Chef::Config[:ssl_client_key]  = nil
+        Chef::Config[:ssl_ca_path]     = nil
+        Chef::Config[:ssl_ca_file]     = nil
+      end
+
+      after do
+        Chef::Config[:ssl_client_cert] = nil
+        Chef::Config[:ssl_client_key]  = nil
+        Chef::Config[:ssl_ca_path]     = nil
+        Chef::Config[:ssl_verify_mode] = :verify_none
+        Chef::Config[:ssl_ca_file]     = nil
+      end
+
+      describe "when configured with :ssl_verify_mode set to :verify peer" do
+        before do
+          @url = URI.parse("https://chef.example.com:4443/")
+          Chef::Config[:ssl_verify_mode] = :verify_peer
+          @request = new_request
+        end
+
+        it "configures the HTTP client to use SSL when given a URL with the https protocol" do
+          @request.http_client.use_ssl?.should be_true
+        end
+
+        it "sets the OpenSSL verify mode to verify_peer" do
+          @request.http_client.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
+        end
+
+        it "raises a ConfigurationError if :ssl_ca_path is set to a path that doesn't exist" do
+          Chef::Config[:ssl_ca_path] = "/dev/null/nothing_here"
+          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
+        end
+
+        it "should set the CA path if that is set in the configuration" do
+          Chef::Config[:ssl_ca_path] = File.join(CHEF_SPEC_DATA, "ssl")
+          new_request.http_client.ca_path.should == File.join(CHEF_SPEC_DATA, "ssl")
+        end
+
+        it "raises a ConfigurationError if :ssl_ca_file is set to a file that does not exist" do
+          Chef::Config[:ssl_ca_file] = "/dev/null/nothing_here"
+          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
+        end
+
+        it "should set the CA file if that is set in the configuration" do
+          Chef::Config[:ssl_ca_file] = CHEF_SPEC_DATA + '/ssl/5e707473.0'
+          new_request.http_client.ca_file.should == CHEF_SPEC_DATA + '/ssl/5e707473.0'
+        end
+      end
+
+      describe "when configured with :ssl_verify_mode set to :verify peer" do
+        before do
+          @url = URI.parse("https://chef.example.com:4443/")
+          Chef::Config[:ssl_verify_mode] = :verify_none
+        end
+
+        it "sets the OpenSSL verify mode to :verify_none" do
+          new_request.http_client.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
+        end
+      end
+
+      describe "when configured with a client certificate" do
+        before {@url = URI.parse("https://chef.example.com:4443/")}
+
+        it "raises ConfigurationError if the certificate file doesn't exist" do
+          Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
+          Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
+          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
+        end
+
+        it "raises ConfigurationError if the certificate file doesn't exist" do
+          Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
+          Chef::Config[:ssl_client_key]  = "/dev/null/nothing_here"
+          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
+        end
+
+        it "raises a ConfigurationError if one of :ssl_client_cert and :ssl_client_key is set but not both" do
+          Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
+          Chef::Config[:ssl_client_key]  = nil
+          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
+        end
+
+        it "configures the HTTP client's cert and private key" do
+          Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
+          Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
+          http_client = new_request.http_client
+          http_client.cert.to_s.should == OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.cert')).to_s
+          http_client.key.to_s.should  == IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.key')
+        end
+      end
+    end
+  end
+
+end
