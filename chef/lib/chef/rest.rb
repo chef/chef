@@ -31,14 +31,16 @@ require 'chef/rest/rest_request'
 class Chef
   class REST
     attr_reader :auth_credentials
-    attr_accessor :url, :cookies, :sign_on_redirect, :sign_request
+    attr_accessor :url, :cookies, :sign_on_redirect, :redirect_limit
 
     def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
       @url = url
       @cookies = CookieJar.instance
       @default_headers = options[:headers] || {}
       @auth_credentials = AuthCredentials.new(client_name, signing_key_filename)
-      @sign_on_redirect = true
+      @sign_on_redirect, @sign_request = true, true
+      @redirects_followed = 0
+      @redirect_limit = 10
     end
 
     def signing_key_filename
@@ -91,22 +93,26 @@ class Chef
     # raw:: Whether you want the raw body returned, or JSON inflated.  Defaults
     #   to JSON inflated.
     def get_rest(path, raw=false, headers={})
-      run_request(:GET, create_url(path), headers, false, 10, raw)
+      if raw
+        streaming_request(create_url(path), headers)
+      else
+        api_request(:GET, create_url(path), headers)
+      end
     end
 
     # Send an HTTP DELETE request to the path
     def delete_rest(path, headers={})
-      run_request(:DELETE, create_url(path), headers)
+      api_request(:DELETE, create_url(path), headers)
     end
 
     # Send an HTTP POST request to the path
     def post_rest(path, json, headers={})
-      run_request(:POST, create_url(path), headers, json)
+      api_request(:POST, create_url(path), headers, json)
     end
 
     # Send an HTTP PUT request to the path
     def put_rest(path, json, headers={})
-      run_request(:PUT, create_url(path), headers, json)
+      api_request(:PUT, create_url(path), headers, json)
     end
 
     def create_url(path)
@@ -117,47 +123,28 @@ class Chef
       end
     end
 
-    # def sign_request(http_method, path, body="", host="localhost")
-    #   auth_credentials.signature_headers(:http_method => http_method, :path => path, :body => body, :host => host)
-    # end
-
     def sign_requests?
-      auth_credentials.sign_requests?
+      auth_credentials.sign_requests? && @sign_request
     end
 
     # Actually run an HTTP request.  First argument is the HTTP method,
     # which should be one of :GET, :PUT, :POST or :DELETE.  Next is the
     # URL, then an object to include in the body (which will be converted with
-    # .to_json) and finally, the limit of HTTP Redirects to follow (10).
+    # .to_json). The limit argument is unused, it is present for backwards
+    # compatibility. Configure the redirect limit with #redirect_limit=
+    # instead.
     #
     # Typically, you won't use this method -- instead, you'll use one of
     # the helper methods (get_rest, post_rest, etc.)
     #
     # Will return the body of the response on success.
-    def run_request(method, url, headers={}, data=false, limit=10, raw=false)
-      raise ArgumentError, 'HTTP redirect too deep' if limit == 0
-
-      headers = @default_headers.merge(headers)
-      headers['Accept'] = "application/json" unless raw
-
-      if data
-        json_body = data.to_json
-        headers["Content-Type"] = 'application/json'
-      else
-        json_body = nil
-      end
-
-      headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
-      rest_request = Chef::REST::RESTRequest.new(method, url, json_body, headers)
-
-
-      Chef::Log.debug("Sending HTTP Request via #{method} to #{url.host}:#{url.port}#{rest_request.path}")
+    def run_request(method, url, headers={}, data=false, limit=nil, raw=false)
+      json_body = data ? data.to_json : nil
+      headers = build_headers(method, url, headers, json_body, raw)
 
       tf = nil
-      http_attempts = 0
 
-      begin
-        http_attempts += 1
+      retriable_rest_request(method, url, json_body, headers) do |rest_request|
 
         res = rest_request.call do |response|
           if raw
@@ -179,9 +166,7 @@ class Chef
             end
           end
         elsif res.kind_of?(Net::HTTPFound) or res.kind_of?(Net::HTTPMovedPermanently)
-          #store_cookie(url, res)
-          @sign_request = false if @sign_on_redirect == false
-          run_request(:GET, create_url(res['location']), {}, false, limit - 1, raw)
+          follow_redirect {run_request(:GET, create_url(res['location']), {}, false, nil, raw)}
         else
           if res['content-type'] =~ /json/
             exception = JSON.parse(res.body)
@@ -189,6 +174,75 @@ class Chef
           end
           res.error!
         end
+      end
+    end
+
+    # Similar to #run_request but only supports JSON APIs. File Download not supported.
+    def api_request(method, url, headers={}, data=false)
+      json_body = data ? data.to_json : nil
+      headers = build_headers(method, url, headers, json_body)
+
+      retriable_rest_request(method, url, json_body, headers) do |rest_request|
+        response = rest_request.call {|r| r.read_body}
+
+        if response.kind_of?(Net::HTTPSuccess)
+          if response['content-type'] =~ /json/
+            JSON.parse(response.body.chomp)
+          else
+            Chef::Log.warn("Expected JSON response, but got content-type '#{response['content-type']}'")
+            response.body
+          end
+        elsif redirect_location = redirected_to(response)
+          follow_redirect {api_request(:GET, create_url(redirect_location))}
+        else
+          if response['content-type'] =~ /json/
+            exception = JSON.parse(response.body)
+            msg = "HTTP Request Returned #{response.code} #{response.message}: "
+            msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
+            Chef::Log.debug(msg)
+          end
+          response.error!
+        end
+      end
+    end
+
+    # similar to #run_request but only supports streaming downloads.
+    # Only supports GET, doesn't speak JSON
+    # Yields the streamed-to tempfile in a block, then closes and unlinks it
+    def streaming_request(url, headers)
+      headers = build_headers(:GET, url, headers, nil, true)
+      retriable_rest_request(:GET, url, nil, headers) do |rest_request|
+        tempfile = nil
+        response = rest_request.call {|r| tempfile = stream_to_tempfile(url, r)}
+        if response.kind_of?(Net::HTTPSuccess)
+          if block_given?
+            begin
+              yield tempfile
+            ensure
+              tempfile.close!
+            end
+          else
+            tempfile
+          end
+        elsif redirect_location = redirected_to(response)
+          follow_redirect {streaming_request(create_url(redirect_location), {})}
+        else
+          response.error!
+        end
+      end
+    end
+
+    def retriable_rest_request(method, url, req_body, headers)
+      rest_request = Chef::REST::RESTRequest.new(method, url, req_body, headers)
+
+      Chef::Log.debug("Sending HTTP Request via #{method} to #{url.host}:#{url.port}#{rest_request.path}")
+
+      http_attempts = 0
+
+      begin
+        http_attempts += 1
+
+        res = yield rest_request
 
       rescue Errno::ECONNREFUSED
         if http_retry_count - http_attempts + 1 > 0
@@ -217,7 +271,6 @@ class Chef
     end
 
     def authentication_headers(method, url, json_body=nil)
-      # TODO: this method is untested
       request_params = {:http_method => method, :path => url.path, :body => json_body, :host => "#{url.host}:#{url.port}"}
       request_params[:body] ||= ""
       auth_credentials.signature_headers(request_params)
@@ -235,10 +288,41 @@ class Chef
       Chef::Config
     end
 
+    def follow_redirect
+      raise Chef::Exceptions::RedirectLimitExceeded if @redirects_followed >= redirect_limit
+      @redirects_followed += 1
+      if @sign_on_redirect
+        yield
+      else
+        @sign_request = false
+        yield
+      end
+    ensure
+      @redirects_followed = 0
+      @sign_request = true
+    end
+
     private
+
+    def redirected_to(response)
+      if response.kind_of?(Net::HTTPFound) || response.kind_of?(Net::HTTPMovedPermanently)
+        response['location']
+      else
+        nil
+      end
+    end
+
+    def build_headers(method, url, headers={}, json_body=false, raw=false)
+      headers                 = @default_headers.merge(headers)
+      headers['Accept']       = "application/json" unless raw
+      headers["Content-Type"] = 'application/json' if json_body
+      headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
+      headers
+    end
 
     def stream_to_tempfile(url, response)
       tf = Tempfile.new("chef-rest")
+      Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
       # Stolen from http://www.ruby-forum.com/topic/166423
       # Kudos to _why!
       size, total = 0, response.header['Content-Length'].to_i
