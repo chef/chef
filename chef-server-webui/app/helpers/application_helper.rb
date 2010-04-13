@@ -112,19 +112,9 @@ module Merb
         count
       end
       
-      def syntax_highlight(code)
-        tokens = File.exists?(code) ? CodeRay.scan_file(code, :ruby) : CodeRay.scan(code, :ruby)
-        CodeRay.encode_tokens(tokens, :span)
-      end
-      
-      def get_file(uri)
-        r = Chef::REST.new(Chef::Config[:chef_server_url])
-        content = r.get_rest(uri)
-        a = Tempfile.new("cookbook_temp_file")
-        File.open(a.path, 'w'){|f| f.write(content)}
-        path = a.path
-        a.close
-        path
+      def syntax_hightlight(uri)
+        code = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest(uri)
+        CodeRay.encode_tokens(CodeRay.scan(code, :ruby), :span)
       end
       
       def str_to_bool(str)
