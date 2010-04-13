@@ -208,7 +208,6 @@ class Chef
           follow_redirect {api_request(:GET, create_url(redirect_location))}
         else
           if response['content-type'] =~ /json/
-            pp :json_formatted_err_res => response.body
             exception = JSON.parse(response.body)
             msg = "HTTP Request Returned #{response.code} #{response.message}: "
             msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
