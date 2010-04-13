@@ -55,28 +55,29 @@ class Chef
           Chef::FileCache.move_to(raw_template_file.path, cache_file_name)
         end
 
-        template_file = render_with_context(cache_file_name)
+        render_with_context(cache_file_name) do |template_file|
 
-        update = false
-      
-        if ::File.exists?(@new_resource.path)
-          @new_resource.checksum(self.checksum(template_file.path))
-          if @new_resource.checksum != @current_resource.checksum
-            Chef::Log.debug("#{@new_resource} changed from #{@current_resource.checksum} to #{@new_resource.checksum}")
-            Chef::Log.info("Updating #{@new_resource} at #{@new_resource.path}")
+          update = false
+          
+          if ::File.exists?(@new_resource.path)
+            @new_resource.checksum(checksum(template_file.path))
+            if @new_resource.checksum != @current_resource.checksum
+              Chef::Log.debug("#{@new_resource} changed from #{@current_resource.checksum} to #{@new_resource.checksum}")
+              Chef::Log.info("Updating #{@new_resource} at #{@new_resource.path}")
+              update = true
+            end
+          else
+            Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
             update = true
           end
-        else
-          Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
-          update = true
-        end
       
-        if update
-          backup
-          FileUtils.cp(template_file.path, @new_resource.path)
-          @new_resource.updated = true
-        else
-          Chef::Log.debug("#{@new_resource} is unchanged")
+          if update
+            backup
+            FileUtils.mv(template_file.path, @new_resource.path)
+            @new_resource.updated = true
+          else
+            Chef::Log.debug("#{@new_resource} is unchanged")
+          end
         end
               
         set_owner if @new_resource.owner != nil
@@ -110,11 +111,11 @@ class Chef
         @cookbook_name = (@new_resource.cookbook || @new_resource.cookbook_name)
       end
       
-      def render_with_context(cache_file_name)
+      def render_with_context(cache_file_name, &block)
         context = {}
         context.merge!(@new_resource.variables)
         context[:node] = @node
-        render_template(Chef::FileCache.load(cache_file_name), context)
+        render_template(Chef::FileCache.load(cache_file_name), context, &block)
       end
       
       def solo_cache_file_name

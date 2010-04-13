@@ -27,22 +27,27 @@ describe Chef::Mixin::Template, "render_template" do
   end
 
   it "should render the template evaluated in the given context" do
-    @template.render_template("<%= @foo %>", { :foo => "bar" }).open.read.should == "bar"
+    @template.render_template("<%= @foo %>", { :foo => "bar" }) do |tmp|
+      tmp.open.read.should == "bar"
+    end
   end
   
   it "should provide a node method to access @node" do
-    @template.render_template("<%= node %>",{:node => "tehShizzle"}).open.read.should == "tehShizzle"
+    @template.render_template("<%= node %>",{:node => "tehShizzle"}) do |tmp|
+      tmp.open.read.should == "tehShizzle"
+    end
   end
   
-  it "should return a file" do
-    f = @template.render_template("abcdef", {})
-    @template.render_template("abcdef", {}).should be_kind_of(Tempfile)
+  it "should yield the tempfile it renders the template to" do
+    @template.render_template("abcdef", {}) do |tempfile|
+      tempfile.should be_kind_of(Tempfile)
+    end
   end
   
   describe "when an exception is raised in the template" do
     def do_raise
       @context = {:chef => "cool"}
-      @template.render_template("foo\nbar\nbaz\n<%= this_is_not_defined %>\nquin\nqunx\ndunno", @context)
+      @template.render_template("foo\nbar\nbaz\n<%= this_is_not_defined %>\nquin\nqunx\ndunno", @context) {|r| r}
     end
   
     it "should catch and re-raise the exception as a TemplateError" do
@@ -50,7 +55,7 @@ describe Chef::Mixin::Template, "render_template" do
     end
     
     it "should raise an error if an attempt is made to access node but it is nil" do
-      lambda {@template.render_template("<%= node %>",{})}.should raise_error(Chef::Mixin::Template::TemplateError)
+      lambda {@template.render_template("<%= node %>",{}) {|r| r}}.should raise_error(Chef::Mixin::Template::TemplateError)
     end
 
     describe "the raised TemplateError" do

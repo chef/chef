@@ -42,10 +42,11 @@ class Chef
         rescue Object => e
           raise TemplateError.new(e, template, context)
         end
-        final_tempfile = Tempfile.new("chef-rendered-template")
-        final_tempfile.print(output)
-        final_tempfile.close
-        final_tempfile
+        Tempfile.open("chef-rendered-template") do |tempfile|
+          tempfile.print(output)
+          tempfile.close
+          yield tempfile
+        end
       end
       
       class TemplateError < RuntimeError
