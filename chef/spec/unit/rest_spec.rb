@@ -148,6 +148,149 @@ describe Chef::REST do
 
     end
 
+    describe "using the run_request API" do
+      it "should build a new HTTP GET request" do
+        Net::HTTP::Get.should_receive(:new).with("/?foo=bar",
+          { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
+        ).and_return(@request_mock)
+        @rest.run_request(:GET, @url, {})
+      end
+
+      it "should build a new HTTP POST request" do
+        request = Net::HTTP::Post.new(@url.path)
+
+        Net::HTTP::Post.should_receive(:new).with("/?foo=bar",
+          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION }
+        ).and_return(request)
+        @rest.run_request(:POST, @url, {}, {:one=>:two})
+        request.body.should == '{"one":"two"}'
+      end
+
+      it "should build a new HTTP PUT request" do
+        request = Net::HTTP::Put.new(@url.path)
+        Net::HTTP::Put.should_receive(:new).with("/?foo=bar",
+          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION }
+        ).and_return(request)
+        @rest.run_request(:PUT, @url, {}, {:one=>:two})
+        request.body.should == '{"one":"two"}'
+      end
+
+      it "should build a new HTTP DELETE request" do
+        Net::HTTP::Delete.should_receive(:new).with("/?foo=bar",
+          { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
+        ).and_return(@request_mock)
+        @rest.run_request(:DELETE, @url)
+      end
+
+      it "should raise an error if the method is not GET/PUT/POST/DELETE" do
+        lambda { @rest.api_request(:MONKEY, @url) }.should raise_error(ArgumentError)
+      end
+
+      it "should run an http request" do
+        @http_client.should_receive(:request).and_return(@http_response_mock)
+        @rest.run_request(:GET, @url)
+      end
+
+      it "returns the response body when the response is successful but content-type is not JSON" do
+        @rest.run_request(:GET, @url).should == "ninja"
+      end
+
+      it "should call read_body without a block if the request is not raw" do
+        @http_response_mock.should_receive(:read_body)
+        @rest.run_request(:GET, @url, {}, nil, false)
+      end
+
+      it "should inflate the body as to an object if JSON is returned" do
+        @http_response_mock.stub!(:[]).with('content-type').and_return("application/json")
+        JSON.should_receive(:parse).with("ninja").and_return("ohai2u_success")
+        @rest.run_request(:GET, @url, {}).should == "ohai2u_success"
+      end
+
+      it "should call run_request again on a Redirect response" do
+        @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
+        @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(true)
+        @http_response_mock.stub!(:[]).with('location').and_return(@url.path)
+        lambda { @rest.run_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
+      end
+
+      it "should call run_request again on a Permanent Redirect response" do
+        @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
+        @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
+        @http_response_mock.stub!(:kind_of?).with(Net::HTTPMovedPermanently).and_return(true)
+        @http_response_mock.stub!(:[]).with('location').and_return(@url.path)
+        lambda { @rest.run_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
+      end
+
+      it "should show the JSON error message on an unsuccessful request" do
+        @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
+        @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
+        @http_response_mock.stub!(:kind_of?).with(Net::HTTPMovedPermanently).and_return(false)
+        @http_response_mock.stub!(:[]).with('content-type').and_return('application/json')
+        @http_response_mock.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
+        @http_response_mock.stub!(:code).and_return(500)
+        @http_response_mock.stub!(:message).and_return('Server Error')
+        ## BUGBUG - this should absolutely be working, but it.. isn't.
+        #Chef::Log.should_receive(:warn).with("HTTP Request Returned 500 Server Error: Ears get sore!, Not even four")
+        @http_response_mock.should_receive(:error!)
+        @rest.run_request(:GET, @url)
+      end
+
+      it "should raise an exception on an unsuccessful request" do
+        @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
+        @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
+        @http_response_mock.stub!(:kind_of?).with(Net::HTTPMovedPermanently).and_return(false)
+        @http_response_mock.should_receive(:error!)
+        @rest.run_request(:GET, @url)
+      end
+
+      describe "streaming downloads to a tempfile" do
+        before do
+          @tf_mock = mock(Tempfile, { :print => true, :close => true, :write => true, :path => '/tmp/spec-tmp-mock' })
+          Tempfile.stub!(:new).with("chef-rest").and_return(@tf_mock)
+        end
+
+        it "should build a new HTTP GET request without the application/json accept header" do
+          Net::HTTP::Get.should_receive(:new).with("/?foo=bar", {'X-Chef-Version' => Chef::VERSION}).and_return(@request_mock)
+          @rest.run_request(:GET, @url, {}, false, nil, true)
+        end
+
+        it "should create a tempfile for the output of a raw request" do
+          @http_mock.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
+          Tempfile.should_receive(:new).with("chef-rest").and_return(@tf_mock)
+          @rest.run_request(:GET, @url, {}, false, nil, true).should eql(@tf_mock)
+        end
+
+        it "should read the body of the response in chunks on a raw request" do
+          @http_response_mock.should_receive(:read_body).and_return(true)
+          @rest.run_request(:GET, @url, {}, false, nil, true)
+        end
+
+        it "should populate the tempfile with the value of the raw request" do
+          @http_response_mock.stub!(:read_body).and_yield("ninja")
+          @tf_mock.should_receive(:write, "ninja").once.and_return(true)
+          @rest.run_request(:GET, @url, {}, false, nil, true)
+        end
+
+        it "should close the tempfile if we're doing a raw request" do
+          @tf_mock.should_receive(:close).once.and_return(true)
+          @rest.run_request(:GET, @url, {}, false, nil, true)
+        end
+
+        it "should not raise a divide by zero exception if the size is 0" do
+          @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "5" })
+          @http_response_mock.stub!(:read_body).and_yield('')
+          lambda { @rest.run_request(:GET, @url, {}, false, nil, true) }.should_not raise_error(ZeroDivisionError)
+        end
+
+        it "should not raise a divide by zero exception if the Content-Length is 0" do
+          @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "0" })
+          @http_response_mock.stub!(:read_body).and_yield("ninja")
+          lambda { @rest.run_request(:GET, @url, {}, false, nil, true) }.should_not raise_error(ZeroDivisionError)
+        end
+      end
+
+    end
+
     describe "as JSON API requests" do
       it "should always include the X-Chef-Version header" do
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar",
@@ -256,53 +399,67 @@ describe Chef::REST do
 
     describe "streaming downloads to a tempfile" do
       before do
-        @tf_mock = mock(Tempfile, { :print => true, :close => true, :write => true, :path => '/tmp/spec-tmp-mock' })
-        Tempfile.stub!(:new).with("chef-rest").and_return(@tf_mock)
+        @tempfile = Tempfile.open("chef-rspec-rest_spec-line#{__LINE__}")
+        Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
       end
 
-      it "should build a new HTTP GET request without the application/json accept header for raw reqs" do
+      after do
+        @tempfile.close!
+      end
+
+      it " build a new HTTP GET request without the application/json accept header" do
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", {'X-Chef-Version' => Chef::VERSION}).and_return(@request_mock)
-        @rest.run_request(:GET, @url, {}, false, nil, true)
+        @rest.streaming_request(@url, {})
       end
 
-      it "should create a tempfile for the output of a raw request" do
-        @http_mock.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
-        Tempfile.should_receive(:new).with("chef-rest").and_return(@tf_mock)
-        @rest.run_request(:GET, @url, {}, false, nil, true).should eql(@tf_mock)
+      it "returns a tempfile containing the streamed response body" do
+        @rest.streaming_request(@url, {}).should equal(@tempfile)
       end
 
-      it "should read the body of the response in chunks on a raw request" do
-        @http_response_mock.should_receive(:read_body).and_return(true)
-        @rest.run_request(:GET, @url, {}, false, nil, true)
+      it "writes the response body to a tempfile" do
+        @http_response_mock.stub!(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        @rest.streaming_request(@url, {})
+        IO.read(@tempfile.path).chomp.should == "realultimatepower"
       end
 
-      it "should populate the tempfile with the value of the raw request" do
-        @http_response_mock.stub!(:read_body).and_yield("ninja")
-        @tf_mock.should_receive(:write, "ninja").once.and_return(true)
-        @rest.run_request(:GET, @url, {}, false, nil, true)
+      it "closes the tempfile" do
+        @rest.streaming_request(@url, {})
+        @tempfile.should be_closed
       end
 
-      it "should close the tempfile if we're doing a raw request" do
-        @tf_mock.should_receive(:close).once.and_return(true)
-        @rest.run_request(:GET, @url, {}, false, nil, true)
+      it "yields the tempfile containing the streamed response body and then unlinks it when given a block" do
+        @http_response_mock.stub!(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        tempfile_path = nil
+        @rest.streaming_request(@url, {}) do |tempfile|
+          tempfile_path = tempfile.path
+          File.exist?(tempfile.path).should be_true
+          IO.read(@tempfile.path).chomp.should == "realultimatepower"
+        end
+        File.exist?(tempfile_path).should be_false
       end
 
-      it "should not raise a divide by zero exception if the size is 0" do
+      it "does not raise a divide by zero exception if the content's actual size is 0" do
         @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "5" })
         @http_response_mock.stub!(:read_body).and_yield('')
-        lambda { @rest.run_request(:GET, @url, {}, false, nil, true) }.should_not raise_error(ZeroDivisionError)
+        lambda { @rest.streaming_request(@url, {}) }.should_not raise_error(ZeroDivisionError)
       end
 
-      it "should not raise a divide by zero exception if the Content-Length is 0" do
+      it "does not raise a divide by zero exception when the Content-Length is 0" do
         @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "0" })
         @http_response_mock.stub!(:read_body).and_yield("ninja")
-        lambda { @rest.run_request(:GET, @url, {}, false, nil, true) }.should_not raise_error(ZeroDivisionError)
+        lambda { @rest.streaming_request(@url, {}) }.should_not raise_error(ZeroDivisionError)
       end
-    end
 
-    it "should call read_body without a block if the request is not raw" do
-      @http_response_mock.should_receive(:read_body)
-      @rest.run_request(:GET, @url, {}, nil, false)
+      it "fetches a file and yields the tempfile it is streamed to" do
+        @http_response_mock.stub!(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        tempfile_path = nil
+        @rest.fetch("cookbooks/a_cookbook") do |tempfile|
+          tempfile_path = tempfile.path
+          IO.read(@tempfile.path).chomp.should == "realultimatepower"
+        end
+        File.exist?(tempfile_path).should be_false
+      end
+
     end
 
   end

@@ -115,6 +115,15 @@ class Chef
       api_request(:PUT, create_url(path), headers, json)
     end
 
+    # Streams a download to a tempfile, then yields the tempfile to a block.
+    # After the download, the tempfile will be closed and unlinked.
+    # If you rename the tempfile, it will not be deleted.
+    # Beware that if the server streams infinite content, this method will
+    # stream it until you run out of disk space.
+    def fetch(path, headers={})
+      streaming_request(create_url(path), headers) {|tmp_file| yield tmp_file }
+    end
+
     def create_url(path)
       if path =~ /^(http|https):\/\//
         URI.parse(path)
