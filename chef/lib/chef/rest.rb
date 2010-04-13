@@ -57,8 +57,9 @@ class Chef
 
     # Register the client
     def register(name=Chef::Config[:node_name], destination=Chef::Config[:client_key])
-      raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?" if (File.exists?(destination) &&  !File.writable?(destination))
-
+      if (File.exists?(destination) &&  !File.writable?(destination))
+        raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?"
+      end
       nc = Chef::ApiClient.new
       nc.name(name)
 
@@ -179,7 +180,9 @@ class Chef
         else
           if res['content-type'] =~ /json/
             exception = JSON.parse(res.body)
-            Chef::Log.debug("HTTP Request Returned #{res.code} #{res.message}: #{exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"]}")
+            msg = "HTTP Request Returned #{res.code} #{res.message}: "
+            msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
+            Chef::Log.warn(msg)
           end
           res.error!
         end
@@ -205,10 +208,11 @@ class Chef
           follow_redirect {api_request(:GET, create_url(redirect_location))}
         else
           if response['content-type'] =~ /json/
+            pp :json_formatted_err_res => response.body
             exception = JSON.parse(response.body)
             msg = "HTTP Request Returned #{response.code} #{response.message}: "
             msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
-            Chef::Log.debug(msg)
+            Chef::Log.warn(msg)
           end
           response.error!
         end
@@ -217,25 +221,35 @@ class Chef
 
     # similar to #run_request but only supports streaming downloads.
     # Only supports GET, doesn't speak JSON
-    # Yields the streamed-to tempfile in a block, then closes and unlinks it
-    def streaming_request(url, headers)
+    # Streams the response body to a tempfile. If a block is given, it's
+    # passed to the tempfile, which means that the tempfile will automatically
+    # be unlinked after the block is executed.
+    # If no block is given, the tempfile is returned, which means it's up to
+    # you to unlink the tempfile when you're done with it.
+    def streaming_request(url, headers, &block)
       headers = build_headers(:GET, url, headers, nil, true)
       retriable_rest_request(:GET, url, nil, headers) do |rest_request|
         tempfile = nil
-        response = rest_request.call {|r| tempfile = stream_to_tempfile(url, r)}
-        if response.kind_of?(Net::HTTPSuccess)
-          if block_given?
+        response = rest_request.call do |r| 
+          if block_given? && r.kind_of?(Net::HTTPSuccess)
             begin
+              tempfile = stream_to_tempfile(url, r, &block)
               yield tempfile
             ensure
               tempfile.close!
             end
           else
-            tempfile
+            tempfile = stream_to_tempfile(url, r)
           end
+        end
+        if response.kind_of?(Net::HTTPSuccess)
+          tempfile
         elsif redirect_location = redirected_to(response)
-          follow_redirect {streaming_request(create_url(redirect_location), {})}
+          # TODO: test tempfile unlinked when following redirects.
+          tempfile && tempfile.close!
+          follow_redirect {streaming_request(create_url(redirect_location), {}, &block)}
         else
+          tempfile && tempfile.close!
           response.error!
         end
       end
@@ -300,6 +314,7 @@ class Chef
     def follow_redirect
       raise Chef::Exceptions::RedirectLimitExceeded if @redirects_followed >= redirect_limit
       @redirects_followed += 1
+      Chef::Log.debug("Following redirect #{@redirects_followed}/#{redirect_limit}")
       if @sign_on_redirect
         yield
       else
@@ -330,7 +345,7 @@ class Chef
     end
 
     def stream_to_tempfile(url, response)
-      tf = Tempfile.new("chef-rest")
+      tf = Tempfile.open("chef-rest")
       Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
       # Stolen from http://www.ruby-forum.com/topic/166423
       # Kudos to _why!
@@ -341,13 +356,16 @@ class Chef
         if size == 0
           Chef::Log.debug("#{url.path} done (0 length file)")
         elsif total == 0
-          Chef::Log.debug("#{url.path} (zero content length)")
+          Chef::Log.debug("#{url.path} (zero content length or no Content-Length header)")
         else
           Chef::Log.debug("#{url.path}" + " %d%% done (%d of %d)" % [(size * 100) / total, size, total])
         end
       end
       tf.close
       tf
+    rescue Exception
+      tf.close!
+      raise
     end
 
   end

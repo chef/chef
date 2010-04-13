@@ -22,6 +22,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 require 'uri'
 require 'net/https'
+require 'stringio'
 
 KEY_DOT_PEM=<<-END_RSA_KEY
 -----BEGIN RSA PRIVATE KEY-----
@@ -56,12 +57,21 @@ Y6S6MeZ69Rp89ma4ttMZ+kwi1+XyHqC/dlcVRW42Zl5Dc7BALRlJjQ==
 
 describe Chef::REST do
   before(:each) do
+    @log_stringio = StringIO.new
+    @logger = Logger.new(@log_stringio)
+    @original_chef_logger = Chef::Log.logger
+    Chef::Log.logger = @logger
+    
     Chef::REST::CookieJar.stub!(:instance).and_return({})
     @base_url   = "http://chef.example.com:4000"
     @monkey_uri = URI.parse("http://chef.example.com:4000/monkey")
     @rest = Chef::REST.new(@base_url, nil, nil)
 
     Chef::REST::CookieJar.instance.clear
+  end
+  
+  after do
+    Chef::Log.logger = @original_chef_logger
   end
 
   describe "calling an HTTP verb on a path or absolute URL" do
@@ -136,23 +146,22 @@ describe Chef::REST do
       Chef::Config[:ssl_client_key]  = nil
       @url = URI.parse("https://one:80/?foo=bar")
 
-      @http_response_mock = mock("Net::HTTPSuccess", :null_object => true)
-      @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(true)
-      @http_response_mock.stub!(:body).and_return("ninja")
-      @http_response_mock.stub!(:error!).and_return(true)
-      @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "5" })
+      @http_response = Net::HTTPSuccess.new("1.1", "200", "successful rest req")
+      @http_response.stub!(:read_body)
+      @http_response.stub!(:body).and_return("ninja")
+      @http_response.add_field("Content-Length", "5")
 
       @http_client = Net::HTTP.new(@url.host, @url.port)
       Net::HTTP.stub!(:new).and_return(@http_client)
-      @http_client.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
-
+      @http_client.stub!(:request).and_yield(@http_response).and_return(@http_response)
     end
 
     describe "using the run_request API" do
       it "should build a new HTTP GET request" do
+        request = Net::HTTP::Get.new(@url.path)
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar",
           { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
-        ).and_return(@request_mock)
+        ).and_return(request)
         @rest.run_request(:GET, @url, {})
       end
 
@@ -176,9 +185,10 @@ describe Chef::REST do
       end
 
       it "should build a new HTTP DELETE request" do
+        request = Net::HTTP::Delete.new(@url.path)
         Net::HTTP::Delete.should_receive(:new).with("/?foo=bar",
           { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
-        ).and_return(@request_mock)
+        ).and_return(request)
         @rest.run_request(:DELETE, @url)
       end
 
@@ -186,67 +196,66 @@ describe Chef::REST do
         lambda { @rest.api_request(:MONKEY, @url) }.should raise_error(ArgumentError)
       end
 
-      it "should run an http request" do
-        @http_client.should_receive(:request).and_return(@http_response_mock)
-        @rest.run_request(:GET, @url)
-      end
-
       it "returns the response body when the response is successful but content-type is not JSON" do
         @rest.run_request(:GET, @url).should == "ninja"
       end
 
       it "should call read_body without a block if the request is not raw" do
-        @http_response_mock.should_receive(:read_body)
+        @http_response.should_receive(:read_body)
         @rest.run_request(:GET, @url, {}, nil, false)
       end
 
       it "should inflate the body as to an object if JSON is returned" do
-        @http_response_mock.stub!(:[]).with('content-type').and_return("application/json")
+        @http_response.add_field("content-type", "application/json")
         JSON.should_receive(:parse).with("ninja").and_return("ohai2u_success")
         @rest.run_request(:GET, @url, {}).should == "ohai2u_success"
       end
 
       it "should call run_request again on a Redirect response" do
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(true)
-        @http_response_mock.stub!(:[]).with('location').and_return(@url.path)
+        http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
+        http_response.add_field("location", @url.path)
+        http_response.stub!(:read_body)
+        
+        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         lambda { @rest.run_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
       end
 
       it "should call run_request again on a Permanent Redirect response" do
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPMovedPermanently).and_return(true)
-        @http_response_mock.stub!(:[]).with('location').and_return(@url.path)
+        http_response = Net::HTTPMovedPermanently.new("1.1", "301", "That's Bob's job")
+        http_response.add_field("location", @url.path)
+        http_response.stub!(:read_body)
+        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         lambda { @rest.run_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
       end
 
       it "should show the JSON error message on an unsuccessful request" do
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPMovedPermanently).and_return(false)
-        @http_response_mock.stub!(:[]).with('content-type').and_return('application/json')
-        @http_response_mock.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
-        @http_response_mock.stub!(:code).and_return(500)
-        @http_response_mock.stub!(:message).and_return('Server Error')
-        ## BUGBUG - this should absolutely be working, but it.. isn't.
-        #Chef::Log.should_receive(:warn).with("HTTP Request Returned 500 Server Error: Ears get sore!, Not even four")
-        @http_response_mock.should_receive(:error!)
-        @rest.run_request(:GET, @url)
+        http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
+        http_response.add_field("content-type", "application/json")
+        http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
+        http_response.stub!(:read_body)
+        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+        lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
+        @log_stringio.string.should match(Regexp.escape('WARN -- : HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
       end
 
       it "should raise an exception on an unsuccessful request" do
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPMovedPermanently).and_return(false)
-        @http_response_mock.should_receive(:error!)
-        @rest.run_request(:GET, @url)
+        @http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
+        http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
+        http_response.stub!(:read_body)
+        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+        lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
       end
 
       describe "streaming downloads to a tempfile" do
         before do
-          @tf_mock = mock(Tempfile, { :print => true, :close => true, :write => true, :path => '/tmp/spec-tmp-mock' })
-          Tempfile.stub!(:new).with("chef-rest").and_return(@tf_mock)
+          @tempfile = Tempfile.open("chef-rspec-rest_spec-line#{__LINE__}-")
+          Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
+          Tempfile.stub!(:open).and_return(@tempfile)
+        end
+
+        after do
+          @tempfile.rspec_reset
+          @tempfile.close!
         end
 
         it "should build a new HTTP GET request without the application/json accept header" do
@@ -255,24 +264,22 @@ describe Chef::REST do
         end
 
         it "should create a tempfile for the output of a raw request" do
-          @http_mock.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
-          Tempfile.should_receive(:new).with("chef-rest").and_return(@tf_mock)
-          @rest.run_request(:GET, @url, {}, false, nil, true).should eql(@tf_mock)
+          @rest.run_request(:GET, @url, {}, false, nil, true).should equal(@tempfile)
         end
 
         it "should read the body of the response in chunks on a raw request" do
-          @http_response_mock.should_receive(:read_body).and_return(true)
+          @http_response.should_receive(:read_body).and_return(true)
           @rest.run_request(:GET, @url, {}, false, nil, true)
         end
 
         it "should populate the tempfile with the value of the raw request" do
           @http_response_mock.stub!(:read_body).and_yield("ninja")
-          @tf_mock.should_receive(:write, "ninja").once.and_return(true)
+          @tempfile.should_receive(:write, "ninja").once.and_return(true)
           @rest.run_request(:GET, @url, {}, false, nil, true)
         end
 
         it "should close the tempfile if we're doing a raw request" do
-          @tf_mock.should_receive(:close).once.and_return(true)
+          @tempfile.should_receive(:close).once.and_return(true)
           @rest.run_request(:GET, @url, {}, false, nil, true)
         end
 
@@ -287,6 +294,7 @@ describe Chef::REST do
           @http_response_mock.stub!(:read_body).and_yield("ninja")
           lambda { @rest.run_request(:GET, @url, {}, false, nil, true) }.should_not raise_error(ZeroDivisionError)
         end
+
       end
 
     end
@@ -344,66 +352,66 @@ describe Chef::REST do
         lambda { @rest.api_request(:MONKEY, @url) }.should raise_error(ArgumentError)
       end
 
-      it "should run an http request" do
-        @http_client.should_receive(:request).and_return(@http_response_mock)
-        @rest.api_request(:GET, @url)
-      end
-
       it "returns nil when the response is successful but content-type is not JSON" do
         @rest.api_request(:GET, @url).should == "ninja"
       end
 
       it "should inflate the body as to an object if JSON is returned" do
-        @http_response_mock.stub!(:[]).with('content-type').and_return("application/json")
-        JSON.should_receive(:parse).with("ninja").and_return("ohai2u_success")
-        @rest.api_request(:GET, @url, {}).should == "ohai2u_success"
+        @http_response.add_field('content-type', "application/json")
+        @http_response.stub!(:body).and_return('{"ohai2u":"json_api"}')
+        @rest.api_request(:GET, @url, {}).should == {"ohai2u"=>"json_api"}
       end
 
       it "should call run_request again on a Redirect response" do
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(true)
-        @http_response_mock.stub!(:[]).with('location').and_return(@url.path)
+        http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
+        http_response.add_field("location", @url.path)
+        http_response.stub!(:read_body)
+        
+        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+        
         lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
       end
 
       it "should call run_request again on a Permanent Redirect response" do
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPMovedPermanently).and_return(true)
-        @http_response_mock.stub!(:[]).with('location').and_return(@url.path)
+        http_response = Net::HTTPMovedPermanently.new("1.1", "301", "That's Bob's job")
+        http_response.add_field("location", @url.path)
+        http_response.stub!(:read_body)
+        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+        
         lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
       end
 
       it "should show the JSON error message on an unsuccessful request" do
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPMovedPermanently).and_return(false)
-        @http_response_mock.stub!(:[]).with('content-type').and_return('application/json')
-        @http_response_mock.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
-        @http_response_mock.stub!(:code).and_return(500)
-        @http_response_mock.stub!(:message).and_return('Server Error')
-        ## BUGBUG - this should absolutely be working, but it.. isn't.
-        #Chef::Log.should_receive(:warn).with("HTTP Request Returned 500 Server Error: Ears get sore!, Not even four")
-        @http_response_mock.should_receive(:error!)
-        @rest.api_request(:GET, @url)
+        http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
+        http_response.add_field("content-type", "application/json")
+        http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
+        http_response.stub!(:read_body)
+        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+        
+        lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
+        @log_stringio.string.should match(Regexp.escape('WARN -- : HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
       end
 
       it "should raise an exception on an unsuccessful request" do
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPSuccess).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPFound).and_return(false)
-        @http_response_mock.stub!(:kind_of?).with(Net::HTTPMovedPermanently).and_return(false)
-        @http_response_mock.should_receive(:error!)
-        @rest.api_request(:GET, @url)
+        http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
+        http_response.stub!(:body)
+        http_response.stub!(:read_body)
+        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+        lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
       end
     end
 
-    describe "streaming downloads to a tempfile" do
+    context "when streaming downloads to a tempfile" do
       before do
         @tempfile = Tempfile.open("chef-rspec-rest_spec-line#{__LINE__}")
         Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
+        @http_response = Net::HTTPSuccess.new("1.1",200, "it-works")
+        @http_response.stub!(:read_body)
+        @http_client.stub!(:request).and_yield(@http_response).and_return(@http_response)
       end
 
       after do
+        @tempfile.rspec_reset
         @tempfile.close!
       end
 
@@ -417,7 +425,7 @@ describe Chef::REST do
       end
 
       it "writes the response body to a tempfile" do
-        @http_response_mock.stub!(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        @http_response.stub!(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
         @rest.streaming_request(@url, {})
         IO.read(@tempfile.path).chomp.should == "realultimatepower"
       end
@@ -428,7 +436,7 @@ describe Chef::REST do
       end
 
       it "yields the tempfile containing the streamed response body and then unlinks it when given a block" do
-        @http_response_mock.stub!(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        @http_response.stub!(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
         tempfile_path = nil
         @rest.streaming_request(@url, {}) do |tempfile|
           tempfile_path = tempfile.path
@@ -439,19 +447,19 @@ describe Chef::REST do
       end
 
       it "does not raise a divide by zero exception if the content's actual size is 0" do
-        @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "5" })
-        @http_response_mock.stub!(:read_body).and_yield('')
+        @http_response.add_field('Content-Length', "5")
+        @http_response.stub!(:read_body).and_yield('')
         lambda { @rest.streaming_request(@url, {}) }.should_not raise_error(ZeroDivisionError)
       end
 
       it "does not raise a divide by zero exception when the Content-Length is 0" do
-        @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "0" })
-        @http_response_mock.stub!(:read_body).and_yield("ninja")
+        @http_response.add_field('Content-Length', "0")
+        @http_response.stub!(:read_body).and_yield("ninja")
         lambda { @rest.streaming_request(@url, {}) }.should_not raise_error(ZeroDivisionError)
       end
 
       it "fetches a file and yields the tempfile it is streamed to" do
-        @http_response_mock.stub!(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        @http_response.stub!(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
         tempfile_path = nil
         @rest.fetch("cookbooks/a_cookbook") do |tempfile|
           tempfile_path = tempfile.path
@@ -460,8 +468,39 @@ describe Chef::REST do
         File.exist?(tempfile_path).should be_false
       end
 
-    end
+      it "closes and unlinks the tempfile if there is an error while streaming the content to the tempfile" do
+        @tempfile.stub!(:write).and_raise(IOError)
+        @rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
+        @tempfile.path.should be_nil
+      end
 
+      it "closes and unlinks the tempfile when the response is a redirect" do
+        Tempfile.rspec_reset
+        tempfile = Tempfile.open("chef-rspec-rest_spec-line#{__LINE__}")
+        Tempfile.stub!(:new).with("chef-rest").and_return(tempfile)
+        tempfile.should_receive(:close!).at_least(2).times
+        
+        http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
+        http_response.add_field("location", @url.path)
+        http_response.stub!(:read_body)
+        
+        @http_client.stub!(:request).and_yield(http_response).and_yield(@http_response).and_return(http_response, @http_response)
+        @rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
+      end
+
+      it "passes the original block to the redirected request" do
+        http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
+        http_response.add_field("location","/that-thing-is-here-now")
+        http_response.stub!(:read_body)
+        
+        block_called = false
+        @http_client.stub!(:request).and_yield(@http_response).and_return(http_response, @http_response)
+        @rest.fetch("cookbooks/a_cookbook") do |tmpfile|
+          block_called = true
+        end
+        block_called.should be_true
+      end
+    end
   end
 
   context "when following redirects" do
@@ -518,232 +557,4 @@ describe Chef::REST do
     end
 
   end
-
-end
-
-describe Chef::REST::AuthCredentials do
-  before do
-    @key_file_fixture = CHEF_SPEC_DATA + '/ssl/private_key.pem'
-    @auth_credentials = Chef::REST::AuthCredentials.new("client-name", @key_file_fixture)
-  end
-
-  it "has a key file value" do
-    @auth_credentials.key_file.should == @key_file_fixture
-  end
-
-  it "has a client name" do
-    @auth_credentials.client_name.should == "client-name"
-  end
-
-  it "loads the private key when initialized with the path to the key" do
-    @auth_credentials.key.should respond_to :private_encrypt
-    @auth_credentials.key.to_s.should == KEY_DOT_PEM
-  end
-
-  describe "when loading the private key" do
-    it "raises PrivateKeyMissing when the key file doesn't exist" do
-      lambda {Chef::REST::AuthCredentials.new("client-name", "/dev/null/nothing_here")}.should raise_error(Chef::Exceptions::PrivateKeyMissing)
-    end
-
-    it "raises InvalidPrivateKey when the key file doesnt' look like a key" do
-      invalid_key_file = CHEF_SPEC_DATA + "/bad-config.rb"
-      lambda {Chef::REST::AuthCredentials.new("client-name", invalid_key_file)}.should raise_error(Chef::Exceptions::InvalidPrivateKey)
-    end
-  end
-
-  describe "generating signature headers for a request" do
-    before do
-      @request_time = Time.at(1270920860)
-      @request_params = {:http_method => :POST, :path => "/clients", :body => '{"some":"json"}', :host => "localhost"}
-    end
-
-    it "generates signature headers for the request" do
-      Time.stub!(:now).and_return(@request_time)
-      expected = {}
-      expected["HOST"]                  = "localhost"
-      expected["X-OPS-AUTHORIZATION-1"] = "kBssX1ENEwKtNYFrHElN9vYGWS7OeowepN9EsYc9csWfh8oUovryPKDxytQ/"
-      expected["X-OPS-AUTHORIZATION-2"] = "Wc2/nSSyxdWJjjfHzrE+YrqNQTaArOA7JkAf5p75eTUonCWcvNPjFrZVgKGS"
-      expected["X-OPS-AUTHORIZATION-3"] = "yhzHJQh+lcVA9wwARg5Hu9q+ddS8xBOdm3Vp5atl5NGHiP0loiigMYvAvzPO"
-      expected["X-OPS-AUTHORIZATION-4"] = "r9853eIxwYMhn5hLGhAGFQznJbE8+7F/lLU5Zmk2t2MlPY8q3o1Q61YD8QiJ"
-      expected["X-OPS-AUTHORIZATION-5"] =  "M8lIt53ckMyUmSU0DDURoiXLVkE9mag/6Yq2tPNzWq2AdFvBqku9h2w+DY5k"
-      expected["X-OPS-AUTHORIZATION-6"] = "qA5Rnzw5rPpp3nrWA9jKkPw4Wq3+4ufO2Xs6w7GCjA=="
-      expected["X-OPS-CONTENT-HASH"]    = "1tuzs5XKztM1ANrkGNPah6rW9GY="
-      expected["X-OPS-SIGN"]            = "version=1.0"
-      expected["X-OPS-TIMESTAMP"]       = "2010-04-10T17:34:20Z"
-      expected["X-OPS-USERID"]          = "client-name"
-
-      @auth_credentials.signature_headers(@request_params).should == expected
-    end
-  end
-end
-
-describe Chef::REST::RESTRequest do
-  def new_request(method=nil)
-    method ||= :POST
-    Chef::REST::RESTRequest.new(method, @url, @req_body, @headers)
-  end
-
-  before do
-    @auth_credentials = Chef::REST::AuthCredentials.new("client-name", CHEF_SPEC_DATA + '/ssl/private_key.pem')
-    @url = URI.parse("http://chef.example.com:4000/?q=chef_is_awesome")
-    @req_body = '{"json_data":"as_a_string"}'
-    @headers = {"Content-type" =>"application/json", "Accept"=>"application/json"}
-    @request = Chef::REST::RESTRequest.new(:POST, @url, @req_body, @headers)
-  end
-
-  it "stores the url it was created with" do
-    @request.url.should == @url
-  end
-
-  it "stores the HTTP method" do
-    @request.method.should == :POST
-  end
-
-  it "adds the chef version header" do
-    @request.headers.should == @headers.merge("X-Chef-Version" => ::Chef::VERSION)
-  end
-
-  describe "configuring the HTTP request" do
-    it "configures GET requests" do
-      @req_body = nil
-      rest_req = new_request(:GET)
-      rest_req.http_request.should be_a_kind_of(Net::HTTP::Get)
-      rest_req.http_request.path.should == "/?q=chef_is_awesome"
-      rest_req.http_request.body.should be_nil
-    end
-
-    it "configures POST requests, including the body" do
-      @request.http_request.should be_a_kind_of(Net::HTTP::Post)
-      @request.http_request.path.should == "/?q=chef_is_awesome"
-      @request.http_request.body.should == @req_body
-    end
-
-    it "configures PUT requests, including the body" do
-      rest_req = new_request(:PUT)
-      rest_req.http_request.should be_a_kind_of(Net::HTTP::Put)
-      rest_req.http_request.path.should == "/?q=chef_is_awesome"
-      rest_req.http_request.body.should == @req_body
-    end
-
-    it "configures DELETE requests" do
-      rest_req = new_request(:DELETE)
-      rest_req.http_request.should be_a_kind_of(Net::HTTP::Delete)
-      rest_req.http_request.path.should == "/?q=chef_is_awesome"
-      rest_req.http_request.body.should be_nil
-    end
-
-    it "configures HTTP basic auth" do
-      @url = URI.parse("http://homie:theclown@chef.example.com:4000/?q=chef_is_awesome")
-      rest_req = new_request(:GET)
-      rest_req.http_request.to_hash["authorization"].should == ["Basic aG9taWU6dGhlY2xvd24="]
-    end
-  end
-
-  describe "configuring the HTTP client" do
-    it "configures the HTTP client for the host and port" do
-      http_client = new_request.http_client
-      http_client.address.should == "chef.example.com"
-      http_client.port.should == 4000
-    end
-
-    it "configures the HTTP client with the read timeout set in the config file" do
-      Chef::Config[:rest_timeout] = 9001
-      new_request.http_client.read_timeout.should == 9001
-    end
-
-    describe "for SSL" do
-      before do
-        Chef::Config[:ssl_client_cert] = nil
-        Chef::Config[:ssl_client_key]  = nil
-        Chef::Config[:ssl_ca_path]     = nil
-        Chef::Config[:ssl_ca_file]     = nil
-      end
-
-      after do
-        Chef::Config[:ssl_client_cert] = nil
-        Chef::Config[:ssl_client_key]  = nil
-        Chef::Config[:ssl_ca_path]     = nil
-        Chef::Config[:ssl_verify_mode] = :verify_none
-        Chef::Config[:ssl_ca_file]     = nil
-      end
-
-      describe "when configured with :ssl_verify_mode set to :verify peer" do
-        before do
-          @url = URI.parse("https://chef.example.com:4443/")
-          Chef::Config[:ssl_verify_mode] = :verify_peer
-          @request = new_request
-        end
-
-        it "configures the HTTP client to use SSL when given a URL with the https protocol" do
-          @request.http_client.use_ssl?.should be_true
-        end
-
-        it "sets the OpenSSL verify mode to verify_peer" do
-          @request.http_client.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
-        end
-
-        it "raises a ConfigurationError if :ssl_ca_path is set to a path that doesn't exist" do
-          Chef::Config[:ssl_ca_path] = "/dev/null/nothing_here"
-          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
-        end
-
-        it "should set the CA path if that is set in the configuration" do
-          Chef::Config[:ssl_ca_path] = File.join(CHEF_SPEC_DATA, "ssl")
-          new_request.http_client.ca_path.should == File.join(CHEF_SPEC_DATA, "ssl")
-        end
-
-        it "raises a ConfigurationError if :ssl_ca_file is set to a file that does not exist" do
-          Chef::Config[:ssl_ca_file] = "/dev/null/nothing_here"
-          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
-        end
-
-        it "should set the CA file if that is set in the configuration" do
-          Chef::Config[:ssl_ca_file] = CHEF_SPEC_DATA + '/ssl/5e707473.0'
-          new_request.http_client.ca_file.should == CHEF_SPEC_DATA + '/ssl/5e707473.0'
-        end
-      end
-
-      describe "when configured with :ssl_verify_mode set to :verify peer" do
-        before do
-          @url = URI.parse("https://chef.example.com:4443/")
-          Chef::Config[:ssl_verify_mode] = :verify_none
-        end
-
-        it "sets the OpenSSL verify mode to :verify_none" do
-          new_request.http_client.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
-        end
-      end
-
-      describe "when configured with a client certificate" do
-        before {@url = URI.parse("https://chef.example.com:4443/")}
-
-        it "raises ConfigurationError if the certificate file doesn't exist" do
-          Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
-          Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
-          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
-        end
-
-        it "raises ConfigurationError if the certificate file doesn't exist" do
-          Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
-          Chef::Config[:ssl_client_key]  = "/dev/null/nothing_here"
-          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
-        end
-
-        it "raises a ConfigurationError if one of :ssl_client_cert and :ssl_client_key is set but not both" do
-          Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
-          Chef::Config[:ssl_client_key]  = nil
-          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
-        end
-
-        it "configures the HTTP client's cert and private key" do
-          Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
-          Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
-          http_client = new_request.http_client
-          http_client.cert.to_s.should == OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.cert')).to_s
-          http_client.key.to_s.should  == IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.key')
-        end
-      end
-    end
-  end
-
 end
