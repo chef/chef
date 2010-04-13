@@ -54,4 +54,10 @@ Feature: Manage Files
       And the file named 'string0644.txt' should have octal mode '0644'
       And the file named 'string2644.txt' should have octal mode '2644'
 
+  Scenario: Set the contents of a file
+    Given a validated node
+      And it includes the recipe 'manage_files::manage_file_contents'
+     When I run the chef-client
+     Then the run should exit '0'
+      And a file named 'aqua_teen.txt' should contain 'I am using the e-photo plugin, you pop it on your back and go'
 
