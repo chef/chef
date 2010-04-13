@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,13 +37,13 @@ class Chef
         end
         big
       end
-      
+
       def octal_mode(mode)
         ((mode.respond_to?(:oct) ? mode.oct : mode.to_i) & 007777)
       end
 
       private :negative_complement, :octal_mode
-      
+
       def load_current_resource
         @current_resource = Chef::Resource::File.new(@new_resource.name)
         @current_resource.path(@new_resource.path)
@@ -56,22 +56,36 @@ class Chef
         end
         @current_resource
       end
-      
+
+      # Compare the content of a file.  Returns true if they are the same, false if they are not.
+      def compare_content
+        @current_resource.checksum == new_resource_content_checksum
+      end
+
+      # Set the content of the file, assuming it is not set correctly already.
+      def set_content
+        unless compare_content
+          Chef::Log.info("Setting content for #{@new_resource}")
+          ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
+          @new_resource.updated = true
+        end
+      end
+
       # Compare the ownership of a file.  Returns true if they are the same, false if they are not.
       def compare_owner
         return false if @new_resource.owner.nil?
-        
+
         @set_user_id = case @new_resource.owner
                        when /^\d+$/, Integer
                          @new_resource.owner.to_i
                        else
-                         # This raises an ArgumentError if you can't find the user         
+                         # This raises an ArgumentError if you can't find the user
                          Etc.getpwnam(@new_resource.owner).uid
                        end
-        
+
         @set_user_id == @current_resource.owner
       end
-      
+
       # Set the ownership on the file, assuming it is not set correctly already.
       def set_owner
         unless compare_owner
@@ -81,21 +95,21 @@ class Chef
           @new_resource.updated = true
         end
       end
-      
+
       # Compares the group of a file.  Returns true if they are the same, false if they are not.
       def compare_group
         return false if @new_resource.group.nil?
-        
+
         @set_group_id = case @new_resource.group
                         when /^\d+$/, Integer
                           @new_resource.group.to_i
                         else
                           Etc.getgrnam(@new_resource.group).gid
                         end
-        
+
         @set_group_id == @current_resource.group
       end
-      
+
       def set_group
         unless compare_group
           Chef::Log.info("Setting group to #{@set_group_id} for #{@new_resource}")
@@ -104,7 +118,7 @@ class Chef
           @new_resource.updated = true
         end
       end
-      
+
       def compare_mode
         case @new_resource.mode
         when /^\d+$/, Integer
@@ -113,7 +127,7 @@ class Chef
           false
         end
       end
-      
+
       def set_mode
         unless compare_mode && @new_resource.mode != nil
           Chef::Log.info("Setting mode to #{sprintf("%o" % octal_mode(@new_resource.mode))} for #{@new_resource}")
@@ -122,22 +136,23 @@ class Chef
           @new_resource.updated = true
         end
       end
-      
+
       def action_create
         unless ::File.exists?(@new_resource.path)
           Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
           ::File.open(@new_resource.path, "w+") { |f| }
           @new_resource.updated = true
         end
+        set_content unless @new_resource.content.nil?
         set_owner unless @new_resource.owner.nil?
         set_group unless @new_resource.group.nil?
         set_mode unless @new_resource.mode.nil?
       end
-      
+
       def action_create_if_missing
         action_create
       end
-      
+
       def action_delete
         if ::File.exists?(@new_resource.path)
           if ::File.writable?(@new_resource.path)
@@ -150,7 +165,7 @@ class Chef
           end
         end
       end
-      
+
       def action_touch
         action_create
         time = Time.now
@@ -158,7 +173,7 @@ class Chef
         ::File.utime(time, time, @new_resource.path)
         @new_resource.updated = true
       end
-      
+
       def backup(file=nil)
         file ||= @new_resource.path
         if @new_resource.backup != false && @new_resource.backup > 0 && ::File.exist?(file)
@@ -171,7 +186,7 @@ class Chef
           end
           Chef::Log.info("Backing up #{@new_resource} to #{prefix + backup_filename}")
           FileUtils.cp(file, prefix + backup_filename, :preserve => true)
-          
+
           # Clean up after the number of backups
           slice_number = @new_resource.backup
           backup_files = Dir[prefix + "#{@new_resource.path}.chef-*"].sort { |a,b| b <=> a }
@@ -184,12 +199,17 @@ class Chef
           end
         end
       end
-      
+
       def generate_url(url, type, args=nil)
         cookbook_name = (@new_resource.respond_to?(:cookbook) && @new_resource.cookbook) ? @new_resource.cookbook : @new_resource.cookbook_name
         generate_cookbook_url(url, cookbook_name, type, @node, args)
       end
-      
+
+      private
+
+      def new_resource_content_checksum
+        @new_resource.content && Digest::SHA2.hexdigest(@new_resource.content)
+      end
     end
   end
 end
