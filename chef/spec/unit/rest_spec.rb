@@ -248,7 +248,7 @@ describe Chef::REST do
 
       describe "streaming downloads to a tempfile" do
         before do
-          @tempfile = Tempfile.open("chef-rspec-rest_spec-line#{__LINE__}-")
+          @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
           Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
           Tempfile.stub!(:open).and_return(@tempfile)
         end
@@ -403,7 +403,7 @@ describe Chef::REST do
 
     context "when streaming downloads to a tempfile" do
       before do
-        @tempfile = Tempfile.open("chef-rspec-rest_spec-line#{__LINE__}")
+        @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
         Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
         @http_response = Net::HTTPSuccess.new("1.1",200, "it-works")
         @http_response.stub!(:read_body)
@@ -476,7 +476,7 @@ describe Chef::REST do
 
       it "closes and unlinks the tempfile when the response is a redirect" do
         Tempfile.rspec_reset
-        tempfile = Tempfile.open("chef-rspec-rest_spec-line#{__LINE__}")
+        tempfile = Tempfile.open("chef-rspec-rest_spec-line#{__LINE__}--")
         Tempfile.stub!(:new).with("chef-rest").and_return(tempfile)
         tempfile.should_receive(:close!).at_least(2).times
         
