@@ -33,7 +33,6 @@ start() {
     [ -x $exec ] || exit 5
     [ -f $config ] || exit 6
     echo -n $"Starting $prog: "
-    /usr/sbin/chef-create-amqp_passwd &> /dev/null
     daemon $prog -d -c "$config" -L "$logfile" "$options"
     retval=$?
     echo
