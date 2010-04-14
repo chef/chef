@@ -28,32 +28,56 @@ class Chef
         vendor_path = File.join(Chef::Config[:cookbook_path].first)
         cookbook_path = File.join(vendor_path, name_args[0])
         upstream_file = File.join(vendor_path, "#{name_args[0]}.tar.gz")
-        branch_name = "#{name_args[0]}-chef-upstream"
+        branch_name = "chef-vendor-#{name_args[0]}"
 
         download = Chef::Knife::CookbookSiteDownload.new
         download.config[:file] = upstream_file 
         download.name_args = name_args
         download.run
 
-        Dir.chdir(vendor_path) do 
-          Chef::Log.info("Checking out the master branch")
-          system("git checkout master")
-          branch_output = `git branch --no-color | grep #{branch_name}`
-          if branch_output =~ /#{branch_name}$/m
-            system("git checkout #{branch_name}")
-          else
-            system("git checkout -b #{branch_name}")
-          end
-          system("rm -r #{cookbook_path}")
-          system("tar zxvf #{upstream_file}")
-          system("rm #{upstream_file}")
-          system("git add #{name_args[0]}")
-          system("git commit -a -m 'Import #{name_args[0]} version #{download.version}'")
-          system("git tag -f #{name_args[0]}-#{download.version}")
-          system("git checkout master")
-          system("git merge #{branch_name}")
+        Chef::Log.info("Checking out the master branch.")
+        Chef::Mixin::Command.run_command(:command => "git checkout master", :cwd => vendor_path) 
+        Chef::Log.info("Checking the status of the vendor branch.")
+        status, branch_output, branch_error = Chef::Mixin::Command.output_of_command("git branch --no-color | grep #{branch_name}", :cwd => vendor_path) 
+        if branch_output =~ /#{branch_name}$/m
+          Chef::Log.info("Vendor branch found.")
+          Chef::Mixin::Command.run_command(:command => "git checkout #{branch_name}", :cwd => vendor_path)
+        else
+          Chef::Log.info("Creating vendor branch.")
+          Chef::Mixin::Command.run_command(:command => "git checkout -b #{branch_name}", :cwd => vendor_path)
         end
-        Chef::Log.info("Cookbook #{name_args[0]} version #{download.version} successfully vendored")
+        Chef::Log.info("Removing pre-existing version.")
+        Chef::Mixin::Command.run_command(:command => "rm -r #{cookbook_path}", :cwd => vendor_path) if File.directory?(cookbook_path)
+        Chef::Log.info("Uncompressing #{name_args[0]} version #{download.version}.")
+        Chef::Mixin::Command.run_command(:command => "tar zxvf #{upstream_file}", :cwd => vendor_path)
+        Chef::Mixin::Command.run_command(:command => "rm #{upstream_file}", :cwd => vendor_path)
+        Chef::Log.info("Adding changes.")
+        Chef::Mixin::Command.run_command(:command => "git add #{name_args[0]}", :cwd => vendor_path)
+        Chef::Log.info("Committing changes.")
+        begin
+          Chef::Mixin::Command.run_command(:command => "git commit -a -m 'Import #{name_args[0]} version #{download.version}'", :cwd => vendor_path)
+        rescue Chef::Exceptions::Exec => e
+          Chef::Log.warn("Checking out the master branch.")
+          Chef::Log.warn("No changes from current vendor #{name_args[0]}, aborting!")
+          Chef::Mixin::Command.run_command(:command => "git checkout master", :cwd => vendor_path) 
+          exit 1
+        end
+        Chef::Log.info("Creating tag chef-vendor-#{name_args[0]}-#{download.version}.")
+        Chef::Mixin::Command.run_command(:command => "git tag -f #{name_args[0]}-#{download.version}", :cwd => vendor_path)
+        Chef::Log.info("Checking out the master branch.")
+        Chef::Mixin::Command.run_command(:command => "git checkout master", :cwd => vendor_path)
+        Chef::Log.info("Merging changes from #{name_args[0]} version #{download.version}.")
+
+        Dir.chdir(vendor_path) do
+          if system("git merge #{branch_name}")
+            Chef::Log.info("Cookbook #{name_args[0]} version #{download.version} successfully vendored!")
+            exit 0
+          else
+            Chef::Log.error("You have merge conflicts - please resolve manually!")
+            Chef::Log.error("(Hint: cd #{vendor_path}; git status)") 
+            exit 1
+          end
+        end
       end
 
     end
