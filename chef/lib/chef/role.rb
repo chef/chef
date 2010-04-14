@@ -210,19 +210,11 @@ class Chef
     def cdb_destroy
       couchdb.delete("role", @name, couchdb_rev)
 
-      if Chef::Config[:couchdb_version] == 0.9
-        rs = couchdb.get_view("nodes", "by_run_list", :startkey => "role[#{@name}]", :endkey => "role[#{@name}]", :include_docs => true)
-        rs["rows"].each do |row| 
-          node = row["doc"]
-          node.run_list.remove("role[#{@name}]")
-          node.cdb_save
-        end
-      else
-       Chef::Node.cdb_list.each do |node|
-         n = Chef::Node.cdb_load(node)
-         n.run_list.remove("role[#{@name}]")
-         n.cdb_save
-       end
+      rs = couchdb.get_view("nodes", "by_run_list", :startkey => "role[#{@name}]", :endkey => "role[#{@name}]", :include_docs => true)
+      rs["rows"].each do |row| 
+        node = row["doc"]
+        node.run_list.remove("role[#{@name}]")
+        node.cdb_save
       end
     end
     
