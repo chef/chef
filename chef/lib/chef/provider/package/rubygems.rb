@@ -97,7 +97,7 @@ class Chef
         def install_package(name, version)
           src = nil
           if @new_resource.source
-            src = "  --source=#{@new_resource.source} --source=http://gems.rubyforge.org"
+            src = "  --source=#{@new_resource.source} --source=http://rubygems.org"
           end  
           run_command_with_systems_locale(
             :command => "#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}"
