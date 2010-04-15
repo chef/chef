@@ -17,12 +17,19 @@
 #
 
 require 'chef/knife'
+require 'chef/cookbook/metadata'
 
 class Chef
   class Knife
     class CookbookSiteVendor < Knife
 
       banner "Sub-Command: cookbook site vendor COOKBOOK [VERSION] (options)"
+
+      option :deps,
+       :short => "-d",
+       :long => "--dependencies",
+       :boolean => true,
+       :description => "Grab dependencies automatically"
 
       def run
         vendor_path = File.join(Chef::Config[:cookbook_path].first)
@@ -53,29 +60,45 @@ class Chef
         Chef::Mixin::Command.run_command(:command => "rm #{upstream_file}", :cwd => vendor_path)
         Chef::Log.info("Adding changes.")
         Chef::Mixin::Command.run_command(:command => "git add #{name_args[0]}", :cwd => vendor_path)
+
         Chef::Log.info("Committing changes.")
+        changes = true
         begin
           Chef::Mixin::Command.run_command(:command => "git commit -a -m 'Import #{name_args[0]} version #{download.version}'", :cwd => vendor_path)
         rescue Chef::Exceptions::Exec => e
           Chef::Log.warn("Checking out the master branch.")
-          Chef::Log.warn("No changes from current vendor #{name_args[0]}, aborting!")
+          Chef::Log.warn("No changes from current vendor #{name_args[0]}")
           Chef::Mixin::Command.run_command(:command => "git checkout master", :cwd => vendor_path) 
-          exit 1
+          changes = false
         end
-        Chef::Log.info("Creating tag chef-vendor-#{name_args[0]}-#{download.version}.")
-        Chef::Mixin::Command.run_command(:command => "git tag -f chef-vendor-#{name_args[0]}-#{download.version}", :cwd => vendor_path)
-        Chef::Log.info("Checking out the master branch.")
-        Chef::Mixin::Command.run_command(:command => "git checkout master", :cwd => vendor_path)
-        Chef::Log.info("Merging changes from #{name_args[0]} version #{download.version}.")
 
-        Dir.chdir(vendor_path) do
-          if system("git merge #{branch_name}")
-            Chef::Log.info("Cookbook #{name_args[0]} version #{download.version} successfully vendored!")
-            exit 0
-          else
-            Chef::Log.error("You have merge conflicts - please resolve manually!")
-            Chef::Log.error("(Hint: cd #{vendor_path}; git status)") 
-            exit 1
+        if changes
+          Chef::Log.info("Creating tag chef-vendor-#{name_args[0]}-#{download.version}.")
+          Chef::Mixin::Command.run_command(:command => "git tag -f chef-vendor-#{name_args[0]}-#{download.version}", :cwd => vendor_path)
+          Chef::Log.info("Checking out the master branch.")
+          Chef::Mixin::Command.run_command(:command => "git checkout master", :cwd => vendor_path)
+          Chef::Log.info("Merging changes from #{name_args[0]} version #{download.version}.")
+
+          Dir.chdir(vendor_path) do
+            if system("git merge #{branch_name}")
+              Chef::Log.info("Cookbook #{name_args[0]} version #{download.version} successfully vendored!")
+            else
+              Chef::Log.error("You have merge conflicts - please resolve manually!")
+              Chef::Log.error("(Hint: cd #{vendor_path}; git status)") 
+              exit 1
+            end
+          end
+        end
+
+        if config[:deps]
+          md = Chef::Cookbook::Metadata.new
+          md.from_file(File.join(cookbook_path, "metadata.rb"))
+          md.dependencies.each do |cookbook, version_list|
+            # Doesn't do versions.. yet
+            nv = Chef::Knife::CookbookSiteVendor.new
+            nv.config = config
+            nv.name_args = [ cookbook ]
+            nv.run
           end
         end
       end
