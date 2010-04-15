@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require 'rubygems'
 require 'chef/mixin/xml_escape'
 require 'chef/log'
 require 'chef/config'
