@@ -63,7 +63,7 @@ class Chef
           exit 1
         end
         Chef::Log.info("Creating tag chef-vendor-#{name_args[0]}-#{download.version}.")
-        Chef::Mixin::Command.run_command(:command => "git tag -f #{name_args[0]}-#{download.version}", :cwd => vendor_path)
+        Chef::Mixin::Command.run_command(:command => "git tag -f chef-vendor-#{name_args[0]}-#{download.version}", :cwd => vendor_path)
         Chef::Log.info("Checking out the master branch.")
         Chef::Mixin::Command.run_command(:command => "git checkout master", :cwd => vendor_path)
         Chef::Log.info("Merging changes from #{name_args[0]} version #{download.version}.")
