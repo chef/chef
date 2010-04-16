@@ -190,7 +190,6 @@ describe Chef::Node::Attribute do
                           "macaddress"=>"00:23:6c:7f:67:6c",
                           "music" => { "jimmy_eat_world" => "nice" }
     }
-  
     @default_hash = {
       "domain" => "opscode.com",
       "hot" => { "day" => "saturday" },
@@ -208,7 +207,8 @@ describe Chef::Node::Attribute do
         "mars_volta" => "cicatriz"
       }
     }
-    @attributes = Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash)
+    @automatic_hash = {"week" => "friday"}
+    @attributes = Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash)
   end
 
   describe "initialize" do
@@ -216,13 +216,13 @@ describe Chef::Node::Attribute do
       @attributes.should be_a_kind_of(Chef::Node::Attribute)
     end
 
-    it "should take an Attribute, Default and Override hash" do
-      lambda { Chef::Node::Attribute.new({}, {}, {}) }.should_not raise_error
+    it "should take an Automatioc, Normal, Default and Override hash" do
+      lambda { Chef::Node::Attribute.new({}, {}, {}, {}) }.should_not raise_error
     end
 
-    [ :attribute, :default, :override ].each do |accessor|
+    [ :normal, :default, :override, :automatic ].each do |accessor|
       it "should set #{accessor}" do
-        na = Chef::Node::Attribute.new({ :attribute => true }, { :default => true }, { :override => true })
+        na = Chef::Node::Attribute.new({ :normal => true }, { :default => true }, { :override => true }, { :automatic => true })
         na.send(accessor).should == { accessor => true } 
       end
     end
@@ -232,7 +232,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should allow you to set the initial state" do
-      na = Chef::Node::Attribute.new({}, {}, {}, [ "first", "second", "third" ])
+      na = Chef::Node::Attribute.new({}, {}, {}, {}, [ "first", "second", "third" ])
       na.state.should == [ "first", "second", "third" ]
     end
 
@@ -479,7 +479,8 @@ describe Chef::Node::Attribute do
         {
           "one" =>  { "six" => "seven" },
           "snack" => "cookies"
-        }
+        },
+        {}
       )
     end
 
@@ -526,7 +527,8 @@ describe Chef::Node::Attribute do
         {
           "one" => "six",
           "snack" => "cookies"
-        }
+        },
+        {}
       )
     end
 
@@ -563,7 +565,8 @@ describe Chef::Node::Attribute do
         {
           "one" => "six",
           "snack" => "cookies"
-        }
+        },
+        {}
       )
     end
 
@@ -598,7 +601,8 @@ describe Chef::Node::Attribute do
         {
           "one" => "six",
           "snack" => "cookies"
-        }
+        },
+        {}
       )
     end
 
@@ -633,7 +637,8 @@ describe Chef::Node::Attribute do
         {
           "one" => "six",
           "snack" => "cookies"
-        }
+        },
+        {}
       )
     end
 
@@ -676,9 +681,10 @@ describe Chef::Node::Attribute do
         {
           "one" => "six",
           "snack" => "cookies"
-        }
+        },
+        {}
       )
-      @empty = Chef::Node::Attribute.new({}, {}, {})
+      @empty = Chef::Node::Attribute.new({}, {}, {}, {})
     end
 
     it "should respond to empty?" do
@@ -709,7 +715,8 @@ describe Chef::Node::Attribute do
         {
           "one" => "six",
           "snack" => "cookies"
-        }
+        },
+        {}
       )
     end
 
@@ -765,7 +772,8 @@ describe Chef::Node::Attribute do
         {
           "one" => "six",
           "snack" => "cookies"
-        }
+        },
+        {}
       )
     end
 
@@ -800,7 +808,8 @@ describe Chef::Node::Attribute do
         {
           "one" => "six",
           "snack" => "cookies"
-        }
+        },
+        {}
       )
     end
 
@@ -837,7 +846,8 @@ describe Chef::Node::Attribute do
         {
           "one" => "six",
           "snack" => "cookies"
-        }
+        },
+        {}
       )
     end
 
@@ -872,7 +882,8 @@ describe Chef::Node::Attribute do
         {
           "one" => "six",
           "snack" => "cookies"
-        }
+        },
+        {}
       )
     end
 
@@ -921,10 +932,11 @@ describe Chef::Node::Attribute do
         {
           "one" => "six",
           "snack" => "cookies"
-        }
+        },
+        {}
       )
 
-      @empty = Chef::Node::Attribute.new({},{},{})
+      @empty = Chef::Node::Attribute.new({},{},{},{})
     end
 
     it "should respond to size" do
