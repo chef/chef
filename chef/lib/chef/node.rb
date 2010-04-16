@@ -214,7 +214,7 @@ class Chef
     # might be missing
     def set
       attrs = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
-      attrs.set_type = :attribute
+      attrs.set_type = :normal
       attrs.auto_vivifiy_on_read = true
       attrs
     end
@@ -225,7 +225,7 @@ class Chef
     # missing, but if the final value already exists, don't set it
     def set_unless
       attrs = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
-      attrs.set_type = :attribute
+      attrs.set_type = :normal
       attrs.auto_vivifiy_on_read = true
       attrs.set_unless_value_present = true
       attrs
@@ -342,9 +342,9 @@ class Chef
       index_hash = Hash.new
       index_hash["chef_type"] = "node"
       index_hash["name"] = @name
-      index_hash["attributes"] = @normal_attrs
-      index_hash["defaults"] = @default_attrs
-      index_hash["overrides"] = @override_attrs
+      index_hash["normal"] = @normal_attrs
+      index_hash["default"] = @default_attrs
+      index_hash["override"] = @override_attrs
       index_hash["recipe"] = @run_list.recipes if @run_list.recipes.length > 0
       index_hash["role"] = @run_list.roles if @run_list.roles.length > 0
       index_hash["run_list"] = @run_list.run_list if @run_list.run_list.length > 0

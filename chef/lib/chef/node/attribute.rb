@@ -23,11 +23,11 @@ require 'chef/log'
 class Chef
   class Node
     class Attribute
-      attr_accessor :attribute,
+      attr_accessor :normal,
                     :default,
                     :override,
                     :state,
-                    :current_attribute,
+                    :current_normal,
                     :current_default,
                     :current_override,
                     :auto_vivifiy_on_read,
@@ -38,9 +38,9 @@ class Chef
 
       include Enumerable
 
-      def initialize(attribute, default, override, state=[])
-        @attribute = attribute
-        @current_attribute = attribute
+      def initialize(normal, default, override, state=[])
+        @normal = normal
+        @current_normal = normal
         @default = default
         @current_default = default
         @override = override
@@ -48,14 +48,22 @@ class Chef
         @state = state
         @auto_vivifiy_on_read = false
         @set_unless_value_present = false
-        @set_type = :attribute
+        @set_type = :normal
         @has_been_read = false
+      end
+
+      def attribute
+        normal
+      end
+
+      def attribute=(value)
+        normal = value
       end
 
       def set_type
         case @set_type
-        when :attribute
-          @attribute
+        when :normal
+          @normal
         when :override
           @override
         when :default
@@ -65,7 +73,7 @@ class Chef
 
       # Reset our internal state to the top of every tree
       def reset
-        @current_attribute = @attribute
+        @current_normal = @normal
         @current_default = @default
         @current_override = @override
         @has_been_read = false
@@ -80,7 +88,7 @@ class Chef
         @has_been_read = true
 
         o_value = value_or_descend(current_override, key, auto_vivifiy_on_read)
-        a_value = value_or_descend(current_attribute, key, auto_vivifiy_on_read)
+        a_value = value_or_descend(current_normal, key, auto_vivifiy_on_read)
         d_value = value_or_descend(current_default, key, auto_vivifiy_on_read)
 
         determine_value(o_value, a_value, d_value)
@@ -88,7 +96,7 @@ class Chef
 
       def attribute?(key)
         return true if get_value(override, key)
-        return true if get_value(attribute, key)
+        return true if get_value(normal, key)
         return true if get_value(default, key)
         false
       end
@@ -105,7 +113,7 @@ class Chef
         get_keys.each do |key|
           value = determine_value(
             get_value(override, key),
-            get_value(attribute, key),
+            get_value(normal, key),
             get_value(default, key)
           )
           block.call([key, value])
@@ -116,7 +124,7 @@ class Chef
         get_keys.each do |key|
           value = determine_value(
             get_value(override, key),
-            get_value(attribute, key),
+            get_value(normal, key),
             get_value(default, key)
           )
           block.call(key, value)
@@ -127,7 +135,7 @@ class Chef
         get_keys.each do |key|
           value = determine_value(
             get_value(override, key),
-            get_value(attribute, key),
+            get_value(normal, key),
             get_value(default, key)
           )
           block.call(key, value)
@@ -144,7 +152,7 @@ class Chef
         get_keys.each do |key|
           value = determine_value(
             get_value(override, key),
-            get_value(attribute, key),
+            get_value(normal, key),
             get_value(default, key)
           )
           block.call(value)
@@ -159,7 +167,7 @@ class Chef
         if get_keys.include? key
           determine_value(
             get_value(override, key),
-            get_value(attribute, key),
+            get_value(normal, key),
             get_value(default, key)
           )
         elsif default_value
@@ -219,8 +227,8 @@ class Chef
         if current_override
           tkeys = current_override.keys
         end
-        if current_attribute
-          current_attribute.keys.each do |key|
+        if current_normal
+          current_normal.keys.each do |key|
             tkeys << key unless tkeys.include?(key)
           end
         end
@@ -352,8 +360,8 @@ class Chef
 
         if auto_vivifiy
           data_hash = auto_vivifiy(data_hash, key)
-          unless current_attribute.has_key?(key)
-            current_attribute[key] = data_hash[key]
+          unless current_normal.has_key?(key)
+            current_normal[key] = data_hash[key]
           end
           unless current_default.has_key?(key)
             current_default[key] = data_hash[key]
@@ -367,8 +375,8 @@ class Chef
         end
 
         if data_hash[key].respond_to?(:has_key?)
-          cna = Chef::Node::Attribute.new(@attribute, @default, @override, @state)
-          cna.current_attribute = current_attribute.nil? ? Mash.new : current_attribute[key]
+          cna = Chef::Node::Attribute.new(@normal, @default, @override, @state)
+          cna.current_normal = current_normal.nil? ? Mash.new : current_normal[key]
           cna.current_default   = current_default.nil? ? Mash.new : current_default[key]
           cna.current_override  = current_override.nil? ? Mash.new : current_override[key]
           cna.auto_vivifiy_on_read = auto_vivifiy_on_read
@@ -404,7 +412,7 @@ class Chef
       end
 
       def to_hash
-        result = determine_value(current_override, current_attribute, current_default)
+        result = determine_value(current_override, current_normal, current_default)
         if result.class == Hash
           result
         else

@@ -327,9 +327,9 @@ describe Chef::Node do
       @node.run_list << "role[leninist]"
       @node.run_list << "recipe[stalinist]"
       h = @node.to_hash
-      h["defaults"].should == @node.default_attrs
-      h["overrides"].should == @node.override_attrs
-      h["attributes"].should == @node.normal_attrs
+      h["default"].should == @node.default_attrs
+      h["override"].should == @node.override_attrs
+      h["normal"].should == @node.normal_attrs
       h["role"].should be_include("marxist")
       h["role"].should be_include("leninist")
       h["run_list"].should be_include("role[marxist]")
