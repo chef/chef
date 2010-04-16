@@ -51,3 +51,6 @@ When /^the node is converged$/ do
   client.run
 end
 
+When /^the node is retrieved from the API$/ do
+  self.inflated_response = Chef::Node.load(client.node.name)
+end

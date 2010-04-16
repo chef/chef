@@ -386,6 +386,10 @@ namespace :features do
     Cucumber::Rake::Task.new(:cookbook_sync) do |t|
       t.profile = "client_cookbook_sync"
     end
+
+    Cucumber::Rake::Task.new(:attribute_settings) do |t|
+      t.profile = "attribute_settings"
+    end
   end
 
   desc "Run cucumber tests for the cookbooks"
