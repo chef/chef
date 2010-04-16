@@ -344,9 +344,9 @@ describe Chef::Node do
       json = @node.to_json()
       json.should =~ /json_class/
       json.should =~ /name/
-      json.should =~ /attributes/
-      json.should =~ /overrides/
-      json.should =~ /defaults/
+      json.should =~ /normal/
+      json.should =~ /default/
+      json.should =~ /override/
       json.should =~ /run_list/
     end
     

@@ -356,10 +356,10 @@ class Chef
       result = {
         "name" => @name,
         'json_class' => self.class.name,
-        "attributes" => @normal_attrs,
+        "normal" => @normal_attrs,
         "chef_type" => "node",
-        "defaults" => @default_attrs,
-        "overrides" => @override_attrs,
+        "default" => @default_attrs,
+        "override" => @override_attrs,
         "run_list" => @run_list.run_list,
       }
       result["_rev"] = @couchdb_rev if @couchdb_rev
@@ -370,9 +370,12 @@ class Chef
     def self.json_create(o)
       node = new
       node.name(o["name"])
-      node.normal_attrs = Mash.new(o["attributes"]) if o.has_key?("attributes")
-      node.default_attrs = Mash.new(o["defaults"]) if o.has_key?("defaults")
-      node.override_attrs = Mash.new(o["overrides"]) if o.has_key?("overrides")
+      if o.has_key?("attributes")
+        node.normal_attrs = o["attributes"]
+      end
+      node.normal_attrs = Mash.new(o["normal"]) if o.has_key?("normal")
+      node.default_attrs = Mash.new(o["default"]) if o.has_key?("default")
+      node.override_attrs = Mash.new(o["override"]) if o.has_key?("override")
 
       if o.has_key?("run_list")
         node.run_list.reset!(o["run_list"])
