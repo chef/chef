@@ -321,7 +321,7 @@ class Chef
           if file_exists?(cookbook_path)
             break
           else
-            (Chef::Log.fatal(e = "No cookbook found in #{cookbook_path}, make sure cookboook_path is set correctly."); (raise Chef::Exceptions::CookbookNotFound, e)) if is_last_element?(index, Chef::Config[:cookbook_path])
+            (Chef::Log.fatal(e = "No cookbook found in #{Chef::Config[:cookbook_path].inspect}, make sure cookboook_path is set correctly."); (raise Chef::Exceptions::CookbookNotFound, e)) if is_last_element?(index, Chef::Config[:cookbook_path])
           end
         end
       end
