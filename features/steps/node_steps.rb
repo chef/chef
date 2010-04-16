@@ -26,6 +26,13 @@ Given /^a validated node$/ do
   client.node.recipes << "integration_setup"
 end
 
+Given /^a validated node with an empty runlist$/ do
+  client.determine_node_name
+  client.register
+  client.build_node
+end
+
+
 Given /^it includes the recipe '(.+)'$/ do |recipe|
   self.recipe = recipe
   client.node.recipes << recipe
