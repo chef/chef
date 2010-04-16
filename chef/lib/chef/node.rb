@@ -195,6 +195,10 @@ class Chef
     def attribute
       Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
     end
+
+    def attribute=(value)
+      @normal_attrs = value
+    end
     
     # Return an attribute of this node.  Returns nil if the attribute is not found.
     def [](attrib)
@@ -212,25 +216,25 @@ class Chef
 
     # Set a normal attribute of this node, but auto-vivifiy any Mashes that
     # might be missing
-    def set
+    def normal 
       attrs = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
       attrs.set_type = :normal
       attrs.auto_vivifiy_on_read = true
       attrs
     end
 
-    alias_method :normal, :set
+    alias_method :set, :normal
 
     # Set a normal attribute of this node, auto-vivifiying any mashes that are
     # missing, but if the final value already exists, don't set it
-    def set_unless
+    def normal_unless
       attrs = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
       attrs.set_type = :normal
       attrs.auto_vivifiy_on_read = true
       attrs.set_unless_value_present = true
       attrs
     end
-    alias_method :normal_unless, :set_unless
+    alias_method :set_unless, :normal_unless
   
     # Set a default of this node, but auto-vivifiy any Mashes that might
     # be missing
@@ -293,7 +297,10 @@ class Chef
     # to set the attribute values.  Otherwise, we'll wind up just returning the attributes
     # value.
     def method_missing(symbol, *args)
-      Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs).send(symbol, *args)
+      attrs = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs)
+      attrs.set_type = :normal
+      attrs.auto_vivify_on_read = true 
+      attrs.send(symbol, *args)
     end
     
     # Returns true if this Node expects a given recipe, false if not.
@@ -342,9 +349,9 @@ class Chef
       index_hash = Hash.new
       index_hash["chef_type"] = "node"
       index_hash["name"] = @name
-      index_hash["normal"] = @normal_attrs
-      index_hash["default"] = @default_attrs
-      index_hash["override"] = @override_attrs
+      attribute.each do |key, value|
+        index_hash[key] = value
+      end
       index_hash["recipe"] = @run_list.recipes if @run_list.recipes.length > 0
       index_hash["role"] = @run_list.roles if @run_list.roles.length > 0
       index_hash["run_list"] = @run_list.run_list if @run_list.run_list.length > 0
