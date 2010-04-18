@@ -61,20 +61,22 @@ module Merb
         ::ChefServerWebui.slice_path_for(type, *segments)
       end
 
-      def build_tree(name, node, default={}, override={})
-        node = Chef::Mixin::DeepMerge.merge(default, node)
-        node = Chef::Mixin::DeepMerge.merge(node, override)
+      def build_tree(name, node)
         html = "<table id='#{name}' class='tree table'>"
         html << "<tr><th class='first'>Attribute</th><th class='last'>Value</th></tr>"
         count = 0
         parent = 0
-        append_tree(name, html, node, count, parent, override)
+        append_tree(name, html, node, count, parent)
         html << "</table>"
         html
       end
 
-      def append_tree(name, html, node, count, parent, override)
-        node.sort{ |a,b| a[0] <=> b[0] }.each do |key, value|
+      def append_tree(name, html, node, count, parent)
+        to_do = node
+        #to_do = node.kind_of?(Chef::Node) ? node.attribute : node
+        Chef::Log.error("I have #{to_do.inspect}")
+        to_do.sort{ |a,b| a[0] <=> b[0] }.each do |key, value|
+          Chef::Log.error("I am #{key.inspect} #{value.inspect}")
           to_send = Array.new
           count += 1
           is_parent = false
@@ -91,14 +93,14 @@ module Merb
             is_parent = true 
             local_html << "<td></td>"
             p = count
-            to_send << Proc.new { append_tree(name, html, value, count, p, override) }
+            to_send << Proc.new { append_tree(name, html, value, count, p) }
           when Array
             is_parent = true 
             local_html << "<td></td>"
             as_hash = {}
             value.each_index { |i| as_hash[i] = value[i] }
             p = count
-            to_send << Proc.new { append_tree(name, html, as_hash, count, p, override) }
+            to_send << Proc.new { append_tree(name, html, as_hash, count, p) }
           else
             local_html << "<td><div class='json-attr'>#{value}</div></td>"
           end

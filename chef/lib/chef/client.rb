@@ -163,15 +163,13 @@ class Chef
       end
       
       @node.consume_attributes(@json_attribs)
-      
-      ohai.each do |field, value|
-        Chef::Log.debug("Ohai Attribute: #{field} - #{value.inspect}")
-        @node[field] = value
-      end
+    
+      @node.automatic_attrs = ohai.data
+
       platform, version = Chef::Platform.find_platform_and_version(@node)
       Chef::Log.debug("Platform is #{platform} version #{version}")
-      @node[:platform] = platform
-      @node[:platform_version] = version
+      @node.automatic_attrs[:platform] = platform
+      @node.automatic_attrs[:platform_version] = version
       @node
     end
    

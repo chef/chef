@@ -26,10 +26,12 @@ class Chef
       attr_accessor :normal,
                     :default,
                     :override,
+                    :automatic,
                     :state,
                     :current_normal,
                     :current_default,
                     :current_override,
+                    :current_automatic,
                     :auto_vivifiy_on_read,
                     :set_unless_value_present,
                     :has_been_read
@@ -38,13 +40,15 @@ class Chef
 
       include Enumerable
 
-      def initialize(normal, default, override, state=[])
+      def initialize(normal, default, override, automatic, state=[])
         @normal = normal
         @current_normal = normal
         @default = default
         @current_default = default
         @override = override
         @current_override = override
+        @automatic = automatic 
+        @current_automatic = automatic 
         @state = state
         @auto_vivifiy_on_read = false
         @set_unless_value_present = false
@@ -68,6 +72,8 @@ class Chef
           @override
         when :default
           @default
+        when :automatic
+          @automatic
         end
       end
 
@@ -76,6 +82,7 @@ class Chef
         @current_normal = @normal
         @current_default = @default
         @current_override = @override
+        @current_automatic = @automatic
         @has_been_read = false
         @state = []
       end
@@ -87,11 +94,12 @@ class Chef
         # See the comments in []= for more details.
         @has_been_read = true
 
+        a_value = value_or_descend(current_automatic, key, auto_vivifiy_on_read)
         o_value = value_or_descend(current_override, key, auto_vivifiy_on_read)
-        a_value = value_or_descend(current_normal, key, auto_vivifiy_on_read)
+        n_value = value_or_descend(current_normal, key, auto_vivifiy_on_read)
         d_value = value_or_descend(current_default, key, auto_vivifiy_on_read)
 
-        determine_value(o_value, a_value, d_value)
+        determine_value(a_value, o_value, n_value, d_value)
       end
 
       def attribute?(key)
@@ -112,6 +120,7 @@ class Chef
       def each(&block)
         get_keys.each do |key|
           value = determine_value(
+            get_value(automatic, key),
             get_value(override, key),
             get_value(normal, key),
             get_value(default, key)
@@ -123,6 +132,7 @@ class Chef
       def each_pair(&block)
         get_keys.each do |key|
           value = determine_value(
+            get_value(automatic, key),
             get_value(override, key),
             get_value(normal, key),
             get_value(default, key)
@@ -134,6 +144,7 @@ class Chef
       def each_attribute(&block)
         get_keys.each do |key|
           value = determine_value(
+            get_value(automatic, key),
             get_value(override, key),
             get_value(normal, key),
             get_value(default, key)
@@ -151,6 +162,7 @@ class Chef
       def each_value(&block)
         get_keys.each do |key|
           value = determine_value(
+            get_value(automatic, key),
             get_value(override, key),
             get_value(normal, key),
             get_value(default, key)
@@ -166,6 +178,7 @@ class Chef
       def fetch(key, default_value=nil, &block)
         if get_keys.include? key
           determine_value(
+            get_value(automatic, key),
             get_value(override, key),
             get_value(normal, key),
             get_value(default, key)
@@ -223,18 +236,12 @@ class Chef
       end
 
       def keys
-        tkeys = []
-        if current_override
-          tkeys = current_override.keys
-        end
-        if current_normal
-          current_normal.keys.each do |key|
-            tkeys << key unless tkeys.include?(key)
-          end
-        end
-        if current_default
-          current_default.keys.each do |key|
-            tkeys << key unless tkeys.include?(key)
+        tkeys = current_automatic ? current_automatic.keys : []
+        [ current_override, current_normal, current_default ].each do |attr_hash|
+          if attr_hash 
+            attr_hash.keys.each do |key|
+              tkeys << key unless tkeys.include?(key)
+            end
           end
         end
         tkeys
@@ -271,32 +278,33 @@ class Chef
         (! to_check.kind_of?(Chef::Node::Attribute)) && to_check.respond_to?(:has_key?)
       end
 
-      def determine_value(o_value, a_value, d_value)
-        # If all three have hash values, merge them
-        if hash_and_not_cna?(o_value) && hash_and_not_cna?(a_value) && hash_and_not_cna?(d_value)
-          value = Chef::Mixin::DeepMerge.merge(d_value, a_value)
-          value = Chef::Mixin::DeepMerge.merge(value, o_value)
+      def determine_value(a_value, o_value, n_value, d_value)
+        if hash_and_not_cna?(a_value)
+          value = {}
+          value = Chef::Mixin::DeepMerge.merge(value, d_value) if hash_and_not_cna?(d_value)
+          value = Chef::Mixin::DeepMerge.merge(value, n_value) if hash_and_not_cna?(n_value)
+          value = Chef::Mixin::DeepMerge.merge(value, o_value) if hash_and_not_cna?(o_value)
+          value = Chef::Mixin::DeepMerge.merge(value, a_value) 
           value
-        # If only the override and attributes have values, merge them
-        elsif hash_and_not_cna?(o_value) && hash_and_not_cna?(a_value)
-          Chef::Mixin::DeepMerge.merge(a_value, o_value)
-        # If only the override and default attributes have values, merge them
-        elsif hash_and_not_cna?(o_value) && hash_and_not_cna?(d_value)
-          Chef::Mixin::DeepMerge.merge(d_value, o_value)
-        # If only the override attribute has a value (any value) use it
-        elsif ! o_value.nil?
-          o_value
-        # If the attributes is a hash, and the default is a hash, merge them
-        elsif hash_and_not_cna?(a_value) && hash_and_not_cna?(d_value)
-          Chef::Mixin::DeepMerge.merge(d_value, a_value)
-        # If we have an attribute value, use it
-        elsif ! a_value.nil?
-          a_value
-        # If we have a default value, use it
-        elsif ! d_value.nil?
+        elsif hash_and_not_cna?(o_value)
+          value = {}
+          value = Chef::Mixin::DeepMerge.merge(value, d_value) if hash_and_not_cna?(d_value)
+          value = Chef::Mixin::DeepMerge.merge(value, n_value) if hash_and_not_cna?(n_value)
+          value = Chef::Mixin::DeepMerge.merge(value, o_value) 
+          value
+        elsif hash_and_not_cna?(n_value)
+          value = {}
+          value = Chef::Mixin::DeepMerge.merge(value, d_value) if hash_and_not_cna?(d_value)
+          value = Chef::Mixin::DeepMerge.merge(value, n_value) 
+          value
+        elsif hash_and_not_cna?(d_value)
           d_value
         else
-          nil
+          return a_value if ! a_value.nil?
+          return o_value if ! o_value.nil?
+          return n_value if ! n_value.nil?
+          return d_value if ! d_value.nil?
+          return nil
         end
       end
 
@@ -369,16 +377,20 @@ class Chef
           unless current_override.has_key?(key)
             current_override[key] = data_hash[key]
           end
+          unless current_automatic.has_key?(key)
+            current_automatic[key] = data_hash[key]
+          end
         else
           return nil if data_hash == nil
           return nil unless data_hash.has_key?(key)
         end
 
         if data_hash[key].respond_to?(:has_key?)
-          cna = Chef::Node::Attribute.new(@normal, @default, @override, @state)
+          cna = Chef::Node::Attribute.new(@normal, @default, @override, @automatic, @state)
           cna.current_normal = current_normal.nil? ? Mash.new : current_normal[key]
           cna.current_default   = current_default.nil? ? Mash.new : current_default[key]
           cna.current_override  = current_override.nil? ? Mash.new : current_override[key]
+          cna.current_automatic  = current_automatic.nil? ? Mash.new : current_automatic[key]
           cna.auto_vivifiy_on_read = auto_vivifiy_on_read
           cna.set_unless_value_present = set_unless_value_present
           cna
@@ -412,7 +424,7 @@ class Chef
       end
 
       def to_hash
-        result = determine_value(current_override, current_normal, current_default)
+        result = determine_value(current_automatic, current_override, current_normal, current_default)
         if result.class == Hash
           result
         else

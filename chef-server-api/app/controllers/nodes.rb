@@ -64,6 +64,7 @@ class ChefServerApi::Nodes < ChefServerApi::Application
 
     updated = params['inflated_object']
     @node.run_list.reset!(updated.run_list)
+    @node.automatic_attrs = updated.automatic_attrs
     @node.normal_attrs = updated.normal_attrs
     @node.override_attrs = updated.override_attrs
     @node.default_attrs = updated.default_attrs
