@@ -37,7 +37,7 @@ class Chef
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
     
-    attr_accessor :node, :registration, :json_attribs, :validation_token, :node_name, :ohai, :rest
+    attr_accessor :node, :registration, :json_attribs, :validation_token, :node_name, :ohai, :rest, :runner
     
     # Creates a new Chef::Client.
     def initialize()
@@ -47,6 +47,7 @@ class Chef
       @json_attribs = nil
       @node_name = nil
       @node_exists = true
+      @runner = nil
       @ohai = Ohai::System.new
       Chef::Log.verbose = Chef::Config[:verbose_logging]
       Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger
@@ -77,21 +78,32 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def run
-      start_time = Time.now
-      Chef::Log.info("Starting Chef Run")
-      
-      determine_node_name
-      register
-      build_node(@node_name)
-      save_node
-      sync_cookbooks
-      save_node
-      converge
-      save_node
-      
-      end_time = Time.now
-      Chef::Log.info("Chef Run complete in #{end_time - start_time} seconds")
-      true
+      begin
+        start_time = Time.now
+        Chef::Log.info("Starting Chef Run")
+        
+        determine_node_name
+        register
+        build_node(@node_name)
+        save_node
+        sync_cookbooks
+        save_node
+        converge
+        save_node
+        
+        end_time = Time.now
+        total_time = end_time - start_time
+        Chef::Log.info("Chef Run complete in #{total_time} seconds")
+        Chef::Config[:report_handlers].each do |handler|
+          handler.report(@node, @runner, total_time)
+        end
+        true
+      rescue Exception => e
+        Chef::Config[:exception_handlers].each do |handler|
+          handler.exception(@node, @runner, e)
+        end
+        raise
+      end
     end
     
     # Similar to Chef::Client#run, but instead of talking to the Chef server,
@@ -316,7 +328,8 @@ class Chef
       compile = Chef::Compile.new(@node)
       
       Chef::Log.debug("Converging node #{@node_name}")
-      Chef::Runner.new(@node, compile.collection, compile.definitions, compile.cookbook_loader).converge
+      @runner = Chef::Runner.new(@node, compile.collection, compile.definitions, compile.cookbook_loader)
+      @runner.converge
       true
     end
 
