@@ -330,7 +330,6 @@ describe Chef::Node::Attribute do
       @attributes["longboard"] = "surfing"
       @attributes["longboard"].should == "surfing"
       @attributes.attribute["longboard"].should == "surfing"
-      @attributes.override["longboard"].should == "surfing"
     end
 
     it "should set deeply nested attribute value when auto_vivifiy_on_read is true" do
@@ -355,24 +354,6 @@ describe Chef::Node::Attribute do
       @attributes.set_unless_value_present = true
       @attributes["hostname"] = "bar"
       @attributes["hostname"].should == "latte"
-    end
-
-    it "should optionally skip setting the value if a default already exists" do
-      @attributes.set_unless_value_present = true
-      @attributes["music"]["mastodon"] = "slays it"
-      @attributes["music"]["mastodon"].should == "rocks"
-    end
-
-    it "should optionally skip setting the value if an attibute already exists" do
-      @attributes.set_unless_value_present = true
-      @attributes["network"]["default_interface"] = "wiz1"
-      @attributes["network"]["default_interface"].should == "en1"
-    end
-
-    it "should optionally skip setting the value if an override already exists" do
-      @attributes.set_unless_value_present = true
-      @attributes["fire"] = "secret life"
-      @attributes["fire"].should == "still burn"
     end
 
     it "should write to an attribute that has been read before properly" do
