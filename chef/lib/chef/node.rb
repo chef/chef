@@ -300,7 +300,6 @@ class Chef
     def method_missing(symbol, *args)
       attrs = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs, @automatic_attrs)
       attrs.set_type = :normal
-      attrs.auto_vivify_on_read = true 
       attrs.send(symbol, *args)
     end
     

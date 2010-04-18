@@ -236,18 +236,12 @@ class Chef
       end
 
       def keys
-        tkeys = []
-        if current_override
-          tkeys = current_override.keys
-        end
-        if current_normal
-          current_normal.keys.each do |key|
-            tkeys << key unless tkeys.include?(key)
-          end
-        end
-        if current_default
-          current_default.keys.each do |key|
-            tkeys << key unless tkeys.include?(key)
+        tkeys = current_automatic ? current_automatic.keys : []
+        [ current_override, current_normal, current_default ].each do |attr_hash|
+          if attr_hash 
+            attr_hash.keys.each do |key|
+              tkeys << key unless tkeys.include?(key)
+            end
           end
         end
         tkeys
