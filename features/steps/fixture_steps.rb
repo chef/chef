@@ -96,6 +96,22 @@ Before do
         r.description "Non-existent nested role"
         r.run_list << "role[not_exist]"
         r
+      end,
+      'attribute_settings_default' => Proc.new do
+        r = Chef::Role.new
+        r.name "attribute_settings_default"
+        r.description "sets a default value"
+        r.run_list("recipe[attribute_settings]")
+        r.default_attributes({ 'attribute_priority_was' => 2 })
+        r 
+      end,
+      'attribute_settings_override' => Proc.new do
+        r = Chef::Role.new
+        r.name "attribute_settings_override"
+        r.description "sets a default value"
+        r.run_list("recipe[attribute_settings_override]")
+        r.override_attributes({ 'attribute_priority_was' => 7 })
+        r 
       end
     },
     'node' => {

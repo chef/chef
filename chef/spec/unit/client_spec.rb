@@ -127,6 +127,7 @@ describe Chef::Client, "build_node" do
       :hostname => "foo"
     }
     @mock_ohai.stub!(:refresh_plugins).and_return(true)
+    @mock_ohai.stub!(:data).and_return(@mock_ohai)
     Ohai::System.stub!(:new).and_return(@mock_ohai)
     @node = Chef::Node.new
     @mock_rest.stub!(:get_rest).and_return(@node)
