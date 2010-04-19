@@ -102,18 +102,39 @@ Removing any system startup links for /etc/init.d/chef ...
 
   end
 
-  describe "when enabling a service" do
-
+  describe "when enabling a service without priority" do
     it "should call update-rc.d 'service_name' defaults" do
       @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults"})
       @provider.enable_service()
     end
   end
+  
+  describe "when enabling a service with simple priority" do
+    before do
+      @new_resource.stub!(:priority).and_return(75)
+    end
 
+    it "should call update-rc.d 'service_name' defaults" do
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults 75 25"})
+      @provider.enable_service()
+    end
+  end
+  
+  describe "when enabling a service with complex priorities" do
+    before do
+      @new_resource.stub!(:priority).and_return({ 2 => [:start, 20], 3 => [:stop, 55] })
+    end
+
+    it "should call update-rc.d 'service_name' defaults" do
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} start 20 2 . stop 55 3 . "})
+      @provider.enable_service()
+    end
+  end
+  
   describe "when disabling a service" do
 
-    it "should call update-rc.d -f 'service_name' remove" do
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove"})
+    it "should call update-rc.d 'service_name' disable" do
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} disable"})
       @provider.disable_service()
     end
   end

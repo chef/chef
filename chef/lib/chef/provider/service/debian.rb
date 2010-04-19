@@ -51,16 +51,51 @@ class Chef
           assert_update_rcd_available
 
           status = popen4("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
+            priority = {}
+            enabled = false
+            status_re = /etc\/rc([\dS]).d\/([SK])(\d\d)/i
             stdout.each_line do |line|
-              return true if line =~ UPDATE_RC_D_ENABLED_MATCHES
+              if status_re.match(line)
+                priority[$1] = [($2 == "S" ? :start : :stop), $3]
+              end
+              if line =~ UPDATE_RC_D_ENABLED_MATCHES
+                enabled = true
+              end
             end
+            @current_resource.enabled enabled
+            @current_resource.priority priority
           end  
 
           unless status.exitstatus == 0
             raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
           end
-          
-          false
+          @current_resource.enabled
+        end
+
+        def enable_service()
+          # If we have a priority which is just a number, we have to
+          # construct the actual priority object
+
+          if @new_resource.priority.is_a? Integer
+            run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults #{@new_resource.priority} #{100 - @new_resource.priority}")
+          elsif @new_resource.priority.is_a? Hash
+            args = ""
+            @new_resource.priority.each do |level, o|
+              action = o[0]
+              priority = o[1]
+              args += "#{action} #{priority} #{level} . "
+            end
+            run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} #{args}")
+          else # No priority, go with update-rc.d defaults
+            run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults")
+          end
+
+        end
+
+        def disable_service()
+          run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} disable")
+#          @new_resource.priority({2 => [:stop, 80]})
+#          enable_service
         end
         
       end
