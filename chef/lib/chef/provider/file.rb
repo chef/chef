@@ -66,6 +66,7 @@ class Chef
       def set_content
         unless compare_content
           Chef::Log.info("Setting content for #{@new_resource}")
+          backup @new_resource.path if ::File.exists?(@new_resource.path)
           ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
           @new_resource.updated = true
         end

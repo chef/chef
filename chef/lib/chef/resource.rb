@@ -204,7 +204,9 @@ class Chef
     def to_json(*a)
       instance_vars = Hash.new
       self.instance_variables.each do |iv|
-        instance_vars[iv] = self.instance_variable_get(iv) unless iv == "@collection"
+        unless iv == "@collection" || iv == "@node"
+          instance_vars[iv] = self.instance_variable_get(iv) 
+        end
       end
       results = {
         'json_class' => self.class.name,

@@ -32,7 +32,8 @@ describe Chef::Client, "run" do
       :register,
       :sync_cookbooks,
       :save_node,
-      :converge
+      :converge,
+      :run_report_handlers
     ]
     to_stub.each do |method|
       @client.stub!(method).and_return(true)
@@ -48,8 +49,8 @@ describe Chef::Client, "run" do
     @client.stub!(:run_ohai)
     @client.stub!(:ohai).and_return(@mock_ohai)
     
-    time = Time.now
-    Time.stub!(:now).and_return(time)
+    @time = Time.now
+    Time.stub!(:now).and_return(@time)
     Chef::Compile.stub!(:new).and_return(mock("Chef::Compile", :null_object => true))
     Chef::Runner.stub!(:new).and_return(mock("Chef::Runner", :null_object => true))
   end
@@ -84,15 +85,28 @@ describe Chef::Client, "run" do
     @client.should_receive(:converge).and_return(true)
     @client.run
   end
+  
+  it "should run report handlers" do
+    @client.should_receive(:run_report_handlers).with(@time, @time, @time - @time)
+    @client.run
+  end
+
+  it "should call exception handlers if an exception is raised" do
+    @client.stub!(:save_node).and_raise("woot")
+    @client.should_receive(:run_exception_handlers)
+    lambda { @client.run }.should raise_error("woot")
+  end
 
 end
 
 describe Chef::Client, "run_solo" do
   before(:each) do
     @client = Chef::Client.new
-    [:run_ohai, :node_name, :build_node].each do |method|
+    [:run_ohai, :node_name, :build_node, :run_report_handlers].each do |method|
       @client.stub!(method).and_return(true)
     end
+    @time = Time.now
+    Time.stub!(:now).and_return(@time)
     Chef::Compile.stub!(:new).and_return(mock("Chef::Compile", :null_object => true))
     Chef::Runner.stub!(:new).and_return(mock("Chef::Runner", :null_object => true))
   end
@@ -117,6 +131,54 @@ describe Chef::Client, "run_solo" do
     Chef::Config[:cookbook_path] = ['one', 'two']
     @client.run_solo
     Chef::Config[:cookbook_path].should eql(['one', 'two'])
+  end
+
+  it "should run report handlers" do
+    @client.should_receive(:run_report_handlers).with(@time, @time, @time - @time)
+    @client.run_solo
+  end
+
+  it "should call exception handlers if an exception is raised" do
+    @client.stub!(:converge).and_raise("woot")
+    @client.should_receive(:run_exception_handlers)
+    lambda { @client.run_solo }.should raise_error("woot")
+  end
+end
+
+describe Chef::Client, "run_report_handlers" do
+  before(:each) do
+    @original_report_handlers = Chef::Config[:report_handlers]
+    @handler = mock("Report Handler", :report => true)
+    @client = Chef::Client.new
+    Chef::Config[:report_handlers] << @handler
+  end
+
+  after(:each) do
+    Chef::Config[:report_handlers] = @original_report_handlers 
+  end
+
+  it "should run report handlers" do
+    @handler.should_receive(:report).and_return(true)
+    @client.run_report_handlers(Time.now, Time.now, 0)
+  end
+end
+
+describe Chef::Client, "run_exception_handlers" do
+  before(:each) do
+    @original_report_handlers = Chef::Config[:report_handlers]
+    @handler = mock("Report Handler", :report => true)
+    @client = Chef::Client.new
+    @exception = Exception.new("woot")
+    Chef::Config[:exception_handlers] << @handler
+  end
+
+  after(:each) do
+    Chef::Config[:exception_handlers] = @original_report_handlers 
+  end
+
+  it "should run report handlers" do
+    @handler.should_receive(:report).and_return(true)
+    @client.run_exception_handlers(nil, nil, Time.now, Time.now, 0, @exception)
   end
 end
 

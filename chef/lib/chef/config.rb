@@ -193,10 +193,10 @@ class Chef
     signing_ca_email "opensource-cert@opscode.com"
 
     # Report Handlers
-    report_handlers = []
+    report_handlers []
 
     # Exception Handlers
-    exception_handlers = []
+    exception_handlers []
 
     # Checksum Cache
     # Uses Moneta on the back-end

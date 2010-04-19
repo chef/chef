@@ -25,6 +25,8 @@ class Chef
   class Runner
     
     include Chef::Mixin::ParamsValidate
+
+    attr_reader :node, :collection, :definitions, :cookbook_loader
     
     def initialize(node, collection, definitions={}, cookbook_loader=nil)
       validate(

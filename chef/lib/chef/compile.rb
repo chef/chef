@@ -45,15 +45,17 @@ class Chef
       @recipes = Array.new
       @default_attributes = Hash.new 
       @override_attributes = Hash.new
+    end
 
+    def go
       load_libraries
       load_providers
       load_resources
       load_attributes
       load_definitions
       load_recipes
-    end
-    
+    end 
+
     # Looks up the node via the "name" argument, first from CouchDB, then by calling
     # Chef::Node.find_file(name)
     #

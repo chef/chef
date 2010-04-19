@@ -21,8 +21,41 @@ class Chef
 
     attr_accessor :config
 
-    def new(config={})
+    def initialize(config={})
       @config = config
+      @config[:path] ||= "/var/chef/reports"
+      @config
+    end
+
+    def build_report_data(node, runner, start_time, end_time, elapsed_time, exception=nil)
+      data = Hash.new
+      data[:node] = node if node
+      if runner
+        data[:resources] = {
+          :all => runner.collection.all_resources,
+          :updated => runner.collection.inject([]) { |m, r| m << r if r.updated; m }
+        }
+      end
+      if exception
+        data[:success] = false 
+        data[:exception] = {
+          :message => exception.message,
+          :backtrace => exception.backtrace
+        }
+      else
+        data[:success] = true
+      end
+      data[:elapsed_time] = elapsed_time 
+      data[:start_time] = start_time
+      data[:end_time] = end_time
+      data
+    end
+
+    def build_report_dir
+      unless File.exists?(config[:path])
+        FileUtils.mkdir_p(config[:path])
+        File.chmod(octal_mode("0700"), config[:path])
+      end
     end
 
   end

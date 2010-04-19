@@ -24,6 +24,7 @@ describe Chef::Compile do
     Chef::Config.cookbook_path(File.join(File.dirname(__FILE__), "..", "data", "compile", "cookbooks"))
     @node = Chef::Node.new
     @compile = Chef::Compile.new(@node)
+    @compile.go
   end
   
   it "should create a new Chef::Compile" do

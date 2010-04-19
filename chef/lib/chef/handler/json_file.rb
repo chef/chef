@@ -16,29 +16,30 @@
 # limitations under the License.
 #
 
+require 'chef/handler'
+require 'chef/resource/directory'
+
 class Chef
   class Handler
-    class File < Chef::Handler
+    class JsonFile < ::Chef::Handler
 
-      def new(config={})
-        config[:path] ||= "/tmp" 
+      def initialize(config={})
         super(config)
       end
 
-      def report(node, runner, time)
-        data = Hash.new
-        data[:node] = node 
-        data[:resources] = {
-          :all => runner.collection.all_resources,
-          :updated => runner.collection.inject([]) { |m, r| m << r if r.updated; m }
-        }
-        data[:time] = time
-        File.open(File.join(config[:path], "report.txt"), "w") do |f|
-          f.print data.to_json
+      def report(node, runner, start_time, end_time, elapsed_time, exception)
+        if exception
+          Chef::Log.error("Creating JSON exception report")
+        else
+          Chef::Log.info("Creating JSON run report")
         end
-      end
 
-      def exception(node, runner, exception=nil)
+        data = build_report_data(node, runner, start_time, end_time, elapsed_time, exception)
+        build_report_dir
+        savetime = Time.now.strftime("%Y%m%d%H%M%S")
+        File.open(File.join(config[:path], "chef-run-report-#{savetime}.json"), "w") do |file|
+          file.puts JSON.pretty_generate(data)
+        end
       end
 
     end

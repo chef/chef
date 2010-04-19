@@ -138,6 +138,7 @@ module Shef
     
     def rebuild_collection
       @compile = Chef::Compile.new(@client.node)
+      @compile.go
       
       @collection = @compile.collection
       @collection << @recipe.collection.all_resources

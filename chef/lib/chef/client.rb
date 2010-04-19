@@ -37,7 +37,7 @@ class Chef
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
     
-    attr_accessor :node, :registration, :json_attribs, :validation_token, :node_name, :ohai, :rest, :runner
+    attr_accessor :node, :registration, :json_attribs, :validation_token, :node_name, :ohai, :rest, :runner, :compile
     
     # Creates a new Chef::Client.
     def initialize()
@@ -48,6 +48,7 @@ class Chef
       @node_name = nil
       @node_exists = true
       @runner = nil
+      @compile = nil
       @ohai = Ohai::System.new
       Chef::Log.verbose = Chef::Config[:verbose_logging]
       Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger
@@ -78,6 +79,8 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def run
+      @runner = nil
+      @compile = nil
       begin
         start_time = Time.now
         Chef::Log.info("Starting Chef Run")
@@ -92,17 +95,37 @@ class Chef
         save_node
         
         end_time = Time.now
-        total_time = end_time - start_time
-        Chef::Log.info("Chef Run complete in #{total_time} seconds")
-        Chef::Config[:report_handlers].each do |handler|
-          handler.report(@node, @runner, total_time)
-        end
+        elapsed_time = end_time - start_time
+        Chef::Log.info("Chef Run complete in #{elapsed_time} seconds")
+        run_report_handlers(start_time, end_time, elapsed_time) 
         true
       rescue Exception => e
-        Chef::Config[:exception_handlers].each do |handler|
-          handler.exception(@node, @runner, e)
-        end
+        run_exception_handlers(@node, @runner ? @runner : @compile, start_time, end_time, elapsed_time, e)
+        Chef::Log.error("Re-raising exception")
         raise
+      end
+    end
+
+    def run_report_handlers(start_time, end_time, elapsed_time)
+      if Chef::Config[:report_handlers].length > 0
+        Chef::Log.info("Running report handlers")
+        Chef::Config[:report_handlers].each do |handler|
+          handler.report(@node, @runner, start_time, end_time, elapsed_time)
+        end
+        Chef::Log.info("Report handlers complete")
+      end
+    end
+
+    def run_exception_handlers(node, runner, start_time, end_time, elapsed_time, exception)
+      if Chef::Config[:exception_handlers].length > 0
+        end_time   ||= Time.now
+        elapsed_time ||= end_time - start_time 
+        Chef::Log.error("Received exception: #{exception.message}")
+        Chef::Log.error("Running exception handlers")
+        Chef::Config[:exception_handlers].each do |handler|
+          handler.report(node, runner, start_time, end_time, elapsed_time, exception)
+        end
+        Chef::Log.error("Exception handlers complete")
       end
     end
     
@@ -114,16 +137,26 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def run_solo
-      start_time = Time.now
-      Chef::Log.info("Starting Chef Solo Run")
+      @runner = nil
+      @compile = nil
+      begin
+        start_time = Time.now
+        Chef::Log.info("Starting Chef Solo Run")
 
-      determine_node_name
-      build_node(@node_name, true)
-      converge(true)
-      
-      end_time = Time.now
-      Chef::Log.info("Chef Run complete in #{end_time - start_time} seconds")
-      true
+        determine_node_name
+        build_node(@node_name, true)
+        converge(true)
+        
+        end_time = Time.now
+        elapsed_time = end_time - start_time
+        Chef::Log.info("Chef Run complete in #{elapsed_time} seconds")
+        run_report_handlers(start_time, end_time, elapsed_time) 
+        true
+      rescue Exception => e
+        run_exception_handlers(@node, @runner ? @runner : @compile, start_time, end_time, elapsed_time, e)
+        Chef::Log.error("Re-raising exception")
+        raise
+      end
     end
 
     def run_ohai
@@ -323,10 +356,11 @@ class Chef
       unless solo
         Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
       end
-      compile = Chef::Compile.new(@node)
+      @compile = Chef::Compile.new(@node)
+      @compile.go
       
       Chef::Log.debug("Converging node #{@node_name}")
-      @runner = Chef::Runner.new(@node, compile.collection, compile.definitions, compile.cookbook_loader)
+      @runner = Chef::Runner.new(@node, @compile.collection, @compile.definitions, @compile.cookbook_loader)
       @runner.converge
       true
     end
