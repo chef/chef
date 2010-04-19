@@ -33,7 +33,7 @@ class Chef
 
       def run 
         client = Chef::ApiClient.load(@name_args[0])
-        json_pretty_print(format_for_display(client))
+        output(format_for_display(client))
       end
 
     end

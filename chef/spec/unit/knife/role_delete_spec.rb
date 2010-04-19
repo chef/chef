@@ -25,7 +25,7 @@ describe Chef::Knife::RoleDelete do
       :print_after => nil
     }
     @knife.name_args = [ "adam" ]
-    @knife.stub!(:json_pretty_print).and_return(true)
+    @knife.stub!(:output).and_return(true)
     @knife.stub!(:confirm).and_return(true)
     @role = Chef::Role.new() 
     @role.stub!(:destroy).and_return(true)
@@ -49,14 +49,14 @@ describe Chef::Knife::RoleDelete do
     end
 
     it "should not print the Role" do
-      @knife.should_not_receive(:json_pretty_print)
+      @knife.should_not_receive(:output)
       @knife.run
     end
 
     describe "with -p or --print-after" do
       it "should pretty print the Role, formatted for display" do
         @knife.config[:print_after] = true
-        @knife.should_receive(:json_pretty_print)
+        @knife.should_receive(:output)
         @knife.run
       end
     end

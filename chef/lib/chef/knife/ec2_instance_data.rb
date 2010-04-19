@@ -38,7 +38,7 @@ class Chef
           "attributes" => { "run_list" => @name_args } 
         }
         data = edit_data(data) if config[:edit]
-        json_pretty_print(data)
+        output(data)
       end
     end
   end

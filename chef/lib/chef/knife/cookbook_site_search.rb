@@ -23,8 +23,8 @@ class Chef
 
       banner "Sub-Command: cookbook site search QUERY (options)"
 
-      def run 
-        json_pretty_print(search_cookbook(name_args[0]))
+      def run
+        output(search_cookbook(name_args[0]))
       end
 
       def search_cookbook(query, items=10, start=0, cookbook_collection={})

@@ -52,9 +52,9 @@ class Chef
           pretty_print(result)
         when 2 # We are showing a specific part of the cookbook
           result = rest.get_rest("cookbooks/#{@name_args[0]}")
-          json_pretty_print(result[@name_args[1]])
+          output(result[@name_args[1]])
         when 1 # We are showing the whole cookbook data
-          json_pretty_print(rest.get_rest("cookbooks/#{@name_args[0]}"))
+          output(rest.get_rest("cookbooks/#{@name_args[0]}"))
         end
       end
 

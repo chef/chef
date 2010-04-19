@@ -23,7 +23,7 @@ describe Chef::Knife::IndexRebuild do
     @knife = Chef::Knife::IndexRebuild.new
     @knife.stub!(:edit_data)
     @rest_client = mock("null rest client", :post_rest => { :result => :true })
-    @knife.stub!(:json_pretty_print)
+    @knife.stub!(:output)
     @knife.stub!(:rest).and_return(@rest_client)
   end
   
@@ -47,14 +47,14 @@ describe Chef::Knife::IndexRebuild do
       @knife.stub!(:print)
       @knife.stub!(:puts)
       @knife.stub!(:nag)
-      @knife.stub!(:json_pretty_print)
+      @knife.stub!(:output)
     end
     
     it "POSTs to /search/reindex and displays the result" do
       @rest_client = mock("Chef::REST")
       @knife.stub!(:rest).and_return(@rest_client)
       @rest_client.should_receive(:post_rest).with("/search/reindex", {}).and_return("monkey")
-      @knife.should_receive(:json_pretty_print).with("monkey")
+      @knife.should_receive(:output).with("monkey")
       @knife.run
     end
   end

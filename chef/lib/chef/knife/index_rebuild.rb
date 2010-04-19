@@ -32,7 +32,7 @@ class Chef
         
       def run
         nag
-        json_pretty_print rest.post_rest("/search/reindex", {})
+        output rest.post_rest("/search/reindex", {})
       end
       
       def nag

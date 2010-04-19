@@ -25,7 +25,7 @@ describe Chef::Knife::NodeBulkDelete do
       :print_after => nil
     }
     @knife.name_args = ["."] 
-    @knife.stub!(:json_pretty_print).and_return(true)
+    @knife.stub!(:output).and_return(true)
     @knife.stub!(:confirm).and_return(true)
     @nodes = Hash.new
     %w{adam brent jacob}.each do |node_name|
@@ -45,7 +45,7 @@ describe Chef::Knife::NodeBulkDelete do
     end
 
     it "should print the nodes you are about to delete" do
-      @knife.should_receive(:json_pretty_print).with(@knife.format_list_for_display(@nodes))
+      @knife.should_receive(:output).with(@knife.format_list_for_display(@nodes))
       @knife.run
     end
 
@@ -78,7 +78,7 @@ describe Chef::Knife::NodeBulkDelete do
       it "should pretty print the node, formatted for display" do
         @knife.config[:print_after] = true
         @nodes.each_value do |n|
-          @knife.should_receive(:json_pretty_print).with(@knife.format_for_display(n))
+          @knife.should_receive(:output).with(@knife.format_for_display(n))
         end
         @knife.run
       end

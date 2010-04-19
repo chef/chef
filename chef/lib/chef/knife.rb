@@ -126,8 +126,16 @@ class Chef
       puts data
     end
 
-    def json_pretty_print(data)
-      puts JSON.pretty_generate(data)
+    def output(data)
+      case config[:format]
+      when "json", nil
+        puts JSON.pretty_generate(data)
+      when "yaml"
+        require 'yaml'
+        puts YAML::dump(data)
+      else
+        raise ArgumentError, "Unknown output format #{config[:format]}"
+      end
     end
 
     def format_list_for_display(list)
@@ -237,7 +245,7 @@ class Chef
 
       Chef::Log.info("Saved #{output}")
 
-      json_pretty_print(format_for_display(object)) if config[:print_after]
+      output(format_for_display(object)) if config[:print_after]
     end
 
     def create_object(object, pretty_name=nil, &block)
@@ -253,7 +261,7 @@ class Chef
 
       Chef::Log.info("Created (or updated) #{pretty_name}")
       
-      json_pretty_print(output) if config[:print_after]
+      output(output) if config[:print_after]
     end
 
     def delete_object(klass, name, delete_name=nil, &block)
@@ -266,7 +274,7 @@ class Chef
         object.destroy
       end
 
-      json_pretty_print(format_for_display(object)) if config[:print_after]
+      output(format_for_display(object)) if config[:print_after]
 
       obj_name = delete_name ? "#{delete_name}[#{name}]" : object
       Chef::Log.warn("Deleted #{obj_name}!")
@@ -285,7 +293,7 @@ class Chef
         to_delete = object_list
       end
 
-      json_pretty_print(format_list_for_display(to_delete))
+      output(format_list_for_display(to_delete))
 
       confirm("Do you really want to delete the above items")
 
@@ -295,7 +303,7 @@ class Chef
         else
           object.destroy
         end
-        json_pretty_print(format_for_display(object)) if config[:print_after]
+        output(format_for_display(object)) if config[:print_after]
         Chef::Log.warn("Deleted #{fancy_name} #{name}")
       end
     end

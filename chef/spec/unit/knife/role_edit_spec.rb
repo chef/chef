@@ -25,7 +25,7 @@ describe Chef::Knife::RoleEdit do
       :print_after => nil
     }
     @knife.name_args = [ "adam" ]
-    @knife.stub!(:json_pretty_print).and_return(true)
+    @knife.stub!(:output).and_return(true)
     @role = Chef::Role.new() 
     @role.stub!(:save)
     Chef::Role.stub!(:load).and_return(@role)
@@ -51,14 +51,14 @@ describe Chef::Knife::RoleEdit do
     end
 
     it "should not print the node" do
-      @knife.should_not_receive(:json_pretty_print)
+      @knife.should_not_receive(:output)
       @knife.run
     end
 
     describe "with -p or --print-after" do
       it "should pretty print the node, formatted for display" do
         @knife.config[:print_after] = true
-        @knife.should_receive(:json_pretty_print).with(@role)
+        @knife.should_receive(:output).with(@role)
         @knife.run
       end
     end

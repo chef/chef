@@ -25,7 +25,7 @@ describe Chef::Knife::CookbookBulkDelete do
       :print_after => nil
     }
     @knife.name_args = ["."]
-    @knife.stub!(:json_pretty_print).and_return(:true)
+    @knife.stub!(:output).and_return(:true)
     @knife.stub!(:confirm).and_return(true)
     @cookbooks = Hash.new
     %w{cheezburger pizza lasagna}.each do |cookbook_name|
@@ -46,7 +46,7 @@ describe Chef::Knife::CookbookBulkDelete do
     end
     
     it "should print the cookbooks you are about to delete" do
-      @knife.should_receive(:json_pretty_print).with(@knife.format_list_for_display(@cookbooks))
+      @knife.should_receive(:output).with(@knife.format_list_for_display(@cookbooks))
       @knife.run
     end
     
@@ -79,7 +79,7 @@ describe Chef::Knife::CookbookBulkDelete do
       it "should pretty_print the node, formatted for display" do
         @knife.config[:print_after] = true
         @cookbooks.each_value do |n|
-          @knife.should_receive(:json_pretty_print).with(@knife.format_for_display(n))
+          @knife.should_receive(:output).with(@knife.format_for_display(n))
         end
         @knife.run
       end

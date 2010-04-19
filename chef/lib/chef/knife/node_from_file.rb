@@ -31,7 +31,7 @@ class Chef
 
         updated.save
         
-        json_pretty_print(format_for_display(updated)) if config[:print_after]
+        output(format_for_display(updated)) if config[:print_after]
 
         Chef::Log.warn("Updated Node #{updated.name}!")
       end

@@ -25,7 +25,7 @@ describe Chef::Knife::NodeRunListAdd do
       :after => nil
     }
     @knife.name_args = [ "adam", "role[monkey]" ]
-    @knife.stub!(:json_pretty_print).and_return(true)
+    @knife.stub!(:output).and_return(true)
     @node = Chef::Node.new() 
     @node.stub!(:save).and_return(true)
     Chef::Node.stub!(:load).and_return(@node)
@@ -48,7 +48,7 @@ describe Chef::Knife::NodeRunListAdd do
     end
 
     it "should print the run list" do
-      @knife.should_receive(:json_pretty_print).and_return(true)
+      @knife.should_receive(:output).and_return(true)
       @knife.run
     end
 
