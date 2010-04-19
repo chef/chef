@@ -19,6 +19,7 @@ couchdb.stderr
 couchdb.stdout
 features/data/tmp/**
 *.swp
+*.swo
 features/data/cookbooks/**/metadata.json
 features/data/solr/**
 erl_crash.dump
