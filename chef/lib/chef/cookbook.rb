@@ -320,6 +320,7 @@ class Chef
             :name => file_name, 
             :uri => file_url, 
             :path => sf.match("cookbooks/#{name}/(#{segment}/.+)")[1],
+            :on_disk_path => sf,
             :checksum => checksum(sf)
           }
           rs[:specificity] = file_specificity if file_specificity
