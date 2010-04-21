@@ -93,56 +93,6 @@ class Application < Merb::Controller
     raise Unauthorized, "You must authenticate first!"
   end
 
-  # Load a cookbook and return a hash with a list of all the files of a
-  # given segment (attributes, recipes, definitions, libraries)
-  #
-  # === Parameters
-  # cookbook_id<String>:: The cookbook to load
-  # segment<Symbol>:: :attributes, :recipes, :definitions, :libraries
-  #
-  # === Returns
-  # <Hash>:: A hash consisting of the short name of the file in :name, and the full path
-  #   to the file in :file.
-  def load_cookbook_segment(cookbook, segment)
-    files_list = segment_files(segment, cookbook)
-
-    files = Hash.new
-    files_list.each do |f|
-      full = File.expand_path(f)
-      name = File.basename(full)
-      files[name] = {
-        :name => name,
-        :file => full,
-      }
-    end
-    files
-  end
-
-  def segment_files(segment, cookbook)
-    files_list = nil
-    case segment
-    when :attributes
-      files_list = cookbook.attribute_files
-    when :recipes
-      files_list = cookbook.recipe_files
-    when :definitions
-      files_list = cookbook.definition_files
-    when :libraries
-      files_list = cookbook.lib_files
-    when :providers
-      files_list = cookbook.provider_files
-    when :resources
-      files_list = cookbook.resource_files
-    when :files
-      files_list = cookbook.remote_files
-    when :templates
-      files_list = cookbook.template_files
-    else
-      raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions, :remote_files, :template_files, :resources, :providers or :libraries"
-    end
-    files_list
-  end
-
   def specific_cookbooks(node_name, cl)
     valid_cookbooks = Hash.new
     begin
@@ -169,66 +119,7 @@ class Application < Merb::Controller
     end
     valid_cookbooks
   end
-
-  def load_cookbook_files(cookbook)
-    response = {
-      :recipes => Array.new,
-      :definitions => Array.new,
-      :libraries => Array.new,
-      :attributes => Array.new,
-      :files => Array.new,
-      :templates => Array.new,
-      :resources => Array.new,
-      :providers => Array.new
-    }
-    [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates ].each do |segment|
-      segment_files(segment, cookbook).each do |sf|
-        next if File.directory?(sf)
-        file_name = nil
-        file_url = nil
-        file_specificity = nil
-
-        if segment == :templates || segment == :files
-          mo = sf.match("cookbooks/#{cookbook.name}/#{segment}/(.+?)/(.+)")
-          unless mo
-            Chef::Log.debug("Skipping file #{sf}, as it doesn't have a proper segment.")
-            next
-          end
-          specificity = mo[1]
-          file_name = mo[2]
-          url_options = { :cookbook_id => cookbook.name.to_s, :segment => segment, :id => file_name }
-
-          case specificity
-          when "default"
-          when /^host-(.+)$/
-            url_options[:fqdn] = $1
-          when /^(.+)-(.+)$/
-            url_options[:platform] = $1
-            url_options[:version] = $2
-          when /^(.+)$/
-            url_options[:platform] = $1
-          end
-
-          file_specificity = specificity
-          file_url = absolute_url(:cookbook_segment, url_options)
-        else
-          mo = sf.match("cookbooks/#{cookbook.name}/#{segment}/(.+)")
-          file_name = mo[1]
-          url_options = { :cookbook_id => cookbook.name.to_s, :segment => segment, :id => file_name }
-          file_url = absolute_url(:cookbook_segment, url_options)
-        end
-        rs = {
-          :name => file_name,
-          :uri => file_url,
-          :checksum => checksum(sf)
-        }
-        rs[:specificity] = file_specificity if file_specificity
-        response[segment] << rs
-      end
-    end
-    response
-  end
-
+  
   def load_all_files(node_name=nil)
     cl = Chef::CookbookLoader.new
     valid_cookbooks = node_name ? specific_cookbooks(node_name, cl) : {}
@@ -237,7 +128,7 @@ class Application < Merb::Controller
       if node_name
         next unless valid_cookbooks[cookbook.name.to_s]
       end
-      cookbook_list[cookbook.name.to_s] = load_cookbook_files(cookbook)
+      cookbook_list[cookbook.name.to_s] = cookbook.generate_manifest { |opts| absolute_slice_url(:cookbook_segment, opts) }
     end
     cookbook_list
   end

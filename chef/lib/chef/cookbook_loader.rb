@@ -112,6 +112,7 @@ class Chef
         @cookbook[cookbook].lib_files = cookbook_settings[cookbook][:lib_files].values
         @cookbook[cookbook].resource_files = cookbook_settings[cookbook][:resource_files].values
         @cookbook[cookbook].provider_files = cookbook_settings[cookbook][:provider_files].values
+        @cookbook[cookbook].metadata_files = cookbook_settings[cookbook][:metadata_files]
         @metadata[cookbook] = Chef::Cookbook::Metadata.new(@cookbook[cookbook])
         cookbook_settings[cookbook][:metadata_files].each do |meta_json|
           begin
@@ -121,6 +122,7 @@ class Chef
             raise
           end
         end
+        @cookbook[cookbook].metadata = @metadata[cookbook]
       end
     end
     

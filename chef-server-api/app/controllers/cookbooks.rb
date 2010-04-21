@@ -46,10 +46,8 @@ class Cookbooks < Application
     rescue ArgumentError => e
       raise NotFound, "Cannot find a cookbook named #{params[:id]}"
     end
-    results = load_cookbook_files(cookbook)
-    results[:name] = cookbook.name.to_s
-    results[:metadata] = cl.metadata[cookbook.name.to_sym]
-    display results 
+    cookbook.generate_manifest { |opts| absolute_slice_url(:cookbook_segment, opts) }
+    display cookbook
   end
  
   def show_segment

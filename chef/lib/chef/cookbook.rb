@@ -26,16 +26,44 @@ require 'chef/mixin/convert_to_class_name'
 class Chef
   class Cookbook
     include Chef::Mixin::ConvertToClassName
+    include Chef::Mixin::Checksum
+    include Chef::IndexQueue::Indexable
     
-    attr_accessor :definition_files, :template_files, :remote_files, 
-                  :lib_files, :resource_files, :provider_files, :name
-    attr_reader :recipe_files, :attribute_files
+    attr_accessor :definition_files, :template_files, :remote_files,
+      :lib_files, :resource_files, :provider_files, :name, :manifest,
+      :metadata, :metadata_files, :status, :couchdb_rev, :couchdb, :version
+    attr_reader :recipe_files, :attribute_files, :couchdb_id
+
+    DESIGN_DOCUMENT = {
+      "version" => 1,
+      "language" => "javascript",
+      "views" => {
+        "all" => {
+          "map" => <<-EOJS
+          function(doc) { 
+            if (doc.chef_type == "cookbook") {
+              emit(doc.name, doc);
+            }
+          }
+          EOJS
+        },
+        "all_id" => {
+          "map" => <<-EOJS
+          function(doc) { 
+            if (doc.chef_type == "cookbook") {
+              emit(doc.name, doc.name);
+            }
+          }
+          EOJS
+        }
+      }
+    }
     
     # Creates a new Chef::Cookbook object.  
     #
     # === Returns
     # object<Chef::Cookbook>:: Duh. :)
-    def initialize(name)
+    def initialize(name, couchdb=nil)
       @name = name
       @attribute_files = Array.new
       @attribute_names = Hash.new
@@ -47,6 +75,18 @@ class Chef
       @lib_files = Array.new
       @resource_files = Array.new
       @provider_files = Array.new
+      @metadata_files = Array.new
+      @couchdb_id = nil
+      @couchdb = couchdb || Chef::CouchDB.new
+      @couchdb_rev = nil 
+      @status = :ready
+      @manifest = nil 
+      @version = nil
+      @metadata = {}
+    end
+
+    def full_name
+      "#{name}-#{version}"
     end
     
     # Loads all the library files in this cookbook via require.
@@ -170,6 +210,159 @@ class Chef
                                 collection, definitions, cookbook_loader)
       recipe.from_file(@recipe_files[@recipe_names[recipe_name]])
       recipe
+    end
+
+    def segment_files(segment)
+      files_list = nil
+      case segment
+      when :attributes
+        files_list = attribute_files
+      when :recipes
+        files_list = recipe_files
+      when :definitions
+        files_list = definition_files
+      when :libraries
+        files_list = lib_files
+      when :providers
+        files_list = provider_files
+      when :resources
+        files_list = resource_files
+      when :files
+        files_list = remote_files
+      when :templates
+        files_list = template_files
+      else
+        raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions, :remote_files, :template_files, :resources, :providers or :libraries"
+      end
+      files_list
+    end
+
+    def to_json(*a)
+      result = self.manifest ? self.manifest : self.generate_manifest
+      result['json_class'] = self.class.name
+      result['chef_type'] = 'cookbook'
+      result["_rev"] = @couchdb_rev if @couchdb_rev
+      result.to_json(*a)
+    end
+
+    def self.json_create(o)
+      cookbook = new(o["cookbook_name"])
+      if o.has_key?('_rev')
+        cookbook.couchdb_rev = o["_rev"] if o.has_key?("_rev")
+        o.delete("_rev")
+      end
+      if o.has_key?("_id")
+        cookbook.couchdb_id = o["_id"] if o.has_key?("_id")
+        cookbook.index_id = cookbook.couchdb_id
+        o.delete("_id")
+      end
+      cookbook.manifest = o
+      cookbook.metadata = o["metadata"]
+      cookbook.version = o["version"]
+      cookbook
+    end
+
+    def generate_manifest(&url_generation)
+      response = {
+        :recipes => Array.new,
+        :definitions => Array.new,
+        :libraries => Array.new,
+        :attributes => Array.new,
+        :files => Array.new,
+        :templates => Array.new,
+        :resources => Array.new,
+        :providers => Array.new
+      }
+      [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates ].each do |segment|
+        segment_files(segment).each do |sf|
+          next if File.directory?(sf)
+
+          file_name = nil
+          file_url = nil
+          file_specificity = nil
+          url_options = nil
+
+          if segment == :templates || segment == :files
+            mo = sf.match("cookbooks/#{name}/#{segment}/(.+?)/(.+)")
+            unless mo
+              Chef::Log.debug("Skipping file #{sf}, as it doesn't have a proper segment.")
+              next
+            end
+            specificity = mo[1]
+            file_name = mo[2]
+            url_options = { :cookbook_id => name.to_s, :segment => segment, :id => file_name }
+
+            case specificity
+            when "default"
+            when /^host-(.+)$/
+              url_options[:fqdn] = $1
+            when /^(.+)-(.+)$/
+              url_options[:platform] = $1
+              url_options[:version] = $2
+            when /^(.+)$/
+              url_options[:platform] = $1
+            end
+
+            file_specificity = specificity
+          else
+            mo = sf.match("cookbooks/#{name}/#{segment}/(.+)")
+            file_name = mo[1]
+            url_options = { :cookbook_id => name.to_s, :segment => segment, :id => file_name }
+          end
+
+          if url_generation
+            file_url = url_generation.call(url_options)
+          else
+            file_url = nil
+          end
+
+          rs = {
+            :name => file_name, 
+            :uri => file_url, 
+            :path => sf.match("cookbooks/#{name}/(#{segment}/.+)")[1],
+            :checksum => checksum(sf)
+          }
+          rs[:specificity] = file_specificity if file_specificity
+          response[segment] << rs 
+        end
+      end
+      response[:cookbook_name] = name.to_s
+      response[:metadata] = metadata 
+      response[:version] = metadata.version
+      @version = metadata.version
+      response[:name] = full_name 
+      @manifest = response
+    end
+
+    ##
+    # Couchdb
+    ##
+
+    def self.create_design_document(couchdb=nil)
+      (couchdb || Chef::CouchDB.new).create_design_document("cookbooks", DESIGN_DOCUMENT)
+    end
+    
+    def self.cdb_list(inflate=false, couchdb=nil)
+      rs = (couchdb || Chef::CouchDB.new).list("cookbooks", inflate)
+      lookup = (inflate ? "value" : "key")
+      rs["rows"].collect { |r| r[lookup] }            
+    end
+
+    def self.cdb_load(name, couchdb=nil)
+      (couchdb || Chef::CouchDB.new).load("cookbook", full_name)
+    end
+
+    def cdb_destroy
+      (couchdb || Chef::CouchDB.new).delete("cookbook", full_name, @couchdb_rev)
+    end
+
+    def cdb_save
+      @couchdb_rev = @couchdb.store("cookbook", full_name, self)["rev"]
+    end
+
+    def couchdb_id=(value)
+      @couchdb_id = value
+      self.index_id = value
     end
 
     private

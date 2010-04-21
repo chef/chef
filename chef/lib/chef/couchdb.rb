@@ -110,7 +110,8 @@ class Chef
       )
       rows = get_view("id_map", "name_to_id", :key => [ obj_type, name ])["rows"]
       uuid    = rows.empty? ? UUIDTools::UUID.random_create.to_s : rows.first.fetch("id")
-      
+     
+      puts object.inspect
       db_put_response = @rest.put_rest("#{couchdb_database}/#{uuid}", object)
       
       Chef::Log.info("Sending #{obj_type}(#{uuid}) to the index queue for addition.")
