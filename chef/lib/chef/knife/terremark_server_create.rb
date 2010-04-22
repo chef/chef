@@ -131,15 +131,19 @@ EOP
 /usr/bin/chef-client -j /etc/chef/first-boot.json'
 EOH
 
-        puts "Waiting 30 seconds before bootstrapping..."
-        sleep 30 
-        ssh = Chef::Knife::Ssh.new
-        ssh.name_args = [ public_ip, "sudo #{command}" ]
-        ssh.config[:ssh_user] = "vcloud"
-        ssh.config[:manual] = true
-        ssh.config[:password] = password
-        ssh.password = password
-        ssh.run
+        begin
+          ssh = Chef::Knife::Ssh.new
+          ssh.name_args = [ public_ip, "sudo #{command}" ]
+          ssh.config[:ssh_user] = "vcloud"
+          ssh.config[:manual] = true
+          ssh.config[:password] = password
+          ssh.password = password
+          ssh.run
+        rescue Errno::ETIMEDOUT
+          puts "Timed out on bootstrap, re-trying. Hit CTRL-C to abort."
+          puts "You probably need to log in to Terremark and powercycle #{h.color(@name_args[0], :bold)}"
+          retry
+        end
 
       end
     end
