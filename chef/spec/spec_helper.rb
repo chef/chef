@@ -23,24 +23,29 @@ module Shef
 end
 
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-$:.unshift(File.join(File.dirname(__FILE__), "..", "..", "chef-server", "lib"))
+#$:.unshift(File.join(File.dirname(__FILE__), "..", "..", "chef-server", "lib"))
 
 require 'chef'
-require File.join(File.dirname(__FILE__), "/../lib/chef/util/file_edit")
+require 'chef/knife'
+Chef::Knife.load_commands
+require 'chef/mixins'
+require 'chef/shef'
+require 'chef/util/file_edit'
 
-chef_lib_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-Dir[
-  File.expand_path(
-    File.join(
-      chef_lib_path, 'chef', '**', '*.rb'
-    )
-  )
-].sort.each do |lib|
-  lib_short_path = lib.match("^#{chef_lib_path}#{File::SEPARATOR}(.+)$")[1]
-  require lib_short_path
-end
+# chef_lib_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
+# Dir[
+#   File.expand_path(
+#     File.join(
+#       chef_lib_path, 'chef', '**', '*.rb'
+#     )
+#   )
+# ].sort.each do |lib|
+#   lib_short_path = lib.match("^#{chef_lib_path}#{File::SEPARATOR}(.+)$")[1]
+#   require lib_short_path
+# end
+
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
-
+# 
 Chef::Config[:log_level] = :fatal
 Chef::Config[:cache_type] = "Memory"
 Chef::Config[:cache_options] = { } 

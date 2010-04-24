@@ -19,8 +19,9 @@
 require 'chef/mixin/command'
 require 'chef/log'
 require 'chef/file_cache'
-require 'chef/resource/remote_file'
-require 'chef/platform'
+# CHEF489TODO
+#require 'chef/resource/remote_file'
+#require 'chef/platform'
 
 class Chef
   class Provider

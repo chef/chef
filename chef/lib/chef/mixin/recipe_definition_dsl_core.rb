@@ -17,8 +17,9 @@
 # limitations under the License.
 #
 
-require 'chef/recipe'
-require 'chef/resource'
+# CHEF489TODO
+#require 'chef/recipe'
+#require 'chef/resource'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/language'
 
