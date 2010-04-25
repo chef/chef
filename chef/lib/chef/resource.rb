@@ -162,10 +162,18 @@ class Chef
       if args.size > 1
         notifies_helper(*args)
       else
-        resources_array = *args
-        resources_array.each do |resource|
-          resource.each do |key, value|
-            notifies_helper(value[0], key, value[1])    
+        # This syntax is so weird. surely people will just give us one hash?
+        notifications = args.flatten
+        notifications.each do |resources_notifications|
+          begin
+            resources_notifications.each do |resource, notification|
+              Chef::Log.error "resource KV: `#{resource.inspect}' => `#{notification.inspect}'"
+              notifies_helper(notification[0], resource, notification[1])    
+            end
+          rescue NoMethodError
+            Chef::Log.fatal("encountered NME processing resource #{resources_notifications.inspect}")
+            Chef::Log.fatal("incoming args: #{args.inspect}")
+            raise
           end
         end 
       end
