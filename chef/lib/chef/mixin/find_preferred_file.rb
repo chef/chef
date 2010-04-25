@@ -16,8 +16,7 @@
 # limitations under the License.
 #
 
-# CHEF489TODO
-# require 'chef/cookbook_loader'
+require 'chef/cookbook_loader'
 
 class Chef
   module Mixin

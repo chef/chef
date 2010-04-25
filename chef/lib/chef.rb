@@ -23,8 +23,6 @@ require 'chef/config'
 require 'chef/providers'
 require 'chef/resources'
 
-# CHEF489TODO keep this require?
-# require 'chef/mixins'
 require 'chef/compile'
 require 'chef/daemon'
 require 'chef/runner'

@@ -18,8 +18,7 @@
 
 require 'chef/provider/package'
 require 'chef/mixin/command'
-# CHEF489TODO
-#require 'chef/resource/package'
+require 'chef/resource/package'
 
 class Chef
   class Provider

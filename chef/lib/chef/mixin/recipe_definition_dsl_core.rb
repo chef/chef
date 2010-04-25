@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-# CHEF489TODO
-#require 'chef/recipe'
-#require 'chef/resource'
+require 'chef/resource'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/language'
+
+Chef.autoload :Recipe, 'chef/recipe'
 
 class Chef
   module Mixin
