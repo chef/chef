@@ -152,7 +152,7 @@ describe Chef::Provider::Deploy do
   
   it "runs the new resource collection in the runner during a callback" do
     @runner.should_receive(:converge)
-    callback_code = lambda { :noop }
+    callback_code = Proc.new { :noop }
     @provider.callback(:whatevs, callback_code)
   end
   
@@ -351,7 +351,7 @@ describe Chef::Provider::Deploy do
     
     it "runs an inline recipe with the provided block for :callback_name == {:recipe => &block} " do
       snitch = nil
-      recipe_code = lambda {snitch = 42}
+      recipe_code = Proc.new {snitch = 42}
       #@provider.should_receive(:instance_eval).with(&recipe_code)
       @provider.callback(:whateverz, recipe_code)
       snitch.should == 42
@@ -366,7 +366,7 @@ describe Chef::Provider::Deploy do
     
     it "instance_evals a block/proc for restart command" do
       snitch = nil
-      restart_cmd = lambda {snitch = 42}
+      restart_cmd = Proc.new {snitch = 42}
       @resource.restart(&restart_cmd)
       @provider.restart
       snitch.should == 42
@@ -395,7 +395,7 @@ describe Chef::Provider::Deploy do
       snitch = nil
       @resource.user("tehCat")
       
-      callback_code = lambda do
+      callback_code = Proc.new do
         snitch = 42
         temp_collection = self.instance_variable_get(:@collection)
         run("tehMice")

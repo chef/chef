@@ -54,7 +54,7 @@ describe Chef::Provider do
   it "evals embedded recipes with a pristine resource collection" do
     @provider.instance_variable_set(:@collection, "bouncyCastle")
     temporary_collection = nil
-    snitch = lambda {temporary_collection = @collection}
+    snitch = Proc.new {temporary_collection = @collection}
     @provider.send(:recipe_eval, &snitch)
     temporary_collection.should be_an_instance_of(Chef::ResourceCollection)
     @provider.instance_variable_get(:@collection).should == "bouncyCastle"
