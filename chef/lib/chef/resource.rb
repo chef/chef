@@ -80,7 +80,7 @@ class Chef
         prior_resource = @collection.lookup(self.to_s)
         Chef::Log.debug("Setting #{self.to_s} to the state of the prior #{self.to_s}")
         prior_resource.instance_variables.each do |iv|
-          unless iv == "@source_line" || iv == "@action"
+          unless iv.to_sym == :@source_line || iv.to_sym == :@action
             self.instance_variable_set(iv, prior_resource.instance_variable_get(iv))
           end
         end
@@ -193,7 +193,11 @@ class Chef
     end
     
     def is(*args)
-      return *args
+      if args.size == 1
+        args.first
+      else
+        return *args
+      end
     end
     
     def to_s
@@ -216,7 +220,9 @@ class Chef
     def to_hash
       instance_vars = Hash.new
       self.instance_variables.each do |iv|
-        instance_vars[iv.sub(/^@/,'').to_sym] = self.instance_variable_get(iv) unless iv == "@collection"
+        iv = iv.to_s
+        next if iv == "@collection"
+        instance_vars[iv.sub(/^@/,'').to_sym] = self.instance_variable_get(iv)
       end
       instance_vars
     end

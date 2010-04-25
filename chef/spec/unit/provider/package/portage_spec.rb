@@ -43,13 +43,13 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
   end
   
   it "should create a current resource with the name of new_resource" do
-    ::Dir.stub!(:entries).and_return("git-1.0.0")
+    ::Dir.stub!(:entries).and_return(["git-1.0.0"])
     Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
     @provider.load_current_resource
   end
   
   it "should set the current resource package name to the new resource package name" do
-    ::Dir.stub!(:entries).and_return("git-1.0.0")
+    ::Dir.stub!(:entries).and_return(["git-1.0.0"])
     @current_resource.should_receive(:package_name).with(@new_resource.package_name)
     @provider.load_current_resource
   end
@@ -61,13 +61,13 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
   end
 
   it "should return a current resource with the correct version if the package is found with revision" do
-    ::Dir.stub!(:entries).and_return("git-1.0.0-r1")
+    ::Dir.stub!(:entries).and_return(["git-1.0.0-r1"])
     @current_resource.should_receive(:version).with("1.0.0-r1")
     @provider.load_current_resource
   end
   
   it "should return a current resource with a nil version if the package is not found" do
-    ::Dir.stub!(:entries).and_return("notgit-1.0.0")
+    ::Dir.stub!(:entries).and_return(["notgit-1.0.0"])
     @current_resource.should_receive(:version).with(nil)
     @provider.load_current_resource
   end

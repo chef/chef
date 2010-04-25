@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,17 +35,17 @@ class Chef
       attr_accessor :cron_exists, :cron_empty
 
       def load_current_resource
-        crontab = String.new
+        crontab_lines = []
         @current_resource = Chef::Resource::Cron.new(@new_resource.name)
         @current_resource.user(@new_resource.user)
         status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
-          stdout.each { |line| crontab << line }
+          stdout.each_line { |line| crontab_lines << line }
         end
         if status.exitstatus > 1
           raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
         elsif status.exitstatus == 0
           cron_found = false
-          crontab.each do |line|
+          crontab_lines.each do |line|
             case line
             when /^# Chef Name: #{@new_resource.name}/
               Chef::Log.debug("Found cron '#{@new_resource.name}'")
@@ -66,11 +66,11 @@ class Chef
               next
             when CRON_PATTERN
               if cron_found
-                @current_resource.minute($1) 
-                @current_resource.hour($2) 
+                @current_resource.minute($1)
+                @current_resource.hour($2)
                 @current_resource.day($3)
-                @current_resource.month($4) 
-                @current_resource.weekday($5) 
+                @current_resource.month($4)
+                @current_resource.weekday($5)
                 @current_resource.command($6)
                 cron_found=false
               end
@@ -84,7 +84,7 @@ class Chef
           Chef::Log.debug("Cron empty for '#{@new_resource.user}'")
           @cron_empty = true
         end
-        
+
         @current_resource
       end
 
@@ -125,12 +125,12 @@ class Chef
               else
                 next if cron_found
               end
-              crontab << line 
+              crontab << line
             end
           end
 
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
-            crontab.each { |line| stdin.puts "#{line}" }
+            crontab.each_line { |line| stdin.puts "#{line}" }
           end
           Chef::Log.info("Updated cron '#{@new_resource.name}'")
           @new_resource.updated = true
@@ -140,11 +140,11 @@ class Chef
               stdout.each { |line| crontab << line }
             end
           end
-  
+
           crontab << newcron
 
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
-            crontab.each { |line| stdin.puts "#{line}" }
+            crontab.each_line { |line| stdin.puts "#{line}" }
           end
           Chef::Log.info("Added cron '#{@new_resource.name}'")
           @new_resource.updated = true
@@ -169,12 +169,12 @@ class Chef
               else
                 next if cron_found
               end
-              crontab << line 
+              crontab << line
             end
           end
 
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
-            crontab.each { |line| stdin.puts "#{line}" }
+            crontab.each_line { |line| stdin.puts "#{line}" }
           end
           Chef::Log.debug("Deleted cron '#{@new_resource.name}'")
           @new_resource.updated = true

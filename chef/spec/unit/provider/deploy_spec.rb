@@ -350,9 +350,11 @@ describe Chef::Provider::Deploy do
   context "using inline recipes for callbacks" do
     
     it "runs an inline recipe with the provided block for :callback_name == {:recipe => &block} " do
-      recipe_code = lambda {:noop}
-      @provider.should_receive(:instance_eval).with(&recipe_code)
+      snitch = nil
+      recipe_code = lambda {snitch = 42}
+      #@provider.should_receive(:instance_eval).with(&recipe_code)
       @provider.callback(:whateverz, recipe_code)
+      snitch.should == 42
     end
     
     it "loads a recipe file from the specified path and from_file evals it" do

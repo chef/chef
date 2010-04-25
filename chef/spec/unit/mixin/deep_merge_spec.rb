@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Mixin::DeepMerge, "deep_merge!" do
   DM = Chef::Mixin::DeepMerge
   FIELD_KNOCKOUT_PREFIX = Chef::Mixin::DeepMerge::DEFAULT_FIELD_KNOCKOUT_PREFIX
-  
+
   # deep_merge core tests - moving from basic to more complex
 
   it "tests merging an hash w/array into blank hash" do
@@ -699,6 +699,8 @@ end # deep_merge!
 
 # Chef specific
 describe Chef::Mixin::DeepMerge, "merge" do
+  DM = Chef::Mixin::DeepMerge
+
   it "should merge a hash into an empty hash" do
     hash_dst = {}
     hash_src = {'id' => '2'}
