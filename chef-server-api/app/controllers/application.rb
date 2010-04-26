@@ -90,13 +90,7 @@ class Application < Merb::Controller
   end
 
   def access_denied
-    case content_type
-    when :html
-      store_location
-      redirect slice_url(:openid_consumer), :message => { :error => "You don't have access to that, please login."}
-    else
-      raise Unauthorized, "You must authenticate first!"
-    end
+    raise Unauthorized, "You must authenticate first!"
   end
 
   # Load a cookbook and return a hash with a list of all the files of a

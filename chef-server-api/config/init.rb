@@ -24,6 +24,7 @@
 require 'merb-assets'
 require 'merb-helpers'
 require 'merb-param-protection'
+require 'merb-haml'
 
 require 'bunny'
 require 'uuidtools'
@@ -43,6 +44,9 @@ require 'chef/data_bag_item'
 require 'mixlib/authentication'
 
 Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger
+
+# Only used for the error page when visiting with a browser...
+use_template_engine :haml
 
 Merb::Config.use do |c|
   c[:session_id_key] = '_chef_server_session_id'
