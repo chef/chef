@@ -1,6 +1,24 @@
-# lkjlk
+#
+# Rakefile for Chef
+#
+# Author:: Adam Jacob (<adam@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-gems = %w[chef chef-server-api chef-server-webui chef-server chef-solr]
+gems = %w[chef chef-server-api chef-server-webui chef-solr]
 require 'rubygems'
 require 'cucumber/rake/task'
 
@@ -12,7 +30,7 @@ task :gem do
       Dir.chdir(dir) { sh build_commands[dir] }
   end
 end
- 
+
 desc "Install the chef gems"
 task :install do
   gems.each do |dir|
@@ -58,7 +76,7 @@ end
 def configure_rabbitmq(type="normal")
   # hack. wait for rabbit to come up.
   sleep 2
-  
+
   puts `rabbitmqctl add_vhost /chef`
 
   # create 'chef' user, give it the password 'testing'
@@ -70,7 +88,7 @@ def configure_rabbitmq(type="normal")
   puts `rabbitmqctl list_users`
   puts `rabbitmqctl list_vhosts`
   puts `rabbitmqctl list_permissions -p /chef`
-  
+
 end
 
 def start_chef_solr(type="normal")
@@ -174,11 +192,11 @@ def stop_dev_environment
   end
   if @couchdb_server_pid
     puts "Stopping CouchDB"
-    Process.kill("KILL", @couchdb_server_pid) 
+    Process.kill("KILL", @couchdb_server_pid)
   end
   if @rabbitmq_server_pid
     puts "Stopping RabbitMQ"
-    Process.kill("KILL", @rabbitmq_server_pid) 
+    Process.kill("KILL", @rabbitmq_server_pid)
   end
   puts "Have a nice day!"
 end
@@ -201,15 +219,15 @@ task :dev do
   wait_for_ctrlc
 end
 
-namespace :dev do  
+namespace :dev do
   desc "Install a test instance of Chef for doing features against"
   task :features do
     start_dev_environment("features")
     wait_for_ctrlc
   end
-  
+
   namespace :features do
-    
+
     namespace :start do
       desc "Start CouchDB for testing"
       task :couchdb do
@@ -223,7 +241,7 @@ namespace :dev do
         configure_rabbitmq("features")
         wait_for_ctrlc
       end
-      
+
       desc "Start Chef Solr for testing"
       task :chef_solr do
         start_chef_solr("features")
@@ -321,7 +339,7 @@ namespace :features do
       end
     end
 
-    namespace :cookbooks do    
+    namespace :cookbooks do
       desc "Run cucumber tests for the cookbooks portion of the REST API"
       Cucumber::Rake::Task.new(:cookbooks) do |t|
         t.profile = "api_cookbooks"
@@ -331,13 +349,13 @@ namespace :features do
         t.profile = "api_cookbooks_tarballs"
       end
     end
-    
-    namespace :data do    
+
+    namespace :data do
       desc "Run cucumber tests for the data portion of the REST API"
       Cucumber::Rake::Task.new(:data) do |t|
         t.profile = "api_data"
       end
-      
+
       desc "Run cucumber tests for deleting data via the REST API"
       Cucumber::Rake::Task.new(:delete) do |t|
         t.profile = "api_data_delete"
@@ -347,13 +365,13 @@ namespace :features do
         t.profile = "api_data_item"
       end
     end
-    
+
     namespace :search do
       desc "Run cucumber tests for searching via the REST API"
       Cucumber::Rake::Task.new(:search) do |t|
         t.profile = "api_search"
       end
-      
+
       desc "Run cucumber tests for listing search endpoints via the REST API"
       Cucumber::Rake::Task.new(:list) do |t|
         t.profile = "api_search_list"
@@ -427,17 +445,17 @@ namespace :features do
       t.profile = "attribute_inclusion"
     end
   end
-  
+
   Cucumber::Rake::Task.new(:lwrp) do |t|
     t.profile = "lwrp"
   end
 
-  desc "Run cucumber tests for providers" 
+  desc "Run cucumber tests for providers"
   Cucumber::Rake::Task.new(:provider) do |t|
     t.profile = "provider"
   end
 
-  
+
   namespace :provider do
     desc "Run cucumber tests for deploy resources"
     Cucumber::Rake::Task.new(:deploy) do |t|
@@ -468,21 +486,21 @@ namespace :features do
     Cucumber::Rake::Task.new(:template) do |t|
       t.profile = "provider_template"
     end
-    
+
     Cucumber::Rake::Task.new(:remote_directory) do |t|
       t.profile = "provider_remote_directory"
     end
-    
+
     Cucumber::Rake::Task.new(:git) do |t|
       t.profile = "provider_git"
     end
-    
+
     namespace :package do
       desc "Run cucumber tests for macports packages"
       Cucumber::Rake::Task.new(:macports) do |t|
         t.profile = "provider_package_macports"
       end
-      
+
       Cucumber::Rake::Task.new(:gems) do |g|
         g.profile = "provider_package_rubygems"
       end
