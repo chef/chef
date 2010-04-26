@@ -20,6 +20,9 @@ require 'chef/config'
 require 'chef/log'
 require 'chef/mixin/params_validate'
 
+# Actually, this file depends on nearly every provider in chef, but actually
+# requiring them causes circular requires resulting in uninitialized constant
+# errors.
 require 'chef/provider'
 require 'chef/provider/log'
 require 'chef/provider/user'
@@ -28,46 +31,6 @@ require 'chef/provider/mount'
 require 'chef/provider/service'
 require 'chef/provider/package'
 
-Chef.autoload :Resource, 'chef/resource'
-
-Chef::Provider.autoload :Cron, 'chef/provider/cron'
-Chef::Provider.autoload :Directory, 'chef/provider/directory'
-Chef::Provider.autoload :ErlCall, 'chef/provider/erl_call'
-Chef::Provider.autoload :Execute, 'chef/provider/execute'
-Chef::Provider.autoload :File, 'chef/provider/file'
-Chef::Provider.autoload :HttpRequest, 'chef/provider/http_request'
-Chef::Provider.autoload :Ifconfig, 'chef/provider/ifconfig'
-Chef::Provider.autoload :Link, 'chef/provider/link'
-Chef::Provider.autoload :Mdadm, 'chef/provider/mdadm'
-Chef::Provider.autoload :RemoteDirectory, 'chef/provider/remote_directory'
-Chef::Provider.autoload :RemoteFile, 'chef/provider/remote_file'
-Chef::Provider.autoload :Route, 'chef/provider/route'
-Chef::Provider.autoload :RubyBlock, 'chef/provider/ruby_block'
-Chef::Provider.autoload :Script, 'chef/provider/script'
-Chef::Provider.autoload :Template, 'chef/provider/template'
-
-Chef::Provider::Mount.autoload :Mount, 'chef/provider/mount/mount'
-
-Chef::Provider::Package.autoload :Apt, 'chef/provider/package/apt'
-Chef::Provider::Package.autoload :Freebsd, 'chef/provider/package/freebsd'
-Chef::Provider::Package.autoload :Macports, 'chef/provider/package/macports'
-Chef::Provider::Package.autoload :Portage, 'chef/provider/package/portage'
-Chef::Provider::Package.autoload :Yum, 'chef/provider/package/yum'
-Chef::Provider::Package.autoload :Zypper, 'chef/provider/package/zypper'
-
-Chef::Provider::Service.autoload :Debian, 'chef/provider/service/debian'
-Chef::Provider::Service.autoload :Freebsd, 'chef/provider/service/freebsd'
-Chef::Provider::Service.autoload :Gentoo, 'chef/provider/service/gentoo'
-Chef::Provider::Service.autoload :Init, 'chef/provider/service/init'
-Chef::Provider::Service.autoload :Redhat, 'chef/provider/service/redhat'
-
-Chef::Provider::User.autoload :Dscl, 'chef/provider/user/dscl'
-Chef::Provider::User.autoload :Useradd, 'chef/provider/user/useradd'
-Chef::Provider::User.autoload :Pw, 'chef/provider/user/pw'
-
-Chef::Provider::Group.autoload :Dscl, 'chef/provider/group/dscl'
-Chef::Provider::Group.autoload :Gpasswd, 'chef/provider/group/gpasswd'
-Chef::Provider::Group.autoload :Pw, 'chef/provider/group/pw'
 
 class Chef
   class Platform
