@@ -23,12 +23,12 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
 
-  s.add_dependency "merb-core", "~> 1.0.0"
-  s.add_dependency "merb-slices", "~> 1.0.0"
-  s.add_dependency "merb-assets", "~> 1.0.0"
-  s.add_dependency "merb-helpers", "~> 1.0.0"
-  s.add_dependency "merb-haml", "~> 1.0.0"
-  s.add_dependency "merb-param-protection", "~> 1.0.0"
+  s.add_dependency "merb-core", "~> 1.0"
+  s.add_dependency "merb-slices", "~> 1.0"
+  s.add_dependency "merb-assets", "~> 1.0"
+  s.add_dependency "merb-helpers", "~> 1.0"
+  s.add_dependency "merb-haml", "~> 1.0"
+  s.add_dependency "merb-param-protection", "~> 1.0"
 
   s.add_dependency "json", "<= 1.4.2"
 
@@ -36,12 +36,6 @@ spec = Gem::Specification.new do |s|
 
   s.bindir       = "bin"
   s.executables  = %w( chef-server-webui )
-  
-  ["thin",
-   "haml",
-   "json",
-   "ruby-openid",
-   "coderay"].each { |g| s.add_dependency g}
   
   s.require_path = 'lib'
   s.files = %w(LICENSE README.rdoc Rakefile config.ru) + Dir.glob("{bin,config,lib,spec,app,public,stubs}/**/*")
