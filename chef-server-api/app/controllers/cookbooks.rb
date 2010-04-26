@@ -21,7 +21,7 @@
 require 'chef' / 'cookbook_loader'
 require 'chef' / 'cookbook' / 'metadata'
 
-class ChefServerApi::Cookbooks < ChefServerApi::Application
+class Cookbooks < Application
   
   provides :json
 
@@ -34,7 +34,7 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
     cl = Chef::CookbookLoader.new
     cookbook_list = Hash.new
     cl.each do |cookbook|
-      cookbook_list[cookbook.name] = absolute_slice_url(:cookbook, :id => cookbook.name.to_s) 
+      cookbook_list[cookbook.name] = absolute_url(:cookbook, :id => cookbook.name.to_s) 
     end
     display cookbook_list 
   end
@@ -169,7 +169,7 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
     
     # construct successful response
     self.status = 201
-    location = absolute_slice_url(:cookbook, :id => desired_name)
+    location = absolute_url(:cookbook, :id => desired_name)
     headers['Location'] = location
     result = { 'uri' => location }
     display result

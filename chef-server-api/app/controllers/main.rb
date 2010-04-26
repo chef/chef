@@ -1,4 +1,4 @@
-class ChefServerApi::Main < ChefServerApi::Application
+class Main < Application
 
   before :authenticate_every
   provides :html, :json
@@ -6,11 +6,11 @@ class ChefServerApi::Main < ChefServerApi::Application
   def index
     display(
       { 
-        absolute_slice_url(:nodes) => "Manage Nodes",
-        absolute_slice_url(:roles) => "Manage Roles",
-        absolute_slice_url(:cookbooks) => "Manage Cookbooks",
-        absolute_slice_url(:data) => "Manage Data Bags",
-        absolute_slice_url(:search) => "Search"
+        absolute_url(:nodes) => "Manage Nodes",
+        absolute_url(:roles) => "Manage Roles",
+        absolute_url(:cookbooks) => "Manage Cookbooks",
+        absolute_url(:data) => "Manage Data Bags",
+        absolute_url(:search) => "Search"
       }
     )
   end

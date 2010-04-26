@@ -19,7 +19,7 @@
 
 require 'chef' / 'node'
 
-class ChefServerApi::Nodes < ChefServerApi::Application
+class Nodes < Application
   
   provides :json
   
@@ -29,7 +29,7 @@ class ChefServerApi::Nodes < ChefServerApi::Application
   def index
     @node_list = Chef::Node.cdb_list 
     display(@node_list.inject({}) do |r,n|
-      r[n] = absolute_slice_url(:node, n); r
+      r[n] = absolute_url(:node, n); r
     end)
   end
 
@@ -52,7 +52,7 @@ class ChefServerApi::Nodes < ChefServerApi::Application
     end
     self.status = 201
     @node.cdb_save
-    display({ :uri => absolute_slice_url(:node, @node.name) })
+    display({ :uri => absolute_url(:node, @node.name) })
   end
 
   def update

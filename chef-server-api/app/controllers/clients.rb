@@ -19,7 +19,7 @@
 
 require 'chef/api_client'
 
-class ChefServerApi::Clients < ChefServerApi::Application
+class Clients < Application
   provides :json
 
   before :authenticate_every
@@ -30,7 +30,7 @@ class ChefServerApi::Clients < ChefServerApi::Application
   # GET /clients
   def index
     @list = Chef::ApiClient.cdb_list(true)
-    display(@list.inject({}) { |result, element| result[element.name] = absolute_slice_url(:client, :id => element.name); result })
+    display(@list.inject({}) { |result, element| result[element.name] = absolute_url(:client, :id => element.name); result })
   end
 
   # GET /clients/:id
@@ -72,8 +72,8 @@ class ChefServerApi::Clients < ChefServerApi::Application
     @client.cdb_save
     
     self.status = 201
-    headers['Location'] = absolute_slice_url(:client, @client.name)
-    display({ :uri => absolute_slice_url(:client, @client.name), :private_key => @client.private_key })
+    headers['Location'] = absolute_url(:client, @client.name)
+    display({ :uri => absolute_url(:client, @client.name), :private_key => @client.private_key })
   end
 
   # PUT /clients/:id

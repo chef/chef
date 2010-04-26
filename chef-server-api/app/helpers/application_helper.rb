@@ -15,9 +15,9 @@ module Merb
       # 
       # @return <String> A uri based on the requested slice.
       #
-      # @example absolute_slice_url(:awesome, :format => 'html')
-      # @example absolute_slice_url(:forum, :posts, :format => 'xml')          
-      def absolute_slice_url(slice_name, *args)
+      # @example absolute_url(:awesome, :format => 'html')
+      # @example absolute_url(:forum, :posts, :format => 'xml')          
+      def absolute_url(slice_name, *args)
         options  = extract_options_from_args!(args) || {}
         protocol = options.delete(:protocol) || request.protocol
         host     = options.delete(:host) || request.host

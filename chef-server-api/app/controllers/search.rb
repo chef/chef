@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,15 +19,15 @@
 
 require 'chef/solr/query'
 
-class ChefServerApi::Search < ChefServerApi::Application
+class Search < Application
   provides :json
- 
+
   before :authenticate_every
   before :is_admin, :only => [:reindex]
-  
+
   def index
     indexes = valid_indexes
-    display(indexes.inject({}) { |r,i| r[i] = absolute_slice_url(:search, i); r })    
+    display(indexes.inject({}) { |r,i| r[i] = absolute_url(:search, i); r })
   end
 
   def valid_indexes
@@ -52,7 +52,7 @@ class ChefServerApi::Search < ChefServerApi::Application
       "total" => total
     })
   end
-  
+
   def reindex
     display(Chef::Solr.new.rebuild_index)
   end
