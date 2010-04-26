@@ -33,6 +33,9 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "uuidtools", "~> 2.1.1"
 
   s.add_dependency "thin"
+  
+  s.bindir       = "bin"
+  s.executables  = %w( chef-server )
 
   s.require_path = 'lib'
   s.files = %w(LICENSE README.rdoc Rakefile) + Dir.glob("{config,lib,spec,app,public,stubs}/**/*")

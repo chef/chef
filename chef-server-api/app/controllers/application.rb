@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef" / "mixin" / "checksum"
-require "chef" / "cookbook_loader"
+require "chef/mixin/checksum"
+require "chef/cookbook_loader"
 require "mixlib/authentication/signatureverification"
 
 class Application < Merb::Controller

@@ -113,10 +113,10 @@ def start_chef_server(type="normal")
     case type
     when "normal"
       puts "Starting chef server for development with './chef-server/bin/chef-server -a thin -l debug -N'"
-      exec("./chef-server/bin/chef-server -a thin -l debug -N")
+      exec("./chef-server-api/bin/chef-server -a thin -l debug -N")
     when "features"
       puts "Starting chef server for features with #{["./chef-server/bin/chef-server -a thin -C #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug -N"].join(' ')}"
-      exec("./chef-server/bin/chef-server -a thin -C #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug -N")
+      exec("./chef-server-api/bin/chef-server -a thin -C #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug -N")
     end
   end
 end

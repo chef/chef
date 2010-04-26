@@ -28,7 +28,7 @@ class Cookbooks < Application
   before :authenticate_every
 
   include Chef::Mixin::Checksum
-  include Merb::ChefServerApi::TarballHelper
+  include Merb::TarballHelper
   
   def index
     cl = Chef::CookbookLoader.new
@@ -179,7 +179,6 @@ class Cookbooks < Application
     cookbook_name = params[:cookbook_id]
     expected_location = cookbook_location(cookbook_name)
     raise NotFound, "Cannot find cookbook named #{cookbook_name} at #{expected_location}. Note: Tarball generation only applies to cookbooks under the first directory in the server's Chef::Config.cookbook_path variable and does to apply overrides." unless File.directory? expected_location
-    
     send_file(get_or_create_cookbook_tarball_location(cookbook_name))
   end
   

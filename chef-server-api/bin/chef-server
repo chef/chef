@@ -9,9 +9,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,42 +20,34 @@
 
 # Based on the 'merb' command, by Ezra
 
-# Add chef and chef-server-slice lib dirs to the load path
-# Load chef and chef-server slice from source rather than gem, if present
-
 require "rubygems"
 require "merb-core"
 
-CHEF_SERVER_VERSION = "0.8.11"
-
+# Load chef and chef-server-api from source rather than gem, if present
 $:.unshift(File.expand_path(File.dirname(__FILE__) + '/../../chef/lib/chef'))
 $:.unshift(File.expand_path(File.dirname(__FILE__) + '/../lib'))
 
 require 'chef'
 require 'chef-server-api'
-# [ 'chef', 'chef-server-api' ].each do |lib|
-#   $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "lib")))
-#   library = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", lib, "lib", "#{lib}.rb"))
-#   require library if File.exists?(library)
-# end
-# 
+
 # Ensure the chef gem we load is the same version as the chef server
 unless defined?(Chef)
-  gem "chef", "=" + CHEF_SERVER_VERSION 
-  require 'chef'  
+  gem "chef", "=" + CHEF_SERVER_VERSION
+  require 'chef'
 end
 
-Dir.chdir File.join(File.dirname(__FILE__),"..")
-#__DIR__ = Dir.getwd
-
+# Print the help message if our argv looks fishy
 if ARGV[0] && ARGV[0] =~ /^[^-]/
   ARGV.push "-H"
-end 
+end
+
+# Default to thin
 unless %w[-a --adapter -i --irb-console -r --script-runner].any? { |o| ARGV.index(o) }
   ARGV.push *%w[-a thin]
 end
-#ARGV.push *[ "-I", File.join(__DIR__, "config", "init.rb") ]
-#ARGV.push *[ "-m", __DIR__]
+
+# Tell merb where to root
+ARGV.push *[ "-m", CHEF_SERVER_API_ROOT]
 
 # attempt to find the user and group that this process will become. Fixes CHEF-1015
 if (index = ARGV.index("-u"))
@@ -65,6 +57,7 @@ if (index = ARGV.index("-G"))
   Chef::Config[:signing_ca_group] = ARGV[index+1]
 end
 
+# Find and load the config
 if index = ARGV.index("-C")
   config = ARGV[index+1]
   ARGV.delete("-C")
@@ -76,7 +69,7 @@ else
   )
 end
 
-Chef::Log.init(Chef::Config[:log_location]) 
+Chef::Log.init(Chef::Config[:log_location])
 Chef::Log.level = Chef::Config[:log_level]
 
 Merb.start
