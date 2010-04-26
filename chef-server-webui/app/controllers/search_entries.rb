@@ -20,7 +20,7 @@
 #require 'chef' / 'search'
 #require 'chef' / 'queue'
 
-class ChefServerWebui::SearchEntries < ChefServerWebui::Application
+class SearchEntries < Application
   
   provides :html
   before :login_required 

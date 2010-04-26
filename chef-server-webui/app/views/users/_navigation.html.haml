@@ -1,9 +1,9 @@
 .secondary-navigation
   %ul
-    %li{ :class => "first #{active == 'index' ? "active" : ''}"}= link_to('List', slice_url(:users))
-    %li{ :class => (active == 'create' ? "active" : '')}= link_to('Create', slice_url(:users_new))
+    %li{ :class => "first #{active == 'index' ? "active" : ''}"}= link_to('List', url(:users))
+    %li{ :class => (active == 'create' ? "active" : '')}= link_to('Create', url(:users_new))
     - if active != 'create' && active != 'index'
-      %li{ :class => (active == 'show' ? "active" : '')}= link_to('Show', slice_url(:users_show))
-      %li{ :class => (active == 'edit' ? "active" : '')}= link_to('Edit', slice_url(:users_edit, :user_id => params[:user_id]))
-      %li= link_to('Delete', slice_url(:users_delete, :user_id => params[:user_id]), :method => "delete", :confirm => "Really delete user #{params[:user_id]}? There is no undo.")
+      %li{ :class => (active == 'show' ? "active" : '')}= link_to('Show', url(:users_show))
+      %li{ :class => (active == 'edit' ? "active" : '')}= link_to('Edit', url(:users_edit, :user_id => params[:user_id]))
+      %li= link_to('Delete', url(:users_delete, :user_id => params[:user_id]), :method => "delete", :confirm => "Really delete user #{params[:user_id]}? There is no undo.")
   .clear

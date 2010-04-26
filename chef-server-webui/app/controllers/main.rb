@@ -1,4 +1,4 @@
-class ChefServerWebui::Main < ChefServerWebui::Application
+class Main < Application
   
   def index
     render

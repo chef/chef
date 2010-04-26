@@ -20,7 +20,7 @@
 require 'chef' / 'mixin' / 'checksum'
 require 'chef' / 'cookbook_loader'
 
-class ChefServerWebui::CookbookLibraries < ChefServerWebui::Application
+class CookbookLibraries < Application
   
   provides :html
   before :login_required 

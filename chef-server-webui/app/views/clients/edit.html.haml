@@ -3,4 +3,4 @@
     %h2.title= "Client: #{h @client.name}"
     .inner
       = partial('navigation', :active => 'edit')
-  = partial('form', :header => "Edit Client #{@client.name}", :form_id => 'edit_client', :submit_name => "Save Client", :submit_id => "edit_client_button", :form_for => 'edit', :form_url => slice_url(:client, @client.name) )
+  = partial('form', :header => "Edit Client #{@client.name}", :form_id => 'edit_client', :submit_name => "Save Client", :submit_id => "edit_client_button", :form_for => 'edit', :form_url => url(:client, @client.name) )

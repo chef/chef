@@ -19,7 +19,7 @@
 
 require 'chef' / 'node'
 
-class ChefServerWebui::Status < ChefServerWebui::Application
+class Status < Application
 
   provides :html
   before :login_required 

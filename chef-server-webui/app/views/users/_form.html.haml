@@ -8,7 +8,7 @@
       %div.group
         .text_field= password_field :id=> "password", :name => "password", :label=>"Password: ", :class => "password_field"
       %br
-      =link_to("Or, log in with OpenID if you have one associated with an existing user account.", slice_url(:openid_consumer))
+      =link_to("Or, log in with OpenID if you have one associated with an existing user account.", url(:openid_consumer))
       %br 
     
     - if form_for == "edit"

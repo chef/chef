@@ -11,7 +11,7 @@
   .content
     %h2.title Login
     .inner
-      %form.form{ :method => "get", "accept-charset" => "UTF-8", :action => slice_url(:openid_consumer_login) }
+      %form.form{ :method => "get", "accept-charset" => "UTF-8", :action => url(:openid_consumer_login) }
         .group
           .text_field= text_field :openid_identifier
         .group
@@ -23,6 +23,6 @@
         .group
           .check_box= check_box :name => "force_post", :label => "Force the transaction to POST", :value => "0"
         .group
-          =link_to("Or, log in with username and password.", slice_url(:users_login))
+          =link_to("Or, log in with username and password.", url(:users_login))
         .group.navform
           .button= submit "Login &rarr;"

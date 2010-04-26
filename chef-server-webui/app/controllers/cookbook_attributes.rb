@@ -19,7 +19,7 @@
 
 require 'chef' / 'mixin' / 'checksum'
 
-class ChefServerWebui::CookbookAttributes < ChefServerWebui::Application
+class CookbookAttributes < Application
   
   provides :html
 

@@ -16,24 +16,24 @@
   %body
     #container
       #header
-        %h1= link_to "Chef Server", slice_url(:top)
+        %h1= link_to "Chef Server", url(:top)
         #user-navigation
           %ul
             - if session[:user]
-              %li= link_to "Logout #{h session[:user]} (#{session[:level].to_s})", slice_url(:users_logout), :method => "get", :confirm => "Are you sure you want to logout?"
+              %li= link_to "Logout #{h session[:user]} (#{session[:level].to_s})", url(:users_logout), :method => "get", :confirm => "Are you sure you want to logout?"
             - else
-              %li= link_to "Login", slice_url(:users_login), :rel => "facebox"
+              %li= link_to "Login", url(:users_login), :rel => "facebox"
           .clear
         #main-navigation
           %ul
-            %li= link_to "Search", slice_url(:searches)
-            %li= link_to "Status", slice_url(:status)
-            %li= link_to "Roles", slice_url(:roles)
-            %li= link_to "Nodes", slice_url(:nodes)
-            %li= link_to "Cookbooks", slice_url(:cookbooks)
-            %li= link_to "Databags", slice_url(:databags)
-            %li= link_to "Clients", slice_url(:clients)
-            %li= link_to "Users", slice_url(:users)
+            %li= link_to "Search", url(:searches)
+            %li= link_to "Status", url(:status)
+            %li= link_to "Roles", url(:roles)
+            %li= link_to "Nodes", url(:nodes)
+            %li= link_to "Cookbooks", url(:cookbooks)
+            %li= link_to "Databags", url(:databags)
+            %li= link_to "Clients", url(:clients)
+            %li= link_to "Users", url(:users)
           .clear
       #wrapper
         #main

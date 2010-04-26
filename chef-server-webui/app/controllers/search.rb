@@ -18,7 +18,7 @@
 
 require 'chef' / 'search' / 'query'
 
-class ChefServerWebui::Search < ChefServerWebui::Application
+class Search < Application
   
   provides :html
   before :login_required 

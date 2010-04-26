@@ -12,14 +12,14 @@
             %th.last &nbsp;
           - even = false
           - if @node_list.empty?
-            %td{:colspan => 4}= "You appear to have no nodes - try connecting one, or creating or editing a #{link_to('client', slice_url(:clients))}"
+            %td{:colspan => 4}= "You appear to have no nodes - try connecting one, or creating or editing a #{link_to('client', url(:clients))}"
           - else
             - @node_list.each do |node, node_url|
               %tr{:class => even ? "even": "odd" }
-                %td{:colspan => 2}= link_to node, slice_url(:node, { :id => node } )
+                %td{:colspan => 2}= link_to node, url(:node, { :id => node } )
                 %td
-                  = link_to('Edit', slice_url(:edit_node, node)) 
+                  = link_to('Edit', url(:edit_node, node)) 
                   |
-                  = link_to('Delete', slice_url(:node, node), :method => "delete", :confirm => "Really delete Node #{node}?  There is no undo.")
+                  = link_to('Delete', url(:node, node), :method => "delete", :confirm => "Really delete Node #{node}?  There is no undo.")
                 - even ? even = false: even = true
 
