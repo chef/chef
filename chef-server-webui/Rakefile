@@ -34,6 +34,15 @@ spec = Gem::Specification.new do |s|
 
   %w{thin haml ruby-openid coderay}.each { |g| s.add_dependency g}
 
+  s.bindir       = "bin"
+  s.executables  = %w( chef-server-webui )
+  
+  ["thin",
+   "haml",
+   "json",
+   "ruby-openid",
+   "coderay"].each { |g| s.add_dependency g}
+  
   s.require_path = 'lib'
   s.files = %w(LICENSE README.rdoc Rakefile config.ru) + Dir.glob("{bin,config,lib,spec,app,public,stubs}/**/*")
 end
