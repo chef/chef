@@ -170,7 +170,7 @@ class Chef
       def handle_command_failures(status, command_output, args={})
         unless args[:ignore_failure] 
           args[:returns] ||= 0
-          if status.exitstatus != args[:returns]
+          if not [args[:returns]].flatten.include?(status.exitstatus)
             # if the log level is not debug, through output of command when we fail
             output = ""
             if Chef::Log.level == :debug || args[:output_on_failure]
