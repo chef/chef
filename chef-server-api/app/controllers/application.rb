@@ -66,7 +66,7 @@ class Application < Merb::Controller
     end
   end
 
-  def is_correct_node
+  def admin_or_requesting_node
     if @auth_user.admin || @auth_user.name == params[:id]
       true
     else
