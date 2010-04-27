@@ -44,6 +44,8 @@ class Cookbooks < Application
       cookbook = Chef::Cookbook.cdb_load(params[:id], params[:version])
     rescue ArgumentError => e
       raise NotFound, "Cannot find a cookbook named #{params[:id]} with version #{params[:version]}"
+    rescue Chef::Exceptions::CouchDBNotFound => e
+      raise NotFound, "Cannot find a cookbook named #{params[:id]} with version #{params[:version]}"
     end
     cookbook.generate_manifest { |opts| absolute_slice_url(:cookbook_segment, opts) }
     display cookbook

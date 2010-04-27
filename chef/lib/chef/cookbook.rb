@@ -31,7 +31,7 @@ class Chef
     
     attr_accessor :definition_files, :template_files, :remote_files,
       :lib_files, :resource_files, :provider_files, :name, :manifest,
-      :metadata, :metadata_files, :status, :couchdb_rev, :couchdb, :version
+      :metadata, :metadata_files, :status, :couchdb_rev, :couchdb
     attr_reader :recipe_files, :attribute_files, :couchdb_id
 
     DESIGN_DOCUMENT = {
@@ -55,7 +55,50 @@ class Chef
             }
           }
           EOJS
-        }
+        },
+        "all_latest_version" => {
+          "map" => %q@
+          function(doc) { 
+            if (doc.chef_type == "cookbook") {
+              emit(doc.cookbook_name, [doc.cookbook_name, doc.version]);
+            }
+          }
+          @,
+          "reduce" => %q@
+          function(keys, values, rereduce) {
+            var result = null;
+
+            for (var idx in values) {
+              var value = values[idx];
+              
+              if (idx == 0) {
+                result = value;
+                continue;
+              }
+              
+              var valueParts = value[1].split('.').map(function(v) { return parseInt(v); });
+              var resultParts = result[1].split('.').map(function(v) { return parseInt(v); });
+
+              if (valueParts[0] != resultParts[0]) {
+                if (valueParts[0] > resultParts[0]) {
+                  result = value;
+                }
+              }
+              else if (valueParts[1] != resultParts[1]) {
+                if (valueParts[1] > resultParts[1]) {
+                  result = value;
+                }
+              }
+              else if (valueParts[2] != resultParts[2]) {
+                if (valueParts[2] > resultParts[2]) {
+                  result = value;
+                }
+              }
+            }
+            return result;
+          }
+          @
+        },
       }
     }
     
@@ -81,8 +124,15 @@ class Chef
       @couchdb_rev = nil 
       @status = :ready
       @manifest = nil 
-      @version = nil
       @metadata = {}
+    end
+    
+    def version
+      @metadata['version']
+    end
+    
+    def version=(new_version)
+      @metadata['version'] = new_version
     end
 
     def full_name
@@ -329,8 +379,7 @@ class Chef
       end
       response[:cookbook_name] = name.to_s
       response[:metadata] = metadata 
-      response[:version] = metadata.version
-      @version = metadata.version
+      response[:version] = metadata['version']
       response[:name] = full_name 
       @manifest = response
     end
@@ -348,7 +397,7 @@ class Chef
 
     # Save this cookbook via the REST API
     def save
-      chef_server_rest.put_rest("cookbooks/#{@name}/#{@version}", self)
+      chef_server_rest.put_rest("cookbooks/#{@name}/#{version}", self)
       self
     end
 
