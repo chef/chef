@@ -40,11 +40,10 @@ class Cookbooks < Application
   end
 
   def show
-    cl = Chef::CookbookLoader.new
     begin
-      cookbook = cl[params[:id]]
+      cookbook = Chef::Cookbook.cdb_load(params[:id], params[:version])
     rescue ArgumentError => e
-      raise NotFound, "Cannot find a cookbook named #{params[:id]}"
+      raise NotFound, "Cannot find a cookbook named #{params[:id]} with version #{params[:version]}"
     end
     cookbook.generate_manifest { |opts| absolute_slice_url(:cookbook_segment, opts) }
     display cookbook
@@ -181,18 +180,32 @@ class Cookbooks < Application
   end
   
   def update
-    cookbook_name = params[:cookbook_id]
-    cookbook_path = cookbook_location(cookbook_name)
-    raise NotFound, "Cannot find cookbook named #{cookbook_name}" unless File.directory? cookbook_path
-    begin
-      validate_file_parameter(cookbook_name, params[:file])
-    rescue FileParameterException => te
-      raise BadRequest, te.message
+    cookbook_name = params[:id]
+    cookbook_version = params[:version]
+    raise(BadRequest, "You didn't pass me a valid object!") unless params.has_key?('inflated_object')
+    raise(BadRequest, "You didn't pass me a Chef::Cookbook object!") unless params['inflated_object'].kind_of?(Chef::Cookbook)
+    unless params["inflated_object"].name == cookbook_name
+      raise(BadRequest, "You said the cookbook was named #{params['inflated_object'].name}, but the URL says it should be #{cookbook_name}.") 
     end
-    
-    expand_tarball_and_put_in_repository(cookbook_name, params[:file][:tempfile])
-    
-    display Hash.new
+
+    unless params["inflated_object"].version == cookbook_version
+      raise(BadRequest, "You said the cookbook was version #{params['inflated_object'].version}, but the URL says it should be #{cookbook_version}.") 
+    end
+
+    @cookbook = nil
+    begin
+      @cookbook = Chef::Cookbook.cdb_load(cookbook_name, cookbook_version)
+    rescue Chef::Exceptions::CouchDBNotFound => e
+      Chef::Log.debug("Cookbook #{cookbook_name} version #{cookbook_version} does not exist")
+    end
+
+    if @cookbook
+      @cookbook.manifest = params['inflated_object'].manifest
+    else
+      params['inflated_object'].cdb_save
+    end
+
+    display @cookbook ? @cookbook : params['inflated_object']
   end
   
   def destroy

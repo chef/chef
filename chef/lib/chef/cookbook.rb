@@ -336,6 +336,23 @@ class Chef
     end
 
     ##
+    # REST API
+    ##
+    def chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])
+    end
+
+    def self.chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])
+    end
+
+    # Save this cookbook via the REST API
+    def save
+      chef_server_rest.put_rest("cookbooks/#{@name}/#{@version}", self)
+      self
+    end
+
+    ##
     # Couchdb
     ##
 
@@ -349,8 +366,9 @@ class Chef
       rs["rows"].collect { |r| r[lookup] }            
     end
 
-    def self.cdb_load(name, couchdb=nil)
-      (couchdb || Chef::CouchDB.new).load("cookbook", full_name)
+    def self.cdb_load(name, version='latest', couchdb=nil)
+      # Probably want to look for a view here at some point
+      (couchdb || Chef::CouchDB.new).load("cookbook", "#{name}-#{version}")
     end
 
     def cdb_destroy
