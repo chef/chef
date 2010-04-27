@@ -25,7 +25,6 @@ class Nodes < Application
   provides :html
   
   before :login_required
-  before :authorized_node, :only => [ :update, :destroy ]
   
   def index
     @node_list =  begin
