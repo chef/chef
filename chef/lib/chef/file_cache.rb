@@ -148,9 +148,8 @@ class Chef
       def list()
         keys = Array.new
         Dir[File.join(Chef::Config[:file_cache_path], '**', '*')].each do |f|
-          if File.file?(f)
-            Chef::Config[:file_cache_path].gsub!(/\\/, "/")
-            path = f.match("^#{Chef::Config[:file_cache_path]}\/(.+)")[1]
+          if File.file?(f)            
+            path = f.match("^#{Dir[Chef::Config[:file_cache_path]].first}\/(.+)")[1]
             keys << path
           end
         end
