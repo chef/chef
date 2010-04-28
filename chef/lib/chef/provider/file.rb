@@ -52,6 +52,7 @@ class Chef
           @current_resource.owner(cstats.uid)
           @current_resource.group(cstats.gid)
           @current_resource.mode(octal_mode(cstats.mode))
+          @current_resource.path.gsub!(/\\/, "/") #for windows
           @current_resource.checksum(checksum(@current_resource.path))
         end
         @current_resource

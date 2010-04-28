@@ -149,6 +149,7 @@ class Chef
         keys = Array.new
         Dir[File.join(Chef::Config[:file_cache_path], '**', '*')].each do |f|
           if File.file?(f)
+            Chef::Config[:file_cache_path].gsub!(/\\/, "/")
             path = f.match("^#{Chef::Config[:file_cache_path]}\/(.+)")[1]
             keys << path
           end
