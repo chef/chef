@@ -42,6 +42,16 @@ class Cookbooks < Application
   def show
     begin
       cookbook = Chef::Cookbook.cdb_load(params[:id], params[:version])
+    rescue Chef::Exceptions::CouchDBNotFound => e
+      raise NotFound, "Cannot find a cookbook named #{params[:id]} with version #{params[:version]}"
+    end
+    cookbook.generate_manifest { |opts| absolute_slice_url(:cookbook_segment, opts) }
+    display cookbook
+  end
+
+  def show_versions
+    begin
+      cookbook = Chef::Cookbook.cdb_load(params[:id], params[:version])
     rescue ArgumentError => e
       raise NotFound, "Cannot find a cookbook named #{params[:id]} with version #{params[:version]}"
     rescue Chef::Exceptions::CouchDBNotFound => e
@@ -211,14 +221,13 @@ class Cookbooks < Application
   end
   
   def destroy
-    cookbook_name = params[:id]
-    cookbook_path = cookbook_location(cookbook_name)
-    raise NotFound, "Cannot find cookbook named #{cookbook_name}" unless File.directory? cookbook_path
+    begin
+      cookbook = Chef::Cookbook.cdb_load(params[:id], params[:version])
+    rescue ArgumentError => e
+      raise NotFound, "Cannot find a cookbook named #{params[:id]} with version #{params[:version]}"
+    end
 
-    FileUtils.rm_rf(cookbook_path)
-    FileUtils.rm_f(cookbook_tarball_location(cookbook_name))
-
-    display Hash.new
+    display cookbook.cdb_destroy
   end
   
 end

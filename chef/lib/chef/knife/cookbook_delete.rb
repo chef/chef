@@ -22,11 +22,11 @@ class Chef
   class Knife
     class CookbookDelete < Knife
 
-      banner "Sub-Command: cookbook delete COOKBOOK (options)"
+      banner "Sub-Command: cookbook delete COOKBOOK VERSION (options)"
 
-      def run 
-        delete_object(Chef::Cookbook, @name_args[0], "cookbook") do
-          rest.delete_rest("cookbooks/#{@name_args[0]}")
+      def run
+        delete_object(Chef::Cookbook, "#{@name_args[0]} #{@name_args[1]}", "cookbook") do
+          rest.delete_rest("cookbooks/#{@name_args[0]}/#{@name_args[1]}")
         end
       end
 

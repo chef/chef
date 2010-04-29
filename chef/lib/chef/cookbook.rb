@@ -307,7 +307,8 @@ class Chef
         o.delete("_id")
       end
       cookbook.manifest = o
-      cookbook.metadata = o["metadata"]
+      # We want the Chef::Cookbook::Metadata object to always be inflated
+      cookbook.metadata = Chef::Cookbook::Metadata.from_hash(o["metadata"])
       cookbook.version = o["version"]
       cookbook
     end
