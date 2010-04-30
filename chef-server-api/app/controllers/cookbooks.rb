@@ -31,12 +31,13 @@ class Cookbooks < Application
   include Merb::TarballHelper
   
   def index
-    cl = Chef::CookbookLoader.new
-    cookbook_list = Hash.new
-    cl.each do |cookbook|
-      cookbook_list[cookbook.name] = absolute_url(:cookbook, :id => cookbook.name.to_s) 
+    cookbook_list = Chef::Cookbook.cdb_list
+    response = Hash.new
+    cookbook_list.each do |cookbook_name|
+      cookbook_name =~ /^(.+)-(\d+\.\d+\.\d+)$/
+      response[$1] = absolute_slice_url(:cookbook, :id => $1)
     end
-    display cookbook_list 
+    display response 
   end
 
   def show
@@ -51,14 +52,13 @@ class Cookbooks < Application
 
   def show_versions
     begin
-      cookbook = Chef::Cookbook.cdb_load(params[:id], params[:version])
+      cookbook_versions = Chef::Cookbook.cdb_by_version(params[:id])
     rescue ArgumentError => e
-      raise NotFound, "Cannot find a cookbook named #{params[:id]} with version #{params[:version]}"
+      raise NotFound, "Cannot find a cookbook named #{params[:id]}"
     rescue Chef::Exceptions::CouchDBNotFound => e
-      raise NotFound, "Cannot find a cookbook named #{params[:id]} with version #{params[:version]}"
+      raise NotFound, "Cannot find a cookbook named #{params[:id]}"
     end
-    cookbook.generate_manifest { |opts| absolute_slice_url(:cookbook_segment, opts) }
-    display cookbook
+    display cookbook_versions
   end
  
   def show_segment
@@ -155,40 +155,6 @@ class Cookbooks < Application
       raise NotFound, "Cannot find the real file for #{to_send[:name]} - this is a 42 error (shouldn't ever happen)" unless file_name
       send_file(file_name)
     end
-  end
-  
-  def create
-    # validate name and file parameters and throw an error if a cookbook with the same name already exists
-    raise BadRequest, "missing required parameter: name" unless params[:name]
-    desired_name = params[:name]
-    raise BadRequest, "invalid parameter: name must be at least one character long and contain only letters, numbers, periods (.), underscores (_), and hyphens (-)" unless desired_name =~ /\A[\w.-]+\Z/
-    begin
-      validate_file_parameter(desired_name, params[:file])
-    rescue FileParameterException => te
-      raise BadRequest, te.message
-    end
-    
-    begin
-      Chef::CookbookLoader.new[desired_name]
-      raise BadRequest, "Cookbook with the name #{desired_name} already exists"
-    rescue ArgumentError
-    end
-    
-    expand_tarball_and_put_in_repository(desired_name, params[:file][:tempfile])
-    
-    # construct successful response
-    self.status = 201
-    location = absolute_url(:cookbook, :id => desired_name)
-    headers['Location'] = location
-    result = { 'uri' => location }
-    display result
-  end
-  
-  def get_tarball
-    cookbook_name = params[:cookbook_id]
-    expected_location = cookbook_location(cookbook_name)
-    raise NotFound, "Cannot find cookbook named #{cookbook_name} at #{expected_location}. Note: Tarball generation only applies to cookbooks under the first directory in the server's Chef::Config.cookbook_path variable and does to apply overrides." unless File.directory? expected_location
-    send_file(get_or_create_cookbook_tarball_location(cookbook_name))
   end
   
   def update
