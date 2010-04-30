@@ -421,6 +421,7 @@ describe Chef::Provider::Mount::Mount, "enable_fs" do
     @current_resource.stub!(:options).and_return(["defaults"])
     @current_resource.stub!(:dump).and_return(0)
     @current_resource.stub!(:pass).and_return(2)
+    ::File.stub(:readlines).and_return([])
     ::File.should_receive(:open).once.with("/etc/fstab", "w").and_yield(@fstab)
     ::File.should_receive(:open).once.with("/etc/fstab", "a").and_yield(@fstab)
     
