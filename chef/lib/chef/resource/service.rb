@@ -35,6 +35,7 @@ class Chef
         @restart_command = nil
         @reload_command = nil
         @action = "nothing"
+        @startup_type = :automatic
         @supports = { :restart => false, :reload => false, :status => false }
         @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
       end
@@ -127,7 +128,15 @@ class Chef
           @supports
         end
       end
-
+      
+      # This attribute applies for Windows only.
+      def startup_type(arg=nil)
+        set_or_return(
+          :startup_type,
+          arg,
+          :equal_to => [:automatic, :mannual]
+        )
+      end
   
     end
   end
