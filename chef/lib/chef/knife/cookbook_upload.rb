@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,14 +38,14 @@ class Chef
         :long => "--all",
         :description => "Upload all cookbooks, rather than just a single cookbook"
 
-      def run 
+      def run
         if config[:cookbook_path]
           Chef::Config[:cookbook_path] = config[:cookbook_path]
         else
           config[:cookbook_path] = Chef::Config[:cookbook_path]
         end
 
-        if config[:all] 
+        if config[:all]
           cl = Chef::CookbookLoader.new
           cl.each do |cookbook|
             Chef::Log.info("** #{cookbook.name.to_s} **")
@@ -58,7 +58,7 @@ class Chef
           end
         end
       end
-      
+
       def test_ruby(cookbook_dir)
         Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
           cache = Chef::Cache::Checksum.instance
@@ -66,7 +66,7 @@ class Chef
           key = cache.generate_key(ruby_file.sub("#{cookbook_dir}/", ""), "chef-test")
           fstat = File.stat(ruby_file)
 
-          if cache.lookup_checksum(key, fstat) 
+          if cache.lookup_checksum(key, fstat)
             Chef::Log.info("No change in checksum of #{ruby_file}")
           else
             cache.generate_checksum(key, ruby_file, fstat)
@@ -83,7 +83,7 @@ class Chef
           key = cache.generate_key(erb_file.sub("#{cookbook_dir}/", ""), "chef-test")
           fstat = File.stat(erb_file)
 
-          if cache.lookup_checksum(key, fstat) 
+          if cache.lookup_checksum(key, fstat)
             Chef::Log.info("No change in checksum of #{erb_file}")
           else
             cache.generate_checksum(key, erb_file, fstat)
@@ -96,10 +96,10 @@ class Chef
       def upload_cookbook(cookbook_name)
 
         if cookbook_name =~ /^#{File::SEPARATOR}/
-          child_folders = cookbook_name 
+          child_folders = cookbook_name
           cookbook_name = File.basename(cookbook_name)
         else
-          child_folders = config[:cookbook_path].inject([]) do |r, e| 
+          child_folders = config[:cookbook_path].inject([]) do |r, e|
             r << File.join(e, cookbook_name)
             r
           end
@@ -118,17 +118,17 @@ class Chef
 
         Chef::Log.debug("Staging at #{tmp_cookbook_dir}")
 
-        found_cookbook = false 
+        found_cookbook = false
 
         child_folders.each do |file_path|
           if File.directory?(file_path)
-            found_cookbook = true 
+            found_cookbook = true
             Chef::Log.info("Copying from #{file_path} to #{tmp_cookbook_dir}")
             FileUtils.cp_r(file_path, tmp_cookbook_dir, :remove_destination => true, :preserve => true)
           else
             Chef::Log.info("Nothing to copy from #{file_path}")
           end
-        end 
+        end
 
         unless found_cookbook
           Chef::Log.fatal("Could not find cookbook #{cookbook_name}!")
@@ -164,32 +164,32 @@ class Chef
 
         if cookbook_uploaded
           Chef::StreamingCookbookUploader.put(
-            "#{Chef::Config[:chef_server_url]}/cookbooks/#{cookbook_name}/_content", 
-            Chef::Config[:node_name], 
-            Chef::Config[:client_key], 
+            "#{Chef::Config[:chef_server_url]}/cookbooks/#{cookbook_name}/_content",
+            Chef::Config[:node_name],
+            Chef::Config[:client_key],
             {
-              :file => File.new(tarball_name), 
+              :file => File.new(tarball_name),
               :name => cookbook_name
             }
           )
         else
           Chef::StreamingCookbookUploader.post(
-            "#{Chef::Config[:chef_server_url]}/cookbooks", 
-            Chef::Config[:node_name], 
-            Chef::Config[:client_key], 
+            "#{Chef::Config[:chef_server_url]}/cookbooks",
+            Chef::Config[:node_name],
+            Chef::Config[:client_key],
             {
-              :file => File.new(tarball_name), 
+              :file => File.new(tarball_name),
               :name => cookbook_name
             }
           )
         end
         Chef::Log.info("Upload complete!")
         Chef::Log.debug("Removing local tarball at #{tarball_name}")
-        FileUtils.rm_rf tarball_name 
+        FileUtils.rm_rf tarball_name
         Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
         FileUtils.rm_rf tmp_cookbook_dir
       end
-      
+
     end
   end
 end
