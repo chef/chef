@@ -68,8 +68,12 @@ class Chef
             case line
             when /^[#\s]/
               next
-            when /^#{device_fstab_regex}\s+#{@new_resource.mount_point}/
+            when /^#{device_fstab_regex}\s+#{@new_resource.mount_point}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
               enabled = true
+              @current_resource.fstype($1)
+              @current_resource.options($2)
+              @current_resource.dump($3.to_i)
+              @current_resource.pass($4.to_i)
               Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/fstab")
             when /^[\/\w]+\s+#{@new_resource.mount_point}/
               enabled = false
@@ -119,13 +123,21 @@ class Chef
         end
 
         def enable_fs
-          unless @current_resource.enabled
-            ::File.open("/etc/fstab", "a") do |fstab|
-              fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? "defaults" : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
-              Chef::Log.info("Enabled #{@new_resource.mount_point}")
+          if @current_resource.enabled
+            if @current_resource.fstype == @new_resource.fstype and
+                @current_resource.options == @new_resource.options and
+                @current_resource.dump == @new_resource.dump and
+                @current_resource.pass == @new_resource.pass
+              Chef::Log.debug("#{@new_resource.mount_point} is already enabled.")
+              return
             end
-          else
-            Chef::Log.debug("#{@new_resource.mount_point} is already enabled.")
+            # The current options don't match what we have, so
+            # disable, then enable.
+            disable_fs
+          end
+          ::File.open("/etc/fstab", "a") do |fstab|
+            fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? "defaults" : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
+            Chef::Log.info("Enabled #{@new_resource.mount_point}")
           end
         end
 

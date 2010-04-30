@@ -28,7 +28,7 @@ class Chef
         @mount_point = name
         @device = nil
         @device_type = :device
-        @fstype = nil
+        @fstype = "auto"
         @options = ["defaults"]
         @dump = 0
         @pass = 2
