@@ -126,12 +126,13 @@ class Chef
             @logfile = File.new(Chef::Config[:log_location], "a")
           end
 
-          Chef::Daemon.change_privilege
           Chef::Log.level = Chef::Config[:log_level]
 
           # Build up a client
           c = Chef::Client.new
           c.build_node(nil, true)
+
+          Chef::Daemon.change_privilege
 
           solr_base = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "..", "solr"))
 
