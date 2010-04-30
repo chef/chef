@@ -55,6 +55,7 @@ class Chef
         else
           @name_args.each do |cookbook_name|
             cl[cookbook_name].generate_manifest
+            puts JSON.pretty_generate(cl[cookbook_name])
             Chef::Log.info("Saving #{cookbook_name} version #{cl[cookbook_name].version}")
             cl[cookbook_name].save
           end

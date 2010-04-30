@@ -313,6 +313,35 @@ class Chef
       cookbook
     end
 
+    def display_manifest(&url_generation)
+      self.manifest ? self.manifest : self.generate_manifest
+      [ 'resources', 'providers', 'recipes', 'definitions', 'libraries', 'attributes', 'files', 'templates' ].each do |segment|
+        if manifest.has_key?(segment)
+          manifest[segment].each do |segment_item|
+            puts segment_item.inspect
+            url_options = { :cookbook_id => name.to_s, :segment => segment, :id => segment_item["name"] }
+            set_specificity_arguments(segment_item["specificity"], url_options)
+            segment_item["uri"] = url_generation.call(url_options)
+          end
+        end
+      end
+      manifest
+    end
+
+    def set_specificity_arguments(specificity, url_options={})
+      case specificity
+      when "default"
+      when /^host-(.+)$/
+        url_options[:fqdn] = $1
+      when /^(.+)-(.+)$/
+        url_options[:platform] = $1
+        url_options[:version] = $2
+      when /^(.+)$/
+        url_options[:platform] = $1
+      end
+      url_options
+    end
+
     def generate_manifest(&url_generation)
       response = {
         :recipes => Array.new,
@@ -324,6 +353,7 @@ class Chef
         :resources => Array.new,
         :providers => Array.new
       }
+
       [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates ].each do |segment|
         segment_files(segment).each do |sf|
           next if File.directory?(sf)
@@ -342,18 +372,7 @@ class Chef
             specificity = mo[1]
             file_name = mo[2]
             url_options = { :cookbook_id => name.to_s, :segment => segment, :id => file_name }
-
-            case specificity
-            when "default"
-            when /^host-(.+)$/
-              url_options[:fqdn] = $1
-            when /^(.+)-(.+)$/
-              url_options[:platform] = $1
-              url_options[:version] = $2
-            when /^(.+)$/
-              url_options[:platform] = $1
-            end
-
+            set_specificity_arguments(specificity, url_options)
             file_specificity = specificity
           else
             mo = sf.match("cookbooks/#{name}/#{segment}/(.+)")
@@ -375,6 +394,7 @@ class Chef
             :checksum => checksum(sf)
           }
           rs[:specificity] = file_specificity if file_specificity
+
           response[segment] << rs 
         end
       end

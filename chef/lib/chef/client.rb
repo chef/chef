@@ -347,7 +347,7 @@ class Chef
                 nil
               end
     end
-    
+
     # Compiles the full list of recipes for the server, and passes it to an instance of
     # Chef::Runner.converge.
     #
