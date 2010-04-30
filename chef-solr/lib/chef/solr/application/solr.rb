@@ -182,7 +182,7 @@ class Chef
             Chef::Log.info("Starting Solr with #{command}")
 
             # Opened earlier before we dropped privileges
-            if @logfile 
+            if @logfile
               # Don't need it anymore
               Chef::Log.close
 
