@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,20 +36,20 @@ class Chef
         :long => "--all",
         :description => "Generate metadata for all cookbooks, rather than just a single cookbook"
 
-      def run 
+      def run
         if config[:cookbook_path]
           Chef::Config[:cookbook_path] = config[:cookbook_path]
         else
           config[:cookbook_path] = Chef::Config[:cookbook_path]
         end
 
-        if config[:all] 
+        if config[:all]
           cl = Chef::CookbookLoader.new
           cl.each do |cookbook|
             generate_metadata(cookbook.name.to_s)
           end
         else
-          generate_metadata(@name_args[0]) 
+          generate_metadata(@name_args[0])
         end
       end
 
@@ -71,7 +71,7 @@ class Chef
           File.open(json_file, "w") do |f|
             f.write(JSON.pretty_generate(md))
           end
-          generated = true 
+          generated = true
           Chef::Log.info("Generated #{json_file}")
         else
           Chef::Log.debug("No #{file} found; skipping!")
