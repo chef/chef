@@ -91,8 +91,9 @@ end
 
 describe Chef::FileCache, "list method" do
   before(:each) do
-    Chef::Config[:file_cache_path] = "/tmp/foo"
-    Dir.stub!(:[]).and_return(["/tmp/foo/whiz/bang", "/tmp/foo/snappy/patter"])
+    Chef::Config[:file_cache_path] = "/tmp/foo"    
+    Dir.stub!(:[]).with(File.join(Chef::Config[:file_cache_path], '**', '*')).and_return(["/tmp/foo/whiz/bang", "/tmp/foo/snappy/patter"])
+    Dir.stub!(:[]).with(Chef::Config[:file_cache_path]).and_return(["/tmp/foo"])
     File.stub!(:file?).and_return(true)
   end
   

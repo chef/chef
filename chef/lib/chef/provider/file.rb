@@ -46,7 +46,8 @@ class Chef
 
       def load_current_resource
         @current_resource = Chef::Resource::File.new(@new_resource.name)
-        @current_resource.path(Dir[@new_resource.path].first)
+        @new_resource.path.gsub!(/\\/, "/") # for Windows
+        @current_resource.path(@new_resource.path)
         if ::File.exist?(@current_resource.path) && ::File.readable?(@current_resource.path)
           cstats = ::File.stat(@current_resource.path)
           @current_resource.owner(cstats.uid)
