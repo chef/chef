@@ -23,7 +23,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::File do
   before(:each) do
     @resource = Chef::Resource::File.new("seattle")
-    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "seattle.txt"))
+    @resource.path(File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "seattle.txt")))
     @node = Chef::Node.new
     @node.name "latte"
     @provider = Chef::Provider::File.new(@node, @resource)
@@ -54,7 +54,7 @@ describe Chef::Provider::File do
 
   it "should load a mostly blank current resource if the file specified in new_resource doesn't exist/isn't readable" do
     resource = Chef::Resource::File.new("seattle")
-    resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "woot.txt"))
+    resource.path(File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "woot.txt")))
     node = Chef::Node.new
     node.name "latte"
     provider = Chef::Provider::File.new(node, resource)
@@ -68,7 +68,7 @@ describe Chef::Provider::File do
   end
 
   it "should not backup symbolic links on delete" do
-    path = File.join(File.dirname(__FILE__), "..", "..", "data", "detroit.txt")
+    path = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "detroit.txt"))
     ::File.open(path, "w") do |file|
       file.write("Detroit's not so nice, so you should come to Seattle instead and buy me a beer instead.")
     end
@@ -342,7 +342,7 @@ end
 describe Chef::Provider::File, "action_create_if_missing" do
   before(:each) do
     @resource = Chef::Resource::File.new("seattle")
-    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "seattle.txt"))
+    @resource.path(File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "seattle.txt")))
     @node = Chef::Node.new
     @node.name "latte"
     @provider = Chef::Provider::File.new(@node, @resource)

@@ -41,7 +41,11 @@ class Chef::Application
     
     at_exit do
       # tear down the logger 
-    end  
+    end
+
+    # Always switch to a readable directory. Keeps subsequent Dir.chdir() {}
+    # from failing due to permissions when launched as a less privileged user.
+    Dir.chdir("/")
   end
   
   # Reconfigure the application. You'll want to override and super this method.

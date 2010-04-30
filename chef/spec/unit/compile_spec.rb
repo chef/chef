@@ -20,8 +20,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Compile do
   before(:each) do
-    Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "compile", "nodes"))
-    Chef::Config.cookbook_path(File.join(File.dirname(__FILE__), "..", "data", "compile", "cookbooks"))
+    Chef::Config.node_path(File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "compile", "nodes")))
+    Chef::Config.cookbook_path(File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "compile", "cookbooks")))
     @node = Chef::Node.new
     @compile = Chef::Compile.new(@node)
   end

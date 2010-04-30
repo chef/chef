@@ -21,7 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::RemoteFile, "action_create" do
   before(:each) do
     @resource = Chef::Resource::RemoteFile.new("seattle")
-    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
+    @resource.path(File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt")))
     @resource.source("http://foo")
     @node = Chef::Node.new
     @node.name "latte"
@@ -45,7 +45,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     @tempfile.stub!(:close)
     @rest.stub!(:get_rest).and_return(@tempfile)
     @resource = Chef::Resource::RemoteFile.new("seattle")
-    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
+    @resource.path(File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt")))
     @resource.source("foo")
     @resource.cookbook_name = "monkey"
     @node = Chef::Node.new

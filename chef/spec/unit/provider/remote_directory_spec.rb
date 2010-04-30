@@ -104,7 +104,7 @@ describe Chef::Provider::RemoteDirectory do
     
     it "lists the directory contents from the cookbook for chef-solo" do
       Chef::Config[:solo] = true
-      @source_path = File.join(File.dirname(__FILE__), "..", "..", "data", "remote_directory_data")
+      @source_path = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "remote_directory_data"))
       @resource.source(@source_path)
       @provider.stub!(:find_preferred_file).and_return(@source_path)
       
