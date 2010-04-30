@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ describe Chef::Knife::CookbookTest do
       @cookbooks << Chef::Cookbook.new(cookbook_name)
     end
   end
-  
+
   describe "run" do
     it "should test the cookbook" do
       @knife.stub!(:test_cookbook).and_return(true)
@@ -36,7 +36,7 @@ describe Chef::Knife::CookbookTest do
       @knife.should_receive(:test_cookbook).with("italian")
       @knife.run
     end
-    
+
     it "should test multiple cookbooks when provided" do
       @knife.stub!(:test_cookbook).and_return(true)
       @knife.name_args = ["tats", "jimmy_johns"]
@@ -163,7 +163,7 @@ describe Chef::Knife::CookbookTest do
         @knife.stub!(:test_cookbook).and_return(true)
         @knife.config[:all] = true
         @loader = mock("Chef::CookbookLoader")
-        @cookbooks.inject(@loader.stub!(:each)) { |stub, cookbook| 
+        @cookbooks.inject(@loader.stub!(:each)) { |stub, cookbook|
           stub.and_yield(cookbook)
         }
         Chef::CookbookLoader.stub!(:new).and_return(@loader)
