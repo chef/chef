@@ -15,6 +15,8 @@ chef_server_url        "http://127.0.0.1:4000"
 client_url             "http://127.0.0.1:4000"
 cookbook_path          [File.join(tmpdir, "cookbooks"), File.join(supportdir, "cookbooks")]
 cookbook_tarball_path  File.join(tmpdir, "cookbook-tarballs")
+sandbox_path           File.join(tmpdir, "sandboxes")
+checksum_path          File.join(tmpdir, "checksums")
 openid_store_path      File.join(tmpdir, "openid", "store")
 openid_cstore_path     File.join(tmpdir, "openid", "cstore")
 role_path              File.join(supportdir, "roles")

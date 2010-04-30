@@ -103,6 +103,8 @@ class Chef
     client_registration_retries 5
     cookbook_path [ "/var/chef/cookbooks", "/var/chef/site-cookbooks" ]
     cookbook_tarball_path "/var/chef/cookbook-tarballs"
+    sandbox_path "/var/chef/sandboxes"
+    checksum_path "/var/chef/checksums"
     couchdb_database "chef"
     couchdb_url "http://localhost:5984"
     couchdb_version nil
