@@ -70,4 +70,22 @@ describe Chef::Cache::Checksum do
     @cache.checksum_for_file(fixture_file).should == expected
   end
 
+  it "generates a key from a file name" do
+    file = "/this/is/a/test/random.rb"
+    @cache.generate_key(file).should == "chef-file--this-is-a-test-random-rb"
+  end
+
+  it "generates a key from a file name and group" do
+    file = "/this/is/a/test/random.rb"
+    @cache.generate_key(file, "spec").should == "spec-file--this-is-a-test-random-rb"
+  end
+
+  it "returns a cached checksum value using a user defined key" do
+    key = @cache.generate_key("riseofthemachines", "specs")
+    @cache.moneta[key] = {"mtime" => "12345", "checksum" => "123abc"}
+    fstat = mock("File.stat('riseofthemachines')", :mtime => Time.at(12345))
+    File.should_receive(:stat).with("riseofthemachines").and_return(fstat)
+    @cache.checksum_for_file("riseofthemachines", key).should == "123abc"
+  end
+
 end
