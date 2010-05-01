@@ -274,7 +274,7 @@ describe Chef::REST do
 
         it "should populate the tempfile with the value of the raw request" do
           @http_response_mock.stub!(:read_body).and_yield("ninja")
-          @tempfile.should_receive(:write, "ninja").once.and_return(true)
+          @tempfile.should_receive(:write).with("ninja").once.and_return(true)
           @rest.run_request(:GET, @url, {}, false, nil, true)
         end
 
@@ -476,9 +476,9 @@ describe Chef::REST do
 
       it "closes and unlinks the tempfile when the response is a redirect" do
         Tempfile.rspec_reset
-        tempfile = Tempfile.open("chef-rspec-rest_spec-line#{__LINE__}--")
-        Tempfile.stub!(:new).with("chef-rest").and_return(tempfile)
+        tempfile = mock("die", :path => "/tmp/ragefist", :close => true)
         tempfile.should_receive(:close!).at_least(2).times
+        Tempfile.stub!(:new).with("chef-rest").and_return(tempfile)
         
         http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_response.add_field("location", @url.path)

@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,42 +21,31 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Package::Freebsd, "load_current_resource" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Package", 
-      :null_object => true,
-      :name => "zsh",
-      :package_name => "zsh",
-      :version => nil
-    )
-    @current_resource = mock("Chef::Resource::Package", 
-      :null_object => true,
-      :name => "zsh",
-      :package_name => "zsh",
-      :version => nil
-    )
+    @node = Chef::Node.new
+    @new_resource     = Chef::Resource::Package.new("zsh")
+    @current_resource = Chef::Resource::Package.new("zsh")
 
-    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)    
-    Chef::Resource::Package.stub!(:new).and_return(@current_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
+    @provider.current_resource = @current_resource
 
-    @provider.should_receive(:ports_candidate_version).and_return("4.3.6")
+    @provider.stub!(:ports_candidate_version).and_return("4.3.6")
   end
 
   it "should create a current resource with the name of the new_resource" do
-    Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
-    @provider.should_receive(:current_installed_version).and_return(nil)
-    @provider.load_current_resource
+    current_resource = Chef::Provider::Package::Freebsd.new(@node, @new_resource).current_resource
+    current_resource.name.should == "zsh"
   end
 
   it "should return a version if the package is installed" do
     @provider.should_receive(:current_installed_version).and_return("4.3.6_7")
-    @current_resource.should_receive(:version).with("4.3.6_7").and_return(true)
     @provider.load_current_resource
+    @current_resource.version.should == "4.3.6_7"
   end
 
   it "should return nil if the package is not installed" do
     @provider.should_receive(:current_installed_version).and_return(nil)
-    @current_resource.should_receive(:version).with(nil).and_return(true)
     @provider.load_current_resource
+    @current_resource.version.should be_nil
   end
 
   it "should return a candidate version if it exists" do
@@ -68,14 +57,9 @@ end
 
 describe Chef::Provider::Package::Freebsd, "system call wrappers" do
   before(:each) do
-    @new_resource = mock("Chef::Resource::Package", 
-      :null_object => true,
-      :name => "zsh",
-      :package_name => "zsh",
-      :version => nil
-    )
+    @new_resource = Chef::Resource::Package.new("zsh")
 
-    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)    
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
 
     @status = mock("Status", :exitstatus => 0)
     @stdin = mock("STDIN", :null_object => true)
@@ -95,7 +79,7 @@ describe Chef::Provider::Package::Freebsd, "system call wrappers" do
     @provider.stub!(:package_name).and_return("zsh")
     @provider.current_installed_version.should be_nil
   end
-  
+
   it "should return the port path for a valid port name" do
     @provider.should_receive(:popen4).with("whereis -s zsh").and_yield(@pid, @stdin, ["zsh: /usr/ports/shells/zsh"], @stderr).and_return(@status)
     @provider.stub!(:port_name).and_return("zsh")
@@ -109,7 +93,7 @@ describe Chef::Provider::Package::Freebsd, "system call wrappers" do
     @stdout.should_receive(:readline).and_return("4.3.6\n")
     @provider.ports_candidate_version.should == "4.3.6"
   end
-  
+
   it "should figure out the package name" do
     @provider.should_receive(:ports_makefile_variable_value).with("PKGNAME").and_return("zsh-4.3.6_7")
     @provider.package_name.should == "zsh"
@@ -119,18 +103,8 @@ end
 describe Chef::Provider::Package::Freebsd, "install_package" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Package",
-      :null_object => true,
-      :name => "zsh",
-      :package_name => "zsh",
-      :version => nil
-    )
-    @current_resource = mock("Chef::Resource::Package", 
-      :null_object => true,
-      :name => "zsh",
-      :package_name => "zsh",
-      :version => nil
-    )
+    @new_resource     = Chef::Resource::Package.new("zsh")
+    @current_resource = Chef::Resource::Package.new("zsh")
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:package_name).and_return("zsh")
@@ -153,49 +127,41 @@ describe Chef::Provider::Package::Freebsd, "install_package" do
 end
 
 describe Chef::Provider::Package::Freebsd, "port path" do
+  before do
+    @node = Chef::Node.new
+    @new_resource = Chef::Resource::Package.new("zsh")
+    @new_resource.cookbook_name = "adventureclub"
+    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
+  end
+
   it "should figure out the port path from the package_name using whereis" do
-    @new_resource = mock( "Chef::Resource::Package", 
-                          :package_name => "zsh", 
-                          :cookbook_name => "adventureclub")
-    @provider = Chef::Provider::Package::Freebsd.new(mock("Chef::Node"), @new_resource)
     @provider.should_receive(:popen4).with("whereis -s zsh").and_yield(nil, nil, ["zsh: /usr/ports/shells/zsh"], nil)
     @provider.port_path.should == "/usr/ports/shells/zsh"
   end
-  
+
   it "should use the package_name as the port path when it starts with /" do
-    @new_resource = mock( "Chef::Resource::Package", 
-                          :package_name => "/usr/ports/www/wordpress",
-                          :cookbook_name => "adventureclub")
-    @provider = Chef::Provider::Package::Freebsd.new(mock("Chef::Node"), @new_resource)
-    @provider.should_not_receive(:popen4)
-    @provider.port_path.should == "/usr/ports/www/wordpress"
+    new_resource = Chef::Resource::Package.new("/usr/ports/www/wordpress")
+    provider = Chef::Provider::Package::Freebsd.new(@node, new_resource)
+    provider.should_not_receive(:popen4)
+    provider.port_path.should == "/usr/ports/www/wordpress"
   end
-  
+
   it "should use the package_name as a relative path from /usr/ports when it contains / but doesn't start with it" do
-    @new_resource = mock( "Chef::Resource::Package", 
-                          :package_name => "www/wordpress",
-                          :cookbook_name => "xenoparadox")
-    @provider = Chef::Provider::Package::Freebsd.new(mock("Chef::Node"), @new_resource)
-    @provider.should_not_receive(:popen4)
-    @provider.port_path.should == "/usr/ports/www/wordpress"
-  end 
+    # @new_resource = mock( "Chef::Resource::Package",
+    #                       :package_name => "www/wordpress",
+    #                       :cookbook_name => "xenoparadox")
+    new_resource = Chef::Resource::Package.new("www/wordpress")
+    provider = Chef::Provider::Package::Freebsd.new(@node, new_resource)
+    provider.should_not_receive(:popen4)
+    provider.port_path.should == "/usr/ports/www/wordpress"
+  end
 end
 
 describe Chef::Provider::Package::Freebsd, "ruby-iconv (package with a dash in the name)" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Package",
-      :null_object => true,
-      :name => "ruby-iconv",
-      :package_name => "ruby-iconv",
-      :version => nil
-    )
-    @current_resource = mock("Chef::Resource::Package", 
-      :null_object => true,
-      :name => "ruby-iconv",
-      :package_name => "ruby-iconv",
-      :version => nil
-    )
+    @new_resource     = Chef::Resource::Package.new("ruby-iconv")
+    @current_resource = Chef::Resource::Package.new("ruby-iconv")
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:port_path).and_return("/usr/ports/converters/ruby-iconv")
@@ -218,18 +184,10 @@ end
 describe Chef::Provider::Package::Freebsd, "remove_package" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Package",
-      :null_object => true,
-      :name => "zsh",
-      :package_name => "zsh",
-      :version => "4.3.6_7"
-    )
-    @current_resource = mock("Chef::Resource::Package", 
-      :null_object => true,
-      :name => "zsh",
-      :package_name => "zsh",
-      :version => "4.3.6_7"
-    )
+    @new_resource = Chef::Resource::Package.new("zsh")
+    @new_resource.version "4.3.6_7"
+    @current_resource = Chef::Resource::Package.new("zsh")
+    @current_resource.version "4.3.6_7"
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:package_name).and_return("zsh")
@@ -263,18 +221,8 @@ end
 describe Chef::Provider::Package::Freebsd, "install_package latest link fixes" do
   it "should install the perl binary package with the correct name" do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Package",
-      :null_object => true,
-      :name => "perl5.8",
-      :package_name => "perl5.8",
-      :version => nil
-    )
-    @current_resource = mock("Chef::Resource::Package", 
-      :null_object => true,
-      :name => "perl5.8",
-      :package_name => "perl5.8",
-      :version => nil
-    )
+    @new_resource = Chef::Resource::Package.new("perl5.8")
+    @current_resource = Chef::Resource::Package.new("perl5.8")
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:package_name).and_return("perl")
@@ -288,18 +236,8 @@ describe Chef::Provider::Package::Freebsd, "install_package latest link fixes" d
 
   it "should install the mysql50-server binary package with the correct name" do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Package",
-      :null_object => true,
-      :name => "mysql50-server",
-      :package_name => "mysql50-server",
-      :version => nil
-    )
-    @current_resource = mock("Chef::Resource::Package", 
-      :null_object => true,
-      :name => "mysql50-server",
-      :package_name => "mysql50-server",
-      :version => nil
-    )
+    @new_resource     = Chef::Resource::Package.new("mysql50-server")
+    @current_resource = Chef::Resource::Package.new("mysql50-server")
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:package_name).and_return("mysql-server")

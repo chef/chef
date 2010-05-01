@@ -51,7 +51,7 @@ class Chef
       
       class TemplateError < RuntimeError
         attr_reader :original_exception, :context
-        SOURCE_CONTEXT_WINDOW = 2 unless defined? SOURCE_CONTEXT_WINDOW
+        SOURCE_CONTEXT_WINDOW = 2
         
         def initialize(original_exception, template, context)
           @original_exception, @template, @context = original_exception, template, context

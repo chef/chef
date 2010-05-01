@@ -111,7 +111,7 @@ describe Chef::Daemon do
     end
     
     it "should write the pid, converted to string, to the pid file" do
-      @f_mock.should_receive(:write, "1337").once.and_return(true)
+      @f_mock.should_receive(:write).with("1337").once.and_return(true)
       Chef::Daemon.save_pid_file
     end
     
@@ -164,7 +164,7 @@ describe Chef::Daemon do
       end
       
       it "should log an appropriate info message" do
-        Chef::Log.should_receive(:info, "About to change privilege to aj:staff")
+        Chef::Log.should_receive(:info).with("About to change privilege to aj:staff")
         Chef::Daemon.change_privilege
       end
       
@@ -180,7 +180,7 @@ describe Chef::Daemon do
       end
             
       it "should log an appropriate info message" do
-        Chef::Log.should_receive(:info, "About to change privilege to aj")
+        Chef::Log.should_receive(:info).with("About to change privilege to aj")
         Chef::Daemon.change_privilege
       end
       

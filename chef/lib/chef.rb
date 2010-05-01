@@ -16,15 +16,18 @@
 # limitations under the License.
 #
 
-$:.unshift(File.dirname(__FILE__)) unless
-  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
-
-require 'rubygems'
 require 'extlib'
 require 'chef/exceptions'
 require 'chef/log'
 require 'chef/config'
-Dir[File.join(File.dirname(__FILE__), 'chef/mixin/**/*.rb')].sort.each { |lib| require lib }
+require 'chef/providers'
+require 'chef/resources'
+
+require 'chef/compile'
+require 'chef/daemon'
+require 'chef/runner'
+require 'chef/webui_user'
+require 'chef/openid_registration'
 
 class Chef
   VERSION = "0.8.11"

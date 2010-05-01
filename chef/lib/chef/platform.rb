@@ -19,128 +19,140 @@
 require 'chef/config'
 require 'chef/log'
 require 'chef/mixin/params_validate'
-require 'chef/platform'
-require 'chef/resource'
-Dir[File.join(File.dirname(__FILE__), 'provider/**/*.rb')].sort.each { |lib| require lib }
+
+# Actually, this file depends on nearly every provider in chef, but actually
+# requiring them causes circular requires resulting in uninitialized constant
+# errors.
+require 'chef/provider'
+require 'chef/provider/log'
+require 'chef/provider/user'
+require 'chef/provider/group'
+require 'chef/provider/mount'
+require 'chef/provider/service'
+require 'chef/provider/package'
+
 
 class Chef
   class Platform
 
-    @platforms = {
-      :mac_os_x => {
-        :default => {
-          :package => Chef::Provider::Package::Macports,
-          :user => Chef::Provider::User::Dscl,
-          :group => Chef::Provider::Group::Dscl
-        }
-      },
-      :freebsd => {
-        :default => {
-          :group   => Chef::Provider::Group::Pw,
-          :package => Chef::Provider::Package::Freebsd,
-          :service => Chef::Provider::Service::Freebsd,
-          :user    => Chef::Provider::User::Pw,
-          :cron    => Chef::Provider::Cron
-        }
-      },
-      :ubuntu   => {
-        :default => {
-          :package => Chef::Provider::Package::Apt,
-          :service => Chef::Provider::Service::Debian,
-          :cron => Chef::Provider::Cron,
-          :mdadm => Chef::Provider::Mdadm
-        }
-      },
-      :debian => {
-        :default => {
-          :package => Chef::Provider::Package::Apt,
-          :service => Chef::Provider::Service::Debian,
-          :cron => Chef::Provider::Cron,
-          :mdadm => Chef::Provider::Mdadm
-        }
-      },
-      :centos   => {
-        :default => {
-          :service => Chef::Provider::Service::Redhat,
-          :cron => Chef::Provider::Cron,
-          :package => Chef::Provider::Package::Yum,
-          :mdadm => Chef::Provider::Mdadm
-        }
-      },
-      :fedora   => {
-        :default => {
-          :service => Chef::Provider::Service::Redhat,
-          :cron => Chef::Provider::Cron,
-          :package => Chef::Provider::Package::Yum,
-          :mdadm => Chef::Provider::Mdadm
-        }
-      },
-      :suse     => {
-        :default => {
-          :service => Chef::Provider::Service::Redhat,
-          :cron => Chef::Provider::Cron,
-          :package => Chef::Provider::Package::Zypper
-        }
-      },
-      :redhat   => {
-        :default => {
-          :service => Chef::Provider::Service::Redhat,
-          :cron => Chef::Provider::Cron,
-          :package => Chef::Provider::Package::Yum,
-          :mdadm => Chef::Provider::Mdadm
-        }
-      },
-      :gentoo   => {
-        :default => {
-          :package => Chef::Provider::Package::Portage,
-          :service => Chef::Provider::Service::Gentoo,
-          :cron => Chef::Provider::Cron,
-          :mdadm => Chef::Provider::Mdadm
-        }
-      },
-      :arch   => {
-        :default => {
-          :package => Chef::Provider::Package::Pacman,
-          :service => Chef::Provider::Service::Arch,
-          :cron => Chef::Provider::Cron,
-          :mdadm => Chef::Provider::Mdadm
-        }
-      },
-      :solaris  => {},
-      :default  => {
-        :file => Chef::Provider::File,
-        :directory => Chef::Provider::Directory,
-        :link => Chef::Provider::Link,
-        :template => Chef::Provider::Template,
-        :remote_file => Chef::Provider::RemoteFile,
-        :remote_directory => Chef::Provider::RemoteDirectory,
-        :execute => Chef::Provider::Execute,
-        :mount => Chef::Provider::Mount::Mount,
-        :script => Chef::Provider::Script,
-        :service => Chef::Provider::Service::Init,
-        :perl => Chef::Provider::Script,
-        :python => Chef::Provider::Script,
-        :ruby => Chef::Provider::Script,
-        :bash => Chef::Provider::Script,
-        :csh => Chef::Provider::Script,
-        :user => Chef::Provider::User::Useradd,
-        :group => Chef::Provider::Group::Gpasswd,
-        :http_request => Chef::Provider::HttpRequest,
-        :route => Chef::Provider::Route,
-        :ifconfig => Chef::Provider::Ifconfig,
-        :ruby_block => Chef::Provider::RubyBlock,
-        :erl_call => Chef::Provider::ErlCall,
-        :log => Chef::Provider::Log::ChefLog
-      }
-    }
 
     class << self
-      attr_accessor :platforms
+      attr_writer :platforms
+      
+      def platforms
+        @platforms ||= {
+          :mac_os_x => {
+            :default => {
+              :package => Chef::Provider::Package::Macports,
+              :user => Chef::Provider::User::Dscl,
+              :group => Chef::Provider::Group::Dscl
+            }
+          },
+          :freebsd => {
+            :default => {
+              :group   => Chef::Provider::Group::Pw,
+              :package => Chef::Provider::Package::Freebsd,
+              :service => Chef::Provider::Service::Freebsd,
+              :user    => Chef::Provider::User::Pw,
+              :cron    => Chef::Provider::Cron
+            }
+          },
+          :ubuntu   => {
+            :default => {
+              :package => Chef::Provider::Package::Apt,
+              :service => Chef::Provider::Service::Debian,
+              :cron => Chef::Provider::Cron,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
+          :debian => {
+            :default => {
+              :package => Chef::Provider::Package::Apt,
+              :service => Chef::Provider::Service::Debian,
+              :cron => Chef::Provider::Cron,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
+          :centos   => {
+            :default => {
+              :service => Chef::Provider::Service::Redhat,
+              :cron => Chef::Provider::Cron,
+              :package => Chef::Provider::Package::Yum,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
+          :fedora   => {
+            :default => {
+              :service => Chef::Provider::Service::Redhat,
+              :cron => Chef::Provider::Cron,
+              :package => Chef::Provider::Package::Yum,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
+          :suse     => {
+            :default => {
+              :service => Chef::Provider::Service::Redhat,
+              :cron => Chef::Provider::Cron,
+              :package => Chef::Provider::Package::Zypper
+            }
+          },
+          :redhat   => {
+            :default => {
+              :service => Chef::Provider::Service::Redhat,
+              :cron => Chef::Provider::Cron,
+              :package => Chef::Provider::Package::Yum,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
+          :gentoo   => {
+            :default => {
+              :package => Chef::Provider::Package::Portage,
+              :service => Chef::Provider::Service::Gentoo,
+              :cron => Chef::Provider::Cron,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
+          :arch   => {
+            :default => {
+              :package => Chef::Provider::Package::Pacman,
+              :service => Chef::Provider::Service::Arch,
+              :cron => Chef::Provider::Cron,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
+          :solaris  => {},
+          :default  => {
+            :file => Chef::Provider::File,
+            :directory => Chef::Provider::Directory,
+            :link => Chef::Provider::Link,
+            :template => Chef::Provider::Template,
+            :remote_file => Chef::Provider::RemoteFile,
+            :remote_directory => Chef::Provider::RemoteDirectory,
+            :execute => Chef::Provider::Execute,
+            :mount => Chef::Provider::Mount::Mount,
+            :script => Chef::Provider::Script,
+            :service => Chef::Provider::Service::Init,
+            :perl => Chef::Provider::Script,
+            :python => Chef::Provider::Script,
+            :ruby => Chef::Provider::Script,
+            :bash => Chef::Provider::Script,
+            :csh => Chef::Provider::Script,
+            :user => Chef::Provider::User::Useradd,
+            :group => Chef::Provider::Group::Gpasswd,
+            :http_request => Chef::Provider::HttpRequest,
+            :route => Chef::Provider::Route,
+            :ifconfig => Chef::Provider::Ifconfig,
+            :ruby_block => Chef::Provider::RubyBlock,
+            :erl_call => Chef::Provider::ErlCall,
+            :log => Chef::Provider::Log::ChefLog
+          }
+        }
+      end
 
       include Chef::Mixin::ParamsValidate
 
       def find(name, version)
-        provider_map = @platforms[:default].clone
+        provider_map = platforms[:default].clone
 
         name_sym = name
         if name.kind_of?(String)
@@ -149,15 +161,15 @@ class Chef
           name_sym = name.to_sym
         end
 
-        if @platforms.has_key?(name_sym)
-          if @platforms[name_sym].has_key?(version)
+        if platforms.has_key?(name_sym)
+          if platforms[name_sym].has_key?(version)
             Chef::Log.debug("Platform #{name.to_s} version #{version} found")
-            if @platforms[name_sym].has_key?(:default)
-              provider_map.merge!(@platforms[name_sym][:default])
+            if platforms[name_sym].has_key?(:default)
+              provider_map.merge!(platforms[name_sym][:default])
             end
-            provider_map.merge!(@platforms[name_sym][version])
-          elsif @platforms[name_sym].has_key?(:default)
-            provider_map.merge!(@platforms[name_sym][:default])
+            provider_map.merge!(platforms[name_sym][version])
+          elsif platforms[name_sym].has_key?(:default)
+            provider_map.merge!(platforms[name_sym][:default])
           end
         else
           Chef::Log.debug("Platform #{name} not found, using all defaults. (Unsupported platform?)")
@@ -221,30 +233,30 @@ class Chef
         )
         if args.has_key?(:platform)
           if args.has_key?(:version)
-            if @platforms.has_key?(args[:platform])
-              if @platforms[args[:platform]].has_key?(args[:version])
-                @platforms[args[:platform]][args[:version]][args[:resource].to_sym] = args[:provider]
+            if platforms.has_key?(args[:platform])
+              if platforms[args[:platform]].has_key?(args[:version])
+                platforms[args[:platform]][args[:version]][args[:resource].to_sym] = args[:provider]
               else
-                @platforms[args[:platform]][args[:version]] = {
+                platforms[args[:platform]][args[:version]] = {
                   args[:resource].to_sym => args[:provider]
                 }
               end
             else
-              @platforms[args[:platform]] = {
+              platforms[args[:platform]] = {
                 args[:version] => {
                   args[:resource].to_sym => args[:provider]
                 }
               }
             end
           else
-            if @platforms.has_key?(args[:platform])
-              if @platforms[args[:platform]].has_key?(:default)
-                @platforms[args[:platform]][:default][args[:resource].to_sym] = args[:provider]
+            if platforms.has_key?(args[:platform])
+              if platforms[args[:platform]].has_key?(:default)
+                platforms[args[:platform]][:default][args[:resource].to_sym] = args[:provider]
               else
-                @platforms[args[:platform]] = { :default => { args[:resource].to_sym => args[:provider] } }
+                platforms[args[:platform]] = { :default => { args[:resource].to_sym => args[:provider] } }
               end
             else
-              @platforms[args[:platform]] = {
+              platforms[args[:platform]] = {
                 :default => {
                   args[:resource].to_sym => args[:provider]
                 }
@@ -252,10 +264,10 @@ class Chef
             end
           end
         else
-          if @platforms.has_key?(:default)
-            @platforms[:default][args[:resource].to_sym] = args[:provider]
+          if platforms.has_key?(:default)
+            platforms[:default][args[:resource].to_sym] = args[:provider]
           else
-            @platforms[:default] = {
+            platforms[:default] = {
               args[:resource].to_sym => args[:provider]
             }
           end

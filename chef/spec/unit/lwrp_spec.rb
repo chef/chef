@@ -41,7 +41,7 @@ describe Chef::Resource do
   end
   
   it "should create a method for each attribute" do
-    Chef::Resource::LwrpFoo.new("blah").methods.should include("monkey")
+    Chef::Resource::LwrpFoo.new("blah").methods.map{ |m| m.to_sym}.should include(:monkey)
   end
 
   it "should build attribute methods that respect validation rules" do
@@ -58,8 +58,8 @@ describe Chef::Provider do
   
   it "should create a method for each attribute" do
     new_resource = mock("new resource", :null_object=>true)
-    Chef::Provider::LwrpBuckPasser.new(nil, new_resource).methods.should include("action_pass_buck")
-    Chef::Provider::LwrpThumbTwiddler.new(nil, new_resource).methods.should include("action_twiddle_thumbs")
+    Chef::Provider::LwrpBuckPasser.new(nil, new_resource).methods.map{|m|m.to_sym}.should include(:action_pass_buck)
+    Chef::Provider::LwrpThumbTwiddler.new(nil, new_resource).methods.map{|m|m.to_sym}.should include(:action_twiddle_thumbs)
   end
 
   it "should insert resources embedded in the provider into the middle of the resource collection" do

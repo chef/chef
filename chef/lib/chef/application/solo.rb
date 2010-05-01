@@ -158,7 +158,7 @@ class Chef::Application::Solo < Chef::Application
     end
     
     if Chef::Config[:recipe_url]
-      cookbooks_path = Chef::Config[:cookbook_path].detect{|e| e =~ /\/cookbooks\/*$/ }
+      cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
       target_file = File.join(recipes_path, 'recipes.tgz')
 
