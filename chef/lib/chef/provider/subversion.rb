@@ -86,7 +86,7 @@ class Chef
           if @new_resource.revision =~ /^\d+$/
             @new_resource.revision
           else
-            command = scm(:info, @new_resource.repository, authentication, "-r#{@new_resource.revision}")
+            command = scm(:info, @new_resource.repository, @new_resource.svn_info_args, authentication, "-r#{@new_resource.revision}")
             status, svn_info, error_message = output_of_command(command, run_options)
             handle_command_failures(status, "STDOUT: #{svn_info}\nSTDERR: #{error_message}")
             extract_revision_info(svn_info)

@@ -99,6 +99,7 @@ describe Chef::Provider::Subversion do
     before do
       @stdout = mock("stdout")
       @stderr = mock("stderr")
+      @resource.svn_info_args "--no-auth-cache"
     end
     
     it "returns the revision number as is if it's already an integer" do
@@ -120,7 +121,9 @@ describe Chef::Provider::Subversion do
       @resource.revision "HEAD"
       @stdout.stub!(:string).and_return(example_svn_info)
       @stderr.stub!(:string).and_return("")
-      @provider.should_receive(:popen4).and_yield("no-pid","no-stdin",@stdout,@stderr).
+      expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {:cwd=>Dir.tmpdir}]
+      @provider.should_receive(:popen4).with(*expected_command).
+                                        and_yield("no-pid","no-stdin",@stdout,@stderr).
                                         and_return(exitstatus)
       @provider.revision_int.should eql("11410")
     end
