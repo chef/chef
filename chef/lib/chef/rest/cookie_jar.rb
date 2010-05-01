@@ -1,6 +1,11 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Thom May (<thom@clearairturbulence.org>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
+# Author:: Christopher Brown (<cb@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,30 +20,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-require 'tempfile'
-require 'chef/provider/execute'
+require 'singleton'
 
 class Chef
-  class Provider
-    class Script < Chef::Provider::Execute
-
-      def action_run
-        tf = Tempfile.new("chef-script")
-        tf.puts(@new_resource.code)
-        tf.close
-
-        fr = Chef::Resource::File.new(tf.path, nil, @node)
-        fr.owner(@new_resource.user)
-        fr.group(@new_resource.group)
-        fr.run_action(:create)
-
-        @new_resource.command("#{@new_resource.interpreter} #{tf.path}")
-        super
-      ensure
-        tf && tf.close!
-      end
-
+  class REST
+    class CookieJar < Hash
+      include Singleton
     end
   end
 end

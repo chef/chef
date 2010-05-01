@@ -50,6 +50,8 @@ Chef::Config.solo(false)
 
 Chef::Log.logger = Logger.new(StringIO.new)
 
+CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
+
 def redefine_argv(value)
   Object.send(:remove_const, :ARGV)
   Object.send(:const_set, :ARGV, value)

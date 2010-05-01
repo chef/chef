@@ -37,5 +37,8 @@ class Chef
     class CannotWritePrivateKey < RuntimeError; end
     class RoleNotFound < RuntimeError; end
     class ValidationFailed < ArgumentError; end
+    class InvalidPrivateKey < ArgumentError; end
+    class ConfigurationError < ArgumentError; end
+    class RedirectLimitExceeded < RuntimeError; end
   end
 end
