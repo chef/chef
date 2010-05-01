@@ -51,7 +51,7 @@ describe Chef::Knife::CookbookTest do
       @knife.stub!(:test_ruby).and_return(true)
       @knife.stub!(:test_template).and_return(true)
       @knife.name_args = ["example"]
-      Chef::Config[:cookbook_path].reverse.each do |path|
+      Array(Chef::Config[:cookbook_path]).reverse.each do |path|
         @knife.should_receive(:test_ruby).with(File.join(path, "example"))
         @knife.should_receive(:test_templates).with(File.join(path, "example"))
       end
