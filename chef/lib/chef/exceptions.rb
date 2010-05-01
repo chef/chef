@@ -41,5 +41,6 @@ class Chef
     class ConfigurationError < ArgumentError; end
     class RedirectLimitExceeded < RuntimeError; end
     class AmbiguousRunlistSpecification < ArgumentError; end
+    class CookbookNotFound < RuntimeError; end
   end
 end

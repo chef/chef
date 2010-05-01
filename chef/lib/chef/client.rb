@@ -274,7 +274,7 @@ class Chef
       Chef::FileCache.list.each do |cache_file|
         if cache_file =~ /^cookbooks\/(.+?)\//
           unless cookbook_hash.has_key?($1)
-            Chef::Log.info("Removing #{cache_file} from the cache; it's cookbook is no longer needed on this client.")
+            Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
             Chef::FileCache.delete(cache_file) 
           end
         end
@@ -312,6 +312,18 @@ class Chef
       Chef::Log.debug("Compiling recipes for node #{@node_name}")
       unless solo
         Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+        Chef::Log.warn("Node #{@node_name} has an empty run list.") if @node.run_list.empty?
+      else
+        # Check for cookbooks in the path given
+        # Chef::Config[:cookbook_path] can be a string or an array
+        # if it's an array, go through it and check each one, raise error at the last one if no files are found
+        Chef::Config[:cookbook_path].each_with_index do |cookbook_path, index|
+          if file_exists?(cookbook_path)
+            break
+          else
+            (Chef::Log.fatal(e = "No cookbook found in #{Chef::Config[:cookbook_path].inspect}, make sure cookboook_path is set correctly."); (raise Chef::Exceptions::CookbookNotFound, e)) if is_last_element?(index, Chef::Config[:cookbook_path])
+          end
+        end
       end
       compile = Chef::Compile.new(@node)
       
@@ -319,6 +331,16 @@ class Chef
       Chef::Runner.new(@node, compile.collection, compile.definitions, compile.cookbook_loader).converge
       true
     end
+    
+    private
+    
+    def file_exists?(path)
+      (File.exists?(path) and Dir.entries(path).size > 2) ? true : false
+    end
+    
+    def is_last_element?(index, object)
+      object.class == Array ? index == object.size - 1 : true 
+    end  
 
   end
 end
