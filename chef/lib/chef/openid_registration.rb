@@ -21,7 +21,6 @@ require 'chef/mixin/params_validate'
 require 'chef/couchdb'
 require 'chef/index_queue'
 require 'digest/sha1'
-require 'rubygems'
 require 'json'
 
 class Chef
