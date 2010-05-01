@@ -24,7 +24,7 @@ require 'uri'
 require 'net/https'
 require 'stringio'
 
-KEY_DOT_PEM=<<-END_RSA_KEY
+SIGNING_KEY_DOT_PEM=<<-END_RSA_KEY
 -----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA49TA0y81ps0zxkOpmf5V4/c4IeR5yVyQFpX3JpxO4TquwnRh
 8VSUhrw8kkTLmB3cS39Db+3HadvhoqCEbqPE6915kXSuk/cWIcNozujLK7tkuPEy
@@ -124,7 +124,7 @@ describe Chef::REST do
     end
 
     it "provides access to the raw key data" do
-      @rest.signing_key.should == KEY_DOT_PEM
+      @rest.signing_key.should == SIGNING_KEY_DOT_PEM
     end
 
     it "does not error out when initialized without credentials" do
