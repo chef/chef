@@ -5,7 +5,7 @@ def package_system_available?(name)
   when 'MacPorts'
     uname = `uname`
     port = `which port`
-    (uname =~ /Darwin/ and !port.match(/not found/))
+    (uname =~ /Darwin/ && !port.match(/not found/) && ::File.directory?('/opt'))
   else
     false
   end
