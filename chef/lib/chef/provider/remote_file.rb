@@ -67,7 +67,7 @@ class Chef
               raise e
             end
           end
-          
+
           Chef::Log.debug "#{@new_resource} completed"
           retval
         end
@@ -75,18 +75,18 @@ class Chef
 
         retval
       end
-      
+
       def enforce_ownership_and_permissions
         set_owner if @new_resource.owner
         set_group if @new_resource.group
         set_mode  if @new_resource.mode
-        
+
       end
-      
+
       def current_resource_matches_target_checksum?
         @new_resource.checksum && @current_resource.checksum && @current_resource.checksum =~ /^#{@new_resource.checksum}/
       end
-      
+
       def matches_current_checksum?(candidate_file)
         Chef::Log.debug "#{@new_resource}: Checking for file existence of #{@new_resource.path}"
         if ::File.exists?(@new_resource.path)
@@ -100,7 +100,7 @@ class Chef
           false
         end
       end
-      
+
       def backup_new_resource
         if ::File.exists?(@new_resource.path)
           Chef::Log.debug "#{@new_resource}: checksum changed from #{@current_resource.checksum} to #{@new_resource.checksum}"
@@ -108,7 +108,7 @@ class Chef
           backup @new_resource.path
         end
       end
-      
+
       def source_file(source, current_checksum, &block)
         if absolute_uri?(source)
           fetch_from_uri(source, &block)
@@ -118,9 +118,9 @@ class Chef
           fetch_from_local_cookbook(source, &block)
         end
       end
-      
+
       private
-      
+
       def absolute_uri?(source)
         URI.parse(source).absolute?
       rescue URI::InvalidURIError

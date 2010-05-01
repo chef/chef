@@ -9,14 +9,14 @@
             - @cookbook["libraries"].each do |f|
               .code
                 %h4.head= link_to File.basename(f["name"]), "JavaScript:void(0);"
-                %pre.ruby= syntax_highlight(f["uri"])     
+                %pre.ruby= syntax_highlight(f["uri"])
         - unless @cookbook["attributes"].empty?
           %h2.head= link_to "Attribute Files", "JavaScript:void(0);"
           .files
             - @cookbook["attributes"].each do |f|
               .code
                 %h4.head= link_to File.basename(f["name"]), "JavaScript:void(0);"
-                %pre.ruby= syntax_highlight(f["uri"])  
+                %pre.ruby= syntax_highlight(f["uri"])
         - unless @cookbook["definitions"].empty?
           %h2.head= link_to "Definition Files", "JavaScript:void(0);"
           .files
