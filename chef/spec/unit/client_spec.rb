@@ -100,7 +100,7 @@ describe Chef::Client, "run_solo" do
   it "should start/stop the run timer" do
     time = Time.now
     Time.should_receive(:now).at_least(1).times.and_return(time)
-    Chef::Config[:cookbook_path] = [File.join(File.dirname(__FILE__), "..", "data", "kitchen"), File.join(File.dirname(__FILE__), "..", "data", "cookbooks")]
+    Chef::Config[:cookbook_path] = [File.join(CHEF_SPEC_DATA, "kitchen"), File.join(CHEF_SPEC_DATA, "cookbooks")]
     @client.run_solo
   end
 
@@ -115,9 +115,9 @@ describe Chef::Client, "run_solo" do
   end
 
   it "should use the configured cookbook_path" do
-    Chef::Config[:cookbook_path] = [File.join(File.dirname(__FILE__), "..", "data", "kitchen"), File.join(File.dirname(__FILE__), "..", "data", "cookbooks")]
+    Chef::Config[:cookbook_path] = [File.join(CHEF_SPEC_DATA, "kitchen"), File.join(CHEF_SPEC_DATA, "cookbooks")]
     @client.run_solo
-    Chef::Config[:cookbook_path].should eql([File.join(File.dirname(__FILE__), "..", "data", "kitchen"), File.join(File.dirname(__FILE__), "..", "data", "cookbooks")])
+    Chef::Config[:cookbook_path].should eql([File.join(CHEF_SPEC_DATA, "kitchen"), File.join(CHEF_SPEC_DATA, "cookbooks")])
   end
 end
 
