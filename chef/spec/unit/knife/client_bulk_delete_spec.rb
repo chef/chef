@@ -25,7 +25,7 @@ describe Chef::Knife::ClientBulkDelete do
       :print_after => nil
     }
     @knife.name_args = ["."]
-    @knife.stub!(:json_pretty_print).and_return(:true)
+    @knife.stub!(:output).and_return(:true)
     @knife.stub!(:confirm).and_return(true)
     @clients = Hash.new
     %w{tim dan stephen}.each do |client_name|
@@ -45,7 +45,7 @@ describe Chef::Knife::ClientBulkDelete do
     end
     
     it "should print the clients you are about to delete" do
-      @knife.should_receive(:json_pretty_print).with(@knife.format_list_for_display(@clients))
+      @knife.should_receive(:output).with(@knife.format_list_for_display(@clients))
       @knife.run
     end
     
@@ -78,7 +78,7 @@ describe Chef::Knife::ClientBulkDelete do
       it "should pretty_print the client, formatted for display" do
         @knife.config[:print_after] = true
         @clients.each_value do |n|
-          @knife.should_receive(:json_pretty_print).with(@knife.format_for_display(n))
+          @knife.should_receive(:output).with(@knife.format_for_display(n))
         end
         @knife.run
       end

@@ -30,7 +30,7 @@ class Chef
         when 2
           cookbook_data = rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}/versions/#{name_args[1].gsub('.', '_')}")
         end
-        json_pretty_print(format_for_display(cookbook_data))
+        output(format_for_display(cookbook_data))
       end
 
       def get_cookbook_list(items=10, start=0, cookbook_collection={})

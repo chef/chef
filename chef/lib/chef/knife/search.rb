@@ -82,7 +82,7 @@ class Chef
             puts display[:rows].join("\n") 
           end
         else
-          json_pretty_print(display)
+          output(display)
         end
       end
     end

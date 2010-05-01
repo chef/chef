@@ -41,7 +41,7 @@ class Chef
 
         config[:run_list] = true
 
-        json_pretty_print(format_for_display(node)) 
+        output(format_for_display(node)) 
       end
 
       def add_to_run_list(node, new_value, after=nil)

@@ -32,7 +32,7 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run 
-        json_pretty_print(format_list_for_display(Chef::ApiClient.list))
+        output(format_list_for_display(Chef::ApiClient.list))
       end
     end
   end

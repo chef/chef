@@ -26,7 +26,7 @@ describe Chef::Knife::NodeShow do
       :run_list => nil
     }
     @knife.name_args = [ "adam" ]
-    @knife.stub!(:json_pretty_print).and_return(true)
+    @knife.stub!(:output).and_return(true)
     @node = Chef::Node.new() 
     Chef::Node.stub!(:load).and_return(@node)
   end
@@ -39,7 +39,7 @@ describe Chef::Knife::NodeShow do
 
     it "should pretty print the node, formatted for display" do
       @knife.should_receive(:format_for_display).with(@node).and_return("poop")
-      @knife.should_receive(:json_pretty_print).with("poop")
+      @knife.should_receive(:output).with("poop")
       @knife.run
     end
   end

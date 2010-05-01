@@ -25,7 +25,7 @@ describe Chef::Knife::NodeFromFile do
       :print_after => nil
     }
     @knife.name_args = [ "adam.rb" ]
-    @knife.stub!(:json_pretty_print).and_return(true)
+    @knife.stub!(:output).and_return(true)
     @knife.stub!(:confirm).and_return(true)
     @node = Chef::Node.new() 
     @node.stub!(:save)
@@ -39,14 +39,14 @@ describe Chef::Knife::NodeFromFile do
     end
 
     it "should not print the Node" do
-      @knife.should_not_receive(:json_pretty_print)
+      @knife.should_not_receive(:output)
       @knife.run
     end
 
     describe "with -p or --print-after" do
       it "should print the Node" do
         @knife.config[:print_after] = true
-        @knife.should_receive(:json_pretty_print)
+        @knife.should_receive(:output)
         @knife.run
       end
     end

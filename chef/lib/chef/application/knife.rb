@@ -94,7 +94,13 @@ class Chef::Application::Knife < Chef::Application
     :short => "-p",
     :long => "--print-after",
     :description => "Show the data after a destructive operation"
-  
+
+  option :format,
+    :short => "-f FORMAT",
+    :long => "--format FORMAT",
+    :description => "Which format to use for output",
+    :default => "json"
+
   option :version,
     :short        => "-v",
     :long         => "--version",

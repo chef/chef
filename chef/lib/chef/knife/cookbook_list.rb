@@ -31,7 +31,7 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run 
-        json_pretty_print(format_list_for_display(rest.get_rest('cookbooks')))
+        output(format_list_for_display(rest.get_rest('cookbooks')))
       end
     end
   end

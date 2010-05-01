@@ -21,7 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Knife::NodeList do
   before(:each) do
     @knife = Chef::Knife::NodeList.new
-    @knife.stub!(:json_pretty_print).and_return(true)
+    @knife.stub!(:output).and_return(true)
     @list = {
       "foo" => "http://example.com/foo",
       "bar" => "http://example.com/foo"
@@ -37,7 +37,7 @@ describe Chef::Knife::NodeList do
 
     it "should pretty print the list" do
       Chef::Node.should_receive(:list).and_return(@list)
-      @knife.should_receive(:json_pretty_print).with([ "bar", "foo" ])
+      @knife.should_receive(:output).with([ "bar", "foo" ])
       @knife.run
     end
 
@@ -45,7 +45,7 @@ describe Chef::Knife::NodeList do
       it "should pretty print the hash" do
         @knife.config[:with_uri] = true
         Chef::Node.should_receive(:list).and_return(@list)
-        @knife.should_receive(:json_pretty_print).with(@list)
+        @knife.should_receive(:output).with(@list)
         @knife.run
       end
     end
