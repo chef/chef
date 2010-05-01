@@ -56,7 +56,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     @tempfile = Tempfile.new("chef-rspec-remote_file_spec-line#{__LINE__}")
     @rest.stub!(:fetch).and_yield(@tempfile)
     @resource = Chef::Resource::RemoteFile.new("seattle")
-    @resource.path(File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt")))
+    @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "seattle.txt")))
     @resource.source("foo")
     @resource.cookbook_name = "monkey"
     @node = Chef::Node.new
