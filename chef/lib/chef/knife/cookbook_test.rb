@@ -59,7 +59,7 @@ class Chef
 
       def test_cookbook(cookbook)
         Chef::Log.info("Running syntax check on #{cookbook}")
-        config[:cookbook_path].reverse.each do |path|
+        Array(config[:cookbook_path]).reverse.each do |path|
           cookbook_dir = File.expand_path(File.join(path, cookbook))
           test_ruby(cookbook_dir)
           test_templates(cookbook_dir)
