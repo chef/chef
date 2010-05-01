@@ -40,5 +40,6 @@ class Chef
     class InvalidPrivateKey < ArgumentError; end
     class ConfigurationError < ArgumentError; end
     class RedirectLimitExceeded < RuntimeError; end
+    class AmbiguousRunlistSpecification < ArgumentError; end
   end
 end
