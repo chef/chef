@@ -52,8 +52,8 @@ describe Chef::Knife::CookbookTest do
       @knife.stub!(:test_template).and_return(true)
       @knife.name_args = ["example"]
       Array(Chef::Config[:cookbook_path]).reverse.each do |path|
-        @knife.should_receive(:test_ruby).with(File.join(path, "example"))
-        @knife.should_receive(:test_templates).with(File.expand_path(File.join(path, "example")))
+        @knife.should_receive(:test_ruby).with(File.join(path, "example")).ordered
+        @knife.should_receive(:test_templates).with(File.expand_path(File.join(path, "example"))).ordered
       end
       @knife.run
     end
