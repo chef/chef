@@ -167,18 +167,18 @@ class Chef
       
       module_function :output_of_command
       
-      def handle_command_failures(status, command_output, args={})
-        unless args[:ignore_failure] 
-          args[:returns] ||= 0
-          if status.exitstatus != args[:returns]
+      def handle_command_failures(status, command_output, opts={})
+        unless opts[:ignore_failure]
+          opts[:returns] ||= 0
+          unless Array(opts[:returns]).include?(status.exitstatus)
             # if the log level is not debug, through output of command when we fail
             output = ""
-            if Chef::Log.level == :debug || args[:output_on_failure]
-              output << "\n---- Begin output of #{args[:command]} ----\n"
-              output << "#{command_output}"
-              output << "---- End output of #{args[:command]} ----\n"
+            if Chef::Log.level == :debug || opts[:output_on_failure]
+              output << "\n---- Begin output of #{opts[:command]} ----\n"
+              output << command_output.to_s
+              output << "\n---- End output of #{opts[:command]} ----\n"
             end
-            raise Chef::Exceptions::Exec, "#{args[:command]} returned #{status.exitstatus}, expected #{args[:returns]}#{output}"
+            raise Chef::Exceptions::Exec, "#{opts[:command]} returned #{status.exitstatus}, expected #{opts[:returns]}#{output}"
           end
         end
       end

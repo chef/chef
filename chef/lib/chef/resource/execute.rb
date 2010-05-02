@@ -100,7 +100,7 @@ class Chef
         set_or_return(
           :returns,
           arg,
-          :kind_of => [ Integer ]
+          :kind_of => [ Integer, Array ]
         )
       end
       
