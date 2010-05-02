@@ -143,12 +143,6 @@ describe Chef::Application::Client, "setup_application" do
     @app.setup_application
   end
   
-  it "should assign the validation token to the chef client instance" do
-    Chef::Config.stub!(:[]).with(:validation_token).and_return("testtoken")
-    @chef_client.should_receive(:validation_token=).with("testtoken").and_return(true)
-    @app.setup_application
-  end
-  
   it "should assign the node name to the chef client instance" do
     Chef::Config.stub!(:[]).with(:node_name).and_return("testnode")
     @chef_client.should_receive(:node_name=).with("testnode").and_return(true)
