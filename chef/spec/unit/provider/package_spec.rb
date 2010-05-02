@@ -315,7 +315,7 @@ describe Chef::Provider::Package, "preseed_package" do
   end
   
   it "should raise Chef::Exceptions::UnsupportedAction" do
-    lambda { @provider.preseed_package(@new_resource.name, @new_resource.version, "response_file") }.should raise_error(Chef::Exceptions::UnsupportedAction)      
+    lambda { @provider.preseed_package(@new_resource.name, @new_resource.version) }.should raise_error(Chef::Exceptions::UnsupportedAction)
   end
 end
 
