@@ -39,5 +39,5 @@ Feature: Synchronize cookbooks from the server
     Given it includes no recipes
      When I run the chef-client with '-l info'
      Then the run should exit '0'
-      And 'stdout' should have 'INFO: Removing cookbooks/synchronize_deps/recipes/default.rb from the cache; it's cookbook is no longer needed on this client.'
+      And 'stdout' should have 'INFO: Removing cookbooks/synchronize_deps/recipes/default.rb from the cache; its cookbook is no longer needed on this client.'
 
