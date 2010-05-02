@@ -23,7 +23,8 @@ class ChefServerApi::Clients < ChefServerApi::Application
   provides :json
 
   before :authenticate_every
-  before :is_admin, :only => [ :index, :create, :update, :destroy ]
+  before :is_admin, :only => [ :index, :update, :destroy ]
+  before :is_admin_or_validator, :only => [ :create ]
   before :is_correct_node, :only => [ :show ]
   
   # GET /clients
@@ -48,7 +49,13 @@ class ChefServerApi::Clients < ChefServerApi::Application
     exists = true 
     if params.has_key?(:inflated_object)
       params[:name] ||= params[:inflated_object].name
-      params[:admin] ||= params[:inflated_object].admin
+      # We can only get here if we're admin or the validator. Only
+      # allow creating admin clients if we're already an admin.
+      if @client.admin
+        params[:admin] ||= params[:inflated_object].admin
+      else
+        params[:admin] = false
+      end
     end
 
     begin
