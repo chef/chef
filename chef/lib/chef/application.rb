@@ -34,7 +34,7 @@ class Chef::Application
       Chef::Application.fatal!("SIGINT received, stopping", 2)
     end
     
-    unless RUBY_PLATFORM =~ /mswin|mingw32/
+    unless RUBY_PLATFORM =~ /mswin|mingw32|windows/
       trap("HUP") do 
         Chef::Log.info("SIGHUP received, reconfiguring")
         reconfigure
