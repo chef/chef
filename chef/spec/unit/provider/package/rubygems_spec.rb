@@ -22,8 +22,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 describe Chef::Provider::Package::Rubygems do
   before(:each) do
     @node = Chef::Node.new
-    @new_resource = Chef::Resource::GemPackage.new("rspec")
-    @new_resource.version "1.2.2"
+    @new_resource = Chef::Resource::GemPackage.new("nokogiri")
+    @new_resource.version "1.4.1"
     @provider = Chef::Provider::Package::Rubygems.new(@node, @new_resource)
   end
 
@@ -36,6 +36,26 @@ describe Chef::Provider::Package::Rubygems do
       @new_resource.gem_binary "/opt/local/bin/custom/ruby"
       @provider.gem_binary_path.should == "/opt/local/bin/custom/ruby"
     end
+  end
+
+  describe "loading the current state" do
+    it "determines the installed versions of gems" do
+      gem_list = "nokogiri (2.3.5, 2.2.2, 1.2.6)"
+      @provider.gem_list_parse(gem_list).should == %w{2.3.5 2.2.2 1.2.6}
+    end
+  end
+
+  describe "determining the candidate version" do
+    it "parses the available versions as reported by rubygems 1.3.6 and lower" do
+      gem_list = "nokogiri (1.4.1)\nnokogiri-happymapper (0.3.3)"
+      @provider.gem_list_parse(gem_list).should == ['1.4.1']
+    end
+
+    it "parses the available versions as reported by rubygems 1.3.7 and newer" do
+      gem_list = "nokogiri (1.4.1 ruby java x86-mingw32 x86-mswin32)\nnokogiri-happymapper (0.3.3)\n"
+      @provider.gem_list_parse(gem_list).should == ['1.4.1']
+    end
+
   end
 
   describe "when installing a gem" do

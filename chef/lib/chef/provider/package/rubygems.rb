@@ -27,9 +27,8 @@ class Chef
       
         def gem_list_parse(line)
           installed_versions = Array.new
-          if line.match("^#{@new_resource.package_name} \\((.+?)\\)$")
-            installed_versions = $1.split(/, /)
-            installed_versions
+          if md = line.match(/^#{@new_resource.package_name} \((.+?)(?: [^\)\.]+)?\)$/)
+            md.captures.first.split(/, /)
           else
             nil
           end
@@ -47,9 +46,8 @@ class Chef
         
           # First, we need to look up whether we have the local gem installed or not
           status = popen4("#{gem_binary_path} list --local #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              installed_versions = gem_list_parse(line)
-              next unless installed_versions
+            stdout.each_line do |line|
+              next unless installed_versions = gem_list_parse(line)
               # If the version we are asking for is installed, make that our current
               # version.  Otherwise, go ahead and use the highest one, which
               # happens to come first in the array.
@@ -75,9 +73,8 @@ class Chef
           return @candidate_version if @candidate_version
 
           status = popen4("#{gem_binary_path} list --remote #{@new_resource.package_name}#{' --source=' + @new_resource.source if @new_resource.source}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              installed_versions = gem_list_parse(line)
-              next unless installed_versions
+            stdout.each_line do |line|
+              next unless installed_versions = gem_list_parse(line)
               Chef::Log.debug("candidate_version: remote rubygem(s) available: #{installed_versions.inspect}")
               
               unless installed_versions.empty?
