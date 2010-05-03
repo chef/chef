@@ -50,11 +50,15 @@ class Chef
           cache
         end
         
+        def sorted_releases_from_filesystem
+          Dir.glob(new_resource.deploy_to + "/releases/*").sort_by { |d| ::File.ctime(d) }
+        end
+
         def load_cache
           begin
             JSON.parse(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
           rescue Chef::Exceptions::FileNotFound
-            save_cache([])
+            sorted_releases_from_filesystem
           end
         end
         
