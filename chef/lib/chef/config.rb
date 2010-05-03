@@ -143,8 +143,8 @@ class Chef
     search_url "http://localhost:4000"
     solo  false
     splay nil
-    ssl_client_cert ""
-    ssl_client_key ""
+    ssl_client_cert nil
+    ssl_client_key nil
     ssl_verify_mode :verify_none
     ssl_ca_path nil
     ssl_ca_file nil
