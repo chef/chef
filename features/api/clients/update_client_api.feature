@@ -25,4 +25,15 @@ Feature: Update a client
       And a 'client' named 'isis_update'
      When I 'PUT' the 'client' to the path '/clients/isis'
      Then I should get a '401 "Unauthorized"' exception
+     
+  @privilege_escalation
+  Scenario: Non-admin clients cannot update themselves
+    Given I am a non admin client
+     When I edit the 'not_admin' client
+      And I set 'admin' to true
+      And I save the client
+     Then I should get a '401 "Unauthorized"' exception
+  
+  
+  
 

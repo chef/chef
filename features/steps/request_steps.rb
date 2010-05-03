@@ -61,6 +61,23 @@ When /^I authenticate as '(.+)'$/ do |reg|
   end
 end
 
+When "I edit the '$not_admin' client" do |client|
+  @object_to_edit = Chef::ApiClient.cdb_load("not_admin")
+end
+ 
+When "I set '$property' to true" do |property|
+  @object_to_edit.send(property.to_sym, true)
+end
+
+When "I save the client" do
+  begin
+    @rest.put_rest "clients/#{@object_to_edit.name}", @object_to_edit
+  rescue Exception => e
+    @exception = e
+  end
+end
+
+
 #When /^I dump the contents of the search index$/ do
 #  Given "I dump the contents of the search index"
 #end
