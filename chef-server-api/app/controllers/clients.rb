@@ -51,7 +51,7 @@ class ChefServerApi::Clients < ChefServerApi::Application
       params[:name] ||= params[:inflated_object].name
       # We can only get here if we're admin or the validator. Only
       # allow creating admin clients if we're already an admin.
-      if @client.admin
+      if @auth_user.admin
         params[:admin] ||= params[:inflated_object].admin
       else
         params[:admin] = false
