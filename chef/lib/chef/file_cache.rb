@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ class Chef
     class << self
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::CreatePath
-      
+
       # Write a file to the File Cache.
       #
       # === Parameters
@@ -47,7 +47,7 @@ class Chef
             :contents => { :kind_of => String },
           }
         )
-      
+
         file_path_array = File.split(path)
         file_name = file_path_array.pop
         cache_path = create_cache_path(File.join(file_path_array))
@@ -56,7 +56,7 @@ class Chef
         io.close
         true
       end
-      
+
       # Move a file in to the cache.  Useful with the REST raw file output.
       #
       # === Parameteres
@@ -73,19 +73,19 @@ class Chef
             :path => { :kind_of => String },
           }
         )
-        
+
         file_path_array = File.split(path)
         file_name = file_path_array.pop
         if File.exists?(file) && File.writable?(file)
           FileUtils.mv(
-            file, 
+            file,
             File.join(create_cache_path(File.join(file_path_array), true), file_name)
           )
         else
           raise RuntimeError, "Cannot move #{file} to #{path}!"
         end
       end
-    
+
       # Read a file from the File Cache
       #
       # === Parameters
@@ -116,7 +116,7 @@ class Chef
           cache_path
         end
       end
-      
+
       # Delete a file from the File Cache
       #
       # === Parameters
@@ -140,7 +140,7 @@ class Chef
         end
         true
       end
-      
+
       # List all the files in the Cache
       #
       # === Returns
@@ -148,20 +148,20 @@ class Chef
       def list()
         keys = Array.new
         Dir[File.join(Chef::Config[:file_cache_path], '**', '*')].each do |f|
-          if File.file?(f)            
+          if File.file?(f)
             path = f.match("^#{Dir[Chef::Config[:file_cache_path]].first}\/(.+)")[1]
             keys << path
           end
         end
         keys
       end
-      
+
       # Whether or not this file exists in the Cache
       #
       # === Parameters
-      # path:: The path to the file you want to check - is relative 
+      # path:: The path to the file you want to check - is relative
       #   to Chef::Config[:file_cache_path]
-      # 
+      #
       # === Returns
       # True:: If the file exists
       # False:: If it does not
@@ -181,25 +181,25 @@ class Chef
           false
         end
       end
-      
+
       # Create a full path to a given file in the cache. By default,
       # also creates the path if it does not exist.
       #
       # === Parameters
       # path:: The path to create, relative to Chef::Config[:file_cache_path]
       # create_if_missing:: True by default - whether to create the path if it does not exist
-      # 
+      #
       # === Returns
       # String:: The fully expanded path
       def create_cache_path(path, create_if_missing=true)
         cache_dir = File.expand_path(File.join(Chef::Config[:file_cache_path], path))
         if create_if_missing
-          create_path(cache_dir) 
+          create_path(cache_dir)
         else
           cache_dir
         end
       end
-  
+
     end
   end
 end
