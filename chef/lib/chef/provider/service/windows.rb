@@ -19,25 +19,25 @@
 require 'chef/provider/service/init'
 
 class Chef::Provider::Service::Windows < Chef::Provider::Service::Init
-  
+
   def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
     super(node, new_resource, collection, definitions, cookbook_loader)
     @init_command = "sc"
   end
-  
+
   def load_current_resource
     @current_resource = Chef::Resource::Service.new(@new_resource.name)
     @current_resource.service_name(@new_resource.service_name)
     status = IO.popen("#{@init_command} query #{@new_resource.service_name}").entries
     raise Chef::Exceptions::Exec, "Service #{@new_resource.service_name} does not exist.\n#{status.join}\n" if status[0].include?("FAILED 1060")
-    
+
     begin
       started = status[3].include?("4")
       @current_resource.running started
-      
+
       start_type = IO.popen("#{@init_command} qc #{@new_resource.service_name}").entries[4]
       @current_resource.enabled(start_type.include?('2') || start_type.include?('3') ? true : false)
-      
+
       Chef::Log.debug "#{@new_resource}: running: #{@current_resource.running}"
     rescue StandardError
       raise Chef::Exceptions::Exec
@@ -48,7 +48,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service::Init
     end
     @current_resource
   end
-  
+
   def start_service
     begin
       result = if @new_resource.start_command
@@ -74,11 +74,11 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service::Init
                  IO.popen("#{@init_command} stop #{@new_resource.service_name}").readlines
                end
       Chef::Log.debug result.join
-      result[3].include?('1') ? true : false
+      result[3].include?('1')
     rescue
       Chef::Log.debug "Failed to stop service #{@new_resource.service_name}"
       false
-    end 
+    end
   end
 
   def restart_service
@@ -93,7 +93,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service::Init
         result = IO.popen("#{@init_command} start #{@new_resource.service_name}").readlines
         Chef::Log.debug result.join
       end
-      result[3].include?('4') || result.include?('2') ? true : false
+      result[3].include?('4') || result.include?('2')
     rescue
       Chef::Log.debug "Failed to restart service #{@new_resource.service_name}"
       false
@@ -103,7 +103,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service::Init
   def enable_service()
     begin
       Chef::Log.debug result = IO.popen("#{@init_command} config #{@new_resource.service_name} start= #{determine_startup_type}").readlines.join
-      result.include?('SUCCESS') ? true : false
+      result.include?('SUCCESS')
     rescue
       Chef::Log.debug "Failed to enable service #{@new_resource.service_name}"
       false
@@ -113,13 +113,13 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service::Init
   def disable_service()
     begin
       Chef::Log.debug result = IO.popen("#{@init_command} config #{@new_resource.service_name} start= disabled").readlines.join
-      result.include?('SUCCESS') ? true : false
+      result.include?('SUCCESS')
     rescue
       Chef::Log.debug "Failed to disable service #{@new_resource.service_name}"
       false
     end
   end
-  
+
   private
 
   def determine_startup_type
