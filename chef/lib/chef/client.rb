@@ -37,12 +37,11 @@ class Chef
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
     
-    attr_accessor :node, :registration, :json_attribs, :validation_token, :node_name, :ohai, :rest
+    attr_accessor :node, :registration, :json_attribs, :node_name, :ohai, :rest
     
     # Creates a new Chef::Client.
     def initialize()
       @node = nil
-      @validation_token = nil
       @registration = nil
       @json_attribs = nil
       @node_name = nil

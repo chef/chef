@@ -113,12 +113,18 @@ class Chef::Application::Client < Chef::Application
     :description => "The chef server URL",
     :proc => nil
 
-  option :validation_token,
-    :short => "-t TOKEN",
-    :long => "--token TOKEN",
-    :description => "Set the openid validation token",
-    :proc => nil
-  
+  option :validation_key,
+    :short        => "-K KEY_FILE",
+    :long         => "--validation_key KEY_FILE",
+    :description  => "Set the validation key file location, used for registering new clients",
+    :proc         => nil
+
+  option :client_key,
+    :short        => "-k KEY_FILE",
+    :long         => "--client_key KEY_FILE",
+    :description  => "Set the client key file location",
+    :proc         => nil
+
   option :version,
     :short        => "-v",
     :long         => "--version",
@@ -185,7 +191,6 @@ class Chef::Application::Client < Chef::Application
 
     @chef_client = Chef::Client.new
     @chef_client.json_attribs = @chef_client_json
-    @chef_client.validation_token = Chef::Config[:validation_token]
     @chef_client.node_name = Chef::Config[:node_name]   
   end
   

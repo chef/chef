@@ -151,7 +151,6 @@ class Chef
     template_url "http://localhost:4000"
     umask 0022
     user nil
-    validation_token nil
     role_path "/var/chef/roles"
     role_url "http://localhost:4000"
     recipe_url nil
