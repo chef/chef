@@ -62,6 +62,7 @@ require 'chef/provider/service/init'
 require 'chef/provider/service/redhat'
 require 'chef/provider/service/simple'
 require 'chef/provider/service/upstart'
+require 'chef/provider/service/windows'
 
 require 'chef/provider/user/dscl'
 require 'chef/provider/user/pw'

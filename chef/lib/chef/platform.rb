@@ -35,10 +35,9 @@ require 'chef/provider/package'
 class Chef
   class Platform
 
-
     class << self
       attr_writer :platforms
-      
+
       def platforms
         @platforms ||= {
           :mac_os_x => {
@@ -126,6 +125,21 @@ class Chef
               :service => Chef::Provider::Service::Arch,
               :cron => Chef::Provider::Cron,
               :mdadm => Chef::Provider::Mdadm
+            }
+          },
+          :mswin => {
+            :default => {
+              :service => Chef::Provider::Service::Windows
+            }
+          },
+          :mingw32 => {
+            :default => {
+              :service => Chef::Provider::Service::Windows
+            }
+          },
+          :windows => {
+            :default => {
+              :service => Chef::Provider::Service::Windows
             }
           },
           :solaris  => {},
@@ -284,8 +298,8 @@ class Chef
 
       def find_provider(platform, version, resource_type)
         pmap = Chef::Platform.find(platform, version)
-        provider_klass = explicit_provider(platform, version, resource_type) || 
-                         platform_provider(platform, version, resource_type) || 
+        provider_klass = explicit_provider(platform, version, resource_type) ||
+                         platform_provider(platform, version, resource_type) ||
                          resource_matching_provider(platform, version, resource_type)
 
         raise ArgumentError, "Cannot find a provider for #{resource_type} on #{platform} version #{version}" if provider_klass.nil?
@@ -308,8 +322,8 @@ class Chef
         def resource_matching_provider(platform, version, resource_type)
           if resource_type.kind_of?(Chef::Resource)
             begin
-              Chef::Provider.const_get(resource_type.class.to_s.split('::').last) 
-            rescue NameError 
+              Chef::Provider.const_get(resource_type.class.to_s.split('::').last)
+            rescue NameError
               nil
             end
           else

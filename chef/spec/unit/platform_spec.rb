@@ -30,7 +30,10 @@ describe "Chef::Platform supports" do
     :redhat,
     :gentoo,
     :arch, 
-    :solaris
+    :solaris,
+    :mswin,
+    :mingw32,
+    :windows
   ].each do |platform|
     it "#{platform}" do
       Chef::Platform.platforms.should have_key(platform)
