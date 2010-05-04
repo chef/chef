@@ -46,8 +46,8 @@ class Chef
         elsif status.exitstatus == 0
           cron_found = false
           crontab_lines.each do |line|
-            case line
-            when /^# Chef Name: #{@new_resource.name}/
+            case line.chomp
+            when "# Chef Name: #{@new_resource.name}"
               Chef::Log.debug("Found cron '#{@new_resource.name}'")
               cron_found = true
               @cron_exists = true
@@ -112,8 +112,8 @@ class Chef
           end
           status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
-              case line
-              when /^# Chef Name: #{@new_resource.name}\n/
+              case line.chomp
+              when "# Chef Name: #{@new_resource.name}"
                 cron_found = true
                 next
               when CRON_PATTERN
@@ -157,8 +157,8 @@ class Chef
           cron_found = false
           status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
-              case line
-              when /^# Chef Name: #{@new_resource.name}\n/
+              case line.chomp
+              when "# Chef Name: #{@new_resource.name}"
                 cron_found = true
                 next
               when CRON_PATTERN
