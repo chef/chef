@@ -26,10 +26,6 @@ class Chef
 
       include Chef::Mixin::Command
 
-      def initialize(node, new_resource)
-        super(node, new_resource)
-      end
-
       def load_current_resource
         @current_resource = Chef::Resource::Mdadm.new(@new_resource.name)
         @current_resource.raid_device(@new_resource.raid_device)
