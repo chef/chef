@@ -75,11 +75,13 @@ class Chef
         def set_members
           unless @new_resource.append
             Chef::Log.debug("#{@new_resource}: removing group members #{@current_resource.members.join(' ')}") unless @current_resource.members.empty?
-            safe_dscl("create /Groups/#{@new_resource.group_name} GroupMembers") # clear guid list
-            safe_dscl("create /Groups/#{@new_resource.group_name} GroupMembership") # clear user list
+            safe_dscl("create /Groups/#{@new_resource.group_name} GroupMembers ''") # clear guid list
+            safe_dscl("create /Groups/#{@new_resource.group_name} GroupMembership ''") # clear user list
           end
-          Chef::Log.debug("#{@new_resource}: setting group members #{@new_resource.members.join(', ')}") unless @new_resource.members.empty?
-          safe_dscl("append /Groups/#{@new_resource.group_name} GroupMembership #{@new_resource.members.join(' ')}")
+          unless @new_resource.members.empty?
+            Chef::Log.debug("#{@new_resource}: setting group members #{@new_resource.members.join(', ')}")
+            safe_dscl("append /Groups/#{@new_resource.group_name} GroupMembership #{@new_resource.members.join(' ')}")
+          end
         end
 
         def load_current_resource
