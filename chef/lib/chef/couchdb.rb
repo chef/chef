@@ -97,6 +97,7 @@ class Chef
       true
     end
 
+    # Save the object to Couch. Add to index if the object supports it.
     def store(obj_type, name, object)
       validate(
         {
@@ -109,13 +110,15 @@ class Chef
         }
       )
       rows = get_view("id_map", "name_to_id", :key => [ obj_type, name ])["rows"]
-      uuid    = rows.empty? ? UUIDTools::UUID.random_create.to_s : rows.first.fetch("id")
+      uuid = rows.empty? ? UUIDTools::UUID.random_create.to_s : rows.first.fetch("id")
      
       puts object.inspect
       db_put_response = @rest.put_rest("#{couchdb_database}/#{uuid}", object)
-      
-      Chef::Log.info("Sending #{obj_type}(#{uuid}) to the index queue for addition.")
-      object.add_to_index(:database => couchdb_database, :id => uuid, :type => obj_type)
+
+      if object.respond_to?(:add_to_index)
+        Chef::Log.info("Sending #{obj_type}(#{uuid}) to the index queue for addition.")
+        object.add_to_index(:database => couchdb_database, :id => uuid, :type => obj_type)
+      end
       
       db_put_response
     end
