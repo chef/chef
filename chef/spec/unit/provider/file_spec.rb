@@ -331,8 +331,8 @@ describe Chef::Provider::File do
     FileUtils.stub!(:mkdir_p).and_return(true)
     FileUtils.stub!(:rm).and_return(true)
     File.stub!(:exist?).and_return(true)
-    Time.stub!(:now).and_return(Time.at(1272147455))
-    FileUtils.should_receive(:cp).with("/tmp/s-20080705111233", "/some_prefix/tmp/s-20080705111233.chef-20100424151735", {:preserve => true}).and_return(true)
+    Time.stub!(:now).and_return(Time.at(1272147455).getgm)
+    FileUtils.should_receive(:cp).with("/tmp/s-20080705111233", "/some_prefix/tmp/s-20080705111233.chef-20100424221735", {:preserve => true}).and_return(true)
     @provider.backup
   end
 
