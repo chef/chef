@@ -143,6 +143,11 @@ class Chef
             }
           },
           :solaris  => {},
+	  :solaris2 => {
+            :default => {
+              :service => Chef::Provider::Service::Solaris
+            }
+          },
           :default  => {
             :file => Chef::Provider::File,
             :directory => Chef::Provider::Directory,
