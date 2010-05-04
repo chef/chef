@@ -39,6 +39,7 @@ class Chef
     def load_cookbooks
       cookbook_settings = Hash.new
       [Chef::Config.cookbook_path].flatten.each do |cb_path|
+        cb_path = File.expand_path(cb_path)
         Dir[File.join(cb_path, "*")].each do |cookbook|
           next unless File.directory?(cookbook)          
           cookbook_name = File.basename(cookbook).to_sym

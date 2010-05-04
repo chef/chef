@@ -364,28 +364,28 @@ class Chef
       }
 
       [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates ].each do |segment|
-        segment_files(segment).each do |sf|
-          next if File.directory?(sf)
+        segment_files(segment).each do |segment_file|
+          next if File.directory?(segment_file)
 
           file_name = nil
           file_url = nil
           file_specificity = nil
           url_options = nil
-
+          
           if segment == :templates || segment == :files
-            mo = sf.match("cookbooks/#{name}/#{segment}/(.+?)/(.+)")
-            unless mo
-              Chef::Log.debug("Skipping file #{sf}, as it doesn't have a proper segment.")
+            matcher = segment_file.match("/#{name}/#{segment}/(.+?)/(.+)")
+            unless matcher
+              Chef::Log.debug("Skipping file #{segment_file}, as it doesn't have a proper segment.")
               next
             end
-            specificity = mo[1]
-            file_name = mo[2]
+            specificity = matcher[1]
+            file_name = matcher[2]
             url_options = { :cookbook_id => name.to_s, :segment => segment, :id => file_name, :cookbook_version => version }
             set_specificity_arguments(specificity, url_options)
             file_specificity = specificity
           else
-            mo = sf.match("cookbooks/#{name}/#{segment}/(.+)")
-            file_name = mo[1]
+            matcher = segment_file.match("/#{name}/#{segment}/(.+)")
+            file_name = matcher[1]
             url_options = { :cookbook_id => name.to_s, :segment => segment, :id => file_name }
           end
 
@@ -398,9 +398,9 @@ class Chef
           rs = {
             :name => file_name, 
             :uri => file_url, 
-            :path => sf.match("cookbooks/#{name}/(#{segment}/.+)")[1],
-            :on_disk_path => sf,
-            :checksum => checksum(sf)
+            :path => segment_file.match("/#{name}/(#{segment}/.+)")[1],
+            :on_disk_path => segment_file,
+            :checksum => checksum(segment_file)
           }
           rs[:specificity] = file_specificity if file_specificity
 

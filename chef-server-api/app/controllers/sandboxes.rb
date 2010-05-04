@@ -25,7 +25,7 @@ class ChefServerApi::Sandboxes < ChefServerApi::Application
 
   before :authenticate_every
 
-  include Chef::Mixin::ChecksumHelper
+  include Chef::Mixin::Checksum
   include Merb::ChefServerApi::TarballHelper
   
   def index
