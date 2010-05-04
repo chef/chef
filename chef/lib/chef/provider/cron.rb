@@ -112,8 +112,8 @@ class Chef
           end
           status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
-              case line
-              when /^# Chef Name: #{@new_resource.name}\n/
+              case line.chomp
+              when "# Chef Name: #{@new_resource.name}"
                 cron_found = true
                 next
               when CRON_PATTERN
@@ -157,8 +157,8 @@ class Chef
           cron_found = false
           status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
-              case line
-              when /^# Chef Name: #{@new_resource.name}\n/
+              case line.chomp
+              when "# Chef Name: #{@new_resource.name}"
                 cron_found = true
                 next
               when CRON_PATTERN
