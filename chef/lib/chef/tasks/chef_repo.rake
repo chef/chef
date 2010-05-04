@@ -228,7 +228,7 @@ task :roles  => FileList[File.join(TOPDIR, 'roles', '**', '*.rb')].pathmap('%X.j
 
 desc "Update a specific role"
 task :role, :role_name do |t, args|
-  system("knife role from file #{args.cookbook}")
+  system("knife role from file #{File.join(TOPDIR, 'roles', args.role_name)}.rb")
 end
 
 desc "Upload all cookbooks"
