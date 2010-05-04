@@ -37,13 +37,13 @@ describe Chef::Provider::Cron, "load_current_resource" do
     @new_resource = mock("Chef::Resource::Cron",
       :null_object => true,
       :user => "root",
-      :name => "foo",
+      :name => "foo[bar] (baz)",
       :minute => "30",
       :command => "/bin/true"
     )
     @current_resource = mock("Chef::Resource::Cron",
       :null_object => true,
-      :name => "foo",
+      :name => "foo[bar] (baz)",
       :minute => "30",
       :command => "/bin/true"
     )
@@ -70,7 +70,7 @@ describe Chef::Provider::Cron, "load_current_resource" do
     @stdout = mock("STDOUT", :null_object => true)    
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
-    @stdout.stub!(:each_line).and_yield("# Chef Name: foo\n").and_yield("* 5 * * * /bin/true\n")
+    @stdout.stub!(:each_line).and_yield("# Chef Name: foo[bar] (baz)\n").and_yield("* 5 * * * /bin/true\n")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
     @provider.load_current_resource
@@ -82,7 +82,7 @@ describe Chef::Provider::Cron, "load_current_resource" do
     @stdout = mock("STDOUT", :null_object => true)    
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
-    @stdout.stub!(:each).and_yield("# Chef Name: foo\n").
+    @stdout.stub!(:each).and_yield("# Chef Name: foo[bar] (baz)\n").
       and_yield("21 */4 * * * some_prog 1234567\n")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     lambda {
@@ -97,7 +97,7 @@ describe Chef::Provider::Cron, "compare_cron" do
     @new_resource = mock("Chef::Resource::Cron",
       :null_object => true,
       :user => "root",
-      :name => "foo",
+      :name => "foo[bar] (baz)",
       :minute => "30",
       :hour => "2",
       :day => "30",
@@ -112,7 +112,7 @@ describe Chef::Provider::Cron, "compare_cron" do
     @current_resource = mock("Chef::Resource::Cron",
       :null_object => true,
       :user => "root",
-      :name => "foo",
+      :name => "foo[bar] (baz)",
       :minute => "30",
       :hour => "2",
       :day => "30",
@@ -147,7 +147,7 @@ describe Chef::Provider::Cron, "action_create" do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Cron",
       :null_object => true,
-      :name => "foo",
+      :name => "foo[bar] (baz)",
       :minute => "30",
       :hour => "*",
       :day => "*",
@@ -161,7 +161,7 @@ describe Chef::Provider::Cron, "action_create" do
     )
     @current_resource = mock("Chef::Resource::Cron",
       :null_object => true,
-      :name => "foo",
+      :name => "foo[bar] (baz)",
       :minute => "*",
       :hour => "5",
       :day => "*",
@@ -197,7 +197,7 @@ describe Chef::Provider::Cron, "action_create" do
     @pid = mock("PID", :null_object => true)
     @stdout.stub!(:each_line).and_yield("# Chef Name: bar\n").
       and_yield("* 10 * * * /bin/false\n").
-      and_yield("# Chef Name: foo\n").
+      and_yield("# Chef Name: foo[bar] (baz)\n").
       and_yield("* 5 * * * /bin/true\n")
     @provider.cron_empty=true
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
@@ -214,7 +214,7 @@ describe Chef::Provider::Cron, "action_create" do
     @pid = mock("PID", :null_object => true)
     @stdout.stub!(:each_line).and_yield("# Chef Name: bar\n").
       and_yield("* 10 * * * /bin/false\n").
-      and_yield("# Chef Name: foo\n").
+      and_yield("# Chef Name: foo[bar] (baz)\n").
       and_yield("* 5 * * * /bin/true\n")
     @provider.cron_exists=true
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
@@ -231,7 +231,7 @@ describe Chef::Provider::Cron, "action_create" do
     @pid = mock("PID", :null_object => true)
     @stdout.stub!(:each_line).and_yield("# Chef Name: bar\n").
       and_yield("* 10 * * * /bin/false\n").
-      and_yield("# Chef Name: foo\n").
+      and_yield("# Chef Name: foo[bar] (baz)\n").
       and_yield("30 * * * * /bin/true\n")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     Chef::Log.should_not_receive(:info).with("Updated cron '#{@new_resource.name}'")
@@ -250,7 +250,7 @@ describe Chef::Provider::Cron, "action_create" do
     @pid = mock("PID", :null_object => true)
     @stdout.stub!(:each_line).and_yield("# Chef Name: bar\n").
       and_yield("* 10 * * * /bin/false\n").
-      and_yield("# Chef Name: foo\n").
+      and_yield("# Chef Name: foo[bar] (baz)\n").
       and_yield("MAILTO=warn@example.com\n").
       and_yield("30 * * * * /bin/true\n")
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
@@ -263,7 +263,7 @@ describe Chef::Provider::Cron, "action_create" do
   it "should update the cron entry if it exists and has no environment variables" do
     resource = mock("Chef::Resource::Cron",
       :null_object => true,
-      :name => "foo",
+      :name => "foo[bar] (baz)",
       :minute => "30",
       :hour => "*",
       :day => "*",
@@ -285,7 +285,7 @@ describe Chef::Provider::Cron, "action_create" do
     @pid = mock("PID", :null_object => true)
     @stdout.stub!(:each_line).and_yield("# Chef Name: bar\n").
       and_yield("* 10 * * * /bin/false\n").
-      and_yield("# Chef Name: foo\n").
+      and_yield("# Chef Name: foo[bar] (baz)\n").
       and_yield("30 * * * * /bin/true\n")
     provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     Chef::Log.should_receive(:info).with("Updated cron '#{@new_resource.name}'")
@@ -300,13 +300,13 @@ describe Chef::Provider::Cron, "action_delete" do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Cron",
       :null_object => true,
-      :name => "foo",
+      :name => "foo[bar] (baz)",
       :minute => "30",
       :command => "/bin/true"
     )
     @current_resource = mock("Chef::Resource::Cron",
       :null_object => true,
-      :name => "foo",
+      :name => "foo[bar] (baz)",
       :minute => "30",
       :command => "/bin/true"
     )
@@ -322,7 +322,7 @@ describe Chef::Provider::Cron, "action_delete" do
     @pid = mock("PID", :null_object => true)
     @stdout.stub!(:each_line).and_yield("# Chef Name: bar\n").
       and_yield("* 10 * * * /bin/false\n").
-      and_yield("# Chef Name: foo\n").
+      and_yield("# Chef Name: foo[bar] (baz)\n").
       and_yield("* 30 * * * /bin/true\n")
     @provider.cron_exists=true
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
