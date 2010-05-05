@@ -19,6 +19,7 @@
 require 'chef/sandbox'
 require 'chef/checksum'
 
+# Sandboxes are used to upload files to the server (e.g., cookbook upload).
 class ChefServerApi::Sandboxes < ChefServerApi::Application
   
   provides :json
@@ -95,8 +96,6 @@ class ChefServerApi::Sandboxes < ChefServerApi::Application
     sandbox_guid = params[:sandbox_id]
     checksum = params[:checksum]
     
-    raise BadRequest, "missing required parameter: sandbox_id" unless sandbox_guid # TODO: possible? router shouldn't route to us if this isn't set
-    raise BadRequest, "missing required parameter: checksum" unless checksum # TODO: possible? router shouldn't route to us if this isn't set
     raise BadRequest, "missing required parameter: file" unless params[:file]
     raise BadRequest, "missing required parameter: file[:tempfile]" unless params[:file][:tempfile]
     
@@ -106,6 +105,10 @@ class ChefServerApi::Sandboxes < ChefServerApi::Application
     raise BadRequest, "checksum #{checksum} isn't a part of sandbox #{sandbox_guid}" unless existing_sandbox.checksums.member?(checksum)
 
     src = params[:file][:tempfile].path
+    
+    observed_checksum = Chef::Cache::Checksum.checksum_for_file(src)
+    raise BadRequest, "Checksum did not match: expected #{checksum}, observed #{observed_checksum}" unless observed_checksum == checksum
+    
     dest = sandbox_checksum_location(sandbox_guid, checksum)
     Chef::Log.info("upload_checksum: move #{src} to #{dest}")
     FileUtils.mv(src, dest)
@@ -116,22 +119,18 @@ class ChefServerApi::Sandboxes < ChefServerApi::Application
   end
   
   def update
-    # TODO: will this ever happen? it won't get routed to us if it's missing?
-    raise BadRequest, "missing required parameter: sandbox_id" unless params[:sandbox_id]
-
     # look up the sandbox by its guid
     existing_sandbox = Chef::Sandbox.cdb_load(params[:sandbox_id])
     raise NotFound, "cannot find sandbox with guid #{sandbox_id}" unless existing_sandbox
     
     raise BadRequest, "cannot update sandbox #{sandbox_id}: already complete" unless !existing_sandbox.is_completed
 
-    # 
     if params[:is_completed]
       existing_sandbox.is_completed = (params[:is_completed] == true)
 
       if existing_sandbox.is_completed
         # Check if files were uploaded to sandbox directory before we 
-        # commit the sandbox. Fail if they weren't.
+        # commit the sandbox. Fail if any weren't.
         existing_sandbox.checksums.each do |checksum|
           checksum_filename = sandbox_checksum_location(existing_sandbox.guid, checksum)
           if !File.exists?(checksum_filename)
@@ -146,8 +145,9 @@ class ChefServerApi::Sandboxes < ChefServerApi::Application
           undo_steps = Array.new
           existing_sandbox.checksums.each do |checksum|
             checksum_filename_in_sandbox = sandbox_checksum_location(existing_sandbox.guid, checksum)
-            checksum_filename_final = final_checksum_location(checksum, true)
-          
+            checksum_filename_final = checksum_location(checksum)
+            FileUtils.mkdir_p File.dirname(checksum_filename_final)
+            
             Chef::Log.info("sandbox finalization: move #{checksum_filename_in_sandbox} to #{checksum_filename_final}")
             File.rename(checksum_filename_in_sandbox, checksum_filename_final)
             

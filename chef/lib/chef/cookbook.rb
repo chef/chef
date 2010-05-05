@@ -30,8 +30,8 @@ class Chef
     include Chef::IndexQueue::Indexable
     
     attr_accessor :definition_files, :template_files, :remote_files,
-      :lib_files, :resource_files, :provider_files, :name, :manifest,
-      :metadata, :metadata_files, :status, :couchdb_rev, :couchdb
+      :lib_files, :resource_files, :provider_files, :name, :metadata,
+      :metadata_files, :status, :couchdb_rev, :couchdb
     attr_reader :recipe_files, :attribute_files, :couchdb_id
 
     DESIGN_DOCUMENT = {
@@ -141,8 +141,29 @@ class Chef
     end
     
     def version=(new_version)
-      @manifest["version"] = new_version
+      manifest["version"] = new_version
       @metadata.version(new_version)
+    end
+
+    def manifest
+      unless @manifest
+        generate_manifest
+      end
+      @manifest
+    end
+    
+    def manifest=(new_manifest)
+      @manifest = new_manifest
+      @checksums = extract_checksums_from_manifest(new_manifest)
+    end
+    
+    # Returns a hash of checksums to either nil or the on disk path (which is
+    # done by generate_manifest).
+    def checksums
+      unless @checksums
+        generate_manifest
+      end
+      @checksums
     end
 
     def full_name
@@ -298,7 +319,7 @@ class Chef
     end
 
     def to_json(*a)
-      result = self.manifest ? self.manifest : self.generate_manifest
+      result = manifest.dup
       result['json_class'] = self.class.name
       result['chef_type'] = 'cookbook'
       result["_rev"] = @couchdb_rev if @couchdb_rev
@@ -322,106 +343,23 @@ class Chef
       cookbook
     end
 
-    def display_manifest(&url_generation)
-      self.manifest ? self.manifest : self.generate_manifest
+    def generate_manifest_with_urls(&url_generator)
       [ 'resources', 'providers', 'recipes', 'definitions', 'libraries', 'attributes', 'files', 'templates' ].each do |segment|
-        if manifest.has_key?(segment)
-          manifest[segment].each do |segment_item|
-            puts segment_item.inspect
-            url_options = { :cookbook_id => name.to_s, :segment => segment, :id => segment_item["name"], :cookbook_version => version }
-            set_specificity_arguments(segment_item["specificity"], url_options)
-            segment_item["uri"] = url_generation.call(url_options)
+        rendered_manifest = manifest.dup
+        if rendered_manifest.has_key?(segment)
+          rendered_manifest[segment].each do |segment_file|
+            url_options = { :cookbook_name => name.to_s, :version => version, :checksum => segment_file["checksum"] }
+            segment_file["uri"] = url_generator.call(url_options)
           end
         end
       end
-      manifest
-    end
-
-    def set_specificity_arguments(specificity, url_options={})
-      case specificity
-      when "default"
-      when /^host-(.+)$/
-        url_options[:fqdn] = $1
-      when /^(.+)-(.+)$/
-        url_options[:platform] = $1
-        url_options[:version] = $2
-      when /^(.+)$/
-        url_options[:platform] = $1
-      end
-      url_options
-    end
-
-    def generate_manifest(&url_generation)
-      response = {
-        :recipes => Array.new,
-        :definitions => Array.new,
-        :libraries => Array.new,
-        :attributes => Array.new,
-        :files => Array.new,
-        :templates => Array.new,
-        :resources => Array.new,
-        :providers => Array.new
-      }
-
-      [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates ].each do |segment|
-        segment_files(segment).each do |segment_file|
-          next if File.directory?(segment_file)
-
-          file_name = nil
-          file_url = nil
-          file_specificity = nil
-          url_options = nil
-          
-          if segment == :templates || segment == :files
-            matcher = segment_file.match("/#{name}/#{segment}/(.+?)/(.+)")
-            unless matcher
-              Chef::Log.debug("Skipping file #{segment_file}, as it doesn't have a proper segment.")
-              next
-            end
-            specificity = matcher[1]
-            file_name = matcher[2]
-            url_options = { :cookbook_id => name.to_s, :segment => segment, :id => file_name, :cookbook_version => version }
-            set_specificity_arguments(specificity, url_options)
-            file_specificity = specificity
-          else
-            matcher = segment_file.match("/#{name}/#{segment}/(.+)")
-            file_name = matcher[1]
-            url_options = { :cookbook_id => name.to_s, :segment => segment, :id => file_name }
-          end
-
-          if url_generation
-            file_url = url_generation.call(url_options)
-          else
-            file_url = nil
-          end
-
-          rs = {
-            :name => file_name, 
-            :uri => file_url, 
-            :path => segment_file.match("/#{name}/(#{segment}/.+)")[1],
-            :on_disk_path => segment_file,
-            :checksum => checksum(segment_file)
-          }
-          rs[:specificity] = file_specificity if file_specificity
-
-          response[segment] << rs 
-        end
-      end
-      response[:cookbook_name] = name.to_s
-      response[:metadata] = metadata 
-      response[:version] = metadata.version
-      response[:name] = full_name 
-      @manifest = response
+      rendered_manifest
     end
 
     ##
     # REST API
     ##
     def chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])
-    end
-
-    def self.chef_server_rest
       Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
@@ -487,28 +425,93 @@ class Chef
 
     private
 
-      def shorten_name(name)
-        short_name = nil
-        nmatch = name.match(/^(.+?)::(.+)$/)
-        short_name = nmatch ? nmatch[2] : name
-      end
+    def shorten_name(name)
+      short_name = nil
+      nmatch = name.match(/^(.+?)::(.+)$/)
+      short_name = nmatch ? nmatch[2] : name
+    end
 
-      def set_with_names(file_list)
-        files = file_list
-        names = Hash.new
-        files.each_index do |i|
-          file = files[i]
-          case file
-          when /(.+\/)(.+).rb$/
-            names[$2] = i
-          when /(.+).rb$/
-            names[$1] = i
-          else  
-            names[file] = i
-          end
+    def set_with_names(file_list)
+      files = file_list
+      names = Hash.new
+      files.each_index do |i|
+        file = files[i]
+        case file
+        when /(.+\/)(.+).rb$/
+          names[$2] = i
+        when /(.+).rb$/
+          names[$1] = i
+        else  
+          names[file] = i
         end
-        [ files, names ]
       end
+      [ files, names ]
+    end
     
+    def generate_manifest
+      manifest = {
+        :recipes => Array.new,
+        :definitions => Array.new,
+        :libraries => Array.new,
+        :attributes => Array.new,
+        :files => Array.new,
+        :templates => Array.new,
+        :resources => Array.new,
+        :providers => Array.new
+      }
+      checksums_to_on_disk_paths = {}
+
+      [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates ].each do |segment|
+        segment_files(segment).each do |segment_file|
+          next if File.directory?(segment_file)
+
+          file_name = nil
+          file_url = nil
+          file_specificity = nil
+          url_options = nil
+          
+          if segment == :templates || segment == :files
+            matcher = segment_file.match("/#{name}/#{segment}/(.+?)/(.+)")
+            unless matcher
+              Chef::Log.debug("Skipping file #{segment_file}, as it doesn't have a proper segment.")
+              next
+            end
+            specificity = matcher[1]
+            file_name = matcher[2]
+          else
+            matcher = segment_file.match("/#{name}/#{segment}/(.+)")
+            file_name = matcher[1]
+          end
+
+          csum = checksum(segment_file)
+          checksums_to_on_disk_paths[csum] = segment_file
+          rs = {
+            :name => file_name,
+            :path => segment_file.match("/#{name}/(#{segment}/.+)")[1],
+            :checksum => csum
+          }
+          rs[:specificity] = specificity if defined?(specificity)
+
+          manifest[segment] << rs
+        end
+      end
+      manifest[:cookbook_name] = name.to_s
+      manifest[:metadata] = metadata
+      manifest[:version] = metadata.version
+      manifest[:name] = full_name
+
+      @checksums = checksums_to_on_disk_paths
+      @manifest = manifest
+    end
+
+    def extract_checksums_from_manifest(manifest)
+      checksums = {}
+      [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates ].each do |segment|
+        manifest[segment.to_s].each do |segment_file|
+          checksums[segment_file["checksum"]] = nil
+        end
+      end
+      checksums
+    end
   end
 end

@@ -92,7 +92,7 @@ class Chef
     
     def self.cdb_all_checksums(couchdb = nil)
       rs = (couchdb || Chef::CouchDB.new).list("checksums", true)
-      rs["rows"].reduce({}) { |hash_result, r| hash_result[r['key']] = 1; hash_result }
+      rs["rows"].inject({}) { |hash_result, r| hash_result[r['key']] = 1; hash_result }
     end
 
     def self.cdb_load(checksum, couchdb=nil)
