@@ -20,6 +20,8 @@
 require 'mixlib/cli'
 require 'chef/mixin/convert_to_class_name'
 
+require 'pp'
+
 class Chef
   class Knife
     include Mixlib::CLI
@@ -139,6 +141,14 @@ class Chef
       when "yaml"
         require 'yaml'
         puts YAML::dump(data)
+      when "text"
+        # If you were looking for some attribute and there is only one match
+        # just dump the attribute value
+        if data.length == 1 and config[:attribute]
+          puts data.values[0]
+        else
+          pp data
+        end
       else
         raise ArgumentError, "Unknown output format #{config[:format]}"
       end
