@@ -96,11 +96,17 @@ class Chef
       klass_instance
     end
 
-    def ask_question(q)
-      print q 
-      a = STDIN.readline
-      a.chomp!
-      a
+    def ask_question(question, opts={})
+      question = question + "[#{opts[:default]}] " if opts[:default]
+        
+      stdout.print question
+      a = stdin.readline.strip
+
+      if opts[:default]
+        a.empty? ? opts[:default] : a
+      else
+        a
+      end
     end
 
     def configure_chef
@@ -190,7 +196,7 @@ class Chef
       return true if config[:yes]
 
       print "#{question}? (Y/N) "
-      answer = STDIN.readline
+      answer = stdin.readline
       answer.chomp!
       case answer
       when "Y", "y"
@@ -306,6 +312,14 @@ class Chef
         output(format_for_display(object)) if config[:print_after]
         Chef::Log.warn("Deleted #{fancy_name} #{name}")
       end
+    end
+    
+    def stdout
+      STDOUT
+    end
+
+    def stdin
+      STDIN
     end
 
     def rest
