@@ -30,8 +30,8 @@ class Chef
     include Chef::IndexQueue::Indexable
     
     attr_accessor :definition_files, :template_files, :remote_files,
-      :lib_files, :resource_files, :provider_files, :name, :metadata,
-      :metadata_files, :status, :couchdb_rev, :couchdb
+      :lib_files, :resource_files, :provider_files, :root_files, :name,
+      :metadata, :metadata_files, :status, :couchdb_rev, :couchdb
     attr_reader :recipe_files, :attribute_files, :couchdb_id
 
     DESIGN_DOCUMENT = {
@@ -312,10 +312,10 @@ class Chef
         files_list = remote_files
       when :templates
         files_list = template_files
-      when :metadata_files
-        files_list = metadata_files
+      when :root_files
+        files_list = root_files
       else
-        raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions, :remote_files, :template_files, :resources, :providers, :libraries, or :metadata_files"
+        raise ArgumentError, "invalid segment #{segment}: must be one of :attributes, :recipes, :definitions, :remote_files, :template_files, :resources, :providers, :libraries, or :root_files"
       end
       files_list
     end
@@ -460,19 +460,19 @@ class Chef
         :templates => Array.new,
         :resources => Array.new,
         :providers => Array.new,
-        :metadata_files => Array.new
+        :root_files => Array.new
       }
       checksums_to_on_disk_paths = {}
 
-      [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :metadata_files ].each do |segment|
+      [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ].each do |segment|
         segment_files(segment).each do |segment_file|
           next if File.directory?(segment_file)
 
           file_name = nil
           path = nil
-          file_specificity = nil
+          specificity = "default"
 
-          if segment == :metadata_files
+          if segment == :root_files
             matcher = segment_file.match("/#{name}/(.+)")
             file_name = matcher[1]
             path = file_name
@@ -498,7 +498,7 @@ class Chef
             :path => path,
             :checksum => csum
           }
-          rs[:specificity] = specificity if defined?(specificity)
+          rs[:specificity] = specificity
 
           manifest[segment] << rs
         end

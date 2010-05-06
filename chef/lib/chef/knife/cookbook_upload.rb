@@ -58,6 +58,7 @@ class Chef
       end
       
       def test_ruby(cookbook_dir)
+        Chef::Log.info("Validating ruby files")
         Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
           Chef::Log.info("Testing #{ruby_file} for syntax errors...")
           Chef::Mixin::Command.run_command(:command => "ruby -c #{ruby_file}")
@@ -65,6 +66,7 @@ class Chef
       end
       
       def test_templates(cookbook_dir)
+        Chef::Log.info("Validating templates")
         Dir[File.join(cookbook_dir, '**', '*.erb')].each do |erb_file|
           Chef::Log.info("Testing template #{erb_file} for syntax errors...")
           Chef::Mixin::Command.run_command(:command => "sh -c 'erubis -x #{erb_file} | ruby -c'")
@@ -72,22 +74,31 @@ class Chef
       end
       
       def upload_cookbook(cookbook)
-        puts JSON.pretty_generate(cookbook)
-        Chef::Log.info("Saving #{cookbook.name} version #{cookbook.version}")
-
-        # TODO See commented out upload_cookbook method below. It creates a
-        # build directory for the cookbook, generates metadata, and does some
-        # validation before uploading. We should do the same. [cw]
+        Chef::Log.info("Saving #{cookbook.name}")
+        
+        # create build directory and create a CookbookLoader that points to it
+        tmp_cookbook_dir = create_build_dir(cookbook)
+        
+        orig_cookbook_path = nil
+        build_dir_cookbook = nil
+        begin
+          orig_cookbook_path = Chef::Config.cookbook_path
+          Chef::Config.cookbook_path = tmp_cookbook_dir
+          build_dir_cookbook = Chef::CookbookLoader.new[cookbook.name]
+          Chef::Log.debug("Staged cookbook manifest:\n#{JSON.pretty_generate(build_dir_cookbook)}")
+        ensure
+          Chef::Config.cookbook_path = orig_cookbook_path
+        end
 
         # generate checksums of cookbook files and create a sandbox
-        checksum_files = cookbook.checksums
+        checksum_files = build_dir_cookbook.checksums
         checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
-        new_sandbox = rest.post_rest("/sandboxes", { :checksums => checksums })
+        new_sandbox = catch_auth_exceptions{ rest.post_rest("/sandboxes", { :checksums => checksums }) }
         
         # upload the new checksums and finalize the sandbox
         new_sandbox['checksums'].each do |checksum, info|
           if info['needs_upload'] == true
-            puts "PUT to #{info['url']}: "
+            Chef::Log.debug("PUTting file with checksum #{checksum} to #{info['url']}")
             put_res = Chef::StreamingCookbookUploader.put(
                                                           info['url'],
                                                           rest.client_name,
@@ -97,116 +108,65 @@ class Chef
                                                             :name => checksum
                                                           }
                                                           )
-            put_res = put_res.body
-            put_res = JSON.parse(put_res)
-            
-            pp({:put_res => put_res})
+            Chef::Log.debug("#{JSON.parse(put_res.body).inspect}")
           end
         end
         sandbox_url = new_sandbox['uri']
-        finalize_res = rest.put_rest(sandbox_url, {:is_completed => true})
-        pp({:finalize_res => finalize_res})
+        Chef::Log.debug("Finalizing sandbox")
+        finalize_res = catch_auth_exceptions{ rest.put_rest(sandbox_url, {:is_completed => true}) }
 
-        # Files are uploaded. Now save the manifest.
-        cookbook.save
+        # files are uploaded, so save the manifest
+        catch_auth_exceptions{ build_dir_cookbook.save }
+        
+        Chef::Log.info("Upload complete!")
+        Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
+        FileUtils.rm_rf tmp_cookbook_dir
       end
-      
-#       def upload_cookbook(cookbook_name)
 
-#         if cookbook_name =~ /^#{File::SEPARATOR}/
-#           child_folders = cookbook_name 
-#           cookbook_name = File.basename(cookbook_name)
-#         else
-#           child_folders = config[:cookbook_path].inject([]) do |r, e| 
-#             r << File.join(e, cookbook_name)
-#             r
-#           end
-#         end
+      def create_build_dir(cookbook)
+        tmp_cookbook_path = Tempfile.new("chef-#{cookbook.name}-build")
+        tmp_cookbook_path.close
+        tmp_cookbook_dir = tmp_cookbook_path.path
+        File.unlink(tmp_cookbook_dir)
+        FileUtils.mkdir_p(tmp_cookbook_dir)
+        
+        Chef::Log.debug("Staging at #{tmp_cookbook_dir}")
 
-#         tmp_cookbook_tarball = Tempfile.new("chef-#{cookbook_name}")
-#         tmp_cookbook_tarball.close
-#         tarball_name = "#{tmp_cookbook_tarball.path}.tar.gz"
-#         File.unlink(tmp_cookbook_tarball.path)
+        checksums_to_on_disk_paths = cookbook.checksums
 
-#         tmp_cookbook_path = Tempfile.new("chef-#{cookbook_name}-build")
-#         tmp_cookbook_path.close
-#         tmp_cookbook_dir = tmp_cookbook_path.path
-#         File.unlink(tmp_cookbook_dir)
-#         FileUtils.mkdir_p(tmp_cookbook_dir)
+        [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ].each do |segment|
+          cookbook.manifest[segment].each do |segment_file|
+            path_in_cookbook = segment_file[:path]
+            on_disk_path = checksums_to_on_disk_paths[segment_file[:checksum]]
+            dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
+            FileUtils.mkdir_p(File.dirname(dest))
+            File.cp(on_disk_path, dest)
+          end
+        end
+        
+        # Validate ruby files and templates
+        test_ruby(tmp_cookbook_dir)
+        test_templates(tmp_cookbook_dir)
 
-#         Chef::Log.debug("Staging at #{tmp_cookbook_dir}")
+        # First, generate metadata
+        Chef::Log.debug("Generating metadata")
+        kcm = Chef::Knife::CookbookMetadata.new
+        kcm.config[:cookbook_path] = [ tmp_cookbook_dir ]
+        kcm.name_args = [ cookbook.name.to_s ]
+        kcm.run
+      end
 
-#         found_cookbook = false 
-
-#         child_folders.each do |file_path|
-#           if File.directory?(file_path)
-#             found_cookbook = true 
-#             Chef::Log.info("Copying from #{file_path} to #{tmp_cookbook_dir}")
-#             FileUtils.cp_r(file_path, tmp_cookbook_dir, :remove_destination => true)
-#           else
-#             Chef::Log.info("Nothing to copy from #{file_path}")
-#           end
-#         end 
-
-#         unless found_cookbook
-#           Chef::Log.fatal("Could not find cookbook #{cookbook_name}!")
-#           exit 17
-#         end
-
-#         test_ruby(tmp_cookbook_dir)
-#         test_templates(tmp_cookbook_dir)
-
-#         # First, generate metadata
-#         kcm = Chef::Knife::CookbookMetadata.new
-#         kcm.config[:cookbook_path] = [ tmp_cookbook_dir ]
-#         kcm.name_args = [ cookbook_name ]
-#         kcm.run
-
-#         Chef::Log.info("Creating tarball at #{tarball_name}")
-#         Chef::Mixin::Command.run_command(
-#           :command => "tar -C #{tmp_cookbook_dir} -cvzf #{tarball_name} ./#{cookbook_name}"
-#         )
-
-#         begin
-#           cb = rest.get_rest("cookbooks/#{cookbook_name}")
-#           cookbook_uploaded = true
-#         rescue Net::HTTPServerException => e
-#           case e.response.code
-#           when "404"
-#             cookbook_uploaded = false
-#           when "401"
-#             Chef::Log.fatal "Failed to fetch remote cookbook '#{cookbook_name}' due to authentication failure (#{e}), check your client configuration (username, key)"
-#             exit 18
-#           end
-#         end
-
-#         if cookbook_uploaded
-#           Chef::StreamingCookbookUploader.put(
-#             "#{Chef::Config[:chef_server_url]}/cookbooks/#{cookbook_name}/_content", 
-#             Chef::Config[:node_name], 
-#             Chef::Config[:client_key], 
-#             {
-#               :file => File.new(tarball_name), 
-#               :name => cookbook_name
-#             }
-#           )
-#         else
-#           Chef::StreamingCookbookUploader.post(
-#             "#{Chef::Config[:chef_server_url]}/cookbooks", 
-#             Chef::Config[:node_name], 
-#             Chef::Config[:client_key], 
-#             {
-#               :file => File.new(tarball_name), 
-#               :name => cookbook_name
-#             }
-#           )
-#         end
-#         Chef::Log.info("Upload complete!")
-#         Chef::Log.debug("Removing local tarball at #{tarball_name}")
-#         FileUtils.rm_rf tarball_name 
-#         Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
-#         FileUtils.rm_rf tmp_cookbook_dir
-#       end
+      def catch_auth_exceptions
+        begin
+          yield
+        rescue Net::HTTPServerException => e
+          case e.response.code
+          when "401"
+            Chef::Log.fatal "Request failed due to authentication (#{e}), check your client configuration (username, key)"
+            exit 18
+          end
+        end
+      end
       
     end
   end

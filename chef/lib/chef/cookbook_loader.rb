@@ -41,7 +41,7 @@ class Chef
       [Chef::Config.cookbook_path].flatten.each do |cb_path|
         cb_path = File.expand_path(cb_path)
         Dir[File.join(cb_path, "*")].each do |cookbook|
-          next unless File.directory?(cookbook)          
+          next unless File.directory?(cookbook)
           cookbook_name = File.basename(cookbook).to_sym
           unless cookbook_settings.has_key?(cookbook_name)
             cookbook_settings[cookbook_name] = { 
@@ -53,6 +53,7 @@ class Chef
               :lib_files        => Hash.new,
               :resource_files   => Hash.new,
               :provider_files   => Hash.new,
+              :root_files       => Hash.new,
               :metadata_files   => Array.new
             }
           end
@@ -95,11 +96,13 @@ class Chef
             File.join(cookbook, "providers"),
             cookbook_settings[cookbook_name][:provider_files]
           )
-          
-          [ "metadata.json", "metadata.rb", "README.rdoc" ].each do |filename|
-            if File.exists?(File.join(cookbook, filename))
-              cookbook_settings[cookbook_name][:metadata_files] << File.join(cookbook, filename)
-            end
+          load_files(
+            "*",
+            cookbook,
+            cookbook_settings[cookbook_name][:root_files]
+          )
+          if File.exists?(File.join(cookbook, "metadata.json"))
+            cookbook_settings[cookbook_name][:metadata_files] << File.join(cookbook, "metadata.json")
           end
         end
       end
@@ -115,9 +118,10 @@ class Chef
         @cookbook[cookbook].lib_files = cookbook_settings[cookbook][:lib_files].values
         @cookbook[cookbook].resource_files = cookbook_settings[cookbook][:resource_files].values
         @cookbook[cookbook].provider_files = cookbook_settings[cookbook][:provider_files].values
+        @cookbook[cookbook].root_files = cookbook_settings[cookbook][:root_files].values
         @cookbook[cookbook].metadata_files = cookbook_settings[cookbook][:metadata_files]
         @metadata[cookbook] = Chef::Cookbook::Metadata.new(@cookbook[cookbook])
-        cookbook_settings[cookbook][:metadata_files].select{|fn| fn =~ /\.json$/}.each do |meta_json|
+        cookbook_settings[cookbook][:metadata_files].each do |meta_json|
           begin
             @metadata[cookbook].from_json(IO.read(meta_json))
           rescue JSON::ParserError
@@ -171,13 +175,21 @@ class Chef
           end
         end
       end
-      
-      def load_cascading_files(file_glob, base_path, result_hash)
-        rm_base_path = /^#{base_path}\/(.+)$/
+
+      def load_files(file_glob, base_path, result_hash, recursive=false)
+        rm_base_path = /^#{Regexp.escape(base_path)}\/(.+)$/
+        file_spec = [base_path]
+        file_spec << "**" if recursive
+        file_spec << file_glob
         # To handle dotfiles like .ssh
-        Dir.glob(File.join(base_path, "**/#{file_glob}"), File::FNM_DOTMATCH).each do |file|
+        Dir.glob(File.join(file_spec), File::FNM_DOTMATCH).each do |file|
+          next if File.directory?(file)
           result_hash[rm_base_path.match(file)[1]] = file
         end
+      end
+      
+      def load_cascading_files(file_glob, base_path, result_hash)
+        load_files(file_glob, base_path, result_hash, true)
       end
       
       def load_files_unless_basename(file_glob, result_hash)
