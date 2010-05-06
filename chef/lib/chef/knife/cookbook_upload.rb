@@ -38,6 +38,8 @@ class Chef
         :description => "Upload all cookbooks, rather than just a single cookbook"
 
       def run
+        Chef::Log.debug "Uploading cookbooks from #{config[:cookbook_path]}"
+
         if config[:cookbook_path]
           Chef::Config[:cookbook_path] = config[:cookbook_path]
         else
