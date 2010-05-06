@@ -29,7 +29,8 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "ohai", ">= 0.5.0"
 
   s.add_dependency "bunny", ">= 0.6.0"
-  %w{json erubis extlib moneta}.each { |gem| s.add_dependency gem }
+  s.add_dependency "json", "<= 1.4.2"
+  %w{erubis extlib moneta}.each { |gem| s.add_dependency gem }
   
   s.bindir       = "bin"
   s.executables  = %w( chef-client chef-solo knife shef )
