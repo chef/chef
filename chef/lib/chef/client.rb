@@ -84,7 +84,6 @@ class Chef
       build_node(@node_name)
       save_node
       sync_cookbooks
-      save_node
       converge
       save_node
       
