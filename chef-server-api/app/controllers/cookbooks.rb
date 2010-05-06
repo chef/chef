@@ -32,7 +32,7 @@ class Cookbooks < Application
   
   def params_helper
     self.cookbook_name = params[:cookbook_name]
-    self.cookbook_version = params[:version]
+    self.cookbook_version = params[:cookbook_version]
   end
 
   include Chef::Mixin::Checksum

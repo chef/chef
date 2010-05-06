@@ -312,8 +312,10 @@ class Chef
         files_list = remote_files
       when :templates
         files_list = template_files
+      when :metadata_files
+        files_list = metadata_files
       else
-        raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions, :remote_files, :template_files, :resources, :providers or :libraries"
+        raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions, :remote_files, :template_files, :resources, :providers, :libraries, or :metadata_files"
       end
       files_list
     end
@@ -344,11 +346,11 @@ class Chef
     end
 
     def generate_manifest_with_urls(&url_generator)
-      [ 'resources', 'providers', 'recipes', 'definitions', 'libraries', 'attributes', 'files', 'templates' ].each do |segment|
-        rendered_manifest = manifest.dup
+      rendered_manifest = manifest.dup
+      [ 'resources', 'providers', 'recipes', 'definitions', 'libraries', 'attributes', 'files', 'templates', 'metadata_files' ].each do |segment|
         if rendered_manifest.has_key?(segment)
           rendered_manifest[segment].each do |segment_file|
-            url_options = { :cookbook_name => name.to_s, :version => version, :checksum => segment_file["checksum"] }
+            url_options = { :cookbook_name => name.to_s, :cookbook_version => version, :checksum => segment_file["checksum"] }
             segment_file["uri"] = url_generator.call(url_options)
           end
         end
@@ -457,37 +459,43 @@ class Chef
         :files => Array.new,
         :templates => Array.new,
         :resources => Array.new,
-        :providers => Array.new
+        :providers => Array.new,
+        :metadata_files => Array.new
       }
       checksums_to_on_disk_paths = {}
 
-      [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates ].each do |segment|
+      [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :metadata_files ].each do |segment|
         segment_files(segment).each do |segment_file|
           next if File.directory?(segment_file)
 
           file_name = nil
-          file_url = nil
+          path = nil
           file_specificity = nil
-          url_options = nil
-          
-          if segment == :templates || segment == :files
-            matcher = segment_file.match("/#{name}/#{segment}/(.+?)/(.+)")
+
+          if segment == :metadata_files
+            matcher = segment_file.match("/#{name}/(.+)")
+            file_name = matcher[1]
+            path = file_name
+          elsif segment == :templates || segment == :files
+            matcher = segment_file.match("/#{name}/(#{segment}/(.+?)/(.+))")
             unless matcher
               Chef::Log.debug("Skipping file #{segment_file}, as it doesn't have a proper segment.")
               next
             end
-            specificity = matcher[1]
-            file_name = matcher[2]
+            path = matcher[1]
+            specificity = matcher[2]
+            file_name = matcher[3]
           else
-            matcher = segment_file.match("/#{name}/#{segment}/(.+)")
-            file_name = matcher[1]
+            matcher = segment_file.match("/#{name}/(#{segment}/(.+))")
+            path = matcher[1]
+            file_name = matcher[2]
           end
 
           csum = checksum(segment_file)
           checksums_to_on_disk_paths[csum] = segment_file
           rs = {
             :name => file_name,
-            :path => segment_file.match("/#{name}/(#{segment}/.+)")[1],
+            :path => path,
             :checksum => csum
           }
           rs[:specificity] = specificity if defined?(specificity)
@@ -495,6 +503,7 @@ class Chef
           manifest[segment] << rs
         end
       end
+
       manifest[:cookbook_name] = name.to_s
       manifest[:metadata] = metadata
       manifest[:version] = metadata.version

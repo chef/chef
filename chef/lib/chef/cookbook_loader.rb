@@ -95,9 +95,11 @@ class Chef
             File.join(cookbook, "providers"),
             cookbook_settings[cookbook_name][:provider_files]
           )
-
-          if File.exists?(File.join(cookbook, "metadata.json"))
-            cookbook_settings[cookbook_name][:metadata_files] << File.join(cookbook, "metadata.json")
+          
+          [ "metadata.json", "metadata.rb", "README.rdoc" ].each do |filename|
+            if File.exists?(File.join(cookbook, filename))
+              cookbook_settings[cookbook_name][:metadata_files] << File.join(cookbook, filename)
+            end
           end
         end
       end
@@ -115,11 +117,11 @@ class Chef
         @cookbook[cookbook].provider_files = cookbook_settings[cookbook][:provider_files].values
         @cookbook[cookbook].metadata_files = cookbook_settings[cookbook][:metadata_files]
         @metadata[cookbook] = Chef::Cookbook::Metadata.new(@cookbook[cookbook])
-        cookbook_settings[cookbook][:metadata_files].each do |meta_json|
+        cookbook_settings[cookbook][:metadata_files].select{|fn| fn =~ /\.json$/}.each do |meta_json|
           begin
             @metadata[cookbook].from_json(IO.read(meta_json))
           rescue JSON::ParserError
-            puts "Couldn't parse JSON in " + meta_json
+            Chef::Log.fatal("Couldn't parse JSON in " + meta_json)
             raise
           end
         end
