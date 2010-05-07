@@ -24,7 +24,6 @@
 require 'merb-assets'
 require 'merb-helpers'
 require 'merb-param-protection'
-require 'merb-haml'
 
 require 'bunny'
 require 'uuidtools'
