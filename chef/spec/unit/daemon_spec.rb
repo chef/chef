@@ -252,5 +252,4 @@ describe Chef::Daemon do
     end
 
   end  
-
 end
