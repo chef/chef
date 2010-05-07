@@ -62,4 +62,3 @@ task :gemspec do
     file.puts spec.to_ruby
   end
 end
-
