@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,36 +23,63 @@ class Chef
   class Knife
     class CookbookDownload < Knife
 
-      banner "Sub-Command: cookbook download COOKBOOK (options)"
+      banner "Sub-Command: cookbook download COOKBOOK VERSION (options)"
 
-      option :file,
-       :short => "-f FILE",
-       :long => "--file FILE",
-       :description => "The filename to write to"
+      option :version,
+       :short => "-v VERSION",
+       :long => "--version VERSION",
+       :description => "The version of the cookbook to download"
 
-      def run 
-        cookbook = rest.get_rest("cookbooks/#{@name_args[0]}")
-        version = cookbook["metadata"]["version"] 
-        Chef::Log.info("Downloading #{@name_args[0]} cookbook version #{version}")
-        rest.sign_on_redirect = false
-        tf = rest.get_rest("cookbooks/#{@name_args[0]}/_content", true)
-        rest.sign_on_redirect = true 
-        unless config[:file]
-          if version
-            config[:file] = File.join(Dir.pwd, "#{@name_args[0]}-#{version}.tar.gz")
+      option :download_directory,
+       :short => "-d DOWNLOAD_DIRECTORY",
+       :long => "--dir DOWNLOAD_DIRECTORY",
+       :description => "The directory to download the cookbook into",
+       :default => Dir.pwd
+      
+      option :force,
+       :short => "-f",
+       :long => "--force",
+       :description => "Force download over the download directory if it exists"
+      
+      def run
+        if @name_args.length != 2
+          Chef::Log.fatal("You must supply a cookbook name and version to download!")
+          exit 42
+        end
+          
+        cookbook_name = @name_args[0]
+        cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
+        Chef::Log.info("Downloading #{cookbook_name} cookbook version #{cookbook_version}")
+        
+        cookbook = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}")
+        manifest = cookbook.manifest
+
+        basedir = File.join(config[:download_directory], "#{cookbook_name}-#{cookbook.version}")
+        if File.exists?(basedir)
+          if config[:force]
+            Chef::Log.debug("Deleting #{basedir}")
+            FileUtils.rm_rf(basedir)
           else
-            config[:file] = File.join(Dir.pwd, "#{@name_args[0]}.tar.gz")
+            Chef::Log.fatal("Directory #{basedir} exists")
+            exit
           end
         end
-        FileUtils.cp(tf.path, config[:file])
-        Chef::Log.info("Cookbook saved: #{config[:file]}")
+        
+        [ 'resources', 'providers', 'recipes', 'definitions', 'libraries', 'attributes', 'files', 'templates', 'root_files' ].each do |segment|
+          next unless manifest.has_key?(segment)
+          Chef::Log.info("Downloading #{segment}")
+          manifest[segment].each do |segment_file|
+            dest = File.join(basedir, segment_file['path'].gsub('/', File::SEPARATOR))
+            Chef::Log.debug("Downloading #{segment_file['path']} to #{dest}")
+            FileUtils.mkdir_p(File.dirname(dest))
+            rest.sign_on_redirect = false
+            tempfile = rest.get_rest(segment_file['uri'], true)
+            FileUtils.mv(tempfile.path, dest)
+          end
+        end
+        Chef::Log.info("Cookbook downloaded to #{basedir}")
       end
 
     end
   end
 end
-
-
-
-
-

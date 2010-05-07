@@ -347,7 +347,7 @@ class Chef
 
     def generate_manifest_with_urls(&url_generator)
       rendered_manifest = manifest.dup
-      [ 'resources', 'providers', 'recipes', 'definitions', 'libraries', 'attributes', 'files', 'templates', 'metadata_files' ].each do |segment|
+      [ 'resources', 'providers', 'recipes', 'definitions', 'libraries', 'attributes', 'files', 'templates', 'root_files' ].each do |segment|
         if rendered_manifest.has_key?(segment)
           rendered_manifest[segment].each do |segment_file|
             url_options = { :cookbook_name => name.to_s, :cookbook_version => version, :checksum => segment_file["checksum"] }
@@ -515,7 +515,7 @@ class Chef
 
     def extract_checksums_from_manifest(manifest)
       checksums = {}
-      [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates ].each do |segment|
+      [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ].each do |segment|
         manifest[segment.to_s].each do |segment_file|
           checksums[segment_file["checksum"]] = nil
         end
