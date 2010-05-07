@@ -26,11 +26,6 @@ describe Chef::Application, "initialize" do
   it "should create an instance of Chef::Application" do
     @app.should be_kind_of(Chef::Application)
   end
-
-  it "should chdir to root" do
-    Dir.should_receive(:chdir).with("/").and_return(0)
-    Chef::Application.new
-  end
 end
 
   
