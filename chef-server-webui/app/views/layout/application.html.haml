@@ -4,17 +4,37 @@
   %head
     %meta{ "http-equiv" => "content-type", :content => "text/html; charset=utf-8" }
     %title Chef Server
-    = css_include_tag "base", "themes/djime-cerulean/style", "chef", "/facebox/facebox.css", "jquery-ui-1.7.1.custom", "jquery.treeTable"
+    = css_include_tag "base", "themes/djime-cerulean/style", "chef", "/facebox/facebox.css", "jquery-ui-1.7.1.custom", "jquery.treeTable", "jsonedit_main.css"
     = js_include_tag "jquery-1.3.2.min", "jquery.jeditable.mini", "jquery.livequery", "jquery.localscroll", "jquery.scrollTo", "jquery.tools.min"
     = js_include_tag "/facebox/facebox.js"
     = js_include_tag "jquery-ui-1.7.1.custom.min"
     = js_include_tag "jquery.treeTable.min"
     = js_include_tag "chef"
+
+    = catch_content :header_content
         
   %body
     #container
       #header
         %h1= link_to "Chef Server", url(:top)
+        #user-navigation
+          %ul
+            - if session[:user]
+              %li= link_to "Logout #{h session[:user]} (#{session[:level].to_s})", url(:users_logout), :method => "get", :confirm => "Are you sure you want to logout?"
+            - else
+              %li= link_to "Login", url(:users_login), :rel => "facebox"
+          .clear
+        #main-navigation
+          %ul
+            %li= link_to "Search", url(:searches)
+            %li= link_to "Status", url(:status)
+            %li= link_to "Roles", url(:roles)
+            %li= link_to "Nodes", url(:nodes)
+            %li= link_to "Cookbooks", url(:cookbooks)
+            %li= link_to "Databags", url(:databags)
+            %li= link_to "Clients", url(:clients)
+            %li= link_to "Users", url(:users)
+          .clear
       #wrapper
         #main
           - unless message.empty?

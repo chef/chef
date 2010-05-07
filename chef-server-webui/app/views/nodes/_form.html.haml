@@ -42,7 +42,7 @@
 
     %div.group.form{:style => "position:relative;"}
       %label.label Attributes 
-      = partial '../layout/jsonedit', :json =>@node.normal_attrs.to_json
+      = partial 'layout/jsonedit', :json =>@node.normal_attrs.to_json
     %div.group.form
       %span.description A JSON hash for default attributes for nodes of this node.  These attributes will only be applied if the node does not already have a value for the attributes.
 

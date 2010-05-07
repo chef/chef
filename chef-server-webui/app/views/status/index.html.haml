@@ -13,11 +13,11 @@
           %th.last Run List
           - if @status.empty?
             %tr
-              %td{:colspan => 7}= "You appear to have no nodes - try connecting one, or creating or editing a #{link_to('client', slice_url(:clients))}"
+              %td{:colspan => 7}= "You appear to have no nodes - try connecting one, or creating or editing a #{link_to('client', url(:clients))}"
           - else
             - @status.sort.each_with_index do |node, index|
               %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-                %td= link_to(node[1].name, slice_url(:node, node[1].name))
+                %td= link_to(node[1].name, url(:node, node[1].name))
                 %td= "#{node[1]["platform"]} #{node[1]["platform_version"]}"
                 %td= node[1]["fqdn"]
                 %td= node[1]["ipaddress"]

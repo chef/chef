@@ -19,7 +19,7 @@
 
 require 'chef/role'
 
-class ChefServerWebui::Roles < ChefServerWebui::Application
+class Roles < Application
 
   provides :html
   before :login_required 
@@ -92,7 +92,7 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
       @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
       @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
       @role.create
-      redirect(slice_url(:roles), :message => { :notice => "Created Role #{@role.name}" })
+      redirect(url(:roles), :message => { :notice => "Created Role #{@role.name}" })
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @available_recipes = get_available_recipes 
@@ -134,7 +134,7 @@ class ChefServerWebui::Roles < ChefServerWebui::Application
     begin
       @role = Chef::Role.load(params[:id])
       @role.destroy
-      redirect(absolute_slice_url(:roles), :message => { :notice => "Role #{@role.name} deleted successfully." }, :permanent => true)
+      redirect(absolute_url(:roles), :message => { :notice => "Role #{@role.name} deleted successfully." }, :permanent => true)
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @role_list = Chef::Role.list()

@@ -20,7 +20,7 @@ require 'chef'/'webui_user'
 require 'uri'
 require 'merb-param-protection'
 
-class ChefServerWebui::Users < ChefServerWebui::Application
+class Users < Application
 
   provides :html
   before :login_required, :exclude => [:login, :login_exec, :complete]
@@ -114,7 +114,7 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       @user.admin = true if params[:admin]
       (params[:openid].length == 0 || params[:openid].nil?) ? @user.set_openid(nil) : @user.set_openid(URI.parse(params[:openid]).normalize.to_s)
       @user.create
-      redirect(slice_url(:users), :message => { :notice => "Created User #{params[:name]}" })
+      redirect(url(:users), :message => { :notice => "Created User #{params[:name]}" })
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @_message = { :error => "Could not create user" }
@@ -124,7 +124,7 @@ class ChefServerWebui::Users < ChefServerWebui::Application
 
   def login
     @user = Chef::WebUIUser.new
-    session[:user] ? redirect(slice_url(:nodes), :message => { :warning => "You've already logged in with user #{session[:user]}"  }) : (render :layout => 'login') 
+    session[:user] ? redirect(url(:nodes), :message => { :warning => "You've already logged in with user #{session[:user]}"  }) : (render :layout => 'login') 
   end 
   
   def login_exec
@@ -143,12 +143,12 @@ class ChefServerWebui::Users < ChefServerWebui::Application
   def complete    
     session[:user] = params[:name]
     session[:level] = (@user.admin == true ? :admin : :user)
-    (@user.name == Chef::Config[:web_ui_admin_user_name] && @user.verify_password(Chef::Config[:web_ui_admin_default_password])) ? redirect(slice_url(:users_edit, :user_id => @user.name), :message => { :warning => "Please change the default password" }) : redirect_back_or_default(absolute_slice_url(:nodes))
+    (@user.name == Chef::Config[:web_ui_admin_user_name] && @user.verify_password(Chef::Config[:web_ui_admin_default_password])) ? redirect(url(:users_edit, :user_id => @user.name), :message => { :warning => "Please change the default password" }) : redirect_back_or_default(absolute_url(:nodes))
   end
 
   def logout
     cleanup_session
-    redirect slice_url(:top)
+    redirect url(:top)
   end
   
   def destroy
@@ -158,7 +158,7 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       @user = Chef::WebUIUser.load(params[:user_id])
       @user.destroy
       logout if params[:user_id] == session[:user]
-      redirect(absolute_slice_url(:users), {:message => { :notice => "User #{params[:user_id]} deleted successfully" }, :permanent => true})
+      redirect(absolute_url(:users), {:message => { :notice => "User #{params[:user_id]} deleted successfully" }, :permanent => true})
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       session[:level] != :admin ? set_user_and_redirect : redirect_to_list_users({ :error => $! })
@@ -173,7 +173,7 @@ class ChefServerWebui::Users < ChefServerWebui::Application
       rescue
         logout_and_redirect_to_login
       else  
-        redirect(slice_url(:users_show, :user_id => session[:user]), {:message => { :error => $! }, :permanent => true})
+        redirect(url(:users_show, :user_id => session[:user]), {:message => { :error => $! }, :permanent => true})
       end 
     end 
   

@@ -21,20 +21,20 @@
 require 'chef' / 'cookbook_loader'
 require 'chef' / 'cookbook' / 'metadata'
 
-class ChefServerApi::Cookbooks < ChefServerApi::Application
+class Cookbooks < Application
   
   provides :json
 
   before :authenticate_every
 
   include Chef::Mixin::Checksum
-  include Merb::ChefServerApi::TarballHelper
+  include Merb::TarballHelper
   
   def index
     cl = Chef::CookbookLoader.new
     cookbook_list = Hash.new
     cl.each do |cookbook|
-      cookbook_list[cookbook.name] = absolute_slice_url(:cookbook, :id => cookbook.name.to_s) 
+      cookbook_list[cookbook.name] = absolute_url(:cookbook, :id => cookbook.name.to_s) 
     end
     display cookbook_list 
   end
@@ -169,7 +169,7 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
     
     # construct successful response
     self.status = 201
-    location = absolute_slice_url(:cookbook, :id => desired_name)
+    location = absolute_url(:cookbook, :id => desired_name)
     headers['Location'] = location
     result = { 'uri' => location }
     display result
@@ -179,7 +179,6 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
     cookbook_name = params[:cookbook_id]
     expected_location = cookbook_location(cookbook_name)
     raise NotFound, "Cannot find cookbook named #{cookbook_name} at #{expected_location}. Note: Tarball generation only applies to cookbooks under the first directory in the server's Chef::Config.cookbook_path variable and does to apply overrides." unless File.directory? expected_location
-    
     send_file(get_or_create_cookbook_tarball_location(cookbook_name))
   end
   

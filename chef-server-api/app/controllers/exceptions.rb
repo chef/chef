@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-class Exceptions < ChefServerApi::Application
+class Exceptions < Application
   
   provides :json
  

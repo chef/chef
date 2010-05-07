@@ -21,7 +21,7 @@
 require 'chef/data_bag'
 require 'chef/data_bag_item'
 
-class ChefServerApi::DataItem < ChefServerApi::Application
+class DataItem < Application
   
   provides :json
   

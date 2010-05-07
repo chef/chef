@@ -20,12 +20,11 @@
 
 require 'chef' / 'node'
 
-class ChefServerWebui::Nodes < ChefServerWebui::Application
+class Nodes < Application
   
   provides :html
   
   before :login_required
-  before :authorized_node, :only => [ :update, :destroy ]
   
   def index
     @node_list =  begin
@@ -90,7 +89,7 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
       @node.run_list.reset!(params[:for_node] ? params[:for_node] : [])
       raise ArgumentError, "Node name cannot be blank" if (params[:name].nil? || params[:name].length==0)
       @node.create
-      redirect(slice_url(:nodes), :message => { :notice => "Created Node #{@node.name}" })
+      redirect(url(:nodes), :message => { :notice => "Created Node #{@node.name}" })
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @node.normal_attrs = JSON.parse(params[:attributes])
@@ -126,7 +125,7 @@ class ChefServerWebui::Nodes < ChefServerWebui::Application
     begin
       @node = Chef::Node.load(params[:id])
       @node.destroy
-      redirect(absolute_slice_url(:nodes), {:message => { :notice => "Node #{params[:id]} deleted successfully" }, :permanent => true})
+      redirect(absolute_url(:nodes), {:message => { :notice => "Node #{params[:id]} deleted successfully" }, :permanent => true})
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @node_list = Chef::Node.list()

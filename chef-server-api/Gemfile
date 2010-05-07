@@ -1,0 +1,15 @@
+source :gemcutter
+
+# MERB
+gem 'rack', '=1.1.0'
+gem 'merb-core', '=1.1.0'
+gem 'merb-haml'
+gem 'merb-assets'
+gem 'merb-helpers'
+gem 'merb-param-protection', '=1.1.0'
+gem 'bunny'
+gem 'uuidtools'
+gem 'ohai'
+gem 'chef'
+gem 'chef-solr'
+gem 'thin'

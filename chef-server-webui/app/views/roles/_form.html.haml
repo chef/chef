@@ -45,7 +45,7 @@
 
     %div.group.form{:style => "position:relative;"}
       %label.label Default and Override Attributes 
-      = partial '../layout/jsonedit', :json => { :defaults => @role.default_attributes, :overrides => @role.override_attributes }.to_json
+      = partial 'layout/jsonedit', :json => { :defaults => @role.default_attributes, :overrides => @role.override_attributes }.to_json
       %span.description A JSON hash for default attributes for nodes of this role.  These attributes will only be applied if the node does not already have a value for the attributes.
     = form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do
       %div.group

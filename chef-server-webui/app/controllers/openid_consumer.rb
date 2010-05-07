@@ -22,7 +22,7 @@ require 'pathname'
 require 'openid'
 require (Chef::Config[:openid_cstore_couchdb] ?   'openid-store-couchdb' : 'openid/store/filesystem')
 
-class ChefServerWebui::OpenidConsumer < ChefServerWebui::Application
+class OpenidConsumer < Application
 
   provides :html
 
@@ -42,8 +42,8 @@ class ChefServerWebui::OpenidConsumer < ChefServerWebui::Application
       raise BadRequest, "Discovery failed for #{oid}: #{e}"
     end
 
-    return_to = absolute_slice_url(:openid_consumer_complete)
-    realm = absolute_slice_url(:openid_consumer)
+    return_to = absolute_url(:openid_consumer_complete)
+    realm = absolute_url(:openid_consumer)
 
     if oidreq.send_redirect?(realm, return_to, params[:immediate])
       return redirect(oidreq.redirect_url(realm, return_to, params[:immediate]))
@@ -55,7 +55,7 @@ class ChefServerWebui::OpenidConsumer < ChefServerWebui::Application
 
   def login
     if session[:user] 
-      redirect(slice_url(:nodes), :message => { :warning => "You've already logged in with user #{session[:user]}"  })
+      redirect(url(:nodes), :message => { :warning => "You've already logged in with user #{session[:user]}"  })
     else
       oid = params[:openid_identifier]
       raise(Unauthorized, "Sorry, #{oid} is not an authorized OpenID.") unless is_authorized_openid_identifier?(oid, Chef::Config[:authorized_openid_identifiers])
@@ -66,7 +66,7 @@ class ChefServerWebui::OpenidConsumer < ChefServerWebui::Application
 
   def complete
     # FIXME - url_for some action is not necessarily the current URL.
-    current_url = absolute_slice_url(:openid_consumer_complete)
+    current_url = absolute_url(:openid_consumer_complete)
     parameters = params.reject{|k,v| k == "controller" || k == "action"}
     oidresp = consumer.complete(parameters, current_url)
     case oidresp.status
@@ -95,11 +95,11 @@ class ChefServerWebui::OpenidConsumer < ChefServerWebui::Application
           end
         end        
         if session[:user].nil?
-          redirect(slice_url(:openid_consumer),  :message => { :error => "No user is associated with this OpenID." })
+          redirect(url(:openid_consumer),  :message => { :error => "No user is associated with this OpenID." })
           return "No user is associated with this OpenID."
         end 
         #end
-        redirect_back_or_default(absolute_slice_url(:nodes))
+        redirect_back_or_default(absolute_url(:nodes))
         return "Verification of #{oidresp.display_identifier} succeeded."
       when OpenID::Consumer::SETUP_NEEDED
         return "Immediate request failed - Setup Needed"
@@ -107,12 +107,12 @@ class ChefServerWebui::OpenidConsumer < ChefServerWebui::Application
         return "OpenID transaction cancelled."
       else
     end
-    redirect absolute_slice_url(:openid_consumer)
+    redirect absolute_url(:openid_consumer)
   end
 
   def logout
     cleanup_session
-    redirect slice_url(:top)
+    redirect url(:top)
   end
 
   private

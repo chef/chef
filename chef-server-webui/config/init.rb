@@ -21,14 +21,20 @@
 # code and views.
 #
 
-$: << File.join(File.dirname(__FILE__), "..", "..", "chef", "lib")
-require 'chef'
 
-merb_gems_version = " > 1.0"
-dependency "merb-haml", merb_gems_version
-dependency "merb-assets", merb_gems_version
-dependency "merb-helpers", merb_gems_version
-dependency "chef", :immediate=>true unless defined?(Chef)
+require "merb-core" 
+require "merb-haml"
+require "merb-assets"
+require "merb-helpers"
+
+require 'coderay'
+
+require 'chef'
+require 'chef/solr'
+
+require 'chef/role'
+require 'chef/webui_user'
+
 
 use_template_engine :haml
 
@@ -36,14 +42,27 @@ Merb::Config.use do |c|
   # BUGBUG [cb] For some reason, this next line
   # causes a merb slice to vomit around openid
   #c[:fork_for_class_load] = false
-  c[:session_id_key] = '_chef_server_session_id'
-  c[:session_secret_key]  = Chef::Config.manage_secret_key
-  c[:session_store] = 'cookie'
-  c[:exception_details] = true
-  c[:reload_classes] = true 
+  c[:session_id_key]     = '_chef_server_session_id'
+  c[:session_secret_key] = Chef::Config.manage_secret_key
+  c[:session_store]      = 'cookie'
+  c[:exception_details]  = true
+  c[:reload_classes]     = true
+  c[:reload_templates]   = true
+  
   c[:log_level] = Chef::Config[:log_level]
   if Chef::Config[:log_location].kind_of?(String)
     c[:log_file] = Chef::Config[:log_location]
   end
 end
 
+Chef::Config[:node_name] = Chef::Config[:web_ui_client_name]
+Chef::Config[:client_key] = Chef::Config[:web_ui_key]
+
+# Create the default admin user "admin" if no admin user exists  
+unless Chef::WebUIUser.admin_exist
+  user = Chef::WebUIUser.new
+  user.name = Chef::Config[:web_ui_admin_user_name]
+  user.set_password(Chef::Config[:web_ui_admin_default_password])
+  user.admin = true
+  user.save
+end

@@ -5,7 +5,7 @@
       = partial('navigation', :active => 'create')
     .content
       .inner
-        %form.form{ :method => "get", "accept-charset" => "UTF-8", :action => slice_url(:users_create) }
+        %form.form{ :method => "get", "accept-charset" => "UTF-8", :action => url(:users_create) }
           %table.table
             %tr
               %td= "Username"

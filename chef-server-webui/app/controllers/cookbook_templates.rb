@@ -21,7 +21,7 @@ require 'chef' / 'mixin' / 'checksum'
 require 'chef' / 'cookbook_loader'
 require 'chef' / 'mixin' / 'find_preferred_file'
 
-class ChefServerWebui::CookbookTemplates < ChefServerWebui::Application
+class CookbookTemplates < Application
   
   provides :html
   before :login_required 

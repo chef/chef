@@ -20,7 +20,7 @@
 
 require 'chef' / 'cookbook_loader'
 
-class ChefServerWebui::Cookbooks < ChefServerWebui::Application
+class Cookbooks < Application
   
   provides :html, :json
   before :login_required 

@@ -1,6 +1,6 @@
 require 'chef/role'
 
-class ChefServerApi::Roles < ChefServerApi::Application
+class Roles < Application
   provides :json
 
   before :authenticate_every
@@ -9,7 +9,7 @@ class ChefServerApi::Roles < ChefServerApi::Application
   # GET /roles
   def index
     @role_list = Chef::Role.cdb_list(true)
-    display(@role_list.inject({}) { |r,role| r[role.name] = absolute_slice_url(:role, role.name); r })
+    display(@role_list.inject({}) { |r,role| r[role.name] = absolute_url(:role, role.name); r })
   end
 
   # GET /roles/:id
@@ -37,7 +37,7 @@ class ChefServerApi::Roles < ChefServerApi::Application
     @role.cdb_save
     
     self.status = 201
-    display({ :uri => absolute_slice_url(:role, :id => @role.name)  })
+    display({ :uri => absolute_url(:role, :id => @role.name)  })
   end
 
   # PUT /roles/:id
