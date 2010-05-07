@@ -29,6 +29,9 @@ require 'chef/runner'
 require 'chef/webui_user'
 require 'chef/openid_registration'
 
+require 'chef/handler'
+require 'chef/handler/json_file'
+
 class Chef
   VERSION = "0.8.12"
 end

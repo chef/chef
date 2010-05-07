@@ -195,7 +195,7 @@ class Chef
     end
 
     def attribute
-      attribute
+      Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs, @automatic_attrs)
     end
 
     def attribute=(value)
