@@ -88,6 +88,14 @@ class ChefServerApi::Application < Merb::Controller
     end
   end
 
+  def is_admin_or_validator
+    if @auth_user.admin || @auth_user.name == Chef::Config[:validation_client_name]
+      true
+    else
+      raise Unauthorized, "You are not allowed to take this action."
+    end
+  end
+
   def is_correct_node
     if @auth_user.admin || @auth_user.name == params[:id]
       true

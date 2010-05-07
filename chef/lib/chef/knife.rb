@@ -20,6 +20,8 @@
 require 'mixlib/cli'
 require 'chef/mixin/convert_to_class_name'
 
+require 'pp'
+
 class Chef
   class Knife
     include Mixlib::CLI
@@ -96,11 +98,17 @@ class Chef
       klass_instance
     end
 
-    def ask_question(q)
-      print q 
-      a = STDIN.readline
-      a.chomp!
-      a
+    def ask_question(question, opts={})
+      question = question + "[#{opts[:default]}] " if opts[:default]
+        
+      stdout.print question
+      a = stdin.readline.strip
+
+      if opts[:default]
+        a.empty? ? opts[:default] : a
+      else
+        a
+      end
     end
 
     def configure_chef
@@ -126,8 +134,24 @@ class Chef
       puts data
     end
 
-    def json_pretty_print(data)
-      puts JSON.pretty_generate(data)
+    def output(data)
+      case config[:format]
+      when "json", nil
+        puts JSON.pretty_generate(data)
+      when "yaml"
+        require 'yaml'
+        puts YAML::dump(data)
+      when "text"
+        # If you were looking for some attribute and there is only one match
+        # just dump the attribute value
+        if data.length == 1 and config[:attribute]
+          puts data.values[0]
+        else
+          pp data
+        end
+      else
+        raise ArgumentError, "Unknown output format #{config[:format]}"
+      end
     end
 
     def format_list_for_display(list)
@@ -182,7 +206,7 @@ class Chef
       return true if config[:yes]
 
       print "#{question}? (Y/N) "
-      answer = STDIN.readline
+      answer = stdin.readline
       answer.chomp!
       case answer
       when "Y", "y"
@@ -237,7 +261,7 @@ class Chef
 
       Chef::Log.info("Saved #{output}")
 
-      json_pretty_print(format_for_display(object)) if config[:print_after]
+      output(format_for_display(object)) if config[:print_after]
     end
 
     def create_object(object, pretty_name=nil, &block)
@@ -253,7 +277,7 @@ class Chef
 
       Chef::Log.info("Created (or updated) #{pretty_name}")
       
-      json_pretty_print(output) if config[:print_after]
+      output(output) if config[:print_after]
     end
 
     def delete_object(klass, name, delete_name=nil, &block)
@@ -266,7 +290,7 @@ class Chef
         object.destroy
       end
 
-      json_pretty_print(format_for_display(object)) if config[:print_after]
+      output(format_for_display(object)) if config[:print_after]
 
       obj_name = delete_name ? "#{delete_name}[#{name}]" : object
       Chef::Log.warn("Deleted #{obj_name}!")
@@ -285,7 +309,7 @@ class Chef
         to_delete = object_list
       end
 
-      json_pretty_print(format_list_for_display(to_delete))
+      output(format_list_for_display(to_delete))
 
       confirm("Do you really want to delete the above items")
 
@@ -295,9 +319,17 @@ class Chef
         else
           object.destroy
         end
-        json_pretty_print(format_for_display(object)) if config[:print_after]
+        output(format_for_display(object)) if config[:print_after]
         Chef::Log.warn("Deleted #{fancy_name} #{name}")
       end
+    end
+    
+    def stdout
+      STDOUT
+    end
+
+    def stdin
+      STDIN
     end
 
     def rest

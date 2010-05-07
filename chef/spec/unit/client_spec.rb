@@ -77,7 +77,7 @@ describe Chef::Client, "run" do
   end
   
   it "should save the nodes state on the server (twice!)" do
-    @client.should_receive(:save_node).exactly(3).times.and_return(true)
+    @client.should_receive(:save_node).exactly(2).times.and_return(true)
     @client.run
   end
   
@@ -114,6 +114,7 @@ describe Chef::Client, "run_solo" do
   it "should start/stop the run timer" do
     time = Time.now
     Time.should_receive(:now).at_least(1).times.and_return(time)
+    Chef::Config[:cookbook_path] = [File.join(CHEF_SPEC_DATA, "kitchen"), File.join(CHEF_SPEC_DATA, "cookbooks")]
     @client.run_solo
   end
 
@@ -128,9 +129,9 @@ describe Chef::Client, "run_solo" do
   end
 
   it "should use the configured cookbook_path" do
-    Chef::Config[:cookbook_path] = ['one', 'two']
+    Chef::Config[:cookbook_path] = [File.join(CHEF_SPEC_DATA, "kitchen"), File.join(CHEF_SPEC_DATA, "cookbooks")]
     @client.run_solo
-    Chef::Config[:cookbook_path].should eql(['one', 'two'])
+    Chef::Config[:cookbook_path].should eql([File.join(CHEF_SPEC_DATA, "kitchen"), File.join(CHEF_SPEC_DATA, "cookbooks")])
   end
 
   it "should run report handlers" do

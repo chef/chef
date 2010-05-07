@@ -143,15 +143,14 @@ class Chef
     search_url "http://localhost:4000"
     solo  false
     splay nil
-    ssl_client_cert ""
-    ssl_client_key ""
+    ssl_client_cert nil
+    ssl_client_key nil
     ssl_verify_mode :verify_none
     ssl_ca_path nil
     ssl_ca_file nil
     template_url "http://localhost:4000"
     umask 0022
     user nil
-    validation_token nil
     role_path "/var/chef/roles"
     role_url "http://localhost:4000"
     recipe_url nil

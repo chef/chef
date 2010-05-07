@@ -161,8 +161,9 @@ Before do
   system("mkdir -p #{tmpdir}")
   system("cp -r #{File.join(Dir.tmpdir, "validation.pem")} #{File.join(tmpdir, "validation.pem")}")
   system("cp -r #{File.join(Dir.tmpdir, "webui.pem")} #{File.join(tmpdir, "webui.pem")}")
-  Chef::CouchDB.new(Chef::Config[:couchdb_url], "chef_integration").create_db
   c = Chef::REST.new(Chef::Config[:couchdb_url], nil, nil)
+  c.delete_rest("chef_integration/") rescue nil
+  Chef::CouchDB.new(Chef::Config[:couchdb_url], "chef_integration").create_db
   c.post_rest("_replicate", { 
     "source" => "#{Chef::Config[:couchdb_url]}/chef_integration_safe",
     "target" => "#{Chef::Config[:couchdb_url]}/chef_integration" 
@@ -170,8 +171,6 @@ Before do
 end
 
 After do
-  r = Chef::REST.new(Chef::Config[:couchdb_url], nil, nil)
-  r.delete_rest("chef_integration/")
   s = Chef::Solr.new
   s.solr_delete_by_query("*:*")
   s.solr_commit

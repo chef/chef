@@ -22,23 +22,21 @@ module Shef
   IRB = nil unless defined? IRB
 end
 
+require 'rubygems'
+
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-$:.unshift(File.join(File.dirname(__FILE__), "..", "..", "chef-server", "lib"))
 
 require 'chef'
-require File.join(File.dirname(__FILE__), "/../lib/chef/util/file_edit")
+require 'chef/knife'
+Chef::Knife.load_commands
+require 'chef/mixins'
+require 'chef/application'
+require 'chef/applications'
 
-chef_lib_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-Dir[
-  File.expand_path(
-    File.join(
-      chef_lib_path, 'chef', '**', '*.rb'
-    )
-  )
-].sort.each do |lib|
-  lib_short_path = lib.match("^#{chef_lib_path}#{File::SEPARATOR}(.+)$")[1]
-  require lib_short_path
-end
+require 'chef/shef'
+require 'chef/util/file_edit'
+
+
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
 
 Chef::Config[:log_level] = :fatal
@@ -49,6 +47,8 @@ Chef::Log.level(Chef::Config.log_level)
 Chef::Config.solo(false)
 
 Chef::Log.logger = Logger.new(StringIO.new)
+
+CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
 
 def redefine_argv(value)
   Object.send(:remove_const, :ARGV)

@@ -47,7 +47,7 @@ class Chef
           converted_arg = arg
         end
         begin
-          if Integer(arg) > 59 then raise RangeError end
+          if integerize(arg) > 59 then raise RangeError end
         rescue ArgumentError
         end
         set_or_return(
@@ -64,7 +64,7 @@ class Chef
           converted_arg = arg
         end
         begin
-          if Integer(arg) > 23 then raise RangeError end
+          if integerize(arg) > 23 then raise RangeError end
         rescue ArgumentError
         end
         set_or_return(
@@ -81,7 +81,7 @@ class Chef
           converted_arg = arg
         end
         begin
-          if Integer(arg) > 31 then raise RangeError end
+          if integerize(arg) > 31 then raise RangeError end
         rescue ArgumentError
         end
         set_or_return(
@@ -98,7 +98,7 @@ class Chef
           converted_arg = arg
         end
         begin
-          if Integer(arg) > 12 then raise RangeError end
+          if integerize(arg) > 12 then raise RangeError end
         rescue ArgumentError
         end
         set_or_return(
@@ -115,7 +115,7 @@ class Chef
           converted_arg = arg
         end
         begin
-          if Integer(arg) > 7 then raise RangeError end
+          if integerize(arg) > 7 then raise RangeError end
         rescue ArgumentError
         end
         set_or_return(
@@ -171,6 +171,15 @@ class Chef
           arg,
           :kind_of => String
         )
+      end
+      
+      private
+      
+      # On Ruby 1.8, Kernel#Integer will happily do this for you. On 1.9, no.
+      def integerize(integerish)
+        Integer(integerish)
+      rescue TypeError
+        0
       end
     end
   end

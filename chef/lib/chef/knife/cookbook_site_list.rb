@@ -29,8 +29,8 @@ class Chef
         :long => "--with-uri",
         :description => "Show corresponding URIs"
 
-      def run 
-        json_pretty_print(format_list_for_display(get_cookbook_list))
+      def run
+        output(format_list_for_display(get_cookbook_list))
       end
 
       def get_cookbook_list(items=10, start=0, cookbook_collection={})

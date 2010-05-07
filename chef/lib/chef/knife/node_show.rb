@@ -38,7 +38,7 @@ class Chef
 
       def run 
         node = Chef::Node.load(@name_args[0])
-        json_pretty_print(format_for_display(node))
+        output(format_for_display(node))
       end
     end
   end

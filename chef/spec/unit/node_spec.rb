@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Node do
   before(:each) do
-    Chef::Config.node_path(File.join(File.dirname(__FILE__), "..", "data", "nodes"))
+    Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "nodes")))
     @node = Chef::Node.new()
   end
  
@@ -203,16 +203,34 @@ describe Chef::Node do
     end
 
     it "should set the tags attribute to an empty array if it is not already defined" do
-      @node.consume_attributes "{}"
+      @node.consume_attributes({})
       @node.tags.should eql([])
     end
 
     it "should not set the tags attribute to an empty array if it is already defined" do
       @node[:tags] = [ "radiohead" ]
-      @node.consume_attributes "{}"
+      @node.consume_attributes({})
       @node.tags.should eql([ "radiohead" ])
     end
     
+    it "deep merges attributes instead of overwriting them" do
+      @node.consume_attributes "one" => {"two" => {"three" => "four"}}
+      @node.one.to_hash.should == {"two" => {"three" => "four"}}
+      @node.consume_attributes "one" => {"abc" => "123"}
+      @node.consume_attributes "one" => {"two" => {"foo" => "bar"}}
+      @node.one.to_hash.should == {"two" => {"three" => "four", "foo" => "bar"}, "abc" => "123"}
+    end
+    
+    it "gives attributes from JSON priority when deep merging" do
+      @node.consume_attributes "one" => {"two" => {"three" => "four"}}
+      @node.one.to_hash.should == {"two" => {"three" => "four"}}
+      @node.consume_attributes "one" => {"two" => {"three" => "forty-two"}}
+      @node.one.to_hash.should == {"two" => {"three" => "forty-two"}}
+    end
+    
+    it "raises an exception if you provide both recipe and run_list attributes, since this is ambiguous" do
+      lambda { @node.consume_attributes "recipes" => "stuff", "run_list" => "other_stuff" }.should raise_error(Chef::Exceptions::AmbiguousRunlistSpecification)
+    end
   end
 
   describe "recipes" do
@@ -276,7 +294,7 @@ describe Chef::Node do
 
   describe "from file" do
     it "should load a node from a ruby file" do
-      @node.from_file(File.join(File.dirname(__FILE__), "..", "data", "nodes", "test.rb"))
+      @node.from_file(File.expand_path(File.join(CHEF_SPEC_DATA, "nodes", "test.rb")))
       @node.name.should eql("test.example.com short")
       @node.sunshine.should eql("in")
       @node.something.should eql("else")

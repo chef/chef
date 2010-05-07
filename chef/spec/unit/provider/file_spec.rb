@@ -23,7 +23,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::File do
   before(:each) do
     @resource = Chef::Resource::File.new("seattle")
-    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "seattle.txt"))
+    @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt")))
     @node = Chef::Node.new
     @node.name "latte"
     @provider = Chef::Provider::File.new(@node, @resource)
@@ -54,7 +54,7 @@ describe Chef::Provider::File do
 
   it "should load a mostly blank current resource if the file specified in new_resource doesn't exist/isn't readable" do
     resource = Chef::Resource::File.new("seattle")
-    resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "woot.txt"))
+    resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "woot.txt")))
     node = Chef::Node.new
     node.name "latte"
     provider = Chef::Provider::File.new(node, resource)
@@ -68,7 +68,7 @@ describe Chef::Provider::File do
   end
 
   it "should not backup symbolic links on delete" do
-    path = File.join(File.dirname(__FILE__), "..", "..", "data", "detroit.txt")
+    path = File.expand_path(File.join(CHEF_SPEC_DATA, "detroit.txt"))
     ::File.open(path, "w") do |file|
       file.write("Detroit's not so nice, so you should come to Seattle instead and buy me a beer instead.")
     end
@@ -331,9 +331,8 @@ describe Chef::Provider::File do
     FileUtils.stub!(:mkdir_p).and_return(true)
     FileUtils.stub!(:rm).and_return(true)
     File.stub!(:exist?).and_return(true)
-    time_becomes_a_loop = mock(Time, :strftime => "wakawaka", :null_object => true, :to_i => 23)
-    Time.stub!(:now).and_return(time_becomes_a_loop)
-    FileUtils.should_receive(:cp).with("/tmp/s-20080705111233", "/some_prefix/tmp/s-20080705111233.chef-wakawaka", {:preserve => true}).and_return(true)
+    Time.stub!(:now).and_return(Time.at(1272147455).getgm)
+    FileUtils.should_receive(:cp).with("/tmp/s-20080705111233", "/some_prefix/tmp/s-20080705111233.chef-20100424221735", {:preserve => true}).and_return(true)
     @provider.backup
   end
 
@@ -342,7 +341,7 @@ end
 describe Chef::Provider::File, "action_create_if_missing" do
   before(:each) do
     @resource = Chef::Resource::File.new("seattle")
-    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "seattle.txt"))
+    @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt")))
     @node = Chef::Node.new
     @node.name "latte"
     @provider = Chef::Provider::File.new(@node, @resource)

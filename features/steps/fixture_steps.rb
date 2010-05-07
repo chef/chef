@@ -201,6 +201,14 @@ def get_fixture(stash_name, stash_key)
   end
 end
 
+Given "I am a non admin client" do
+  r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
+  r.register("not_admin", "#{tmpdir}/not_admin.pem")
+  c = Chef::ApiClient.cdb_load("not_admin")
+  c.cdb_save
+  @rest = Chef::REST.new(Chef::Config[:registration_url], 'not_admin', "#{tmpdir}/not_admin.pem")
+end
+
 Given /^an? '(.+)' named '(.+)'$/ do |stash_name, stash_key|
   # BUGBUG: I need to reference fixtures individually, but the fixtures, as written, store under the type, not the fixture's identifier and I don't currently have time to re-write the tests
 

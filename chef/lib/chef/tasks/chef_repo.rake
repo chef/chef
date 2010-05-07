@@ -72,8 +72,8 @@ task :install => [ :update, :roles, :upload_cookbooks ] do
   end
 end
 
-desc "By default, run rake test"
-task :default => [ :test ]
+desc "By default, run rake test_cookbooks"
+task :default => [ :test_cookbooks ]
 
 desc "Create a new cookbook (with COOKBOOK=name, optional CB_PREFIX=site-)"
 task :new_cookbook do
@@ -213,7 +213,7 @@ EOH
 end
 
 rule(%r{\b(?:site-)?cookbooks/[^/]+/metadata\.json\Z} => [ proc { |task_name| task_name.sub(/\.[^.]+$/, '.rb') } ]) do |t|
-  system("knife cookbook metadata #{t.source}")
+  system("knife cookbook metadata from file #{t.source}")
 end
 
 desc "Build cookbook metadata.json from metadata.rb"
@@ -228,7 +228,7 @@ task :roles  => FileList[File.join(TOPDIR, 'roles', '**', '*.rb')].pathmap('%X.j
 
 desc "Update a specific role"
 task :role, :role_name do |t, args|
-  system("knife role from file #{args.cookbook}")
+  system("knife role from file #{File.join(TOPDIR, 'roles', args.role_name)}.rb")
 end
 
 desc "Upload all cookbooks"
@@ -241,5 +241,15 @@ desc "Upload a single cookbook"
 task :upload_cookbook => [ :metadata ]
 task :upload_cookbook, :cookbook do |t, args|
   system("knife cookbook upload #{args.cookbook}")
+end
+
+desc "Test all cookbooks"
+task :test_cookbooks do
+  system("knife cookbook test --all")
+end
+
+desc "Test a single cookbook"
+task :test_cookbook, :cookbook do |t, args|
+  system("knife cookbook test #{args.cookbook}")
 end
 

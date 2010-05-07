@@ -18,21 +18,12 @@ require 'chef' unless defined?(Chef)
 include FileUtils
 
 GEM = "chef-server"
-CHEF_SERVER_VERSION = "0.8.11"
+CHEF_SERVER_VERSION = "0.8.12"
 AUTHOR = "Opscode"
 EMAIL = "chef@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"
 SUMMARY = "A systems integration framework, built to bring the benefits of configuration management to your entire infrastructure."
 
-# Load the basic runtime dependencies; this will include 
-# any plugins and therefore plugin rake tasks.
-init_env = ENV['MERB_ENV'] || 'rake'
-Merb.load_dependencies(:environment => init_env)
-     
-# Get Merb plugins and dependencies
-Merb::Plugins.rakefiles.each { |r| require r } 
-
-# Load any app level custom rakefile extensions from lib/tasks
 tasks_path = File.join(File.dirname(__FILE__), "lib", "tasks")
 rake_files = Dir["#{tasks_path}/*.rake"]
 rake_files.each{|rake_file| load rake_file }

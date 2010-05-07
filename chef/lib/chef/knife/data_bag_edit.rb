@@ -38,7 +38,7 @@ class Chef
 
           Chef::Log.info("Saved data_bag_item[#{@name_args[1]}]")
 
-          json_pretty_print(format_for_display(object)) if config[:print_after]
+          output(format_for_display(object)) if config[:print_after]
         end
       end
     end

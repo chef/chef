@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Scm < Chef::Resource
-      
+
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)
         @destination = name
@@ -34,7 +34,7 @@ class Chef
         @depth = nil
         @allowed_actions.push(:checkout, :export, :sync, :diff, :log)
       end
-      
+
       def destination(arg=nil)
         set_or_return(
           :destination,
@@ -42,7 +42,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       def repository(arg=nil)
         set_or_return(
           :repository,
@@ -50,7 +50,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       def revision(arg=nil)
         set_or_return(
           :revision,
@@ -58,7 +58,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       def user(arg=nil)
         set_or_return(
           :user,
@@ -66,7 +66,7 @@ class Chef
           :kind_of => [String, Integer]
         )
       end
-      
+
       def group(arg=nil)
         set_or_return(
           :group,
@@ -74,7 +74,7 @@ class Chef
           :kind_of => [String, Integer]
         )
       end
-      
+
       def svn_username(arg=nil)
         set_or_return(
           :svn_username,
@@ -82,7 +82,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       def svn_password(arg=nil)
         set_or_return(
           :svn_password,
@@ -90,7 +90,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       def svn_arguments(arg=nil)
         set_or_return(
           :svn_arguments,
@@ -98,7 +98,14 @@ class Chef
           :kind_of => String
         )
       end
-      
+
+      def svn_info_args(arg=nil)
+        set_or_return(
+          :svn_arguments,
+          arg,
+          :kind_of => String)
+      end
+
       # Capistrano and git-deploy use ``shallow clone''
       def depth(arg=nil)
         set_or_return(
@@ -107,7 +114,7 @@ class Chef
           :kind_of => Integer
         )
       end
-      
+
       def enable_submodules(arg=nil)
         set_or_return(
           :enable_submodules,
@@ -115,7 +122,7 @@ class Chef
           :kind_of => [TrueClass, FalseClass]
         )
       end
-      
+
       def remote(arg=nil)
         set_or_return(
           :remote,
@@ -123,7 +130,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       def ssh_wrapper(arg=nil)
         set_or_return(
           :ssh_wrapper,
@@ -131,7 +138,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
     end
   end
 end

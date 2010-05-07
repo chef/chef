@@ -33,7 +33,7 @@ class Chef
 
       def run 
         role = Chef::Role.load(@name_args[0])
-        json_pretty_print(format_for_display(role))
+        output(format_for_display(role))
       end
 
     end

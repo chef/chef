@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require 'rubygems'
 require 'chef/mixin/xml_escape'
 require 'chef/log'
 require 'chef/config'
@@ -35,7 +34,7 @@ require 'uri'
 class Chef
   class Solr
 
-    VERSION = "0.8.11"
+    VERSION = "0.8.12"
 
     include Chef::Mixin::XMLEscape
 

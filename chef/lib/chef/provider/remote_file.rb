@@ -45,42 +45,20 @@ class Chef
       def do_remote_file(source, path)
         retval = true
 
-        if(@new_resource.checksum && @current_resource.checksum && @current_resource.checksum =~ /^#{@new_resource.checksum}/)
-          Chef::Log.debug("File #{@new_resource} checksum matches, not updating")
+        if current_resource_matches_target_checksum?
+          Chef::Log.debug("File #{@new_resource} checksum matches target checksum (#{@new_resource.checksum}), not updating")
         else
           begin
-            # The remote filehandle
-            raw_file = get_from_uri(source)    ||
-                       get_from_server(source, @current_resource.checksum) ||
-                       get_from_local_cookbook(source)
-
-            # If the file exists
-            Chef::Log.debug "#{@new_resource}: Checking for file existence of #{@new_resource.path}"
-            if ::File.exists?(@new_resource.path)
-              # And it matches the checksum of the raw file
-              @new_resource.checksum(self.checksum(raw_file.path))
-              Chef::Log.debug "#{@new_resource}: File exists at #{@new_resource.path}"
-              Chef::Log.debug "#{@new_resource}: Target checksum: #{@current_resource.checksum}"
-              Chef::Log.debug "#{@new_resource}: Source checksum: #{@new_resource.checksum}"
-              if @new_resource.checksum != @current_resource.checksum
-                # Updating target file, let's perform a backup!
-                Chef::Log.debug "#{@new_resource}: checksum changed from #{@current_resource.checksum} to #{@new_resource.checksum}"
-                Chef::Log.info "#{@new_resource}: Updating #{@new_resource.path}"
-                backup @new_resource.path
+            source_file(source, @current_resource.checksum) do |raw_file|
+              if matches_current_checksum?(raw_file)
+                Chef::Log.debug "#{@new_resource}: Target and Source checksums are the same, taking no action"
+              else
+                backup_new_resource
+                Chef::Log.debug "copying remote file from origin #{raw_file.path} to destination #{@new_resource.path}"
                 FileUtils.cp raw_file.path, @new_resource.path
                 @new_resource.updated = true
-              else
-                Chef::Log.debug "#{@new_resource}: Target and Source checksums are the same, taking no action"
               end
-            else
-              # We're creating a new file
-              Chef::Log.info "#{@new_resource}: Creating #{@new_resource.path}"
-              FileUtils.cp raw_file.path, @new_resource.path
-              @new_resource.updated = true
             end
-
-            # We're done with the file, so make sure to close it if it was open.
-            raw_file.close unless raw_file.closed?
           rescue Net::HTTPRetriableError => e
             if e.response.kind_of?(Net::HTTPNotModified)
               Chef::Log.debug("File #{path} is unchanged")
@@ -89,38 +67,78 @@ class Chef
               raise e
             end
           end
+
+          Chef::Log.debug "#{@new_resource} completed"
+          retval
         end
-        
-        set_owner if @new_resource.owner
-        set_group if @new_resource.group
-        set_mode  if @new_resource.mode
+        enforce_ownership_and_permissions
 
         retval
       end
 
-      def get_from_uri(source)
-        begin
-          uri = URI.parse(source)
-          if uri.absolute
-            r = Chef::REST.new(source, nil, nil)
-            Chef::Log.debug("Downloading from absolute URI: #{source}")
-            r.get_rest(source, true).open
-          end
-        rescue URI::InvalidURIError
-          nil
+      def enforce_ownership_and_permissions
+        set_owner if @new_resource.owner
+        set_group if @new_resource.group
+        set_mode  if @new_resource.mode
+
+      end
+
+      def current_resource_matches_target_checksum?
+        @new_resource.checksum && @current_resource.checksum && @current_resource.checksum =~ /^#{@new_resource.checksum}/
+      end
+
+      def matches_current_checksum?(candidate_file)
+        Chef::Log.debug "#{@new_resource}: Checking for file existence of #{@new_resource.path}"
+        if ::File.exists?(@new_resource.path)
+          Chef::Log.debug "#{@new_resource}: File exists at #{@new_resource.path}"
+          @new_resource.checksum(checksum(candidate_file.path))
+          Chef::Log.debug "#{@new_resource}: Target checksum: #{@current_resource.checksum}"
+          Chef::Log.debug "#{@new_resource}: Source checksum: #{@new_resource.checksum}"
+          @new_resource.checksum == @current_resource.checksum
+        else
+          Chef::Log.info "#{@new_resource}: Creating #{@new_resource.path}"
+          false
         end
       end
 
-      def get_from_server(source, current_checksum)
-        unless Chef::Config[:solo]
-          r = Chef::REST.new(Chef::Config[:remotefile_url])
-          url = generate_url(source, "files", :checksum => current_checksum)
-          Chef::Log.debug("Downloading from server: #{url}")
-          r.get_rest(url, true).open
+      def backup_new_resource
+        if ::File.exists?(@new_resource.path)
+          Chef::Log.debug "#{@new_resource}: checksum changed from #{@current_resource.checksum} to #{@new_resource.checksum}"
+          Chef::Log.info "#{@new_resource}: Updating #{@new_resource.path}"
+          backup @new_resource.path
         end
       end
 
-      def get_from_local_cookbook(source)
+      def source_file(source, current_checksum, &block)
+        if absolute_uri?(source)
+          fetch_from_uri(source, &block)
+        elsif !Chef::Config[:solo]
+          fetch_from_chef_server(source, current_checksum, &block)
+        else
+          fetch_from_local_cookbook(source, &block)
+        end
+      end
+
+      private
+
+      def absolute_uri?(source)
+        URI.parse(source).absolute?
+      rescue URI::InvalidURIError
+        false
+      end
+
+      def fetch_from_uri(source)
+        Chef::Log.debug("Downloading from absolute URI: #{source}")
+        Chef::REST.new(source, nil, nil).fetch(source) { |tmp_file| yield tmp_file  }
+      end
+
+      def fetch_from_chef_server(source, current_checksum)
+        url = generate_url(source, "files", :checksum => current_checksum)
+        Chef::Log.debug("Downloading #{@new_resource} from server: #{url}")
+        Chef::REST.new(Chef::Config[:remotefile_url]).fetch(url) { |tmp_file| yield tmp_file  }
+      end
+
+      def fetch_from_local_cookbook(source)
         if Chef::Config[:solo]
           cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
           filename = find_preferred_file(
@@ -132,7 +150,12 @@ class Chef
             @node[:platform_version]
           )
           Chef::Log.debug("Using local file for remote_file:#{filename}")
-          ::File.open(filename)
+          begin
+            file = ::File.open(filename)
+            yield file
+          ensure
+            file.close
+          end
         end
       end
 

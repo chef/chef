@@ -52,7 +52,7 @@ describe Chef::Cache::Checksum do
   end
   
   it "computes a checksum of a file" do
-    fixture_file = File.dirname(__FILE__) + "/../../data/checksum/random.txt"
+    fixture_file = CHEF_SPEC_DATA + "/checksum/random.txt"
     expected = "09ee9c8cc70501763563bcf9c218d71b2fbf4186bf8e1e0da07f0f42c80a3394"
     @cache.send(:checksum_file, fixture_file).should == expected
   end
@@ -65,9 +65,27 @@ describe Chef::Cache::Checksum do
   end
   
   it "returns a generated checksum if there is no cached value" do
-    fixture_file = File.dirname(__FILE__) + "/../../data/checksum/random.txt"
+    fixture_file = CHEF_SPEC_DATA + "/checksum/random.txt"
     expected = "09ee9c8cc70501763563bcf9c218d71b2fbf4186bf8e1e0da07f0f42c80a3394"
     @cache.checksum_for_file(fixture_file).should == expected
+  end
+
+  it "generates a key from a file name" do
+    file = "/this/is/a/test/random.rb"
+    @cache.generate_key(file).should == "chef-file--this-is-a-test-random-rb"
+  end
+
+  it "generates a key from a file name and group" do
+    file = "/this/is/a/test/random.rb"
+    @cache.generate_key(file, "spec").should == "spec-file--this-is-a-test-random-rb"
+  end
+
+  it "returns a cached checksum value using a user defined key" do
+    key = @cache.generate_key("riseofthemachines", "specs")
+    @cache.moneta[key] = {"mtime" => "12345", "checksum" => "123abc"}
+    fstat = mock("File.stat('riseofthemachines')", :mtime => Time.at(12345))
+    File.should_receive(:stat).with("riseofthemachines").and_return(fstat)
+    @cache.checksum_for_file("riseofthemachines", key).should == "123abc"
   end
 
 end

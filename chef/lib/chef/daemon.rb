@@ -121,6 +121,8 @@ class Chef
       # Change process user/group to those specified in Chef::Config
       #
       def change_privilege
+        Dir.chdir("/")
+
         if Chef::Config[:user] and Chef::Config[:group]
           Chef::Log.info("About to change privilege to #{Chef::Config[:user]}:#{Chef::Config[:group]}")
           _change_privilege(Chef::Config[:user], Chef::Config[:group])

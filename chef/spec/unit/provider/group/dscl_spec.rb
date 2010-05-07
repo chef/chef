@@ -250,12 +250,12 @@ describe Chef::Provider::Group::Dscl, "set_members" do
     end
 
     it "should run safe_dscl with create /Groups/group GroupMembers to clear the Group's GUID list" do
-      @provider.should_receive(:safe_dscl).with("create /Groups/aj GroupMembers").and_return(true)
+      @provider.should_receive(:safe_dscl).with("create /Groups/aj GroupMembers ''").and_return(true)
       @provider.set_members
     end
 
     it "should run safe_dscl with create /Groups/group GroupMembership to clear the Group's UID list" do
-      @provider.should_receive(:safe_dscl).with("create /Groups/aj GroupMembership").and_return(true)
+      @provider.should_receive(:safe_dscl).with("create /Groups/aj GroupMembership ''").and_return(true)
       @provider.set_members
     end
   end
@@ -273,6 +273,17 @@ describe Chef::Provider::Group::Dscl, "set_members" do
 
     it "should run safe_dscl with append /Groups/group GroupMembership and group members all, your, base" do
       @provider.should_receive(:safe_dscl).with("append /Groups/aj GroupMembership all your base").and_return(true)
+      @provider.set_members
+    end
+  end
+  
+  describe "with no members in the new resource" do
+    before do
+      @new_resource.stub!(:members).and_return([])
+    end
+
+    it "should not call safe_dscl" do
+      @provider.should_not_receive(:safe_dscl)
       @provider.set_members
     end
   end

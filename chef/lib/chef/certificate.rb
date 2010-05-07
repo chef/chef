@@ -128,11 +128,11 @@ class Chef
         return client_cert.public_key, client_keypair
       end
 
-      def gen_validation_key(name=Chef::Config[:validation_client_name], key_file=Chef::Config[:validation_key])
+      def gen_validation_key(name=Chef::Config[:validation_client_name], key_file=Chef::Config[:validation_key], admin=false)
         # Create the validation key
         api_client = Chef::ApiClient.new
         api_client.name(name)
-        api_client.admin(true)
+        api_client.admin(admin)
         
         begin
           # If both the couch record and file exist, don't do anything. Otherwise,

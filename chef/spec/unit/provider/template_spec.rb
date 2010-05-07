@@ -15,19 +15,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+require 'stringio'
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
 describe Chef::Provider::Template do
   before(:each) do
     @rest = mock(Chef::REST, { :get_rest => "/tmp/foobar" })
-    @tempfile = mock(Tempfile, { :path => "/tmp/foo", :print => true, :close => true })
-    Tempfile.stub!(:new).and_return(@tempfile)
+    @tempfile = StringIO.new
+    @tempfile.stub!(:path).and_return("/tmp/foo")
+    Tempfile.stub!(:open).and_yield(@tempfile)
     File.stub!(:read).and_return("monkeypoop")
     @rest.stub!(:get_rest).and_return(@tempfile)
     @resource = Chef::Resource::Template.new("seattle")
     @resource.cookbook_name = "foo"
-    @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "templates", "seattle.txt"))
+    @resource.path(CHEF_SPEC_DATA + '/templates/seattle.txt')
     @resource.source("http://foo")
     @node = Chef::Node.new
     @node.name "latte"
@@ -35,7 +36,7 @@ describe Chef::Provider::Template do
     @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     @provider.current_resource = @resource.clone
     @provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-    FileUtils.stub!(:cp).and_return(true)
+    FileUtils.stub!(:mv).and_return(true)
     Chef::FileCache.stub!(:has_key).and_return(false)
     Chef::FileCache.stub!(:move_to).and_return(true)
     Chef::FileCache.stub!(:load).and_return("monkeypoop")
@@ -77,9 +78,10 @@ describe Chef::Provider::Template do
     end
     
     it "should set the checksum of the new resource to the value of the returned template" do
-      @resource.should_receive(:checksum).with("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa").once
-      @resource.should_receive(:checksum).twice
+      #@resource.should_receive(:checksum).with("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa").once
+      #@resource.should_receive(:checksum).twice
       do_action_create
+      @resource.checksum.should == "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
     end
   
     it "should not copy the tempfile to the real file if the checksums match" do
@@ -89,7 +91,7 @@ describe Chef::Provider::Template do
   
     it "should copy the tempfile to the real file if the checksums do not match" do
       @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924ab")
-      FileUtils.should_receive(:cp).once
+      FileUtils.should_receive(:mv).with("/tmp/foo", CHEF_SPEC_DATA + '/templates/seattle.txt').once
       @provider.stub!(:backup).and_return(true)
       do_action_create
     end
@@ -140,6 +142,9 @@ describe Chef::Provider::Template do
     it "should not update the FileCache for the template on the second pass" do
       do_action_create
       Chef::FileCache.should_not_receive(:move_to)
+      @tempfile = StringIO.new
+      @tempfile.stub!(:path).and_return("/tmp/foo")
+      Tempfile.stub!(:open).and_yield(@tempfile)
       do_action_create
     end
   end

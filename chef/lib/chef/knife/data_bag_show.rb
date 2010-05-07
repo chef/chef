@@ -32,7 +32,7 @@ class Chef
                   else
                     format_list_for_display(Chef::DataBag.load(@name_args[0]))
                   end
-        json_pretty_print(display)
+        output(display)
       end
     end
   end

@@ -104,7 +104,7 @@ describe Chef::Provider::RemoteDirectory do
     
     it "lists the directory contents from the cookbook for chef-solo" do
       Chef::Config[:solo] = true
-      @source_path = File.join(File.dirname(__FILE__), "..", "..", "data", "remote_directory_data")
+      @source_path = File.expand_path(File.join(CHEF_SPEC_DATA, "remote_directory_data"))
       @resource.source(@source_path)
       @provider.stub!(:find_preferred_file).and_return(@source_path)
       
@@ -126,5 +126,26 @@ describe Chef::Provider::RemoteDirectory do
       
     end
     
+    it "removes existing files if purge is true" do
+      @resource.purge(true)
+      @provider.stub!(:files_to_transfer).and_return(["fileA", "fileB"])
+      @provider.stub!(:fetch_remote_file).and_return
+      ::Dir.stub!(:[]).with("#{@resource.path}/**/*").and_return(["#{@resource.path}/fileA", "#{@resource.path}/delete_this_file.txt"])
+      ::File.should_receive(:directory?)
+      ::File.should_receive(:delete).with("#{@resource.path}/delete_this_file.txt")
+      @provider.send(:do_recursive)
+    end
+
+    it "removes files in subdirectories before files above" do
+      @resource.purge(true)
+      @provider.stub!(:files_to_transfer).and_return(["fileA", "fileB"])
+      @provider.stub!(:fetch_remote_file).and_return
+      ::Dir.stub!(:[]).with("#{@resource.path}/**/*").and_return(["#{@resource.path}/fileA", "#{@resource.path}/dir", "#{@resource.path}/dir/f1"])
+      ::File.should_receive(:directory?).with("#{@resource.path}/dir/f1").and_return(false)
+      ::File.should_receive(:directory?).with("#{@resource.path}/dir").and_return(true)
+      ::File.should_receive(:delete).ordered.with("#{@resource.path}/dir/f1")
+      ::Dir.should_receive(:rmdir).ordered.with("#{@resource.path}/dir")
+      @provider.send(:do_recursive)
+    end
   end
 end

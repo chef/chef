@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require 'rubygems'
 require 'chef/log'
 require 'chef/config'
 require 'chef/solr'

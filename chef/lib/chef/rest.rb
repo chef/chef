@@ -10,9 +10,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,67 +20,58 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/params_validate'
 require 'net/https'
 require 'uri'
 require 'json'
 require 'tempfile'
-require 'singleton'
-require 'mixlib/authentication/signedheaderauth'
 require 'chef/api_client'
-
-include Mixlib::Authentication::SignedHeaderAuth
+require 'chef/rest/auth_credentials'
+require 'chef/rest/rest_request'
 
 class Chef
   class REST
+    attr_reader :auth_credentials
+    attr_accessor :url, :cookies, :sign_on_redirect, :redirect_limit
 
-    class CookieJar < Hash
-      include Singleton
-    end
-    
-    attr_accessor :url, :cookies, :client_name, :signing_key, :signing_key_filename, :sign_on_redirect, :sign_request
-    
     def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
       @url = url
       @cookies = CookieJar.instance
-      @client_name = client_name
       @default_headers = options[:headers] || {}
-      if signing_key_filename
-        @signing_key_filename = signing_key_filename
-        @signing_key = load_signing_key(signing_key_filename) 
-        @sign_request = true
-      else
-        @signing_key = nil
-        @sign_request = false
-      end
-      @sign_on_redirect = true
+      @auth_credentials = AuthCredentials.new(client_name, signing_key_filename)
+      @sign_on_redirect, @sign_request = true, true
+      @redirects_followed = 0
+      @redirect_limit = 10
     end
 
-    def load_signing_key(key)
-      begin
-        IO.read(key)
-      rescue StandardError=>se
-        Chef::Log.error "Failed to read the private key #{key}: #{se.inspect}, #{se.backtrace}"
-        raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key}, which you told me to use to sign requests!"
-      end
+    def signing_key_filename
+      @auth_credentials.key_file
     end
-    
-    # Register the client 
+
+    def client_name
+      @auth_credentials.client_name
+    end
+
+    def signing_key
+      @auth_credentials.raw_key
+    end
+
+    # Register the client
     def register(name=Chef::Config[:node_name], destination=Chef::Config[:client_key])
-      raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?" if (File.exists?(destination) &&  !File.writable?(destination))
-
+      if (File.exists?(destination) &&  !File.writable?(destination))
+        raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?"
+      end
       nc = Chef::ApiClient.new
       nc.name(name)
 
       catch(:done) do
-        retries = Chef::Config[:client_registration_retries] || 5
+        retries = config[:client_registration_retries] || 5
         0.upto(retries) do |n|
           begin
             response = nc.save(true, true)
             Chef::Log.debug("Registration response: #{response.inspect}")
             raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
             # Write out the private key
-            file = File.open(destination, File::WRONLY|File::EXCL|File::CREAT, 0600) 
+            file = ::File.open(destination, File::WRONLY|File::EXCL|File::CREAT, 0600)
             file.print(response["private_key"])
             file.close
             throw :done
@@ -100,27 +91,40 @@ class Chef
     #
     # === Parameters
     # path:: The path to GET
-    # raw:: Whether you want the raw body returned, or JSON inflated.  Defaults 
+    # raw:: Whether you want the raw body returned, or JSON inflated.  Defaults
     #   to JSON inflated.
     def get_rest(path, raw=false, headers={})
-      run_request(:GET, create_url(path), headers, false, 10, raw)    
-    end                               
-                          
+      if raw
+        streaming_request(create_url(path), headers)
+      else
+        api_request(:GET, create_url(path), headers)
+      end
+    end
+
     # Send an HTTP DELETE request to the path
-    def delete_rest(path, headers={}) 
-      run_request(:DELETE, create_url(path), headers)       
-    end                               
-    
-    # Send an HTTP POST request to the path                                  
+    def delete_rest(path, headers={})
+      api_request(:DELETE, create_url(path), headers)
+    end
+
+    # Send an HTTP POST request to the path
     def post_rest(path, json, headers={})
-      run_request(:POST, create_url(path), headers, json)    
-    end                               
-                                      
+      api_request(:POST, create_url(path), headers, json)
+    end
+
     # Send an HTTP PUT request to the path
     def put_rest(path, json, headers={})
-      run_request(:PUT, create_url(path), headers, json)
+      api_request(:PUT, create_url(path), headers, json)
     end
-    
+
+    # Streams a download to a tempfile, then yields the tempfile to a block.
+    # After the download, the tempfile will be closed and unlinked.
+    # If you rename the tempfile, it will not be deleted.
+    # Beware that if the server streams infinite content, this method will
+    # stream it until you run out of disk space.
+    def fetch(path, headers={})
+      streaming_request(create_url(path), headers) {|tmp_file| yield tmp_file }
+    end
+
     def create_url(path)
       if path =~ /^(http|https):\/\//
         URI.parse(path)
@@ -128,150 +132,39 @@ class Chef
         URI.parse("#{@url}/#{path}")
       end
     end
-    
-    def sign_request(http_method, path, private_key, user_id, body = "", host="localhost")
-      #body = "" if body == false
-      timestamp = Time.now.utc.iso8601
-      sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
-                                                         :http_method=>http_method,
-                                                         :path => path,
-                                                         :body=>body,
-                                                         :user_id=>user_id,
-                                                         :timestamp=>timestamp)
-      signed =  sign_obj.sign(private_key).merge({:host => host})
-      signed.inject({}){|memo, kv| memo["#{kv[0].to_s.upcase}"] = kv[1];memo}
+
+    def sign_requests?
+      auth_credentials.sign_requests? && @sign_request
     end
-    
+
     # Actually run an HTTP request.  First argument is the HTTP method,
     # which should be one of :GET, :PUT, :POST or :DELETE.  Next is the
     # URL, then an object to include in the body (which will be converted with
-    # .to_json) and finally, the limit of HTTP Redirects to follow (10).
+    # .to_json). The limit argument is unused, it is present for backwards
+    # compatibility. Configure the redirect limit with #redirect_limit=
+    # instead.
     #
     # Typically, you won't use this method -- instead, you'll use one of
     # the helper methods (get_rest, post_rest, etc.)
     #
     # Will return the body of the response on success.
-    def run_request(method, url, headers={}, data=false, limit=10, raw=false)
-      
-      http_retry_delay = Chef::Config[:http_retry_delay] 
-      http_retry_count = Chef::Config[:http_retry_count]
+    def run_request(method, url, headers={}, data=false, limit=nil, raw=false)
+      json_body = data ? data.to_json : nil
+      headers = build_headers(method, url, headers, json_body, raw)
 
-      raise ArgumentError, 'HTTP redirect too deep' if limit == 0 
-
-      http = Net::HTTP.new(url.host, url.port)
-      if url.scheme == "https"
-        http.use_ssl = true 
-        if Chef::Config[:ssl_verify_mode] == :verify_none
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        elsif Chef::Config[:ssl_verify_mode] == :verify_peer
-          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        end
-        if Chef::Config[:ssl_ca_path] and File.exists?(Chef::Config[:ssl_ca_path])
-          http.ca_path = Chef::Config[:ssl_ca_path]
-        elsif Chef::Config[:ssl_ca_file] and File.exists?(Chef::Config[:ssl_ca_file])
-          http.ca_file = Chef::Config[:ssl_ca_file]
-        end
-        if Chef::Config[:ssl_client_cert] && File.exists?(Chef::Config[:ssl_client_cert])
-          http.cert = OpenSSL::X509::Certificate.new(File.read(Chef::Config[:ssl_client_cert]))
-          http.key = OpenSSL::PKey::RSA.new(File.read(Chef::Config[:ssl_client_key]))
-        end
-      end
-
-      http.read_timeout = Chef::Config[:rest_timeout]
-      
-      headers = @default_headers.merge(headers)
-      
-      unless raw
-        headers = headers.merge({ 
-          'Accept' => "application/json",
-        })
-      end
-
-      headers['X-Chef-Version'] = ::Chef::VERSION
-      
-      if @cookies.has_key?("#{url.host}:#{url.port}")
-        headers['Cookie'] = @cookies["#{url.host}:#{url.port}"]
-      end
-
-      json_body = data ? data.to_json : nil 
-
-      if @sign_request
-        raise ArgumentError, "Cannot sign the request without a client name, check that :node_name is assigned" if @client_name.nil?
-        Chef::Log.debug("Signing the request as #{@client_name}")
-        if json_body
-          headers.merge!(sign_request(method, url.path, OpenSSL::PKey::RSA.new(@signing_key), @client_name, json_body, "#{url.host}:#{url.port}"))
-        else
-          headers.merge!(sign_request(method, url.path, OpenSSL::PKey::RSA.new(@signing_key), @client_name, "", "#{url.host}:#{url.port}"))
-        end
-      end
-     
-      req = nil
-      case method
-      when :GET
-        req_path = "#{url.path}"
-        req_path << "?#{url.query}" if url.query
-        req = Net::HTTP::Get.new(req_path, headers)
-      when :POST
-        headers["Content-Type"] = 'application/json' if data
-        req_path = "#{url.path}"
-        req_path << "?#{url.query}" if url.query
-        req = Net::HTTP::Post.new(req_path, headers)          
-        req.body = json_body if json_body 
-      when :PUT
-        headers["Content-Type"] = 'application/json' if data
-        req_path = "#{url.path}"
-        req_path << "?#{url.query}" if url.query
-        req = Net::HTTP::Put.new(req_path, headers)
-        req.body = json_body if json_body 
-      when :DELETE
-        req_path = "#{url.path}"
-        req_path << "?#{url.query}" if url.query
-        req = Net::HTTP::Delete.new(req_path, headers)
-      else
-        raise ArgumentError, "You must provide :GET, :PUT, :POST or :DELETE as the method"
-      end
-
-      Chef::Log.debug("Sending HTTP Request via #{req.method} to #{url.host}:#{url.port}#{req.path}")
-      
-      # Optionally handle HTTP Basic Authentication
-      req.basic_auth(url.user, url.password) if url.user
-
-      res = nil
       tf = nil
-      http_attempts = 0
 
-      begin
-        http_attempts += 1
-        
-        res = http.request(req) do |response|
+      retriable_rest_request(method, url, json_body, headers) do |rest_request|
+
+        res = rest_request.call do |response|
           if raw
-            tf = Tempfile.new("chef-rest") 
-            # Stolen from http://www.ruby-forum.com/topic/166423
-            # Kudos to _why!
-            size, total = 0, response.header['Content-Length'].to_i
-            response.read_body do |chunk|
-              tf.write(chunk) 
-              size += chunk.size
-              if size == 0
-                Chef::Log.debug("#{req.path} done (0 length file)")
-              elsif total == 0
-                Chef::Log.debug("#{req.path} (zero content length)")
-              else
-                Chef::Log.debug("#{req.path}" + " %d%% done (%d of %d)" % [(size * 100) / total, size, total])
-              end
-            end
-            tf.close 
-            tf
+            tf = stream_to_tempfile(url, response)
           else
             response.read_body
           end
-          response
         end
-        
+
         if res.kind_of?(Net::HTTPSuccess)
-          if res['set-cookie']
-            @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
-          end
           if res['content-type'] =~ /json/
             response_body = res.body.chomp
             JSON.parse(response_body)
@@ -283,37 +176,114 @@ class Chef
             end
           end
         elsif res.kind_of?(Net::HTTPFound) or res.kind_of?(Net::HTTPMovedPermanently)
-          if res['set-cookie']
-            @cookies["#{url.host}:#{url.port}"] = res['set-cookie']
-          end
-          @sign_request = false if @sign_on_redirect == false
-          run_request(:GET, create_url(res['location']), {}, false, limit - 1, raw)
+          follow_redirect {run_request(:GET, create_url(res['location']), {}, false, nil, raw)}
         else
           if res['content-type'] =~ /json/
             exception = JSON.parse(res.body)
-            Chef::Log.debug("HTTP Request Returned #{res.code} #{res.message}: #{exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"]}")
+            msg = "HTTP Request Returned #{res.code} #{res.message}: "
+            msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
+            Chef::Log.warn(msg)
           end
           res.error!
         end
-      
+      end
+    end
+
+    # Similar to #run_request but only supports JSON APIs. File Download not supported.
+    def api_request(method, url, headers={}, data=false)
+      json_body = data ? data.to_json : nil
+      headers = build_headers(method, url, headers, json_body)
+
+      retriable_rest_request(method, url, json_body, headers) do |rest_request|
+        response = rest_request.call {|r| r.read_body}
+
+        if response.kind_of?(Net::HTTPSuccess)
+          if response['content-type'] =~ /json/
+            JSON.parse(response.body.chomp)
+          else
+            Chef::Log.warn("Expected JSON response, but got content-type '#{response['content-type']}'")
+            response.body
+          end
+        elsif redirect_location = redirected_to(response)
+          follow_redirect {api_request(:GET, create_url(redirect_location))}
+        else
+          if response['content-type'] =~ /json/
+            exception = JSON.parse(response.body)
+            msg = "HTTP Request Returned #{response.code} #{response.message}: "
+            msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
+            Chef::Log.warn(msg)
+          end
+          response.error!
+        end
+      end
+    end
+
+    # similar to #run_request but only supports streaming downloads.
+    # Only supports GET, doesn't speak JSON
+    # Streams the response body to a tempfile. If a block is given, it's
+    # passed to the tempfile, which means that the tempfile will automatically
+    # be unlinked after the block is executed.
+    # If no block is given, the tempfile is returned, which means it's up to
+    # you to unlink the tempfile when you're done with it.
+    def streaming_request(url, headers, &block)
+      headers = build_headers(:GET, url, headers, nil, true)
+      retriable_rest_request(:GET, url, nil, headers) do |rest_request|
+        tempfile = nil
+        response = rest_request.call do |r| 
+          if block_given? && r.kind_of?(Net::HTTPSuccess)
+            begin
+              tempfile = stream_to_tempfile(url, r, &block)
+              yield tempfile
+            ensure
+              tempfile.close!
+            end
+          else
+            tempfile = stream_to_tempfile(url, r)
+          end
+        end
+        if response.kind_of?(Net::HTTPSuccess)
+          tempfile
+        elsif redirect_location = redirected_to(response)
+          # TODO: test tempfile unlinked when following redirects.
+          tempfile && tempfile.close!
+          follow_redirect {streaming_request(create_url(redirect_location), {}, &block)}
+        else
+          tempfile && tempfile.close!
+          response.error!
+        end
+      end
+    end
+
+    def retriable_rest_request(method, url, req_body, headers)
+      rest_request = Chef::REST::RESTRequest.new(method, url, req_body, headers)
+
+      Chef::Log.debug("Sending HTTP Request via #{method} to #{url.host}:#{url.port}#{rest_request.path}")
+
+      http_attempts = 0
+
+      begin
+        http_attempts += 1
+
+        res = yield rest_request
+
       rescue Errno::ECONNREFUSED
         if http_retry_count - http_attempts + 1 > 0
-          Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_attempts}/#{http_retry_count}")
+          Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{rest_request.path}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
-        raise Errno::ECONNREFUSED, "Connection refused connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
+        raise Errno::ECONNREFUSED, "Connection refused connecting to #{url.host}:#{url.port} for #{rest_request.path}, giving up"
       rescue Timeout::Error
         if http_retry_count - http_attempts + 1 > 0
-          Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{req.path}, retry #{http_attempts}/#{http_retry_count}")
+          Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{rest_request.path}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
-        raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{req.path}, giving up"
+        raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{rest_request.path}, giving up"
       rescue Net::HTTPServerException
         if res.kind_of?(Net::HTTPForbidden)
           if http_retry_count - http_attempts + 1 > 0
-            Chef::Log.error("Received 403 Forbidden against #{url.host}:#{url.port} for #{req.path}, retry #{http_attempts}/#{http_retry_count}")
+            Chef::Log.error("Received 403 Forbidden against #{url.host}:#{url.port} for #{rest_request.path}, retry #{http_attempts}/#{http_retry_count}")
             sleep(http_retry_delay)
             retry
           end
@@ -321,6 +291,81 @@ class Chef
         raise
       end
     end
-    
+
+    def authentication_headers(method, url, json_body=nil)
+      request_params = {:http_method => method, :path => url.path, :body => json_body, :host => "#{url.host}:#{url.port}"}
+      request_params[:body] ||= ""
+      auth_credentials.signature_headers(request_params)
+    end
+
+    def http_retry_delay
+      config[:http_retry_delay]
+    end
+
+    def http_retry_count
+      config[:http_retry_count]
+    end
+
+    def config
+      Chef::Config
+    end
+
+    def follow_redirect
+      raise Chef::Exceptions::RedirectLimitExceeded if @redirects_followed >= redirect_limit
+      @redirects_followed += 1
+      Chef::Log.debug("Following redirect #{@redirects_followed}/#{redirect_limit}")
+      if @sign_on_redirect
+        yield
+      else
+        @sign_request = false
+        yield
+      end
+    ensure
+      @redirects_followed = 0
+      @sign_request = true
+    end
+
+    private
+
+    def redirected_to(response)
+      if response.kind_of?(Net::HTTPFound) || response.kind_of?(Net::HTTPMovedPermanently)
+        response['location']
+      else
+        nil
+      end
+    end
+
+    def build_headers(method, url, headers={}, json_body=false, raw=false)
+      headers                 = @default_headers.merge(headers)
+      headers['Accept']       = "application/json" unless raw
+      headers["Content-Type"] = 'application/json' if json_body
+      headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
+      headers
+    end
+
+    def stream_to_tempfile(url, response)
+      tf = Tempfile.open("chef-rest")
+      Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
+      # Stolen from http://www.ruby-forum.com/topic/166423
+      # Kudos to _why!
+      size, total = 0, response.header['Content-Length'].to_i
+      response.read_body do |chunk|
+        tf.write(chunk)
+        size += chunk.size
+        if size == 0
+          Chef::Log.debug("#{url.path} done (0 length file)")
+        elsif total == 0
+          Chef::Log.debug("#{url.path} (zero content length or no Content-Length header)")
+        else
+          Chef::Log.debug("#{url.path}" + " %d%% done (%d of %d)" % [(size * 100) / total, size, total])
+        end
+      end
+      tf.close
+      tf
+    rescue Exception
+      tf.close!
+      raise
+    end
+
   end
 end

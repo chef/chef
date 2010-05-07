@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,8 @@ require 'chef/knife'
 class Chef
   class Knife
     class Configure < Knife
+      attr_reader :chef_server, :new_client_name, :admin_client_name, :admin_client_key
+      attr_reader :chef_repo, :new_client_key, :validation_client_name, :validation_key
 
       banner "Sub-Command: configure (options)"
 
@@ -37,58 +39,48 @@ class Chef
 
       def configure_chef
         # We are just faking out the system so that you can do this without a key specified
-        Chef::Config[:node_name] = 'woot' 
+        Chef::Config[:node_name] = 'woot'
         super
         Chef::Config[:node_name] = nil
       end
 
-      def run 
-        config[:config_file] ||= ask_question("Where should I put the config file? ") 
-        if File.exists?(config[:config_file]) 
-          confirm("Overwrite #{config[:config_file]}")
-        end
+      def run
+        ask_user_for_config_path
 
         Mixlib::Log::Formatter.show_time = false
         Chef::Log.init(STDOUT)
         Chef::Log.level(:info)
 
-        chef_config_path = File.dirname(config[:config_file])
-        FileUtils.mkdir_p(File.dirname(config[:config_file]))
+        FileUtils.mkdir_p(chef_config_path)
 
-        chef_server = config[:chef_server_url] || ask_question("Your chef server URL? ")
-        opscode_user = config[:node_name] || ask_question("Your client user name? ")
-        opscode_key = config[:client_key] || File.join(chef_config_path, "#{opscode_user}.pem")
-        validation_user = config[:validation_client_name] || ask_question("Your validation client user name? ")
-        validation_key = config[:validation_key] || File.join(chef_config_path, "#{validation_user}.pem")
-        chef_repo = config[:repository] || ask_question("Path to a chef repository (or leave blank)? ")
-        
+        ask_user_for_config
 
-        File.open(config[:config_file], "w") do |f|
-          f.puts <<EOH
+        ::File.open(config[:config_file], "w") do |f|
+          f.puts <<-EOH
 log_level                :info
 log_location             STDOUT
-node_name                '#{opscode_user}'
-client_key               '#{opscode_key}'
-validation_client_name   '#{validation_user}'
+node_name                '#{new_client_name}'
+client_key               '#{new_client_key}'
+validation_client_name   '#{validation_client_name}'
 validation_key           '#{validation_key}'
-chef_server_url          '#{chef_server}'  
+chef_server_url          '#{chef_server}'
 cache_type               'BasicFile'
 cache_options( :path => '#{File.join(chef_config_path, "checksums")}' )
 EOH
-          unless chef_repo == ""
+          unless chef_repo.empty?
             f.puts "cookbook_path [ '#{chef_repo}/cookbooks', '#{chef_repo}/site-cookbooks' ]"
-          end 
+          end
         end
 
         if config[:initial]
           Chef::Log.warn("Creating initial API user...")
           Chef::Config[:chef_server_url] = chef_server
-          Chef::Config[:node_name] = 'chef-webui'
-          Chef::Config[:client_key] = '/etc/chef/webui.pem'
+          Chef::Config[:node_name] = admin_client_name
+          Chef::Config[:client_key] = admin_client_key
           client_create = Chef::Knife::ClientCreate.new
-          client_create.name_args = [ opscode_user ]
+          client_create.name_args = [ new_client_name ]
           client_create.config[:admin] = true
-          client_create.config[:file] = opscode_key
+          client_create.config[:file] = new_client_key
           client_create.config[:yes] = true
           client_create.config[:no_editor] = true
           client_create.run
@@ -96,7 +88,7 @@ EOH
           Chef::Log.warn("*****")
           Chef::Log.warn("")
           Chef::Log.warn("You must place your client key in:")
-          Chef::Log.warn("  #{opscode_key}")
+          Chef::Log.warn("  #{new_client_key}")
           Chef::Log.warn("Before running commands with Knife!")
           Chef::Log.warn("")
           Chef::Log.warn("*****")
@@ -111,13 +103,32 @@ EOH
         Chef::Log.warn("Configuration file written to #{config[:config_file]}")
       end
 
+      def ask_user_for_config_path
+        config[:config_file] ||= ask_question("Where should I put the config file? ")
+        if File.exists?(config[:config_file])
+          confirm("Overwrite #{config[:config_file]}")
+        end
+      end
+
+      def ask_user_for_config
+        @chef_server            = config[:chef_server_url] || ask_question("Your chef server URL? ", :default => 'http://localhost:4000')
+        @new_client_name        = config[:node_name] || ask_question("Select a user name for your new client: ", :default => Etc.getlogin)
+        @admin_client_name      = config[:admin_client_name] || ask_question("Your existing admin client user name? ", :default => 'chef-webui')
+        @admin_client_key       = config[:admin_client_key] || ask_question("The location of your existing admin key? ", :default => '/etc/chef/webui.pem')
+        @validation_client_name = config[:validation_client_name] || ask_question("Your validation client user name? ", :default => 'chef-validator')
+        @validation_key         = config[:validation_key] || ask_question("The location of your validation key? ", :default => '/etc/chef/validation.pem')
+        @chef_repo              = config[:repository] || ask_question("Path to a chef repository (or leave blank)? ")
+
+        @new_client_key = config[:client_key] || File.join(chef_config_path, "#{@new_client_name}.pem")
+      end
+
+      def config_file
+        config[:config_file]
+      end
+
+      def chef_config_path
+        File.dirname(config_file)
+      end
     end
   end
 end
-
-
-
-
-
-
-

@@ -44,10 +44,12 @@ class Chef
         self.class.index_object_type || Mixin::ConvertToClassName.snake_case_basename(self.class.name)
       end
       
-      def with_indexer_metadata(with_metadata={})
+      def with_indexer_metadata(indexer_metadata={})
         # changing input param symbol keys to strings, as the keys in hash that goes to solr are expected to be strings [cb]
-        with_metadata.each do |key,value|
-          with_metadata[key.to_s] = with_metadata.delete(key)
+        # Ruby 1.9 hates you, cb [dan]
+        with_metadata = {}
+        indexer_metadata.each_key do |key|
+          with_metadata[key.to_s] = indexer_metadata[key]
         end
 
         with_metadata["type"]     ||= self.index_object_type

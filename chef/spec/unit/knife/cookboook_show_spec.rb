@@ -26,7 +26,7 @@ describe Chef::Knife::CookbookShow do
     @rest = mock(Chef::REST, :null_object => true)
     @knife.stub!(:rest).and_return(@rest)
     @knife.stub!(:pretty_print).and_return(true)
-    @knife.stub!(:json_pretty_print).and_return(true)
+    @knife.stub!(:output).and_return(true)
   end
 
   describe "run" do
@@ -34,7 +34,7 @@ describe Chef::Knife::CookbookShow do
       it "should show the raw cookbook data" do
         response = { "snootch" => "to the bootch" }
         @rest.should_receive(:get_rest).with("cookbooks/adam").and_return(response)
-        @knife.should_receive(:json_pretty_print).with(response)
+        @knife.should_receive(:output).with(response)
         @knife.run
       end
     end
@@ -47,7 +47,7 @@ describe Chef::Knife::CookbookShow do
 
       it "should show the specific part of a cookbook" do
         @rest.should_receive(:get_rest).with("cookbooks/adam").and_return(@response)
-        @knife.should_receive(:json_pretty_print).with(@response["snootchy"])
+        @knife.should_receive(:output).with(@response["snootchy"])
         @knife.run
       end
     end

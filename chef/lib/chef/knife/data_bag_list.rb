@@ -30,8 +30,8 @@ class Chef
         :long => "--with-uri",
         :description => "Show corresponding URIs"
 
-      def run 
-        json_pretty_print(format_list_for_display(Chef::DataBag.list))
+      def run
+        output(format_list_for_display(Chef::DataBag.list))
       end
     end
   end

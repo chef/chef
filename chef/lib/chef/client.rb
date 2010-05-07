@@ -37,12 +37,11 @@ class Chef
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
     
-    attr_accessor :node, :registration, :json_attribs, :validation_token, :node_name, :ohai, :rest, :runner, :compile
+    attr_accessor :node, :registration, :json_attribs, :node_name, :ohai, :rest, :compile
     
     # Creates a new Chef::Client.
     def initialize()
       @node = nil
-      @validation_token = nil
       @registration = nil
       @json_attribs = nil
       @node_name = nil
@@ -90,7 +89,6 @@ class Chef
         build_node(@node_name)
         save_node
         sync_cookbooks
-        save_node
         converge
         save_node
         
@@ -317,7 +315,7 @@ class Chef
       Chef::FileCache.list.each do |cache_file|
         if cache_file =~ /^cookbooks\/(.+?)\//
           unless cookbook_hash.has_key?($1)
-            Chef::Log.info("Removing #{cache_file} from the cache; it's cookbook is no longer needed on this client.")
+            Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
             Chef::FileCache.delete(cache_file) 
           end
         end
@@ -355,6 +353,22 @@ class Chef
       Chef::Log.debug("Compiling recipes for node #{@node_name}")
       unless solo
         Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+        Chef::Log.warn("Node #{@node_name} has an empty run list.") if @node.run_list.empty?
+      else
+        # Check for cookbooks in the path given
+        # Chef::Config[:cookbook_path] can be a string or an array
+        # if it's an array, go through it and check each one, raise error at the last one if no files are found
+        Chef::Log.fatal "BUGBUG: cookbook_path: #{Chef::Config[:cookbook_path]}"
+        Array(Chef::Config[:cookbook_path]).each_with_index do |cookbook_path, index|
+          if directory_not_empty?(cookbook_path)
+            Chef::Log.fatal "BUGBUG: cb path not empty: #{cookbook_path}"
+            break
+          else
+            msg = "No cookbook found in #{Chef::Config[:cookbook_path].inspect}, make sure cookboook_path is set correctly."
+            Chef::Log.fatal(msg)
+            raise Chef::Exceptions::CookbookNotFound, msg if is_last_element?(index, Chef::Config[:cookbook_path])
+          end
+        end
       end
       @compile = Chef::Compile.new(@node)
       @compile.go
@@ -364,6 +378,16 @@ class Chef
       @runner.converge
       true
     end
+    
+    private
+    
+    def directory_not_empty?(path)
+      File.exists?(path) && (Dir.entries(path).size > 2)
+    end
+    
+    def is_last_element?(index, object)
+      object.kind_of?(Array) ? index == object.size - 1 : true 
+    end  
 
   end
 end
