@@ -109,7 +109,7 @@ describe Chef::Provider::File do
     io = StringIO.new
     @provider.load_current_resource
     @provider.new_resource.content "foobar"
-    File.stub!(:open).and_return(1)
+    @provider.should_receive(:backup)
     File.should_receive(:open).with(@provider.new_resource.path, "w").and_yield(io)
     lambda { @provider.set_content }.should_not raise_error
     io.string.should == "foobar"

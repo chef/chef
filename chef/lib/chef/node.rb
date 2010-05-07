@@ -340,7 +340,7 @@ class Chef
         Chef::Log.info("Replacing the run_list with #{new_run_list.inspect} from JSON")
         run_list(new_run_list)
       end
-      Chef::Mixin::DeepMerge.merge(@attribute, attrs)
+      Chef::Mixin::DeepMerge.merge(@normal_attrs, attrs)
 
       self[:tags] = Array.new unless attribute?(:tags)
     end

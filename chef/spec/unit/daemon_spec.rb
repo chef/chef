@@ -155,6 +155,13 @@ describe Chef::Daemon do
     before do
       Chef::Application.stub!(:fatal!).and_return(true)
       Chef::Config.stub!(:[]).with(:user).and_return("aj")
+      Dir.stub!(:chdir)
+    end
+
+    it "changes the working directory to root" do
+      Dir.rspec_reset
+      Dir.should_receive(:chdir).with("/").and_return(0)
+      Chef::Daemon.change_privilege
     end
     
     describe "when the user and group options are supplied" do
