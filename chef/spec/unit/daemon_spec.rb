@@ -253,3 +253,4 @@ describe Chef::Daemon do
 
   end  
 end
+
