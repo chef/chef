@@ -86,7 +86,7 @@ class ChefServerApi::Sandboxes < ChefServerApi::Application
     self.status = 201
     location = absolute_slice_url(:sandbox, :sandbox_id => new_sandbox.guid)
     headers['Location'] = location
-    result = { 'uri' => location, 'checksums' => result_checksums }
+    result = { 'uri' => location, 'checksums' => result_checksums, 'sandbox_id' => new_sandbox.guid }
     #result = { 'uri' => location }
     
     display result
@@ -102,7 +102,7 @@ class ChefServerApi::Sandboxes < ChefServerApi::Application
     existing_sandbox = Chef::Sandbox.cdb_load(sandbox_guid)
     raise NotFound, "cannot find sandbox with guid #{sandbox_guid}" unless existing_sandbox
     
-    raise BadRequest, "checksum #{checksum} isn't a part of sandbox #{sandbox_guid}" unless existing_sandbox.checksums.member?(checksum)
+    raise NotFound, "checksum #{checksum} isn't a part of sandbox #{sandbox_guid}" unless existing_sandbox.checksums.member?(checksum)
 
     src = params[:file][:tempfile].path
     
@@ -134,7 +134,7 @@ class ChefServerApi::Sandboxes < ChefServerApi::Application
         existing_sandbox.checksums.each do |checksum|
           checksum_filename = sandbox_checksum_location(existing_sandbox.guid, checksum)
           if !File.exists?(checksum_filename)
-            raise BadRequest, "cannot update sandbox #{sandbox_id}: checksum #{checksum} was not uploaded"
+            raise BadRequest, "cannot update sandbox #{params[:sandbox_id]}: checksum #{checksum} was not uploaded"
           end
         end
         
