@@ -25,14 +25,14 @@ class Clients < Application
   
   # GET /clients
   def index
-     @clients_list =  begin
-                        Chef::ApiClient.list()
-                      rescue => e
-                        Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                        @_message = {:error => "Could not list clients"}
-                        {}
-                      end 
-     render
+    @clients_list = begin
+                      Chef::ApiClient.list()
+                    rescue => e
+                      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+                      @_message = {:error => "Could not list clients"}
+                      {}
+                    end.keys.sort
+    render
   end
 
   # GET /clients/:id

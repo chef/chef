@@ -27,13 +27,16 @@ class Nodes < Application
   before :login_required
   
   def index
-    @node_list =  begin
-                    Chef::Node.list 
+    node_hash =  begin
+                    Chef::Node.list
                   rescue => e
                     Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
                     @_message = {:error => "Could not list nodes"}
                     {}
-                  end 
+                  end
+    @node_list = node_hash.values.sort.map do |node_url|
+      node_hash.index(node_url)
+    end
     render
   end
 
