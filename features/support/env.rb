@@ -28,6 +28,8 @@ require 'chef/client'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
 require 'chef/api_client'
+require 'chef/checksum'
+require 'chef/sandbox'
 require 'chef/solr'
 require 'chef/certificate'
 require 'tmpdir'
@@ -67,6 +69,10 @@ def create_databases
   Chef::Role.create_design_document
   Chef::DataBag.create_design_document
   Chef::ApiClient.create_design_document
+  Chef::Cookbook.create_design_document
+  Chef::Sandbox.create_design_document
+  Chef::Checksum.create_design_document
+  
   Chef::Role.sync_from_disk_to_couchdb
   Chef::Certificate.generate_signing_ca
   Chef::Certificate.gen_validation_key
@@ -109,7 +115,7 @@ module ChefWorld
 
   attr_accessor :recipe, :cookbook, :response, :inflated_response, :log_level,
                 :chef_args, :config_file, :stdout, :stderr, :status, :exception,
-                :gemserver_thread
+                :gemserver_thread, :sandbox_url
 
   def client
     @client ||= Chef::Client.new

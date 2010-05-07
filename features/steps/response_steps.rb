@@ -2,6 +2,10 @@ Then /^I should get a '(.+)' exception$/ do |exception|
   self.exception.to_s.should == exception
 end
 
+Then /^I should not get an exception$/ do
+  self.exception.should == nil
+end
+
 Then /^the response code should be '(.+)'$/ do |response_code|
   self.response.status.should == response_code.to_i
 end

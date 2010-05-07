@@ -28,6 +28,27 @@ Before do
         c
       end
     },
+    'sandbox' => {
+      # The filename part of these 'checksums' hashes isn't used by the API (the 
+      # value side of that hash is ignored), and is here for documentation's sake.
+      'sandbox1' => {
+        :checksums => {
+          Chef::Cache::Checksum.checksum_for_file(File.join(datadir, "cookbooks", "attribute_include/recipes/default.rb")) => nil
+        },
+      },
+      'sandbox2' => {
+        :checksums => {
+          Chef::Cache::Checksum.checksum_for_file(File.join(datadir, "cookbooks", "attribute_include/attributes/a.rb")) => nil,
+          Chef::Cache::Checksum.checksum_for_file(File.join(datadir, "cookbooks", "attribute_include/attributes/b.rb")) => nil,
+        },
+      },
+    },
+    'sandbox_file' => {
+      "sandbox1_file1" => File.join(datadir, "cookbooks", "attribute_include/recipes/default.rb"),
+
+      "sandbox2_file1" => File.join(datadir, "cookbooks", "attribute_include/attributes/a.rb"),
+      "sandbox2_file2" => File.join(datadir, "cookbooks", "attribute_include/attributes/b.rb"),
+    },
     'signing_caller' =>{ 
       :user_id=>'bobo', :secret_key => "/tmp/poop.pem"
     },
