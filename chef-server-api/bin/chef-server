@@ -23,13 +23,9 @@
 require "rubygems"
 require "merb-core"
 
-<<<<<<< HEAD:chef-server-api/bin/chef-server
 # Load chef and chef-server-api from source rather than gem, if present
 $:.unshift(File.expand_path(File.dirname(__FILE__) + '/../../chef/lib/chef'))
 $:.unshift(File.expand_path(File.dirname(__FILE__) + '/../lib'))
-=======
-CHEF_SERVER_VERSION = "0.8.15"
->>>>>>> bump to dev version 0.8.15:chef-server/bin/chef-server
 
 require 'chef'
 require 'chef-server-api'
