@@ -143,7 +143,7 @@ class Chef
             }
           },
           :solaris  => {},
-	  :solaris2 => {
+          :solaris2 => {
             :default => {
               :service => Chef::Provider::Service::Solaris
             }
