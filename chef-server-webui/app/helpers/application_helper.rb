@@ -4,4 +4,3 @@ module Merb
   module ApplicationHelper
   end
 end
-
