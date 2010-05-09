@@ -73,7 +73,7 @@ class Chef
 
           if update
             backup
-            FileUtils.mv(template_file.path, @new_resource.path)
+            FileUtils.cp(template_file.path, @new_resource.path)
             @new_resource.updated = true
           else
             Chef::Log.debug("#{@new_resource} is unchanged")
