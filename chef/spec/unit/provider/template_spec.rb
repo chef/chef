@@ -86,7 +86,7 @@ describe Chef::Provider::Template do
 
     it "should copy the tempfile to the real file if the checksums do not match" do
       @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924ab")
-      FileUtils.should_receive(:mv).with("/tmp/foo", CHEF_SPEC_DATA + '/templates/seattle.txt').once
+      FileUtils.should_receive(:cp).with("/tmp/foo", CHEF_SPEC_DATA + '/templates/seattle.txt').once
       @provider.stub!(:backup).and_return(true)
       @provider.action_create
     end
