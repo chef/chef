@@ -1,8 +1,24 @@
-# lkjlk
+#
+# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 gems = %w[chef chef-server-api chef-server-webui chef-server chef-solr]
 require 'rubygems'
-require 'cucumber/rake/task'
 
 desc "Build the chef gems"
 task :gem do
@@ -12,7 +28,7 @@ task :gem do
       Dir.chdir(dir) { sh build_commands[dir] }
   end
 end
- 
+
 desc "Install the chef gems"
 task :install do
   gems.each do |dir|
@@ -58,7 +74,7 @@ end
 def configure_rabbitmq(type="normal")
   # hack. wait for rabbit to come up.
   sleep 2
-  
+
   puts `rabbitmqctl add_vhost /chef`
 
   # create 'chef' user, give it the password 'testing'
@@ -70,7 +86,7 @@ def configure_rabbitmq(type="normal")
   puts `rabbitmqctl list_users`
   puts `rabbitmqctl list_vhosts`
   puts `rabbitmqctl list_permissions -p /chef`
-  
+
 end
 
 def start_chef_solr(type="normal")
@@ -174,11 +190,11 @@ def stop_dev_environment
   end
   if @couchdb_server_pid
     puts "Stopping CouchDB"
-    Process.kill("KILL", @couchdb_server_pid) 
+    Process.kill("KILL", @couchdb_server_pid)
   end
   if @rabbitmq_server_pid
     puts "Stopping RabbitMQ"
-    Process.kill("KILL", @rabbitmq_server_pid) 
+    Process.kill("KILL", @rabbitmq_server_pid)
   end
   puts "Have a nice day!"
 end
@@ -195,21 +211,21 @@ def wait_for_ctrlc
   end
 end
 
-desc "Run a Devel instance of Chef"
+desc "Run a development instance of Chef"
 task :dev do
   start_dev_environment
   wait_for_ctrlc
 end
 
-namespace :dev do  
-  desc "Install a test instance of Chef for doing features against"
+namespace :dev do
+  desc "Run a test instance of Chef suitable for cucumber tests"
   task :features do
     start_dev_environment("features")
     wait_for_ctrlc
   end
-  
+
   namespace :features do
-    
+
     namespace :start do
       desc "Start CouchDB for testing"
       task :couchdb do
@@ -223,7 +239,7 @@ namespace :dev do
         configure_rabbitmq("features")
         wait_for_ctrlc
       end
-      
+
       desc "Start Chef Solr for testing"
       task :chef_solr do
         start_chef_solr("features")
@@ -291,197 +307,203 @@ namespace :dev do
   end
 end
 
-Cucumber::Rake::Task.new(:features) do |t|
-  t.profile = "default"
-end
+begin
+  require 'cucumber/rake/task'
 
-namespace :features do
-  desc "Run cucumber tests for the REST API"
-  Cucumber::Rake::Task.new(:api) do |t|
-    t.profile = "api"
+  Cucumber::Rake::Task.new(:features) do |t|
+    t.profile = "default"
   end
 
-  namespace :api do
-    [ :nodes, :roles, :clients ].each do |api|
-        Cucumber::Rake::Task.new(api) do |apitask|
-          apitask.profile = "api_#{api.to_s}"
-        end
-      namespace api do
-        %w{create delete list show update}.each do |action|
-          Cucumber::Rake::Task.new("#{action}") do |t|
-            t.profile = "api_#{api.to_s}_#{action}"
+  namespace :features do
+    desc "Run cucumber tests for the REST API"
+    Cucumber::Rake::Task.new(:api) do |t|
+      t.profile = "api"
+    end
+
+    namespace :api do
+      [ :nodes, :roles, :clients ].each do |api|
+          Cucumber::Rake::Task.new(api) do |apitask|
+            apitask.profile = "api_#{api.to_s}"
+          end
+        namespace api do
+          %w{create delete list show update}.each do |action|
+            Cucumber::Rake::Task.new("#{action}") do |t|
+              t.profile = "api_#{api.to_s}_#{action}"
+            end
           end
         end
       end
-    end
 
-    namespace :nodes do
-      Cucumber::Rake::Task.new("sync") do |t|
-        t.profile = "api_nodes_sync"
+      namespace :nodes do
+        Cucumber::Rake::Task.new("sync") do |t|
+          t.profile = "api_nodes_sync"
+        end
+      end
+
+      namespace :cookbooks do
+        desc "Run cucumber tests for the cookbooks portion of the REST API"
+        Cucumber::Rake::Task.new(:cookbooks) do |t|
+          t.profile = "api_cookbooks"
+        end
+
+        Cucumber::Rake::Task.new(:cookbook_tarballs) do |t|
+          t.profile = "api_cookbooks_tarballs"
+        end
+      end
+
+      namespace :data do
+        desc "Run cucumber tests for the data portion of the REST API"
+        Cucumber::Rake::Task.new(:data) do |t|
+          t.profile = "api_data"
+        end
+
+        desc "Run cucumber tests for deleting data via the REST API"
+        Cucumber::Rake::Task.new(:delete) do |t|
+          t.profile = "api_data_delete"
+        end
+        desc "Run cucumber tests for adding items via the REST API"
+        Cucumber::Rake::Task.new(:item) do |t|
+          t.profile = "api_data_item"
+        end
+      end
+
+      namespace :search do
+        desc "Run cucumber tests for searching via the REST API"
+        Cucumber::Rake::Task.new(:search) do |t|
+          t.profile = "api_search"
+        end
+
+        desc "Run cucumber tests for listing search endpoints via the REST API"
+        Cucumber::Rake::Task.new(:list) do |t|
+          t.profile = "api_search_list"
+        end
+        desc "Run cucumber tests for searching via the REST API"
+        Cucumber::Rake::Task.new(:show) do |t|
+          t.profile = "api_search_show"
+        end
+        desc "Run cucumber tests for searching via the REST API"
+        Cucumber::Rake::Task.new(:reindex) do |t|
+          t.profile = "api_search_reindex"
+        end
       end
     end
 
-    namespace :cookbooks do    
-      desc "Run cucumber tests for the cookbooks portion of the REST API"
-      Cucumber::Rake::Task.new(:cookbooks) do |t|
-        t.profile = "api_cookbooks"
+    desc "Run cucumber tests for the chef client"
+    Cucumber::Rake::Task.new(:client) do |t|
+      t.profile = "client"
+    end
+
+    namespace :client do
+      Cucumber::Rake::Task.new(:roles) do |t|
+        t.profile = "client_roles"
       end
 
-      Cucumber::Rake::Task.new(:cookbook_tarballs) do |t|
-        t.profile = "api_cookbooks_tarballs"
+      Cucumber::Rake::Task.new(:run_interval) do |t|
+        t.profile = "client_run_interval"
+      end
+
+      Cucumber::Rake::Task.new(:cookbook_sync) do |t|
+        t.profile = "client_cookbook_sync"
       end
     end
-    
-    namespace :data do    
-      desc "Run cucumber tests for the data portion of the REST API"
-      Cucumber::Rake::Task.new(:data) do |t|
-        t.profile = "api_data"
-      end
-      
-      desc "Run cucumber tests for deleting data via the REST API"
-      Cucumber::Rake::Task.new(:delete) do |t|
-        t.profile = "api_data_delete"
-      end
-      desc "Run cucumber tests for adding items via the REST API"
-      Cucumber::Rake::Task.new(:item) do |t|
-        t.profile = "api_data_item"
+
+    desc "Run cucumber tests for the cookbooks"
+    Cucumber::Rake::Task.new(:cookbooks) do |t|
+      t.profile = "cookbooks"
+    end
+
+    namespace :cookbook do
+
+      desc "Run cucumber tests for the cookbook metadata"
+      Cucumber::Rake::Task.new(:metadata) do |t|
+        t.profile = "cookbook_metadata"
       end
     end
-    
-    namespace :search do
-      desc "Run cucumber tests for searching via the REST API"
-      Cucumber::Rake::Task.new(:search) do |t|
-        t.profile = "api_search"
+
+    desc "Run cucumber tests for the recipe language"
+    Cucumber::Rake::Task.new(:language) do |t|
+      t.profile = "language"
+    end
+
+    desc "Run cucumber tests for searching in recipes"
+    Cucumber::Rake::Task.new(:search) do |t|
+      t.profile = "search"
+    end
+
+    Cucumber::Rake::Task.new(:language) do |t|
+      t.profile = "language"
+    end
+
+    namespace :language do
+      Cucumber::Rake::Task.new(:recipe_include) do |t|
+        t.profile = "recipe_inclusion"
       end
-      
-      desc "Run cucumber tests for listing search endpoints via the REST API"
-      Cucumber::Rake::Task.new(:list) do |t|
-        t.profile = "api_search_list"
-      end
-      desc "Run cucumber tests for searching via the REST API"
-      Cucumber::Rake::Task.new(:show) do |t|
-        t.profile = "api_search_show"
-      end
-      desc "Run cucumber tests for searching via the REST API"
-      Cucumber::Rake::Task.new(:reindex) do |t|
-        t.profile = "api_search_reindex"
+      Cucumber::Rake::Task.new(:attribute_include) do |t|
+        t.profile = "attribute_inclusion"
       end
     end
-  end
 
-  desc "Run cucumber tests for the chef client"
-  Cucumber::Rake::Task.new(:client) do |t|
-    t.profile = "client"
-  end
-
-  namespace :client do
-    Cucumber::Rake::Task.new(:roles) do |t|
-      t.profile = "client_roles"
+    Cucumber::Rake::Task.new(:lwrp) do |t|
+      t.profile = "lwrp"
     end
 
-    Cucumber::Rake::Task.new(:run_interval) do |t|
-      t.profile = "client_run_interval"
+    desc "Run cucumber tests for providers"
+    Cucumber::Rake::Task.new(:provider) do |t|
+      t.profile = "provider"
     end
 
-    Cucumber::Rake::Task.new(:cookbook_sync) do |t|
-      t.profile = "client_cookbook_sync"
-    end
-  end
 
-  desc "Run cucumber tests for the cookbooks"
-  Cucumber::Rake::Task.new(:cookbooks) do |t|
-    t.profile = "cookbooks"
-  end
-
-  namespace :cookbook do
-
-    desc "Run cucumber tests for the cookbook metadata"
-    Cucumber::Rake::Task.new(:metadata) do |t|
-      t.profile = "cookbook_metadata"
-    end
-  end
-
-  desc "Run cucumber tests for the recipe language"
-  Cucumber::Rake::Task.new(:language) do |t|
-    t.profile = "language"
-  end
-
-  desc "Run cucumber tests for searching in recipes"
-  Cucumber::Rake::Task.new(:search) do |t|
-    t.profile = "search"
-  end
-
-  Cucumber::Rake::Task.new(:language) do |t|
-    t.profile = "language"
-  end
-
-  namespace :language do
-    Cucumber::Rake::Task.new(:recipe_include) do |t|
-      t.profile = "recipe_inclusion"
-    end
-    Cucumber::Rake::Task.new(:attribute_include) do |t|
-      t.profile = "attribute_inclusion"
-    end
-  end
-  
-  Cucumber::Rake::Task.new(:lwrp) do |t|
-    t.profile = "lwrp"
-  end
-
-  desc "Run cucumber tests for providers" 
-  Cucumber::Rake::Task.new(:provider) do |t|
-    t.profile = "provider"
-  end
-
-  
-  namespace :provider do
-    desc "Run cucumber tests for deploy resources"
-    Cucumber::Rake::Task.new(:deploy) do |t|
-      t.profile = "provider_deploy"
-    end
-
-    desc "Run cucumber tests for directory resources"
-    Cucumber::Rake::Task.new(:directory) do |t|
-      t.profile = "provider_directory"
-    end
-
-    desc "Run cucumber tests for execute resources"
-    Cucumber::Rake::Task.new(:execute) do |t|
-      t.profile = "provider_execute"
-    end
-
-    desc "Run cucumber tests for file resources"
-    Cucumber::Rake::Task.new(:file) do |t|
-      t.profile = "provider_file"
-    end
-
-    desc "Run cucumber tests for remote_file resources"
-    Cucumber::Rake::Task.new(:remote_file) do |t|
-      t.profile = "provider_remote_file"
-    end
-
-    desc "Run cucumber tests for template resources"
-    Cucumber::Rake::Task.new(:template) do |t|
-      t.profile = "provider_template"
-    end
-    
-    Cucumber::Rake::Task.new(:remote_directory) do |t|
-      t.profile = "provider_remote_directory"
-    end
-    
-    Cucumber::Rake::Task.new(:git) do |t|
-      t.profile = "provider_git"
-    end
-    
-    namespace :package do
-      desc "Run cucumber tests for macports packages"
-      Cucumber::Rake::Task.new(:macports) do |t|
-        t.profile = "provider_package_macports"
+    namespace :provider do
+      desc "Run cucumber tests for deploy resources"
+      Cucumber::Rake::Task.new(:deploy) do |t|
+        t.profile = "provider_deploy"
       end
-      
-      Cucumber::Rake::Task.new(:gems) do |g|
-        g.profile = "provider_package_rubygems"
+
+      desc "Run cucumber tests for directory resources"
+      Cucumber::Rake::Task.new(:directory) do |t|
+        t.profile = "provider_directory"
+      end
+
+      desc "Run cucumber tests for execute resources"
+      Cucumber::Rake::Task.new(:execute) do |t|
+        t.profile = "provider_execute"
+      end
+
+      desc "Run cucumber tests for file resources"
+      Cucumber::Rake::Task.new(:file) do |t|
+        t.profile = "provider_file"
+      end
+
+      desc "Run cucumber tests for remote_file resources"
+      Cucumber::Rake::Task.new(:remote_file) do |t|
+        t.profile = "provider_remote_file"
+      end
+
+      desc "Run cucumber tests for template resources"
+      Cucumber::Rake::Task.new(:template) do |t|
+        t.profile = "provider_template"
+      end
+
+      Cucumber::Rake::Task.new(:remote_directory) do |t|
+        t.profile = "provider_remote_directory"
+      end
+
+      Cucumber::Rake::Task.new(:git) do |t|
+        t.profile = "provider_git"
+      end
+
+      namespace :package do
+        desc "Run cucumber tests for macports packages"
+        Cucumber::Rake::Task.new(:macports) do |t|
+          t.profile = "provider_package_macports"
+        end
+
+        Cucumber::Rake::Task.new(:gems) do |g|
+          g.profile = "provider_package_rubygems"
+        end
       end
     end
   end
+rescue LoadError
+  STDERR.puts "\n*** Cucumber is missing. (sudo) gem install cucumber to run integration tests. ***\n\n"
 end
