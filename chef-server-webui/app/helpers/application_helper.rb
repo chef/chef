@@ -112,7 +112,7 @@ module Merb
         count
       end
       
-      def syntax_hightlight(uri)
+      def syntax_highlight(uri)
         code = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest(uri)
         CodeRay.encode_tokens(CodeRay.scan(code, :ruby), :span)
       end
