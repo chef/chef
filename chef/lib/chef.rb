@@ -30,7 +30,7 @@ require 'chef/webui_user'
 require 'chef/openid_registration'
 
 class Chef
-  VERSION = "0.8.14"
+  VERSION = "0.8.15"
 end
 
 # Adds a Dir.glob to Ruby 1.8.5, for compat
