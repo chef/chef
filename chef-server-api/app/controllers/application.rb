@@ -1,7 +1,9 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -93,7 +95,7 @@ class Application < Merb::Controller
     raise Unauthorized, "You must authenticate first!"
   end
 
-  def specific_cookbooks(node_name, cl)
+  def cookbooks_for_node(node_name, cookbook_loader)
     valid_cookbooks = Hash.new
     begin
       node = Chef::Node.cdb_load(node_name)
@@ -102,29 +104,29 @@ class Application < Merb::Controller
       recipes = []
     end
     recipes.each do |recipe|
-      valid_cookbooks = expand_cookbook_deps(valid_cookbooks, cl, recipe)
+      valid_cookbooks = expand_cookbook_deps(valid_cookbooks, cookbook_loader, recipe)
     end
     valid_cookbooks
   end
 
-  def expand_cookbook_deps(valid_cookbooks, cl, recipe)
+  def expand_cookbook_deps(visited_cookbooks, cookbook_loader, recipe)
     cookbook = recipe
     if recipe =~ /^(.+)::/
       cookbook = $1
     end
     Chef::Log.debug("Node requires #{cookbook}")
-    valid_cookbooks[cookbook] = true
-    cl.metadata[cookbook.to_sym].dependencies.each do |dep, versions|
-      expand_cookbook_deps(valid_cookbooks, cl, dep) unless valid_cookbooks[dep]
+    visited_cookbooks[cookbook] = true 
+    cookbook_loader.metadata[cookbook.to_sym].dependencies.each do |dep, versions|
+      expand_cookbook_deps(visited_cookbooks, cookbook_loader, dep) unless visited_cookbooks[dep]
     end
-    valid_cookbooks
+    visited_cookbooks
   end
   
   def load_all_files(node_name=nil)
-    cl = Chef::CookbookLoader.new
-    valid_cookbooks = node_name ? specific_cookbooks(node_name, cl) : {}
+    cookbook_loader = Chef::CookbookLoader.new
+    valid_cookbooks = node_name ? cookbooks_for_node(node_name, cookbook_loader) : {} 
     cookbook_list = Hash.new
-    cl.each do |cookbook|
+    cookbook_loader.each do |cookbook|
       if node_name
         next unless valid_cookbooks[cookbook.name.to_s]
       end
@@ -134,9 +136,9 @@ class Application < Merb::Controller
   end
 
   def get_available_recipes
-    cl = Chef::CookbookLoader.new
-    available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
-      element.recipes.sort.each do |r|
+    cookbook_loader = Chef::CookbookLoader.new
+    available_recipes = cookbook_loader.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
+      element.recipes.sort.each do |r| 
         if r =~ /^(.+)::default$/
           result << $1
         else

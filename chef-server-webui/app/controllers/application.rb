@@ -156,7 +156,6 @@ class Application < Merb::Controller
     files_list
   end
 
-
   def build_tree(name, node)
     html = "<table id='#{name}' class='tree table'>"
     html << "<tr><th class='first'>Attribute</th><th class='last'>Value</th></tr>"
