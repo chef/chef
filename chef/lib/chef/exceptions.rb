@@ -44,5 +44,7 @@ class Chef
     class AmbiguousRunlistSpecification < ArgumentError; end
     class CookbookNotFound < RuntimeError; end
     class AttributeNotFound < RuntimeError; end
+    class InvalidCommandOption < RuntimeError; end
+    class CommandTimeout < RuntimeError; end
   end
 end
