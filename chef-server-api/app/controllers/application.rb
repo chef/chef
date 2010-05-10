@@ -95,49 +95,47 @@ class Application < Merb::Controller
     raise Unauthorized, "You must authenticate first!"
   end
 
-  def cookbooks_for_node(node_name, cookbook_loader)
-    valid_cookbooks = Hash.new
-    begin
-      node = Chef::Node.cdb_load(node_name)
-      recipes, default_attrs, override_attrs = node.run_list.expand('couchdb')
-    rescue Net::HTTPServerException
-      recipes = []
+  def cookbooks_for_node(node_name)
+    # get node's explicit dependencies
+    node = Chef::Node.cdb_load(node_name)
+    run_list_items, default_attrs, override_attrs = node.run_list.expand('couchdb')
+    
+    # walk run list and accumulate included dependencies
+    all_cookbooks = Chef::Cookbook.cdb_list(true)
+    run_list_item.inject({}) do |included_cookbooks, run_list_item|
+      expand_cookbook_deps(included_cookbooks, all_cookbooks, run_list_item)
+      included_cookbooks
     end
-    recipes.each do |recipe|
-      valid_cookbooks = expand_cookbook_deps(valid_cookbooks, cookbook_loader, recipe)
-    end
-    valid_cookbooks
   end
-
-  def expand_cookbook_deps(visited_cookbooks, cookbook_loader, recipe)
-    cookbook = recipe
-    if recipe =~ /^(.+)::/
-      cookbook = $1
-    end
+  
+  # Accumulates transitive cookbook dependencies no more than once in included_cookbooks
+  def expand_cookbook_deps(included_cookbooks, all_cookbooks, run_list_item)
+    # determine the run list item's parent cookbook, which might be run_list_item in the default case
+    cookbook = (run_list_item =~ /^(.+)::/ ? $1 : run_list_item)
     Chef::Log.debug("Node requires #{cookbook}")
-    visited_cookbooks[cookbook] = true 
-    cookbook_loader.metadata[cookbook.to_sym].dependencies.each do |dep, versions|
-      expand_cookbook_deps(visited_cookbooks, cookbook_loader, dep) unless visited_cookbooks[dep]
+
+    # include its dependencies
+    included_cookbooks[cookbook] = true
+    all_cookbooks.metadata[cookbook.to_sym].dependencies.each do |dep, versions|
+      expand_cookbook_deps(included_cookbooks, all_cookbooks, dep) unless included_cookbooks[dep]
     end
-    visited_cookbooks
   end
   
   def load_all_files(node_name=nil)
-    cookbook_loader = Chef::CookbookLoader.new
-    valid_cookbooks = node_name ? cookbooks_for_node(node_name, cookbook_loader) : {} 
-    cookbook_list = Hash.new
-    cookbook_loader.each do |cookbook|
+    included_cookbooks = node_name ? cookbooks_for_node(node_name) : {} 
+    nodes_cookbooks = Hash.new
+    included_cookbooks.each do |cookbook|
       if node_name
-        next unless valid_cookbooks[cookbook.name.to_s]
+        next unless included_cookbooks[cookbook.name.to_s]
       end
-      cookbook_list[cookbook.name.to_s] = cookbook.generate_manifest { |opts| absolute_slice_url(:cookbook_segment, opts) }
+      nodes_cookbooks[cookbook.name.to_s] = cookbook.generate_manifest_with_urls{|opts| absolute_slice_url(:cookbook_file, opts) }
     end
-    cookbook_list
+    nodes_cookbooks
   end
 
   def get_available_recipes
-    cookbook_loader = Chef::CookbookLoader.new
-    available_recipes = cookbook_loader.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
+    all_cookbooks = Chef::Cookbook.cdb_list(true)
+    available_recipes = all_cookbooks.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
       element.recipes.sort.each do |r| 
         if r =~ /^(.+)::default$/
           result << $1
