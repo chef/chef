@@ -199,6 +199,9 @@ module Shef
 
     def parse_opts
       parse_options
+      # We have to nuke ARGV to make sure irb's option parser never sees it.
+      # otherwise, IRB complains about command line switches it doesn't recognize.
+      ARGV.clear
       config[:config_file] = config_file_for_shef_mode
       config_msg = config[:config_file] || "none (standalone shef session)"
       puts "loading configuration: #{config_msg}"
