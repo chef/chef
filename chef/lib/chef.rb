@@ -22,7 +22,6 @@ require 'chef/log'
 require 'chef/config'
 require 'chef/providers'
 require 'chef/resources'
-require 'chef/shell_out'
 
 require 'chef/compile'
 require 'chef/daemon'
