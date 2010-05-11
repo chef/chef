@@ -22,6 +22,7 @@ require 'chef/log'
 require 'chef/config'
 require 'chef/providers'
 require 'chef/resources'
+require 'chef/shell_out'
 
 require 'chef/compile'
 require 'chef/daemon'
@@ -30,7 +31,7 @@ require 'chef/webui_user'
 require 'chef/openid_registration'
 
 class Chef
-  VERSION = "0.8.15"
+  VERSION = "0.8.16"
 end
 
 # Adds a Dir.glob to Ruby 1.8.5, for compat
