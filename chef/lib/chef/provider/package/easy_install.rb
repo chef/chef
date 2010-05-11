@@ -48,14 +48,14 @@ class Chef
           @current_resource.version(nil)
 
           # get the currently installed version if installed
+          package_version = nil
           if install_check(@new_resource.package_name)
             command = "python -c \"import #{@new_resource.package_name}; print #{@new_resource.package_name}.__path__\""
-            pid, stdin, stdout, stderr = popen4(command)
-            install_location = stdout.readline
-            install_location[/\S\S(.*)\/(.*)-(.*)-py(.*).egg\S/]
-            package_version = $3
-          else
-            package_version = nil
+            status = popen4(command) do |pid, stdin, stdout, stderr|
+              install_location = stdout.readline
+              install_location[/\S\S(.*)\/(.*)-(.*)-py(.*).egg\S/]
+              package_version = $3
+            end
           end
 
           if package_version == @new_resource.version
