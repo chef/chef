@@ -49,17 +49,34 @@ describe Chef::Provider::Mount::Mount do
       @provider.current_resource.mount_point.should == '/tmp/foo'
       @provider.current_resource.device.should == '/dev/sdz1'
     end
+    
+    it "should accecpt device_type :uuid" do
+      @new_resource.device_type :uuid
+      @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
+      @stdout_findfs = mock("STDOUT", :first => "/dev/sdz1")
+      @provider.should_receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,@stdout_findfs,@stderr).and_return(@status)
+      @provider.load_current_resource()
+    end
 
     it "should raise an error if the mount device does not exist" do
       ::File.stub!(:exists?).with("/dev/sdz1").and_return false
       lambda { @provider.load_current_resource() }.should raise_error(Chef::Exceptions::Mount)
     end
-
+    
+    it "should raise an error if the mount device (uuid) does not exist" do
+      @new_resource.device_type :uuid
+      @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
+      status_findfs = mock("Status", :exitstatus => 1)
+      stdout_findfs = mock("STDOUT", :first => nil)
+      @provider.should_receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,stdout_findfs,@stderr).and_return(status_findfs)
+      ::File.should_receive(:exists?).with("").and_return(false)
+      lambda { @provider.load_current_resource() }.should raise_error(Chef::Exceptions::Mount)
+    end
+    
     it "should raise an error if the mount point does not exist" do
       ::File.stub!(:exists?).with("/tmp/foo").and_return false
       lambda { @provider.load_current_resource() }.should raise_error(Chef::Exceptions::Mount)
     end
-
 
     it "should set mounted true if the mount point is found in the mounts list" do
       @provider.stub!(:shell_out!).and_return(OpenStruct.new(:stdout => '/dev/sdz1 on /tmp/foo'))
@@ -173,6 +190,16 @@ describe Chef::Provider::Mount::Mount do
         options = "rw,noexec,noauto"
         @new_resource.options(%w{rw noexec noauto})
         @provider.should_receive(:shell_out!).with("mount -t ext3 -o rw,noexec,noauto /dev/sdz1 /tmp/foo")
+        @provider.mount_fs()
+      end
+      
+      it "should mount the filesystem specified by uuid" do
+        @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
+        @new_resource.device_type :uuid
+        @stdout_findfs = mock("STDOUT", :first => "/dev/sdz1")
+        @provider.stub!(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,@stdout_findfs,@stderr).and_return(@status)
+        @stdout.stub!(:each).and_yield("#{@new_resource.device} on #{@new_resource.mount_point}")
+        @provider.should_receive(:shell_out!).with("mount -t #{@new_resource.fstype} -o defaults -U #{@new_resource.device} #{@new_resource.mount_point}")
         @provider.mount_fs()
       end
 
