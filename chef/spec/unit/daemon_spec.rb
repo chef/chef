@@ -163,7 +163,7 @@ describe Chef::Daemon do
       Dir.should_receive(:chdir).with("/").and_return(0)
       Chef::Daemon.change_privilege
     end
-    
+
     describe "when the user and group options are supplied" do
       
       before do
