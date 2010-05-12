@@ -195,7 +195,7 @@ class Chef::Application::Solo < Chef::Application
           sleep splay
         end
 
-        @chef_solo.run_solo
+        @chef_solo.run
         
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
