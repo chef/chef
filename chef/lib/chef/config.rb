@@ -109,7 +109,7 @@ class Chef
     delay 0
     executable_path ENV['PATH'] ? ENV['PATH'].split(File::PATH_SEPARATOR) : []
     file_cache_path "/var/chef/cache"
-    file_backup_path nil
+    file_backup_path "/var/chef/backup"
     group nil
     http_retry_count 5
     http_retry_delay 5
