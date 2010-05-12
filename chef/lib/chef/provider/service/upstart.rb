@@ -42,7 +42,7 @@ class Chef
           case platform
           when "ubuntu"
             case version
-            when /8.04/,/8.10/,/9.04/
+            when /8.04/,/8.10/,/9.04/,/10.04/
               @upstart_job_dir = "/etc/event.d"
               @upstart_conf_suffix = ""
             else
