@@ -34,9 +34,8 @@ class Chef
                     :current_automatic,
                     :auto_vivifiy_on_read,
                     :set_unless_value_present,
-                    :has_been_read
-
-      attr_writer :set_type
+                    :has_been_read,
+                    :set_type
 
       include Enumerable
 
@@ -64,16 +63,16 @@ class Chef
         normal = value
       end
 
-      def set_type
+      def set_type_hash(current=false)
         case @set_type
         when :normal
-          @normal
+          current ? @current_normal : @normal
         when :override
-          @override
+          current ? @current_override : @override
         when :default
-          @default
+          current ? @current_default : @default
         when :automatic
-          @automatic
+          current ? @current_automatic : @automatic
         end
       end
 
@@ -93,6 +92,7 @@ class Chef
         # We set this to so that we can cope with ||= as a setting.
         # See the comments in []= for more details.
         @has_been_read = true
+
 
         a_value = value_or_descend(current_automatic, key, auto_vivifiy_on_read)
         o_value = value_or_descend(current_override, key, auto_vivifiy_on_read)
@@ -310,7 +310,7 @@ class Chef
 
       def []=(key, value)
         if set_unless_value_present
-          if get_value(set_type, key) != nil
+          if get_value(set_type_hash, key) != nil
             Chef::Log.debug("Not setting #{state.join("/")}/#{key} to #{value.inspect} because it has a #{@set_type} value already")
             return false
           end
@@ -324,7 +324,7 @@ class Chef
         # supporting one more single-use style.
         @state.pop if @has_been_read && @state.last == key
 
-        set_value(set_type, key, value)
+        set_value(set_type_hash, key, value)
         value
       end
 
@@ -365,21 +365,9 @@ class Chef
       end
 
       def value_or_descend(data_hash, key, auto_vivifiy=false)
-
         if auto_vivifiy
-          data_hash = auto_vivifiy(data_hash, key)
-          unless current_normal.has_key?(key)
-            current_normal[key] = data_hash[key]
-          end
-          unless current_default.has_key?(key)
-            current_default[key] = data_hash[key]
-          end
-          unless current_override.has_key?(key)
-            current_override[key] = data_hash[key]
-          end
-          unless current_automatic.has_key?(key)
-            current_automatic[key] = data_hash[key]
-          end
+          set_type_hash = auto_vivifiy(set_type_hash, key)
+          set_type_hash(true)[key] = set_type_hash(true)[key]
         else
           return nil if data_hash == nil
           return nil unless data_hash.has_key?(key)
@@ -393,6 +381,7 @@ class Chef
           cna.current_automatic  = current_automatic.nil? ? Mash.new : current_automatic[key]
           cna.auto_vivifiy_on_read = auto_vivifiy_on_read
           cna.set_unless_value_present = set_unless_value_present
+          cna.set_type = set_type
           cna
         else
           data_hash[key]

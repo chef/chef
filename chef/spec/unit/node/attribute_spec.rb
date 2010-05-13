@@ -333,11 +333,11 @@ describe Chef::Node::Attribute do
     end
 
     it "should set deeply nested attribute value when auto_vivifiy_on_read is true" do
+      @attributes.set_type = :normal
       @attributes.auto_vivifiy_on_read = true
-      @attributes["longboard"]["hunters"]["comics"] = "surfing"
-      @attributes["longboard"]["hunters"]["comics"].should == "surfing"
-      @attributes.attribute["longboard"]["hunters"]["comics"].should == "surfing"
-      @attributes.override["longboard"]["hunters"]["comics"].should == "surfing"
+      @attributes["deftones"]["hunters"]["nap"] = "surfing"
+      @attributes.reset
+      @attributes.normal_attrs["deftones"]["hunters"]["nap"].should == "surfing"
     end
 
     it "should die if you try and do nested attributes that do not exist without read vivification" do
