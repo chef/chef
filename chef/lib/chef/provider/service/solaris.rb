@@ -57,6 +57,11 @@ class Chef
 	  run_command(:command => "#{@init_command} refresh #{@new_resource.service_name}")
 	end
 
+        def restart_service()
+          disable_service()
+          return enable_service()
+        end
+
 	def service_status()
 	  status = popen4("#{@status_command} #{@current_resource.service_name}") do |pid, stdin, stdout, stderr|
 	  stdout.each do |line|
