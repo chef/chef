@@ -43,5 +43,6 @@ class Chef
     class RedirectLimitExceeded < RuntimeError; end
     class AmbiguousRunlistSpecification < ArgumentError; end
     class CookbookNotFound < RuntimeError; end
+    class AttributeNotFound < RuntimeError; end
   end
 end
