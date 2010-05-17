@@ -22,6 +22,11 @@ class Chef
   module Mixin
     module LanguageIncludeAttribute
 
+      # Loads the attribute file specified by the short name of the
+      # file, e.g., loads specified cookbook's
+      #   "attributes/mailservers.rb"
+      # if passed
+      #   "mailservers"
       def include_attribute(*args)
         if self.kind_of?(Chef::Node)
           node = self
@@ -39,11 +44,11 @@ class Chef
           node.run_state[:seen_attributes][attrib] = true
 
           if amatch = attrib.match(/(.+?)::(.+)/)
-            cookbook = @cookbook_loader[amatch[1].to_sym]
-            cookbook.load_attribute(amatch[2], node)
+            cookbook_name = amatch[1].to_sym
+            node.load_attribute_by_short_filename(amatch[2], cookbook_name)
           else
-            cookbook = @cookbook_loader[amatch[1].to_sym]
-            cookbook.load_attribute("default", node)
+            cookbook_name = attrib.to_sym
+            node.load_attribute_by_short_filename("default", cookbook_name)
           end
         end
         true
