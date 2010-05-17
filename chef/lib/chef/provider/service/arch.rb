@@ -21,8 +21,8 @@ require 'chef/mixin/command'
 
 class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   
-  def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-    super(node, new_resource, collection, definitions, cookbook_loader)
+  def initialize(new_resource, run_context)
+    super
     @init_command = "/etc/rc.d/#{@new_resource.service_name}"
   end
   

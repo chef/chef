@@ -35,9 +35,8 @@ class Chef
         # [1] http://upstart.ubuntu.com/wiki/JobStates
         # [2] http://www.netsplit.com/2008/04/27/upstart-05-events/
 
-        def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-          super(node, new_resource, collection, definitions, cookbook_loader)
-
+        def initialize(new_resource, run_context)
+          super
           platform, version = Chef::Platform.find_platform_and_version(node)
           case platform
           when "ubuntu"

@@ -30,14 +30,10 @@ class Chef
       
       attr_reader :scm_provider, :release_path
       
-      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-        super(node, new_resource, collection, definitions, cookbook_loader)
+      def initialize(new_resource, run_context)
+        super(new_resource, run_context)
         
-        # NOTE: workaround for CHEF-577
-        @definitions ||= Hash.new
-        @collection = Chef::ResourceCollection.new
-        
-        @scm_provider = @new_resource.scm_provider.new(@node, @new_resource)
+        @scm_provider = @new_resource.scm_provider.new(run_context, @new_resource)
         
         # @configuration is not used by Deploy, it is only for backwards compat with
         # chef-deploy or capistrano hooks that might use it to get environment information
