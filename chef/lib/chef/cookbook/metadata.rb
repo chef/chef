@@ -74,7 +74,7 @@ class Chef
         @recipes = Mash.new
         @version = Version.new "0.0.0"
         if cookbook
-          @recipes = cookbook.recipes.inject({}) do |r, e| 
+          @recipes = cookbook.fully_qualified_recipes.inject({}) do |r, e| 
             e = self.name if e =~ /::default$/ 
             r[e] = ""
             self.provides e
@@ -382,7 +382,7 @@ class Chef
           :replacing => self.replacing,
           :attributes => self.attributes,
           :groupings => self.groupings,
-          :recipes => self.recipes,
+          :recipes => self.fully_qualified_recipes,
           :version => self.version
         }
         result.to_json(*a)
