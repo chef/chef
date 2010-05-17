@@ -22,20 +22,6 @@ class Chef
   module Mixin
     module GenerateURL
     
-      def generate_cookbook_url(url, cookbook, type, node, args=nil)
-        Chef::Log.debug("generating cookbook url for url=#{url}, cookbook=#{cookbook.inspect}, type=#{type}, node=#{node}")
-        new_url = nil
-        if url =~ /^(http|https):\/\//
-          new_url = url
-        else
-          new_url = "cookbooks/#{cookbook}/#{type}?"
-          new_url += "id=#{url}"
-          new_url = generate_cookbook_url_from_uri(new_url, node, args)
-        end
-        Chef::Log.debug("generated cookbook url: #{new_url}")
-        return new_url
-      end
-
       def generate_cookbook_url_from_uri(uri, node, args=nil)
         platform, version = Chef::Platform.find_platform_and_version(node)
         uri =~ /cookbooks\/(.+?)\/(.+)\?/
