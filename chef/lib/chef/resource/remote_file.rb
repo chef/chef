@@ -21,9 +21,9 @@ require 'chef/resource/file'
 class Chef
   class Resource
     class RemoteFile < Chef::Resource::File
-        
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      
+      def initialize(name, run_context)
+        super
         @resource_name = :remote_file
         @action = "create"
         @source = ::File.basename(name)

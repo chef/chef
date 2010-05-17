@@ -22,8 +22,8 @@ class Chef
   class Resource
     class Subversion < Chef::Resource::Scm
       
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(name, run_context)
+        super
         @resource_name = :subversion
         @provider = Chef::Provider::Subversion
         allowed_actions << :force_export

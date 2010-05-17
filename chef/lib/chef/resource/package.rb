@@ -21,9 +21,9 @@ require 'chef/resource'
 class Chef
   class Resource
     class Package < Chef::Resource
-        
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      
+      def initialize(name, run_context)
+        super
         @resource_name = :package
         @package_name = name
         @version = nil
