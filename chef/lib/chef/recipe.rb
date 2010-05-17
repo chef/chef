@@ -33,21 +33,23 @@ class Chef
     include Chef::Mixin::LanguageIncludeRecipe
     include Chef::Mixin::RecipeDefinitionDSLCore
     
-    attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :collection, 
+    attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :resource_collection, 
                   :definitions, :params, :cookbook_loader
     
-    def initialize(cookbook_name, recipe_name, node, collection=nil, definitions=nil, cookbook_loader=nil)
+    def initialize(cookbook_name, recipe_name, run_context)
       @cookbook_name = cookbook_name
       @recipe_name = recipe_name
-      @node = node
-      @collection = collection || Chef::ResourceCollection.new
+      @node = run_context.node
+      @resource_collection = run_context.resource_collection || Chef::ResourceCollection.new
       @definitions = definitions || Hash.new
-      @cookbook_loader = cookbook_loader || Chef::CookbookLoader.new
+      @cookbook_collection = run_context.cookbook_loader || Chef::CookbookLoader.new
+      # params is 
       @params = Hash.new      
     end
     
+    # what does this do? and what is args? TODO 5-14-2010
     def resources(*args)
-      @collection.resources(*args)
+      @resource_collection.resources(*args)
     end
     
     # Sets a tag, or list of tags, for this node.  Syntactic sugar for
