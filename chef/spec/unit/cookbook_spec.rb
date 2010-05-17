@@ -83,20 +83,20 @@ describe Chef::Cookbook do
 
   it "should have a list of recipes by name" do
     @cookbook.recipe_files = [ "one", "two" ]
-    @cookbook.recipes.detect { |r| r == "openldap::one" }.should eql("openldap::one")
-    @cookbook.recipes.detect { |r| r == "openldap::two" }.should eql("openldap::two")
+    @cookbook.fully_qualified_recipes.detect { |r| r == "openldap::one" }.should eql("openldap::one")
+    @cookbook.fully_qualified_recipes.detect { |r| r == "openldap::two" }.should eql("openldap::two")
   end
   
   it "should take a file /path.rb, and use the filename minus rb as a recipe name" do
     @cookbook.recipe_files = [ "/something/one.rb", "/otherthing/two.rb" ]
-    @cookbook.recipes.detect { |r| r == "openldap::one" }.should eql("openldap::one")
-    @cookbook.recipes.detect { |r| r == "openldap::two" }.should eql("openldap::two")
+    @cookbook.fully_qualified_recipes.detect { |r| r == "openldap::one" }.should eql("openldap::one")
+    @cookbook.fully_qualified_recipes.detect { |r| r == "openldap::two" }.should eql("openldap::two")
   end
   
   it "should take a file path.rb, and use the filename minus rb as a recipe name" do
     @cookbook.recipe_files = [ "one.rb", "two.rb" ]
-    @cookbook.recipes.detect { |r| r == "openldap::one" }.should eql("openldap::one")
-    @cookbook.recipes.detect { |r| r == "openldap::two" }.should eql("openldap::two")
+    @cookbook.fully_qualified_recipes.detect { |r| r == "openldap::one" }.should eql("openldap::one")
+    @cookbook.fully_qualified_recipes.detect { |r| r == "openldap::two" }.should eql("openldap::two")
   end
   
   it "should allow you to test for a recipe with recipe?" do
