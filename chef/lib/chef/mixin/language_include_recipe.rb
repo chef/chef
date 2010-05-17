@@ -22,24 +22,19 @@ class Chef
   module Mixin
     module LanguageIncludeRecipe
 
-      def include_recipe(*args)
-        args.flatten.each do |recipe|
-          if @node.run_state[:seen_recipes].has_key?(recipe)
-            Chef::Log.debug("I am not loading #{recipe}, because I have already seen it.")
+      def include_recipe(*recipe_names)
+        recipe_names.flatten.each do |recipe_name|
+          if node.run_state[:seen_recipes].has_key?(recipe_name)
+            Chef::Log.debug("I am not loading #{recipe_name}, because I have already seen it.")
             next
-          end        
-
-          Chef::Log.debug("Loading Recipe #{recipe} via include_recipe")
-          @node.run_state[:seen_recipes][recipe] = true
-
-          rmatch = recipe.match(/(.+?)::(.+)/)
-          if rmatch
-            cookbook = @cookbook_loader[rmatch[1]]
-            cookbook.load_recipe(rmatch[2], @node, @collection, @definitions, @cookbook_loader)
-          else
-            cookbook = @cookbook_loader[recipe]
-            cookbook.load_recipe("default", @node, @collection, @definitions, @cookbook_loader)
           end
+
+          Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
+          node.run_state[:seen_recipes][recipe_name] = true
+
+          cookbook_name, recipe_short_name = Chef::Cookbook.parse_recipe_name(recipe_name)
+          cookbook = run_context.cookbook_collection[cookbook_name]
+          cookbook.load_recipe(recipe_short_name, run_context)
         end
       end
 
