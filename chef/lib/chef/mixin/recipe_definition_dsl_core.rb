@@ -36,14 +36,14 @@ class Chef
         # If we have a definition that matches, we want to use that instead.  This should
         # let you do some really crazy over-riding of "native" types, if you really want
         # to. 
-        if @definitions.has_key?(method_symbol)
+        if run_context.definitions.has_key?(method_symbol)
           # This dupes the high level object, but we still need to dup the params
-          new_def = @definitions[method_symbol].dup
+          new_def = run_context.definitions[method_symbol].dup
           new_def.params = new_def.params.dup
-          new_def.node = @node
+          new_def.node = run_context.node
           # This sets up the parameter overrides
           new_def.instance_eval(&block) if block
-          new_recipe = Chef::Recipe.new(@cookbook_name, @recipe_name, @node, @collection, @definitions, @cookbook_loader)
+          new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, run_context)
           new_recipe.params = new_def.params
           new_recipe.params[:name] = args[0]
           new_recipe.instance_eval(&new_def.recipe)
@@ -54,8 +54,8 @@ class Chef
           
           # If we have a resource like this one, we want to steal its state
           resource = begin
-                       args << @collection
-                       args << @node
+                       args << run_context.resource_collection
+                       args << run_context.node
                        Chef::Resource.const_get(rname).new(*args)
                      rescue NameError => e
                        if e.to_s =~ /Chef::Resource/
@@ -65,8 +65,8 @@ class Chef
                        end
                      end
           resource.load_prior_resource
-          resource.cookbook_name = @cookbook_name
-          resource.recipe_name = @recipe_name
+          resource.cookbook_name = cookbook_name
+          resource.recipe_name = recipe_name
           resource.params = @params
           # Determine whether this resource is being created in the context of an enclosing Provider
           resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil
