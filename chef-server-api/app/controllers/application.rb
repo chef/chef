@@ -94,48 +94,70 @@ class Application < Merb::Controller
   def access_denied
     raise Unauthorized, "You must authenticate first!"
   end
-
-  def cookbooks_for_node(node_name)
+  
+  # returns name -> Cookbook for all cookbooks included on the given node.
+  def cookbooks_for_node(node_name, all_cookbooks)
     # get node's explicit dependencies
     node = Chef::Node.cdb_load(node_name)
     run_list_items, default_attrs, override_attrs = node.run_list.expand('couchdb')
     
     # walk run list and accumulate included dependencies
-    all_cookbooks = Chef::Cookbook.cdb_list(true)
-    run_list_item.inject({}) do |included_cookbooks, run_list_item|
+    run_list_items.inject({}) do |included_cookbooks, run_list_item|
       expand_cookbook_deps(included_cookbooks, all_cookbooks, run_list_item)
       included_cookbooks
     end
   end
   
   # Accumulates transitive cookbook dependencies no more than once in included_cookbooks
+  #   included_cookbooks == hash of name -> Cookbook, which is used for returning result
+  #                         as well as for tracking which cookbooks we've already recursed
+  #                         into
+  #   all_cookbooks    == hash of name -> Cookbook, all cookbooks available
+  #   run_list_items   == name of cookbook to include
   def expand_cookbook_deps(included_cookbooks, all_cookbooks, run_list_item)
     # determine the run list item's parent cookbook, which might be run_list_item in the default case
-    cookbook = (run_list_item =~ /^(.+)::/ ? $1 : run_list_item)
-    Chef::Log.debug("Node requires #{cookbook}")
+    cookbook_name = (run_list_item =~ /^(.+)::/ ? $1 : run_list_item)
+    Chef::Log.debug("Node requires #{cookbook_name}")
 
     # include its dependencies
-    included_cookbooks[cookbook] = true
-    all_cookbooks.metadata[cookbook.to_sym].dependencies.each do |dep, versions|
+    included_cookbooks[cookbook_name] = all_cookbooks[cookbook_name]
+    puts ({:all_cookbooks_keys => all_cookbooks.keys}).inspect
+    puts "cookbook_name = #{cookbook_name}"
+    if !all_cookbooks[cookbook_name]
+      Chef::Log.warn "#{__FILE__}:#{__LINE__}: in expand_cookbook_deps, cookbook/role #{cookbook_name} could not be found, ignoring it in cookbook expansion"
+      return included_cookbooks
+    end
+    
+    all_cookbooks[cookbook_name].metadata.dependencies.each do |depname, dep|
+      # recursively expand dependencies into included_cookbooks unless we've already done it
       expand_cookbook_deps(included_cookbooks, all_cookbooks, dep) unless included_cookbooks[dep]
     end
   end
   
-  def load_all_files(node_name=nil)
-    included_cookbooks = node_name ? cookbooks_for_node(node_name) : {} 
+  def load_all_files(node_name)
+    puts "load_all_files -- node_name #{node_name}"
+    all_cookbooks = Chef::Cookbook.cdb_list(true).inject({}) {|hsh,record| hsh[record.name] = record ; hsh}
+    puts "load_all_files: all_cookbooks.keys = #{all_cookbooks.keys.inspect}"
+    
+    included_cookbooks = cookbooks_for_node(node_name, all_cookbooks)
+    puts "included_cookbooks = #{included_cookbooks.inspect}"
     nodes_cookbooks = Hash.new
-    included_cookbooks.each do |cookbook|
-      if node_name
-        next unless included_cookbooks[cookbook.name.to_s]
-      end
-      nodes_cookbooks[cookbook.name.to_s] = cookbook.generate_manifest_with_urls{|opts| absolute_slice_url(:cookbook_file, opts) }
+    included_cookbooks.each do |cookbook_name, cookbook|
+      puts "** cookbook_name = #{cookbook_name}"
+      puts "** node_name = #{node_name}"
+
+      next unless cookbook
+
+      nodes_cookbooks[cookbook_name.to_s] = cookbook.generate_manifest_with_urls{|opts| absolute_slice_url(:cookbook_file, opts) }
     end
+
+    puts "** nodes_cookbooks = #{nodes_cookbooks.inspect}"
     nodes_cookbooks
   end
 
   def get_available_recipes
-    all_cookbooks = Chef::Cookbook.cdb_list(true)
-    available_recipes = all_cookbooks.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
+    all_cookbooks_list = Chef::Cookbook.cdb_list(true)
+    available_recipes = all_cookbooks_list.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
       element.recipes.sort.each do |r| 
         if r =~ /^(.+)::default$/
           result << $1
