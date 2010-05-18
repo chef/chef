@@ -1,6 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,64 +20,48 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
-describe Chef::Compile do
+describe Chef::RunContext do
   before(:each) do
     Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "compile", "nodes")))
     Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "compile", "cookbooks")))
     @node = Chef::Node.new
-    @compile = Chef::Compile.new(@node)
-    @compile.go
+    @run_context = Chef::RunContext.new(@node)
+    @run_context.go
   end
   
-  it "should create a new Chef::Compile" do
-    @compile.should be_a_kind_of(Chef::Compile)
-  end
-  
-  it "should have a Chef::CookbookLoader" do
-    @compile.cookbook_loader.should be_a_kind_of(Chef::CookbookLoader)
-  end
-  
-  it "should have a Chef::ResourceCollection" do
-    @compile.collection.should be_a_kind_of(Chef::ResourceCollection)
-  end
-  
-  it "should have a hash of Definitions" do
-    @compile.definitions.should be_a_kind_of(Hash)
-  end
-
   it "should load a node by name" do
     node = Chef::Node.new
     Chef::Node.stub!(:load).and_return(node)
     lambda { 
-      @compile.load_node("compile")
+      @run_context.load_node("compile")
     }.should_not raise_error
-    @compile.node.name.should == "compile"
+    @run_context.node.name.should == "compile"
   end
   
   it "should load all the definitions" do
-    lambda { @compile.load_definitions }.should_not raise_error
-    @compile.definitions.should have_key(:new_cat)
-    @compile.definitions.should have_key(:new_badger)
-    @compile.definitions.should have_key(:new_dog)
+    lambda { @run_context.load_definitions }.should_not raise_error
+    @run_context.definitions.should have_key(:new_cat)
+    @run_context.definitions.should have_key(:new_badger)
+    @run_context.definitions.should have_key(:new_dog)
   end
   
   it "should load all the recipes specified for this node" do
     node = Chef::Node.new
     Chef::Node.stub!(:load).and_return(node)
-    @compile.load_node("compile")
-    @compile.load_definitions
-    lambda { @compile.load_recipes }.should_not raise_error
-    @compile.collection[0].to_s.should == "cat[einstein]"  
-    @compile.collection[1].to_s.should == "cat[loulou]"
-    @compile.collection[2].to_s.should == "cat[birthday]"
-    @compile.collection[3].to_s.should == "cat[peanut]"
-    @compile.collection[4].to_s.should == "cat[fat peanut]"
+    @run_context.load_node("compile")
+    @run_context.load_definitions
+    lambda { @run_context.load_recipes }.should_not raise_error
+    @run_context.resource_collection[0].to_s.should == "cat[einstein]"  
+    @run_context.resource_collection[1].to_s.should == "cat[loulou]"
+    @run_context.resource_collection[2].to_s.should == "cat[birthday]"
+    @run_context.resource_collection[3].to_s.should == "cat[peanut]"
+    @run_context.resource_collection[4].to_s.should == "cat[fat peanut]"
   end
 
   it "should not clobber default and overrides at expansion" do
     @node.set[:monkey] = [ {}, {} ]
     @node[:monkey].each { |m| m[:name] = "food" }
-    @compile.expand_node
+    @run_context.expand_node
     @node[:monkey].should == [ { "name" => "food" }, { "name" => "food" } ]
   end
 

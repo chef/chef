@@ -23,9 +23,7 @@ require 'chef/config'
 require 'chef/providers'
 require 'chef/resources'
 
-require 'chef/compile'
 require 'chef/daemon'
-require 'chef/runner'
 require 'chef/webui_user'
 require 'chef/openid_registration'
 
