@@ -428,7 +428,6 @@ begin
     Cucumber::Rake::Task.new(:attribute_settings) do |t|
       t.profile = "attribute_settings"
     end
-  end
 
     desc "Run cucumber tests for searching in recipes"
     Cucumber::Rake::Task.new(:search) do |t|
