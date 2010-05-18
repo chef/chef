@@ -33,7 +33,7 @@ require 'chef/handler'
 require 'chef/handler/json_file'
 
 class Chef
-  VERSION = "0.8.17"
+  VERSION = "0.9.0.a1"
 end
 
 # Adds a Dir.glob to Ruby 1.8.5, for compat
