@@ -39,10 +39,6 @@ class Chef
     attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list, :override_attrs, :default_attrs, :normal_attrs, :automatic_attrs, :cookbook_collection
     attr_reader :couchdb_id
 
-    # This looks weird at first, but it allows the components of the
-    # DSL to refer to the node as "node".
-    attr_reader :node
-    
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
@@ -135,7 +131,6 @@ class Chef
     # Create a new Chef::Node object.
     def initialize(couchdb=nil)
       @name = nil
-      @node = self
 
       @normal_attrs = Mash.new
       @override_attrs = Mash.new
@@ -157,6 +152,11 @@ class Chef
     def couchdb_id=(value)
       self.couchdb_id = value
       self.index_id = value
+    end
+    
+    # Used by DSL
+    def node
+      self
     end
 
     def chef_server_rest

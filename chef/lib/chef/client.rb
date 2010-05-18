@@ -83,6 +83,7 @@ class Chef
         if Chef::Config[:solo]
           build_node
           self.run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
+          assert_cookbook_path_not_empty
           converge
         else
           register
@@ -95,6 +96,7 @@ class Chef
           # and feeds them to the node's lazy-loading cookbook
           # collection. [cw/tim-5/11/2010]
           sync_cookbooks
+          assert_cookbook_path_not_empty
           self.run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
           save_node
           
@@ -329,12 +331,8 @@ class Chef
       object.kind_of?(Array) ? index == object.size - 1 : true 
     end  
     
-    # TODO: call this method in run after rebase conflicts are resolved
     def assert_cookbook_path_not_empty
-      unless Chef::Config[:solo]
-        Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
-        Chef::Log.warn("Node #{@node_name} has an empty run list.") if @node.run_list.empty?
-      else
+      if Chef::Config[:solo]
         # Check for cookbooks in the path given
         # Chef::Config[:cookbook_path] can be a string or an array
         # if it's an array, go through it and check each one, raise error at the last one if no files are found
@@ -348,6 +346,8 @@ class Chef
             raise Chef::Exceptions::CookbookNotFound, msg if is_last_element?(index, Chef::Config[:cookbook_path])
           end
         end
+      else
+        Chef::Log.warn("Node #{node_name} has an empty run list.") if node.run_list.empty?
       end
       
     end
