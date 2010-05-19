@@ -27,14 +27,14 @@ class Chef
       #   "attributes/mailservers.rb"
       # if passed
       #   "mailservers"
-      def include_attribute(*args)
+      def include_attribute(*attribute_short_filenames)
         if self.kind_of?(Chef::Node)
           node = self
         else
           node = @node
         end
 
-        args.flatten.each do |attrib|
+        attribute_short_filenames.flatten.each do |attrib|
           if node.run_state[:seen_attributes].has_key?(attrib)
             Chef::Log.debug("I am not loading attribute file #{attrib}, because I have already seen it.")
             next

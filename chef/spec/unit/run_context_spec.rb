@@ -20,49 +20,32 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
+Chef::Log.level = :debug
+
 describe Chef::RunContext do
   before(:each) do
-    Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "compile", "nodes")))
-    Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "compile", "cookbooks")))
+    Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "nodes")))
+    Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")))
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node)
-    @run_context.go
-  end
-  
-  it "should load a node by name" do
-    node = Chef::Node.new
-    Chef::Node.stub!(:load).and_return(node)
-    lambda { 
-      @run_context.load_node("compile")
-    }.should_not raise_error
-    @run_context.node.name.should == "compile"
+    @run_context = Chef::RunContext.new(@node, Chef::CookbookLoader.new)
+    puts "run_context is #{@run_context}"
   end
   
   it "should load all the definitions" do
-    lambda { @run_context.load_definitions }.should_not raise_error
+    puts "step 1"
     @run_context.definitions.should have_key(:new_cat)
     @run_context.definitions.should have_key(:new_badger)
     @run_context.definitions.should have_key(:new_dog)
+    puts "step 2"
   end
   
   it "should load all the recipes specified for this node" do
-    node = Chef::Node.new
-    Chef::Node.stub!(:load).and_return(node)
-    @run_context.load_node("compile")
-    @run_context.load_definitions
-    lambda { @run_context.load_recipes }.should_not raise_error
+    pp ({ :rc => @run_context.resource_collection})
     @run_context.resource_collection[0].to_s.should == "cat[einstein]"  
     @run_context.resource_collection[1].to_s.should == "cat[loulou]"
     @run_context.resource_collection[2].to_s.should == "cat[birthday]"
     @run_context.resource_collection[3].to_s.should == "cat[peanut]"
     @run_context.resource_collection[4].to_s.should == "cat[fat peanut]"
-  end
-
-  it "should not clobber default and overrides at expansion" do
-    @node.set[:monkey] = [ {}, {} ]
-    @node[:monkey].each { |m| m[:name] = "food" }
-    @run_context.expand_node
-    @node[:monkey].should == [ { "name" => "food" }, { "name" => "food" } ]
   end
 
 end

@@ -36,8 +36,13 @@ require 'json'
 class Chef
   class Node
     
-    attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list, :override_attrs, :default_attrs, :normal_attrs, :automatic_attrs, :cookbook_collection
+    attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list, :override_attrs, :default_attrs, :normal_attrs, :automatic_attrs
     attr_reader :couchdb_id
+    
+    # TODO: 5/18/2010 cw/timh. cookbook_collection should be removed
+    # from here and for any place it's needed, it should be accessed
+    # through a Chef::RunContext
+    attr_accessor :cookbook_collection
 
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
@@ -131,7 +136,7 @@ class Chef
     # Create a new Chef::Node object.
     def initialize(couchdb=nil)
       @name = nil
-
+      
       @normal_attrs = Mash.new
       @override_attrs = Mash.new
       @default_attrs = Mash.new
@@ -184,14 +189,9 @@ class Chef
     # Set the name of this Node, or return the current name.
     def name(arg=nil)
       if arg != nil
-        validate(
-          {:name => arg },
-          {:name => { :kind_of => String,
-                      :cannot_be => :blank}
-          })
-        self.name = arg
+        @name = arg
       else
-        name
+        @name
       end
     end
 
@@ -330,7 +330,7 @@ class Chef
     # Returns an Array of roles and recipes, in the order they will be applied.
     # If you call it with arguments, they will become the new list of roles and recipes.
     def run_list(*args)
-      args.length > 0 ? run_list.reset!(args) : run_list
+      args.length > 0 ? @run_list.reset!(args) : @run_list
     end
 
     def recipes(*args)

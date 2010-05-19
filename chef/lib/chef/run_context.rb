@@ -17,12 +17,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/cookbook_loader'
 require 'chef/resource_collection'
 require 'chef/node'
 require 'chef/role'
 require 'chef/log'
-require 'chef/mixin/deep_merge'
 require 'chef/mixin/language_include_recipe'
 
 # Value object that loads and tracks the context of a Chef run
@@ -34,23 +32,26 @@ class Chef
 
     attr_reader :node, :cookbook_collection, :resource_collection, :definitions
 
-    # Creates a new Chef::Compile object and populates its fields. This object gets
+    # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
     # === Returns
-    # object<Chef::Compile>:: Duh. :)
+    # object<Chef::RunContext>:: Duh. :)
     def initialize(node, cookbook_collection)
       @node = node
       @cookbook_collection = cookbook_collection
       @resource_collection = Chef::ResourceCollection.new
       @definitions = Hash.new
-      @default_attributes = Hash.new 
-      @override_attributes = Hash.new
+      
+      # TODO: 5/18/2010 cw/timh - See note on Chef::Node's
+      # cookbook_collection attr_accessor
+      node.cookbook_collection = cookbook_collection
 
-      load_stuff
+      load
     end
 
-    def load_stuff
+    def load
+      puts "in run_context.load"
       foreach_cookbook_load_segment(:libraries) do |cookbook_name, filename|
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
         require filename
@@ -62,17 +63,18 @@ class Chef
       end
       
       foreach_cookbook_load_segment(:resources) do |cookbook_name, filename|
+        puts ("Loading cookbook #{cookbook_name}'s resources from #{filename}")
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s resources from #{filename}")
         Chef::Resource.build_from_file(cookbook_name, filename)
       end
 
       node.load_attributes
-      
+
       foreach_cookbook_load_segment(:definitions) do |cookbook_name, filename|
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s definitions from #{filename}")
         resourcelist = Chef::ResourceDefinitionList.new
         resourcelist.from_file(filename)
-        results.merge!(resourcelist.defines) do |key, oldval, newval|
+        definitions.merge!(resourcelist.defines) do |key, oldval, newval|
           Chef::Log.info("Overriding duplicate definition #{key}, new found in #{filename}")
           newval
         end
@@ -81,17 +83,26 @@ class Chef
       # Retrieve the fully expanded list of recipes for the node by
       # resolving roles; this step also merges attributes into the
       # node from the roles/recipes included.
+      puts "node.run_list #{node.run_list.inspect}"
       recipe_names = node.expand_node!
+      puts "expanded recipe_names is #{recipe_names.inspect}"
       recipe_names.each do |recipe_name|
         # TODO: timh/cw, 5-14-2010: It's distasteful to be including
         # the DSL in a class outside the context of the DSL
         include_recipe(recipe_name)
       end
     end
+
+    private
     
     def foreach_cookbook_load_segment(segment, &block)
+      puts "foreach_cookbook_load_segment: segment #{segment}"
       cookbook_collection.each do |cookbook_name, cookbook|
+        puts "foreach_cookbook_load_segment: cookbook_name #{cookbook_name}"
+        puts "foreach_cookbook_load_segment: cookbook #{cookbook.inspect}"
+        
         segment_filenames = cookbook.segment_filenames(segment)
+        puts "foreach_cookbook_load_segment: segment_filenames is #{segment_filenames.inspect}"
         segment_filenames.each do |segment_filename|
           block.call(cookbook_name, segment_filename)
         end

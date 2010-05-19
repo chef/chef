@@ -39,7 +39,7 @@ class Chef
     # OpenStruct with a .resource and .action member
     attr_reader :notifies_immediate, :notifies_delayed
     
-    def initialize(name, run_context)
+    def initialize(name, run_context=nil)
       @name = name
       @run_context = run_context
       @noop = nil
@@ -57,7 +57,7 @@ class Chef
       @only_if_args = {}
       @notifies_immediate = Hash.new
       @notifies_delayed = Hash.new
-      sline = caller(4).shiftw
+      sline = caller(4).shift
       if sline
         @source_line = sline.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
         @source_line = ::File.expand_path(@source_line) if @source_line

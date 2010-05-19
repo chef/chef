@@ -27,11 +27,15 @@ class Chef
   class Cookbook
     include Chef::IndexQueue::Indexable
 
-    attr_accessor :definition_files, :template_files, :remote_files,
-      :library_files, :resource_files, :provider_files, :root_files, :name,
-      :metadata, :metadata_files, :status, :couchdb_rev, :couchdb
+    attr_accessor :definition_filenames, :template_filenames, :remote_filenames,
+      :library_filenames, :resource_filenames, :provider_filenames, :root_filenames, :name,
+      :metadata, :metadata_filenames, :status, :couchdb_rev, :couchdb
     attr_reader :couchdb_id
     attr_reader :file_vendor
+
+    # attribute_filenames also has a setter that has non-default
+    # functionality.
+    attr_reader :attribute_filenames
 
     attr_reader :recipe_filename_by_name
     attr_reader :attribute_filename_by_short_filename
@@ -121,17 +125,16 @@ class Chef
     # object<Chef::Cookbook>:: Duh. :)
     def initialize(name, couchdb=nil)
       @name = name
-#       @attribute_files = Array.new
-#       @attribute_names = Hash.new
-#       @definition_files = Array.new
-#       @template_files = Array.new
-#       @remote_files = Array.new
-#       @recipe_files = Array.new
-#       @recipe_names = Hash.new
-#       @lib_files = Array.new
-#       @resource_files = Array.new
-#       @provider_files = Array.new
-#       @metadata_files = Array.new
+      @attribute_filenames = Array.new
+      @definition_filenames = Array.new
+      @template_filenames = Array.new
+      @remote_filenames = Array.new
+      @recipe_filenames = Array.new
+      @library_filenames = Array.new
+      @resource_filenames = Array.new
+      @provider_filenames = Array.new
+      @metadata_filenames = Array.new
+      @root_filenames = Array.new
       @couchdb_id = nil
       @couchdb = couchdb || Chef::CouchDB.new
       @couchdb_rev = nil
@@ -158,7 +161,7 @@ class Chef
     end
     
     def manifest=(new_manifest)
-      self.manifest = new_manifest
+      @manifest = new_manifest
       self.checksums = extract_checksums_from_manifest(new_manifest)
     end
     
@@ -174,10 +177,10 @@ class Chef
     def full_name
       "#{name}-#{version}"
     end
-
+    
     def attribute_filenames=(*filenames)
-      self.attribute_filenames = filenames.flatten
-      self.attribute_filename_by_short_filename = filenames_by_name(filenames)
+      @attribute_filenames = filenames.flatten
+      @attribute_filename_by_short_filename = filenames_by_name(filenames)
       attribute_filenames
     end
     
@@ -191,9 +194,9 @@ class Chef
     end
     
     def recipe_filenames=(*filenames)
-      self.recipe_filenames = filenames.flatten
-      self.recipe_filename_by_name = filenames_by_name(filenames)
-      recipe_filenames
+      @recipe_filenames = filenames.flatten
+      @recipe_filename_by_name = filenames_by_name(filenames)
+      @recipe_filenames
     end
     
     # called from DSL
@@ -213,11 +216,27 @@ class Chef
     end
 
     def segment_filenames(segment)
-      raise ArgumentError, "invalid segment #{segment}: must be one of #{COOKBOOK_SEGMENTS.join(', ')}"
-      if manifest[segment]
-        manifest[segment].map{|segment_file| file_vendor.get_filename(segment_file["path"]) }
-      else
-        []
+      raise ArgumentError, "invalid segment #{segment}: must be one of #{COOKBOOK_SEGMENTS.join(', ')}" unless COOKBOOK_SEGMENTS.include?(segment)
+
+      case segment.to_sym
+      when :resources
+        @resource_filenames
+      when :providers
+        @provider_filenames
+      when :recipes
+        @recipe_filenames
+      when :libraries
+        @library_filenames
+      when :definitions
+        @definition_filenames
+      when :attributes
+        @attribute_filenames
+      when :files
+        @file_filenames
+      when :templates
+        @template_filenames
+      when :root_files
+        @root_filenames
       end
     end
 

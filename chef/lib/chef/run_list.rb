@@ -191,7 +191,6 @@ class Chef
         end
       rescue Chef::Exceptions::RoleNotFound
         Chef::Log.error("Role #{name} is in the runlist but does not exist. Skipping expand.")
-        next
       end
     end
 
