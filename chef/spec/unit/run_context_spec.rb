@@ -32,20 +32,17 @@ describe Chef::RunContext do
   end
   
   it "should load all the definitions" do
-    puts "step 1"
     @run_context.definitions.should have_key(:new_cat)
     @run_context.definitions.should have_key(:new_badger)
     @run_context.definitions.should have_key(:new_dog)
-    puts "step 2"
   end
   
   it "should load all the recipes specified for this node" do
-    pp ({ :rc => @run_context.resource_collection})
     @run_context.resource_collection[0].to_s.should == "cat[einstein]"  
     @run_context.resource_collection[1].to_s.should == "cat[loulou]"
     @run_context.resource_collection[2].to_s.should == "cat[birthday]"
     @run_context.resource_collection[3].to_s.should == "cat[peanut]"
     @run_context.resource_collection[4].to_s.should == "cat[fat peanut]"
   end
-
+  
 end
