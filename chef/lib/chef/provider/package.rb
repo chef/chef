@@ -75,29 +75,27 @@ class Chef
       end
       
       def action_remove        
-        if should_remove_package(@current_resource.version, @new_resource.version)
+        if removing_package?
           Chef::Log.info("Removing #{@new_resource}")
           remove_package(@current_resource.package_name, @new_resource.version)
           @new_resource.updated = true
         end
       end
       
-      def should_remove_package(current_version, new_version)
-        to_remove_package = false
-        if current_version != nil
-          if new_version != nil 
-            if new_version == current_version
-              to_remove_package = true
-            end
-          else
-            to_remove_package = true
-          end
+      def removing_package?
+        if @current_resource.version.nil?
+          false # nothing to remove
+        elsif @new_resource.version.nil?
+          true # remove any version of a package
+        elsif @new_resource.version == @current_resource.version
+          true # remove the version we have
+        else
+          false # we don't have the version we want to remove
         end
-        to_remove_package
       end
       
       def action_purge
-        if should_remove_package(@current_resource.version, @new_resource.version)
+        if removing_package?
           Chef::Log.info("Purging #{@new_resource}")
           purge_package(@current_resource.package_name, @new_resource.version)
           @new_resource.updated = true
@@ -125,30 +123,30 @@ class Chef
       end
       
       def get_preseed_file(name, version)        
-        full_cache_dir = Chef::FileCache.create_cache_path("preseed/#{@new_resource.cookbook_name}")
-        full_cache_file = "#{full_cache_dir}/#{name}-#{version}.seed"
-        cache_path = "preseed/#{@new_resource.cookbook_name}/#{name}-#{version}.seed"
-              
-        Chef::Log.debug("Fetching preseed file to #{cache_path}")
+        remote_file = remote_preseed_file
+        remote_file.load_current_resource
+        remote_file.action_create
         
-        remote_file = Chef::Resource::RemoteFile.new(
-          full_cache_file,
-          nil,
-          @node
-        )
-        remote_file.cookbook_name = @new_resource.cookbook_name
-        remote_file.source(@new_resource.response_file)
-        remote_file.backup(false)
-        
-        rf_provider = Chef::Platform.provider_for_node(@node, remote_file)
-        rf_provider.load_current_resource
-        rf_provider.action_create
-        
-        if remote_file.updated
+        if remote_file.new_resource.updated?
           Chef::FileCache.load(cache_path, false)
         else
           false
         end
+      end
+      
+      def remote_preseed_file
+        full_cache_dir = Chef::FileCache.create_cache_path("preseed/#{@new_resource.cookbook_name}")
+        full_cache_file = "#{full_cache_dir}/#{name}-#{version}.seed"
+        cache_path = "preseed/#{@new_resource.cookbook_name}/#{name}-#{version}.seed"
+
+        Chef::Log.debug("Fetching preseed file to #{cache_path}")
+
+        remote_file = Chef::Resource::RemoteFile.new(relative_cache_file_path)
+        remote_file.cookbook_name = @new_resource.cookbook_name
+        remote_file.source(@new_resource.response_file)
+        remote_file.backup(false)
+
+        Chef::Platform.provider_for_node(@node, remote_file)
       end
 
       def expand_options(options)
