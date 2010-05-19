@@ -24,29 +24,12 @@ class Chef
   class Provider
     class Service
       class Debian < Chef::Provider::Service::Init
+        UPDATE_RC_D_ENABLED_MATCHES = /etc\/rc[\dS].d\/S|not installed/i
+        
         def load_current_resource
           super
           
-          unless ::File.exists? "/usr/sbin/update-rc.d"
-            raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d does not exist!"
-          end
-
-          status = popen4("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
-            r = /etc\/rc[\dS].d\/S|not installed/i
-            stdout.each_line do |line|
-              if r.match(line)
-                @current_resource.enabled true
-                break
-              else
-                @current_resource.enabled false
-              end
-            end
-          end  
-
-          unless status.exitstatus == 0
-            raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
-          end
-
+          @current_resource.enabled(service_currently_enabled?)
           @current_resource        
         end
 
@@ -56,6 +39,28 @@ class Chef
 
         def disable_service()
           run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
+        end
+        
+        def assert_update_rcd_available
+          unless ::File.exists? "/usr/sbin/update-rc.d"
+            raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d does not exist!"
+          end
+        end
+        
+        def service_currently_enabled?
+          assert_update_rcd_available
+
+          status = popen4("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
+            stdout.each_line do |line|
+              return true if line =~ UPDATE_RC_D_ENABLED_MATCHES
+            end
+          end  
+
+          unless status.exitstatus == 0
+            raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
+          end
+          
+          false
         end
         
       end

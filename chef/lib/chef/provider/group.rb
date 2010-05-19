@@ -115,6 +115,19 @@ class Chef
           raise Chef::Exceptions::Group, "Cannot modify #{@new_resource} - group does not exist!"
         end
       end
+      
+      def create_group
+        raise NotImplementedError, "subclasses of Chef::Provider::Group should define #create_group"
+      end
+
+      def manage_group
+        raise NotImplementedError, "subclasses of Chef::Provider::Group should define #manage_group"
+      end
+
+      def remove_group
+        raise NotImplementedError, "subclasses of Chef::Provider::Group should define #remove_group"
+      end
+
     end
   end
 end
