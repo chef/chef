@@ -27,8 +27,8 @@ describe Chef::RunContext do
     Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "nodes")))
     Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")))
     @node = Chef::Node.new
+    @node.find_file("run_context")
     @run_context = Chef::RunContext.new(@node, Chef::CookbookLoader.new)
-    puts "run_context is #{@run_context}"
   end
   
   it "should load all the definitions" do

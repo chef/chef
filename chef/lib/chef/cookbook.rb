@@ -37,8 +37,12 @@ class Chef
     # functionality.
     attr_reader :attribute_filenames
 
-    attr_reader :recipe_filename_by_name
-    attr_reader :attribute_filename_by_short_filename
+    # recipe_filenames also has a setter that has non-default
+    # functionality.
+    attr_reader :recipe_filenames
+
+    attr_reader :recipe_filenames_by_name
+    attr_reader :attribute_filenames_by_short_filename
     
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
     
@@ -180,14 +184,14 @@ class Chef
     
     def attribute_filenames=(*filenames)
       @attribute_filenames = filenames.flatten
-      @attribute_filename_by_short_filename = filenames_by_name(filenames)
+      @attribute_filenames_by_short_filename = filenames_by_name(attribute_filenames)
       attribute_filenames
     end
     
     # Return recipe names in the form of cookbook_name::recipe_name
     def fully_qualified_recipe_names
       results = Array.new
-      recipe_filename_by_name.each_key do |rname|
+      recipe_filenames_by_name.each_key do |rname|
         results << "#{name}::#{rname}"
       end
       results
@@ -195,15 +199,15 @@ class Chef
     
     def recipe_filenames=(*filenames)
       @recipe_filenames = filenames.flatten
-      @recipe_filename_by_name = filenames_by_name(filenames)
-      @recipe_filenames
+      @recipe_filenames_by_name = filenames_by_name(recipe_filenames)
+      recipe_filenames
     end
     
     # called from DSL
     def load_recipe(recipe_name, run_context)
       cookbook_name = self.name
       
-      unless recipe_filename_by_name.has_key?(recipe_name)
+      unless recipe_filenames_by_name.has_key?(recipe_name)
         raise ArgumentError, "Cannot find a recipe matching #{recipe_name} in cookbook #{name}"
       end
       Chef::Log.debug("Found recipe #{recipe_name} in cookbook #{cookbook_name}")

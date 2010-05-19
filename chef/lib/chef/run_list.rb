@@ -46,7 +46,7 @@ class Chef
 
     # Add an item of the form "recipe[foo::bar]" or "role[webserver]"
     def <<(run_list_item)
-      type, short_name, typed_name = parse_entry(item)
+      type, short_name, typed_name = parse_entry(run_list_item)
       
       self.run_list << run_list_item
       self
@@ -102,7 +102,7 @@ class Chef
     end
 
     def reset!(*args)
-      self.run_list = Array.new
+      self.run_list.clear
       args.flatten.each do |item|
         if item.kind_of?(Chef::RunList)
           item.each { |r| self << r }

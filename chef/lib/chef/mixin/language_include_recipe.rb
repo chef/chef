@@ -33,6 +33,8 @@ class Chef
           node.run_state[:seen_recipes][recipe_name] = true
 
           cookbook_name, recipe_short_name = Chef::Cookbook.parse_recipe_name(recipe_name)
+
+          run_context = self.is_a?(Chef::RunContext) ? self : self.run_context
           cookbook = run_context.cookbook_collection[cookbook_name]
           cookbook.load_recipe(recipe_short_name, run_context)
         end

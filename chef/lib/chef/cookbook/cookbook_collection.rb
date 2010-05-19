@@ -27,7 +27,7 @@
 # into this.
 class Chef
   class CookbookCollection < Hash
-    
+
     # The input is a mapping of cookbook name to Cookbook object. We simply
     # extract them
     def populate(cookbooks)

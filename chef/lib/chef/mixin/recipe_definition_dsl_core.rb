@@ -54,8 +54,7 @@ class Chef
           
           # If we have a resource like this one, we want to steal its state
           resource = begin
-                       args << run_context.resource_collection
-                       args << run_context.node
+                       args << run_context
                        Chef::Resource.const_get(rname).new(*args)
                      rescue NameError => e
                        if e.to_s =~ /Chef::Resource/
@@ -72,7 +71,7 @@ class Chef
           resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil
           resource.instance_eval(&block) if block
 
-          @collection.insert(resource)
+          run_context.resource_collection.insert(resource)
           resource
         end
       end

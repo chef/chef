@@ -32,7 +32,7 @@ class Chef
     include Chef::Mixin::Language
     include Chef::Mixin::ConvertToClassName
     
-    attr_accessor :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name, :enclosing_provider
+    attr_accessor :params, :provider, :updated, :allowed_actions, :run_context, :cookbook_name, :recipe_name, :enclosing_provider
     attr_reader :resource_name, :source_line, :not_if_args, :only_if_args
 
     # Each notify entry is a resource/action pair, modeled as an
@@ -182,9 +182,9 @@ class Chef
         end 
       end
     end
-  
+    
     def resources(*args)
-      @collection.resources(*args)
+      run_context.resource_collection.resources(*args)
     end
     
     def subscribes(action, resources, timing=:delayed)

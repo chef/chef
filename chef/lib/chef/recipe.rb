@@ -22,8 +22,6 @@ require 'chef/mixin/recipe_definition_dsl_core'
 require 'chef/mixin/from_file'
 require 'chef/mixin/language'
 require 'chef/mixin/language_include_recipe'
-require 'chef/resource_collection'
-require 'chef/cookbook_loader'
 
 class Chef
   class Recipe
@@ -33,18 +31,19 @@ class Chef
     include Chef::Mixin::LanguageIncludeRecipe
     include Chef::Mixin::RecipeDefinitionDSLCore
     
-    attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :resource_collection, 
-                  :definitions, :params, :cookbook_loader
+    attr_accessor :cookbook_name, :recipe_name, :recipe, :params, :run_context
     
     def initialize(cookbook_name, recipe_name, run_context)
       @cookbook_name = cookbook_name
       @recipe_name = recipe_name
-      @node = run_context.node
-      @resource_collection = run_context.resource_collection || Chef::ResourceCollection.new
-      @definitions = definitions || Hash.new
-      @cookbook_collection = run_context.cookbook_loader || Chef::CookbookLoader.new
-      # params is 
-      @params = Hash.new      
+      @run_context = run_context
+      # TODO: 5/19/2010 cw/tim: determine whether this can be removed
+      @params = Hash.new
+    end
+    
+    # Used in DSL mixins
+    def node
+      run_context.node
     end
     
     # what does this do? and what is args? TODO 5-14-2010

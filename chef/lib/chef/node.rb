@@ -189,6 +189,11 @@ class Chef
     # Set the name of this Node, or return the current name.
     def name(arg=nil)
       if arg != nil
+        validate(
+                 {:name => arg },
+                 {:name => { :kind_of => String,
+                     :cannot_be => :blank}
+                 })
         @name = arg
       else
         @name
