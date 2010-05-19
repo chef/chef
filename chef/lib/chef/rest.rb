@@ -345,6 +345,9 @@ class Chef
 
     def stream_to_tempfile(url, response)
       tf = Tempfile.open("chef-rest")
+      if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+        tf.binmode #required for binary files on Windows platforms
+      end
       Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
       # Stolen from http://www.ruby-forum.com/topic/166423
       # Kudos to _why!
