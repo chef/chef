@@ -21,7 +21,7 @@ class Chef
   class Resource
     class RubyBlock < Chef::Resource
       
-      def initialize(name, run_context)
+      def initialize(name, run_context=nil)
         super
         @resource_name = :ruby_block
         @action = "create"

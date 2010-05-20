@@ -22,7 +22,7 @@ class Chef
   class Resource
     class Subversion < Chef::Resource::Scm
       
-      def initialize(name, run_context)
+      def initialize(name, run_context=nil)
         super
         @resource_name = :subversion
         @provider = Chef::Provider::Subversion

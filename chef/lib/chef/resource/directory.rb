@@ -22,7 +22,7 @@ class Chef
   class Resource
     class Directory < Chef::Resource
       
-      def initialize(name, run_context)
+      def initialize(name, run_context=nil)
         super
         @resource_name = :directory
         @path = name
