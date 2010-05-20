@@ -44,6 +44,8 @@ class Chef
     attr_reader :recipe_filenames_by_name
     attr_reader :attribute_filenames_by_short_filename
     
+    attr_reader :attribute_filenames
+    
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
     
     DESIGN_DOCUMENT = {
@@ -134,6 +136,7 @@ class Chef
       @template_filenames = Array.new
       @remote_filenames = Array.new
       @recipe_filenames = Array.new
+      @recipe_filenames_by_name = {}
       @library_filenames = Array.new
       @resource_filenames = Array.new
       @provider_filenames = Array.new
@@ -188,6 +191,10 @@ class Chef
       attribute_filenames
     end
     
+    ## BACKCOMPAT/DEPRECATED - Remove these and fix breakage before release [DAN - 5/20/2010]##
+    alias :attribute_files :attribute_filenames
+    alias :attribute_files= :attribute_filenames=
+    
     # Return recipe names in the form of cookbook_name::recipe_name
     def fully_qualified_recipe_names
       results = Array.new
@@ -202,6 +209,10 @@ class Chef
       @recipe_filenames_by_name = filenames_by_name(recipe_filenames)
       recipe_filenames
     end
+    
+    ## BACKCOMPAT/DEPRECATED - Remove these and fix breakage before release [DAN - 5/20/2010]##
+    alias :recipe_files :recipe_filenames
+    alias :recipe_files= :recipe_filenames=
     
     # called from DSL
     def load_recipe(recipe_name, run_context)

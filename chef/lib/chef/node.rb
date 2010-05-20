@@ -20,6 +20,7 @@
 #
 
 require 'chef/config'
+require 'chef/cookbook/cookbook_collection'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
@@ -36,7 +37,8 @@ require 'json'
 class Chef
   class Node
     
-    attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list, :override_attrs, :default_attrs, :normal_attrs, :automatic_attrs
+    attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list
+    attr_accessor :override_attrs, :default_attrs, :normal_attrs, :automatic_attrs
     attr_reader :couchdb_id
     
     # TODO: 5/18/2010 cw/timh. cookbook_collection should be removed
@@ -152,6 +154,9 @@ class Chef
         :seen_recipes => Hash.new,
         :seen_attributes => Hash.new
       }
+      # TODO: 5/20/2010 need this here as long as other objects try to access
+      # the cookbook collection via Node, otherwise get NoMethodError on nil.
+      @cookbook_collection = CookbookCollection.new
     end
 
     def couchdb_id=(value)
