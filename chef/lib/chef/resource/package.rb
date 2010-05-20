@@ -30,7 +30,7 @@ class Chef
         @candidate_version = nil
         @response_file = nil
         @source = nil
-        @action = "install"
+        @action = :install
         @options = nil
         @allowed_actions.push(:install, :upgrade, :remove, :purge)
       end
