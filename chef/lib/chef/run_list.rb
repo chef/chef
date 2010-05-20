@@ -42,12 +42,6 @@ class Chef
       @run_list_items = Array.new
     end
 
-    def rest
-      @rest ||= Chef::REST.new
-    end
-
-    attr_writer :rest
-
     def role_names
       @run_list_items.inject([]){|memo, run_list_item| memo << run_list_item.name if run_list_item.role? ; memo}
     end
@@ -124,7 +118,7 @@ class Chef
       self
     end
 
-    def expand(data_source='server', couchdb=nil)
+    def expand(data_source='server', couchdb=nil, rest=nil)
       couchdb = couchdb ? couchdb : Chef::CouchDB.new
 
       expansion = expansion_for_data_source(data_source, :couchdb => couchdb, :rest => rest)
