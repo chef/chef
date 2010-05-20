@@ -30,6 +30,7 @@ require 'chef/role'
 require 'chef/file_cache'
 require 'chef/run_context'
 require 'chef/runner'
+require 'chef/cookbook/cookbook_collection'
 require 'ohai'
 
 class Chef
@@ -37,8 +38,10 @@ class Chef
     
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
-    
-    attr_accessor :node, :registration, :json_attribs, :node_name, :ohai, :rest, :runner, :run_context
+
+    # TODO: timh/cw: 5-19-2010: json_attribs should be moved to RunContext?
+    attr_accessor :node, :registration, :json_attribs, :node_name, :ohai, :rest, :runner
+    attr_reader :node_exists
     
     # Creates a new Chef::Client.
     def initialize()
@@ -48,16 +51,15 @@ class Chef
       @node_name = nil
       @node_exists = true
       @runner = nil
-      @run_context = nil
       @ohai = Ohai::System.new
       Chef::Log.verbose = Chef::Config[:verbose_logging]
       Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger
       @ohai_has_run = false
-      @rest = if File.exists?(Chef::Config[:client_key])
-                Chef::REST.new(Chef::Config[:chef_server_url])
-              else
-                Chef::REST.new(Chef::Config[:chef_server_url], nil, nil)
-              end
+
+      run_ohai
+      determine_node_name
+      register unless Chef::Config[:solo]
+      build_node
     end
     
     # Do a full run for this Chef::Client.  Calls:
@@ -72,22 +74,16 @@ class Chef
     # true:: Always returns true.
     def run
       self.runner = nil
-      self.run_context = nil
+      run_context = nil
       begin
         start_time = Time.now
         Chef::Log.info("Starting Chef Run")
         
-        run_ohai
-        determine_node_name
-        
         if Chef::Config[:solo]
-          build_node
-          self.run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
-          assert_cookbook_path_not_empty
+          run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
+          assert_cookbook_path_not_empty(run_context)
           converge
         else
-          register
-          build_node
           save_node
           
           # Note: When we move to lazily loading all cookbook files,
@@ -96,11 +92,11 @@ class Chef
           # and feeds them to the node's lazy-loading cookbook
           # collection. [cw/tim-5/11/2010]
           sync_cookbooks
-          assert_cookbook_path_not_empty
-          self.run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
+          run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
+          assert_cookbook_path_not_empty(run_context)
           save_node
           
-          converge
+          converge(run_context)
           save_node
         end
         
@@ -148,17 +144,22 @@ class Chef
     end
 
     def determine_node_name
+      puts "ohai = #{ohai.inspect}"
       unless node_name
         if Chef::Config[:node_name]
+          puts "in this fucking block #1"
           self.node_name = Chef::Config[:node_name]
         else
+          puts "in this fucking block #2 - ohai[:fqdn] is '#{ohai[:fqdn]}', ohai[:hostname] is '#{ohai[:hostname]}'"
           self.node_name = ohai[:fqdn] ? ohai[:fqdn] : ohai[:hostname]
           Chef::Config[:node_name] = node_name
         end
+
         raise RuntimeError, "Unable to determine node name from ohai" unless node_name
       end
       node_name
     end
+    
 
     # Builds a new node object for this client.  Starts with querying for the FQDN of the current
     # host (unless it is supplied), then merges in the facts from Ohai.
@@ -167,7 +168,8 @@ class Chef
     # node<Chef::Node>:: Returns the created node object, also stored in @node
     def build_node
       Chef::Log.debug("Building node object for #{node_name}")
-
+      
+      puts "Chef::Config[:solo] == #{Chef::Config[:solo]}"
       unless Chef::Config[:solo]
         self.node = begin
                       rest.get_rest("nodes/#{node_name}")
@@ -177,7 +179,7 @@ class Chef
       end
       
       unless node
-        self.node_exists = false
+        @node_exists = false
         self.node = Chef::Node.new
         node.name(node_name)
       end
@@ -202,13 +204,17 @@ class Chef
     # rest<Chef::REST>:: returns Chef::REST connection object
     def register
       if File.exists?(Chef::Config[:client_key])
+        puts "SKIPPING REGISTRATIONF UCKFUCK"
         Chef::Log.debug("Client key #{Chef::Config[:client_key]} is present - skipping registration")
       else
+        puts "Chef::Config[:client_url] = #{Chef::Config[:client_url]}, :validation_client_name = #{Chef::Config[:validation_client_name]}, validation_key = #{Chef::Config[:validation_key]}"
         Chef::Log.info("Client key #{Chef::Config[:client_key]} is not present - registering")
         Chef::REST.new(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).register(node_name, Chef::Config[:client_key])
+        puts "done with Chef::Rest.register"
       end
       # We now have the client key, and should use it from now on.
-      self.rest = Chef::REST.new(Chef::Config[:chef_server_url])
+      puts "about to make new chef:rest with #{Chef::Config[:chef_server_url]}, #{node_name}, #{Chef::Config[:client_key]}"
+      self.rest = Chef::REST.new(Chef::Config[:chef_server_url], node_name, Chef::Config[:client_key])
     end
     
     # Update the file caches for a given cache segment.  Takes a segment name
@@ -291,7 +297,7 @@ class Chef
       end
       
       # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
-        Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+      Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
     end
     
     # Updates the current node configuration on the server.
@@ -304,7 +310,7 @@ class Chef
                     rest.put_rest("nodes/#{node_name}", node)
                   else
                     result = rest.post_rest("nodes", node)
-                    self.node_exists = true
+                    @node_exists = true
                     rest.get_rest(result['uri'])
                   end
     end
@@ -314,9 +320,9 @@ class Chef
     #
     # === Returns
     # true:: Always returns true
-    def converge
+    def converge(run_context)
       Chef::Log.debug("Converging node #{node_name}")
-      self.runner = Chef::Runner.new(run_context).converge(node)
+      self.runner = Chef::Runner.new(run_context)
       runner.converge
       true
     end
@@ -331,7 +337,7 @@ class Chef
       object.kind_of?(Array) ? index == object.size - 1 : true 
     end  
     
-    def assert_cookbook_path_not_empty
+    def assert_cookbook_path_not_empty(run_context)
       if Chef::Config[:solo]
         # Check for cookbooks in the path given
         # Chef::Config[:cookbook_path] can be a string or an array
@@ -347,9 +353,9 @@ class Chef
           end
         end
       else
-        Chef::Log.warn("Node #{node_name} has an empty run list.") if node.run_list.empty?
+        Chef::Log.warn("Node #{node_name} has an empty run list.") if run_context.node.run_list.empty?
       end
-      
+
     end
   end
 end

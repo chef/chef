@@ -36,8 +36,8 @@ describe Chef::Handler do
   describe "build_report_data" do
     before(:each) do
       @node = Chef::Node.new
-      @compile = Chef::Compile.new(@node)
-      @runner = Chef::Runner.new(@node, @compile.collection, @compile.definitions, @compile.cookbook_loader)
+      @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
+      @runner = Chef::Runner.new(@node, @run_context)
       @start_time = Time.now
       @end_time = Time.now
       @elapsed_time = @end_time - @start_time

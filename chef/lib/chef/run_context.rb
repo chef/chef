@@ -51,7 +51,6 @@ class Chef
     end
 
     def load
-      puts "in run_context.load"
       foreach_cookbook_load_segment(:libraries) do |cookbook_name, filename|
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
         require filename
@@ -63,7 +62,6 @@ class Chef
       end
       
       foreach_cookbook_load_segment(:resources) do |cookbook_name, filename|
-        puts ("Loading cookbook #{cookbook_name}'s resources from #{filename}")
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s resources from #{filename}")
         Chef::Resource.build_from_file(cookbook_name, filename)
       end
@@ -83,9 +81,7 @@ class Chef
       # Retrieve the fully expanded list of recipes for the node by
       # resolving roles; this step also merges attributes into the
       # node from the roles/recipes included.
-      puts "node.run_list #{node.run_list.inspect}"
       recipe_names = node.expand_node!
-      puts "expanded recipe_names is #{recipe_names.inspect}"
       recipe_names.each do |recipe_name|
         # TODO: timh/cw, 5-14-2010: It's distasteful to be including
         # the DSL in a class outside the context of the DSL
@@ -96,13 +92,8 @@ class Chef
     private
     
     def foreach_cookbook_load_segment(segment, &block)
-      puts "foreach_cookbook_load_segment: segment #{segment}"
       cookbook_collection.each do |cookbook_name, cookbook|
-        puts "foreach_cookbook_load_segment: cookbook_name #{cookbook_name}"
-        puts "foreach_cookbook_load_segment: cookbook #{cookbook.inspect}"
-        
         segment_filenames = cookbook.segment_filenames(segment)
-        puts "foreach_cookbook_load_segment: segment_filenames is #{segment_filenames.inspect}"
         segment_filenames.each do |segment_filename|
           block.call(cookbook_name, segment_filename)
         end
