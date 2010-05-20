@@ -22,9 +22,10 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 describe Chef::Provider::Package::Rubygems do
   before(:each) do
     @node = Chef::Node.new
+    @run_context = Chef::RunContext.new(@node, {})
     @new_resource = Chef::Resource::GemPackage.new("nokogiri")
     @new_resource.version "1.4.1"
-    @provider = Chef::Provider::Package::Rubygems.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
   end
 
   describe "when selecting the gem binary to use" do
