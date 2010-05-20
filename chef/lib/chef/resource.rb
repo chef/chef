@@ -65,7 +65,7 @@ class Chef
     end
     
     def node
-      run_context.node
+      run_context && run_context.node
     end
 
     # If an unknown method is invoked, determine whether the enclosing Provider's
