@@ -9,100 +9,106 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/mixin/deep_merge'
+require 'chef/run_list/run_list_item'
+require 'chef/run_list/run_list_expansion'
 
 class Chef
   class RunList
     include Enumerable
 
-    # @run_list is an array of strings that describe the items to execute in order.
+    # @run_list_items is an array of RunListItems that describe the items to 
+    # execute in order. RunListItems can load from and convert to the string
+    # forms users set on roles and nodes.
     # For example:
-    #   @run_list = ['recipe[foo::bar]', 'role[webserver]']
+    #   @run_list_items = ['recipe[foo::bar]', 'role[webserver]']
     # Thus,
     #   self.role_names would return ['webserver']
     #   self.recipe_names would return ['foo::bar']
-    attr_reader :run_list
+    attr_reader :run_list_items
+
+    # For backwards compat
+    alias :run_list :run_list_items
 
     def initialize
-      @run_list = Array.new
-    end
-    
-    def role_names
-      run_list.inject([]){|memo, run_list_item| type, short_name, typed_name = parse_entry(run_list_item); memo << short_name if type=="role" ; memo}
+      @run_list_items = Array.new
     end
 
-    def recipe_names
-      run_list.inject([]){|memo, run_list_item| type, short_name, typed_name = parse_entry(run_list_item); memo << short_name if type=="recipe" ; memo}
+    def rest
+      @rest ||= Chef::REST.new
     end
+
+    attr_writer :rest
+
+    def role_names
+      @run_list_items.inject([]){|memo, run_list_item| memo << run_list_item.name if run_list_item.role? ; memo}
+    end
+
+    alias :roles :role_names
+
+    def recipe_names
+      @run_list_items.inject([]){|memo, run_list_item| memo << run_list_item.name if run_list_item.recipe? ; memo}
+    end
+
+    alias :recipes :recipe_names
 
     # Add an item of the form "recipe[foo::bar]" or "role[webserver]"
     def <<(run_list_item)
-      type, short_name, typed_name = parse_entry(run_list_item)
-      
-      self.run_list << typed_name
+      run_list_item = parse_entry(run_list_item)
+      @run_list_items << run_list_item unless @run_list_items.include?(run_list_item)
       self
     end
 
-    def ==(*isequal)
-      check_array = nil
-      if isequal[0].kind_of?(Chef::RunList)
-        check_array = isequal[0].run_list
+    def ==(other)
+      if other.kind_of?(Chef::RunList)
+        other.run_list_items == @run_list_items
       else
-        check_array = isequal.flatten
-      end
-      
-      return false if check_array.length != run_list.length
+        other_run_list_items = other
+        return false unless other_run_list_items.size == @run_list_items.size
 
-      check_array.each_index do |i|
-        to_check = check_array[i]
-        type, name, typed_name = parse_entry(to_check)
-        return false if run_list[i] != typed_name
+        other_run_list_items.map! { |item| item.kind_of?(RunListItem) ? item : RunListItem.new(item) }
+        other_run_list_items == @run_list_items
       end
-
-      true
     end
 
     def to_s
-      run_list.join(", ")
+      @run_list_items.join(", ")
     end
 
     def empty?
-      run_list.length == 0 ? true : false
+      @run_list_items.length == 0 ? true : false
     end
 
     def [](pos)
-      run_list[pos]
+      @run_list_items[pos]
     end
 
     def []=(pos, item)
-      type, entry, fentry = parse_entry(item)
-      run_list[pos] = fentry 
+      @run_list_items[pos] = parse_entry(item)
     end
 
     def each(&block)
-      run_list.each { |i| block.call(i) }
+      @run_list_items.each { |i| block.call(i) }
     end
 
     def each_index(&block)
-      run_list.each_index { |i| block.call(i) }
+      @run_list_items.each_index { |i| block.call(i) }
     end
 
     def include?(item)
-      type, entry, fentry = parse_entry(item)
-      run_list.include?(fentry)
+      @run_list_items.include?(parse_entry(item))
     end
 
     def reset!(*args)
-      self.run_list.clear
+      @run_list_items.clear
       args.flatten.each do |item|
         if item.kind_of?(Chef::RunList)
           item.each { |r| self << r }
@@ -114,83 +120,32 @@ class Chef
     end
 
     def remove(item)
-      self.run_list.delete_if{|i| i == item}
+      @run_list_items.delete_if{|i| i == item}
       self
     end
 
-    def expand(data_source='server', couchdb=nil, rest=nil)
+    def expand(data_source='server', couchdb=nil)
       couchdb = couchdb ? couchdb : Chef::CouchDB.new
-      recipes = Array.new
-      default_attrs = Mash.new
-      override_attrs = Mash.new
-      seen_roles = Hash.new
 
-      # for each run list item, add recipes and expand roles into
-      # their constituent recipes recursively
-      run_list.each do |entry|
-        type, name, typed_name = parse_entry(entry)
-        case type
-        when 'recipe'
-          recipes << name unless recipes.include?(name)
-        when 'role'
-          # don't duplicate role expansion
-          next if seen_roles.has_key?(name)
-          seen_roles[name] = true
-
-          # expand role
-          role = expand_role(name, data_source)
-          nested_recipes, nested_default_attrs, nested_override_attrs = role.run_list.expand(data_source, couchdb, rest)
-
-          # add its recipes
-          nested_recipes.each { |r| recipes <<  r unless recipes.include?(r) }
-          
-          # merge its attributes
-          default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, Chef::Mixin::DeepMerge.merge(role.default_attributes,nested_default_attrs))
-          override_attrs = Chef::Mixin::DeepMerge.merge(override_attrs, Chef::Mixin::DeepMerge.merge(role.override_attributes, nested_override_attrs))
-        end
-      end
-      
-      return recipes, default_attrs, override_attrs
+      expansion = expansion_for_data_source(data_source, :couchdb => couchdb, :rest => rest)
+      expansion.expand
+      return expansion.recipes, expansion.default_attrs, expansion.override_attrs
     end
-    
-    private
 
-    # Return a [type, short_name, typed_name] entry, e.g.,
-    # If passed
-    #   'recipe[aws::elastic_ip]'
-    # will return
-    #   ['recipe', 'aws::elastic_ip', 'recipe[aws::elastic_ip]']
+    # Converts a string run list entry to a RunListItem object
     def parse_entry(entry)
-      case entry
-      when /^(.+)\[(.+)\]$/
-        [ $1, $2, entry ]
-      else
-        [ 'recipe', entry, "recipe[#{entry}]" ]
-      end
+      RunListItem.new(entry)
     end
-    
-    # data_source should be one of 'disk', 'server', or
-    # 'couchdb'. If running in Chef Solo, it adopts the behavior of
-    # 'disk'.
-    def expand_role(name, data_source)
-      begin
-        if data_source == 'disk' || Chef::Config[:solo]
-          # Load the role from disk
-          Chef::Role.from_disk(name) || raise(Chef::Exceptions::RoleNotFound)
-        elsif data_source == 'server'
-          # Load the role from the server
-           begin
-            (rest || Chef::REST.new(Chef::Config[:role_url])).get_rest("roles/#{name}") 
-          rescue Net::HTTPServerException
-            raise Chef::Exceptions::RoleNotFound if $!.message == '404 "Not Found"'
-            raise
-          end
-        elsif data_source == 'couchdb'
-          # Load the role from couchdb
-          Chef::Role.cdb_load(name, couchdb) rescue Chef::Exceptions::CouchDBNotFound raise(Chef::Exceptions::RoleNotFound)
-        end
-      rescue Chef::Exceptions::RoleNotFound
-        Chef::Log.error("Role #{name} is in the runlist but does not exist. Skipping expand.")
+
+    def expansion_for_data_source(data_source, opts={})
+      data_source = 'disk' if Chef::Config[:solo]
+      case data_source.to_s
+      when 'disk'
+        RunListExpansionFromDisk.new(@run_list_items)
+      when 'server'
+        RunListExpansionFromAPI.new(@run_list_items, opts[:rest])
+      when 'couchdb'
+        RunListExpansionFromCouchDB.new(@run_list_items, opts[:couchdb])
       end
     end
 

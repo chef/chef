@@ -269,6 +269,10 @@ class Chef
       provider.send("action_#{action}")
     end
     
+    def updated?
+      updated
+    end
+
     class << self
       
       def json_create(o)

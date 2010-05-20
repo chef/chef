@@ -275,6 +275,8 @@ class Chef
         role.name(name)
         role.from_file(rb_file)
         role
+      else
+        raise Chef::Exceptions::RoleNotFound, "Role '#{name}' could not be loaded from disk"
       end
     end
 
