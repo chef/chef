@@ -21,7 +21,7 @@ class Chef
     class ZenMaster < Chef::Resource
       attr_reader :peace
       
-      def initialize(name, run_context)
+      def initialize(name, run_context=nil)
         @resource_name = :zen_master
         super
       end
