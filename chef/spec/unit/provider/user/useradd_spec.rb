@@ -23,7 +23,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 describe Chef::Provider::User::Useradd do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, [])
+    @run_context = Chef::RunContext.new(@node, {})
     
     @new_resource = Chef::Resource::User.new("adam", @run_context)
     @new_resource.comment "Adam Jacob"

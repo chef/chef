@@ -22,7 +22,7 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
     @node[:command] = {:ps => 'fuuuu'}
-    @run_context = Chef::RunContext.new(@node, [])
+    @run_context = Chef::RunContext.new(@node, {})
 
     @new_resource = Chef::Resource::Service.new("chef")
 

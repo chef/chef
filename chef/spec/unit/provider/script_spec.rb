@@ -21,7 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::Script, "action_run" do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, [])
+    @run_context = Chef::RunContext.new(@node, {})
     @new_resource = Chef::Resource::Script.new('run some perl code')
     @new_resource.code "$| = 1; print 'i like beans'"
     @new_resource.interpreter 'perl'
