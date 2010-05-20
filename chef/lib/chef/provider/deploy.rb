@@ -33,7 +33,7 @@ class Chef
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
         
-        @scm_provider = @new_resource.scm_provider.new(run_context, @new_resource)
+        @scm_provider = @new_resource.scm_provider.new(@new_resource, run_context)
         
         # @configuration is not used by Deploy, it is only for backwards compat with
         # chef-deploy or capistrano hooks that might use it to get environment information
