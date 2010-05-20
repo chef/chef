@@ -25,9 +25,9 @@ class Chef
       
       def action_break
         if defined?(Shef) && Shef.running?
-          @collection.iterator.pause
+          run_context.resource_collection.iterator.pause
           @new_resource.updated = true
-          @collection.iterator
+          run_context.resource_collection.iterator
         end
       end
       
