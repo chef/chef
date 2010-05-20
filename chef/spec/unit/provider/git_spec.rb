@@ -26,7 +26,8 @@ describe Chef::Provider::Git do
     @resource.destination "/my/deploy/dir"
     @resource.revision "d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @node = Chef::Node.new
-    @provider = Chef::Provider::Git.new(@node, @resource)
+    @run_context = Chef::RunContext.new(@node, {})
+    @provider = Chef::Provider::Git.new(@resource, @run_context)
   end
   
   context "determining the revision of the currently deployed checkout" do
