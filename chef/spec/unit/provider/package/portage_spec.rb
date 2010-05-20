@@ -19,7 +19,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Package::Portage, "load_current_resource" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     
     @new_resource = mock("Chef::Resource::Package",
       :null_object => true,
@@ -76,7 +76,7 @@ end
 
 describe Chef::Provider::Package::Portage, "candidate_version" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package",
       :null_object => true,
       :name => "dev-util/git",
@@ -110,7 +110,7 @@ end
 
 describe Chef::Provider::Package::Portage, "install_package" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package",
       :null_object => true,
       :name => "dev-util/git",
@@ -149,7 +149,7 @@ end
 
 describe Chef::Provider::Package::Portage, "remove_package" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package",
       :null_object => true,
       :name => "dev-util/git",

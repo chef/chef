@@ -64,7 +64,7 @@ describe Chef::Provider::Package::EasyInstall do
 
   describe "actions_on_package" do
     # before(:each) do
-    #   @node = mock("Chef::Node", :null_object => true)
+    #   @node = Chef::Node.new
     #   @new_resource = mock("Chef::Resource::Package",
     #     :null_object => true,
     #     :name => "boto",

@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::Route, "initialize" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource", :null_object => true)
   end
 
@@ -33,7 +33,7 @@ end
 
 describe Chef::Provider::Route, "action_add" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Route",
       :null_object => true,
       :name => "10.0.0.10",
@@ -68,7 +68,7 @@ end
 
 describe Chef::Provider::Route, "action_delete" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Route",
       :null_object => true,
       :name => "10.0.0.10",

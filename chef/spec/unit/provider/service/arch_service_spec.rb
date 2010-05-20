@@ -24,7 +24,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Service::Arch, "load_current_resource" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @node.stub!(:[]).with(:command).and_return({:ps => "ps -ef"})
 
     @new_resource = mock("Chef::Resource::Service",

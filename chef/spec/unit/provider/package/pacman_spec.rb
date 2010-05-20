@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Package::Pacman, "load_current_resource" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package", 
       :null_object => true,
       :name => "nano",
@@ -132,7 +132,7 @@ end
 describe Chef::Provider::Package::Pacman, "install_package" do
   
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package", 
       :null_object => true,
       :name => "nano",
@@ -164,7 +164,7 @@ end
 describe Chef::Provider::Package::Pacman, "upgrade_package" do
   
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package", 
       :null_object => true,
       :name => "nano",
@@ -184,7 +184,7 @@ end
 
 describe Chef::Provider::Package::Pacman, "remove_package" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package", 
       :null_object => true,
       :name => "nano",
@@ -215,7 +215,7 @@ end
 
 describe Chef::Provider::Package::Pacman, "purge_package" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package", 
       :null_object => true,
       :name => "nano",

@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::User::Dscl, "dscl" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @status = mock("Process::Status", :null_object => true, :exitstatus => 0) 
@@ -47,7 +47,7 @@ end
 
 describe Chef::Provider::User::Dscl, "safe_dscl" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @status = mock("Process::Status", :null_object => true, :exitstatus => 0)
@@ -98,7 +98,7 @@ end
 
 describe Chef::Provider::User::Dscl, "get_free_uid" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "aj")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @provider.stub!(:safe_dscl).and_return("\naj      200\njt      201\n")
@@ -121,7 +121,7 @@ end
 
 describe Chef::Provider::User::Dscl, "uid_used?" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "aj")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @provider.stub!(:safe_dscl).and_return("\naj      500\n")
@@ -147,7 +147,7 @@ end
 
 describe Chef::Provider::User::Dscl, "set_uid" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User",
       :null_object => true,
       :username => "adam",
@@ -235,7 +235,7 @@ end
 
 describe Chef::Provider::User::Dscl, "modify_home" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @current_resource = mock("Chef::Resource::User",
       :null_object => true,
       :username => "adam",
@@ -353,7 +353,7 @@ end
 
 describe Chef::Provider::User::Dscl, "osx_shadow_hash?" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "adam")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @provider.stub!(:safe_dscl).and_return(true)
@@ -370,7 +370,7 @@ end
 
 describe Chef::Provider::User::Dscl, "osx_salted_sha1?" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "adam")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @provider.stub!(:safe_dscl).and_return(true)
@@ -387,7 +387,7 @@ end
 
 describe Chef::Provider::User::Dscl, "guid" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "adam")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @provider.stub!(:safe_dscl).and_return("GeneratedUID: 2B503067-BA65-47F3-B2B7-BE321E618CEA\n")
@@ -401,7 +401,7 @@ end
 
 describe Chef::Provider::User::Dscl, "shadow_hash_set?" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "adam")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @provider.stub!(:safe_dscl).and_return("\n\n")
@@ -450,7 +450,7 @@ end
 
 describe Chef::Provider::User::Dscl, "modify_password" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User",
       :null_object => true,
       :username => "adam",
@@ -527,7 +527,7 @@ end
 
 describe Chef::Provider::User::Dscl, "load_current_resource" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "adam")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     File.stub!(:exists?).and_return(false)
@@ -546,7 +546,7 @@ end
 
 describe Chef::Provider::User::Dscl, "create_user" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", :null_object => true)
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @provider.stub!(:manage_user).and_return(true)
@@ -560,7 +560,7 @@ end
 
 describe Chef::Provider::User::Dscl, "manage_user" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User",
       :null_object => true,
       :username => "adam",
@@ -610,7 +610,7 @@ describe Chef::Provider::User::Dscl, "manage_user" do
 
   describe "with manage set to false" do
     before do
-      @node = mock("Chef::Node", :null_object => true)
+      @node = Chef::Node.new
       @new_resource = mock("Chef::Resource::User",
         :null_object => true,
         :username => "adam",
@@ -680,7 +680,7 @@ end
 
 describe Chef::Provider::User::Dscl, "remove_user" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User",
       :null_object => true,
       :username => "adam",
@@ -729,7 +729,7 @@ end
 
 describe Chef::Provider::User::Dscl, "locked?" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "adam")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @provider.stub!(:safe_dscl).and_return("\n\n")
@@ -778,7 +778,7 @@ end
 
 describe Chef::Provider::User::Dscl, "check_lock" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "adam")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @provider.stub!(:locked?).and_return("retval")
@@ -792,7 +792,7 @@ end
 
 describe Chef::Provider::User::Dscl, "lock_user" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "adam")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @provider.stub!(:safe_dscl).and_return(true)
@@ -806,7 +806,7 @@ end
 
 describe Chef::Provider::User::Dscl, "unlock_user" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "adam")
     @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
     @provider.stub!(:safe_dscl).and_return("AuthenticationAuthority: ;DisabledUser;")

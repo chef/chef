@@ -102,7 +102,7 @@ end
 
 describe Chef::Provider::Package::Freebsd, "install_package" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource     = Chef::Resource::Package.new("zsh")
     @current_resource = Chef::Resource::Package.new("zsh")
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
@@ -159,7 +159,7 @@ end
 
 describe Chef::Provider::Package::Freebsd, "ruby-iconv (package with a dash in the name)" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource     = Chef::Resource::Package.new("ruby-iconv")
     @current_resource = Chef::Resource::Package.new("ruby-iconv")
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
@@ -183,7 +183,7 @@ end
 
 describe Chef::Provider::Package::Freebsd, "remove_package" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = Chef::Resource::Package.new("zsh")
     @new_resource.version "4.3.6_7"
     @current_resource = Chef::Resource::Package.new("zsh")
@@ -220,7 +220,7 @@ end
 
 describe Chef::Provider::Package::Freebsd, "install_package latest link fixes" do
   it "should install the perl binary package with the correct name" do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = Chef::Resource::Package.new("perl5.8")
     @current_resource = Chef::Resource::Package.new("perl5.8")
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
@@ -235,7 +235,7 @@ describe Chef::Provider::Package::Freebsd, "install_package latest link fixes" d
   end
 
   it "should install the mysql50-server binary package with the correct name" do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource     = Chef::Resource::Package.new("mysql50-server")
     @current_resource = Chef::Resource::Package.new("mysql50-server")
     @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)

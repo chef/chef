@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Service::Redhat, "load_current_resource" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
 
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
@@ -89,7 +89,7 @@ end
 
 describe Chef::Provider::Service::Redhat, "enable_service" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
@@ -109,7 +109,7 @@ end
 
 describe Chef::Provider::Service::Redhat, "disable_service" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Redhat",
       :null_object => true,
       :name => "chef",

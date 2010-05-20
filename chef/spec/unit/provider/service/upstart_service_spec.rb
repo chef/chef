@@ -179,7 +179,7 @@ describe Chef::Provider::Service::Upstart do
 
   describe "enable and disable service" do
     before(:each) do
-      # @node = mock("Chef::Node", :null_object => true)
+      # @node = Chef::Node.new
       # @new_resource = mock("Chef::Resource::Service",
       #   :null_object => true,
       #   :name => "rsyslog",

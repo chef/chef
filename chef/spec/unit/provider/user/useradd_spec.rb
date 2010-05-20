@@ -136,7 +136,7 @@ describe Chef::Provider::User::Useradd do
 
   describe "when removing a user" do
   # before(:each) do
-  #   @node = mock("Chef::Node", :null_object => true)
+  #   @node = Chef::Node.new
   #   @new_resource = mock("Chef::Resource::User", 
   #     :null_object => true,
   #     :username => "adam",
@@ -168,7 +168,7 @@ describe Chef::Provider::User::Useradd do
 
   describe "when checking the lock" do
     before(:each) do
-      # @node = mock("Chef::Node", :null_object => true)
+      # @node = Chef::Node.new
       # @new_resource = mock("Chef::Resource::User",
       #   :null_object => true,
       #   :username => "adam"
@@ -219,7 +219,7 @@ describe Chef::Provider::User::Useradd do
 
   describe Chef::Provider::User::Useradd, "lock_user" do
   # before(:each) do
-  #   @node = mock("Chef::Node", :null_object => true)
+  #   @node = Chef::Node.new
   #   @new_resource = mock("Chef::Resource::User", 
   #     :null_object => true,
   #     :username => "adam"
@@ -235,7 +235,7 @@ describe Chef::Provider::User::Useradd do
 
   describe "when unlocking the user" do
   # before(:each) do
-  #   @node = mock("Chef::Node", :null_object => true)
+  #   @node = Chef::Node.new
   #   @new_resource = mock("Chef::Resource::User", 
   #     :null_object => true,
   #     :username => "adam"

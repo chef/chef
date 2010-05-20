@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Group::Groupadd, "set_options" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group",
       :null_object => true,
       :group_name => "aj",
@@ -66,7 +66,7 @@ end
 
 describe Chef::Provider::Group::Groupadd, "create_group" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group", :null_object => true)
     @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
     @provider.stub!(:run_command).and_return(true)
@@ -87,7 +87,7 @@ end
 
 describe Chef::Provider::Group::Groupadd, "manage_group" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group", :null_object => true)
     @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
     @provider.stub!(:run_command).and_return(true)
@@ -108,7 +108,7 @@ end
 
 describe Chef::Provider::Group::Groupadd, "remove_group" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group", 
       :null_object => true,
       :group_name => "aj"
@@ -125,7 +125,7 @@ end
 
 describe Chef::Provider::Group::Groupadd, "modify_group_members" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group",
       :null_object => true,
       :group_name => "aj",
@@ -144,7 +144,7 @@ end
 
 describe Chef::Provider::Group::Usermod, "load_current_resource" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     Chef::Node.stub!(:new).and_return(@node)
     @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
     @provider = Chef::Provider::Group::Usermod.new(@node, @new_resource)

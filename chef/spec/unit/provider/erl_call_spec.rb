@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::ErlCall, "action_run" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::ErlCall",
       :null_object => true,
       :code => "io:format(\"burritos\", []).",
@@ -59,7 +59,7 @@ end
 
 describe Chef::Provider::ErlCall, "action_run" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::ErlCall",
       :null_object => true,
       :code => "io:format(\"burritos\", []).",

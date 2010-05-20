@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::Service, "initialize" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource", :null_object => true)
   end
   
@@ -33,7 +33,7 @@ end
 
 describe Chef::Provider::Service, "action_enable" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
@@ -69,7 +69,7 @@ end
 
 describe Chef::Provider::Service, "action_disable" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
@@ -104,7 +104,7 @@ end
 
 describe Chef::Provider::Service, "action_start" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
@@ -139,7 +139,7 @@ end
 
 describe Chef::Provider::Service, "action_stop" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
@@ -174,7 +174,7 @@ end
 
 describe Chef::Provider::Service, "action_restart" do
 before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
@@ -210,7 +210,7 @@ end
 
 describe Chef::Provider::Service, "action_reload" do
 before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Service",
       :null_object => true,
       :name => "chef",
@@ -256,7 +256,7 @@ end
 
   describe Chef::Provider::Service, act_string do
     before(:each) do
-      @node = mock("Chef::Node", :null_object => true)
+      @node = Chef::Node.new
       @new_resource = mock("Chef::Resource::Service",
         :null_object => true,
         :name => "chef",

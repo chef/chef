@@ -21,7 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::Mdadm, "initialize" do
 
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mdadm",
       :null_object => true,
       :devices => ["/dev/sdz1","/dev/sdz2"],
@@ -71,7 +71,7 @@ end
 
 describe Chef::Provider::Mdadm, "action_create" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mdadm",
       :null_object => true,
       :devices => ["/dev/sdz1","/dev/sdz2"],
@@ -110,7 +110,7 @@ end
 
 describe Chef::Provider::Mdadm, "action_assemble" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mdadm",
       :null_object => true,
       :devices => ["/dev/sdz1","/dev/sdz2"],
@@ -149,7 +149,7 @@ end
 
 describe Chef::Provider::Mdadm, "action_stop" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mdadm",
       :null_object => true,
       :devices => ["/dev/sdz1","/dev/sdz2"],

@@ -21,7 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::Mount, "initialize" do
 
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource", :null_object => true)
   end
 
@@ -34,7 +34,7 @@ end
 
 describe Chef::Provider::Mount, "action_mount" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mount",
     :null_object => true,
     :device => "/dev/sdz1",
@@ -74,7 +74,7 @@ end
 
 describe Chef::Provider::Mount, "action_umount" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mount",
     :null_object => true,
     :device => "/dev/sdz1",
@@ -113,7 +113,7 @@ end
 
 describe Chef::Provider::Mount, "action_remount" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mount",
     :null_object => true,
     :device => "/dev/sdz1",
@@ -153,7 +153,7 @@ end
 
 describe Chef::Provider::Mount, "action_enable" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mount",
     :null_object => true,
     :device => "/dev/sdz1",
@@ -192,7 +192,7 @@ end
 
 describe Chef::Provider::Mount, "action_disable" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mount",
     :null_object => true,
     :device => "/dev/sdz1",
@@ -234,7 +234,7 @@ end
 
   describe Chef::Provider::Service, act_string do
     before(:each) do
-      @node = mock("Chef::Node", :null_object => true)
+      @node = Chef::Node.new
       @new_resource = mock("Chef::Resource::Mount",
       :null_object => true,
       :device => "/dev/sdz1",

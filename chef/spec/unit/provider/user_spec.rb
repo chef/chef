@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::User, "initialize" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", 
       :null_object => true,
       :username => "adam",
@@ -51,7 +51,7 @@ end
 
 describe Chef::Provider::User, "load_current_resource" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", 
       :null_object => true,
       :username => "adam",
@@ -143,7 +143,7 @@ end
 
 describe Chef::Provider::User, "compare_user" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", 
       :null_object => true,
       :username => "adam",
@@ -185,7 +185,7 @@ end
 
 describe Chef::Provider::User, "action_create" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", 
       :null_object => true,
       :username => "adam",
@@ -249,7 +249,7 @@ end
 
 describe Chef::Provider::User, "action_remove" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", 
       :null_object => true
     )
@@ -282,7 +282,7 @@ end
 
 describe Chef::Provider::User, "action_manage" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", 
       :null_object => true
     )
@@ -323,7 +323,7 @@ end
 
 describe Chef::Provider::User, "action_modify" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", 
       :null_object => true
     )
@@ -364,7 +364,7 @@ end
 
 describe Chef::Provider::User, "action_lock" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", 
       :null_object => true
     )
@@ -398,7 +398,7 @@ end
 
 describe Chef::Provider::User, "action_unlock" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::User", 
       :null_object => true
     )
@@ -430,7 +430,7 @@ end
 
 describe Chef::Provider::User, "convert_group_name" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = Chef::Resource::User.new("user_spec_guy") 
     @new_resource.gid("lololo")
     @current_resource = Chef::Resource::User.new("user_spec_current_resource_guy")

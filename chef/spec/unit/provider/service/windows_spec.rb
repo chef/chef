@@ -21,7 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 describe Chef::Provider::Service::Windows, "load_current_resource" do
   before(:each) do
     @init_command = "sc"
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = Chef::Resource::Service.new("chef")
     @new_resource.stub!(:pattern).and_return("chef")
     @new_resource.stub!(:status_command).and_return(false)

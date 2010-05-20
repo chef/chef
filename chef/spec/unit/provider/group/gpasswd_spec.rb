@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group",
       :null_object => true,
       :group_name => "aj",
@@ -71,7 +71,7 @@ end
 
 describe Chef::Provider::Group::Gpasswd, "load_current_resource" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
     @provider = Chef::Provider::Group::Gpasswd.new(@node, @new_resource)
     File.stub!(:exists?).and_return(false)

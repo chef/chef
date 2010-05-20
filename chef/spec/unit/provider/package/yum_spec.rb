@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Package::Yum, "load_current_resource" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package", 
       :null_object => true,
       :name => "cups",
@@ -85,7 +85,7 @@ end
 describe Chef::Provider::Package::Yum, "install_package" do
   
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package", 
       :null_object => true,
       :name => "emacs",
@@ -125,7 +125,7 @@ end
 describe Chef::Provider::Package::Yum, "upgrade_package" do
   
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package",
       :null_object => true,
       :name => "emacs",
@@ -179,7 +179,7 @@ end
 
 describe Chef::Provider::Package::Yum, "remove_package" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package", 
       :null_object => true,
       :name => "emacs",
@@ -209,7 +209,7 @@ end
 
 describe Chef::Provider::Package::Yum, "purge_package" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package", 
       :null_object => true,
       :name => "emacs",

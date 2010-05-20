@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::Cron, "initialize" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource", :null_object => true)
   end
 
@@ -33,7 +33,7 @@ end
 
 describe Chef::Provider::Cron, "load_current_resource" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Cron",
       :null_object => true,
       :user => "root",
@@ -93,7 +93,7 @@ end
 
 describe Chef::Provider::Cron, "compare_cron" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Cron",
       :null_object => true,
       :user => "root",
@@ -144,7 +144,7 @@ end
 
 describe Chef::Provider::Cron, "action_create" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Cron",
       :null_object => true,
       :name => "foo[bar] (baz)",
@@ -297,7 +297,7 @@ end
 
 describe Chef::Provider::Cron, "action_delete" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Cron",
       :null_object => true,
       :name => "foo[bar] (baz)",

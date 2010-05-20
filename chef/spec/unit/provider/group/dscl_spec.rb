@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Group::Dscl, "dscl" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
     @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
     @status = mock("Process::Status", :null_object => true, :exitstatus => 0) 
@@ -47,7 +47,7 @@ end
 
 describe Chef::Provider::Group::Dscl, "safe_dscl" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
     @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
     @status = mock("Process::Status", :null_object => true, :exitstatus => 0)
@@ -98,7 +98,7 @@ end
 
 describe Chef::Provider::Group::Dscl, "get_free_gid" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
     @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
     @provider.stub!(:safe_dscl).and_return("\naj      200\njt      201\n")
@@ -121,7 +121,7 @@ end
 
 describe Chef::Provider::Group::Dscl, "gid_used?" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
     @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
     @provider.stub!(:safe_dscl).and_return("\naj      500\n")
@@ -147,7 +147,7 @@ end
 
 describe Chef::Provider::Group::Dscl, "set_gid" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group",
       :null_object => true,
       :group_name => "aj",
@@ -220,7 +220,7 @@ end
 
 describe Chef::Provider::Group::Dscl, "set_members" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group",
       :null_object => true,
       :group_name => "aj",
@@ -291,7 +291,7 @@ end
 
 describe Chef::Provider::Group::Dscl, "load_current_resource" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
     @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
     File.stub!(:exists?).and_return(false)
@@ -310,7 +310,7 @@ end
 
 describe Chef::Provider::Group::Dscl, "create_group" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group", :null_object => true)
     @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
     @provider.stub!(:manage_group).and_return(true)
@@ -324,7 +324,7 @@ end
 
 describe Chef::Provider::Group::Dscl, "manage_group" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group",
       :null_object => true,
       :group_name => "aj",
@@ -362,7 +362,7 @@ describe Chef::Provider::Group::Dscl, "manage_group" do
 
   describe "with manage set to false" do
     before do
-      @node = mock("Chef::Node", :null_object => true)
+      @node = Chef::Node.new
       @new_resource = mock("Chef::Resource::Group",
         :null_object => true,
         :group_name => "aj",
@@ -408,7 +408,7 @@ end
 
 describe Chef::Provider::Group::Dscl, "remove_group" do
   before do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Group",
       :null_object => true,
       :group_name => "aj"

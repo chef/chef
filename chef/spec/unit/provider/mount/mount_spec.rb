@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Mount::Mount, "load_current_resource" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mount",
       :null_object => true,
       :device => "/dev/sdz1",
@@ -187,7 +187,7 @@ end
 
 describe Chef::Provider::Mount::Mount, "mount_fs" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mount",
       :null_object => true,
       :device => "/dev/sdz1",
@@ -249,7 +249,7 @@ end
 
 describe Chef::Provider::Mount::Mount, "umount_fs" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mount",
       :null_object => true,
       :device => "/dev/sdz1",
@@ -299,7 +299,7 @@ end
 
 describe Chef::Provider::Mount::Mount, "remount_fs" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mount",
       :null_object => true,
       :device => "/dev/sdz1",
@@ -360,7 +360,7 @@ end
 
 describe Chef::Provider::Mount::Mount, "enable_fs" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mount",
       :null_object => true,
       :device => "/dev/sdz1",
@@ -431,7 +431,7 @@ end
 
 describe Chef::Provider::Mount::Mount, "disable_fs" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Mount",
       :null_object => true,
       :device => "/dev/sdz1",

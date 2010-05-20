@@ -19,7 +19,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Package::Rpm, "load_current_resource" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     
     @new_resource = mock("Chef::Resource::Package",
       :null_object => true,
@@ -101,7 +101,7 @@ end
 
 describe Chef::Provider::Package::Rpm, "install and upgrade" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package",
       :null_object => true,
       :name => "emacs",
@@ -139,7 +139,7 @@ end
 
 describe Chef::Provider::Package::Rpm, "remove" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @new_resource = mock("Chef::Resource::Package",
       :null_object => true,
       :name => "emacs",

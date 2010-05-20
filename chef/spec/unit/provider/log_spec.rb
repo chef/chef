@@ -22,7 +22,7 @@ describe Chef::Provider::Log::ChefLog do
 
   before(:each) do
     @log_str = "this is my test string to log"
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
     @node.should_ignore_missing
   end  
 
