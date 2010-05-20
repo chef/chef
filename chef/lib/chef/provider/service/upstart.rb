@@ -25,6 +25,7 @@ class Chef
   class Provider
     class Service
       class Upstart < Chef::Provider::Service::Simple
+        UPSTART_STATE_FORMAT = /\w+ \(?(\w+)\)?[\/ ](\w+)/
        
         # Upstart does more than start or stop a service, creating multiple 'states' [1] that a service can be in.
         # In chef, when we ask a service to start, we expect it to have started before performing the next step
@@ -36,8 +37,13 @@ class Chef
         # [2] http://www.netsplit.com/2008/04/27/upstart-05-events/
 
         def initialize(new_resource, run_context)
+          # TODO: re-evaluate if this is needed after integrating cookbook fix
+          raise ArgumentError, "run_context cannot be nil" unless run_context
           super
-          platform, version = Chef::Platform.find_platform_and_version(node)
+          
+          run_context.node
+          
+          platform, version = Chef::Platform.find_platform_and_version(run_context.node)
           case platform
           when "ubuntu"
             case version
@@ -174,13 +180,13 @@ class Chef
         def upstart_state
           command = "/sbin/status #{@new_resource.service_name}"
           status = popen4(command) do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
+            stdout.each_line do |line|
               # rsyslog stop/waiting
               # service goal/state
               # OR
               # rsyslog (stop) waiting
               # service (goal) state
-              line =~ /\w+ \(?(\w+)\)?[\/ ](\w+)/
+              line =~ UPSTART_STATE_FORMAT
               data = Regexp.last_match
               return data[2]
             end

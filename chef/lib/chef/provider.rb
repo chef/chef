@@ -35,7 +35,7 @@ class Chef
     end
 
     def node
-      run_context.node
+      run_context &&run_context.node
     end
     
     def load_current_resource
