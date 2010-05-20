@@ -108,7 +108,7 @@ class Chef
 
         def initialize(new_resource, run_context)
           @yum = YumCache.instance
-          super(node, new_resource, collection, definitions, cookbook_loader)
+          super
         end
       
         def load_current_resource
