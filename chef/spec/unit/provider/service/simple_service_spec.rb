@@ -20,27 +20,14 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Service::Simple, "load_current_resource" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @node.stub!(:[]).with(:command).and_return({:ps => "ps -ef"})
+    @node = Chef::Node.new
+    @node[:command] = {:ps => "ps -ef"}
+    @run_context = Chef::RunContext.new(@node, {})
 
-    @new_resource = mock("Chef::Resource::Service",
-      :null_object => true,
-      :name => "chef",
-      :service_name => "chef",
-      :running => false
-    )
-    @new_resource.stub!(:pattern).and_return("chef")
-    @new_resource.stub!(:supports).and_return({:status => false})
-    @new_resource.stub!(:status_command).and_return(false)
+    @new_resource = Chef::Resource::Service.new("chef")
+    @current_resource = Chef::Resource::Service.new("chef")
 
-    @current_resource = mock("Chef::Resource::Service",
-      :null_object => true,
-      :name => "chef",
-      :service_name => "chef",
-      :running => false
-    )
-
-    @provider = Chef::Provider::Service::Simple.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Simple.new(@new_resource, @run_context)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
 
     @status = mock("Status", :exitstatus => 0)
@@ -65,20 +52,16 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
   end
 
   it "should set running to false if the node has a nil ps attribute" do
-    @node.stub!(:[]).with(:command).and_return({:ps => nil})
+    @node[:command] = {:ps => nil}
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
   end
 
   it "should set running to false if the node has an empty ps attribute" do
-    @node.stub!(:[]).with(:command).and_return(:ps => "")
+    @node[:command] = {:ps => ""}
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
   end
 
   describe "when we have a 'ps' attribute" do
-    before do
-      @node.stub!(:[]).with(:command).and_return({:ps => "ps -ef"})
-    end
-
     it "should popen4 the node's ps command" do
       @provider.should_receive(:popen4).with(@node[:command][:ps]).and_return(@status)
       @provider.load_current_resource
@@ -94,14 +77,14 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
       @stdout.stub!(:each_line).and_yield("aj        7842  5057  0 21:26 pts/2    00:00:06 chef").
                                 and_yield("aj        7842  5057  0 21:26 pts/2    00:00:06 poos")
       @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @current_resource.should_receive(:running).with(true)
       @provider.load_current_resource 
+      @current_resource.running.should be_true
     end
 
     it "should set running to false if the regex doesn't match" do
       @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @current_resource.should_receive(:running).with(false)
       @provider.load_current_resource
+      @current_resource.running.should be_false
     end
 
     it "should raise an exception if ps fails" do
@@ -114,108 +97,52 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     @provider.load_current_resource.should eql(@current_resource)
   end
 
-end
 
-describe Chef::Provider::Service::Simple, "start_service" do
-  before(:each) do
-    @new_resource = mock("Chef::Resource::Service",
-      :null_object => true,
-      :name => "chef",
-      :service_name => "chef",
-      :start_command => "/etc/init.d/chef start",
-      :running => false
-    )
-    @new_resource.stub!(:start_command).and_return(false)
 
-    @provider = Chef::Provider::Service::Simple.new(@node, @new_resource)
-    Chef::Resource::Service.stub!(:new).and_return(@current_resource)
-  end
-  
-  it "should call the start command if one is specified" do
-    @new_resource.stub!(:start_command).and_return("#{@new_resource.start_command}")
-    @provider.should_receive(:run_command).with({:command => "#{@new_resource.start_command}"}).and_return(0)
-    @provider.start_service()
+  describe "when starting the service" do
+    it "should call the start command if one is specified" do
+      @new_resource.stub!(:start_command).and_return("#{@new_resource.start_command}")
+      @provider.should_receive(:run_command).with({:command => "#{@new_resource.start_command}"}).and_return(0)
+      @provider.start_service()
+    end
+
+    it "should raise an exception if no start command is specified" do
+      lambda { @provider.start_service() }.should raise_error(Chef::Exceptions::Service)
+    end 
   end
 
-  it "should raise an exception if no start command is specified" do
-    lambda { @provider.start_service() }.should raise_error(Chef::Exceptions::Service)
-  end 
-end
+  describe "when stopping a service" do
+    it "should call the stop command if one is specified" do
+      @new_resource.stop_command("/etc/init.d/themadness stop")
+      @provider.should_receive(:run_command).with({:command => "/etc/init.d/themadness stop"}).and_return(0)
+      @provider.stop_service()
+    end
 
-describe Chef::Provider::Service::Simple, "stop_service" do
-  before(:each) do
-    @new_resource = mock("Chef::Resource::Service",
-      :null_object => true,
-      :name => "chef",
-      :service_name => "chef",
-      :service_command => "/etc/init.d/chef stop",
-      :running => false
-    )
-    @new_resource.stub!(:stop_command).and_return(false)
-
-    @provider = Chef::Provider::Service::Simple.new(@node, @new_resource)
-    Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+    it "should raise an exception if no stop command is specified" do
+      lambda { @provider.stop_service() }.should raise_error(Chef::Exceptions::Service)
+    end
   end
 
-  it "should call the stop command if one is specified" do
-    @new_resource.stub!(:stop_command).and_return("#{@new_resource.stop_command}")
-    @provider.should_receive(:run_command).with({:command => "#{@new_resource.stop_command}"}).and_return(0)
-    @provider.stop_service()
+  describe Chef::Provider::Service::Simple, "restart_service" do
+    it "should call the restart command if one has been specified" do
+      @new_resource.restart_command("/etc/init.d/foo restart")
+      @provider.should_receive(:run_command).with({:command => "/etc/init.d/foo restart"}).and_return(0)
+      @provider.restart_service()
+    end
+
+    it "should just call stop, then start when the resource doesn't support restart and no restart_command is specified" do
+      @provider.should_receive(:stop_service)
+      @provider.should_receive(:sleep).with(1)
+      @provider.should_receive(:start_service)
+      @provider.restart_service()
+    end
   end
 
-  it "should raise an exception if no stop command is specified" do
-    lambda { @provider.stop_service() }.should raise_error(Chef::Exceptions::Service)
-  end
-end
-
-describe Chef::Provider::Service::Simple, "restart_service" do
-  before(:each) do
-    @new_resource = mock("Chef::Resource::Service",
-      :null_object => true,
-      :name => "chef",
-      :service_name => "chef",
-      :restart_command => "/etc/init.d/chef restart",
-      :running => false
-    )
-    @new_resource.stub!(:restart_command).and_return(false)
-    @new_resource.stub!(:supports).and_return({:restart => false})
-
-    @provider = Chef::Provider::Service::Simple.new(@node, @new_resource)
-    Chef::Resource::Service.stub!(:new).and_return(@current_resource)
-  end
-
-  it "should call the restart command if one has been specified" do
-    @new_resource.stub!(:restart_command).and_return("#{@new_resource.stop_command}")
-    @provider.should_receive(:run_command).with({:command => "#{@new_resource.restart_command}"}).and_return(0)
-    @provider.restart_service()
-  end
-
-  it "should just call stop, then start when the resource doesn't support restart and no restart_command is specified" do
-    @provider.should_receive(:stop_service)
-    @provider.should_receive(:sleep).with(1)
-    @provider.should_receive(:start_service)
-    @provider.restart_service()
-  end
-end
-
-describe Chef::Provider::Service::Simple, "reload_service" do
-  before(:each) do
-    @new_resource = mock("Chef::Resource::Service",
-      :null_object => true,
-      :name => "chef",
-      :service_name => "chef",
-      :reload_command => "/etc/init.d/chef reload",
-      :running => false
-    )
-    @new_resource.stub!(:reload_command).and_return(false)
-
-    @provider = Chef::Provider::Service::Simple.new(@node, @new_resource)
-    Chef::Resource::Service.stub!(:new).and_return(@current_resource)
-  end
-
-  it "should should run the user specified reload command if one is specified" do
-    @new_resource.stub!(:reload_command).and_return("#{@new_resource.reload_command}")
-    @provider.should_receive(:run_command).with({:command => "#{@new_resource.reload_command}"}).and_return(0)
-    @provider.reload_service()
+  describe Chef::Provider::Service::Simple, "reload_service" do
+    it "should should run the user specified reload command if one is specified" do
+      @new_resource.reload_command("kill -9 1")
+      @provider.should_receive(:run_command).with({:command => "kill -9 1"}).and_return(0)
+      @provider.reload_service()
+    end
   end
 end
