@@ -30,7 +30,7 @@ class Chef
 
     # The input is a mapping of cookbook name to Cookbook object. We simply
     # extract them
-    def populate(cookbooks)
+    def initialize(cookbooks={})
       cookbooks.each{ |cookbook_name, cookbook| self[cookbook_name] = cookbook }
     end
     

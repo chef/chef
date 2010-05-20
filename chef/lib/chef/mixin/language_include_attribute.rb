@@ -27,27 +27,27 @@ class Chef
       #   "attributes/mailservers.rb"
       # if passed
       #   "mailservers"
-      def include_attribute(*attribute_short_filenames)
+      def include_attribute(*fully_qualified_attribute_short_filenames)
         if self.kind_of?(Chef::Node)
           node = self
         else
           node = @node
         end
 
-        attribute_short_filenames.flatten.each do |attrib|
-          if node.run_state[:seen_attributes].has_key?(attrib)
-            Chef::Log.debug("I am not loading attribute file #{attrib}, because I have already seen it.")
+        fully_qualified_attribute_short_filenames.flatten.each do |fully_qualified_attribute_short_filename|
+          if node.run_state[:seen_attributes].has_key?(fully_qualified_attribute_short_filename)
+            Chef::Log.debug("I am not loading attribute file #{fully_qualified_attribute_short_filename}, because I have already seen it.")
             next
           end
 
-          Chef::Log.debug("Loading Attribute #{attrib}")
-          node.run_state[:seen_attributes][attrib] = true
+          Chef::Log.debug("Loading Attribute #{fully_qualified_attribute_short_filename}")
+          node.run_state[:seen_attributes][fully_qualified_attribute_short_filename] = true
 
-          if amatch = attrib.match(/(.+?)::(.+)/)
+          if amatch = fully_qualified_attribute_short_filename.match(/(.+?)::(.+)/)
             cookbook_name = amatch[1].to_sym
             node.load_attribute_by_short_filename(amatch[2], cookbook_name)
           else
-            cookbook_name = attrib.to_sym
+            cookbook_name = fully_qualified_attribute_short_filename.to_sym
             node.load_attribute_by_short_filename("default", cookbook_name)
           end
         end

@@ -23,6 +23,7 @@ class Chef
     module LanguageIncludeRecipe
 
       def include_recipe(*recipe_names)
+        result_recipes = Array.new
         recipe_names.flatten.each do |recipe_name|
           if node.run_state[:seen_recipes].has_key?(recipe_name)
             Chef::Log.debug("I am not loading #{recipe_name}, because I have already seen it.")
@@ -36,8 +37,9 @@ class Chef
 
           run_context = self.is_a?(Chef::RunContext) ? self : self.run_context
           cookbook = run_context.cookbook_collection[cookbook_name]
-          cookbook.load_recipe(recipe_short_name, run_context)
+          result_recipes << cookbook.load_recipe(recipe_short_name, run_context)
         end
+        result_recipes
       end
 
       def require_recipe(*args)

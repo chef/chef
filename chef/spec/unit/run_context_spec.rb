@@ -26,12 +26,13 @@ describe Chef::RunContext do
   before(:each) do
     Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "nodes")))
     Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")))
+    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
     @node = Chef::Node.new
     @node.find_file("run_context")
-    @run_context = Chef::RunContext.new(@node, Chef::CookbookLoader.new)
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
   end
   
-  it "should load all the definitions" do
+  it "should load all the definitions in the cookbooks for this node" do
     @run_context.definitions.should have_key(:new_cat)
     @run_context.definitions.should have_key(:new_badger)
     @run_context.definitions.should have_key(:new_dog)
@@ -44,5 +45,4 @@ describe Chef::RunContext do
     @run_context.resource_collection[3].to_s.should == "cat[peanut]"
     @run_context.resource_collection[4].to_s.should == "cat[fat peanut]"
   end
-  
 end

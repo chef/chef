@@ -206,7 +206,7 @@ class Chef
     # called from DSL
     def load_recipe(recipe_name, run_context)
       cookbook_name = self.name
-      
+
       unless recipe_filenames_by_name.has_key?(recipe_name)
         raise ArgumentError, "Cannot find a recipe matching #{recipe_name} in cookbook #{name}"
       end
@@ -294,14 +294,14 @@ class Chef
     # cookbook name and recipe short name.
     #
     # For example:
-    #   "aws::elastic_ip" returns ["aws", "elastic_ip"]
-    #   "aws" returns ["aws", "default"]
+    #   "aws::elastic_ip" returns [:aws, "elastic_ip"]
+    #   "aws" returns [:aws, "default"]
     def self.parse_recipe_name(recipe_name)
       rmatch = recipe_name.match(/(.+?)::(.+)/)
       if rmatch
-        [ rmatch[1], rmatch[2] ]
+        [ rmatch[1].to_sym, rmatch[2] ]
       else
-        [ recipe_name, "default" ]
+        [ recipe_name.to_sym, "default" ]
       end
     end
 
