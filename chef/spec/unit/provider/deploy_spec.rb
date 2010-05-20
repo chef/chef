@@ -26,7 +26,8 @@ describe Chef::Provider::Deploy do
     @expected_release_dir = "/my/deploy/dir/releases/20040815162342"
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     @node = Chef::Node.new
-    @provider = Chef::Provider::Deploy.new(@node, @resource)
+    @run_context = Chef::RunContext.new(@node, {})
+    @provider = Chef::Provider::Deploy.new(@resource, @run_context)
     @provider.stub!(:release_slug)
     @provider.stub!(:release_path).and_return(@expected_release_dir)
     @runner = mock("runnah", :null_object => true)
