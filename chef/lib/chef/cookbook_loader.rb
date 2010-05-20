@@ -109,8 +109,6 @@ class Chef
       remove_ignored_files_from(cookbook_settings)
 
       cookbook_settings.each_key do |cookbook|
-        puts "in cookbook_loader, cookbook is #{cookbook}"
-        puts "in cookbook_loader, recipe_filenames is #{cookbook_settings[cookbook][:recipe_files].inspect}"
         @cookbook[cookbook] = Chef::Cookbook.new(cookbook)
         @cookbook[cookbook].attribute_filenames = cookbook_settings[cookbook][:attribute_files].values
         @cookbook[cookbook].definition_filenames = cookbook_settings[cookbook][:definition_files].values
@@ -199,9 +197,7 @@ class Chef
       end
       
       def load_files_unless_basename(file_glob, result_hash)
-        puts "load_files_unless_basename: file_glob #{file_glob.inspect}, result_hash #{result_hash.inspect}"
         Dir[file_glob].each do |file|
-          puts "load_files_unless_basename: file is #{file}"
           result_hash[File.basename(file)] = file
         end
       end

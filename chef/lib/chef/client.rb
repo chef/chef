@@ -144,13 +144,10 @@ class Chef
     end
 
     def determine_node_name
-      puts "ohai = #{ohai.inspect}"
       unless node_name
         if Chef::Config[:node_name]
-          puts "in this fucking block #1"
           self.node_name = Chef::Config[:node_name]
         else
-          puts "in this fucking block #2 - ohai[:fqdn] is '#{ohai[:fqdn]}', ohai[:hostname] is '#{ohai[:hostname]}'"
           self.node_name = ohai[:fqdn] ? ohai[:fqdn] : ohai[:hostname]
           Chef::Config[:node_name] = node_name
         end
@@ -169,7 +166,6 @@ class Chef
     def build_node
       Chef::Log.debug("Building node object for #{node_name}")
       
-      puts "Chef::Config[:solo] == #{Chef::Config[:solo]}"
       unless Chef::Config[:solo]
         self.node = begin
                       rest.get_rest("nodes/#{node_name}")
@@ -204,16 +200,12 @@ class Chef
     # rest<Chef::REST>:: returns Chef::REST connection object
     def register
       if File.exists?(Chef::Config[:client_key])
-        puts "SKIPPING REGISTRATIONF UCKFUCK"
         Chef::Log.debug("Client key #{Chef::Config[:client_key]} is present - skipping registration")
       else
-        puts "Chef::Config[:client_url] = #{Chef::Config[:client_url]}, :validation_client_name = #{Chef::Config[:validation_client_name]}, validation_key = #{Chef::Config[:validation_key]}"
         Chef::Log.info("Client key #{Chef::Config[:client_key]} is not present - registering")
         Chef::REST.new(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).register(node_name, Chef::Config[:client_key])
-        puts "done with Chef::Rest.register"
       end
       # We now have the client key, and should use it from now on.
-      puts "about to make new chef:rest with #{Chef::Config[:chef_server_url]}, #{node_name}, #{Chef::Config[:client_key]}"
       self.rest = Chef::REST.new(Chef::Config[:chef_server_url], node_name, Chef::Config[:client_key])
     end
     

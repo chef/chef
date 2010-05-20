@@ -1,6 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +23,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 require 'chef/run_context'
 require 'chef/rest'
 
-describe Chef::Client, "tests that are actually valuable" do
-  it "should identify the node" do
+describe Chef::Client, "run" do
+  it "should identify the node and run ohai, then register the client" do
     # Fake data to identify the node
     HOSTNAME = "hostname"
     FQDN = "hostname.example.org"
@@ -46,29 +48,27 @@ describe Chef::Client, "tests that are actually valuable" do
     mock_couchdb = OpenStruct.new({ })
 
     Chef::CouchDB.stub(:new).and_return(mock_couchdb)
-#    Chef::REST.stub!(:new).and_return(mock_chef_rest_for_node)
 
     # --Client.register
-    #   File.exists? should return false, so Client.register will register a new client.
+    #   Use a filename we're sure doesn't exist, so that the registration 
+    #   code creates a new client.
     temp_client_key_file = Tempfile.new("chef_client_spec__client_key")
     temp_client_key_file.close
     FileUtils.rm(temp_client_key_file.path)
     Chef::Config[:client_key] = temp_client_key_file.path
-    puts "FUCKFUCK path is #{temp_client_key_file.path}"
-#    ::File.should_receive(:exists?).with(Chef::Config[:client_key]).and_return(false)
 
     #   Client.register will register with the validation client name.
     Chef::REST.should_receive(:new).with(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).and_return(mock_chef_rest_for_client)
     mock_chef_rest_for_client.should_receive(:register).with(FQDN, Chef::Config[:client_key]).and_return(true)
-    # Client.register will then turn around create another
-    # Chef::REST object, this time with the client key it got from the
-    # previous step.
-    Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url], HOSTNAME, Chef::Config[:client_key]).and_return(mock_chef_rest_for_node)
+    #   Client.register will then turn around create another
+    #   Chef::REST object, this time with the client key it got from the
+    #   previous step.
+    Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url], FQDN, Chef::Config[:client_key]).and_return(mock_chef_rest_for_node)
     
-    # --Client.build_node -- looks up the node, which we will return,
-    #   then later saves it.
+    # --Client.build_node
+    #   looks up the node, which we will return, then later saves it.
     mock_chef_rest_for_node.should_receive(:get_rest).with("nodes/#{FQDN}").and_return(node)
-    mock_chef_rest_for_node.should_receive(:put_rest).with("nodes/#{FQDN}", node).at_least(20).times.and_return(node)
+    mock_chef_rest_for_node.should_receive(:put_rest).with("nodes/#{FQDN}", node).at_least(3).times.and_return(node)
 
     # --Client.sync_cookbooks -- downloads the list of cookbooks to sync
     #
