@@ -41,8 +41,9 @@ describe Chef::Handler::JsonFile do
   describe "report" do
     before(:each) do
       @node = Chef::Node.new
-      @compile = Chef::Compile.new(@node)
-      @runner = Chef::Runner.new(@node, @compile.collection, @compile.definitions, @compile.cookbook_loader)
+      @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+      @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+      @runner = Chef::Runner.new(@run_context)
       @start_time = Time.now
       @end_time = Time.now
       @elapsed_time = @end_time - @start_time
