@@ -233,32 +233,33 @@ describe Chef::Node do
     end
   end
 
-  describe "recipes" do
-    it "should have a RunList of recipes that should be applied" do
-      @node.recipes.should be_a_kind_of(Chef::RunList)
-    end
-    
-    it "should allow you to query whether or not it has a recipe applied with recipe?" do
-      @node.recipes << "sunrise"
-      @node.recipe?("sunrise").should eql(true)
-      @node.recipe?("not at home").should eql(false)
-    end
-
-    it "should allow you to query whether or not a recipe has been applied, even if it was included" do
-      @node.run_state[:seen_recipes]["snakes"] = true
-      @node.recipe?("snakes").should eql(true)
-    end
-
-    it "should return false if a recipe has not been seen" do
-      @node.recipe?("snakes").should eql(false)
-    end
-    
-    it "should allow you to set recipes with arguments" do
-      @node.recipes "one", "two"
-      @node.recipe?("one").should eql(true)
-      @node.recipe?("two").should eql(true)
-    end
-  end
+  # TODO: timh, cw: 2010-5-19: Node.recipe? deprecated. See node.rb
+  # describe "recipes" do
+  #   it "should have a RunList of recipes that should be applied" do
+  #     @node.recipes.should be_a_kind_of(Chef::RunList)
+  #   end
+  #   
+  #   it "should allow you to query whether or not it has a recipe applied with recipe?" do
+  #     @node.recipes << "sunrise"
+  #     @node.recipe?("sunrise").should eql(true)
+  #     @node.recipe?("not at home").should eql(false)
+  #   end
+  # 
+  #   it "should allow you to query whether or not a recipe has been applied, even if it was included" do
+  #     @node.run_state[:seen_recipes]["snakes"] = true
+  #     @node.recipe?("snakes").should eql(true)
+  #   end
+  # 
+  #   it "should return false if a recipe has not been seen" do
+  #     @node.recipe?("snakes").should eql(false)
+  #   end
+  #   
+  #   it "should allow you to set recipes with arguments" do
+  #     @node.recipes "one", "two"
+  #     @node.recipe?("one").should eql(true)
+  #     @node.recipe?("two").should eql(true)
+  #   end
+  # end
 
   describe "roles" do
     it "should allow you to query whether or not it has a recipe applied with role?" do

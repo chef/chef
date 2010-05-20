@@ -48,7 +48,7 @@ class Chef
     def <<(run_list_item)
       type, short_name, typed_name = parse_entry(run_list_item)
       
-      self.run_list << run_list_item
+      self.run_list << typed_name
       self
     end
 

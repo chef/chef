@@ -371,8 +371,8 @@ class Chef
       attribute.each do |key, value|
         index_hash[key] = value
       end
-      index_hash["recipe"] = run_list.recipes if run_list.recipes.length > 0
-      index_hash["role"] = run_list.roles if run_list.roles.length > 0
+      index_hash["recipe"] = run_list.recipe_names if run_list.recipe_names.length > 0
+      index_hash["role"] = run_list.role_names if run_list.role_names.length > 0
       index_hash["run_list"] = run_list.run_list if run_list.run_list.length > 0
       index_hash
     end
