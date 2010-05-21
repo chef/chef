@@ -120,16 +120,16 @@ class Chef
     # Find existing resources by searching the list of existing resources.  Possible
     # forms are:
     #
-    # resources(:file => "foobar")
-    # resources(:file => [ "foobar", "baz" ])
-    # resources("file[foobar]", "file[baz]")
-    # resources("file[foobar,baz]")
+    # find(:file => "foobar")
+    # find(:file => [ "foobar", "baz" ])
+    # find("file[foobar]", "file[baz]")
+    # find("file[foobar,baz]")
     #
     # Returns the matching resource, or an Array of matching resources. 
     #
     # Raises an ArgumentError if you feed it bad lookup information
     # Raises a Runtime Error if it can't find the resources you are looking for.
-    def resources(*args)
+    def find(*args)
       results = Array.new
       args.each do |arg|
         case arg
@@ -144,6 +144,10 @@ class Chef
       flat_results = results.flatten
       flat_results.length == 1 ? flat_results[0] : flat_results
     end
+    
+    # resources is a poorly named, but we have to maintain it for back
+    # compat.
+    alias_method :resources, :find
     
     # Serialize this object as a hash 
     def to_json(*a)

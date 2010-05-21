@@ -46,13 +46,16 @@ class Chef
       run_context.node
     end
     
-    # what does this do? and what is args? TODO 5-14-2010
+    # what does this do? and what is args? TODO 5-14-2010.
+    #
+    # We believe this is used by the DSL when it's executing in the
+    # context of a recipe in order to look up resources.
     def resources(*args)
-      @resource_collection.resources(*args)
+      run_context.resource_collection.find(*args)
     end
     
     # Sets a tag, or list of tags, for this node.  Syntactic sugar for
-    # @node[:tags].  
+    # run_context.node[:tags].
     #
     # With no arguments, returns the list of tags.
     #
@@ -60,15 +63,15 @@ class Chef
     # tags<Array>:: A list of tags to add - can be a single string
     #
     # === Returns
-    # tags<Array>:: The contents of @node[:tags]
+    # tags<Array>:: The contents of run_context.node[:tags]
     def tag(*args)
       if args.length > 0
         args.each do |tag|
-          @node[:tags] << tag unless @node[:tags].include?(tag)
+          run_context.node[:tags] << tag unless run_context.node[:tags].include?(tag)
         end
-        @node[:tags]
+        run_context.node[:tags]
       else
-        @node[:tags]
+        run_context.node[:tags]
       end
     end
     
@@ -82,7 +85,7 @@ class Chef
     # false<FalseClass>:: If any of the parameters are missing
     def tagged?(*args)
       args.each do |tag|
-        return false unless @node[:tags].include?(tag)
+        return false unless run_context.node[:tags].include?(tag)
       end
       true
     end
@@ -93,10 +96,10 @@ class Chef
     # tags<Array>:: A list of tags
     #
     # === Returns
-    # tags<Array>:: The current list of @node[:tags]
+    # tags<Array>:: The current list of run_context.node[:tags]
     def untag(*args)
       args.each do |tag|
-        @node[:tags].delete(tag)
+        run_context.node[:tags].delete(tag)
       end
     end
     
