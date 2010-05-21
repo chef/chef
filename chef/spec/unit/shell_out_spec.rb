@@ -70,8 +70,9 @@ describe Chef::ShellOut do
   end
   
   it "computes the gid of the user when a string/symbolic groupname is given" do
-    @shell_cmd.group = Etc.getgrgid.name
-    @shell_cmd.gid.should == Etc.getpwuid.gid
+    a_group = Etc.group
+    @shell_cmd.group = a_group.name
+    @shell_cmd.gid.should == a_group.gid
   end
   
   it "has a timeout defaulting to 60 seconds" do
@@ -230,6 +231,11 @@ describe Chef::ShellOut do
       cmd = Chef::ShellOut.new('echo $LC_ALL', :environment => {"LC_ALL" => 'es'})
       cmd.run_command
       cmd.stdout.strip.should == 'es'
+    end
+    
+    it "recovers the error message when exec fails" do
+      cmd = Chef::ShellOut.new("fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
+      lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
     end
     
   end
