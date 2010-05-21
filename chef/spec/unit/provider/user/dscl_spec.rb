@@ -197,13 +197,6 @@ describe Chef::Provider::User::Dscl do
   end
 
   describe "guid" do
-    # before do
-    #   @node = Chef::Node.new
-    #   @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "adam")
-    #   @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
-    #   @provider.stub!(:safe_dscl).and_return("GeneratedUID: 2B503067-BA65-47F3-B2B7-BE321E618CEA\n")
-    # end
-
     it "should run safe_dscl with read /Users/user GeneratedUID to get the users GUID" do
       expected_uuid = "b398449e-cee0-45e0-80f8-b0b5b1bfdeaa"
       @provider.should_receive(:safe_dscl).with("read /Users/toor GeneratedUID").and_return(expected_uuid + "\n")
