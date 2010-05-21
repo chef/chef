@@ -38,7 +38,7 @@ class Chef
     def build_provider(resource)
       provider_class = Chef::Platform.find_provider_for_node(run_context.node, resource)
       Chef::Log.debug("#{resource} using #{provider_class.to_s}")
-      provider = provider_class.new(run_context.node, resource, run_context.resource_collection, run_context.definitions, run_context.cookbook_collection)
+      provider = provider_class.new(resource, run_context)
       provider.load_current_resource
       provider
     end

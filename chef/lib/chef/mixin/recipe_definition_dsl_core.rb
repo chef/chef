@@ -43,7 +43,7 @@ class Chef
           new_def.node = run_context.node
           # This sets up the parameter overrides
           new_def.instance_eval(&block) if block
-          new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, run_context)
+          new_recipe = Chef::Recipe.new(cookbook_name, @recipe_name, run_context)
           new_recipe.params = new_def.params
           new_recipe.params[:name] = args[0]
           new_recipe.instance_eval(&new_def.recipe)
@@ -65,7 +65,10 @@ class Chef
                      end
           resource.load_prior_resource
           resource.cookbook_name = cookbook_name
-          resource.recipe_name = recipe_name
+          # TODO: 5/21/2010 cw/dan: do we need recipe_name for
+          # anything? it's not even possible that this ivar is set on
+          # Chef::Provider.
+#          resource.recipe_name = @recipe_name
           resource.params = @params
           # Determine whether this resource is being created in the context of an enclosing Provider
           resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil

@@ -35,7 +35,11 @@ class Chef
     end
 
     def node
-      run_context &&run_context.node
+      run_context && run_context.node
+    end
+
+    def cookbook_name
+      new_resource.cookbook_name
     end
     
     def load_current_resource
