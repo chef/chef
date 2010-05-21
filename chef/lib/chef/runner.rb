@@ -54,7 +54,7 @@ class Chef
       if resource.updated
         resource.notifies_immediate.each do |notify|
           Chef::Log.info("#{resource} sending #{notify.action} action to #{notify.resource} (immediate)")
-          run_action(notify.resource, notify.action)
+          run_action(notify.resource, notify.action, delayed_actions)
         end
         
         resource.notifies_delayed.each do |notify|
@@ -119,7 +119,7 @@ class Chef
           notify_or_lambda.call
         else
           # OpenStruct of resource/action to call
-          run_action(notify_or_lambda.resource, notify_or_lambda.action)
+          run_action(notify_or_lambda.resource, notify_or_lambda.action, delayed_actions)
         end
       end
 
