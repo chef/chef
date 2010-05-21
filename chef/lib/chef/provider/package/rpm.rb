@@ -45,7 +45,7 @@ class Chef
               end
             end
           else
-            if @new_resource.action.include?(:install)
+            if Array(@new_resource.action).include?(:install)
               raise Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
             end
           end
