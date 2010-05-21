@@ -96,11 +96,17 @@ class Chef
       msg
     end
     
+    def exitstatus
+      @status && @status.exitstatus
+    end
+    
     # Run the command, writing the command's standard out and standard error
     # to +stdout+ and +stderr+, and saving its exit status to +result+
     # === Returns
     # returns +self+
     def run_command
+      Chef::Log.debug("sh(#{@command})")
+      
       @child_pid = fork_subprocess
       
       propagate_pre_exec_failure
@@ -145,6 +151,20 @@ class Chef
       close_all_pipes
     end
     
+    def error!
+      unless (retval = @status.exitstatus) == 0
+        msg = "Expected process to exit 0, but it exited with #{retval}\n#{format_for_exception}"
+        raise Chef::Exceptions::ShellCommandFailed, msg 
+      end
+    end
+    
+    def inspect
+      "<#{self.class.name}##{object_id}: " +
+      { :command => @command, :process_status => @status, :stdout => @stdout, :stderr => @stderr, 
+        :child_pid => @child_pid, :environment => @environment, :timeout => @timeout, 
+        :user => @user, :group => @group, :working_dir => cwd}.inspect + " >"
+    end
+
     private
     
     def parse_options(opts)
@@ -256,12 +276,14 @@ class Chef
       while chunk = child_stdout.read(16 * 1024)
         @stdout << chunk
       end
+    rescue Errno::EAGAIN
     end
     
     def read_stderr_to_buffer
       while chunk = child_stderr.read(16 * 1024)
         @stderr << chunk
       end
+    rescue Errno::EAGAIN
     end
     
     def fork_subprocess
