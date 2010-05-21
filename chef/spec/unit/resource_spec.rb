@@ -1,6 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,13 +26,10 @@ end
 
 describe Chef::Resource do
   before(:each) do
-    @resource = Chef::Resource.new("funk")
-  end
-  
-  describe "initialize" do
-    it "should create a new Chef::Resource" do
-      @resource.should be_a_kind_of(Chef::Resource)
-    end
+    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+    @node = Chef::Node.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+    @resource = Chef::Resource.new("funk", @run_context)
   end
   
   describe "load_prior_resource" do
@@ -41,7 +40,7 @@ describe Chef::Resource do
       @prior_resource.allowed_actions << :funkytown
       @prior_resource.action(:funkytown)
       @resource.allowed_actions << :funkytown
-      @resource.collection << @prior_resource
+      @run_context.resource_collection << @prior_resource
     end
     
     it "should load the attributes of a prior resource" do
@@ -84,59 +83,61 @@ describe Chef::Resource do
   
   describe "notifies" do
     it "should make notified resources appear in the actions hash" do
-      @resource.collection << Chef::Resource::ZenMaster.new("coffee")
-      @resource.notifies :reload, @resource.resources(:zen_master => "coffee")
-      @resource.actions[:reload][:delayed][0].name.should eql("coffee")
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee")
+      @resource.notifies_delayed.detect{|e| e.resource.name == "coffee" && e.action == :reload}.should_not be_nil
     end
   
     it "should make notified resources be capable of acting immediately" do
-      @resource.collection << Chef::Resource::ZenMaster.new("coffee")
-      @resource.notifies :reload, @resource.resources(:zen_master => "coffee"), :immediate
-      @resource.actions[:reload][:immediate][0].name.should eql("coffee")
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee"), :immediate
+      puts "@resource.notifies_immediate = #{@resource.notifies_immediate.inspect}"
+      @resource.notifies_immediate.detect{|e| e.resource.name == "coffee" && e.action == :reload}.should_not be_nil
     end
   
     it "should raise an exception if told to act in other than :delay or :immediate(ly)" do
-      @resource.collection << Chef::Resource::ZenMaster.new("coffee")
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       lambda { 
-        @resource.notifies :reload, @resource.resources(:zen_master => "coffee"), :someday
+        @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee"), :someday
       }.should raise_error(ArgumentError)
     end
   
     it "should allow multiple notified resources appear in the actions hash" do
-      @resource.collection << Chef::Resource::ZenMaster.new("coffee")
-      @resource.notifies :reload, @resource.resources(:zen_master => "coffee")
-      @resource.actions[:reload][:delayed][0].name.should eql("coffee")
-      @resource.collection << Chef::Resource::ZenMaster.new("beans")
-      @resource.notifies :reload, @resource.resources(:zen_master => "beans")
-      @resource.actions[:reload][:delayed][1].name.should eql("beans")
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee")
+      @resource.notifies_delayed.detect{|e| e.resource.name == "coffee" && e.action == :reload}.should_not be_nil
+      
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("beans")
+      @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "beans")
+      @resource.notifies_delayed.detect{|e| e.resource.name == "beans" && e.action == :reload}.should_not be_nil
     end
   end
   
   describe "subscribes" do  
     it "should make resources appear in the actions hash of subscribed nodes" do
-      @resource.collection << Chef::Resource::ZenMaster.new("coffee")
-      zr = @resource.resources(:zen_master => "coffee")
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      zr = @run_context.resource_collection.find(:zen_master => "coffee")
       @resource.subscribes :reload, zr
-      zr.actions[:reload][:delayed][0].name.should eql("funk")
+      zr.notifies_delayed.detect{|e| e.resource.name == "funk" && e.action == :reload}.should_not be_nil
     end
   
     it "should make resources appear in the actions hash of subscribed nodes" do
-      @resource.collection << Chef::Resource::ZenMaster.new("coffee")
-      zr = @resource.resources(:zen_master => "coffee")
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      zr = @run_context.resource_collection.find(:zen_master => "coffee")
       @resource.subscribes :reload, zr
-      zr.actions[:reload][:delayed][0].name.should eql("funk")
+      zr.notifies_delayed.detect{|e| e.resource.name == @resource.name && e.action == :reload}.should_not be_nil
     
-      @resource.collection << Chef::Resource::ZenMaster.new("bean")
-      zrb = @resource.resources(:zen_master => "bean")
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("bean")
+      zrb = @run_context.resource_collection.find(:zen_master => "bean")
       zrb.subscribes :reload, zr
-      zr.actions[:reload][:delayed][1].name.should eql("bean")
+      zr.notifies_delayed.detect{|e| e.resource.name == @resource.name && e.action == :reload}.should_not be_nil
     end
   
     it "should make subscribed resources be capable of acting immediately" do
-      @resource.collection << Chef::Resource::ZenMaster.new("coffee")
-      zr = @resource.resources(:zen_master => "coffee")
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      zr = @run_context.resource_collection.find(:zen_master => "coffee")
       @resource.subscribes :reload, zr, :immediately
-      zr.actions[:reload][:immediate][0].name.should eql("funk")
+      zr.notifies_immediate.detect{|e| e.resource.name == @resource.name && e.action == :reload}.should_not be_nil
     end
   end
   
@@ -171,9 +172,14 @@ describe Chef::Resource do
   describe "to_hash" do
     it "should convert to a hash" do
       hash = @resource.to_hash
-      hash.keys.should include( :only_if, :allowed_actions, :params, :provider, 
-                                :updated, :before, :not_if, :supports, :node, 
-                                :actions, :noop, :ignore_failure, :name, :source_line, :action)
+      expected_keys = [ :only_if, :allowed_actions, :params, :provider, 
+                        :updated, :before, :not_if, :supports, 
+                        :notifies_delayed, :notifies_immediate, :noop,
+                        :ignore_failure, :name, :source_line, :action,
+                        :not_if_args, :only_if_args
+                      ]
+      (hash.keys - expected_keys).should == []
+      (expected_keys - hash.keys).should == []
       hash[:name].should eql("funk")
     end
   end

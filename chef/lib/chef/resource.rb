@@ -55,8 +55,8 @@ class Chef
       @not_if_args = {}
       @only_if = nil
       @only_if_args = {}
-      @notifies_immediate = Hash.new
-      @notifies_delayed = Hash.new
+      @notifies_immediate = Array.new
+      @notifies_delayed = Array.new
       sline = caller(4).shift
       if sline
         @source_line = sline.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
@@ -188,18 +188,9 @@ class Chef
     end
     
     def subscribes(action, resources, timing=:delayed)
-      timing = check_timing(timing)
-      rarray = resources.kind_of?(Array) ? resources : [ resources ]
-      rarray.each do |resource|
-        action_sym = action.to_sym
-        if resource.actions.has_key?(action_sym)
-          resource.actions[action_sym][timing] << self
-        else       
-          resource.actions[action_sym] = Hash.new
-          resource.actions[action_sym][:delayed] = Array.new
-          resource.actions[action_sym][:immediate] = Array.new   
-          resource.actions[action_sym][timing] << self
-        end
+      resources = [resources].flatten
+      resources.each do |resource|
+        resource.notifies(action, self, timing)
       end
       true
     end
@@ -235,7 +226,7 @@ class Chef
       instance_vars = Hash.new
       self.instance_variables.each do |iv|
         iv = iv.to_s
-        next if iv == "@collection"
+        next if iv == "@run_context"
         instance_vars[iv.sub(/^@/,'').to_sym] = self.instance_variable_get(iv)
       end
       instance_vars
@@ -379,9 +370,14 @@ class Chef
         end
       end
       
-      def notifies_helper(action, resources, timing=:delayed)
+      def validate_timing(timing)
         timing = timing.to_sym
         raise ArgumentError, "invalid timing: #{timing}; must be one of: :delayed, :immediate, :immediately" unless (timing == :delayed || timing == :immediate || timing == :immediately)
+        timing == :immediately ? :immediate : timing
+      end
+      
+      def notifies_helper(action, resources, timing=:delayed)
+        timing = validate_timing(timing)
         
         resource_array = [resources].flatten
         resource_array.each do |resource|
@@ -392,8 +388,8 @@ class Chef
             notifies_immediate << new_notify
           end
         end
-
+        
         true
       end
-  end
+    end
 end
