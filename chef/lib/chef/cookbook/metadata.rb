@@ -41,11 +41,8 @@ class Chef
                     :replacing,
                     :attributes,
                     :groupings,
-                    :fully_qualified_recipe_names,
+                    :recipes,
                     :version
-                    
-      ## DEPRECATED [DAN - 05/20/2010] ##
-      alias :recipes :fully_qualified_recipe_names
 
       # Builds a new Chef::Cookbook::Metadata object.
       # 
@@ -303,7 +300,7 @@ class Chef
       # === Returns
       # description<String>:: Returns the current description 
       def recipe(name, description)
-        @fully_qualified_recipe_names[name] = description 
+        @recipes[name] = description 
       end
 
       # Adds an attribute that a user needs to configure for this cookbook. Takes
@@ -385,7 +382,7 @@ class Chef
           :replacing        => self.replacing,
           :attributes       => self.attributes,
           :groupings        => self.groupings,
-          :recipes          => self.fully_qualified_recipe_names,
+          :recipes          => self.recipes,
           :version          => self.version
         }
         result.to_json(*a)
@@ -413,7 +410,7 @@ class Chef
         @replacing                    = o['replacing'] if o.has_key?('replacing')
         @attributes                   = o['attributes'] if o.has_key?('attributes')
         @groupings                    = o['groupings'] if o.has_key?('groupings')
-        @fully_qualified_recipe_names = o['recipes'] if o.has_key?('recipes')
+        @recipes                      = o['recipes'] if o.has_key?('recipes')
         @version                      = o['version'] if o.has_key?('version')
         self
       end
