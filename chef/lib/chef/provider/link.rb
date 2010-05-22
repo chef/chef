@@ -18,14 +18,15 @@
 
 require 'chef/config'
 require 'chef/log'
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/resource/link'
 require 'chef/provider'
 
 class Chef
   class Provider
     class Link < Chef::Provider
-      include Chef::Mixin::Command
+      include Chef::Mixin::ShellOut
+      #include Chef::Mixin::Command
 
       def negative_complement(big)
         if big > 1073741823 # Fixnum max
@@ -117,9 +118,7 @@ class Chef
         if @current_resource.to != ::File.expand_path(@new_resource.to, @new_resource.target_file)
           Chef::Log.info("Creating a #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file} for #{@new_resource}")
           if @new_resource.link_type == :symbolic
-            run_command(
-              :command => "ln -nfs #{@new_resource.to} #{@new_resource.target_file}"
-            )
+            shell_out! "ln -nfs #{@new_resource.to} #{@new_resource.target_file}"
           elsif @new_resource.link_type == :hard
             ::File.link(@new_resource.to, @new_resource.target_file)
           end
