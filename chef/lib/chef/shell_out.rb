@@ -159,10 +159,9 @@ class Chef
     end
     
     def inspect
-      "<#{self.class.name}##{object_id}: " +
-      { :command => @command, :process_status => @status, :stdout => @stdout, :stderr => @stderr, 
-        :child_pid => @child_pid, :environment => @environment, :timeout => @timeout, 
-        :user => @user, :group => @group, :working_dir => cwd}.inspect + " >"
+      "<#{self.class.name}##{object_id}: command: '#@command' process_status: #{@status.inspect} " +
+      "stdout: '#@stdout' stderr: '#@stderr' child_pid: #{@child_pid.inspect} " + 
+      "environment: #{@environment.inspect} timeout: #@timeout user: #@user group: #@group working_dir: #@cwd >"
     end
 
     private
