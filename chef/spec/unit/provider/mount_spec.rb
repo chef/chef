@@ -55,7 +55,7 @@ describe Chef::Provider::Mount do
 
   end
 
-  describe "when the target state is a mounted filesystem using umount" do
+  describe "when the target state is an unmounted filesystem" do
     it "should umount the filesystem if it is mounted" do
       @current_resource.stub!(:mounted).and_return(true)
       @provider.should_receive(:umount_fs).with.and_return(true)
