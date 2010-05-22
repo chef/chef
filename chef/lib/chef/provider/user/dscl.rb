@@ -81,11 +81,6 @@ class Chef
           if @new_resource.supports[:manage_home]
             validate_home_dir_specification!
             
-            pp :modify_home => {:cr_home => @current_resource.home,
-                                :nr_home => @new_resource.home,
-                                :nh_exist => new_home_exists?,
-                                :ch_exist => current_home_exists?}
-            
             if (@current_resource.home == @new_resource.home) && !new_home_exists?
               ditto_home
             elsif !current_home_exists? && !new_home_exists?
@@ -119,7 +114,6 @@ class Chef
         end
 
         def modify_password
-          pp :modify_password => {:nr_password => @new_resource.password}
           if @new_resource.password
             shadow_hash = nil
             
