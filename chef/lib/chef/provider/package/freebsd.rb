@@ -18,13 +18,14 @@
 #
 
 require 'chef/provider/package'
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/resource/package'
 
 class Chef
   class Provider
     class Package
       class Freebsd < Chef::Provider::Package
+        include Chef::Mixin::ShellOut
 
         def initialize(*args)
           super
@@ -32,19 +33,8 @@ class Chef
         end
 
         def current_installed_version
-          command = "pkg_info -E \"#{package_name}*\""
-          status = popen4(command) do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^#{package_name}-(.+)/
-                return $1
-              end
-            end
-          end
-          unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "#{command} failed - #{status.inspect}!"
-          end
-          nil
+          pkg_info = shell_out!("pkg_info -E \"#{package_name}*\"", :env => nil, :returns => [0,1])
+          pkg_info.stdout[/^#{package_name}-(.+)/, 1]
         end
 
         def port_path
@@ -58,27 +48,17 @@ class Chef
             "/usr/ports/#{@new_resource.package_name}"
           # Otherwise look up the path to the ports directory using 'whereis'
           else
-            popen4("whereis -s #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-              stdout.each do |line|
-                case line
-                when /^#{@new_resource.package_name}:\s+(.+)$/
-                  return $1
-                end
-              end
+            whereis = shell_out!("whereis -s #{@new_resource.package_name}", :env => nil)
+            unless path = whereis.stdout[/^#{@new_resource.package_name}:\s+(.+)$/, 1]
+              raise Chef::Exceptions::Package, "Could not find port with the name #{@new_resource.package_name}"
             end
-            raise Chef::Exceptions::Package, "Could not find port with the name #{@new_resource.package_name}"
+            path
           end
         end
 
         def ports_makefile_variable_value(variable)
-          command = "cd #{port_path}; make -V #{variable}"
-          status = popen4(command) do |pid, stdin, stdout, stderr|
-            return stdout.readline.strip
-          end
-          unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "#{command} failed - #{status.inspect}!"
-          end
-          nil
+          make_v = shell_out!("make -V #{variable}", :cwd => port_path, :env => nil, :returns => [0,1])
+          make_v.stdout.strip.split($\).first # $\ is the line separator, i.e., newline
         end
 
         def ports_candidate_version
@@ -114,26 +94,15 @@ class Chef
           unless @current_resource.version
             case @new_resource.source
             when /^ports$/
-              run_command_with_systems_locale(
-                :command => "make -DBATCH install",
-                :cwd => "#{port_path}"
-              )
+              shell_out!("make -DBATCH install", :cwd => port_path, :env => nil).status
             when /^http/, /^ftp/
-              run_command_with_systems_locale(
-                :command => "pkg_add -r #{package_name}",
-                :environment => { "PACKAGESITE" => @new_resource.source }
-              )
+              shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
               Chef::Log.info("Installed package #{package_name} from: #{@new_resource.source}")
             when /^\//
-              run_command_with_systems_locale(
-                :command => "pkg_add #{@new_resource.name}",
-                :environment => { "PKG_PATH" => @new_resource.source }
-              )
+              shell_out!("pkg_add #{@new_resource.name}", :env => { "PKG_PATH" => @new_resource.source , 'LC_ALL'=>nil}).status
               Chef::Log.info("Installed package #{@new_resource.name} from: #{@new_resource.source}")
             else
-              run_command_with_systems_locale(
-                :command => "pkg_add -r #{latest_link_name}"
-              )
+              shell_out!("pkg_add -r #{latest_link_name}", :env => nil).status
               Chef::Log.info("Installed package #{package_name}")
             end
           end
@@ -142,15 +111,12 @@ class Chef
         def remove_package(name, version)
           # a version is mandatory
           if version
-            run_command_with_systems_locale(
-              :command => "pkg_delete #{package_name}-#{version}"
-            )
+            shell_out!("pkg_delete #{package_name}-#{version}", :env => nil).status
           else
-            run_command_with_systems_locale(
-              :command => "pkg_delete #{package_name}-#{@current_resource.version}"
-            )
+            shell_out!("pkg_delete #{package_name}-#{@current_resource.version}", :env => nil).status
           end
         end
+
       end
     end
   end
