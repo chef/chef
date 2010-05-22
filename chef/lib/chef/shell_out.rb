@@ -27,12 +27,16 @@ class Chef
   # No means for passing input to the subprocess is provided, nor is there any
   # way to inspect the output of the command as it is being read. If you need 
   # to do that, you have to use Chef::Mixin::Command.popen4
+  #
+  # == Platform Support
+  # Chef::ShellOut uses Kernel.fork() and is therefore unsuitable for Windows
+  # or jruby.
   class ShellOut
     READ_WAIT_TIME = 0.01
     DEFAULT_READ_TIMEOUT = 60
     DEFAULT_ENVIRONMENT = {'LC_ALL' => 'C'}
     
-    attr_accessor :user, :group, :cwd
+    attr_accessor :user, :group, :cwd, :valid_exit_codes
     attr_reader :command, :umask, :environment
     attr_writer :timeout
     
@@ -55,12 +59,17 @@ class Chef
     #   be sure to use two leading zeros so it's parsed as Octal. A string will
     #   be treated as an octal integer
     # * environment: a Hash of environment variables to set before the command
-    #   is run.
+    #   is run. By default, the environment will *always* be set to 'LC_ALL' => 'C'
+    #   to prevent issues with multibyte characters in Ruby 1.8. To avoid this,
+    #   use :environment => nil for *no* extra environment settings, or
+    #   :environment => {'LC_ALL'=>nil, ...} to set other environment settings
+    #   without changing the locale.
     def initialize(*command_args)
       @stdout, @stderr = '', ''
       @environment = DEFAULT_ENVIRONMENT
       @cwd = Dir.tmpdir
-      
+      @valid_exit_codes = [0]
+
       if command_args.last.is_a?(Hash)
         parse_options(command_args.pop)
       end
@@ -101,9 +110,16 @@ class Chef
     end
     
     # Run the command, writing the command's standard out and standard error
-    # to +stdout+ and +stderr+, and saving its exit status to +result+
+    # to +stdout+ and +stderr+, and saving its exit status object to +status+
     # === Returns
-    # returns +self+
+    # returns   +self+; +stdout+, +stderr+, +status+, and +exitstatus+ will be
+    #           populated with results of the command
+    # === Raises
+    # Errno::EACCES   when you are not privileged to execute the command
+    # Errno::ENOENT   when the command is not available on the system (or not
+    #                 in the current $PATH)
+    # Chef::Exceptions::CommandTimeout when the command does not complete
+    #                                  within +timeout+ seconds (default: 60s)
     def run_command
       Chef::Log.debug("sh(#{@command})")
       
@@ -152,16 +168,28 @@ class Chef
     end
     
     def error!
-      unless (retval = @status.exitstatus) == 0
-        msg = "Expected process to exit 0, but it exited with #{retval}\n#{format_for_exception}"
-        raise Chef::Exceptions::ShellCommandFailed, msg 
+      unless Array(valid_exit_codes).include?(exitstatus)
+        invalid!("Expected process to exit 0, but it exited with #{exitstatus}")
       end
+    end
+
+    # Raises a Chef::Exceptions::ShellCommandFailed exception, appending the
+    # command's stdout, stderr, and exitstatus to the exception message.
+    # === Arguments
+    # +msg+     A String to use as the basis of the exception message. The 
+    #           default explanation is very generic, providing a more 
+    #           informative message is highly encouraged.
+    # === Raises
+    # Chef::Exceptions::ShellCommandFailed  always
+    def invalid!(msg=nil)
+      msg ||= "Command produced unexpected results"
+      raise Chef::Exceptions::ShellCommandFailed, msg + "\n" + format_for_exception
     end
     
     def inspect
       "<#{self.class.name}##{object_id}: command: '#@command' process_status: #{@status.inspect} " +
-      "stdout: '#@stdout' stderr: '#@stderr' child_pid: #{@child_pid.inspect} " + 
-      "environment: #{@environment.inspect} timeout: #@timeout user: #@user group: #@group working_dir: #@cwd >"
+      "stdout: '#{stdout.strip}' stderr: '#{stderr.strip}' child_pid: #{@child_pid.inspect} " + 
+      "environment: #{@environment.inspect} timeout: #{timeout} user: #@user group: #@group working_dir: #@cwd >"
     end
 
     private
@@ -179,8 +207,11 @@ class Chef
           self.umask = setting
         when 'timeout'
           self.timeout = setting
-        when 'environment'
-          @environment.merge!(setting)
+        when 'returns'
+          self.valid_exit_codes = Array(setting)
+        when 'environment', 'env'
+          # passing :environment => nil means don't set any new ENV vars
+          setting.nil? ? @environment = {} : @environment.merge!(setting)
         else
           raise Chef::Exceptions::InvalidCommandOption, "option '#{option.inspect}' is not a valid option for #{self.class.name}"
         end

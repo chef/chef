@@ -84,10 +84,19 @@ describe Chef::ShellOut do
     @shell_cmd.timeout.should == 10
   end
   
+  it "has a list of valid exit codes which is just 0 by default" do
+    @shell_cmd.valid_exit_codes.should == [0]
+  end
+  
+  it "sets the list of valid exit codes" do
+    @shell_cmd.valid_exit_codes = [0,23,42]
+    @shell_cmd.valid_exit_codes.should == [0,23,42]
+  end
+  
   context "when initialized with a hash of options" do
     before do
       @opts = { :cwd => '/tmp', :user => 'toor', :group => 'wheel', :umask => '2222',
-                :timeout => 5, :environment => {'RUBY_OPTS' => '-w'}}
+                :timeout => 5, :environment => {'RUBY_OPTS' => '-w'}, :returns => [0,1,42]}
       @shell_cmd = Chef::ShellOut.new("brew install couchdb", @opts)
     end
     
@@ -113,6 +122,20 @@ describe Chef::ShellOut do
     
     it "merges the environment with the default environment settings" do
       @shell_cmd.environment.should == {'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'}
+    end
+    
+    it "also accepts :env to set the enviroment for brevity's sake" do
+      @shell_cmd = Chef::ShellOut.new("brew install couchdb", :env => {'RUBY_OPTS'=>'-w'})
+      @shell_cmd.environment.should == {'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'}
+    end
+    
+    it "does not set any environment settings when given :environment => nil" do
+      @shell_cmd = Chef::ShellOut.new("brew install couchdb", :environment => nil)
+      @shell_cmd.environment.should == {}
+    end
+    
+    it "sets the list of acceptable return values" do
+      @shell_cmd.valid_exit_codes.should == [0,1,42]
     end
     
     it "raises an error when given an invalid option" do
@@ -249,30 +272,32 @@ describe Chef::ShellOut do
     cmd.format_for_exception.split("\n")[3].should == %q{---- End output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----}
   end
   
-  it "takes an array of acceptable return values, defaulting to 0" do
-    pending
-  end
-  
-  it "takes a block to evaluate if the command succeeded" do
-    pending
-    cmd = Chef::ShellOut.new(something)
-    cmd.validate { |results| results.stdout.match /some_regex/ }
-    #prove it exists...
-  end
-  
   it "raises a InvalidCommandResult error if the exitstatus is an unexpected value" do
-    pending
-    cmd = Chef::ShellOut.new("exit 2")
+    cmd = Chef::ShellOut.new('ruby -e "exit 2"')
     cmd.run_command
-    lambda {cmd.error!}.should raise_error(Chef::Exceptions::InvalidCommandResult)
+    lambda {cmd.error!}.should raise_error(Chef::Exceptions::ShellCommandFailed)
+  end
+
+  it "does not raise an error if the command returns a value in the list of valid_exit_codes" do
+    cmd = Chef::ShellOut.new('ruby -e "exit 42"', :returns => 42)
+    cmd.run_command
+    lambda {cmd.error!}.should_not raise_error
   end
   
   it "includes output with exceptions from #error!" do
-    pending
+    cmd = Chef::ShellOut.new('ruby -e "exit 2"')
+    cmd.run_command
+    begin
+      cmd.error!
+    rescue Chef::Exceptions::ShellCommandFailed => e
+      e.message.should match(Regexp.escape(cmd.format_for_exception))
+    end
   end
   
-  it "has a class method to create the command, run it, and call error! on it." do
-    pending
+  it "errors out when told the result is invalid" do
+    cmd = Chef::ShellOut.new('ruby -e "exit 0"')
+    cmd.run_command
+    lambda { cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Chef::Exceptions::ShellCommandFailed)
   end
-  
+
 end
