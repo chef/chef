@@ -30,7 +30,11 @@ class Chef
     # Used to load the node's recipes after expanding its run list
     include Chef::Mixin::LanguageIncludeRecipe
 
-    attr_reader :node, :cookbook_collection, :resource_collection, :definitions
+    attr_reader :node, :cookbook_collection, :definitions
+
+    # Needs to be settable so deploy can run a resource_collection independent
+    # of any cookbooks.
+    attr_accessor :resource_collection
 
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.

@@ -38,6 +38,11 @@ class Chef
       run_context && run_context.node
     end
 
+    # Used by providers supporting embedded recipes
+    def resource_collection
+      run_context && run_context.resource_collection
+    end
+
     def cookbook_name
       new_resource.cookbook_name
     end

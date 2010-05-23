@@ -33,7 +33,7 @@ class Chef
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
         
-        @scm_provider = @new_resource.scm_provider.new(@new_resource, run_context)
+        @scm_provider = new_resource.scm_provider.new(new_resource, run_context)
         
         # @configuration is not used by Deploy, it is only for backwards compat with
         # chef-deploy or capistrano hooks that might use it to get environment information
@@ -271,11 +271,17 @@ class Chef
       end
       
       def install_gems
+        gem_resource_collection_runner.converge
+      end
+
+      def gem_resource_collection_runner
         gems_collection = Chef::ResourceCollection.new
         gem_packages.each { |rbgem| gems_collection << rbgem }
-        Chef::Runner.new(@node, gems_collection).converge
+        gems_run_context = run_context.dup
+        gems_run_context.resource_collection = gems_collection
+        Chef::Runner.new(gems_run_context)
       end
-      
+
       def gem_packages
         return [] unless ::File.exist?("#{release_path}/gems.yml")
         gems = YAML.load(IO.read("#{release_path}/gems.yml"))
