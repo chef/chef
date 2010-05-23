@@ -1,25 +1,25 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:           chef-server
-# Required-Start:     $remote_fs $network rabbitmq-server couchdb
-# Required-Stop:      $remote_fs $network rabbitmq-server couchdb
+# Provides:           chef-server-webui
+# Required-Start:     $remote_fs $network chef-server
+# Required-Stop:      $remote_fs $network chef-server
 # Default-Start:      2 3 4 5
 # Default-Stop:       0 1 6
-# Short-Description:  Start a chef-server.
+# Short-Description:  Start a chef-server-webui
 ### END INIT INFO
 #
 # Copyright (c) 2009-2010 Opscode, Inc <legal@opscode.com>
 #
-# chef-server         Startup script for chef-server.
-# chkconfig: - 90 02
+# chef-server-webui   Startup script for chef-server-webui.
+# chkconfig: - 95 02
 # description: starts up chef-server webui.
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/bin/chef-server
-PIDFILE=/var/run/chef/server.%s.pid
-MAINPID=/var/run/chef/server.main.pid
-NAME=chef-server
-DESC=chef-server
+DAEMON=/usr/bin/chef-server-webui
+PIDFILE=/var/run/chef/server-webui.%s.pid
+MAINPID=/var/run/chef/server-webui.main.pid
+NAME=chef-server-webui
+DESC=chef-server-webui
 
 test -x $DAEMON || exit 0
 
@@ -37,6 +37,7 @@ DAEMON_OPTS="-p $PORT -e production -d -a $ADAPTER -P $PIDFILE -L $LOGFILE -C $C
 running() {
   [ ! -f  "$MAINPID" ] &&  return 1
   pid=`cat $MAINPID`
+  name=$WORKER
   [ -z "$pid" ] && return 1
   [ ! -d /proc/$pid ] && return 1
   (ps -fp $pid | egrep -q "merb.*(merb : master|worker.*$PORT)") || return 1

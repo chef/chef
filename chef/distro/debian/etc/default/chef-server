@@ -1,0 +1,6 @@
+LOGFILE=/var/log/chef/server.log
+CONFIG=/etc/chef/server.rb
+ADAPTER=thin
+PORT=4000
+USER=chef
+GROUP=chef
