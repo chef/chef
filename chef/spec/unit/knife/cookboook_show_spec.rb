@@ -22,7 +22,7 @@ describe Chef::Knife::CookbookShow do
   before(:each) do
     @knife = Chef::Knife::CookbookShow.new
     @knife.config = { }
-    @knife.name_args = [ "adam" ]
+    @knife.name_args = [ "cookbook_name" ]
     @rest = mock(Chef::REST, :null_object => true)
     @knife.stub!(:rest).and_return(@rest)
     @knife.stub!(:pretty_print).and_return(true)
@@ -30,44 +30,93 @@ describe Chef::Knife::CookbookShow do
   end
 
   describe "run" do
-    describe "with 1 argument" do
+    describe "with 1 argument: versions" do
       it "should show the raw cookbook data" do
-        response = { "snootch" => "to the bootch" }
-        @rest.should_receive(:get_rest).with("cookbooks/adam").and_return(response)
-        @knife.should_receive(:output).with(response)
+        @response = ["0.1.0"]
+        @rest.should_receive(:get_rest).with("cookbooks/cookbook_name").and_return(@response)
+        @knife.should_receive(:output).with(@response)
         @knife.run
       end
     end
 
-    describe "with 2 arguments" do
+    describe "with 2 arguments: name and version" do
       before(:each) do
-        @knife.name_args << "snootchy"
-        @response = { "snootchy" => { "bootches" => "snarf!" } }
+        @knife.name_args << "0.1.0"
+        @response = { "0.1.0" => { "recipes" => {"default.rb" => ""} } }
       end
 
       it "should show the specific part of a cookbook" do
-        @rest.should_receive(:get_rest).with("cookbooks/adam").and_return(@response)
-        @knife.should_receive(:output).with(@response["snootchy"])
+        @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@response)
+        @knife.should_receive(:output).with(@response)
         @knife.run
       end
     end
 
-    describe "with 3 arguments" do
+    # 3-argument needed
+
+    describe "with 4 arguments: name, version, segment and filename" do
       before(:each) do
-        @knife.name_args = [ "adam", "recipes", "default.rb" ]
-        @response = "Feel the fire that burns us all"
+        @knife.name_args = [ "cookbook_name", "0.1.0", "recipes", "default.rb" ]
+        @cookbook_response = {
+          "recipes" => [
+            {
+              "name" => "default.rb",
+              "path" => "recipes/default.rb",
+              "checksum" => "1234"
+            }
+          ]
+        }
+        @response = "Example recipe text"
       end
 
       it "should print the raw result of the request (likely a file!)" do
-        @rest.should_receive(:get_rest).with("cookbooks/adam/recipes?id=default.rb").and_return(@response)
+        @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
+        @rest.should_erceive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/1234").and_return(@response)
         @knife.should_receive(:pretty_print).with(@response)
         @knife.run
       end
+    end
 
-      describe "and --fqdn" do
+    describe "with 4 arguments: name, version, segment and filename -- with specificity" do
+      before(:each) do
+        @knife.name_args = [ "cookbook_name", "0.1.0", "files", "afile.rb" ]
+        @cookbook_response = {
+          "files" => [
+            {
+              "name" => "afile.rb",
+              "path" => "files/host-examplehost.example.org/afile.rb",
+              "checksum" => "1111",
+              "specificity" => "host-examplehost.example.org"
+            },
+            {
+              "name" => "afile.rb",
+              "path" => "files/ubuntu-9.10/afile.rb",
+              "checksum" => "2222",
+              "specificity" => "ubuntu-9.10"
+            },
+            {
+              "name" => "afile.rb",
+              "path" => "files/ubuntu/afile.rb",
+              "checksum" => "3333",
+              "specificity" => "ubuntu"
+            },
+            {
+              "name" => "afile.rb",
+              "path" => "files/default/afile.rb",
+              "checksum" => "4444",
+              "specificity" => "default"
+            },
+          ]
+        }
+        @response = "Example recipe text"
+      end
+      
+      describe "with --fqdn" do
         it "should pass the fqdn" do
-          @knife.config[:fqdn] = "woot.com"
-          @rest.should_receive(:get_rest).with("cookbooks/adam/recipes?fqdn=woot.com&id=default.rb").and_return(@response)
+          @knife.config[:fqdn] = "examplehost.example.org"
+          @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
+          @rest.should_erceive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/1111").and_return(@response)
+          @knife.should_receive(:pretty_print).with(@response)
           @knife.run
         end
       end
@@ -75,25 +124,28 @@ describe Chef::Knife::CookbookShow do
       describe "and --platform" do
         it "should pass the platform" do
           @knife.config[:platform] = "ubuntu"
-          @rest.should_receive(:get_rest).with("cookbooks/adam/recipes?id=default.rb&platform=ubuntu").and_return(@response)
+          @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
+          @rest.should_erceive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/3333").and_return(@response)
+          @knife.should_receive(:pretty_print).with(@response)
           @knife.run
         end
       end
 
       describe "and --platform-version" do
         it "should pass the platform" do
-          @knife.config[:platform_version] = "9.04"
-          @rest.should_receive(:get_rest).with("cookbooks/adam/recipes?id=default.rb&version=9.04").and_return(@response)
+          @knife.config[:platform_version] = "9.10"
+          @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
+          @rest.should_erceive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/2222").and_return(@response)
+          @knife.should_receive(:pretty_print).with(@response)
           @knife.run
         end
       end
 
-      describe "and with all three arguments" do
+      describe "with none of the arguments, it should use the default" do
         it "should pass them all" do
-          @knife.config[:fqdn] = "woot.com"
-          @knife.config[:platform] = "ubuntu"
-          @knife.config[:platform_version] = "9.04"
-          @rest.should_receive(:get_rest).with("cookbooks/adam/recipes?fqdn=woot.com&id=default.rb&platform=ubuntu&version=9.04").and_return(@response)
+          @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
+          @rest.should_erceive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/4444").and_return(@response)
+          @knife.should_receive(:pretty_print).with(@response)
           @knife.run
         end
       end

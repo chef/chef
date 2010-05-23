@@ -44,11 +44,27 @@ class Chef
       def run 
         case @name_args.length
         when 4 # We are showing a specific file
-          arguments = { :id => @name_args[3] } 
-          arguments[:fqdn] = config[:fqdn] if config.has_key?(:fqdn)
-          arguments[:platform] = config[:platform] if config.has_key?(:platform)
-          arguments[:version] = config[:platform_version] if config.has_key?(:platform_version)
-          result = rest.get_rest("cookbooks/#{@name_args[0]}/#{@name_args[1]}/#{@name_args[2]}?#{make_query_params(arguments)}")
+          node = Hash.new
+          node[:fqdn] = config[:fqdn] if config.has_key?(:fqdn)
+          node[:platform] = config[:platform] if config.has_key?(:platform)
+          node[:platform_version] = config[:platform_version] if config.has_key?(:platform_version)
+
+          class << node
+            def attribute?(name)
+              has_key?(name)
+            end
+          end
+
+          cookbook_name, cookbook_version, segment, filename = @name_args[0..3]
+          puts "cookbook_name #{cookbook_name}, cookbook_version #{cookbook_version}, segment #{segment}, filename #{filename}"
+
+          manifest = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}")
+          cookbook = Chef::Cookbook.new(cookbook_name)
+          cookbook.manifest = manifest
+          
+          manifest_entry = cookbook.preferred_manifest_record(node, segment, filename)
+          result = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}/files/#{manifest_entry.checksum}")
+          
           pretty_print(result)
         when 3 # We are showing a specific part of the cookbook
           cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
