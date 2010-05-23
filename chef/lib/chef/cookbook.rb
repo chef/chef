@@ -255,7 +255,7 @@ class Chef
       end
     end
     
-    def preferred_filename(node, segment, filename)
+    def preferred_manifest_record(node, segment, filename)
       platform, version = Chef::Platform.find_platform_and_version(node)
       fqdn = node[:fqdn]
 
@@ -267,20 +267,20 @@ class Chef
         File.join("default", filename)
       ]
       
-      preferences.find{ |preferred_file| manifest[segment.to_s][preferred_file] }
+      found_pref = preferences.find{ |preferred_file| manifest[segment.to_s][preferred_file] }
+      if found_pref
+        manifest[segment.to_s][found_pref]
+      else
+        raise Chef::Exceptions::FileNotFound, "cookbook #{name} does not contain file #{segment}/#{filename}"
+      end
     end
     
     def preferred_filename_on_disk_location(node, segment, filename, current_checksum=nil)
-      found_pref = preferred_filename(node, segment, filename)
-      if found_pref
-        manifest_record = manifest[segment.to_s][found_pref]
-        if current_checksum && (manifest_record['checksum'] == current_checksum.strip)
-          nil
-        else
-          file_vendor.get_filename(manifest_record['path'])
-        end
+      manifest_record = preferred_manifest_record(node, segment, filename)
+      if current_checksum && (manifest_record['checksum'] == current_checksum.strip)
+        nil
       else
-        raise Chef::Exceptions::FileNotFound, "cookbook #{name} does not contain file #{segment}/#{filename}"
+        file_vendor.get_filename(manifest_record['path'])
       end
     end
 
