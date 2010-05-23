@@ -133,7 +133,7 @@ describe Chef::Provider::Package do
   
   end
 
-  describe Chef::Provider::Package, "action_upgrade" do
+  describe "when upgrading the package" do
     before(:each) do
       @provider.stub!(:upgrade_package).and_return(true)
     end
@@ -271,6 +271,7 @@ describe Chef::Provider::Package do
 
   describe "when fetching a preseed file" do
     before(:each) do
+      pending "Depends on resolution for remote file [DAN 5/22/2010]"
       @remote_file = Chef::Resource::RemoteFile.new("/var/chef/cache/preseed/javacb/java-6.seed")
       @remote_file.cookbook_name = "javacb"
       @remote_file.source "java-6.seed"
