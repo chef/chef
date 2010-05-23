@@ -27,48 +27,48 @@ Merb::Router.prepare do
   # Cookbooks
   match('/nodes/:id/cookbooks', :method => 'get').to(:controller => "nodes", :action => "cookbooks")
 
-  scope.match("/cookbooks",
-              :method => 'get'
-              ).to(:controller => "cookbooks", :action => "index")
+  match("/cookbooks",
+        :method => 'get'
+        ).to(:controller => "cookbooks", :action => "index")
 
-  scope.match("/cookbooks/:cookbook_name/:cookbook_version",
-              :method => 'put',
-              :cookbook_name => /[\w\.]+/,
-              :cookbook_version => /\d+\.\d+\.\d+/
-              ).to(:controller => "cookbooks", :action => "update")
+  match("/cookbooks/:cookbook_name/:cookbook_version",
+        :method => 'put',
+        :cookbook_name => /[\w\.]+/,
+        :cookbook_version => /\d+\.\d+\.\d+/
+        ).to(:controller => "cookbooks", :action => "update")
 
-  scope.match("/cookbooks/:cookbook_name/:cookbook_version",
-              :method => 'get',
-              :cookbook_name => /[\w\.]+/,
-              :cookbook_version => /(\d+\.\d+\.\d+|_latest)/
-              ).to(:controller => "cookbooks", :action => "show")
+  match("/cookbooks/:cookbook_name/:cookbook_version",
+        :method => 'get',
+        :cookbook_name => /[\w\.]+/,
+        :cookbook_version => /(\d+\.\d+\.\d+|_latest)/
+        ).to(:controller => "cookbooks", :action => "show")
 
-  scope.match("/cookbooks/:cookbook_name/:cookbook_version",
-              :method => 'delete',
-              :cookbook_name => /[\w\.]+/,
-              :cookbook_version => /(\d+\.\d+\.\d+|_latest)/
-              ).to(:controller => "cookbooks", :action => "destroy")
+  match("/cookbooks/:cookbook_name/:cookbook_version",
+        :method => 'delete',
+        :cookbook_name => /[\w\.]+/,
+        :cookbook_version => /(\d+\.\d+\.\d+|_latest)/
+        ).to(:controller => "cookbooks", :action => "destroy")
 
-  scope.match("/cookbooks/:cookbook_name",
-              :method => 'get',
-              :cookbook_name => /[\w\.]+/
-              ).to(:controller => "cookbooks", :action => "show_versions").name(:cookbook)
+  match("/cookbooks/:cookbook_name",
+        :method => 'get',
+        :cookbook_name => /[\w\.]+/
+        ).to(:controller => "cookbooks", :action => "show_versions").name(:cookbook)
 
-  scope.match("/cookbooks/:cookbook_name/:cookbook_version/files/:checksum",
-              :cookbook_name => /[\w\.]+/,
-              :cookbook_version => /(\d+\.\d+\.\d+|_latest)/
-              ).to(
-                   :controller => "cookbooks",
-                   :action => "show_file"
-                   ).name(:cookbook_file)
+  match("/cookbooks/:cookbook_name/:cookbook_version/files/:checksum",
+        :cookbook_name => /[\w\.]+/,
+        :cookbook_version => /(\d+\.\d+\.\d+|_latest)/
+        ).to(
+             :controller => "cookbooks",
+             :action => "show_file"
+             ).name(:cookbook_file)
 
   # Sandbox
-  scope.match('/sandboxes', :method => 'get').to(:controller => "sandboxes", :action => "index").name(:sandboxes)
-  scope.match('/sandboxes', :method => 'post').to(:controller => "sandboxes", :action => "create")
-  scope.match('/sandboxes/:sandbox_id', :method => 'get', :sandbox_id => /[\w\.]+/).to(:controller => "sandboxes", :action => "show").name(:sandbox)
-  scope.match('/sandboxes/:sandbox_id', :method => 'put', :sandbox_id => /[\w\.]+/).to(:controller => "sandboxes", :action => "update")
-  scope.match('/sandboxes/:sandbox_id/:checksum', :method => 'put', :sandbox_id => /[\w\.]+/, :checksum => /[\w\.]+/).to(:controller => "sandboxes", :action => "upload_checksum").name(:sandbox_checksum)
-  scope.match('/sandboxes/:sandbox_id/:checksum', :method => 'get', :sandbox_id => /[\w\.]+/, :checksum => /[\w\.]+/).to(:controller => "sandboxes", :action => "download_checksum")
+  match('/sandboxes', :method => 'get').to(:controller => "sandboxes", :action => "index").name(:sandboxes)
+  match('/sandboxes', :method => 'post').to(:controller => "sandboxes", :action => "create")
+  match('/sandboxes/:sandbox_id', :method => 'get', :sandbox_id => /[\w\.]+/).to(:controller => "sandboxes", :action => "show").name(:sandbox)
+  match('/sandboxes/:sandbox_id', :method => 'put', :sandbox_id => /[\w\.]+/).to(:controller => "sandboxes", :action => "update")
+  match('/sandboxes/:sandbox_id/:checksum', :method => 'put', :sandbox_id => /[\w\.]+/, :checksum => /[\w\.]+/).to(:controller => "sandboxes", :action => "upload_checksum").name(:sandbox_checksum)
+  match('/sandboxes/:sandbox_id/:checksum', :method => 'get', :sandbox_id => /[\w\.]+/, :checksum => /[\w\.]+/).to(:controller => "sandboxes", :action => "download_checksum")
 
   # Data
   match("/data/:data_bag_id/:id", :method => 'get').to(:controller => "data_item", :action => "show").name("data_bag_item")

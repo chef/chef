@@ -21,6 +21,8 @@ require 'chef/knife'
 require 'chef/streaming_cookbook_uploader'
 require 'chef/cache/checksum'
 require 'chef/sandbox'
+require 'chef/cookbook'
+require 'chef/cookbook/file_system_file_vendor'
 
 class Chef
   class Knife
@@ -45,6 +47,8 @@ class Chef
         else
           config[:cookbook_path] = Chef::Config[:cookbook_path]
         end
+
+        Chef::Cookbook::FileVendor.instance_creator = lambda { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
 
         cl = Chef::CookbookLoader.new
         if config[:all] 
@@ -134,13 +138,13 @@ class Chef
 
         checksums_to_on_disk_paths = cookbook.checksums
 
-        [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ].each do |segment|
+        Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
           cookbook.manifest[segment].each do |segment_file|
             path_in_cookbook = segment_file[:path]
             on_disk_path = checksums_to_on_disk_paths[segment_file[:checksum]]
             dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
             FileUtils.mkdir_p(File.dirname(dest))
-            File.cp(on_disk_path, dest)
+            FileUtils.cp(on_disk_path, dest)
           end
         end
         

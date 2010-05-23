@@ -80,6 +80,7 @@ class Chef
         Chef::Log.info("Starting Chef Run")
         
         if Chef::Config[:solo]
+          Chef::Cookbook::FileVendor.instance_creator = lambda { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
           run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
           assert_cookbook_path_not_empty(run_context)
           converge
@@ -88,9 +89,11 @@ class Chef
           
           # Note: When we move to lazily loading all cookbook files,
           # replace sync_cookbooks with a method that simply gets the
-          # cookbook objects (and their download URLs) from the server
-          # and feeds them to the node's lazy-loading cookbook
-          # collection. [cw/tim-5/11/2010]
+          # cookbook manifests from the remote server (and their
+          # download URLs) from the server and feeds them to
+          # RemoteFileVendors. [cw/tim-5/11/2010, 5/23/2010]
+          Chef::Cookbook::FileVendor.instance_creator = lambda { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
+#          Chef::Cookbook::FileVendor.instance_creator = lambda { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest) }
           sync_cookbooks
           run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
           assert_cookbook_path_not_empty(run_context)

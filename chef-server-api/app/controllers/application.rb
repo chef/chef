@@ -148,7 +148,7 @@ class Application < Merb::Controller
 
       next unless cookbook
 
-      nodes_cookbooks[cookbook_name.to_s] = cookbook.generate_manifest_with_urls{|opts| absolute_slice_url(:cookbook_file, opts) }
+      nodes_cookbooks[cookbook_name.to_s] = cookbook.generate_manifest_with_urls{|opts| absolute_url(:cookbook_file, opts) }
     end
 
     puts "** nodes_cookbooks = #{nodes_cookbooks.inspect}"

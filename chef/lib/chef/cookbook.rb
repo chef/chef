@@ -22,12 +22,13 @@ require 'chef/log'
 require 'chef/node'
 require 'chef/resource_definition_list'
 require 'chef/recipe'
+require 'chef/cookbook/file_vendor'
 
 class Chef
   class Cookbook
     include Chef::IndexQueue::Indexable
 
-    attr_accessor :definition_filenames, :template_filenames, :remote_filenames,
+    attr_accessor :definition_filenames, :template_filenames, :file_filenames, :remote_filenames,
       :library_filenames, :resource_filenames, :provider_filenames, :root_filenames, :name,
       :metadata, :metadata_filenames, :status, :couchdb_rev, :couchdb
     attr_reader :couchdb_id
@@ -134,9 +135,10 @@ class Chef
       @attribute_filenames = Array.new
       @definition_filenames = Array.new
       @template_filenames = Array.new
+      @file_filenames = Array.new
       @remote_filenames = Array.new
       @recipe_filenames = Array.new
-      @recipe_filenames_by_name = {}
+      @recipe_filenames_by_name = Hash.new
       @library_filenames = Array.new
       @resource_filenames = Array.new
       @provider_filenames = Array.new
@@ -169,7 +171,7 @@ class Chef
     
     def manifest=(new_manifest)
       @manifest = new_manifest
-      self.checksums = extract_checksums_from_manifest(new_manifest)
+      @checksums = extract_checksums_from_manifest(new_manifest)
     end
     
     # Returns a hash of checksums to either nil or the on disk path (which is
@@ -216,15 +218,13 @@ class Chef
     
     # called from DSL
     def load_recipe(recipe_name, run_context)
-      cookbook_name = self.name
-
       unless recipe_filenames_by_name.has_key?(recipe_name)
         raise ArgumentError, "Cannot find a recipe matching #{recipe_name} in cookbook #{name}"
       end
-      Chef::Log.debug("Found recipe #{recipe_name} in cookbook #{cookbook_name}")
-      recipe = Chef::Recipe.new(cookbook_name, recipe_name, run_context)
+      Chef::Log.debug("Found recipe #{recipe_name} in cookbook #{name}")
+      recipe = Chef::Recipe.new(name, recipe_name, run_context)
       recipe_filename = recipe_filenames_by_name[recipe_name]
-      raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{self.name}" unless recipe_filename
+      raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}" unless recipe_filename
       
       recipe.from_file(recipe_filename)
       recipe
@@ -270,7 +270,7 @@ class Chef
       found_pref = preferences.find{ |preferred_file| manifest[segment.to_s][preferred_file] }
       if found_pref
         manifest_record = manifest[segment.to_s][found_pref]
-        file_vendor.get_filename(manifest_record)
+        file_vendor.get_filename(manifest_record['path'])
       else
         raise Chef::Exceptions::FileNotFound, "cookbook #{name} does not contain file #{segment}/#{filename}"
       end
@@ -388,12 +388,12 @@ class Chef
     end
 
     def cdb_save
-      self.couchdb_rev = couchdb.store("cookbook", full_name, self)["rev"]
+      @couchdb_rev = couchdb.store("cookbook", full_name, self)["rev"]
     end
 
     def couchdb_id=(value)
-      self.couchdb_id = value
-      self.index_id = value
+      @couchdb_id = value
+      @index_id = value
     end
 
     private
@@ -402,7 +402,7 @@ class Chef
     def filenames_by_name(filenames)
       filenames.select{|filename| filename =~ /\.rb$/}.inject({}){|memo, filename| memo[File.basename(filename, '.rb')] = filename ; memo }
     end
-    
+
     def generate_manifest
       manifest = {
         :recipes => Array.new,
@@ -443,8 +443,8 @@ class Chef
             path = matcher[1]
             file_name = matcher[2]
           end
-
-          csum = checksum(segment_file)
+          
+          csum = Chef::Cache::Checksum.generate_md5_checksum_for_file(segment_file)
           checksums_to_on_disk_paths[csum] = segment_file
           rs = {
             :name => file_name,
@@ -462,9 +462,9 @@ class Chef
       manifest[:version] = metadata.version
       manifest[:name] = full_name
 
-      self.checksums = checksums_to_on_disk_paths
-      self.file_vendor = Chef::CookbookFileVendor.new(manifest)
-      self.manifest = manifest
+      @checksums = checksums_to_on_disk_paths
+      @file_vendor = Chef::Cookbook::FileVendor.create_from_manifest(manifest)
+      @manifest = manifest
     end
 
     def extract_checksums_from_manifest(manifest)

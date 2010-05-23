@@ -43,7 +43,7 @@ class Cookbooks < Application
     response = Hash.new
     cookbook_list.each do |cookbook_name|
       cookbook_name =~ /^(.+)-(\d+\.\d+\.\d+)$/
-      response[$1] = absolute_slice_url(:cookbook, :cookbook_name => $1)
+      response[$1] = absolute_url(:cookbook, :cookbook_name => $1)
     end
     display response 
   end
@@ -60,7 +60,7 @@ class Cookbooks < Application
 
   def show
     cookbook = get_cookbook_version(cookbook_name, cookbook_version)
-    display cookbook.generate_manifest_with_urls { |opts| absolute_slice_url(:cookbook_file, opts) }
+    display cookbook.generate_manifest_with_urls { |opts| absolute_url(:cookbook_file, opts) }
   end
 
   def show_file

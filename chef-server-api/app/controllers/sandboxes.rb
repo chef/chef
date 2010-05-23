@@ -20,14 +20,14 @@ require 'chef/sandbox'
 require 'chef/checksum'
 
 # Sandboxes are used to upload files to the server (e.g., cookbook upload).
-class ChefServerApi::Sandboxes < ChefServerApi::Application
+class Sandboxes < Application
   
   provides :json
 
   before :authenticate_every
 
   include Chef::Mixin::Checksum
-  include Merb::ChefServerApi::TarballHelper
+  include Merb::TarballHelper
   
   def index
     couch_sandbox_list = Chef::Sandbox::cdb_list(true)
@@ -36,7 +36,7 @@ class ChefServerApi::Sandboxes < ChefServerApi::Application
     
     sandbox_list = Hash.new
     couch_sandbox_list.each do |sandbox|
-      sandbox_list[sandbox.guid] = absolute_slice_url(:sandbox, :sandbox_id => sandbox.guid)
+      sandbox_list[sandbox.guid] = absolute_url(:sandbox, :sandbox_id => sandbox.guid)
       puts
     end
     puts "Sandboxes.index: sandbox_list = #{sandbox_list.inspect}"
@@ -71,7 +71,7 @@ class ChefServerApi::Sandboxes < ChefServerApi::Application
         }
       else
         result_checksums[incoming_checksum] = {
-          :url => absolute_slice_url(:sandbox_checksum, :sandbox_id => new_sandbox.guid, :checksum => incoming_checksum),
+          :url => absolute_url(:sandbox_checksum, :sandbox_id => new_sandbox.guid, :checksum => incoming_checksum),
           :needs_upload => true
         }
         new_sandbox.checksums << incoming_checksum
@@ -84,7 +84,7 @@ class ChefServerApi::Sandboxes < ChefServerApi::Application
     
     # construct successful response
     self.status = 201
-    location = absolute_slice_url(:sandbox, :sandbox_id => new_sandbox.guid)
+    location = absolute_url(:sandbox, :sandbox_id => new_sandbox.guid)
     headers['Location'] = location
     result = { 'uri' => location, 'checksums' => result_checksums, 'sandbox_id' => new_sandbox.guid }
     #result = { 'uri' => location }
@@ -105,15 +105,15 @@ class ChefServerApi::Sandboxes < ChefServerApi::Application
     raise NotFound, "checksum #{checksum} isn't a part of sandbox #{sandbox_guid}" unless existing_sandbox.checksums.member?(checksum)
 
     src = params[:file][:tempfile].path
-    
-    observed_checksum = Chef::Cache::Checksum.checksum_for_file(src)
+
+    observed_checksum = Chef::Cache::Checksum.generate_md5_checksum_for_file(src)
     raise BadRequest, "Checksum did not match: expected #{checksum}, observed #{observed_checksum}" unless observed_checksum == checksum
     
     dest = sandbox_checksum_location(sandbox_guid, checksum)
     Chef::Log.info("upload_checksum: move #{src} to #{dest}")
     FileUtils.mv(src, dest)
 
-    url = absolute_slice_url(:sandbox_checksum, :sandbox_id => sandbox_guid, :checksum => checksum)
+    url = absolute_url(:sandbox_checksum, :sandbox_id => sandbox_guid, :checksum => checksum)
     result = { 'uri' => url }
     display result
   end
