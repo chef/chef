@@ -20,6 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::RemoteFile, "action_create" do
   before(:each) do
+    pending("requires resolution of remote file by cw&&tim [DAN 5/23/2010]")
     @resource = Chef::Resource::RemoteFile.new("seattle")
     @resource.path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt"))
     @resource.source("http://foo")
@@ -52,6 +53,7 @@ end
 
 describe Chef::Provider::RemoteFile, "do_remote_file" do
   before(:each) do
+    pending("Requires resolution of remote file by cw && tim [DAN 5/23/2010]")
     @rest = mock(Chef::REST, { })
     @tempfile = Tempfile.new("chef-rspec-remote_file_spec-line#{__LINE__}")
     @rest.stub!(:fetch).and_yield(@tempfile)

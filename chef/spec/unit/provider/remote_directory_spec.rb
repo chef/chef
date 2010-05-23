@@ -20,6 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::RemoteDirectory do
   before do
+    pending "requires resolution of remote files by cw && tim [DAN 5/23/2010]"
     @resource = Chef::Resource::RemoteDirectory.new("/tmp/tafty")
     @resource.source "path/on/server"
     @node = Chef::Node.new
