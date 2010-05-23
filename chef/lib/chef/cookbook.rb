@@ -254,7 +254,11 @@ class Chef
         @root_filenames
       end
     end
-    
+
+    # Determine the most specific manifest record for the given
+    # segment/filename, given information in the node. Throws
+    # FileNotFound if there is no such segment and filename in the
+    # manifest.
     def preferred_manifest_record(node, segment, filename)
       platform, version = Chef::Platform.find_platform_and_version(node)
       fqdn = node[:fqdn]
