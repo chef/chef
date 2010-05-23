@@ -61,6 +61,7 @@ module Shef
         banner << "".ljust(80, "=")
         banner << "| " + "Command".ljust(25) + "| " + "Description"
         banner << "".ljust(80, "=")
+
         self.class.all_help_descriptions.each do |cmd, description|
           banner << "| " + cmd.ljust(25) + "| " + description
         end
@@ -86,7 +87,7 @@ module Shef
         end
         
         def all_help_descriptions
-          if sc = superclass && superclass.respond_to?(:help_descriptions)
+          if (sc = superclass) && superclass.respond_to?(:help_descriptions)
             help_descriptions + sc.help_descriptions
           else
             help_descriptions

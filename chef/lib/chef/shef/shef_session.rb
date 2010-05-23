@@ -50,8 +50,6 @@ module Shef
       run_context.resource_collection
     end
 
-    #alias :collection :resource_collection
-
     def run_context
       @run_context || rebuild_context
     end
