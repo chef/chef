@@ -32,7 +32,22 @@ class Chef
     include Chef::Mixin::RecipeDefinitionDSLCore
     
     attr_accessor :cookbook_name, :recipe_name, :recipe, :params, :run_context
-    
+
+    # Parses a potentially fully-qualified recipe name into its
+    # cookbook name and recipe short name.
+    #
+    # For example:
+    #   "aws::elastic_ip" returns [:aws, "elastic_ip"]
+    #   "aws" returns [:aws, "default"]
+    def self.parse_recipe_name(recipe_name)
+      rmatch = recipe_name.match(/(.+?)::(.+)/)
+      if rmatch
+        [ rmatch[1].to_sym, rmatch[2] ]
+      else
+        [ recipe_name.to_sym, "default" ]
+      end
+    end
+
     def initialize(cookbook_name, recipe_name, run_context)
       @cookbook_name = cookbook_name
       @recipe_name = recipe_name

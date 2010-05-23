@@ -307,21 +307,6 @@ class Chef
       cookbook
     end
     
-    # Parses a potentially fully-qualified recipe name into its
-    # cookbook name and recipe short name.
-    #
-    # For example:
-    #   "aws::elastic_ip" returns [:aws, "elastic_ip"]
-    #   "aws" returns [:aws, "default"]
-    def self.parse_recipe_name(recipe_name)
-      rmatch = recipe_name.match(/(.+?)::(.+)/)
-      if rmatch
-        [ rmatch[1].to_sym, rmatch[2] ]
-      else
-        [ recipe_name.to_sym, "default" ]
-      end
-    end
-
     def generate_manifest_with_urls(&url_generator)
       rendered_manifest = manifest.dup
       COOKBOOK_SEGMENTS.map{|s|s.to_s}.each do |segment|
