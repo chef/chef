@@ -255,7 +255,8 @@ class Chef
       end
     end
 
-    def preferred_filename(node, segment, filename)
+    #def preferred_filename(node, segment, filename)
+    def preferred_filename(node, segment, filename, current_checksum=nil)
       platform, version = Chef::Platform.find_platform_and_version(node)
       fqdn = node[:fqdn]
 
@@ -270,7 +271,12 @@ class Chef
       found_pref = preferences.find{ |preferred_file| manifest[segment.to_s][preferred_file] }
       if found_pref
         manifest_record = manifest[segment.to_s][found_pref]
-        file_vendor.get_filename(manifest_record['path'])
+        #file_vendor.get_filename(manifest_record['path']) upstream was like this before I rebased
+        if current_checksum && (manifest_record['checksum'] == current_checksum.strip)
+          nil
+        else
+          file_vendor.get_filename(manifest_record['path']) # so I made the change down here
+        end
       else
         raise Chef::Exceptions::FileNotFound, "cookbook #{name} does not contain file #{segment}/#{filename}"
       end

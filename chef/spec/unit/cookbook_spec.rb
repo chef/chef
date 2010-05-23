@@ -56,6 +56,15 @@ describe Chef::Cookbook do
     @cookbook.fully_qualified_recipe_names.include?("openldap::three").should == true
   end
   
+  it "should find a preferred file" do
+    pending
+  end
+  
+  it "should not return an unchanged preferred file" do
+    pending
+    @cookbook.preferred_filename(@node, :files, 'a-filename', 'the-checksum').should be_nil
+  end
+  
 # TODO: timh, cw: 5/20/2010: removed Cookbook.recipe? as it's not used; see cookbook.rb
 #   it "should allow you to test for a recipe with recipe?" do
 #     @cookbook.recipe_filenames = [ "one", "two" ]
