@@ -225,8 +225,7 @@ class Object
   def run_chef
     Chef::Log.level = :debug
     session = Shef.session
-    session.rebuild_collection
-    runrun = Chef::Runner.new(node, session.collection, session.definitions, session.cookbook_loader).converge
+    runrun = Chef::Runner.new(session.run_context).converge
     Chef::Log.level = :info
     runrun
   end
@@ -287,7 +286,7 @@ class Chef
     desc "list all the resources on the current recipe"
     def resources(*args)
       if args.empty?
-        pp collection.instance_variable_get(:@resources_by_name).keys
+        pp run_context.resource_collection.instance_variable_get(:@resources_by_name).keys
       else
         pp resources = original_resources(*args)
         resources
