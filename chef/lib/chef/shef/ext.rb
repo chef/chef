@@ -86,7 +86,7 @@ module Shef
         end
         
         def all_help_descriptions
-          if sc = superclass
+          if sc = superclass && superclass.respond_to?(:help_descriptions)
             help_descriptions + sc.help_descriptions
           else
             help_descriptions
