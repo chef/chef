@@ -40,7 +40,10 @@ class Chef
        :short => "-f",
        :long => "--force",
        :description => "Force download over the download directory if it exists"
-      
+
+      # TODO: tim/cw: 5-23-2010: need to implement knife-side
+      # specificity for downloads - need to implement --platform and
+      # --fqdn here
       def run
         if @name_args.length != 2
           Chef::Log.fatal("You must supply a cookbook name and version to download!")
@@ -65,7 +68,7 @@ class Chef
           end
         end
         
-        [ 'resources', 'providers', 'recipes', 'definitions', 'libraries', 'attributes', 'files', 'templates', 'root_files' ].each do |segment|
+        Chef::Cookbook::COOKBOOK_SEGMENTS.map{|s|s.to_s}.each do |segment|
           next unless manifest.has_key?(segment)
           Chef::Log.info("Downloading #{segment}")
           manifest[segment].each do |segment_file|
