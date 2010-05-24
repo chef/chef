@@ -51,7 +51,8 @@ class Chef
           # Otherwise, we're rocking the regular resource call route.
           method_name = method_symbol.to_s
           rname = convert_to_class_name(method_name)
-          
+          raise ArgumentError, "Creating a resource requires a name argument" if args.length < 1
+
           # If we have a resource like this one, we want to steal its state
           resource = begin
                        args << run_context

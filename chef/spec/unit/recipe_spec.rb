@@ -62,12 +62,18 @@ describe Chef::Recipe do
       end
   
       it "should throw an error if you access a resource that we can't find" do
-        lambda { @recipe.not_home { || } }.should raise_error(NameError)
+        lambda { @recipe.not_home("not_home_resource") }.should raise_error(NameError)
+      end
+
+      it "should require a name argument" do
+        lambda {
+          @recipe.cat
+        }.should raise_error(ArgumentError)
       end
   
       it "should allow regular errors (not NameErrors) to pass unchanged" do
-        lambda { 
-          @recipe.cat { || raise ArgumentError, "You Suck" } 
+        lambda {
+          @recipe.cat("felix") { raise ArgumentError, "You Suck" } 
         }.should raise_error(ArgumentError)
       end
   
