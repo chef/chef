@@ -192,9 +192,9 @@ class Chef
     end
     
     def manifest=(new_manifest)
-      @manifest = new_manifest
+      @manifest = Mash.new new_manifest
       @checksums = extract_checksums_from_manifest(new_manifest)
-      @manifest_records_by_path = extract_manifest_records_by_path(new_manifest)
+      @manifest_records_by_path = extract_manifest_records_by_path(@manifest)
     end
     
     # Returns a hash of checksums to either nil or the on disk path (which is
@@ -291,36 +291,38 @@ class Chef
     #   :checksum => "1234"
     # }
     def preferred_manifest_record(node, segment, filename)
-      if segment.to_sym == :files || segment.to_sym == :templates
-        begin
-          platform, version = Chef::Platform.find_platform_and_version(node)
-        rescue ArgumentError => e
-          # Skip platform/version if they were not found by find_platform_and_version
-          if e.message =~ /Cannot find a (platform|version)/
-            platform = "/unknown_platform/"
-            version = "/unknown_platform_version/"
-          else
-            raise
-          end
-        end
+      # only files and templates can be platform-specific
+      preferences = if segment.to_sym == :files || segment.to_sym == :templates
+                      begin
+                        platform, version = Chef::Platform.find_platform_and_version(node)
+                      rescue ArgumentError => e
+                        # Skip platform/version if they were not found by find_platform_and_version
+                        if e.message =~ /Cannot find a (platform|version)/
+                          platform = "/unknown_platform/"
+                          version = "/unknown_platform_version/"
+                        else
+                          raise
+                        end
+                      end
+                      
+                      fqdn = node[:fqdn]
 
-        fqdn = node[:fqdn]
-
-        # Most specific to least specific places to find the filename
-        preferences = [
-          File.join(segment, "host-#{fqdn}", filename),
-          File.join(segment, "#{platform}-#{version}", filename),
-          File.join(segment, platform, filename),
-          File.join(segment, "default", filename)
-        ]
-      else
-        preferences = [File.join(segment, filename)]
-      end
+                      # Most specific to least specific places to find the filename
+                      [
+                       File.join(segment, "host-#{fqdn}", filename),
+                       File.join(segment, "#{platform}-#{version}", filename),
+                       File.join(segment, platform, filename),
+                       File.join(segment, "default", filename)
+                      ]
+                    else
+                      [File.join(segment, filename)]
+                    end
 
       # ensure that we generate the manifest, which will also generate
       # @manifest_records_by_path
       manifest
-
+      
+      # in order of prefernce, look for the filename in the manifest
       found_pref = preferences.find {|preferred_filename| @manifest_records_by_path[preferred_filename] }
       if found_pref
         @manifest_records_by_path[found_pref]
@@ -365,7 +367,7 @@ class Chef
     
     def generate_manifest_with_urls(&url_generator)
       rendered_manifest = manifest.dup
-      COOKBOOK_SEGMENTS.map{|s|s.to_s}.each do |segment|
+      COOKBOOK_SEGMENTS.each do |segment|
         if rendered_manifest.has_key?(segment)
           rendered_manifest[segment].each do |segment_file|
             url_options = { :cookbook_name => name.to_s, :cookbook_version => version, :checksum => segment_file["checksum"] }
@@ -520,7 +522,7 @@ class Chef
 
     def extract_checksums_from_manifest(manifest)
       checksums = {}
-      COOKBOOK_SEGMENTS.map{|s|s.to_s}.each do |segment|
+      COOKBOOK_SEGMENTS.each do |segment|
         next unless manifest.has_key?(segment)
         manifest[segment].each do |manifest_record|
           checksums[manifest_record[:checksum]] = nil
@@ -531,7 +533,7 @@ class Chef
     
     def extract_manifest_records_by_path(manifest)
       manifest_records_by_path = {}
-      COOKBOOK_SEGMENTS.map{|s|s.to_s}.each do |segment|
+      COOKBOOK_SEGMENTS.each do |segment|
         next unless manifest.has_key?(segment)
         manifest[segment].each do |manifest_record|
           manifest_records_by_path[manifest_record[:path]] = manifest_record

@@ -224,7 +224,7 @@ class Chef
 
       filenames_seen = Hash.new
       
-      Chef::Cookbook::COOKBOOK_SEGMENTS.map { |sym| sym.to_s }.each do |segment|
+      Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
         segment.each do |segment_file|
 
           # segment = cookbook segment
