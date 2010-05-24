@@ -54,9 +54,10 @@ class Chef
 
     alias :recipes :recipe_names
 
-    # Add an item of the form "recipe[foo::bar]" or "role[webserver]"
+    # Add an item of the form "recipe[foo::bar]" or "role[webserver]";
+    # takes a String or a RunListItem
     def <<(run_list_item)
-      run_list_item = parse_entry(run_list_item)
+      run_list_item = run_list_item.kind_of?(RunListItem) ? run_list_item : parse_entry(run_list_item)
       @run_list_items << run_list_item unless @run_list_items.include?(run_list_item)
       self
     end
@@ -126,7 +127,7 @@ class Chef
       return expansion.recipes, expansion.default_attrs, expansion.override_attrs
     end
 
-    # Converts a string run list entry to a RunListItem object
+    # Converts a string run list entry to a RunListItem object.
     def parse_entry(entry)
       RunListItem.new(entry)
     end
