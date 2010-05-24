@@ -471,7 +471,7 @@ describe Chef::REST do
       it "closes and unlinks the tempfile if there is an error while streaming the content to the tempfile" do
         @tempfile.stub!(:write).and_raise(IOError)
         @rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
-        @tempfile.path.should be_nil
+        File.exists?(@tempfile.path).should be_false
       end
 
       it "closes and unlinks the tempfile when the response is a redirect" do
