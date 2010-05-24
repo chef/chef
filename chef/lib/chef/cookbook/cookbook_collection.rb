@@ -31,6 +31,9 @@ class Chef
     # The input is a mapping of cookbook name to Cookbook object. We simply
     # extract them
     def initialize(cookbooks={})
+      super() do |hash, key|
+        raise Chef::Exceptions::CookbookNotFound, "Cookbook #{key} not found"
+      end
       cookbooks.each{ |cookbook_name, cookbook| self[cookbook_name] = cookbook }
     end
     
