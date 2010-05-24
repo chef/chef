@@ -56,14 +56,13 @@ class Chef
           end
 
           cookbook_name, cookbook_version, segment, filename = @name_args[0..3]
-          puts "cookbook_name #{cookbook_name}, cookbook_version #{cookbook_version}, segment #{segment}, filename #{filename}"
 
           manifest = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}")
           cookbook = Chef::Cookbook.new(cookbook_name)
           cookbook.manifest = manifest
           
           manifest_entry = cookbook.preferred_manifest_record(node, segment, filename)
-          result = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}/files/#{manifest_entry.checksum}")
+          result = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}/files/#{manifest_entry[:checksum]}")
           
           pretty_print(result)
         when 3 # We are showing a specific part of the cookbook

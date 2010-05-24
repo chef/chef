@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+# rename to cookbook not coookbook
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
 describe Chef::Knife::CookbookShow do
@@ -60,9 +61,9 @@ describe Chef::Knife::CookbookShow do
         @cookbook_response = {
           "recipes" => [
             {
-              "name" => "default.rb",
-              "path" => "recipes/default.rb",
-              "checksum" => "1234"
+              :name => "default.rb",
+              :path => "recipes/default.rb",
+              :checksum => "1234"
             }
           ]
         }
@@ -71,7 +72,7 @@ describe Chef::Knife::CookbookShow do
 
       it "should print the raw result of the request (likely a file!)" do
         @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-        @rest.should_erceive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/1234").and_return(@response)
+        @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/1234").and_return(@response)
         @knife.should_receive(:pretty_print).with(@response)
         @knife.run
       end
@@ -83,28 +84,28 @@ describe Chef::Knife::CookbookShow do
         @cookbook_response = {
           "files" => [
             {
-              "name" => "afile.rb",
-              "path" => "files/host-examplehost.example.org/afile.rb",
-              "checksum" => "1111",
-              "specificity" => "host-examplehost.example.org"
+              :name => "afile.rb",
+              :path => "files/host-examplehost.example.org/afile.rb",
+              :checksum => "1111",
+              :specificity => "host-examplehost.example.org"
             },
             {
-              "name" => "afile.rb",
-              "path" => "files/ubuntu-9.10/afile.rb",
-              "checksum" => "2222",
-              "specificity" => "ubuntu-9.10"
+              :name => "afile.rb",
+              :path => "files/ubuntu-9.10/afile.rb",
+              :checksum => "2222",
+              :specificity => "ubuntu-9.10"
             },
             {
-              "name" => "afile.rb",
-              "path" => "files/ubuntu/afile.rb",
-              "checksum" => "3333",
-              "specificity" => "ubuntu"
+              :name => "afile.rb",
+              :path => "files/ubuntu/afile.rb",
+              :checksum => "3333",
+              :specificity => "ubuntu"
             },
             {
-              "name" => "afile.rb",
-              "path" => "files/default/afile.rb",
-              "checksum" => "4444",
-              "specificity" => "default"
+              :name => "afile.rb",
+              :path => "files/default/afile.rb",
+              :checksum => "4444",
+              :specificity => "default"
             },
           ]
         }
@@ -113,9 +114,11 @@ describe Chef::Knife::CookbookShow do
       
       describe "with --fqdn" do
         it "should pass the fqdn" do
+          @knife.config[:platform] = "example_platform"
+          @knife.config[:platform_version] = "1.0"
           @knife.config[:fqdn] = "examplehost.example.org"
           @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-          @rest.should_erceive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/1111").and_return(@response)
+          @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/1111").and_return(@response)
           @knife.should_receive(:pretty_print).with(@response)
           @knife.run
         end
@@ -124,8 +127,10 @@ describe Chef::Knife::CookbookShow do
       describe "and --platform" do
         it "should pass the platform" do
           @knife.config[:platform] = "ubuntu"
+          @knife.config[:platform_version] = "1.0"
+          @knife.config[:fqdn] = "differenthost.example.org"
           @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-          @rest.should_erceive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/3333").and_return(@response)
+          @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/3333").and_return(@response)
           @knife.should_receive(:pretty_print).with(@response)
           @knife.run
         end
@@ -133,9 +138,11 @@ describe Chef::Knife::CookbookShow do
 
       describe "and --platform-version" do
         it "should pass the platform" do
+          @knife.config[:platform] = "ubuntu"
           @knife.config[:platform_version] = "9.10"
+          @knife.config[:fqdn] = "differenthost.example.org"
           @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-          @rest.should_erceive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/2222").and_return(@response)
+          @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/2222").and_return(@response)
           @knife.should_receive(:pretty_print).with(@response)
           @knife.run
         end
@@ -144,7 +151,7 @@ describe Chef::Knife::CookbookShow do
       describe "with none of the arguments, it should use the default" do
         it "should pass them all" do
           @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
-          @rest.should_erceive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/4444").and_return(@response)
+          @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0/files/4444").and_return(@response)
           @knife.should_receive(:pretty_print).with(@response)
           @knife.run
         end
