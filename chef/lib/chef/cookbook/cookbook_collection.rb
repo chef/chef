@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+require 'extlib'
+
 # This class is the consistent interface for a node to obtain its
 # cookbooks by name.
 #
@@ -26,7 +28,7 @@
 # objects for lazily-loaded remote cookbooks), it gets transformed
 # into this.
 class Chef
-  class CookbookCollection < Hash
+  class CookbookCollection < Mash
 
     # The input is a mapping of cookbook name to Cookbook object. We simply
     # extract them
