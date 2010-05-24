@@ -30,7 +30,7 @@ class Chef
     include Enumerable
     
     def initialize()
-      @cookbook = Hash.new
+      @cookbooks_by_name = Hash.new
       @metadata = Hash.new
       @ignore_regexes = Hash.new { |hsh, key| hsh[key] = Array.new }
       load_cookbooks
@@ -45,16 +45,16 @@ class Chef
           cookbook_name = File.basename(cookbook).to_sym
           unless cookbook_settings.has_key?(cookbook_name)
             cookbook_settings[cookbook_name] = { 
-              :attribute_files  => Hash.new,
-              :definition_files => Hash.new,
-              :recipe_files     => Hash.new,
-              :template_files   => Hash.new,
-              :remote_files     => Hash.new,
-              :lib_files        => Hash.new,
-              :resource_files   => Hash.new,
-              :provider_files   => Hash.new,
-              :root_files       => Hash.new,
-              :metadata_files   => Array.new
+              :attribute_filenames  => Hash.new,
+              :definition_filenames => Hash.new,
+              :recipe_filenames     => Hash.new,
+              :template_filenames   => Hash.new,
+              :remote_filenames     => Hash.new,
+              :library_filenames    => Hash.new,
+              :resource_filenames   => Hash.new,
+              :provider_filenames   => Hash.new,
+              :root_filenames       => Hash.new,
+              :metadata_filenames   => Array.new
             }
           end
           ignore_regexes = load_ignore_file(File.join(cookbook, "ignore"))
@@ -62,66 +62,66 @@ class Chef
           
           load_files_unless_basename(
             File.join(cookbook, "attributes", "*.rb"), 
-            cookbook_settings[cookbook_name][:attribute_files]
+            cookbook_settings[cookbook_name][:attribute_filenames]
           )
           load_files_unless_basename(
             File.join(cookbook, "definitions", "*.rb"), 
-            cookbook_settings[cookbook_name][:definition_files]
+            cookbook_settings[cookbook_name][:definition_filenames]
           )
           load_files_unless_basename(
             File.join(cookbook, "recipes", "*.rb"), 
-            cookbook_settings[cookbook_name][:recipe_files]
+            cookbook_settings[cookbook_name][:recipe_filenames]
           )
           load_files_unless_basename(
             File.join(cookbook, "libraries", "*.rb"),               
-            cookbook_settings[cookbook_name][:lib_files]
+            cookbook_settings[cookbook_name][:library_filenames]
           )
           load_cascading_files(
             "*",
             File.join(cookbook, "templates"),
-            cookbook_settings[cookbook_name][:template_files]
+            cookbook_settings[cookbook_name][:template_filenames]
           )
           load_cascading_files(
             "*",
             File.join(cookbook, "files"),
-            cookbook_settings[cookbook_name][:remote_files]
+            cookbook_settings[cookbook_name][:remote_filenames]
           )
           load_cascading_files(
             "*.rb",
             File.join(cookbook, "resources"),
-            cookbook_settings[cookbook_name][:resource_files]
+            cookbook_settings[cookbook_name][:resource_filenames]
           )
           load_cascading_files(
             "*.rb",
             File.join(cookbook, "providers"),
-            cookbook_settings[cookbook_name][:provider_files]
+            cookbook_settings[cookbook_name][:provider_filenames]
           )
           load_files(
             "*",
             cookbook,
-            cookbook_settings[cookbook_name][:root_files]
+            cookbook_settings[cookbook_name][:root_filenames]
           )
           if File.exists?(File.join(cookbook, "metadata.json"))
-            cookbook_settings[cookbook_name][:metadata_files] << File.join(cookbook, "metadata.json")
+            cookbook_settings[cookbook_name][:metadata_filenames] << File.join(cookbook, "metadata.json")
           end
         end
       end
       remove_ignored_files_from(cookbook_settings)
 
       cookbook_settings.each_key do |cookbook|
-        @cookbook[cookbook] = Chef::Cookbook.new(cookbook)
-        @cookbook[cookbook].attribute_filenames = cookbook_settings[cookbook][:attribute_files].values
-        @cookbook[cookbook].definition_filenames = cookbook_settings[cookbook][:definition_files].values
-        @cookbook[cookbook].recipe_filenames = cookbook_settings[cookbook][:recipe_files].values
-        @cookbook[cookbook].template_filenames = cookbook_settings[cookbook][:template_files].values
-        @cookbook[cookbook].remote_filenames = cookbook_settings[cookbook][:remote_files].values
-        @cookbook[cookbook].library_filenames = cookbook_settings[cookbook][:lib_files].values
-        @cookbook[cookbook].resource_filenames = cookbook_settings[cookbook][:resource_files].values
-        @cookbook[cookbook].provider_filenames = cookbook_settings[cookbook][:provider_files].values
-        @cookbook[cookbook].root_filenames = cookbook_settings[cookbook][:root_files].values
-        @cookbook[cookbook].metadata_filenames = cookbook_settings[cookbook][:metadata_files]
-        @metadata[cookbook] = Chef::Cookbook::Metadata.new(@cookbook[cookbook])
-        cookbook_settings[cookbook][:metadata_files].each do |meta_json|
+        @cookbooks_by_name[cookbook] = Chef::Cookbook.new(cookbook)
+        @cookbooks_by_name[cookbook].attribute_filenames = cookbook_settings[cookbook][:attribute_filenames].values
+        @cookbooks_by_name[cookbook].definition_filenames = cookbook_settings[cookbook][:definition_filenames].values
+        @cookbooks_by_name[cookbook].recipe_filenames = cookbook_settings[cookbook][:recipe_filenames].values
+        @cookbooks_by_name[cookbook].template_filenames = cookbook_settings[cookbook][:template_filenames].values
+        @cookbooks_by_name[cookbook].remote_filenames = cookbook_settings[cookbook][:remote_filenames].values
+        @cookbooks_by_name[cookbook].library_filenames = cookbook_settings[cookbook][:library_filenames].values
+        @cookbooks_by_name[cookbook].resource_filenames = cookbook_settings[cookbook][:resource_filenames].values
+        @cookbooks_by_name[cookbook].provider_filenames = cookbook_settings[cookbook][:provider_filenames].values
+        @cookbooks_by_name[cookbook].root_filenames = cookbook_settings[cookbook][:root_filenames].values
+        @cookbooks_by_name[cookbook].metadata_filenames = cookbook_settings[cookbook][:metadata_filenames]
+        @metadata[cookbook] = Chef::Cookbook::Metadata.new(@cookbooks_by_name[cookbook])
+        cookbook_settings[cookbook][:metadata_filenames].each do |meta_json|
           begin
             @metadata[cookbook].from_json(IO.read(meta_json))
           rescue JSON::ParserError
@@ -129,26 +129,30 @@ class Chef
             raise
           end
         end
-        @cookbook[cookbook].metadata = @metadata[cookbook]
+        @cookbooks_by_name[cookbook].metadata = @metadata[cookbook]
       end
     end
     
     def [](cookbook)
-      if @cookbook.has_key?(cookbook.to_sym)
-        @cookbook[cookbook.to_sym]
+      if @cookbooks_by_name.has_key?(cookbook.to_sym)
+        @cookbooks_by_name[cookbook.to_sym]
       else
         raise ArgumentError, "Cannot find a cookbook named #{cookbook.to_s}; did you forget to add metadata to a cookbook? (http://wiki.opscode.com/display/chef/Metadata)"
       end
     end
+
+    def has_key?(cookbook_name)
+      @cookbooks_by_name.has_key?(cookbook_name)
+    end
     
     def each
-      @cookbook.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |cname|
-        yield(cname, @cookbook[cname])
+      @cookbooks_by_name.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |cname|
+        yield(cname, @cookbooks_by_name[cname])
       end
     end
 
     def values
-      @cookbook.values
+      @cookbooks_by_name.values
     end
 
     private
@@ -167,8 +171,8 @@ class Chef
       end
       
       def remove_ignored_files_from(cookbook_settings)
-        file_types_to_inspect = [ :attribute_files, :definition_files, :recipe_files, :template_files, 
-                                  :remote_files, :lib_files, :resource_files, :provider_files]
+        file_types_to_inspect = [ :attribute_filenames, :definition_filenames, :recipe_filenames, :template_filenames, 
+                                  :remote_filenames, :library_filenames, :resource_filenames, :provider_filenames]
         
         @ignore_regexes.each do |cookbook_name, regexes|
           regexes.each do |regex|
