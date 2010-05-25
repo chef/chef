@@ -330,9 +330,9 @@ class Chef
       end
     end
     
-    def preferred_filename_on_disk_location(node, segment, filename, current_checksum=nil)
+    def preferred_filename_on_disk_location(node, segment, filename, current_filepath=nil)
       manifest_record = preferred_manifest_record(node, segment, filename)
-      if current_checksum && (manifest_record['checksum'] == current_checksum.strip)
+      if current_filepath && (manifest_record['checksum'] == checksum_cookbook_file)
         nil
       else
         file_vendor.get_filename(manifest_record['path'])
@@ -495,7 +495,7 @@ class Chef
             file_name = matcher[2]
           end
           
-          csum = Chef::Cache::Checksum.generate_md5_checksum_for_file(segment_file)
+          csum = checksum_cookbook_file(segment_file)
           checksums_to_on_disk_paths[csum] = segment_file
           rs = Mash.new({
             :name => file_name,
@@ -540,5 +540,14 @@ class Chef
       end
       manifest_records_by_path
     end
+
+    private
+    
+    # This is the one and only method that knows how cookbook files'
+    # checksums are generated.
+    def checksum_cookbook_file(filepath)
+      Chef::Cache::Checksum.generate_md5_checksum_for_file(filepath)
+    end
+    
   end
 end
