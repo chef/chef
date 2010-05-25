@@ -125,8 +125,9 @@ class Chef
       
       @child_pid = fork_subprocess
       
-      propagate_pre_exec_failure
       configure_parent_process_file_descriptors
+      propagate_pre_exec_failure
+      
       
       child_stdin.close # make sure subprocess knows not to expect input
         
@@ -244,6 +245,7 @@ class Chef
     
     def initialize_ipc
       @stdin_pipe, @stdout_pipe, @stderr_pipe, @process_status_pipe = IO.pipe, IO.pipe, IO.pipe, IO.pipe
+      #@process_status_pipe.last.close
       @process_status_pipe.last.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
     end
     
@@ -270,8 +272,11 @@ class Chef
       child_process_status.close unless child_process_status.closed?
     end
     
-    # replace stdin, stdout, and stderr with pipes to the parent
+    # replace stdin, stdout, and stderr with pipes to the parent, and close the
+    # reader side of the error marshaling side channel
     def configure_subprocess_file_descriptors
+      process_status_pipe.first.close
+      
       stdin_pipe.last.close
       STDIN.reopen stdin_pipe.first
       stdin_pipe.first.close
@@ -345,7 +350,6 @@ class Chef
     # assume everything went well.
     def propagate_pre_exec_failure
       begin
-        return true unless IO.select([child_process_status],nil,nil,0.1)
         e = Marshal.load child_process_status
         raise(Exception === e ? e : "unknown failure: #{e.inspect}")
       rescue EOFError # If we get an EOF error, then the exec was successful
