@@ -63,7 +63,7 @@ class Chef
             Chef::Log.debug("Deleting #{basedir}")
             FileUtils.rm_rf(basedir)
           else
-            Chef::Log.fatal("Directory #{basedir} exists")
+            Chef::Log.fatal("Directory #{basedir} exists, use --force to overwrite")
             exit
           end
         end
