@@ -47,7 +47,7 @@ class Chef
 
           # Check to see if the volume is mounted. Last volume entry wins.
           mounted = false
-          shell_out!("mount").stdout.each_line.each do |line|
+          shell_out!("mount").stdout.each_line do |line|
             case line
             when /^#{device_mount_regex}\s+on\s+#{@new_resource.mount_point}/
               mounted = true

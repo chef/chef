@@ -267,7 +267,7 @@ describe Chef::Provider::Mount::Mount do
         other_mount = "/dev/sdy1  /tmp/foo  ext3  defaults  1 2\n"
         this_mount = "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n"
 
-        @fstab_read = StringIO.new(this_mount + other_mount)
+        @fstab_read = [this_mount, other_mount]
         ::File.stub!(:readlines).with("/etc/fstab").and_return(@fstab_read)
         @fstab_write = StringIO.new
         ::File.stub!(:open).with("/etc/fstab", "w").and_yield(@fstab_write)
