@@ -63,16 +63,16 @@ class Chef
         normal = value
       end
 
-      def set_type_hash(current=false)
+      def set_type_hash
         case @set_type
         when :normal
-          current ? @current_normal : @normal
+          @normal
         when :override
-          current ? @current_override : @override
+          @override
         when :default
-          current ? @current_default : @default
+          @default
         when :automatic
-          current ? @current_automatic : @automatic
+          @automatic
         end
       end
 
@@ -93,16 +93,16 @@ class Chef
         # See the comments in []= for more details.
         @has_been_read = true
 
-
-        a_value = value_or_descend(current_automatic, key, auto_vivifiy_on_read)
-        o_value = value_or_descend(current_override, key, auto_vivifiy_on_read)
-        n_value = value_or_descend(current_normal, key, auto_vivifiy_on_read)
-        d_value = value_or_descend(current_default, key, auto_vivifiy_on_read)
+        a_value = value_or_descend(current_automatic, key, auto_vivifiy_on_read && @set_type == :automatic)
+        o_value = value_or_descend(current_override, key, auto_vivifiy_on_read && @set_type == :override)
+        n_value = value_or_descend(current_normal, key, auto_vivifiy_on_read && @set_type == :normal)
+        d_value = value_or_descend(current_default, key, auto_vivifiy_on_read && @set_type == :default)
 
         determine_value(a_value, o_value, n_value, d_value)
       end
 
       def attribute?(key)
+        return true if get_value(automatic, key)
         return true if get_value(override, key)
         return true if get_value(normal, key)
         return true if get_value(default, key)
@@ -366,8 +366,8 @@ class Chef
 
       def value_or_descend(data_hash, key, auto_vivifiy=false)
         if auto_vivifiy
-          set_type_hash = auto_vivifiy(set_type_hash, key)
-          set_type_hash(true)[key] = set_type_hash(true)[key]
+          hash_to_vivifiy = auto_vivifiy(data_hash, key)
+          data_hash[key] = hash_to_vivifiy[key]
         else
           return nil if data_hash == nil
           return nil unless data_hash.has_key?(key)

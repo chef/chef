@@ -295,9 +295,8 @@ class Chef
       attribute.each_attribute(&block)
     end
 
-    # Set an attribute based on the missing method.  If you pass an argument, we'll use that
-    # to set the attribute values.  Otherwise, we'll wind up just returning the attributes
-    # value.
+    # Encouraged to only get used for lookups - while you can do sets from here, it's not as explicit
+    # as using the normal/default/override interface.
     def method_missing(symbol, *args)
       attrs = attribute
       attrs.set_type = :normal
