@@ -285,7 +285,7 @@ describe Chef::ShellOut do
       lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
     end
   end
-  
+   
   it "formats itself for exception messages" do
     cmd = Chef::ShellOut.new %q{ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"'}
     cmd.run_command
