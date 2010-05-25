@@ -309,10 +309,10 @@ class Chef
 
                       # Most specific to least specific places to find the filename
                       [
-                       File.join(segment, "host-#{fqdn}", filename),
-                       File.join(segment, "#{platform}-#{version}", filename),
-                       File.join(segment, platform, filename),
-                       File.join(segment, "default", filename)
+                       File.join(segment.to_s, "host-#{fqdn}", filename),
+                       File.join(segment.to_s, "#{platform}-#{version}", filename),
+                       File.join(segment.to_s, platform, filename),
+                       File.join(segment.to_s, "default", filename)
                       ]
                     else
                       [File.join(segment, filename)]
