@@ -48,6 +48,21 @@ EXPECTED
     @provider.resource_cookbook.should == 'apache2'
   end
 
+  describe "when loading the current file state" do
+    
+    it "converts windows-y filenames to unix-y ones" do
+      @new_resource.path('\windows\stuff')
+      @provider.load_current_resource
+      @new_resource.path.should == '/windows/stuff'
+    end
+    
+    it "sets the current resources path to the same as the new resource" do
+      @new_resource.path('/tmp/file')
+      @provider.load_current_resource
+      @provider.current_resource.path.should == '/tmp/file'
+    end
+  end
+
   describe "when the file doesn't yet exist" do
     before do
       @current_resource = @new_resource.dup
@@ -131,12 +146,6 @@ EXPECTED
       @provider.current_resource = @current_resource
     end
     
-    it "loads the current file state" do
-      @provider.load_current_resource
-      expected = "3d69d1b1c1c84ae32dc03456b8ea2ea1637471bc20eecd59251158f50f6b8a29"
-      @provider.current_resource.checksum.should == expected
-    end
-
     it "overwrites it when the create action is called" do
       @provider.should_receive(:set_all_access_controls)
       @provider.action_create
@@ -162,12 +171,6 @@ EXPECTED
       @tempfile.close
       @current_resource = @new_resource.dup
       @provider.current_resource = @current_resource
-    end
-
-    it "loads the current file state" do
-      @provider.load_current_resource
-      expected = "17fccd87e03f48f4312c9f8c1dd88cad98f0cf3a6fc68a8d922562c427ecb726"
-      @provider.current_resource.checksum.should == expected
     end
 
     it "it checks access control but does not alter content when action is create" do

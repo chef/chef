@@ -23,6 +23,14 @@ class Chef
   class Provider
     class CookbookFile < Chef::Provider::File
       
+      def load_current_resource
+        @current_resource = Chef::Resource::CookbookFile.new(@new_resource.name)
+        @new_resource.path.gsub!(/\\/, "/") # for Windows
+        @current_resource.path(@new_resource.path)
+        @current_resource
+      end
+
+
       def action_create
          if file_cache_location
            Chef::Log.debug("content of file #{@new_resource.path} requires update")
