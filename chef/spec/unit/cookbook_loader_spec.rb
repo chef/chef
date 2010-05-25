@@ -132,10 +132,10 @@ describe Chef::CookbookLoader do
     end
     
     it "should find files that start with a ." do
-      @cookbook_loader[:openldap].remote_filenames.detect { |f|
+      @cookbook_loader[:openldap].file_filenames.detect { |f|
         f =~ /\.dotfile$/
       }.should =~ /\.dotfile$/
-      @cookbook_loader[:openldap].remote_filenames.detect { |f|
+      @cookbook_loader[:openldap].file_filenames.detect { |f|
         f =~ /\.ssh\/id_rsa$/
       }.should =~ /\.ssh\/id_rsa$/
     end

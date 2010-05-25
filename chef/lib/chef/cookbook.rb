@@ -30,7 +30,7 @@ class Chef
   class Cookbook
     include Chef::IndexQueue::Indexable
 
-    attr_accessor :definition_filenames, :template_filenames, :file_filenames, :remote_filenames,
+    attr_accessor :definition_filenames, :template_filenames, :file_filenames, 
       :library_filenames, :resource_filenames, :provider_filenames, :root_filenames, :name,
       :metadata, :metadata_filenames, :status, :couchdb_rev, :couchdb
     attr_reader :couchdb_id
@@ -136,7 +136,6 @@ class Chef
       @definition_filenames = Array.new
       @template_filenames = Array.new
       @file_filenames = Array.new
-      @remote_filenames = Array.new
       @recipe_filenames = Array.new
       @recipe_filenames_by_name = Hash.new
       @library_filenames = Array.new

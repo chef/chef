@@ -49,7 +49,7 @@ class Chef
               :definition_filenames => Hash.new,
               :recipe_filenames     => Hash.new,
               :template_filenames   => Hash.new,
-              :remote_filenames     => Hash.new,
+              :file_filenames       => Hash.new,
               :library_filenames    => Hash.new,
               :resource_filenames   => Hash.new,
               :provider_filenames   => Hash.new,
@@ -84,7 +84,7 @@ class Chef
           load_cascading_files(
             "*",
             File.join(cookbook, "files"),
-            cookbook_settings[cookbook_name][:remote_filenames]
+            cookbook_settings[cookbook_name][:file_filenames]
           )
           load_cascading_files(
             "*.rb",
@@ -114,7 +114,7 @@ class Chef
         @cookbooks_by_name[cookbook].definition_filenames = cookbook_settings[cookbook][:definition_filenames].values
         @cookbooks_by_name[cookbook].recipe_filenames = cookbook_settings[cookbook][:recipe_filenames].values
         @cookbooks_by_name[cookbook].template_filenames = cookbook_settings[cookbook][:template_filenames].values
-        @cookbooks_by_name[cookbook].remote_filenames = cookbook_settings[cookbook][:remote_filenames].values
+        @cookbooks_by_name[cookbook].file_filenames = cookbook_settings[cookbook][:file_filenames].values
         @cookbooks_by_name[cookbook].library_filenames = cookbook_settings[cookbook][:library_filenames].values
         @cookbooks_by_name[cookbook].resource_filenames = cookbook_settings[cookbook][:resource_filenames].values
         @cookbooks_by_name[cookbook].provider_filenames = cookbook_settings[cookbook][:provider_filenames].values
@@ -172,7 +172,7 @@ class Chef
       
       def remove_ignored_files_from(cookbook_settings)
         file_types_to_inspect = [ :attribute_filenames, :definition_filenames, :recipe_filenames, :template_filenames, 
-                                  :remote_filenames, :library_filenames, :resource_filenames, :provider_filenames]
+                                  :file_filenames, :library_filenames, :resource_filenames, :provider_filenames]
         
         @ignore_regexes.each do |cookbook_name, regexes|
           regexes.each do |regex|
