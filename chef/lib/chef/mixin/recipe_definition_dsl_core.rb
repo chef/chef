@@ -51,19 +51,14 @@ class Chef
           # Otherwise, we're rocking the regular resource call route.
           method_name = method_symbol.to_s
           rname = convert_to_class_name(method_name)
+          
+          super unless Chef::Resource.const_defined?(rname)
+          
           raise ArgumentError, "Creating a resource requires a name argument" if args.length < 1
 
           # If we have a resource like this one, we want to steal its state
-          resource = begin
-                       args << run_context
-                       Chef::Resource.const_get(rname).new(*args)
-                     rescue NameError => e
-                       if e.to_s =~ /Chef::Resource/
-                         raise NameError, "Cannot find #{rname} for #{method_name}\nOriginal exception: #{e.class}: #{e.message}"
-                       else
-                         raise e
-                       end
-                     end
+          args << run_context
+          resource = Chef::Resource.const_get(rname).new(*args)
           resource.load_prior_resource
           resource.cookbook_name = cookbook_name
           # TODO: 5/21/2010 cw/dan: do we need recipe_name for
