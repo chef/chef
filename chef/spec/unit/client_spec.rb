@@ -28,6 +28,7 @@ describe Chef::Client, "run" do
     # Fake data to identify the node
     HOSTNAME = "hostname"
     FQDN = "hostname.example.org"
+    Chef::Config[:node_name] = FQDN
     mock_ohai = {
       :fqdn => FQDN,
       :hostname => HOSTNAME,
