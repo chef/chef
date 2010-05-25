@@ -208,6 +208,10 @@ class Chef
       @node.consume_attributes(@json_attribs)
     
       @node.automatic_attrs = ohai.data
+      # We clear defaults and overrides, so that any deleted attributes between runs are
+      # still gone.
+      @node.default_attrs = Mash.new
+      @node.override_attrs = Mash.new
 
       platform, version = Chef::Platform.find_platform_and_version(@node)
       Chef::Log.debug("Platform is #{platform} version #{version}")
