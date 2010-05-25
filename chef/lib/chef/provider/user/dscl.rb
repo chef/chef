@@ -242,11 +242,11 @@ class Chef
         end
         
         def current_home_exists?
-          ::File.exists?("#{@current_resource.home}")
+          ::File.exist?("#{@current_resource.home}")
         end
         
         def new_home_exists?
-          ::File.exists?("#{@new_resource.home}")          
+          ::File.exist?("#{@new_resource.home}")          
         end
         
         def ditto_home

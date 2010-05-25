@@ -142,18 +142,18 @@ describe Chef::Provider::User::Dscl do
     end
 
     it "moves the users home to the new location if it exists and the target location is different" do
-      @current_resource.home('/old/home/toor')
+      @new_resource.supports(:manage_home => true)
+      
+      current_home = CHEF_SPEC_DATA + '/old_home_dir'
+      current_home_files = [current_home + '/my-dot-emacs', current_home + '/my-dot-vim']
+      @current_resource.home(current_home)
       @new_resource.gid(23)
       ::File.stub!(:exists?).with('/old/home/toor').and_return(true)
       ::File.stub!(:exists?).with('/Users/toor').and_return(true)
-      Dir.stub!(:glob).and_return(["/old/home/adam/.dotfile","/old/home/adam/file"])
-      FileUtils.stub!(:mv).and_return(true)
-      FileUtils.stub!(:mkdir_p).and_return(true)
-      FileUtils.stub!(:rmdir).and_return(true)
     
-      File.should_receive(:exists?).and_return(true,false)
-      Dir.should_receive(:glob).and_return(["/old/home/adam/.dotfile","/old/home/adam/file"])
-      FileUtils.should_receive(:mv).and_return(true)
+      FileUtils.should_receive(:mkdir_p).with('/Users/toor').and_return(true)
+      FileUtils.should_receive(:rmdir).with(current_home)
+      FileUtils.should_receive(:mv).with(current_home_files, "/Users/toor", :force => true)
       FileUtils.should_receive(:chown_R).with('toor','23','/Users/toor')
       
       @provider.should_receive(:safe_dscl).with("create /Users/toor NFSHomeDirectory '/Users/toor'")
@@ -309,13 +309,6 @@ describe Chef::Provider::User::Dscl do
   end
 
   describe "load_current_resource" do
-    # before do
-    #   @node = Chef::Node.new
-    #   @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "adam")
-    #   @provider = Chef::Provider::User::Dscl.new(@node, @new_resource)
-    #   File.stub!(:exists?).and_return(false)
-    # end
-
     it "should raise an error if the required binary /usr/bin/dscl doesn't exist" do
       ::File.should_receive(:exists?).with("/usr/bin/dscl").and_return(false)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::User)
