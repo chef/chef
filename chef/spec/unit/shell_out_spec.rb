@@ -261,6 +261,21 @@ describe Chef::ShellOut do
       lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
     end
     
+    it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
+      chatty = %q{ruby -e "puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000"}
+      cmd = Chef::ShellOut.new(chatty)
+      cmd.run_command
+      cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
+      cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
+    end
+
+    it "does not deadlock when the subprocess writes lots of data to both stdout and stderr (part2)" do
+      chatty = %q{ruby -e "STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000"}
+      cmd = Chef::ShellOut.new(chatty)
+      cmd.run_command
+      cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
+      cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
+    end
   end
   
   it "formats itself for exception messages" do
