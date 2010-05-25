@@ -23,14 +23,14 @@ class Chef
   class Cookbook
     class FileVendor
 
-      def self.instance_creator=(creator)
-        @instance_creator = creator
+      def self.on_create(&block)
+        @instance_creator = block
       end
       
       # Factory method that creates the appropriate kind of
       # Cookbook::FileVendor to serve the contents of the manifest
       def self.create_from_manifest(manifest)
-        raise "Must set Chef::Cookbook::FileVendor.instance_creator before calling create_from_manifest factory" unless defined?(@instance_creator)
+        raise "Must call Chef::Cookbook::FileVendor.on_create before calling create_from_manifest factory" unless defined?(@instance_creator)
         @instance_creator.call(manifest)
       end
       

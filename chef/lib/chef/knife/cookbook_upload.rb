@@ -48,7 +48,7 @@ class Chef
           config[:cookbook_path] = Chef::Config[:cookbook_path]
         end
 
-        Chef::Cookbook::FileVendor.instance_creator = lambda { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
+        Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
 
         cl = Chef::CookbookLoader.new
         if config[:all] 
