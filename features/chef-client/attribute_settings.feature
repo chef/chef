@@ -109,8 +109,8 @@ Feature: Set default, normal, and override attributes
       And a file named 'attribute_setting.txt' should contain '7'
      When the node is retrieved from the API
      Then the inflated responses key 'attribute_priority_was' should be the integer '7'
-    Given a validated node
     Given it includes no recipes
+      And it includes the recipe 'integration_setup'
       And it includes the recipe 'no_attributes'
      When I run the chef-client
      Then the run should exit '0'
