@@ -48,29 +48,39 @@ class Chef
         if current_resource_matches_target_checksum?
           Chef::Log.debug("File #{@new_resource} checksum matches target checksum (#{@new_resource.checksum}), not updating")
         else
-          begin
-            source_file(source, @current_resource.checksum) do |raw_file|
-              if matches_current_checksum?(raw_file)
-                Chef::Log.debug "#{@new_resource}: Target and Source checksums are the same, taking no action"
-              else
-                backup_new_resource
-                Chef::Log.debug "copying remote file from origin #{raw_file.path} to destination #{@new_resource.path}"
-                FileUtils.cp raw_file.path, @new_resource.path
-                @new_resource.updated = true
-              end
-            end
-          rescue Net::HTTPRetriableError => e
-            if e.response.kind_of?(Net::HTTPNotModified)
-              Chef::Log.debug("File #{path} is unchanged")
-              retval = false
-            else
-              raise e
-            end
+          cookbook = run_context.cookbook_collection[cookbook_name]
+          if file_in_cache = cookbook.preferred_filename(node, :files, @new_resource.source, @current_resource.checksum)
+            backup_new_resource
+            FileUtils.cp raw_file.path, @new_resource.path
+            @new_resource.updated = true
+          else
+            @new_resource.updated = false
           end
-
-          Chef::Log.debug "#{@new_resource} completed"
-          retval
         end
+        # else
+        #   begin
+        #     source_file(source, @current_resource.checksum) do |raw_file|
+        #       if matches_current_checksum?(raw_file)
+        #         Chef::Log.debug "#{@new_resource}: Target and Source checksums are the same, taking no action"
+        #       else
+        #         backup_new_resource
+        #         Chef::Log.debug "copying remote file from origin #{raw_file.path} to destination #{@new_resource.path}"
+        #         FileUtils.cp raw_file.path, @new_resource.path
+        #         @new_resource.updated = true
+        #       end
+        #     end
+        #   rescue Net::HTTPRetriableError => e
+        #     if e.response.kind_of?(Net::HTTPNotModified)
+        #       Chef::Log.debug("File #{path} is unchanged")
+        #       retval = false
+        #     else
+        #       raise e
+        #     end
+        #   end
+        # 
+        #   Chef::Log.debug "#{@new_resource} completed"
+        #   retval
+        # end
         enforce_ownership_and_permissions
 
         retval

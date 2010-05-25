@@ -17,6 +17,7 @@
 #
 
 require 'chef/provider/breakpoint'
+require 'chef/provider/cookbook_file'
 require 'chef/provider/cron'
 require 'chef/provider/deploy'
 require 'chef/provider/directory'

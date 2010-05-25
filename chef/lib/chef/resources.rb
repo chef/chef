@@ -19,6 +19,7 @@
 require 'chef/resource/apt_package'
 require 'chef/resource/bash'
 require 'chef/resource/breakpoint'
+require 'chef/resource/cookbook_file'
 require 'chef/resource/cron'
 require 'chef/resource/csh'
 require 'chef/resource/deploy'
