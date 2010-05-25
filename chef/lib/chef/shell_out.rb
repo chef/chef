@@ -345,7 +345,7 @@ class Chef
     # assume everything went well.
     def propagate_pre_exec_failure
       begin
-        return true unless IO.select([child_process_status],nil,nil,0.05)
+        return true unless IO.select([child_process_status],nil,nil,0.1)
         e = Marshal.load child_process_status
         raise(Exception === e ? e : "unknown failure: #{e.inspect}")
       rescue EOFError # If we get an EOF error, then the exec was successful
