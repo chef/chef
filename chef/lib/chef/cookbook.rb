@@ -332,7 +332,7 @@ class Chef
     
     def preferred_filename_on_disk_location(node, segment, filename, current_filepath=nil)
       manifest_record = preferred_manifest_record(node, segment, filename)
-      if current_filepath && (manifest_record['checksum'] == checksum_cookbook_file)
+      if current_filepath && (manifest_record['checksum'] == checksum_cookbook_file(current_filepath))
         nil
       else
         file_vendor.get_filename(manifest_record['path'])
@@ -547,6 +547,9 @@ class Chef
     # checksums are generated.
     def checksum_cookbook_file(filepath)
       Chef::Cache::Checksum.generate_md5_checksum_for_file(filepath)
+    rescue Errno::ENOENT
+      Chef::Log.debug("File #{filepath} does not exist, so there is no checksum to generate")
+      nil
     end
     
   end
