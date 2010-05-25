@@ -38,7 +38,7 @@ class Chef
       # Chef::Config.cookbook_path file hierarchy for the requested
       # file.
       def get_filename(filename)
-        location = [Chef::Config.cookbook_path].flatten.inject(nil) do |memo, basepath|
+        location = Array(Chef::Config.cookbook_path).inject(nil) do |memo, basepath|
           candidate_location = File.join(basepath, @cookbook_name, filename)
           memo = candidate_location if File.exist?(candidate_location)
           memo
