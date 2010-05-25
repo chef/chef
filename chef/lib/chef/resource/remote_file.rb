@@ -54,6 +54,29 @@ class Chef
         )
       end
 
+      # The provider that should be used for this resource.
+      # === Returns:
+      # Chef::Provider::RemoteFile    when the source is an absolute URI, like
+      #                               http://www.google.com/robots.txt
+      # Chef::Provider::CookbookFile  when the source is a relative URI, like
+      #                               'myscript.pl', 'dir/config.conf'
+      def provider
+        if absolute_uri?(source)
+          Chef::Provider::RemoteFile
+        else
+          # contentious...
+          Chef::Log.warn("remote_file is deprecated for fetching files from cookbooks. Use cookbook_file instead")
+          Chef::Provider::CookbookFile
+        end
+      end
+
+      private
+      
+      def absolute_uri?(source)
+        URI.parse(source).absolute?
+      rescue URI::InvalidURIError
+        false
+      end
 
     end
   end

@@ -162,7 +162,6 @@ class Chef
             :directory => Chef::Provider::Directory,
             :link => Chef::Provider::Link,
             :template => Chef::Provider::Template,
-            :remote_file => Chef::Provider::RemoteFile,
             :remote_directory => Chef::Provider::RemoteDirectory,
             :execute => Chef::Provider::Execute,
             :mount => Chef::Provider::Mount::Mount,
