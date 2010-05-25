@@ -46,30 +46,6 @@ class Chef
             end
           end
         end
-        # else
-        #   begin
-        #     source_file(source, @current_resource.checksum) do |raw_file|
-        #       if matches_current_checksum?(raw_file)
-        #         Chef::Log.debug "#{@new_resource}: Target and Source checksums are the same, taking no action"
-        #       else
-        #         backup_new_resource
-        #         Chef::Log.debug "copying remote file from origin #{raw_file.path} to destination #{@new_resource.path}"
-        #         FileUtils.cp raw_file.path, @new_resource.path
-        #         @new_resource.updated = true
-        #       end
-        #     end
-        #   rescue Net::HTTPRetriableError => e
-        #     if e.response.kind_of?(Net::HTTPNotModified)
-        #       Chef::Log.debug("File #{path} is unchanged")
-        #       retval = false
-        #     else
-        #       raise e
-        #     end
-        #   end
-        # 
-        #   Chef::Log.debug "#{@new_resource} completed"
-        #   retval
-        # end
         enforce_ownership_and_permissions
 
         @new_resource.updated
