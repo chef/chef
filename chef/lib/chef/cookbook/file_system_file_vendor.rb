@@ -31,7 +31,7 @@ class Chef
     class FileSystemFileVendor < FileVendor
       
       def initialize(manifest)
-        @cookbook_name = manifest[:name]
+        @cookbook_name = manifest[:cookbook_name]
       end
       
       # Implements abstract base's requirement. It looks in the
@@ -43,7 +43,7 @@ class Chef
           memo = candidate_location if File.exist?(candidate_location)
           memo
         end
-        raise "File #{filename} does not exist for cookbook #{cookbook_name}" unless location
+        raise "File #{filename} does not exist for cookbook #{@cookbook_name}" unless location
         
         location
       end
