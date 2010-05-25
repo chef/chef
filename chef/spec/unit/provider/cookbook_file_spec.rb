@@ -171,18 +171,6 @@ EXPECTED
     end
 
     it "it checks access control but does not alter content when action is create" do
-#      pending(<<-FUUUU)
-#
-#This test fails because the checksum method for Chef::Provider::File (from the
-#checksum mixin) generates sha2-256 checksums, but cookbooks are using MD5 now.
-#Something must give. Affected by this bug:
-#* load_current_resource for this class
-#* when C::P::RemoteFile delegates for deprecation to this class, it must happen
-#  in/before load_current_resource so the correct cksum implementation is used.
-#FUUUU
-#      
-      pp :cb_file_chksum => @provider.checksum(CHEF_SPEC_DATA + "/cookbooks/apache2/files/default/apache2_module_conf_generate.pl")
-      pp @provider.run_context.cookbook_collection['apache2']
       @provider.load_current_resource
       @provider.should_receive(:set_all_access_controls)
       @provider.should_not_receive(:stage_file_to_tmpdir)
@@ -190,7 +178,10 @@ EXPECTED
     end
     
     it "does not alter content or access control when action is create if missing" do
-      pending
+      @provider.load_current_resource
+      @provider.should_not_receive(:set_all_access_controls)
+      @provider.should_not_receive(:stage_file_to_tmpdir)
+      @provider.action_create_if_missing
     end
   end
 end
