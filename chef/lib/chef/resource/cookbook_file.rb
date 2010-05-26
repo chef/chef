@@ -17,6 +17,7 @@
 #
 
 require 'chef/resource/file'
+require 'chef/provider/cookbook_file'
 
 class Chef
   class Resource
@@ -24,6 +25,7 @@ class Chef
       
       def initialize(name, run_context=nil)
         super
+        @provider = Chef::Provider::CookbookFile
         @resource_name = :cookbook_file
         @action = "create"
         @source = ::File.basename(name)

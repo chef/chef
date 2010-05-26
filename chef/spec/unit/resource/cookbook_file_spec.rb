@@ -42,7 +42,7 @@ describe Chef::Resource::CookbookFile do
   end
   
   it "sets the provider to Chef::Provider::CookbookFile" do
-    pending('need to define this const first')
+    @cookbook_file.provider.should == Chef::Provider::CookbookFile
   end
 
 end
