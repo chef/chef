@@ -336,6 +336,73 @@ class Chef
         file_vendor.get_filename(manifest_record['path'])
       end
     end
+    
+    # Determine the manifest records from the most specific directory
+    # for the given node. See #preferred_manifest_record for a
+    # description of entries of the returned Array.
+    def preferred_manifest_records_for_directory(node, segment, dirname)
+      preferences = preferences_for_path(node, segment, dirname)
+      records_by_pref = Hash.new
+      preferences.each { |pref| records_by_pref[pref] = Array.new }
+
+      manifest[segment].each do |manifest_record|
+        manifest_record_path = manifest_record[:path]
+
+        # extract the preference part from the path.
+        if manifest_record_path =~ /(#{segment}\/[^\/]+\/#{dirname})\/.+$/
+          # Note the specificy_dirname includes the segment and
+          # dirname argument as above, which is what
+          # preferences_for_path returns. It could be
+          # "files/ubuntu-9.10/dirname", for example.
+          specificity_dirname = $1
+          
+          # Record the specificity_dirname only if it's in the list of
+          # valid preferences
+          if records_by_pref[specificity_dirname]
+            records_by_pref[specificity_dirname] << manifest_record
+          end
+        end
+      end
+      
+      best_pref = preferences.find { |pref| !records_by_pref[pref].empty? }
+        
+      raise Chef::Exceptions::FileNotFound, "cookbook #{name} has no directory #{segment}/#{dirname}" unless best_pref
+
+      records_by_pref[best_pref]
+    end
+    
+    # Given a node, segment and path (filename or directory name),
+    # return the priority-ordered list of preference locations to
+    # look.
+    def preferences_for_path(node, segment, path)
+      # only files and templates can be platform-specific
+      if segment.to_sym == :files || segment.to_sym == :templates
+        begin
+          platform, version = Chef::Platform.find_platform_and_version(node)
+        rescue ArgumentError => e
+          # Skip platform/version if they were not found by find_platform_and_version
+          if e.message =~ /Cannot find a (platform|version)/
+            platform = "/unknown_platform/"
+            version = "/unknown_platform_version/"
+          else
+            raise
+          end
+        end
+        
+        fqdn = node[:fqdn]
+
+        # Most specific to least specific places to find the path
+        [
+         File.join(segment.to_s, "host-#{fqdn}", path),
+         File.join(segment.to_s, "#{platform}-#{version}", path),
+         File.join(segment.to_s, platform.to_s, path),
+         File.join(segment.to_s, "default", path)
+        ]
+      else
+        [File.join(segment, path)]
+      end
+    end
+    private :preferences_for_path
 
 
     def relative_filenames_in_preferred_directory(node, segment, dirname)
