@@ -51,10 +51,10 @@ class Chef
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
 
         cl = Chef::CookbookLoader.new
-        if config[:all] 
-          cl.each do |cookbook|
+        if config[:all]
+          cl.each do |cookbook_name, cookbook|
             Chef::Log.info("** #{cookbook.name.to_s} **")
-            upload_cookbook(cookbook.name.to_s)
+            upload_cookbook(cookbook)
           end
         else
           @name_args.each{|cookbook_name| upload_cookbook(cl[cookbook_name]) }

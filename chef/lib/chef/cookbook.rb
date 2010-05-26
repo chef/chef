@@ -126,6 +126,15 @@ class Chef
       }
     }
     
+    # This is the one and only method that knows how cookbook files'
+    # checksums are generated.
+    def self.checksum_cookbook_file(filepath)
+      Chef::Cache::Checksum.generate_md5_checksum_for_file(filepath)
+    rescue Errno::ENOENT
+      Chef::Log.debug("File #{filepath} does not exist, so there is no checksum to generate")
+      nil
+    end
+    
     # Creates a new Chef::Cookbook object.  
     #
     # === Returns
@@ -192,8 +201,22 @@ class Chef
     
     def manifest=(new_manifest)
       @manifest = Mash.new new_manifest
-      @checksums = extract_checksums_from_manifest(new_manifest)
+      @checksums = extract_checksums_from_manifest(@manifest)
       @manifest_records_by_path = extract_manifest_records_by_path(@manifest)
+
+      COOKBOOK_SEGMENTS.each do |segment|
+        next unless @manifest.has_key?(segment)
+        filenames = @manifest[segment].map{|manifest_record| manifest_record['name']}
+        
+        if segment == :recipes
+          self.recipe_filenames = filenames
+        elsif segment == :attributes
+          self.attribute_filenames = filenames
+        else
+          segment_filenames(segment).clear
+          filenames.each { |filename| segment_filenames(segment) << filename }
+        end
+      end
     end
     
     # Returns a hash of checksums to either nil or the on disk path (which is
@@ -332,7 +355,7 @@ class Chef
     
     def preferred_filename_on_disk_location(node, segment, filename, current_filepath=nil)
       manifest_record = preferred_manifest_record(node, segment, filename)
-      if current_filepath && (manifest_record['checksum'] == checksum_cookbook_file(current_filepath))
+      if current_filepath && (manifest_record['checksum'] == self.class.checksum_cookbook_file(current_filepath))
         nil
       else
         file_vendor.get_filename(manifest_record['path'])
@@ -495,7 +518,7 @@ class Chef
             file_name = matcher[2]
           end
           
-          csum = checksum_cookbook_file(segment_file)
+          csum = self.class.checksum_cookbook_file(segment_file)
           checksums_to_on_disk_paths[csum] = segment_file
           rs = Mash.new({
             :name => file_name,
@@ -539,17 +562,6 @@ class Chef
         end
       end
       manifest_records_by_path
-    end
-
-    private
-    
-    # This is the one and only method that knows how cookbook files'
-    # checksums are generated.
-    def checksum_cookbook_file(filepath)
-      Chef::Cache::Checksum.generate_md5_checksum_for_file(filepath)
-    rescue Errno::ENOENT
-      Chef::Log.debug("File #{filepath} does not exist, so there is no checksum to generate")
-      nil
     end
     
   end

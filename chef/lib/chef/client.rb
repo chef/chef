@@ -20,8 +20,6 @@
 
 require 'chef/config'
 require 'chef/mixin/params_validate'
-require 'chef/mixin/generate_url'
-require 'chef/mixin/checksum'
 require 'chef/log'
 require 'chef/rest'
 require 'chef/platform'
@@ -35,10 +33,6 @@ require 'ohai'
 
 class Chef
   class Client
-    
-    include Chef::Mixin::GenerateURL
-    include Chef::Mixin::Checksum
-
     # TODO: timh/cw: 5-19-2010: json_attribs should be moved to RunContext?
     attr_accessor :node, :registration, :json_attribs, :node_name, :ohai, :rest, :runner
     attr_reader :node_exists
@@ -223,48 +217,50 @@ class Chef
       Chef::Log.debug("Synchronizing cookbook #{cookbook.name}")
 
       filenames_seen = Hash.new
-      
-      Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
-        segment.each do |segment_file|
 
+      Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+        cookbook.manifest[segment].each do |manifest_record|
           # segment = cookbook segment
           # remote_list = list of file hashes
           #
           # We need the list of known good attribute files, so we can delete any that are
           # just laying about.
         
-          cache_filename = File.join("cookbooks", cookbook.name, segment, segment_file['name'])
+          cache_filename = File.join("cookbooks", cookbook.name, manifest_record['path'])
           filenames_seen[cache_filename] = true
 
           current_checksum = nil
           if Chef::FileCache.has_key?(cache_filename)
-            current_checksum = checksum(Chef::FileCache.load(cache_file, false))
+            current_checksum = Chef::Cookbook.checksum_cookbook_file(Chef::FileCache.load(cache_filename, false))
           end
           
           # If the checksums are different between on-disk (current) and on-server
           # (remote, per manifest), do the update. This will also execute if there
           # is no current checksum.
-          if current_checksum != segment_file['checksum']
-            url = "/cookbooks/#{cookbook.name}/#{cookbook.version}/files/#{segment_file['checksum']}"
+          if current_checksum != manifest_record['checksum']
+            url = "/cookbooks/#{cookbook.name}/#{cookbook.version}/files/#{manifest_record['checksum']}"
 
             raw_file = rest.get_rest(url, true)
 
-            Chef::Log.info("Storing updated #{cache_file} in the cache.")
-            Chef::FileCache.move_to(raw_file.path, cache_file)
+            Chef::Log.info("Storing updated #{cache_filename} in the cache.")
+            Chef::FileCache.move_to(raw_file.path, cache_filename)
+          else
           end
         end
-
       end
-      
+
+      filenames_seen
+    end
+    
+    def cleanup_file_cache(valid_cache_entries)
       # Delete each file in the cache that we didn't encounter in the
       # manifest.
       Chef::FileCache.list.each do |cache_filename|
-        unless filenames_seen[cache_filename]
+        unless valid_cache_entries[cache_filename]
           Chef::Log.info("Removing #{cache_filename} from the cache; it is no longer on the server.")
           Chef::FileCache.delete(cache_filename)
         end
       end
-      
     end
 
     # Synchronizes all the cookbooks from the chef-server.
@@ -287,9 +283,12 @@ class Chef
       end
 
       # Synchronize each of the node's cookbooks
-      cookbook_hash.values.each do |cookbook|
-        sync_cookbook_file_cache(cookbook)
+      valid_cache_entries = cookbook_hash.values.inject({}) do |memo, cookbook|
+        memo.merge!(sync_cookbook_file_cache(cookbook))
+        memo
       end
+
+      cleanup_file_cache(valid_cache_entries)
       
       # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
       Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")

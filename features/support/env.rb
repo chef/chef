@@ -79,6 +79,10 @@ def create_databases
   Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
   system("cp #{File.join(Dir.tmpdir, "chef_integration", "validation.pem")} #{Dir.tmpdir}")
   system("cp #{File.join(Dir.tmpdir, "chef_integration", "webui.pem")} #{Dir.tmpdir}")
+
+  cmd = [File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "knife"), "cookbook", "upload", "-a", "-o", File.join(File.dirname(__FILE__), "..", "data", "cookbooks"), "-u", "validator", "-k", File.join(Dir.tmpdir, "validation.pem")]
+  Chef::Log.info("Uploading fixture cookbooks with #{cmd.join(' ')}")
+  system(*cmd)
 end
 
 def prepare_replicas

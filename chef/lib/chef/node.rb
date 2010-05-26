@@ -160,8 +160,8 @@ class Chef
     end
 
     def couchdb_id=(value)
-      self.couchdb_id = value
-      self.index_id = value
+      @couchdb_id = value
+      @index_id = value
     end
     
     # Used by DSL
@@ -472,7 +472,7 @@ class Chef
 
     # Save this node to the CouchDB
     def cdb_save
-      self.couchdb_rev = couchdb.store("node", name, self)["rev"]
+      @couchdb_rev = couchdb.store("node", name, self)["rev"]
     end
 
     # Save this node via the REST API
