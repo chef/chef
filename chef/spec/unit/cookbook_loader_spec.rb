@@ -68,7 +68,8 @@ describe Chef::CookbookLoader do
         seen << cookbook_name
       end
       seen[0].should == :apache2
-      seen[1].should == :openldap
+      seen[1].should == :java
+      seen[2].should == :openldap
     end
   end
   
