@@ -53,6 +53,7 @@ class Chef
           rname = convert_to_class_name(method_name)
 
           super unless Chef::Resource.const_defined?(rname)
+          raise ArgumentError, "You must supply a name when declaring a #{method_name} resource" unless args.size > 0
 
           # If we have a resource like this one, we want to steal its state
           args << run_context

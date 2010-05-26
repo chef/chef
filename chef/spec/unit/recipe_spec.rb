@@ -68,7 +68,7 @@ describe Chef::Recipe do
       it "should require a name argument" do
         lambda {
           @recipe.cat
-        }.should raise_error(ArgumentError)
+        }.should raise_error(ArgumentError, "You must supply a name when declaring a cat resource")
       end
   
       it "should allow regular errors (not NameErrors) to pass unchanged" do
