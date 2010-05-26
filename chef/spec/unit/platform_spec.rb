@@ -152,13 +152,25 @@ describe Chef::Platform do
     Chef::Platform.find_provider_for_node(node, kitty).should eql(Chef::Provider::Cat)
   end
   
-  it "should return a provider object given the node and a Chef::Resource object" do
-    file = Chef::Resource::File.new("whateva")
+  it "returns a provider object given a Chef::Resource object which has a valid run context" do
     node = Chef::Node.new
-    node.name("Intel")
     node.platform("mac_os_x")
     node.platform_version("9.2.2")
-    Chef::Platform.provider_for_node(node, file).should be_an_instance_of(Chef::Provider::File)
+    run_context = Chef::RunContext.new(node, {})
+    file = Chef::Resource::File.new("whateva", run_context)
+    provider = Chef::Platform.provider_for_resource(file)
+    provider.should be_an_instance_of(Chef::Provider::File)
+    provider.new_resource.should equal(file)
+    provider.run_context.should equal(run_context)
+  end
+  
+  it "raises an error when trying to find the provider for a resource with no run context" do
+    file = Chef::Resource::File.new("whateva")
+    lambda {Chef::Platform.provider_for_resource(file)}.should raise_error(ArgumentError)
+  end
+
+  it "does not support finding a provider by resource and node -- a run context is required" do
+    lambda {Chef::Platform.provider_for_node('node', 'resource')}.should raise_error(NotImplementedError)
   end
 
   it "should update the provider map with map" do  
