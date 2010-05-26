@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/file_access_control'
 require 'chef/provider/file'
 require 'tempfile'
 
@@ -78,7 +79,7 @@ class Chef
       end
 
       def set_all_access_controls(file)
-        access_controls = FileAccessControl.new(@new_resource, file)
+        access_controls = Chef::FileAccessControl.new(@new_resource, file)
         access_controls.set_all
         @new_resource.updated = access_controls.modified?
       end
@@ -88,118 +89,6 @@ class Chef
           Chef::Log.info "Backing up current file at #{@new_resource.path}"
           backup @new_resource.path
         end
-      end
-
-      class FileAccessControl
-        UINT = (1 << 32)
-        UID_MAX = (1 << 30)
-        
-        attr_reader :resource
-        
-        attr_reader :file
-        
-        # FileAccessControl objects set the owner, group and mode of +file+ to
-        # the values specified by +resource+. +file+ is completely independent
-        # of any file or path attribute on +resource+, so it is possible to set
-        # access control settings on a tempfile (for example).
-        # === Arguments:
-        # resource:   probably a Chef::Resource::File object (or subclass), but
-        #             this is not required. Must respond to +owner+, +group+,
-        #             and +mode+
-        # file:       The file whose access control settings you wish to modify,
-        #             given as a String.
-        def initialize(resource, file)
-          @resource, @file = resource, file
-          @modified = false
-        end
-        
-        def modified?
-          @modified
-        end
-        
-        def set_all
-          set_owner
-          set_group
-          set_mode
-        end
-        
-        # Workaround the fact that Ruby's Etc module doesn't believe in negative
-        # uids, so negative uids show up as the diminished radix complement of
-        # the maximum fixnum size. For example, a uid of -2 is reported as 
-        def dimished_radix_complement(int)
-          if int > UID_MAX
-            int - UINT
-          else
-            int
-          end
-        end
-        
-        def target_uid
-          return nil if resource.owner.nil?
-          if resource.owner.kind_of?(String)
-            dimished_radix_complement( Etc.getpwnam(resource.owner).uid )
-          elsif resource.owner.kind_of?(Integer)
-            resource.owner
-          else
-            raise ArgumentError, "cannot resolve #{resource.owner.inspect} to uid, owner must be a string or integer"
-          end
-        rescue ArgumentError
-          raise Chef::Exceptions::UserIDNotFound, "cannot resolve user id for '#{resource.owner}'"
-        end
-        
-        def set_owner
-          if (uid = target_uid) && (uid != stat.uid)
-            Chef::Log.debug("setting owner on #{file} to #{uid}")
-            FileUtils.chown(uid, nil, file)
-            modified
-          end
-        end
-        
-        def target_gid
-          return nil if resource.group.nil?
-          if resource.group.kind_of?(String)
-            dimished_radix_complement( Etc.getgrnam(resource.group).gid )
-          elsif resource.group.kind_of?(Integer)
-            resource.group
-          else
-            raise ArgumentError, "cannot resolve #{resource.group.inspect} to gid, group must be a string or integer"
-          end
-        rescue ArgumentError
-          raise Chef::Exceptions::GroupIDNotFound, "cannot resolve group id for '#{resource.group}'"
-        end
-        
-        def set_group
-          if (gid = target_gid) && (gid != stat.gid)
-            Chef::Log.debug("setting group on #{file} to #{gid}")
-            FileUtils.chown(nil, gid, file)
-            modified
-          end
-        end
-
-        def target_mode
-          return nil if resource.mode.nil?
-          (resource.mode.respond_to?(:oct) ? resource.mode.oct : resource.mode.to_i) & 007777
-        end
-
-        def set_mode
-          if (mode = target_mode) && (mode != (stat.mode & 007777))
-            Chef::Log.debug("setting mode on #{file} to #{mode.to_s(8)}")
-            FileUtils.chmod(target_mode, file)
-            modified
-          end
-        end
-        
-
-        def stat
-          @stat ||= ::File.stat(file)
-        end
-        
-        private
-        
-        def modified
-          @modified = true
-        end
-        
       end
 
     end
