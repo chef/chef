@@ -50,18 +50,31 @@ class Sandboxes < Application
   end
  
   def create
+<<<<<<< HEAD
     checksums = params[:checksums]
     
     raise BadRequest, "missing required parameter: checksums" unless checksums
     raise BadRequest, "required parameter checksums is not a hash: #{checksums.class.name}" unless checksums.is_a?(Hash)
+=======
+    incoming_checksums = params[:checksums]
+    
+    raise BadRequest, "missing required parameter: checksums" unless incoming_checksums
+    raise BadRequest, "required parameter checksums is not a hash: #{checksums.class.name}" unless incoming_checksums.is_a?(Hash)
+>>>>>>> Sandboxes tests passing
 
     new_sandbox = Chef::Sandbox.new
     result_checksums = Hash.new
     
     all_existing_checksums = Chef::Checksum.cdb_all_checksums
+<<<<<<< HEAD
     checksums.keys.each do |checksum|
       if all_existing_checksums[checksum]
         result_checksums[checksum] = {
+=======
+    incoming_checksums.keys.each do |incoming_checksum|
+      if all_existing_checksums[incoming_checksum]
+        result_checksums[incoming_checksum] = {
+>>>>>>> Sandboxes tests passing
           :needs_upload => false
         }
       else
