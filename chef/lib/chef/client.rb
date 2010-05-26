@@ -77,7 +77,7 @@ class Chef
           Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
           run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
           assert_cookbook_path_not_empty(run_context)
-          converge
+          converge(run_context)
         else
           save_node
           
@@ -104,7 +104,7 @@ class Chef
         true
       rescue Exception => e
         run_exception_handlers(node, runner ? runner : run_context, start_time, end_time, elapsed_time, e)
-        Chef::Log.error("Re-raising exception")
+        Chef::Log.error("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
         raise
       end
     end
