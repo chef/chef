@@ -308,17 +308,17 @@ class Chef
     end
     
     def read_stdout_to_buffer
-      while chunk = child_stdout.read(16 * 1024)
+      while chunk = child_stdout.read_nonblock(16 * 1024)
         @stdout << chunk
       end
-    rescue Errno::EAGAIN
+    rescue Errno::EAGAIN, EOFError
     end
     
     def read_stderr_to_buffer
-      while chunk = child_stderr.read(16 * 1024)
+      while chunk = child_stderr.read_nonblock(16 * 1024)
         @stderr << chunk
       end
-    rescue Errno::EAGAIN
+    rescue Errno::EAGAIN, EOFError
     end
     
     def fork_subprocess

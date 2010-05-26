@@ -208,19 +208,22 @@ describe Chef::ShellOut do
       cmd.run_command
       cmd.stdout.should match /X{16384}\.{1024}/
     end
-    
+  
     it "returns empty strings from commands that have no output" do
       cmd = Chef::ShellOut.new(%q{ruby -e 'exit 0'})
       cmd.run_command
       cmd.stdout.should == ''
       cmd.stderr.should == ''
     end
-    
-    it "doesn't hang or lose output when a process closes one of stdout/stderr and continues writing to the other" do
-      halfandhalf = %q{ruby -e 'STDOUT.close;sleep 0.5;STDERR.puts :win'}
-      cmd = Chef::ShellOut.new(halfandhalf)
-      cmd.run_command
-      cmd.stderr.should == "win\n"
+
+    # segfaults this version of ruby :(
+    unless (RUBY_VERSION == '1.8.7') && (RUBY_PATCHLEVEL <= 173)
+      it "doesn't hang or lose output when a process closes one of stdout/stderr and continues writing to the other" do
+        halfandhalf = %q{ruby -e 'STDOUT.close;sleep 0.5;STDERR.puts :win'}
+        cmd = Chef::ShellOut.new(halfandhalf)
+        cmd.run_command
+        cmd.stderr.should == "win\n"
+      end
     end
     
     it "doesn't hang or lose output when a process writes, pauses, then continues writing" do
