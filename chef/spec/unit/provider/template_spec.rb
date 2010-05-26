@@ -144,4 +144,3 @@ describe Chef::Provider::Template do
 
   end
 end
-
