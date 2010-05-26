@@ -39,7 +39,7 @@ Then /^I upload a file named '([^\']+)' to the sandbox$/ do |stash_sandbox_filen
     sandbox_filename = get_fixture('sandbox_file', stash_sandbox_filename)
     raise "no such stash_sandbox_filename in fixtures: #{stash_sandbox_filename}" unless sandbox_filename
     
-    sandbox_file_checksum = Chef::Cache::Checksum.checksum_for_file(sandbox_filename)
+    sandbox_file_checksum = Chef::Cookbook.checksum_cookbook_file(sandbox_filename)
 
     url = "#{self.sandbox_url}/#{sandbox_file_checksum}"
     File.open(sandbox_filename, "r") do |sandbox_file|
@@ -68,7 +68,7 @@ Then /^I upload a file named '([^\']+)' using the checksum of '(.+)' to the sand
     raise "no such stash_upload_filename in fixtures: #{stash_upload_filename}" unless sandbox_upload_filename
     raise "no such stash_checksum_filename in fixtures: #{stash_checksum_filename}" unless stash_checksum_filename
     
-    use_checksum = Chef::Cache::Checksum.checksum_for_file(sandbox_checksum_filename)
+    use_checksum = Chef::Cookbook.checksum_cookbook_file(sandbox_checksum_filename)
     url = "#{self.sandbox_url}/#{use_checksum}"
     
     File.open(sandbox_upload_filename, "r") do |file_to_upload|
@@ -91,7 +91,7 @@ Then /^the sandbox file '(.+)' should need upload$/ do |stash_filename|
   sandbox = @stash['sandbox_response']
   
   sandbox_filename = get_fixture('sandbox_file', stash_filename)
-  sandbox_checksum = Chef::Cache::Checksum.checksum_for_file(sandbox_filename)
+  sandbox_checksum = Chef::Cookbook.checksum_cookbook_file(sandbox_filename)
 
   sandbox['checksums'][sandbox_checksum]['needs_upload'] == true
 end
@@ -100,7 +100,7 @@ Then /^the sandbox file '(.+)' should not need upload$/ do |stash_filename|
   sandbox = @stash['sandbox_response']
   
   sandbox_filename = get_fixture('sandbox_file', stash_filename)
-  sandbox_checksum = Chef::Cache::Checksum.checksum_for_file(sandbox_filename)
+  sandbox_checksum = Chef::Cookbook.checksum_cookbook_file(sandbox_filename)
   
   sandbox['checksums'][sandbox_checksum]['needs_upload'] == false
 end

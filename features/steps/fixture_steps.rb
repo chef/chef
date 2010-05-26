@@ -33,21 +33,21 @@ Before do
       # value side of that hash is ignored), and is here for documentation's sake.
       'sandbox1' => {
         :checksums => {
-          Chef::Cache::Checksum.checksum_for_file(File.join(datadir, "cookbooks", "attribute_include/recipes/default.rb")) => nil
+          Chef::Cookbook.checksum_cookbook_file(File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "recipes", "default.rb")) => nil
         },
       },
       'sandbox2' => {
         :checksums => {
-          Chef::Cache::Checksum.checksum_for_file(File.join(datadir, "cookbooks", "attribute_include/attributes/a.rb")) => nil,
-          Chef::Cache::Checksum.checksum_for_file(File.join(datadir, "cookbooks", "attribute_include/attributes/b.rb")) => nil,
+          Chef::Cookbook.checksum_cookbook_file(File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "attributes", "attr1.rb")) => nil,
+          Chef::Cookbook.checksum_cookbook_file(File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "attributes", "attr2.rb")) => nil
         },
       },
     },
     'sandbox_file' => {
-      "sandbox1_file1" => File.join(datadir, "cookbooks", "attribute_include/recipes/default.rb"),
+      "sandbox1_file1" => File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "recipes", "default.rb"),
 
-      "sandbox2_file1" => File.join(datadir, "cookbooks", "attribute_include/attributes/a.rb"),
-      "sandbox2_file2" => File.join(datadir, "cookbooks", "attribute_include/attributes/b.rb"),
+      "sandbox2_file1" => File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "attributes", "attr1.rb"),
+      "sandbox2_file2" => File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "attributes", "attr2.rb"),
     },
     'signing_caller' =>{ 
       :user_id=>'bobo', :secret_key => "/tmp/poop.pem"

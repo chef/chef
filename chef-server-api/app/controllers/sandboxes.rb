@@ -32,14 +32,11 @@ class Sandboxes < Application
   def index
     couch_sandbox_list = Chef::Sandbox::cdb_list(true)
     
-    puts "couch_sandbox_list = #{couch_sandbox_list.inspect}"
     
     sandbox_list = Hash.new
     couch_sandbox_list.each do |sandbox|
       sandbox_list[sandbox.guid] = absolute_url(:sandbox, :sandbox_id => sandbox.guid)
-      puts
     end
-    puts "Sandboxes.index: sandbox_list = #{sandbox_list.inspect}"
     display sandbox_list
   end
 
@@ -58,12 +55,11 @@ class Sandboxes < Application
     
     raise BadRequest, "missing required parameter: checksums" unless incoming_checksums
     raise BadRequest, "required parameter checksums is not a hash: #{checksums.class.name}" unless incoming_checksums.is_a?(Hash)
-    
+
     new_sandbox = Chef::Sandbox.new
     result_checksums = Hash.new
     
     all_existing_checksums = Chef::Checksum.cdb_all_checksums
-    puts "all_existing_checksums = #{all_existing_checksums.inspect}"
     incoming_checksums.keys.each do |incoming_checksum|
       if all_existing_checksums[incoming_checksum]
         result_checksums[incoming_checksum] = {

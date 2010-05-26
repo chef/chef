@@ -1,4 +1,4 @@
-@api @sandboxes @create_sandbox
+@api @sandboxes @sandbox @create_sandbox
 Feature: Create a sandbox via the REST API 
   In order to have files available to be included in a cookbook
   As a Developer
