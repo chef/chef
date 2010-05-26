@@ -100,6 +100,7 @@ describe Chef::Provider::Template do
         @resource.owner("adam")
         @resource.group("wheel")
         @resource.mode(00644)
+        @provider.should_receive(:backup)
         @provider.should_receive(:set_all_access_controls).with(an_instance_of(String))
         @provider.action_create
       end

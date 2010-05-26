@@ -65,9 +65,13 @@ EXPECTED
 
   describe "when the file doesn't yet exist" do
     before do
+      @install_to = Dir.tmpdir + '/apache2_modconf.pl'
+
       @current_resource = @new_resource.dup
       @provider.current_resource = @current_resource
     end
+
+    after { ::File.exist?(@install_to) && FileUtils.rm(@install_to) }
 
     it "loads the current file state" do
       @provider.load_current_resource
@@ -105,33 +109,20 @@ EXPECTED
     end
     
     it "installs the file from the cookbook cache" do
-      tempfile = nil
-      begin
-        tempfile = Tempfile.open('rspec-action-create-test')
-        install_path = ::File.dirname(tempfile.path) + '/apache2_modconf.pl'
-        @new_resource.path(install_path)
-        @provider.should_receive(:set_all_access_controls)
-        @provider.action_create
-        actual = IO.read(install_path)
-        actual.should == @file_content
-      ensure
-        tempfile && tempfile.close!
-      end
+      @new_resource.path(@install_to)
+      @provider.should_receive(:backup_new_resource)
+      @provider.should_receive(:set_all_access_controls)
+      @provider.action_create
+      actual = IO.read(@install_to)
+      actual.should == @file_content
     end
     
     it "installs the file for create_if_missing" do
-      install_path = nil
-      Tempfile.open('rspec-action-create-test') do |tempfile|
-        install_path = ::File.dirname(tempfile.path) + '/apache2_modconf.pl'
-        FileUtils.rm(install_path)
-      end
-
-      ::File.exist?(install_path).should be_false
-
-      @new_resource.path(install_path)
+      @new_resource.path(@install_to)
       @provider.should_receive(:set_all_access_controls)
+      @provider.should_receive(:backup_new_resource)
       @provider.action_create_if_missing
-      actual = IO.read(install_path)
+      actual = IO.read(@install_to)
       actual.should == @file_content
     end
   end
@@ -148,6 +139,7 @@ EXPECTED
     
     it "overwrites it when the create action is called" do
       @provider.should_receive(:set_all_access_controls)
+      @provider.should_receive(:backup_new_resource)
       @provider.action_create
       actual = IO.read(@target_file)
       actual.should == @file_content
@@ -172,6 +164,8 @@ EXPECTED
       @current_resource = @new_resource.dup
       @provider.current_resource = @current_resource
     end
+
+    after { @tempfile && @tempfile.unlink}
 
     it "it checks access control but does not alter content when action is create" do
       @provider.load_current_resource
