@@ -255,7 +255,7 @@ class Chef
     end
     
     def run_action(action)
-      provider = Chef::Platform.provider_for_node(node, self)
+      provider = Chef::Platform.provider_for_resource(self)
       provider.load_current_resource
       provider.send("action_#{action}")
     end

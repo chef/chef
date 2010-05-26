@@ -269,81 +269,78 @@ describe Chef::Provider::Package do
     end
   end
 
-  describe "when fetching a preseed file" do
+  describe "when given a response file" do
     before(:each) do
-      pending "Depends on resolution for remote file [DAN 5/22/2010]"
-      @remote_file = Chef::Resource::RemoteFile.new("/var/chef/cache/preseed/javacb/java-6.seed")
-      @remote_file.cookbook_name = "javacb"
-      @remote_file.source "java-6.seed"
-      @remote_file.backup false
-      @rf_provider = Chef::Provider::RemoteFile.new(@remote_file, @run_context)
-      
-      @provider.stub!(:remote_preseed_file).and_return(@rf_provider)
-      
-      #Chef::Resource::RemoteFile.stub!(:new).and_return(@remote_file)
-      #Chef::Platform.stub!(:find_provider_for_node).and_return(Chef::Provider::RemoteFile)
-      #Chef::Provider::RemoteFile.stub!(:new).and_return(@rf_provider)
-      Chef::FileCache.stub!(:create_cache_path).and_return("/tmp")
-      Chef::FileCache.stub!(:load).and_return("/tmp/java-6.seed")
+      Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")))
+      Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
+
+      @node = Chef::Node.new
+      @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+      @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+
+      @node[:platform] = 'PLATFORM: just testing'
+      @node[:platform_version] = 'PLATFORM VERSION: just testing'
+
+      @new_resource.response_file('java.response')
+      @new_resource.cookbook_name = 'java'
     end
-  
-    it "should find the full cache path" do
-      Chef::FileCache.should_receive(:create_cache_path).with("preseed/java")
-      @provider.get_preseed_file("java", "6")
+
+    describe "creating the cookbook file resource to fetch the response file" do
+      before do
+        Chef::FileCache.should_receive(:create_cache_path).with('preseed/java').and_return("/tmp/preseed/java")
+      end
+      it "should set the cookbook name of the remote file to the new resources cookbook name" do
+        @provider.preseed_resource('java', '6').cookbook_name.should == 'java'
+      end
+
+      it "should set remote files source to the new resources response file" do
+        @provider.preseed_resource('java', '6').source.should == 'java.response'
+      end
+
+      it "should never back up the cached response file" do
+        @provider.preseed_resource('java', '6').backup.should be_false
+      end
+
+      it "sets the install path of the resource to $file_cache/$cookbook/$pkg_name-$pkg_version.seed" do
+        @provider.preseed_resource('java', '6').path.should == '/tmp/preseed/java/java-6.seed'
+      end
     end
-  
-    it "should create a new RemoteFile for the response file" do
-      Chef::Resource::RemoteFile.should_receive(:new).with("/tmp/java-6.seed").and_return(@remote_file)
-      @provider.get_preseed_file("java", "6")
+
+    describe "when installing the preseed file to the cache location" do
+      before do
+        @node[:platform] = :just_testing
+        @node[:platform_version] = :just_testing
+
+        @response_file_destination = Dir.tmpdir + '/preseed--java--java-6.seed'
+
+        @response_file_resource = Chef::Resource::CookbookFile.new(@response_file_destination, @run_context)
+        @response_file_resource.cookbook_name = 'java'
+        @response_file_resource.backup(false)
+        @response_file_resource.source('java.response')
+
+
+        @provider.should_receive(:preseed_resource).with('java', '6').and_return(@response_file_resource)
+      end
+
+      after do
+        FileUtils.rm(@response_file_destination) if ::File.exist?(@response_file_destination)
+      end
+
+      it "creates the preseed file in the cache" do
+        @response_file_resource.should_receive(:run_action).with('create')
+        @provider.get_preseed_file("java", "6")
+      end
+
+      it "returns the path to the response file if the response file was updated" do
+        @provider.get_preseed_file("java", "6").should == @response_file_destination
+      end
+
+      it "should return false if the response file has not been updated" do
+        @response_file_resource.stub!(:updated?).and_return false
+        @provider.get_preseed_file("java", "6").should be(false)
+      end
+
     end
-  
-    it "should set the cookbook name of the remote file to the new resources cookbook name" do
-      @remote_file.should_receive(:cookbook_name=).with(@new_resource.cookbook_name).and_return(true)
-      @provider.get_preseed_file("java", "6")
-    end
-  
-    it "should set remote files source to the new resources response file" do
-      @remote_file.should_receive(:source).with(@new_resource.response_file).and_return(true)
-      @provider.get_preseed_file("java", "6")
-    end
-  
-    it "should never back up the cached response file" do
-      @remote_file.should_receive(:backup).with(false).and_return(true)
-      @provider.get_preseed_file("java", "6")
-    end
-  
-    it "should find the provider for the remote file" do
-      Chef::Platform.should_receive(:find_provider_for_node).and_return(Chef::Provider::RemoteFile)
-      @provider.get_preseed_file("java", "6")
-    end
-  
-    it "should create a new provider for the remote file" do
-      Chef::Provider::RemoteFile.should_receive(:new).with(@remote_file).and_return(@rf_provider)
-      @provider.get_preseed_file("java", "6")
-    end
-  
-    it "should load the current resource state for the remote file" do
-      @rf_provider.should_receive(:load_current_resource)
-      @provider.get_preseed_file("java", "6")
-    end
-   
-    it "should run the create action for the remote file" do
-      @rf_provider.should_receive(:action_create)
-      @provider.get_preseed_file("java", "6")
-    end
-  
-    it "should check to see if the response file has been updated" do
-      @remote_file.should_receive(:updated).and_return(false)
-      @provider.get_preseed_file("java", "6")
-    end
-  
-    it "should return false if the response file has not been updated" do
-      @provider.get_preseed_file("java", "6").should be(false)
-    end
-  
-    it "should return the full path to the cached response file if the response file has been updated" do
-      @remote_file.should_receive(:updated).and_return(true)
-      @provider.get_preseed_file("java", "6").should == "/tmp/java-6.seed"
-    end
+
   end
 end

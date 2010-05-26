@@ -35,7 +35,7 @@ class Chef
          if file_cache_location
            Chef::Log.debug("content of file #{@new_resource.path} requires update")
            backup_new_resource
-           Tempfile.open(@new_resource.name) do |staging_file|
+           Tempfile.open(::File.basename(@new_resource.name)) do |staging_file|
              Chef::Log.debug("staging #{file_cache_location} to #{staging_file.path}")
              staging_file.close
              stage_file_to_tmpdir(staging_file.path)

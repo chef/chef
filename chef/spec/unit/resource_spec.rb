@@ -232,5 +232,9 @@ describe Chef::Resource do
     end
     
   end
-  
+
+  it "runs an action by finding its provider, loading the current resource and then running the action" do
+    pending
+  end
+
 end

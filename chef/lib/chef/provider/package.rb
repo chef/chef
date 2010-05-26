@@ -122,31 +122,32 @@ class Chef
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support pre-seeding package install/upgrade instructions - don't ask it to!" 
       end
       
-      def get_preseed_file(name, version)        
-        remote_file = remote_preseed_file
-        remote_file.load_current_resource
-        remote_file.action_create
+      def get_preseed_file(name, version)
+        resource = preseed_resource(name, version)
+        Chef::Log.debug("Fetching preseed file to #{resource.path}")
+        resource.run_action('create')
         
-        if remote_file.new_resource.updated?
-          Chef::FileCache.load(cache_path, false)
+        if resource.updated?
+          resource.path
         else
           false
         end
       end
       
-      def remote_preseed_file
-        full_cache_dir = Chef::FileCache.create_cache_path("preseed/#{@new_resource.cookbook_name}")
-        full_cache_file = "#{full_cache_dir}/#{name}-#{version}.seed"
-        cache_path = "preseed/#{@new_resource.cookbook_name}/#{name}-#{version}.seed"
+      def preseed_resource(name, version)
+        # A directory in our cache to store this cookbook's preseed files in
+        file_cache_dir = Chef::FileCache.create_cache_path("preseed/#{@new_resource.cookbook_name}")
+        # The full path where the preseed file will be stored
+        cache_seed_to = "#{file_cache_dir}/#{name}-#{version}.seed"
 
-        Chef::Log.debug("Fetching preseed file to #{cache_path}")
+        Chef::Log.debug("Fetching preseed file to #{cache_seed_to}")
 
-        remote_file = Chef::Resource::RemoteFile.new(relative_cache_file_path)
+        remote_file = Chef::Resource::CookbookFile.new(cache_seed_to)
         remote_file.cookbook_name = @new_resource.cookbook_name
         remote_file.source(@new_resource.response_file)
         remote_file.backup(false)
-
-        Chef::Platform.provider_for_node(@node, remote_file)
+        
+        remote_file
       end
 
       def expand_options(options)
