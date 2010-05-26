@@ -333,7 +333,7 @@ class Chef
                       [
                        File.join(segment.to_s, "host-#{fqdn}", filename),
                        File.join(segment.to_s, "#{platform}-#{version}", filename),
-                       File.join(segment.to_s, platform, filename),
+                       File.join(segment.to_s, platform.to_s, filename),
                        File.join(segment.to_s, "default", filename)
                       ]
                     else
