@@ -108,7 +108,11 @@ Then /^the inflated response should match the '(.+)'$/ do |stash_name|
 end
 
 Then /^the inflated response should be the '(.+)'$/ do |stash_key|
-  stash[stash_key].should == self.inflated_response
+  self.inflated_response.should == stash[stash_key]
+end
+
+Then /^the stringified response should be the stringified '(.+)'$/ do |stash_key|
+  self.response.to_s.should == stash[stash_key].to_s
 end
 
 Then /^the inflated response should be a kind of '(.+)'$/ do |thing|

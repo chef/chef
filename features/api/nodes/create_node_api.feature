@@ -22,12 +22,12 @@ Feature: Create a node via the REST API
       And an 'node' named 'webserver'
      When I 'POST' the 'node' to the path '/nodes' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
-     
+
   Scenario: Create a node with a role that does not exist
     Given a 'registration' named 'bobo' exists
       And an 'node' named 'role_not_exist'
      When I 'POST' the 'node' to the path '/nodes' 
      Then the inflated responses key 'uri' should match '^http://.+/nodes/role_not_exist$'
      When I 'GET' the path '/nodes/role_not_exist'
-     Then the inflated responses key 'run_list'.to_s should be 'role[not_exist]'
+     Then the stringified response should be the stringified 'node'
 

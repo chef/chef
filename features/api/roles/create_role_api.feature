@@ -35,4 +35,4 @@ Feature: Create a role via the REST API
       When I 'POST' the 'role' to the path '/roles' 
       Then the inflated responses key 'uri' should match '^http://.+/roles/role_not_exist$'
       When I 'GET' the path '/roles/role_not_exist'
-      Then the inflated response should respond to 'run_list' with 'role[not_exist]'
+      Then the stringified response should be the stringified 'role'
