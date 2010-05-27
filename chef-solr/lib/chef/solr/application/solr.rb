@@ -117,7 +117,6 @@ class Chef
         end
 
         def setup_application
-          STDERR.puts "blargh"
           # Need to redirect stdout and stderr so Java process inherits them.
           # If -L wasn't specified, Chef::Config[:log_location] will be an IO
           # object, otherwise it will be a String.
