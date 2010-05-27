@@ -216,8 +216,13 @@ describe Chef::ShellOut do
       cmd.stderr.should == ''
     end
 
-    # segfaults this version of ruby :(
-    unless (RUBY_VERSION == '1.8.7') && (RUBY_PATCHLEVEL <= 173)
+    def self.bad_ruby?
+      return true if (RUBY_VERSION == '1.8.7') && (RUBY_PATCHLEVEL <= 173)
+      return true if (RUBY_VERSION == '1.8.6') && (RUBY_PATCHLEVEL <= 398) # I know 399 works...
+    end
+
+    # segfaults these versions of ruby :(
+    unless bad_ruby?
       it "doesn't hang or lose output when a process closes one of stdout/stderr and continues writing to the other" do
         halfandhalf = %q{ruby -e 'STDOUT.close;sleep 0.5;STDERR.puts :win'}
         cmd = Chef::ShellOut.new(halfandhalf)
