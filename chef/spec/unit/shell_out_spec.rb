@@ -224,6 +224,22 @@ describe Chef::ShellOut do
         cmd.run_command
         cmd.stderr.should == "win\n"
       end
+
+      it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
+        chatty = %q{ruby -e "puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000"}
+        cmd = Chef::ShellOut.new(chatty)
+        cmd.run_command
+        cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
+        cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
+      end
+
+      it "does not deadlock when the subprocess writes lots of data to both stdout and stderr (part2)" do
+        chatty = %q{ruby -e "STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000"}
+        cmd = Chef::ShellOut.new(chatty)
+        cmd.run_command
+        cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
+        cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
+      end
     end
     
     it "doesn't hang or lose output when a process writes, pauses, then continues writing" do
@@ -262,22 +278,6 @@ describe Chef::ShellOut do
     it "recovers the error message when exec fails" do
       cmd = Chef::ShellOut.new("fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
       lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
-    end
-    
-    it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
-      chatty = %q{ruby -e "puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000"}
-      cmd = Chef::ShellOut.new(chatty)
-      cmd.run_command
-      cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
-      cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
-    end
-
-    it "does not deadlock when the subprocess writes lots of data to both stdout and stderr (part2)" do
-      chatty = %q{ruby -e "STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000"}
-      cmd = Chef::ShellOut.new(chatty)
-      cmd.run_command
-      cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
-      cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
     end
   end
   
