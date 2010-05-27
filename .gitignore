@@ -25,3 +25,4 @@ features/data/solr/**
 erl_crash.dump
 *.rake_tasks~
 .idea
+features/data/repo/checksums/

@@ -117,6 +117,7 @@ class Chef
         end
 
         def setup_application
+          STDERR.puts "wot the fuck cunt"
           # Need to redirect stdout and stderr so Java process inherits them.
           # If -L wasn't specified, Chef::Config[:log_location] will be an IO
           # object, otherwise it will be a String.
@@ -126,7 +127,8 @@ class Chef
             @logfile = File.new(Chef::Config[:log_location], "a")
           end
 
-          Chef::Log.level = Chef::Config[:log_level]
+          #Chef::Log.level = Chef::Config[:log_level]
+          Chef::Log.level = :debug
 
           # Build up a client
           node = Chef::Node.new

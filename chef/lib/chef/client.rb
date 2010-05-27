@@ -29,6 +29,8 @@ require 'chef/file_cache'
 require 'chef/run_context'
 require 'chef/runner'
 require 'chef/cookbook/cookbook_collection'
+require 'chef/cookbook/file_vendor'
+require 'chef/cookbook/file_system_file_vendor'
 require 'ohai'
 
 class Chef

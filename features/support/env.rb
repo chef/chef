@@ -20,6 +20,10 @@ require 'rubygems'
 require 'spec/expectations'
 
 CHEF_PROJECT_ROOT = File.expand_path(File.dirname(__FILE__) + '/../../')
+KNIFE_CONFIG = CHEF_PROJECT_ROOT + '/features/data/config/knife.rb'
+KNIFE_CMD = File.expand_path(File.join(CHEF_PROJECT_ROOT, "chef", "bin", "knife"))
+INTEGRATION_COOKBOOKS = File.join(CHEF_PROJECT_ROOT, "features", "data", "cookbooks")
+
 $:.unshift(CHEF_PROJECT_ROOT + '/chef/lib')
 $:.unshift(CHEF_PROJECT_ROOT + '/chef-server-api/lib')
 $:.unshift(CHEF_PROJECT_ROOT + '/chef-server-webui/lib')
@@ -35,9 +39,12 @@ require 'chef/checksum'
 require 'chef/sandbox'
 require 'chef/solr'
 require 'chef/certificate'
+require 'chef/mixin/shell_out'
 require 'tmpdir'
 require 'chef/streaming_cookbook_uploader'
 require 'webrick'
+
+include Chef::Mixin::ShellOut
 
 ENV['LOG_LEVEL'] ||= 'error'
 
@@ -83,9 +90,9 @@ def create_databases
   system("cp #{File.join(Dir.tmpdir, "chef_integration", "validation.pem")} #{Dir.tmpdir}")
   system("cp #{File.join(Dir.tmpdir, "chef_integration", "webui.pem")} #{Dir.tmpdir}")
 
-  cmd = [File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "knife"), "cookbook", "upload", "-a", "-o", File.join(File.dirname(__FILE__), "..", "data", "cookbooks"), "-u", "validator", "-k", File.join(Dir.tmpdir, "validation.pem")]
+  cmd = [KNIFE_CMD, "cookbook", "upload", "-a", "-o", INTEGRATION_COOKBOOKS, "-u", "validator", "-k", File.join(Dir.tmpdir, "validation.pem"), "-c", KNIFE_CONFIG]
   Chef::Log.info("Uploading fixture cookbooks with #{cmd.join(' ')}")
-  system(*cmd)
+  shell_out!(*cmd)
 end
 
 def prepare_replicas
