@@ -309,8 +309,7 @@ class Chef
                   end
     end
 
-    # Compiles the full list of recipes for the server and passes it to an instance of
-    # Chef::Runner.converge.
+    # Converges the node.
     #
     # === Returns
     # true:: Always returns true
