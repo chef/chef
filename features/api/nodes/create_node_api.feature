@@ -30,4 +30,3 @@ Feature: Create a node via the REST API
      Then the inflated responses key 'uri' should match '^http://.+/nodes/role_not_exist$'
      When I 'GET' the path '/nodes/role_not_exist'
      Then the stringified response should be the stringified 'node'
-
