@@ -67,21 +67,13 @@ describe "Chef::Cookbook manifest" do
        
        {
          :name => "anotherfile1.rb",
-<<<<<<< HEAD
          :path => "files/ubuntu-9.10/adirectory/anotherfile1.rb.platform-version",
-=======
-         :path => "files/ubuntu-9.10/adirectory/anotherfile1.rb",
->>>>>>> implemented Cookbook.preferred_manifest_records_for_directory, used for remote_directory/cookbook_directory
          :checksum => "csum-platver-1",
          :specificity => "ubuntu-9.10"
        },
        {
          :name => "anotherfile2.rb",
-<<<<<<< HEAD
          :path => "files/ubuntu-9.10/adirectory/anotherfile2.rb.platform-version",
-=======
-         :path => "files/ubuntu-9.10/adirectory/anotherfile2.rb",
->>>>>>> implemented Cookbook.preferred_manifest_records_for_directory, used for remote_directory/cookbook_directory
          :checksum => "csum-platver-2",
          :specificity => "ubuntu-9.10"
        },

@@ -336,7 +336,46 @@ class Chef
         file_vendor.get_filename(manifest_record['path'])
       end
     end
-    
+
+
+    def relative_filenames_in_preferred_directory(node, segment, dirname)
+      preferences = preferences_for_path(node, segment, dirname)
+      filenames_by_pref = Hash.new
+      preferences.each { |pref| filenames_by_pref[pref] = Array.new }
+
+      manifest[segment].each do |manifest_record|
+        manifest_record_path = manifest_record[:path]
+
+        # find the NON SPECIFIC filenames, but prefer them by filespecificity.
+        # For example, if we have a file:
+        # 'files/default/somedir/somefile.conf' we only keep
+        # 'somedir/somefile.conf'. If there is also
+        # 'files/$hostspecific/somedir/otherfiles' that matches the requested
+        # hostname specificity, that directory will win, as it is more specific.
+        #
+        # This is clearly ugly b/c the use case is for remote directory, where
+        # we're just going to make cookbook_files out of these and make the
+        # cookbook find them by filespecificity again. but it's the shortest
+        # path to "success" for now.
+        if manifest_record_path =~ /(#{segment}\/[^\/]+\/#{dirname})\/.+$/
+          specificity_dirname = $1
+          non_specific_path = manifest_record_path[/#{segment}\/[^\/]+\/#{dirname}\/(.+)$/, 1]
+          # Record the specificity_dirname only if it's in the list of
+          # valid preferences
+          if filenames_by_pref[specificity_dirname]
+            filenames_by_pref[specificity_dirname] << non_specific_path
+          end
+        end
+      end
+
+      best_pref = preferences.find { |pref| !filenames_by_pref[pref].empty? }
+
+      raise Chef::Exceptions::FileNotFound, "cookbook #{name} has no directory #{segment}/#{dirname}" unless best_pref
+
+      filenames_by_pref[best_pref]
+
+    end
+
     # Determine the manifest records from the most specific directory
     # for the given node. See #preferred_manifest_record for a
     # description of entries of the returned Array.
