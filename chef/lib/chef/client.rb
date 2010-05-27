@@ -49,11 +49,6 @@ class Chef
       Chef::Log.verbose = Chef::Config[:verbose_logging]
       Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger
       @ohai_has_run = false
-
-      run_ohai
-      determine_node_name
-      register unless Chef::Config[:solo]
-      build_node
     end
     
     # Do a full run for this Chef::Client.  Calls:
@@ -69,6 +64,12 @@ class Chef
     def run
       self.runner = nil
       run_context = nil
+
+      run_ohai
+      determine_node_name
+      register unless Chef::Config[:solo]
+      build_node
+      
       begin
         start_time = Time.now
         Chef::Log.info("Starting Chef Run")
@@ -154,7 +155,6 @@ class Chef
       node_name
     end
     
-
     # Builds a new node object for this client.  Starts with querying for the FQDN of the current
     # host (unless it is supplied), then merges in the facts from Ohai.
     #
@@ -176,7 +176,7 @@ class Chef
         self.node = Chef::Node.new
         node.name(node_name)
       end
-      
+
       node.consume_attributes(json_attribs)
     
       node.automatic_attrs = ohai.data

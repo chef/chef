@@ -3,7 +3,7 @@ When /^I run chef-solo with the '(.+)' recipe$/ do |recipe_name|
   # Set up the JSON file with the recipe we want to run.
   dna_file = "#{tmpdir}/chef-solo-features-dna.json"
   File.open(dna_file, "w") do |fp|
-    fp.write("{ \"recipes\": [\"#{recipe_name}\"] }")
+    fp.write("{ \"run_list\": [\"#{recipe_name}\"] }")
   end
 
   cleanup_files << "#{tmpdir}/chef-solo-features-dna.json"
