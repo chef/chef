@@ -61,6 +61,10 @@ Then /^the inflated responses key '(.+)' should exist$/ do |key|
   self.inflated_response.has_key?(key).should == true 
 end
 
+Then /^the inflated responses key '(.+)'.to_s should be '(.+)'$/ do |key, expected_value|
+  self.inflated_response[key].to_s.should == expected_value
+end
+
 Then /^the inflated response should be an empty array$/ do
   self.inflated_response.should == []
 end
