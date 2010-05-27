@@ -14,14 +14,17 @@
 # limitations under the License.
 #
 
-%w{chef chef-server chef-server-slice chef-solr}.each do |inc_dir|
-  $: << File.join(File.dirname(__FILE__), '..', '..', inc_dir, 'lib')
-end
-
 Thread.abort_on_exception = true
 
 require 'rubygems'
 require 'spec/expectations'
+
+CHEF_PROJECT_ROOT = File.expand_path(File.dirname(__FILE__) + '/../../')
+$:.unshift(CHEF_PROJECT_ROOT + '/chef/lib')
+$:.unshift(CHEF_PROJECT_ROOT + '/chef-server-api/lib')
+$:.unshift(CHEF_PROJECT_ROOT + '/chef-server-webui/lib')
+$:.unshift(CHEF_PROJECT_ROOT + '/chef-solr/lib')
+
 require 'chef'
 require 'chef/config'
 require 'chef/client'
