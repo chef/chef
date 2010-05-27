@@ -107,7 +107,7 @@ class Application < Merb::Controller
       included_cookbooks
     end
   end
-  
+
   # Accumulates transitive cookbook dependencies no more than once in included_cookbooks
   #   included_cookbooks == hash of name -> Cookbook, which is used for returning result
   #                         as well as for tracking which cookbooks we've already recursed
@@ -116,42 +116,36 @@ class Application < Merb::Controller
   #   run_list_items   == name of cookbook to include
   def expand_cookbook_deps(included_cookbooks, all_cookbooks, run_list_item)
     # determine the run list item's parent cookbook, which might be run_list_item in the default case
-    cookbook_name = (run_list_item =~ /^(.+)::/ ? $1 : run_list_item)
+    cookbook_name = (run_list_item[/^(.+)::/, 1] || run_list_item.to_s)
     Chef::Log.debug("Node requires #{cookbook_name}")
 
     # include its dependencies
     included_cookbooks[cookbook_name] = all_cookbooks[cookbook_name]
-    puts ({:all_cookbooks_keys => all_cookbooks.keys}).inspect
-    puts "cookbook_name = #{cookbook_name}"
     if !all_cookbooks[cookbook_name]
       Chef::Log.warn "#{__FILE__}:#{__LINE__}: in expand_cookbook_deps, cookbook/role #{cookbook_name} could not be found, ignoring it in cookbook expansion"
       return included_cookbooks
     end
     
-    all_cookbooks[cookbook_name].metadata.dependencies.each do |depname, dep|
-      # recursively expand dependencies into included_cookbooks unless we've already done it
-      expand_cookbook_deps(included_cookbooks, all_cookbooks, dep) unless included_cookbooks[dep]
+    # TODO: 5/27/2010 cw: implement dep_version_constraints according to
+    # http://wiki.opscode.com/display/chef/Metadata#Metadata-depends,
+    all_cookbooks[cookbook_name].metadata.dependencies.each do |depname, dep_version_constraints|
+      # recursively expand dependencies into included_cookbooks unless
+      # we've already done it
+      expand_cookbook_deps(included_cookbooks, all_cookbooks, depname) unless included_cookbooks[depname]
     end
   end
   
   def load_all_files(node_name)
-    puts "load_all_files -- node_name #{node_name}"
     all_cookbooks = Chef::Cookbook.cdb_list(true).inject({}) {|hsh,record| hsh[record.name] = record ; hsh}
-    puts "load_all_files: all_cookbooks.keys = #{all_cookbooks.keys.inspect}"
     
     included_cookbooks = cookbooks_for_node(node_name, all_cookbooks)
-    puts "included_cookbooks = #{included_cookbooks.inspect}"
     nodes_cookbooks = Hash.new
     included_cookbooks.each do |cookbook_name, cookbook|
-      puts "** cookbook_name = #{cookbook_name}"
-      puts "** node_name = #{node_name}"
-
       next unless cookbook
 
       nodes_cookbooks[cookbook_name.to_s] = cookbook.generate_manifest_with_urls{|opts| absolute_url(:cookbook_file, opts) }
     end
 
-    puts "** nodes_cookbooks = #{nodes_cookbooks.inspect}"
     nodes_cookbooks
   end
 
