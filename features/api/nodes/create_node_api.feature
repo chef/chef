@@ -29,5 +29,5 @@ Feature: Create a node via the REST API
      When I 'POST' the 'node' to the path '/nodes' 
      Then the inflated responses key 'uri' should match '^http://.+/nodes/role_not_exist$'
      When I 'GET' the path '/nodes/role_not_exist'
-     Then the inflated response should respond to 'run_list' with 'role[not_exist]'
+     Then the inflated responses key 'run_list'.to_s should be 'role[not_exist]'
 
