@@ -37,14 +37,18 @@ Given /^a local cookbook named '(.+)'$/ do |cb|
   cleanup_dirs << "#{tmpdir}/cookbooks_dir"
 end
 
+Given "I upload the cookbook" do
+  cookbook_name, recipe_name = recipe.split('::')
+  shell_out!("#{KNIFE_CMD} cookbook upload -c #{KNIFE_CONFIG} -a -o #{INTEGRATION_COOKBOOKS}")
+end
+
 When /^I run the task to generate cookbook metadata for '(.+)'$/ do |cb|
   self.cookbook = cb
   When('I run the task to generate cookbook metadata')
 end
 
 When /^I run the task to generate cookbook metadata$/ do
-  knife_cmd = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "knife"))
-  to_run = "#{knife_cmd} cookbook metadata"
+  to_run = "#{KNIFE_CMD} cookbook metadata"
   if cookbook
     to_run += " #{cookbook}" 
   else
