@@ -1,3 +1,4 @@
+// Javascript generated and modified from the tool on http://www.echoecho.com/tooldropdown.htm
 function land(ref, target)
 {
 lowtarget=target.toLowerCase();
