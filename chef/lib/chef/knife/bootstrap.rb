@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,12 +26,6 @@ class Chef
 
       banner "Sub-Command: knife bootstrap FQDN [RUN LIST...] (options)"
 
-      option :concurrency,
-        :short => "-C NUM",
-        :long => "--concurrency NUM",
-        :description => "The number of concurrent connections",
-        :default => nil 
-
       option :ssh_user,
         :short => "-x USERNAME",
         :long => "--ssh-user USERNAME",
@@ -42,6 +36,12 @@ class Chef
         :short => "-P PASSWORD",
         :long => "--ssh-password PASSWORD",
         :description => "The ssh password"
+
+      option :chef_node_name,
+        :short => "-N NAME",
+        :long => "--node-name NAME",
+        :description => "The Chef node name for your new node"
+
 
       def h
         @highline ||= HighLine.new
@@ -86,6 +86,7 @@ log_level        :info
 log_location     STDOUT
 chef_server_url  "#{Chef::Config[:chef_server_url]}" 
 validation_client_name "#{Chef::Config[:validation_client_name]}"
+#{config[:chef_node_name] == nil ? "# Using default node name" : "node_name \"#{config[:chef_node_name]}\""} 
 EOP
 ) > /etc/chef/client.rb
 
@@ -122,5 +123,4 @@ EOH
     end
   end
 end
-
 

@@ -34,8 +34,7 @@ class Chef
       option :image,
         :short => "-i IMAGE",
         :long => "--image IMAGE",
-        :description => "The AMI for the server",
-        :default => "ami-17f51c7e"
+        :description => "The AMI for the server"
 
       option :security_groups,
         :short => "-G X,Y,Z",
@@ -55,6 +54,12 @@ class Chef
         :long => "--ssh-key KEY",
         :description => "The SSH root key",
         :proc => Proc.new { |key| Chef::Config[:knife][:aws_ssh_key_id] = key }
+
+      option :ssh_user,
+        :short => "-x USERNAME",
+        :long => "--ssh-user USERNAME",
+        :description => "The ssh username",
+        :default => "root" 
 
       option :aws_access_key_id,
         :short => "-A ID",
@@ -90,12 +95,6 @@ class Chef
           :groups => config[:security_groups],
           :flavor_id => config[:flavor],
           :key_name => Chef::Config[:knife][:aws_ssh_key_id],
-          :user_data => {
-            "chef_server" => Chef::Config[:chef_server_url],
-            "validation_client_name" => Chef::Config[:validation_client_name],
-            "validation_key" => IO.read(Chef::Config[:validation_key]),
-            "attributes" => { "run_list" => @name_args } 
-          }.to_json,
           :availability_zone => config[:availability_zone]
         )
 
@@ -118,10 +117,30 @@ class Chef
         puts "#{h.color("Private DNS Name", :cyan)}: #{server.private_dns_name}"
         puts "#{h.color("Private IP Address", :cyan)}: #{server.private_ip_address}"
 
+        puts "\nWaiting 15 seconds for SSH...\n"
+
+        sleep 15
+
+        bootstrap = Chef::Knife::Bootstrap.new
+        bootstrap.name_args = [ server.ip_address, @name_args ].flatten
+        bootstrap.config[:ssh_user] = config[:ssh_user] 
+        bootstrap.config[:chef_node_name] = server.id
+        bootstrap.run
+
+        puts "\n"
+        puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
+        puts "#{h.color("Flavor", :cyan)}: #{server.flavor_id}"
+        puts "#{h.color("Image", :cyan)}: #{server.image_id}"
+        puts "#{h.color("Availability Zone", :cyan)}: #{server.availability_zone}"
+        puts "#{h.color("Security Groups", :cyan)}: #{server.groups.join(", ")}"
+        puts "#{h.color("SSH Key", :cyan)}: #{server.key_name}"
+        puts "#{h.color("Public DNS Name", :cyan)}: #{server.dns_name}"
+        puts "#{h.color("Public IP Address", :cyan)}: #{server.ip_address}"
+        puts "#{h.color("Private DNS Name", :cyan)}: #{server.private_dns_name}"
+        puts "#{h.color("Private IP Address", :cyan)}: #{server.private_ip_address}"
+        puts "#{h.color("Run List", :cyan)}: #{@name_args.join(', ')}"
       end
     end
   end
 end
-
-
 
