@@ -125,6 +125,7 @@ module Shef
     def rebuild_node
       Chef::Config[:solo] = true
       @client = Chef::Client.new
+      @client.run_ohai
       @client.determine_node_name
       @client.build_node #(@client.node_name, true)
     end
@@ -147,6 +148,7 @@ module Shef
       # Tell the client we're chef solo so it won't try to contact the server
       Chef::Config[:solo] = true
       @client = Chef::Client.new
+      @client.run_ohai
       @client.determine_node_name
       @client.build_node #(@client.node_name, true)
     end
@@ -165,6 +167,7 @@ module Shef
       # Make sure the client knows this is not chef solo
       Chef::Config[:solo] = false
       @client = Chef::Client.new
+      @client.run_ohai
       @client.determine_node_name
       @client.register
       @client.build_node #(@client.node_name, false)
