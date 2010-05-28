@@ -508,7 +508,7 @@ class Chef
     # Couchdb
     ##
     
-    def self.cdb_by_version(cookbook_name=nil, couchdb=nil)
+    def self.cdb_by_name(cookbook_name=nil, couchdb=nil)
       cdb = couchdb || Chef::CouchDB.new
       options = cookbook_name ? { :startkey => cookbook_name, :endkey => cookbook_name } : {}
       rs = cdb.get_view("cookbooks", "all_with_version", options)

@@ -1,204 +1,215 @@
-@api @cookbooks @tarballs
-@manage_cookbook_tarballs
+@api @cookbooks
+@manage_cookbook
 
-Feature: CRUD cookbook tarballs
+# TODO: timh, 5-27-2010: It'd be nice if we could get the following kind of
+# error checking, but it's not available when using Chef::REST
+#   And the inflated responses key 'error' should include 'missing required parameter: name'
+
+Feature: CRUD cookbooks
   In order to manage cookbook data
   As a Developer
-  I want to create, read, update, and delete cookbook tarballs
+  I want to create, read, update, and delete cookbook files and manifests
 
-  # Creating a cookbook -- negative
-@create_cookbook_negative
-  Scenario: Should not be able to create a cookbook without a name parameter
+  @create_cookbook_negative
+
+  Scenario: Should not be able to create a cookbook with the wrong name
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'   
-     When I create a cookbook with 'original cookbook tarball'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'missing required parameter: name'
+     When I create a versioned cookbook named 'foo' versioned '1.0.0' with 'testcookbook_valid'
+     Then I should get a '400 "Bad Request"' exception
 
-  Scenario: Should not be able to create a cookbook with a blank name parameter
+  Scenario: Should not be able to create a cookbook with the wrong version
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-     When I create a cookbook named '' with 'original cookbook tarball'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'invalid parameter: name'
+     When I create a versioned cookbook named 'testcookbook_valid' versioned '9.9.9' with 'testcookbook_valid'
+     Then I should get a '400 "Bad Request"' exception
 
-  Scenario: Should not be able to create a cookbook with invalid characters in the name parameter
+  Scenario: Should not be able to create a cookbook with missing name
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-     When I create a cookbook named 'a+b' with 'original cookbook tarball'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'invalid parameter: name'
+     When I create a versioned cookbook named '' versioned '9.9.9' with 'testcookbook_valid'
+     Then I should get a '404 "Not Found"' exception
 
-  Scenario: Should not be able to create a cookbook with a name that already exists
+  Scenario: Should not be able to create a cookbook with missing name and version
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-      And a 'file' named 'new cookbook tarball'
-      And a cookbook named 'test_cookbook' is created with 'original cookbook tarball'
-     When I create a cookbook named 'test_cookbook' with 'new cookbook tarball'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'cookbook already exists'
+     When I create a versioned cookbook named '' versioned '' with 'testcookbook_valid'
+     Then I should get a '404 "Not Found"' exception
 
-  Scenario: Should not be able to create a cookbook without a file parameter
+  Scenario: Should not be able to create a cookbook with non-X.Y.Z version
     Given a 'registration' named 'bobo' exists
-      And a 'hash' named 'nothing'
-     When I create a cookbook named 'test_cookbook' with 'nothing'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'missing required parameter: file'
+     When I create a versioned cookbook named 'testcookbook_valid' versioned '1.0' with 'testcookbook_valid'
+     Then I should get a '404 "Not Found"' exception
 
-@manage_cookbook_tarballs_blank_file
-  Scenario: Should not be able to create a cookbook with a blank file parameter
+  Scenario: Should not be able to create a cookbook if none of its contained files have been uploaded
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'blank file parameter'
-     When I create a cookbook named 'test_cookbook' with 'blank file parameter'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'invalid parameter: file must be a File'
+     When I create a versioned cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+     Then I should get a '400 "Bad Request"' exception
 
-@manage_cookbook_tarballs_string_file
-  Scenario: Should not be able to create a cookbook with a string file parameter
+  @create_cookbook_positive
+  Scenario: Should be able to create a cookbook if its files have been uploaded
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'string file parameter'
-     When I create a cookbook named 'test_cookbook' with 'string file parameter'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'invalid parameter: file must be a File'
-
-  Scenario: Should not be able to create a cookbook with an invalid tarball
+     When I create a sandbox named 'sandbox1' for cookbook 'testcookbook_valid'
+     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
+     Then I upload a file named 'metadata.json' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'metadata.rb' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'attributes/attributes.rb' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'recipes/default.rb' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     When I commit the sandbox
+     Then I should not get an exception
+     When I create a versioned cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+     Then I should not get an exception
+     
+  @create_cookbook_positive
+  Scenario: Cookbook successfully uploaded via sandbox should later be visible via /cookbooks, including its versions and metadata
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'not a tarball'
-     When I create a cookbook named 'test_cookbook' with 'not a tarball'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'invalid tarball'
-
-  Scenario: Should not be able to create a cookbook with a tarball that does not contain a directory in the base with the same name as the cookbook
-    Given a 'registration' named 'bobo' exists
-      And a 'file' named 'empty tarball'
-     When I create a cookbook named 'test_cookbook' with 'empty tarball'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'invalid tarball'
-
-  # Creating a cookbook -- positive
-
-@create_cookbook_positive
-  Scenario: Create a cookbook and verify that it is in proceeding cookbooks listings
-    Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-     When I create a cookbook named 'test_cookbook' with 'original cookbook tarball'
-     Then the response code should be '201'
-      And the 'Location' header should match 'http://[^/]+/cookbooks/test_cookbook'
-      And the inflated responses key 'uri' should match 'http://[^/]+/cookbooks/test_cookbook'
+     When I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
      When I 'GET' the path '/cookbooks'
-     Then the inflated responses key 'test_cookbook' should exist
+     Then the inflated responses key 'testcookbook_valid' should exist
+     When I 'GET' the path '/cookbooks/testcookbook_valid'
+     Then the inflated responses key 'testcookbook_valid' should exist
+     Then the inflated responses key 'testcookbook_valid' item '0' should be '0.1.0'
+     When I 'GET' the path '/cookbooks/testcookbook_valid/0.1.0'
+     Then the inflated response should match '.*default.rb.*' as json
+
+  # The sandbox is created missing 'metadata.json'. However, the cookbook's
+  # manifest includes that file. We don't upload the file to the sandbox, but
+  # the sandbox commits ok cuz it wasn't expecting that file. However, when we
+  # try to create the cookbook, it should complain as its manifest wants that
+  # file.
+  @create_cookbook_negative
+  Scenario: Should not be able to create a cookbook if it is missing one file
+    Given a 'registration' named 'bobo' exists
+     When I create a sandbox named 'sandbox1' for cookbook 'testcookbook_valid' minus files 'metadata.rb'
+     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
+     Then I upload a file named 'metadata.json' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'attributes/attributes.rb' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'recipes/default.rb' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     When I commit the sandbox
+     Then I should not get an exception
+     When I create a versioned cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+     Then I should get a '400 "Bad Request"' exception
+  
+  @create_cookbook_negative
+  Scenario: Should not be able to create a cookbook if it has no metadata file
+    Given a 'registration' named 'bobo' exists
+     When I create a sandbox named 'sandbox1' for cookbook 'testcookbook_invalid_nometadata'
+     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
+     Then I upload a file named 'attributes/attributes.rb' from cookbook 'testcookbook_invalid_nometadata' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'recipes/default.rb' from cookbook 'testcookbook_invalid_nometadata' to the sandbox
+     Then the response code should be '200'
+     When I commit the sandbox
+     Then I should not get an exception
+     When I create a versioned cookbook named 'testcookbook_invalid_nometadata' versioned '0.1.0' with 'testcookbook_invalid_nometadata'
+     Then I should get a '400 "Bad Request"' exception
+    
+  #  update a cookbook with no files should fail
+  @create_cookbook_negative
+  Scenario: Should not be able to create a cookbook if it has no files and just metadata
+    Given a 'registration' named 'bobo' exists
+     When I create a sandbox named 'sandbox1' for cookbook 'testcookbook_invalid_empty_except_metadata'
+     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
+     Then I upload a file named 'metadata.json' from cookbook 'testcookbook_invalid_empty_except_metadata' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'metadata.rb' from cookbook 'testcookbook_invalid_empty_except_metadata' to the sandbox
+     Then the response code should be '200'
+     When I commit the sandbox
+     Then I should not get an exception
+     When I create a versioned cookbook named 'testcookbook_invalid_empty_except_metadata' versioned '0.1.0' with 'testcookbook_invalid_empty'
+     Then I should get a '400 "Bad Request"' exception
 
   # Downloading a cookbook -- negative
 
-  Scenario: Downloading a non-existent cookbook should fail
+  @download_cookbook_negative
+  Scenario: Listing versions for a non-existent cookbook should fail
     Given a 'registration' named 'bobo' exists
-     When I download the 'non_existent' cookbook
+    When I 'GET' the path '/cookbooks/non_existent'
+    Then I should get a '404 "Not Found"' exception
+     
+  @download_cookbook_negative
+  Scenario: Retrieving a non-existent version for an existing cookbook should fail
+    Given a 'registration' named 'bobo' exists
+     Then I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+     When I download the cookbook manifest for 'testcookbook_valid' version '9.9.9'
      Then I should get a '404 "Not Found"' exception
-
+  
   # Downloading a cookbook -- positive
-
+  @download_cookbook_positive
   Scenario: After a cookbook is uploaded, it should be downloadable
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-      And a cookbook named 'test_cookbook' is created with 'original cookbook tarball'
-     When I download the 'test_cookbook' cookbook
-     Then the response should be a valid tarball
-      And the untarred response should include file 'test_cookbook/original'
+     Then I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+     When I download the cookbook manifest for 'testcookbook_valid' version '0.1.0'
+     Then the downloaded cookbook manifest contents should match 'testcookbook_valid'
 
-  Scenario: Should be able to download a tarball for a cookbook that was placed on the file system (not uploaded through the API)
+  Scenario: After a cookbook is uploaded, its contents should be downloadable
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-     And a cookbook named 'test_cookbook' is created with 'original cookbook tarball'
-     And I delete the cached tarball for 'test_cookbook'
-     When I download the 'test_cookbook' cookbook
-     Then the response should be a valid tarball
-      And the untarred response should include file 'test_cookbook/original'
+     Then I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+     When I download the cookbook manifest for 'testcookbook_valid' version '0.1.0'
+     When I download the file 'metadata.json' from the downloaded cookbook manifest
+     Then I should not get an exception
+     When I download the file 'recipes/default.rb' from the downloaded cookbook manifest
+     Then I should not get an exception
 
-  # Updating a cookbook -- negative
-
-  Scenario: Updating a non-existent cookbook should fail
+  @download_cookbook_positive
+  Scenario: After uploading two versions of a cookbook, I should be able to retrieve files from either version
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-     When I upload 'original cookbook tarball' to cookbook 'test_cookbook'
-     Then the response code should be '404'
+     When I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+      And I fully upload a sandboxed cookbook force-named 'testcookbook_valid' versioned '0.2.0' with 'testcookbook_valid_v0.2.0'
+     When I download the cookbook manifest for 'testcookbook_valid' version '0.1.0'
+     Then I should not get an exception
+     When I download the file 'recipes/default.rb' from the downloaded cookbook manifest
+     Then the downloaded cookbook file contents should match the pattern '.*0.1.0.*'
+     When I download the cookbook manifest for 'testcookbook_valid' version '0.2.0'
+     Then I should not get an exception
+     When I download the file 'recipes/default.rb' from the downloaded cookbook manifest
+     Then the downloaded cookbook file contents should match the pattern '.*0.2.0.*'
 
-  Scenario: Should not be able to update a cookbook without a file parameter
+  @delete_cookbook_positive @delete_cookbook_version_positive
+  Scenario: After uploading two versions of a cookbook, then deleting the second, I should not be able to interact with the second but should be able to interact with the first
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-      And a 'hash' named 'nothing'
-      And a cookbook named 'test_cookbook' is created with 'original cookbook tarball'
-     When I upload 'nothing' to cookbook 'test_cookbook'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'missing required parameter: file'
+     When I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+      And I fully upload a sandboxed cookbook force-named 'testcookbook_valid' versioned '0.2.0' with 'testcookbook_valid_v0.2.0'
+     When I 'GET' to the path '/cookbooks/testcookbook_valid/0.2.0'
+     Then I should not get an exception
+     When I 'DELETE' to the path '/cookbooks/testcookbook_valid/0.2.0'
+     When I 'GET' to the path '/cookbooks/testcookbook_valid'
+     Then the inflated responses key 'testcookbook_valid' should exist
+     Then the inflated responses key 'testcookbook_valid' should be '1' items long
+     Then the inflated responses key 'testcookbook_valid' item '0' should be '0.1.0'
+     When I 'GET' to the path '/cookbooks/testcookbook_valid/0.2.0'
+     Then I should get a '404 "Not Found"' exception
+     When I download the cookbook manifest for 'testcookbook_valid' version '0.1.0'
+     Then I should not get an exception
+     When I download the file 'recipes/default.rb' from the downloaded cookbook manifest
+     Then the downloaded cookbook file contents should match the pattern '.*0.1.0.*'
 
-  Scenario: Should not be able to update a cookbook with a blank file parameter
+  @delete_cookbook_negative @delete_cookbook_version_negative
+  Scenario: I should not be able to delete a cookbook version that does not exist
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-      And a 'file' named 'blank file parameter'
-      And a cookbook named 'test_cookbook' is created with 'original cookbook tarball'
-     When I upload 'blank file parameter' to cookbook 'test_cookbook'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'invalid parameter: file must be a File'
-
-  Scenario: Should not be able to update a cookbook with a string file parameter
-    Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-      And a 'file' named 'string file parameter'
-      And a cookbook named 'test_cookbook' is created with 'original cookbook tarball'
-     When I upload 'string file parameter' to cookbook 'test_cookbook'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'invalid parameter: file must be a File'
-
-  Scenario: Should not be able to update a cookbook with an invalid tarball
-    Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-      And a 'file' named 'not a tarball'
-      And a cookbook named 'test_cookbook' is created with 'original cookbook tarball'
-     When I upload 'not a tarball' to cookbook 'test_cookbook'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'invalid tarball'
-
-  Scenario: Should not be able to update a cookbook with a tarball that does not contain a directory in the base with the same name as the cookbook
-    Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-      And a 'file' named 'empty tarball'
-      And a cookbook named 'test_cookbook' is created with 'original cookbook tarball'
-     When I upload 'empty tarball' to cookbook 'test_cookbook'
-     Then the response code should be '400'
-      And the inflated responses key 'error' should include 'invalid tarball'
-
-  # Updating a cookbook -- positive
-
-  Scenario: Should be able to update a cookbook and download the latest version afterwards
-    Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-      And a 'file' named 'new cookbook tarball'
-      And a cookbook named 'test_cookbook' is created with 'original cookbook tarball'
-     When I upload 'new cookbook tarball' to cookbook 'test_cookbook'
-     Then the response code should be '200'
-     When I download the 'test_cookbook' cookbook
-      And the response should be a valid tarball
-      And the untarred response should include file 'test_cookbook/new'
-
-  # Deleting a cookbook -- negative
-
-  Scenario: Deleting a non-existent cookbook should fail
-    Given a 'registration' named 'bobo' exists
-     When I delete cookbook 'non_existent'
+     When I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+      And I fully upload a sandboxed cookbook force-named 'testcookbook_valid' versioned '0.2.0' with 'testcookbook_valid_v0.2.0'
+     When I 'DELETE' to the path '/cookbooks/testcookbook_valid/0.3.0'
      Then I should get a '404 "Not Found"' exception
 
-  # Deleting a cookbook -- positive
-
-  Scenario: Should be able to delete a cookbook and should be able to create a cookbook with the same name afterwards
+  # Currently you cannot delete a cookbook by, e.g., DELETE /cookbooks/foo.
+  # You delete all of its versions and then it disappears.     
+  @delete_cookbook_positive
+  Scenario: I should be able to delete a cookbook by deleting all of its versions
     Given a 'registration' named 'bobo' exists
-      And a 'file' named 'original cookbook tarball'
-      And a 'file' named 'new cookbook tarball'
-      And a cookbook named 'test_cookbook' is created with 'original cookbook tarball'
-     When I delete cookbook 'test_cookbook'
-     When I download the 'test_cookbook' cookbook
+     When I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+     When I 'DELETE' to the path '/cookbooks/testcookbook_valid/0.1.0'
+     Then I should not get an exception
+     When I 'GET' the path '/cookbooks'
+     Then the inflated responses key 'testcookbook_valid' should not exist
+     When I 'GET' the path '/cookbooks/testcookbook_valid'
      Then I should get a '404 "Not Found"' exception
-     When I create a cookbook named 'test_cookbook' with 'new cookbook tarball'
-     Then the response code should be '201'
-     When I download the 'test_cookbook' cookbook
-      And the response should be a valid tarball
-      And the untarred response should include file 'test_cookbook/new'
+     
+  @delete_cookbook_negative
+  Scenario: I should not be able to delete a cookbook that doesn't exist'
+    Given a 'registration' named 'bobo' exists
+     When I 'DELETE' to the path '/cookbooks/testcookbook_nonexistent'
+     Then I should get a '404 "Not Found"' exception

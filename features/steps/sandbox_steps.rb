@@ -1,4 +1,23 @@
-When /^I create a sandbox named '(.+)'$/ do |sandbox_name|
+# Upload the given file to the sandbox which was created by 'when I create a
+# sandbox named'
+def upload_to_sandbox(sandbox_filename)
+  sandbox_file_checksum = Chef::Cookbook.checksum_cookbook_file(sandbox_filename)
+
+  url = "#{self.sandbox_url}/#{sandbox_file_checksum}"
+  File.open(sandbox_filename, "r") do |sandbox_file|
+    payload = {
+      :name => sandbox_filename,
+      :file => sandbox_file,
+    }
+    
+    self.exception = nil
+    self.response = Chef::StreamingCookbookUploader.put(url, rest.client_name, rest.signing_key_filename, payload)
+    self.inflated_response = JSON.parse(self.response.to_s)
+  end
+end
+  
+
+When /^I create a sandbox named '([^\']+)'$/ do |sandbox_name|
   begin
     sandbox = get_fixture('sandbox', sandbox_name)
     raise "no such sandbox in fixtures: #{sandbox_name}" unless sandbox
@@ -36,21 +55,12 @@ end
 Then /^I upload a file named '([^\']+)' to the sandbox$/ do |stash_sandbox_filename|
   begin
     sandbox = @stash['sandbox']
+    raise "no sandbox defined, have you called 'When I create a sandbox'" unless sandbox
+    
     sandbox_filename = get_fixture('sandbox_file', stash_sandbox_filename)
     raise "no such stash_sandbox_filename in fixtures: #{stash_sandbox_filename}" unless sandbox_filename
     
-    sandbox_file_checksum = Chef::Cookbook.checksum_cookbook_file(sandbox_filename)
-
-    url = "#{self.sandbox_url}/#{sandbox_file_checksum}"
-    File.open(sandbox_filename, "r") do |sandbox_file|
-      payload = {
-        :name => sandbox_filename,
-        :file => sandbox_file,
-      }
-      self.exception = nil
-      self.response = Chef::StreamingCookbookUploader.put(url, rest.client_name, rest.signing_key_filename, payload)
-      self.inflated_response = JSON.parse(self.response.to_s)
-    end
+    upload_to_sandbox(sandbox_filename)
   rescue
     Chef::Log.debug("Caught exception in sandbox checksum upload (PUT) request: #{$!.message}: #{$!.backtrace.join("\n")}")
     self.exception = $!

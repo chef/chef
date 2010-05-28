@@ -19,7 +19,7 @@ require 'chef/log'
 require 'uuidtools'
 
 
-# Checksum for an individual file; e.g., used for sandbox/cookbook uplaoding
+# Checksum for an individual file; e.g., used for sandbox/cookbook uploading
 # to track which files the system already manages.
 class Chef
   class Checksum
@@ -56,7 +56,10 @@ class Chef
         :checksum => checksum,
         :create_time => create_time,
         :json_class => self.class.name,
-        :chef_type => 'checksum'
+        :chef_type => 'checksum',
+
+        # For Chef::CouchDB (id_to_name, name_to_id)
+        :name => checksum
       }
       result.to_json(*a)
     end

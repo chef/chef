@@ -41,6 +41,10 @@ Then /^the inflated responses key '(.+)' should match '(.+)' as json$/ do |key, 
   self.inflated_response[key].to_json.should =~ /#{regex}/m
 end
 
+Then /^the inflated responses key '(.+)' item '(\d+)' should be '(.+)'$/ do |key, index, to_equal|
+  inflated_response[key][index.to_i].should == to_equal
+end
+
 Then /^the inflated responses key '(.+)' item '(\d+)' should be a kind of '(.+)'$/ do |key, index, constant|
   inflated_response[key][index.to_i].should be_a_kind_of(eval(constant))
 end

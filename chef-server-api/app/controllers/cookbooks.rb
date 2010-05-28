@@ -2,6 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Tim Hinderliter (<tim@opscode.com>)
 # Copyright:: Copyright (c) 2008, 2009, 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -49,13 +50,9 @@ class Cookbooks < Application
   end
 
   def show_versions
-    begin
-      display Chef::Cookbook.cdb_by_version(cookbook_name)
-    rescue ArgumentError => e
-      raise NotFound, "Cannot find a cookbook named #{cookbook_name}"
-    rescue Chef::Exceptions::CouchDBNotFound => e
-      raise NotFound, "Cannot find a cookbook named #{cookbook_name}"
-    end
+    versions = Chef::Cookbook.cdb_by_name(cookbook_name)
+    raise NotFound, "Cannot find a cookbook named #{cookbook_name}" unless versions && versions.size > 0
+    display versions
   end
 
   def show
@@ -86,14 +83,29 @@ class Cookbooks < Application
       raise(BadRequest, "You said the cookbook was version #{params['inflated_object'].version}, but the URL says it should be #{cookbook_version}.") 
     end
     
-    # TODO: verify checksums in manifest are registered on the system [cw]
-
     begin
       cookbook = Chef::Cookbook.cdb_load(cookbook_name, cookbook_version)
       cookbook.manifest = params['inflated_object'].manifest
     rescue Chef::Exceptions::CouchDBNotFound => e
       Chef::Log.debug("Cookbook #{cookbook_name} version #{cookbook_version} does not exist")
       cookbook = params['inflated_object']
+    end
+    
+    # ensure that all checksums referred to by the manifest have been uploaded.
+    Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+      next unless cookbook.manifest[segment]
+      cookbook.manifest[segment].each do |manifest_record|
+        checksum = manifest_record[:checksum]
+        path = manifest_record[:path]
+        
+        begin
+          checksum_obj = Chef::Checksum.cdb_load(checksum)
+        rescue Chef::Exceptions::CouchDBNotFound => cdbx
+          checksum_obj = nil
+        end
+        
+        raise BadRequest, "Manifest has checksum #{checksum} (path #{path}) but it hasn't yet been uploaded" unless checksum_obj
+      end
     end
     
     raise InternalServerError, "Error saving cookbook" unless cookbook.cdb_save

@@ -1,7 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Chris Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +17,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require 'chef/cookbook/file_system_file_vendor'
+
+def compare_manifests(manifest1, manifest2)
+  Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+    next unless manifest1[segment]
+    manifest2.should have_key(segment)
+    
+    manifest2_records_by_path = manifest2[segment].inject({}) {|memo,manifest2_record| memo[manifest2_record[:path]] = manifest2_record; memo}
+    manifest1[segment].each do |manifest1_record|
+      path = manifest1_record[:path]
+      
+      manifest2_records_by_path.should have_key(path)
+      manifest1_record.should == manifest2_records_by_path[path]
+    end
+  end
+end
+
+Before do
+  save_cookbook_path = Chef::Config[:cookbook_path]
+  Chef::Config[:cookbook_path] = File.join(datadir, "cookbooks_not_uploaded_at_feature_start")
+  Chef::Cookbook::FileVendor.on_create {|manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
+  @cookbook_loader_not_uploaded_at_feature_start = Chef::CookbookLoader.new
+  Chef::Config[:cookbook_path] = save_cookbook_path
+end
 
 Given /^a local cookbook repository$/ do 
   Dir.mkdir(File.join(tmpdir, 'cookbooks_dir'))
@@ -64,75 +90,205 @@ When /^I run the task to generate cookbook metadata$/ do
 end
 
 #####
-# Cookbook tarball-specific steps
+# Cookbook upload/download-specific steps
 #####
 
 require 'chef/streaming_cookbook_uploader'
 
-Given /^a cookbook named '(.+?)' is created with '(.*?)'$/ do |cookbook, stash_key|
-  params = {:name => cookbook}.merge(@stash[stash_key])
-  response = Chef::StreamingCookbookUploader.post("#{Chef::Config[:chef_server_url]}/cookbooks", rest.client_name, rest.signing_key_filename, params)
-  response.status.should == 201
-end
 
-When /^I delete the cached tarball for '(.*?)'$/ do |cookbook|
-  path = File.join(server_tmpdir, "cookbook-tarballs", "#{cookbook}.tar.gz")
-  Chef::Log.debug "Deleting #{path}"
-  FileUtils.rm_f(path)
-end
-
-When /^I create a cookbook(?: named '(.*?)')? with '(.*?)'$/ do |name, stash_key|
-  payload = { }
-  payload[:name] = name if name
-  payload.merge!(@stash[stash_key])
-  url = "#{Chef::Config[:chef_server_url]}/cookbooks"
-  payload[:file].rewind if payload[:file].kind_of?(File)
-  response = Chef::StreamingCookbookUploader.post(url, rest.client_name, rest.signing_key_filename, payload)
+When /^I create a versioned cookbook(?: named '(.*?)')?(?: versioned '(.*?)')? with '(.*?)'$/ do |request_name, request_version, cookbook_name|
+  cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
+  raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless cookbook
   
-  store_response response
-end
-
-When /^I upload '(.*?)' to cookbook '(.*?)'$/ do |stash_key, cookbook|
-  payload = @stash[stash_key]
-  url = "#{Chef::Config[:chef_server_url]}/cookbooks/#{cookbook}/_content"
-  payload[:file].rewind if payload[:file].kind_of?(File)
-  response = Chef::StreamingCookbookUploader.put(url, rest.client_name, rest.signing_key_filename, payload)
-  
-  store_response response
-end
-
-When /^I download the '(.*?)' cookbook$/ do |cookbook|
-  When "I 'GET' the path '/cookbooks/#{cookbook}/_content'"
-end
-
-When /^I delete cookbook '(.*?)'$/ do |cookbook|
-  When "I 'DELETE' the path '/cookbooks/#{cookbook}'"
-end
-
-Then /^the response should be a valid tarball$/ do
-  Tempfile.open('tarball') do |tempfile|
-    tempfile.write(self.response.to_s)
-    tempfile.flush()
-    system("tar", "tzf", tempfile.path).should == true
-  end
-end
-
-Then /^the untarred response should include file '(.+)'$/ do |filepath|
-  Tempfile.open('tarball') do |tempfile|
-    tempfile.write(self.response.to_s)
-    tempfile.flush()
-    `tar tzf #{tempfile.path}`.split("\n").select{|e| e == filepath}.empty?.should == false
-  end
-end
-
-def store_response(resp)
-  self.response = resp
-  
-  Chef::Log.debug "store response: #{resp.inspect}, #{resp.to_s}"
   begin
-    Chef::Log.debug resp.to_s
-    self.inflated_response = JSON.parse(resp.to_s)
+    self.response = rest.put_rest("/cookbooks/#{request_name}/#{request_version}", cookbook)
+    self.inflated_response = response
   rescue
-    Chef::Log.debue "failed to convert response to JSON: #{$!.message}"
+    self.exception = $!
   end
 end
+
+When /^I create a sandbox named '(.+)' for cookbook '([^\']+)'(?: minus files '(.+)')?$/ do |sandbox_name, cookbook_name, filenames_to_exclude|
+  cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
+  raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless cookbook
+  
+  if filenames_to_exclude
+    filenames_to_exclude = filenames_to_exclude.split(",").inject({}) { |memo, filename| memo[filename] = 1; memo }
+  else
+    filenames_to_exclude = Hash.new
+  end
+
+  # add all the checksums from the given cookbook into the sandbox.
+  checksums = Hash.new
+  Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+    next unless cookbook.manifest[segment]
+    cookbook.manifest[segment].each do |manifest_record|
+      # include the checksum, unless it was included in the filenames to exclude
+      checksums[manifest_record[:checksum]] = nil unless filenames_to_exclude.has_key?(manifest_record[:path])
+    end
+  end
+  
+  sandbox = {
+    :checksums => checksums
+  }
+    
+  begin
+    self.response = nil
+    self.exception = nil
+    self.inflated_response = rest.post_rest('/sandboxes', sandbox)
+    self.sandbox_url = self.inflated_response['uri']
+    
+    @stash['sandbox_response'] = self.inflated_response
+  rescue
+    Chef::Log.debug("Caught exception in sandbox create (POST) request: #{$!.message}: #{$!.backtrace.join("\n")}")
+    self.exception = $!
+  end
+end
+
+Then /^I upload a file named '(.+)' from cookbook '(.+)' to the sandbox/ do |path, cookbook_name|
+  cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
+  raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless cookbook
+
+  if path =~ /([^\/]+)\/(.+)/
+    segment, path_no_segment = $1, $2
+  else
+    segment = :root_files
+    path_no_segment = path
+  end
+  if cookbook.manifest[segment]
+    manifest_record = cookbook.manifest[segment].find {|manifest_record| manifest_record[:path] == path }
+  end
+  raise ArgumentError, "no such file in cookbooks_not_uploaded_at_feature_start/#{cookbook_name}: #{path}" unless manifest_record
+
+  full_path = File.join(datadir, "cookbooks_not_uploaded_at_feature_start", cookbook_name, path)
+    
+  begin
+    upload_to_sandbox(full_path)
+  rescue
+    Chef::Log.debug("Caught exception in cookbook/sandbox checksum upload (PUT) request: #{$!.message}: #{$!.backtrace.join("\n")}")
+    self.exception = $!
+  end
+end
+
+# Shortcut for uploading a whole cookbook based on data in the
+# cookbooks_not_uploaded_at_feature_start directory
+Then /I fully upload a sandboxed cookbook (force-)?named '([^\']+)' versioned '([^\']+)' with '(.+)'/ do |forced, request_name, request_version, cookbook_name|
+  cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
+  raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless cookbook
+
+  # If they said 'force-named', we will reach into the cookbook and change its
+  # name. This is to get around the fact that CookbookLoader uses the
+  # directory name as the cookbook name. This is super awesome right here.
+  if forced == "force-"
+    # If the paths contain the name of the old cookbook name, change it to the
+    # new cookbook name.
+    Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+      next unless cookbook.manifest[segment]
+      cookbook.manifest[segment].each do |manifest_record|
+        if manifest_record[:path] =~ /^(.+)\/#{cookbook.name}\/(.+)$/
+          manifest_record[:path] = "#{$1}/#{request_name}/#{$2}"
+        end
+      end
+    end
+    cookbook.name = request_name
+    cookbook.manifest[:cookbook_name] = request_name
+    cookbook.manifest[:name] = "#{cookbook.manifest[:cookbook_name]}-#{cookbook.manifest[:version]}"
+  end
+  
+  When "I create a sandbox named 'sandbox1' for cookbook '#{cookbook_name}'"
+  Then "the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'"
+  
+  Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+    next unless cookbook.manifest[segment]
+    cookbook.manifest[segment].each do |manifest_record|
+      full_path = File.join(datadir, "cookbooks_not_uploaded_at_feature_start", cookbook_name, manifest_record[:path])
+
+      begin
+        upload_to_sandbox(full_path)
+      rescue
+        Chef::Log.debug("Caught exception in cookbook/sandbox checksum upload (PUT) request: #{$!.message}: #{$!.backtrace.join("\n")}")
+        self.exception = $!
+      end
+      Then "the response code should be '200'"
+    end
+  end
+  
+  When "I commit the sandbox"
+  Then "I should not get an exception"
+  When "I create a versioned cookbook named '#{request_name}' versioned '#{request_version}' with '#{cookbook_name}'"
+  Then "I should not get an exception"
+end
+
+When /I download the cookbook manifest for '(.+)' version '(.+)'$/ do |cookbook_name, cookbook_version|
+  self.response = self.inflated_response = self.exception = nil
+
+  When "I 'GET' to the path '/cookbooks/#{cookbook_name}/#{cookbook_version}'"
+  @downloaded_cookbook = self.inflated_response
+end
+
+Then /the downloaded cookbook manifest contents should match '(.+)'$/ do |cookbook_name|
+  expected_cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
+  raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless expected_cookbook
+  
+  downloaded_cookbook_manifest = Mash.new(@downloaded_cookbook.manifest)
+  downloaded_cookbook_manifest.delete("uri")
+
+  # remove the uri's from the manifest records
+  Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+    next unless downloaded_cookbook_manifest[segment]
+    downloaded_cookbook_manifest[segment].each do |downloaded_manifest_record|
+      downloaded_manifest_record.delete("uri")
+    end
+  end
+  
+  # ensure that each file expected (from the cookbook on disk) was downloaded,
+  # and then do the opposite.
+  begin
+    compare_manifests(expected_cookbook.manifest, downloaded_cookbook_manifest)
+    compare_manifests(downloaded_cookbook_manifest, expected_cookbook.manifest)
+  rescue
+    pp({:expected_cookbook_manifest => expected_cookbook.manifest})
+    pp({:downloaded_cookbook_manifest => downloaded_cookbook_manifest})
+    
+    raise
+  end
+end
+
+When /I download the file '([^\']+)' from the downloaded cookbook manifest/ do |path|
+  raise "no @downloaded_cookbook" unless @downloaded_cookbook
+
+  # TODO: timh, 2010-5-26: Cookbook really should have a "get me a file by its
+  # path" method.
+  if path =~ /^([^\/]+)\/(.+)$/
+    segment, path_in_segment = $1, $2
+  else
+    segment = :root_files
+    path_in_segment = path
+  end
+
+  raise "no such file #{path}" unless @downloaded_cookbook.manifest[segment]
+  found_manifest_record = @downloaded_cookbook.manifest[segment].find {|manifest_record| manifest_record[:path] == path}
+  raise "no such file #{path}" unless found_manifest_record
+  
+  begin
+    cookbook_name = @downloaded_cookbook.name
+    cookbook_version = @downloaded_cookbook.version
+    checksum = found_manifest_record[:checksum]
+    
+    self.response = nil
+    self.inflated_response = nil
+    self.exception = nil
+    
+    downloaded_cookbook_file = rest.get_rest("/cookbooks/#{cookbook_name}/#{cookbook_version}/files/#{checksum}", true)
+    @downloaded_cookbook_file_contents = IO.read(downloaded_cookbook_file.path)
+  rescue
+    self.exception = $!
+  end
+end
+
+Then /^the downloaded cookbook file contents should match the pattern '(.+)'$/ do |pattern|
+  raise "no @downloaded_cookbook_file_contents" unless @downloaded_cookbook_file_contents
+  
+  @downloaded_cookbook_file_contents.should =~ /#{pattern}/
+end
+
