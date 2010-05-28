@@ -32,7 +32,6 @@ class Sandboxes < Application
   def index
     couch_sandbox_list = Chef::Sandbox::cdb_list(true)
     
-    
     sandbox_list = Hash.new
     couch_sandbox_list.each do |sandbox|
       sandbox_list[sandbox.guid] = absolute_url(:sandbox, :sandbox_id => sandbox.guid)
@@ -51,26 +50,26 @@ class Sandboxes < Application
   end
  
   def create
-    incoming_checksums = params[:checksums]
+    checksums = params[:checksums]
     
-    raise BadRequest, "missing required parameter: checksums" unless incoming_checksums
-    raise BadRequest, "required parameter checksums is not a hash: #{checksums.class.name}" unless incoming_checksums.is_a?(Hash)
+    raise BadRequest, "missing required parameter: checksums" unless checksums
+    raise BadRequest, "required parameter checksums is not a hash: #{checksums.class.name}" unless checksums.is_a?(Hash)
 
     new_sandbox = Chef::Sandbox.new
     result_checksums = Hash.new
     
     all_existing_checksums = Chef::Checksum.cdb_all_checksums
-    incoming_checksums.keys.each do |incoming_checksum|
-      if all_existing_checksums[incoming_checksum]
-        result_checksums[incoming_checksum] = {
+    checksums.keys.each do |checksum|
+      if all_existing_checksums[checksum]
+        result_checksums[checksum] = {
           :needs_upload => false
         }
       else
-        result_checksums[incoming_checksum] = {
-          :url => absolute_url(:sandbox_checksum, :sandbox_id => new_sandbox.guid, :checksum => incoming_checksum),
+        result_checksums[checksum] = {
+          :url => absolute_url(:sandbox_checksum, :sandbox_id => new_sandbox.guid, :checksum => checksum),
           :needs_upload => true
         }
-        new_sandbox.checksums << incoming_checksum
+        new_sandbox.checksums << checksum
       end
     end
     
@@ -119,7 +118,7 @@ class Sandboxes < Application
     existing_sandbox = Chef::Sandbox.cdb_load(params[:sandbox_id])
     raise NotFound, "cannot find sandbox with guid #{sandbox_id}" unless existing_sandbox
     
-    raise BadRequest, "cannot update sandbox #{sandbox_id}: already complete" unless !existing_sandbox.is_completed
+    raise BadRequest, "cannot update sandbox #{sandbox_id}: already complete" if existing_sandbox.is_completed
 
     if params[:is_completed]
       existing_sandbox.is_completed = (params[:is_completed] == true)

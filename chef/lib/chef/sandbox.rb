@@ -26,7 +26,7 @@ class Chef
     
     alias :name :guid
     
-    attr_accessor :couchdb_id, :couchdb_rev
+    attr_accessor :couchdb, :couchdb_id, :couchdb_rev
 
     # list of checksum ids
     attr_accessor :checksums
@@ -140,7 +140,6 @@ class Chef
     end
 
     def cdb_save(couchdb=nil)
-      puts "sandbox.cdb_save : guid = #{guid} :: @couchdb_rev = #{@couchdb_rev} :: sandbox/self = #{self.inspect}"
       @couchdb_rev = (couchdb || Chef::CouchDB.new).store("sandbox", guid, self)["rev"]
     end
 
