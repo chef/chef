@@ -128,6 +128,7 @@ class Chef
     end
 
     # Converts a string run list entry to a RunListItem object.
+    # TODO: 5/27/2010 cw: this method has become nothing more than a proxy, revisit its necessity
     def parse_entry(entry)
       RunListItem.new(entry)
     end

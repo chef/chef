@@ -25,16 +25,25 @@ class Chef
 
       attr_reader :type
 
-      def initialize(item_string)
-        if match = QUALIFIED_RECIPE.match(item_string)
-          @type = :recipe
-          @name = match[1]
-        elsif match = QUALIFIED_ROLE.match(item_string)
-          @type = :role
-          @name = match[1]
+      def initialize(item)
+        case item
+        when Hash
+          raise ArgumentError, "Initializing a #{self.class} from a hash requires that it have a 'type' and 'name' key" unless (item.has_key?('type')||item.has_key?(:type)) && (item.has_key?('name')||item.has_key?(:name))
+          @type = (item['type'] || item[:type]).to_sym
+          @name = item['name'] || item[:name]
+        when String
+          if match = QUALIFIED_RECIPE.match(item)
+            @type = :recipe
+            @name = match[1]
+          elsif match = QUALIFIED_ROLE.match(item)
+            @type = :role
+            @name = match[1]
+          else
+            @type = :recipe
+            @name = item
+          end
         else
-          @type = :recipe
-          @name = item_string
+          raise ArgumentError, "Unable to create #{self.class} from #{item.class}:#{item.inspect}: must be a Hash or String"
         end
       end
 
