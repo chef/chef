@@ -1,40 +1,49 @@
+%script{:type=>"text/javascript", :src => "/javascripts/drop_down_menu.js"}
 .block#block-text
   .content
-    %h2.title= "Cookbook: #{h @cookbook["name"]}"
+    %h2
+      .title
+        = "Cookbook: #{h @cookbook.manifest["name"]}"
+        - unless @other_versions.nil? || @other_versions.empty?    
+          %select{:name => "choice", :onchange => "jump(this)", :size => "1"}
+            %option{:value => ""} Other Versions
+            %option{:value => ""} --------------
+            - @other_versions.each do |v|
+              %option{:value => url(:show_specific_version_cookbook, :cookbook_id => @cookbook_id, :cb_version => v)} "#{v}"
     .inner
       .accordion
-        - unless @cookbook["libraries"].empty?
+        - unless @cookbook.manifest["libraries"].empty?
           %h2.head= link_to "Library Files", "JavaScript:void(0);"
           .files
-            - @cookbook["libraries"].each do |f|
+            - @cookbook.manifest["libraries"].each do |f|
               .code
                 %h4.head= link_to File.basename(f["name"]), "JavaScript:void(0);"
-                %pre.ruby= syntax_highlight(f["uri"])
-        - unless @cookbook["attributes"].empty?
+                %pre.ruby= syntax_highlight(get_file(f["uri"]))
+        - unless @cookbook.manifest["attributes"].empty?
           %h2.head= link_to "Attribute Files", "JavaScript:void(0);"
           .files
-            - @cookbook["attributes"].each do |f|
+            - @cookbook.manifest["attributes"].each do |f|
               .code
                 %h4.head= link_to File.basename(f["name"]), "JavaScript:void(0);"
-                %pre.ruby= syntax_highlight(f["uri"])
-        - unless @cookbook["definitions"].empty?
+                %pre.ruby= syntax_highlight(get_file(f["uri"]))
+        - unless @cookbook.manifest["definitions"].empty?
           %h2.head= link_to "Definition Files", "JavaScript:void(0);"
           .files
-            - @cookbook["definitions"].each do |f|
+            - @cookbook.manifest["definitions"].each do |f|
               .code
                 %h4.head= link_to File.basename(f["name"]), "JavaScript:void(0);"
-                %pre.ruby= syntax_highlight(f["uri"])
-        - unless @cookbook["recipes"].empty?
+                %pre.ruby= syntax_highlight(get_file(f["uri"]))
+        - unless @cookbook.manifest["recipes"].empty?
           %h2.head= link_to "Recipe Files", "JavaScript:void(0);"
           .files
-            - @cookbook["recipes"].each do |f|
+            - @cookbook.manifest["recipes"].each do |f|
               .code
                 %h4.head= link_to File.basename(f["name"]), "JavaScript:void(0);"
-                %pre.ruby= syntax_highlight(f["uri"])
-        - unless @cookbook["templates"].empty?
+                %pre.ruby= syntax_highlight(get_file(f["uri"]))
+        - unless @cookbook.manifest["templates"].empty?
           %h2.head= link_to "Template Files", "JavaScript:void(0);"
           .files
-            - @cookbook["templates"].each do |f|
+            - @cookbook.manifest["templates"].each do |f|
               .code
                 %h4.head= link_to File.basename(f["name"]), "JavaScript:void(0);"
-                %pre.ruby= syntax_highlight(f["uri"])
+                %pre.ruby= syntax_highlight(get_file(f["uri"]))   
