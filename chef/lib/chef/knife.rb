@@ -112,9 +112,19 @@ class Chef
     end
 
     def configure_chef
-      if !config[:config_file].nil? && File.exists?(config[:config_file]) && File.readable?(config[:config_file])
-        Chef::Config.from_file(config[:config_file]) 
+      unless config[:config_file]
+        full_path = Dir.pwd.split(File::SEPARATOR)
+        (full_path.length - 1).downto(0) do |i|
+          config_file_to_check = File.join([ full_path[0..i], ".chef", "knife.rb" ].flatten)
+          if File.exists?(config_file_to_check)
+            config[:config_file] = config_file_to_check 
+            break
+          end
+        end
+        config[:config_file] ||= File.join(ENV['HOME'], '.chef', 'knife.rb')
       end
+
+      Chef::Config.from_file(config[:config_file]) 
 
       Chef::Config[:log_level] = config[:log_level] if config[:log_level]
       Chef::Config[:log_location] = config[:log_location] if config[:log_location]
@@ -124,6 +134,8 @@ class Chef
       Mixlib::Log::Formatter.show_time = false
       Chef::Log.init(Chef::Config[:log_location])
       Chef::Log.level(Chef::Config[:log_level])
+
+      Chef::Log.debug("Using configuration from #{config[:config_file]}")
 
       if Chef::Config[:node_name].nil?
         raise ArgumentError, "No user specified, pass via -u or specifiy 'node_name' in #{config[:config_file] ? config[:config_file] : "~/.chef/knife.rb"}"
