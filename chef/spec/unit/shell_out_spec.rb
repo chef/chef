@@ -70,7 +70,7 @@ describe Chef::ShellOut do
   end
   
   it "computes the gid of the user when a string/symbolic groupname is given" do
-    a_group = Etc.group
+    a_group = Etc.getgrent
     @shell_cmd.group = a_group.name
     @shell_cmd.gid.should == a_group.gid
   end
@@ -206,7 +206,7 @@ describe Chef::ShellOut do
       chatty = %q|ruby -e "print('X' * 16 * 1024); print( '.' * 1024)"|
       cmd = Chef::ShellOut.new(chatty)
       cmd.run_command
-      cmd.stdout.should match /X{16384}\.{1024}/
+      cmd.stdout.should match(/X{16384}\.{1024}/)
     end
   
     it "returns empty strings from commands that have no output" do
@@ -216,35 +216,27 @@ describe Chef::ShellOut do
       cmd.stderr.should == ''
     end
 
-    def self.bad_ruby?
-      return true if (RUBY_VERSION == '1.8.7') && (RUBY_PATCHLEVEL <= 173)
-      return true if (RUBY_VERSION == '1.8.6') && (RUBY_PATCHLEVEL <= 398) # I know 399 works...
+    it "doesn't hang or lose output when a process closes one of stdout/stderr and continues writing to the other" do
+      halfandhalf = %q{ruby -e 'STDOUT.close;sleep 0.5;STDERR.puts :win'}
+      cmd = Chef::ShellOut.new(halfandhalf)
+      cmd.run_command
+      cmd.stderr.should == "win\n"
     end
 
-    # segfaults these versions of ruby :(
-    unless bad_ruby?
-      it "doesn't hang or lose output when a process closes one of stdout/stderr and continues writing to the other" do
-        halfandhalf = %q{ruby -e 'STDOUT.close;sleep 0.5;STDERR.puts :win'}
-        cmd = Chef::ShellOut.new(halfandhalf)
-        cmd.run_command
-        cmd.stderr.should == "win\n"
-      end
+    it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
+      chatty = %q{ruby -e "puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000"}
+      cmd = Chef::ShellOut.new(chatty)
+      cmd.run_command
+      cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
+      cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
+    end
 
-      it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
-        chatty = %q{ruby -e "puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000"}
-        cmd = Chef::ShellOut.new(chatty)
-        cmd.run_command
-        cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
-        cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
-      end
-
-      it "does not deadlock when the subprocess writes lots of data to both stdout and stderr (part2)" do
-        chatty = %q{ruby -e "STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000"}
-        cmd = Chef::ShellOut.new(chatty)
-        cmd.run_command
-        cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
-        cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
-      end
+    it "does not deadlock when the subprocess writes lots of data to both stdout and stderr (part2)" do
+      chatty = %q{ruby -e "STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000"}
+      cmd = Chef::ShellOut.new(chatty)
+      cmd.run_command
+      cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
+      cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
     end
     
     it "doesn't hang or lose output when a process writes, pauses, then continues writing" do
@@ -283,6 +275,12 @@ describe Chef::ShellOut do
     it "recovers the error message when exec fails" do
       cmd = Chef::ShellOut.new("fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
       lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
+    end
+
+    it "closes stdin on the child process so it knows not to wait for any input" do
+      cmd = Chef::ShellOut.new(%q{ruby -e 'print STDIN.eof?.to_s'})
+      cmd.run_command
+      cmd.stdout.should == "true"
     end
   end
    
