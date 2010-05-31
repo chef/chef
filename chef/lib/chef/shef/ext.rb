@@ -275,6 +275,14 @@ class Object
   
 end
 
+class String
+  undef_method :version
+end
+
+class NilClass
+  undef_method :version
+end
+
 class Chef
   class Recipe
     
