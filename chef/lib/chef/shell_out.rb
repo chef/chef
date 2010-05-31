@@ -269,10 +269,12 @@ class Chef
     def configure_subprocess_file_descriptors
       process_status_pipe.first.close
       
-      STDIN.close
-      # stdin_pipe.last.close
-      # STDIN.reopen stdin_pipe.first
-      # stdin_pipe.first.close
+      # HACK: for some reason, just STDIN.close isn't good enough when running
+      # under ruby 1.9.2, so make it good enough:
+      stdin_reader, stdin_writer = IO.pipe
+      stdin_writer.close
+      STDIN.reopen stdin_reader
+      stdin_reader.close
 
       stdout_pipe.first.close
       STDOUT.reopen stdout_pipe.last
