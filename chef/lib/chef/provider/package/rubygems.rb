@@ -23,19 +23,24 @@ require 'chef/resource/package'
 
 # Class methods on Gem are defined in rubygems
 require 'rubygems'
-require 'rubygems/specification'
+# Ruby 1.9's gem_prelude can interact poorly with loading the full rubygems
+# explicitly like this. Make sure rubygems/specification is always last in this
+# list
 require 'rubygems/version'
 require 'rubygems/dependency'
 require 'rubygems/spec_fetcher'
 require 'rubygems/platform'
 require 'rubygems/format'
 require 'rubygems/dependency_installer'
+require 'rubygems/uninstaller'
+require 'rubygems/specification'
 
 class Chef
   class Provider
     class Package
       class Rubygems < Chef::Provider::Package
         class GemEnvironment
+          DEFAULT_UNINSTALLER_OPTS = {:ignore => true, :executables => true}
 
           ##
           # The paths where rubygems should search for installed gems
@@ -143,8 +148,17 @@ class Chef
             end
           end
 
+          def uninstall(gem_name, gem_version=nil, opts={})
+            gem_version ? opts[:version] = gem_version : opts[:all] = true
+            uninstaller(gem_name, opts).uninstall
+          end
+
           def dependency_installer(opts={})
             Gem::DependencyInstaller.new(opts)
+          end
+
+          def uninstaller(gem_name, opts={})
+            Gem::Uninstaller.new(gem_name, DEFAULT_UNINSTALLER_OPTS.merge(opts))
           end
 
           private
@@ -175,6 +189,14 @@ class Chef
 
         class AlternateGemEnvironment < GemEnvironment
           JRUBY_PLATFORM = /(:?universal|x86_64|x86)\-java\-[0-9\.]+/
+          
+          def self.gempath_cache
+            @gempath_cache ||= {}
+          end
+
+          def self.platform_cache
+            @platform_cache ||= {}
+          end
 
           include Chef::Mixin::ShellOut
 
@@ -185,11 +207,14 @@ class Chef
           end
 
           def gem_paths
-            @gempaths ||= begin
+            if self.class.gempath_cache.key?(@gem_binary_location)
+              self.class.gempath_cache[@gem_binary_location]
+            else
               # shellout! is a fork/exec which won't work on windows
               shell_style_paths = shell_out!("#{@gem_binary_location} env gempath").stdout
               # on windows, the path separator is (usually? always?) semicolon
-              shell_style_paths.split(::File::PATH_SEPARATOR).map { |path| path.strip }
+              paths = shell_style_paths.split(::File::PATH_SEPARATOR).map { |path| path.strip }
+              self.class.gempath_cache[@gem_binary_location] = paths
             end
           end
 
@@ -212,12 +237,14 @@ class Chef
           # objects, i.e., Strings that are valid for Gem::Platform or actual
           # Gem::Platform objects.
           def gem_platforms
-            @gem_platforms ||= begin
+            if self.class.platform_cache.key?(@gem_binary_location)
+              self.class.platform_cache[@gem_binary_location]
+            else
               gem_environment = shell_out!("#{@gem_binary_location} env").stdout
               if jruby = gem_environment[JRUBY_PLATFORM]
-                ['ruby', Gem::Platform.new(jruby)]
+                self.class.platform_cache[@gem_binary_location] = ['ruby', Gem::Platform.new(jruby)]
               else
-                Gem.platforms
+                self.class.platform_cache[@gem_binary_location] = Gem.platforms
               end
             end
           end
@@ -241,6 +268,8 @@ class Chef
 
         end
 
+        include Chef::Mixin::ShellOut
+
         attr_reader :gem_env
 
         def logger
@@ -250,6 +279,11 @@ class Chef
         def initialize(new_resource, run_context=nil)
           super
           if new_resource.gem_binary
+            if new_resource.options && new_resource.options.kind_of?(Hash)
+              msg =  "options cannot be given as a hash when using an explicit gem_binary\n"
+              msg << "in #{new_resource} from #{new_resource.source_line}"
+              raise ArgumentError, msg
+            end
             @gem_env = AlternateGemEnvironment.new(new_resource.gem_binary)
           else
             @gem_env = CurrentGemEnvironment.new
@@ -260,8 +294,8 @@ class Chef
           Gem::Dependency.new(@new_resource.package_name, @new_resource.version)
         end
 
-        def explicit_source_is_remote?
-          return false if @new_resource.source.nil?
+        def source_is_remote?
+          return true if @new_resource.source.nil?
           URI.parse(@new_resource.source).absolute?
         end
 
@@ -302,7 +336,9 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Package::GemPackage.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
-          @current_resource.version(current_version.version.to_s)
+          if current_spec = current_version
+            @current_resource.version(current_spec.version.to_s)
+          end
           @current_resource
         end
 
@@ -310,7 +346,7 @@ class Chef
           @candidate_version ||= begin
             if target_version_already_installed?
               nil
-            elsif explicit_source_is_remote?
+            elsif source_is_remote?
               @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s
             else
               @gem_env.candidate_version_from_file(gem_dependency, @new_resource.source).to_s
@@ -321,49 +357,20 @@ class Chef
         def target_version_already_installed?
           return false unless @current_resource && @current_resource.version
           return false if @current_resource.version.nil?
-          # This works according to the behavior of the current implementation.
-          # in the future it probably makes sense to revisit this, in particular
-          # if ppl want to use action_upgrade with squiggly requirements
-          # i.e., "~> 1.2.0"
+          # in the future we could support squiggly requirements like "~> 1.2.0"
+          # for now, the behavior when using anything other than exact 
+          # requirements is undefined.
           Gem::Requirement.new(@new_resource.version).satisfied_by?(Gem::Version.new(@current_resource.version))
         end
 
-        # def action_install
-        #   if @new_resource.version != nil && @new_resource.version != @current_resource.version
-        #     install_version = @new_resource.version
-        #   # If it's not installed at all, install it
-        #   elsif @current_resource.version == nil
-        #     install_version = candidate_version
-        #   else
-        #     return
-        #   end
-        #
-        #   unless install_version
-        #     raise(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{@new_resource.package_name}")
-        #   end
-        #
-        #   Chef::Log.info("Installing #{@new_resource} version #{install_version}")
-        #
-        #   status = install_package(@new_resource.package_name, install_version)
-        #   if status
-        #     @new_resource.updated = true
-        #   end
-        #
-        # end
-
+        ##
+        # Installs the gem, using either the gems API or shelling out to `gem`
+        # according to the following criteria:
+        # 1. Use gems API (Gem::DependencyInstaller) by default
+        # 2. shell out to install when a String of options is given
+        # 3. use gems API with options if a hash of options is given
         def install_package(name, version)
-          # If we install with a DependencyInstaller.new, this is equivalent to:
-          # --no-rdoc --no-ri --no-test on the command line.
-          # DependencyInstaller also offers the following options
-          # :bin_dir, :development, :domain, :env_shebang, :force, :format_executable
-          # :ignore_dependencies, :prerelease, :security_policy, :user_install,
-          # :wrappers, :install_dir, :cache_dir
-          #
-          # So it seems that the sensible thing to do is:
-          # 1. Use dependency installer by default
-          # 2. shell out to install when a String of options is given (log an info about this.)
-          # 3. use dependency installer + opts if a hash of options is given
-          if explicit_source_is_remote? && @new_resource.gem_binary.nil?
+          if source_is_remote? && @new_resource.gem_binary.nil?
             if @new_resource.options.nil?
               @gem_env.install(gem_dependency, :sources => gem_sources)
             elsif @new_resource.options.kind_of?(Hash)
@@ -371,17 +378,21 @@ class Chef
               options[:sources] = gem_sources
               @gem_env.install(gem_dependency, options)
             else
-              install_via_gem_command
+              install_via_gem_command(name, version)
             end
           elsif @new_resource.gem_binary.nil?
             @gem_env.install(@new_resource.source)
           else
-            install_via_gem_command
+            install_via_gem_command(name,version)
           end
           true
         end
 
-        def install_via_gem_command
+        def gem_binary_path
+          @new_resource.gem_binary || 'gem'
+        end
+
+        def install_via_gem_command(name, version)
           src = @new_resource.source && "  --source=#{@new_resource.source} --source=http://rubygems.org"
           shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
         end
@@ -391,14 +402,24 @@ class Chef
         end
 
         def remove_package(name, version)
-          if version
-            run_command_with_systems_locale(
-              :command => "#{gem_binary_path} uninstall #{name} -q -v \"#{version}\""
-            )
+          if @new_resource.gem_binary.nil?
+            if @new_resource.options.nil?
+              @gem_env.uninstall(name, version)
+            elsif @new_resource.options.kind_of?(Hash)
+              @gem_env.uninstall(name, version, @new_resource.options)
+            else
+              uninstall_via_gem_command(name, version)
+            end
           else
-            run_command_with_systems_locale(
-              :command => "#{gem_binary_path} uninstall #{name} -q -a"
-            )
+            uninstall_via_gem_command(name, version)
+          end
+        end
+
+        def uninstall_via_gem_command(name, version)
+          if version
+            shell_out!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", :env=>nil)
+          else
+            shell_out!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", :env=>nil)
           end
         end
 

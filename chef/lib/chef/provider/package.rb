@@ -79,6 +79,7 @@ class Chef
           Chef::Log.info("Removing #{@new_resource}")
           remove_package(@current_resource.package_name, @new_resource.version)
           @new_resource.updated = true
+        else
         end
       end
       
