@@ -37,6 +37,11 @@ class Chef
       include Chef::Mixin::Template
       #include Chef::Mixin::FindPreferredFile
 
+      def load_current_resource
+        super
+        @current_resource.checksum(checksum(@current_resource.path))
+      end
+
       def action_create
         render_with_context(template_location) do |rendered_template|
           rendered(rendered_template)
