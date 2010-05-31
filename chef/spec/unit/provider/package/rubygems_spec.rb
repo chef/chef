@@ -377,13 +377,13 @@ describe Chef::Provider::Package::Rubygems do
   end
 
   describe "when installing a gem" do
-    describe "in the current gem environment" do
-      before do
-        @current_resource = Chef::Resource::GemPackage.new('rspec')
-        @provider.current_resource = @current_resource
-        @gem_dep = Gem::Dependency.new('rspec', @spec_version)
-      end
+    before do
+      @current_resource = Chef::Resource::GemPackage.new('rspec')
+      @provider.current_resource = @current_resource
+      @gem_dep = Gem::Dependency.new('rspec', @spec_version)
+    end
 
+    describe "in the current gem environment" do
       it "installs the gem via the gems api when no explicit options are used" do
         @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => nil)
         @provider.action_install.should be_true
@@ -418,7 +418,9 @@ describe Chef::Provider::Package::Rubygems do
 
     describe "in an alternate gem environment" do
       it "installs the gem by shelling out to gem install" do
-        pending
+        @new_resource.gem_binary('/usr/weird/bin/gem')
+        @provider.should_receive(:shell_out!).with("/usr/weird/bin/gem install rspec -q --no-rdoc --no-ri -v \"#{@spec_version}\"", :env=>nil)
+        @provider.action_install.should be_true
       end
     end
 
@@ -468,24 +470,10 @@ describe Chef::Provider::Package::Rubygems do
     
     describe "in an alternate gem environment" do
       it "uninstalls via the gem command" do
-        pending
+        @new_resource.gem_binary('/usr/weird/bin/gem')
+        @provider.should_receive(:shell_out!).with("/usr/weird/bin/gem uninstall rspec -q -x -I -a", :env=>nil)
+        @provider.action_remove
       end
     end
   end
-
-  # describe "when installing a gem" do
-  #   it "should run gem install with the package name and version" do
-  #     @provider.should_receive(:run_command).with(
-  #       :command => "gem install rspec -q --no-rdoc --no-ri -v \"1.2.2\"",
-  #       :environment => {"LC_ALL" => nil})
-  #     @provider.install_package("rspec", "1.2.2")
-  #   end
-  #
-  #   it "installs gems with arbitrary options set by resource's options" do
-  #     @new_resource.options "-i /arbitrary/install/dir"
-  #     @provider.should_receive(:run_command_with_systems_locale).
-  #       with(:command => "gem install rspec -q --no-rdoc --no-ri -v \"1.2.2\" -i /arbitrary/install/dir")
-  #     @provider.install_package("rspec", "1.2.2")
-  #   end
-  # end
 end
