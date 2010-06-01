@@ -120,12 +120,12 @@ class Chef
     # to +stdout+ and +stderr+, and saving its exit status object to +status+
     # === Returns
     # returns   +self+; +stdout+, +stderr+, +status+, and +exitstatus+ will be
-    #           populated with results of the command
+    # populated with results of the command
     # === Raises
-    # Errno::EACCES   when you are not privileged to execute the command
-    # Errno::ENOENT   when the command is not available on the system (or not
-    #                 in the current $PATH)
-    # Chef::Exceptions::CommandTimeout when the command does not complete
+    # * Errno::EACCES   when you are not privileged to execute the command
+    # * Errno::ENOENT   when the command is not available on the system (or not
+    #   in the current $PATH)
+    # * Chef::Exceptions::CommandTimeout when the command does not complete
     #                                  within +timeout+ seconds (default: 60s)
     def run_command
       Chef::Log.debug("sh(#{@command})")
