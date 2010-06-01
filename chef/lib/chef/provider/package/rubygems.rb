@@ -40,6 +40,9 @@ class Chef
     class Package
       class Rubygems < Chef::Provider::Package
         class GemEnvironment
+          # HACK: trigger gem config load early so it doesn't stomp our trickery
+          Gem.configuration
+
           DEFAULT_UNINSTALLER_OPTS = {:ignore => true, :executables => true}
 
           ##
@@ -125,6 +128,7 @@ class Chef
             # DependencyInstaller sorts the results such that the last one is
             # always the one it considers best.
             spec_with_source = dependency_installer.find_gems_with_sources(gem_dependency).last
+
             spec = spec_with_source && spec_with_source[0]
             version = spec && spec_with_source[0].version
             if version
@@ -132,7 +136,7 @@ class Chef
               version
             else
               source_list = sources.compact.empty? ? "[#{Gem.sources.join(', ')}]" : "[#{sources.join(', ')}]"
-              logger.debug { "Failed to find gem #{gem_dependency} from #{source_list}" }
+              logger.warn { "Failed to find gem #{gem_dependency} from #{source_list}" }
               nil
             end
           end

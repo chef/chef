@@ -308,6 +308,11 @@ describe Chef::Provider::Package::Rubygems do
     @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
   end
 
+  it "triggers a gem configuration load so a later one will not stomp its config values" do
+    # ugly, is there a better way?
+    Gem.instance_variable_get(:@configuration).should_not be_nil
+  end
+
   it "uses the CurrentGemEnvironment implementation when no gem_binary_path is provided" do
     @provider.gem_env.should be_a_kind_of(Chef::Provider::Package::Rubygems::CurrentGemEnvironment)
   end
