@@ -33,3 +33,7 @@ end
 Then /^the gem '(.+)' version '(.+)' should be installed$/ do |gem_name, version|
   Then "a file named 'installed-gems/gems/#{gem_name}-#{version}' should exist"
 end
+
+Then "the gem '$gem_name' version '$version' should not be installed" do |gem_name, version|
+  Then "a file named 'installed-gems/gems/#{gem_name}-#{version}' should not exist"
+end
