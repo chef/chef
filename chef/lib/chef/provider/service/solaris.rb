@@ -24,60 +24,60 @@ class Chef
     class Service
       class Solaris < Chef::Provider::Service
 
-	def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
+        def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
           super(node, new_resource, collection, definitions, cookbook_loader)
-	  @init_command = "/usr/sbin/svcadm"
-	  @status_command = "/bin/svcs -l"
+          @init_command = "/usr/sbin/svcadm"
+          @status_command = "/bin/svcs -l"
         end
 
-	def load_current_resource
-	  @current_resource = Chef::Resource::Service.new(@new_resource.name)
-	  @current_resource.service_name(@new_resource.service_name)
-	  unless ::File.exists? "/bin/svcs"
-	    raise Chef::Exceptions::Service, "/bin/svcs does not exist!"
-	  end
-	  @status = service_status().enabled
-	  @current_resource
-	end
+        def load_current_resource
+          @current_resource = Chef::Resource::Service.new(@new_resource.name)
+          @current_resource.service_name(@new_resource.service_name)
+          unless ::File.exists? "/bin/svcs"
+            raise Chef::Exceptions::Service, "/bin/svcs does not exist!"
+          end
+          @status = service_status.enabled
+          @current_resource
+        end
 
-        def enable_service()
+        def enable_service
           run_command(:command => "#{@init_command} enable #{@new_resource.service_name}")
-	  return service_status().enabled
-	end
+          return service_status.enabled
+        end
 
-        def disable_service()
+        def disable_service
           run_command(:command => "#{@init_command} disable #{@new_resource.service_name}")
-	  return service_status().enabled
+          return service_status.enabled
         end
 
         alias_method :stop_service, :disable_service
-	alias_method :start_service, :enable_service
+        alias_method :start_service, :enable_service
 
-	def reload_service()
-	  run_command(:command => "#{@init_command} refresh #{@new_resource.service_name}")
-	end
-
-        def restart_service()
-          disable_service()
-          return enable_service()
+        def reload_service
+          run_command(:command => "#{@init_command} refresh #{@new_resource.service_name}")
         end
 
-	def service_status()
-	  status = popen4("#{@status_command} #{@current_resource.service_name}") do |pid, stdin, stdout, stderr|
-	  stdout.each do |line|
-	  case line
-	    when /state\s+online/
-		@current_resource.enabled(true)
-		@current_resource.running(true)
-	    end
+        def restart_service
+          disable_service
+          return enable_service
+        end
+
+        def service_status
+          status = popen4("#{@status_command} #{@current_resource.service_name}") do |pid, stdin, stdout, stderr|
+            stdout.each do |line|
+              case line
+              when /state\s+online/
+                @current_resource.enabled(true)
+                @current_resource.running(true)
+              end
+            end
           end
-	  end
-	  unless @current_resource.enabled
-	    @current_resource.enabled(false)
-	    @current_resource.running(false)
-	  end
-	  @current_resource
-	end
+          unless @current_resource.enabled
+            @current_resource.enabled(false)
+            @current_resource.running(false)
+          end
+          @current_resource
+        end
 
       end
     end
