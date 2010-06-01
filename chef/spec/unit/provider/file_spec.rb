@@ -91,12 +91,6 @@ describe Chef::Provider::File do
     @provider.current_resource.owner.should eql(stats.uid)
   end
 
-  it "should load an sha256 sum for an existing file" do
-    actual_checksum = Digest::SHA2.file(@resource.path).to_s
-    @provider.load_current_resource
-    @provider.current_resource.checksum.should eql(actual_checksum)
-  end
-
   it "should compare the current content with the requested content" do
     @provider.load_current_resource
 
