@@ -14,7 +14,7 @@
           - if @node_list.empty?
             %td{:colspan => 4}= "You appear to have no nodes - try connecting one, or creating or editing a #{link_to('client', url(:clients))}"
           - else
-            - @node_list.each do |node, node_url|
+            - @node_list.each do |node|
               %tr{:class => even ? "even": "odd" }
                 %td{:colspan => 2}= link_to node, url(:node, { :id => node } )
                 %td
