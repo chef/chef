@@ -17,6 +17,8 @@
 #
 
 require 'etc'
+require 'tmpdir'
+require 'chef/log'
 
 class Chef
   
@@ -46,10 +48,12 @@ class Chef
     
     # === Arguments:
     # Takes a single command, or a list of command fragments. These are used
-    # as arguments to Kernel.exec.
+    # as arguments to Kernel.exec. See the Kernel.exec documentation for more
+    # explanation of how arguments are evaluated. The last argument can be an
+    # options Hash.
     # === Options:
-    # If the last argument is a Hash, it's removed from the list of command
-    # fragments and used as an options hash. The following options are available:
+    # If the last argument is a Hash, it is removed from the list of args passed
+    # to exec and used as an options hash. The following options are available:
     # * user: the user the commmand should run as. if an integer is given, it is
     #   used as a uid. A string is treated as a username and resolved to a uid
     #   with Etc.getpwnam
@@ -58,6 +62,9 @@ class Chef
     # * umask: a umask to set before running the command. If given as an Integer,
     #   be sure to use two leading zeros so it's parsed as Octal. A string will
     #   be treated as an octal integer
+    # * returns:  one or more Integer values to use as valid exit codes for the
+    #   subprocess. This only has an effect if you call +error!+ after
+    #   +run_command+.
     # * environment: a Hash of environment variables to set before the command
     #   is run. By default, the environment will *always* be set to 'LC_ALL' => 'C'
     #   to prevent issues with multibyte characters in Ruby 1.8. To avoid this,
@@ -261,6 +268,7 @@ class Chef
       child_stdout.close  unless child_stdout.closed?
       child_stderr.close  unless child_stderr.closed?
       child_process_status.close unless child_process_status.closed?
+    #rescue NoMethodError # we blew up before IPC was setup
     end
     
     # replace stdout, and stderr with pipes to the parent, and close the
