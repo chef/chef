@@ -21,23 +21,6 @@ require 'pp'
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
 require 'ostruct'
 
-class Chef::Resource
-
-  def to_text
-    skip = [:@allowed_actions, :@resource_name, :@source_line]
-    ivars = instance_variables.map { |ivar| ivar.to_sym }
-    text = "# Declared in #{@source_line}\n"
-    text << convert_to_snake_case(self.class.name, 'Chef::Resource') + "(#{name}) do\n"
-    ivars.each do |ivar|
-      next if skip.include?(ivar)
-      if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
-        text << "  #{ivar.to_s.sub(/^@/,'')}(#{value.inspect})\n"
-      end
-    end
-    text << "end\n"
-  end
-end
-
 describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   before do
     @gem_env = Chef::Provider::Package::Rubygems::CurrentGemEnvironment.new
