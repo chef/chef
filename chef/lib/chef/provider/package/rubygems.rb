@@ -40,13 +40,15 @@ class Chef
     class Package
       class Rubygems < Chef::Provider::Package
         class GemEnvironment
-          # HACK: trigger gem config load early so it doesn't stomp our trickery
+          # HACK: trigger gem config load early. Otherwise it can get lazy
+          # loaded during operations where we've set Gem.sources to an
+          # alternate value and overwrite it with the defaults.
           Gem.configuration
 
           DEFAULT_UNINSTALLER_OPTS = {:ignore => true, :executables => true}
 
           ##
-          # The paths where rubygems should search for installed gems
+          # The paths where rubygems should search for installed gems.
           # Implemented by subclasses.
           def gem_paths
             raise NotImplementedError
@@ -109,10 +111,9 @@ class Chef
 
           ##
           # Finds the newest version that satisfies the constraints of
-          # +gem_dependency+. If a path to a file is given as a source, the
-          # version is determined by parsing the gem's gemspec. Otherwise, the
-          # version is determined from the cache or a round-trip to the server
-          # as needed
+          # +gem_dependency+. The version is determined from the cache or a
+          # round-trip to the server as needed. The architecture and gem
+          # sources will be set before making the query.
           # === Returns
           # Gem::Version  a singular gem version object is returned if the gem
           #               is available
@@ -152,6 +153,12 @@ class Chef
             end
           end
 
+          ##
+          # Uninstall the gem +gem_name+ via the rubygems ruby API. If
+          # +gem_version+ is provided, only that version will be uninstalled.
+          # Otherwise, all versions are uninstalled.
+          # === Options
+          # Options are passed to Gem::Uninstaller.new
           def uninstall(gem_name, gem_version=nil, opts={})
             gem_version ? opts[:version] = gem_version : opts[:all] = true
             uninstaller(gem_name, opts).uninstall
@@ -371,7 +378,7 @@ class Chef
         # Installs the gem, using either the gems API or shelling out to `gem`
         # according to the following criteria:
         # 1. Use gems API (Gem::DependencyInstaller) by default
-        # 2. shell out to install when a String of options is given
+        # 2. shell out to `gem install` when a String of options is given
         # 3. use gems API with options if a hash of options is given
         def install_package(name, version)
           if source_is_remote? && @new_resource.gem_binary.nil?
