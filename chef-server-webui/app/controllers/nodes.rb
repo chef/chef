@@ -27,27 +27,25 @@ class Nodes < Application
   before :login_required
   
   def index
-    node_hash =  begin
-                    Chef::Node.list
-                  rescue => e
-                    Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                    @_message = {:error => "Could not list nodes"}
-                    {}
-                  end
-    @node_list = node_hash.values.sort.map do |node_url|
-      node_hash.index(node_url)
+    begin
+      node_hash = Chef::Node.list
+      @node_list = node_hash.keys.sort_by {|a,b| node_hash[a] <=> node_hash[b]}
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = {:error => "Could not list nodes"}
+      @node_hash = {}
     end
     render
   end
 
   def show
-    @node = begin      
-              Chef::Node.load(params[:id])
-            rescue => e
-              Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-              @_message = {:error => "Could not load node #{params[:id]}"}
-              Chef::Node.new
-            end 
+    begin      
+      @node =Chef::Node.load(params[:id])
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = {:error => "Could not load node #{params[:id]}"}
+      @node = Chef::Node.new
+    end 
     render
   end
 
