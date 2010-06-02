@@ -1,0 +1,6 @@
+LOGFILE=/var/log/chef/server-webui.log
+CONFIG=/etc/chef/webui.rb
+ADAPTER=thin
+PORT=4040
+USER=chef
+GROUP=chef
