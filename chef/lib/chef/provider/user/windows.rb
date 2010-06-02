@@ -26,8 +26,8 @@ class Chef
     class User
       class Windows < Chef::Provider::User
 
-        def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-          super(node, new_resource, collection, definitions, cookbook_loader)
+        def initialize(new_resource,run_context)
+          super
           @net_user = Chef::Util::Windows::NetUser.new(@new_resource.name)
         end
 

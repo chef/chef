@@ -31,12 +31,13 @@ describe Chef::Provider::User::Windows do
   before(:each) do
     @node = Chef::Node.new
     @new_resource = Chef::Resource::User.new("monkey")
+    @run_context = Chef::RunContext.new(@node, {})
     @current_resource = Chef::Resource::User.new("monkey")
 
     @net_user = mock("Chef::Util::Windows::NetUser")
     Chef::Util::Windows::NetUser.stub!(:new).and_return(@net_user)
 
-    @provider = Chef::Provider::User::Windows.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Windows.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
   
