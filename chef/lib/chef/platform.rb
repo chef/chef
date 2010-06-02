@@ -130,19 +130,25 @@ class Chef
           :mswin => {
             :default => {
               :env =>  Chef::Provider::Env::Windows,
-              :service => Chef::Provider::Service::Windows
+              :service => Chef::Provider::Service::Windows,
+              :user => Chef::Provider::User::Windows,
+              :group => Chef::Provider::Group::Windows
             }
           },
           :mingw32 => {
             :default => {
               :env =>  Chef::Provider::Env::Windows,
-              :service => Chef::Provider::Service::Windows
+              :service => Chef::Provider::Service::Windows,
+              :user => Chef::Provider::User::Windows,
+              :group => Chef::Provider::Group::Windows
             }
           },
           :windows => {
             :default => {
               :env =>  Chef::Provider::Env::Windows,
-              :service => Chef::Provider::Service::Windows
+              :service => Chef::Provider::Service::Windows,
+              :user => Chef::Provider::User::Windows,
+              :group => Chef::Provider::Group::Windows
             }
           },
           :solaris  => {},
