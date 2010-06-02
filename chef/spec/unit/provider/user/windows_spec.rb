@@ -27,187 +27,150 @@ class Chef
   end
 end
 
-describe Chef::Provider::User::Windows, "set_options" do
+describe Chef::Provider::User::Windows do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User",
-      :null_object => true,
-      :username => "adam",
-      :comment => "Adam Jacob",
-      :uid => 1000,
-      :gid => 1000,
-      :home => "/home/adam",
-      :shell => "/usr/bin/zsh",
-      :password => "abracadabra",
-      :updated => nil
-    )
-    @current_resource = mock("Chef::Resource::User",
-      :null_object => true,
-      :username => "adam",
-      :comment => "Adam Jacob",
-      :uid => 1000,
-      :gid => 1000,
-      :home => "/home/adam",
-      :shell => "/usr/bin/zsh",
-      :password => "abracadabra",
-      :updated => nil
-    )
-    @net_user = mock("Chef::Util::Windows::NetUser",
-      :null_object => true
-    )
+    @node = Chef::Node.new
+    @new_resource = Chef::Resource::User.new("monkey")
+    @current_resource = Chef::Resource::User.new("monkey")
+
+    @net_user = mock("Chef::Util::Windows::NetUser")
     Chef::Util::Windows::NetUser.stub!(:new).and_return(@net_user)
+
     @provider = Chef::Provider::User::Windows.new(@node, @new_resource)
     @provider.current_resource = @current_resource
   end
   
-  field_list = {
-    'comment' => 'full_name',
-    'home' => 'home_dir',
-    'gid' => 'primary_group_id',
-    'uid' => 'user_id',
-    'shell' => 'script_path',
-    'password' => 'password'
-  }
-  field_list.each do |attribute, option|
-    it "should check for differences in #{attribute} between the new and current resources" do
-      @current_resource.should_receive(attribute)
-      @new_resource.should_receive(attribute)
-      @provider.set_options
+  describe "when comparing the user's current attributes to the desired attributes" do
+    before do
+      @new_resource.comment   "Adam Jacob"
+      @new_resource.uid       1000
+      @new_resource.gid       1000
+      @new_resource.home      "/home/adam"
+      @new_resource.shell     "/usr/bin/zsh"
+      @new_resource.password  "abracadabra"
+
+      @provider.current_resource = @new_resource.clone
+    end
+    describe "and the attributes match" do
+      it "doesn't set the comment field to be updated" do
+        @provider.set_options.should_not have_key(:full_name)
+      end
+
+      it "doesn't set the home directory to be updated" do
+        @provider.set_options.should_not have_key(:home_dir)
+      end
+
+      it "doesn't set the group id to be updated" do
+        @provider.set_options.should_not have_key(:primary_group_id)
+      end
+
+      it "doesn't set the user id to be updated" do
+        @provider.set_options.should_not have_key(:user_id)
+      end
+
+      it "doesn't set the shell to be updated" do
+        @provider.set_options.should_not have_key(:script_path)
+      end
+
+      it "doesn't set the password to be updated" do
+        @provider.set_options.should_not have_key(:password)
+      end
+
     end
     
-    it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
-      @new_resource.stub!(attribute).and_return("hola")
-      @provider.set_options.should eql({:name, @new_resource.username, option.to_sym, @new_resource.send(attribute)})
+    describe "and the attributes do not match" do
+      before do
+        @current_resource = Chef::Resource::User.new("adam")
+        @current_resource.comment   "Adam Jacob-foo"
+        @current_resource.uid       1111
+        @current_resource.gid       1111
+        @current_resource.home      "/home/adam-foo"
+        @current_resource.shell     "/usr/bin/tcsh"
+        @current_resource.password  "foobarbaz"
+        @provider.current_resource = @current_resource
+      end
+
+      it "marks the full_name field to be updated" do
+        @provider.set_options[:full_name].should == "Adam Jacob"
+      end
+
+      it "marks the home_dir attribute to be updated" do
+        @provider.set_options[:home_dir].should == '/home/adam'
+      end
+
+      it "marks the primary_group_id attribute to be updated" do
+        @provider.set_options[:primary_group_id].should == 1000
+      end
+
+      it "marks the user_id attribute to be updated" do
+        @provider.set_options[:user_id].should == 1000
+      end
+
+      it "marks the script_path attribute to be updated" do
+        @provider.set_options[:script_path].should == '/usr/bin/zsh'
+      end
+
+      it "marks the password attribute to be updated" do
+        @provider.set_options[:password].should == 'abracadabra'
+      end
     end
   end
-end
 
-describe Chef::Provider::User::Windows, "create_user" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User", :null_object => true)
-    @net_user = mock("Chef::Util::Windows::NetUser",
-      :null_object => true
-    )
-    Chef::Util::Windows::NetUser.stub!(:new).and_return(@net_user)
-    @provider = Chef::Provider::User::Windows.new(@node, @new_resource)
-    @provider.stub!(:set_options).and_return({:name, "monkey"})
-    @net_user.stub!(:add)
+  describe "when creating the user" do
+    it "should call @net_user.add with the return of set_options" do
+      @provider.stub!(:set_options).and_return(:name=> "monkey")
+      @net_user.should_receive(:add).with(:name=> "monkey")
+      @provider.create_user
+    end
   end
 
-  it "should call @net_user.add with the return of set_options" do
-    @net_user.should_receive(:add).with({:name, "monkey"})
-    @provider.create_user
-  end
-end
-
-describe Chef::Provider::User::Windows, "manage_user" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User", :null_object => true)
-    @net_user = mock("Chef::Util::Windows::NetUser",
-      :null_object => true
-    )
-    Chef::Util::Windows::NetUser.stub!(:new).and_return(@net_user)
-    @provider = Chef::Provider::User::Windows.new(@node, @new_resource)
-    @provider.stub!(:set_options).and_return({:name, "monkey"})
-    @net_user.stub!(:update)
-  end
+  describe "manage_user" do
+    before(:each) do
+      @provider.stub!(:set_options).and_return(:name=> "monkey")
+    end
   
-  it "should call @net_user.update with the return of set_options" do
-    @net_user.should_receive(:update).with({:name, "monkey"})
-    @provider.manage_user
-  end
-end
-
-describe Chef::Provider::User::Windows, "remove_user" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User",
-      :null_object => true,
-      :username => "adam"
-    )
-    @net_user = mock("Chef::Util::Windows::NetUser",
-      :null_object => true
-    )
-    Chef::Util::Windows::NetUser.stub!(:new).and_return(@net_user)
-    @provider = Chef::Provider::User::Windows.new(@node, @new_resource)
-    @net_user.stub!(:delete)
-  end
-  
-  it "should call @net_user.delete" do
-    @net_user.should_receive(:delete)
-    @provider.remove_user
-  end
-end
-
-describe Chef::Provider::User::Windows, "check_lock" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User", :null_object => true)
-    @current_resource = mock("Chef::Resource::User",
-      :null_object => true,
-      :password => "abracadabra"
-    )
-    @net_user = mock("Chef::Util::Windows::NetUser",
-      :null_object => true
-    )
-    Chef::Util::Windows::NetUser.stub!(:new).and_return(@net_user)
-    @provider = Chef::Provider::User::Windows.new(@node, @new_resource)
-    @provider.current_resource = @current_resource
+    it "should call @net_user.update with the return of set_options" do
+      @net_user.should_receive(:update).with(:name=> "monkey")
+      @provider.manage_user
+    end
   end
 
-  it "should return true if user is locked" do
-    @net_user.stub!(:check_enabled).and_return(true)
-    @provider.check_lock.should eql(true)
+  describe "when removing the user" do
+    it "should call @net_user.delete" do
+      @net_user.should_receive(:delete)
+      @provider.remove_user
+    end
   end
 
-  it "should return false if user is not locked" do
-    @net_user.stub!(:check_enabled).and_return(false)
-    @provider.check_lock.should eql(false)
-  end
-end
+  describe "when checking if the user is locked" do
+    before(:each) do
+      @current_resource.password "abracadabra"
+    end
 
-describe Chef::Provider::User::Windows, "lock_user" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User",
-      :null_object => true,
-      :username => "adam"
-    )
-    @net_user = mock("Chef::Util::Windows::NetUser",
-      :null_object => true
-    )
-    Chef::Util::Windows::NetUser.stub!(:new).and_return(@net_user)
-    @net_user.stub!(:check_enabled).and_return(true)
-    @net_user.stub!(:disable_account)
-    @provider = Chef::Provider::User::Windows.new(@node, @new_resource)
-  end
-  
-  it "should call @net_user.disable_account" do
-    @net_user.should_receive(:disable_account)
-    @provider.lock_user
-  end
-end
+    it "should return true if user is locked" do
+      @net_user.stub!(:check_enabled).and_return(true)
+      @provider.check_lock.should eql(true)
+    end
 
-describe Chef::Provider::User::Windows, "unlock_user" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::User",
-      :null_object => true,
-      :username => "adam"
-    )
-    @net_user = mock("Chef::Util::Windows::NetUser",
-      :null_object => true
-    )
-    Chef::Util::Windows::NetUser.stub!(:new).and_return(@net_user)
-    @net_user.stub!(:check_enabled).and_return(false)
-    @net_user.stub!(:enable_account)
-    @provider = Chef::Provider::User::Windows.new(@node, @new_resource)
+    it "should return false if user is not locked" do
+      @net_user.stub!(:check_enabled).and_return(false)
+      @provider.check_lock.should eql(false)
+    end
   end
-  
-  it "should call @net_user.enable_account" do
-    @net_user.should_receive(:enable_account)
-    @provider.unlock_user
+
+  describe "locking the user" do
+    it "should call @net_user.disable_account" do
+      @net_user.stub!(:check_enabled).and_return(true)
+      @net_user.should_receive(:disable_account)
+      @provider.lock_user
+    end
+  end
+
+  describe "unlocking the user" do
+    it "should call @net_user.enable_account" do
+      @net_user.stub!(:check_enabled).and_return(false)
+      @net_user.should_receive(:enable_account)
+      @provider.unlock_user
+    end
   end
 end
