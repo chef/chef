@@ -113,6 +113,7 @@ class Chef::Application::Knife < Chef::Application
     validate_and_parse_options
     knife = Chef::Knife.find_command(ARGV, self.class.options)
     knife.run
+    exit 0
   end
   
   private
