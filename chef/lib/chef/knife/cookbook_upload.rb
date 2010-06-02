@@ -106,21 +106,22 @@ class Chef
         new_sandbox['checksums'].each do |checksum, info|
           if info['needs_upload'] == true
             Chef::Log.debug("PUTting #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
-            file_contents = File.read(checksum_files[checksum])
-            # TODO - 5/28/2010, cw: make this a streaming request
-            # checksum is the hexadecimal representation of the md5,
+            
+            # Checksum is the hexadecimal representation of the md5,
             # but we need the base64 encoding for the content-md5
             # header
             checksum64 = Base64.encode64([checksum].pack("H*")).strip
-            headers = { 'content-type'=>'application/x-binary', 'content-md5' => checksum64 }
-            ts = Time.now.utc.iso8601
+            timestamp = Time.now.utc.iso8601
+            file_contents = File.read(checksum_files[checksum])
+            # TODO - 5/28/2010, cw: make signing and sending the request streaming
             sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
-                                                                               :http_method=>:put,
-                                                                               :path=>info['url'],
-                                                                               :body=>file_contents,
-                                                                               :timestamp=>ts,
-                                                                               :user_id=>rest.client_name
+                                                                               :http_method => :put,
+                                                                               :path        => info['url'],
+                                                                               :body        => file_contents,
+                                                                               :timestamp   => timestamp,
+                                                                               :user_id     => rest.client_name
                                                                                )
+            headers = { 'content-type'=>'application/x-binary', 'content-md5' => checksum64 }
             headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
             begin
               RestClient::Request.execute(:method => :put, :url => info['url'], :headers => headers, :payload => file_contents)
