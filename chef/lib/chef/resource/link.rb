@@ -61,7 +61,7 @@ class Chef
         set_or_return(
           :group,
           arg,
-          :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
+          :regex => Chef::Config[:group_valid_regex]
         )
       end
       
@@ -69,7 +69,7 @@ class Chef
         set_or_return(
           :owner,
           arg,
-          :regex => [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
+          :regex => Chef::Config[:user_valid_regex]
         )
       end
 

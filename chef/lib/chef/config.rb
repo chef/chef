@@ -206,5 +206,10 @@ class Chef
 
     # Arbitrary knife configuration data
     knife Hash.new
+
+    # Those lists of regular expressions define what chef considers a
+    # valid user and group name
+    user_valid_regex [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
+    group_valid_regex [ /^([a-z]|[A-Z]|[0-9]|_|-)+$/, /^\d+$/ ]
   end
 end
