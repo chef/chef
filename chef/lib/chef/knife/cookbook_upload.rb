@@ -116,7 +116,7 @@ class Chef
             # TODO - 5/28/2010, cw: make signing and sending the request streaming
             sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
                                                                                :http_method => :put,
-                                                                               :path        => info['url'],
+                                                                               :path        => URI.parse(info['url']).path,
                                                                                :body        => file_contents,
                                                                                :timestamp   => timestamp,
                                                                                :user_id     => rest.client_name
