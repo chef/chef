@@ -1,10 +1,6 @@
 @api @cookbooks
 @manage_cookbook
 
-# TODO: timh, 5-27-2010: It'd be nice if we could get the following kind of
-# error checking, but it's not available when using Chef::REST
-#   And the inflated responses key 'error' should include 'missing required parameter: name'
-
 Feature: CRUD cookbooks
   In order to manage cookbook data
   As a Developer
