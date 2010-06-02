@@ -36,7 +36,7 @@ class Chef
         
         def remove_user
           command = "userdel"
-          command << " -r" if @new_resource.supports[:manage_home]
+          command << " -r" if @new_resource.manage_home || @new_resource.supports[:manage_home]
           command << " #{@new_resource.username}"
           run_command(:command => command)
         end
@@ -89,7 +89,7 @@ class Chef
             end
           end
           if @current_resource.home != @new_resource.home && @new_resource.home
-            if @new_resource.supports[:manage_home]
+            if @new_resource.manage_home || @new_resource.supports[:manage_home]
               Chef::Log.debug("Managing the home directory for #{@new_resource}")
               opts << " -d '#{@new_resource.home}' -m"
             else
@@ -97,7 +97,8 @@ class Chef
               opts << " -d '#{@new_resource.home}'"
             end
           end
-          opts << " -o" if @new_resource.supports[:non_unique]
+          opts << " -r" if @new_resource.system
+          opts << " -o" if @new_resource.non_unique || @new_resource.supports[:non_unique]
           opts << " #{@new_resource.username}"
           opts
         end

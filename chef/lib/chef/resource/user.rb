@@ -32,6 +32,9 @@ class Chef
         @home = nil
         @shell = nil
         @password = nil
+        @system = false
+        @manage_home = false
+        @non_unique = false
         @action = :create
         @supports = { 
           :manage_home => false,
@@ -95,6 +98,30 @@ class Chef
           :password,
           arg,
           :kind_of => [ String ]
+        )
+      end
+
+      def system(arg=nil)
+        set_or_return(
+          :system,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def manage_home(arg=nil)
+        set_or_return(
+          :manage_home,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def non_unique(arg=nil)
+        set_or_return(
+          :non_unique,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
       
