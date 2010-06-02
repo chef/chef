@@ -80,7 +80,7 @@ class Chef
     def set_owner
       if (uid = target_uid) && (uid != stat.uid)
         Chef::Log.debug("setting owner on #{file} to #{uid}")
-        FileUtils.chown(uid, nil, file)
+        File.chown(uid, nil, file)
         modified
       end
     end
@@ -101,7 +101,7 @@ class Chef
     def set_group
       if (gid = target_gid) && (gid != stat.gid)
         Chef::Log.debug("setting group on #{file} to #{gid}")
-        FileUtils.chown(nil, gid, file)
+        File.chown(nil, gid, file)
         modified
       end
     end
@@ -114,7 +114,7 @@ class Chef
     def set_mode
       if (mode = target_mode) && (mode != (stat.mode & 007777))
         Chef::Log.debug("setting mode on #{file} to #{mode.to_s(8)}")
-        FileUtils.chmod(target_mode, file)
+        File.chmod(target_mode, file)
         modified
       end
     end
