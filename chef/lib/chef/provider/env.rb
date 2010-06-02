@@ -26,8 +26,8 @@ class Chef
       include Chef::Mixin::Command
       attr_accessor :key_exists
 
-      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-        super(node, new_resource, collection, definitions, cookbook_loader)
+      def initialize(new_resource, run_context)
+        super
         @key_exists = true
       end
 
@@ -61,9 +61,9 @@ class Chef
       def compare_value
         if @new_resource.delim
           #e.g. check for existing value within PATH
-          @current_resource.value.split(@new_resource.delim).select { |item|
-            item == @new_resource.value
-          }.size == 0
+          not @current_resource.value.split(@new_resource.delim).any? do |val|
+            val == @new_resource.value
+          end
         else
           @new_resource.value != @current_resource.value
         end
