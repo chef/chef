@@ -1,10 +1,14 @@
 # Configuration file for the chef-server service
 
-#CHILDPIDFILES=/var/run/chef/server.%s.pid
-#PIDFILE=/var/run/chef/server.pid
 #CONFIG=/etc/chef/server.rb
-#CHEF_USER=chef
-#CHEF_GROUP=chef
-#CLUSTER_NODES=1
-#LOGFILE=/var/log/chef/merb.%s.log
+#PIDFILE=/var/run/chef/server.pid
+#LOCKFILE=/var/lock/subsys/chef-server
+#LOGFILE=/var/log/chef/server.log
+#PORT=4000
+#ENVIRONMENT=production
+#ADAPTER=thin
+#CHILDPIDFILES=/var/run/chef/server.%s.pid
+#SERVER_USER=chef
+#SERVER_GROUP=chef
+# Any additional chef-server options.
 #OPTIONS=

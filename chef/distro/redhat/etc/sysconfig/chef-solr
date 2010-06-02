@@ -1,9 +1,8 @@
 # Configuration file for the chef-solr service
 
+#CONFIG=/etc/chef/solr.rb
 #PIDFILE=/var/run/chef/solr.pid
-#CONFIG=/etc/chef/server.rb
-#CHEF_USER=chef
-#CHEF_GROUP=chef
+#LOCKFILE=/var/lock/subsys/chef-solr
 #LOGFILE=/var/log/chef/solr.log
-# options for Java. Need to start with -j followed by options..
+# Options for Java. Need to start with -j followed by options.
 #OPTIONS="-j "
