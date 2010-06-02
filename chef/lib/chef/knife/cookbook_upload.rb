@@ -17,13 +17,14 @@
 # limitations under the License.
 #
 
+require 'rest_client'
+
 require 'chef/knife'
 require 'chef/streaming_cookbook_uploader'
 require 'chef/cache/checksum'
 require 'chef/sandbox'
 require 'chef/cookbook_version'
 require 'chef/cookbook/file_system_file_vendor'
-require 'opscode/rest'
 
 class Chef
   class Knife
@@ -105,21 +106,24 @@ class Chef
         new_sandbox['checksums'].each do |checksum, info|
           if info['needs_upload'] == true
             Chef::Log.debug("PUTting #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
+            file_contents = File.read(checksum_files[checksum])
             # TODO - 5/28/2010, cw: make this a streaming request
             # checksum is the hexadecimal representation of the md5,
-            # but we need the base64-encoding for the content-md5
+            # but we need the base64 encoding for the content-md5
             # header
             checksum64 = Base64.encode64([checksum].pack("H*")).strip
             headers = { 'content-type'=>'application/x-binary', 'content-md5' => checksum64 }
-            options = {
-              :authenticate => true,
-              :user_secret  => OpenSSL::PKey::RSA.new(rest.signing_key),
-              :user_id      => rest.client_name,
-              :headers      => headers,
-              :payload      => File.read(checksum_files[checksum])
-            }
+            ts = Time.now.utc.iso8601
+            sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
+                                                                               :http_method=>:put,
+                                                                               :path=>info['url'],
+                                                                               :body=>file_contents,
+                                                                               :timestamp=>ts,
+                                                                               :user_id=>rest.client_name
+                                                                               )
+            headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
             begin
-              Opscode::REST.new.request(:put, info['url'], options)
+              RestClient::Request.execute(:method => :put, :url => info['url'], :headers => headers, :payload => file_contents)
             rescue RestClient::RequestFailed => e
               Chef::Log.error("Upload failed: #{e.message}\n#{e.response.body}")
               raise
@@ -149,7 +153,7 @@ class Chef
 
         checksums_to_on_disk_paths = cookbook.checksums
 
-        Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+        Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
           cookbook.manifest[segment].each do |manifest_record|
             path_in_cookbook = manifest_record[:path]
             on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]

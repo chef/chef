@@ -47,6 +47,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "mixlib-authentication", ">= 1.1.0"
   s.add_dependency "ohai", ">= 0.5.0"
 
+  s.add_dependency "rest-client", ">= 1.1.0"
   s.add_dependency "bunny", ">= 0.6.0"
   s.add_dependency "json", "<= 1.4.2"
   %w{erubis extlib moneta}.each { |gem| s.add_dependency gem }
