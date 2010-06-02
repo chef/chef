@@ -23,6 +23,7 @@ require 'chef/cache/checksum'
 require 'chef/sandbox'
 require 'chef/cookbook'
 require 'chef/cookbook/file_system_file_vendor'
+require 'opscode/rest'
 
 class Chef
   class Knife
@@ -80,9 +81,10 @@ class Chef
       def upload_cookbook(cookbook)
         Chef::Log.info("Saving #{cookbook.name}")
         
-        # create build directory and create a CookbookLoader that points to it
+        # create build directory
         tmp_cookbook_dir = create_build_dir(cookbook)
-        
+
+        # create a CookbookLoader that loads a Cookbook from the build directory
         orig_cookbook_path = nil
         build_dir_cookbook = nil
         begin
@@ -99,25 +101,34 @@ class Chef
         checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
         new_sandbox = catch_auth_exceptions{ rest.post_rest("/sandboxes", { :checksums => checksums }) }
         
-        # upload the new checksums and finalize the sandbox
+        # upload the new checksums and commit the sandbox
         new_sandbox['checksums'].each do |checksum, info|
           if info['needs_upload'] == true
-            Chef::Log.debug("PUTting file with checksum #{checksum} to #{info['url']}")
-            put_res = Chef::StreamingCookbookUploader.put(
-                                                          info['url'],
-                                                          rest.client_name,
-                                                          rest.signing_key_filename,
-                                                          {
-                                                            :file => File.new(checksum_files[checksum]),
-                                                            :name => checksum
-                                                          }
-                                                          )
-            Chef::Log.debug("#{JSON.parse(put_res.body).inspect}")
+            Chef::Log.debug("PUTting #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
+            # TODO - 5/28/2010, cw: make this a streaming request
+            # checksum is the hexadecimal representation of the md5,
+            # but we need the base64-encoding for the content-md5
+            # header
+            checksum64 = Base64.encode64([checksum].pack("H*")).strip
+            headers = { 'content-type'=>'application/x-binary', 'content-md5' => checksum64 }
+            options = {
+              :authenticate => true,
+              :user_secret  => OpenSSL::PKey::RSA.new(rest.signing_key),
+              :user_id      => rest.client_name,
+              :headers      => headers,
+              :payload      => File.read(checksum_files[checksum])
+            }
+            begin
+              Opscode::REST.new.request(:put, info['url'], options)
+            rescue RestClient::RequestFailed => e
+              Chef::Log.error("Upload failed: #{e.message}\n#{e.response.body}")
+              raise
+            end
           end
         end
         sandbox_url = new_sandbox['uri']
-        Chef::Log.debug("Finalizing sandbox")
-        finalize_res = catch_auth_exceptions{ rest.put_rest(sandbox_url, {:is_completed => true}) }
+        Chef::Log.debug("Committing sandbox")
+        catch_auth_exceptions{ rest.put_rest(sandbox_url, {:is_completed => true}) }
 
         # files are uploaded, so save the manifest
         catch_auth_exceptions{ build_dir_cookbook.save }
@@ -139,9 +150,9 @@ class Chef
         checksums_to_on_disk_paths = cookbook.checksums
 
         Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
-          cookbook.manifest[segment].each do |segment_file|
-            path_in_cookbook = segment_file[:path]
-            on_disk_path = checksums_to_on_disk_paths[segment_file[:checksum]]
+          cookbook.manifest[segment].each do |manifest_record|
+            path_in_cookbook = manifest_record[:path]
+            on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
             dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
             FileUtils.mkdir_p(File.dirname(dest))
             FileUtils.cp(on_disk_path, dest)

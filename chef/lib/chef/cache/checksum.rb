@@ -19,6 +19,7 @@
 #
 
 require 'chef/cache'
+require 'digest/md5'
 
 class Chef
   class Cache
@@ -58,7 +59,7 @@ class Chef
       end
       
       def generate_md5_checksum_for_file(file)
-        checksum_file(file, Digest::SHA1.new)
+        checksum_file(file, Digest::MD5.new)
       end
       
       private
