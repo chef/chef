@@ -182,9 +182,12 @@ class Chef
           time = Time.now
           savetime = time.strftime("%Y%m%d%H%M%S")
           backup_filename = "#{@new_resource.path}.chef-#{savetime}"
-          prefix = Chef::Config[:file_backup_path]
+          # if :file_backup_path is nil, we fallback to the old behavior of
+          # keeping the backup in the same directory. We also need to to_s it
+          # so we don't get a type error around implicit to_str conversions.
+          prefix = Chef::Config[:file_backup_path].to_s
           backup_path = ::File.join(prefix, backup_filename)
-          FileUtils.mkdir_p(::File.dirname(backup_path))
+          FileUtils.mkdir_p(::File.dirname(backup_path)) if Chef::Config[:file_backup_path]
           Chef::Log.info("Backing up #{@new_resource} to #{backup_path}")
           FileUtils.cp(file, backup_path, :preserve => true)
 
