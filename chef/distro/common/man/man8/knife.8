@@ -1,369 +1,777 @@
 .\" generated with Ronn/v0.5
 .\" http://github.com/rtomayko/ronn/
 .
-.TH "KNIFE" "" "May 2010" "" ""
-.TH CHEF: "1" "December 2009" "knife: 0.8.0" "System Administration Utilities"
-.SH NAME
-knife: \- Chef server REST API utility
-.SH SYNOPSIS
-.B knife
-\\fIsub\-command (options)\\fR
-.SH DESCRIPTION
-.TP
+.TH "KNIFE" "8" "June 2010" "" ""
+.
+.SH "NAME"
+\fBknife\fR \-\- Chef Server REST API utility
+.
+.SH "SYNOPSIS"
+\fBknife\fR \fIsub\-command\fR \fI(options)\fR
+.
+.SH "DESCRIPTION"
 This manual page documents knife, a command\-line utility used to interact with a Chef server directly through the RESTful API. Knife uses sub\-commands to take various actions on different types of Chef objects. Some sub\-commands take additional options. General options follow sub\-commands and their options. A configuration file can be created for common defaults.
-.TP
+.
+.P
 Unless otherwise specified, output is in JSON format, and input files are also JSON format.
-.SH GENERAL OPTIONS
+.
+.SH "GENERAL OPTIONS"
+.
 .TP
-\\fB\-s\\fR, \\fB\-\-server\-url\\fR URL
+\fB\-s\fR, \fB\-\-server\-url\fR URL
 Chef Server URL
+.
 .TP
-\\fB\-k\\fR, \\fB\-\-key\\fR KEY
+\fB\-k\fR, \fB\-\-key\fR KEY
 API Client Key
+.
 .TP
-\\fB\-c\\fR, \\fB\-\-config\\fR CONFIG
+\fB\-c\fR, \fB\-\-config\fR CONFIG
 The configuration file to use
+.
 .TP
-\\fB\-e\\fR, \\fB\-\-editor\\fR EDITOR
+\fB\-e\fR, \fB\-\-editor\fR EDITOR
 Set the editor to use for interactive commands
+.
 .TP
-\\fB\-l\\fR, \\fB\-\-log_level\\fR LEVEL
+\fB\-f\fR, \fB\-\-format\fR FORMAT
+Which format to use for output
+.
+.TP
+\fB\-l\fR, \fB\-\-log_level\fR LEVEL
 Set the log level (debug, info, warn, error, fatal)
+.
 .TP
-\\fB\-L\\fR, \\fB\-\-logfile\\fR LOGLOCATION
+\fB\-L\fR, \fB\-\-logfile\fR LOGLOCATION
 Set the log file location, defaults to STDOUT
+.
 .TP
-\\fB\-u\\fR, \\fB\-\-user\\fR USER
+\fB\-n\fR, \fB\-\-no\-editor\fR
+Do not open EDITOR, just accept the data as is
+.
+.TP
+\fB\-u\fR, \fB\-\-user\fR USER
 API Client Username
+.
 .TP
-\\fB\-p\\fR, \\fB\-\-print\-after\\fR
+\fB\-p\fR, \fB\-\-print\-after\fR
 Show the data after a destructive operation
+.
 .TP
-\\fB\-v\\fR, \\fB\-\-version\\fR
+\fB\-v\fR, \fB\-\-version\fR
 Show chef version
+.
 .TP
-\\fB\-y\\fR, \\fB\-\-yes\\fR
+\fB\-y\fR, \fB\-\-yes\fR
 Say yes to all prompts for confirmation
+.
 .TP
-\\fB\-h\\fR, \\fB\-\-help\\fR
-Show usage information.
-.SH SUB\-COMMANDS
-Knife sub\-commands are structured as "NOUN verb NOUN (options)". The sub\-commands are meant to be intuitively named.
-.SH CLIENT SUB\-COMMANDS
+\fB\-h\fR, \fB\-\-help\fR
+Show this message
+.
+.SH "SUB\-COMMANDS"
+Knife sub\-commands are structured as "\fINOUN\fR \fBverb\fR \fINOUN\fR (options)". The sub\-commands are meant to be intuitively named. Because the Chef Server API is RESTful, sub\-commands generally utilize CRUD operations.
+.
+.IP "\(bu" 4
+create (create)
+.
+.IP "\(bu" 4
+list and show (read)
+.
+.IP "\(bu" 4
+edit (update)
+.
+.IP "\(bu" 4
+delete (destroy)
+.
+.IP "" 0
+.
+.P
+Objects stored on the server support these, as described below.
+.
+.SH "GENERAL SUB\-COMMANDS"
+The following are general sub\-commands that do not fit within the other object types utilized in the Chef Server API.
+.
+.P
+\fBconfigure\fR \fI(options)\fR
+.
 .TP
-Sub\-commands related to working with clients, which are registered entities that access the Chef server.
+\fB\-i\fR, \fB\-\-initial\fR
+Create an initial API Client
+.
 .TP
-.B client bulk delete \\fI(options)\\fR
-.TP
-\\fB\-r\\fR, \\fB\-\-regex\\fR [REGEX]
-Narrow the operation via regular expression
-.PP
-Delete all the clients on the Chef server, or only certain clients based on a regular expression.
-.PP
-.B client create CLIENT (options)
-.TP
-\\fB\-f\\fR, \\fB\-\-file\\fR FILE
-Write the key to a file
-.PP
-Create a new client.
-.PP
-.B client delete CLIENT (options)
-.PP
-Deletes a registered client.
-.PP
-.B client edit CLIENT (options)
-.PP
-Edit a registered client.
-.PP
-.B client list (options)
-.TP
-\\fB\-w\\fR, \\fB\-\-with\-uri\\fR
-Show corresponding URIs
-.PP
-List all registered clients.
-.PP
-.B client reregister CLIENT (options)
-.TP
-\\fB\-f\\fR, \\fB\-\-file\\fR FILE
-Write the key to a file
-.PP
-Regenerate the private key for a client.
-.PP
-.B client show CLIENT (options)
-.TP
-\\fB\-a\\fR, \\fB\-\-attribute\\fR [ATTR]
-Show only one attribute
-.PP
-Show a client.
-.SH COOKBOOK SUB\-COMMANDS
-.TP
-Cookbooks are the fundamental unit of distribution in Chef. They encapsulate all the recipes of resources and the assets used to configure a particular aspect of the infrastructure.
-.PP
-.B cookbook bulk delete COOKBOOK (options)
-.TP
-\\fB\-r\\fR, \\fB\-\-regex\\fR [REGEX]
-Narrow the operation via regular expression
-.PP
-Delete all the cookbooks on the Chef server, or use a regular expression to only delete certain cookbooks.
-.PP
-.B cookbook delete COOKBOOK (options)
-.PP
-Delete a single named COOKBOOK.
-.PP
-.B cookbook download COOKBOOK (options)
-.TP
-\\fB\-f\\fR, \\fB\-\-file\\fR FILE
-The filename to write to
-.PP
-Download a cookbook from the server as a gzip(1)'ed, tar(1) archive.
-.PP
-.B cookbook list (options)
-.TP
-\\fB\-w\\fR, \\fB\-\-with\-uri\\fR
-Show corresponding URIs
-.PP
-List all cookbooks.
-.PP
-.B cookbook metadata COOKBOOK (options)
-.TP
-\\fB\-a\\fR, \\fB\-\-all\\fR
-Generate metadata for all cookbooks, rather than just a single cookbook
-.PP
-Generate cookbook metadata for the named COOKBOOK.
-.TP
-\\fB\-o\\fR, \\fB\-\-cookbook\-path\\fR PATH:PATH
-A colon\-separated path to look for cookbooks in
-.PP
-.B cookbook show COOKBOOK [PART] [FILENAME] (options)
-.TP
-\\fB\-f\\fR, \\fB\-\-fqdn\\fR FQDN
-The FQDN of the host to see the file for
-.TP
-\\fB\-p\\fR, \\fB\-\-platform\\fR PLATFORM
-The platform to see the file for
-.TP
-\\fB\-V\\fR, \\fB\-\-platform\-version\\fR VERSION
-The platform version to see the file for
-.PP
-Show the particular part of a COOKBOOK. PART can be one of:
-.TP
-\\fIattribute definition file provider recipe resource template\\fR
-.PP
-.B cookbook upload COOKBOOK (options)
-.TP
-\\fB\-a\\fR, \\fB\-\-all\\fR
-Upload all cookbooks, rather than just a single cookbook
-.TP
-\\fB\-o\\fR, \\fB\-\-cookbook\-path\\fR PATH:PATH
-A colon\-separated path to look for cookbooks in
-.PP
-Upload a cookbook to the server.
-.SH DATA BAG SUB\-COMMANDS
-.PP
-Data bags are stores of JSON blobs. These blobs are called items. They are free form and indexed by the search mechanism on the Chef server.
-.PP
-.B data bag create BAG [ITEM] (options)
-.PP
-Create a new data bag, or item in a data bag.
-.PP
-.B data bag delete BAG [ITEM] (options)
-.PP
-Delete a data bag, or item from a data bag.
-.PP
-.B data bag edit BAG ITEM (options)
-.PP
-Edit an item in a data bag.
-.PP
-.B data bag list (options)
-.TP
-\\fB\-w\\fR, \\fB\-\-with\-uri\\fR
-Show corresponding URIs
-.PP
-List the available data bags.
-.PP
-.B data bag show BAG [ITEM] (options)
-.PP
-Show a specific data bag or an item in a data bag.
-.SH NODE SUB\-COMMANDS
-.PP
-Nodes are the entities which are configured with Chef, typically servers or workstations. Nodes are registered as a client, typcially of the same name, but a single client might represent one or more nodes.
-.PP
-.B node bulk delete (options)
-.TP
-\\fB\-r\\fR, \\fB\-\-regex\\fR [REGEX]
-Narrow the operation via regular expression
-.PP
-Delete all nodes, or only certain nodes based on a regular expression.
-.PP
-.B node create NODE (options)
-.PP
-Create a new node.
-.PP
-.B node delete NODE (options)
-.PP
-Delete a single node.
-.PP
-.B node edit NODE (options)
-.PP
-Edit a node.
-.PP
-.B node from file FILE (options)
-.PP
-Create a node from a JSON file.
-.PP
-.B node list (options)
-.TP
-\\fB\-w\\fR, \\fB\-\-with\-uri\\fR
-Show corresponding URIs
-.PP
-List all nodes.
-.PP
-.B node run_list add [NODE] [ENTRY] (options)
-.TP
-\\fB\-a\\fR, \\fB\-\-after\\fR [ITEM]
-Place the ENTRY in the run list after ITEM
-.PP
-Add a recipe or role to the node's run_list.
-.PP
-.B node run_list remove [NODE] [ENTRY] (options)
-.PP
-Remove a recipe or role from the node's run_list.
-.PP
-.B node show NODE (options)
-.TP
-\\fB\-a\\fR, \\fB\-\-attribute\\fR [ATTR]
-Show only one attribute
-.TP
-\\fB\-r\\fR, \\fB\-\-run\-list\\fR
-Show only the run list
-.PP
-Show a node.
-.SH ROLE SUB\-COMMANDS
-.PP
-Roles provide a mechanism to apply a set of recipes and attributes to nodes. For example, the 'webserver' role might instruct Chef to add a recipe for Apache, and specify a default domain to use.
-.PP
-.B role bulk delete (options)
-.TP
-\\fB\-r\\fR, \\fB\-\-regex\\fR [REGEX]
-Narrow the operation via regular expression
-.PP
-Delete all roles, or only certain roles based on a regular expression.
-.PP
-.B role create ROLE (options)
-.TP
-\\fB\-d\\fR, \\fB\-\-description\\fR
-The role description
-.PP
-Create a new role.
-.PP
-.B role delete ROLE (options)
-.PP
-Delete a role.
-.PP
-.B role edit ROLE (options)
-Edit a role.
-.PP
-.B role from file FILE (options)
-.PP
-Update a role from a file.
-.PP
-.B role list (options)
-.TP
-\\fB\-w\\fR, \\fB\-\-with\-uri\\fR
-Show corresponding URIs
-.PP
-List roles.
-.PP
-.B role show ROLE (options)
-.TP
-\\fB\-a\\fR, \\fB\-\-attribute\\fR [ATTR]
-Show only one attribute
-.PP
-Show a specific role.
-.SH EC2 SUB\-COMMANDS
-The following sub\-commands are specific to working with Amazon AWS EC2 systems.
-.PP
-.B ec2 instance data [RUN LIST...] (options)
-.TP
-\\fB\-e\\fR, \\fB\-\-edit\\fR
-Edit the instance data
-.PP
-Chef is commonly used with Amazon AWS EC2 nodes. This command will generate instance metadata that can be used to automatically configure an EC2 instance with Chef.
-.SH RACKSPACE SUB\-COMMANDS
-The following sub\-commands are specific to working with Rackspace Cloud systems.
-.SH TERREMARK SUB\-COMMANDS
-The following sub\-commands are specific to working with Terremark vCloud systems.
-.SH GENERAL SUB\-COMMANDS
-.PP
-The following are general sub\-commands that do not fit within the other object types used in Chef.
-.PP
-.B configure (options)
-.TP
-\\fB\-r\\fR, \\fB\-\-repository\\fR REPO
+\fB\-r\fR, \fB\-\-repository REPO\fR
 The path to your chef\-repo
-.PP
-Create a configuration file for knife. This will prompt for values to enter into the file. See "\\fBCONFIGURATION\\fR" below for available options.
-.PP
-.B search INDEX QUERY (options)
+.
+.P
+Create a configuration file for knife. This will prompt for values to enter into the file. Default values are listed in square brackets if no other entry is typed. See "\fBCONFIGURATION\fR" below for available options.
+.
+.P
+\fBindex rebuild\fR \fI(options)\fR
+.
 .TP
-\\fB\-a\\fR, \\fB\-\-attribute\\fR [ATTR]
+\fB\-y\fR, \fB\-\-yes\fR
+don't bother to ask if I'm sure
+.
+.P
+Rebuilds all the search indexes on the server.
+.
+.P
+\fBsearch INDEX QUERY\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-attribute ATTR\fR
 Show only one attribute
+.
 .TP
-\\fB\-i\\fR, \\fB\-\-id\-only\\fR
+\fB\-i\fR, \fB\-\-id\-only\fR
 Show only the ID of matching objects
+.
 .TP
-\\fB\-R\\fR, \\fB\-\-rows\\fR INT
+\fB\-R\fR, \fB\-\-rows INT\fR
 The number of rows to return
+.
 .TP
-\\fB\-r\\fR, \\fB\-\-run\-list\\fR
+\fB\-r\fR, \fB\-\-run\-list\fR
 Show only the run list
+.
 .TP
-\\fB\-o\\fR, \\fB\-\-sort\\fR SORT
+\fB\-o\fR, \fB\-\-sort SORT\fR
 The order to sort the results in
+.
 .TP
-\\fB\-b\\fR, \\fB\-\-start\\fR ROW
+\fB\-b\fR, \fB\-\-start ROW\fR
 The row to start returning results at
-.PP
-Search indexes are a powerful feature of the Chef server and the search subcommand allows searching any of the available indexes using the SOLR query syntax.
-.SH CONFIGURATION
-The knife configuration file is a Ruby DSL. If it exists, knife uses the settings for \\fBGENERAL OPTIONS\\fR defaults.
+.
+.P
+Search indexes are a feature of the Chef Server and the search sub\-command allows querying any of the available indexes using SOLR query syntax. The following data types are indexed for search: \fInode\fR, \fIrole\fR, \fIclient\fR, \fIdata bag\fR.
+.
+.P
+\fBssh QUERY COMMAND\fR \fI(options)\fR
+.
 .TP
-.B log_level
-A Ruby symbol specifying the log level. Corresponds to the \-l or \-\-log_level option. Default is :info.
+\fB\-a\fR, \fB\-\-attribute ATTR      \fR
+The attribute to use for opening the connection \- default is fqdn
+.
 .TP
-.B log_location
-Corresponds to the \-L or \-\-logfile option. Default is STDOUT.
+\fB\-C\fR, \fB\-\-concurrency NUM     \fR
+The number of concurrent connections
+.
 .TP
-.B node_name
-User to authenticate to the Chef server. Corresponds to the \-u or \-\-user option. This is requested from the user when running this sub\-command.
+\fB\-m\fR, \fB\-\-manual\-list         \fR
+QUERY is a space separated list of servers
+.
 .TP
-.B client_key
-Private key file to authenticate to the Chef server. Corresponds to the \-k or \-\-key option. This is requested from the user when running this sub\-command.
+\fB\-P\fR, \fB\-\-ssh\-password PASSWORD\fR
+The ssh password
+.
 .TP
-.B chef_server_url
-URL of the Chef server. Corresponds to the \-s or \-\-server\-url option. This is requested from the user when running this sub\-command.
+\fB\-x\fR, \fB\-\-ssh\-user USERNAME   \fR
+The ssh username
+.
+.P
+The \fBssh\fR sub\-command opens an ssh session to each of the nodes in the search results of the \fIQUERY\fR. This sub\-command requires that the net\-ssh\-multi and highline Ruby libraries are installed. On Debian systems, these are the libnet\-ssh\-multi\-ruby and libhighline\-ruby packages. They can also be installed as RubyGems (net\-ssh\-multi and highline, respectively).
+.
+.SH "CLIENT SUB\-COMMANDS"
+Clients are entities that communicate with the Chef Server API.
+.
+.P
+\fBclient bulk delete REGEX\fR \fI(options)\fR
+.
+.P
+Delete clients on the Chef Server based on a regular expression. The regular expression (\fIREGEX\fR) should be in quotes, not in //'s.
+.
+.P
+\fBclient create CLIENT\fR \fI(options)\fR
+.
 .TP
-.B cache_type
-The type of cache to use. Default is \\fIBasicFile\\fR. This can be any type of Cache that moneta supports: BasicFile, Berkeley, Couch, DataMapper, File, LMC, Memcache, Memory, MongoDB, Redis, Rufus, S3, SDBM, Tyrant, Xattr, YAML.
+\fB\-a\fR, \fB\-\-admin   \fR
+Create the client as an admin
+.
 .TP
-.B cache_options
+\fB\-f\fR, \fB\-\-file FILE\fR
+Write the key to a file
+.
+.P
+Create a new client. This generates an RSA keypair. The private key will be displayed on \fISTDOUT\fR or written to the named file. The public half will be stored on the Server. For \fIchef\-client\fR systems, the private key should be copied to the system as \fB/etc/chef/client.pem\fR.
+.
+.P
+Admin clients should be created for users that will use \fIknife\fR to access the API as an administrator. The private key will generally be copied to \fB~/.chef/CLIENT.pem\fR and referenced in the \fBknife.rb\fR configuration file.
+.
+.P
+\fBclient delete CLIENT\fR \fI(options)\fR
+.
+.P
+Deletes a registered client.
+.
+.P
+\fBclient edit CLIENT\fR \fI(options)\fR
+.
+.P
+Edit a registered client.
+.
+.P
+\fBclient list\fR \fI(options)\fR
+.
+.TP
+\fB\-w\fR, \fB\-\-with\-uri\fR
+  Show corresponding URIs
+.
+.P
+List all registered clients.
+.
+.P
+\fBclient reregister CLIENT\fR \fI(options)\fR
+.
+.TP
+\fB\-f\fR, \fB\-\-file FILE\fR
+Write the key to a file
+.
+.P
+Regenerate the RSA keypair for a client. The public half will be stored on the server and the private key displayed on \fISTDOUT\fR or written to the named file.
+.
+.P
+\fBclient show CLIENT\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-attribute ATTR\fR
+Show only one attribute
+.
+.P
+Show a client.
+.
+.SH "COOKBOOK SUB\-COMMANDS"
+Cookbooks are the fundamental unit of distribution in Chef. They encapsulate all recipes of resources and assets used to configure a particular aspect of the infrastructure. The following sub\-commands can be used to manipulate the cookbooks stored on the Chef Server.
+.
+.P
+\fBcookbook bulk delete REGEX\fR \fI(options)\fR
+.
+.P
+Delete cookbooks on the Chef Server based on a regular expression. The regular expression (\fIREGEX\fR) should be in quotes, not in //'s.
+.
+.P
+\fBcookbook delete COOKBOOK\fR \fI(options)\fR
+.
+.P
+Delete a single named \fICOOKBOOK\fR.
+.
+.P
+\fBcookbook download COOKBOOK\fR \fI(options)\fR
+.
+.TP
+\fB\-f\fR, \fB\-\-file FILE\fR
+The filename to write to
+.
+.P
+Download a cookbook from the Chef Server as a gzip(1)'ed, tar(1) archive.
+.
+.P
+\fBcookbook list\fR \fI(options)\fR
+.
+.TP
+\fB\-w\fR, \fB\-\-with\-uri\fR
+Show corresponding URIs
+.
+.P
+List all the cookbooks.
+.
+.P
+\fBcookbook metadata COOKBOOK\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-all\fR
+Generate metadata for all cookbooks, rather than just a single cookbook
+.
+.TP
+\fB\-o\fR, \fB\-\-cookbook\-path PATH:PATH\fR
+A colon\-separated path to look for cookbooks in
+.
+.P
+Generate cookbook metadata for the named \fICOOKBOOK\fR. The \fIPATH\fR used here specifies where the "cookbooks" directory is located and corresponds to the \fBcookbook_path\fR configuration option.
+.
+.P
+\fBcookbook metadata from FILE\fR \fI(options)\fR
+.
+.P
+Load the cookbook metadata from a specified file.
+.
+.P
+\fBcookbook show COOKBOOK [PART] [FILENAME]\fR \fI(options)\fR
+.
+.TP
+\fB\-f\fR, \fB\-\-fqdn FQDN              \fR
+The FQDN of the host to see the file for
+.
+.TP
+\fB\-p\fR, \fB\-\-platform PLATFORM      \fR
+The platform to see the file for
+.
+.TP
+\fB\-V\fR, \fB\-\-platform\-version VERSION\fR
+The platform version to see the file for
+.
+.P
+Show a particular part of a \fICOOKBOOK\fR. \fIPART\fR can be one of:
+.
+.IP "\(bu" 4
+\fIattributes\fR
+.
+.IP "\(bu" 4
+\fIdefinitions\fR
+.
+.IP "\(bu" 4
+\fIfiles\fR
+.
+.IP "\(bu" 4
+\fIlibraries\fR
+.
+.IP "\(bu" 4
+\fIproviders\fR
+.
+.IP "\(bu" 4
+\fIrecipes\fR
+.
+.IP "\(bu" 4
+\fIresources\fR
+.
+.IP "\(bu" 4
+\fItemplates\fR
+.
+.IP "" 0
+.
+.P
+\fBcookbook test [COOKBOOKS...]\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-all\fR
+Test all cookbooks, rather than just a single cookbook
+.
+.TP
+\fB\-o\fR, \fB\-\-cookbook\-path PATH:PATH\fR
+A colon\-separated path to look for cookbooks in
+.
+.P
+Test the specified cookbooks for syntax errors. This uses the built\-in Ruby syntax checking option for files in the cookbook ending in \fB.rb\fR, and the ERB syntax check for files ending in \fB.erb\fR (templates).
+.
+.P
+\fBcookbook upload [COOKBOOKS...]\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-all\fR
+Upload all cookbooks, rather than just a single cookbook
+.
+.TP
+\fB\-o\fR, \fB\-\-cookbook\-path PATH:PATH\fR
+A colon\-separated path to look for cookbooks in
+.
+.P
+Uploads the specified cookbooks to the Chef Server. The actual upload executes a number of commands, most of which occur on the local machine. The cookbook is staged in a temporary location. Then the \fBcookbook_path\fR (or \fB\-o PATH\fR) is processed to search for the named cookbook, and each occurance is copied in the order specified. A syntax check is performed a la \fBcookbook test\fR, above. The metadata is generated, a la \fBcookbook metadata\fR. A gzip(1)'ed, tar(1) file is created, and is uploaded to the server.
+.
+.SH "COOKBOOK SITE SUB\-COMMANDS"
+The following sub\-commands are still in the context of cookbooks, but they make use of Opscode's Cookbook Community site, \fIhttp://cookbooks.opscode.com/\fR. That site has an API, and these sub\-commands utilize that API, rather than the Chef Server API.
+.
+.P
+\fBcookbook site download COOKBOOK [VERSION]\fR \fI(options)\fR
+.
+.TP
+\fB\-f\fR, \fB\-\-file FILE\fR
+The filename to write to
+.
+.P
+Downloads a specific cookbook from the Community site, optionally specifying a certain version.
+.
+.P
+\fBcookbook site list\fR \fI(options)\fR
+.
+.TP
+\fB\-w\fR, \fB\-\-with\-uri\fR
+Show corresponding URIs
+.
+.P
+Lists available cookbooks from the Community site.
+.
+.P
+\fBcookbook site search QUERY\fR \fI(options)\fR
+.
+.P
+Searches the Community site with the specified query.
+.
+.P
+\fBcookbook site show COOKBOOK [VERSION]\fR \fI(options)\fR
+.
+.P
+Shows information from the site about a particular cookbook.
+.
+.P
+\fBcookbook site vendor COOKBOOK [VERSION]\fR \fI(options)\fR
+.
+.TP
+\fB\-d\fR, \fB\-\-dependencies\fR
+Grab dependencies automatically
+.
+.P
+Downloads a cookbook and untars it in the cookbooks directory. If \fI\-d\fR is specified, all the cookbooks it depends on (via metadata \fIdependencies\fR) are downloaded and untarred as well.
+.
+.SH "DATA BAG SUB\-COMMANDS"
+Data bags are stores of JSON blobs. These blobs are called items. They are free form JSON and indexed by the Chef Server.
+.
+.P
+\fBdata bag create BAG [ITEM]\fR \fI(options)\fR
+.
+.P
+Create a new data bag, or an item in a data bag.
+.
+.P
+\fBdata bag delete BAG [ITEM]\fR \fI(options)\fR
+.
+.P
+Delete a data bag, or an item from a data bag.
+.
+.P
+\fBdata bag edit BAG ITEM\fR \fI(options)\fR
+.
+.P
+Edit an item in a data bag.
+.
+.P
+\fBdata bag list\fR \fI(options)\fR
+.
+.TP
+\fB\-w\fR, \fB\-\-with\-uri\fR
+Show corresponding URIs
+.
+.P
+List the available data bags.
+.
+.P
+\fBdata bag show BAG [ITEM]\fR \fI(options)\fR
+.
+.P
+Show a specific data bag or an item in a data bag.
+.
+.SH "NODE SUB\-COMMANDS"
+Nodes are the entities which are configured with Chef. Typically these are servers or workstations. Nodes are registered as a client, by default by the fully qualified domain name (fqdn). A single client may configure more than one node.
+.
+.P
+\fBnode bulk delete REGEX\fR \fI(options)\fR
+.
+.P
+Delete nodes on the Chef Server based on a regular expression. The regular expression (\fIREGEX\fR) should be in quotes, not in //'s.
+.
+.P
+\fBnode create NODE\fR \fI(options)\fR
+.
+.P
+Create a new node.
+.
+.P
+\fBnode delete NODE\fR \fI(options)\fR
+.
+.P
+Delete a single node.
+.
+.P
+\fBnode edit NODE\fR \fI(options)\fR
+.
+.P
+Edit a node.
+.
+.P
+\fBnode from file FILE\fR \fI(options)\fR
+.
+.P
+Create a node from a JSON file.
+.
+.P
+\fBnode list\fR \fI(options)\fR
+.
+.TP
+\fB\-w\fR, \fB\-\-with\-uri\fR
+Show corresponding URIs
+.
+.P
+List all nodes.
+.
+.P
+\fBnode run_list add [NODE] [ENTRY]\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-after ITEM\fR
+Place the ENTRY in the run list after ITEM
+.
+.P
+Add a recipe or role to the node's \fBrun_list\fR.
+.
+.P
+\fBnode run_list remove [NODE] [ENTRY]\fR \fI(options)\fR
+.
+.P
+Remove a recipe or role from the node's \fBrun_list\fR.
+.
+.P
+\fBnode show NODE\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-attribute [ATTR]\fR
+Show only one attribute
+.
+.TP
+\fB\-r\fR, \fB\-\-run\-list       \fR
+Show only the run list
+.
+.P
+Show a node.
+.
+.SH "ROLE SUB\-COMMANDS"
+\fBrole bulk delete REGEX\fR \fI(options)\fR
+.
+.P
+Delete roles on the Chef Server based on a regular expression. The regular expression (\fIREGEX\fR) should be in quotes, not in //'s.
+.
+.P
+\fBrole create ROLE\fR \fI(options)\fR
+.
+.TP
+\fB\-d\fR, \fB\-\-description\fR
+The role description
+.
+.P
+Create a new role.
+.
+.P
+\fBrole delete ROLE\fR \fI(options)\fR
+.
+.P
+Delete a role.
+.
+.P
+\fBrole edit ROLE\fR \fI(options)\fR
+.
+.P
+Edit a role.
+.
+.P
+\fBrole from file FILE\fR \fI(options)\fR
+.
+.P
+Create or update a role from a role Ruby DSL (\fB.rb\fR) or JSON file.
+.
+.P
+\fBrole list\fR \fI(options)\fR
+.
+.TP
+\fB\-w\fR, \fB\-\-with\-uri\fR
+Show corresponding URIs
+.
+.P
+List roles.
+.
+.P
+\fBrole show ROLE\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-attribute ATTR\fR
+Show only one attribute
+.
+.P
+Show a specific role.
+.
+.SH "CLOUD COMPUTING SUB\-COMMANDS"
+The next sections describe sub\-commands to work with various Cloud Computing APIs to launch server instances with validation and run\-time configuration that Chef knows about. These sub\-commands require the fog Ruby library. On Debian and Ubuntu systems this is the package \fBlibfog\-ruby\fR. It is also available as a RubyGem, \fBfog\fR.
+.
+.P
+The Rackspace and Terremark sub\-commands are early stage of development. Right now when creating instances of these types, knife will assume an Ubuntu image, install Ruby from packages, RubyGems from source and Chef as a RubyGem. As these commands are developed, other installation styles may become available, as options.
+.
+.SH "EC2 SUB\-COMMANDS"
+Chef is commonly used with Amazon AWS EC2 nodes. This sub\-command will generate instance metadata that can be used to automatically configure an EC2 instance with Chef. This requires an AMI that has Chef preinstalled with a configuration file that can parse the metadata at run\-time. At this time this is the only sub\-command for EC2, but more may be added later similar to \fBRACKSPACE\fR and \fBTERREMARK\fR below.
+.
+.P
+\fBec2 instance data [RUN LIST...]\fR \fI(options)\fR
+.
+.TP
+\fB\-e\fR, \fB\-\-edit\fR
+Edit the instance data
+.
+.P
+The \fIRUN LIST\fR should be specified as a space separated list of roles or recipes that will be used by the instance to configure the server.
+.
+.SH "RACKSPACE SUB\-COMMANDS"
+In addition to EC2 nodes, Chef can be used on Rackspace Cloud nodes. The following sub\-commands allow manipulating Rackspace Cloud nodes via the \fBfog\fR library.
+.
+.P
+\fBrackspace server create [RUN LIST...]\fR \fI(options)\fR
+.
+.TP
+\fB\-K\fR, \fB\-\-rackspace\-api\-key KEY\fR
+Your rackspace API key
+.
+.TP
+\fB\-A USERNAME\fR, \fB\-\-rackspace\-api\-username\fR
+Your rackspace API username
+.
+.TP
+\fB\-f\fR, \fB\-\-flavor FLAVOR  \fR
+The flavor of server
+.
+.TP
+\fB\-i\fR, \fB\-\-image IMAGE    \fR
+The image of the server
+.
+.TP
+\fB\-N\fR, \fB\-\-server\-name NAME\fR
+The server name
+.
+.P
+Creates a new Rackspace Cloud server.
+.
+.P
+\fBrackspace server delete SERVER\fR \fI(options)\fR
+.
+.P
+Deletes a running Rackspace Cloud server.
+.
+.P
+\fBrackspace server list\fR \fI(options)\fR
+.
+.P
+Lists running Rackspace Cloud servers.
+.
+.SH "TERREMARK SUB\-COMMANDS"
+As above, Chef can also be used on Terremark vCloud nodes. The following sub\-commands allow manipulating Terremark vCloud nodes via the \fBfog\fR library.
+.
+.P
+\fBterremark server create NAME [RUN LIST...]\fR \fI(options)\fR
+.
+.TP
+\fB\-K PASSWORD\fR, \fB\-\-terremark\-password\fR
+Your terremark password
+.
+.TP
+\fB\-S\fR, \fB\-\-terremark\-service SERVICE\fR
+Your terremark service name
+.
+.TP
+\fB\-A USERNAME\fR, \fB\-\-terremark\-username\fR
+Your terremark username
+.
+.P
+Creates a new Terremark vCloud server.
+.
+.P
+\fBterremark server delete SERVER\fR \fI(options)\fR
+.
+.P
+Deletes a running Terremark vCloud server.
+.
+.P
+\fBterremark server list\fR \fI(options)\fR
+.
+.TP
+\fB\-K PASSWORD\fR, \fB\-\-terremark\-password\fR
+Your terremark password
+.
+.TP
+\fB\-S\fR, \fB\-\-terremark\-service SERVICE\fR
+Your terremark service name
+.
+.TP
+\fB\-A USERNAME\fR, \fB\-\-terremark\-username\fR
+Your terremark username
+.
+.P
+Lists running Terremark vCloud servers.
+.
+.SH "CONFIGURATION"
+The knife configuration file is a Ruby DSL. If it exists, knife uses these settings for \fBGENERAL OPTIONS\fR defaults.
+.
+.P
+\fBlog_level\fR
+.
+.P
+A Ruby symbol specifying the log level. Corresponds to \fB\-l\fR or \fB\-\-log_level\fR option. Default is \fI:info\fR. Valid values are:
+.
+.IP "\(bu" 4
+:info
+.
+.IP "\(bu" 4
+:debug
+.
+.IP "\(bu" 4
+:warn
+.
+.IP "\(bu" 4
+:fatal
+.
+.IP "" 0
+.
+.P
+\fBlog_location\fR
+.
+.P
+Corresponds to the \fB\-L\fR or \fB\-\-log\-file\fR option. Defaults is \fBSTDOUT\fR. Valid values are \fBSTDOUT\fR or a filename.
+.
+.P
+\fBnode_name\fR
+.
+.P
+User to authenticate to the Chef server. Corresponds to the \fB\-u\fR or \fB\-\-user\fR option. This is requested from the user when running this sub\-command.
+.
+.P
+\fBclient_key\fR
+.
+.P
+Private key file to authenticate to the Chef server. Corresponds to the \fB\-k\fR or \fB\-\-key\fR option. This is requested from the user when running this sub\-command.
+.
+.P
+\fBchef_server_url\fR
+.
+.P
+URL of the Chef server. Corresponds to the \fB\-s\fR or \fB\-\-server\-url\fR option. This is requested from the user when running this sub\-command.
+.
+.P
+\fBcache_type\fR
+.
+.P
+The type of cache to use. Default is BasicFile. This can be any type of Cache that moneta supports: BasicFile, Berkeley, Couch, DataMapper, File, LMC, Memcache, Memory, MongoDB, Redis, Rufus, S3, SDBM, Tyrant, Xattr, YAML.
+.
+.P
+\fBcache_options\fR
+.
+.P
 Specifies various options to use for caching. Default reads the Chef client configuration (/etc/chef/checksums).
-.SH FILES
-.PP
-\\fI~/.chef/knife.rb\\fR
-.TP
-Ruby DSL configuration file for Knife. See "\\fBCONFIGURATION\\fR".
-.SH SEE ALSO
-.PP
-Full documentation for Chef and Knife is located on the Chef wiki, http://wiki.opscode.com/display/chef/Home.
-.PP
+.
+.P
+\fBvalidation_client_name\fR
+.
+.P
+Specifies the name of the client used to validate new clients. This is requested from the user when running the configuration sub\-command.
+.
+.P
+\fBvalidation_key\fR
+.
+.P
+Specifies the private key file to use for generating ec2 instance data for validating new clients. This is implied from the \fBvalidation_client_name\fR.
+.
+.SH "FILES"
+\fI~/.chef/knife.rb\fR
+.
+.P
+Ruby DSL configuration file for knife. See "\fBCONFIGURATION\fR".
+.
+.SH "SEE ALSO"
+Full documentation for Chef is located on the Chef wiki, http://wiki.opscode.com/display/chef/Home/.
+.
+.P
 JSON is JavaScript Object Notation and more information can be found at http://json.org/.
-.PP
-SOLR is an open source search engine. The Chef Server includes a SOLR installation. More information about SOLR, including search query syntax, can be found at http://lucene.apache.org/solr/.
-.SH AUTHOR
-Chef was written by Adam Jacob \fIadam@ospcode.com\fR of Opscode (http://www.opscode.com), with contributions from the community.
-This manual page was written by Joshua Timberman \fIjoshua@opscode.com\fR with help2man. Permission is granted
-to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
-.PP
-On Debian systems, the complete text of the Apache 2.0 License can be found in
-/usr/share/common\-licenses/Apache\-2.0.
+.
+.P
+SOLR is an open source search engine. The Chef Server includes a SOLR installation. More information about SOLR, including the search query syntax, can be found at http://lucene.apache.org/solr/.
+.
+.P
+This manual page was generated in nroff from Markdown with ronn. Ryan Tomayko wrote ronn and more information can be found at http://rtomayko.github.com/ronn/ronn.5.html.
+.
+.SH "AUTHOR"
+Chef was written by Adam Jacob \fIadam@opscode.com\fR of Opscode (http://www.opscode.com), with contributions from the community. This manual page was written by Joshua Timberman \fIjoshua@opscode.com\fR. Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+.
+.P
+On Debian systems, the complete text of the Apache 2.0 License can be found in \fB/usr/share/common\-licenses/Apache\-2.0\fR.
