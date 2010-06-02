@@ -26,8 +26,8 @@ class Chef
     class Group
       class Windows < Chef::Provider::Group
         
-        def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-          super(node, new_resource, collection, definitions, cookbook_loader)
+        def initialize(new_resource,run_context)
+          super
           @net_group = Chef::Util::Windows::NetGroup.new(@new_resource.name)
         end
 
