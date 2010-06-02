@@ -35,7 +35,7 @@ describe Chef::CookbookLoader do
   
   describe "[]" do
     it "should return cookbook objects with []" do
-      @cookbook_loader[:openldap].should be_a_kind_of(Chef::Cookbook)
+      @cookbook_loader[:openldap].should be_a_kind_of(Chef::CookbookVersion)
     end
   
   

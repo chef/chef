@@ -27,7 +27,7 @@ require 'chef/cookbook/file_vendor'
 # TODO: timh/cw: 5-24-2010: mutators for files (e.g., recipe_filenames=,
 # recipe_filenames.insert) should dirty the manifest so it gets regenerated.
 class Chef
-  class Cookbook
+  class CookbookVersion
     include Chef::IndexQueue::Indexable
 
     attr_accessor :definition_filenames, :template_filenames, :file_filenames, 
@@ -56,7 +56,7 @@ class Chef
         "all" => {
           "map" => <<-EOJS
           function(doc) { 
-            if (doc.chef_type == "cookbook") {
+            if (doc.chef_type == "cookbook_version") {
               emit(doc.name, doc);
             }
           }
@@ -65,7 +65,7 @@ class Chef
         "all_id" => {
           "map" => <<-EOJS
           function(doc) { 
-            if (doc.chef_type == "cookbook") {
+            if (doc.chef_type == "cookbook_version") {
               emit(doc.name, doc.name);
             }
           }
@@ -74,7 +74,7 @@ class Chef
         "all_with_version" => {
           "map" => <<-EOJS
           function(doc) { 
-            if (doc.chef_type == "cookbook") {
+            if (doc.chef_type == "cookbook_version") {
               emit(doc.cookbook_name, doc.version);
             }
           }
@@ -83,7 +83,7 @@ class Chef
         "all_latest_version" => {
           "map" => %q@
           function(doc) { 
-            if (doc.chef_type == "cookbook") {
+            if (doc.chef_type == "cookbook_version") {
               emit(doc.cookbook_name, doc.version);
             }
           }
@@ -135,10 +135,10 @@ class Chef
       nil
     end
     
-    # Creates a new Chef::Cookbook object.  
+    # Creates a new Chef::CookbookVersion object.  
     #
     # === Returns
-    # object<Chef::Cookbook>:: Duh. :)
+    # object<Chef::CookbookVersion>:: Duh. :)
     def initialize(name, couchdb=nil)
       @name = name
       @attribute_filenames = Array.new
@@ -552,26 +552,26 @@ class Chef
     def to_json(*a)
       result = manifest.dup
       result['json_class'] = self.class.name
-      result['chef_type'] = 'cookbook'
+      result['chef_type'] = 'cookbook_version'
       result["_rev"] = couchdb_rev if couchdb_rev
       result.to_json(*a)
     end
 
     def self.json_create(o)
-      cookbook = new(o["cookbook_name"])
+      cookbook_version = new(o["cookbook_name"])
       if o.has_key?('_rev')
-        cookbook.couchdb_rev = o["_rev"] if o.has_key?("_rev")
+        cookbook_version.couchdb_rev = o["_rev"] if o.has_key?("_rev")
         o.delete("_rev")
       end
       if o.has_key?("_id")
-        cookbook.couchdb_id = o["_id"] if o.has_key?("_id")
-        cookbook.index_id = cookbook.couchdb_id
+        cookbook_version.couchdb_id = o["_id"] if o.has_key?("_id")
+        cookbook_version.index_id = cookbook_version.couchdb_id
         o.delete("_id")
       end
-      cookbook.manifest = o
+      cookbook_version.manifest = o
       # We want the Chef::Cookbook::Metadata object to always be inflated
-      cookbook.metadata = Chef::Cookbook::Metadata.from_hash(o["metadata"])
-      cookbook
+      cookbook_version.metadata = Chef::Cookbook::Metadata.from_hash(o["metadata"])
+      cookbook_version
     end
     
     def generate_manifest_with_urls(&url_generator)
@@ -614,9 +614,9 @@ class Chef
     # Couchdb
     ##
     
-    def self.cdb_by_name(cookbook_name=nil, couchdb=nil)
+    def self.cdb_by_name(cookbook_name, couchdb=nil)
       cdb = couchdb || Chef::CouchDB.new
-      options = cookbook_name ? { :startkey => cookbook_name, :endkey => cookbook_name } : {}
+      options = { :startkey => cookbook_name, :endkey => cookbook_name }
       rs = cdb.get_view("cookbooks", "all_with_version", options)
       rs["rows"].inject({}) { |memo, row| memo.has_key?(row["key"]) ? memo[row["key"]] << row["value"] : memo[row["key"]] = [ row["value"] ]; memo }
     end
@@ -634,19 +634,19 @@ class Chef
     def self.cdb_load(name, version='latest', couchdb=nil)
       cdb = couchdb || Chef::CouchDB.new
       if version == "latest" || version == "_latest"
-        rs = cdb.get_view("cookbooks", "all_latest_version", :key => name, :descending => true, :group => true, :reduce => true)["rows"].first
-        cdb.load("cookbook", "#{rs["key"]}-#{rs["value"]}")
+        rs = cdb.get_view("cookbook_versions", "all_latest_version", :key => name, :descending => true, :group => true, :reduce => true)["rows"].first
+        cdb.load("cookbook_version", "#{rs["key"]}-#{rs["value"]}")
       else
-        cdb.load("cookbook", "#{name}-#{version}")
+        cdb.load("cookbook_version", "#{name}-#{version}")
       end
     end
 
     def cdb_destroy
-      (couchdb || Chef::CouchDB.new).delete("cookbook", full_name, couchdb_rev)
+      (couchdb || Chef::CouchDB.new).delete("cookbook_version", full_name, couchdb_rev)
     end
 
     def cdb_save
-      @couchdb_rev = couchdb.store("cookbook", full_name, self)["rev"]
+      @couchdb_rev = couchdb.store("cookbook_version", full_name, self)["rev"]
     end
 
     def couchdb_id=(value)

@@ -30,13 +30,13 @@ require 'extlib'
 class Chef
   class CookbookCollection < Mash
 
-    # The input is a mapping of cookbook name to Cookbook object. We simply
-    # extract them
-    def initialize(cookbooks={})
+    # The input is a mapping of cookbook name to CookbookVersion objects. We
+    # simply extract them
+    def initialize(cookbook_versions={})
       super() do |hash, key|
         raise Chef::Exceptions::CookbookNotFound, "Cookbook #{key} not found"
       end
-      cookbooks.each{ |cookbook_name, cookbook| self[cookbook_name] = cookbook }
+      cookbook_versions.each{ |cookbook_name, cookbook_version| self[cookbook_name] = cookbook_version }
     end
     
   end

@@ -21,7 +21,7 @@ require 'chef/knife'
 require 'chef/streaming_cookbook_uploader'
 require 'chef/cache/checksum'
 require 'chef/sandbox'
-require 'chef/cookbook'
+require 'chef/cookbook_version'
 require 'chef/cookbook/file_system_file_vendor'
 require 'opscode/rest'
 

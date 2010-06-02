@@ -18,7 +18,7 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
-describe Chef::Cookbook do
+describe Chef::CookbookVersion do
 #  COOKBOOK_PATH = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks", "openldap"))
   before(:each) do
     Chef::Config.cookbook_path = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
@@ -65,14 +65,14 @@ describe Chef::Cookbook do
     @cookbook.preferred_filename(@node, :files, 'a-filename', 'the-checksum').should be_nil
   end
   
-# TODO: timh, cw: 5/20/2010: removed Cookbook.recipe? as it's not used; see cookbook.rb
+# TODO: timh, cw: 5/20/2010: removed CookbookVersion.recipe? as it's not used; see cookbook.rb
 #   it "should allow you to test for a recipe with recipe?" do
 #     @cookbook.recipe_filenames = [ "one", "two" ]
 #     @cookbook.recipe?("one").should eql(true)
 #     @cookbook.recipe?("shanghai").should eql(false)
 #   end
   
-# TODO: timh, cw: 5/20/2010: removed Cookbook.recipe? as it's not used; see cookbook.rb
+# TODO: timh, cw: 5/20/2010: removed CookbookVersion.recipe? as it's not used; see cookbook.rb
 #  it "should allow you to test for a recipe? with a fq recipe name" do
 #    @cookbook.recipe_filenames = [ "one", "two" ]
 #    @cookbook.recipe?("openldap::one").should eql(true)

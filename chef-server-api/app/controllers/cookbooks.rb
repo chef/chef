@@ -40,7 +40,7 @@ class Cookbooks < Application
   include Merb::TarballHelper
   
   def index
-    cookbook_list = Chef::Cookbook.cdb_list
+    cookbook_list = Chef::CookbookVersion.cdb_list
     response = Hash.new
     cookbook_list.each do |cookbook_name|
       cookbook_name =~ /^(.+)-(\d+\.\d+\.\d+)$/
@@ -50,7 +50,7 @@ class Cookbooks < Application
   end
 
   def show_versions
-    versions = Chef::Cookbook.cdb_by_name(cookbook_name)
+    versions = Chef::CookbookVersion.cdb_by_name(cookbook_name)
     raise NotFound, "Cannot find a cookbook named #{cookbook_name}" unless versions && versions.size > 0
     display versions
   end
@@ -74,7 +74,7 @@ class Cookbooks < Application
 
   def update
     raise(BadRequest, "You didn't pass me a valid object!") unless params.has_key?('inflated_object')
-    raise(BadRequest, "You didn't pass me a Chef::Cookbook object!") unless params['inflated_object'].kind_of?(Chef::Cookbook)
+    raise(BadRequest, "You didn't pass me a Chef::CookbookVersion object!") unless params['inflated_object'].kind_of?(Chef::CookbookVersion)
     unless params["inflated_object"].name == cookbook_name
       raise(BadRequest, "You said the cookbook was named #{params['inflated_object'].name}, but the URL says it should be #{cookbook_name}.")
     end
@@ -84,7 +84,7 @@ class Cookbooks < Application
     end
     
     begin
-      cookbook = Chef::Cookbook.cdb_load(cookbook_name, cookbook_version)
+      cookbook = Chef::CookbookVersion.cdb_load(cookbook_name, cookbook_version)
       cookbook.manifest = params['inflated_object'].manifest
     rescue Chef::Exceptions::CouchDBNotFound => e
       Chef::Log.debug("Cookbook #{cookbook_name} version #{cookbook_version} does not exist")
@@ -92,7 +92,7 @@ class Cookbooks < Application
     end
     
     # ensure that all checksums referred to by the manifest have been uploaded.
-    Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+    Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
       next unless cookbook.manifest[segment]
       cookbook.manifest[segment].each do |manifest_record|
         checksum = manifest_record[:checksum]
@@ -127,7 +127,7 @@ class Cookbooks < Application
 
   def get_cookbook_version(name, version)
     begin
-      Chef::Cookbook.cdb_load(name, version)
+      Chef::CookbookVersion.cdb_load(name, version)
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot find a cookbook named #{name} with version #{version}"
     end

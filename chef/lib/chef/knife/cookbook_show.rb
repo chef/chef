@@ -58,7 +58,7 @@ class Chef
           cookbook_name, cookbook_version, segment, filename = @name_args[0..3]
 
           manifest = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}")
-          cookbook = Chef::Cookbook.new(cookbook_name)
+          cookbook = Chef::CookbookVersion.new(cookbook_name)
           cookbook.manifest = manifest
           
           manifest_entry = cookbook.preferred_manifest_record(node, segment, filename)

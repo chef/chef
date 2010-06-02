@@ -21,7 +21,7 @@
 require 'chef/cookbook/file_system_file_vendor'
 
 def compare_manifests(manifest1, manifest2)
-  Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+  Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
     next unless manifest1[segment]
     manifest2.should have_key(segment)
     
@@ -120,7 +120,7 @@ When /^I create a sandbox named '(.+)' for cookbook '([^\']+)'(?: minus files '(
 
   # add all the checksums from the given cookbook into the sandbox.
   checksums = Hash.new
-  Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+  Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
     next unless cookbook.manifest[segment]
     cookbook.manifest[segment].each do |manifest_record|
       # include the checksum, unless it was included in the filenames to exclude
@@ -182,7 +182,7 @@ Then /I fully upload a sandboxed cookbook (force-)?named '([^\']+)' versioned '(
   if forced == "force-"
     # If the paths contain the name of the old cookbook name, change it to the
     # new cookbook name.
-    Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+    Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
       next unless cookbook.manifest[segment]
       cookbook.manifest[segment].each do |manifest_record|
         if manifest_record[:path] =~ /^(.+)\/#{cookbook.name}\/(.+)$/
@@ -198,7 +198,7 @@ Then /I fully upload a sandboxed cookbook (force-)?named '([^\']+)' versioned '(
   When "I create a sandbox named 'sandbox1' for cookbook '#{cookbook_name}'"
   Then "the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'"
   
-  Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+  Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
     next unless cookbook.manifest[segment]
     cookbook.manifest[segment].each do |manifest_record|
       full_path = File.join(datadir, "cookbooks_not_uploaded_at_feature_start", cookbook_name, manifest_record[:path])
@@ -234,7 +234,7 @@ Then /the downloaded cookbook manifest contents should match '(.+)'$/ do |cookbo
   downloaded_cookbook_manifest.delete("uri")
 
   # remove the uri's from the manifest records
-  Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+  Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
     next unless downloaded_cookbook_manifest[segment]
     downloaded_cookbook_manifest[segment].each do |downloaded_manifest_record|
       downloaded_manifest_record.delete("uri")

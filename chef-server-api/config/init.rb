@@ -39,7 +39,7 @@ require 'chef/webui_user'
 require 'chef/certificate'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
-require 'chef/cookbook'
+require 'chef/cookbook_version'
 require 'chef/sandbox'
 require 'chef/checksum'
 
@@ -70,7 +70,7 @@ unless Merb::Config.environment == "test"
   Chef::DataBag.create_design_document
   Chef::ApiClient.create_design_document
   Chef::WebUIUser.create_design_document
-  Chef::Cookbook.create_design_document
+  Chef::CookbookVersion.create_design_document
   Chef::Sandbox.create_design_document
   Chef::Checksum.create_design_document
 

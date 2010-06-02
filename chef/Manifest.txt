@@ -45,7 +45,7 @@ lib/chef.rb
 lib/chef/client.rb
 lib/chef/compile.rb
 lib/chef/config.rb
-lib/chef/cookbook.rb
+lib/chef/cookbook_version.rb
 lib/chef/cookbook_loader.rb
 lib/chef/couchdb.rb
 lib/chef/exceptions.rb

@@ -220,7 +220,7 @@ class Chef
 
       filenames_seen = Hash.new
 
-      Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+      Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
         cookbook.manifest[segment].each do |manifest_record|
           # segment = cookbook segment
           # remote_list = list of file hashes
@@ -233,7 +233,7 @@ class Chef
 
           current_checksum = nil
           if Chef::FileCache.has_key?(cache_filename)
-            current_checksum = Chef::Cookbook.checksum_cookbook_file(Chef::FileCache.load(cache_filename, false))
+            current_checksum = Chef::CookbookVersion.checksum_cookbook_file(Chef::FileCache.load(cache_filename, false))
           end
           
           # If the checksums are different between on-disk (current) and on-server

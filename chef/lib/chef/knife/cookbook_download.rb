@@ -68,7 +68,7 @@ class Chef
           end
         end
         
-        Chef::Cookbook::COOKBOOK_SEGMENTS.each do |segment|
+        Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
           next unless manifest.has_key?(segment)
           Chef::Log.info("Downloading #{segment}")
           manifest[segment].each do |segment_file|

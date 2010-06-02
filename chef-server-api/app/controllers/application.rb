@@ -95,7 +95,7 @@ class Application < Merb::Controller
     raise Unauthorized, "You must authenticate first!"
   end
   
-  # returns name -> Cookbook for all cookbooks included on the given node.
+  # returns name -> CookbookVersion for all cookbooks included on the given node.
   def cookbooks_for_node(node_name, all_cookbooks)
     # get node's explicit dependencies
     node = Chef::Node.cdb_load(node_name)
@@ -109,10 +109,10 @@ class Application < Merb::Controller
   end
 
   # Accumulates transitive cookbook dependencies no more than once in included_cookbooks
-  #   included_cookbooks == hash of name -> Cookbook, which is used for returning result
-  #                         as well as for tracking which cookbooks we've already recursed
-  #                         into
-  #   all_cookbooks    == hash of name -> Cookbook, all cookbooks available
+  #   included_cookbooks == hash of name -> CookbookVersion, which is used for returning 
+  #                         result as well as for tracking which cookbooks we've already 
+  #                         recursed into
+  #   all_cookbooks    == hash of name -> CookbookVersion, all cookbooks available
   #   run_list_items   == name of cookbook to include
   def expand_cookbook_deps(included_cookbooks, all_cookbooks, run_list_item)
     # determine the run list item's parent cookbook, which might be run_list_item in the default case
@@ -136,7 +136,7 @@ class Application < Merb::Controller
   end
   
   def load_all_files(node_name)
-    all_cookbooks = Chef::Cookbook.cdb_list(true).inject({}) {|hsh,record| hsh[record.name] = record ; hsh}
+    all_cookbooks = Chef::CookbookVersion.cdb_list(true).inject({}) {|hsh,record| hsh[record.name] = record ; hsh}
     
     included_cookbooks = cookbooks_for_node(node_name, all_cookbooks)
     nodes_cookbooks = Hash.new
@@ -150,7 +150,7 @@ class Application < Merb::Controller
   end
 
   def get_available_recipes
-    all_cookbooks_list = Chef::Cookbook.cdb_list(true)
+    all_cookbooks_list = Chef::CookbookVersion.cdb_list(true)
     available_recipes = all_cookbooks_list.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
       element.recipes.sort.each do |r| 
         if r =~ /^(.+)::default$/

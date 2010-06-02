@@ -19,9 +19,9 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
-describe "Chef::Cookbook manifest" do
+describe "Chef::CookbookVersion manifest" do
   before(:each) do
-    @cookbook = Chef::Cookbook.new "test-cookbook"
+    @cookbook = Chef::CookbookVersion.new "test-cookbook"
     @cookbook.manifest = {
       "files" =>
       [

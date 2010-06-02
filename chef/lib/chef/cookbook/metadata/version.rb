@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/cookbook'
+require 'chef/cookbook_version'
 require 'chef/cookbook/metadata'
 
 class Chef::Cookbook::Metadata

@@ -21,7 +21,7 @@ require 'chef/cookbook/metadata'
 
 describe Chef::Cookbook::Metadata do 
   before(:each) do
-    @cookbook = Chef::Cookbook.new('test_cookbook')
+    @cookbook = Chef::CookbookVersion.new('test_cookbook')
     @meta = Chef::Cookbook::Metadata.new(@cookbook)
   end
 

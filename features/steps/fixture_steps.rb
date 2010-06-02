@@ -33,13 +33,13 @@ Before do
       # value side of that hash is ignored), and is here for documentation's sake.
       'sandbox1' => {
         :checksums => {
-          Chef::Cookbook.checksum_cookbook_file(File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "recipes", "default.rb")) => nil
+          Chef::CookbookVersion.checksum_cookbook_file(File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "recipes", "default.rb")) => nil
         },
       },
       'sandbox2' => {
         :checksums => {
-          Chef::Cookbook.checksum_cookbook_file(File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "attributes", "attr1.rb")) => nil,
-          Chef::Cookbook.checksum_cookbook_file(File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "attributes", "attr2.rb")) => nil
+          Chef::CookbookVersion.checksum_cookbook_file(File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "attributes", "attr1.rb")) => nil,
+          Chef::CookbookVersion.checksum_cookbook_file(File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "attributes", "attr2.rb")) => nil
         },
       },
     },

@@ -19,7 +19,7 @@
 # limitations under the License.
 
 require 'chef/config'
-require 'chef/cookbook'
+require 'chef/cookbook_version'
 require 'chef/cookbook/metadata'
 
 class Chef
@@ -109,7 +109,7 @@ class Chef
       remove_ignored_files_from(cookbook_settings)
 
       cookbook_settings.each_key do |cookbook|
-        @cookbooks_by_name[cookbook] = Chef::Cookbook.new(cookbook)
+        @cookbooks_by_name[cookbook] = Chef::CookbookVersion.new(cookbook)
         @cookbooks_by_name[cookbook].attribute_filenames = cookbook_settings[cookbook][:attribute_filenames].values
         @cookbooks_by_name[cookbook].definition_filenames = cookbook_settings[cookbook][:definition_filenames].values
         @cookbooks_by_name[cookbook].recipe_filenames = cookbook_settings[cookbook][:recipe_filenames].values
