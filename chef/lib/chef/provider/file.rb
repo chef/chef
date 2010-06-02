@@ -182,16 +182,18 @@ class Chef
           time = Time.now
           savetime = time.strftime("%Y%m%d%H%M%S")
           backup_filename = "#{@new_resource.path}.chef-#{savetime}"
-          prefix = Chef::Config[:file_backup_path] || ""
-          if Chef::Config[:file_backup_path]
-            FileUtils.mkdir_p(::File.dirname(Chef::Config[:file_backup_path] + backup_filename))
-          end
-          Chef::Log.info("Backing up #{@new_resource} to #{prefix + backup_filename}")
-          FileUtils.cp(file, prefix + backup_filename, :preserve => true)
+          # if :file_backup_path is nil, we fallback to the old behavior of
+          # keeping the backup in the same directory. We also need to to_s it
+          # so we don't get a type error around implicit to_str conversions.
+          prefix = Chef::Config[:file_backup_path].to_s
+          backup_path = ::File.join(prefix, backup_filename)
+          FileUtils.mkdir_p(::File.dirname(backup_path)) if Chef::Config[:file_backup_path]
+          Chef::Log.info("Backing up #{@new_resource} to #{backup_path}")
+          FileUtils.cp(file, backup_path, :preserve => true)
 
           # Clean up after the number of backups
           slice_number = @new_resource.backup
-          backup_files = Dir[prefix + "#{@new_resource.path}.chef-*"].sort { |a,b| b <=> a }
+          backup_files = Dir[::File.join(prefix, ".#{@new_resource.path}.chef-*")].sort { |a,b| b <=> a }
           if backup_files.length >= @new_resource.backup
             remainder = backup_files.slice(slice_number..-1)
             remainder.each do |backup_to_delete|
