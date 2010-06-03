@@ -1,6 +1,9 @@
 # Upload the given file to the sandbox which was created by 'when I create a
 # sandbox named'
-def upload_to_sandbox(sandbox_filename, sandbox_file_checksum, url)
+def upload_to_sandbox(sandbox_filename, sandbox_file_checksum=nil, url=nil)
+  
+  sandbox_file_checksum ||= Chef::CookbookVersion.checksum_cookbook_file(sandbox_filename)
+  url ||= "#{self.sandbox_url}/#{sandbox_file_checksum}"
   
   checksum64 = Base64.encode64([sandbox_file_checksum].pack("H*")).strip
   timestamp = Time.now.utc.iso8601
@@ -73,10 +76,7 @@ Then /^I upload a file named '([^\']+)' to the sandbox$/ do |stash_sandbox_filen
     sandbox_filename = get_fixture('sandbox_file', stash_sandbox_filename)
     raise "no such stash_sandbox_filename in fixtures: #{stash_sandbox_filename}" unless sandbox_filename
     
-    sandbox_file_checksum = Chef::CookbookVersion.checksum_cookbook_file(sandbox_filename)
-    url = "#{self.sandbox_url}/#{sandbox_file_checksum}"
-    
-    upload_to_sandbox(sandbox_filename, sandbox_file_checksum, url)
+    upload_to_sandbox(sandbox_filename)
   rescue
     Chef::Log.debug("Caught exception in sandbox checksum upload (PUT) request: #{$!.message}: #{$!.backtrace.join("\n")}")
     self.exception = $!
@@ -95,9 +95,8 @@ Then /^I upload a file named '([^\']+)' using the checksum of '(.+)' to the sand
     raise "no such stash_checksum_filename in fixtures: #{stash_checksum_filename}" unless stash_checksum_filename
     
     use_checksum = Chef::CookbookVersion.checksum_cookbook_file(sandbox_checksum_filename)
-    url = "#{self.sandbox_url}/#{use_checksum}"
     
-    upload_to_sandbox(sandbox_upload_filename, use_checksum, url)
+    upload_to_sandbox(sandbox_upload_filename, use_checksum)
   rescue
     Chef::Log.debug("Caught exception in bad sandbox checksum upload (PUT) request: #{$!.message}: #{$!.backtrace.join("\n")}")
     self.exception = $!
