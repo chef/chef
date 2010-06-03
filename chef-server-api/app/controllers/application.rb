@@ -56,7 +56,7 @@ class Application < Merb::Controller
     if @auth_user.admin
       true
     else
-      raise Unauthorized, "You are not allowed to take this action."
+      raise Forbidden, "You are not allowed to take this action."
     end
   end
 
@@ -64,7 +64,7 @@ class Application < Merb::Controller
     if @auth_user.admin || @auth_user.name == Chef::Config[:validation_client_name]
       true
     else
-      raise Unauthorized, "You are not allowed to take this action."
+      raise Forbidden, "You are not allowed to take this action."
     end
   end
 
@@ -72,7 +72,7 @@ class Application < Merb::Controller
     if @auth_user.admin || @auth_user.name == params[:id]
       true
     else
-      raise Unauthorized, "You are not the correct node (auth_user name: #{@auth_user.name}, params[:id]: #{params[:id]}), or are not an API administrator (admin: #{@auth_user.admin})."
+      raise Forbidden, "You are not the correct node (auth_user name: #{@auth_user.name}, params[:id]: #{params[:id]}), or are not an API administrator (admin: #{@auth_user.admin})."
     end
   end
 
