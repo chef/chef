@@ -549,11 +549,16 @@ class Chef
     end
     private :preferences_for_path
 
-    def to_json(*a)
+    def to_hash
       result = manifest.dup
-      result['json_class'] = self.class.name
       result['chef_type'] = 'cookbook_version'
       result["_rev"] = couchdb_rev if couchdb_rev
+      result.to_hash
+    end
+
+    def to_json(*a)
+      result = self.to_hash
+      result['json_class'] = self.class.name
       result.to_json(*a)
     end
 

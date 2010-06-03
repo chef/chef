@@ -141,6 +141,9 @@ Then /^the inflated response should respond to '(.+)' and match '(.+)'$/ do |met
   self.inflated_response.to_hash[method].should == to_match
 end
 
+Then /^the inflated response should respond to '(.+)' and match '(.+)' as json$/ do |method, regex|
+  self.inflated_response.to_hash[method].to_json.should =~ /#{regex}/m
+end
 
 Then /^the fields in the inflated response should match the '(.+)'$/ do |stash_name|
   self.inflated_response.each do |k,v|

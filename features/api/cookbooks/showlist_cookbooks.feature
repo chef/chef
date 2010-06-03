@@ -9,15 +9,17 @@ Feature: Show a cookbook via the REST API
     Given I am an administrator
      When I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
      Then I 'GET' the path '/cookbooks/testcookbook_valid/0.1.0'
-     Then I call to_hash on the inflated response
-     Then the inflated responses key 'name' should match 'testcookbook_valid'
-     Then the inflated responses key 'files' should match '^\[.+\]$' as json
-     Then the inflated responses key 'recipes' should match '^\[.+\]$' as json
-     Then the inflated responses key 'metadata' should match '^\{.+\}$' as json
-     Then the inflated responses key 'attributes' should match '^\[.+\]$' as json
-     Then the inflated responses key 'libraries' should match '^\[.+\]$' as json
-     Then the inflated responses key 'definitions' should match '^\[.+\]$' as json
-     Then the inflated responses key 'templates' should match '^\[.+\]$' as json
+     Then the inflated response should respond to 'cookbook_name' and match 'testcookbook_valid'
+     Then the inflated response should respond to 'name' and match 'testcookbook_valid-0.1.0'
+     Then the inflated response should respond to 'files' and match '^\[\]$' as json
+     Then the inflated response should respond to 'root_files' and match '^\[.+\]$' as json
+     Then the inflated response should respond to 'recipes' and match '^\[.+\]$' as json
+     Then the inflated response should respond to 'metadata' and match '^\{.+\}$' as json
+     Then the inflated response should respond to 'attributes' and match '^\[.+\]$' as json
+     Then the inflated response should respond to 'libraries' and match '^\[\]$' as json
+     Then the inflated response should respond to 'definitions' and match '^\[\]$' as json
+     Then the inflated response should respond to 'templates' and match '^\[\]$' as json
+     Then the inflated response should respond to 'resources' and match '^\[\]$' as json
 
   @show_cookbook_negative
   Scenario: Show a cookbook with a wrong private key
