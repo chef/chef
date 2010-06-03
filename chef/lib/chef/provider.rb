@@ -26,16 +26,25 @@ class Chef
     
     include Chef::Mixin::RecipeDefinitionDSLCore
     
-    attr_accessor :node, :new_resource, :current_resource
+    attr_accessor :new_resource, :current_resource, :run_context
     
-    def initialize(node, new_resource, collection=nil, definitions={}, cookbook_loader=nil)
-      @node = node
+    def initialize(new_resource, run_context)
       @new_resource = new_resource
       @current_resource = nil
-      @collection = collection
-      @definitions = definitions
-      @cookbook_loader = cookbook_loader
-      @cookbook_name = @new_resource.cookbook_name
+      @run_context = run_context
+    end
+
+    def node
+      run_context && run_context.node
+    end
+
+    # Used by providers supporting embedded recipes
+    def resource_collection
+      run_context && run_context.resource_collection
+    end
+
+    def cookbook_name
+      new_resource.cookbook_name
     end
     
     def load_current_resource
@@ -50,12 +59,21 @@ class Chef
     protected
     
     def recipe_eval(&block)
-      provider_collection, @collection = @collection, Chef::ResourceCollection.new
+      # This block has new resource definitions within it, which
+      # essentially makes it an in-line Chef run. Save our current
+      # run_context and create one anew, so the new Chef run only
+      # executes the embedded resources.
+      #
+      # TODO: timh,cw: 2010-5-14: This means that the resources within
+      # this block cannot interact with resources outside, e.g.,
+      # manipulating notifies.
+      saved_run_context = run_context
+      self.run_context = Chef::RunContext.new(saved_run_context.node, saved_run_context.cookbook_collection)
       
       instance_eval(&block)
-      Chef::Runner.new(@node, @collection).converge
+      Chef::Runner.new(run_context).converge
       
-      @collection = provider_collection
+      self.run_context = saved_run_context
     end
     
     public

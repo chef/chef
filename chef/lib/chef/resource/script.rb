@@ -21,9 +21,9 @@ require 'chef/resource/execute'
 class Chef
   class Resource
     class Script < Chef::Resource::Execute
-        
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      
+      def initialize(name, run_context=nil)
+        super
         @resource_name = :script
         @command = name
         @code = nil

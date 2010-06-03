@@ -21,13 +21,13 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Service::Gentoo do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
+    @run_context = Chef::RunContext.new(@node, {})
     
-    resource_opts     = { :null_object => true, :name => 'chef', :service_name => 'chef', :enabled => false, :running => nil, :supports => {}, :status_command => false }
-    @new_resource     = mock("Chef::Resource::Service", resource_opts)
-    @current_resource = mock("Chef::Resource::Service", resource_opts)
+    @new_resource     = Chef::Resource::Service.new("chef")
+    @current_resource = Chef::Resource::Service.new("chef")
     
-    @provider = Chef::Provider::Service::Gentoo.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Gentoo.new(@new_resource, @run_context)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
     @provider.stub!(:popen4).and_return(@status)
     @provider.stub!(:run_command).with(:command => "/etc/init.d/chef status").and_return(true)
@@ -55,8 +55,8 @@ describe Chef::Provider::Service::Gentoo do
             File.stub!(:readable?).with("/etc/runlevels/default/chef").and_return(true)
           end
           it "should set enabled to true" do
-            @current_resource.should_receive(:enabled).with(true).and_return(true)
             @provider.load_current_resource
+            @current_resource.enabled.should be_true
           end
         end
 
@@ -67,8 +67,8 @@ describe Chef::Provider::Service::Gentoo do
           end
           
           it "should set enabled to false" do
-            @current_resource.should_receive(:enabled).with(false).and_return(false)
             @provider.load_current_resource
+            @current_resource.enabled.should be_false
           end
         end
 
@@ -79,8 +79,8 @@ describe Chef::Provider::Service::Gentoo do
           end
 
           it "should set enabled to false" do
-            @current_resource.should_receive(:enabled).with(false).and_return(false)
             @provider.load_current_resource
+            @current_resource.enabled.should be_false
           end
 
         end
@@ -88,30 +88,6 @@ describe Chef::Provider::Service::Gentoo do
 
   end
  
-=begin
-    it "should set enabled true if rc-update indicates service is in default runlevel" do
-      @stdout.should_receive(:each_line).
-          and_yield('  gfs | default ').
-          and_yield(' chef | default ').
-          and_yield('monit | default ').
-          and_yield('mysql | default ')
-      @provider.should_receive(:popen4).with("/sbin/rc-update -s default").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @current_resource.should_receive(:enabled).with(true)
-      @provider.load_current_resource
-    end
-  
-    it "should set enabled false if rc-update indicates service is not in default runlevel" do
-      @stdout.should_receive(:each_line).
-          and_yield('    gfs | default ').
-          and_yield('notchef | default ').
-          and_yield('  monit | default ').
-          and_yield('  mysql | default ')
-      @provider.should_receive(:popen4).with("/sbin/rc-update -s default").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.load_current_resource
-      @current_resource.enabled.should be_false
-    end
-=end
-  
     it "should return the current_resource" do
       @provider.load_current_resource.should == @current_resource
     end  

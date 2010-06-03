@@ -73,6 +73,7 @@ class Chef
         end
 
         def set_members
+          pp :set_members => {:append => @new_resource.append, :members => @new_resource.members}
           unless @new_resource.append
             Chef::Log.debug("#{@new_resource}: removing group members #{@current_resource.members.join(' ')}") unless @current_resource.members.empty?
             safe_dscl("create /Groups/#{@new_resource.group_name} GroupMembers ''") # clear guid list
@@ -90,35 +91,26 @@ class Chef
         end
         
         def create_group
-          manage_group(false)
+          dscl_create_group
+          set_gid
+          set_members
         end
         
-        def manage_group(manage=true)#
-          fields = []
-          if manage
-            [:group_name,:gid,:members].each do |field|
-              if @current_resource.send(field) != @new_resource.send(field)
-                fields << field if @new_resource.send(field)
-              end
-            end
-          else
-            # create
-            fields = [:group_name,:gid,:members]
+        def manage_group
+          if @new_resource.group_name && (@current_resource.group_name != @new_resource.group_name)
+            dscl_create_group
           end
-
-          fields.each do |field|
-            case field
-            when :group_name
-              safe_dscl("create /Groups/#{@new_resource.group_name}")
-              safe_dscl("create /Groups/#{@new_resource.group_name} Password '*'")
-              
-            when :gid
-              set_gid
-              
-            when :members
-              set_members
-            end
+          if @new_resource.gid && (@current_resource.gid != @new_resource.gid)
+            set_gid
           end
+          if @new_resource.members && (@current_resource.members != @new_resource.members)
+            set_members
+          end
+        end
+        
+        def dscl_create_group
+          safe_dscl("create /Groups/#{@new_resource.group_name}")
+          safe_dscl("create /Groups/#{@new_resource.group_name} Password '*'")
         end
         
         def remove_group

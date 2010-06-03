@@ -43,5 +43,14 @@ class Chef
     class RedirectLimitExceeded < RuntimeError; end
     class AmbiguousRunlistSpecification < ArgumentError; end
     class CookbookNotFound < RuntimeError; end
+    class AttributeNotFound < RuntimeError; end
+    class InvalidCommandOption < RuntimeError; end
+    class CommandTimeout < RuntimeError; end
+    class ShellCommandFailed < RuntimeError; end
+    class RequestedUIDUnavailable < RuntimeError; end
+    class InvalidHomeDirectory < ArgumentError; end
+    class DsclCommandFailed < RuntimeError; end
+    class UserIDNotFound < ArgumentError; end
+    class GroupIDNotFound < ArgumentError; end
   end
 end

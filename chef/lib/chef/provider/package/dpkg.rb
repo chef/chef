@@ -24,11 +24,19 @@ class Chef
   class Provider
     class Package
       class Dpkg < Chef::Provider::Package::Apt
+        DPKG_INFO = /([a-z\d\-\+]+)\t([\w\d.-]+)/
+        DPKG_INSTALLED = /^Status: install ok installed/
+        DPKG_VERSION = /^Version: (.+)$/
       
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
           @new_resource.version(nil)
+
+          # if the source was not set, and we're installing, fail
+          if Array(@new_resource.action).include?(:install) && @new_resource.source.nil?
+            raise Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
+          end
 
           # We only -need- source for action install
           if @new_resource.source
@@ -39,17 +47,12 @@ class Chef
             # Get information from the package if supplied
             Chef::Log.debug("Checking dpkg status for #{@new_resource.package_name}")
             status = popen4("dpkg-deb -W #{@new_resource.source}") do |pid, stdin, stdout, stderr|
-              stdout.each do |line|
-                if pkginfo = /([a-z\d\-\+]+)\t([\w\d.-]+)/.match(line)
+              stdout.each_line do |line|
+                if pkginfo = DPKG_INFO.match(line)
                   @current_resource.package_name(pkginfo[1])
                   @new_resource.version(pkginfo[2])
                 end
               end
-            end
-          else
-            # if the source was not set, and we're installing, fail
-            if @new_resource.action.include?(:install)
-              raise Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
             end
           end
           
@@ -57,11 +60,11 @@ class Chef
           package_installed = nil
           Chef::Log.debug("Checking install state for #{@current_resource.package_name}")
           status = popen4("dpkg -s #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
+            stdout.each_line do |line|
               case line
-              when /^Status: install ok installed/
+              when DPKG_INSTALLED
                 package_installed = true
-              when /^Version: (.+)$/
+              when DPKG_VERSION
                 if package_installed
                   Chef::Log.debug("Current version is #{$1}")                
                   @current_resource.version($1)

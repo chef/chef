@@ -12,17 +12,7 @@ Given /^the cookbook has a '(.+)' named '(.+)' in the '(.+)' specific directory$
   when "default"
     specific_dir = "default"
   end
-  new_file_dir = File.expand_path(
-    File.join(
-      File.dirname(__FILE__), 
-      "..", 
-      "data", 
-      "cookbooks", 
-      cookbook_name, 
-      type_dir, 
-      specific_dir
-    )
-  )
+  new_file_dir = File.expand_path(File.dirname(__FILE__) + "/../data/cookbooks/#{cookbook_name}/#{type_dir}/#{specific_dir}")
   cleanup_dirs << new_file_dir unless new_file_dir =~ /default$/
   system("mkdir -p #{new_file_dir}")
   new_file_name = File.join(new_file_dir, filename)

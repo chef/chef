@@ -18,246 +18,122 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-describe Chef::Provider::Mount, "initialize" do
-
+describe Chef::Provider::Mount do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource", :null_object => true)
-  end
+    @node = Chef::Node.new
+    @run_context = Chef::RunContext.new(@node, {})
+    
+    @new_resource = Chef::Resource::Mount.new('/tmp/foo')
+    @new_resource.device      "/dev/sdz1"
+    @new_resource.name        "/tmp/foo"
+    @new_resource.mount_point "/tmp/foo"
+    @new_resource.fstype      "ext3"
+    
+    @current_resource = Chef::Resource::Mount.new('/tmp/foo')
+    @current_resource.device      "/dev/sdz1"
+    @current_resource.name        "/tmp/foo"
+    @current_resource.mount_point "/tmp/foo"
+    @current_resource.fstype      "ext3"
 
-  it "should return a Chef::Provider::Mount object" do
-    provider = Chef::Provider::Mount.new(@node, @new_resource)
-    provider.should be_a_kind_of(Chef::Provider::Mount)
-  end
-
-end
-
-describe Chef::Provider::Mount, "action_mount" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Mount",
-    :null_object => true,
-    :device => "/dev/sdz1",
-    :name => "/tmp/foo",
-    :mount_point => "/tmp/foo",
-    :fstype => "ext3",
-    :mounted => false,
-    :enabled => false
-    )
-    @current_resource = mock("Chef::Resource::Mount",
-    :null_object => true,
-    :device => "/dev/sdz1",
-    :name => "/tmp/foo",
-    :mount_point => "/tmp/foo",
-    :fstype => "ext3",
-    :mounted => false,
-    :enabled => false
-    )
-    @provider = Chef::Provider::Mount.new(@node, @new_resource)
+    @provider = Chef::Provider::Mount.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
-    @provider.stub!(:mount_fs).and_return(true)
   end
+  
+  describe "when the target state is a mounted filesystem" do
 
-  it "should mount the filesystem if it isn't mounted" do
-    @current_resource.stub!(:mounted).and_return(false)
-    @provider.should_receive(:mount_fs).with.and_return(true)
-    @provider.action_mount
-  end
-
-  it "should not mount the filesystem if it is mounted" do
-    @current_resource.stub!(:mounted).and_return(true)
-    @provider.should_not_receive(:mount_fs).with.and_return(true)
-    @provider.action_mount
-  end
-
-end
-
-describe Chef::Provider::Mount, "action_umount" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Mount",
-    :null_object => true,
-    :device => "/dev/sdz1",
-    :name => "/tmp/foo",
-    :mount_point => "/tmp/foo",
-    :fstype => "ext3",
-    :mounted => false,
-    :enabled => false
-    )
-    @current_resource = mock("Chef::Resource::Mount",
-    :null_object => true,
-    :device => "/dev/sdz1",
-    :name => "/tmp/foo",
-    :mount_point => "/tmp/foo",
-    :fstype => "ext3",
-    :mounted => false,
-    :enabled => false
-    )
-    @provider = Chef::Provider::Mount.new(@node, @new_resource)
-    @provider.current_resource = @current_resource
-    @provider.stub!(:umount_fs).and_return(true)
-  end
-
-  it "should umount the filesystem if it is mounted" do
-    @current_resource.stub!(:mounted).and_return(true)
-    @provider.should_receive(:umount_fs).with.and_return(true)
-    @provider.action_umount
-  end
-
-  it "should not umount the filesystem if it is not mounted" do
-    @current_resource.stub!(:mounted).and_return(false)
-    @provider.should_not_receive(:umount_fs).with.and_return(true)
-    @provider.action_umount
-  end
-end
-
-describe Chef::Provider::Mount, "action_remount" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Mount",
-    :null_object => true,
-    :device => "/dev/sdz1",
-    :name => "/tmp/foo",
-    :mount_point => "/tmp/foo",
-    :fstype => "ext3",
-    :mounted => false,
-    :enabled => false
-    )
-    @current_resource = mock("Chef::Resource::Mount",
-    :null_object => true,
-    :device => "/dev/sdz1",
-    :name => "/tmp/foo",
-    :mount_point => "/tmp/foo",
-    :fstype => "ext3",
-    :mounted => false,
-    :enabled => false
-    )
-    @provider = Chef::Provider::Mount.new(@node, @new_resource)
-    @provider.current_resource = @current_resource
-    @provider.stub!(:remount_fs).and_return(true)
-    @current_resource.stub!(:supports).and_return({:remount => true})
-  end
-
-  it "should remount the filesystem if remount is support and it is mounted" do
-    @current_resource.stub!(:mounted).and_return(true)
-    @provider.should_receive(:remount_fs).and_return(true)
-    @provider.action_remount
-  end
-
-  it "should not remount the filesystem if it is not mounted" do
-    @current_resource.stub!(:mounted).and_return(false)
-    @provider.should_not_receive(:remount_fs).and_return(true)
-    @provider.action_remount
-  end
-end
-
-describe Chef::Provider::Mount, "action_enable" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Mount",
-    :null_object => true,
-    :device => "/dev/sdz1",
-    :name => "/tmp/foo",
-    :mount_point => "/tmp/foo",
-    :fstype => "ext3",
-    :mounted => false,
-    :enabled => false
-    )
-    @current_resource = mock("Chef::Resource::Mount",
-    :null_object => true,
-    :device => "/dev/sdz1",
-    :name => "/tmp/foo",
-    :mount_point => "/tmp/foo",
-    :fstype => "ext3",
-    :mounted => false,
-    :enabled => false
-    )
-    @provider = Chef::Provider::Mount.new(@node, @new_resource)
-    @provider.current_resource = @current_resource
-    @provider.stub!(:enable_fs).and_return(true)
-  end
-
-  it "should enable the mount if it isn't enable" do
-    @current_resource.stub!(:enabled).and_return(false)
-    @provider.should_receive(:enable_fs).with.and_return(true)
-    @provider.action_enable
-  end
-
-  it "should not enable the mount if it is enabled" do
-    @current_resource.stub!(:enabled).and_return(true)
-    @provider.should_not_receive(:enable_fs).with.and_return(true)
-    @provider.action_enable
-  end
-end
-
-describe Chef::Provider::Mount, "action_disable" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Mount",
-    :null_object => true,
-    :device => "/dev/sdz1",
-    :name => "/tmp/foo",
-    :mount_point => "/tmp/foo",
-    :fstype => "ext3",
-    :mounted => false,
-    :enabled => false
-    )
-    @current_resource = mock("Chef::Resource::Mount",
-    :null_object => true,
-    :device => "/dev/sdz1",
-    :name => "/tmp/foo",
-    :mount_point => "/tmp/foo",
-    :fstype => "ext3",
-    :mounted => false,
-    :enabled => false
-    )
-    @provider = Chef::Provider::Mount.new(@node, @new_resource)
-    @provider.current_resource = @current_resource
-    @provider.stub!(:disable_fs).and_return(true)
-  end
-
-  it "should disable the mount if it is enabled" do
-    @current_resource.stub!(:enabled).and_return(true)
-    @provider.should_receive(:disable_fs).with.and_return(true)
-    @provider.action_disable
-  end
-
-  it "should not disable the mount if it isn't enabled" do
-    @current_resource.stub!(:enabled).and_return(false)
-    @provider.should_not_receive(:disable_fs).with.and_return(true)
-    @provider.action_disable
-  end
-end
-
-%w{mount umount remount enable disable}.each do |act|
-  act_string = "#{act}_fs"
-
-  describe Chef::Provider::Service, act_string do
-    before(:each) do
-      @node = mock("Chef::Node", :null_object => true)
-      @new_resource = mock("Chef::Resource::Mount",
-      :null_object => true,
-      :device => "/dev/sdz1",
-      :name => "/tmp/foo",
-      :mount_point => "/tmp/foo",
-      :fstype => "ext3",
-      :mounted => false
-      )
-      @current_resource = mock("Chef::Resource::Mount",
-      :null_object => true,
-      :device => "/dev/sdz1",
-      :name => "/tmp/foo",
-      :mount_point => "/tmp/foo",
-      :fstype => "ext3",
-      :mounted => false
-      )
-      @provider = Chef::Provider::Mount.new(@node, @new_resource)
-      @provider.current_resource = @current_resource
-
+    it "should mount the filesystem if it isn't mounted" do
+      @current_resource.stub!(:mounted).and_return(false)
+      @provider.should_receive(:mount_fs).with.and_return(true)
+      @provider.action_mount
     end
 
-    it "should raise Chef::Exceptions::UnsupportedAction on an unsupported action" do
-      lambda { @provider.send(act_string) }.should raise_error(Chef::Exceptions::UnsupportedAction)
+    it "should not mount the filesystem if it is mounted" do
+      @current_resource.stub!(:mounted).and_return(true)
+      @provider.should_not_receive(:mount_fs).with.and_return(true)
+      @provider.action_mount
     end
+
+  end
+
+  describe "when the target state is an unmounted filesystem" do
+    it "should umount the filesystem if it is mounted" do
+      @current_resource.stub!(:mounted).and_return(true)
+      @provider.should_receive(:umount_fs).with.and_return(true)
+      @provider.action_umount
+    end
+
+    it "should not umount the filesystem if it is not mounted" do
+      @current_resource.stub!(:mounted).and_return(false)
+      @provider.should_not_receive(:umount_fs).with.and_return(true)
+      @provider.action_umount
+    end
+  end
+
+  describe "when the filesystem should be remounted and the resource supports remounting" do
+    before do
+      @new_resource.supports[:remount] = true
+    end
+    
+    it "should remount the filesystem if remount is support and it is mounted" do
+      @current_resource.mounted(true)
+      @provider.should_receive(:remount_fs)
+      @provider.action_remount
+    end
+
+    it "should not remount the filesystem if it is not mounted" do
+      @current_resource.stub!(:mounted)
+      @new_resource.supports[:remount] = true
+      @provider.should_not_receive(:remount_fs)
+      @provider.action_remount
+    end
+  end
+
+  describe "when enabling the filesystem to be mounted" do
+    it "should enable the mount if it isn't enable" do
+      @current_resource.stub!(:enabled).and_return(false)
+      @provider.should_receive(:enable_fs).with.and_return(true)
+      @provider.action_enable
+    end
+
+    it "should not enable the mount if it is enabled" do
+      @current_resource.stub!(:enabled).and_return(true)
+      @provider.should_not_receive(:enable_fs).with.and_return(true)
+      @provider.action_enable
+    end
+  end
+
+  describe "when the target state is to disable the mount" do
+    it "should disable the mount if it is enabled" do
+      @current_resource.stub!(:enabled).and_return(true)
+      @provider.should_receive(:disable_fs).with.and_return(true)
+      @provider.action_disable
+    end
+
+    it "should not disable the mount if it isn't enabled" do
+      @current_resource.stub!(:enabled).and_return(false)
+      @provider.should_not_receive(:disable_fs).with.and_return(true)
+      @provider.action_disable
+    end
+  end
+
+
+  it "should delegates the mount implementation to subclasses" do
+    lambda { @provider.mount_fs }.should raise_error(Chef::Exceptions::UnsupportedAction)
+  end
+
+  it "should delegates the umount implementation to subclasses" do
+    lambda { @provider.umount_fs }.should raise_error(Chef::Exceptions::UnsupportedAction)
+  end
+
+  it "should delegates the remount implementation to subclasses" do
+    lambda { @provider.remount_fs }.should raise_error(Chef::Exceptions::UnsupportedAction)
+  end
+
+  it "should delegates the enable implementation to subclasses" do
+    lambda { @provider.enable_fs }.should raise_error(Chef::Exceptions::UnsupportedAction)
+  end
+
+  it "should delegates the disable implementation to subclasses" do
+    lambda { @provider.disable_fs }.should raise_error(Chef::Exceptions::UnsupportedAction)
   end
 end

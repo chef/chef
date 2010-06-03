@@ -5,7 +5,7 @@ Feature: Trigger a reindex via the REST API
   I want to rebuild the search index via the api
 
 	Scenario: Ensure objects are inserted back into the index
-	  Given a 'registration' named 'bobo' exists
+	  Given I am an administrator
 	    And a 'data_bag' named 'users' exists
 	    And a 'data_bag_item' named 'francis' exists
 	    And I wait for '15' seconds

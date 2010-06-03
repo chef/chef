@@ -51,10 +51,10 @@ class Chef
             end
           elsif
             Chef::Log.debug "#{@new_resource}: falling back to process table inspection"
-            if @node[:command][:ps].nil? or @node[:command][:ps].empty?
+            if ps_cmd.nil? or ps_cmd.empty?
               raise Chef::Exceptions::Service, "#{@new_resource}: could not determine how to inspect the process table, please set this nodes 'command.ps' attribute"
             end
-            status = popen4(@node[:command][:ps]) do |pid, stdin, stdout, stderr|
+            status = popen4(ps_cmd) do |pid, stdin, stdout, stderr|
               r = Regexp.new(@new_resource.pattern)
               Chef::Log.debug "#{@new_resource}: attempting to match '#{@new_resource.pattern}' (#{r}) against process list"
               stdout.each_line do |line|
@@ -66,7 +66,7 @@ class Chef
               @current_resource.running false unless @current_resource.running
             end
             unless status.exitstatus == 0
-              raise Chef::Exceptions::Service, "Command #{@node[:command][:ps]} failed"
+              raise Chef::Exceptions::Service, "Command #{ps_cmd} failed"
             else
               Chef::Log.debug "#{@new_resource}: running: #{@current_resource.running}"
             end
@@ -107,6 +107,10 @@ class Chef
           else
             raise Chef::Exceptions::Service, "#{self.to_s} requires that reload_command to be set"
           end
+        end
+        
+        def ps_cmd
+          @run_context.node[:command] && @run_context.node[:command][:ps]
         end
       end
     end

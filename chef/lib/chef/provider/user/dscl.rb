@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
 require 'chef/provider/user'
 require 'openssl'
 
@@ -23,23 +24,21 @@ class Chef
   class Provider
     class User
       class Dscl < Chef::Provider::User
+        include Chef::Mixin::ShellOut
+        
+        NFS_HOME_DIRECTORY        = %r{^NFSHomeDirectory: (.*)$}
+        AUTHENTICATION_AUTHORITY  = %r{^AuthenticationAuthority: (.*)$}
         
         def dscl(*args)
-          host = "."
-          stdout_result = ""; stderr_result = ""; cmd = "dscl #{host} -#{args.join(' ')}"
-          status = popen4(cmd) do |pid, stdin, stdout, stderr|
-            stdout.each { |line| stdout_result << line }
-            stderr.each { |line| stderr_result << line }
-          end
-          return [cmd, status, stdout_result, stderr_result]
+          shell_out("dscl . -#{args.join(' ')}")
         end
 
         def safe_dscl(*args)
           result = dscl(*args)
-          return "" if ( args.first =~ /^delete/ ) && ( result[1].exitstatus != 0 )
-          raise(Chef::Exceptions::User,"dscl error: #{result.inspect}") unless result[1].exitstatus == 0
-          raise(Chef::Exceptions::User,"dscl error: #{result.inspect}") if result[2] =~ /No such key: /
-          return result[2]
+          return "" if ( args.first =~ /^delete/ ) && ( result.exitstatus != 0 )
+          raise(Chef::Exceptions::DsclCommandFailed,"dscl error: #{result.inspect}") unless result.exitstatus == 0
+          raise(Chef::Exceptions::DsclCommandFailed,"dscl error: #{result.inspect}") if result.stdout =~ /No such key: /
+          return result.stdout
         end
 
         # This is handled in providers/group.rb by Etc.getgrnam()
@@ -70,56 +69,28 @@ class Chef
         end
 
         def set_uid
-          @new_resource.uid(get_free_uid) if [nil,""].include? @new_resource.uid
-          raise(Chef::Exceptions::User,"uid is already in use") if uid_used?(@new_resource.uid)
+          @new_resource.uid(get_free_uid) if (@new_resource.uid.nil? || @new_resource.uid == '')
+          if uid_used?(@new_resource.uid)
+            raise(Chef::Exceptions::RequestedUIDUnavailable, "uid #{@new_resource.uid} is already in use")
+          end
           safe_dscl("create /Users/#{@new_resource.username} UniqueID #{@new_resource.uid}")
         end
 
         def modify_home
           return safe_dscl("delete /Users/#{@new_resource.username} NFSHomeDirectory") if (@new_resource.home.nil? || @new_resource.home.empty?)
           if @new_resource.supports[:manage_home]
-            unless @new_resource.home =~ /^\//
-              raise(Chef::Exceptions::User,"invalid path spec for User: '#{@new_resource.username}', home directory: '#{@new_resource.home}'") 
-            end
-
-            ch_eq_nh = ( @current_resource.home ==  @new_resource.home )
-            cur_home_exists = ::File.exists?("#{@current_resource.home}")
-            new_home_exists = ::File.exists?("#{@new_resource.home}")
-            ditto = false
-            move = false
+            validate_home_dir_specification!
             
-            if ch_eq_nh
-              if !new_home_exists
-                ditto = true
-              end
-            else
-              if !cur_home_exists
-                if !new_home_exists
-                  ditto = true
-                end
-              elsif cur_home_exists
-                move = true
-              end
-            end
-
-            if ditto
-              skel = "/System/Library/User Template/English.lproj"
-              raise(Chef::Exceptions::User,"can't find skel at: #{skel}") unless ::File.exists?(skel)
-              run_command(:command => "ditto '#{skel}' '#{@new_resource.home}'")
-              ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
-            end
-
-            if move
-              src = @current_resource.home
-              FileUtils.mkdir_p(@new_resource.home)
-              files = ::Dir.glob("#{src}/*", ::File::FNM_DOTMATCH) - ["#{src}/.","#{src}/.."]
-              ::FileUtils.mv(files,@new_resource.home, :force => true)
-              ::FileUtils.rmdir(src)
-              ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
+            if (@current_resource.home == @new_resource.home) && !new_home_exists?
+              ditto_home
+            elsif !current_home_exists? && !new_home_exists?
+              ditto_home
+            elsif current_home_exists?
+              move_home
             end
           end
           safe_dscl("create /Users/#{@new_resource.username} NFSHomeDirectory '#{@new_resource.home}'")
-      end
+        end
 
         def osx_shadow_hash?(string)
           return !! ( string =~ /^[[:xdigit:]]{1240}$/ )
@@ -130,15 +101,16 @@ class Chef
         end
 
         def guid
-          safe_dscl("read /Users/#{@new_resource.username} GeneratedUID").gsub(/GeneratedUID: /,"").gsub!(/\n/,"")
+          safe_dscl("read /Users/#{@new_resource.username} GeneratedUID").gsub(/GeneratedUID: /,"").strip
         end
 
         def shadow_hash_set?
-          if safe_dscl("read /Users/#{@new_resource.username}") =~ /AuthenticationAuthority: /
-            auth_auth = safe_dscl("read /Users/#{@new_resource.username} AuthenticationAuthority")
-            return !! ( auth_auth =~ /ShadowHash/ )
+          user_data = safe_dscl("read /Users/#{@new_resource.username}") 
+          if user_data =~ /AuthenticationAuthority: / && user_data =~ /ShadowHash/
+            true
+          else
+            false
           end
-          return false
         end
 
         def modify_password
@@ -149,12 +121,12 @@ class Chef
             if osx_shadow_hash?(@new_resource.password)
               shadow_hash = @new_resource.password.upcase
             else
-              salted_sha1 = nil
               if osx_salted_sha1?(@new_resource.password)
                 salted_sha1 = @new_resource.password.upcase
               else
-                hex_salt = ""; chars = ("0".."9").to_a + ("a".."f").to_a
-                1.upto(8) { |i| hex_salt << chars[::Kernel.rand(chars.size-1)] }
+                hex_salt = ""
+                OpenSSL::Random.random_bytes(10).each_byte { |b| hex_salt << b.to_i.to_s(16) }
+                hex_salt = hex_salt.slice(0...8)
                 salt = [hex_salt].pack("H*")
                 sha1 = ::OpenSSL::Digest::SHA1.hexdigest(salt+@new_resource.password)
                 salted_sha1 = (hex_salt+sha1).upcase
@@ -179,62 +151,52 @@ class Chef
         end
 
         def create_user
-          manage_user(false)
+          dscl_create_user
+          dscl_create_comment
+          set_uid
+          dscl_set_gid
+          modify_home
+          dscl_set_shell
+          modify_password
         end
         
-        def manage_user(manage = true)
-          fields = []
-          if manage
-            [:username,:comment,:uid,:gid,:home,:shell,:password].each do |field|
-              if @current_resource.send(field) != @new_resource.send(field)
-                fields << field if @new_resource.send(field)
-              end
-            end
-            if @new_resource.send(:supports)[:manage_home]
-              fields << :home if @new_resource.send(:home)
-            end
-            fields << :shell if fields.include?(:password)
+        def manage_user
+          dscl_create_user    if diverged?(:username)
+          dscl_create_comment if diverged?(:comment)
+          set_uid             if diverged?(:uid)
+          dscl_set_gid        if diverged?(:uid)
+          modify_home         if diverged?(:home)
+          dscl_set_shell      if diverged?(:shell)
+          modify_password     if diverged?(:password)
+        end
+        
+        def dscl_create_user
+          safe_dscl("create /Users/#{@new_resource.username}")              
+        end
+        
+        def dscl_create_comment
+          safe_dscl("create /Users/#{@new_resource.username} RealName '#{@new_resource.comment}'")
+        end
+        
+        def dscl_set_gid
+          safe_dscl("create /Users/#{@new_resource.username} PrimaryGroupID '#{@new_resource.gid}'")
+        end
+        
+        def dscl_set_shell
+          if @new_resource.password || ::File.exists?("#{@new_resource.shell}")
+            safe_dscl("create /Users/#{@new_resource.username} UserShell '#{@new_resource.shell}'")
           else
-            # create
-            fields = [:username,:comment,:uid,:gid,:home,:shell,:password]
-          end
-          fields.uniq!
-          fields.each do |field|
-            case field
-            when :username
-              safe_dscl("create /Users/#{@new_resource.username}")              
-              
-            when :comment
-              safe_dscl("create /Users/#{@new_resource.username} RealName '#{@new_resource.comment}'")
-
-            when :uid
-              set_uid
-              
-            when :gid
-              safe_dscl("create /Users/#{@new_resource.username} PrimaryGroupID '#{@new_resource.gid}'")
-
-            when :home
-              modify_home
-
-            when :shell
-              if @new_resource.password || ::File.exists?("#{@new_resource.shell}")
-                safe_dscl("create /Users/#{@new_resource.username} UserShell '#{@new_resource.shell}'")
-              else
-                safe_dscl("create /Users/#{@new_resource.username} UserShell '/usr/bin/false'")
-              end
-
-            when :password
-              modify_password
-            end
+            safe_dscl("create /Users/#{@new_resource.username} UserShell '/usr/bin/false'")
           end
         end
         
         def remove_user
           if @new_resource.supports[:manage_home]
-            # remove home directory
-            if safe_dscl("read /Users/#{@new_resource.username}") =~ /NFSHomeDirectory/
-              nfs_home = safe_dscl("read /Users/#{@new_resource.username} NFSHomeDirectory")
-              nfs_home.gsub!(/NFSHomeDirectory: /,"").gsub!(/\n$/,"")
+            user_info = safe_dscl("read /Users/#{@new_resource.username}") 
+            if nfs_home_match = user_info.match(NFS_HOME_DIRECTORY)
+              #nfs_home = safe_dscl("read /Users/#{@new_resource.username} NFSHomeDirectory")
+              #nfs_home.gsub!(/NFSHomeDirectory: /,"").gsub!(/\n$/,"")
+              nfs_home = nfs_home_match[1]
               FileUtils.rm_rf(nfs_home)
             end
           end
@@ -251,11 +213,12 @@ class Chef
         end
 
         def locked?
-          if safe_dscl("read /Users/#{@new_resource.username}") =~ /AuthenticationAuthority: /
-            auth_auth = safe_dscl("read /Users/#{@new_resource.username} AuthenticationAuthority")
-            return !! ( auth_auth =~ /DisabledUser/ )
+          user_info = safe_dscl("read /Users/#{@new_resource.username}")
+          if auth_authority_md = AUTHENTICATION_AUTHORITY.match(user_info)
+            !!(auth_authority_md[1] =~ /DisabledUser/ )
+          else
+            false
           end
-          return false
         end
         
         def check_lock
@@ -267,9 +230,49 @@ class Chef
         end
         
         def unlock_user
-          auth_auth = safe_dscl("read /Users/#{@new_resource.username} AuthenticationAuthority")
-          auth_auth.gsub!(/AuthenticationAuthority: /,"").gsub!(/DisabledUser/,"").gsub!(/[; ]*$/,"")
-          safe_dscl("create /Users/#{@new_resource.username} AuthenticationAuthority '#{auth_auth}'")
+          auth_info = safe_dscl("read /Users/#{@new_resource.username} AuthenticationAuthority")
+          auth_string = auth_info.gsub(/AuthenticationAuthority: /,"").gsub(/;DisabledUser;/,"").strip#.gsub!(/[; ]*$/,"")
+          safe_dscl("create /Users/#{@new_resource.username} AuthenticationAuthority '#{auth_string}'")
+        end
+        
+        def validate_home_dir_specification!
+          unless @new_resource.home =~ /^\//
+            raise(Chef::Exceptions::InvalidHomeDirectory,"invalid path spec for User: '#{@new_resource.username}', home directory: '#{@new_resource.home}'") 
+          end
+        end
+        
+        def current_home_exists?
+          ::File.exist?("#{@current_resource.home}")
+        end
+        
+        def new_home_exists?
+          ::File.exist?("#{@new_resource.home}")          
+        end
+        
+        def ditto_home
+          skel = "/System/Library/User Template/English.lproj"
+          raise(Chef::Exceptions::User,"can't find skel at: #{skel}") unless ::File.exists?(skel)
+          shell_out! "ditto '#{skel}' '#{@new_resource.home}'"
+          ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
+        end
+
+        def move_home
+          Chef::Log.debug("moving #{self} home from #{@current_resource.home} to #{@new_resource.home}")
+          
+          src = @current_resource.home
+          FileUtils.mkdir_p(@new_resource.home)
+          files = ::Dir.glob("#{src}/*", ::File::FNM_DOTMATCH) - ["#{src}/.","#{src}/.."]
+          ::FileUtils.mv(files,@new_resource.home, :force => true)
+          ::FileUtils.rmdir(src)
+          ::FileUtils.chown_R(@new_resource.username,@new_resource.gid.to_s,@new_resource.home)
+        end
+        
+        def diverged?(parameter)
+          parameter_updated?(parameter) && (not @new_resource.send(parameter).nil?)
+        end
+        
+        def parameter_updated?(parameter)
+          not (@new_resource.send(parameter) == @current_resource.send(parameter))
         end
       end
     end

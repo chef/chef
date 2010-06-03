@@ -1,6 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,10 +22,17 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Recipe do
   before(:each) do
+    Chef::Config.cookbook_path = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
+    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
     @node = Chef::Node.new
-    @recipe = Chef::Recipe.new("hjk", "test", @node)
+    @node[:tags] = Array.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+    @recipe = Chef::Recipe.new("hjk", "test", @run_context)
+
+    # Shef/ext.rb is on the run path, and it defines
+    # Chef::Recipe#resources to call pp, which we don't want when
+    # we're running tests.
     @recipe.stub!(:pp)
-    @recipe.node[:tags] = Array.new
   end
  
   describe "method_missing" do
@@ -53,12 +62,18 @@ describe Chef::Recipe do
       end
   
       it "should throw an error if you access a resource that we can't find" do
-        lambda { @recipe.not_home { || } }.should raise_error(NameError)
+        lambda { @recipe.not_home("not_home_resource") }.should raise_error(NameError)
+      end
+
+      it "should require a name argument" do
+        lambda {
+          @recipe.cat
+        }.should raise_error(ArgumentError, "You must supply a name when declaring a cat resource")
       end
   
       it "should allow regular errors (not NameErrors) to pass unchanged" do
-        lambda { 
-          @recipe.cat { || raise ArgumentError, "You Suck" } 
+        lambda {
+          @recipe.cat("felix") { raise ArgumentError, "You Suck" } 
         }.should raise_error(ArgumentError)
       end
   
@@ -66,7 +81,7 @@ describe Chef::Recipe do
         @recipe.zen_master "monkey" do
           peace true
         end
-        @recipe.collection.lookup("zen_master[monkey]").name.should eql("monkey")
+        @run_context.resource_collection.lookup("zen_master[monkey]").name.should eql("monkey")
       end
   
       it "should add our zen masters to the collection in the order they appear" do
@@ -75,16 +90,8 @@ describe Chef::Recipe do
             peace true
           end
         end
-        @recipe.collection.each_index do |i|
-          case i
-          when 0
-            @recipe.collection[i].name.should eql("monkey")
-          when 1
-            @recipe.collection[i].name.should eql("dog")
-          when 2
-            @recipe.collection[i].name.should eql("cat")
-          end
-        end
+        
+        @run_context.resource_collection.map{|r| r.name}.should eql(["monkey", "dog", "cat"])
       end
         
       it "should return the new resource after creating it" do
@@ -105,12 +112,12 @@ describe Chef::Recipe do
             something params[:something]
           end
         end
-        @recipe.definitions[:crow] = crow_define
+        @run_context.definitions[:crow] = crow_define
         @recipe.crow "mine" do
           peace true
         end
-        @recipe.resources(:zen_master => "lao tzu").name.should eql("lao tzu")
-        @recipe.resources(:zen_master => "lao tzu").something.should eql(true)
+        @run_context.resource_collection.resources(:zen_master => "lao tzu").name.should eql("lao tzu")
+        @run_context.resource_collection.resources(:zen_master => "lao tzu").something.should eql(true)
       end
 
       it "should set the node on defined resources" do
@@ -121,8 +128,8 @@ describe Chef::Recipe do
             something params[:something]
           end
         end
-        @recipe.definitions[:crow] = crow_define    
-        @recipe.node[:foo] = false
+        @run_context.definitions[:crow] = crow_define
+        @node[:foo] = false
         @recipe.crow "mine" do
           something node[:foo]
         end
@@ -162,35 +169,28 @@ describe Chef::Recipe do
   
   describe "include_recipe" do
     it "should evaluate another recipe with include_recipe" do
-      Chef::Config.cookbook_path File.join(CHEF_SPEC_DATA, "cookbooks")
-      @recipe.cookbook_loader.load_cookbooks
-      @recipe.include_recipe "openldap::gigantor"
-      res = @recipe.resources(:cat => "blanket")
+      @run_context.include_recipe "openldap::gigantor"
+      res = @run_context.resource_collection.resources(:cat => "blanket")
       res.name.should eql("blanket")
       res.pretty_kitty.should eql(false)
     end
   
     it "should load the default recipe for a cookbook if include_recipe is called without a ::" do
-      Chef::Config.cookbook_path File.join(CHEF_SPEC_DATA, "cookbooks")
-      @recipe.cookbook_loader.load_cookbooks
-      @recipe.include_recipe "openldap"
-      res = @recipe.resources(:cat => "blanket")
+      @run_context.include_recipe "openldap"
+      res = @run_context.resource_collection.resources(:cat => "blanket")
       res.name.should eql("blanket")
       res.pretty_kitty.should eql(true)
     end
     
     it "should store that it has seen a recipe in node.run_state[:seen_recipes]" do
-      Chef::Config.cookbook_path File.join(CHEF_SPEC_DATA, "cookbooks")
-      @recipe.cookbook_loader.load_cookbooks
-      @recipe.include_recipe "openldap"
+      @run_context.include_recipe "openldap"
       @node.run_state[:seen_recipes].should have_key("openldap")
     end
     
     it "should not include the same recipe twice" do
-      Chef::Config.cookbook_path File.join(CHEF_SPEC_DATA, "cookbooks")
-      @recipe.cookbook_loader.load_cookbooks
+      @cookbook_collection[:openldap].should_receive(:load_recipe).with("default", @run_context)
       @recipe.include_recipe "openldap"
-      Chef::Log.should_receive(:debug).with("I am not loading openldap, because I have already seen it.")
+      @cookbook_collection[:openldap].should_not_receive(:load_recipe).with("default", @run_context)
       @recipe.include_recipe "openldap"
     end
   end
@@ -198,19 +198,19 @@ describe Chef::Recipe do
   describe "tags" do
     it "should set tags via tag" do
       @recipe.tag "foo"
-      @recipe.node[:tags].should include("foo")
+      @node[:tags].should include("foo")
     end
   
     it "should set multiple tags via tag" do
       @recipe.tag "foo", "bar"
-      @recipe.node[:tags].should include("foo")
-      @recipe.node[:tags].should include("bar")
+      @node[:tags].should include("foo")
+      @node[:tags].should include("bar")
     end
   
     it "should not set the same tag twice via tag" do
       @recipe.tag "foo"
       @recipe.tag "foo"
-      @recipe.node[:tags].should eql([ "foo" ])
+      @node[:tags].should eql([ "foo" ])
     end
   
     it "should return the current list of tags from tag with no arguments" do
@@ -234,13 +234,13 @@ describe Chef::Recipe do
     it "should remove a tag from the tag list via untag" do
       @recipe.tag "foo"
       @recipe.untag "foo"
-      @recipe.node[:tags].should eql([])
+      @node[:tags].should eql([])
     end
   
     it "should remove multiple tags from the tag list via untag" do
       @recipe.tag "foo", "bar"
       @recipe.untag "bar", "foo"
-      @recipe.node[:tags].should eql([])
+      @node[:tags].should eql([])
     end
   end
 end

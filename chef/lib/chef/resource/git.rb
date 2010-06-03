@@ -22,8 +22,8 @@ class Chef
   class Resource
     class Git < Chef::Resource::Scm
       
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(name, run_context=nil)
+        super
         @resource_name = :git
         @provider = Chef::Provider::Git
       end

@@ -60,6 +60,16 @@ describe Chef::Node do
   end
 
   describe "attributes" do
+    it "should be loaded from the node's cookbooks" do
+      Chef::Config.cookbook_path = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
+      @node.cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+      @node.load_attributes
+      @node.ldap_server.should eql("ops1prod")
+      @node.ldap_basedn.should eql("dc=hjksolutions,dc=com")
+      @node.ldap_replication_password.should eql("forsure")
+      @node.smokey.should eql("robinson")
+    end
+    
     it "should have attributes" do
       @node.attribute.should be_a_kind_of(Hash)
     end
@@ -233,32 +243,33 @@ describe Chef::Node do
     end
   end
 
-  describe "recipes" do
-    it "should have a RunList of recipes that should be applied" do
-      @node.recipes.should be_a_kind_of(Chef::RunList)
-    end
-    
-    it "should allow you to query whether or not it has a recipe applied with recipe?" do
-      @node.recipes << "sunrise"
-      @node.recipe?("sunrise").should eql(true)
-      @node.recipe?("not at home").should eql(false)
-    end
-
-    it "should allow you to query whether or not a recipe has been applied, even if it was included" do
-      @node.run_state[:seen_recipes]["snakes"] = true
-      @node.recipe?("snakes").should eql(true)
-    end
-
-    it "should return false if a recipe has not been seen" do
-      @node.recipe?("snakes").should eql(false)
-    end
-    
-    it "should allow you to set recipes with arguments" do
-      @node.recipes "one", "two"
-      @node.recipe?("one").should eql(true)
-      @node.recipe?("two").should eql(true)
-    end
-  end
+  # TODO: timh, cw: 2010-5-19: Node.recipe? deprecated. See node.rb
+  # describe "recipes" do
+  #   it "should have a RunList of recipes that should be applied" do
+  #     @node.recipes.should be_a_kind_of(Chef::RunList)
+  #   end
+  #   
+  #   it "should allow you to query whether or not it has a recipe applied with recipe?" do
+  #     @node.recipes << "sunrise"
+  #     @node.recipe?("sunrise").should eql(true)
+  #     @node.recipe?("not at home").should eql(false)
+  #   end
+  # 
+  #   it "should allow you to query whether or not a recipe has been applied, even if it was included" do
+  #     @node.run_state[:seen_recipes]["snakes"] = true
+  #     @node.recipe?("snakes").should eql(true)
+  #   end
+  # 
+  #   it "should return false if a recipe has not been seen" do
+  #     @node.recipe?("snakes").should eql(false)
+  #   end
+  #   
+  #   it "should allow you to set recipes with arguments" do
+  #     @node.recipes "one", "two"
+  #     @node.recipe?("one").should eql(true)
+  #     @node.recipe?("two").should eql(true)
+  #   end
+  # end
 
   describe "roles" do
     it "should allow you to query whether or not it has a recipe applied with role?" do

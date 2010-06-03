@@ -23,9 +23,9 @@ class Chef
     class ErlCall < Chef::Resource
 
       # erl_call : http://erlang.org/doc/man/erl_call.html
-
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      
+      def initialize(name, run_context=nil)
+        super
         @resource_name = :erl_call
 
         @code = "q()." # your erlang code goes here

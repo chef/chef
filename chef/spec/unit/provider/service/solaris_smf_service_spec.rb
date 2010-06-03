@@ -21,12 +21,13 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 describe Chef::Provider::Service::Solaris do
   before(:each) do
     @node =Chef::Node.new
+    @run_context = Chef::RunContext.new(@node, {})
 
     @new_resource = Chef::Resource::Service.new('chef')
 
     @current_resource = Chef::Resource::Service.new('chef')
 
-    @provider = Chef::Provider::Service::Solaris.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Solaris.new(@new_resource, @run_context)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
 
     @stdin = mock("STDIN", :null_object => true)
@@ -82,7 +83,7 @@ describe Chef::Provider::Service::Solaris do
 
     describe "when enabling the service" do
       before(:each) do
-        @provider = Chef::Provider::Service::Solaris.new(@node, @new_resource)
+        #@provider = Chef::Provider::Service::Solaris.new(@node, @new_resource)
         @provider.current_resource = @current_resource
         @current_resource.enabled(true)
       end
@@ -104,8 +105,7 @@ describe Chef::Provider::Service::Solaris do
 
     describe "when disabling the service" do
       before(:each) do
-        @provider = Chef::Provider::Service::Solaris.new(@node, @new_resource)
-        Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+        @provider.current_resource = @current_resource
         @current_resource.enabled(false)
       end
 
@@ -126,8 +126,7 @@ describe Chef::Provider::Service::Solaris do
     describe "when reloading the service" do
       before(:each) do
         @status = mock("Process::Status", :exitstatus => 0)
-        @provider = Chef::Provider::Service::Solaris.new(@node, @new_resource)
-        Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+        @provider.current_resource = @current_resource
       end
 
       it "should call svcadm refresh chef" do

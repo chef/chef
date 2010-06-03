@@ -21,9 +21,9 @@ class Chef
     class OneTwoThreeFour < Chef::Resource
       attr_reader :i_can_count
       
-      def initialize(name, collection=nil, node=nil)
+      def initialize(name, run_context)
         @resource_name = :one_two_three_four
-        super(name, collection, node)
+        super
       end
       
       def i_can_count(tf)

@@ -29,7 +29,7 @@ class Chef
           Chef::Log.fatal("You must supply a regular expression to match the results against")
           exit 42
         else
-          bulk_delete(Chef::Cookbook, "cookbook", "cookbook", rest.get_rest("cookbooks"), @name_args[0]) do |name, cookbook|
+          bulk_delete(Chef::CookbookVersion, "cookbook", "cookbook", rest.get_rest("cookbooks"), @name_args[0]) do |name, cookbook|
             rest.delete_rest(cookbook)
           end
         end

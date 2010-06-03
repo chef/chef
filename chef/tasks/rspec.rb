@@ -29,7 +29,7 @@ begin
 
   desc "Run all specs in spec directory"
   Spec::Rake::SpecTask.new(:spec) do |t|
-    t.spec_opts = ['--format', 'specdoc', '--options', "\"#{CHEF_ROOT}/spec/spec.opts\""]
+    t.spec_opts = ['--options', "\"#{CHEF_ROOT}/spec/spec.opts\""]
     t.spec_files = FileList['spec/**/*_spec.rb']
   end
 

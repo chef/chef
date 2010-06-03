@@ -53,13 +53,9 @@ class Chef
         # <string>:: A string containing the option and then the quoted value
         def set_options
           opts = " #{@new_resource.group_name}"
-          { :gid => "-g" }.sort { |a,b| a[0] <=> b[0] }.each do |field, option|
-            if @current_resource.send(field) != @new_resource.send(field)
-              if @new_resource.send(field)
-                Chef::Log.debug("#{@new_resource}: setting #{field.to_s} to #{@new_resource.send(field)}")
-                opts << " #{option} '#{@new_resource.send(field)}'"
-              end
-            end
+          if @new_resource.gid && (@current_resource.gid != @new_resource.gid)
+            Chef::Log.debug("#{@new_resource}: current gid (#{@current_resource.gid}) doesnt match target gid (#{@new_resource.gid}), changing it")
+            opts << " -g '#{@new_resource.gid}'"
           end
           opts
         end

@@ -21,9 +21,9 @@ class Chef
     class ZenMaster < Chef::Resource
       attr_reader :peace
       
-      def initialize(name, collection=nil, node=nil)
+      def initialize(name, run_context=nil)
         @resource_name = :zen_master
-        super(name, collection, node)
+        super
       end
       
       def peace(tf)

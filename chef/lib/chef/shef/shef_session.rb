@@ -19,9 +19,8 @@ module Shef
   class ShefSession
     include Singleton
     
-    attr_accessor :node, :compile, :recipe
+    attr_accessor :node, :compile, :recipe, :run_context
     attr_reader :node_attributes, :client
-    
     def initialize
       @node_built = false
     end
@@ -34,9 +33,10 @@ module Shef
       loading do 
         rebuild_node
         @node = client.node
+        rebuild_context
         node.consume_attributes(node_attributes) if node_attributes
         shorten_node_inspect
-        @recipe = Chef::Recipe.new(nil, nil, @node)
+        @recipe = Chef::Recipe.new(nil, nil, run_context)
         @node_built = true
       end
     end
@@ -46,8 +46,12 @@ module Shef
       @node.consume_attributes(@node_attributes)
     end
     
-    def collection
-      @collection || rebuild_collection
+    def resource_collection
+      run_context.resource_collection
+    end
+
+    def run_context
+      @run_context || rebuild_context
     end
     
     def definitions
@@ -62,7 +66,7 @@ module Shef
       raise "Not Supported! #{self.class.name} doesn't support #save_node, maybe you need to run shef in client mode?"
     end
     
-    def rebuild_collection
+    def rebuild_context
       raise "Not Implemented! :rebuild_collection should be implemented by subclasses"
     end
     
@@ -112,16 +116,18 @@ module Shef
   
   class StandAloneSession < ShefSession
     
-    def rebuild_collection
-      @collection = @recipe.collection
+    def rebuild_context
+      @run_context = Chef::RunContext.new(@node, {}) # no recipes
     end
     
     private
     
     def rebuild_node
+      Chef::Config[:solo] = true
       @client = Chef::Client.new
+      @client.run_ohai
       @client.determine_node_name
-      @client.build_node(@client.node_name, true)
+      @client.build_node #(@client.node_name, true)
     end
     
   end
@@ -129,28 +135,22 @@ module Shef
   class SoloSession < ShefSession
     
     def definitions
-      @compile.definitions
+      @run_context.definitions
     end
     
-    def cookbook_loader
-      @compile.cookbook_loader
-    end
-    
-    def rebuild_collection
-      @compile = Chef::Compile.new(@client.node)
-      @compile.go
-      
-      @collection = @compile.collection
-      @collection << @recipe.collection.all_resources
-      @collection
+    def rebuild_context
+      @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
     end
     
     private
     
     def rebuild_node
+      # Tell the client we're chef solo so it won't try to contact the server
+      Chef::Config[:solo] = true
       @client = Chef::Client.new
+      @client.run_ohai
       @client.determine_node_name
-      @client.build_node(@client.node_name, true)
+      @client.build_node #(@client.node_name, true)
     end
     
   end
@@ -164,10 +164,13 @@ module Shef
     private
 
     def rebuild_node
+      # Make sure the client knows this is not chef solo
+      Chef::Config[:solo] = false
       @client = Chef::Client.new
+      @client.run_ohai
       @client.determine_node_name
       @client.register
-      @client.build_node(@client.node_name, false)
+      @client.build_node #(@client.node_name, false)
       
       @client.sync_cookbooks
     end

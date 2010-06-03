@@ -54,12 +54,12 @@ describe Chef::Cache::Checksum do
   it "computes a checksum of a file" do
     fixture_file = CHEF_SPEC_DATA + "/checksum/random.txt"
     expected = "09ee9c8cc70501763563bcf9c218d71b2fbf4186bf8e1e0da07f0f42c80a3394"
-    @cache.send(:checksum_file, fixture_file).should == expected
+    @cache.send(:checksum_file, fixture_file, Digest::SHA256.new).should == expected
   end
   
   it "computes a checksum and stores it in the cache" do
     fstat = mock("File.stat('riseofthemachines')", :mtime => Time.at(555555))
-    @cache.should_receive(:checksum_file).with("riseofthemachines").and_return("ohai2uChefz")
+    @cache.should_receive(:checksum_file).with("riseofthemachines", an_instance_of(Digest::SHA256)).and_return("ohai2uChefz")
     @cache.generate_checksum("chef-file-riseofthemachines", "riseofthemachines", fstat).should == "ohai2uChefz"
     @cache.lookup_checksum("chef-file-riseofthemachines", fstat).should == "ohai2uChefz"
   end

@@ -30,8 +30,8 @@ class Chef
       
       attr_accessor :candidate_version
       
-      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-        super(node, new_resource, collection, definitions, cookbook_loader)
+      def initialize(new_resource, run_context)
+        super
         @candidate_version = nil
       end
       
@@ -75,29 +75,28 @@ class Chef
       end
       
       def action_remove        
-        if should_remove_package(@current_resource.version, @new_resource.version)
+        if removing_package?
           Chef::Log.info("Removing #{@new_resource}")
           remove_package(@current_resource.package_name, @new_resource.version)
           @new_resource.updated = true
+        else
         end
       end
       
-      def should_remove_package(current_version, new_version)
-        to_remove_package = false
-        if current_version != nil
-          if new_version != nil 
-            if new_version == current_version
-              to_remove_package = true
-            end
-          else
-            to_remove_package = true
-          end
+      def removing_package?
+        if @current_resource.version.nil?
+          false # nothing to remove
+        elsif @new_resource.version.nil?
+          true # remove any version of a package
+        elsif @new_resource.version == @current_resource.version
+          true # remove the version we have
+        else
+          false # we don't have the version we want to remove
         end
-        to_remove_package
       end
       
       def action_purge
-        if should_remove_package(@current_resource.version, @new_resource.version)
+        if removing_package?
           Chef::Log.info("Purging #{@new_resource}")
           purge_package(@current_resource.package_name, @new_resource.version)
           @new_resource.updated = true
@@ -124,31 +123,32 @@ class Chef
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support pre-seeding package install/upgrade instructions - don't ask it to!" 
       end
       
-      def get_preseed_file(name, version)        
-        full_cache_dir = Chef::FileCache.create_cache_path("preseed/#{@new_resource.cookbook_name}")
-        full_cache_file = "#{full_cache_dir}/#{name}-#{version}.seed"
-        cache_path = "preseed/#{@new_resource.cookbook_name}/#{name}-#{version}.seed"
-              
-        Chef::Log.debug("Fetching preseed file to #{cache_path}")
+      def get_preseed_file(name, version)
+        resource = preseed_resource(name, version)
+        Chef::Log.debug("Fetching preseed file to #{resource.path}")
+        resource.run_action('create')
         
-        remote_file = Chef::Resource::RemoteFile.new(
-          full_cache_file,
-          nil,
-          @node
-        )
+        if resource.updated?
+          resource.path
+        else
+          false
+        end
+      end
+      
+      def preseed_resource(name, version)
+        # A directory in our cache to store this cookbook's preseed files in
+        file_cache_dir = Chef::FileCache.create_cache_path("preseed/#{@new_resource.cookbook_name}")
+        # The full path where the preseed file will be stored
+        cache_seed_to = "#{file_cache_dir}/#{name}-#{version}.seed"
+
+        Chef::Log.debug("Fetching preseed file to #{cache_seed_to}")
+
+        remote_file = Chef::Resource::CookbookFile.new(cache_seed_to)
         remote_file.cookbook_name = @new_resource.cookbook_name
         remote_file.source(@new_resource.response_file)
         remote_file.backup(false)
         
-        rf_provider = Chef::Platform.provider_for_node(@node, remote_file)
-        rf_provider.load_current_resource
-        rf_provider.action_create
-        
-        if remote_file.updated
-          Chef::FileCache.load(cache_path, false)
-        else
-          false
-        end
+        remote_file
       end
 
       def expand_options(options)

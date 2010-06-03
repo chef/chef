@@ -27,8 +27,8 @@ class Chef
 
       CRON_PATTERN = /([0-9\*\-\,\/]+)\s*([0-9\*\-\,\/]+)\s*([0-9\*\-\,\/]+)\s*([0-9\*\-\,\/]+)\s*([0-9\*\-\,\/]+)\s*(.*)/
 
-      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-        super(node, new_resource, collection, definitions, cookbook_loader)
+      def initialize(new_resource, run_context)
+        super(new_resource, run_context)
         @cron_exists = false
         @cron_empty = false
       end

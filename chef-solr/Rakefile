@@ -16,35 +16,59 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require File.dirname(__FILE__) + '/lib/chef/solr/version'
 
 require 'rubygems'
 require 'rake'
+require 'rake/gempackagetask'
 
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "chef-solr"
-    gem.summary = %Q{Search indexing for Chef}
-    gem.email = "adam@opscode.com"
-    gem.homepage = "http://wiki.opscode.com/display/chef"
-    gem.authors = ["Adam Jacob"]
-    gem.add_dependency "libxml-ruby", ">=1.1.3"
-    gem.add_dependency "uuidtools", ">=2.0.0"
-    gem.add_dependency "chef", IO.read("VERSION").strip
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-    gem.executables = [ 'chef-solr', 'chef-solr-indexer', 'chef-solr-rebuild' ]
-    gem.files = [
-      "README.rdoc",
-      "Rakefile",
-      "VERSION"
-    ]
-    gem.files.include %w{ README.rdoc Rakefile VERSION bin/* lib/**/* solr/* spec/**/* }
-  end
-
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it from gemcutter with: sudo gem install gemcutter jeweler"
+spec = Gem::Specification.new do |gem|
+  gem.name = "chef-solr"
+  gem.version = Chef::Solr::VERSION
+  gem.summary = %Q{Search indexing for Chef}
+  gem.email = "adam@opscode.com"
+  gem.homepage = "http://wiki.opscode.com/display/chef"
+  gem.authors = ["Adam Jacob"]
+  gem.add_dependency "libxml-ruby", ">=1.1.3"
+  gem.add_dependency "uuidtools", ">=2.0.0"
+  gem.add_dependency "chef", Chef::Solr::VERSION
+  # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+  gem.executables = [ 'chef-solr', 'chef-solr-indexer', 'chef-solr-rebuild' ]
+  gem.files = [
+    "README.rdoc",
+    "Rakefile"
+  ]
+  gem.files = %w{ README.rdoc Rakefile LICENSE} + Dir.glob("{bin,lib,solr,spec}/**/*")
 end
 
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.gem_spec = spec
+end
+
+# begin
+#   require 'jeweler'
+#   Jeweler::Tasks.new do |gem|
+#     gem.name = "chef-solr"
+#     gem.summary = %Q{Search indexing for Chef}
+#     gem.email = "adam@opscode.com"
+#     gem.homepage = "http://wiki.opscode.com/display/chef"
+#     gem.authors = ["Adam Jacob"]
+#     gem.add_dependency "libxml-ruby", ">=1.1.3"
+#     gem.add_dependency "uuidtools", ">=2.0.0"
+#     gem.add_dependency "chef", Chef::Solr::VERSION
+#     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+#     gem.executables = [ 'chef-solr', 'chef-solr-indexer', 'chef-solr-rebuild' ]
+#     gem.files = [
+#       "README.rdoc",
+#       "Rakefile"
+#     ]
+#     gem.files.include %w{ README.rdoc Rakefile VERSION bin/* lib/**/* solr/* spec/**/* }
+#   end
+# 
+# rescue LoadError
+#   puts "Jeweler (or a dependency) not available. Install it from gemcutter with: sudo gem install gemcutter jeweler"
+# end
+# 
 begin
   require 'spec/rake/spectask'
   Spec::Rake::SpecTask.new(:spec) do |spec|
@@ -79,7 +103,7 @@ Rake::RDocTask.new do |rdoc|
     config = YAML.load(File.read('VERSION.yml'))
     version = "#{config[:major]}.#{config[:minor]}.#{config[:patch]}"
   else
-    version = ""
+    version = Chef::Solr::VERSION
   end
 
   rdoc.rdoc_dir = 'rdoc'

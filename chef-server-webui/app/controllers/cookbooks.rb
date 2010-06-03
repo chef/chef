@@ -23,7 +23,13 @@ require 'chef' / 'cookbook_loader'
 class Cookbooks < Application
   
   provides :html, :json
-  before :login_required 
+  before :login_required
+  before :params_helper
+  
+  attr_reader :cookbook_id
+  def params_helper
+    @cookbook_id = params[:id] || params[:cookbook_id]
+  end
   
   def index
     @cl = begin
@@ -38,7 +44,19 @@ class Cookbooks < Application
 
   def show
     begin
-      @cookbook = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks/#{params[:id]}")
+      # array of versions, sorted from large to small e.g. ["0.20.0", "0.1.0"]
+      versions = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks/#{cookbook_id}")[cookbook_id].sort!{|x,y| y <=> x }      
+      # if version is not specified in the url, get the most recent version, otherwise get the specified version
+      version = if params[:cb_version].nil? || params[:cb_version].empty?
+                  versions.first
+                else
+                  params[:cb_version]
+                end
+                
+      @cookbook = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks/#{cookbook_id}/#{version}")
+      
+      # by default always show the largest version number (assuming largest means most recent)
+      @other_versions = versions - [version]
       raise NotFound unless @cookbook
       display @cookbook
     rescue => e

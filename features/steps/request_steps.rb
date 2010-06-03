@@ -7,8 +7,8 @@ end
 
 When /^I '([^']*)' (?:to )?the path '([^']*)'$/ do |http_method, request_uri|
   begin
-    self.response = rest.send("#{http_method}_rest".downcase.to_sym, request_uri)
-    self.inflated_response = self.response
+    self.api_response = rest.send("#{http_method}_rest".downcase.to_sym, request_uri)
+    self.inflated_response = self.api_response
   rescue
     Chef::Log.debug("Caught exception in request: #{$!.message}")
     self.exception = $!
@@ -23,10 +23,22 @@ When /^I '(.+)' the path '(.+)' using a wrong private key$/ do |http_method, req
   When "I '#{http_method}' the path '#{request_uri}'"
 end
 
+When /^I (.+) the client$/ do |action| 
+  raise ArgumentError, "You can only create or save clients" unless action =~ /^(create|save)$/
+  client = stash['client']
+  request_body = {:name => client.name, :admin => client.admin}
+  begin
+    self.inflated_response = @rest.post_rest("clients", request_body) if action == 'create'
+    self.inflated_response = @rest.put_rest("clients/#{client.name}", request_body) if action == 'save'
+  rescue
+    self.exception = $!
+  end
+end
+
 When /^I '(.+)' the '(.+)' to the path '(.+)'$/ do |http_method, stash_key, request_uri|
   begin
-    self.response = rest.send("#{http_method.to_s.downcase}_rest".downcase.to_sym, request_uri, stash[stash_key])
-    self.inflated_response = response
+    self.api_response = rest.send("#{http_method.to_s.downcase}_rest".downcase.to_sym, request_uri, stash[stash_key])
+    self.inflated_response = self.api_response
   rescue
     self.exception = $!
   end
@@ -62,21 +74,28 @@ When /^I authenticate as '(.+)'$/ do |reg|
 end
 
 When "I edit the '$not_admin' client" do |client|
-  @object_to_edit = Chef::ApiClient.cdb_load("not_admin")
+  stash['client'] = @rest.get_rest("/clients/not_admin")
 end
  
 When "I set '$property' to true" do |property|
-  @object_to_edit.send(property.to_sym, true)
+  stash['client'].send(property.to_sym, true)
 end
 
-When "I save the client" do
+def call_as_admin(&block)
+  orig_rest = @rest
+  orig_node_name = Chef::Config[:node_name]
+  orig_client_key = Chef::Config[:client_key]
   begin
-    @rest.put_rest "clients/#{@object_to_edit.name}", @object_to_edit
-  rescue Exception => e
-    @exception = e
+    @rest = admin_rest
+    Chef::Config[:node_name] = @rest.auth_credentials.client_name
+    Chef::Config[:client_key] = @rest.auth_credentials.key_file
+    yield
+  ensure
+    @rest = orig_rest
+    Chef::Config[:node_name] = orig_node_name
+    Chef::Config[:client_key] = orig_client_key
   end
 end
-
 
 #When /^I dump the contents of the search index$/ do
 #  Given "I dump the contents of the search index"
@@ -86,7 +105,7 @@ end
 # When /^I '(.+)' the path '(.+)'$/ do |http_method, request_uri|
 #   begin
 #     #if http_method.downcase == 'get'
-#     #  self.response = @rest.get_rest(request_uri)
+#     #  self.api_response = @rest.get_rest(request_uri)
 #     #else
 #       #puts "test test test \n\n\n\n\n\n\n"
 #       @response = @rest.send("#{http_method}_rest".downcase.to_sym, request_uri)
@@ -94,9 +113,9 @@ end
 #     puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 #     puts @response
 #     puts @response['content-type']
-#     #puts self.response
-#     #puts self.response.inspect
-#     #self.inflated_response = self.response
+#     #puts self.api_response
+#     #puts self.api_response.inspect
+#     #self.inflated_response = self.api_response
 #     @inflated_response = @response#JSON.parse(response.body.to_s) 
 #     puts "~~~~~~~~INFLATED RESPONSE~~~~~~~~~~~~"
 #     puts @inflated_response
@@ -109,18 +128,18 @@ end
 #   begin
 #     #if http_method.downcase == 'post'
 #     #  puts "post request"
-#     #  self.response = @rest.post_rest(request_uri, @stash[stash_key])
-#     #  puts self.response
+#     #  self.api_response = @rest.post_rest(request_uri, @stash[stash_key])
+#     #  puts self.api_response
 #     #else
 #     puts "This is the request -- @stash[stash_key]:" 
 #     puts @stash[stash_key].to_s
 #     @response = @rest.send("#{http_method}_rest".downcase.to_sym, request_uri, @stash[stash_key])
 #     #end
 #     puts "This is the response:"
-#     #puts self.response.body.to_s
+#     #puts self.api_response.body.to_s
 #     puts @response
 #     #self.inflated_response = response
-#     @inflated_response = @response#JSON.parse(self.response.body.to_s)
+#     @inflated_response = @response#JSON.parse(self.api_response.body.to_s)
 #     puts "~~~~~~~~INFLATED RESPONSE~~~~~~~~~~~~"
 #     puts @inflated_response
 #   rescue

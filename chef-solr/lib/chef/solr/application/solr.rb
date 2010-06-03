@@ -126,7 +126,8 @@ class Chef
             @logfile = File.new(Chef::Config[:log_location], "a")
           end
 
-          Chef::Log.level = Chef::Config[:log_level]
+          #Chef::Log.level = Chef::Config[:log_level]
+          Chef::Log.level = :debug
 
           # Build up a client
           node = Chef::Node.new
@@ -137,13 +138,14 @@ class Chef
 
           solr_base = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "..", "solr"))
 
+          run_context = Chef::RunContext.new(node, {})
           # Create the Jetty container
           unless File.directory?(Chef::Config[:solr_jetty_path])
             Chef::Log.warn("Initializing the Jetty container")
-            solr_jetty_dir = Chef::Resource::Directory.new(Chef::Config[:solr_jetty_path], nil, node)
+            solr_jetty_dir = Chef::Resource::Directory.new(Chef::Config[:solr_jetty_path], run_context)
             solr_jetty_dir.recursive(true)
             solr_jetty_dir.run_action(:create)
-            solr_jetty_untar = Chef::Resource::Execute.new("untar_jetty", nil, node)
+            solr_jetty_untar = Chef::Resource::Execute.new("untar_jetty", run_context)
             solr_jetty_untar.command("tar zxvf #{File.join(solr_base, 'solr-jetty.tar.gz')}")
             solr_jetty_untar.cwd(Chef::Config[:solr_jetty_path])
             solr_jetty_untar.run_action(:run)
@@ -152,10 +154,10 @@ class Chef
           # Create the solr home
           unless File.directory?(Chef::Config[:solr_home_path])
             Chef::Log.warn("Initializing Solr home directory")
-            solr_home_dir = Chef::Resource::Directory.new(Chef::Config[:solr_home_path], nil, node)
+            solr_home_dir = Chef::Resource::Directory.new(Chef::Config[:solr_home_path], run_context)
             solr_home_dir.recursive(true)
             solr_home_dir.run_action(:create)
-            solr_jetty_untar = Chef::Resource::Execute.new("untar_solr_home", nil, node)
+            solr_jetty_untar = Chef::Resource::Execute.new("untar_solr_home", run_context)
             solr_jetty_untar.command("tar zxvf #{File.join(solr_base, 'solr-home.tar.gz')}")
             solr_jetty_untar.cwd(Chef::Config[:solr_home_path])
             solr_jetty_untar.run_action(:run)
@@ -164,7 +166,7 @@ class Chef
           # Create the solr data path
           unless File.directory?(Chef::Config[:solr_data_path])
             Chef::Log.warn("Initializing Solr data directory")
-            solr_data_dir = Chef::Resource::Directory.new(Chef::Config[:solr_data_path], nil, node)
+            solr_data_dir = Chef::Resource::Directory.new(Chef::Config[:solr_data_path], run_context)
             solr_data_dir.recursive(true)
             solr_data_dir.run_action(:create)
           end
@@ -201,3 +203,4 @@ class Chef
     end
   end
 end
+

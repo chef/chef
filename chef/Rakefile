@@ -17,13 +17,14 @@
 # limitations under the License.
 #
 
+require File.dirname(__FILE__) + '/lib/chef/version'
+
 require 'rubygems'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require './tasks/rspec.rb'
 
 GEM = "chef"
-CHEF_VERSION = "0.9.0.a1"
 AUTHOR = "Adam Jacob"
 EMAIL = "adam@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"
@@ -31,7 +32,7 @@ SUMMARY = "A systems integration framework, built to bring the benefits of confi
 
 spec = Gem::Specification.new do |s|
   s.name = GEM
-  s.version = CHEF_VERSION
+  s.version = Chef::VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README.rdoc", "LICENSE" ]
@@ -47,6 +48,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "mixlib-authentication", ">= 1.1.0"
   s.add_dependency "ohai", ">= 0.5.0"
 
+  s.add_dependency "rest-client", ">= 1.1.0"
   s.add_dependency "bunny", ">= 0.6.0"
   s.add_dependency "json", "<= 1.4.2"
   %w{erubis extlib moneta}.each { |gem| s.add_dependency gem }

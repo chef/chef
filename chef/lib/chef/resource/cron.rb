@@ -21,9 +21,9 @@ require 'chef/resource'
 class Chef
   class Resource
     class Cron < Chef::Resource
-
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      
+      def initialize(name, run_context=nil)
+        super
         @resource_name = :cron
         @action = :create
         @allowed_actions.push(:create, :delete)

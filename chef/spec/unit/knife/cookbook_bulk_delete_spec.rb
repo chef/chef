@@ -29,7 +29,7 @@ describe Chef::Knife::CookbookBulkDelete do
     @knife.stub!(:confirm).and_return(true)
     @cookbooks = Hash.new
     %w{cheezburger pizza lasagna}.each do |cookbook_name|
-      cookbook = Chef::Cookbook.new(cookbook_name)
+      cookbook = Chef::CookbookVersion.new(cookbook_name)
       @cookbooks[cookbook_name] = cookbook
     end
     @rest = mock("Chef::REST")

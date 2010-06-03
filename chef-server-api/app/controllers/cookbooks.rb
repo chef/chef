@@ -2,7 +2,8 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2009, 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,186 +27,110 @@ class Cookbooks < Application
   provides :json
 
   before :authenticate_every
+  before :params_helper
+  
+  attr_accessor :cookbook_name, :cookbook_version
+  
+  def params_helper
+    self.cookbook_name = params[:cookbook_name]
+    self.cookbook_version = params[:cookbook_version]
+  end
 
   include Chef::Mixin::Checksum
   include Merb::TarballHelper
   
   def index
-    cl = Chef::CookbookLoader.new
-    cookbook_list = Hash.new
-    cl.each do |cookbook|
-      cookbook_list[cookbook.name] = absolute_url(:cookbook, :id => cookbook.name.to_s) 
+    cookbook_list = Chef::CookbookVersion.cdb_list
+    response = Hash.new
+    cookbook_list.each do |cookbook_name|
+      cookbook_name =~ /^(.+)-(\d+\.\d+\.\d+)$/
+      response[$1] = absolute_url(:cookbook, :cookbook_name => $1)
     end
-    display cookbook_list 
+    display response 
+  end
+
+  def show_versions
+    versions = Chef::CookbookVersion.cdb_by_name(cookbook_name)
+    raise NotFound, "Cannot find a cookbook named #{cookbook_name}" unless versions && versions.size > 0
+    display versions
   end
 
   def show
-    cl = Chef::CookbookLoader.new
-    begin
-      cookbook = cl[params[:id]]
-    rescue ArgumentError => e
-      raise NotFound, "Cannot find a cookbook named #{params[:id]}"
-    end
-    results = load_cookbook_files(cookbook)
-    results[:name] = cookbook.name.to_s
-    results[:metadata] = cl.metadata[cookbook.name.to_sym]
-    display results 
-  end
- 
-  def show_segment
-    cl = Chef::CookbookLoader.new
-    begin
-      cookbook = cl[params[:cookbook_id]]
-    rescue ArgumentError => e
-      raise NotFound, "Cannot find a cookbook named #{params[:cookbook_id]}" 
-    end
-    cookbook_files = load_cookbook_files(cookbook)
-    raise NotFound unless cookbook_files.has_key?(params[:segment].to_sym)
-
-    if params[:id]
-      case params[:segment]
-      when "templates","files"
-        if params[:recursive]
-          serve_directory_preferred(cookbook, params[:segment], cookbook_files[params[:segment].to_sym])
-        else
-          serve_segment_preferred(cookbook, params[:segment], cookbook_files[params[:segment].to_sym])
-        end
-      else
-        serve_segment_file(cookbook, params[:segment], cookbook_files[params[:segment].to_sym])
-      end
-    else
-      display cookbook_files[params[:segment].to_sym]
-    end
+    cookbook = get_cookbook_version(cookbook_name, cookbook_version)
+    display cookbook.generate_manifest_with_urls { |opts| absolute_url(:cookbook_file, opts) }
   end
 
-  def serve_segment_preferred(cookbook, segment, files)
+  def show_file
+    cookbook = get_cookbook_version(cookbook_name, cookbook_version)
+    
+    checksum = params[:checksum]
+    raise NotFound, "Cookbook #{cookbook_name} version #{cookbook_version} does not contain a file with checksum #{checksum}" unless cookbook.checksums.keys.include?(checksum)
 
-    to_send = nil
-    
-    preferences.each do |pref|
-      unless to_send
-        Chef::Log.debug("Looking for a file with name `#{params[:id]}' and specificity #{pref}")
-        to_send = files.detect do |file| 
-          Chef::Log.debug("#{pref.inspect} #{file.inspect}")
-          file[:name] == params[:id] && file[:specificity] == pref
-          
-        end
-      end
-    end
+    filename = checksum_location(checksum)
+    raise InternalServerError, "File with checksum #{checksum} not found in the repository (this should not happen)" unless File.exists?(filename)
 
-    raise NotFound, "Cannot find a suitable #{segment} file for #{params[:id]}!" unless to_send 
-    current_checksum = to_send[:checksum] 
-    Chef::Log.debug("#{to_send[:name]} Client Checksum: #{params[:checksum]}, Server Checksum: #{current_checksum}") 
-    if current_checksum == params[:checksum]
-      raise NotModified, "File #{to_send[:name]} has not changed"
-    else
-      file_name = nil
-      segment_files(segment.to_sym, cookbook).each do |f|
-        if f =~ /#{to_send[:specificity]}\/#{to_send[:name]}$/
-          file_name = File.expand_path(f)
-          break 
-        end
-      end
-      raise NotFound, "Cannot find the real file for #{to_send[:specificity]} #{to_send[:name]} - this is a 42 error (shouldn't ever happen)" unless file_name
-      send_file(file_name)
-    end
-  end
-  
-  def serve_directory_preferred(cookbook, segment, files)
-    preferred_dir_contents = []
-    preferences.each do |preference|
-      preferred_dir_contents = files.select { |file| file[:name] =~ /^#{params[:id]}/ && file[:specificity] == preference  }
-      break unless preferred_dir_contents.empty?
-    end
-    
-    raise NotFound, "Cannot find a suitable directory for #{params[:id]}" if preferred_dir_contents.empty?
-    
-    display preferred_dir_contents.map { |file| file[:name].sub(/^#{params[:id]}/, '') }
-  end
-  
-  def preferences
-    ["host-#{params[:fqdn]}",
-    "#{params[:platform]}-#{params[:version]}",
-    "#{params[:platform]}",
-    "default"]
+    send_file(filename)
   end
 
-  def serve_segment_file(cookbook, segment, files)
-    to_send = files.detect { |f| f[:name] == params[:id] } 
-    raise NotFound, "Cannot find a suitable #{segment} file!" unless to_send 
-    current_checksum = to_send[:checksum] 
-    Chef::Log.debug("#{to_send[:name]} Client Checksum: #{params[:checksum]}, Server Checksum: #{current_checksum}") 
-    if current_checksum == params[:checksum]
-      raise NotModified, "File #{to_send[:name]} has not changed"
-    else
-      file_name = nil
-      segment_files(segment.to_sym, cookbook).each do |f|
-        next unless File.basename(f) == to_send[:name]
-        file_name = File.expand_path(f)
-      end
-      raise NotFound, "Cannot find the real file for #{to_send[:name]} - this is a 42 error (shouldn't ever happen)" unless file_name
-      send_file(file_name)
-    end
-  end
-  
-  def create
-    # validate name and file parameters and throw an error if a cookbook with the same name already exists
-    raise BadRequest, "missing required parameter: name" unless params[:name]
-    desired_name = params[:name]
-    raise BadRequest, "invalid parameter: name must be at least one character long and contain only letters, numbers, periods (.), underscores (_), and hyphens (-)" unless desired_name =~ /\A[\w.-]+\Z/
-    begin
-      validate_file_parameter(desired_name, params[:file])
-    rescue FileParameterException => te
-      raise BadRequest, te.message
-    end
-    
-    begin
-      Chef::CookbookLoader.new[desired_name]
-      raise BadRequest, "Cookbook with the name #{desired_name} already exists"
-    rescue ArgumentError
-    end
-    
-    expand_tarball_and_put_in_repository(desired_name, params[:file][:tempfile])
-    
-    # construct successful response
-    self.status = 201
-    location = absolute_url(:cookbook, :id => desired_name)
-    headers['Location'] = location
-    result = { 'uri' => location }
-    display result
-  end
-  
-  def get_tarball
-    cookbook_name = params[:cookbook_id]
-    expected_location = cookbook_location(cookbook_name)
-    raise NotFound, "Cannot find cookbook named #{cookbook_name} at #{expected_location}. Note: Tarball generation only applies to cookbooks under the first directory in the server's Chef::Config.cookbook_path variable and does to apply overrides." unless File.directory? expected_location
-    send_file(get_or_create_cookbook_tarball_location(cookbook_name))
-  end
-  
   def update
-    cookbook_name = params[:cookbook_id]
-    cookbook_path = cookbook_location(cookbook_name)
-    raise NotFound, "Cannot find cookbook named #{cookbook_name}" unless File.directory? cookbook_path
-    begin
-      validate_file_parameter(cookbook_name, params[:file])
-    rescue FileParameterException => te
-      raise BadRequest, te.message
+    raise(BadRequest, "You didn't pass me a valid object!") unless params.has_key?('inflated_object')
+    raise(BadRequest, "You didn't pass me a Chef::CookbookVersion object!") unless params['inflated_object'].kind_of?(Chef::CookbookVersion)
+    unless params["inflated_object"].name == cookbook_name
+      raise(BadRequest, "You said the cookbook was named #{params['inflated_object'].name}, but the URL says it should be #{cookbook_name}.")
+    end
+
+    unless params["inflated_object"].version == cookbook_version
+      raise(BadRequest, "You said the cookbook was version #{params['inflated_object'].version}, but the URL says it should be #{cookbook_version}.") 
     end
     
-    expand_tarball_and_put_in_repository(cookbook_name, params[:file][:tempfile])
+    begin
+      cookbook = Chef::CookbookVersion.cdb_load(cookbook_name, cookbook_version)
+      cookbook.manifest = params['inflated_object'].manifest
+    rescue Chef::Exceptions::CouchDBNotFound => e
+      Chef::Log.debug("Cookbook #{cookbook_name} version #{cookbook_version} does not exist")
+      cookbook = params['inflated_object']
+    end
     
-    display Hash.new
+    # ensure that all checksums referred to by the manifest have been uploaded.
+    Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
+      next unless cookbook.manifest[segment]
+      cookbook.manifest[segment].each do |manifest_record|
+        checksum = manifest_record[:checksum]
+        path = manifest_record[:path]
+        
+        begin
+          checksum_obj = Chef::Checksum.cdb_load(checksum)
+        rescue Chef::Exceptions::CouchDBNotFound => cdbx
+          checksum_obj = nil
+        end
+        
+        raise BadRequest, "Manifest has checksum #{checksum} (path #{path}) but it hasn't yet been uploaded" unless checksum_obj
+      end
+    end
+    
+    raise InternalServerError, "Error saving cookbook" unless cookbook.cdb_save
+
+    display cookbook
   end
   
   def destroy
-    cookbook_name = params[:id]
-    cookbook_path = cookbook_location(cookbook_name)
-    raise NotFound, "Cannot find cookbook named #{cookbook_name}" unless File.directory? cookbook_path
+    begin
+      cookbook = get_cookbook_version(cookbook_name, cookbook_version)
+    rescue ArgumentError => e
+      raise NotFound, "Cannot find a cookbook named #{cookbook_name} with version #{cookbook_version}"
+    end
 
-    FileUtils.rm_rf(cookbook_path)
-    FileUtils.rm_f(cookbook_tarball_location(cookbook_name))
+    display cookbook.cdb_destroy
+  end
 
-    display Hash.new
+  private
+
+  def get_cookbook_version(name, version)
+    begin
+      Chef::CookbookVersion.cdb_load(name, version)
+    rescue Chef::Exceptions::CouchDBNotFound => e
+      raise NotFound, "Cannot find a cookbook named #{name} with version #{version}"
+    end
   end
   
 end

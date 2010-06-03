@@ -25,7 +25,8 @@ gem_package "chef-integration-test" do
   options "-i #{node[:tmpdir]}/installed-gems/"
 end
 
-gem_package "chef-integration-test" do
+gem_package "chef-integration-test-upgrade" do
+  package_name 'chef-integration-test'
   source "http://localhost:8000"
   options "-i #{node[:tmpdir]}/installed-gems/"
   action :upgrade

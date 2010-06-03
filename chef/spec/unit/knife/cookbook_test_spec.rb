@@ -25,7 +25,7 @@ describe Chef::Knife::CookbookTest do
     @knife = Chef::Knife::CookbookTest.new
     @cookbooks = []
     %w{tats central_market jimmy_johns pho}.each do |cookbook_name|
-      @cookbooks << Chef::Cookbook.new(cookbook_name)
+      @cookbooks << Chef::CookbookVersion.new(cookbook_name)
     end
   end
 

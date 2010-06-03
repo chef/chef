@@ -24,7 +24,7 @@ class Chef
   class Knife
     class CookbookShow < Knife
 
-      banner "Sub-Command: cookbook show COOKBOOK [PART] [FILENAME] (options)"
+      banner "Sub-Command: cookbook show COOKBOOK [VERSION] [PART] [FILENAME] (options)"
 
       option :fqdn,
        :short => "-f FQDN",
@@ -43,17 +43,36 @@ class Chef
 
       def run 
         case @name_args.length
-        when 3 # We are showing a specific file
-          arguments = { :id => @name_args[2] } 
-          arguments[:fqdn] = config[:fqdn] if config.has_key?(:fqdn)
-          arguments[:platform] = config[:platform] if config.has_key?(:platform)
-          arguments[:version] = config[:platform_version] if config.has_key?(:platform_version)
-          result = rest.get_rest("cookbooks/#{@name_args[0]}/#{@name_args[1]}?#{make_query_params(arguments)}")
+        when 4 # We are showing a specific file
+          node = Hash.new
+          node[:fqdn] = config[:fqdn] if config.has_key?(:fqdn)
+          node[:platform] = config[:platform] if config.has_key?(:platform)
+          node[:platform_version] = config[:platform_version] if config.has_key?(:platform_version)
+
+          class << node
+            def attribute?(name)
+              has_key?(name)
+            end
+          end
+
+          cookbook_name, cookbook_version, segment, filename = @name_args[0..3]
+
+          manifest = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}")
+          cookbook = Chef::CookbookVersion.new(cookbook_name)
+          cookbook.manifest = manifest
+          
+          manifest_entry = cookbook.preferred_manifest_record(node, segment, filename)
+          result = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}/files/#{manifest_entry[:checksum]}")
+          
           pretty_print(result)
-        when 2 # We are showing a specific part of the cookbook
-          result = rest.get_rest("cookbooks/#{@name_args[0]}")
-          output(result[@name_args[1]])
-        when 1 # We are showing the whole cookbook data
+        when 3 # We are showing a specific part of the cookbook
+          cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
+          result = rest.get_rest("cookbooks/#{@name_args[0]}/#{cookbook_version}")
+          output(result.manifest[@name_args[2]])
+        when 2 # We are showing the whole cookbook data
+          cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
+          output(rest.get_rest("cookbooks/#{@name_args[0]}/#{cookbook_version}"))
+        when 1 # We are showing the cookbook versions 
           output(rest.get_rest("cookbooks/#{@name_args[0]}"))
         end
       end

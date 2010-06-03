@@ -127,7 +127,7 @@ module Shef
   
   def self.client_type
     type = Shef::StandAloneSession
-    type = Shef::SoloSession   if Chef::Config[:solo]
+    type = Shef::SoloSession   if Chef::Config[:shef_solo]
     type = Shef::ClientSession if Chef::Config[:client]
     type
   end
@@ -161,11 +161,12 @@ module Shef
       :default      => true,
       :boolean      => true
 
-    option :solo,
+    option :shef_solo,
       :short        => "-s",
       :long         => "--solo",
       :description  => "chef-solo shef session",
-      :boolean      => true
+      :boolean      => true,
+      :proc         => proc {Chef::Config[:solo] = true}
 
     option :client,
       :short        => "-z",

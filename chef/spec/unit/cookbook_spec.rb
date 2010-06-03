@@ -18,121 +18,83 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
-describe Chef::Cookbook do
-  COOKBOOK_PATH = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks", "openldap"))
-  
+describe Chef::CookbookVersion do
+#  COOKBOOK_PATH = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks", "openldap"))
   before(:each) do
-    @cookbook = Chef::Cookbook.new("openldap")
-  end
-  
-  it "should be a Chef::Cookbook object" do
-    @cookbook.should be_kind_of(Chef::Cookbook)
+    Chef::Config.cookbook_path = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
+    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+    @cookbook = @cookbook_collection[:openldap]
+    @node = Chef::Node.new
+    @node.name "Julia Child"
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
   end
   
   it "should have a name" do
-    @cookbook.name.should eql("openldap")
+    @cookbook.name.should == :openldap
   end
   
-  it "should have a list of attribute files" do
-    @cookbook.attribute_files.should be_kind_of(Array)
+  it "should allow you to set the list of attribute files and create the mapping from short names to paths" do
+    @cookbook.attribute_filenames = [ "attributes/one.rb", "attributes/two.rb" ]
+    @cookbook.attribute_filenames.should == [ "attributes/one.rb", "attributes/two.rb" ]
+    @cookbook.attribute_filenames_by_short_filename.keys.sort.should eql(["one", "two"])
+    @cookbook.attribute_filenames_by_short_filename["one"].should == "attributes/one.rb"
+    @cookbook.attribute_filenames_by_short_filename["two"].should == "attributes/two.rb"
   end
   
-  it "should allow you to set the list of attribute files" do
-    @cookbook.attribute_files = [ "one", "two" ]
-    @cookbook.attribute_files.should eql(["one", "two"])
-  end
-  
-  it "should allow you to load all the attributes" do
-    node = Chef::Node.new
-    node.name "Julia Child"
-    node.chef_env false
-    @cookbook.attribute_files = Dir[File.join(COOKBOOK_PATH, "attributes", "**", "*.rb")]
-    node = @cookbook.load_attributes(node)
-    node.ldap_server.should eql("ops1prod")
-    node.ldap_basedn.should eql("dc=hjksolutions,dc=com")
-    node.ldap_replication_password.should eql("forsure")
-    node.smokey.should eql("robinson")
-  end
-  
-  it "should have a list of definition files" do
-    @cookbook.definition_files.should be_a_kind_of(Array)
-  end
-  
-  it "should allow you to set the list of definition files" do
-    @cookbook.definition_files = [ "one", "two" ]
-    @cookbook.definition_files.should eql(["one", "two"])
-  end
-  
-  it "should allow you to load all the definitions, returning a hash of ResourceDefinitions by name" do
-    @cookbook.definition_files = Dir[File.join(COOKBOOK_PATH, "definitions", "**", "*.rb")]
-    defs = @cookbook.load_definitions
-    defs.has_key?(:openldap_server).should eql(true)
-    defs[:openldap_server].should be_a_kind_of(Chef::ResourceDefinition)
-    defs.has_key?(:openldap_client).should eql(true)
-    defs[:openldap_client].should be_a_kind_of(Chef::ResourceDefinition)
-  end
-  
-  it "should have a list of recipe files" do
-    @cookbook.recipe_files.should be_a_kind_of(Array)
-  end
-  
-  it "should allow you to set the list of recipe files" do
-    @cookbook.recipe_files = [ "one", "two" ]
-    @cookbook.recipe_files.should eql(["one", "two"])
+  it "should allow you to set the list of recipe files and create the mapping of recipe short name to filename" do
+    @cookbook.recipe_filenames = [ "recipes/one.rb", "recipes/two.rb" ]
+    @cookbook.recipe_filenames.should == [ "recipes/one.rb", "recipes/two.rb" ]
+    @cookbook.recipe_filenames_by_name.keys.sort.should eql(["one", "two"])
+    @cookbook.recipe_filenames_by_name["one"].should == "recipes/one.rb"
+    @cookbook.recipe_filenames_by_name["two"].should == "recipes/two.rb"
   end
 
-  it "should have a list of recipes by name" do
-    @cookbook.recipe_files = [ "one", "two" ]
-    @cookbook.recipes.detect { |r| r == "openldap::one" }.should eql("openldap::one")
-    @cookbook.recipes.detect { |r| r == "openldap::two" }.should eql("openldap::two")
+  it "should generate a list of recipes by fully-qualified name" do
+    @cookbook.recipe_filenames = [ "recipes/one.rb", "/recipes/two.rb", "three.rb" ]
+    @cookbook.fully_qualified_recipe_names.include?("openldap::one").should == true
+    @cookbook.fully_qualified_recipe_names.include?("openldap::two").should == true
+    @cookbook.fully_qualified_recipe_names.include?("openldap::three").should == true
   end
   
-  it "should take a file /path.rb, and use the filename minus rb as a recipe name" do
-    @cookbook.recipe_files = [ "/something/one.rb", "/otherthing/two.rb" ]
-    @cookbook.recipes.detect { |r| r == "openldap::one" }.should eql("openldap::one")
-    @cookbook.recipes.detect { |r| r == "openldap::two" }.should eql("openldap::two")
+  it "should find a preferred file" do
+    pending
   end
   
-  it "should take a file path.rb, and use the filename minus rb as a recipe name" do
-    @cookbook.recipe_files = [ "one.rb", "two.rb" ]
-    @cookbook.recipes.detect { |r| r == "openldap::one" }.should eql("openldap::one")
-    @cookbook.recipes.detect { |r| r == "openldap::two" }.should eql("openldap::two")
+  it "should not return an unchanged preferred file" do
+    pending
+    @cookbook.preferred_filename(@node, :files, 'a-filename', 'the-checksum').should be_nil
   end
   
-  it "should allow you to test for a recipe with recipe?" do
-    @cookbook.recipe_files = [ "one", "two" ]
-    @cookbook.recipe?("one").should eql(true)
-    @cookbook.recipe?("shanghai").should eql(false)
-  end
+# TODO: timh, cw: 5/20/2010: removed CookbookVersion.recipe? as it's not used; see cookbook.rb
+#   it "should allow you to test for a recipe with recipe?" do
+#     @cookbook.recipe_filenames = [ "one", "two" ]
+#     @cookbook.recipe?("one").should eql(true)
+#     @cookbook.recipe?("shanghai").should eql(false)
+#   end
   
-  it "should allow you to test for a recipe? with a fq recipe name" do
-    @cookbook.recipe_files = [ "one", "two" ]
-    @cookbook.recipe?("openldap::one").should eql(true)
-    @cookbook.recipe?("shanghai::city").should eql(false)
-  end
+# TODO: timh, cw: 5/20/2010: removed CookbookVersion.recipe? as it's not used; see cookbook.rb
+#  it "should allow you to test for a recipe? with a fq recipe name" do
+#    @cookbook.recipe_filenames = [ "one", "two" ]
+#    @cookbook.recipe?("openldap::one").should eql(true)
+#    @cookbook.recipe?("shanghai::city").should eql(false)
+#  end
   
-  it "should allow you to run a recipe by name via load_recipe" do
-    @cookbook.recipe_files = Dir[File.join(COOKBOOK_PATH, "recipes", "**", "*.rb")]
-    node = Chef::Node.new
-    node.name "Julia Child"
-    recipe = @cookbook.load_recipe("openldap::gigantor", node)
-    recipe.recipe_name.should eql("gigantor")
-    recipe.cookbook_name.should eql("openldap")
-    recipe.collection[0].name.should eql("blanket")
+  it "should allow you to include a fully-qualified recipe using the DSL" do
+    # DSL method include_recipe allows multiple arguments, so extract the first
+    recipe = @run_context.include_recipe("openldap::gigantor").first
+
+    recipe.recipe_name.should == "gigantor"
+    recipe.cookbook_name.should == :openldap
+    @run_context.resource_collection[0].name.should == "blanket"
   end
   
   it "should raise an ArgumentException if you try to load a bad recipe name" do
-    node = Chef::Node.new
-    node.name "Julia Child"
-    lambda { @cookbook.load_recipe("smackdown", node) }.should raise_error(ArgumentError)
+    lambda { @cookbook.load_recipe("doesnt_exist", @node) }.should raise_error(ArgumentError)
   end
 
   it "should allow you to load an attribute file by name via load_attribute" do
-    @cookbook.attribute_files = Dir[File.join(COOKBOOK_PATH, "attributes", "**", "*.rb")]
-    node = Chef::Node.new
-    node.name "Julia Child"
-    @cookbook.load_attribute("openldap::smokey", node)
-    node.smokey.should == "robinson"
+    @node.include_attribute("openldap::smokey")
+    @node.smokey.should == "robinson"
   end
   
 end

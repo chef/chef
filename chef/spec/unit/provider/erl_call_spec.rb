@@ -20,7 +20,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::ErlCall, "action_run" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
+    @run_context = Chef::RunContext.new(@node, {})
     @new_resource = mock("Chef::Resource::ErlCall",
       :null_object => true,
       :code => "io:format(\"burritos\", []).",
@@ -31,7 +32,7 @@ describe Chef::Provider::ErlCall, "action_run" do
       :name => "test"
     )
 
-    @provider = Chef::Provider::ErlCall.new(@node, @new_resource)
+    @provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
 
     @status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
@@ -42,7 +43,7 @@ describe Chef::Provider::ErlCall, "action_run" do
   end
 
   it "should return a Chef::Provider::ErlCall object" do
-    provider = Chef::Provider::ErlCall.new(@node, @new_resource)
+    provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
     provider.should be_a_kind_of(Chef::Provider::ErlCall)
   end
 
@@ -59,7 +60,8 @@ end
 
 describe Chef::Provider::ErlCall, "action_run" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
+    @run_context = Chef::RunContext.new(@node, {})
     @new_resource = mock("Chef::Resource::ErlCall",
       :null_object => true,
       :code => "io:format(\"burritos\", []).",
@@ -70,7 +72,7 @@ describe Chef::Provider::ErlCall, "action_run" do
       :name => "test"
     )
 
-    @provider = Chef::Provider::ErlCall.new(@node, @new_resource)
+    @provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
 
     @status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
@@ -81,7 +83,7 @@ describe Chef::Provider::ErlCall, "action_run" do
   end
 
   it "should return a Chef::Provider::ErlCall object" do
-    provider = Chef::Provider::ErlCall.new(@node, @new_resource)
+    provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
     provider.should be_a_kind_of(Chef::Provider::ErlCall)
   end
 

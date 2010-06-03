@@ -2,8 +2,19 @@ Then /^I should get a '(.+)' exception$/ do |exception|
   self.exception.to_s.should == exception
 end
 
+Then /^I should not get an exception$/ do
+  self.exception.should == nil
+end
+
 Then /^the response code should be '(.+)'$/ do |response_code|
-  self.response.status.should == response_code.to_i
+  case response_code.to_i
+    when 200
+      self.api_response.code.should == 200
+    when 400
+      Then "I should get a 'Bad Request' exception"
+    when 404
+      Then "I should get a 'RestClient::ResourceNotFound' exception"
+  end
 end
 
 Then /^the inflated responses key '(.+)' should be the integer '(\d+)'$/ do |key, int|
@@ -37,6 +48,10 @@ Then /^the inflated responses key '(.+)' should match '(.+)' as json$/ do |key, 
   self.inflated_response[key].to_json.should =~ /#{regex}/m
 end
 
+Then /^the inflated responses key '(.+)' item '(\d+)' should be '(.+)'$/ do |key, index, to_equal|
+  inflated_response[key][index.to_i].should == to_equal
+end
+
 Then /^the inflated responses key '(.+)' item '(\d+)' should be a kind of '(.+)'$/ do |key, index, constant|
   inflated_response[key][index.to_i].should be_a_kind_of(eval(constant))
 end
@@ -55,6 +70,10 @@ end
 
 Then /^the inflated responses key '(.+)' should exist$/ do |key|
   self.inflated_response.has_key?(key).should == true 
+end
+
+Then /^the inflated responses key '(.+)'.to_s should be '(.+)'$/ do |key, expected_value|
+  self.inflated_response[key].to_s.should == expected_value
 end
 
 Then /^the inflated response should be an empty array$/ do
@@ -82,7 +101,7 @@ Then /^the inflated response should be '(.+)' items long$/ do |length|
 end
 
 Then /^the '(.+)' header should match '(.+)'$/ do |header, regex|
-  self.response.headers[header].should =~ /#{regex}/
+  self.api_response.headers[header].should =~ /#{regex}/
 end
 
 Then /^the inflated responses key '(.+)' should include '(.+)'$/ do |key, regex|
@@ -100,7 +119,11 @@ Then /^the inflated response should match the '(.+)'$/ do |stash_name|
 end
 
 Then /^the inflated response should be the '(.+)'$/ do |stash_key|
-  stash[stash_key].should == self.inflated_response
+  self.inflated_response.should == stash[stash_key]
+end
+
+Then /^the stringified response should be the stringified '(.+)'$/ do |stash_key|
+  self.api_response.to_s.should == stash[stash_key].to_s
 end
 
 Then /^the inflated response should be a kind of '(.+)'$/ do |thing|
@@ -111,13 +134,16 @@ Then /^the inflated response should respond to '(.+)' with '(.+)'$/ do |method, 
   to_match = JSON.parse(to_match) if to_match =~ /^\[|\{/
   to_match = true if to_match == 'true'
   to_match = false if to_match == 'false'
-  self.inflated_response.send(method.to_sym).should == to_match 
+  self.inflated_response.to_hash[method].should == to_match 
 end
 
 Then /^the inflated response should respond to '(.+)' and match '(.+)'$/ do |method, to_match|
-  self.inflated_response.send(method.to_sym).should == to_match 
+  self.inflated_response.to_hash[method].should == to_match
 end
 
+Then /^the inflated response should respond to '(.+)' and match '(.+)' as json$/ do |method, regex|
+  self.inflated_response.to_hash[method].to_json.should =~ /#{regex}/m
+end
 
 Then /^the fields in the inflated response should match the '(.+)'$/ do |stash_name|
   self.inflated_response.each do |k,v|

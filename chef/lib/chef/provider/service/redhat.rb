@@ -18,42 +18,40 @@
 
 require 'chef/provider/service'
 require 'chef/provider/service/init'
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Service
       class Redhat < Chef::Provider::Service::Init
+        include Chef::Mixin::ShellOut
         
-        def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-          super(node, new_resource, collection, definitions, cookbook_loader)
+        CHKCONFIG_ON = /\d:on/
+        
+        def initialize(new_resource, run_context)
+          super
            @init_command = "/sbin/service #{@new_resource.service_name}"
+           @new_resource.supports[:status] = true
          end
         
         def load_current_resource
-          super
-          
           unless ::File.exists? "/sbin/chkconfig"
             raise Chef::Exceptions::Service, "/sbin/chkconfig does not exist!"
           end
-
-          status = popen4("/sbin/chkconfig --list #{@current_resource.service_name}") do |pid, stdin, stdout, stderr|
-            if stdout.gets =~ /\d:on/
-              @current_resource.enabled true
-            else
-              @current_resource.enabled false
-            end
-          end  
-
+          
+          super
+          
+          chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}")
+          @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
           @current_resource        
         end
 
         def enable_service()
-          run_command(:command => "/sbin/chkconfig #{@new_resource.service_name} on")
+          shell_out! "/sbin/chkconfig #{@new_resource.service_name} on"
         end
 
         def disable_service()
-          run_command(:command => "/sbin/chkconfig #{@new_resource.service_name} off")
+          shell_out! "/sbin/chkconfig #{@new_resource.service_name} off"
         end
         
       end

@@ -29,8 +29,8 @@ class Chef
       
       attr_accessor :user_exists, :locked
       
-      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-        super(node, new_resource, collection, definitions, cookbook_loader)
+      def initialize(new_resource, run_context)
+        super
         @user_exists = true
         @locked = nil
       end
@@ -47,12 +47,12 @@ class Chef
         @current_resource = Chef::Resource::User.new(@new_resource.name)
         @current_resource.username(@new_resource.username)
       
-        user_info = nil
         begin
           user_info = Etc.getpwnam(@new_resource.username)
         rescue ArgumentError => e
           @user_exists = false
           Chef::Log.debug("User #{@new_resource.username} does not exist")
+          user_info = nil
         end
         
         if user_info
@@ -95,17 +95,14 @@ class Chef
       end
       
       def action_create
-        case @user_exists
-        when false
+        if !@user_exists
           create_user
           Chef::Log.info("Created #{@new_resource}")
           @new_resource.updated = true
-        else 
-          if compare_user
-            manage_user
-            Chef::Log.info("Altered #{@new_resource}")
-            @new_resource.updated = true
-          end
+        elsif compare_user
+          manage_user
+          Chef::Log.info("Altered #{@new_resource}")
+          @new_resource.updated = true
         end
       end
       
@@ -116,17 +113,25 @@ class Chef
           Chef::Log.info("Removed #{@new_resource}")
         end
       end
-      
+
+      def remove_user
+        raise NotImplementedError
+      end
+
       def action_manage
         if @user_exists && compare_user
-          manage_user 
+          manage_user
           @new_resource.updated = true
           Chef::Log.info("Managed #{@new_resource}")
         end
       end
-      
+
+      def manage_user
+        raise NotImplementedError
+      end
+
       def action_modify
-        if @user_exists 
+        if @user_exists
           if compare_user
             manage_user
             @new_resource.updated = true
@@ -136,7 +141,7 @@ class Chef
           raise Chef::Exceptions::User, "Cannot modify #{@new_resource} - user does not exist!"
         end
       end
-      
+
       def action_lock
         if @user_exists
           if check_lock() == false
@@ -150,7 +155,15 @@ class Chef
           raise Chef::Exceptions::User, "Cannot lock #{@new_resource} - user does not exist!"
         end
       end
-      
+
+      def check_lock
+        raise NotImplementedError
+      end
+
+      def lock_user
+        raise NotImplementedError
+      end
+
       def action_unlock
         if @user_exists
           if check_lock() == true
@@ -165,6 +178,10 @@ class Chef
         end
       end
       
+      def unlock_user
+        raise NotImplementedError
+      end
+
     end
   end
 end

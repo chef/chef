@@ -29,9 +29,41 @@ module Merb
       entry_roots = `tar tzf #{tarball_path}`.split("\n").map{|e|(e.split('/')-['.']).first}.uniq
       raise FileParameterException, "invalid tarball: tarball root must contain #{cookbook_name}" unless entry_roots.include?(cookbook_name)
     end
+    
+    def sandbox_base
+      Chef::Config.sandbox_path
+    end
+    
+    def sandbox_location(sandbox_guid)
+      File.join(sandbox_base, sandbox_guid)
+    end
+    
+    def sandbox_checksum_location(sandbox_guid, checksum)
+      File.join(sandbox_location(sandbox_guid), checksum)
+    end
 
+    def checksum_base
+      Chef::Config.checksum_path
+    end
+    
+    def checksum_location(checksum)
+      File.join(checksum_base, checksum[0..1], checksum)
+    end
+    
     def cookbook_base
       [Chef::Config.cookbook_path].flatten.first
+    end
+    
+    def cookbook_location(cookbook_name)
+      File.join(cookbook_base, cookbook_name)
+    end
+    
+    def cookbook_base
+      [Chef::Config.cookbook_path].flatten.first
+    end
+    
+    def cookbook_location(cookbook_name)
+      File.join(cookbook_base, cookbook_name)
     end
 
     def cookbook_location(cookbook_name)

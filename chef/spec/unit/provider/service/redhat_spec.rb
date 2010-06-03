@@ -17,112 +17,63 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
+require 'ostruct'
 
-describe Chef::Provider::Service::Redhat, "load_current_resource" do
+describe "load_current_resource" do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
+    @node = Chef::Node.new
+    @node[:command] = {:ps => 'foo'}
+    @run_context = Chef::RunContext.new(@node, {})
 
-    @new_resource = mock("Chef::Resource::Service",
-      :null_object => true,
-      :name => "chef",
-      :service_name => "chef",
-      :enabled => false,
-      :status_command => false
-    )
+    @new_resource = Chef::Resource::Service.new("chef")
 
-    @current_resource = mock("Chef::Resource::Service",
-      :null_object => true,
-      :name => "chef",
-      :service_name => "chef",
-      :enabled => false,
-      :status_command => false
-    )
+    @current_resource = Chef::Resource::Service.new("chef")
 
-    @provider = Chef::Provider::Service::Redhat.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Redhat.new(@new_resource, @run_context)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
     File.stub!(:exists?).and_return(true)
 
-    @status = mock("Status", :exitstatus => 0)
-    @provider.stub!(:popen4).and_return(@status)
-    @provider.should_receive(:run_command).with(:command => "/sbin/service chef status")
-    @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
-    @stdout_string = "chef    0:off   1:off   2:off   3:off   4:off   5:off   6:off"
-    @stdout.stub!(:gets).and_return(@stdout_string)
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
+    # @status = mock("Status", :exitstatus => 0)
+    # @provider.stub!(:popen4).and_return(@status)
+    # @provider.should_receive(:run_command).with(:command => "/sbin/service chef status")
+    # @stdin = mock("STDIN", :null_object => true)
+    # @stdout = mock("STDOUT", :null_object => true)
+    # @stdout_string = "chef    0:off   1:off   2:off   3:off   4:off   5:off   6:off"
+    # @stdout.stub!(:gets).and_return(@stdout_string)
+    # @stderr = mock("STDERR", :null_object => true)
+    # @pid = mock("PID", :null_object => true)
   end
 
   it "should raise an error if /sbin/chkconfig does not exist" do
-    File.should_receive(:exists?).with("/sbin/chkconfig").and_return(false)
+    ::File.should_receive(:exists?).with("/sbin/chkconfig").and_return(false)
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
   end
 
-  it "should popen4 '/sbin/chkconfig --list service_name'" do
-    @provider.should_receive(:popen4).with("/sbin/chkconfig --list chef").and_return(@status)
+  it "sets the current enabled status to true if the service is enabled for any run level" do
+    chkconfig = OpenStruct.new(:stdout => "chef    0:off   1:off   2:off   3:off   4:off   5:on   6:off")
+    @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef").and_return(chkconfig)
     @provider.load_current_resource
+    @current_resource.enabled.should be_true
   end
 
-  it "should read the stdout of the chkconfig command" do
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @stdout.should_receive(:gets).once.and_return(@stdout_string)
-    @provider.load_current_resource
-  end
-
-  it "should set enabled to true if the regex matches" do
-    @stdout.stub!(:gets).and_return("chef    0:off   1:off   2:on   3:on   4:on   5:on   6:off")
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @current_resource.should_receive(:enabled).with(true)
-    @provider.load_current_resource
-  end
-
-  it "should set enabled to false if the regex does not match" do
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @current_resource.should_receive(:enabled).with(false)
-    @provider.load_current_resource
-  end
-
-  it "should return the current resource" do
+  it "sets the current enabled status to false if the regex does not match" do
+    chkconfig = OpenStruct.new(:stdout => "chef    0:off   1:off   2:off   3:off   4:off   5:off   6:off")
+    @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef").and_return(chkconfig)
     @provider.load_current_resource.should eql(@current_resource)
-  end
-end
-
-describe Chef::Provider::Service::Redhat, "enable_service" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Service",
-      :null_object => true,
-      :name => "chef",
-      :service_name => "chef",
-      :status_command => false
-    )
-
-    @provider = Chef::Provider::Service::Redhat.new(@node, @new_resource)
-    Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+    @current_resource.enabled.should be_false
   end
 
-  it "should call chkconfig to add 'service_name'" do
-    @provider.should_receive(:run_command).with({:command => "/sbin/chkconfig #{@new_resource.service_name} on"})
-    @provider.enable_service()
-  end
-end
-
-describe Chef::Provider::Service::Redhat, "disable_service" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Redhat",
-      :null_object => true,
-      :name => "chef",
-      :service_name => "chef",
-      :status_command => false
-    )
-
-    @provider = Chef::Provider::Service::Redhat.new(@node, @new_resource)
-    Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+  describe "enable_service" do
+    it "should call chkconfig to add 'service_name'" do
+      @provider.should_receive(:shell_out!).with("/sbin/chkconfig #{@new_resource.service_name} on")
+      @provider.enable_service
+    end
   end
 
-  it "should call chkconfig to del 'service_name'" do
-    @provider.should_receive(:run_command).with({:command => "/sbin/chkconfig #{@new_resource.service_name} off"})
-    @provider.disable_service()
+  describe "disable_service" do
+    it "should call chkconfig to del 'service_name'" do
+      @provider.should_receive(:shell_out!).with("/sbin/chkconfig #{@new_resource.service_name} off")
+      @provider.disable_service
+    end
   end
 end

@@ -5,26 +5,26 @@ Feature: Delete a client via the REST API
   I want to delete a client via the REST API
   
   Scenario: Delete a client 
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'client' named 'isis' exists
      When I 'DELETE' the path '/clients/isis'
      Then the inflated responses key 'name' should match '^isis$' 
 
   Scenario: Delete a client that does not exist
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And there are no clients 
      When I 'DELETE' the path '/clients/isis'
      Then I should get a '404 "Not Found"' exception
     
   Scenario: Delete a client with a wrong private key
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'client' named 'isis' exists
      When I 'DELETE' the path '/clients/isis' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
   Scenario: Delete a client when you are not an admin
-    Given a 'registration' named 'not_admin' exists
+    Given I am a non-admin
       And a 'client' named 'isis' exists
      When I 'DELETE' the path '/clients/isis'
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '403 "Forbidden"' exception
 

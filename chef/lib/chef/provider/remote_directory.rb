@@ -18,8 +18,8 @@
 
 require 'chef/provider/file'
 require 'chef/provider/directory'
-require 'chef/rest'
-require 'chef/mixin/find_preferred_file'
+#require 'chef/rest'
+#require 'chef/mixin/find_preferred_file'
 require 'chef/resource/directory'
 require 'chef/resource/remote_file'
 require 'chef/platform'
@@ -32,30 +32,29 @@ class Chef
   class Provider
     class RemoteDirectory < Chef::Provider::Directory
 
-      include ::Chef::Mixin::FindPreferredFile
-      
       def action_create
         super
-        do_recursive
-      end
-    
-      protected
-      
-      def do_recursive
-        if Chef::Config[:solo]
-          Chef::Log.debug("Doing a local recursive directory copy for #{@new_resource}")
-        else
-          Chef::Log.debug("Doing a remote recursive directory transfer for #{@new_resource}")
-        end
+        Chef::Log.debug("Doing a remote recursive directory transfer for #{@new_resource}")
           
-        existing_files = Set.new Dir[::File.join(@new_resource.path, '**', '*')]
+        files_to_purge = Set.new Dir[::File.join(@new_resource.path, '**', '*')]
 
-        files_to_transfer.each do |remote_file_source|
-          fetch_remote_file(remote_file_source)
-          existing_files.delete(::File.join(@new_resource.path, remote_file_source))
+        files_to_transfer.each do |cookbook_file_relative_path|
+          create_cookbook_file(cookbook_file_relative_path)
+          files_to_purge.delete(::File.dirname(::File.join(@new_resource.path, cookbook_file_relative_path)))
+          files_to_purge.delete(::File.join(@new_resource.path, cookbook_file_relative_path))
         end
+        purge_unmanaged_files(files_to_purge)
+      end
+
+      def action_create_if_missing
+        raise Chef::Exceptions::UnsupportedAction, "Remote Directories do not support create_if_missing."
+      end
+
+      protected
+
+      def purge_unmanaged_files(unmanaged_files)
         if @new_resource.purge
-          existing_files.sort { |a,b| b <=> a }.each do |f|
+          unmanaged_files.sort.reverse.each do |f|
             if ::File.directory?(f)
               Chef::Log.debug("Removing directory #{f}")
               Dir::rmdir(f)
@@ -66,87 +65,65 @@ class Chef
           end
         end
       end
-      
+
       def files_to_transfer
-        file_list = Chef::Config[:solo] ? generate_solo_file_list : generate_client_file_list
-        Chef::Log.debug("Generated file manifest for #{@new_resource}:\n#{file_list.join("\n")}")
-        file_list
+        cookbook = run_context.cookbook_collection[resource_cookbook]
+        files = cookbook.relative_filenames_in_preferred_directory(node, :files, @new_resource.source)
+        files.sort.reverse
       end
       
-      def generate_solo_file_list
-        # Pulled from chef-server-slice files controller
-        directory = find_preferred_file(
-          @new_resource.cookbook_name, 
-          :remote_file, 
-          @new_resource.source, 
-          @node[:fqdn],
-          @node[:platform],
-          @node[:platform_version]
-        )
-
-        unless (directory && ::File.directory?(directory))
-          raise NotFound, "Cannot find a suitable directory"
+      def directory_root_in_cookbook_cache
+        @directory_root_in_cookbook_cache ||= begin
+          cookbook = run_context.cookbook_collection[resource_cookbook]
+          cookbook.preferred_filename_on_disk_location(node, :files, @new_resource.source, @new_resource.path)
         end
+      end
+      
+      # Determine the cookbook to get the file from. If new resource sets an 
+      # explicit cookbook, use it, otherwise fall back to the implicit cookbook
+      # i.e., the cookbook the resource was declared in.
+      def resource_cookbook
+        @new_resource.cookbook || @new_resource.cookbook_name
+      end
 
-        file_list = Array.new
-        Dir[::File.join(directory, '**', '*')].sort.reverse.select do |file|
-          unless ::File.directory?(file)
-            file_list << file[/^#{directory}\/(.+)$/, 1]
-          end
-        end
-        file_list
-      end
-      
-      def generate_client_file_list
-        r = Chef::REST.new(Chef::Config[:remotefile_url])
-        r.get_rest(generate_url(@new_resource.source, "files", { :recursive => "true" }))
-      end
-      
-      def fetch_remote_file(remote_file_source)
-        full_path = ::File.join(@new_resource.path, remote_file_source)
+      def create_cookbook_file(cookbook_file_relative_path)
+        full_path = ::File.join(@new_resource.path, cookbook_file_relative_path)
         
         ensure_directory_exists(::File.dirname(full_path))
         
-        file_to_fetch = provider_for_remote_file(full_path, remote_file_source)
-        file_to_fetch.load_current_resource
-        file_to_fetch.action_create
-        @new_resource.updated = true if file_to_fetch.new_resource.updated        
+        file_to_fetch = cookbook_file_resource(full_path, cookbook_file_relative_path)
+        file_to_fetch.run_action(:create)
+        @new_resource.updated = true if file_to_fetch.updated?
       end
       
-      def provider_for_remote_file(path, source)
-        remote_file = Chef::Resource::RemoteFile.new(path, nil, @node)
-        remote_file.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
-        remote_file.source(::File.join(@new_resource.source, source))
-        remote_file.mode(@new_resource.files_mode) if @new_resource.files_mode
-        remote_file.group(@new_resource.files_group) if @new_resource.files_group
-        remote_file.owner(@new_resource.files_owner) if @new_resource.files_owner
-        remote_file.backup(@new_resource.files_backup) if @new_resource.files_backup
+      def cookbook_file_resource(target_path, relative_source_path)
+        cookbook_file = Chef::Resource::CookbookFile.new(target_path, run_context)
+        cookbook_file.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
+        cookbook_file.source(::File.join(@new_resource.source, relative_source_path))
+        cookbook_file.mode(@new_resource.files_mode)    if @new_resource.files_mode
+        cookbook_file.group(@new_resource.files_group)  if @new_resource.files_group
+        cookbook_file.owner(@new_resource.files_owner)  if @new_resource.files_owner
+        cookbook_file.backup(@new_resource.files_backup) if @new_resource.files_backup
         
-        Chef::Platform.provider_for_node(@node, remote_file)
+        cookbook_file
       end
       
       def ensure_directory_exists(path)
         unless ::File.directory?(path)
-          directory_to_create = provider_for_directory(path)
-          directory_to_create.load_current_resource
-          directory_to_create.action_create
-          @new_resource.updated = true if directory_to_create.new_resource.updated  
+          directory_to_create = resource_for_directory(path)
+          directory_to_create.run_action(:create)
+          @new_resource.updated = true if directory_to_create.updated?
         end
       end
-      
-      def provider_for_directory(path)
-        new_dir = Chef::Resource::Directory.new(path, nil, @node)
-        new_dir.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name            
-        new_dir.mode(@new_resource.mode)
-        new_dir.group(@new_resource.group)
-        new_dir.owner(@new_resource.owner)
-        new_dir.recursive(true)
-        
-        Chef::Platform.provider_for_node(@node, new_dir)
-      end
-            
-      def action_create_if_missing
-        raise Chef::Exceptions::UnsupportedAction, "Remote Directories do not support create_if_missing."
+
+      def resource_for_directory(path)
+        dir = Chef::Resource::Directory.new(path, run_context)
+        dir.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
+        dir.mode(@new_resource.mode)
+        dir.group(@new_resource.group)
+        dir.owner(@new_resource.owner)
+        dir.recursive(true)
+        dir
       end
 
     end

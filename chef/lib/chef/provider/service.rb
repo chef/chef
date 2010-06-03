@@ -25,29 +25,27 @@ class Chef
 
       include Chef::Mixin::Command
 
-      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-        super(node, new_resource, collection, definitions, cookbook_loader)
+      def initialize(new_resource, run_context)
+        super
         @enabled = nil
       end
 
       def action_enable
-        unless @current_resource.enabled
+        if @current_resource.enabled
+          Chef::Log.debug("#{@new_resource}: not enabling, already enabled")
+        else
           Chef::Log.debug("#{@new_resource}: attempting to enable")
-          status = enable_service()
-          if status
+          if enable_service
             @new_resource.updated = true
             Chef::Log.info("#{@new_resource}: enabled successfully")
           end
-        else
-          Chef::Log.debug("#{@new_resource}: not enabling, already enabled")
         end
       end
 
       def action_disable
         if @current_resource.enabled
           Chef::Log.debug("#{@new_resource}: attempting to disable")
-          status = disable_service()
-          if status
+          if disable_service
             @new_resource.updated = true
             Chef::Log.info("#{@new_resource}: disabled successfully")
           end
@@ -59,8 +57,7 @@ class Chef
       def action_start
         unless @current_resource.running
           Chef::Log.debug("#{@new_resource}: attempting to start")
-          status = start_service()
-          if status
+          if start_service
             @new_resource.updated = true
             Chef::Log.info("Started service #{@new_resource} successfully")
           end
@@ -72,8 +69,7 @@ class Chef
       def action_stop
         if @current_resource.running
           Chef::Log.debug("#{@new_resource}: attempting to stop")
-          status = stop_service()
-          if status
+          if stop_service
             @new_resource.updated = true
             Chef::Log.info("#{@new_resource}: stopped successfully")
           end
@@ -84,49 +80,46 @@ class Chef
       
       def action_restart
         Chef::Log.debug("#{@new_resource}: attempting to restart")
-        status = restart_service()
-        if status
+        if restart_service
           @new_resource.updated = true
           Chef::Log.info("#{@new_resource}: restarted successfully")
         end
       end
 
       def action_reload
-        unless @new_resource.supports[:reload] or @new_resource.reload_command
+        unless (@new_resource.supports[:reload] || @new_resource.reload_command)
           raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
-        else
-          if @current_resource.running
-            Chef::Log.debug("#{@new_resource}: attempting to reload")
-            status = reload_service()
-            if status
-              @new_resource.updated = true
-              Chef::Log.info("#{@new_resource}: reloaded successfully")
-            end
+        end
+        if @current_resource.running
+          Chef::Log.debug("#{@new_resource}: attempting to reload")
+          if reload_service
+            @new_resource.updated = true
+            Chef::Log.info("#{@new_resource}: reloaded successfully")
           end
         end
       end
 
-      def enable_service(name)
+      def enable_service
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"
       end
 
-      def disable_service(name)
+      def disable_service
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"
       end
 
-      def start_service(name)
+      def start_service
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :start"
       end
 
-      def stop_service(name)
+      def stop_service
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :stop"
       end 
       
-      def restart_service(name)
+      def restart_service
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :restart"
       end
 
-      def reload_service(name)
+      def reload_service
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :restart"
       end
  

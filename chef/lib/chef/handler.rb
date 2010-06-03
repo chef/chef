@@ -32,8 +32,8 @@ class Chef
       data[:node] = node if node
       if runner
         data[:resources] = {
-          :all => runner.collection.all_resources,
-          :updated => runner.collection.inject([]) { |m, r| m << r if r.updated; m }
+          :all => runner.run_context.resource_collection.all_resources,
+          :updated => runner.run_context.resource_collection.inject([]) { |m, r| m << r if r.updated; m }
         }
       end
       if exception

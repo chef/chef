@@ -27,8 +27,8 @@ class Chef
       include Chef::Mixin::Command
       attr_accessor :group_exists
       
-      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-        super(node, new_resource, collection, definitions, cookbook_loader)
+      def initialize(new_resource, run_context)
+        super
         @group_exists = true
       end
       
@@ -115,6 +115,19 @@ class Chef
           raise Chef::Exceptions::Group, "Cannot modify #{@new_resource} - group does not exist!"
         end
       end
+      
+      def create_group
+        raise NotImplementedError, "subclasses of Chef::Provider::Group should define #create_group"
+      end
+
+      def manage_group
+        raise NotImplementedError, "subclasses of Chef::Provider::Group should define #manage_group"
+      end
+
+      def remove_group
+        raise NotImplementedError, "subclasses of Chef::Provider::Group should define #remove_group"
+      end
+
     end
   end
 end

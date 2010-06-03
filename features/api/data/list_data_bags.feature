@@ -5,21 +5,21 @@ Feature: List data bags via the REST API
   I want to list all the data bags
 
   Scenario: List data bags when none have been created
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And there are no data bags
      When I authenticate as 'bobo'
       And I 'GET' the path '/data' 
      Then the inflated response should be an empty hash
 
   Scenario: List data bags when one has been created
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
      When I authenticate as 'bobo'
       And I 'GET' the path '/data'
      Then the inflated responses key 'users' should match '^http://.+/data/users$'
 
   Scenario: List data bags when two have been created
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag' named 'rubies' exists
      When I authenticate as 'bobo'

@@ -19,6 +19,7 @@
 #
 
 require 'chef/cache'
+require 'digest/md5'
 
 class Chef
   class Cache
@@ -44,7 +45,7 @@ class Chef
       end
       
       def generate_checksum(key, file, fstat)
-        checksum = checksum_file(file)
+        checksum = checksum_file(file, Digest::SHA256.new)
         moneta.store(key, {"mtime" => fstat.mtime.to_f, "checksum" => checksum})
         checksum
       end
@@ -52,19 +53,25 @@ class Chef
       def generate_key(file, group="chef")
         "#{group}-file-#{file.gsub(/(#{File::SEPARATOR}|\.)/, '-')}"
       end
-
+      
+      def self.generate_md5_checksum_for_file(*args)
+        instance.generate_md5_checksum_for_file(*args)
+      end
+      
+      def generate_md5_checksum_for_file(file)
+        checksum_file(file, Digest::MD5.new)
+      end
+      
       private
       
       def file_unchanged?(cached, fstat)
         cached["mtime"].to_f == fstat.mtime.to_f
       end
       
-      def checksum_file(file)
-        digest = Digest::SHA256.new
+      def checksum_file(file, digest)
         IO.foreach(file) {|line| digest.update(line) }
         digest.hexdigest
       end
-
     end
   end
 end

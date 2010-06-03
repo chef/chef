@@ -20,29 +20,17 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::RubyBlock, "initialize" do
   before(:each) do
-    @n = mock("Chef::Node", :null_object => true)
-    @nr = mock("Chef::Resource::RubyBlock", :null_object => true)
-  end
-
-  it "should return a Chef::Provider::RubyBlock object" do
-    provider = Chef::Provider::RubyBlock.new(@n, @nr)
-    provider.should be_a_kind_of(Chef::Provider::RubyBlock)
-  end
-end
-
-describe Chef::Provider::RubyBlock, "action_create" do  
-  before(:each) do
-    @n = mock("Chef::Node", :null_object => true)
-    @nr = mock("Chef::Resource::RubyBlock",
-               :null_object => true,
-               :block => Proc.new {"lol"}
-              )
-    @p = Chef::Provider::RubyBlock.new(@n, @nr)
+    $evil_global_evil_laugh = :wahwah
+    @node = Chef::Node.new
+    @run_context = Chef::RunContext.new(@node, {})
+    @new_resource = Chef::Resource::RubyBlock.new("bloc party")
+    @new_resource.block { $evil_global_evil_laugh = :mwahahaha}
+    @provider = Chef::Provider::RubyBlock.new(@new_resource, @run_context)
   end
 
   it "should call the block" do
-    @nr.block.should_receive(:call).and_return("lol")
-    @p.action_create
+    @provider.action_create
+    $evil_global_evil_laugh.should == :mwahahaha
   end
 end
 

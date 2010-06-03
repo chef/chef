@@ -20,15 +20,13 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Provider do
   before(:each) do
-    @resource = Chef::Resource.new("funk")
-    @resource.cookbook_name = "a_delicious_pie"
+    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
     @node = Chef::Node.new
     @node.name "latte"
-    @provider = Chef::Provider.new(@node, @resource)
-  end
-  
-  it "should return a Chef::Provider" do
-    @provider.should be_a_kind_of(Chef::Provider)
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+    @resource = Chef::Resource.new("funk", @run_context)
+    @resource.cookbook_name = "a_delicious_pie"
+    @provider = Chef::Provider.new(@resource, @run_context)
   end
   
   it "should store the resource passed to new as new_resource" do
@@ -47,16 +45,12 @@ describe Chef::Provider do
     @provider.action_nothing.should eql(true)
   end
   
-  it "sets @cookbook_name to the cookbook name given by @new_resource" do
-    @provider.instance_variable_get(:@cookbook_name).should == "a_delicious_pie"
-  end
-  
   it "evals embedded recipes with a pristine resource collection" do
-    @provider.instance_variable_set(:@collection, "bouncyCastle")
+    @provider.run_context.instance_variable_set(:@resource_collection, "doesn't matter what this is")
     temporary_collection = nil
-    snitch = Proc.new {temporary_collection = @collection}
+    snitch = Proc.new {temporary_collection = @run_context.resource_collection}
     @provider.send(:recipe_eval, &snitch)
     temporary_collection.should be_an_instance_of(Chef::ResourceCollection)
-    @provider.instance_variable_get(:@collection).should == "bouncyCastle"
+    @provider.run_context.instance_variable_get(:@resource_collection).should == "doesn't matter what this is"
   end
 end

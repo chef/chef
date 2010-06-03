@@ -1,7 +1,9 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,7 +56,7 @@ class Application < Merb::Controller
     if @auth_user.admin
       true
     else
-      raise Unauthorized, "You are not allowed to take this action."
+      raise Forbidden, "You are not allowed to take this action."
     end
   end
 
@@ -62,7 +64,7 @@ class Application < Merb::Controller
     if @auth_user.admin || @auth_user.name == Chef::Config[:validation_client_name]
       true
     else
-      raise Unauthorized, "You are not allowed to take this action."
+      raise Forbidden, "You are not allowed to take this action."
     end
   end
 
@@ -70,7 +72,7 @@ class Application < Merb::Controller
     if @auth_user.admin || @auth_user.name == params[:id]
       true
     else
-      raise Unauthorized, "You are not the correct node (auth_user name: #{@auth_user.name}, params[:id]: #{params[:id]}), or are not an API administrator (admin: #{@auth_user.admin})."
+      raise Forbidden, "You are not the correct node (auth_user name: #{@auth_user.name}, params[:id]: #{params[:id]}), or are not an API administrator (admin: #{@auth_user.admin})."
     end
   end
 
@@ -92,160 +94,65 @@ class Application < Merb::Controller
   def access_denied
     raise Unauthorized, "You must authenticate first!"
   end
-
-  # Load a cookbook and return a hash with a list of all the files of a
-  # given segment (attributes, recipes, definitions, libraries)
-  #
-  # === Parameters
-  # cookbook_id<String>:: The cookbook to load
-  # segment<Symbol>:: :attributes, :recipes, :definitions, :libraries
-  #
-  # === Returns
-  # <Hash>:: A hash consisting of the short name of the file in :name, and the full path
-  #   to the file in :file.
-  def load_cookbook_segment(cookbook, segment)
-    files_list = segment_files(segment, cookbook)
-
-    files = Hash.new
-    files_list.each do |f|
-      full = File.expand_path(f)
-      name = File.basename(full)
-      files[name] = {
-        :name => name,
-        :file => full,
-      }
+  
+  # returns name -> CookbookVersion for all cookbooks included on the given node.
+  def cookbooks_for_node(node_name, all_cookbooks)
+    # get node's explicit dependencies
+    node = Chef::Node.cdb_load(node_name)
+    run_list_items, default_attrs, override_attrs = node.run_list.expand('couchdb')
+    
+    # walk run list and accumulate included dependencies
+    run_list_items.inject({}) do |included_cookbooks, run_list_item|
+      expand_cookbook_deps(included_cookbooks, all_cookbooks, run_list_item)
+      included_cookbooks
     end
-    files
   end
 
-  def segment_files(segment, cookbook)
-    files_list = nil
-    case segment
-    when :attributes
-      files_list = cookbook.attribute_files
-    when :recipes
-      files_list = cookbook.recipe_files
-    when :definitions
-      files_list = cookbook.definition_files
-    when :libraries
-      files_list = cookbook.lib_files
-    when :providers
-      files_list = cookbook.provider_files
-    when :resources
-      files_list = cookbook.resource_files
-    when :files
-      files_list = cookbook.remote_files
-    when :templates
-      files_list = cookbook.template_files
-    else
-      raise ArgumentError, "segment must be one of :attributes, :recipes, :definitions, :remote_files, :template_files, :resources, :providers or :libraries"
+  # Accumulates transitive cookbook dependencies no more than once in included_cookbooks
+  #   included_cookbooks == hash of name -> CookbookVersion, which is used for returning 
+  #                         result as well as for tracking which cookbooks we've already 
+  #                         recursed into
+  #   all_cookbooks    == hash of name -> CookbookVersion, all cookbooks available
+  #   run_list_items   == name of cookbook to include
+  def expand_cookbook_deps(included_cookbooks, all_cookbooks, run_list_item)
+    # determine the run list item's parent cookbook, which might be run_list_item in the default case
+    cookbook_name = (run_list_item[/^(.+)::/, 1] || run_list_item.to_s)
+    Chef::Log.debug("Node requires #{cookbook_name}")
+
+    # include its dependencies
+    included_cookbooks[cookbook_name] = all_cookbooks[cookbook_name]
+    if !all_cookbooks[cookbook_name]
+      Chef::Log.warn "#{__FILE__}:#{__LINE__}: in expand_cookbook_deps, cookbook/role #{cookbook_name} could not be found, ignoring it in cookbook expansion"
+      return included_cookbooks
     end
-    files_list
+    
+    # TODO: 5/27/2010 cw: implement dep_version_constraints according to
+    # http://wiki.opscode.com/display/chef/Metadata#Metadata-depends,
+    all_cookbooks[cookbook_name].metadata.dependencies.each do |depname, dep_version_constraints|
+      # recursively expand dependencies into included_cookbooks unless
+      # we've already done it
+      expand_cookbook_deps(included_cookbooks, all_cookbooks, depname) unless included_cookbooks[depname]
+    end
   end
+  
+  def load_all_files(node_name)
+    all_cookbooks = Chef::CookbookVersion.cdb_list(true).inject({}) {|hsh,record| hsh[record.name] = record ; hsh}
+    
+    included_cookbooks = cookbooks_for_node(node_name, all_cookbooks)
+    nodes_cookbooks = Hash.new
+    included_cookbooks.each do |cookbook_name, cookbook|
+      next unless cookbook
 
-  def specific_cookbooks(node_name, cl)
-    valid_cookbooks = Hash.new
-    begin
-      node = Chef::Node.cdb_load(node_name)
-      recipes, default_attrs, override_attrs = node.run_list.expand('couchdb')
-    rescue Net::HTTPServerException
-      recipes = []
+      nodes_cookbooks[cookbook_name.to_s] = cookbook.generate_manifest_with_urls{|opts| absolute_url(:cookbook_file, opts) }
     end
-    recipes.each do |recipe|
-      valid_cookbooks = expand_cookbook_deps(valid_cookbooks, cl, recipe)
-    end
-    valid_cookbooks
-  end
 
-  def expand_cookbook_deps(valid_cookbooks, cl, recipe)
-    cookbook = recipe
-    if recipe =~ /^(.+)::/
-      cookbook = $1
-    end
-    Chef::Log.debug("Node requires #{cookbook}")
-    valid_cookbooks[cookbook] = true
-    cl.metadata[cookbook.to_sym].dependencies.each do |dep, versions|
-      expand_cookbook_deps(valid_cookbooks, cl, dep) unless valid_cookbooks[dep]
-    end
-    valid_cookbooks
-  end
-
-  def load_cookbook_files(cookbook)
-    response = {
-      :recipes => Array.new,
-      :definitions => Array.new,
-      :libraries => Array.new,
-      :attributes => Array.new,
-      :files => Array.new,
-      :templates => Array.new,
-      :resources => Array.new,
-      :providers => Array.new
-    }
-    [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates ].each do |segment|
-      segment_files(segment, cookbook).each do |sf|
-        next if File.directory?(sf)
-        file_name = nil
-        file_url = nil
-        file_specificity = nil
-
-        if segment == :templates || segment == :files
-          mo = sf.match("cookbooks/#{cookbook.name}/#{segment}/(.+?)/(.+)")
-          unless mo
-            Chef::Log.debug("Skipping file #{sf}, as it doesn't have a proper segment.")
-            next
-          end
-          specificity = mo[1]
-          file_name = mo[2]
-          url_options = { :cookbook_id => cookbook.name.to_s, :segment => segment, :id => file_name }
-
-          case specificity
-          when "default"
-          when /^host-(.+)$/
-            url_options[:fqdn] = $1
-          when /^(.+)-(.+)$/
-            url_options[:platform] = $1
-            url_options[:version] = $2
-          when /^(.+)$/
-            url_options[:platform] = $1
-          end
-
-          file_specificity = specificity
-          file_url = absolute_url(:cookbook_segment, url_options)
-        else
-          mo = sf.match("cookbooks/#{cookbook.name}/#{segment}/(.+)")
-          file_name = mo[1]
-          url_options = { :cookbook_id => cookbook.name.to_s, :segment => segment, :id => file_name }
-          file_url = absolute_url(:cookbook_segment, url_options)
-        end
-        rs = {
-          :name => file_name,
-          :uri => file_url,
-          :checksum => checksum(sf)
-        }
-        rs[:specificity] = file_specificity if file_specificity
-        response[segment] << rs
-      end
-    end
-    response
-  end
-
-  def load_all_files(node_name=nil)
-    cl = Chef::CookbookLoader.new
-    valid_cookbooks = node_name ? specific_cookbooks(node_name, cl) : {}
-    cookbook_list = Hash.new
-    cl.each do |cookbook|
-      if node_name
-        next unless valid_cookbooks[cookbook.name.to_s]
-      end
-      cookbook_list[cookbook.name.to_s] = load_cookbook_files(cookbook)
-    end
-    cookbook_list
+    nodes_cookbooks
   end
 
   def get_available_recipes
-    cl = Chef::CookbookLoader.new
-    available_recipes = cl.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
-      element.recipes.sort.each do |r|
+    all_cookbooks_list = Chef::CookbookVersion.cdb_list(true)
+    available_recipes = all_cookbooks_list.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
+      element.recipes.sort.each do |r| 
         if r =~ /^(.+)::default$/
           result << $1
         else

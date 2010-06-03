@@ -285,7 +285,8 @@ describe Shef do
   describe "extending the recipe object" do
     
     before do
-      @recipe_object = Chef::Recipe.new(nil, nil, nil)
+      @run_context = Chef::RunContext.new(Chef::Node.new, {})
+      @recipe_object = Chef::Recipe.new(nil, nil, @run_context)
     end
     
     it "gives a list of the resources" do
@@ -298,31 +299,36 @@ describe Shef do
   
   describe Shef::StandAloneSession do
     before do
-      @client = Shef::StandAloneSession.instance
-      @node = @client.node = Chef::Node.new
-      @recipe = @client.recipe = Chef::Recipe.new(nil, nil, @node)
+      @session = Shef::StandAloneSession.instance
+      @node = @session.node = Chef::Node.new
+      @run_context = @session.run_context = Chef::RunContext.new(@node, {})
+      @recipe = @session.recipe = Chef::Recipe.new(nil, nil, @run_context)
+    end
+    
+    it "has a run_context" do
+      @session.run_context.should equal(@run_context)
     end
     
     it "returns a collection based on it's standalone recipe file" do
-      @client.collection.should == @recipe.collection
+      @session.resource_collection.should == @recipe.run_context.resource_collection
     end
     
     it "gives nil for the definitions (for now)" do
-      @client.definitions.should be_nil
+      @session.definitions.should be_nil
     end
     
     it "gives nil for the cookbook_loader" do
-      @client.cookbook_loader.should be_nil
+      @session.cookbook_loader.should be_nil
     end
     
     it "runs chef with the standalone recipe" do
-      @client.stub!(:node_built?).and_return(true)
+      @session.stub!(:node_built?).and_return(true)
       Chef::Log.stub!(:level)
       chef_runner = mock("Chef::Runner.new", :converge => :converged)
       # pre-heat resource collection cache
-      @client.collection
+      @session.resource_collection
       
-      Chef::Runner.should_receive(:new).with(@client.node, @recipe.collection, nil,nil).and_return(chef_runner)
+      Chef::Runner.should_receive(:new).with(@session.recipe.run_context).and_return(chef_runner)
       @root_context.run_chef.should == :converged
     end
     
@@ -330,59 +336,54 @@ describe Shef do
   
   describe Shef::SoloSession do
     before do
-      Chef::Config[:solo] = true
-      @client = Shef::SoloSession.instance
+      Chef::Config[:shef_solo] = true
+      @session = Shef::SoloSession.instance
       @node = Chef::Node.new
-      @client.node = @node
-      @compile = @client.compile = Chef::Compile.new(@node)
+      @run_context = @session.run_context = Chef::RunContext.new(@node, {})
+      @session.node = @node
+      #@compile = @session.compile = Chef::Compile.new(@node)
       # prevent dynamic re-compilation from raining on the parade
-      Chef::Compile.stub!(:new).and_return(@compile)
-      @recipe = @client.recipe = Chef::Recipe.new(nil, nil, @node)
+      #Chef::Compile.stub!(:new).and_return(@compile)
+      @recipe = @session.recipe = Chef::Recipe.new(nil, nil, @run_context)
     end
     
     after do
-      Chef::Config[:solo] = nil
+      Chef::Config[:shef_solo] = nil
     end
     
     it "returns a collection based on it's compilation object and the extra recipe provided by shef" do
-      @client.stub!(:node_built?).and_return(true)
+      @session.stub!(:node_built?).and_return(true)
       kitteh = Chef::Resource::Cat.new("keyboard")
-      @recipe.collection << kitteh
-      @client.rebuild_collection
-      @client.collection.should include(kitteh)
+      @recipe.run_context.resource_collection << kitteh
+      @session.resource_collection.should include(kitteh)
     end
     
     it "returns definitions from it's compilation object" do
-      @client.definitions.should == @compile.definitions
-    end
-    
-    it "returns the cookbook_loader from it's compilation object" do
-      @client.cookbook_loader.should == @compile.cookbook_loader
+      @session.definitions.should == @run_context.definitions
     end
     
     it "keeps json attribs and passes them to the node for consumption" do
-      @client.node_attributes = {"besnard_lakes" => "are_the_dark_horse"}
-      @client.node.besnard_lakes.should == "are_the_dark_horse"
+      @session.node_attributes = {"besnard_lakes" => "are_the_dark_horse"}
+      @session.node.besnard_lakes.should == "are_the_dark_horse"
       #pending "1) keep attribs in an ivar 2) pass them to the node 3) feed them to the node on reset"
     end
     
     it "generates it's resource collection from the compiled cookbooks and the ad hoc recipe" do
-      @client.stub!(:node_built?).and_return(true)
+      @session.stub!(:node_built?).and_return(true)
       kitteh_cat = Chef::Resource::Cat.new("kitteh")
-      @compile.collection << kitteh_cat
+      @run_context.resource_collection << kitteh_cat
       keyboard_cat = Chef::Resource::Cat.new("keyboard_cat")
-      @recipe.collection << keyboard_cat
-      @client.rebuild_collection
-      @client.collection.should include(kitteh_cat, keyboard_cat)
+      @recipe.run_context.resource_collection << keyboard_cat
+      #@session.rebuild_collection
+      @session.resource_collection.should include(kitteh_cat, keyboard_cat)
     end
     
     it "runs chef with a resource collection from the compiled cookbooks" do
-      @client.stub!(:node_built?).and_return(true)
+      @session.stub!(:node_built?).and_return(true)
       Chef::Log.stub!(:level)
       chef_runner = mock("Chef::Runner.new", :converge => :converged)
-      Chef::Runner.should_receive(:new).
-                    with(@client.node, an_instance_of(Chef::ResourceCollection), @client.definitions, an_instance_of(Chef::CookbookLoader)).
-                    and_return(chef_runner)
+      Chef::Runner.should_receive(:new).with(an_instance_of(Chef::RunContext)).and_return(chef_runner)
+
       @root_context.run_chef.should == :converged
     end
     

@@ -18,17 +18,16 @@
 
 require 'chef/provider/mount'
 require 'chef/log'
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Mount
       class Mount < Chef::Provider::Mount
+        include Chef::Mixin::ShellOut
 
-        include Chef::Mixin::Command
-
-        def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-          super(node, new_resource, collection, definitions, cookbook_loader)
+        def initialize(new_resource, run_context)
+          super
           @real_device = nil
         end
         attr_accessor :real_device
@@ -48,16 +47,14 @@ class Chef
 
           # Check to see if the volume is mounted. Last volume entry wins.
           mounted = false
-          popen4("mount") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^#{device_mount_regex}\s+on\s+#{@new_resource.mount_point}/
-                mounted = true
-                Chef::Log.debug("Special device #{device_logstring} mounted as #{@new_resource.mount_point}")
-              when /^([\/\w])+\son\s#{@new_resource.mount_point}\s+/
-                mounted = false
-                Chef::Log.debug("Special device #{$~[1]} mounted as #{@new_resource.mount_point}")
-              end
+          shell_out!("mount").stdout.each_line do |line|
+            case line
+            when /^#{device_mount_regex}\s+on\s+#{@new_resource.mount_point}/
+              mounted = true
+              Chef::Log.debug("Special device #{device_logstring} mounted as #{@new_resource.mount_point}")
+            when /^([\/\w])+\son\s#{@new_resource.mount_point}\s+/
+              mounted = false
+              Chef::Log.debug("Special device #{$~[1]} mounted as #{@new_resource.mount_point}")
             end
           end
           @current_resource.mounted(mounted)
@@ -89,7 +86,7 @@ class Chef
             command << " -o #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
             command << " #{device_real}"
             command << " #{@new_resource.mount_point}"
-            run_command(:command => command)
+            shell_out!(command)
             Chef::Log.info("Mounted #{@new_resource.mount_point}")
           else
             Chef::Log.debug("#{@new_resource.mount_point} is already mounted.")
@@ -98,8 +95,7 @@ class Chef
 
         def umount_fs
           if @current_resource.mounted
-            command = "umount #{@new_resource.mount_point}"
-            run_command(:command => command)
+            shell_out!("umount #{@new_resource.mount_point}")
             Chef::Log.info("Unmounted #{@new_resource.mount_point}")
           else
             Chef::Log.debug("#{@new_resource.mount_point} is not mounted.")
@@ -108,8 +104,7 @@ class Chef
 
         def remount_fs
           if @current_resource.mounted and @new_resource.supports[:remount]
-            command = "mount -o remount #{@new_resource.mount_point}"
-            run_command(:command => command)
+            shell_out!("mount -o remount #{@new_resource.mount_point}")
 
             @new_resource.updated = true
             Chef::Log.info("Remounted #{@new_resource.mount_point}")
@@ -123,14 +118,12 @@ class Chef
         end
 
         def enable_fs
+          if @current_resource.enabled && mount_options_unchanged?
+            Chef::Log.debug("#{@new_resource.mount_point} is already enabled.")
+            return nil
+          end
+          
           if @current_resource.enabled
-            if @current_resource.fstype == @new_resource.fstype and
-                @current_resource.options == @new_resource.options and
-                @current_resource.dump == @new_resource.dump and
-                @current_resource.pass == @new_resource.pass
-              Chef::Log.debug("#{@new_resource.mount_point} is already enabled.")
-              return
-            end
             # The current options don't match what we have, so
             # disable, then enable.
             disable_fs
@@ -214,6 +207,14 @@ class Chef
             device_fstab
           end
         end
+        
+        def mount_options_unchanged?
+          @current_resource.fstype == @new_resource.fstype and
+          @current_resource.options == @new_resource.options and
+          @current_resource.dump == @new_resource.dump and
+          @current_resource.pass == @new_resource.pass
+        end
+        
       end
     end
   end

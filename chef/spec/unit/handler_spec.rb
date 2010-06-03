@@ -36,8 +36,8 @@ describe Chef::Handler do
   describe "build_report_data" do
     before(:each) do
       @node = Chef::Node.new
-      @compile = Chef::Compile.new(@node)
-      @runner = Chef::Runner.new(@node, @compile.collection, @compile.definitions, @compile.cookbook_loader)
+      @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
+      @runner = Chef::Runner.new(@run_context)
       @start_time = Time.now
       @end_time = Time.now
       @elapsed_time = @end_time - @start_time
@@ -59,11 +59,11 @@ describe Chef::Handler do
     describe "resources" do
       describe "runner was passed" do
         before(:each) do
-          @elvis = Chef::Resource::File.new("elvis")
-          @runner.collection << @elvis 
-          @metallica = Chef::Resource::File.new("metallica")
+          @elvis = Chef::Resource::File.new("elvis", @run_context)
+          @runner.run_context.resource_collection << @elvis 
+          @metallica = Chef::Resource::File.new("metallica", @run_context)
           @metallica.updated = true
-          @runner.collection << @metallica 
+          @runner.run_context.resource_collection << @metallica 
           @data = @handler.build_report_data(@node, @runner, @start_time, @end_time, @elapsed_time, @exception)
         end
 

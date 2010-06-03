@@ -39,8 +39,8 @@ class Chef
       # name<String>:: Message to log
       # collection<Array>:: Collection of included recipes
       # node<Chef::Node>:: Node where resource will be used
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(name, run_context=nil)
+        super
         @resource_name = :log
         @level = :info
         @action = :write

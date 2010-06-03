@@ -20,160 +20,127 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::Template do
   before(:each) do
-    @rest = mock(Chef::REST, { :get_rest => "/tmp/foobar" })
-    @tempfile = StringIO.new
-    @tempfile.stub!(:path).and_return("/tmp/foo")
-    Tempfile.stub!(:open).and_yield(@tempfile)
-    File.stub!(:read).and_return("monkeypoop")
-    @rest.stub!(:get_rest).and_return(@tempfile)
-    @resource = Chef::Resource::Template.new("seattle")
-    @resource.cookbook_name = "foo"
-    @resource.path(CHEF_SPEC_DATA + '/templates/seattle.txt')
-    @resource.source("http://foo")
-    @node = Chef::Node.new
-    @node.name "latte"
-    @provider = Chef::Provider::Template.new(@node, @resource)
-    @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-    @provider.current_resource = @resource.clone
-    @provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-    FileUtils.stub!(:mv).and_return(true)
-    Chef::FileCache.stub!(:has_key).and_return(false)
-    Chef::FileCache.stub!(:move_to).and_return(true)
-    Chef::FileCache.stub!(:load).and_return("monkeypoop")
+    Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")))
+    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
 
-    Chef::REST.stub!(:new).and_return(@rest)
+    @node = Chef::Node.new
+    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+    
+    @rendered_file_location = Dir.tmpdir + '/openldap_stuff.conf'
+    
+    @resource = Chef::Resource::Template.new(@rendered_file_location)
+    @resource.cookbook_name = 'openldap'
+    
+    @provider = Chef::Provider::Template.new(@resource, @run_context)
+    @current_resource = @resource.dup
+    @provider.current_resource = @current_resource
   end
 
-  describe "action_create" do
-    describe Chef::Provider::Template, "action_create solo" do
-      before  do
-        Chef::Config[:solo] = true
+  describe "when creating the template" do
+
+    after do
+      FileUtils.rm(@rendered_file_location) if ::File.exist?(@rendered_file_location)
+    end
+
+    it "finds the template file in the coobook cache if it isn't local" do
+      @provider.template_location.should == CHEF_SPEC_DATA + '/cookbooks/openldap/templates/default/openldap_stuff.conf.erb'
+    end
+    
+    it "finds the template file locally if it is local" do
+      @resource.local(true)
+      @resource.source('/tmp/its_on_disk.erb')
+      @provider.template_location.should == '/tmp/its_on_disk.erb'
+    end
+
+    it "should use the cookbook name if defined in the template resource" do
+      @resource.cookbook_name = 'apache2'
+      @resource.cookbook('openldap')
+      @resource.source "test.erb"
+      @provider.template_location.should == CHEF_SPEC_DATA + '/cookbooks/openldap/templates/default/test.erb'
+    end
+
+    describe "when the target file does not exist" do
+      it "creates the template with the rendered content" do
+        @node[:slappiness] = "a warm gun"
+        @provider.should_receive(:backup)
+        @provider.action_create
+        IO.read(@rendered_file_location).should == "slappiness is a warm gun"
       end
 
-      after do
-        Chef::Config[:solo] = false
+      it "should set the file access control as specified in the resource" do
+        @resource.owner("adam")
+        @resource.group("wheel")
+        @resource.mode(00644)
+        @provider.should_receive(:set_all_access_controls).with(an_instance_of(String))
+        @provider.action_create
       end
 
-      it "should load the correct file from the FileCache" do
-        Chef::Config[:file_cache_path] = '/var/chef'
-        @provider.stub!(:find_preferred_file).and_return('/var/chef/site-cookbooks/joe/templates/default/joe.erb')
-        Chef::FileCache.should_receive(:load).with('site-cookbooks/joe/templates/default/joe.erb').and_return('joe template')
+      it "creates the template with the rendered content for the create if missing action" do
+        @node[:slappiness] = "happiness"
+        @provider.should_receive(:backup)
+        @provider.action_create_if_missing
+        IO.read(@rendered_file_location).should == "slappiness is happiness"
+      end
+    end
+
+    describe "when the target file has the wrong content" do
+      before do
+        File.open(@rendered_file_location, "w+") { |f| f.print "blargh" }
+      end
+      
+      it "overwrites the file with the updated content when the create action is run" do
+        @node[:slappiness] = "a warm gun"
+        @provider.should_receive(:backup)
+        @provider.action_create
+        IO.read(@rendered_file_location).should == "slappiness is a warm gun"
+      end
+      
+      it "should set the file access control as specified in the resource" do
+        @resource.owner("adam")
+        @resource.group("wheel")
+        @resource.mode(00644)
+        @provider.should_receive(:backup)
+        @provider.should_receive(:set_all_access_controls).with(an_instance_of(String))
+        @provider.action_create
+      end
+
+      it "doesn't overwrite the file when the create if missing action is run" do
+        @node[:slappiness] = "a warm gun"
+        @provider.should_not_receive(:backup)
+        @provider.action_create_if_missing
+        IO.read(@rendered_file_location).should == "blargh"
+      end
+    end
+
+    describe "when the target has the correct content" do
+      before do
+        File.open(@rendered_file_location, "w") { |f| f.print "slappiness is a warm gun" }
+        @current_resource.checksum('4ff94a87794ed9aefe88e734df5a66fc8727a179e9496cbd88e3b5ec762a5ee9')
+      end
+      
+      it "does not backup the original or overwrite it" do
+        @node[:slappiness] = "a warm gun"
+        @provider.should_not_receive(:backup)
+        FileUtils.should_not_receive(:mv)
+        @provider.action_create
+      end
+
+      it "does not backup the original or overwrite it on create if missing" do
+        @node[:slappiness] = "a warm gun"
+        @provider.should_not_receive(:backup)
+        FileUtils.should_not_receive(:mv)
+        @provider.action_create
+      end
+
+      it "sets the file access controls if they have diverged" do
+        @resource.owner("adam")
+        @resource.group("wheel")
+        @resource.mode(00644)
+        @provider.should_receive(:set_all_access_controls).with(an_instance_of(String))
         @provider.action_create
       end
     end
 
-    it "should get the template based on the resources source value" do
-      @rest.should_receive(:get_rest).with(@resource.source, true).and_return(@tempfile)
-      @provider.action_create
-    end
-
-    it "should use the cookbook name if defined in the template resource" do
-      @resource.cookbook "jane"
-      @resource.source "template.erb"
-      @provider.should_receive(:fetch_template_via_rest).with("cookbooks/jane/templates/default/template.erb", "jane_template.erb")
-      @provider.action_create
-    end
-
-    it "should set the checksum of the new resource to the value of the returned template" do
-      @provider.action_create
-      @resource.checksum.should == "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
-    end
-
-    it "should not copy the tempfile to the real file if the checksums match" do
-      FileUtils.should_not_receive(:cp)
-      @provider.action_create
-    end
-
-    it "should copy the tempfile to the real file if the checksums do not match" do
-      @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924ab")
-      FileUtils.should_receive(:cp).with("/tmp/foo", CHEF_SPEC_DATA + '/templates/seattle.txt').once
-      @provider.stub!(:backup).and_return(true)
-      @provider.action_create
-    end
-
-    it "should set the owner if provided" do
-      @resource.owner("adam")
-      @provider.should_receive(:set_owner).and_return(true)
-      @provider.action_create
-    end
-
-    it "should set the group if provided" do
-      @resource.group("adam")
-      @provider.should_receive(:set_group).and_return(true)
-      @provider.action_create
-    end
-
-    it "should set the mode if provided" do
-      @resource.mode(0676)
-      @provider.should_receive(:set_mode).and_return(true)
-      @provider.action_create
-    end
-
-    it "should build a checksum of the file in the cache (assuming it exists)" do
-      Chef::FileCache.stub!(:has_key?).and_return(true)
-      Chef::FileCache.stub!(:load).and_return("/some/path")
-      @provider.should_receive(:checksum).with("/some/path")
-      @provider.action_create
-    end
-
-    it "should not update the filecache if the template has not been modified on the server" do
-      error_response = mock("Net::HTTPNotModified", { :kind_of? => true })
-      @rest.stub!(:get_rest).and_raise(Net::HTTPRetriableError.new("foo", error_response))
-      Chef::FileCache.should_not_receive(:move_to)
-      @provider.action_create
-    end
-
-    it "should raise an exception if we get a Net::HTTPRetriableError that is not from a NotModified response" do
-      error_response = mock("Net::HTTPNotModified", { :kind_of? => false })
-      @rest.stub!(:get_rest).and_raise(Net::HTTPRetriableError.new("foo", error_response))
-      lambda { @provider.action_create }.should raise_error(Net::HTTPRetriableError)
-    end
-
-    it "should populate the template_cache as true after rendering once" do
-      @provider.action_create
-      @node.run_state[:template_cache]["#{@resource.cookbook_name}_#{@resource.source}"].should eql(true)
-    end
-
-    it "should not update the FileCache for the template on the second pass" do
-      @provider.action_create
-      Chef::FileCache.should_not_receive(:move_to)
-      @tempfile = StringIO.new
-      @tempfile.stub!(:path).and_return("/tmp/foo")
-      Tempfile.stub!(:open).and_yield(@tempfile)
-      @provider.action_create
-    end
   end
-
-  describe "action_create_if_missing" do
-
-    it "should not call action_create if the new resources path exists" do
-      File.stub!(:exists?).and_return(true)
-      @provider.should_not_receive(:action_create)
-      @provider.action_create_if_missing
-    end
-
-    it "should call action create if the new resource path does not exist" do
-      File.stub!(:exists?).and_return(false)
-      @provider.should_receive(:action_create).and_return(true)
-      @provider.action_create_if_missing
-    end
-  end
-
-  describe "generate_url" do
-    before(:each) do
-      @resource.cookbook_name = "daft"
-    end
-
-    it "should return a raw url if it starts with http" do
-      @provider.generate_url('http://foobar', "templates").should eql("http://foobar")
-    end
-
-    it "should return a composed url if it does not start with http" do
-      Chef::Platform.stub!(:find_platform_and_version).and_return(["monkey", "1.0"])
-      @node.fqdn("monkeynode")
-      @provider.generate_url('default/something', "templates").should eql("cookbooks/daft/templates?id=default/something&platform=monkey&version=1.0&fqdn=monkeynode&node_name=latte")
-    end
-  end
-
 end
-

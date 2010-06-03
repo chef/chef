@@ -95,12 +95,6 @@ class Chef::Application::Solo < Chef::Application
     :description => "The splay time for running at intervals, in seconds",
     :proc => lambda { |s| s.to_i }
 
-  option :json_attribs,
-    :short => "-j JSON_ATTRIBS",
-    :long => "--json-attributes JSON_ATTRIBS",
-    :description => "Load attributes from a JSON file or URL",
-    :proc => nil
-  
   option :recipe_url,
       :short => "-r RECIPE_URL",
       :long => "--recipe-url RECIPE_URL",
@@ -195,7 +189,7 @@ class Chef::Application::Solo < Chef::Application
           sleep splay
         end
 
-        @chef_solo.run_solo
+        @chef_solo.run
         
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")

@@ -32,20 +32,18 @@ class Chef
     include Chef::Mixin::Language
     include Chef::Mixin::ConvertToClassName
     
-    attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name, :enclosing_provider
-    attr_reader :resource_name, :source_line, :node, :not_if_args, :only_if_args
+    attr_accessor :params, :provider, :updated, :allowed_actions, :run_context, :cookbook_name, :recipe_name, :enclosing_provider
+    attr_reader :resource_name, :source_line, :not_if_args, :only_if_args
+
+    # Each notify entry is a resource/action pair, modeled as an
+    # OpenStruct with a .resource and .action member
+    attr_reader :notifies_immediate, :notifies_delayed
     
-    def initialize(name, collection=nil, node=nil)
+    def initialize(name, run_context=nil)
       @name = name
-      if collection
-        @collection = collection
-      else
-        @collection = Chef::ResourceCollection.new()
-      end      
-      @node = node ? node : Chef::Node.new
+      @run_context = run_context
       @noop = nil
       @before = nil
-      @actions = Hash.new
       @params = Hash.new
       @provider = nil
       @allowed_actions = [ :nothing ]
@@ -57,11 +55,17 @@ class Chef
       @not_if_args = {}
       @only_if = nil
       @only_if_args = {}
+      @notifies_immediate = Array.new
+      @notifies_delayed = Array.new
       sline = caller(4).shift
       if sline
         @source_line = sline.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
         @source_line = ::File.expand_path(@source_line) if @source_line
       end
+    end
+    
+    def node
+      run_context && run_context.node
     end
 
     # If an unknown method is invoked, determine whether the enclosing Provider's
@@ -77,7 +81,7 @@ class Chef
     
     def load_prior_resource
       begin
-        prior_resource = @collection.lookup(self.to_s)
+        prior_resource = run_context.resource_collection.lookup(self.to_s)
         Chef::Log.debug("Setting #{self.to_s} to the state of the prior #{self.to_s}")
         prior_resource.instance_variables.each do |iv|
           unless iv.to_sym == :@source_line || iv.to_sym == :@action
@@ -178,24 +182,15 @@ class Chef
         end 
       end
     end
-  
+    
     def resources(*args)
-      @collection.resources(*args)
+      run_context.resource_collection.resources(*args)
     end
     
     def subscribes(action, resources, timing=:delayed)
-      timing = check_timing(timing)
-      rarray = resources.kind_of?(Array) ? resources : [ resources ]
-      rarray.each do |resource|
-        action_sym = action.to_sym
-        if resource.actions.has_key?(action_sym)
-          resource.actions[action_sym][timing] << self
-        else       
-          resource.actions[action_sym] = Hash.new
-          resource.actions[action_sym][:delayed] = Array.new
-          resource.actions[action_sym][:immediate] = Array.new   
-          resource.actions[action_sym][timing] << self
-        end
+      resources = [resources].flatten
+      resources.each do |resource|
+        resource.notifies(action, self, timing)
       end
       true
     end
@@ -216,7 +211,7 @@ class Chef
     def to_json(*a)
       instance_vars = Hash.new
       self.instance_variables.each do |iv|
-        unless iv == "@collection" || iv == "@node"
+        unless iv == "@run_context"
           instance_vars[iv] = self.instance_variable_get(iv) 
         end
       end
@@ -231,7 +226,7 @@ class Chef
       instance_vars = Hash.new
       self.instance_variables.each do |iv|
         iv = iv.to_s
-        next if iv == "@collection"
+        next if iv == "@run_context"
         instance_vars[iv.sub(/^@/,'').to_sym] = self.instance_variable_get(iv)
       end
       instance_vars
@@ -260,11 +255,15 @@ class Chef
     end
     
     def run_action(action)
-      provider = Chef::Platform.provider_for_node(@node, self)
+      provider = Chef::Platform.provider_for_resource(self)
       provider.load_current_resource
       provider.send("action_#{action}")
     end
     
+    def updated?
+      updated
+    end
+
     class << self
       
       def json_create(o)
@@ -302,8 +301,8 @@ class Chef
           # default initialize method that ensures that when initialize is finally
           # wrapped (see below), super is called in the event that the resource
           # definer does not implement initialize
-          def initialize(name, collection=nil, node=nil)
-            super(name, collection, node)
+          def initialize(name, run_context)
+            super(name, run_context)
           end
           
           @actions_to_create = []
@@ -328,10 +327,9 @@ class Chef
           old_init = instance_method(:initialize)
 
           define_method(:initialize) do |name, *optional_args|
-            collection = optional_args.shift
-            node = optional_args.shift
+            args_run_context = optional_args.shift
             @resource_name = rname.to_sym
-            old_init.bind(self).call(name, collection, node)
+            old_init.bind(self).call(name, args_run_context)
             allowed_actions.push(self.class.actions_to_create).flatten!
           end
         end
@@ -372,31 +370,26 @@ class Chef
         end
       end
       
-      def check_timing(timing)
-        unless timing == :delayed || timing == :immediate || timing == :immediately
-          raise ArgumentError, "Timing must be :delayed or :immediate(ly), you said #{timing}"
-        end
-        if timing == :immediately
-          timing = :immediate
-        end
-        timing
+      def validate_timing(timing)
+        timing = timing.to_sym
+        raise ArgumentError, "invalid timing: #{timing}; must be one of: :delayed, :immediate, :immediately" unless (timing == :delayed || timing == :immediate || timing == :immediately)
+        timing == :immediately ? :immediate : timing
       end
       
       def notifies_helper(action, resources, timing=:delayed)
-        timing = check_timing(timing)
-        rarray = resources.kind_of?(Array) ? resources : [ resources ]
-        rarray.each do |resource|
-          action_sym = action.to_sym
-          if @actions.has_key?(action_sym)
-            @actions[action_sym][timing] << resource
+        timing = validate_timing(timing)
+        
+        resource_array = [resources].flatten
+        resource_array.each do |resource|
+          new_notify = OpenStruct.new(:resource => resource, :action => action)
+          if timing == :delayed
+            notifies_delayed << new_notify
           else
-            @actions[action_sym] = Hash.new
-            @actions[action_sym][:delayed] = Array.new
-            @actions[action_sym][:immediate] = Array.new   
-            @actions[action_sym][timing] << resource
+            notifies_immediate << new_notify
           end
         end
+        
         true
       end
-  end
+    end
 end

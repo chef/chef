@@ -24,6 +24,7 @@ require "mixlib/cli"
 
 require "irb"
 require "irb/completion"
+require 'irb/ext/save-history'
 
 # TODO::EVIL
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))

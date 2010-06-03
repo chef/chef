@@ -22,9 +22,9 @@ require 'chef/provider/package/yum'
 class Chef
   class Resource
     class YumPackage < Chef::Resource::Package
-        
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      
+      def initialize(name, run_context=nil)
+        super
         @resource_name = :yum_package
         @provider = Chef::Provider::Package::Yum
       end

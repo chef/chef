@@ -20,13 +20,15 @@
 # Given
 ###
 Given /^a validated node$/ do
+  client.run_ohai
   client.determine_node_name
   client.register
   client.build_node
-  client.node.recipes << "integration_setup"
+  client.node.run_list << "integration_setup"
 end
 
 Given /^a validated node with an empty runlist$/ do
+  client.run_ohai
   client.determine_node_name
   client.register
   client.build_node
@@ -35,7 +37,7 @@ end
 
 Given /^it includes the recipe '(.+)'$/ do |recipe|
   self.recipe = recipe
-  client.node.recipes << recipe
+  client.node.run_list << recipe
   client.save_node
 end
 

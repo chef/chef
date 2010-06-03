@@ -5,14 +5,14 @@ Feature: Create a data bag via the REST API
   I want to create data bags via the REST API
   
   Scenario: Create a new data bag 
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users'
      When I authenticate as 'bobo'
       And I 'POST' the 'data_bag' to the path '/data' 
       And the inflated responses key 'uri' should match '^http://.+/data/users$'
 
   Scenario: Create a data bag that already exists
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users'
      When I authenticate as 'bobo'
       And I 'POST' the 'data_bag' to the path '/data' 
@@ -25,8 +25,8 @@ Feature: Create a data bag via the REST API
      Then I should get a '401 "Unauthorized"' exception
 
   Scenario: Create a new data bag as a non-admin
-    Given a 'registration' named 'not_admin' exists
+    Given I am a non-admin
       And a 'data_bag' named 'users'
      When I 'POST' the 'data_bag' to the path '/data' 
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '403 "Forbidden"' exception
 

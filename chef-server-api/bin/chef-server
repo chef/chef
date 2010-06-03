@@ -24,7 +24,7 @@ require "rubygems"
 require "merb-core"
 
 # Load chef and chef-server-api from source rather than gem, if present
-$:.unshift(File.expand_path(File.dirname(__FILE__) + '/../../chef/lib/chef'))
+$:.unshift(File.expand_path(File.dirname(__FILE__) + '/../../chef/lib/'))
 $:.unshift(File.expand_path(File.dirname(__FILE__) + '/../lib'))
 
 require 'chef'

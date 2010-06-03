@@ -22,16 +22,14 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::Directory do
   before(:each) do
-    @new_resource = mock("New Resource", :null_object => true)
-    @new_resource.stub!(:name).and_return("directory")
-    @new_resource.stub!(:path).and_return("/tmp")
-    @new_resource.stub!(:owner).and_return(500)
-    @new_resource.stub!(:group).and_return(500)
-    @new_resource.stub!(:mode).and_return(0644)    
-    @new_resource.stub!(:updated).and_return(false)
+    @new_resource = Chef::Resource::Directory.new('/tmp')
+    @new_resource.owner(500)
+    @new_resource.group(500)
+    @new_resource.mode(0644)    
     @node = Chef::Node.new
-    @node.name "latte"
-    @directory = Chef::Provider::Directory.new(@node, @new_resource)
+    @run_context = Chef::RunContext.new(@node, {})
+    
+    @directory = Chef::Provider::Directory.new(@new_resource, @run_context)
   end
   
   it "should load the current resource based on the new resource" do

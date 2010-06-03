@@ -21,21 +21,29 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class GemPackage < Chef::Resource::Package
-        
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      
+      def initialize(name, run_context=nil)
+        super
         @resource_name = :gem_package
         @provider = Chef::Provider::Package::Rubygems
       end
 
       # Sets a custom gem_binary to run for gem commands.
-      def gem_binary(arg=nil)
-        set_or_return(
-          :gem_binary,
-          arg,
-          :kind_of => [ String ]
-        )
+      def gem_binary(gem_cmd=nil)
+        set_or_return(:gem_binary,gem_cmd,:kind_of => [ String ])
       end
+
+      ##
+      # Options for the gem install, either a Hash or a String. When a hash is
+      # given, the options are passed to Gem::DependencyInstaller.new, and the
+      # gem will be installed via the gems API. When a String is given, the gem
+      # will be installed by shelling out to the gem command. Using a Hash of
+      # options with an explicit gem_binary will result in undefined behavior.
+      def options(opts=nil)
+        set_or_return(:options,opts,:kind_of => [String,Hash])
+      end
+
+
     end
   end
 end

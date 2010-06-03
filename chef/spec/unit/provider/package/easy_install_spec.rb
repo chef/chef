@@ -18,26 +18,17 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
 
-describe Chef::Provider::Package::EasyInstall, "easy_install_binary_path" do
+describe Chef::Provider::Package::EasyInstall do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Package",
-      :null_object => true,
-      :name => nil,
-      :version => "1.8d",
-      :package_name => "boto",
-      :easy_install_binary => nil
-    )
+    @node = Chef::Node.new
+    @run_context = Chef::RunContext.new(@node, {})
+    @new_resource = Chef::Resource::EasyInstallPackage.new('boto')
+    @new_resource.version('1.8d')
 
-    @current_resource = mock("Chef::Resource::Package",
-      :null_object => true,
-      :name => "boto",
-      :version => "1.8d",
-      :package_name => "boto",
-      :updated => nil
-    )
+    @current_resource = Chef::Resource::EasyInstallPackage.new('boto')
+    @current_resource.version('1.8d')
 
-    @provider = Chef::Provider::Package::EasyInstall.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::EasyInstall.new(@new_resource, @run_context)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
 
     @stdin = mock("STDIN", :null_object => true)
@@ -47,68 +38,71 @@ describe Chef::Provider::Package::EasyInstall, "easy_install_binary_path" do
     @pid = mock("PID", :null_object => true)
     @provider.stub!(:popen4).and_return(@status)
   end
+  
+  describe "easy_install_binary_path" do
 
-  it "should return a Chef::Provider::EasyInstall object" do
-    provider = Chef::Provider::Package::EasyInstall.new(@node, @new_resource)
-    provider.should be_a_kind_of(Chef::Provider::Package::EasyInstall)
+    it "should return a Chef::Provider::EasyInstall object" do
+      provider = Chef::Provider::Package::EasyInstall.new(@node, @new_resource)
+      provider.should be_a_kind_of(Chef::Provider::Package::EasyInstall)
+    end
+
+    it "should set the current resources package name to the new resources package name" do
+      @current_resource.should_receive(:package_name).with(@new_resource.package_name)
+      @provider.load_current_resource
+    end
+
+    it "should return a relative path to easy_install if no easy_install_binary is given" do
+      @provider.easy_install_binary_path.should eql("easy_install")
+    end
+
+    it "should return a specific path to easy_install if a easy_install_binary is given" do
+      @new_resource.should_receive(:easy_install_binary).and_return("/opt/local/bin/custom/easy_install")
+      @provider.easy_install_binary_path.should eql("/opt/local/bin/custom/easy_install")
+    end
+
   end
 
-  it "should set the current resources package name to the new resources package name" do
-    @current_resource.should_receive(:package_name).with(@new_resource.package_name)
-    @provider.load_current_resource
+  describe "actions_on_package" do
+    # before(:each) do
+    #   @node = Chef::Node.new
+    #   @new_resource = mock("Chef::Resource::Package",
+    #     :null_object => true,
+    #     :name => "boto",
+    #     :version => nil,
+    #     :package_name => "boto",
+    #     :easy_install_binary => nil
+    #   )
+    # 
+    #   @provider = Chef::Provider::Package::EasyInstall.new(@node, @new_resource)
+    # end
+
+    it "should run easy_install with the package name and version" do
+      @provider.should_receive(:run_command).with({
+        :command => "easy_install \"boto==1.8d\""
+      })
+      @provider.install_package("boto", "1.8d")
+    end
+
+    it "should run easy_install with the package name and version" do
+      @provider.should_receive(:run_command).with({
+        :command => "easy_install \"boto==1.8d\""
+      })
+      @provider.upgrade_package("boto", "1.8d")
+    end
+
+    it "should run easy_install -m with the package name and version" do
+      @provider.should_receive(:run_command).with({
+        :command => "easy_install -m boto"
+      })
+      @provider.remove_package("boto", "1.8d")
+    end
+
+    it "should run easy_install -m with the package name and version" do
+      @provider.should_receive(:run_command).with({
+        :command => "easy_install -m boto"
+      })
+      @provider.purge_package("boto", "1.8d")
+    end
+
   end
-
-  it "should return a relative path to easy_install if no easy_install_binary is given" do
-    @provider.easy_install_binary_path.should eql("easy_install")
-  end
-
-  it "should return a specific path to easy_install if a easy_install_binary is given" do
-    @new_resource.should_receive(:easy_install_binary).and_return("/opt/local/bin/custom/easy_install")
-    @provider.easy_install_binary_path.should eql("/opt/local/bin/custom/easy_install")
-  end
-
-end
-
-describe Chef::Provider::Package::EasyInstall, "actions_on_package" do
-  before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Package",
-      :null_object => true,
-      :name => "boto",
-      :version => nil,
-      :package_name => "boto",
-      :easy_install_binary => nil
-    )
-
-    @provider = Chef::Provider::Package::EasyInstall.new(@node, @new_resource)
-  end
-
-  it "should run easy_install with the package name and version" do
-    @provider.should_receive(:run_command).with({
-      :command => "easy_install \"boto==1.8d\""
-    })
-    @provider.install_package("boto", "1.8d")
-  end
-
-  it "should run easy_install with the package name and version" do
-    @provider.should_receive(:run_command).with({
-      :command => "easy_install \"boto==1.8d\""
-    })
-    @provider.upgrade_package("boto", "1.8d")
-  end
-
-  it "should run easy_install -m with the package name and version" do
-    @provider.should_receive(:run_command).with({
-      :command => "easy_install -m boto"
-    })
-    @provider.remove_package("boto", "1.8d")
-  end
-
-  it "should run easy_install -m with the package name and version" do
-    @provider.should_receive(:run_command).with({
-      :command => "easy_install -m boto"
-    })
-    @provider.purge_package("boto", "1.8d")
-  end
-
 end

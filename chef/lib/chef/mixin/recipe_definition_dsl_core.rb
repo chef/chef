@@ -36,14 +36,14 @@ class Chef
         # If we have a definition that matches, we want to use that instead.  This should
         # let you do some really crazy over-riding of "native" types, if you really want
         # to. 
-        if @definitions.has_key?(method_symbol)
+        if run_context.definitions.has_key?(method_symbol)
           # This dupes the high level object, but we still need to dup the params
-          new_def = @definitions[method_symbol].dup
+          new_def = run_context.definitions[method_symbol].dup
           new_def.params = new_def.params.dup
-          new_def.node = @node
+          new_def.node = run_context.node
           # This sets up the parameter overrides
           new_def.instance_eval(&block) if block
-          new_recipe = Chef::Recipe.new(@cookbook_name, @recipe_name, @node, @collection, @definitions, @cookbook_loader)
+          new_recipe = Chef::Recipe.new(cookbook_name, @recipe_name, run_context)
           new_recipe.params = new_def.params
           new_recipe.params[:name] = args[0]
           new_recipe.instance_eval(&new_def.recipe)
@@ -51,28 +51,25 @@ class Chef
           # Otherwise, we're rocking the regular resource call route.
           method_name = method_symbol.to_s
           rname = convert_to_class_name(method_name)
-          
+
+          super unless Chef::Resource.const_defined?(rname)
+          raise ArgumentError, "You must supply a name when declaring a #{method_name} resource" unless args.size > 0
+
           # If we have a resource like this one, we want to steal its state
-          resource = begin
-                       args << @collection
-                       args << @node
-                       Chef::Resource.const_get(rname).new(*args)
-                     rescue NameError => e
-                       if e.to_s =~ /Chef::Resource/
-                         raise NameError, "Cannot find #{rname} for #{method_name}\nOriginal exception: #{e.class}: #{e.message}"
-                       else
-                         raise e
-                       end
-                     end
+          args << run_context
+          resource = Chef::Resource.const_get(rname).new(*args)
           resource.load_prior_resource
-          resource.cookbook_name = @cookbook_name
-          resource.recipe_name = @recipe_name
+          resource.cookbook_name = cookbook_name
+          # TODO: 5/21/2010 cw/dan: do we need recipe_name for
+          # anything? it's not even possible that this ivar is set on
+          # Chef::Provider.
+#          resource.recipe_name = @recipe_name
           resource.params = @params
           # Determine whether this resource is being created in the context of an enclosing Provider
           resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil
           resource.instance_eval(&block) if block
 
-          @collection.insert(resource)
+          run_context.resource_collection.insert(resource)
           resource
         end
       end

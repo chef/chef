@@ -26,7 +26,7 @@ Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "pr
   Chef::Provider.build_from_file("lwrp", file)
 end
 
-describe Chef::Resource do
+describe "Light-weight Chef::Resource" do
   
   it "should load the resource into a properly-named class" do
     Chef::Resource.const_get("LwrpFoo").should be_kind_of(Class)
@@ -50,8 +50,15 @@ describe Chef::Resource do
   
 end
 
-describe Chef::Provider do
-    
+describe "Light-weight Chef::Provider" do
+  before(:each) do
+    node = Chef::Node.new
+    node.platform(:ubuntu)
+    node.platform_version('8.10')
+    @run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new({}))
+  end
+  
+  
   it "should load the provider into a properly-named class" do
     Chef::Provider.const_get("LwrpBuckPasser").should be_kind_of(Class)
   end
@@ -63,33 +70,23 @@ describe Chef::Provider do
   end
 
   it "should insert resources embedded in the provider into the middle of the resource collection" do
-    node = Chef::Node.new
-    node.platform(:ubuntu)
-    node.platform_version('8.10')
-    rc = Chef::ResourceCollection.new
-    
     injector = Chef::Resource::LwrpFoo.new("morpheus")
     injector.action(:pass_buck)
     injector.provider(:lwrp_buck_passer)
     dummy = Chef::Resource::ZenMaster.new("keanu reeves")
     dummy.provider(Chef::Provider::Easy)
-    rc.insert(injector)
-    rc.insert(dummy)
+    @run_context.resource_collection.insert(injector)
+    @run_context.resource_collection.insert(dummy)
+
+    Chef::Runner.new(@run_context).converge
     
-    Chef::Runner.new(node, rc).converge
-    
-    rc[0].should eql(injector)
-    rc[1].name.should eql(:prepared_thumbs)
-    rc[2].name.should eql(:twiddled_thumbs)
-    rc[3].should eql(dummy)
+    @run_context.resource_collection[0].should eql(injector)
+    @run_context.resource_collection[1].name.should eql(:prepared_thumbs)
+    @run_context.resource_collection[2].name.should eql(:twiddled_thumbs)
+    @run_context.resource_collection[3].should eql(dummy)
   end
   
   it "should insert embedded resources from multiple providers, including from the last position, properly into the resource collection" do
-    node = Chef::Node.new
-    node.platform(:ubuntu)
-    node.platform_version('8.10')
-    rc = Chef::ResourceCollection.new
-    
     injector = Chef::Resource::LwrpFoo.new("morpheus")
     injector.action(:pass_buck)
     injector.provider(:lwrp_buck_passer)
@@ -99,53 +96,43 @@ describe Chef::Provider do
     dummy = Chef::Resource::ZenMaster.new("keanu reeves")
     dummy.provider(Chef::Provider::Easy)
     
-    rc.insert(injector)
-    rc.insert(dummy)
-    rc.insert(injector2)
+    @run_context.resource_collection.insert(injector)
+    @run_context.resource_collection.insert(dummy)
+    @run_context.resource_collection.insert(injector2)
     
-    Chef::Runner.new(node, rc).converge
+    Chef::Runner.new(@run_context).converge
     
-    rc[0].should eql(injector)
-    rc[1].name.should eql(:prepared_thumbs)
-    rc[2].name.should eql(:twiddled_thumbs)
-    rc[3].should eql(dummy)
-    rc[4].should eql(injector2)
-    rc[5].name.should eql(:prepared_eyes)
-    rc[6].name.should eql(:dried_paint_watched)
+    @run_context.resource_collection[0].should eql(injector)
+    @run_context.resource_collection[1].name.should eql(:prepared_thumbs)
+    @run_context.resource_collection[2].name.should eql(:twiddled_thumbs)
+    @run_context.resource_collection[3].should eql(dummy)
+    @run_context.resource_collection[4].should eql(injector2)
+    @run_context.resource_collection[5].name.should eql(:prepared_eyes)
+    @run_context.resource_collection[6].name.should eql(:dried_paint_watched)
   end
 
   it "should properly handle a new_resource reference" do
-    node = Chef::Node.new
-    node.platform(:ubuntu)
-    node.platform_version('8.10')
-    rc = Chef::ResourceCollection.new
-    
     res = Chef::Resource::LwrpFoo.new("morpheus")
     res.monkey("bob")
     res.action(:twiddle_thumbs)
     res.provider(:lwrp_monkey_name_printer)
-    rc.insert(res)
+    @run_context.resource_collection.insert(res)
 
     STDOUT.should_receive(:write).with("my monkey's name is 'bob'").exactly(:once)
     STDOUT.should_receive(:write).with("\n").exactly(:once)
-    Chef::Runner.new(node, rc).converge
+    Chef::Runner.new(@run_context).converge
   end
 
   it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
-    node = Chef::Node.new
-    node.platform(:ubuntu)
-    node.platform_version('8.10')
-    rc = Chef::ResourceCollection.new
-    
     res = Chef::Resource::LwrpFoo.new("morpheus")
     res.monkey("bob")
     res.action(:twiddle_thumbs)
     res.provider(:lwrp_embedded_resource_accesses_providers_scope)
-    rc.insert(res)
+    @run_context.resource_collection.insert(res)
     
     STDOUT.should_receive(:write).with("my monkey's name is 'bob, the monkey'").exactly(:once)
     STDOUT.should_receive(:write).with("\n").exactly(:once)
-    Chef::Runner.new(node, rc).converge
+    Chef::Runner.new(@run_context).converge
   end
   
 end

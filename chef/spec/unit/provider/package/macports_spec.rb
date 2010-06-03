@@ -20,21 +20,12 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "sp
 
 describe Chef::Provider::Package::Macports do
   before(:each) do
-    @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Package", 
-      :null_object => true,
-      :name => "zsh",
-      :package_name => "zsh",
-      :version => nil
-    )
-    @current_resource = mock("Chef::Resource::Package", 
-      :null_object => true,
-      :name => "zsh",
-      :package_name => "zsh",
-      :version => nil
-    )
+    @node = Chef::Node.new
+    @run_context = Chef::RunContext.new(@node, {})
+    @new_resource = Chef::Resource::Package.new("zsh")
+    @current_resource = Chef::Resource::Package.new("zsh")
 
-    @provider = Chef::Provider::Package::Macports.new(@node, @new_resource)    
+    @provider = Chef::Provider::Package::Macports.new(@new_resource, @run_context)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
 
     @status = mock("Status", :exitstatus => 0)

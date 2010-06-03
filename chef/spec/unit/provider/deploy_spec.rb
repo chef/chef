@@ -26,11 +26,10 @@ describe Chef::Provider::Deploy do
     @expected_release_dir = "/my/deploy/dir/releases/20040815162342"
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     @node = Chef::Node.new
-    @provider = Chef::Provider::Deploy.new(@node, @resource)
+    @run_context = Chef::RunContext.new(@node, {})
+    @provider = Chef::Provider::Deploy.new(@resource, @run_context)
     @provider.stub!(:release_slug)
     @provider.stub!(:release_path).and_return(@expected_release_dir)
-    @runner = mock("runnah", :null_object => true)
-    Chef::Runner.stub!(:new).and_return(@runner)
   end
   
   it "supports :deploy and :rollback actions" do
@@ -151,6 +150,8 @@ describe Chef::Provider::Deploy do
   end
   
   it "runs the new resource collection in the runner during a callback" do
+    @runner = mock("Runner")
+    Chef::Runner.stub!(:new).and_return(@runner)
     @runner.should_receive(:converge)
     callback_code = Proc.new { :noop }
     @provider.callback(:whatevs, callback_code)
@@ -336,7 +337,7 @@ describe Chef::Provider::Deploy do
   it "sets @configuration[:environment] to the value of RAILS_ENV for backwards compat reasons" do
     resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     resource.environment "production" 
-    provider = Chef::Provider::Deploy.new(@node, resource)
+    provider = Chef::Provider::Deploy.new(resource, @run_context)
     provider.instance_variable_get(:@configuration)[:environment].should eql("production")
   end
   
@@ -397,7 +398,7 @@ describe Chef::Provider::Deploy do
       
       callback_code = Proc.new do
         snitch = 42
-        temp_collection = self.instance_variable_get(:@collection)
+        temp_collection = self.resource_collection
         run("tehMice")
         snitch = temp_collection.lookup("execute[tehMice]")
       end
@@ -429,11 +430,11 @@ describe Chef::Provider::Deploy do
     it "takes a list of gem providers converges them" do
       IO.stub!(:read)
       YAML.stub!(:load).and_return(@gem_list)
-      gem_resources = @provider.send(:gem_packages)
-      run4r = mock("Chef::Runner")
-      Chef::Runner.should_receive(:new).with(@node, an_instance_of(Chef::ResourceCollection)).and_return(run4r)
-      run4r.should_receive(:converge)
-      @provider.send(:install_gems)
+      expected_gem_resources = @provider.send(:gem_packages).map { |r| [r.name, r.version] }
+      gem_runner = @provider.send(:gem_resource_collection_runner)
+      # no one has heard of defining == to be meaningful so I have use this monstrosity
+      actual = gem_runner.run_context.resource_collection.all_resources.map { |r| [r.name, r.version] }
+      actual.should == expected_gem_resources
     end
     
   end
