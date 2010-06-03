@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/version'
+
 require 'extlib'
 require 'chef/exceptions'
 require 'chef/log'
@@ -30,10 +32,6 @@ require 'chef/openid_registration'
 
 require 'chef/handler'
 require 'chef/handler/json_file'
-
-class Chef
-  VERSION = "0.9.0.a1"
-end
 
 # Adds a Dir.glob to Ruby 1.8.5, for compat
 if RUBY_VERSION < "1.8.6" || RUBY_PLATFORM =~ /mswin|mingw32|windows/

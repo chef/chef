@@ -1,3 +1,5 @@
+require File.dirname(__FILE__) + '/lib/chef-server-webui/version'
+
 require 'rubygems'
 require 'rake/gempackagetask'
 
