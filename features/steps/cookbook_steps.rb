@@ -131,8 +131,9 @@ When /^I create a sandbox named '(.+)' for cookbook '([^\']+)'(?: minus files '(
   }
     
   begin
-    self.api_response = nil
+    self.api_response = self.inflated_response = nil
     self.exception = nil
+    
     self.inflated_response = rest.post_rest('/sandboxes', sandbox)
     self.sandbox_url = self.inflated_response['uri']
     
@@ -161,7 +162,8 @@ Then /^I upload a file named '(.+)' from cookbook '(.+)' to the sandbox/ do |pat
   full_path = File.join(datadir, "cookbooks_not_uploaded_at_feature_start", cookbook_name, path)
     
   begin
-    upload_to_sandbox(full_path)
+    url = @stash['sandbox_response']['checksums'][manifest_record[:checksum]]['url']
+    upload_to_sandbox(full_path, manifest_record[:checksum], url)
   rescue
     Chef::Log.debug("Caught exception in cookbook/sandbox checksum upload (PUT) request: #{$!.message}: #{$!.backtrace.join("\n")}")
     self.exception = $!
@@ -202,7 +204,8 @@ Then /I fully upload a sandboxed cookbook (force-)?named '([^\']+)' versioned '(
       full_path = File.join(datadir, "cookbooks_not_uploaded_at_feature_start", cookbook_name, manifest_record[:path])
 
       begin
-        upload_to_sandbox(full_path)
+        url = @stash['sandbox_response']['checksums'][manifest_record[:checksum]]['url']
+        upload_to_sandbox(full_path, manifest_record[:checksum], url)
       rescue
         Chef::Log.debug("Caught exception in cookbook/sandbox checksum upload (PUT) request: #{$!.message}: #{$!.backtrace.join("\n")}")
         self.exception = $!
