@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Nuo Yan (<nuo@opscode.com>)
+# Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,11 +31,22 @@ class Chef
     class Query < Chef::Solr
       
       # Create a new Query object - takes the solr_url and optional
-      # couchdb_database to inflate objects into.
-      def initialize(solr_url=Chef::Config[:solr_url], database=Chef::Config[:couchdb_database])
+      # Chef::CouchDB object to inflate objects into.
+      def initialize(solr_url=Chef::Config[:solr_url], couchdb = nil)
         super(solr_url)
-        @database = database
-        @couchdb = Chef::CouchDB.new(nil, database)
+        if couchdb.nil?
+          @database = Chef::Config[:couchdb_database]
+          @couchdb = Chef::CouchDB.new(nil, Chef::Config[:couchdb_database])
+        else
+          unless couchdb.kind_of?(Chef::CouchDB)
+            Chef::Log.warn("Passing the database name to Chef::Solr::Query initialization is deprecated. Please pass in the Chef::CouchDB object instead.")
+            @database = couchdb
+            @couchdb = Chef::CouchDB.new(nil, couchdb)
+          else
+            @database = couchdb.couchdb_database
+            @couchdb = couchdb
+          end
+        end 
       end
 
       # A raw query against CouchDB - takes the type of object to find, and raw

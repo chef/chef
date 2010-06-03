@@ -40,7 +40,7 @@ class Search < Application
       raise NotFound, "I don't know how to search for #{params[:id]} data objects."
     end
 
-    query = Chef::Solr::Query.new(Chef::Config[:solr_url], Chef::Config[:couchdb_database])
+    query = Chef::Solr::Query.new(Chef::Config[:solr_url])
     params[:q]     ||= "*:*"
     params[:sort]  ||= nil
     params[:start] ||= 0
