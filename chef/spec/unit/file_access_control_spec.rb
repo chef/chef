@@ -80,7 +80,7 @@ describe Chef::FileAccessControl do
   it "sets the file's owner as specified in the resource when the current owner is incorrect" do
     @resource.owner(2342)
     @fac.stub!(:stat).and_return(OpenStruct.new(:uid => 1234))
-    FileUtils.should_receive(:chown).with(2342, nil, '/tmp/different_file.txt')
+    File.should_receive(:chown).with(2342, nil, '/tmp/different_file.txt')
     @fac.set_owner
     @fac.should be_modified
   end
@@ -88,7 +88,7 @@ describe Chef::FileAccessControl do
   it "doesn't set the file's owner if it already matches" do
     @resource.owner(2342)
     @fac.stub!(:stat).and_return(OpenStruct.new(:uid => 2342))
-    FileUtils.should_not_receive(:chown)
+    File.should_not_receive(:chown)
     @fac.set_owner
     @fac.should_not be_modified
   end
@@ -122,7 +122,7 @@ describe Chef::FileAccessControl do
   it "sets the file's group as specified in the resource when the group is not correct" do
     @resource.group(2342)
     @fac.stub!(:stat).and_return(OpenStruct.new(:gid => 815))
-    FileUtils.should_receive(:chown).with(nil, 2342, '/tmp/different_file.txt')
+    File.should_receive(:chown).with(nil, 2342, '/tmp/different_file.txt')
     @fac.set_group
     @fac.should be_modified
   end
@@ -130,7 +130,7 @@ describe Chef::FileAccessControl do
   it "doesnt set the file's group if it is already correct" do
     @resource.group(2342)
     @fac.stub!(:stat).and_return(OpenStruct.new(:gid => 2342))
-    FileUtils.should_not_receive(:chown)
+    File.should_not_receive(:chown)
     @fac.set_group
     @fac.should_not be_modified
   end
@@ -154,14 +154,14 @@ describe Chef::FileAccessControl do
   it "sets the file's mode as specified in the resource when the current modes are incorrect" do
     # stat returns modes like 0100644 (octal) => 33188 (decimal)
     @fac.stub!(:stat).and_return(OpenStruct.new(:mode => 33188))
-    FileUtils.should_receive(:chmod).with(256, '/tmp/different_file.txt')
+    File.should_receive(:chmod).with(256, '/tmp/different_file.txt')
     @fac.set_mode
     @fac.should be_modified
   end
 
   it "does not set the file's mode when the current modes are correct" do
     @fac.stub!(:stat).and_return(OpenStruct.new(:mode => 0100400))
-    FileUtils.should_not_receive(:chmod)
+    File.should_not_receive(:chmod)
     @fac.set_mode
     @fac.should_not be_modified
   end
@@ -171,9 +171,9 @@ describe Chef::FileAccessControl do
     @resource.mode(0400)
     @resource.owner(0)
     @resource.group(0)
-    FileUtils.should_receive(:chmod).with(0400, '/tmp/different_file.txt')
-    FileUtils.should_receive(:chown).with(0, nil, '/tmp/different_file.txt')
-    FileUtils.should_receive(:chown).with(nil, 0, '/tmp/different_file.txt')
+    File.should_receive(:chmod).with(0400, '/tmp/different_file.txt')
+    File.should_receive(:chown).with(0, nil, '/tmp/different_file.txt')
+    File.should_receive(:chown).with(nil, 0, '/tmp/different_file.txt')
     @fac.set_all
     @fac.should be_modified
   end

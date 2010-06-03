@@ -42,6 +42,7 @@ describe Chef::Application::Knife do
       with_argv("node", "show", "latte.local") do
         knife = mock(Chef::Knife, :null_object => true)
         Chef::Knife.should_receive(:find_command).with(ARGV, Chef::Application::Knife.options).and_return(knife)
+        @knife.should_receive(:exit).with(0)
         @knife.run
       end
     end

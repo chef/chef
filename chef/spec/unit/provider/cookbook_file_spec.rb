@@ -88,9 +88,9 @@ EXPECTED
       @new_resource.group(0)
       @new_resource.mode(0400)
       ::File.should_receive(:stat).with('/tmp/foo').and_return(OpenStruct.new(:owner => 99, :group => 99, :mode => 0100444))
-      FileUtils.should_receive(:chmod).with(0400, '/tmp/foo')
-      FileUtils.should_receive(:chown).with(0, nil, '/tmp/foo')
-      FileUtils.should_receive(:chown).with(nil, 0, '/tmp/foo')
+      File.should_receive(:chmod).with(0400, '/tmp/foo')
+      File.should_receive(:chown).with(0, nil, '/tmp/foo')
+      File.should_receive(:chown).with(nil, 0, '/tmp/foo')
 
       @provider.set_all_access_controls('/tmp/foo')
       @provider.new_resource.should be_updated
