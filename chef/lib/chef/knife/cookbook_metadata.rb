@@ -45,8 +45,8 @@ class Chef
 
         if config[:all]
           cl = Chef::CookbookLoader.new
-          cl.each do |cookbook|
-            generate_metadata(cookbook.name.to_s)
+          cl.each do |cname, cookbook|
+            generate_metadata(cname.to_s)
           end
         else
           generate_metadata(@name_args[0])
