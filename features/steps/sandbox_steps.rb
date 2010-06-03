@@ -20,14 +20,13 @@ def upload_to_sandbox(sandbox_filename, sandbox_file_checksum, url)
   }
   headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
   
-  self.response = RestClient::Request.execute(
+  self.api_response = RestClient::Request.execute(
     :method => :put, 
     :url => url, 
     :headers => headers, 
     :payload => file_contents
   )
-  self.inflated_response = JSON.parse(self.response)
-  
+  self.inflated_response = JSON.parse(self.api_response)
 end
   
 
@@ -38,7 +37,7 @@ When /^I create a sandbox named '([^\']+)'$/ do |sandbox_name|
     
     @stash['sandbox'] = sandbox
     
-    self.response = nil
+    self.api_response = nil
     self.exception = nil
     self.inflated_response = rest.post_rest('/sandboxes', sandbox)
     self.sandbox_url = self.inflated_response['uri']
@@ -55,7 +54,7 @@ When /^I commit the sandbox$/ do
     sandbox = @stash['sandbox']
 
     # sandbox_url is fully qualified (with http://, sandboxes, etc.)
-    self.response = nil
+    self.api_response = nil
     self.exception = nil
     self.inflated_response = rest.put_rest("#{self.sandbox_url}", {:is_completed => true})
     

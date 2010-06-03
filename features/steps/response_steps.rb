@@ -9,7 +9,7 @@ end
 Then /^the response code should be '(.+)'$/ do |response_code|
   case response_code.to_i
     when 200
-      self.response.code.should == 200
+      self.api_response.code.should == 200
     when 400
       Then "I should get a 'Bad Request' exception"
     when 404
@@ -101,7 +101,7 @@ Then /^the inflated response should be '(.+)' items long$/ do |length|
 end
 
 Then /^the '(.+)' header should match '(.+)'$/ do |header, regex|
-  self.response.headers[header].should =~ /#{regex}/
+  self.api_response.headers[header].should =~ /#{regex}/
 end
 
 Then /^the inflated responses key '(.+)' should include '(.+)'$/ do |key, regex|
@@ -123,7 +123,7 @@ Then /^the inflated response should be the '(.+)'$/ do |stash_key|
 end
 
 Then /^the stringified response should be the stringified '(.+)'$/ do |stash_key|
-  self.response.to_s.should == stash[stash_key].to_s
+  self.api_response.to_s.should == stash[stash_key].to_s
 end
 
 Then /^the inflated response should be a kind of '(.+)'$/ do |thing|

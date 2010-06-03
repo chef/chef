@@ -5,7 +5,7 @@ Feature: Synchronize cookbooks to the edge
   I want to synchronize the cookbooks from the server to the edge nodes
 
   Scenario: Retrieve the list of cookbook files to synchronize
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'node' named 'sync' exists
      When I 'GET' the path '/nodes/sync/cookbooks'
       And the inflated responses key 'node_cookbook_sync' should exist
@@ -19,14 +19,14 @@ Feature: Synchronize cookbooks to the edge
       And the inflated responses key 'node_cookbook_sync' should match 'attr_file.rb' as json
 
   Scenario: Retrieve the list of cookbook files to synchronize with a wrong private key
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'node' named 'sync' exists
      When I 'GET' the path '/nodes/sync/cookbooks' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
   Scenario: Retrieve the list of cookbook files to synchronize as a non-admin
-    Given a 'registration' named 'not_admin' exists
+    Given I am a non-admin
       And a 'node' named 'sync' exists
      When I 'GET' the path '/nodes/sync/cookbooks'
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '403 "Forbidden"' exception
 

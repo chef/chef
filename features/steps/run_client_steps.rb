@@ -22,7 +22,7 @@
 When /^I run the chef\-client$/ do
   @log_level ||= ENV["LOG_LEVEL"] ? ENV["LOG_LEVEL"] : "error"
   @chef_args ||= ""
-  @config_file ||= File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client.rb'))
+  @config_file ||= File.expand_path(File.join(configdir, 'client.rb'))
   status = Chef::Mixin::Command.popen4(
     "#{File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "chef-client")} -l #{@log_level} -c #{@config_file} #{@chef_args}") do |p, i, o, e|
     @stdout = o.gets(nil)

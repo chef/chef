@@ -6,13 +6,13 @@ Feature: Create a sandbox via the REST API
 
   @positive  
   Scenario: Create a one-file sandbox
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
      When I create a sandbox named 'sandbox1'
      Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
 
   @negative  
   Scenario: Create a one-file sandbox, but commit without uploading any files
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
      When I create a sandbox named 'sandbox1'
      Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
      When I commit the sandbox
@@ -20,7 +20,7 @@ Feature: Create a sandbox via the REST API
 
   @positive
   Scenario: Create a one-file sandbox, upload a file with an expected checksum, then commit
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
     When I create a sandbox named 'sandbox1'
     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
     Then I upload a file named 'sandbox1_file1' to the sandbox
@@ -30,7 +30,7 @@ Feature: Create a sandbox via the REST API
 
   @negative
   Scenario: Create a one-file sandbox, upload a file with an unexpected checksum, then commit
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
     When I create a sandbox named 'sandbox1'
     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
     Then I upload a file named 'sandbox2_file1' to the sandbox
@@ -40,7 +40,7 @@ Feature: Create a sandbox via the REST API
 
   @negative
   Scenario: Create a one-file sandbox, upload a file with an expected checksum and one with an unexpected checksum, then commit
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
     When I create a sandbox named 'sandbox1'
     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
     Then I upload a file named 'sandbox1_file1' to the sandbox
@@ -53,7 +53,7 @@ Feature: Create a sandbox via the REST API
  
   @negative
   Scenario: Create a one-file sandbox, upload a file to an expected checksum URL whose contents do not match that checksum, then commit
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
     When I create a sandbox named 'sandbox1'
     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
     Then I upload a file named 'sandbox2_file1' using the checksum of 'sandbox1_file1' to the sandbox
@@ -64,7 +64,7 @@ Feature: Create a sandbox via the REST API
 # multiple file sandbox positive and 1/2 negative
   @positive
   Scenario: Create a two-file sandbox, upload two expected checksums, and commit
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
     When I create a sandbox named 'sandbox2'
     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
     Then I upload a file named 'sandbox2_file1' to the sandbox
@@ -76,7 +76,7 @@ Feature: Create a sandbox via the REST API
     
   @negative
   Scenario: Create a two-file sandbox, upload one of the expected checksums, then commit
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
     When I create a sandbox named 'sandbox2'
     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
     Then I upload a file named 'sandbox2_file1' to the sandbox
@@ -86,7 +86,7 @@ Feature: Create a sandbox via the REST API
 
   @positive
   Scenario: Create a two-file sandbox, and check the needs_upload field is set for both checksums
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
     When I create a sandbox named 'sandbox2'
     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
     Then the sandbox file 'sandbox2_file1' should need upload
@@ -94,7 +94,7 @@ Feature: Create a sandbox via the REST API
 
   @positive
   Scenario: Create a two-file sandbox, upload the files, then commit. Create the same sandbox again, and neither file should need_upload.
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
     When I create a sandbox named 'sandbox2'
     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
     Then the sandbox file 'sandbox2_file1' should need upload

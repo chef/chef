@@ -8,7 +8,7 @@ Feature: CRUD cookbooks
 
   @delete_cookbook_positive @delete_cookbook_version_positive
   Scenario: After uploading two versions of a cookbook, then deleting the second, I should not be able to interact with the second but should be able to interact with the first
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
      When I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
       And I fully upload a sandboxed cookbook force-named 'testcookbook_valid' versioned '0.2.0' with 'testcookbook_valid_v0.2.0'
      When I 'GET' to the path '/cookbooks/testcookbook_valid/0.2.0'
@@ -27,7 +27,7 @@ Feature: CRUD cookbooks
 
   @delete_cookbook_negative @delete_cookbook_version_negative
   Scenario: I should not be able to delete a cookbook version that does not exist
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
      When I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
       And I fully upload a sandboxed cookbook force-named 'testcookbook_valid' versioned '0.2.0' with 'testcookbook_valid_v0.2.0'
      When I 'DELETE' to the path '/cookbooks/testcookbook_valid/0.3.0'
@@ -37,7 +37,7 @@ Feature: CRUD cookbooks
   # You delete all of its versions and then it disappears.     
   @delete_cookbook_positive
   Scenario: I should be able to delete a cookbook by deleting all of its versions
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
      When I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
      When I 'DELETE' to the path '/cookbooks/testcookbook_valid/0.1.0'
      Then I should not get an exception
@@ -48,7 +48,7 @@ Feature: CRUD cookbooks
      
   @delete_cookbook_negative
   Scenario: I should not be able to delete a cookbook that doesn't exist'
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
      When I 'DELETE' to the path '/cookbooks/testcookbook_nonexistent'
      Then I should get a '404 "Not Found"' exception
 

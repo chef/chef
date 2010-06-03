@@ -37,6 +37,7 @@ end
 
 Before do
   save_cookbook_path = Chef::Config[:cookbook_path]
+  FileUtils.mkdir "#{datadir}/cookbooks_not_uploaded_at_feature_start/testcookbook_invalid_empty" unless Dir["#{datadir}/cookbooks_not_uploaded_at_feature_start/testcookbook_invalid_empty"]
   Chef::Config[:cookbook_path] = File.join(datadir, "cookbooks_not_uploaded_at_feature_start")
   Chef::Cookbook::FileVendor.on_create {|manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
   @cookbook_loader_not_uploaded_at_feature_start = Chef::CookbookLoader.new
@@ -101,8 +102,8 @@ When /^I create a versioned cookbook(?: named '(.*?)')?(?: versioned '(.*?)')? w
   raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless cookbook
   
   begin
-    self.response = rest.put_rest("/cookbooks/#{request_name}/#{request_version}", cookbook)
-    self.inflated_response = response
+    self.api_response = rest.put_rest("/cookbooks/#{request_name}/#{request_version}", cookbook)
+    self.inflated_response = api_response
   rescue
     self.exception = $!
   end
@@ -133,7 +134,7 @@ When /^I create a sandbox named '(.+)' for cookbook '([^\']+)'(?: minus files '(
   }
     
   begin
-    self.response = nil
+    self.api_response = nil
     self.exception = nil
     self.inflated_response = rest.post_rest('/sandboxes', sandbox)
     self.sandbox_url = self.inflated_response['uri']
@@ -220,7 +221,7 @@ Then /I fully upload a sandboxed cookbook (force-)?named '([^\']+)' versioned '(
 end
 
 When /I download the cookbook manifest for '(.+)' version '(.+)'$/ do |cookbook_name, cookbook_version|
-  self.response = self.inflated_response = self.exception = nil
+  self.api_response = self.inflated_response = self.exception = nil
 
   When "I 'GET' to the path '/cookbooks/#{cookbook_name}/#{cookbook_version}'"
   @downloaded_cookbook = self.inflated_response
@@ -275,7 +276,7 @@ When /I download the file '([^\']+)' from the downloaded cookbook manifest/ do |
     cookbook_version = @downloaded_cookbook.version
     checksum = found_manifest_record[:checksum]
     
-    self.response = nil
+    self.api_response = nil
     self.inflated_response = nil
     self.exception = nil
     

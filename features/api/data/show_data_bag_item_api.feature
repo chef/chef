@@ -5,7 +5,7 @@ Feature: Show a data_bag item via the REST API
   I want to retrieve an item from a data_bag
 
   Scenario: Show a data_bag item 
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
      When I authenticate as 'bobo'
@@ -13,7 +13,7 @@ Feature: Show a data_bag item via the REST API
      Then the inflated responses key 'id' should match '^francis$'
 
   Scenario: Show a missing data_bag item
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
      When I authenticate as 'bobo'
       And I 'GET' the path '/data/users/francis'

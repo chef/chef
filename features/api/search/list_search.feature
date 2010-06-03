@@ -5,7 +5,7 @@ Feature: List search endpoints via the REST API
   I want to list all the search indexes 
 
   Scenario: List search indexes when no data bags have been created
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And there are no data bags
      When I authenticate as 'bobo'
       And I 'GET' the path '/search' 
@@ -15,7 +15,7 @@ Feature: List search endpoints via the REST API
       And the inflated response should be '3' items long
 
   Scenario: List search indexes when a data bag has been created
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
      When I authenticate as 'bobo'
       And I 'GET' the path '/search'

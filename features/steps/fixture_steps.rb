@@ -242,28 +242,21 @@ Given /^an? '(.+)' named '(.+)'$/ do |stash_name, stash_key|
   @stash[key] = get_fixture(stash_name, stash_key)
 end
 
+Given "I am an administrator" do
+  make_admin
+end
+
+Given "I am a non-admin" do
+  make_non_admin
+end
+
 Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|  
-  @stash[stash_name] = get_fixture(stash_name, stash_key) 
-    
-  if stash_name == 'registration'
-    if stash_key == "bobo"
-      r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
-      r.register("bobo", "#{tmpdir}/bobo.pem")
-      c = Chef::ApiClient.cdb_load("bobo")
-      c.admin(true)
-      c.cdb_save
-      @rest = Chef::REST.new(Chef::Config[:registration_url], 'bobo', "#{tmpdir}/bobo.pem")
-    elsif stash_key == "not_admin"
-      r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
-      r.register("not_admin", "#{tmpdir}/not_admin.pem")
-      c = Chef::ApiClient.cdb_load("not_admin")
-      c.cdb_save
-      @rest = Chef::REST.new(Chef::Config[:registration_url], 'not_admin', "#{tmpdir}/not_admin.pem")
-    end
-  else 
-    if @stash[stash_name].respond_to?(:cdb_save)
-      @stash[stash_name].cdb_save
-    elsif @stash[stash_name].respond_to?(:save)
+  call_as_admin do
+    @stash[stash_name] = get_fixture(stash_name, stash_key)
+
+    #if @stash[stash_name].respond_to?(:cdb_save)
+    #  @stash[stash_name].cdb_save
+    if @stash[stash_name].respond_to?(:save)
       @stash[stash_name].save
     else
       request_path = "/#{stash_name.pluralize}"

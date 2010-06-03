@@ -5,7 +5,7 @@ Feature: Search data via the REST API
   I want to search the objects 
 
   Scenario: Search for objects when none have been created
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
      When I authenticate as 'bobo'
       And I 'GET' the path '/search/users' 
@@ -14,7 +14,7 @@ Feature: Search data via the REST API
       And the inflated responses key 'total' should be the integer '0'
 
   Scenario: Search for objects when one has been created
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
       And I wait for '15' seconds
@@ -26,7 +26,7 @@ Feature: Search data via the REST API
       And the inflated responses key 'total' should be the integer '1' 
 
   Scenario: Search for objects when two have been created
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
       And a 'data_bag_item' named 'axl_rose' exists
@@ -41,7 +41,7 @@ Feature: Search data via the REST API
       And the inflated responses key 'total' should be the integer '2' 
 
   Scenario: Search for objects with a manual ascending sort order 
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
       And a 'data_bag_item' named 'axl_rose' exists
@@ -56,7 +56,7 @@ Feature: Search data via the REST API
       And the inflated responses key 'total' should be the integer '2' 
 
   Scenario: Search for objects with a manual descending sort order 
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
       And a 'data_bag_item' named 'axl_rose' exists
@@ -71,7 +71,7 @@ Feature: Search data via the REST API
       And the inflated responses key 'total' should be the integer '2' 
 
   Scenario: Search for objects and page through the results
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
       And a 'data_bag_item' named 'axl_rose' exists
@@ -91,7 +91,7 @@ Feature: Search data via the REST API
       And the inflated responses key 'total' should be the integer '2'
 
   Scenario: Search for a subset of objects 
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
       And a 'data_bag_item' named 'axl_rose' exists
@@ -104,7 +104,7 @@ Feature: Search data via the REST API
       And the inflated responses key 'total' should be the integer '1' 
 
   Scenario: Search for a node 
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'node' named 'searchman' exists
       And I wait for '15' seconds
      When I authenticate as 'bobo'
@@ -115,7 +115,7 @@ Feature: Search data via the REST API
       And the inflated responses key 'rows' item '0' key 'walking' should be 'tall'
 
   Scenario: Search for a type of object that does not exist 
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
      When I authenticate as 'bobo'
       And I 'GET' the path '/search/funkensteins'
      Then I should get a '404 "Not Found"' exception

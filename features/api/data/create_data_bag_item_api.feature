@@ -5,7 +5,7 @@ Feature: Create a data bag item via the REST API
   I want to store data bag items via the REST API
   
   Scenario: Create a new data bag item
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis'
      When I authenticate as 'bobo'
@@ -13,7 +13,7 @@ Feature: Create a data bag item via the REST API
      Then the inflated responses key 'id' should match '^francis$'
 
   Scenario: Update a data bag item that already exists
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
       And a 'data_bag_item' named 'francis_extra'
@@ -29,9 +29,9 @@ Feature: Create a data bag item via the REST API
      Then I should get a '401 "Unauthorized"' exception
 
   Scenario: Create a new data bag item as a non-admin
-    Given a 'registration' named 'not_admin' exists
+    Given I am a non-admin
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis'
      When I 'PUT' the 'data_bag_item' to the path '/data/users/francis' 
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '403 "Forbidden"' exception
 

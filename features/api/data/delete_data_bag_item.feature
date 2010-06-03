@@ -5,7 +5,7 @@ Feature: Delete a Data Bag Item via the REST API
   I want to delete a Data Bag Item via the REST API
   
   Scenario: Delete a Data Bag Item
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
      When I authenticate as 'bobo'
@@ -13,7 +13,7 @@ Feature: Delete a Data Bag Item via the REST API
      Then the inflated responses key 'id' should match '^francis$'
 
   Scenario: Delete a Data Bag Item that does not exist
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
      When I authenticate as 'bobo'
      When I 'DELETE' the path '/data/users/francis'
@@ -26,9 +26,9 @@ Feature: Delete a Data Bag Item via the REST API
      Then I should get a '401 "Unauthorized"' exception
 
   Scenario: Delete a Data Bag Item as a non-admin
-    Given a 'registration' named 'not_admin' exists
+    Given I am a non-admin
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
      When I 'DELETE' the path '/data/users/francis'
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '403 "Forbidden"' exception
 

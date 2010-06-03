@@ -7,8 +7,8 @@ end
 
 When /^I '([^']*)' (?:to )?the path '([^']*)'$/ do |http_method, request_uri|
   begin
-    self.response = rest.send("#{http_method}_rest".downcase.to_sym, request_uri)
-    self.inflated_response = self.response
+    self.api_response = rest.send("#{http_method}_rest".downcase.to_sym, request_uri)
+    self.inflated_response = self.api_response
   rescue
     Chef::Log.debug("Caught exception in request: #{$!.message}")
     self.exception = $!
@@ -37,8 +37,8 @@ end
 
 When /^I '(.+)' the '(.+)' to the path '(.+)'$/ do |http_method, stash_key, request_uri|
   begin
-    self.response = rest.send("#{http_method.to_s.downcase}_rest".downcase.to_sym, request_uri, stash[stash_key])
-    self.inflated_response = self.response
+    self.api_response = rest.send("#{http_method.to_s.downcase}_rest".downcase.to_sym, request_uri, stash[stash_key])
+    self.inflated_response = self.api_response
   rescue
     self.exception = $!
   end
@@ -105,7 +105,7 @@ end
 # When /^I '(.+)' the path '(.+)'$/ do |http_method, request_uri|
 #   begin
 #     #if http_method.downcase == 'get'
-#     #  self.response = @rest.get_rest(request_uri)
+#     #  self.api_response = @rest.get_rest(request_uri)
 #     #else
 #       #puts "test test test \n\n\n\n\n\n\n"
 #       @response = @rest.send("#{http_method}_rest".downcase.to_sym, request_uri)
@@ -113,9 +113,9 @@ end
 #     puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 #     puts @response
 #     puts @response['content-type']
-#     #puts self.response
-#     #puts self.response.inspect
-#     #self.inflated_response = self.response
+#     #puts self.api_response
+#     #puts self.api_response.inspect
+#     #self.inflated_response = self.api_response
 #     @inflated_response = @response#JSON.parse(response.body.to_s) 
 #     puts "~~~~~~~~INFLATED RESPONSE~~~~~~~~~~~~"
 #     puts @inflated_response
@@ -128,18 +128,18 @@ end
 #   begin
 #     #if http_method.downcase == 'post'
 #     #  puts "post request"
-#     #  self.response = @rest.post_rest(request_uri, @stash[stash_key])
-#     #  puts self.response
+#     #  self.api_response = @rest.post_rest(request_uri, @stash[stash_key])
+#     #  puts self.api_response
 #     #else
 #     puts "This is the request -- @stash[stash_key]:" 
 #     puts @stash[stash_key].to_s
 #     @response = @rest.send("#{http_method}_rest".downcase.to_sym, request_uri, @stash[stash_key])
 #     #end
 #     puts "This is the response:"
-#     #puts self.response.body.to_s
+#     #puts self.api_response.body.to_s
 #     puts @response
 #     #self.inflated_response = response
-#     @inflated_response = @response#JSON.parse(self.response.body.to_s)
+#     @inflated_response = @response#JSON.parse(self.api_response.body.to_s)
 #     puts "~~~~~~~~INFLATED RESPONSE~~~~~~~~~~~~"
 #     puts @inflated_response
 #   rescue

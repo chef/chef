@@ -5,7 +5,7 @@ Feature: Update a node
   I want to update my node via the API 
 
   Scenario Outline: Update a node 
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'node' named 'webserver' exists
       And sending the method '<method>' to the 'node' with '<updated_value>'
      When I 'PUT' the 'node' to the path '/nodes/webserver' 
@@ -20,21 +20,21 @@ Feature: Update a node
       
 
   Scenario: Update a node with a wrong private key
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'node' named 'webserver' exists
       And sending the method 'run_list' to the 'node' with '[ "recipe[one]", "recipe[two]" ]'
      When I 'PUT' the 'node' to the path '/nodes/webserver' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
   Scenario: Update a node when I am not an admin
-    Given a 'registration' named 'not_admin' exists
+    Given I am a non-admin
       And a 'node' named 'webserver' exists
       And sending the method 'run_list' to the 'node' with '[ "recipe[one]", "recipe[two]" ]'
      When I 'PUT' the 'node' to the path '/nodes/webserver'
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '403 "Forbidden"' exception
      
    Scenario: Update a node with a role that does not exist
-     Given a 'registration' named 'bobo' exists
+     Given I am an administrator
        And a 'node' named 'webserver' exists
        And sending the method 'run_list' to the 'node' with '["role[not_exist]"]'
       When I 'PUT' the 'node' to the path '/nodes/webserver' 

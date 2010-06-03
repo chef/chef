@@ -5,19 +5,19 @@ Feature: Show a node via the REST API
   I want to show the details for a specific node
   
   Scenario: Show a node
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'node' named 'webserver' exists
      When I 'GET' the path '/nodes/webserver'
      Then the inflated response should respond to 'name' with 'webserver'
 
   Scenario: Show a missing node
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And there are no nodes 
      When I 'GET' the path '/nodes/bobo'
      Then I should get a '404 "Not Found"' exception
 
   Scenario: Show a node with a wrong private key
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'node' named 'webserver' exists
      When I 'GET' the path '/nodes/webserver' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception

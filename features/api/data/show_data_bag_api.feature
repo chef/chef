@@ -5,14 +5,14 @@ Feature: Show a data_bag via the REST API
   I want to show the details for a specific data_bag
 
   Scenario: Show a data_bag with no entries in it 
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
      When I authenticate as 'bobo'
       And I 'GET' the path '/data/users'
      Then the inflated response should be an empty hash
   
   Scenario: Show a data_bag with one entry in it
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
      When I authenticate as 'bobo'
@@ -20,7 +20,7 @@ Feature: Show a data_bag via the REST API
      Then the inflated responses key 'francis' should match '/data/users/francis'
 
   Scenario: Show a data_bag with two entries in it
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
       And a 'data_bag_item' named 'axl_rose' exists
@@ -30,7 +30,7 @@ Feature: Show a data_bag via the REST API
       And the inflated responses key 'axl_rose' should match '/data/users/axl_rose'
 
   Scenario: Show a missing data_bag
-    Given a 'registration' named 'bobo' exists
+    Given I am an administrator
       And there are no data_bags 
      When I authenticate as 'bobo'
       And I 'GET' the path '/data/users'
