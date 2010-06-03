@@ -37,7 +37,7 @@ end
 
 Before do
   save_cookbook_path = Chef::Config[:cookbook_path]
-  FileUtils.mkdir "#{datadir}/cookbooks_not_uploaded_at_feature_start/testcookbook_invalid_empty" unless Dir["#{datadir}/cookbooks_not_uploaded_at_feature_start/testcookbook_invalid_empty"]
+  FileUtils.mkdir "#{datadir}/cookbooks_not_uploaded_at_feature_start/testcookbook_invalid_empty" unless File.exist?("#{datadir}/cookbooks_not_uploaded_at_feature_start/testcookbook_invalid_empty")
   Chef::Config[:cookbook_path] = File.join(datadir, "cookbooks_not_uploaded_at_feature_start")
   Chef::Cookbook::FileVendor.on_create {|manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
   @cookbook_loader_not_uploaded_at_feature_start = Chef::CookbookLoader.new
