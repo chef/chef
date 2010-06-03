@@ -94,9 +94,6 @@ end
 # Cookbook upload/download-specific steps
 #####
 
-require 'chef/streaming_cookbook_uploader'
-
-
 When /^I create a versioned cookbook(?: named '(.*?)')?(?: versioned '(.*?)')? with '(.*?)'$/ do |request_name, request_version, cookbook_name|
   cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
   raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless cookbook

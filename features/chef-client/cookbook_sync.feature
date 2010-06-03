@@ -41,3 +41,12 @@ Feature: Synchronize cookbooks from the server
      Then the run should exit '0'
       And 'stdout' should have 'INFO: Removing cookbooks/synchronize_deps/recipes/default.rb from the cache; its cookbook is no longer needed on this client.'
 
+  Scenario: Try to download a cookbook that depends on a non-existent cookbook
+    Given I am an administrator
+      And I fully upload a sandboxed cookbook named 'testcookbook_wrong_metadata' versioned '0.1.0' with 'testcookbook_wrong_metadata'
+      And a validated node
+      And it includes the recipe 'testcookbook_wrong_metadata'
+     When I run the chef-client with '-l debug'
+     Then the run should exit '1'
+      And 'stdout' should have '412 Precondition Failed: cookbook testcookbook_wrong_metadata depends on cookbook no_such_cookbook, but no_such_cookbook does not exist'
+
