@@ -7,7 +7,14 @@ Then /^I should not get an exception$/ do
 end
 
 Then /^the response code should be '(.+)'$/ do |response_code|
-  self.response.status.should == response_code.to_i
+  case response_code.to_i
+    when 200
+      self.response.code.should == 200
+    when 400
+      Then "I should get a 'Bad Request' exception"
+    when 404
+      Then "I should get a 'RestClient::ResourceNotFound' exception"
+  end
 end
 
 Then /^the inflated responses key '(.+)' should be the integer '(\d+)'$/ do |key, int|
@@ -127,11 +134,11 @@ Then /^the inflated response should respond to '(.+)' with '(.+)'$/ do |method, 
   to_match = JSON.parse(to_match) if to_match =~ /^\[|\{/
   to_match = true if to_match == 'true'
   to_match = false if to_match == 'false'
-  self.inflated_response.send(method.to_sym).should == to_match 
+  self.inflated_response.to_hash[method].should == to_match 
 end
 
 Then /^the inflated response should respond to '(.+)' and match '(.+)'$/ do |method, to_match|
-  self.inflated_response.send(method.to_sym).should == to_match 
+  self.inflated_response.to_hash[method].should == to_match
 end
 
 

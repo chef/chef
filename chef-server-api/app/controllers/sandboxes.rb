@@ -91,23 +91,23 @@ class Sandboxes < Application
     sandbox_guid = params[:sandbox_id]
     checksum = params[:checksum]
     
-    raise BadRequest, "missing required parameter: file" unless params[:file]
-    raise BadRequest, "missing required parameter: file[:tempfile]" unless params[:file][:tempfile]
-    
     existing_sandbox = Chef::Sandbox.cdb_load(sandbox_guid)
-    raise NotFound, "cannot find sandbox with guid #{sandbox_guid}" unless existing_sandbox
-    
+    raise NotFound, "cannot find sandbox with guid #{sandbox_guid}" unless existing_sandbox  
     raise NotFound, "checksum #{checksum} isn't a part of sandbox #{sandbox_guid}" unless existing_sandbox.checksums.member?(checksum)
 
-    src = params[:file][:tempfile].path
+    Tempfile.open("sandbox") do |src|
+      src.write(self.request.env["rack.input"].string) 
+      src.close
 
-    observed_checksum = Chef::Cache::Checksum.generate_md5_checksum_for_file(src)
-    raise BadRequest, "Checksum did not match: expected #{checksum}, observed #{observed_checksum}" unless observed_checksum == checksum
+      observed_checksum = Chef::Cache::Checksum.generate_md5_checksum_for_file(src.path)
+      
+      raise BadRequest, "Checksum did not match: expected #{checksum}, observed #{observed_checksum}" unless observed_checksum == checksum
     
-    dest = sandbox_checksum_location(sandbox_guid, checksum)
-    Chef::Log.info("upload_checksum: move #{src} to #{dest}")
-    FileUtils.mv(src, dest)
-
+      dest = sandbox_checksum_location(sandbox_guid, checksum)
+      Chef::Log.info("upload_checksum: move #{src} to #{dest}")
+      FileUtils.mv(src.path, dest)
+    end
+    
     url = absolute_url(:sandbox_checksum, :sandbox_id => sandbox_guid, :checksum => checksum)
     result = { 'uri' => url }
     display result

@@ -1,19 +1,33 @@
 # Upload the given file to the sandbox which was created by 'when I create a
 # sandbox named'
-def upload_to_sandbox(sandbox_filename)
-  sandbox_file_checksum = Chef::CookbookVersion.checksum_cookbook_file(sandbox_filename)
-
-  url = "#{self.sandbox_url}/#{sandbox_file_checksum}"
-  File.open(sandbox_filename, "r") do |sandbox_file|
-    payload = {
-      :name => sandbox_filename,
-      :file => sandbox_file,
-    }
-    
-    self.exception = nil
-    self.response = Chef::StreamingCookbookUploader.put(url, rest.client_name, rest.signing_key_filename, payload)
-    self.inflated_response = JSON.parse(self.response.to_s)
-  end
+def upload_to_sandbox(sandbox_filename, sandbox_file_checksum, url)
+  
+  checksum64 = Base64.encode64([sandbox_file_checksum].pack("H*")).strip
+  timestamp = Time.now.utc.iso8601
+  file_contents = File.read(sandbox_filename)
+  # TODO - 5/28/2010, cw: make signing and sending the request streaming
+  sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
+                                                                     :http_method => :put,
+                                                                     :path => URI.parse(url).path,
+                                                                     :body => file_contents,
+                                                                     :timestamp => timestamp,
+                                                                     :user_id => rest.client_name
+                                                                     )
+  headers = { 
+    'content-type' => 'application/x-binary', 
+    'content-md5' => checksum64, 
+    :accept => 'application/json'
+  }
+  headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
+  
+  self.response = RestClient::Request.execute(
+    :method => :put, 
+    :url => url, 
+    :headers => headers, 
+    :payload => file_contents
+  )
+  self.inflated_response = JSON.parse(self.response)
+  
 end
   
 
@@ -60,7 +74,10 @@ Then /^I upload a file named '([^\']+)' to the sandbox$/ do |stash_sandbox_filen
     sandbox_filename = get_fixture('sandbox_file', stash_sandbox_filename)
     raise "no such stash_sandbox_filename in fixtures: #{stash_sandbox_filename}" unless sandbox_filename
     
-    upload_to_sandbox(sandbox_filename)
+    sandbox_file_checksum = Chef::CookbookVersion.checksum_cookbook_file(sandbox_filename)
+    url = "#{self.sandbox_url}/#{sandbox_file_checksum}"
+    
+    upload_to_sandbox(sandbox_filename, sandbox_file_checksum, url)
   rescue
     Chef::Log.debug("Caught exception in sandbox checksum upload (PUT) request: #{$!.message}: #{$!.backtrace.join("\n")}")
     self.exception = $!
@@ -81,15 +98,7 @@ Then /^I upload a file named '([^\']+)' using the checksum of '(.+)' to the sand
     use_checksum = Chef::CookbookVersion.checksum_cookbook_file(sandbox_checksum_filename)
     url = "#{self.sandbox_url}/#{use_checksum}"
     
-    File.open(sandbox_upload_filename, "r") do |file_to_upload|
-      payload = {
-        :name => stash_upload_filename,
-        :file => file_to_upload
-      }
-      self.exception = nil
-      self.response = Chef::StreamingCookbookUploader.put(url, rest.client_name, rest.signing_key_filename, payload)
-      self.inflated_response = JSON.parse(self.response.to_s)
-    end
+    upload_to_sandbox(sandbox_upload_filename, use_checksum, url)
   rescue
     Chef::Log.debug("Caught exception in bad sandbox checksum upload (PUT) request: #{$!.message}: #{$!.backtrace.join("\n")}")
     self.exception = $!

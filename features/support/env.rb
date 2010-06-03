@@ -43,6 +43,7 @@ require 'chef/mixin/shell_out'
 require 'tmpdir'
 require 'chef/streaming_cookbook_uploader'
 require 'webrick'
+require 'restclient'
 
 include Chef::Mixin::ShellOut
 
