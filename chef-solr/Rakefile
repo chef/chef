@@ -22,6 +22,8 @@ require 'rubygems'
 require 'rake'
 require 'rake/gempackagetask'
 
+GEM_NAME = "chef-solr"
+
 spec = Gem::Specification.new do |gem|
   gem.name = "chef-solr"
   gem.version = Chef::Solr::VERSION
@@ -45,30 +47,25 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-# begin
-#   require 'jeweler'
-#   Jeweler::Tasks.new do |gem|
-#     gem.name = "chef-solr"
-#     gem.summary = %Q{Search indexing for Chef}
-#     gem.email = "adam@opscode.com"
-#     gem.homepage = "http://wiki.opscode.com/display/chef"
-#     gem.authors = ["Adam Jacob"]
-#     gem.add_dependency "libxml-ruby", ">=1.1.3"
-#     gem.add_dependency "uuidtools", ">=2.0.0"
-#     gem.add_dependency "chef", Chef::Solr::VERSION
-#     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-#     gem.executables = [ 'chef-solr', 'chef-solr-indexer', 'chef-solr-rebuild' ]
-#     gem.files = [
-#       "README.rdoc",
-#       "Rakefile"
-#     ]
-#     gem.files.include %w{ README.rdoc Rakefile VERSION bin/* lib/**/* solr/* spec/**/* }
-#   end
-# 
-# rescue LoadError
-#   puts "Jeweler (or a dependency) not available. Install it from gemcutter with: sudo gem install gemcutter jeweler"
-# end
-# 
+desc "Install the gem"
+task :install => :package do
+  sh %{gem install pkg/#{GEM_NAME}-#{Chef::Solr::VERSION} --no-rdoc --no-ri}
+end
+
+desc "Uninstall the gem"
+task :uninstall do
+  sh %{gem uninstall #{GEM_NAME} -x -v #{Chef::Solr::VERSION} }
+end
+
+desc "Create a gemspec file"
+task :gemspec do
+  File.open("#{GEM_NAME}.gemspec", "w") do |file|
+    file.puts spec.to_ruby
+  end
+end
+
+
+
 begin
   require 'spec/rake/spectask'
   Spec::Rake::SpecTask.new(:spec) do |spec|

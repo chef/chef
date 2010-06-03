@@ -7,7 +7,6 @@ require 'merb-core'
 require 'merb-core/tasks/merb'
 
 GEM_NAME = "chef-server-webui"
-CHEF_SERVER_VERSION="0.9.0.a1"
 AUTHOR = "Opscode"
 EMAIL = "chef@opscode.com"
 HOMEPAGE = "http://wiki.opscode.com/display/chef"
@@ -15,7 +14,7 @@ SUMMARY = "A systems integration framework, built to bring the benefits of confi
 
 spec = Gem::Specification.new do |s|
   s.name = GEM_NAME
-  s.version = CHEF_SERVER_VERSION
+  s.version = ChefServerWebui::VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README.rdoc", "LICENSE" ]
@@ -49,12 +48,12 @@ end
 
 desc "Install the gem"
 task :install => :package do
-  sh %{gem install pkg/#{GEM_NAME}-#{CHEF_SERVER_VERSION} --no-rdoc --no-ri}
+  sh %{gem install pkg/#{GEM_NAME}-#{ChefServerWebui::VERSION} --no-rdoc --no-ri}
 end
 
 desc "Uninstall the gem"
 task :uninstall do
-  sh %{gem uninstall #{GEM_NAME} -x -v #{CHEF_SERVER_VERSION} }
+  sh %{gem uninstall #{GEM_NAME} -x -v #{ChefServerWebui::VERSION} }
 end
 
 desc "Create a gemspec file"
