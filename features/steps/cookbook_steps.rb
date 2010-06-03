@@ -238,7 +238,7 @@ Then /the downloaded cookbook manifest contents should match '(.+)'$/ do |cookbo
   Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
     next unless downloaded_cookbook_manifest[segment]
     downloaded_cookbook_manifest[segment].each do |downloaded_manifest_record|
-      downloaded_manifest_record.delete("uri")
+      downloaded_manifest_record.delete("url")
     end
   end
   
@@ -274,13 +274,15 @@ When /I download the file '([^\']+)' from the downloaded cookbook manifest/ do |
   begin
     cookbook_name = @downloaded_cookbook.name
     cookbook_version = @downloaded_cookbook.version
+
     checksum = found_manifest_record[:checksum]
     
     self.api_response = nil
     self.inflated_response = nil
     self.exception = nil
-    
-    downloaded_cookbook_file = rest.get_rest("/cookbooks/#{cookbook_name}/#{cookbook_version}/files/#{checksum}", true)
+
+    url = found_manifest_record[:url]
+    downloaded_cookbook_file = rest.get_rest(url, true)
     @downloaded_cookbook_file_contents = IO.read(downloaded_cookbook_file.path)
   rescue
     self.exception = $!
