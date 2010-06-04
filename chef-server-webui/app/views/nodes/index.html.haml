@@ -21,5 +21,5 @@
                   = link_to('Edit', url(:edit_node, node)) 
                   |
                   = link_to('Delete', url(:node, node), :method => "delete", :confirm => "Really delete Node #{node}?  There is no undo.")
-                - even ? even = false: even = true
+                - even = (not even)
 

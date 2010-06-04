@@ -13,9 +13,9 @@
           - even = false;
           - @clients_list.each do |client|
             %tr{ :class => even ? "even" : "odd" }
-              %td{:colspan => 2}= link_to(client, slice_url(:client, client))
+              %td{:colspan => 2}= link_to(client, url(:client, client))
               %td
                 = link_to('Edit', url(:edit_client, client)) 
                 |
                 = link_to('Delete', url(:client, client), :method => "delete", :confirm => "Really delete Role #{client}?  there is no undo.")
-              - even ? even = false: even = true
+              - even = (not even)

@@ -16,20 +16,24 @@
 # limitations under the License.
 #
 
-module Merb
-  module ChefServerWebui
+# Possibly Dead Code. To revive it, move the GlobalHelpers module into the
+# Merb namespace
 
-    module GlobalHelpers
-      # helpers defined here available to all views.
-      def resource_collection(collection)
-        html = "<ul>"
-        collection.each do |resource|
-          html << "<li><b>#{resource.class}</b></li>"
-        end
-        html << "</ul>"
-        html
-      end
-
-    end
-  end
-end
+# module Merb
+#   module ChefServerWebui
+# 
+#     module GlobalHelpers
+#       # helpers defined here available to all views.
+#       def resource_collection(collection)
+#         html = "<ul>"
+#         collection.each do |resource|
+#           html << "<li><b>#{resource.class}</b></li>"
+#         end
+#         html << "</ul>"
+#         html
+#       end
+# 
+#     end
+#   end
+# end
+# 

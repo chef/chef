@@ -20,12 +20,11 @@
                   %tr
                     %td{:colspan => 2} This role does not include any roles or recipes.
                 - else
-                  -@role.run_list.each_index do |i|
-                    - type, name, fname = @role.run_list.parse_entry(@role.run_list[i])
+                  -@role.run_list.each_with_index do |run_list_item, i|
                     %tr
                       %td.position= i
-                      %td= name 
-                      %td= type 
+                      %td= run_list_item.name 
+                      %td= run_list_item.type 
           .left.accordion
             %h3.head= link_to("Recipes", "#")
             - full_recipe_list, default_attrs, override_attrs = @role.run_list.expand()

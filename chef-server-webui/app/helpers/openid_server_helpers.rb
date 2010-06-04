@@ -16,14 +16,17 @@
 # limitations under the License.
 #
 
-module Merb
-  module ChefServerWebui
-    module OpenidServerHelper
-      
-      def url_for_user
-        url(:openid_node, :username => session[:username])
-      end
+# possibly dead code.
 
-    end
-  end
-end
+# module Merb
+#   module ChefServerWebui
+#     module OpenidServerHelper
+#       
+#       def url_for_user
+#         url(:openid_node, :username => session[:username])
+#       end
+# 
+#     end
+#   end
+# end
+# 
