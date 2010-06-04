@@ -18,9 +18,16 @@
 require 'chef' / 'node'
 
 module Merb
-  module ChefServerWebui
-    module StatusHelper
+  module StatusHelper
+    def time_difference_in_hms(unix_time)
+      now = Time.now.to_i
+      difference = now - unix_time.to_i
+      hours = (difference / 3600).to_i
+      difference = difference % 3600
+      minutes = (difference / 60).to_i
+      seconds = (difference % 60)
+      return [hours, minutes, seconds]
     end
-
+    
   end
 end
