@@ -727,7 +727,7 @@ class Chef
     def self.cdb_load(name, version='latest', couchdb=nil)
       cdb = couchdb || Chef::CouchDB.new
       if version == "latest" || version == "_latest"
-        rs = cdb.get_view("cookbook_versions", "all_latest_version", :key => name, :descending => true, :group => true, :reduce => true)["rows"].first
+        rs = cdb.get_view("cookbooks", "all_latest_version", :key => name, :descending => true, :group => true, :reduce => true)["rows"].first
         cdb.load("cookbook_version", "#{rs["key"]}-#{rs["value"]}")
       else
         cdb.load("cookbook_version", "#{name}-#{version}")
