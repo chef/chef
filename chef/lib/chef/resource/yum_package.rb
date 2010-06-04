@@ -29,6 +29,15 @@ class Chef
         @provider = Chef::Provider::Package::Yum
       end
       
+      # Install a specific arch
+      def arch(arg=nil)
+        set_or_return(
+          :arch,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
     end
   end
 end
