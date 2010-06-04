@@ -17,12 +17,11 @@
                   %tr
                     %td{:colspan => 2} This node has no roles or recipes applied.
                 - else
-                  -@node.run_list.each_index do |i|
-                    - type, name, fname = @node.run_list.parse_entry(@node.run_list[i])
+                  -@node.run_list.each_with_index do |run_list_item, i|
                     %tr
                       %td.position= i
-                      %td= name 
-                      %td= type 
+                      %td= run_list_item.name
+                      %td= run_list_item.type
           .left.accordion
             %h3.head= link_to("Recipes", "#")
             - full_recipe_list, default_attrs, override_attrs = @node.run_list.expand()

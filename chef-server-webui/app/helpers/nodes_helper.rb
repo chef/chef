@@ -17,25 +17,27 @@
 # limitations under the License.
 #
 
-module Merb
-  module ChefServerWebui
-    module NodesHelper
-      def recipe_list(node)
-        response = ""
-        node.recipes.each do |recipe|
-          response << "<li>#{recipe}</li>\n"
-        end
-        response
-      end
-
-      def attribute_list(node)
-        response = ""
-        node.each_attribute do |k,v|
-          response << "<li><b>#{k}</b>: #{v}</li>\n"
-        end
-        response
-      end
-      
-    end
-  end
-end
+# Possibly dead code. to revive it, move NodesHelper into the Merb namespace.
+# module Merb
+#   module ChefServerWebui
+#     module NodesHelper
+#       def recipe_list(node)
+#         response = ""
+#         node.recipes.each do |recipe|
+#           response << "<li>#{recipe}</li>\n"
+#         end
+#         response
+#       end
+# 
+#       def attribute_list(node)
+#         response = ""
+#         node.each_attribute do |k,v|
+#           response << "<li><b>#{k}</b>: #{v}</li>\n"
+#         end
+#         response
+#       end
+#       
+#     end
+#   end
+# end
+# 
