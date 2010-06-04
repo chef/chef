@@ -37,4 +37,13 @@ describe Chef::Resource::YumPackage, "initialize" do
   end
 end
 
+describe Chef::Resource::YumPackage, "arch" do
+  before(:each) do
+    @resource = Chef::Resource::YumPackage.new("foo")
+  end
 
+  it "should set the arch variable to whatever is passed in" do
+    @resource.arch("i386")
+    @resource.arch.should eql("i386")
+  end
+end
