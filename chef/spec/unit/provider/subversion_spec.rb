@@ -26,6 +26,8 @@ describe Chef::Provider::Subversion do
     @resource.repository "http://svn.example.org/trunk/"
     @resource.destination "/my/deploy/dir"
     @resource.revision "12345"
+    @resource.svn_arguments(false)
+    @resource.svn_info_args(false)
     @node = Chef::Node.new
     @run_context = Chef::RunContext.new(@node, {})
     @provider = Chef::Provider::Subversion.new(@resource, @run_context)

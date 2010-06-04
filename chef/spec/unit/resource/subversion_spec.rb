@@ -36,5 +36,23 @@ describe Chef::Resource::Subversion do
   it "allows the force_export action" do
     @svn.allowed_actions.should include(:force_export)
   end
-  
+
+  it "sets svn info arguments to --no-auth-cache by default" do
+    @svn.svn_info_args.should == '--no-auth-cache'
+  end
+
+  it "resets svn info arguments to nil when given false in the setter" do
+    @svn.svn_info_args(false)
+    @svn.svn_info_args.should be_nil
+  end
+
+  it "sets svn arguments to --no-auth-cache by default" do
+    @svn.svn_arguments.should == '--no-auth-cache'
+  end
+
+  it "resets svn arguments to nil when given false in the setter" do
+    @svn.svn_arguments(false)
+    @svn.svn_arguments.should be_nil
+  end
+
 end
