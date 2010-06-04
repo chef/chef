@@ -339,6 +339,7 @@ class Chef
       headers                 = @default_headers.merge(headers)
       headers['Accept']       = "application/json" unless raw
       headers["Content-Type"] = 'application/json' if json_body
+      headers['Content-Length'] = json_body.bytesize.to_s if json_body
       headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
       headers
     end

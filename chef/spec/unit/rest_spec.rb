@@ -169,7 +169,7 @@ describe Chef::REST do
         request = Net::HTTP::Post.new(@url.path)
 
         Net::HTTP::Post.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION }
+          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION, "Content-Length" => '13' }
         ).and_return(request)
         @rest.run_request(:POST, @url, {}, {:one=>:two})
         request.body.should == '{"one":"two"}'
@@ -178,7 +178,7 @@ describe Chef::REST do
       it "should build a new HTTP PUT request" do
         request = Net::HTTP::Put.new(@url.path)
         Net::HTTP::Put.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION }
+          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION, 'Content-Length' => '13' }
         ).and_return(request)
         @rest.run_request(:PUT, @url, {}, {:one=>:two})
         request.body.should == '{"one":"two"}'
@@ -326,7 +326,7 @@ describe Chef::REST do
         request = Net::HTTP::Post.new(@url.path)
 
         Net::HTTP::Post.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION }
+          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION, 'Content-Length' => '13' }
         ).and_return(request)
         @rest.api_request(:POST, @url, {}, {:one=>:two})
         request.body.should == '{"one":"two"}'
@@ -335,7 +335,7 @@ describe Chef::REST do
       it "should build a new HTTP PUT request" do
         request = Net::HTTP::Put.new(@url.path)
         Net::HTTP::Put.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION }
+          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION, 'Content-Length' => '13' }
         ).and_return(request)
         @rest.api_request(:PUT, @url, {}, {:one=>:two})
         request.body.should == '{"one":"two"}'
