@@ -1,14 +1,5 @@
 
 version "1.0"
-maintainer "Bobo T. Clown"
-maintainer_email "bobo@example.com"
-long_description "I have a long arm!"
-supports :ubuntu, ">> 8.04"
-depends "bobo", "= 1.0"
-depends "bobotclown", "= 1.1"
-recommends "snark", "<< 3.0"
-suggests "kindness", ">> 2.0", "<< 4.0"
-conflicts "hatred"
-provides "foo(:bar, :baz)"
-replaces "snarkitron"
-
+maintainer "opscode"
+maintainer_email "donotreply@opscode.com"
+long_description "excercise the execute provider"
