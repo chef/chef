@@ -583,9 +583,9 @@ class Chef
       rendered_manifest = manifest.dup
       COOKBOOK_SEGMENTS.each do |segment|
         if rendered_manifest.has_key?(segment)
-          rendered_manifest[segment].each do |segment_file|
-            url_options = { :cookbook_name => name.to_s, :cookbook_version => version, :checksum => segment_file["checksum"] }
-            segment_file["uri"] = url_generator.call(url_options)
+          rendered_manifest[segment].each do |manifest_record|
+            url_options = { :cookbook_name => name.to_s, :cookbook_version => version, :checksum => manifest_record["checksum"] }
+            manifest_record["url"] = url_generator.call(url_options)
           end
         end
       end

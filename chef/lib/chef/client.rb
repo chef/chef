@@ -240,10 +240,8 @@ class Chef
           # (remote, per manifest), do the update. This will also execute if there
           # is no current checksum.
           if current_checksum != manifest_record['checksum']
-            url = "/cookbooks/#{cookbook.name}/#{cookbook.version}/files/#{manifest_record['checksum']}"
-
-            raw_file = rest.get_rest(url, true)
-
+            raw_file = rest.get_rest(manifest_record[:url], true)
+            
             Chef::Log.info("Storing updated #{cache_filename} in the cache.")
             Chef::FileCache.move_to(raw_file.path, cache_filename)
           else

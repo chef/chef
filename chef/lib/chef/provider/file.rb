@@ -20,7 +20,6 @@ require 'chef/config'
 require 'chef/log'
 require 'chef/resource/file'
 require 'chef/mixin/checksum'
-require 'chef/mixin/generate_url'
 require 'chef/provider'
 require 'etc'
 require 'fileutils'
@@ -29,7 +28,6 @@ class Chef
   class Provider
     class File < Chef::Provider
       include Chef::Mixin::Checksum
-      include Chef::Mixin::GenerateURL
 
       def negative_complement(big)
         if big > 1073741823 # Fixnum max
@@ -202,11 +200,6 @@ class Chef
             end
           end
         end
-      end
-
-      def generate_url(url, type, args=nil)
-        cookbook_name = (@new_resource.respond_to?(:cookbook) && @new_resource.cookbook) ? @new_resource.cookbook : @new_resource.cookbook_name
-        generate_cookbook_url(url, cookbook_name, type, @node, args)
       end
 
       private

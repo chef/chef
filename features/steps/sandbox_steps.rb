@@ -1,9 +1,8 @@
+require 'chef/sandbox'
+
 # Upload the given file to the sandbox which was created by 'when I create a
 # sandbox named'
-def upload_to_sandbox(sandbox_filename, sandbox_file_checksum=nil, url=nil)
-  
-  sandbox_file_checksum ||= Chef::CookbookVersion.checksum_cookbook_file(sandbox_filename)
-  url ||= "#{self.sandbox_url}/#{sandbox_file_checksum}"
+def upload_to_sandbox(sandbox_filename, sandbox_file_checksum, url)
   
   checksum64 = Base64.encode64([sandbox_file_checksum].pack("H*")).strip
   timestamp = Time.now.utc.iso8601
@@ -22,14 +21,17 @@ def upload_to_sandbox(sandbox_filename, sandbox_file_checksum=nil, url=nil)
     :accept => 'application/json'
   }
   headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
-  
+
+  # Don't set inflated_response as S3 (for the Platform) doesn't return JSON.
+  # Only Open Source does.
+  self.inflated_response = nil
+  self.exception = nil
   self.api_response = RestClient::Request.execute(
     :method => :put, 
     :url => url, 
     :headers => headers, 
     :payload => file_contents
   )
-  self.inflated_response = JSON.parse(self.api_response)
 end
   
 
@@ -44,7 +46,7 @@ When /^I create a sandbox named '([^\']+)'$/ do |sandbox_name|
     self.exception = nil
     self.inflated_response = rest.post_rest('/sandboxes', sandbox)
     self.sandbox_url = self.inflated_response['uri']
-    
+        
     @stash['sandbox_response'] = self.inflated_response
   rescue
     Chef::Log.debug("Caught exception in sandbox create (POST) request: #{$!.message}: #{$!.backtrace.join("\n")}")
@@ -76,7 +78,10 @@ Then /^I upload a file named '([^\']+)' to the sandbox$/ do |stash_sandbox_filen
     sandbox_filename = get_fixture('sandbox_file', stash_sandbox_filename)
     raise "no such stash_sandbox_filename in fixtures: #{stash_sandbox_filename}" unless sandbox_filename
     
-    upload_to_sandbox(sandbox_filename)
+    sandbox_file_checksum = Chef::CookbookVersion.checksum_cookbook_file(sandbox_filename)
+    url = @stash['sandbox_response']['checksums'][manifest_record[:checksum]]['url']
+    
+    upload_to_sandbox(sandbox_filename, sandbox_file_checksum, url)
   rescue
     Chef::Log.debug("Caught exception in sandbox checksum upload (PUT) request: #{$!.message}: #{$!.backtrace.join("\n")}")
     self.exception = $!
@@ -95,8 +100,9 @@ Then /^I upload a file named '([^\']+)' using the checksum of '(.+)' to the sand
     raise "no such stash_checksum_filename in fixtures: #{stash_checksum_filename}" unless stash_checksum_filename
     
     use_checksum = Chef::CookbookVersion.checksum_cookbook_file(sandbox_checksum_filename)
+    url = @stash['sandbox_response']['checksums'][manifest_record[:checksum]]['url']
     
-    upload_to_sandbox(sandbox_upload_filename, use_checksum)
+    upload_to_sandbox(sandbox_upload_filename, use_checksum, url)
   rescue
     Chef::Log.debug("Caught exception in bad sandbox checksum upload (PUT) request: #{$!.message}: #{$!.backtrace.join("\n")}")
     self.exception = $!

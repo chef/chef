@@ -76,7 +76,7 @@ class Chef
             Chef::Log.debug("Downloading #{segment_file['path']} to #{dest}")
             FileUtils.mkdir_p(File.dirname(dest))
             rest.sign_on_redirect = false
-            tempfile = rest.get_rest(segment_file['uri'], true)
+            tempfile = rest.get_rest(segment_file['url'], true)
             FileUtils.mv(tempfile.path, dest)
           end
         end
