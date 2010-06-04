@@ -22,13 +22,13 @@ require 'chef/provider/package/yum'
 class Chef
   class Resource
     class YumPackage < Chef::Resource::Package
-      
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :yum_package
         @provider = Chef::Provider::Package::Yum
       end
-      
+
       # Install a specific arch
       def arch(arg=nil)
         set_or_return(
@@ -41,5 +41,3 @@ class Chef
     end
   end
 end
-
-

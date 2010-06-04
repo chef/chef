@@ -24,8 +24,8 @@ require 'singleton'
 class Chef
   class Provider
     class Package
-      class Yum < Chef::Provider::Package  
-      
+      class Yum < Chef::Provider::Package
+
         class YumCache
           include Chef::Mixin::Command
           include Singleton
@@ -156,19 +156,19 @@ class Chef
           end
 
           Chef::Log.debug("Checking yum info for #{@new_resource.package_name}#{yum_arch}")
-    
+
           @yum.refresh
 
           installed_version = @yum.installed_version(@new_resource.package_name, arch)
           @candidate_version = @yum.candidate_version(@new_resource.package_name, arch)
-          
+
           @current_resource.version(installed_version)
           if candidate_version
             @candidate_version = candidate_version
           else
             @candidate_version = installed_version
           end
-        
+
           @current_resource
         end
 
@@ -184,7 +184,7 @@ class Chef
           end
           @yum.flush
         end
-      
+
         def upgrade_package(name, version)
           # If we're not given a version, running update is the correct
           # option. If we are, then running install_package is right.
@@ -211,11 +211,11 @@ class Chef
             
           @yum.flush
         end
-      
+
         def purge_package(name, version)
           remove_package(name, version)
         end
-      
+
       end
     end
   end
