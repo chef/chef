@@ -40,14 +40,15 @@ class Chef
         index = Chef::Solr::Index.new
         Chef::Log.debug("Dequeued item for indexing: #{payload.inspect}")
 
-        response = begin
-                     pitem = payload["item"].to_hash                  
-                     generate_response { index.add(payload["id"], payload["database"], payload["type"], pitem) }                  
-                   rescue NoMethodError
-                     generate_response() { raise ArgumentError, "Payload item does not respond to :keys or :to_hash, cannot index!" }
-                   end
+        begin
+          pitem = payload["item"].to_hash                  
+          response = generate_response { index.add(payload["id"], payload["database"], payload["type"], pitem) }                  
+        rescue NoMethodError
+          response = generate_response() { raise ArgumentError, "Payload item does not respond to :keys or :to_hash, cannot index!" }
+        end
         
-        Chef::Log.info("Indexing #{payload["type"]} #{payload["id"]} from #{payload["database"]} status #{response[:status]}#{response[:status] == :error ? ' ' + response[:error] : ''}")
+        msg = "Indexing #{payload["type"]} #{payload["id"]} from #{payload["database"]} status #{status_message(response)}}"
+        Chef::Log.info(msg)
         response 
       end
 
@@ -58,18 +59,25 @@ class Chef
       end
       
       private
-        def generate_response(&block)
-          response = {}
-          begin
-            block.call
-          rescue
-            response[:status] = :error
-            response[:error] = $!
-          else
-            response[:status] = :ok
-          end
-          response
+
+      def generate_response(&block)
+        response = {}
+        begin
+          block.call
+        rescue => e
+          response[:status] = :error
+          response[:error] = e
+        else
+          response[:status] = :ok
         end
+        response
+      end
+
+      def status_message(response)
+        msg = response[:status].to_s
+        msg << ' ' + response[:error].to_s if response[:status] == :error
+        msg
+      end
 
     end
   end
