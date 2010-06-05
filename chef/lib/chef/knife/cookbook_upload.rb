@@ -29,6 +29,7 @@ require 'chef/cookbook/file_system_file_vendor'
 class Chef
   class Knife
     class CookbookUpload < Knife
+      include Chef::Mixin::ShellOut
 
       banner "Sub-Command: cookbook upload [COOKBOOKS...] (options)"
 
@@ -59,23 +60,29 @@ class Chef
             upload_cookbook(cookbook)
           end
         else
-          @name_args.each{|cookbook_name| upload_cookbook(cl[cookbook_name]) }
+          @name_args.each do |cookbook_name|
+            if cl.cookbook_exists?(cookbook_name)
+              upload_cookbook(cl[cookbook_name])
+            else
+              Chef::Log.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
+            end
+          end
         end
       end
       
       def test_ruby(cookbook_dir)
         Chef::Log.info("Validating ruby files")
         Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
-          Chef::Log.info("Testing #{ruby_file} for syntax errors...")
-          Chef::Mixin::Command.run_command(:command => "ruby -c #{ruby_file}")
+          Chef::Log.debug("Testing #{ruby_file} for syntax errors...")
+          shell_out!("ruby -c #{ruby_file}")
         end
       end
       
       def test_templates(cookbook_dir)
         Chef::Log.info("Validating templates")
         Dir[File.join(cookbook_dir, '**', '*.erb')].each do |erb_file|
-          Chef::Log.info("Testing template #{erb_file} for syntax errors...")
-          Chef::Mixin::Command.run_command(:command => "sh -c 'erubis -x #{erb_file} | ruby -c'")
+          Chef::Log.debug("Testing template #{erb_file} for syntax errors...")
+          shell_out!("sh -c 'erubis -x #{erb_file} | ruby -c'")
         end
       end
       
