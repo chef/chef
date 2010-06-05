@@ -1,34 +1,20 @@
-
-##
-# Sandboxes upload checksum
-##
-# sandbox_guid = params[:sandbox_id]
-# checksum = params[:checksum]
+#
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 # 
-# existing_sandbox = Chef::Sandbox.cdb_load(sandbox_guid)
-# raise NotFound, "cannot find sandbox with guid #{sandbox_guid}" unless existing_sandbox  
-# raise NotFound, "checksum #{checksum} isn't a part of sandbox #{sandbox_guid}" unless existing_sandbox.checksums.member?(checksum)
+#     http://www.apache.org/licenses/LICENSE-2.0
 # 
-# Tempfile.open("sandbox") do |src|
-#   rack_input = self.request.env["rack.input"]
-#   Chef::Log.debug("Processing rack input: #{rack_input.inspect}")
-#   
-#   src.write(rack_input.string) 
-#   src.close
-# 
-#   observed_checksum = Chef::Cache::Checksum.generate_md5_checksum_for_file(src.path)
-#   
-#   raise BadRequest, "Checksum did not match: expected #{checksum}, observed #{observed_checksum}" unless observed_checksum == checksum
-# 
-#   dest = sandbox_checksum_location(sandbox_guid, checksum)
-#   Chef::Log.info("upload_checksum: move #{src} to #{dest}")
-#   FileUtils.mv(src.path, dest)
-# end
-# 
-# url = absolute_url(:sandbox_checksum, :sandbox_id => sandbox_guid, :checksum => checksum)
-# result = { 'uri' => url }
-# display result
-# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 require 'chef/sandbox'
 require 'chef/exceptions'
