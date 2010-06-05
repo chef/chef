@@ -73,16 +73,14 @@ class Chef
       def test_ruby(cookbook_dir)
         Chef::Log.info("Validating ruby files")
         Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
-          Chef::Log.debug("Testing #{ruby_file} for syntax errors...")
-          shell_out!("ruby -c #{ruby_file}")
+          test_ruby_file(cookbook_dir, ruby_file)
         end
       end
       
       def test_templates(cookbook_dir)
         Chef::Log.info("Validating templates")
         Dir[File.join(cookbook_dir, '**', '*.erb')].each do |erb_file|
-          Chef::Log.debug("Testing template #{erb_file} for syntax errors...")
-          shell_out!("sh -c 'erubis -x #{erb_file} | ruby -c'")
+          test_template_file(cookbook_dir, erb_file)
         end
       end
       
@@ -193,6 +191,30 @@ class Chef
             exit 18
           end
         end
+      end
+
+      private
+
+      def test_template_file(cookbook_dir, erb_file)
+        Chef::Log.debug("Testing template #{erb_file} for syntax errors...")
+        result = shell_out("sh -c 'erubis -x #{erb_file} | ruby -c'")
+        result.error!
+      rescue Chef::Exceptions::ShellCommandFailed
+        file_relative_path = erb_file[/^#{Regexp.escape(cookbook_dir)}#{File::Separator}(.*)/, 1]
+        Chef::Log.fatal("Erb template #{file_relative_path} has a syntax error:")
+        result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
+        exit
+      end
+
+      def test_ruby_file(cookbook_dir, ruby_file)
+        Chef::Log.debug("Testing #{ruby_file} for syntax errors...")
+        result = shell_out("ruby -c #{ruby_file}")
+        result.error!
+      rescue Chef::Exceptions::ShellCommandFailed
+        file_relative_path = ruby_file[/^#{Regexp.escape(cookbook_dir)}#{File::Separator}(.*)/, 1]
+        Chef::Log.fatal("Cookbook file #{file_relative_path} has a syntax error:")
+        result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
+        exit
       end
       
     end
