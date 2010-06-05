@@ -42,11 +42,11 @@ class Chef
             platform_hash.delete(key)
           end
         end
-        if platform_hash.has_key?(@node[:platform])
-          if platform_hash[@node[:platform]].has_key?(@node[:platform_version])
-            result = platform_hash[@node[:platform]][@node[:platform_version]]
-          elsif platform_hash[@node[:platform]].has_key?("default")
-            result = platform_hash[@node[:platform]]["default"]
+        if platform_hash.has_key?(node[:platform])
+          if platform_hash[node[:platform]].has_key?(node[:platform_version])
+            result = platform_hash[node[:platform]][node[:platform_version]]
+          elsif platform_hash[node[:platform]].has_key?("default")
+            result = platform_hash[node[:platform]]["default"]
           end
         end
   
@@ -72,7 +72,7 @@ class Chef
         has_platform = false
   
         args.flatten.each do |platform|
-          has_platform = true if platform == @node[:platform]
+          has_platform = true if platform == node[:platform]
         end
   
         has_platform
