@@ -84,7 +84,13 @@ class Chef
       @create_time = Time.now.iso8601
       @checksums = Array.new
     end
-    
+
+    def include?(checksum)
+      @checksums.include?(checksum)
+    end
+
+    alias :member? :include?
+
     def to_json(*a)
       result = {
         :guid => guid,

@@ -88,4 +88,10 @@ describe Chef::Cache::Checksum do
     @cache.checksum_for_file("riseofthemachines", key).should == "123abc"
   end
 
+  it "generates a checksum from a non-file IO object" do
+    io = StringIO.new("riseofthemachines\nriseofthechefs\n")
+    expected_md5 = '0e157ac1e2dd73191b76067fb6b4bceb'
+    @cache.generate_md5_checksum(io).should == expected_md5
+  end
+
 end
