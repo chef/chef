@@ -104,6 +104,15 @@ class Chef
           if File.exists?(File.join(cookbook, "metadata.json"))
             cookbook_settings[cookbook_name][:metadata_filenames] << File.join(cookbook, "metadata.json")
           end
+
+          empty = cookbook_settings[cookbook_name].inject(true) do |all_empty, files|
+            all_empty && files.last.empty?
+          end
+
+          if empty
+            Chef::Log.warn "found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
+            cookbook_settings.delete(cookbook_name)
+          end
         end
       end
       remove_ignored_files_from(cookbook_settings)
@@ -144,6 +153,7 @@ class Chef
     def has_key?(cookbook_name)
       @cookbooks_by_name.has_key?(cookbook_name)
     end
+    alias :cookbook_exists? :has_key?
     
     def each
       @cookbooks_by_name.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |cname|

@@ -54,7 +54,7 @@ class Chef
       end
 
       def generate_metadata(cookbook)
-        Chef::Log.info("Generating metadata for #{cookbook}")
+        Chef::Log.info("Generating Metadata")
         config[:cookbook_path].reverse.each do |path|
           file = File.expand_path(File.join(path, cookbook, 'metadata.rb'))
           generate_metadata_from_file(cookbook, file)
@@ -63,7 +63,7 @@ class Chef
 
       def generate_metadata_from_file(cookbook, file)
         if File.exists?(file)
-          Chef::Log.info("Generating from #{file}")
+          Chef::Log.debug("Generating metadata for #{cookbook} from #{file}")
           md = Chef::Cookbook::Metadata.new
           md.name(cookbook)
           md.from_file(file)
@@ -72,7 +72,7 @@ class Chef
             f.write(JSON.pretty_generate(md))
           end
           generated = true
-          Chef::Log.info("Generated #{json_file}")
+          Chef::Log.debug("Generated #{json_file}")
         else
           Chef::Log.debug("No #{file} found; skipping!")
         end
