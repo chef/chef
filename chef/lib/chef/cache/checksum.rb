@@ -24,6 +24,8 @@ require 'digest/md5'
 class Chef
   class Cache
     class Checksum < Chef::Cache
+      # singleton is inherited from Chef::Cache, but we like to be explicit.
+      include ::Singleton
     
       def self.checksum_for_file(*args)
         instance.checksum_for_file(*args)
@@ -62,6 +64,10 @@ class Chef
         checksum_file(file, Digest::MD5.new)
       end
       
+      def generate_md5_checksum(io)
+        checksum_io(io, Digest::MD5.new)
+      end
+      
       private
       
       def file_unchanged?(cached, fstat)
@@ -69,9 +75,16 @@ class Chef
       end
       
       def checksum_file(file, digest)
-        IO.foreach(file) {|line| digest.update(line) }
+        File.open(file) { |f| checksum_io(f, digest) }
+      end
+
+      def checksum_io(io, digest)
+        while chunk = io.read(1024 * 8)
+          digest.update(chunk)
+        end
         digest.hexdigest
       end
+
     end
   end
 end
