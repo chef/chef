@@ -18,7 +18,8 @@
 # limitations under the License.
 #
 
-require 'chef' / 'cookbook_loader'
+require 'chef/cookbook_loader'
+require 'chef/cookbook_version'
 
 class Cookbooks < Application
   

@@ -240,21 +240,7 @@ class Application < Merb::Controller
 
   def get_available_recipes
     r = Chef::REST.new(Chef::Config[:chef_server_url])
-    result = Array.new
-    cookbooks = r.get_rest("cookbooks")
-    cookbooks.keys.sort.each do |key|
-      cb = r.get_rest(cookbooks[key])
-      cb["recipes"].each do |recipe|
-        recipe["name"] =~ /(.+)\.rb/
-        r_name = $1;
-        if r_name == "default"
-          result << key
-        else
-          result << "#{key}::#{r_name}"
-        end
-      end
-    end
-    result
+    r.get_rest('cookbooks/_recipes')
   end
 
   def convert_newline_to_br(string)

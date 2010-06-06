@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require 'chef' / 'node'
+require 'chef/node'
 
 class Nodes < Application
   
@@ -29,7 +29,9 @@ class Nodes < Application
   def index
     begin
       node_hash = Chef::Node.list
-      @node_list = node_hash.keys.sort_by {|a,b| node_hash[a] <=> node_hash[b]}
+      require 'pp'
+      pp node_hash
+      @node_list = node_hash.keys.sort
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @_message = {:error => "Could not list nodes"}
