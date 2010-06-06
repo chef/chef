@@ -59,8 +59,7 @@ class Cookbooks < Application
       # by default always show the largest version number (assuming largest means most recent)
       @other_versions = versions - [version]
       raise NotFound unless @cookbook
-      require 'pp'
-      pp @cookbook
+
       @manifest = @cookbook.manifest
       display @cookbook
     rescue => e
