@@ -51,21 +51,26 @@ dl dt { font-weight: bold; }
 
 div.sortable {
   height: 200px;
-  width: 225px;
+  width: 350px;
   margin-right: 10px;
   border: 1px solid black;
-  overflow: scroll;
+  overflow-y: scroll;
   background: #777777;
 }
 
 div.sortable.run-list {
   height: 430px;
-  width: 225px;
+  width: 350px;
   margin-right: 10px;
   border: 1px solid black;
-  overflow: scroll;
+  overflow-y: scroll;
   background: #777777;
 }
+
+div.run-list ul.ui-sortable#for_node, div.run-list ul.ui-sortable#for_role {
+  min-height: 420px;
+}
+
 
 div.clear {
   clear: left;
@@ -125,9 +130,24 @@ div.editor {
   border: 1px solid black;
 }
 
-#node_available_roles, #node_available_recipes, #for_node, #for_role, #available_recipes { list-style-type: none; margin: 0; padding: 0; float: left; margin-right: 10px; background: #eee; padding: 5px; width: 200px;}
+#node_available_roles, #node_available_recipes, #for_node, #for_role, #available_recipes { 
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  float: left;
+  margin-right: 10px; 
+  background: #eee; 
+  padding: 5px; 
+  width: 325px;
+  min-height:200px;
+}
 
-#node_available_roles li, #node_available_recipes li, #for_node li, #for_role li, #available_recipes li { margin: 0 5px 5px 5px; padding: 5px; width: 175px; }
+#node_available_roles li, #node_available_recipes li, #for_node li, #for_role li, #available_recipes li { 
+  margin: 0 5px 5px 5px; 
+  padding: 5px; 
+  width: 310px; 
+  overflow:hidden;
+}
 
 #sidebar_block {
   display: none;
