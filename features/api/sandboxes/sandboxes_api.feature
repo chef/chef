@@ -51,7 +51,7 @@ Feature: Create a sandbox via the REST API
     # commit works as we did upload the only correct file.
     Then I should not get an exception
  
-  @negative
+  @negative @die
   Scenario: Create a one-file sandbox, upload a file to an expected checksum URL whose contents do not match that checksum, then commit
     Given I am an administrator
     When I create a sandbox named 'sandbox1'
