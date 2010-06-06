@@ -35,14 +35,14 @@ describe Chef::Knife::IndexRebuild do
     @knife.should_receive(:puts)
     @knife.should_receive(:exit).with(7)
     @knife.run
-    @out.string.should match /yes\/no/
+    @out.string.should match(/yes\/no/)
   end
 
   it "asks a confirmation and continues on 'yes'" do
     @knife.stub!(:stdin).and_return(StringIO.new("yes\n"))
     @knife.should_not_receive(:exit)
     @knife.run
-    @out.string.should match /yes\/no/
+    @out.string.should match(/yes\/no/)
   end
 
   describe "after confirming the operation" do

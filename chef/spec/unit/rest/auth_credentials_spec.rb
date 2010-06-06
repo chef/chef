@@ -69,7 +69,7 @@ describe Chef::REST::AuthCredentials do
   end
 
   it "loads the private key when initialized with the path to the key" do
-    @auth_credentials.key.should respond_to :private_encrypt
+    @auth_credentials.key.should respond_to(:private_encrypt)
     @auth_credentials.key.to_s.should == KEY_DOT_PEM
   end
 
