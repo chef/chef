@@ -23,7 +23,7 @@ require 'chef/cookbook_version'
 
 class Cookbooks < Application
   
-  provides :html, :json
+  provides :html
   before :login_required
   before :params_helper
   
@@ -59,6 +59,9 @@ class Cookbooks < Application
       # by default always show the largest version number (assuming largest means most recent)
       @other_versions = versions - [version]
       raise NotFound unless @cookbook
+      require 'pp'
+      pp @cookbook
+      @manifest = @cookbook.manifest
       display @cookbook
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
