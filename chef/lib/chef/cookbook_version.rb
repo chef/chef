@@ -123,6 +123,49 @@ class Chef
           }
           @
         },
+        "all_latest_version_by_id" => {
+          "map" => %q@
+          function(doc) {
+            if (doc.chef_type == "cookbook_version") {
+              emit(doc.cookbook_name, doc.version);
+            }
+          }
+          @,
+          "reduce" => %q@
+          function(keys, values, rereduce) {
+            var result = null;
+
+            for (var idx in values) {
+              var value = values[idx];
+
+              if (idx == 0) {
+                result = value;
+                continue;
+              }
+
+              var valueParts = value[1].split('.').map(function(v) { return parseInt(v); });
+              var resultParts = result[1].split('.').map(function(v) { return parseInt(v); });
+
+              if (valueParts[0] != resultParts[0]) {
+                if (valueParts[0] > resultParts[0]) {
+                  result = value;
+                }
+              }
+              else if (valueParts[1] != resultParts[1]) {
+                if (valueParts[1] > resultParts[1]) {
+                  result = value;
+                }
+              }
+              else if (valueParts[2] != resultParts[2]) {
+                if (valueParts[2] > resultParts[2]) {
+                  result = value;
+                }
+              }
+            }
+            return keys[idx][1];
+          }
+          @
+        },
       }
     }
     
@@ -645,8 +688,19 @@ class Chef
 
     def self.cdb_list_latest(inflate=false, couchdb=nil)
       couchdb ||= Chef::CouchDB.new
-      results = couchdb.get_view("cookbooks", "all_latest_version", :reduce=>false)["rows"]
-      results.inject({}) { |mapped, row| mapped[row["key"]] = row["value"]; mapped}
+      if inflate
+        doc_ids = cdb_list_latest_ids
+        couchdb.bulk_get(doc_ids)
+      else
+        results = couchdb.get_view("cookbooks", "all_latest_version", :group=>true)["rows"]
+        results.inject({}) { |mapped, row| mapped[row["key"]] = row["value"]; mapped}
+      end
+    end
+
+    def self.cdb_list_latest_ids(inflate=false, couchdb=nil)
+      couchdb ||= Chef::CouchDB.new
+      results = couchdb.get_view("cookbooks", "all_latest_version_by_id", :group=>true)["rows"]
+      results.map { |name_and_id| name_and_id["value"]}
     end
 
     def self.cdb_list(inflate=false, couchdb=nil)

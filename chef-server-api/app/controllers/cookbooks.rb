@@ -50,7 +50,7 @@ class Cookbooks < Application
 
   #FIXME: this is different from the rest of our API, but in a useful way...
   def index_latest
-    cookbook_list = Chef::CookbookVersion.cdb_list_latest.sort
+    cookbook_list = Chef::CookbookVersion.cdb_list_latest(true)
     response = Hash.new
     cookbook_list.map! do |cookbook_name, cookbook_version|
       response[cookbook_name]={ :url=>absolute_url(:cookbook, :cookbook_name => cookbook_name, :cookbook_version => cookbook_version),
@@ -60,13 +60,12 @@ class Cookbooks < Application
   end
 
   def index_recipes #FIXME: is this cool to do w/ access control on platform?
-    all_cookbooks = Array(Chef::CookbookVersion.cdb_list_latest)
-    all_cookbooks.sort!
-    all_cookbooks.map! do |cookbook_name, cookbook_version|
-      manifest = Chef::CookbookVersion.cdb_load(cookbook_name, cookbook_version).manifest
-      manifest["recipes"].map { |r| "#{cookbook_name}::#{r['name']}" }
+    all_cookbooks = Array(Chef::CookbookVersion.cdb_list_latest(true))
+    all_cookbooks.map! do |cookbook|
+      cookbook.manifest["recipes"].map { |r| "#{cookbook.name}::#{r['name']}" }
     end
     all_cookbooks.flatten!
+    all_cookbooks.sort!
     display all_cookbooks
   end
 
