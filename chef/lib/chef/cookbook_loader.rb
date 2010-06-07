@@ -30,7 +30,7 @@ class Chef
     include Enumerable
     
     def initialize()
-      @cookbooks_by_name = Hash.new
+      @cookbooks_by_name = Mash.new
       @metadata = Hash.new
       @ignore_regexes = Hash.new { |hsh, key| hsh[key] = Array.new }
       load_cookbooks
