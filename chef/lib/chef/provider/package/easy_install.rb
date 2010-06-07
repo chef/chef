@@ -74,14 +74,15 @@ class Chef
 
            # do a dry run to get the latest version
            command = "#{easy_install_binary_path} -n #{@new_resource.package_name}"
-           pid, stdin, stdout, stderr = popen4(command)
-           dry_run_output = ""
-           stdout.each do |line|
-             dry_run_output << line
+           status  = popen4(command) do |pid, stdin, stdout, stderr|
+             dry_run_output = ""
+             stdout.each do |line|
+               dry_run_output << line
+             end
+             dry_run_output[/(.*)Best match: (.*) (.*)\n/]
+             @candidate_version = $3
+             @candidate_version
            end
-           dry_run_output[/(.*)Best match: (.*) (.*)\n/]
-           @candidate_version = $3
-           @candidate_version
         end
 
         def install_package(name, version)
