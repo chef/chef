@@ -106,11 +106,12 @@ class Chef
         checksum_files = build_dir_cookbook.checksums
         checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
         new_sandbox = catch_auth_exceptions{ rest.post_rest("/sandboxes", { :checksums => checksums }) }
-        
+     
+        Chef::Log.info("Uploading files")
         # upload the new checksums and commit the sandbox
         new_sandbox['checksums'].each do |checksum, info|
           if info['needs_upload'] == true
-            Chef::Log.debug("PUTting #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
+            Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
             
             # Checksum is the hexadecimal representation of the md5,
             # but we need the base64 encoding for the content-md5
@@ -134,6 +135,8 @@ class Chef
               Chef::Log.error("Upload failed: #{e.message}\n#{e.response.body}")
               raise
             end
+          else
+            Chef::Log.debug("#{checksum_files[checksum]} has not changed")
           end
         end
         sandbox_url = new_sandbox['uri']
