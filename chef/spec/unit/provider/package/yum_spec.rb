@@ -76,7 +76,7 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
   
     # before(:each) do
     #   @node = Chef::Node.new
-    #   @new_resource = mock("Chef::Resource::Package", 
+    #   @new_resource = mock("Chef::Resource::Package",
     #     :null_object => true,
     #     :name => "emacs",
     #     :version => nil,
@@ -97,7 +97,7 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
   
     it "should run yum install with the package name and version" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install emacs-1.0"
+        :command => "yum -d0 -e0 -y  install emacs-1.0"
       })
       @provider.install_package("emacs", "1.0")
     end
@@ -105,7 +105,7 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
     it "should run yum localinstall if given a path to an rpm" do
       @new_resource.stub!(:source).and_return("/tmp/emacs-21.4-20.el5.i386.rpm")
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y localinstall /tmp/emacs-21.4-20.el5.i386.rpm"
+        :command => "yum -d0 -e0 -y  localinstall /tmp/emacs-21.4-20.el5.i386.rpm"
       })
       @provider.install_package("emacs", "21.4-20.el5")
     end
@@ -113,10 +113,9 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
   end
 
   describe Chef::Provider::Package::Yum, "upgrade_package" do
-  
     it "should run yum update if the package is installed and no version is given" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y update cups"
+        :command => "yum -d0 -e0 -y  update cups"
       })
       @provider.upgrade_package(@new_resource.name, nil)
     end
@@ -124,16 +123,17 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
     it "should run yum install if the package is installed and a version is given" do
       @provider.candidate_version = '11'
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install cups-11"
+        :command => "yum -d0 -e0 -y  install cups-11"
       })
       @provider.upgrade_package(@new_resource.name, @provider.candidate_version)
     end
-  
+ 
     it "should run yum install if the package is not installed" do
       @provider.candidate_version = '11'
       @current_resource.stub!(:version).and_return(nil)
+      @current_resource.stub!(:options).and_return(nil)
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install cups-11"
+        :command => "yum -d0 -e0 -y  install cups-11"
       })
       @provider.upgrade_package(@new_resource.name, @provider.candidate_version)
     end
@@ -142,7 +142,7 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
   describe Chef::Provider::Package::Yum, "remove_package" do
     it "should run yum remove with the package name" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y remove emacs-1.0"
+        :command => "yum -d0 -e0 -y  remove emacs-1.0"
       })
       @provider.remove_package("emacs", "1.0")
     end
@@ -151,9 +151,21 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
   describe Chef::Provider::Package::Yum, "purge_package" do
     it "should run yum remove with the package name" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y remove emacs-1.0"    
+        :command => "yum -d0 -e0 -y  remove emacs-1.0"
       })
       @provider.purge_package("emacs", "1.0")
     end
   end
+
+  describe Chef::Provider::Package::Yum, "use_options" do
+    it "should run yum with options" do
+      @provider.candidate_version = '11'
+      @new_resource.stub!(:options).and_return("--disablerepo epmd")
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "yum -d0 -e0 -y --disablerepo epmd install cups-11"
+      })
+      @provider.install_package(@new_resource.name, @provider.candidate_version)
+    end
+  end
+
 end

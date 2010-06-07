@@ -104,13 +104,22 @@ class Chef
           def flush
             @data.clear
           end
+        
+          def options(arg=nil)
+            set_or_return(
+              :options + " ",
+              arg + " ",
+              :kind_of => [ String ]
+            )
+          end
+ 
         end
 
         def initialize(new_resource, run_context)
           @yum = YumCache.instance
           super
         end
-      
+
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
@@ -152,11 +161,11 @@ class Chef
         def install_package(name, version)
           if @new_resource.source 
             run_command_with_systems_locale(
-              :command => "yum -d0 -e0 -y localinstall #{@new_resource.source}"
+              :command => "yum -d0 -e0 -y #{@new_resource.options} localinstall #{@new_resource.source}"
             )
           else
             run_command_with_systems_locale(
-              :command => "yum -d0 -e0 -y install #{name}-#{version}"
+              :command => "yum -d0 -e0 -y #{@new_resource.options} install #{name}-#{version}"
             )
           end
           @yum.flush
@@ -167,7 +176,7 @@ class Chef
           # option. If we are, then running install_package is right.
           unless version
             run_command_with_systems_locale(
-              :command => "yum -d0 -e0 -y update #{name}"
+              :command => "yum -d0 -e0 -y #{@new_resource.options} update #{name}"
             )   
             @yum.flush
           else
@@ -178,11 +187,11 @@ class Chef
         def remove_package(name, version)
           if version
             run_command_with_systems_locale(
-             :command => "yum -d0 -e0 -y remove #{name}-#{version}"
+             :command => "yum -d0 -e0 -y #{@new_resource.options} remove #{name}-#{version}"
             )
           else
             run_command_with_systems_locale(
-             :command => "yum -d0 -e0 -y remove #{name}"
+             :command => "yum -d0 -e0 -y #{@new_resource.options} remove #{name}"
             )
           end
             
