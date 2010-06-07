@@ -51,14 +51,13 @@ class Chef
           @current_resource.owner(cstats.uid)
           @current_resource.group(cstats.gid)
           @current_resource.mode(octal_mode(cstats.mode))
-          @current_resource.checksum(checksum(@current_resource.path))
         end
         @current_resource
       end
 
       # Compare the content of a file.  Returns true if they are the same, false if they are not.
       def compare_content
-        @current_resource.checksum == new_resource_content_checksum
+        checksum(@current_resource.path) == new_resource_content_checksum
       end
 
       # Set the content of the file, assuming it is not set correctly already.
