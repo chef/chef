@@ -161,9 +161,14 @@ class Chef
       end
     end
 
+    def cookbook_names
+      @cookbooks_by_name.keys.sort
+    end
+
     def values
       @cookbooks_by_name.values
     end
+    alias :cookbooks :values
 
     private
     

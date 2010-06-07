@@ -115,5 +115,5 @@ Feature: CRUD cookbooks
      Then the response code should be '200'
      When I commit the sandbox
      Then I should not get an exception
-     When I create a versioned cookbook named 'testcookbook_invalid_empty_except_metadata' versioned '0.1.0' with 'testcookbook_invalid_empty'
+     When I create a cookbook named 'testcookbook_invalid_empty_except_metadata' with only the metadata file
      Then I should get a '400 "Bad Request"' exception

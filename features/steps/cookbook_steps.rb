@@ -101,8 +101,23 @@ When /^I create a versioned cookbook(?: named '(.*?)')?(?: versioned '(.*?)')? w
   begin
     self.api_response = rest.put_rest("/cookbooks/#{request_name}/#{request_version}", cookbook)
     self.inflated_response = api_response
-  rescue
-    self.exception = $!
+  rescue => e
+    self.exception = e
+  end
+end
+
+# The argument handling in the above step defn isn't working for me, so dup city.
+# :/
+When "I create a cookbook named '$cookbook_name' with only the metadata file" do |cookbook_name|
+  cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name.to_sym]
+  raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless cookbook
+
+  begin
+    self.api_response = rest.put_rest("/cookbooks/#{cookbook_name}/1.0.0", cookbook)
+    self.inflated_response = api_response
+  rescue => e
+    Chef::Log.debug("Caught exception #{e} from HTTP request")
+    self.exception = e
   end
 end
 
