@@ -99,12 +99,12 @@ describe Chef::Provider::User::Useradd do
 
     describe "when we want to create a system user" do
       before do
-        @new_resource.stub!(:manage_home).and_return(true)
-        @new_resource.stub!(:non_unique).and_return(false)
+        @new_resource.manage_home(true)
+        @new_resource.non_unique(false)
       end
 
       it "should set useradd -r" do
-        @new_resource.stub!(:system).and_return(true)
+        @new_resource.system(true)
         @provider.set_options.should eql(" -r adam")
       end
     end
