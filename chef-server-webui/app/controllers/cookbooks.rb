@@ -18,11 +18,12 @@
 # limitations under the License.
 #
 
-require 'chef' / 'cookbook_loader'
+require 'chef/cookbook_loader'
+require 'chef/cookbook_version'
 
 class Cookbooks < Application
   
-  provides :html, :json
+  provides :html
   before :login_required
   before :params_helper
   
@@ -58,6 +59,8 @@ class Cookbooks < Application
       # by default always show the largest version number (assuming largest means most recent)
       @other_versions = versions - [version]
       raise NotFound unless @cookbook
+
+      @manifest = @cookbook.manifest
       display @cookbook
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")

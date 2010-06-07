@@ -27,20 +27,11 @@ require "rubygems"
 require "merb-core"
 
 # Load chef and chef-server-api from source rather than gem, if present
-$:.unshift(File.expand_path(File.dirname(__FILE__) + '/../../chef/lib/chef'))
+$:.unshift(File.expand_path(File.dirname(__FILE__) + '/../../chef/lib'))
 $:.unshift(File.expand_path(File.dirname(__FILE__) + '/../lib'))
 
 require 'chef'
 require 'chef-server-webui'
-
-# Ensure the chef gem we load is the same version as the chef server
-unless defined?(Chef)
-  gem "chef", "=" + CHEF_SERVER_WEBUI_VERSION
-  require 'chef'  
-end
-
-#Dir.chdir File.join(File.dirname(__FILE__),"..")
-#__DIR__ = Dir.getwd
 
 if ARGV[0] && ARGV[0] =~ /^[^-]/
   ARGV.push "-H"

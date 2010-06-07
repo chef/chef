@@ -123,6 +123,49 @@ class Chef
           }
           @
         },
+        "all_latest_version_by_id" => {
+          "map" => %q@
+          function(doc) {
+            if (doc.chef_type == "cookbook_version") {
+              emit(doc.cookbook_name, doc.version);
+            }
+          }
+          @,
+          "reduce" => %q@
+          function(keys, values, rereduce) {
+            var result = null;
+
+            for (var idx in values) {
+              var value = values[idx];
+
+              if (idx == 0) {
+                result = value;
+                continue;
+              }
+
+              var valueParts = value[1].split('.').map(function(v) { return parseInt(v); });
+              var resultParts = result[1].split('.').map(function(v) { return parseInt(v); });
+
+              if (valueParts[0] != resultParts[0]) {
+                if (valueParts[0] > resultParts[0]) {
+                  result = value;
+                }
+              }
+              else if (valueParts[1] != resultParts[1]) {
+                if (valueParts[1] > resultParts[1]) {
+                  result = value;
+                }
+              }
+              else if (valueParts[2] != resultParts[2]) {
+                if (valueParts[2] > resultParts[2]) {
+                  result = value;
+                }
+              }
+            }
+            return keys[idx][1];
+          }
+          @
+        },
       }
     }
     
@@ -595,8 +638,12 @@ class Chef
     ##
     # REST API
     ##
-    def chef_server_rest
+    def self.chef_server_rest
       Chef::REST.new(Chef::Config[:chef_server_url])
+    end
+
+    def chef_server_rest
+      self.class.chef_server_rest
     end
 
     def save
@@ -612,7 +659,16 @@ class Chef
 
     def self.load(name, version="_latest")
       version = "_latest" if version == "latest"
-      Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks/#{name}/#{version}")
+      chef_server_rest.get_rest("cookbooks/#{name}/#{version}")
+    end
+
+    def self.list
+      chef_server_rest.get_rest('cookbooks')
+    end
+
+    # Get the newest version of all cookbooks
+    def self.latest_cookbooks
+      chef_server_rest.get_rest('cookbooks/_latest')
     end
 
     ##
@@ -620,7 +676,7 @@ class Chef
     ##
     
     def self.cdb_by_name(cookbook_name, couchdb=nil)
-      cdb = couchdb || Chef::CouchDB.new
+      cdb = (couchdb || Chef::CouchDB.new)
       options = { :startkey => cookbook_name, :endkey => cookbook_name }
       rs = cdb.get_view("cookbooks", "all_with_version", options)
       rs["rows"].inject({}) { |memo, row| memo.has_key?(row["key"]) ? memo[row["key"]] << row["value"] : memo[row["key"]] = [ row["value"] ]; memo }
@@ -629,7 +685,24 @@ class Chef
     def self.create_design_document(couchdb=nil)
       (couchdb || Chef::CouchDB.new).create_design_document("cookbooks", DESIGN_DOCUMENT)
     end
-    
+
+    def self.cdb_list_latest(inflate=false, couchdb=nil)
+      couchdb ||= Chef::CouchDB.new
+      if inflate
+        doc_ids = cdb_list_latest_ids
+        couchdb.bulk_get(doc_ids)
+      else
+        results = couchdb.get_view("cookbooks", "all_latest_version", :group=>true)["rows"]
+        results.inject({}) { |mapped, row| mapped[row["key"]] = row["value"]; mapped}
+      end
+    end
+
+    def self.cdb_list_latest_ids(inflate=false, couchdb=nil)
+      couchdb ||= Chef::CouchDB.new
+      results = couchdb.get_view("cookbooks", "all_latest_version_by_id", :group=>true)["rows"]
+      results.map { |name_and_id| name_and_id["value"]}
+    end
+
     def self.cdb_list(inflate=false, couchdb=nil)
       rs = (couchdb || Chef::CouchDB.new).list("cookbooks", inflate)
       lookup = (inflate ? "value" : "key")

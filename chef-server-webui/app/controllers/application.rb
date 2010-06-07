@@ -209,19 +209,15 @@ class Application < Merb::Controller
     count
   end
 
-  def syntax_highlight(code)
-    tokens = File.exists?(code) ? CodeRay.scan_file(code, :ruby) : CodeRay.scan(code, :ruby)
-    CodeRay.encode_tokens(tokens, :span)
-  end
-
-  def get_file(uri)
+  def syntax_highlight(file_url)
+    Chef::Log.debug("fetching file from '#{file_url}' for highlighting")
     r = Chef::REST.new(Chef::Config[:chef_server_url])
-    content = r.get_rest(uri)
-    a = Tempfile.new("cookbook_temp_file")
-    File.open(a.path, 'w'){|f| f.write(content)}
-    path = a.path
-    a.close
-    path
+    highlighted_file = nil
+    r.fetch(file_url) do |tempfile|
+      tokens = CodeRay.scan_file(tempfile.path, :ruby)
+      highlighted_file = CodeRay.encode_tokens(tokens, :span)
+    end
+    highlighted_file
   end
 
   def str_to_bool(str)
@@ -240,21 +236,7 @@ class Application < Merb::Controller
 
   def get_available_recipes
     r = Chef::REST.new(Chef::Config[:chef_server_url])
-    result = Array.new
-    cookbooks = r.get_rest("cookbooks")
-    cookbooks.keys.sort.each do |key|
-      cb = r.get_rest(cookbooks[key])
-      cb["recipes"].each do |recipe|
-        recipe["name"] =~ /(.+)\.rb/
-        r_name = $1;
-        if r_name == "default"
-          result << key
-        else
-          result << "#{key}::#{r_name}"
-        end
-      end
-    end
-    result
+    r.get_rest('cookbooks/_recipes')
   end
 
   def convert_newline_to_br(string)

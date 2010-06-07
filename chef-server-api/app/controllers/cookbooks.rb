@@ -19,8 +19,8 @@
 # limitations under the License.
 #
 
-require 'chef' / 'cookbook_loader'
-require 'chef' / 'cookbook' / 'metadata'
+require 'chef/cookbook_loader'
+require 'chef/cookbook/metadata'
 
 class Cookbooks < Application
   
@@ -40,13 +40,33 @@ class Cookbooks < Application
   include Merb::TarballHelper
   
   def index
-    cookbook_list = Chef::CookbookVersion.cdb_list
+    cookbook_list = Chef::CookbookVersion.cdb_list_latest.keys.sort
     response = Hash.new
-    cookbook_list.each do |cookbook_name|
-      cookbook_name =~ /^(.+)-(\d+\.\d+\.\d+)$/
-      response[$1] = absolute_url(:cookbook, :cookbook_name => $1)
+    cookbook_list.map! do |cookbook_name|
+      response[cookbook_name] = absolute_url(:cookbook, :cookbook_name => cookbook_name)
     end
-    display response 
+    display response
+  end
+
+  #FIXME: this is different from the rest of our API, but in a useful way...
+  def index_latest
+    cookbook_list = Chef::CookbookVersion.cdb_list_latest(true)
+    response = Hash.new
+    cookbook_list.map! do |cookbook_name, cookbook_version|
+      response[cookbook_name]={ :url=>absolute_url(:cookbook, :cookbook_name => cookbook_name, :cookbook_version => cookbook_version),
+                                :cookbook_name => cookbook_name, :cookbook_version=>cookbook_version}
+    end
+    display response
+  end
+
+  def index_recipes #FIXME: is this cool to do w/ access control on platform?
+    all_cookbooks = Array(Chef::CookbookVersion.cdb_list_latest(true))
+    all_cookbooks.map! do |cookbook|
+      cookbook.manifest["recipes"].map { |r| "#{cookbook.name}::#{r['name']}" }
+    end
+    all_cookbooks.flatten!
+    all_cookbooks.sort!
+    display all_cookbooks
   end
 
   def show_versions
