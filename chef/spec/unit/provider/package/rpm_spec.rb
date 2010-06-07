@@ -73,7 +73,7 @@ describe Chef::Provider::Package::Rpm, "load_current_resource" do
     it "should raise an exception if the source is not set but we are installing" do
       new_resource = Chef::Resource::Package.new("emacs")
       provider = Chef::Provider::Package::Rpm.new(new_resource, @run_context)
-      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)  
+      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
   
     it "should raise an exception if rpm fails to run" do
@@ -91,7 +91,7 @@ describe Chef::Provider::Package::Rpm, "load_current_resource" do
     describe Chef::Provider::Package::Rpm, "install and upgrade" do
       it "should run rpm -i with the package source to install" do
         @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "rpm -i /tmp/emacs-21.4-20.el5.i386.rpm"
+          :command => "rpm  -i /tmp/emacs-21.4-20.el5.i386.rpm"
         })
         @provider.install_package("emacs", "21.4-20.el5")
       end
@@ -99,7 +99,7 @@ describe Chef::Provider::Package::Rpm, "load_current_resource" do
       it "should run rpm -U with the package source to upgrade" do
         @current_resource.stub!(:version).and_return("21.4-19.el5")
         @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "rpm -U /tmp/emacs-21.4-20.el5.i386.rpm"
+          :command => "rpm  -U /tmp/emacs-21.4-20.el5.i386.rpm"
         })
         @provider.upgrade_package("emacs", "21.4-20.el5")
       end
@@ -108,10 +108,26 @@ describe Chef::Provider::Package::Rpm, "load_current_resource" do
     describe Chef::Provider::Package::Rpm, "remove" do
       it "should run rpm -e to remove the package" do
         @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "rpm -e emacs-21.4-20.el5"
+          :command => "rpm  -e emacs-21.4-20.el5"
         })
         @provider.remove_package("emacs", "21.4-20.el5")
       end
     end
   end
+
+  describe "execute rpm command with options" do
+    before do
+      @provider.current_resource = @current_resource
+    end
+
+    it "should have options set" do
+      @provider.candidate_version = '11'
+      @new_resource.stub!(:options).and_return("--dbpath /var/lib/rpm")
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "rpm --dbpath /var/lib/rpm -i /tmp/emacs-21.4-20.el5.i386.rpm"
+      })
+      @provider.install_package(@new_resource.name, @provider.candidate_version)
+    end
+  end
 end
+
