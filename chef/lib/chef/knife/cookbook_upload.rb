@@ -189,6 +189,8 @@ class Chef
           when "401"
             Chef::Log.fatal "Request failed due to authentication (#{e}), check your client configuration (username, key)"
             exit 18
+          else 
+            raise
           end
         end
       end
