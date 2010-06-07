@@ -765,7 +765,7 @@ class Chef
           specificity = "default"
           
           if segment == :root_files
-            matcher = segment_file.match("/#{name}/(.+)")
+            matcher = segment_file.match(".+/#{name}/(.+)")
             file_name = matcher[1]
             path = file_name
           elsif segment == :templates || segment == :files

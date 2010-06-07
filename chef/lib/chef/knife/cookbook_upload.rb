@@ -168,6 +168,7 @@ class Chef
             on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
             dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
             FileUtils.mkdir_p(File.dirname(dest))
+            Chef::Log.debug("Staging #{on_disk_path} to #{dest}")
             FileUtils.cp(on_disk_path, dest)
           end
         end
@@ -182,6 +183,8 @@ class Chef
         kcm.config[:cookbook_path] = [ tmp_cookbook_dir ]
         kcm.name_args = [ cookbook.name.to_s ]
         kcm.run
+
+        tmp_cookbook_dir
       end
 
       def catch_auth_exceptions
