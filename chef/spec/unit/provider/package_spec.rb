@@ -289,6 +289,13 @@ describe Chef::Provider::Package do
       before do
         Chef::FileCache.should_receive(:create_cache_path).with('preseed/java').and_return("/tmp/preseed/java")
       end
+      it "sets the preseed resource's runcontext to its own run context" do
+        Chef::FileCache.rspec_reset
+        Chef::FileCache.stub!(:create_cache_path).and_return("/tmp/preseed/java")
+        @provider.preseed_resource('java', '6').run_context.should_not be_nil
+        @provider.preseed_resource('java', '6').run_context.should equal(@provider.run_context)
+      end
+
       it "should set the cookbook name of the remote file to the new resources cookbook name" do
         @provider.preseed_resource('java', '6').cookbook_name.should == 'java'
       end
