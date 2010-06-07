@@ -69,6 +69,17 @@ describe Chef::Mixin::FindPreferredFile do
       args = %w{no_cookbook_id no_filetype mods/deflate.conf.erb nohost.example.com noplatform noversion}
       @finder.find_preferred_file(*args).should == "/srv/chef/cookbooks/apache2/templates/default/mods/deflate.conf.erb"
     end
+
+    it "finds the default file with brackets" do
+      file_name = "file-with-[brackets]"
+      expected_file_path = "/srv/chef/cookbooks/apache2/templates/default/#{file_name}"
+      hsh = default_file_hash.merge({
+         expected_file_path => expected_file_path 
+      })
+      @finder.stub!(:load_cookbook_files).and_return(hsh)
+      args = %w{no_cookbook_id no_filetype} + [ file_name ] + %w{nohost.example.com noplatform noversion}
+      @finder.find_preferred_file(*args).should == expected_file_path
+    end
     
     it "prefers a platform specific file to the default" do
       @default_file_list << "/srv/chef/cookbooks/apache2/templates/ubuntu/mods/deflate.conf.erb"
