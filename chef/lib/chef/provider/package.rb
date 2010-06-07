@@ -143,7 +143,7 @@ class Chef
 
         Chef::Log.debug("Fetching preseed file to #{cache_seed_to}")
 
-        remote_file = Chef::Resource::CookbookFile.new(cache_seed_to)
+        remote_file = Chef::Resource::CookbookFile.new(cache_seed_to, run_context)
         remote_file.cookbook_name = @new_resource.cookbook_name
         remote_file.source(@new_resource.response_file)
         remote_file.backup(false)
