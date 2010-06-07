@@ -33,13 +33,13 @@ class Chef
 
     class Template < Chef::Provider::File
 
-      #include Chef::Mixin::Checksum
+      include Chef::Mixin::Checksum
       include Chef::Mixin::Template
       #include Chef::Mixin::FindPreferredFile
 
       def load_current_resource
         super
-        @current_resource.checksum(checksum(@current_resource.path))
+        @current_resource.checksum(checksum(@current_resource.path)) if ::File.exist?(@current_resource.path)
       end
 
       def action_create

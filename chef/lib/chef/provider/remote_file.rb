@@ -31,7 +31,7 @@ class Chef
 
       def load_current_resource
         super
-        @current_resource.checksum(checksum(@current_resource.path))
+        @current_resource.checksum(checksum(@current_resource.path)) if ::File.exist?(@current_resource.path)
       end
 
       def action_create
