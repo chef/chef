@@ -58,8 +58,8 @@ describe Chef::CookbookLoader do
       @cookbook_loader.each do |cookbook_name, cookbook|
         seen[cookbook_name] = true
       end
-      seen.should have_key(:openldap)
-      seen.should have_key(:apache2)
+      seen.should have_key("openldap")
+      seen.should have_key("apache2")
     end
 
     it "should iterate in alphabetical order" do
@@ -67,9 +67,9 @@ describe Chef::CookbookLoader do
       @cookbook_loader.each do |cookbook_name, cookbook|
         seen << cookbook_name
       end
-      seen[0].should == :apache2
-      seen[1].should == :java
-      seen[2].should == :openldap
+      seen[0].should == "apache2"
+      seen[1].should == "java"
+      seen[2].should == "openldap"
     end
   end
   
