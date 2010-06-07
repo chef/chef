@@ -65,7 +65,7 @@ Removing any system startup links for /etc/init.d/chef ...
     
     it "stores the 'enabled' state" do
       Chef::Resource::Service.stub!(:new).and_return(@current_resource)
-      @provider.load_current_resource.should equal @current_resource
+      @provider.load_current_resource.should equal(@current_resource)
       @current_resource.enabled.should be_true
     end
   end
@@ -85,7 +85,7 @@ Removing any system startup links for /etc/init.d/chef ...
     
     it "stores the 'disabled' state" do
       Chef::Resource::Service.stub!(:new).and_return(@current_resource)
-      @provider.load_current_resource.should equal @current_resource
+      @provider.load_current_resource.should equal(@current_resource)
       @current_resource.enabled.should be_false
     end
   end

@@ -273,8 +273,8 @@ describe Chef::Provider::Mount::Mount do
         ::File.stub!(:open).with("/etc/fstab", "w").and_yield(@fstab_write)
 
         @provider.disable_fs
-        @fstab_write.string.should match Regexp.escape(other_mount)
-        @fstab_write.string.should_not match Regexp.escape(this_mount)
+        @fstab_write.string.should match(Regexp.escape(other_mount))
+        @fstab_write.string.should_not match(Regexp.escape(this_mount))
       end
 
       it "should disable if enabled is true and ignore commented lines" do
