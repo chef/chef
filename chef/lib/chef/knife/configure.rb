@@ -113,13 +113,17 @@ EOH
       end
 
       def ask_user_for_config
-        @chef_server            = config[:chef_server_url] || ask_question("Your chef server URL? ", :default => 'http://localhost:4000')
-        @new_client_name        = config[:node_name] || ask_question("Select a user name for your new client: ", :default => Etc.getlogin)
-        @admin_client_name      = config[:admin_client_name] || ask_question("Your existing admin client user name? ", :default => 'chef-webui')
-        @admin_client_key       = config[:admin_client_key] || ask_question("The location of your existing admin key? ", :default => '/etc/chef/webui.pem')
-        @validation_client_name = config[:validation_client_name] || ask_question("Your validation client user name? ", :default => 'chef-validator')
-        @validation_key         = config[:validation_key] || ask_question("The location of your validation key? ", :default => '/etc/chef/validation.pem')
-        @chef_repo              = config[:repository] || ask_question("Path to a chef repository (or leave blank)? ")
+        @chef_server            = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => 'http://localhost:4000')
+        if config[:initial]
+          @new_client_name        = config[:node_name] || ask_question("Please enter a clientname for the new client: ", :default => Etc.getlogin)
+          @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin clientname: ", :default => 'chef-webui')
+          @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin client's private key: ", :default => '/etc/chef/webui.pem')
+        else
+          @new_client_name        = config[:node_name] || ask_question("Please enter an existing username or clientname for the API: ", :default => Etc.getlogin)
+        end
+        @validation_client_name = config[:validation_client_name] || ask_question("Please enter the validation clientname: ", :default => 'chef-validator')
+        @validation_key         = config[:validation_key] || ask_question("Please enter the location of the validation key: ", :default => '/etc/chef/validation.pem')
+        @chef_repo              = config[:repository] || ask_question("Please enter the path to a chef repository (or leave blank): ")
 
         @new_client_key = config[:client_key] || File.join(chef_config_path, "#{@new_client_name}.pem")
       end
