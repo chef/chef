@@ -208,10 +208,10 @@ class Chef
         result = shell_out("sh -c 'erubis -x #{erb_file} | ruby -c'")
         result.error!
       rescue Chef::Exceptions::ShellCommandFailed
-        file_relative_path = erb_file[/^#{Regexp.escape(cookbook_dir)}#{File::Separator}(.*)/, 1]
+        file_relative_path = erb_file[/^#{Regexp.escape(cookbook_dir+File::Separator)}(.*)/, 1]
         Chef::Log.fatal("Erb template #{file_relative_path} has a syntax error:")
         result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
-        exit
+        exit(1)
       end
 
       def test_ruby_file(cookbook_dir, ruby_file)
@@ -219,10 +219,10 @@ class Chef
         result = shell_out("ruby -c #{ruby_file}")
         result.error!
       rescue Chef::Exceptions::ShellCommandFailed
-        file_relative_path = ruby_file[/^#{Regexp.escape(cookbook_dir)}#{File::Separator}(.*)/, 1]
+        file_relative_path = ruby_file[/^#{Regexp.escape(cookbook_dir+File::Separator)}(.*)/, 1]
         Chef::Log.fatal("Cookbook file #{file_relative_path} has a syntax error:")
         result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
-        exit
+        exit(1)
       end
       
     end
