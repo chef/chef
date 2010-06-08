@@ -16,43 +16,64 @@ describe Chef::Knife::Configure do
 
   it "asks the user for the URL of the chef server" do
     @knife.ask_user_for_config
-    @out.string.should match(Regexp.escape('Your chef server URL? [http://localhost:4000]'))
+    @out.string.should match(Regexp.escape('Please enter the chef server URL: [http://localhost:4000]'))
     @knife.chef_server.should == 'http://localhost:4000'
   end
 
-  it "asks the user for the user name they want for the new client" do
+  it "asks the user for the clientname they want for the new client if -i is specified" do
+    @knife.config[:initial] = true
     @knife.ask_user_for_config
-    @out.string.should match(Regexp.escape("Select a user name for your new client: [#{Etc.getlogin}]"))
+    @out.string.should match(Regexp.escape("Please enter a clientname for the new client: [#{Etc.getlogin}]"))
     @knife.new_client_name.should == Etc.getlogin
   end
   
-  it "asks the user for the existing admin client's name" do
+  it "asks the user for the existing API username or clientname if -i is not specified" do
     @knife.ask_user_for_config
-    @out.string.should match(Regexp.escape("Your existing admin client user name? [chef-webui]"))
-    @knife.admin_client_name.should == 'chef-webui'
-  end
+    @out.string.should match(Regexp.escape("Please enter an existing username or clientname for the API: [#{Etc.getlogin}]"))
+    @knife.new_client_name.should == Etc.getlogin
+  end  
   
-  it "asks the user for the location of the existing admin key" do
-    @knife.ask_user_for_config
-    @out.string.should match(Regexp.escape("The location of your existing admin key? [/etc/chef/webui.pem]"))
-    @knife.admin_client_key.should == '/etc/chef/webui.pem'
-  end
+  it "asks the user for the existing admin client's name if -i is specified" do
+     @knife.config[:initial] = true
+     @knife.ask_user_for_config
+     @out.string.should match(Regexp.escape("Please enter the existing admin clientname: [chef-webui]"))
+     @knife.admin_client_name.should == 'chef-webui'
+   end
+
+   it "should not ask the user for the existing admin client's name if -i is not specified" do
+     @knife.ask_user_for_config
+     @out.string.should_not match(Regexp.escape("Please enter the existing admin clientname: [chef-webui]"))
+     @knife.admin_client_name.should_not == 'chef-webui'
+   end
+
+   it "asks the user for the location of the existing admin key if -i is specified" do
+     @knife.config[:initial] = true
+     @knife.ask_user_for_config
+     @out.string.should match(Regexp.escape("Please enter the location of the existing admin client's private key: [/etc/chef/webui.pem]"))
+     @knife.admin_client_key.should == '/etc/chef/webui.pem'
+   end
+
+   it "should not ask the user for the location of the existing admin key if -i is not specified" do
+     @knife.ask_user_for_config
+     @out.string.should_not match(Regexp.escape("Please enter the location of the existing admin client's private key: [/etc/chef/webui.pem]"))
+     @knife.admin_client_key.should_not == '/etc/chef/webui.pem'
+   end
   
   it "asks the user for the location of a chef repo" do
     @knife.ask_user_for_config
-    @out.string.should match(Regexp.escape("Path to a chef repository (or leave blank)?"))
+    @out.string.should match(Regexp.escape("Please enter the path to a chef repository (or leave blank):"))
     @knife.chef_repo.should == ''
   end
   
   it "asks the users for the name of the validation client" do
     @knife.ask_user_for_config
-    @out.string.should match(Regexp.escape("Your validation client user name? [chef-validator]"))
+    @out.string.should match(Regexp.escape("Please enter the validation clientname: [chef-validator]"))
     @knife.validation_client_name.should == 'chef-validator'
   end
   
   it "asks the users for the location of the validation key" do
     @knife.ask_user_for_config
-    @out.string.should match(Regexp.escape("The location of your validation key? [/etc/chef/validation.pem]"))
+    @out.string.should match(Regexp.escape("Please enter the location of the validation key: [/etc/chef/validation.pem]"))
     @knife.validation_key.should == '/etc/chef/validation.pem'
   end
   
