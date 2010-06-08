@@ -19,9 +19,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 require 'chef/mixin/deprecation'
 
-describe Chef::Mixin::Deprecation::DeprecatedInstanceVariableProxy do
+describe Chef::Mixin::Deprecation::DeprecatedInstanceVariable do
   before do
-    @deprecated_ivar = Chef::Mixin::Deprecation::DeprecatedInstanceVariableProxy.new('value', 'an_ivar')
+    @deprecated_ivar = Chef::Mixin::Deprecation::DeprecatedInstanceVariable.new('value', 'an_ivar')
   end
 
   it "forward method calls to the target object" do
