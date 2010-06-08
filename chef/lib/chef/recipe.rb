@@ -23,6 +23,8 @@ require 'chef/mixin/from_file'
 require 'chef/mixin/language'
 require 'chef/mixin/language_include_recipe'
 
+require 'chef/mixin/deprecation'
+
 class Chef
   class Recipe
     
@@ -30,6 +32,7 @@ class Chef
     include Chef::Mixin::Language
     include Chef::Mixin::LanguageIncludeRecipe
     include Chef::Mixin::RecipeDefinitionDSLCore
+    include Chef::Mixin::Deprecation
     
     attr_accessor :cookbook_name, :recipe_name, :recipe, :params, :run_context
 
@@ -54,6 +57,7 @@ class Chef
       @run_context = run_context
       # TODO: 5/19/2010 cw/tim: determine whether this can be removed
       @params = Hash.new
+      @node = deprecated_ivar(run_context.node, :node, :warn)
     end
     
     # Used in DSL mixins

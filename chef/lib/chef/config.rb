@@ -42,6 +42,9 @@ class Chef
       newkey
     end
 
+    def self.inspect
+      configuration.inspect
+    end
 
     # Override the config dispatch to set the value of multiple server options simultaneously
     # 

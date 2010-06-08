@@ -63,6 +63,7 @@ describe Shef do
   
   before do
     Shef.irb_conf = {}
+    Shef::ShefSession.instance.rspec_reset
     Shef::ShefSession.instance.stub!(:reset!)
   end
   
@@ -99,7 +100,7 @@ describe Shef do
       Shef.configure_irb
 
       conf = OpenStruct.new
-      conf.main = Chef::Recipe.new(nil,nil,nil)
+      conf.main = Chef::Recipe.new(nil,nil,Chef::RunContext.new(Chef::Node.new, {}))
       Shef.irb_conf[:IRB_RC].call(conf)
       conf.prompt_c.should      == "chef:recipe > "
       conf.prompt_i.should      == "chef:recipe > "
