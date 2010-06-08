@@ -74,7 +74,7 @@ class Chef
 
       # Search Solr for objects of a given type, for a given query. If you give
       # it a block, it will handle the paging for you dynamically.
-      def search(type, query="*:*", sort=nil, start=0, rows=20, &block)
+      def search(type, query="*:*", sort='X_CHEF_id_CHEF_X asc', start=0, rows=1000, &block)
         options = {
           :q => query,
           :start => start,
