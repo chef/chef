@@ -243,9 +243,17 @@ class Chef
       end
     end
 
-    def load_from_file(klass, from_file) 
-      from_file = @name_args[0]
-      relative_file = File.expand_path(File.join(Dir.pwd, 'roles', from_file))
+    def load_from_file(klass, from_file, bag=nil) 
+      relative_path = ""
+      if klass == Chef::Role
+        relative_path = "roles"
+      elsif klass == Chef::Node
+        relative_path = "nodes"
+      elsif klass == Chef::DataBagItem
+        relative_path = "data_bags/#{bag}"
+      end
+
+      relative_file = File.expand_path(File.join(Dir.pwd, relative_path, from_file))
       filename = nil
 
       if file_exists_and_is_readable?(from_file)

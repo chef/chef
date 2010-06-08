@@ -42,6 +42,10 @@ class Chef
         :long => "--node-name NAME",
         :description => "The Chef node name for your new node"
 
+      option :prerelease,
+        :long => "--prerelease",
+        :description => "Install the pre-release chef gems"
+
 
       def h
         @highline ||= HighLine.new
@@ -67,7 +71,7 @@ if [ ! -f /usr/bin/chef-client ]; then
   cd rubygems-1.3.6
   ruby setup.rb
   cp /usr/bin/gem1.8 /usr/bin/gem
-  gem install chef ohai --no-rdoc --no-ri --verbose
+  gem install ohai chef --no-rdoc --no-ri --verbose #{"--prerelease" if config[:prerelease]}
 fi
 
 mkdir -p /etc/chef
