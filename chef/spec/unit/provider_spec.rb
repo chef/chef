@@ -53,4 +53,12 @@ describe Chef::Provider do
     temporary_collection.should be_an_instance_of(Chef::ResourceCollection)
     @provider.run_context.instance_variable_get(:@resource_collection).should == "doesn't matter what this is"
   end
+
+  it "does not re-load recipes when creating the temporary run context" do
+    # we actually want to test that RunContext#load is never called, but we
+    # can't stub all instances of an object with rspec's mocks. :/
+    Chef::RunContext.stub!(:new).and_raise("not supposed to happen")
+    snitch = Proc.new {temporary_collection = @run_context.resource_collection}
+    @provider.send(:recipe_eval, &snitch)
+  end
 end
