@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-gems = %w[chef chef-server-api chef-server-webui chef-solr]
+gems = %w[chef chef-server-api chef-server-webui chef-solr chef-server]
 require 'rubygems'
 
 desc "Build the chef gems"
