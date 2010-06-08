@@ -149,7 +149,9 @@ class Chef
           # Other options are passed to Gem::DependencyInstaller.new
           def install(gem_dependency, options={})
             with_gem_sources(*options.delete(:sources)) do
-              dependency_installer(options).install(gem_dependency)
+              with_correct_verbosity do
+                dependency_installer(options).install(gem_dependency)
+              end
             end
           end
 
@@ -161,7 +163,17 @@ class Chef
           # Options are passed to Gem::Uninstaller.new
           def uninstall(gem_name, gem_version=nil, opts={})
             gem_version ? opts[:version] = gem_version : opts[:all] = true
-            uninstaller(gem_name, opts).uninstall
+            with_correct_verbosity do
+              uninstaller(gem_name, opts).uninstall
+            end
+          end
+
+          ##
+          # Set rubygems' user interaction to ConsoleUI or SilentUI depending
+          # on our current debug level
+          def with_correct_verbosity
+            Gem::DefaultUserInteraction.ui = Chef::Log.debug? ? Gem::ConsoleUI.new : Gem::SilentUI.new
+            yield
           end
 
           def dependency_installer(opts={})
