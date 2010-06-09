@@ -73,6 +73,10 @@ class Chef
         :description => "Your AWS API Secret Access Key",
         :proc => Proc.new { |key| Chef::Config[:knife][:aws_secret_access_key] = key } 
 
+      option :prerelease,
+        :long => "--prerelease",
+        :description => "Install the pre-release chef gems"
+
       def h
         @highline ||= HighLine.new
       end
@@ -122,9 +126,14 @@ class Chef
           bootstrap.name_args = [ server.ip_address, @name_args ].flatten
           bootstrap.config[:ssh_user] = config[:ssh_user] 
           bootstrap.config[:chef_node_name] = server.id
+          bootstrap.config[:prerelease] = config[:prerelease]
           bootstrap.run
         rescue Errno::ECONNREFUSED
           puts h.color("Connection refused on SSH, retrying - CTRL-C to abort")
+          sleep 1
+          retry
+        rescue Errno::ETIMEDOUT
+          puts h.color("Connection timed out on SSH, retrying - CTRL-C to abort")
           sleep 1
           retry
         end
