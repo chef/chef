@@ -31,6 +31,7 @@ require 'chef/runner'
 require 'chef/cookbook/cookbook_collection'
 require 'chef/cookbook/file_vendor'
 require 'chef/cookbook/file_system_file_vendor'
+require 'chef/cookbook/remote_file_vendor'
 require 'ohai'
 
 class Chef
@@ -83,16 +84,15 @@ class Chef
           converge(run_context)
         else
           save_node
+
+          # Sync_cookbooks eagerly loads all files except files and templates.
+          # It returns the cookbook_hash -- the return result from
+          # /nodes/#{nodename}/cookbooks -- which we will use for our
+          # run_context.
+          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest) }
+          cookbook_hash = sync_cookbooks
+          run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
           
-          # Note: When we move to lazily loading all cookbook files,
-          # replace sync_cookbooks with a method that simply gets the
-          # cookbook manifests from the remote server (and their
-          # download URLs) from the server and feeds them to
-          # RemoteFileVendors. [cw/tim-5/11/2010, 5/23/2010]
-          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
-#          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest) }
-          sync_cookbooks
-          run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
           assert_cookbook_path_not_empty(run_context)
           save_node
           
@@ -212,7 +212,13 @@ class Chef
 
       filenames_seen = Hash.new
 
-      Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
+      # files and templates are lazily loaded, and will be done later.
+      eager_segments = Array(Chef::CookbookVersion::COOKBOOK_SEGMENTS)
+      eager_segments.delete(:files)
+      eager_segments.delete(:templates)
+      
+      eager_segments.each do |segment|
+        segment_filenames = Array.new
         cookbook.manifest[segment].each do |manifest_record|
           # segment = cookbook segment
           # remote_list = list of file hashes
@@ -237,7 +243,21 @@ class Chef
             Chef::Log.info("Storing updated #{cache_filename} in the cache.")
             Chef::FileCache.move_to(raw_file.path, cache_filename)
           else
+            Chef::Log.info("Not storing #{cache_filename}, as the cache is up to date.")
           end
+          
+          # make the segment filenames a full path.
+          full_path_cache_filename = Chef::FileCache.load(cache_filename, false)
+          segment_filenames << full_path_cache_filename
+        end
+        
+        # replace segment filenames with a full-path one.
+        if segment.to_sym == :recipes
+          cookbook.recipe_filenames = segment_filenames
+        elsif segment.to_sym == :attributes
+          cookbook.attribute_filenames = segment_filenames
+        else
+          cookbook.segment_filenames(segment).replace(segment_filenames)
         end
       end
 
@@ -263,7 +283,7 @@ class Chef
       Chef::Log.debug("Synchronizing cookbooks")
       cookbook_hash = rest.get_rest("nodes/#{node_name}/cookbooks")
       Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
-
+      
       # Remove all cookbooks no longer relevant to this node
       Chef::FileCache.find(File.join(%w{cookbooks ** *})).each do |cache_file|
         #if cache_file =~ /^cookbooks\/(.+?)\//
@@ -284,6 +304,8 @@ class Chef
       
       # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
       Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+      
+      cookbook_hash
     end
     
     # Updates the current node configuration on the server.
