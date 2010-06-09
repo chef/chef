@@ -315,7 +315,6 @@ class Chef
     # as using the normal/default/override interface.
     def method_missing(symbol, *args)
       attrs = construct_attributes
-      attrs.set_type = :normal
       attrs.send(symbol, *args)
     end
 
