@@ -16,7 +16,7 @@
           %td 
             %label.label Available Roles
           %td
-            %label.label Run List 
+            %label.label Run List
         %tr
           %td
             %div.sortable
@@ -27,8 +27,7 @@
             %div.sortable.run-list
               %ul#for_role.connectedSortable
                 - @run_list.each do |entry|
-                  - type, name, fname = @run_list.parse_entry(entry)
-                  %li{ :id => h(fname), :class => type == 'role' ? 'ui-state-highlight' : 'ui-state-default' }= h name 
+                  %li{ :id => h(entry.to_s), :class => entry.type == 'role' ? 'ui-state-highlight' : 'ui-state-default' }= h entry.name 
           %td.help
             %span.description
               Drag recipes from the list of Available Recipes section on the left, and drop them
@@ -41,7 +40,7 @@
             %div.sortable
               %ul#node_available_recipes.connectedSortable
                 - @available_recipes.each do |recipe|
-                  %li{ :id => "recipe[#{recipe}]", :class => 'ui-state-default' }= h recipe
+                  %li{ :id => "recipe[#{File.basename(recipe, ".rb")}]", :class => 'ui-state-default' }= h File.basename(recipe, ".rb")
 
     %div.group.form{:style => "position:relative;"}
       %label.label Default and Override Attributes 
