@@ -35,6 +35,7 @@ class Chef
   # or jruby.
   class ShellOut
     READ_WAIT_TIME = 0.01
+    READ_SIZE = 4096
     DEFAULT_READ_TIMEOUT = 60
     DEFAULT_ENVIRONMENT = {'LC_ALL' => 'C'}
     
@@ -303,9 +304,7 @@ class Chef
       # Get output as it happens rather than buffered
       child_stdout.sync = true
       child_stderr.sync = true
-      # Set file descriptors to non-blocking IO. man(2) fcntl
-      child_stdout.fcntl(Fcntl::F_SETFL, child_stdout.fcntl(Fcntl::F_GETFL) | Fcntl::O_NONBLOCK)
-      child_stderr.fcntl(Fcntl::F_SETFL, child_stderr.fcntl(Fcntl::F_GETFL) | Fcntl::O_NONBLOCK)
+
       true
     end
     
@@ -316,7 +315,7 @@ class Chef
     end
 
     def read_stdout_to_buffer
-      while chunk = child_stdout.read(16 * 1024)
+      while chunk = child_stdout.read_nonblock(READ_SIZE)
         @stdout << chunk
       end
     rescue Errno::EAGAIN
@@ -325,7 +324,7 @@ class Chef
     end
     
     def read_stderr_to_buffer
-      while chunk = child_stderr.read(16 * 1024)
+      while chunk = child_stderr.read_nonblock(READ_SIZE)
         @stderr << chunk
       end
     rescue Errno::EAGAIN
