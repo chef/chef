@@ -326,6 +326,13 @@ describe Chef::Node::Attribute do
   end
 
   describe "[]=" do
+    it "should let you set an attribute value when another hash has an intermediate value" do
+      @attributes.normal["the_ghost"] = { "exterminate" => "the future" }
+      @attributes.set_type = :default
+      @attributes.auto_vivifiy_on_read = true
+      lambda { @attributes["the_ghost"]["exterminate"]["tomorrow"] = false }.should_not raise_error(NoMethodError)
+    end
+
     it "should set the attribute value" do
       @attributes["longboard"] = "surfing"
       @attributes["longboard"].should == "surfing"
@@ -374,12 +381,14 @@ describe Chef::Node::Attribute do
 
     it "should get a value based on the state of the object" do
       @attributes.auto_vivifiy_on_read = true
+      @attributes.set_type = :normal
       @attributes[:foo][:bar][:baz] = "snack"
       @attributes.get_value(@attribute_hash, :baz).should == "snack"
     end
 
     it "should return nil based on the state of the object if the key does not exist" do
       @attributes.auto_vivifiy_on_read = true
+      @attributes.set_type = :normal
       @attributes[:foo][:bar][:baz] = "snack"
       @attributes.get_value(@attribute_hash, :baznatch).should == nil
     end
