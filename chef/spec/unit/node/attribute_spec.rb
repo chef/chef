@@ -381,12 +381,14 @@ describe Chef::Node::Attribute do
 
     it "should get a value based on the state of the object" do
       @attributes.auto_vivifiy_on_read = true
+      @attributes.set_type = :normal
       @attributes[:foo][:bar][:baz] = "snack"
       @attributes.get_value(@attribute_hash, :baz).should == "snack"
     end
 
     it "should return nil based on the state of the object if the key does not exist" do
       @attributes.auto_vivifiy_on_read = true
+      @attributes.set_type = :normal
       @attributes[:foo][:bar][:baz] = "snack"
       @attributes.get_value(@attribute_hash, :baznatch).should == nil
     end
