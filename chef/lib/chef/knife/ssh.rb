@@ -198,6 +198,20 @@ class Chef
         exec("screen -c #{tf.path}")
       end
 
+      def tmux
+        begin
+          Chef::Mixin::Command.run_command(:command => "tmux new-session -d -s 'knife'")
+        rescue Chef::Exceptions::Exec
+        end
+        session.servers_for.each do |server|
+          begin
+            Chef::Mixin::Command.run_command(:command => "tmux new-window -d -n '#{server.host}' -t 'knife:+' 'ssh #{server.user ? "#{server.user}@#{server.host}" : server.host}'")
+          rescue Chef::Exceptions::Exec
+          end
+        end
+        exec("tmux attach-session -t knife")
+      end
+
       def run 
         @longest = 0
 
@@ -212,6 +226,8 @@ class Chef
           interactive 
         when "screen"
           screen
+        when "tmux"
+          tmux
         else
           ssh_command(@name_args[1..-1].join(" "))
         end
