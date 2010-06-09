@@ -126,8 +126,7 @@ class Chef
             @logfile = File.new(Chef::Config[:log_location], "a")
           end
 
-          #Chef::Log.level = Chef::Config[:log_level]
-          Chef::Log.level = :debug
+          Chef::Log.level = Chef::Config[:log_level]
 
           # Build up a client
           node = Chef::Node.new
