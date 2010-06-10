@@ -130,7 +130,6 @@ class Chef
     #                                  within +timeout+ seconds (default: 60s)
     def run_command
       Chef::Log.debug("sh(#{@command})")
-      
       @child_pid = fork_subprocess
       
       configure_parent_process_file_descriptors
@@ -139,6 +138,11 @@ class Chef
       @result = nil
       read_time = 0
      
+      # Ruby 1.8.7 and 1.8.6 from mid 2009 try to allocate objects during GC
+      # when calling IO.select and IO#read. Some OS Vendors are not interested
+      # in updating their ruby packages (Apple, *cough*) and we *have to*
+      # make it work. So I give you this epic hack:
+      GC.disable
       until @status
         ready = IO.select(open_pipes, nil, nil, READ_WAIT_TIME)
         unless ready
@@ -170,6 +174,10 @@ class Chef
       Process.waitpid2(@child_pid, Process::WNOHANG) rescue nil
       raise
     ensure
+      # no matter what happens, turn the GC back on, and hope whatever busted
+      # version of ruby we're on doesn't allocate some objects during the next
+      # GC run.
+      GC.enable
       close_all_pipes
     end
     
