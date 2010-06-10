@@ -22,6 +22,7 @@ class Users < Application
   provides :json
 
   before :authenticate_every
+  before :is_admin, :only => [ :create, :destroy, :update ]
 
   # GET to /users
   def index
