@@ -146,9 +146,9 @@ class Chef
     def determine_node_name
       unless node_name
         if Chef::Config[:node_name]
-          self.node_name = Chef::Config[:node_name]
+          @node_name = Chef::Config[:node_name]
         else
-          self.node_name = ohai[:fqdn] ? ohai[:fqdn] : ohai[:hostname]
+          @node_name = ohai[:fqdn] ? ohai[:fqdn] : ohai[:hostname]
           Chef::Config[:node_name] = node_name
         end
 
@@ -163,37 +163,29 @@ class Chef
     # === Returns
     # node<Chef::Node>:: Returns the created node object, also stored in @node
     def build_node
-      Chef::Log.debug("Building node object for #{node_name}")
+      Chef::Log.debug("Building node object for #{@node_name}")
       
       unless Chef::Config[:solo]
-        self.node = begin
-                      rest.get_rest("nodes/#{node_name}")
-                    rescue Net::HTTPServerException => e
-                      raise unless e.message =~ /^404/
-                    end
+        begin
+          @node = rest.get_rest("nodes/#{@node_name}")
+        rescue Net::HTTPServerException => e
+          raise unless e.message =~ /^404/
+        end
       end
       
       unless node
         @node_exists = false
-        self.node = Chef::Node.new
-        node.name(node_name)
+        @node = Chef::Node.new
+        @node.name(node_name)
       end
 
-      node.consume_attributes(json_attribs)
-    
-      node.automatic_attrs = ohai.data
+      @node.prepare_for_run(ohai.data, @json_attribs)
+      # Need to nil-ify the json attribs so they are not applied on subsequent runs
+      @json_attribs = nil
 
-      platform, version = Chef::Platform.find_platform_and_version(node)
-      Chef::Log.debug("Platform is #{platform} version #{version}")
-      @node.automatic_attrs[:platform] = platform
-      @node.automatic_attrs[:platform_version] = version
-      # We clear defaults and overrides, so that any deleted attributes between runs are
-      # still gone.
-      @node.default_attrs = Mash.new
-      @node.override_attrs = Mash.new
       @node
     end
-   
+
     # 
     # === Returns
     # rest<Chef::REST>:: returns Chef::REST connection object
@@ -255,7 +247,7 @@ class Chef
     def cleanup_file_cache(valid_cache_entries)
       # Delete each file in the cache that we didn't encounter in the
       # manifest.
-      Chef::FileCache.list.each do |cache_filename|
+      Chef::FileCache.find(File.join(%w{cookbooks ** *})).each do |cache_filename|
         unless valid_cache_entries[cache_filename]
           Chef::Log.info("Removing #{cache_filename} from the cache; it is no longer on the server.")
           Chef::FileCache.delete(cache_filename)
@@ -273,13 +265,13 @@ class Chef
       Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
 
       # Remove all cookbooks no longer relevant to this node
-      Chef::FileCache.list.each do |cache_file|
-        if cache_file =~ /^cookbooks\/(.+?)\//
-          unless cookbook_hash.has_key?($1)
-            Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
-            Chef::FileCache.delete(cache_file) 
-          end
+      Chef::FileCache.find(File.join(%w{cookbooks ** *})).each do |cache_file|
+        #if cache_file =~ /^cookbooks\/(.+?)\//
+        unless cookbook_hash.has_key?($1)
+          Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
+          Chef::FileCache.delete(cache_file) 
         end
+        #end
       end
 
       # Synchronize each of the node's cookbooks
@@ -297,16 +289,16 @@ class Chef
     # Updates the current node configuration on the server.
     #
     # === Returns
-    # true:: Always returns true
+    # Chef::Node - the current node
     def save_node
       Chef::Log.debug("Saving the current state of node #{node_name}")
-      self.node = if node_exists
-                    rest.put_rest("nodes/#{node_name}", node)
-                  else
-                    result = rest.post_rest("nodes", node)
-                    @node_exists = true
-                    rest.get_rest(result['uri'])
-                  end
+      if node_exists
+        @node = @node.save
+      else
+        result = rest.post_rest("nodes", node)
+        @node_exists = true
+        @node = rest.get_rest(result['uri'])
+      end
     end
 
     # Converges the node.

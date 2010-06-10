@@ -184,32 +184,39 @@ describe Chef::Node do
   end
   
   describe "consuming json" do
-    it "should add any json attributes to the node" do
-      @node.consume_attributes "one" => "two", "three" => "four"
-      @node.one.should eql("two")
-      @node.three.should eql("four")
-    end
 
-    it "should allow you to set recipes from the json attributes" do
-      @node.consume_attributes "recipes" => [ "one", "two", "three" ]
-      @node.recipes.should == [ "one", "two", "three" ]
-    end
-
-    it "should overwrite the run list if you set recipes twice" do
-      @node.consume_attributes "recipes" => [ "one", "two" ]
-      @node.consume_attributes "recipes" => [ "three" ]
-      @node.recipes.should == [ "three" ]
-    end
-
-    it "should allow you to set a run_list from the json attributes" do
-      @node.consume_attributes "run_list" => [ "role[base]", "recipe[chef::server]" ]
+    it "consumes the run list portion of a collection of attributes and returns the remainder" do
+      attrs = {"run_list" => [ "role[base]", "recipe[chef::server]" ], "foo" => "bar"}
+      @node.consume_run_list(attrs).should == {"foo" => "bar"}
       @node.run_list.should == [ "role[base]", "recipe[chef::server]" ]
+    end
+
+    it "should overwrites the run list with the run list it consumes" do
+      @node.consume_run_list "recipes" => [ "one", "two" ]
+      @node.consume_run_list "recipes" => [ "three" ]
+      @node.recipes.should == [ "three" ]
     end
 
     it "should not add duplicate recipes from the json attributes" do
       @node.recipes << "one"
-      @node.consume_attributes "recipes" => [ "one", "two", "three" ]
+      @node.consume_run_list "recipes" => [ "one", "two", "three" ]
       @node.recipes.should  == [ "one", "two", "three" ]
+    end
+
+    it "doesn't change the run list if no run_list is specified in the json" do
+      @node.run_list << "role[database]"
+      @node.consume_run_list "foo" => "bar"
+      @node.run_list.should == ["role[database]"]
+    end
+
+    it "raises an exception if you provide both recipe and run_list attributes, since this is ambiguous" do
+      lambda { @node.consume_run_list "recipes" => "stuff", "run_list" => "other_stuff" }.should raise_error(Chef::Exceptions::AmbiguousRunlistSpecification)
+    end
+
+    it "should add json attributes to the node" do
+      @node.consume_attributes "one" => "two", "three" => "four"
+      @node.one.should eql("two")
+      @node.three.should eql("four")
     end
 
     it "should set the tags attribute to an empty array if it is not already defined" do
@@ -238,9 +245,52 @@ describe Chef::Node do
       @node.one.to_hash.should == {"two" => {"three" => "forty-two"}}
     end
     
-    it "raises an exception if you provide both recipe and run_list attributes, since this is ambiguous" do
-      lambda { @node.consume_attributes "recipes" => "stuff", "run_list" => "other_stuff" }.should raise_error(Chef::Exceptions::AmbiguousRunlistSpecification)
+  end
+
+  describe "preparing for a chef client run" do
+    before do
+      @ohai_data = {:platform => 'foobuntu', :platform_version => '23.42'}
     end
+
+#    @json_attribs = node.consume_run_list(json_attribs)
+#  
+#    node.automatic_attrs = ohai.data
+#
+#    platform, version = Chef::Platform.find_platform_and_version(node)
+#    Chef::Log.debug("Platform is #{platform} version #{version}")
+#    @node.automatic_attrs[:platform] = platform
+#    @node.automatic_attrs[:platform_version] = version
+#    # We clear defaults and overrides, so that any deleted attributes between runs are
+#    # still gone.
+#    @node.default_attrs = Mash.new
+#    @node.override_attrs = Mash.new
+
+    it "clears the default and override attributes" do
+      @node.default_attrs["foo"] = "bar"
+      @node.override_attrs["baz"] = "qux"
+      @node.prepare_for_run(@ohai_data, {})
+      @node.default_attrs.should be_empty
+      @node.override_attrs.should be_empty
+    end
+
+    it "sets its platform according to platform detection" do
+      @node.prepare_for_run(@ohai_data, {})
+      @node.automatic_attrs[:platform].should == 'foobuntu'
+      @node.automatic_attrs[:platform_version].should == '23.42'
+    end
+
+    it "consumes the run list from provided json attributes" do
+      @node.prepare_for_run(@ohai_data, {"run_list" => ['recipe[unicorn]']})
+      @node.run_list.should == ['recipe[unicorn]']
+    end
+
+    it "saves non-runlist json attrs for later" do
+      @node.run_list.stub!(:expand).and_return([[], {}, {}])
+      @node.prepare_for_run(@ohai_data, {"foo" => "bar"})
+      @node.expand!
+      @node.normal_attrs.should == {"foo" => "bar", "tags" => []}
+    end
+
   end
 
   # TODO: timh, cw: 2010-5-19: Node.recipe? deprecated. See node.rb

@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+CHEF_CLIENT = File.join(CHEF_PROJECT_ROOT, "chef", "bin", "chef-client")
+
 ###
 # When
 ###
@@ -59,6 +61,13 @@ When /^I run the chef\-client at log level '(.+)'$/ do |log_level|
   @log_level = log_level.to_sym
   When "I run the chef-client"
 end
+
+When 'I run the chef-client with json attributes' do
+  @log_level = :debug
+  @chef_args = "-j #{File.join(FEATURES_DATA, 'json_attribs', 'attribute_settings.json')}"
+  When "I run the chef-client"
+end
+  
 
 When /^I run the chef\-client with config file '(.+)'$/ do |config_file|
   @config_file = config_file

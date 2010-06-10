@@ -85,7 +85,8 @@ class Chef
       # Retrieve the fully expanded list of recipes for the node by
       # resolving roles; this step also merges attributes into the
       # node from the roles/recipes included.
-      recipe_names = node.expand_node!
+      recipe_names = node.expand!
+
       recipe_names.each do |recipe_name|
         # TODO: timh/cw, 5-14-2010: It's distasteful to be including
         # the DSL in a class outside the context of the DSL

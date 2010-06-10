@@ -41,9 +41,12 @@ describe Chef::Client, "run" do
 
     # Fake node
     node = Chef::Node.new(HOSTNAME)
+    node.name(FQDN)
     node[:platform] = "example-platform"
     node[:platform_version] = "example-platform-1.0"
-    
+
+    #node.stub!(:expand!)
+
     mock_chef_rest_for_node = OpenStruct.new({ })
     mock_chef_rest_for_client = OpenStruct.new({ })
     mock_couchdb = OpenStruct.new({ })
@@ -59,6 +62,7 @@ describe Chef::Client, "run" do
     Chef::Config[:client_key] = temp_client_key_file.path
 
     #   Client.register will register with the validation client name.
+    Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url]).at_least(1).times.and_return(mock_chef_rest_for_node)
     Chef::REST.should_receive(:new).with(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).and_return(mock_chef_rest_for_client)
     mock_chef_rest_for_client.should_receive(:register).with(FQDN, Chef::Config[:client_key]).and_return(true)
     #   Client.register will then turn around create another
