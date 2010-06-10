@@ -147,12 +147,44 @@ def print_output
   puts @stderr
 end
 
+# Matcher for regular expression which uses normal string interpolation for
+# the actual (target) value instead of expecting it, as stdout/stderr which
+# get matched against may have lots of newlines, which looks ugly when
+# inspected, as the newlines show up as \n
+class NoInspectMatch
+  def initialize(expected_regex)
+    @expected_regex = expected_regex
+  end
+  def matches?(target)
+    @target = target
+    @target =~ @expected_regex
+  end
+  def failure_message
+    "expected #{@target} should match #{@expected_regex}"
+  end
+  def negative_failure_message
+    "expected #{@target} not to match #{@expected_regex}"
+  end
+end
+def noinspect_match(expected_regex)
+  NoInspectMatch.new(expected_regex)
+end
+
+
 Then /^'(.+)' should have '(.+)'$/ do |which, to_match|
-  self.instance_variable_get("@#{which}".to_sym).should match(/#{to_match}/m)
+  if which == "stdout" || which == "stderr"
+    self.instance_variable_get("@#{which}".to_sym).should noinspect_match(/#{to_match}/m)
+  else
+    self.instance_variable_get("@#{which}".to_sym).should match(/#{to_match}/m)
+  end    
 end
 
 Then /^'(.+)' should not have '(.+)'$/ do |which, to_match|
-  self.instance_variable_get("@#{which}".to_sym).should_not match(/#{to_match}/m)
+  if which == "stdout" || which == "stderr"
+    self.instance_variable_get("@#{which}".to_sym).should_not noinspect_match(/#{to_match}/m)
+  else
+    self.instance_variable_get("@#{which}".to_sym).should_not match(/#{to_match}/m)
+  end
 end
 
 Then /^'(.+)' should appear on '(.+)' '(.+)' times$/ do |to_match, which, count|

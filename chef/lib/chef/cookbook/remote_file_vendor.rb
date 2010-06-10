@@ -18,21 +18,17 @@
 
 require 'chef/cookbook/file_vendor'
 
-# This FileVendor loads files from Chef::Config.cookbook_path. The
-# thing that's sort of janky about this FileVendor implementation is
-# that it basically takes only the cookbook's name from the manifest
-# and throws the rest away then re-builds the list of files on the
-# disk. This is due to the manifest not having the on-disk file
-# locations, since in the chef-client case, that information is
-# non-sensical.
+# This FileVendor loads files by either fetching them from the local cache, or
+# if not available, loading them from the remote server.
 class Chef
   class Cookbook
     class RemoteFileVendor < FileVendor
       
-      def initialize(manifest, rest)
+      def initialize(manifest, rest, valid_cache_entries)
         @manifest = manifest
         @cookbook_name = @manifest[:cookbook_name]
         @rest = rest
+        @valid_cache_entries = valid_cache_entries
       end
       
       # Implements abstract base's requirement. It looks in the
@@ -42,15 +38,18 @@ class Chef
         if filename =~ /([^\/]+)\/(.+)$/
           segment = $1
         else
-          raise "get_filename: cannot determine segment/filename for incoming filename #{filename}"
+          raise "get_filename: Cannot determine segment/filename for incoming filename #{filename}"
         end
         
-        raise "no such segment #{segment} in cookbook #{@cookbook_name}" unless @manifest[segment]
+        raise "No such segment #{segment} in cookbook #{@cookbook_name}" unless @manifest[segment]
         found_manifest_record = @manifest[segment].find {|manifest_record| manifest_record[:path] == filename }
-        puts "@manifest = #{@manifest.inspect}"
-        raise "no such file #{filename} in #{@cookbook_name}" unless found_manifest_record
+        raise "No such file #{filename} in #{@cookbook_name}" unless found_manifest_record
         
         cache_filename = File.join("cookbooks", @cookbook_name, found_manifest_record['path'])
+        
+        # update valid_cache_entries so the upstream cache cleaner knows what
+        # we've used.
+        @valid_cache_entries[cache_filename] = true
 
         current_checksum = nil
         if Chef::FileCache.has_key?(cache_filename)
@@ -66,11 +65,10 @@ class Chef
           Chef::Log.info("Storing updated #{cache_filename} in the cache.")
           Chef::FileCache.move_to(raw_file.path, cache_filename)
         else
-          Chef::Log.info("Not storing #{cache_filename}, as the cache is up to date.")
+          Chef::Log.debug("Not storing #{cache_filename}, as the cache is up to date.")
         end
 
         full_path_cache_filename = Chef::FileCache.load(cache_filename, false)
-        Chef::Log.debug("full_path_cache_filename = #{full_path_cache_filename}")
 
         # return the filename, not the contents (second argument= false)
         full_path_cache_filename

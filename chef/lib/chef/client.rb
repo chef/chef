@@ -83,14 +83,20 @@ class Chef
           assert_cookbook_path_not_empty(run_context)
           converge(run_context)
         else
+          # Keep track of the filenames that we use in both eager cookbook
+          # downloading (during sync_cookbooks) and lazy (during the run
+          # itself, through FileVendor). After the run is over, clean up the
+          # cache.
+          valid_cache_entries = Hash.new
+          
           save_node
 
           # Sync_cookbooks eagerly loads all files except files and templates.
           # It returns the cookbook_hash -- the return result from
           # /nodes/#{nodename}/cookbooks -- which we will use for our
           # run_context.
-          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest) }
-          cookbook_hash = sync_cookbooks
+          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest, valid_cache_entries) }
+          cookbook_hash = sync_cookbooks(valid_cache_entries)
           run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
           
           assert_cookbook_path_not_empty(run_context)
@@ -98,6 +104,8 @@ class Chef
           
           converge(run_context)
           save_node
+          
+          cleanup_file_cache(valid_cache_entries)
         end
         
         end_time = Time.now
@@ -200,17 +208,46 @@ class Chef
       self.rest = Chef::REST.new(Chef::Config[:chef_server_url], node_name, Chef::Config[:client_key])
     end
     
+    # Synchronizes all the cookbooks from the chef-server.
+    #
+    # === Returns
+    # true:: Always returns true
+    def sync_cookbooks(valid_cache_entries)
+      Chef::Log.debug("Synchronizing cookbooks")
+      cookbook_hash = rest.get_rest("nodes/#{node_name}/cookbooks")
+      Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
+      
+      # Remove all cookbooks no longer relevant to this node
+      Chef::FileCache.find(File.join(%w{cookbooks ** *})).each do |cache_file|
+        cache_file =~ /^cookbooks\/([^\/]+)\//
+        unless cookbook_hash.has_key?($1)
+          Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
+          Chef::FileCache.delete(cache_file) 
+        end
+      end
+
+      # Synchronize each of the node's cookbooks, and add to the
+      # valid_cache_entries hash.
+      cookbook_hash.values.each do |cookbook|
+        sync_cookbook_file_cache(cookbook, valid_cache_entries)
+      end
+
+      # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
+      Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+      
+      cookbook_hash
+    end
+    
     # Update the file caches for a given cache segment.  Takes a segment name
     # and a hash that matches one of the cookbooks/_attribute_files style
     # remote file listings.
     #
     # === Parameters
-    # segment<String>:: The cache segment to update
-    # remote_list<Hash>:: A cookbooks/_attribute_files style remote file listing
-    def sync_cookbook_file_cache(cookbook)
+    # cookbook<Chef::Cookbook>:: The cookbook to update
+    # valid_cache_entries<Hash>:: Out-param; Added to this hash are the files that 
+    # were referred to by this cookbook
+    def sync_cookbook_file_cache(cookbook, valid_cache_entries)
       Chef::Log.debug("Synchronizing cookbook #{cookbook.name}")
-
-      filenames_seen = Hash.new
 
       # files and templates are lazily loaded, and will be done later.
       eager_segments = Array(Chef::CookbookVersion::COOKBOOK_SEGMENTS)
@@ -227,7 +264,7 @@ class Chef
           # just laying about.
         
           cache_filename = File.join("cookbooks", cookbook.name, manifest_record['path'])
-          filenames_seen[cache_filename] = true
+          valid_cache_entries[cache_filename] = true
 
           current_checksum = nil
           if Chef::FileCache.has_key?(cache_filename)
@@ -243,7 +280,7 @@ class Chef
             Chef::Log.info("Storing updated #{cache_filename} in the cache.")
             Chef::FileCache.move_to(raw_file.path, cache_filename)
           else
-            Chef::Log.info("Not storing #{cache_filename}, as the cache is up to date.")
+            Chef::Log.debug("Not storing #{cache_filename}, as the cache is up to date.")
           end
           
           # make the segment filenames a full path.
@@ -260,8 +297,6 @@ class Chef
           cookbook.segment_filenames(segment).replace(segment_filenames)
         end
       end
-
-      filenames_seen
     end
     
     def cleanup_file_cache(valid_cache_entries)
@@ -275,39 +310,6 @@ class Chef
       end
     end
 
-    # Synchronizes all the cookbooks from the chef-server.
-    #
-    # === Returns
-    # true:: Always returns true
-    def sync_cookbooks
-      Chef::Log.debug("Synchronizing cookbooks")
-      cookbook_hash = rest.get_rest("nodes/#{node_name}/cookbooks")
-      Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
-      
-      # Remove all cookbooks no longer relevant to this node
-      Chef::FileCache.find(File.join(%w{cookbooks ** *})).each do |cache_file|
-        #if cache_file =~ /^cookbooks\/(.+?)\//
-        unless cookbook_hash.has_key?($1)
-          Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
-          Chef::FileCache.delete(cache_file) 
-        end
-        #end
-      end
-
-      # Synchronize each of the node's cookbooks
-      valid_cache_entries = cookbook_hash.values.inject({}) do |memo, cookbook|
-        memo.merge!(sync_cookbook_file_cache(cookbook))
-        memo
-      end
-
-      cleanup_file_cache(valid_cache_entries)
-      
-      # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
-      Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
-      
-      cookbook_hash
-    end
-    
     # Updates the current node configuration on the server.
     #
     # === Returns
