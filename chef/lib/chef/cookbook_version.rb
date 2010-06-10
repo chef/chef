@@ -34,7 +34,6 @@ class Chef
       :library_filenames, :resource_filenames, :provider_filenames, :root_filenames, :name,
       :metadata, :metadata_filenames, :status, :couchdb_rev, :couchdb
     attr_reader :couchdb_id
-    attr_reader :file_vendor
 
     # attribute_filenames also has a setter that has non-default
     # functionality.
@@ -379,7 +378,6 @@ class Chef
         file_vendor.get_filename(manifest_record['path'])
       end
     end
-
 
     def relative_filenames_in_preferred_directory(node, segment, dirname)
       preferences = preferences_for_path(node, segment, dirname)
@@ -802,9 +800,15 @@ class Chef
       manifest[:name] = full_name
 
       @checksums = checksums_to_on_disk_paths
-      @file_vendor = Chef::Cookbook::FileVendor.create_from_manifest(manifest)
       @manifest = manifest
       @manifest_records_by_path = extract_manifest_records_by_path(manifest)
+    end
+    
+    def file_vendor
+      unless @file_vendor
+        @file_vendor = Chef::Cookbook::FileVendor.create_from_manifest(manifest)
+      end
+      @file_vendor
     end
 
     def extract_checksums_from_manifest(manifest)
