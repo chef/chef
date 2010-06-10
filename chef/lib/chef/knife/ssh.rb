@@ -205,7 +205,7 @@ class Chef
         end
         session.servers_for.each do |server|
           begin
-            Chef::Mixin::Command.run_command(:command => "tmux new-window -d -n '#{server.host}' -t 'knife:+' 'ssh #{server.user ? "#{server.user}@#{server.host}" : server.host}'")
+            Chef::Mixin::Command.run_command(:command => "tmux new-window -d -n '#{server.host}' -t 'knife' 'ssh #{server.user ? "#{server.user}@#{server.host}" : server.host}'")
           rescue Chef::Exceptions::Exec
           end
         end
