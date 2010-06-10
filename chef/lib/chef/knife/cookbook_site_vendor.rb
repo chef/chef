@@ -32,7 +32,7 @@ class Chef
        :description => "Grab dependencies automatically"
 
       def run
-        vendor_path = File.join(Chef::Config[:cookbook_path].first)
+        vendor_path = File.expand_path(File.join(Chef::Config[:cookbook_path].first))
         cookbook_path = File.join(vendor_path, name_args[0])
         upstream_file = File.join(vendor_path, "#{name_args[0]}.tar.gz")
         branch_name = "chef-vendor-#{name_args[0]}"
