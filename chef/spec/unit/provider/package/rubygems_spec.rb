@@ -18,10 +18,22 @@
 #
 require 'pp'
 
+module GemspecBackcompatCreator
+  def gemspec(name, version)
+    if Gem::Specification.new.method(:initialize).arity == 0
+      Gem::Specification.new { |s| s.name = name; s.version = version }
+    else
+      Gem::Specification.new(name, version)
+    end
+  end
+end
+
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
 require 'ostruct'
 
 describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
+  include GemspecBackcompatCreator
+
   before do
     @gem_env = Chef::Provider::Package::Rubygems::CurrentGemEnvironment.new
   end
@@ -31,7 +43,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   end
 
   it "determines the installed versions of gems from Gem.source_index" do
-    gems = [Gem::Specification.new('rspec', Gem::Version.new('1.2.9')), Gem::Specification.new('rspec', Gem::Version.new('1.3.0'))]
+    gems = [gemspec('rspec', Gem::Version.new('1.2.9')), gemspec('rspec', Gem::Version.new('1.3.0'))]
     Gem.source_index.should_receive(:search).with(Gem::Dependency.new('rspec', nil)).and_return(gems)
     @gem_env.installed_versions(Gem::Dependency.new('rspec', nil)).should == gems
   end
@@ -71,46 +83,46 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   end
 
   it "finds a matching gem candidate version" do
-    dep = Gem::Dependency.new('rspec')
+    dep = Gem::Dependency.new('rspec', '>= 0')
     dep_installer = Gem::DependencyInstaller.new
     @gem_env.stub!(:dependency_installer).and_return(dep_installer)
-    latest = [[Gem::Specification.new("rspec", Gem::Version.new("1.3.0")), "http://rubygems.org/"]]
+    latest = [[gemspec("rspec", Gem::Version.new("1.3.0")), "http://rubygems.org/"]]
     dep_installer.should_receive(:find_gems_with_sources).with(dep).and_return(latest)
-    @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec')).should == Gem::Version.new('1.3.0')
+    @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0')).should == Gem::Version.new('1.3.0')
   end
 
   it "gives the candidate version as nil if none is found" do
-    dep = Gem::Dependency.new('rspec')
+    dep = Gem::Dependency.new('rspec', '>= 0')
     latest = []
     dep_installer = Gem::DependencyInstaller.new
     @gem_env.stub!(:dependency_installer).and_return(dep_installer)
     dep_installer.should_receive(:find_gems_with_sources).with(dep).and_return(latest)
-    @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec')).should be_nil
+    @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0')).should be_nil
   end
 
   it "finds a matching candidate version from a .gem file when the path to the gem is supplied" do
     location = CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem'
-    @gem_env.candidate_version_from_file(Gem::Dependency.new('chef-integration-test'), location).should == Gem::Version.new('0.1.0')
+    @gem_env.candidate_version_from_file(Gem::Dependency.new('chef-integration-test', '>= 0'), location).should == Gem::Version.new('0.1.0')
     @gem_env.candidate_version_from_file(Gem::Dependency.new('chef-integration-test', '>= 0.2.0'), location).should be_nil
   end
 
   it "finds a matching gem from a specific gemserver when explicit sources are given" do
-    dep = Gem::Dependency.new('rspec')
-    latest = [[Gem::Specification.new("rspec", Gem::Version.new("1.3.0")), "http://rubygems.org/"]]
+    dep = Gem::Dependency.new('rspec', '>= 0')
+    latest = [[gemspec("rspec", Gem::Version.new("1.3.0")), "http://rubygems.org/"]]
 
     @gem_env.should_receive(:with_gem_sources).with('http://gems.example.com').and_yield
     dep_installer = Gem::DependencyInstaller.new
     @gem_env.stub!(:dependency_installer).and_return(dep_installer)
     dep_installer.should_receive(:find_gems_with_sources).with(dep).and_return(latest)
-    @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec'), 'http://gems.example.com').should == Gem::Version.new('1.3.0')
+    @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>=0'), 'http://gems.example.com').should == Gem::Version.new('1.3.0')
   end
 
   it "installs a gem with a hash of options for the dependency installer" do
     dep_installer = Gem::DependencyInstaller.new
     @gem_env.should_receive(:dependency_installer).with(:install_dir => '/foo/bar').and_return(dep_installer)
     @gem_env.should_receive(:with_gem_sources).with('http://gems.example.com').and_yield
-    dep_installer.should_receive(:install).with(Gem::Dependency.new('rspec'))
-    @gem_env.install(Gem::Dependency.new('rspec'), :install_dir => '/foo/bar', :sources => ['http://gems.example.com'])
+    dep_installer.should_receive(:install).with(Gem::Dependency.new('rspec', '>= 0'))
+    @gem_env.install(Gem::Dependency.new('rspec', '>= 0'), :install_dir => '/foo/bar', :sources => ['http://gems.example.com'])
   end
 
   it "builds an uninstaller for a gem with options set to avoid requiring user input" do
@@ -137,6 +149,8 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
 end
 
 describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
+  include GemspecBackcompatCreator
+
   before do
     Chef::Provider::Package::Rubygems::AlternateGemEnvironment.gempath_cache.clear
     Chef::Provider::Package::Rubygems::AlternateGemEnvironment.platform_cache.clear
@@ -175,7 +189,7 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
   end
 
   it "determines the installed versions of gems from the source index" do
-    gems = [Gem::Specification.new('rspec', Gem::Version.new('1.2.9')), Gem::Specification.new('rspec', Gem::Version.new('1.3.0'))]
+    gems = [gemspec('rspec', Gem::Version.new('1.2.9')), gemspec('rspec', Gem::Version.new('1.3.0'))]
     @gem_env.stub!(:gem_source_index).and_return(Gem.source_index)
     @gem_env.gem_source_index.should_receive(:search).with(Gem::Dependency.new('rspec', nil)).and_return(gems)
     @gem_env.installed_versions(Gem::Dependency.new('rspec', nil)).should == gems

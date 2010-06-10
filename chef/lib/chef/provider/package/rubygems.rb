@@ -348,7 +348,7 @@ class Chef
 
         def all_installed_versions
           @all_installed_versions ||= begin
-            @gem_env.installed_versions(Gem::Dependency.new(gem_dependency.name))
+            @gem_env.installed_versions(Gem::Dependency.new(gem_dependency.name, '>= 0'))
           end
         end
 
