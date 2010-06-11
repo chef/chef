@@ -189,7 +189,7 @@ class Chef
         if File.exist? "#{ENV["HOME"]}/.screenrc"
           tf.puts("source #{ENV["HOME"]}/.screenrc")
         end
-        tf.puts("caption always '%w'")
+        tf.puts("caption always '%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<'")
         tf.puts("hardstatus alwayslastline 'knife ssh #{@name_args[0]}'")
         window = 0
         session.servers_for.each do |server|
