@@ -565,14 +565,16 @@ class Chef
     # invalidated only when run_list is mutated?
     def expand!
       # This call should only be called on a chef-client run.
-      recipes, expanded_default_attrs, expanded_override_attrs = run_list.expand('server')
+      expansion = run_list.expand('server')
+      raise Chef::Exceptions::MissingRole if expansion.errors?
+
       Chef::Log.debug("Applying attributes from json file")
       @normal_attrs = Chef::Mixin::DeepMerge.merge(@normal_attrs, @json_attrib_for_expansion)
       self[:tags] = Array.new unless attribute?(:tags)
-      @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expanded_default_attrs)
-      @override_attrs = Chef::Mixin::DeepMerge.merge(override_attrs, expanded_override_attrs)
+      @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
+      @override_attrs = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
 
-      recipes
+      expansion.recipes
     end
     
   end

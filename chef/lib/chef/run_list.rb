@@ -124,7 +124,7 @@ class Chef
 
       expansion = expansion_for_data_source(data_source, :couchdb => couchdb, :rest => rest)
       expansion.expand
-      return expansion.recipes, expansion.default_attrs, expansion.override_attrs
+      expansion
     end
 
     # Converts a string run list entry to a RunListItem object.
