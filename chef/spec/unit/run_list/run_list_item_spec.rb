@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Chef::RunList::RunListItem do
-  
+
   describe "when creating an item from a string" do
     it "parses a qualified recipe" do
       item = Chef::RunList::RunListItem.new("recipe[rage]")
@@ -28,7 +28,7 @@ describe Chef::RunList::RunListItem do
       item.to_s.should == 'recipe[rage]'
       item.name.should == 'rage'
     end
-    
+
     it "parses a qualified role" do
       item = Chef::RunList::RunListItem.new("role[fist]")
       item.should be_a_role
@@ -36,7 +36,7 @@ describe Chef::RunList::RunListItem do
       item.to_s.should == 'role[fist]'
       item.name.should == 'fist'
     end
-    
+
     it "parses an unqualified recipe" do
       item = Chef::RunList::RunListItem.new("lobster")
       item.should be_a_recipe
@@ -45,27 +45,27 @@ describe Chef::RunList::RunListItem do
       item.name.should == 'lobster'
     end
   end
-  
+
   describe "comparing to other run list items" do
     it "is equal to another run list item that has the same name and type" do
       item1 = Chef::RunList::RunListItem.new('recipe[lrf]')
       item2 = Chef::RunList::RunListItem.new('recipe[lrf]')
       item1.should == item2
     end
-    
+
     it "is not equal to another run list item with the same name and different type" do
       item1 = Chef::RunList::RunListItem.new('recipe[lrf]')
       item2 = Chef::RunList::RunListItem.new('role[lrf]')
       item1.should_not == item2
     end
-    
+
     it "is not equal to another run list item with the same type and different name" do
       item1 = Chef::RunList::RunListItem.new('recipe[lrf]')
       item2 = Chef::RunList::RunListItem.new('recipe[lobsterragefist]')
       item1.should_not == item2
     end
   end
-  
+
   describe "comparing to strings" do
     it "is equal to a string if that string matches its to_s representation" do
       Chef::RunList::RunListItem.new('recipe[lrf]').should == 'recipe[lrf]'
