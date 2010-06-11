@@ -37,6 +37,7 @@ Feature: Set default, normal, and override attributes
 
   Scenario: Set a normal attribute in a cookbook attribute file
     Given a validated node
+      And a 'role' named 'attribute_settings_default' exists
       And it includes the role 'attribute_settings_default'
       And it includes the recipe 'attribute_settings::default_in_recipe'
       And it includes the recipe 'attribute_settings_normal'
@@ -48,6 +49,7 @@ Feature: Set default, normal, and override attributes
 
   Scenario: Set a normal attribute in a cookbook recipe 
     Given a validated node
+      And a 'role' named 'attribute_settings_default' exists
       And it includes the role 'attribute_settings_default'
       And it includes the recipe 'attribute_settings::default_in_recipe'
       And it includes the recipe 'attribute_settings_normal::normal_in_recipe'
@@ -59,6 +61,7 @@ Feature: Set default, normal, and override attributes
 
   Scenario: Set a override attribute in a cookbook attribute file
     Given a validated node
+      And a 'role' named 'attribute_settings_default' exists
       And it includes the role 'attribute_settings_default'
       And it includes the recipe 'attribute_settings::default_in_recipe'
       And it includes the recipe 'attribute_settings_normal::normal_in_recipe'

@@ -114,8 +114,8 @@ class Nodes < Application
   def cookbooks_for_node(node_name, all_cookbooks)
     # get node's explicit dependencies
     node = Chef::Node.cdb_load(node_name)
-    
-    #run_list_items, default_attrs, override_attrs = node.run_list.expand('couchdb')
+
+    # expand returns a RunListExpansion which contains recipes, default and override attrs [cb]
     recipes = node.run_list.expand('couchdb').recipes
 
     # walk run list and accumulate included dependencies
