@@ -66,8 +66,8 @@ class Chef
       if other.kind_of?(Chef::RunList)
         other.run_list_items == @run_list_items
       else
-        other_run_list_items = other
-        return false unless other_run_list_items.size == @run_list_items.size
+        return false unless other.respond_to?(:size) && (other.size == @run_list_items.size)
+        other_run_list_items = other.dup
 
         other_run_list_items.map! { |item| item.kind_of?(RunListItem) ? item : RunListItem.new(item) }
         other_run_list_items == @run_list_items
@@ -124,7 +124,7 @@ class Chef
 
       expansion = expansion_for_data_source(data_source, :couchdb => couchdb, :rest => rest)
       expansion.expand
-      return expansion.recipes, expansion.default_attrs, expansion.override_attrs
+      expansion
     end
 
     # Converts a string run list entry to a RunListItem object.

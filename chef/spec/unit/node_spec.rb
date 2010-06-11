@@ -285,7 +285,8 @@ describe Chef::Node do
     end
 
     it "saves non-runlist json attrs for later" do
-      @node.run_list.stub!(:expand).and_return([[], {}, {}])
+      expansion = Chef::RunList::RunListExpansion.new([])
+      @node.run_list.stub!(:expand).and_return(expansion)
       @node.prepare_for_run(@ohai_data, {"foo" => "bar"})
       @node.expand!
       @node.normal_attrs.should == {"foo" => "bar", "tags" => []}
