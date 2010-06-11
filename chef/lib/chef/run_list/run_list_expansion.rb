@@ -63,6 +63,8 @@ class Chef
         @errors.length > 0
       end
 
+      alias :invalid? :errors?
+
       # Iterates over the run list items, expanding roles. After this,
       # +recipes+ will contain the fully expanded recipe list
       def expand

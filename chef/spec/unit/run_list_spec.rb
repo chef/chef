@@ -182,19 +182,19 @@ describe Chef::RunList do
     end
 
     it "should return the list of expanded recipes" do
-      recipes, default, override = @run_list.expand
-      recipes[0].should == "one"
-      recipes[1].should == "two"
+      expansion = @run_list.expand
+      expansion.recipes[0].should == "one"
+      expansion.recipes[1].should == "two"
     end
 
     it "should return the list of default attributes" do
-      recipes, default, override = @run_list.expand
-      default[:one].should == :two
+      expansion = @run_list.expand
+      expansion.default_attrs[:one].should == :two
     end
 
     it "should return the list of override attributes" do
-      recipes, default, override = @run_list.expand
-      override[:three].should == :four
+      expansion = @run_list.expand
+      expansion.override_attrs[:three].should == :four
     end
 
     it "should recurse into a child role" do
@@ -206,9 +206,9 @@ describe Chef::RunList do
       Chef::Role.stub!(:from_disk).with("stubby").and_return(@role)
       Chef::Role.stub!(:from_disk).with("dog").and_return(dog)
 
-      recipes, default, override = @run_list.expand('disk')
-      recipes[2].should == "three"
-      default[:seven].should == :nine
+      expansion = @run_list.expand('disk')
+      expansion.recipes[2].should == "three"
+      expansion.default_attrs[:seven].should == :nine
     end
 
     it "should not recurse infinitely" do
@@ -220,14 +220,10 @@ describe Chef::RunList do
       Chef::Role.stub!(:from_disk).with("stubby").and_return(@role)
       Chef::Role.should_receive(:from_disk).with("dog").once.and_return(dog)
 
-      recipes, default, override = @run_list.expand('disk')
-      recipes[2].should == "three"
-      recipes[3].should == "kitty"
-      default[:seven].should == :nine
-    end
-
-    it "propagates the couchdb used as the data source when expanding" do
-      pending("FIXME: this is the cause of the sharding bug on opscode platform :/")
+      expansion = @run_list.expand('disk')
+      expansion.recipes[2].should == "three"
+      expansion.recipes[3].should == "kitty"
+      expansion.default_attrs[:seven].should == :nine
     end
 
   end

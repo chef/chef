@@ -80,4 +80,22 @@ describe Chef::RunList::RunListExpansion do
       @expansion.override_attrs.should == {'baz' => 'qux'}
     end
   end
+
+  describe "after expanding a run list with a non existant role" do
+    before do
+      @expansion.stub!(:fetch_role) { @expansion.role_not_found('crabrevenge') }
+      @expansion.expand
+    end
+
+    it "is invalid" do
+      @expansion.should be_invalid
+      @expansion.errors?.should be_true # aliases
+    end
+
+    it "has a list of invalid role names" do
+      @expansion.errors.should include('crabrevenge')
+    end
+
+  end
+
 end
