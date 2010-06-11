@@ -20,7 +20,8 @@
         #user-navigation
           %ul
             - if session[:user]
-              %li= link_to "Logout #{h session[:user]} (#{session[:level].to_s})", url(:users_logout), :method => "get", :confirm => "Are you sure you want to logout?"
+              %li= link_to "Edit account", url(:users_edit, :user_id => session[:user]), :method => 'get'
+              %li= link_to "Logout #{h session[:user]} (#{session[:level].to_s})", url(:users_logout), :method => 'get', :confirm => "Are you sure you want to logout?"
             - else
               %li= link_to "Login", url(:users_login), :rel => "facebox"
           .clear
@@ -49,7 +50,7 @@
           = catch_content :for_layout
           #footer
             .block
-              %p Copyright &copy; 2009 Opscode
+              %p Copyright &copy; 2010 Opscode
         #sidebar
           .block.notice#sidebar_block_notice= catch_content :sidebar_block_notice
           .block#sidebar_block= catch_content :sidebar_block

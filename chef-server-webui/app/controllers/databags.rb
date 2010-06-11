@@ -21,7 +21,8 @@ require 'chef' / 'data_bag'
 class Databags < Application
   
   provides :html, :json
-  before :login_required 
+  before :login_required
+  before :require_admin
   
   def new
     @databag = Chef::DataBag.new
