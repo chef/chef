@@ -64,7 +64,7 @@ class Chef
       end
 
       # Iterates over the run list items, expanding roles. After this,
-      # +recipes+ will the fully expanded recipe list
+      # +recipes+ will contain the fully expanded recipe list
       def expand
         @run_list_items.each_with_index do |entry, index|
           case entry.type
