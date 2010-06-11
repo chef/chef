@@ -84,6 +84,11 @@ class Chef
       def build_from_file(cookbook_name, filename)
         pname = filename_to_qualified_string(cookbook_name, filename)
         
+        # Add log entry if we override an existing light-weight provider.
+        class_name = convert_to_class_name(pname)
+        overriding = Chef::Provider.const_defined?(class_name)
+        Chef::Log.info("#{class_name} light-weight provider already initialized -- overriding!") if overriding
+        
         new_provider_class = Class.new self do |cls|
           
           def load_current_resource
