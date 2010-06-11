@@ -66,7 +66,7 @@ class Chef::Application
   def configure_chef
     parse_options
 
-    if not File.file?(config[:config_file])
+    unless config[:config_file] && File.file?(config[:config_file])
       Chef::Log.warn("*****************************************")
       Chef::Log.warn("Can not find config file: #{config[:config_file]}, using defaults.")
       Chef::Log.warn("*****************************************")
