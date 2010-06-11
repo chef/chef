@@ -186,6 +186,9 @@ class Chef
 
       def screen
         tf = Tempfile.new("knife-ssh-screen")
+        if File.exist? "#{ENV["HOME"]}/.screenrc"
+          tf.puts("source #{ENV["HOME"]}/.screenrc")
+        end
         tf.puts("caption always '%w'")
         tf.puts("hardstatus alwayslastline 'knife ssh #{@name_args[0]}'")
         window = 0
