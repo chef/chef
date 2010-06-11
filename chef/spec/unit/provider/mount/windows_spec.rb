@@ -35,6 +35,7 @@ REMOTE = "\\\\server-name\\path"
 describe Chef::Provider::Mount::Windows do
   before(:each) do
     @node = Chef::Node.new
+    @run_context = Chef::RunContext.new(@node, {})
     @new_resource = Chef::Resource::Mount.new("X:")
     @new_resource.device GUID
     @current_resource = Chef::Resource::Mount.new("X:")
@@ -45,7 +46,7 @@ describe Chef::Provider::Mount::Windows do
     @vol = mock("Chef::Util::Windows::Volume")
     Chef::Util::Windows::Volume.stub!(:new).and_return(@vol)
 
-    @provider = Chef::Provider::Mount::Windows.new(@node, @new_resource)
+    @provider = Chef::Provider::Mount::Windows.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
 
