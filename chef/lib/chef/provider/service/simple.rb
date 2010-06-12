@@ -56,7 +56,7 @@ class Chef
             end
             status = popen4(ps_cmd) do |pid, stdin, stdout, stderr|
               r = Regexp.new(@new_resource.pattern)
-              Chef::Log.debug "#{@new_resource}: attempting to match '#{@new_resource.pattern}' (#{r}) against process list"
+              Chef::Log.debug "#{@new_resource}: attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
               stdout.each_line do |line|
                 if r.match(line)
                   @current_resource.running true
