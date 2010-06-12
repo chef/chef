@@ -76,6 +76,7 @@ class Chef
                  end
                  r
                end
+        (Chef::Log.fatal("No nodes returned from search!"); exit 10) if list.length == 0
         session_from_list(list)
       end
 
@@ -212,6 +213,20 @@ class Chef
         exec("tmux attach-session -t knife")
       end
 
+      def macterm
+        require 'appscript'
+        Appscript.app("/Applications/Utilities/Terminal.app").windows.first.activate  
+        Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", :using=>:command_down)
+        term = Appscript.app('Terminal')  
+        window = term.windows.first.get
+        session.servers_for.each do |server|
+          Appscript.app("System Events").application_processes["Terminal.app"].keystroke("t", :using=>:command_down)
+          cmd = "unset PROMPT_COMMAND; echo -e \"\\033]0;#{server.host}\\007\"; ssh #{server.user ? "#{server.user}@#{server.host}" : server.host}"
+          Appscript.app('Terminal').do_script(cmd, :in => window.tabs.last.get)
+          sleep 1
+        end
+      end
+
       def run 
         @longest = 0
 
@@ -228,6 +243,8 @@ class Chef
           screen
         when "tmux"
           tmux
+        when "macterm"
+          macterm
         else
           ssh_command(@name_args[1..-1].join(" "))
         end
