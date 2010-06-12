@@ -32,7 +32,12 @@ class Chef
        :description => "Grab dependencies automatically"
 
       def run
-        vendor_path = File.join(Chef::Config[:cookbook_path].first)
+        if config[:cookbook_path]
+          vendor_path = File.expand_path(File.join(config[:cookbook_path].first))
+        else
+          Chef::Log.warn("cookbook path is not configured in your knife.rb, using the current directory for the cookbook repo")
+          vendor_path = Dir.pwd
+        end
         cookbook_path = File.join(vendor_path, name_args[0])
         upstream_file = File.join(vendor_path, "#{name_args[0]}.tar.gz")
         branch_name = "chef-vendor-#{name_args[0]}"

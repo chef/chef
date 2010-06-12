@@ -216,36 +216,34 @@ describe Chef::ShellOut do
       cmd.stderr.should == ''
     end
 
-    unless RUBY_VERSION == "1.8.7"
-      it "doesn't hang or lose output when a process closes one of stdout/stderr and continues writing to the other" do
-        halfandhalf = %q{ruby -e 'STDOUT.close;sleep 0.5;STDERR.puts :win'}
-        cmd = Chef::ShellOut.new(halfandhalf)
-        cmd.run_command
-        cmd.stderr.should == "win\n"
-      end
+    it "doesn't hang or lose output when a process closes one of stdout/stderr and continues writing to the other" do
+      halfandhalf = %q{ruby -e 'STDOUT.close;sleep 0.5;STDERR.puts :win'}
+      cmd = Chef::ShellOut.new(halfandhalf)
+      cmd.run_command
+      cmd.stderr.should == "win\n"
+    end
 
-      it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
-        chatty = %q{ruby -e "puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000"}
-        cmd = Chef::ShellOut.new(chatty)
-        cmd.run_command
-        cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
-        cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
-      end
+    it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
+      chatty = %q{ruby -e "puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000"}
+      cmd = Chef::ShellOut.new(chatty)
+      cmd.run_command
+      cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
+      cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
+    end
 
-      it "does not deadlock when the subprocess writes lots of data to both stdout and stderr (part2)" do
-        chatty = %q{ruby -e "STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000"}
-        cmd = Chef::ShellOut.new(chatty)
-        cmd.run_command
-        cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
-        cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
-      end
-      
-      it "doesn't hang or lose output when a process writes, pauses, then continues writing" do
-        stop_and_go = %q{ruby -e 'puts "before";sleep 0.5;puts"after"'}
-        cmd = Chef::ShellOut.new(stop_and_go)
-        cmd.run_command
-        cmd.stdout.should == "before\nafter\n"
-      end
+    it "does not deadlock when the subprocess writes lots of data to both stdout and stderr (part2)" do
+      chatty = %q{ruby -e "STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000"}
+      cmd = Chef::ShellOut.new(chatty)
+      cmd.run_command
+      cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
+      cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
+    end
+    
+    it "doesn't hang or lose output when a process writes, pauses, then continues writing" do
+      stop_and_go = %q{ruby -e 'puts "before";sleep 0.5;puts"after"'}
+      cmd = Chef::ShellOut.new(stop_and_go)
+      cmd.run_command
+      cmd.stdout.should == "before\nafter\n"
     end
     
     it "doesn't hang or lose output when a process pauses before writing" do

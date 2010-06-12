@@ -31,6 +31,7 @@ require 'chef/runner'
 require 'chef/cookbook/cookbook_collection'
 require 'chef/cookbook/file_vendor'
 require 'chef/cookbook/file_system_file_vendor'
+require 'chef/cookbook/remote_file_vendor'
 require 'ohai'
 
 class Chef
@@ -82,22 +83,29 @@ class Chef
           assert_cookbook_path_not_empty(run_context)
           converge(run_context)
         else
-          save_node
+          # Keep track of the filenames that we use in both eager cookbook
+          # downloading (during sync_cookbooks) and lazy (during the run
+          # itself, through FileVendor). After the run is over, clean up the
+          # cache.
+          valid_cache_entries = Hash.new
           
-          # Note: When we move to lazily loading all cookbook files,
-          # replace sync_cookbooks with a method that simply gets the
-          # cookbook manifests from the remote server (and their
-          # download URLs) from the server and feeds them to
-          # RemoteFileVendors. [cw/tim-5/11/2010, 5/23/2010]
-          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
-#          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest) }
-          sync_cookbooks
-          run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
+          save_node
+
+          # Sync_cookbooks eagerly loads all files except files and templates.
+          # It returns the cookbook_hash -- the return result from
+          # /nodes/#{nodename}/cookbooks -- which we will use for our
+          # run_context.
+          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest, valid_cache_entries) }
+          cookbook_hash = sync_cookbooks(valid_cache_entries)
+          run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
+          
           assert_cookbook_path_not_empty(run_context)
           save_node
           
           converge(run_context)
           save_node
+          
+          cleanup_file_cache(valid_cache_entries)
         end
         
         end_time = Time.now
@@ -146,9 +154,9 @@ class Chef
     def determine_node_name
       unless node_name
         if Chef::Config[:node_name]
-          self.node_name = Chef::Config[:node_name]
+          @node_name = Chef::Config[:node_name]
         else
-          self.node_name = ohai[:fqdn] ? ohai[:fqdn] : ohai[:hostname]
+          @node_name = ohai[:fqdn] ? ohai[:fqdn] : ohai[:hostname]
           Chef::Config[:node_name] = node_name
         end
 
@@ -163,37 +171,29 @@ class Chef
     # === Returns
     # node<Chef::Node>:: Returns the created node object, also stored in @node
     def build_node
-      Chef::Log.debug("Building node object for #{node_name}")
+      Chef::Log.debug("Building node object for #{@node_name}")
       
       unless Chef::Config[:solo]
-        self.node = begin
-                      rest.get_rest("nodes/#{node_name}")
-                    rescue Net::HTTPServerException => e
-                      raise unless e.message =~ /^404/
-                    end
+        begin
+          @node = rest.get_rest("nodes/#{@node_name}")
+        rescue Net::HTTPServerException => e
+          raise unless e.message =~ /^404/
+        end
       end
       
       unless node
         @node_exists = false
-        self.node = Chef::Node.new
-        node.name(node_name)
+        @node = Chef::Node.new
+        @node.name(node_name)
       end
 
-      node.consume_attributes(json_attribs)
-    
-      node.automatic_attrs = ohai.data
+      @node.prepare_for_run(ohai.data, @json_attribs)
+      # Need to nil-ify the json attribs so they are not applied on subsequent runs
+      @json_attribs = nil
 
-      platform, version = Chef::Platform.find_platform_and_version(node)
-      Chef::Log.debug("Platform is #{platform} version #{version}")
-      @node.automatic_attrs[:platform] = platform
-      @node.automatic_attrs[:platform_version] = version
-      # We clear defaults and overrides, so that any deleted attributes between runs are
-      # still gone.
-      @node.default_attrs = Mash.new
-      @node.override_attrs = Mash.new
       @node
     end
-   
+
     # 
     # === Returns
     # rest<Chef::REST>:: returns Chef::REST connection object
@@ -208,19 +208,54 @@ class Chef
       self.rest = Chef::REST.new(Chef::Config[:chef_server_url], node_name, Chef::Config[:client_key])
     end
     
+    # Synchronizes all the cookbooks from the chef-server.
+    #
+    # === Returns
+    # true:: Always returns true
+    def sync_cookbooks(valid_cache_entries)
+      Chef::Log.debug("Synchronizing cookbooks")
+      cookbook_hash = rest.get_rest("nodes/#{node_name}/cookbooks")
+      Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
+      
+      # Remove all cookbooks no longer relevant to this node
+      Chef::FileCache.find(File.join(%w{cookbooks ** *})).each do |cache_file|
+        cache_file =~ /^cookbooks\/([^\/]+)\//
+        unless cookbook_hash.has_key?($1)
+          Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
+          Chef::FileCache.delete(cache_file) 
+        end
+      end
+
+      # Synchronize each of the node's cookbooks, and add to the
+      # valid_cache_entries hash.
+      cookbook_hash.values.each do |cookbook|
+        sync_cookbook_file_cache(cookbook, valid_cache_entries)
+      end
+
+      # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
+      Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
+      
+      cookbook_hash
+    end
+    
     # Update the file caches for a given cache segment.  Takes a segment name
     # and a hash that matches one of the cookbooks/_attribute_files style
     # remote file listings.
     #
     # === Parameters
-    # segment<String>:: The cache segment to update
-    # remote_list<Hash>:: A cookbooks/_attribute_files style remote file listing
-    def sync_cookbook_file_cache(cookbook)
+    # cookbook<Chef::Cookbook>:: The cookbook to update
+    # valid_cache_entries<Hash>:: Out-param; Added to this hash are the files that 
+    # were referred to by this cookbook
+    def sync_cookbook_file_cache(cookbook, valid_cache_entries)
       Chef::Log.debug("Synchronizing cookbook #{cookbook.name}")
 
-      filenames_seen = Hash.new
-
-      Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
+      # files and templates are lazily loaded, and will be done later.
+      eager_segments = Array(Chef::CookbookVersion::COOKBOOK_SEGMENTS)
+      eager_segments.delete(:files)
+      eager_segments.delete(:templates)
+      
+      eager_segments.each do |segment|
+        segment_filenames = Array.new
         cookbook.manifest[segment].each do |manifest_record|
           # segment = cookbook segment
           # remote_list = list of file hashes
@@ -229,7 +264,7 @@ class Chef
           # just laying about.
         
           cache_filename = File.join("cookbooks", cookbook.name, manifest_record['path'])
-          filenames_seen[cache_filename] = true
+          valid_cache_entries[cache_filename] = true
 
           current_checksum = nil
           if Chef::FileCache.has_key?(cache_filename)
@@ -245,17 +280,29 @@ class Chef
             Chef::Log.info("Storing updated #{cache_filename} in the cache.")
             Chef::FileCache.move_to(raw_file.path, cache_filename)
           else
+            Chef::Log.debug("Not storing #{cache_filename}, as the cache is up to date.")
           end
+          
+          # make the segment filenames a full path.
+          full_path_cache_filename = Chef::FileCache.load(cache_filename, false)
+          segment_filenames << full_path_cache_filename
+        end
+        
+        # replace segment filenames with a full-path one.
+        if segment.to_sym == :recipes
+          cookbook.recipe_filenames = segment_filenames
+        elsif segment.to_sym == :attributes
+          cookbook.attribute_filenames = segment_filenames
+        else
+          cookbook.segment_filenames(segment).replace(segment_filenames)
         end
       end
-
-      filenames_seen
     end
     
     def cleanup_file_cache(valid_cache_entries)
       # Delete each file in the cache that we didn't encounter in the
       # manifest.
-      Chef::FileCache.list.each do |cache_filename|
+      Chef::FileCache.find(File.join(%w{cookbooks ** *})).each do |cache_filename|
         unless valid_cache_entries[cache_filename]
           Chef::Log.info("Removing #{cache_filename} from the cache; it is no longer on the server.")
           Chef::FileCache.delete(cache_filename)
@@ -263,50 +310,19 @@ class Chef
       end
     end
 
-    # Synchronizes all the cookbooks from the chef-server.
-    #
-    # === Returns
-    # true:: Always returns true
-    def sync_cookbooks
-      Chef::Log.debug("Synchronizing cookbooks")
-      cookbook_hash = rest.get_rest("nodes/#{node_name}/cookbooks")
-      Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
-
-      # Remove all cookbooks no longer relevant to this node
-      Chef::FileCache.list.each do |cache_file|
-        if cache_file =~ /^cookbooks\/(.+?)\//
-          unless cookbook_hash.has_key?($1)
-            Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
-            Chef::FileCache.delete(cache_file) 
-          end
-        end
-      end
-
-      # Synchronize each of the node's cookbooks
-      valid_cache_entries = cookbook_hash.values.inject({}) do |memo, cookbook|
-        memo.merge!(sync_cookbook_file_cache(cookbook))
-        memo
-      end
-
-      cleanup_file_cache(valid_cache_entries)
-      
-      # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
-      Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
-    end
-    
     # Updates the current node configuration on the server.
     #
     # === Returns
-    # true:: Always returns true
+    # Chef::Node - the current node
     def save_node
       Chef::Log.debug("Saving the current state of node #{node_name}")
-      self.node = if node_exists
-                    rest.put_rest("nodes/#{node_name}", node)
-                  else
-                    result = rest.post_rest("nodes", node)
-                    @node_exists = true
-                    rest.get_rest(result['uri'])
-                  end
+      if node_exists
+        @node = @node.save
+      else
+        result = rest.post_rest("nodes", node)
+        @node_exists = true
+        @node = rest.get_rest(result['uri'])
+      end
     end
 
     # Converges the node.

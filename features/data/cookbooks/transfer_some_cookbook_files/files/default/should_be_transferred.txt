@@ -1,0 +1,3 @@
+This file should be transferred, since it's referred to in a "cookbook_file" directive in the
+default recipe.
+

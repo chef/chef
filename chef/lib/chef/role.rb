@@ -209,25 +209,11 @@ class Chef
     # Remove this role from the CouchDB
     def cdb_destroy
       couchdb.delete("role", @name, couchdb_rev)
-
-      rs = couchdb.get_view("nodes", "by_run_list", :startkey => "role[#{@name}]", :endkey => "role[#{@name}]", :include_docs => true)
-      rs["rows"].each do |row|
-        node = row["doc"]
-        node.run_list.remove("role[#{@name}]")
-        node.cdb_save
-      end
     end
 
     # Remove this role via the REST API
     def destroy
       chef_server_rest.delete_rest("roles/#{@name}")
-
-      Chef::Node.list.each do |node|
-        n = Chef::Node.load(node[0])
-        n.run_list.remove("role[#{@name}]")
-        n.save
-      end
-
     end
 
     # Save this role to the CouchDB

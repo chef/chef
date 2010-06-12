@@ -31,7 +31,7 @@ class Chef
       #
       # === Parameters
       # path<String>:: The path to the file you want to put in the cache - should
-      #   be relative to Chef::Config[:file_cache_path]
+      #   be relative to file_cache_path
       # contents<String>:: A string with the contents you want written to the file
       #
       # === Returns
@@ -51,9 +51,9 @@ class Chef
         file_path_array = File.split(path)
         file_name = file_path_array.pop
         cache_path = create_cache_path(File.join(file_path_array))
-        io = File.open(File.join(cache_path, file_name), "w")
-        io.print(contents)
-        io.close
+        File.open(File.join(cache_path, file_name), "w") do |io|
+          io.print(contents)
+        end
         true
       end
 
@@ -90,7 +90,7 @@ class Chef
       #
       # === Parameters
       # path<String>:: The path to the file you want to load - should
-      #   be relative to Chef::Config[:file_cache_path]
+      #   be relative to file_cache_path
       # read<True/False>:: Whether to return the file contents, or the path.
       #   Defaults to true.
       #
@@ -121,7 +121,7 @@ class Chef
       #
       # === Parameters
       # path<String>:: The path to the file you want to delete - should
-      #   be relative to Chef::Config[:file_cache_path]
+      #   be relative to file_cache_path
       #
       # === Returns
       # true
@@ -145,12 +145,19 @@ class Chef
       #
       # === Returns
       # Array:: An array of files in the cache, suitable for use with load, delete and store
-      def list()
+      def list
+        find("**#{File::Separator}*")
+      end
+
+      ##
+      # Find files in the cache by +glob_pattern+
+      # === Returns
+      # [String] - An array of file cache keys matching the glob
+      def find(glob_pattern)
         keys = Array.new
-        Dir[File.join(Chef::Config[:file_cache_path], '**', '*')].each do |f|
+        Dir[File.join(file_cache_path, glob_pattern)].each do |f|
           if File.file?(f)
-            path = f.match("^#{Dir[Chef::Config[:file_cache_path]].first}\/(.+)")[1]
-            keys << path
+            keys << f[/^#{Regexp.escape(Dir[file_cache_path].first) + File::Separator}(.+)/, 1]
           end
         end
         keys
@@ -160,7 +167,7 @@ class Chef
       #
       # === Parameters
       # path:: The path to the file you want to check - is relative
-      #   to Chef::Config[:file_cache_path]
+      #   to file_cache_path
       #
       # === Returns
       # True:: If the file exists
@@ -186,18 +193,24 @@ class Chef
       # also creates the path if it does not exist.
       #
       # === Parameters
-      # path:: The path to create, relative to Chef::Config[:file_cache_path]
+      # path:: The path to create, relative to file_cache_path
       # create_if_missing:: True by default - whether to create the path if it does not exist
       #
       # === Returns
       # String:: The fully expanded path
       def create_cache_path(path, create_if_missing=true)
-        cache_dir = File.expand_path(File.join(Chef::Config[:file_cache_path], path))
+        cache_dir = File.expand_path(File.join(file_cache_path, path))
         if create_if_missing
           create_path(cache_dir)
         else
           cache_dir
         end
+      end
+
+      private
+
+      def file_cache_path
+        Chef::Config[:file_cache_path]
       end
 
     end

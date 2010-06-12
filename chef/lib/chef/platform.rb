@@ -132,7 +132,8 @@ class Chef
               :env =>  Chef::Provider::Env::Windows,
               :service => Chef::Provider::Service::Windows,
               :user => Chef::Provider::User::Windows,
-              :group => Chef::Provider::Group::Windows
+              :group => Chef::Provider::Group::Windows,
+              :mount => Chef::Provider::Mount::Windows
             }
           },
           :mingw32 => {
@@ -140,7 +141,8 @@ class Chef
               :env =>  Chef::Provider::Env::Windows,
               :service => Chef::Provider::Service::Windows,
               :user => Chef::Provider::User::Windows,
-              :group => Chef::Provider::Group::Windows
+              :group => Chef::Provider::Group::Windows,
+              :mount => Chef::Provider::Mount::Windows
             }
           },
           :windows => {
@@ -148,7 +150,8 @@ class Chef
               :env =>  Chef::Provider::Env::Windows,
               :service => Chef::Provider::Service::Windows,
               :user => Chef::Provider::User::Windows,
-              :group => Chef::Provider::Group::Windows
+              :group => Chef::Provider::Group::Windows,
+              :mount => Chef::Provider::Mount::Windows
             }
           },
           :solaris  => {},

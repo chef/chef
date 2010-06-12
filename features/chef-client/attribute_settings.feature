@@ -37,6 +37,7 @@ Feature: Set default, normal, and override attributes
 
   Scenario: Set a normal attribute in a cookbook attribute file
     Given a validated node
+      And a 'role' named 'attribute_settings_default' exists
       And it includes the role 'attribute_settings_default'
       And it includes the recipe 'attribute_settings::default_in_recipe'
       And it includes the recipe 'attribute_settings_normal'
@@ -48,6 +49,7 @@ Feature: Set default, normal, and override attributes
 
   Scenario: Set a normal attribute in a cookbook recipe 
     Given a validated node
+      And a 'role' named 'attribute_settings_default' exists
       And it includes the role 'attribute_settings_default'
       And it includes the recipe 'attribute_settings::default_in_recipe'
       And it includes the recipe 'attribute_settings_normal::normal_in_recipe'
@@ -59,6 +61,7 @@ Feature: Set default, normal, and override attributes
 
   Scenario: Set a override attribute in a cookbook attribute file
     Given a validated node
+      And a 'role' named 'attribute_settings_default' exists
       And it includes the role 'attribute_settings_default'
       And it includes the recipe 'attribute_settings::default_in_recipe'
       And it includes the recipe 'attribute_settings_normal::normal_in_recipe'
@@ -116,4 +119,15 @@ Feature: Set default, normal, and override attributes
      Then the run should exit '0'
       And a file named 'attribute_setting.txt' should contain 'snakes'
 
-
+  @chef1286
+  Scenario: Attributes are provided as JSON via the command line
+    Given a validated node
+      And it includes the recipe 'attribute_settings_normal'
+     When I run the chef-client with json attributes
+     Then the run should exit '0'
+     Then a file named 'attribute_setting.txt' should contain 'from_json_file'
+     When the node is retrieved from the API
+     Then the inflated responses key 'attribute_priority_was' should match 'from_json_file'
+  
+  
+  

@@ -22,7 +22,8 @@ require 'spec/expectations'
 CHEF_PROJECT_ROOT = File.expand_path(File.dirname(__FILE__) + '/../../')
 KNIFE_CONFIG = CHEF_PROJECT_ROOT + '/features/data/config/knife.rb'
 KNIFE_CMD = File.expand_path(File.join(CHEF_PROJECT_ROOT, "chef", "bin", "knife"))
-INTEGRATION_COOKBOOKS = File.join(CHEF_PROJECT_ROOT, "features", "data", "cookbooks")
+FEATURES_DATA = File.join(CHEF_PROJECT_ROOT, "features", "data")
+INTEGRATION_COOKBOOKS = File.join(FEATURES_DATA, "cookbooks")
 
 $:.unshift(CHEF_PROJECT_ROOT + '/chef/lib')
 $:.unshift(CHEF_PROJECT_ROOT + '/chef-server-api/lib')

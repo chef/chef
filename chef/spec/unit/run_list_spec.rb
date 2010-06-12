@@ -182,19 +182,19 @@ describe Chef::RunList do
     end
 
     it "should return the list of expanded recipes" do
-      recipes, default, override = @run_list.expand
-      recipes[0].should == "one"
-      recipes[1].should == "two"
+      expansion = @run_list.expand
+      expansion.recipes[0].should == "one"
+      expansion.recipes[1].should == "two"
     end
 
     it "should return the list of default attributes" do
-      recipes, default, override = @run_list.expand
-      default[:one].should == :two
+      expansion = @run_list.expand
+      expansion.default_attrs[:one].should == :two
     end
 
     it "should return the list of override attributes" do
-      recipes, default, override = @run_list.expand
-      override[:three].should == :four
+      expansion = @run_list.expand
+      expansion.override_attrs[:three].should == :four
     end
 
     it "should recurse into a child role" do
@@ -206,9 +206,9 @@ describe Chef::RunList do
       Chef::Role.stub!(:from_disk).with("stubby").and_return(@role)
       Chef::Role.stub!(:from_disk).with("dog").and_return(dog)
 
-      recipes, default, override = @run_list.expand('disk')
-      recipes[2].should == "three"
-      default[:seven].should == :nine
+      expansion = @run_list.expand('disk')
+      expansion.recipes[2].should == "three"
+      expansion.default_attrs[:seven].should == :nine
     end
 
     it "should not recurse infinitely" do
@@ -220,134 +220,11 @@ describe Chef::RunList do
       Chef::Role.stub!(:from_disk).with("stubby").and_return(@role)
       Chef::Role.should_receive(:from_disk).with("dog").once.and_return(dog)
 
-      recipes, default, override = @run_list.expand('disk')
-      recipes[2].should == "three"
-      recipes[3].should == "kitty"
-      default[:seven].should == :nine
+      expansion = @run_list.expand('disk')
+      expansion.recipes[2].should == "three"
+      expansion.recipes[3].should == "kitty"
+      expansion.default_attrs[:seven].should == :nine
     end
 
-    it "propagates the couchdb used as the data source when expanding" do
-      pending("FIXME: this is the cause of the sharding bug on opscode platform :/")
-    end
-
-  end
-end
-
-describe Chef::RunList::RunListItem do
-  
-  describe "when creating an item from a string" do
-    it "parses a qualified recipe" do
-      item = Chef::RunList::RunListItem.new("recipe[rage]")
-      item.should be_a_recipe
-      item.should_not be_a_role
-      item.to_s.should == 'recipe[rage]'
-      item.name.should == 'rage'
-    end
-    
-    it "parses a qualified role" do
-      item = Chef::RunList::RunListItem.new("role[fist]")
-      item.should be_a_role
-      item.should_not be_a_recipe
-      item.to_s.should == 'role[fist]'
-      item.name.should == 'fist'
-    end
-    
-    it "parses an unqualified recipe" do
-      item = Chef::RunList::RunListItem.new("lobster")
-      item.should be_a_recipe
-      item.should_not be_a_role
-      item.to_s.should == 'recipe[lobster]'
-      item.name.should == 'lobster'
-    end
-  end
-  
-  describe "comparing to other run list items" do
-    it "is equal to another run list item that has the same name and type" do
-      item1 = Chef::RunList::RunListItem.new('recipe[lrf]')
-      item2 = Chef::RunList::RunListItem.new('recipe[lrf]')
-      item1.should == item2
-    end
-    
-    it "is not equal to another run list item with the same name and different type" do
-      item1 = Chef::RunList::RunListItem.new('recipe[lrf]')
-      item2 = Chef::RunList::RunListItem.new('role[lrf]')
-      item1.should_not == item2
-    end
-    
-    it "is not equal to another run list item with the same type and different name" do
-      item1 = Chef::RunList::RunListItem.new('recipe[lrf]')
-      item2 = Chef::RunList::RunListItem.new('recipe[lobsterragefist]')
-      item1.should_not == item2
-    end
-  end
-  
-  describe "comparing to strings" do
-    it "is equal to a string if that string matches its to_s representation" do
-      Chef::RunList::RunListItem.new('recipe[lrf]').should == 'recipe[lrf]'
-    end
-  end
-end
-
-describe Chef::RunList::RunListExpansion do
-  before do
-    @run_list = Chef::RunList.new
-    @run_list << 'recipe[lobster]' << 'role[rage]' << 'recipe[fist]'
-    @expansion = Chef::RunList::RunListExpansion.new(@run_list.run_list_items)
-  end
-  
-  describe "before expanding the run list" do
-    it "has an array of run list items" do
-      @expansion.run_list_items.should == @run_list.run_list_items
-    end
-  
-    it "has default_attrs" do
-      @expansion.default_attrs.should == Mash.new
-    end
-  
-    it "has override attrs" do
-      @expansion.override_attrs.should == Mash.new
-    end
-  
-    it "it has an empty list of recipes" do
-      @expansion.should have(0).recipes
-    end
-    
-    it "has not applied its roles" do
-      @expansion.applied_role?('rage').should be_false
-    end
-  end
-  
-  describe "after applying a role" do
-    before do
-      @expansion.applied_role('rage')
-    end
-    
-    it "tracks the applied role" do
-      @expansion.applied_role?('rage').should be_true
-    end
-    
-    it "does not inflate the role again" do
-      @expansion.inflate_role('rage').should be_false
-    end
-  end
-  
-  describe "after expanding a run list" do
-    before do
-      @inflated_role = Chef::Role.new
-      @inflated_role.run_list('recipe[crabrevenge]')
-      @inflated_role.default_attributes({'foo' => 'bar'})
-      @inflated_role.override_attributes({'baz' => 'qux'})
-      @expansion.stub!(:fetch_role).and_return(@inflated_role)
-      @expansion.expand
-    end
-    
-    it "has the ordered list of recipes" do
-      @expansion.recipes.should == ['lobster', 'crabrevenge', 'fist']
-    end
-    
-    it "has the merged attributes from the roles" do
-      @expansion.default_attrs.should == {'foo' => 'bar'}
-      @expansion.override_attrs.should == {'baz' => 'qux'}
-    end
   end
 end

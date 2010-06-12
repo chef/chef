@@ -66,6 +66,12 @@ class Chef::Application
   def configure_chef
     parse_options
 
+    unless config[:config_file] && File.file?(config[:config_file])
+      Chef::Log.warn("*****************************************")
+      Chef::Log.warn("Can not find config file: #{config[:config_file]}, using defaults.")
+      Chef::Log.warn("*****************************************")
+    end
+
     Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exists?(config[:config_file]) && File.readable?(config[:config_file])
     Chef::Config.merge!(config)
   end

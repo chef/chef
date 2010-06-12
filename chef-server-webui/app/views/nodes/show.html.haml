@@ -24,7 +24,7 @@
                       %td= run_list_item.type
           .left.accordion
             %h3.head= link_to("Recipes", "#")
-            - full_recipe_list, default_attrs, override_attrs = @node.run_list.expand()
+            - recipes = @node.run_list.expand('server').recipes
             %div
               %span.description.form.help
                 This is the list of recipes, fully expanded, as they will be applied to the node in question.  
@@ -36,10 +36,10 @@
                   %tr
                     %td{:colspan => 2} This node has no recipes applied.
                 - else
-                  - full_recipe_list.each_index do |i|
+                  - full_recipe_list.each do |recipe|
                     %tr
                       %td.position= i
-                      %td= full_recipe_list[i]
+                      %td= recipe
             
           .left
             %h3 Tags 

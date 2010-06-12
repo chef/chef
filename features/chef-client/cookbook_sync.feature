@@ -28,7 +28,7 @@ Feature: Synchronize cookbooks from the server
     Given we have an empty file named 'cookbooks/synchronize_deps/recipes/woot.rb' in the client cache
      When I run the chef-client with '-l info'
      Then the run should exit '0'
-      And 'stdout' should have 'INFO: Removing cookbooks/synchronize_deps/recipes/woot.rb from the cache; it is no longer on the server.'
+      And 'stdout' should have 'INFO: Removing cookbooks/synchronize_deps/recipes/woot.rb from the cache'
 
   Scenario: Remove cookbooks that are no longer needed 
     Given a validated node

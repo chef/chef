@@ -33,7 +33,7 @@ describe Chef::Provider::Directory do
   end
   
   it "should load the current resource based on the new resource" do
-    File.should_receive(:exist?).once.and_return(true)
+    File.stub!(:exist?).and_return(true)
     File.should_receive(:directory?).once.and_return(true)
     cstats = mock("stats", :null_object => true)
     cstats.stub!(:uid).and_return(500)

@@ -51,7 +51,7 @@ class Chef
         @state = state
         @auto_vivifiy_on_read = false
         @set_unless_value_present = false
-        @set_type = :normal
+        @set_type = nil
         @has_been_read = false
       end
 
@@ -93,12 +93,23 @@ class Chef
         # See the comments in []= for more details.
         @has_been_read = true
 
-        a_value = value_or_descend(current_automatic, key, auto_vivifiy_on_read && @set_type == :automatic)
-        o_value = value_or_descend(current_override, key, auto_vivifiy_on_read && @set_type == :override)
-        n_value = value_or_descend(current_normal, key, auto_vivifiy_on_read && @set_type == :normal)
-        d_value = value_or_descend(current_default, key, auto_vivifiy_on_read && @set_type == :default)
+        # If we have a set type, our destiny is to write 
+        if @set_type
+          a_value = @set_type == :automatic ? value_or_descend(current_automatic, key, auto_vivifiy_on_read) : nil
+          o_value = @set_type == :override ? value_or_descend(current_override, key, auto_vivifiy_on_read) : nil
+          n_value = @set_type == :normal ? value_or_descend(current_normal, key, auto_vivifiy_on_read) : nil
+          d_value = @set_type == :default ? value_or_descend(current_default, key, auto_vivifiy_on_read) : nil
 
-        determine_value(a_value, o_value, n_value, d_value)
+          determine_value(a_value, o_value, n_value, d_value)
+        # Our destiny is only to read, so we get the full list. 
+        else
+          a_value = value_or_descend(current_automatic, key)
+          o_value = value_or_descend(current_override, key)
+          n_value = value_or_descend(current_normal, key)
+          d_value = value_or_descend(current_default, key)
+
+          determine_value(a_value, o_value, n_value, d_value)
+        end
       end
 
       def attribute?(key)
@@ -309,6 +320,9 @@ class Chef
       end
 
       def []=(key, value)
+        # If we don't have one, then we'll pretend we're normal
+        @set_type ||= :normal
+
         if set_unless_value_present
           if get_value(set_type_hash, key) != nil
             Chef::Log.debug("Not setting #{state.join("/")}/#{key} to #{value.inspect} because it has a #{@set_type} value already")

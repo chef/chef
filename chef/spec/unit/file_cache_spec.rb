@@ -18,108 +18,97 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
-describe Chef::FileCache, "store method" do
-  before(:each) do
-    Chef::Config[:file_cache_path] = "/tmp/foo"
-    Dir.stub!(:mkdir).and_return(true)
-    File.stub!(:directory?).and_return(true)
-    @io = mock("IO", { :print => true, :close => true })
-    File.stub!(:open).and_return(@io)
+describe Chef::FileCache do
+  before do
+    @file_cache_path = Dir.mktmpdir
+    Chef::Config[:file_cache_path] = @file_cache_path
+    @io = StringIO.new
   end
 
-  it "should create the directories leading up to bang" do
-    File.stub!(:directory?).and_return(false)
-    Dir.should_receive(:mkdir).with("/tmp").and_return(true)
-    Dir.should_receive(:mkdir).with("/tmp/foo").and_return(true)
-    Dir.should_receive(:mkdir).with("/tmp/foo/whiz").and_return(true)
-    Dir.should_not_receive(:mkdir).with("/tmp/foo/whiz/bang").and_return(true)
-    Chef::FileCache.store("whiz/bang", "I found a poop")
+  after do
+    FileUtils.rm_rf(Chef::Config[:file_cache_path])
   end
 
-  it "should create a file at /tmp/foo/whiz/bang" do
-    File.should_receive(:open).with("/tmp/foo/whiz/bang", "w").and_return(@io)
-    Chef::FileCache.store("whiz/bang", "I found a poop")
+  describe "when the relative path to the cache file doesn't exist" do
+    it "creates intermediate directories as needed" do
+      Chef::FileCache.store("whiz/bang", "I found a poop")
+      File.should exist(File.join(@file_cache_path, 'whiz'))
+    end
+
+    it "creates the cached file at the correct relative path" do
+      File.should_receive(:open).with(File.join(@file_cache_path, 'whiz', 'bang'), "w").and_yield(@io)
+      Chef::FileCache.store("whiz/bang", "borkborkbork")
+    end
+
+  end
+  
+  describe "when storing a file" do
+    before do
+      File.stub!(:open).and_yield(@io)
+    end
+
+    it "should print the contents to the file" do
+      Chef::FileCache.store("whiz/bang", "borkborkbork")
+      @io.string.should == "borkborkbork"
+    end
+
   end
 
-  it "should print the contents to the file" do
-    @io.should_receive(:print).with("I found a poop")
-    Chef::FileCache.store("whiz/bang", "I found a poop")
+  describe "when loading cached files" do
+    it "finds and reads the cached file" do
+      FileUtils.mkdir_p(File.join(@file_cache_path, 'whiz'))
+      File.open(File.join(@file_cache_path, 'whiz', 'bang'), 'w') { |f| f.print("borkborkbork") }
+      Chef::FileCache.load('whiz/bang').should == 'borkborkbork'
+    end
+
+    it "should raise a Chef::Exceptions::FileNotFound if the file doesn't exist" do
+      lambda { Chef::FileCache.load('whiz/bang') }.should raise_error(Chef::Exceptions::FileNotFound)
+    end
   end
 
-  it "should close the file" do
-    @io.should_receive(:close)
-    Chef::FileCache.store("whiz/bang", "I found a poop")
+  describe "when deleting cached files" do
+    before(:each) do
+      FileUtils.mkdir_p(File.join(@file_cache_path, 'whiz'))
+      File.open(File.join(@file_cache_path, 'whiz', 'bang'), 'w') { |f| f.print("borkborkbork") }
+    end
+
+    it "unlinks the file" do
+      Chef::FileCache.delete("whiz/bang")
+      File.should_not exist(File.join(@file_cache_path, 'whiz', 'bang'))
+    end
+
   end
 
-end
+  describe "when listing files in the cache" do
+    before(:each) do
+      FileUtils.mkdir_p(File.join(@file_cache_path, 'whiz'))
+      FileUtils.touch(File.join(@file_cache_path, 'whiz', 'bang'))
+      FileUtils.mkdir_p(File.join(@file_cache_path, 'snappy'))
+      FileUtils.touch(File.join(@file_cache_path, 'snappy', 'patter'))
+    end
 
-describe Chef::FileCache, "load method" do
-  before(:each) do
-    Chef::Config[:file_cache_path] = "/tmp/foo"
-    Dir.stub!(:mkdir).and_return(true)
-    File.stub!(:directory?).and_return(true)
-    File.stub!(:exists?).and_return(true)
-    File.stub!(:read).and_return("I found a poop")
+    it "should return the relative paths" do
+      Chef::FileCache.list.sort.should == %w{snappy/patter whiz/bang}
+    end
+
+    it "searches for cached files by globbing" do
+      Chef::FileCache.find('snappy/**/*').should == %w{snappy/patter}
+    end
+
   end
 
-  it "should find the full path to whiz/bang" do
-    File.should_receive(:read).with("/tmp/foo/whiz/bang").and_return(true)
-    Chef::FileCache.load('whiz/bang')
-  end
+  describe "when checking for the existence of a file" do
+    before do
+      FileUtils.mkdir_p(File.join(@file_cache_path, 'whiz'))
+    end
 
-  it "should raise a Chef::Exceptions::FileNotFound if the file doesn't exist" do
-    File.stub!(:exists?).and_return(false)
-    lambda { Chef::FileCache.load('whiz/bang') }.should raise_error(Chef::Exceptions::FileNotFound)
-  end
-end
+    it "has a key if the corresponding cache file exists" do
+      FileUtils.touch(File.join(@file_cache_path, 'whiz', 'bang'))
+      Chef::FileCache.should have_key("whiz/bang")
+    end
 
-describe Chef::FileCache, "delete method" do
-  before(:each) do
-    Chef::Config[:file_cache_path] = "/tmp/foo"
-    Dir.stub!(:mkdir).and_return(true)
-    File.stub!(:directory?).and_return(true)
-    File.stub!(:exists?).and_return(true)
-    File.stub!(:unlink).and_return(true)
-  end
-
-  it "should unlink the full path to whiz/bang" do
-    File.should_receive(:unlink).with("/tmp/foo/whiz/bang").and_return(true)
-    Chef::FileCache.delete("whiz/bang")
-  end
-
-end
-
-describe Chef::FileCache, "list method" do
-  before(:each) do
-    Chef::Config[:file_cache_path] = "/tmp/foo"
-    Dir.stub!(:[]).with(File.join(Chef::Config[:file_cache_path], '**', '*')).and_return(["/tmp/foo/whiz/bang", "/tmp/foo/snappy/patter"])
-    Dir.stub!(:[]).with(Chef::Config[:file_cache_path]).and_return(["/tmp/foo"])
-    File.stub!(:file?).and_return(true)
-  end
-
-  it "should return the relative paths" do
-    Chef::FileCache.list.should eql([ "whiz/bang", "snappy/patter" ])
-  end
-end
-
-describe Chef::FileCache, "has_key? method" do
-  before(:each) do
-    Chef::Config[:file_cache_path] = "/tmp/foo"
-  end
-
-  it "should check the full path to the file" do
-    File.should_receive(:exists?).with("/tmp/foo/whiz/bang")
-    Chef::FileCache.has_key?("whiz/bang")
-  end
-
-  it "should return true if the file exists" do
-    File.stub!(:exists?).and_return(true)
-    Chef::FileCache.has_key?("whiz/bang").should eql(true)
-  end
-
-  it "should return false if the file does not exist" do
-    File.stub!(:exists?).and_return(false)
-    Chef::FileCache.has_key?("whiz/bang").should eql(false)
+    it "doesn't have a key if the corresponding cache file doesn't exist" do
+      Chef::FileCache.should_not have_key("whiz/bang")
+    end
   end
 end
-

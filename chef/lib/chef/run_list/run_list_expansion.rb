@@ -37,12 +37,16 @@ class Chef
 
       attr_reader :override_attrs
 
+      attr_reader :errors
+
       # The data source passed to the constructor. Not used in this class.
       # In subclasses, this is a couchdb or Chef::REST object pre-configured
       # to fetch roles from their correct location.
       attr_reader :source
 
       def initialize(run_list_items, source=nil)
+        @errors = Array.new
+
         @run_list_items = run_list_items.dup
         @source = source
 
@@ -54,8 +58,15 @@ class Chef
         @applied_roles = {}
       end
 
+      # Did we find any errors (expanding roles)?
+      def errors?
+        @errors.length > 0
+      end
+
+      alias :invalid? :errors?
+
       # Iterates over the run list items, expanding roles. After this,
-      # +recipes+ will the fully expanded recipe list
+      # +recipes+ will contain the fully expanded recipe list
       def expand
         @run_list_items.each_with_index do |entry, index|
           case entry.type
@@ -99,12 +110,13 @@ class Chef
         raise NotImplementedError
       end
 
-      # When a role is not found, an error message should be logged, but no
-      # exception should be raised
+      # When a role is not found, an error message is logged, but no
+      # exception is raised.  We do add an entry in the errors collection.
       # === Returns
       # nil
       def role_not_found(name)
         Chef::Log.error("Role #{name} is in the runlist but does not exist. Skipping expand.")
+        @errors << name
         nil
       end
     end
