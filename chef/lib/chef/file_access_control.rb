@@ -16,6 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require 'chef/log'
+
 class Chef
 
   # FileAccessControl objects set the owner, group and mode of +file+ to
@@ -55,7 +58,7 @@ class Chef
   
     # Workaround the fact that Ruby's Etc module doesn't believe in negative
     # uids, so negative uids show up as the diminished radix complement of
-    # the maximum fixnum size. For example, a uid of -2 is reported as 
+    # a uint. For example, a uid of -2 is reported as 4294967294
     def dimished_radix_complement(int)
       if int > UID_MAX
         int - UINT
@@ -71,10 +74,11 @@ class Chef
       elsif resource.owner.kind_of?(Integer)
         resource.owner
       else
+        Chef::Log.error("The `owner` parameter of the #@resource resource is set to an invalid value (#{resource.owner.inspect})")
         raise ArgumentError, "cannot resolve #{resource.owner.inspect} to uid, owner must be a string or integer"
       end
     rescue ArgumentError
-      raise Chef::Exceptions::UserIDNotFound, "cannot resolve user id for '#{resource.owner}'"
+      raise Chef::Exceptions::UserIDNotFound, "cannot determine user id for '#{resource.owner}', does the user exist on this system?"
     end
   
     def set_owner
@@ -92,10 +96,11 @@ class Chef
       elsif resource.group.kind_of?(Integer)
         resource.group
       else
+        Chef::Log.error("The `group` parameter of the #@resource resource is set to an invalid value (#{resource.owner.inspect})")
         raise ArgumentError, "cannot resolve #{resource.group.inspect} to gid, group must be a string or integer"
       end
     rescue ArgumentError
-      raise Chef::Exceptions::GroupIDNotFound, "cannot resolve group id for '#{resource.group}'"
+      raise Chef::Exceptions::GroupIDNotFound, "cannot determine group id for '#{resource.group}', does the group exist on this system?"
     end
   
     def set_group
