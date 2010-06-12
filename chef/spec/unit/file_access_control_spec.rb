@@ -47,7 +47,7 @@ describe Chef::FileAccessControl do
 
   it "raises a Chef::Exceptions::UserIDNotFound error when Etc can't find the user's name" do
     Etc.should_receive(:getpwnam).with('toor').and_raise(ArgumentError)
-    lambda { @fac.target_uid }.should raise_error(Chef::Exceptions::UserIDNotFound, "cannot resolve user id for 'toor'")
+    lambda { @fac.target_uid }.should raise_error(Chef::Exceptions::UserIDNotFound, "cannot determine user id for 'toor', does the user exist on this system?")
   end
 
   it "does not attempt to resolve the uid if the user is not specified" do
@@ -105,7 +105,7 @@ describe Chef::FileAccessControl do
 
   it "raises a Chef::Exceptions::GroupIDNotFound error when Etc can't find the user's name" do
     Etc.should_receive(:getgrnam).with('wheel').and_raise(ArgumentError)
-    lambda { @fac.target_gid }.should raise_error(Chef::Exceptions::GroupIDNotFound, "cannot resolve group id for 'wheel'")
+    lambda { @fac.target_gid }.should raise_error(Chef::Exceptions::GroupIDNotFound, "cannot determine group id for 'wheel', does the group exist on this system?")
   end
 
   it "does not attempt to resolve a gid when none is supplied" do
