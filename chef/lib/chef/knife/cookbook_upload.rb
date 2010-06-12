@@ -24,6 +24,7 @@ require 'chef/streaming_cookbook_uploader'
 require 'chef/cache/checksum'
 require 'chef/sandbox'
 require 'chef/cookbook_version'
+require 'chef/cookbook/syntax_check'
 require 'chef/cookbook/file_system_file_vendor'
 
 class Chef
@@ -50,6 +51,8 @@ class Chef
         else
           config[:cookbook_path] = Chef::Config[:cookbook_path]
         end
+        # Ugh, manipulating globals causes bugs.
+        @user_cookbook_path = config[:cookbook_path]
 
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
 
@@ -70,23 +73,12 @@ class Chef
         end
       end
       
-      def test_ruby(cookbook_dir)
-        Chef::Log.info("Validating ruby files")
-        Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
-          test_ruby_file(cookbook_dir, ruby_file)
-        end
-      end
-      
-      def test_templates(cookbook_dir)
-        Chef::Log.info("Validating templates")
-        Dir[File.join(cookbook_dir, '**', '*.erb')].each do |erb_file|
-          test_template_file(cookbook_dir, erb_file)
-        end
-      end
-      
       def upload_cookbook(cookbook)
         Chef::Log.info("Saving #{cookbook.name}")
         
+        # Validate the cookbook before staging it or else the syntax checker's
+        # cache will not be helpful.
+        validate_cookbook(cookbook)
         # create build directory
         tmp_cookbook_dir = create_build_dir(cookbook)
 
@@ -173,10 +165,6 @@ class Chef
           end
         end
         
-        # Validate ruby files and templates
-        test_ruby(tmp_cookbook_dir)
-        test_templates(tmp_cookbook_dir)
-
         # First, generate metadata
         Chef::Log.debug("Generating metadata")
         kcm = Chef::Knife::CookbookMetadata.new
@@ -201,30 +189,18 @@ class Chef
         end
       end
 
-      private
-
-      def test_template_file(cookbook_dir, erb_file)
-        Chef::Log.debug("Testing template #{erb_file} for syntax errors...")
-        result = shell_out("sh -c 'erubis -x #{erb_file} | ruby -c'")
-        result.error!
-      rescue Chef::Exceptions::ShellCommandFailed
-        file_relative_path = erb_file[/^#{Regexp.escape(cookbook_dir+File::Separator)}(.*)/, 1]
-        Chef::Log.fatal("Erb template #{file_relative_path} has a syntax error:")
-        result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
-        exit(1)
+      def validate_cookbook(cookbook)
+        pp :validate_cookbook => {:cookbook_name => cookbook.name}
+        syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cookbook.name, @user_cookbook_path)
+        pp syntax_checker
+        Chef::Log.info("Validating ruby files")
+        exit(1) unless syntax_checker.validate_ruby_files
+        Chef::Log.info("Validating templates")
+        exit(1) unless syntax_checker.validate_templates
+        Chef::Log.info("Syntax OK")
+        true
       end
 
-      def test_ruby_file(cookbook_dir, ruby_file)
-        Chef::Log.debug("Testing #{ruby_file} for syntax errors...")
-        result = shell_out("ruby -c #{ruby_file}")
-        result.error!
-      rescue Chef::Exceptions::ShellCommandFailed
-        file_relative_path = ruby_file[/^#{Regexp.escape(cookbook_dir+File::Separator)}(.*)/, 1]
-        Chef::Log.fatal("Cookbook file #{file_relative_path} has a syntax error:")
-        result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
-        exit(1)
-      end
-      
     end
   end
 end
