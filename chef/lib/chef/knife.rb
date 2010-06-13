@@ -159,17 +159,17 @@ class Chef
     def output(data)
       case config[:format]
       when "json", nil
-        puts JSON.pretty_generate(data)
+        stdout.puts JSON.pretty_generate(data)
       when "yaml"
         require 'yaml'
-        puts YAML::dump(data)
+        stdout.puts YAML::dump(data)
       when "text"
         # If you were looking for some attribute and there is only one match
         # just dump the attribute value
         if data.length == 1 and config[:attribute]
-          puts data.values[0]
+          stdout.puts data.values[0]
         else
-          pp data
+          PP.pp(data, stdout)
         end
       else
         raise ArgumentError, "Unknown output format #{config[:format]}"
@@ -224,10 +224,11 @@ class Chef
       parse_output ? JSON.parse(output) : output
     end
 
-    def confirm(question)
+    def confirm(question, append_instructions=true)
       return true if config[:yes]
 
-      print "#{question}? (Y/N) "
+      print question
+      print "? (Y/N) " if append_instructions
       answer = stdin.readline
       answer.chomp!
       case answer

@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +18,7 @@
 #
 
 require 'chef/knife'
+require 'chef/knife/cookbook_delete'
 
 class Chef
   class Knife
@@ -24,13 +26,26 @@ class Chef
 
       banner "Sub-Command: cookbook bulk delete REGEX (options)"
 
-      def run 
-        if @name_args.length < 1
+      def run
+        unless regex_str = @name_args.first
           Chef::Log.fatal("You must supply a regular expression to match the results against")
           exit 42
-        else
-          bulk_delete(Chef::CookbookVersion, "cookbook", "cookbook", rest.get_rest("cookbooks"), @name_args[0]) do |name, cookbook|
-            rest.delete_rest(cookbook)
+        end
+
+        regex = Regexp.new(regex_str)
+
+        all_cookbooks = Chef::CookbookVersion.list
+        cookbooks_names = all_cookbooks.keys.grep(regex)
+        cookbooks_to_delete = cookbooks_names.inject({}) { |hash, name| hash[name] = all_cookbooks[name];hash }
+        output(format_list_for_display(cookbooks_to_delete))
+
+        confirm("Do you really want to delete these cookbooks? All versions will be deleted. (Y/N) ", false)
+        
+        cookbooks_names.each do |cookbook_name|
+          versions = rest.get_rest("cookbooks/#{cookbook_name}").values.flatten
+          versions.each do |version|
+            object = rest.delete_rest("cookbooks/#{cookbook_name}/#{version}")
+            Chef::Log.info("Deleted cookbook  #{cookbook_name.ljust(25)} [#{version}]")
           end
         end
       end
