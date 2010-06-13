@@ -224,10 +224,11 @@ class Chef
       parse_output ? JSON.parse(output) : output
     end
 
-    def confirm(question)
+    def confirm(question, append_instructions=true)
       return true if config[:yes]
 
-      print "#{question}? (Y/N) "
+      print question
+      print "? (Y/N) " if append_instructions
       answer = stdin.readline
       answer.chomp!
       case answer

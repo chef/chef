@@ -190,9 +190,7 @@ class Chef
       end
 
       def validate_cookbook(cookbook)
-        pp :validate_cookbook => {:cookbook_name => cookbook.name}
         syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cookbook.name, @user_cookbook_path)
-        pp syntax_checker
         Chef::Log.info("Validating ruby files")
         exit(1) unless syntax_checker.validate_ruby_files
         Chef::Log.info("Validating templates")

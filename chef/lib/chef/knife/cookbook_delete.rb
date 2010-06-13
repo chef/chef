@@ -106,7 +106,7 @@ class Chef
       end
 
       def delete_version_without_confirmation(version)
-        rest.delete_rest("cookbooks/#{@cookbook_name}/#{version}")
+        object = rest.delete_rest("cookbooks/#{@cookbook_name}/#{version}")
         output(format_for_display(object)) if config[:print_after]
         Chef::Log.info("Deleted cookbook[#{@cookbook_name}][#{version}]")
       end
