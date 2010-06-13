@@ -146,10 +146,14 @@ class Cookbooks < Application
   private
 
   def get_cookbook_version(name, version)
-    begin
-      Chef::CookbookVersion.cdb_load(name, version)
-    rescue Chef::Exceptions::CouchDBNotFound => e
+    Chef::CookbookVersion.cdb_load(name, version)
+  rescue Chef::Exceptions::CouchDBNotFound => e
+    raise NotFound, "Cannot find a cookbook named #{name} with version #{version}"
+  rescue Net::HTTPServerException => e
+    if e.to_s =~ /^404/
       raise NotFound, "Cannot find a cookbook named #{name} with version #{version}"
+    else
+      raise
     end
   end
   
