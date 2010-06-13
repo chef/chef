@@ -45,7 +45,6 @@ class Chef
           versions = rest.get_rest("cookbooks/#{cookbook_name}").values.flatten
           versions.each do |version|
             object = rest.delete_rest("cookbooks/#{cookbook_name}/#{version}")
-            output(format_for_display(object)) if config[:print_after]
             Chef::Log.info("Deleted cookbook  #{cookbook_name.ljust(25)} [#{version}]")
           end
         end
