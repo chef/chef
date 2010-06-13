@@ -42,7 +42,7 @@ Unless otherwise specified, output is in JSON format, and input files are also J
 
 ## SUB-COMMANDS
 
-Knife sub-commands are structured as "_NOUN_ __verb__ _NOUN_ (options)". The sub-commands are meant to be intuitively named. Because the Chef Server API is RESTful, sub-commands generally utilize CRUD operations.
+Knife sub-commands are structured as _NOUN verb NOUN (options)_. The sub-commands are meant to be intuitively named. Because the Chef Server API is RESTful, sub-commands generally utilize CRUD operations.
 
 * create (create)
 * list and show (read)
@@ -62,7 +62,7 @@ __configure__ _(options)_
   * `-r`, `--repository REPO`:
     The path to your chef-repo
 
-Create a configuration file for knife. This will prompt for values to enter into the file. Default values are listed in square brackets if no other entry is typed. See "__CONFIGURATION__" below for available options.
+Create a configuration file for knife. This will prompt for values to enter into the file. Default values are listed in square brackets if no other entry is typed. See __CONFIGURATION__ below for available options.
 
 __index rebuild__ _(options)_
 
@@ -195,7 +195,7 @@ __cookbook metadata COOKBOOK__ _(options)_
   * `-o`, `--cookbook-path PATH:PATH`:
     A colon-separated path to look for cookbooks in
 
-Generate cookbook metadata for the named _COOKBOOK_. The _PATH_ used here specifies where the "cookbooks" directory is located and corresponds to the `cookbook_path` configuration option.
+Generate cookbook metadata for the named _COOKBOOK_. The _PATH_ used here specifies where the cookbooks directory is located and corresponds to the `cookbook_path` configuration option.
 
 __cookbook metadata from FILE__ _(options)_
 
@@ -410,7 +410,7 @@ __bootstrap FQDN [RUN LIST...]__ _(options)_
   * `--prerelease`:
     Install pre-release Chef gems
 
-Performs a "Chef Bootstrap" on the target node. This subcommand is used internally by the various cloud computing server create commands. Currently assumes an Ubuntu base OS image and will take the following actions:
+Performs a Chef Bootstrap on the target node. This subcommand is used internally by the various cloud computing server create commands. Currently assumes an Ubuntu base OS image and will take the following actions:
 
   - Updates APT cache.
   - Installs Ruby and packages required to build RubyGems with native extensions.
@@ -426,7 +426,7 @@ When this is complete, the bootstrapped node will have:
   - Be validated with the configured Chef Server.
   - Have run Chef with its default run list.
 
-Future versions of this sub-command will support performing "Chef Bootstrap" on other platforms.
+Future versions of this sub-command will support performing Chef Bootstrap on other platforms.
 
 ## EC2 SUB-COMMANDS
 
@@ -539,9 +539,9 @@ Lists running Terremark vCloud servers.
 
 ## CONFIGURATION
 
-The knife configuration file is a Ruby DSL to set configuration parameters for Knife's __GENERAL OPTIONS__. The default location for the config file is `~/.chef/knife.rb`. If managing multiple Chef repositories, "per-repository" config files can be created. The file must be `.chef/knife.rb` in the current directory of the repository.
+The knife configuration file is a Ruby DSL to set configuration parameters for Knife's __GENERAL OPTIONS__. The default location for the config file is `~/.chef/knife.rb`. If managing multiple Chef repositories, per-repository config files can be created. The file must be `.chef/knife.rb` in the current directory of the repository.
 
-If it exists, knife uses these settings for __GENERAL OPTIONS__ defaults.
+If the config file exists, knife uses these settings for __GENERAL OPTIONS__ defaults.
 
 `log_level`
 
@@ -588,7 +588,7 @@ Specifies the private key file to use for generating ec2 instance data for valid
 
 _~/.chef/knife.rb_
 
-Ruby DSL configuration file for knife. See "__CONFIGURATION__".
+Ruby DSL configuration file for knife. See __CONFIGURATION__.
 
 ## SEE ALSO
 
