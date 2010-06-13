@@ -35,20 +35,16 @@ describe Chef::Cookbook::Metadata::Version do
 
       it "should raise an error with an invalid string" do
         lambda { @ccmv.new("poos") }.should(
-          raise_error("Metadata version does not match 'x.y.z' or 'x.y'")
+          raise_error("Metadata version 'poos' does not match 'x.y.z' or 'x.y'")
         )
       end
 
       it "should accept a 3 digit, two-decimal version string" do
-        lambda { @ccmv.new("1.2.3") }.should_not(
-          raise_error("Metadata version does not match 'x.y.z' or 'x.y'")
-        )
+        lambda { @ccmv.new("1.2.3") }.should_not raise_error
       end
 
       it "should accept a 2 digit, one-decimal version string" do
-        lambda { @ccmv.new("1.2") }.should_not(
-          raise_error("Metadata version does not match 'x.y.z' or 'x.y'")
-        )
+        lambda { @ccmv.new("1.2") }.should_not raise_error
       end
     end
   
@@ -63,11 +59,11 @@ describe Chef::Cookbook::Metadata::Version do
   describe "_parse" do
 
     it "should raise an error when called with no arg" do
-      lambda { @v._parse }.should raise_error("Metadata version does not match 'x.y.z' or 'x.y'")
+      lambda { @v._parse }.should raise_error("Metadata version '' does not match 'x.y.z' or 'x.y'")
     end
 
     it "should raise an error when called with a non matching string" do
-      lambda { @v._parse("poopypants") }.should raise_error("Metadata version does not match 'x.y.z' or 'x.y'")
+      lambda { @v._parse("poopypants") }.should raise_error("Metadata version 'poopypants' does not match 'x.y.z' or 'x.y'")
     end
 
     it "should parse '1.2' into [1, 2, 0]" do
