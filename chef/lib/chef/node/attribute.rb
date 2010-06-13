@@ -426,6 +426,15 @@ class Chef
         end
       end
 
+      def inspect
+        determine_value(current_automatic, current_override, current_normal, current_default)
+        exclude_attrs = ["@override", "@attribute", "@default", "@normal", "@automatic"]
+
+        "#<#{self.class} " << instance_variables.map{|iv| 
+          iv + '=' + (exclude_attrs.include?(iv) ? "{...}" : instance_variable_get(iv).inspect)
+        }.join(', ') << ">"
+      end
+
       def to_hash
         result = determine_value(current_automatic, current_override, current_normal, current_default)
         if result.class == Hash

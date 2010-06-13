@@ -975,4 +975,11 @@ describe Chef::Node::Attribute do
       @attributes.should_not be_a_kind_of(Chef::Node)
     end
   end
+
+  describe "inspect" do
+    it "should be readable" do
+      @attributes.inspect.should =~ /@automatic=\{\.\.\.\}/
+      @attributes.inspect.should =~ /@normal=\{\.\.\.\}/
+    end
+  end
 end
