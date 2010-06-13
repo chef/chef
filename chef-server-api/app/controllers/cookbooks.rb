@@ -48,7 +48,7 @@ class Cookbooks < Application
     display response
   end
 
-  #FIXME: this is different from the rest of our API, but in a useful way...
+  #FIXME: this is different from the rest of the API, but in a useful way...
   def index_latest
     cookbook_list = Chef::CookbookVersion.cdb_list_latest(true)
     response = Hash.new
@@ -59,7 +59,7 @@ class Cookbooks < Application
     display response
   end
 
-  def index_recipes #FIXME: is this cool to do w/ access control on platform?
+  def index_recipes
     all_cookbooks = Array(Chef::CookbookVersion.cdb_list_latest(true))
     all_cookbooks.map! do |cookbook|
       cookbook.manifest["recipes"].map { |r| "#{cookbook.name}::#{r['name']}" }
