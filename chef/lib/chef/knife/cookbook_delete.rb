@@ -35,7 +35,9 @@ class Chef
         elsif @cookbook_name && @version.nil?
           delete_without_explicit_version
         elsif @cookbook_name.nil?
-          # fail
+          show_usage
+          Chef::Log.fatal("You must provide the name of the cookbook to delete")
+          exit(1)
         end
       end
 
@@ -55,13 +57,16 @@ class Chef
         # got to the list of versions to delete and selected 'all'
         # and also a specific version
         @available_versions = nil
-        available_versions.each do |version|
+        Array(available_versions).each do |version|
           delete_version_without_confirmation(version)
         end
       end
 
       def delete_without_explicit_version
-        if available_versions.size == 1
+        if available_versions.nil?
+          # we already logged an error or 2 about it, so just bail
+          exit(1)
+        elsif available_versions.size == 1
           @version = available_versions.first
           delete_explicit_version
         else
@@ -75,6 +80,7 @@ class Chef
       rescue Net::HTTPServerException => e
         if e.to_s =~ /^404/
           Chef::Log.error("Cannot find a cookbook named #{@cookbook_name} to delete")
+          nil
         else
           raise
         end
