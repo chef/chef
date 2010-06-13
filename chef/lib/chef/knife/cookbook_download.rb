@@ -23,12 +23,13 @@ class Chef
   class Knife
     class CookbookDownload < Knife
 
-      banner "Sub-Command: cookbook download COOKBOOK VERSION (options)"
+      banner "Sub-Command: cookbook download COOKBOOK [VERSION] (options)"
 
-      option :version,
-       :short => "-v VERSION",
-       :long => "--version VERSION",
-       :description => "The version of the cookbook to download"
+      option :latest,
+       :short => "-N",
+       :long => "--latest",
+       :description => "The version of the cookbook to download",
+       :boolean => true
 
       option :download_directory,
        :short => "-d DOWNLOAD_DIRECTORY",
@@ -45,19 +46,22 @@ class Chef
       # specificity for downloads - need to implement --platform and
       # --fqdn here
       def run
-        if @name_args.length != 2
-          Chef::Log.fatal("You must supply a cookbook name and version to download!")
-          exit 42
+        @cookbook_name, @version = @name_args
+
+        if @cookbook_name.nil?
+          show_usage
+          Chef::Log.fatal("You must specify a cookbook name")
+          exit 1
+        elsif @version.nil?
+          determine_version
         end
           
-        cookbook_name = @name_args[0]
-        cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
-        Chef::Log.info("Downloading #{cookbook_name} cookbook version #{cookbook_version}")
+        Chef::Log.info("Downloading #{@cookbook_name} cookbook version #{@version}")
         
-        cookbook = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}")
+        cookbook = rest.get_rest("cookbooks/#{@cookbook_name}/#{@version}")
         manifest = cookbook.manifest
 
-        basedir = File.join(config[:download_directory], "#{cookbook_name}-#{cookbook.version}")
+        basedir = File.join(config[:download_directory], "#{@cookbook_name}-#{cookbook.version}")
         if File.exists?(basedir)
           if config[:force]
             Chef::Log.debug("Deleting #{basedir}")
@@ -81,6 +85,44 @@ class Chef
           end
         end
         Chef::Log.info("Cookbook downloaded to #{basedir}")
+      end
+
+      def determine_version
+        if available_versions.size == 1
+          @version = available_versions.first
+        elsif config[:latest]
+          @version = available_versions.map { |v| Chef::Cookbook::Metadata::Version.new(v) }.sort.last
+        else
+          ask_which_version
+        end
+      end
+
+      def available_versions
+        @available_versions ||= begin
+          versions = Chef::CookbookVersion.available_versions(@cookbook_name).map do |version|
+            Chef::Cookbook::Metadata::Version.new(version)
+          end
+          versions.sort!
+          versions
+        end
+        #pp :available_versions => @available_versions
+        @available_versions
+      end
+
+      def ask_which_version
+        question = "Which version do you want to download?\n"
+        valid_responses = {}
+        available_versions.each_with_index do |version, index|
+          valid_responses[(index + 1).to_s] = version
+          question << "#{index + 1}. #{@cookbook_name} #{version}\n"
+        end
+        question += "\n"
+        response = ask_question(question).strip
+
+        unless @version = valid_responses[response]
+          Chef::Log.error("'#{response}' is not a valid value.")
+          exit(1)
+        end
       end
 
     end
