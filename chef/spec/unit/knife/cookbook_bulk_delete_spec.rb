@@ -21,11 +21,10 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Knife::CookbookBulkDelete do
   before(:each) do
     @knife = Chef::Knife::CookbookBulkDelete.new
-    @knife.config = {
-      :print_after => nil
-    }
+    @knife.config = {:print_after => nil}
     @knife.name_args = ["."]
-    @knife.stub!(:output).and_return(:true)
+    @stdout = StringIO.new
+    @knife.stub!(:stdout).and_return(@stdout)
     @knife.stub!(:confirm).and_return(true)
     @cookbooks = Hash.new
     %w{cheezburger pizza lasagna}.each do |cookbook_name|
@@ -36,12 +35,15 @@ describe Chef::Knife::CookbookBulkDelete do
     @rest.stub!(:get_rest).and_return(@cookbooks)
     @rest.stub!(:delete_rest).and_return(true)
     @knife.stub!(:rest).and_return(@rest)
+    Chef::CookbookVersion.stub!(:list).and_return(@cookbooks)
   end
-  
+
   describe "run" do
     
-    it "should get the list of the cookbooks" do
-      @rest.should_receive(:get_rest).with("cookbooks").and_return(@cookbooks)
+    it "should get the list of the cookbooks, then get their versions" do
+      @rest.should_receive(:get_rest).with('cookbooks/cheezburger')
+      @rest.should_receive(:get_rest).with('cookbooks/pizza')
+      @rest.should_receive(:get_rest).with('cookbooks/lasagna')
       @knife.run
     end
     
@@ -56,17 +58,20 @@ describe Chef::Knife::CookbookBulkDelete do
     end
     
     it "should delete each cookbook" do
-      @cookbooks.each_value do |c|
-        @rest.should_receive(:delete_rest).with(c)
+      @rest.should_receive(:get_rest).with('cookbooks/cheezburger').and_return('cheezburger' => ['1.0.0'])
+      @rest.should_receive(:get_rest).with('cookbooks/pizza').and_return('pizza' => ['1.0.0'])
+      @rest.should_receive(:get_rest).with('cookbooks/lasagna').and_return('lasagna' => ['1.0.0'])
+
+      @cookbooks.each_key do |cookbook_name|
+        @rest.should_receive(:delete_rest).with("cookbooks/#{cookbook_name}/1.0.0")
       end
       @knife.run
     end
     
     it "should only delete cookbooks that match the regex" do
       @knife.name_args = ["cheezburger"]
-      @rest.should_receive(:delete_rest).with(@cookbooks["cheezburger"])
-      @rest.should_not_receive(:delete_rest).with(@cookbooks["pizza"])
-      @rest.should_not_receive(:delete_rest).with(@cookbooks["lasagna"])
+      @rest.should_receive(:get_rest).with('cookbooks/cheezburger').and_return('cheezburger' => ['1.0.0'])
+      @rest.should_receive(:delete_rest).with('cookbooks/cheezburger/1.0.0')
       @knife.run
     end
 
@@ -75,14 +80,5 @@ describe Chef::Knife::CookbookBulkDelete do
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
-    describe "with -p or --print_after" do
-      it "should pretty_print the node, formatted for display" do
-        @knife.config[:print_after] = true
-        @cookbooks.each_value do |n|
-          @knife.should_receive(:output).with(@knife.format_for_display(n))
-        end
-        @knife.run
-      end
-    end
   end
 end
