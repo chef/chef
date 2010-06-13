@@ -71,6 +71,10 @@ __index rebuild__ _(options)_
 
 Rebuilds all the search indexes on the server.
 
+__recipe list [PATTERN]__
+
+List available recipes from the server. Specify _PATTERN_ as a regular expression to limit the results.
+
 __search INDEX QUERY__ _(options)_
 
   * `-a`, `--attribute ATTR`:
@@ -159,14 +163,21 @@ __cookbook bulk delete REGEX__ _(options)_
 
 Delete cookbooks on the Chef Server based on a regular expression. The regular expression (_REGEX_) should be in quotes, not in //'s.
 
-__cookbook delete COOKBOOK__ _(options)_
+__cookbook delete COOKBOOK VERSION__ _(options)_
 
-Delete a single named _COOKBOOK_.
+  * `-a`, `--all`:
+    Delete all versions
 
-__cookbook download COOKBOOK__ _(options)_
+Delete the specified _VERSION_ of the named _COOKBOOK_.
 
+__cookbook download COOKBOOK VERSION__ _(options)_
+
+  * `-d`, `--dir DOWNLOAD_DIRECTORY`:
+    The directory to download the cookbook into
   * `-f`, `--file FILE`:
     The filename to write to
+  * `-v`, `--version VERSION`:
+    The version of the cookbook to download
 
 Download a cookbook from the Chef Server as a gzip(1)'ed, tar(1) archive.
 
@@ -190,7 +201,7 @@ __cookbook metadata from FILE__ _(options)_
 
 Load the cookbook metadata from a specified file.
 
-__cookbook show COOKBOOK [PART] [FILENAME]__ _(options)_
+__cookbook show COOKBOOK [VERSION] [PART] [FILENAME]__ _(options)_
 
   * `-f`, `--fqdn FQDN               `:
     The FQDN of the host to see the file for
@@ -199,7 +210,7 @@ __cookbook show COOKBOOK [PART] [FILENAME]__ _(options)_
   * `-V`, `--platform-version VERSION`:
     The platform version to see the file for
 
-Show a particular part of a _COOKBOOK_. _PART_ can be one of:
+Show a particular part of a _COOKBOOK_ for the specified _VERSION_. _PART_ can be one of:
 
   * _attributes_
   * _definitions_
@@ -276,6 +287,10 @@ Delete a data bag, or an item from a data bag.
 __data bag edit BAG ITEM__ _(options)_
 
 Edit an item in a data bag.
+
+__data bag from file BAG FILE__ _(options)_
+
+Load a data bag item from a JSON file. Looks in the directory `data_bags/BAG/ITEM.json` unless a relative path is specified.
 
 __data bag list__ _(options)_
 
@@ -384,6 +399,35 @@ The next sections describe sub-commands to work with various Cloud Computing API
 
 The Rackspace and Terremark sub-commands are early stage of development. Right now when creating instances of these types, knife will assume an Ubuntu image, install Ruby from packages, RubyGems from source and Chef as a RubyGem. As these commands are developed, other installation styles may become available, as options.
 
+__bootstrap FQDN [RUN LIST...]__ _(options)_
+
+  * `-N`, `--node-name NAME`:
+    The Chef node name for your new node
+  * `-P`, `--ssh-password PASSWORD`:
+    The ssh password
+  * `-x`, `--ssh-user USERNAME`:
+    The ssh username
+  * `--prerelease`:
+    Install pre-release Chef gems
+
+Performs a "Chef Bootstrap" on the target node. This subcommand is used internally by the various cloud computing server create commands. Currently assumes an Ubuntu base OS image and will take the following actions:
+
+  - Updates APT cache.
+  - Installs Ruby and packages required to build RubyGems with native extensions.
+  - Installs RubyGems 1.3.6 **from source**.
+  - Installs Chef and Ohai RubyGems.
+  - Writes the validation.pem per the local knife configuration.
+  - Writes a default config file for Chef.
+  - Creates a JSON attributes file containing the node's run list and runs Chef.
+
+When this is complete, the bootstrapped node will have:
+
+  - Latest Chef version installed from RubyGems.
+  - Be validated with the configured Chef Server.
+  - Have run Chef with its default run list.
+
+Future versions of this sub-command will support performing "Chef Bootstrap" on other platforms.
+
 ## EC2 SUB-COMMANDS
 
 Chef is commonly used with Amazon AWS EC2 nodes. This sub-command will generate instance metadata that can be used to automatically configure an EC2 instance with Chef. This requires an AMI that has Chef preinstalled with a configuration file that can parse the metadata at run-time. At this time this is the only sub-command for EC2, but more may be added later similar to __RACKSPACE__ and __TERREMARK__ below.
@@ -394,6 +438,47 @@ __ec2 instance data [RUN LIST...]__ _(options)_
     Edit the instance data
 
 The _RUN LIST_ should be specified as a space separated list of roles or recipes that will be used by the instance to configure the server.
+
+__ec2 server create [RUN LIST...]__ _(options)_
+
+  * `-Z`, `--availability-zone ZONE`:
+    The Availability Zone
+  * `-A`, `--aws-access-key-id KEY `:
+    Your AWS Access Key ID
+  * `-K SECRET`, `--aws-secret-access-key`:
+    Your AWS API Secret Access Key
+  * `-f`, `--flavor FLAVOR`:
+    The flavor of server (m1.small, m1.medium, etc)
+  * `-i`, `--image IMAGE`:
+    The AMI for the server
+  * `--prerelease`:
+    Install the pre-release chef gems
+  * `-G`, `--groups X,Y,Z     `:
+    The security groups for this server
+  * `-S`, `--ssh-key KEY      `:
+    The SSH root key
+  * `-x`, `--ssh-user USERNAME`:
+    The ssh username
+
+Creates a new Amazon AWS EC2 instance.
+
+__ec2 server delete SERVER [SERVER]__ _(options)_
+
+  * `-A`, `--aws-access-key-id KEY`:
+    Your AWS Access Key ID
+  * `-K SECRET`, `--aws-secret-access-key`:
+    Your AWS API Secret Access Key
+
+Terminates a running Amazon AWS EC2 instance.
+
+__ec2 server list [RUN LIST...]__ _(options)_
+
+  * `-A`, `--aws-access-key-id KEY`:
+    Your AWS Access Key ID
+  * `-K SECRET`, `--aws-secret-access-key`:
+    Your AWS API Secret Access Key
+
+List running Amazon AWS EC2 instances.
 
 ## RACKSPACE SUB-COMMANDS
 
@@ -454,7 +539,9 @@ Lists running Terremark vCloud servers.
 
 ## CONFIGURATION
 
-The knife configuration file is a Ruby DSL. If it exists, knife uses these settings for __GENERAL OPTIONS__ defaults.
+The knife configuration file is a Ruby DSL to set configuration parameters for Knife's __GENERAL OPTIONS__. The default location for the config file is `~/.chef/knife.rb`. If managing multiple Chef repositories, "per-repository" config files can be created. The file must be `.chef/knife.rb` in the current directory of the repository.
+
+If it exists, knife uses these settings for __GENERAL OPTIONS__ defaults.
 
 `log_level`
 
