@@ -664,6 +664,23 @@ class Chef
       chef_server_rest.get_rest('cookbooks')
     end
 
+    ##
+    # Given a +cookbook_name+, get a list of all versions that exist on the
+    # server.
+    # ===Returns
+    # [String]::  Array of cookbook versions, which are strings like 'x.y.z'
+    # nil::       if the cookbook doesn't exist. an error will also be logged.
+    def self.available_versions(cookbook_name)
+      chef_server_rest.get_rest("cookbooks/#{cookbook_name}").values.flatten
+    rescue Net::HTTPServerException => e
+      if e.to_s =~ /^404/
+        Chef::Log.error("Cannot find a cookbook named #{cookbook_name}")
+        nil
+      else
+        raise
+      end
+    end
+
     # Get the newest version of all cookbooks
     def self.latest_cookbooks
       chef_server_rest.get_rest('cookbooks/_latest')
