@@ -49,7 +49,7 @@ class Chef
       def untested_ruby_files
         ruby_files.reject do |file|
           if validated?(file)
-            Chef::Log.debug("ruby file #{file} is unchanged skipping syntax check")
+            Chef::Log.debug("ruby file #{file} is unchanged, skipping syntax check")
             true
           else
             false
