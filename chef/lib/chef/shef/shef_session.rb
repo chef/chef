@@ -172,7 +172,7 @@ module Shef
       @client.register
       @client.build_node #(@client.node_name, false)
       
-      @client.sync_cookbooks
+      @client.sync_cookbooks({})
     end
 
   end
