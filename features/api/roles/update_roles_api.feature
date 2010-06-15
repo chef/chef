@@ -14,12 +14,12 @@ Feature: Update a role
      Then the inflated response should respond to '<method>' with '<updated_value>' 
 
     Examples:
-      | method       | updated_value    |
-      | description  | gorilla          |
-      | run_list      | [ "recipe[one]", "recipe[two]", "role[a]" ] |
-      | default_attributes | { "a": "d" } |
-      | override_attributes | { "c": "e" } |
-      
+      | method              | updated_value                               |
+      | description         | gorilla                                     |
+      | run_list            | [ "recipe[one]", "recipe[two]", "role[a]" ] |
+      | default_attributes  | { "a": "d" }                                |
+      | override_attributes | { "c": "e" }                                |
+
   Scenario: Update a role with a wrong private key
     Given I am an administrator
       And a 'role' named 'webserver' exists

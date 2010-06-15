@@ -132,7 +132,21 @@ Before do
         r.description "sets a default value"
         r.run_list("recipe[attribute_settings_override]")
         r.override_attributes({ 'attribute_priority_was' => 7 })
-        r 
+        r
+      end,
+      'role1_includes_role2' => Proc.new do
+        r = Chef::Role.new
+        r.name "role1_includes_role2"
+        r.description "role1 includes role2"
+        r.run_list("role[role2_included_by_role1]")
+        r
+      end,
+      'role2_included_by_role1' => Proc.new do
+        r = Chef::Role.new
+        r.name "role2_included_by_role1"
+        r.description "role2 is included by role1"
+        r.run_list("recipe[attribute_settings_override]")
+        r
       end
     },
     'node' => {
