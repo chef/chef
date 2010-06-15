@@ -17,7 +17,16 @@ Feature: Update a node
       | method       | updated_value    |
       | run_list     | [ "recipe[one]", "recipe[two]" ] |
       | snakes       | really arent so bad | 
-      
+
+  @PL-493
+  Scenario: Update a node to include a role which includes another role
+    Given I am an administrator
+      And a 'node' named 'webserver' exists
+      And sending the method 'run_list' to the 'node' with '[ "role[role1_includes_role2]" ]'
+     When I 'PUT' the 'node' to the path '/nodes/webserver'
+     Then the inflated response should respond to 'run_list' with '[ "role[role1_includes_role2]" ]' 
+     When I 'GET' the path '/nodes/webserver'
+     Then the inflated response should respond to 'run_list' with '[ "role[role1_includes_role2]" ]'
 
   Scenario: Update a node with a wrong private key
     Given I am an administrator
