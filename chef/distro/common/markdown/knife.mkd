@@ -163,23 +163,23 @@ __cookbook bulk delete REGEX__ _(options)_
 
 Delete cookbooks on the Chef Server based on a regular expression. The regular expression (_REGEX_) should be in quotes, not in //'s.
 
-__cookbook delete COOKBOOK VERSION__ _(options)_
+__cookbook delete COOKBOOK [VERSION]__ _(options)_
 
   * `-a`, `--all`:
     Delete all versions
 
-Delete the specified _VERSION_ of the named _COOKBOOK_.
+Delete the specified _VERSION_ of the named _COOKBOOK_. If no version is specified, and only one version exists on the server, that version will be deleted. If multiple versions are available on the server, you will be prompted for a version to delete.
 
-__cookbook download COOKBOOK VERSION__ _(options)_
+__cookbook download COOKBOOK [VERSION]__ _(options)_
 
   * `-d`, `--dir DOWNLOAD_DIRECTORY`:
     The directory to download the cookbook into
-  * `-f`, `--file FILE`:
-    The filename to write to
-  * `-v`, `--version VERSION`:
-    The version of the cookbook to download
+  * `-f`, `--force`:
+    Overwrite an existing directory with the download
+  * `-N`, `--latest`:
+    Download the latest version of the cookbook
 
-Download a cookbook from the Chef Server as a gzip(1)'ed, tar(1) archive.
+Download a cookbook from the Chef Server. If no version is specified and only one version exists on the server, that version will be downloaded. If no version is specified and multiple versions are available on the server, you will be prompted for a version to download.
 
 __cookbook list__ _(options)_
 
@@ -353,6 +353,11 @@ __node show NODE__ _(options)_
     Show only the run list
 
 Show a node.
+
+## RECIPE SUB-COMMANDS
+__recipe list [PATTERN]__
+
+List the recipes available on the server. The results shown can be limited with the optional PATTERN, which is a regular expression. PATTERN should be given in quotes, without slashes.
 
 ## ROLE SUB-COMMANDS
 
