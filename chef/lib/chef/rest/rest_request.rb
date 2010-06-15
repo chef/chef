@@ -55,10 +55,12 @@ class Chef
       end
 
       def call
-        http_client.request(http_request) do |response|
-          store_cookie(response)
-          yield response if block_given?
-          response
+        hide_net_http_bug do
+          http_client.request(http_request) do |response|
+            store_cookie(response)
+            yield response if block_given?
+            response
+          end
         end
       end
 
@@ -67,6 +69,21 @@ class Chef
       end
 
       private
+
+      def hide_net_http_bug
+        yield
+      rescue NoMethodError => e
+        # http://redmine.ruby-lang.org/issues/show/2708
+        # http://redmine.ruby-lang.org/issues/show/2758
+        if e.to_s =~ /#{Regexp.escape(%q|undefined method `closed?' for nil:NilClass|)}/
+          Chef::Log.debug("rescued error in http connect, re-raising as Errno::ECONNREFUSED to hide bug in net/http")
+          Chef::Log.debug("#{e.class.name}: #{e.to_s}")
+          Chef::Log.debug(e.backtrace.join("\n"))
+          raise Errno::ECONNREFUSED, "Connection refused attempting to contact #{url.scheme}://#{host}:#{port}"
+        else
+          raise
+        end
+      end
 
       def store_cookie(response)
         if response['set-cookie']
