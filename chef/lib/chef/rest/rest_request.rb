@@ -73,6 +73,8 @@ class Chef
       def hide_net_http_bug
         yield
       rescue NoMethodError => e
+        # http://redmine.ruby-lang.org/issues/show/2708
+        # http://redmine.ruby-lang.org/issues/show/2758
         if e.to_s =~ /#{Regexp.escape(%q|undefined method `closed?' for nil:NilClass|)}/
           Chef::Log.debug("rescued error in http connect, re-raising as Errno::ECONNREFUSED to hide bug in net/http")
           Chef::Log.debug("#{e.class.name}: #{e.to_s}")
