@@ -21,101 +21,83 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::Handler do
   before(:each) do
     @handler = Chef::Handler.new
+
+    @node = Chef::Node.new
+    @run_status = Chef::RunStatus.new(@node)
+
+    @handler.instance_variable_set(:@run_status, @run_status)
   end
 
-  describe "initialize" do
-    it "should return a Chef::Handler" do
-      @handler.should be_a_kind_of(Chef::Handler)
-    end
-
-    it "should set the :path config option" do
-      @handler.config[:path].should == "/var/chef/reports"
-    end
-  end
-
-  describe "build_report_data" do
-    before(:each) do
-      @node = Chef::Node.new
-      @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
-      @runner = Chef::Runner.new(@run_context)
+  describe "when accessing the run status" do
+    before do
+      @backtrace = caller
+      @exception = Exception.new("epic_fail")
+      @exception.set_backtrace(@backtrace)
+      @run_status.exception = @exception
+      @run_context = Chef::RunContext.new(@node, {})
+      @all_resources = [Chef::Resource::Cat.new('lolz'), Chef::Resource::ZenMaster.new('tzu')]
+      @all_resources.first.updated = true
+      @run_context.resource_collection.all_resources.replace(@all_resources)
+      @run_status.run_context = @run_context
       @start_time = Time.now
-      @end_time = Time.now
-      @elapsed_time = @end_time - @start_time
-      @exception = Exception.new("Boy howdy!")
-      @data = @handler.build_report_data(@node, @runner, @start_time, @end_time, @elapsed_time, @exception)
+      @end_time = @start_time + 4.2
+      Time.stub!(:now).and_return(@start_time, @end_time)
+      @run_status.start_clock
+      @run_status.stop_clock
     end
 
-    describe "node data" do
-      it "should be present if passed" do
-        @data[:node].should be(@node)
-      end
-
-      it "should be absent if not passed" do
-        @data = @handler.build_report_data(nil, @runner, @start_time, @end_time, @elapsed_time, @exception)
-        @data.has_key?(:node).should be(false)
-      end
+    it "has a shortcut for the exception" do
+      @handler.exception.should == @exception
     end
 
-    describe "resources" do
-      describe "runner was passed" do
-        before(:each) do
-          @elvis = Chef::Resource::File.new("elvis", @run_context)
-          @runner.run_context.resource_collection << @elvis 
-          @metallica = Chef::Resource::File.new("metallica", @run_context)
-          @metallica.updated = true
-          @runner.run_context.resource_collection << @metallica 
-          @data = @handler.build_report_data(@node, @runner, @start_time, @end_time, @elapsed_time, @exception)
-        end
-
-        it "resources=>all should contain the entire resource collection" do
-          @data[:resources][:all].should == [ @elvis, @metallica ] 
-        end
-        it "resources=>updated should contain the updated resources" do
-          @data[:resources][:updated].should == [ @metallica ] 
-        end
-      end
-      
-      it "resources data should not be included if runner was not passed" do
-          @data = @handler.build_report_data(@node, nil, @start_time, @end_time, @elapsed_time, @exception)
-        @data.has_key?(:resources).should == false
-      end
+    it "has a shortcut for the backtrace" do
+      @handler.backtrace.should == @backtrace
     end
 
-    describe "exceptions" do
-      describe "was passed" do
-        it "should set success to false" do
-          @data[:success].should be(false)
-        end
-
-        it "should set the exception message" do
-          @data[:exception][:message].should == @exception.message 
-        end
-
-        it "should set the exception backtrace" do
-          @data[:exception][:backtrace].should == @exception.backtrace
-        end
-      end
+    it "has a shortcut for all resources" do
+      @handler.all_resources.should == @all_resources
     end
 
-    it "should set sucess to true if an exception was not passed" do
-      @data = @handler.build_report_data(@node, @runner, @start_time, @end_time, @elapsed_time, nil)
-      @data[:success].should == true
+    it "has a shortcut for just the updated resources" do
+      @handler.updated_resources.should == [@all_resources.first]
     end
 
-    describe "timing data" do
-      it "should set the elapsed time" do
-        @data[:elapsed_time].should == @elapsed_time
-      end
-
-      it "should set the start time" do
-        @data[:start_time].should == @start_time
-      end
-
-      it "should set the end time" do
-        @data[:end_time].should == @end_time
-      end
+    it "has a shortcut for the start time" do
+      @handler.start_time.should == @start_time
     end
 
+    it "has a shortcut for the end time" do
+      @handler.end_time.should == @end_time
+    end
+
+    it "has a shortcut for the node" do
+      @handler.node.should == @node
+    end
+
+    it "has a shortcut for the run context" do
+      @handler.run_context.should == @run_context
+    end
+
+    it "has a shortcut for the success? and failed? predicates" do
+      @handler.success?.should be_false # becuase there's an exception
+      @handler.failed?.should be_true
+    end
+
+    it "has a shortcut to the hash representation of the run status" do
+      @handler.data.should == @run_status.to_hash
+    end
+  end
+
+  describe "when running the report" do
+    it "does not fail if the report handler raises an exception" do
+      $report_ran = false
+      def @handler.report
+        $report_ran = true
+        raise Exception, "I died the deth"
+      end
+      lambda {@handler.run_report_safely(@run_status)}.should_not raise_error
+      $report_ran.should be_true
+    end
   end
 
 end

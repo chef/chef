@@ -74,12 +74,14 @@ class Chef
       build_node
       
       begin
-        start_time = Time.now
+        run_status = Chef::RunStatus.new(node)
+        run_status.start_clock
         Chef::Log.info("Starting Chef Run")
         
         if Chef::Config[:solo]
           Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
           run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
+          run_status.run_context = run_context
           assert_cookbook_path_not_empty(run_context)
           converge(run_context)
         else
@@ -98,7 +100,8 @@ class Chef
           Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest, valid_cache_entries) }
           cookbook_hash = sync_cookbooks(valid_cache_entries)
           run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
-          
+          run_status.run_context = run_context
+
           assert_cookbook_path_not_empty(run_context)
           save_node
           
@@ -108,39 +111,35 @@ class Chef
           cleanup_file_cache(valid_cache_entries)
         end
         
-        end_time = Time.now
-        elapsed_time = end_time - start_time
-        Chef::Log.info("Chef Run complete in #{elapsed_time} seconds")
-        run_report_handlers(start_time, end_time, elapsed_time) 
+        run_status.stop_clock
+        Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
+        run_report_handlers(run_status)
         true
       rescue Exception => e
-        run_exception_handlers(node, runner ? runner : run_context, start_time, end_time, elapsed_time, e)
+        run_status.stop_clock
+        run_status.exception = e
+        run_exception_handlers(run_status)
         Chef::Log.error("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
         raise
+      ensure
+        run_status = nil
       end
     end
 
-    def run_report_handlers(start_time, end_time, elapsed_time)
-      if Chef::Config[:report_handlers].length > 0
-        Chef::Log.info("Running report handlers")
-        Chef::Config[:report_handlers].each do |handler|
-          handler.report(node, runner, start_time, end_time, elapsed_time)
-        end
-        Chef::Log.info("Report handlers complete")
+    def run_report_handlers(run_status)
+      Chef::Log.info("Running report handlers")
+      Array(Chef::Config[:report_handlers]).each do |handler|
+        handler.run_report_safely(handler)
       end
+      Chef::Log.info("Report handlers complete")
     end
 
-    def run_exception_handlers(node, runner, start_time, end_time, elapsed_time, exception)
-      if Chef::Config[:exception_handlers].length > 0
-        end_time   ||= Time.now
-        elapsed_time ||= end_time - start_time 
-        Chef::Log.error("Received exception: #{exception.message}")
-        Chef::Log.error("Running exception handlers")
-        Chef::Config[:exception_handlers].each do |handler|
-          handler.report(node, runner, start_time, end_time, elapsed_time, exception)
-        end
-        Chef::Log.error("Exception handlers complete")
+    def run_exception_handlers(run_status)
+      Chef::Log.error("Running exception handlers")
+      Array(Chef::Config[:exception_handlers]).each do |handler|
+        handler.run_report_safely(run_status)
       end
+      Chef::Log.error("Exception handlers complete")
     end
     
     def run_ohai
@@ -331,7 +330,7 @@ class Chef
     # true:: Always returns true
     def converge(run_context)
       Chef::Log.debug("Converging node #{node_name}")
-      self.runner = Chef::Runner.new(run_context)
+      @runner = Chef::Runner.new(run_context)
       runner.converge
       true
     end

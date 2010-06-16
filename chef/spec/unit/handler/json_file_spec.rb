@@ -20,48 +20,46 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Handler::JsonFile do
   before(:each) do
-    @handler = Chef::Handler::JsonFile.new
+    @handler = Chef::Handler::JsonFile.new(:the_sun => "will rise", :path => '/tmp/foobarbazqux')
   end
 
-  describe "initialize" do
-    it "should return a Chef::Handler" do
-      @handler.should be_a_kind_of(Chef::Handler)
-    end
-
-    it "should return a Chef::Handler::JsonFile" do
-      @handler.should be_a_kind_of(Chef::Handler::JsonFile)
-    end
-
-    it "should let you set config options" do
-      h = Chef::Handler::JsonFile.new(:the_sun => "will rise")
-      h.config[:the_sun].should == "will rise"
-    end
+  it "accepts arbitrary config options" do
+    @handler.config[:the_sun].should == "will rise"
   end
 
-  describe "report" do
+  it "creates the directory where the reports will be saved" do
+    FileUtils.should_receive(:mkdir_p).with('/tmp/foobarbazqux')
+    File.should_receive(:chmod).with(00700, '/tmp/foobarbazqux')
+    @handler.build_report_dir
+  end
+
+  describe "when reporting a succ" do
     before(:each) do
       @node = Chef::Node.new
-      @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
-      @run_context = Chef::RunContext.new(@node, @cookbook_collection)
-      @runner = Chef::Runner.new(@run_context)
-      @start_time = Time.now
-      @end_time = Time.now
-      @elapsed_time = @end_time - @start_time
-      @exception = Exception.new("Boy howdy!")
-      @file_mock = mock(File, :null_object => true)
+      @run_status = Chef::RunStatus.new(@node)
+      @expected_time = Time.now
+      Time.stub(:now).and_return(@expected_time, @expected_time + 5)
+      @run_status.start_clock
+      @run_status.stop_clock
+      @run_context = Chef::RunContext.new(@node, {})
+      @run_status.run_context = @run_context
+      @run_status.exception = Exception.new("Boy howdy!")
+      @file_mock = StringIO.new
       File.stub!(:open).and_yield(@file_mock)
     end
 
-    it "should build a report" do
-      @handler.stub!(:build_report_data).and_return({ "partial" => "success" })
-      @file_mock.should_receive(:puts).with("{\n  \"partial\": \"success\"\n}")
-      report = @handler.report(@node, @runner, @start_time, @end_time, @elapsed_time, @exception)
+
+    it "saves run status data to a file as JSON" do
+      @handler.should_receive(:build_report_dir)
+      @handler.run_report_unsafe(@run_status)
+      puts @run_status.exception
+      reported_data = JSON.parse(@file_mock.string)
+      pp reported_data
+      reported_data['exception'].should == "Exception: Boy howdy!"
+      reported_data['start_time'].should == @expected_time.iso8601
+      reported_data['end_time'].should == (@expected_time + 5).iso8601
+      reported_data['elapsed_time'].should == 5
     end
 
-    it "should save the report to a file" do
-      Time.stub!(:now).and_return(Time.at(0))
-      File.should_receive(:open).with("/var/chef/reports/chef-run-report-19691231160000.json", "w").and_yield(@file_mock)
-      report = @handler.report(@node, @runner, @start_time, @end_time, @elapsed_time, @exception)
-    end
   end
 end
