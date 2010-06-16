@@ -164,8 +164,9 @@ describe Chef::RunList do
 
     describe "from the chef server" do
       it "should load the role from the chef server" do
-        @rest.should_receive(:get_rest).with("roles/stubby")
-        @run_list.expand("server")
+        #@rest.should_receive(:get_rest).with("roles/stubby")
+        expansion = @run_list.expand("server")
+        expansion.recipes.should == ['one', 'two', 'kitty']
       end
 
       it "should default to expanding from the server" do
