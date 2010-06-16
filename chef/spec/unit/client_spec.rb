@@ -32,6 +32,8 @@ describe Chef::Client, "run" do
     mock_ohai = {
       :fqdn => FQDN,
       :hostname => HOSTNAME,
+      :platform => 'example-platform',
+      :platform_version => 'example-platform',
       :data => {
       }
     }

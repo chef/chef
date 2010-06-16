@@ -17,41 +17,32 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-describe Chef::Application::Client, "initialize" do
-  before do
-    @app = Chef::Application::Client.new
-  end
-  
-  it "should create an instance of Chef::Application::Client" do
-    @app.should be_kind_of(Chef::Application::Client)
-  end
-end
-
 describe Chef::Application::Client, "reconfigure" do
   before do
+    @original_config = Chef::Config.configuration
+
     @app = Chef::Application::Client.new
     @app.stub!(:configure_opt_parser).and_return(true)
     @app.stub!(:configure_chef).and_return(true)
     @app.stub!(:configure_logging).and_return(true)
-    Chef::Config.stub!(:[]).with(:json_attribs).and_return(nil)
-    Chef::Config.stub!(:[]).with(:interval).and_return(10)
-    Chef::Config.stub!(:[]).with(:splay).and_return(nil)
+    Chef::Config[:json_attribs] = nil
+    Chef::Config[:interval] = 10
+    Chef::Config[:splay] = nil
   end
 
-  describe "when in daemonized mode" do
+  after do
+    Chef::Config.configuration.replace(@original_config)
+  end
+
+  describe "when in daemonized mode and no interval has been set" do
     before do
-      Chef::Config.stub!(:[]).with(:daemonize).and_return(true)
+      Chef::Config[:daemonize] = true
+      Chef::Config[:interval] = nil
     end
 
-    describe "and no interval has been set" do
-      before do
-        Chef::Config.stub!(:[]).with(:interval).and_return(nil)
-      end
-
-      it "should set the interval to 1800" do
-        Chef::Config.should_receive(:[]=).with(:interval, 1800).and_return(1800)
-        @app.reconfigure
-      end
+    it "should set the interval to 1800" do
+      @app.reconfigure
+      Chef::Config.interval.should == 1800
     end
   end
 
@@ -62,7 +53,7 @@ describe Chef::Application::Client, "reconfigure" do
         @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
         @rest = mock("Chef::REST", :get_rest => @json, :null_object => true)
 
-        Chef::Config.stub!(:[]).with(:json_attribs).and_return("https://foo.com/foo.json")
+        Chef::Config[:json_attribs] = "https://foo.com/foo.json"
         Chef::REST.stub!(:new).with("https://foo.com/foo.json", nil, nil).and_return(@rest)
         @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
       end
@@ -80,7 +71,7 @@ describe Chef::Application::Client, "reconfigure" do
 
     describe "and the json_attribs does not match the HTTP regex" do
       before do
-        Chef::Config.stub!(:[]).with(:json_attribs).and_return("/etc/chef/dna.json")
+        Chef::Config[:json_attribs] = "/etc/chef/dna.json"
         @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
         @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
       end
@@ -93,7 +84,7 @@ describe Chef::Application::Client, "reconfigure" do
     
     describe "when parsing fails" do
       before do
-        Chef::Config.stub!(:[]).with(:json_attribs).and_return("/etc/chef/dna.json")
+        Chef::Config[:json_attribs] = "/etc/chef/dna.json"
         @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
         @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
         JSON.stub!(:parse).with(@json.read).and_raise(JSON::ParserError)
@@ -118,11 +109,11 @@ describe Chef::Application::Client, "setup_application" do
     @app.stub!(:configure_opt_parser).and_return(true)
     @app.stub!(:configure_chef).and_return(true)
     @app.stub!(:configure_logging).and_return(true)
-    Chef::Config.stub!(:[]).with(:interval).and_return(false)
-    Chef::Config.stub!(:[]).with(:splay).and_return(false)
-    Chef::Config.stub!(:[]).with(:recipe_url).and_return(false)
-    Chef::Config.stub!(:[]).with(:json_attribs).and_return("/etc/chef/dna.json")
-    Chef::Config.stub!(:[]).with(:user).and_return(nil)
+    Chef::Config[:interval] = false
+    Chef::Config[:splay] = false
+    Chef::Config[:recipe_url] = false
+    Chef::Config[:json_attribs] = "/etc/chef/dna.json"
+    Chef::Config[:user] = nil
     @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
     @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
   end
@@ -144,7 +135,7 @@ describe Chef::Application::Client, "setup_application" do
   end
   
   it "should assign the node name to the chef client instance" do
-    Chef::Config.stub!(:[]).with(:node_name).and_return("testnode")
+    Chef::Config[:node_name] = "testnode"
     @chef_client.should_receive(:node_name=).with("testnode").and_return(true)
     @app.setup_application
   end

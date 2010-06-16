@@ -18,6 +18,13 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Daemon do  
+  before do
+    @original_config = Chef::Config.configuration
+  end
+
+  after do
+    Chef::Config.configuration.replace(@original_config)
+  end
   
   describe ".running?" do
     
@@ -56,9 +63,13 @@ describe Chef::Daemon do
     describe "when the pid_file option has been set" do
       
       before do
-        Chef::Config.stub!(:[]).with(:pid_file).and_return("/var/run/chef/chef-client.pid")
+        Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
       end
-      
+
+      after do
+        Chef::Config.configuration.replace(@original_config)
+      end
+
       it "should return the supplied value" do
         Chef::Daemon.pid_file.should eql("/var/run/chef/chef-client.pid")
       end
@@ -67,7 +78,7 @@ describe Chef::Daemon do
     describe "without the pid_file option set" do
       
       before do
-        Chef::Config.stub!(:[]).with(:pid_file).and_return(nil)
+        Chef::Config[:pid_file] = nil
         Chef::Daemon.name = "chef-client"
       end
       
@@ -81,7 +92,7 @@ describe Chef::Daemon do
   describe ".pid_from_file" do
     
     before do
-      Chef::Config.stub!(:[]).with(:pid_file).and_return("/var/run/chef/chef-client.pid")
+      Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
     end
     
     it "should suck the pid out of pid_file" do
@@ -94,7 +105,7 @@ describe Chef::Daemon do
     
     before do
       Process.stub!(:pid).and_return(1337)
-      Chef::Config.stub!(:[]).with(:pid_file).and_return("/var/run/chef/chef-client.pid")
+      Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
       Chef::Application.stub!(:fatal!).and_return(true)
       @f_mock = mock(File, { :print => true, :close => true, :write => true })
       File.stub!(:open).with("/var/run/chef/chef-client.pid", "w").and_yield(@f_mock)
@@ -119,7 +130,7 @@ describe Chef::Daemon do
   
   describe ".remove_pid_file" do
     before do
-      Chef::Config.stub!(:[]).with(:pid_file).and_return("/var/run/chef/chef-client.pid")
+      Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
     end
     
     describe "when the pid file exists" do
@@ -154,7 +165,7 @@ describe Chef::Daemon do
     
     before do
       Chef::Application.stub!(:fatal!).and_return(true)
-      Chef::Config.stub!(:[]).with(:user).and_return("aj")
+      Chef::Config[:user] = 'aj'
       Dir.stub!(:chdir)
     end
 
@@ -167,7 +178,7 @@ describe Chef::Daemon do
     describe "when the user and group options are supplied" do
       
       before do
-        Chef::Config.stub!(:[]).with(:group).and_return("staff")
+        Chef::Config[:group] = 'staff'
       end
       
       it "should log an appropriate info message" do
@@ -183,7 +194,7 @@ describe Chef::Daemon do
     
     describe "when just the user option is supplied" do
       before do
-        Chef::Config.stub!(:[]).with(:group).and_return(nil)
+        Chef::Config[:group] = nil
       end
             
       it "should log an appropriate info message" do
