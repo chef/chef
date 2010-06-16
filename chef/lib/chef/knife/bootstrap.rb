@@ -24,7 +24,7 @@ class Chef
   class Knife
     class Bootstrap < Knife
 
-      banner "Sub-Command: knife bootstrap FQDN [RUN LIST...] (options)"
+      banner "knife bootstrap FQDN [RUN LIST...] (options)"
 
       option :ssh_user,
         :short => "-x USERNAME",

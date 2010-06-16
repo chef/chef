@@ -24,7 +24,7 @@ class Chef
   class Knife
     class TerremarkServerList < Knife
 
-      banner "Sub-Command: terremark server list (options)"
+      banner "knife terremark server list (options)"
 
       option :terremark_password,
         :short => "-K PASSWORD",

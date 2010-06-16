@@ -26,7 +26,7 @@ class Chef
 
       option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
 
-      banner "Sub-Command: cookbook delete COOKBOOK VERSION (options)"
+      banner "knife cookbook delete COOKBOOK VERSION (options)"
 
       def run
         confirm("Files that are common to multiple cookbooks are shared, so purging the files may disable other cookbooks. Are you sure you want to purge files instead of just deleting the cookbook") if config[:purge]

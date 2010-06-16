@@ -24,7 +24,7 @@ class Chef
   class Knife
     class RoleCreate < Knife
 
-      banner "Sub-Command: role create ROLE (options)"
+      banner "knife role create ROLE (options)"
 
       option :description,
         :short => "-d",

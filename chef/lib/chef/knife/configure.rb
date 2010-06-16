@@ -24,7 +24,7 @@ class Chef
       attr_reader :chef_server, :new_client_name, :admin_client_name, :admin_client_key
       attr_reader :chef_repo, :new_client_key, :validation_client_name, :validation_key
 
-      banner "Sub-Command: configure (options)"
+      banner "knife configure (options)"
 
       option :repository,
         :short => "-r REPO",

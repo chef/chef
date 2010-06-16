@@ -24,7 +24,7 @@ class Chef
   class Knife
     class NodeBulkDelete < Knife
 
-      banner "Sub-Command: node bulk delete REGEX (options)"
+      banner "knife node bulk delete REGEX (options)"
 
       def run 
         if @name_args.length < 1

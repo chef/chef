@@ -24,7 +24,7 @@ class Chef
   class Knife
     class NodeFromFile < Knife
 
-      banner "Sub-Command: node from file FILE (options)"
+      banner "knife node from file FILE (options)"
 
       def run 
         updated = load_from_file(Chef::Node, @name_args[0])

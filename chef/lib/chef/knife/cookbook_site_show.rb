@@ -21,7 +21,7 @@ class Chef
   class Knife
     class CookbookSiteShow < Knife
 
-      banner "Sub-Command: cookbook site show COOKBOOK [VERSION] (options)"
+      banner "knife cookbook site show COOKBOOK [VERSION] (options)"
 
       def run
         case @name_args.length

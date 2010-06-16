@@ -25,7 +25,7 @@ class Chef
   class Knife
     class CookbookMetadataFromFile < Knife
 
-      banner "Sub-Command: cookbook metadata from FILE (options)"
+      banner "knife cookbook metadata from FILE (options)"
 
       def run
         file = @name_args[0]

@@ -24,7 +24,7 @@ class Chef
   class Knife
     class NodeCreate < Knife
 
-      banner "Sub-Command: node create NODE (options)"
+      banner "knife node create NODE (options)"
 
       def run
         @node_name = @name_args[0]

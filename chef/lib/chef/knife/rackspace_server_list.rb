@@ -23,7 +23,7 @@ class Chef
   class Knife
     class RackspaceServerList < Knife
 
-      banner "Sub-Command: rackspace server list (options)"
+      banner "knife rackspace server list (options)"
 
       def h
         @highline ||= HighLine.new

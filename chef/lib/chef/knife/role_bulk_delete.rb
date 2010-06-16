@@ -24,7 +24,7 @@ class Chef
   class Knife
     class RoleBulkDelete < Knife
 
-      banner "Sub-Command: role bulk delete REGEX (options)"
+      banner "knife role bulk delete REGEX (options)"
 
       def run 
         if @name_args.length < 1

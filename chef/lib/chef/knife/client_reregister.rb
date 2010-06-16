@@ -24,7 +24,7 @@ class Chef
   class Knife
     class ClientReregister < Knife
 
-      banner "Sub-Command: client reregister CLIENT (options)"
+      banner "knife client reregister CLIENT (options)"
 
       option :file,
         :short => "-f FILE",

@@ -24,7 +24,7 @@ class Chef
   class Knife
     class ClientDelete < Knife
 
-      banner "Sub-Command: client delete CLIENT (options)"
+      banner "knife client delete CLIENT (options)"
 
       def run 
         @client_name = @name_args[0]

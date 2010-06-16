@@ -23,7 +23,7 @@ class Chef
   class Knife
     class Ec2ServerCreate < Knife
 
-      banner "Sub-Command: ec2 server create [RUN LIST...] (options)"
+      banner "knife ec2 server create [RUN LIST...] (options)"
 
       option :flavor,
         :short => "-f FLAVOR",

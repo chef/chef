@@ -23,7 +23,7 @@ class Chef
   class Knife
     class TerremarkServerDelete < Knife
 
-      banner "Sub-Command: terremark server delete SERVER (options)"
+      banner "knife terremark server delete SERVER (options)"
 
       def h
         @highline ||= HighLine.new

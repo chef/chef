@@ -30,7 +30,7 @@ class Chef
 
       attr_writer :password
 
-      banner "Sub-Command: ssh QUERY COMMAND (options)"
+      banner "knife ssh QUERY COMMAND (options)"
 
       option :concurrency,
         :short => "-C NUM",

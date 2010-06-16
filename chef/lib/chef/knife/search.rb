@@ -23,7 +23,7 @@ class Chef
   class Knife
     class Search < Knife
 
-      banner "Sub-Command: search INDEX QUERY (options)"
+      banner "knife search INDEX QUERY (options)"
 
       option :sort,
         :short => "-o SORT",

@@ -24,7 +24,7 @@ class Chef
   class Knife
     class NodeDelete < Knife
 
-      banner "Sub-Command: node delete NODE (options)"
+      banner "knife node delete NODE (options)"
 
       def run 
         @node_name = @name_args[0]

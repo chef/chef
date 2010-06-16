@@ -24,7 +24,7 @@ class Chef
   class Knife
     class RoleShow < Knife
 
-      banner "Sub-Command: role show ROLE (options)"
+      banner "knife role show ROLE (options)"
 
       option :attribute,
         :short => "-a ATTR",

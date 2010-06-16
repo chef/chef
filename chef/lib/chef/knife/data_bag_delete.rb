@@ -23,7 +23,7 @@ class Chef
   class Knife
     class DataBagDelete < Knife
 
-      banner "Sub-Command: data bag delete BAG [ITEM] (options)"
+      banner "knife data bag delete BAG [ITEM] (options)"
 
       def run 
         if @name_args.length == 2

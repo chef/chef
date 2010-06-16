@@ -24,7 +24,7 @@ class Chef
   class Knife
     class NodeShow < Knife
 
-      banner "Sub-Command: node show NODE (options)"
+      banner "knife node show NODE (options)"
 
       option :attribute,
         :short => "-a [ATTR]",

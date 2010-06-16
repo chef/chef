@@ -24,7 +24,7 @@ class Chef
   class Knife
     class NodeEdit < Knife
 
-      banner "Sub-Command: node edit NODE (options)"
+      banner "knife node edit NODE (options)"
 
       def run 
         @node_name = @name_args[0]

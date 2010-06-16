@@ -24,7 +24,7 @@ class Chef
   class Knife
     class NodeRunListRemove < Knife
 
-      banner "Sub-Command: node run_list remove [NODE] [ENTRY] (options)"
+      banner "knife node run_list remove [NODE] [ENTRY] (options)"
 
       def run 
         node = Chef::Node.load(@name_args[0])

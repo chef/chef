@@ -24,7 +24,7 @@ class Chef
   class Knife
     class ClientList < Knife
 
-      banner "Sub-Command: client list (options)"
+      banner "knife client list (options)"
 
       option :with_uri,
         :short => "-w",

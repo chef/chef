@@ -23,7 +23,7 @@ class Chef
   class Knife
     class Ec2ServerList < Knife
 
-      banner "Sub-Command: ec2 server list [RUN LIST...] (options)"
+      banner "knife ec2 server list [RUN LIST...] (options)"
 
       option :aws_access_key_id,
         :short => "-A ID",

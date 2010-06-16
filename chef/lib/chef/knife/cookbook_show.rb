@@ -24,7 +24,7 @@ class Chef
   class Knife
     class CookbookShow < Knife
 
-      banner "Sub-Command: cookbook show COOKBOOK [VERSION] [PART] [FILENAME] (options)"
+      banner "knife cookbook show COOKBOOK [VERSION] [PART] [FILENAME] (options)"
 
       option :fqdn,
        :short => "-f FQDN",
