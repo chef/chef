@@ -252,6 +252,10 @@ Cookbooks are the fundamental unit of distribution in Chef. They encapsulate all
 .P
 \fBcookbook bulk delete REGEX\fR \fI(options)\fR
 .
+.TP
+\fB\-p\fR, \fB\-\-purge\fR
+Purge files from backing store. This will disable any cookbook that contains any of the same files as the cookbook being purged.
+.
 .P
 Delete cookbooks on the Chef Server based on a regular expression. The regular expression (\fIREGEX\fR) should be in quotes, not in //'s.
 .
@@ -261,6 +265,10 @@ Delete cookbooks on the Chef Server based on a regular expression. The regular e
 .TP
 \fB\-a\fR, \fB\-\-all\fR
 Delete all versions
+.
+.TP
+\fB\-p\fR, \fB\-\-purge\fR
+Purge files from backing store. This will disable any cookbook that contains any of the same files as the cookbook being purged.
 .
 .P
 Delete the specified \fIVERSION\fR of the named \fICOOKBOOK\fR. If no version is specified, and only one version exists on the server, that version will be deleted. If multiple versions are available on the server, you will be prompted for a version to delete.
