@@ -69,7 +69,6 @@ class Chef
 
     def self.find_command(args=ARGV, merge_opts={})
       load_commands
-
       non_dash_args = Array.new
       args.each do |arg|
         non_dash_args << arg if arg =~ /^([[:alnum:]]|_)+$/
@@ -92,7 +91,7 @@ class Chef
       end
 
       unless klass_instance
-        Chef::Log.fatal("Cannot find sub command for: #{args.join(' ')}")
+        puts "Cannot find sub command for: #{args.join(' ')}"
         Chef::Knife.list_commands
         exit 10
       end
