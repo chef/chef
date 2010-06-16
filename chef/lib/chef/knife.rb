@@ -44,10 +44,19 @@ class Chef
 
     def self.list_commands
       load_commands
-      @sub_classes.keys.sort.each do |snake_case|
-        klass_instance = build_sub_class(snake_case) 
-        klass_instance.parse_options([])
-        puts klass_instance.opt_parser
+      puts "SUB-COMMANDS (for details, knife SUBCMD --help)\n\n"
+      ch = Hash.new { |h, k| h[k] = [] }
+      @sub_classes.keys.sort.each do |c|
+        k = c
+        if c.index("_")
+          k = c.split("_").first
+        end
+        ch[k] << c
+      end
+      ch.keys.sort.each do |k|
+        ch[k].each do |c|
+          puts c
+        end
         puts
       end
     end
