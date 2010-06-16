@@ -161,12 +161,18 @@ Cookbooks are the fundamental unit of distribution in Chef. They encapsulate all
 
 __cookbook bulk delete REGEX__ _(options)_
 
+  * `-p`, `--purge`:
+    Purge files from backing store. This will disable any cookbook that contains any of the same files as the cookbook being purged.
+
 Delete cookbooks on the Chef Server based on a regular expression. The regular expression (_REGEX_) should be in quotes, not in //'s.
 
 __cookbook delete COOKBOOK [VERSION]__ _(options)_
 
   * `-a`, `--all`:
     Delete all versions
+
+  * `-p`, `--purge`:
+    Purge files from backing store. This will disable any cookbook that contains any of the same files as the cookbook being purged.
 
 Delete the specified _VERSION_ of the named _COOKBOOK_. If no version is specified, and only one version exists on the server, that version will be deleted. If multiple versions are available on the server, you will be prompted for a version to delete.
 
