@@ -70,6 +70,10 @@ describe Chef::Handler do
       @handler.end_time.should == @end_time
     end
 
+    it "has a shortcut for the elapsed time" do
+      @handler.elapsed_time.should == 4.2
+    end
+
     it "has a shortcut for the node" do
       @handler.node.should == @node
     end
