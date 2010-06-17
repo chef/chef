@@ -37,6 +37,12 @@ class Chef
     def_delegator :@run_status, :end_time
 
     ##
+    # :method: elapsed_time
+    #
+    # The time elapsed between the start and finish of the chef run
+    def_delegator :@run_status, :elapsed_time
+
+    ##
     # :method: run_context
     #
     # The Chef::RunContext object used by the chef run
