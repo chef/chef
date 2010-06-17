@@ -24,6 +24,8 @@ class Chef
   class Knife
     class CookbookBulkDelete < Knife
 
+      option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
+      
       banner "Sub-Command: cookbook bulk delete REGEX (options)"
 
       def run
@@ -41,10 +43,12 @@ class Chef
 
         confirm("Do you really want to delete these cookbooks? All versions will be deleted. (Y/N) ", false)
         
+        confirm("Files that are common to multiple cookbooks are shared, so purging the files may disable other cookbooks. Are you sure you want to purge files instead of just deleting the cookbooks") if config[:purge]
+        
         cookbooks_names.each do |cookbook_name|
           versions = rest.get_rest("cookbooks/#{cookbook_name}").values.flatten
           versions.each do |version|
-            object = rest.delete_rest("cookbooks/#{cookbook_name}/#{version}")
+            object = rest.delete_rest("cookbooks/#{cookbook_name}/#{version}#{config[:purge] ? "?purge=true" : ""}")
             Chef::Log.info("Deleted cookbook  #{cookbook_name.ljust(25)} [#{version}]")
           end
         end
@@ -52,10 +56,3 @@ class Chef
     end
   end
 end
-
-
-
-
-
-
-
