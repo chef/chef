@@ -16,5 +16,5 @@
 # limitations under the License.
 
 class Chef
-  VERSION = '0.9.0.rc01'
+  VERSION = '0.9.0.rc02'
 end
