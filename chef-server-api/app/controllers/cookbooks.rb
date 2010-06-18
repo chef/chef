@@ -62,7 +62,7 @@ class Cookbooks < Application
   def index_recipes
     all_cookbooks = Array(Chef::CookbookVersion.cdb_list_latest(true))
     all_cookbooks.map! do |cookbook|
-      cookbook.manifest["recipes"].map { |r| "#{cookbook.name}::#{r['name']}" }
+      cookbook.manifest["recipes"].map { |r| "#{cookbook.name}::#{File.basename(r['name'], ".rb")}" }
     end
     all_cookbooks.flatten!
     all_cookbooks.sort!

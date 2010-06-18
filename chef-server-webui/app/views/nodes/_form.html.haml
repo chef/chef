@@ -36,7 +36,7 @@
             %div.sortable
               %ul#node_available_recipes.connectedSortable
                 - @available_recipes.each do |recipe|
-                  %li{ :id => "recipe[#{File.basename(recipe, ".rb")}]", :class => 'ui-state-default' }= h File.basename(recipe, ".rb")
+                  %li{ :id => "recipe[#{recipe}]",:title => recipe, :class => 'ui-state-default' }= h recipe
 
 
     %div.group.form{:style => "position:relative;"}
