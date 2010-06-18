@@ -26,6 +26,7 @@ require 'chef/node'
 
 class Chef
   class Resource
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name]
         
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
@@ -33,7 +34,8 @@ class Chef
     include Chef::Mixin::ConvertToClassName
     
     attr_accessor :params, :provider, :updated, :allowed_actions, :run_context, :cookbook_name, :recipe_name, :enclosing_provider
-    attr_reader :resource_name, :source_line, :not_if_args, :only_if_args
+    attr_accessor :source_line
+    attr_reader :resource_name, :not_if_args, :only_if_args
 
     # Each notify entry is a resource/action pair, modeled as an
     # OpenStruct with a .resource and .action member
@@ -57,11 +59,7 @@ class Chef
       @only_if_args = {}
       @notifies_immediate = Array.new
       @notifies_delayed = Array.new
-      sline = caller(4).shift
-      if sline
-        @source_line = sline.gsub!(/^(.+):(.+):.+$/, '\1 line \2')
-        @source_line = ::File.expand_path(@source_line) if @source_line
-      end
+      @source_line = nil
     end
     
     def node
@@ -205,6 +203,20 @@ class Chef
     
     def to_s
       "#{@resource_name}[#{@name}]"
+    end
+
+    def to_text
+      skip = 
+      ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
+      text = "# Declared in #{@source_line}\n"
+      text << convert_to_snake_case(self.class.name, 'Chef::Resource') + "(#{name}) do\n"
+      ivars.each do |ivar|
+        #next if skip.include?(ivar)
+        if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
+          text << "  #{ivar.to_s.sub(/^@/,'')}(#{value.inspect})\n"
+        end
+      end
+      text << "end\n"
     end
     
     # Serialize this object as a hash 
