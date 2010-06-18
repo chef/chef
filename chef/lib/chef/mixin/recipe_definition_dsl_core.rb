@@ -65,6 +65,7 @@ class Chef
           # Chef::Provider.
 #          resource.recipe_name = @recipe_name
           resource.params = @params
+          resource.source_line = caller[0]
           # Determine whether this resource is being created in the context of an enclosing Provider
           resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil
           resource.instance_eval(&block) if block
