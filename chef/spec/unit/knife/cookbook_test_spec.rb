@@ -68,11 +68,7 @@ describe Chef::Knife::CookbookTest do
         end
         Chef::CookbookLoader.stub!(:new).and_return(@loader)
         @loader.each do |key, cookbook|
-          puts "FOOBAR"
-          pp cookbook
-          puts 'nuo2'
           @knife.should_receive(:test_cookbook).with(cookbook.name)
-          puts 'nuo3'
         end
         @knife.run
       end
