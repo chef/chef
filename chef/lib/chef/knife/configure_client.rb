@@ -24,18 +24,23 @@ class Chef
       banner "Sub-Command: configure client DIRECTORY"
 
       def run
-        raise ArgumentError, "You must provide the directory to put the files in" unless @name_args[0]
+        unless @config_dir = @name_args[0]
+          Chef::Log.fatal "You must provide the directory to put the files in"
+          show_usage
+          exit(1)
+        end
+
         Chef::Log.info("Creating client configuration")
-        system("mkdir -p #{@name_args[0]}")
+        system("mkdir -p #{@config_dir}")
         Chef::Log.info("Writing client.rb")
-        File.open(File.join(@name_args[0], "client.rb"), "w") do |file|
+        File.open(File.join(@config_dir, "client.rb"), "w") do |file|
           file.puts('log_level        :info')
           file.puts('log_location     STDOUT')
           file.puts("chef_server_url  '#{Chef::Config[:chef_server_url]}'")
           file.puts("validation_client_name '#{Chef::Config[:validation_client_name]}'")
         end
         Chef::Log.info("Writing validation.pem")
-        system("cp #{Chef::Config[:validation_key]} #{File.join(@name_args[0], 'validation.pem')}")
+        system("cp #{Chef::Config[:validation_key]} #{File.join(@config_dir, 'validation.pem')}")
       end
 
     end
