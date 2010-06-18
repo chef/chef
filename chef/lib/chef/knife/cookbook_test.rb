@@ -45,10 +45,10 @@ class Chef
           config[:cookbook_path] = Chef::Config[:cookbook_path]
         end
 
-        if config[:all] 
+        if config[:all]
           cl = Chef::CookbookLoader.new
-          cl.each do |cookbook|
-            test_cookbook(cookbook.name.to_s)
+          cl.each do |key, cookbook|
+            test_cookbook(key)
           end
         else
           @name_args.each do |cb|
@@ -60,42 +60,21 @@ class Chef
       def test_cookbook(cookbook)
         Chef::Log.info("Running syntax check on #{cookbook}")
         Array(config[:cookbook_path]).reverse.each do |path|
-          cookbook_dir = File.expand_path(File.join(path, cookbook))
-          test_ruby(cookbook_dir)
-          test_templates(cookbook_dir)
+          syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cookbook, path)
+          test_ruby(syntax_checker)
+          test_templates(syntax_checker)
         end
       end
 
-      def test_ruby(cookbook_dir)
-        cache = Chef::Cache::Checksum.instance
-        Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
-          key = cache.generate_key(ruby_file, "chef-test")
-          fstat = File.stat(ruby_file)
 
-          if cache.lookup_checksum(key, fstat) 
-            Chef::Log.info("No change in checksum of #{ruby_file}")
-          else
-            Chef::Log.info("Testing #{ruby_file} for syntax errors...")
-            Chef::Mixin::Command.run_command(:command => "ruby -c #{ruby_file}", :output_on_failure => true)
-            cache.generate_checksum(key, ruby_file, fstat)
-          end
-        end
+      def test_ruby(syntax_checker)
+        Chef::Log.info("Validating ruby files")
+        exit(1) unless syntax_checker.validate_ruby_files
       end
-
-      def test_templates(cookbook_dir)
-        cache = Chef::Cache::Checksum.instance
-        Dir[File.join(cookbook_dir, '**', '*.erb')].each do |erb_file|
-          key = cache.generate_key(erb_file, "chef-test")
-          fstat = File.stat(erb_file)
-
-          if cache.lookup_checksum(key, fstat) 
-            Chef::Log.info("No change in checksum of #{erb_file}")
-          else
-            Chef::Log.info("Testing template #{erb_file} for syntax errors...")
-            Chef::Mixin::Command.run_command(:command => "sh -c 'erubis -x #{erb_file} | ruby -c'", :output_on_failure => true)
-            cache.generate_checksum(key, erb_file, fstat)
-          end
-        end
+      
+      def test_templates(syntax_checker)
+        Chef::Log.info("Validating templates")
+        exit(1) unless syntax_checker.validate_templates
       end
 
     end
