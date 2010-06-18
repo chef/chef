@@ -39,7 +39,7 @@
                   %tr
                     %td{:colspan => 2} This node has no recipes applied.
                 - else
-                  - recipes.each do |recipe|
+                  - recipes.each_with_index do |recipe, i|
                     %tr
                       %td.position= i
                       %td= recipes
