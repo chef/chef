@@ -24,7 +24,7 @@ require 'chef/data_bag_item'
 begin
   gem "net-ssh", ">= 2.0.23"
 rescue LoadError
-  STDERR.puts "Please install net-ssh version 2.0.23 or higher, as lower versions cause issues."
+  STDERR.puts "ERROR: Please install net-ssh version 2.0.23 or higher, as lower versions cause issues."
   exit 1
 end
 
