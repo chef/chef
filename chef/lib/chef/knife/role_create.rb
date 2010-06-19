@@ -31,9 +31,17 @@ class Chef
         :long => "--description",
         :description => "The role description"
 
-      def run 
+      def run
+        @role_name = @name_args[0]
+
+        if @role_name.nil?
+          show_usage
+          Chef::Log.fatal("You must specify a role name")
+          exit 1
+        end
+        
         role = Chef::Role.new
-        role.name(@name_args[0])
+        role.name(@role_name)
         role.description(config[:description]) if config[:description]
         create_object(role)
       end

@@ -26,8 +26,16 @@ class Chef
 
       banner "Sub-Command: client edit CLIENT (options)"
 
-      def run 
-        edit_object(Chef::ApiClient, @name_args[0])
+      def run
+        @client_name = @name_args[0]
+
+        if @client_name.nil?
+          show_usage
+          Chef::Log.fatal("You must specify a client name")
+          exit 1
+        end
+        
+        edit_object(Chef::ApiClient, @client_name)
       end
     end
   end

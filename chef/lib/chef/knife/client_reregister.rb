@@ -31,8 +31,16 @@ class Chef
         :long  => "--file FILE",
         :description => "Write the key to a file"
 
-      def run 
-        client = Chef::ApiClient.load(@name_args[0])
+      def run
+        @client_name = @name_args[0]
+
+        if @client_name.nil?
+          show_usage
+          Chef::Log.fatal("You must specify a client name")
+          exit 1
+        end
+        
+        client = Chef::ApiClient.load(@client_name)
         key = client.save(true)
         if config[:file]
           File.open(config[:file], "w") do |f|

@@ -27,7 +27,15 @@ class Chef
       banner "Sub-Command: role delete ROLE (options)"
 
       def run 
-        delete_object(Chef::Role, @name_args[0])
+        @role_name = @name_args[0]
+
+        if @role_name.nil?
+          show_usage
+          Chef::Log.fatal("You must specify a role name")
+          exit 1
+        end
+        
+        delete_object(Chef::Role, @role_name)
       end
 
     end

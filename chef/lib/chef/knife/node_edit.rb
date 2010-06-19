@@ -27,7 +27,15 @@ class Chef
       banner "Sub-Command: node edit NODE (options)"
 
       def run 
-        edit_object(Chef::Node, @name_args[0])
+        @node_name = @name_args[0]
+
+        if @node_name.nil?
+          show_usage
+          Chef::Log.fatal("You must specify a node name")
+          exit 1
+        end
+        
+        edit_object(Chef::Node, @node_name)
       end
     end
   end
