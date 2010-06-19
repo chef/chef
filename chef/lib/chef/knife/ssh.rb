@@ -21,7 +21,12 @@ require 'chef/data_bag_item'
 
 # net-ssh of lower versions has a bug that causes 'knife ssh (searchterm) (commandname)" 
 # to loop infinitely and consume all the CPU of one core.
-gem "net-ssh", ">= 2.0.23"
+begin
+  gem "net-ssh", ">= 2.0.23"
+rescue LoadError
+  STDERR.puts "Please install net-ssh version 2.0.23 or higher, as lower versions cause issues."
+  exit 1
+end
 
 class Chef
   class Knife
