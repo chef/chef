@@ -18,10 +18,24 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
+module ChefSpecs
+  class ChefRest
+    attr_reader :args_received
+    def initialize
+      @args_received = []
+    end
+    
+    def post_rest(*args)
+      @args_received << args
+    end
+  end
+end
+
+
 describe Chef::Knife::DataBagCreate do
   before do
     @knife = Chef::Knife::DataBagCreate.new
-    @rest = mock("Chef::Rest")
+    @rest = ChefSpecs::ChefRest.new
     @knife.stub!(:rest).and_return(@rest)
     @log = Chef::Log
   end
@@ -40,10 +54,10 @@ describe Chef::Knife::DataBagCreate do
     @knife.instance_variable_set(:@name_args, ['sudoing_admins', 'ME'])
     user_supplied_json = {"login_name" => "alphaomega", "id" => "ME"}.to_json
     @knife.should_receive(:create_object).and_yield(user_supplied_json)
-    @rest.should_receive(:post_rest).with("data/sudoing_admins", user_supplied_json)
+    @rest.should_receive(:post_rest).with("data", {'name' => 'sudoing_admins'}).ordered
+    @rest.should_receive(:post_rest).with("data/sudoing_admins", user_supplied_json).ordered
 
     @knife.run
-    
   end
 
 end
