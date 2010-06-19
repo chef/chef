@@ -195,7 +195,9 @@ class Chef
         config[:attribute].split(".").each do |attr|
           if data.respond_to?(:[])
             data = data[attr]
-          else
+          elsif data.nil?
+            nil # don't get no method error on nil
+          else data.respond_to?(attr.to_sym)
             data = data.send(attr.to_sym)
           end
         end
