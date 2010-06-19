@@ -19,6 +19,10 @@
 require 'chef/knife'
 require 'chef/data_bag_item'
 
+# net-ssh of lower versions has a bug that causes 'knife ssh (searchterm) (commandname)" 
+# to loop infinitely and consume all the CPU of one core.
+gem "net-ssh", ">= 2.0.23"
+
 class Chef
   class Knife
     class Ssh < Knife
@@ -31,7 +35,8 @@ class Chef
         :short => "-C NUM",
         :long => "--concurrency NUM",
         :description => "The number of concurrent connections",
-        :default => nil 
+        :default => nil,
+        :proc => lambda { |o| o.to_i }
 
       option :attribute,
         :short => "-a ATTR",
