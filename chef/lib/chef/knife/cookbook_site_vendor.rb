@@ -31,13 +31,20 @@ class Chef
        :boolean => true,
        :description => "Grab dependencies automatically"
 
+      option :cookbook_path,
+        :short => "-o PATH:PATH",
+        :long => "--cookbook-path PATH:PATH",
+        :description => "A colon-separated path to look for cookbooks in",
+        :proc => lambda { |o| o.split(":") }
+
       def run
         if config[:cookbook_path]
-          vendor_path = File.expand_path(File.join(config[:cookbook_path].first))
+          Chef::Config[:cookbook_path] = config[:cookbook_path]
         else
-          Chef::Log.warn("cookbook path is not configured in your knife.rb, using the current directory for the cookbook repo")
-          vendor_path = Dir.pwd
+          config[:cookbook_path] = Chef::Config[:cookbook_path]
         end
+
+        vendor_path = File.expand_path(File.join(config[:cookbook_path].first))
         cookbook_path = File.join(vendor_path, name_args[0])
         upstream_file = File.join(vendor_path, "#{name_args[0]}.tar.gz")
         branch_name = "chef-vendor-#{name_args[0]}"
