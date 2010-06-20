@@ -74,6 +74,10 @@ class Chef
           output(rest.get_rest("cookbooks/#{@name_args[0]}/#{cookbook_version}"))
         when 1 # We are showing the cookbook versions 
           output(rest.get_rest("cookbooks/#{@name_args[0]}"))
+        when 0
+          show_usage
+          Chef::Log.fatal("You must specify a cookbook name")
+          exit 1
         end
       end
 

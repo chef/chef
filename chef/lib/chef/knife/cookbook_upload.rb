@@ -63,6 +63,11 @@ class Chef
             upload_cookbook(cookbook)
           end
         else
+          if @name_args.length < 1
+            show_usage
+            Chef::Log.fatal("You must specify the --all flag or at least one cookbook name")
+            exit 1
+          end
           @name_args.each do |cookbook_name|
             if cl.cookbook_exists?(cookbook_name)
               upload_cookbook(cl[cookbook_name])

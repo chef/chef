@@ -26,9 +26,17 @@ class Chef
 
       banner "Sub-Command: node create NODE (options)"
 
-      def run 
+      def run
+        @node_name = @name_args[0]
+
+        if @node_name.nil?
+          show_usage
+          Chef::Log.fatal("You must specify a node name")
+          exit 1
+        end
+        
         node = Chef::Node.new
-        node.name(@name_args[0])
+        node.name(@node_name)
         create_object(node)
       end
     end

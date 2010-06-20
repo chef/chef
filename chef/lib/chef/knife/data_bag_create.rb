@@ -26,14 +26,27 @@ class Chef
       banner "Sub-Command: data bag create BAG [ITEM] (options)"
 
       def run
-        # create the data bag
-        rest.post_rest("data", { "name" => @name_args[0] })
-        Chef::Log.info("Created data_bag[#{@name_args[0]}]")
+        @data_bag_name, @data_bag_item_name = @name_args
 
+        if @data_bag_name.nil?
+          show_usage
+          Chef::Log.fatal("You must specify a data bag name")
+          exit 1
+        end
+        
+        # create the data bag
+        begin
+          rest.post_rest("data", { "name" => @data_bag_name })
+          Chef::Log.info("Created data_bag[#{@data_bag_name}]")
+        rescue Net::HTTPServerException => e
+          raise unless e.to_s =~ /^409/
+          Chef::Log.info("Data bag #{@data_bag_name} already exists")
+        end
+        
         # if an item is specified, create it, as well
-        if @name_args.length == 2
-          create_object({ "id" => @name_args[1] }, "data_bag_item[#{@name_args[1]}]") do |output|
-            rest.post_rest("data/#{@name_args[0]}", output)
+        if @data_bag_item_name
+          create_object({ "id" => @data_bag_item_name }, "data_bag_item[#{@data_bag_item_name}]") do |output|
+            rest.post_rest("data/#{@data_bag_name}", output)
           end
         end
       end
