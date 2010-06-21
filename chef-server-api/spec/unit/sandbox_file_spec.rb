@@ -120,6 +120,15 @@ describe ChefServerApi::SandboxFile do
         @sandbox_file.commit_to('/tmp/final_home')
         @tempfile.string.should == "riseofthemachines\nriseofthechefs\n"
       end
+
+      it "calls #read and not #string on the rack input [CHEF-1363, #regression]" do
+        @input.should_not_receive(:string)
+        @tempfile = StringIO.new
+        @tempfile.stub!(:path).and_return("/tmpfile/source")
+        Tempfile.stub!(:open).and_yield(@tempfile)
+        FileUtils.stub!(:mv)
+        @sandbox_file.commit_to('/tmp/final_home')
+      end
     end
 
     context "and a tempfile for input" do

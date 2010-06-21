@@ -99,7 +99,7 @@ module ChefServerApi
 
     def commit_stringio_to(destination_file_path)
       Tempfile.open("sandbox") do |src|
-        src.write(@input.string) 
+        src.write(@input.read)
         src.close
         Chef::Log.info("upload_checksum: move #{src.path} to #{destination_file_path}")
         FileUtils.mv(src.path, destination_file_path)
