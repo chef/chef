@@ -121,7 +121,7 @@ describe ChefServerApi::SandboxFile do
         @tempfile.string.should == "riseofthemachines\nriseofthechefs\n"
       end
 
-      it "calls #read and not #string on the rack input [CHEF-1363, #regression]" do
+      it "calls #read and not #string on the rack input [CHEF-1363 regression test]" do
         @input.should_not_receive(:string)
         @tempfile = StringIO.new
         @tempfile.stub!(:path).and_return("/tmpfile/source")
