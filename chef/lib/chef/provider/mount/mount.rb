@@ -39,7 +39,7 @@ class Chef
           Chef::Log.debug("Checking for mount point #{@current_resource.mount_point}")
 
           # only check for existence of non-remote devices
-          if(@new_resource.device !~ /:/ && @new_resource.device !~ /\/\// && !::File.exists?(@new_resource.device) )
+          if(@new_resource.device !~ /:/ && @new_resource.device !~ /\/\// && !::File.exists?(device_real) )
             raise Chef::Exceptions::Mount, "Device #{@new_resource.device} does not exist"
           elsif( !::File.exists?(@new_resource.mount_point) )
             raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
@@ -84,7 +84,14 @@ class Chef
           unless @current_resource.mounted
             command = "mount -t #{@new_resource.fstype}"
             command << " -o #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
-            command << " #{device_real}"
+            command << case @new_resource.device_type
+            when :device
+              " #{device_real}"
+            when :label
+              " -L #{@new_resource.device}"
+            when :uuid
+              " -U #{@new_resource.device}"
+            end
             command << " #{@new_resource.mount_point}"
             shell_out!(command)
             Chef::Log.info("Mounted #{@new_resource.mount_point}")
@@ -174,11 +181,10 @@ class Chef
             if @new_resource.device_type == :device
               @real_device = @new_resource.device
             else
+              @real_device = ""
               status = popen4("/sbin/findfs #{device_fstab}") do |pid, stdin, stdout, stderr|
-                @real_device = stdout.first.chomp
-              end
-              unless status.exitstatus == 0
-                @real_device = "/dev/null"
+                device_line = stdout.first # stdout.first consumes
+                @real_device = device_line.chomp unless device_line.nil?
               end
             end
           end
