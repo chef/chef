@@ -41,7 +41,7 @@ class Chef
           
           super
           
-          chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}")
+          chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}", :returns => [0,1])
           @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
           @current_resource        
         end

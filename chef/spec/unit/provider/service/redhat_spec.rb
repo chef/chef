@@ -32,16 +32,6 @@ describe "load_current_resource" do
     @provider = Chef::Provider::Service::Redhat.new(@new_resource, @run_context)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
     File.stub!(:exists?).and_return(true)
-
-    # @status = mock("Status", :exitstatus => 0)
-    # @provider.stub!(:popen4).and_return(@status)
-    # @provider.should_receive(:run_command).with(:command => "/sbin/service chef status")
-    # @stdin = mock("STDIN", :null_object => true)
-    # @stdout = mock("STDOUT", :null_object => true)
-    # @stdout_string = "chef    0:off   1:off   2:off   3:off   4:off   5:off   6:off"
-    # @stdout.stub!(:gets).and_return(@stdout_string)
-    # @stderr = mock("STDERR", :null_object => true)
-    # @pid = mock("PID", :null_object => true)
   end
 
   it "should raise an error if /sbin/chkconfig does not exist" do
@@ -51,14 +41,14 @@ describe "load_current_resource" do
 
   it "sets the current enabled status to true if the service is enabled for any run level" do
     chkconfig = OpenStruct.new(:stdout => "chef    0:off   1:off   2:off   3:off   4:off   5:on   6:off")
-    @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef").and_return(chkconfig)
+    @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
     @provider.load_current_resource
     @current_resource.enabled.should be_true
   end
 
   it "sets the current enabled status to false if the regex does not match" do
     chkconfig = OpenStruct.new(:stdout => "chef    0:off   1:off   2:off   3:off   4:off   5:off   6:off")
-    @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef").and_return(chkconfig)
+    @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
     @provider.load_current_resource.should eql(@current_resource)
     @current_resource.enabled.should be_false
   end
