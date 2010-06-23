@@ -19,6 +19,8 @@
 require 'etc'
 require 'tmpdir'
 require 'chef/log'
+require 'fcntl'
+require 'chef/exceptions'
 
 class Chef
   
