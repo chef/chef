@@ -44,6 +44,7 @@ class Chef
     attr_accessor :user, :group, :cwd, :valid_exit_codes
     attr_reader :command, :umask, :environment
     attr_writer :timeout
+    attr_reader :execution_time
     
     attr_reader :stdout, :stderr, :status
     
@@ -138,7 +139,7 @@ class Chef
       propagate_pre_exec_failure
         
       @result = nil
-      read_time = 0
+      @execution_time = 0
      
       # Ruby 1.8.7 and 1.8.6 from mid 2009 try to allocate objects during GC
       # when calling IO.select and IO#read. Some OS Vendors are not interested
@@ -148,8 +149,8 @@ class Chef
       until @status
         ready = IO.select(open_pipes, nil, nil, READ_WAIT_TIME)
         unless ready
-          read_time += READ_WAIT_TIME
-          if read_time >= timeout && !@result
+          @execution_time += READ_WAIT_TIME
+          if @execution_time >= timeout && !@result
             raise Chef::Exceptions::CommandTimeout, "command timed out:\n#{format_for_exception}"
           end
         end
