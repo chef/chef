@@ -19,6 +19,7 @@
 
 require 'chef/config'
 require 'chef/mixin/params_validate'
+require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/certificate'
 require 'chef/index_queue'

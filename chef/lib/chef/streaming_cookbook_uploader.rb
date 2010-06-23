@@ -9,6 +9,7 @@
 require 'net/http'
 require 'mixlib/authentication/signedheaderauth'
 require 'openssl'
+require 'chef/version'
 
 class Chef
   class StreamingCookbookUploader
