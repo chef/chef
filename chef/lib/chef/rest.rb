@@ -27,6 +27,7 @@ require 'tempfile'
 require 'chef/api_client'
 require 'chef/rest/auth_credentials'
 require 'chef/rest/rest_request'
+require 'chef/monkey_patches/string'
 
 class Chef
   class REST
