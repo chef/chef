@@ -249,7 +249,7 @@ class Chef
       Chef::Log.debug("Synchronizing cookbook #{cookbook.name}")
 
       # files and templates are lazily loaded, and will be done later.
-      eager_segments = Array(Chef::CookbookVersion::COOKBOOK_SEGMENTS)
+      eager_segments = Chef::CookbookVersion::COOKBOOK_SEGMENTS.dup
       eager_segments.delete(:files)
       eager_segments.delete(:templates)
       

@@ -16,6 +16,11 @@
 # limitations under the License.
 #
 
+require 'chef/shell_out'
+require 'chef/mixin/shell_out'
+
+include Chef::Mixin::ShellOut
+
 CHEF_CLIENT = File.join(CHEF_PROJECT_ROOT, "chef", "bin", "chef-client")
 
 ###
@@ -31,6 +36,11 @@ When /^I run the chef\-client$/ do
     @stderr = e.gets(nil)
   end
   @status = status
+end
+
+When "I run the chef-client for no more than '$timeout' seconds" do |timeout|
+  cmd = shell_out("#{CHEF_CLIENT} -l info -i 1 -s 1 -c #{File.expand_path(File.join(configdir, 'client.rb'))}", :timeout => timeout.to_i)
+  @status = cmd.status
 end
 
 When /^I run the chef\-client again$/ do
