@@ -20,7 +20,7 @@
 require 'rest_client'
 
 require 'chef/knife'
-require 'chef/streaming_cookbook_uploader'
+require 'chef/cookbook_loader'
 require 'chef/cache/checksum'
 require 'chef/sandbox'
 require 'chef/cookbook_version'
