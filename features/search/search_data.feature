@@ -10,7 +10,7 @@ Feature: Search Data
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
       And a 'data_bag_item' named 'axl_rose' exists
-     When I run the chef-client
+     When I run the chef-client with '-l debug'
      Then the run should exit '0'
       And a file named 'francis' should exist
       And a file named 'axl_rose' should exist
