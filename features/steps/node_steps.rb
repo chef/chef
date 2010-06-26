@@ -20,7 +20,7 @@
 # Given
 ###
 Given /^a validated node$/ do
-  client.run_ohai
+  # client should have cached ohai assigned to it
   client.determine_node_name
   client.register
   client.build_node
@@ -28,7 +28,7 @@ Given /^a validated node$/ do
 end
 
 Given /^a validated node with an empty runlist$/ do
-  client.run_ohai
+  # client should have cached ohai assigned to it
   client.determine_node_name
   client.register
   client.build_node

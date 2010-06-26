@@ -23,6 +23,7 @@
 require 'uri'
 require 'net/http'
 require 'chef/rest/cookie_jar'
+require 'chef/version'
 
 class Chef
   class REST
