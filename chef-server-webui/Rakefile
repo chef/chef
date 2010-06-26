@@ -3,8 +3,12 @@ require File.dirname(__FILE__) + '/lib/chef-server-webui/version'
 require 'rubygems'
 require 'rake/gempackagetask'
 
-require 'merb-core'
-require 'merb-core/tasks/merb'
+begin
+  require 'merb-core'
+  require 'merb-core/tasks/merb'
+rescue LoadError
+  STDERR.puts "merb is not installed, merb rake tasks will not be available."
+end
 
 GEM_NAME = "chef-server-webui"
 AUTHOR = "Opscode"
@@ -24,12 +28,12 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
 
-  s.add_dependency "merb-core", "~> 1.0"
-  s.add_dependency "merb-slices", "~> 1.0"
-  s.add_dependency "merb-assets", "~> 1.0"
-  s.add_dependency "merb-helpers", "~> 1.0"
-  s.add_dependency "merb-haml", "~> 1.0"
-  s.add_dependency "merb-param-protection", "~> 1.0"
+  s.add_dependency "merb-core", "~> 1.1.0"
+  s.add_dependency "merb-slices", "~> 1.1.0"
+  s.add_dependency "merb-assets", "~> 1.1.0"
+  s.add_dependency "merb-helpers", "~> 1.1.0"
+  s.add_dependency "merb-haml", "~> 1.1.0"
+  s.add_dependency "merb-param-protection", "~> 1.1.0"
 
   s.add_dependency "json", "<= 1.4.2"
 
