@@ -140,7 +140,6 @@ describe Chef::RunList do
       @role.default_attributes :one => :two
       @role.override_attributes :three => :four
 
-      Chef::Role.stub!(:from_disk).and_return(@role)
       Chef::Role.stub!(:load).and_return(@role)
       @rest = mock("Chef::REST", { :get_rest => @role, :url => "/" })
       Chef::REST.stub!(:new).and_return(@rest)
