@@ -52,7 +52,7 @@ class Chef
             Chef::Log.info("Writing updated content for #{@new_resource} to #{@new_resource.path}")
             backup
             set_all_access_controls(rendered_template.path)
-            FileUtils.cp(rendered_template.path, @new_resource.path)
+            FileUtils.mv(rendered_template.path, @new_resource.path)
             @new_resource.updated = true
           end
         end
