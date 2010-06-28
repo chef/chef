@@ -129,7 +129,7 @@ class Chef
     def run_report_handlers(run_status)
       Chef::Log.info("Running report handlers")
       Array(Chef::Config[:report_handlers]).each do |handler|
-        handler.run_report_safely(handler)
+        handler.run_report_safely(run_status)
       end
       Chef::Log.info("Report handlers complete")
     end
