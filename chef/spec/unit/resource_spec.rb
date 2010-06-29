@@ -232,6 +232,10 @@ describe Chef::Resource do
     
   end
 
+  it "supports accessing the node via the @node instance variable [DEPRECATED]" do
+    @resource.instance_variable_get(:@node).should == @node
+  end
+
   it "runs an action by finding its provider, loading the current resource and then running the action" do
     pending
   end
