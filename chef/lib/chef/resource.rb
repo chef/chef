@@ -24,14 +24,17 @@ require 'chef/mixin/convert_to_class_name'
 require 'chef/resource_collection'
 require 'chef/node'
 
+require 'chef/mixin/deprecation'
+
 class Chef
   class Resource
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name]
-        
+
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::Language
     include Chef::Mixin::ConvertToClassName
+    include Chef::Mixin::Deprecation
     
     attr_accessor :params, :provider, :updated, :allowed_actions, :run_context, :cookbook_name, :recipe_name, :enclosing_provider
     attr_accessor :source_line
@@ -60,6 +63,8 @@ class Chef
       @notifies_immediate = Array.new
       @notifies_delayed = Array.new
       @source_line = nil
+
+      @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
     end
     
     def node
@@ -237,9 +242,10 @@ class Chef
     def to_hash
       instance_vars = Hash.new
       self.instance_variables.each do |iv|
-        iv = iv.to_s
-        next if iv == "@run_context"
-        instance_vars[iv.sub(/^@/,'').to_sym] = self.instance_variable_get(iv)
+        #iv = iv.to_s
+        #next if iv == "@run_context"
+        key = iv.to_s.sub(/^@/,'').to_sym
+        instance_vars[key] = self.instance_variable_get(iv) unless (key == :run_context) || (key == :node)
       end
       instance_vars
     end
