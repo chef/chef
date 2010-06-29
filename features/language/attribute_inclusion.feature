@@ -11,3 +11,11 @@ Feature: Attribute Inclusion
      Then the run should exit '0'
       And a file named 'mars_volta' should contain 'mars_volta is dope' only '1' time 
 
+  @fuuu
+  Scenario: Include a default attribute file
+    Given a validated node
+      And it includes the recipe 'attribute_include_default'
+     When I run the chef-client
+     Then the run should exit '0'
+      And a file named 'mars_volta' should contain 'mars_volta is dope' only '1' time 
+
