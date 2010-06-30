@@ -14,6 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'chef/recipe'
+require 'fileutils'
+require 'chef/version'
+require 'chef/shef/shef_session'
 
 module Shef
   module Extensions

@@ -73,7 +73,6 @@ class Chef
         end
 
         def set_members
-          pp :set_members => {:append => @new_resource.append, :members => @new_resource.members}
           unless @new_resource.append
             Chef::Log.debug("#{@new_resource}: removing group members #{@current_resource.members.join(' ')}") unless @current_resource.members.empty?
             safe_dscl("create /Groups/#{@new_resource.group_name} GroupMembers ''") # clear guid list

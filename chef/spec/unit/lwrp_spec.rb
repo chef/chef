@@ -136,8 +136,7 @@ describe "Light-weight Chef::Provider" do
     res.provider(:lwrp_monkey_name_printer)
     @run_context.resource_collection.insert(res)
 
-    STDOUT.should_receive(:write).with("my monkey's name is 'bob'").exactly(:once)
-    STDOUT.should_receive(:write).with("\n").exactly(:once)
+    STDOUT.should_receive(:puts).with("my monkey's name is 'bob'").exactly(:once)
     Chef::Runner.new(@run_context).converge
   end
 
@@ -148,8 +147,7 @@ describe "Light-weight Chef::Provider" do
     res.provider(:lwrp_embedded_resource_accesses_providers_scope)
     @run_context.resource_collection.insert(res)
     
-    STDOUT.should_receive(:write).with("my monkey's name is 'bob, the monkey'").exactly(:once)
-    STDOUT.should_receive(:write).with("\n").exactly(:once)
+    STDOUT.should_receive(:puts).with("my monkey's name is 'bob, the monkey'").exactly(:once)
     Chef::Runner.new(@run_context).converge
   end
   

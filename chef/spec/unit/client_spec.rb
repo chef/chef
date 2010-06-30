@@ -88,6 +88,9 @@ describe Chef::Client, "run" do
     Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "nodes")))
     Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")))
     client = Chef::Client.new
+
+    client.node = node
+
     client.stub!(:sync_cookbooks).and_return({})
     client.run
     
