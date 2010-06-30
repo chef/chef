@@ -381,11 +381,41 @@ describe Chef::Provider::Deploy do
       @provider.sudo("the moon, fool")
     end
 
-    it "defines run as a forwarder to execute, setting the user to new_resource.user" do
+    it "defines run as a forwarder to execute, setting the user, group, cwd and environment to new_resource.user" do
+      mock_execution = mock("Resource::Execute")
+      @provider.should_receive(:execute).with("iGoToHell4this").and_return(mock_execution)
+      @resource.user("notCoolMan")
+      @resource.group("Ggroup")
+      @resource.environment("APP_ENV" => 'staging')
+      @resource.deploy_to("/my/app")
+      mock_execution.should_receive(:user).with("notCoolMan")
+      mock_execution.should_receive(:group).with("Ggroup")
+      mock_execution.should_receive(:cwd){|*args|
+        if args.empty?
+          nil 
+        else 
+          args.size.should == 1
+          args.first.should == @provider.release_path
+        end
+      }.twice
+      mock_execution.should_receive(:environment){ |*args|
+        if args.empty? 
+          nil 
+        else 
+          args.size.should == 1
+          args.first.should == {"APP_ENV" => "staging"}
+        end
+      }.twice
+      @provider.run("iGoToHell4this")
+    end
+
+    it "defines run as a forwarder to execute, setting cwd and environment but not override" do
       mock_execution = mock("Resource::Execute")
       @provider.should_receive(:execute).with("iGoToHell4this").and_return(mock_execution)
       @resource.user("notCoolMan")
       mock_execution.should_receive(:user).with("notCoolMan")
+      mock_execution.should_receive(:cwd).with(no_args()).and_return("/some/value")
+      mock_execution.should_receive(:environment).with(no_args()).and_return({})
       @provider.run("iGoToHell4this")
     end
 

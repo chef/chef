@@ -51,7 +51,10 @@ class Chef
       
       def run(command, &block)
         exec = execute(command, &block)
-        exec.user(@new_resource.user)
+        exec.user(@new_resource.user) if @new_resource.user
+        exec.group(@new_resource.group) if @new_resource.group
+        exec.cwd(release_path) unless exec.cwd
+        exec.environment(@new_resource.environment) unless exec.environment 
         exec
       end
       
