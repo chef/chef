@@ -148,20 +148,6 @@ describe Chef::Provider::Group::Dscl do
   end
 
   describe "set_gid" do
-    # before do
-    #   @node = Chef::Node.new
-    #   @new_resource = mock("Chef::Resource::Group",
-    #     :null_object => true,
-    #     :group_name => "aj",
-    #     :gid => 50,
-    #     :members => [ "root", "aj"]
-    #   )
-    #   @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
-    #   @provider.stub!(:get_free_gid).and_return(501)
-    #   @provider.stub!(:gid_used?).and_return(false)
-    #   @provider.stub!(:safe_dscl).and_return(true)
-    # end
-
     describe "with the new resource and a gid number which is already in use" do
       before do
         @provider.stub!(:gid_used?).and_return(true)
@@ -173,19 +159,6 @@ describe Chef::Provider::Group::Dscl do
     end
   
     describe "with no gid number for the new resources" do
-      # before do
-      #   @new_resource = mock("Chef::Resource::Group",
-      #     :null_object => true,
-      #     :group_name => "aj",
-      #     :gid => nil,
-      #     :members => [ "root", "aj"]
-      #   )
-      #   @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
-      #   @provider.stub!(:get_free_gid).and_return(501)
-      #   @provider.stub!(:gid_used?).and_return(false)
-      #   @provider.stub!(:safe_dscl).and_return(true)
-      # end
-
       it "should run get_free_gid and return a valid, unused gid number" do
         @provider.should_receive(:get_free_gid).and_return(501)
         @provider.set_gid
@@ -314,16 +287,6 @@ describe Chef::Provider::Group::Dscl do
   end
 
   describe "remove_group" do
-    # before do
-    #   @node = Chef::Node.new
-    #   @new_resource = mock("Chef::Resource::Group",
-    #     :null_object => true,
-    #     :group_name => "aj"
-    #   )
-    #   @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
-    #   @provider.stub!(:safe_dscl).and_return(true)
-    # end
-  
     it "should run safe_dscl with delete /Groups/group and with the new resources group name" do
       @provider.should_receive(:safe_dscl).with("delete /Groups/aj").and_return(true)
       @provider.remove_group
