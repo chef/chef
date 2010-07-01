@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'chef'
 require 'chef/application'
 require 'chef/client'
 require 'chef/config'
@@ -118,7 +119,7 @@ class Chef::Application::Solo < Chef::Application
   def reconfigure
     super
     
-    Chef::Config.solo true
+    Chef::Config[:solo] = true
 
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800

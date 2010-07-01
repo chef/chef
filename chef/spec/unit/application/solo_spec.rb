@@ -29,16 +29,19 @@ describe Chef::Application::Solo do
     Chef::Config[:recipe_url] = false
     Chef::Config[:json_attribs] = false
     Chef::Config[:splay] = nil
+    Chef::Config[:solo] = true
   end
   
   after do
+    Chef::Config[:solo] = nil
     Chef::Config.configuration.replace(@original_config)
+    Chef::Config[:solo] = false
   end
 
   describe "configuring the application" do
     it "should set solo mode to true" do
-      Chef::Config.should_receive(:solo).once.with(true).and_return(true)
       @app.reconfigure
+      Chef::Config[:solo].should be_true
     end
 
     describe "when in daemonized mode and no interval has been set" do
