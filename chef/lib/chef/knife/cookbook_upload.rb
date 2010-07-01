@@ -144,7 +144,7 @@ class Chef
         begin
           catch_auth_exceptions{ rest.put_rest(sandbox_url, {:is_completed => true}) }
         rescue Net::HTTPServerException => e
-          if e.message =~ /^400/ && (retries += 1) <= 1
+          if e.message =~ /^400/ && (retries += 1) <= 5
             sleep 2
             retry
           else
