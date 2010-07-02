@@ -15,12 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef/cookbook/metadata/version'
-
 class Chef
   class RunList
     class RunListItem
-      QUALIFIED_RECIPE = %r{^recipe\[([^\],]+)(,(#{Chef::Cookbook::Metadata::Version::PATTERN}))?\]$}
+      QUALIFIED_RECIPE = %r{^recipe\[([^\],]+)(,([0-9]+(\.[0-9]+){1,2}))?\]$}
       QUALIFIED_ROLE   = %r{^role\[([^\]]+)\]$}
 
       attr_reader :name, :type, :version
