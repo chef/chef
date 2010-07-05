@@ -23,7 +23,7 @@
             %div.sortable.run-list
               %ul#for_node.connectedSortable
                 - @run_list.each do |entry|
-                  %li{ :id => h(entry.to_s), :class => entry.type == :role ? 'ui-state-highlight' : 'ui-state-default' }= h entry.name 
+                  %li{ :id => h(entry.to_s), :class => entry.type == 'role' ? 'ui-state-highlight' : 'ui-state-default' }= h "#{entry.name} #{entry.version}"
           %td.help
             %span.description
               Drag recipes from the list of Available Recipes section on the left, and drop them
@@ -36,7 +36,7 @@
             %div.sortable
               %ul#node_available_recipes.connectedSortable
                 - @available_recipes.each do |recipe|
-                  %li{ :id => "recipe[#{recipe}]",:title => recipe, :class => 'ui-state-default' }= h recipe
+                  %li{ :id => "recipe[#{recipe.split(" ").join(",")}]", :title => recipe, :class => 'ui-state-default' }= h recipe
 
 
     %div.group.form{:style => "position:relative;"}
