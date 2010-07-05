@@ -157,8 +157,7 @@ class Nodes < Application
     items = @node.run_list.expand('couchdb').run_list_items
 
     # walk run list and accumulate included dependencies
-    items.inject({}) do |included_cookbooks, rli|
-      next unless rli.recipe?
+    items.select{|i| i.recipe?}.inject({}) do |included_cookbooks, rli|
       expand_cookbook_deps(included_cookbooks, all_cookbooks, rli)
       included_cookbooks
     end
