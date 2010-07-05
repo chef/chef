@@ -105,8 +105,8 @@ class Nodes < Application
 
   def satisfy(cookbook, req=nil)
     r = req.to_s
-    versions = Chef::CookbookVersion.cdb_by_name(cookbook_name)
-    if r.nil? or r.empty?
+    versions = Chef::CookbookVersion.cdb_by_name(cookbook)[cookbook].sort
+    if r.nil? or r.empty? or r == "latest"
       versions
     elsif r =~ PATTERN
       comp = $1 || "="
