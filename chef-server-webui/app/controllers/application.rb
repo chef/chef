@@ -255,7 +255,16 @@ class Application < Merb::Controller
 
   def get_available_recipes
     r = Chef::REST.new(Chef::Config[:chef_server_url])
-    r.get_rest('cookbooks/_recipes')
+    all_recipes = Array.new
+    r.get_rest('cookbooks').keys.each do |cb|
+      all_recipes << r.get_rest("cookbooks/#{cb}")[cb].sort!{|x,y| y <=> x }.map do |ver|
+        r.get_rest("cookbooks/#{cb}/#{ver}").recipe_filenames.map do |rec| 
+          rn = File.basename(rec, ".rb")
+          rn == "default" ? "#{cb} #{ver}" : "#{cb}::#{rn} #{ver}"
+        end
+      end
+    end
+    all_recipes.flatten.uniq
   end
 
   def convert_newline_to_br(string)
