@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,12 +21,12 @@ require 'chef/cookbook/metadata/version'
 require 'chef' / 'node'
 
 class Nodes < Application
-  
+
   provides :json
-  
-  before :authenticate_every 
+
+  before :authenticate_every
   before :admin_or_requesting_node, :only => [ :update, :destroy, :cookbooks ]
-  
+
   CMP = {
     "<<" => lambda { |v, r| v < r },
     "<=" => lambda { |v, r| v <= r },
@@ -39,7 +39,7 @@ class Nodes < Application
   PATTERN = /\A\s*(#{qcmp})?\s*(#{Chef::Cookbook::Metadata::Version::PATTERN})\s*\z/
 
   def index
-    @node_list = Chef::Node.cdb_list 
+    @node_list = Chef::Node.cdb_list
     display(@node_list.inject({}) do |r,n|
       r[n] = absolute_url(:node, n); r
     end)
@@ -58,7 +58,7 @@ class Nodes < Application
   def create
     @node = params["inflated_object"]
     begin
-      Chef::Node.cdb_load(@node.name) 
+      Chef::Node.cdb_load(@node.name)
       raise Conflict, "Node already exists"
     rescue Chef::Exceptions::CouchDBNotFound
     end
@@ -83,7 +83,7 @@ class Nodes < Application
   def destroy
     begin
       @node = Chef::Node.cdb_load(params[:id])
-    rescue Chef::Exceptions::CouchDBNotFound => e 
+    rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
     @node.cdb_destroy
@@ -94,7 +94,7 @@ class Nodes < Application
   def cookbooks
     begin
       @node = Chef::Node.cdb_load(params[:id])
-    rescue Chef::Exceptions::CouchDBNotFound => e 
+    rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load node #{params[:id]}"
     end
 
@@ -115,6 +115,26 @@ class Nodes < Application
     else
       raise ArgumentError, "Unrecognized dependency specification: #{r}"
     end
+  end
+
+  def satisfy_all(cookbook, reqs=[])
+    vers = Array.new
+
+    if reqs.empty?
+      return Chef::CookbookVersion.cdb_load(cookbook,  satisfy(cookbook).last)
+    end
+
+    reqs.each do |pat|
+      v = satisfy(cookbook, pat)
+      raise ArgumentError, "Can't satisfy dependency #{pat} for cookbook #{cookbook}" if v.empty?
+      if vers.empty?
+        vers = v
+      else
+        vers = vers & v
+        raise ArgumentError, "Conflicting dependencies for #{cookbook}" if vers.empty?
+      end
+    end
+    Chef::CookbookVersion.cdb_load(cookbook, vers.last)
   end
 
   def load_all_files
