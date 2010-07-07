@@ -30,7 +30,13 @@ begin
   desc "Run all specs in spec directory"
   Spec::Rake::SpecTask.new(:spec) do |t|
     t.spec_opts = ['--options', "\"#{CHEF_ROOT}/spec/spec.opts\""]
-    t.spec_files = FileList['spec/**/*_spec.rb']
+    t.spec_files = FileList['spec/unit/**/*_spec.rb']
+  end
+
+  desc "Run all functional specs (in functional/ directory)"
+  Spec::Rake::SpecTask.new(:functional) do |t|
+    t.spec_opts = ['--options', "\"#{CHEF_ROOT}/spec/spec.opts\""]
+    t.spec_files = FileList['spec/functional/**/*_spec.rb']
   end
 
   namespace :spec do
