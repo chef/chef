@@ -237,8 +237,8 @@ class Chef
     def confirm(question, append_instructions=true)
       return true if config[:yes]
 
-      print question
-      print "? (Y/N) " if append_instructions
+      stdout.print question
+      stdout.print "? (Y/N) " if append_instructions
       answer = stdin.readline
       answer.chomp!
       case answer
