@@ -24,8 +24,8 @@ require 'singleton'
 class Chef
   class Provider
     class Package
-      class Yum < Chef::Provider::Package  
-      
+      class Yum < Chef::Provider::Package
+
         class YumCache
           include Chef::Mixin::Command
           include Singleton
@@ -68,8 +68,11 @@ class Chef
                 if !@data.has_key?(name)
                   @data[name] = Hash.new
                 end
-                @data[name][type_sym] = { :epoch => epoch, :version => version,
-                                          :release => release, :arch => arch }
+                if !@data[name].has_key?(type_sym)
+                  @data[name][type_sym] = Hash.new
+                end
+                @data[name][type_sym][arch] = { :epoch => epoch, :version => version,
+                                                :release => release }
               end
               
               error = stderr.readlines
@@ -83,38 +86,58 @@ class Chef
           end
           alias :reload :load_data
 
-          def version(package_name, type)
+          def version(package_name, type, arch)
             if (x = @data[package_name])
               if (y = x[type])
-                return "#{y[:version]}-#{y[:release]}"
+                if arch
+                  if (z = y[arch])
+                    return "#{z[:version]}-#{z[:release]}"
+                  end
+                else
+                  # no arch specified - take the first match
+                  z = y.to_a[0][1]
+                  return "#{z[:version]}-#{z[:release]}"
+                end
               end
             end
 
             nil
           end
 
-          def installed_version(package_name)
-            version(package_name, :installed)
+          def installed_version(package_name, arch)
+            version(package_name, :installed, arch)
           end
 
-          def candidate_version(package_name)
-            version(package_name, :available)
+          def candidate_version(package_name, arch)
+            version(package_name, :available, arch)
           end
-         
+
           def flush
             @data.clear
           end
         end
 
         def initialize(new_resource, run_context)
-          @yum = YumCache.instance
           super
+          @yum = YumCache.instance
+        end
+
+        def arch
+          if @new_resource.respond_to?("arch")
+            @new_resource.arch 
+          else
+            nil
+          end
+        end
+
+        def yum_arch
+          arch ? ".#{arch}" : nil
         end
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
-        
+
           if @new_resource.source
             unless ::File.exists?(@new_resource.source)
               raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
@@ -132,20 +155,20 @@ class Chef
             end
           end
 
-          Chef::Log.debug("Checking yum info for #{@new_resource.package_name}")
-    
+          Chef::Log.debug("Checking yum info for #{@new_resource.package_name}#{yum_arch}")
+
           @yum.refresh
 
-          installed_version = @yum.installed_version(@new_resource.package_name)
-          @candidate_version = @yum.candidate_version(@new_resource.package_name)
-          
+          installed_version = @yum.installed_version(@new_resource.package_name, arch)
+          @candidate_version = @yum.candidate_version(@new_resource.package_name, arch)
+
           @current_resource.version(installed_version)
           if candidate_version
             @candidate_version = candidate_version
           else
             @candidate_version = installed_version
           end
-        
+
           @current_resource
         end
 
@@ -156,18 +179,18 @@ class Chef
             )
           else
             run_command_with_systems_locale(
-              :command => "yum -d0 -e0 -y #{@new_resource.options} install #{name}-#{version}"
+              :command => "yum -d0 -e0 -y #{@new_resource.options} install #{name}-#{version}#{yum_arch}"
             )
           end
           @yum.flush
         end
-      
+
         def upgrade_package(name, version)
           # If we're not given a version, running update is the correct
           # option. If we are, then running install_package is right.
           unless version
             run_command_with_systems_locale(
-              :command => "yum -d0 -e0 -y #{@new_resource.options} update #{name}"
+              :command => "yum -d0 -e0 -y #{@new_resource.options} update #{name}#{yum_arch}"
             )   
             @yum.flush
           else
@@ -178,21 +201,21 @@ class Chef
         def remove_package(name, version)
           if version
             run_command_with_systems_locale(
-             :command => "yum -d0 -e0 -y #{@new_resource.options} remove #{name}-#{version}"
+             :command => "yum -d0 -e0 -y #{@new_resource.options} remove #{name}-#{version}#{yum_arch}"
             )
           else
             run_command_with_systems_locale(
-             :command => "yum -d0 -e0 -y #{@new_resource.options} remove #{name}"
+             :command => "yum -d0 -e0 -y #{@new_resource.options} remove #{name}#{yum_arch}"
             )
           end
             
           @yum.flush
         end
-      
+
         def purge_package(name, version)
           remove_package(name, version)
         end
-      
+
       end
     end
   end
