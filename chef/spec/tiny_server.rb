@@ -44,6 +44,8 @@ module TinyServer
     def initialize(options=nil)
       @options = options ? DEFAULT_OPTIONS.merge(options) : DEFAULT_OPTIONS
       @creator = caller.first
+
+      Thin::Logging.silent = !@options[:debug]
     end
 
     def start
@@ -93,30 +95,30 @@ module TinyServer
     POST    = "POST"
     DELETE  = "DELETE"
 
-    attr_reader :api_data
+    attr_reader :routes
 
     def initialize
       clear
     end
 
     def clear
-      @api_data = {GET => [], PUT => [], POST => [], DELETE => []}
+      @routes = {GET => [], PUT => [], POST => [], DELETE => []}
     end
 
     def get(path, response_code, data=nil, &block)
-      @api_data[GET] << [path, Response.new(response_code,data, &block)]
+      @routes[GET] << Route.new(path, Response.new(response_code,data, &block))
     end
 
     def put(path, response_code, data=nil, &block)
-      @api_data[PUT] << [path, Response.new(response_code,data, &block)]
+      @routes[PUT] << Route.new(path, Response.new(response_code,data, &block))
     end
 
     def post(path, response_code, data=nil, &block)
-      @api_data[POST] << [path, Response.new(response_code,data, &block)]
+      @routes[POST] << Route.new(path, Response.new(response_code,data, &block))
     end
 
     def delete(path, response_code, data=nil, &block)
-      @api_data[DELETE] << [path, Response.new(response_code,data, &block)]
+      @routes[DELETE] << Route.new(path, Response.new(response_code,data, &block))
     end
 
     def call(env)
@@ -124,16 +126,33 @@ module TinyServer
         response.call
       else
         debug_info = {:message => "no data matches the request for #{env['REQUEST_URI']}",
-                      :available_data => @api_data, :request => env}
+                      :available_routes => @routes, :request => env}
         [404, {'Content-Type' => 'application/json'}, debug_info.to_json]
       end
     end
 
     def response_for_request(env)
-      if route_tuple = @api_data[env["REQUEST_METHOD"]].find { |route, response| route === env["REQUEST_URI"] }
-        route_tuple[1]
+      if route = @routes[env["REQUEST_METHOD"]].find { |route| route.matches_request?(env["REQUEST_URI"]) }
+        route.response
       end
     end
+  end
+
+  class Route
+    attr_reader :response
+
+    def initialize(path_spec, response)
+      @path_spec, @response = path_spec, response
+    end
+
+    def matches_request?(uri)
+      @path_spec === uri
+    end
+
+    def to_s
+      "#{@path_spec} => (#{@response})"
+    end
+
   end
 
   class Response
@@ -148,6 +167,11 @@ module TinyServer
       data = @data || @block.call
       [@response_code, HEADERS, data]
     end
+
+    def to_s
+      "#{@response_code} => #{(@data|| @block)}"
+    end
+
   end
 
 end

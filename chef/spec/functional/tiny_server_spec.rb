@@ -32,7 +32,7 @@ describe TinyServer::API do
   it "clears the router" do
     @api.get('/blargh', 200, "blargh")
     @api.clear
-    @api.api_data["GET"].should be_empty
+    @api.routes["GET"].should be_empty
   end
 
   it "creates a route for a GET request" do
@@ -56,7 +56,7 @@ describe TinyServer::API do
     response[2].should be_a_kind_of(String)
     response_obj = JSON.parse(response[2])
     response_obj["message"].should == "no data matches the request for /no_such_thing"
-    response_obj["available_data"].should == {"GET"=>[], "PUT"=>[], "POST"=>[], "DELETE"=>[]}
+    response_obj["available_routes"].should == {"GET"=>[], "PUT"=>[], "POST"=>[], "DELETE"=>[]}
     response_obj["request"].should == {"REQUEST_METHOD"=>"GET", "REQUEST_URI"=>"/no_such_thing"}
   end
 
