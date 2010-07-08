@@ -104,15 +104,6 @@ class Chef
           def flush
             @data.clear
           end
-        
-          def options(arg=nil)
-            set_or_return(
-              :options + " ",
-              arg + " ",
-              :kind_of => [ String ]
-            )
-          end
- 
         end
 
         def initialize(new_resource, run_context)
