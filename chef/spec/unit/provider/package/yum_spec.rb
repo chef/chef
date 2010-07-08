@@ -91,7 +91,7 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
     it "should run yum install with the package name, version and arch" do
       @new_resource.stub!(:arch).and_return("i386")
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install emacs-21.4-20.el5.i386"
+        :command => "yum -d0 -e0 -y  install emacs-21.4-20.el5.i386"
       })
       @provider.install_package("emacs", "21.4-20.el5")
     end
@@ -109,7 +109,7 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
     it "should run yum update with arch if the package is installed and no version is given" do
       @new_resource.stub!(:arch).and_return("i386")
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y update cups.i386"
+        :command => "yum -d0 -e0 -y  update cups.i386"
       })
       @provider.upgrade_package(@new_resource.name, nil)
     end
@@ -144,7 +144,7 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
     it "should run yum remove with the package name and arch" do
       @new_resource.stub!(:arch).and_return("x86_64")
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y remove emacs-1.0.x86_64"
+        :command => "yum -d0 -e0 -y  remove emacs-1.0.x86_64"
       })
       @provider.remove_package("emacs", "1.0")
     end
