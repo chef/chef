@@ -1,1 +1,0 @@
-I'm a dot file inside a the root remote_directory source dir.

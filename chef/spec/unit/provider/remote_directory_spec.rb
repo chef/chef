@@ -94,6 +94,8 @@ describe Chef::Provider::RemoteDirectory do
       File.exist?(@destination_dir + '/remote_dir_file2.txt').should be_true
       File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file1.txt').should be_true
       File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file2.txt').should be_true
+      File.exist?(@destination_dir + '/remotesubdir/.a_dotfile').should be_true
+      File.exist?(@destination_dir + '/.a_dotdir/.a_dotfile_in_a_dotdir').should be_true
     end
     
     describe "with purging enabled" do
