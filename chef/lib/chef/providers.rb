@@ -57,6 +57,7 @@ require 'chef/provider/package/rpm'
 require 'chef/provider/package/rubygems'
 require 'chef/provider/package/yum'
 require 'chef/provider/package/zypper'
+require 'chef/provider/package/solaris'
 
 require 'chef/provider/service/arch'
 require 'chef/provider/service/debian'
