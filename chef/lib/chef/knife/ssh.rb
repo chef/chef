@@ -19,13 +19,9 @@
 require 'chef/knife'
 require 'chef/data_bag_item'
 
-# net-ssh of lower versions has a bug that causes 'knife ssh (searchterm) (commandname)" 
-# to loop infinitely and consume all the CPU of one core.
 begin
   gem "net-ssh", ">= 2.0.23"
 rescue LoadError
-  STDERR.puts "ERROR: Please install net-ssh version 2.0.23 or higher, as lower versions cause issues."
-  exit 1
 end
 
 class Chef
@@ -243,9 +239,7 @@ class Chef
       def run 
         @longest = 0
 
-        require 'net/ssh/multi'
-        require 'readline'
-        require 'highline'
+        load_late_dependencies
 
         configure_session
 
@@ -264,6 +258,34 @@ class Chef
 
         session.close
       end
+
+      def load_late_dependencies
+        require 'net/ssh/multi'
+        require 'readline'
+        require 'highline'
+
+        assert_net_ssh_version_acceptable!
+      end
+
+      # :nodoc:
+      # TODO: remove this stuff entirely and package knife ssh as a knife plugin. (Dan - 08 Jul 2010)
+      #
+      # The correct way to specify version deps is in the gemspec or other packaging.
+      # However, we don't want to have a gem dep on net-ssh, because it's a hassle
+      # when you only need the chef-client (e.g., on a managed node). So we have to
+      # check here that you have a decent version of Net::SSH.
+      #
+      # net-ssh of lower versions has a bug that causes 'knife ssh (searchterm) (commandname)" 
+      # to loop infinitely and consume all the CPU of one core.
+      def assert_net_ssh_version_acceptable!
+        netssh_version = Net::SSH::Version
+        # we want version 2.0.23 and higher:
+        unless (netssh_version::MAJOR == 2) && (netssh_version::TINY >= 23 || netssh_version::MINOR >= 1)
+          STDERR.puts "ERROR: Please install net-ssh version 2.0.23 or higher, as lower versions cause issues."
+          exit 1
+        end
+      end
+
     end
   end
 end
