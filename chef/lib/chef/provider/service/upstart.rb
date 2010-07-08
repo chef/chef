@@ -44,16 +44,9 @@ class Chef
           run_context.node
           
           platform, version = Chef::Platform.find_platform_and_version(run_context.node)
-          case platform
-          when "ubuntu"
-            case version
-            when /8.04/,/8.10/,/9.04/,/10.04/
-              @upstart_job_dir = "/etc/event.d"
-              @upstart_conf_suffix = ""
-            else
-              @upstart_job_dir = "/etc/init"
-              @upstart_conf_suffix = ".conf"
-            end
+          if platform == "ubuntu" && (8.04..9.04).include?(version.to_f)
+            @upstart_job_dir = "/etc/event.d"
+            @upstart_conf_suffix = ""
           else
             @upstart_job_dir = "/etc/init"
             @upstart_conf_suffix = ".conf"
