@@ -52,7 +52,7 @@ class Chef
           uid = nil; next_uid_guess = 200
           users_uids = safe_dscl("list /Users uid")
           while(next_uid_guess < search_limit + 200)
-            if users_uids =~ Regexp.new("#{next_uid_guess}\n")
+            if users_uids =~ Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n")
               next_uid_guess += 1
             else
               uid = next_uid_guess
@@ -65,7 +65,7 @@ class Chef
         def uid_used?(uid)
           return false unless uid
           users_uids = safe_dscl("list /Users uid")
-          !! ( users_uids =~ Regexp.new("#{uid}\n") )
+          !! ( users_uids =~ Regexp.new("#{Regexp.escape(uid.to_s)}\n") )
         end
 
         def set_uid

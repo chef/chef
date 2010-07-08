@@ -50,7 +50,7 @@ class Chef
           gid = nil; next_gid_guess = 200
           groups_gids = safe_dscl("list /Groups gid")
           while(next_gid_guess < search_limit + 200)
-            if groups_gids =~ Regexp.new("#{next_gid_guess}\n")
+            if groups_gids =~ Regexp.new("#{Regexp.escape(next_gid_guess.to_s)}\n")
               next_gid_guess += 1
             else
               gid = next_gid_guess
@@ -63,7 +63,7 @@ class Chef
         def gid_used?(gid)
           return false unless gid
           groups_gids = safe_dscl("list /Groups gid")
-          !! ( groups_gids =~ Regexp.new("#{gid}\n") )
+          !! ( groups_gids =~ Regexp.new("#{Regexp.escape(gid.to_s)}\n") )
         end
 
         def set_gid

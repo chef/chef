@@ -398,9 +398,9 @@ class Chef
         # we're just going to make cookbook_files out of these and make the
         # cookbook find them by filespecificity again. but it's the shortest
         # path to "success" for now.
-        if manifest_record_path =~ /(#{segment}\/[^\/]+\/#{dirname})\/.+$/
+        if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
           specificity_dirname = $1
-          non_specific_path = manifest_record_path[/#{segment}\/[^\/]+\/#{dirname}\/(.+)$/, 1]
+          non_specific_path = manifest_record_path[/#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)}\/(.+)$/, 1]
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
           if filenames_by_pref[specificity_dirname]
@@ -429,7 +429,7 @@ class Chef
         manifest_record_path = manifest_record[:path]
 
         # extract the preference part from the path.
-        if manifest_record_path =~ /(#{segment}\/[^\/]+\/#{dirname})\/.+$/
+        if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
           # Note the specificy_dirname includes the segment and
           # dirname argument as above, which is what
           # preferences_for_path returns. It could be
@@ -461,7 +461,7 @@ class Chef
           platform, version = Chef::Platform.find_platform_and_version(node)
         rescue ArgumentError => e
           # Skip platform/version if they were not found by find_platform_and_version
-          if e.message =~ /Cannot find a (platform|version)/
+          if e.message =~ /Cannot find a (?:platform|version)/
             platform = "/unknown_platform/"
             version = "/unknown_platform_version/"
           else
@@ -504,9 +504,9 @@ class Chef
         # we're just going to make cookbook_files out of these and make the
         # cookbook find them by filespecificity again. but it's the shortest
         # path to "success" for now.
-        if manifest_record_path =~ /(#{segment}\/[^\/]+\/#{dirname})\/.+$/
+        if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
           specificity_dirname = $1
-          non_specific_path = manifest_record_path[/#{segment}\/[^\/]+\/#{dirname}\/(.+)$/, 1]
+          non_specific_path = manifest_record_path[/#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)}\/(.+)$/, 1]
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
           if filenames_by_pref[specificity_dirname]
@@ -535,7 +535,7 @@ class Chef
         manifest_record_path = manifest_record[:path]
 
         # extract the preference part from the path.
-        if manifest_record_path =~ /(#{segment}\/[^\/]+\/#{dirname})\/.+$/
+        if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
           # Note the specificy_dirname includes the segment and
           # dirname argument as above, which is what
           # preferences_for_path returns. It could be
@@ -567,7 +567,7 @@ class Chef
           platform, version = Chef::Platform.find_platform_and_version(node)
         rescue ArgumentError => e
           # Skip platform/version if they were not found by find_platform_and_version
-          if e.message =~ /Cannot find a (platform|version)/
+          if e.message =~ /Cannot find a (?:platform|version)/
             platform = "/unknown_platform/"
             version = "/unknown_platform_version/"
           else
@@ -780,11 +780,11 @@ class Chef
           specificity = "default"
           
           if segment == :root_files
-            matcher = segment_file.match(".+/#{name}/(.+)")
+            matcher = segment_file.match(".+/#{Regexp.escape(name.to_s)}/(.+)")
             file_name = matcher[1]
             path = file_name
           elsif segment == :templates || segment == :files
-            matcher = segment_file.match("/#{name}/(#{segment}/(.+?)/(.+))")
+            matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+?)/(.+))")
             unless matcher
               Chef::Log.debug("Skipping file #{segment_file}, as it doesn't have a proper segment.")
               next
@@ -793,7 +793,7 @@ class Chef
             specificity = matcher[2]
             file_name = matcher[3]
           else
-            matcher = segment_file.match("/#{name}/(#{segment}/(.+))")
+            matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+))")
             path = matcher[1]
             file_name = matcher[2]
           end

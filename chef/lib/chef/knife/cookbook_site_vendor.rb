@@ -58,7 +58,7 @@ class Chef
         Chef::Mixin::Command.run_command(:command => "git checkout master", :cwd => vendor_path) 
         Chef::Log.info("Checking the status of the vendor branch.")
         status, branch_output, branch_error = Chef::Mixin::Command.output_of_command("git branch --no-color | grep #{branch_name}", :cwd => vendor_path) 
-        if branch_output =~ /#{branch_name}$/m
+        if branch_output =~ /#{Regexp.escape(branch_name)}$/m
           Chef::Log.info("Vendor branch found.")
           Chef::Mixin::Command.run_command(:command => "git checkout #{branch_name}", :cwd => vendor_path)
         else
