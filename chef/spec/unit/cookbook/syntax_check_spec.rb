@@ -111,11 +111,11 @@ describe Chef::Cookbook::SyntaxCheck do
     end
 
     it "lists the ruby files in the cookbook" do
-      @syntax_check.ruby_files.should == @ruby_files
+      @syntax_check.ruby_files.sort.should == @ruby_files.sort
     end
 
     it "lists the erb templates in the cookbook" do
-      @syntax_check.template_files.should == @template_files
+      @syntax_check.template_files.sort.should == @template_files.sort
     end
 
   end
@@ -131,11 +131,11 @@ describe Chef::Cookbook::SyntaxCheck do
     describe "and the files have not been syntax checked previously" do
 
       it "shows that all ruby files require a syntax check" do
-        @syntax_check.untested_ruby_files.should == @ruby_files
+        @syntax_check.untested_ruby_files.sort.should == @ruby_files.sort
       end
 
       it "shows that all template files require a syntax check" do
-        @syntax_check.untested_template_files.should == @template_files
+        @syntax_check.untested_template_files.sort.should == @template_files.sort
       end
 
       it "removes a ruby file from the list of untested files after it is marked as validated" do
