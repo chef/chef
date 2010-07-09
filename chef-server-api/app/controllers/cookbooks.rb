@@ -58,13 +58,11 @@ class Cookbooks < Application
   end
 
   def index_recipes
-    all_cookbooks = Array(Chef::CookbookVersion.cdb_list_latest(true))
-    all_cookbooks.map! do |cookbook|
-      cookbook.manifest["recipes"].map { |r| "#{cookbook.name}::#{File.basename(r['name'], ".rb")}" }
+    display Chef::CookbookVersion.cdb_list(true).inject({}) do |memo, f| 
+      memo[f.name] ||= {}
+      memo[f.name][f.version] = f.recipe_filenames_by_name.keys
+      memo
     end
-    all_cookbooks.flatten!
-    all_cookbooks.sort!
-    display all_cookbooks
   end
 
   def show_versions
