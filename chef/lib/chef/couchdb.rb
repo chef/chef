@@ -232,17 +232,7 @@ class Chef
     end
     
     def view_uri(design, view)
-      Chef::Config[:couchdb_version] ||= @rest.run_request(:GET,
-                                                           URI.parse(@rest.url + "/"),
-                                                           {},
-                                                           10,
-                                                           false)["version"].gsub(/-.+/,"").to_f
-      case Chef::Config[:couchdb_version]
-      when 0.8
-        "#{couchdb_database}/_view/#{design}/#{view}"
-      else
-        "#{couchdb_database}/_design/#{design}/_view/#{view}"
-      end
+      "#{couchdb_database}/_design/#{design}/_view/#{view}"
     end
     
   end

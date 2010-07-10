@@ -47,28 +47,27 @@ class Chef
     end
 
     # Override the config dispatch to set the value of multiple server options simultaneously
-    # 
+    #
     # === Parameters
     # url<String>:: String to be set for all of the chef-server-api URL's
     #
     config_attr_writer :chef_server_url do |url|
       configure do |c|
         [ :registration_url,
-          :openid_url,
           :template_url,
           :remotefile_url,
           :search_url,
           :chef_server_url,
-          :role_url ].each do |u| 
+          :role_url ].each do |u|
             c[u] = url
         end
       end
       url
     end
 
-    # When you are using ActiveSupport, they monkey-patch 'daemonize' into Kernel.  
+    # When you are using ActiveSupport, they monkey-patch 'daemonize' into Kernel.
     # So while this is basically identical to what method_missing would do, we pull
-    # it up here and get a real method written so that things get dispatched 
+    # it up here and get a real method written so that things get dispatched
     # properly.
     config_attr_writer :daemonize do |v|
       configure do |c|
@@ -101,21 +100,43 @@ class Chef
       providers
     end
 
+    # Used when OpenID authentication is enabled in the Web UI
     authorized_openid_identifiers nil
     authorized_openid_providers nil
+    openid_cstore_couchdb false
+    openid_cstore_path "/var/chef/openid/cstore"
+
+    # The number of times the client should retry when registering with the server
     client_registration_retries 5
+
+    # Where the cookbooks are located. Meaning is somewhat context dependent between
+    # knife, chef-client, and chef-solo.
     cookbook_path [ "/var/chef/cookbooks", "/var/chef/site-cookbooks" ]
-    cookbook_tarball_path "/var/chef/cookbook-tarballs"
+
+    # Where files are stored temporarily during uploads
     sandbox_path "/var/chef/sandboxes"
+
+    # Where cookbook files are stored on the server (by content checksum)
     checksum_path "/var/chef/checksums"
+
+    # CouchDB database name to use
     couchdb_database "chef"
+
     couchdb_url "http://localhost:5984"
-    couchdb_version nil
-    delay 0
-    executable_path ENV['PATH'] ? ENV['PATH'].split(File::PATH_SEPARATOR) : []
+
+    # Where chef's cache files should be stored
     file_cache_path "/var/chef/cache"
+
+    # Where backups of chef-managed files should go
     file_backup_path "/var/chef/backup"
+
+    ## Daemonization Settings ##
+    # What user should Chef run as?
+    user nil
+    # What group should the chef-server, -solr, -solr-indexer run as
     group nil
+    umask 0022
+
     http_retry_count 5
     http_retry_delay 5
     interval nil
@@ -125,52 +146,53 @@ class Chef
     verbose_logging nil
     node_name nil
     node_path "/var/chef/node"
-    openid_cstore_couchdb false
-    openid_cstore_path "/var/chef/openid/cstore"    
-    openid_providers nil
-    openid_store_couchdb false
-    openid_store_path "/var/chef/openid/db"
-    openid_url "http://localhost:4001"
+
     pid_file nil
-    queue_host "localhost"
-    queue_password ""
-    queue_port 61613
-    queue_retry_count 5
-    queue_retry_delay 5
-    queue_user ""
-    chef_server_url "http://localhost:4000"
-    registration_url "http://localhost:4000"
+
+    chef_server_url   "http://localhost:4000"
+    registration_url  "http://localhost:4000"
+    template_url      "http://localhost:4000"
+    role_url          "http://localhost:4000"
+    remotefile_url    "http://localhost:4000"
+    search_url        "http://localhost:4000"
+
     client_url "http://localhost:4042"
-    remotefile_url "http://localhost:4000"
+
     rest_timeout 300
     run_command_stderr_timeout 120
     run_command_stdout_timeout 120
-    search_url "http://localhost:4000"
     solo  false
     splay nil
+
+    # Set these to enable SSL authentication / mutual-authentication
+    # with the server
     ssl_client_cert nil
     ssl_client_key nil
     ssl_verify_mode :verify_none
     ssl_ca_path nil
     ssl_ca_file nil
-    template_url "http://localhost:4000"
-    umask 0022
-    user nil
+
+
+    # Where should chef-solo look for role files?
     role_path "/var/chef/roles"
-    role_url "http://localhost:4000"
+
+    # Where should chef-solo download recipes from?
     recipe_url nil
+
     solr_url "http://localhost:8983"
     solr_jetty_path "/var/chef/solr-jetty"
     solr_data_path "/var/chef/solr/data"
     solr_home_path "/var/chef/solr"
     solr_heap_size "256M"
     solr_java_opts nil
+
+    # Parameters for connecting to RabbitMQ
     amqp_host '0.0.0.0'
     amqp_port '5672'
     amqp_user 'chef'
     amqp_pass 'testing'
     amqp_vhost '/chef'
-    # Setting this to a UUID string also makes the queue durable 
+    # Setting this to a UUID string also makes the queue durable
     # (persist across rabbitmq restarts)
     amqp_consumer_id "default"
 
