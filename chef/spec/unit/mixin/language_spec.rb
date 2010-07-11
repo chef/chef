@@ -67,3 +67,49 @@ describe Chef::Mixin::Language do
 
 end
 
+describe Chef::Mixin::Language::PlatformDependentValue do
+  before do
+    platform_hash = {
+      :openbsd => {:default => 'free, functional, secure'},
+      [:redhat, :centos, :fedora, :scientific] => {:default => '"stable"'},
+      :ubuntu => {'10.04' => 'using upstart more', :default => 'using init more'},
+      :default => 'bork da bork'
+    }
+    @platform_specific_value = Chef::Mixin::Language::PlatformDependentValue.new(platform_hash)
+  end
+
+  it "returns the default value when the platform doesn't match" do
+    @platform_specific_value.value_for_node(:platform => :dos).should == 'bork da bork'
+  end
+
+  it "returns a value for a platform set as a group" do
+    @platform_specific_value.value_for_node(:platform => :centos).should == '"stable"'
+  end
+
+  it "returns a value for the platform when it was set as a symbol but fetched as a string" do
+    @platform_specific_value.value_for_node(:platform => "centos").should == '"stable"'
+  end
+
+  it "returns a value for a specific platform version" do
+    node = {:platform => 'ubuntu', :platform_version => '10.04'}
+    @platform_specific_value.value_for_node(node).should == 'using upstart more'
+  end
+
+  it "returns a platform-default value if the platform version doesn't match an explicit one" do
+    node = {:platform => 'ubuntu', :platform_version => '9.10' }
+    @platform_specific_value.value_for_node(node).should == 'using init more'
+  end
+
+  it "returns nil if there is no default and no platforms match" do
+    # this matches the behavior in the original implementation.
+    # whether or not it's correct is another matter.
+    platform_specific_value = Chef::Mixin::Language::PlatformDependentValue.new({})
+    platform_specific_value.value_for_node(:platform => 'foo').should be_nil
+  end
+
+  it "raises an argument error if the platform hash is not correctly structured" do
+    bad_hash = {:ubuntu => :foo} # should be :ubuntu => {:default => 'foo'}
+    lambda {Chef::Mixin::Language::PlatformDependentValue.new(bad_hash)}.should raise_error(ArgumentError)
+  end
+
+end
