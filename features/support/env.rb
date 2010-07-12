@@ -97,7 +97,8 @@ def create_databases
 
   cmd = [KNIFE_CMD, "cookbook", "upload", "-a", "-o", INTEGRATION_COOKBOOKS, "-u", "validator", "-k", File.join(Dir.tmpdir, "validation.pem"), "-c", KNIFE_CONFIG]
   Chef::Log.info("Uploading fixture cookbooks with #{cmd.join(' ')}")
-  shell_out!(*cmd, :timeout => 120)
+  cmd << {:timeout => 120}
+  shell_out!(*cmd)
 end
 
 def prepare_replicas

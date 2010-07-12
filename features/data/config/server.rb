@@ -6,7 +6,6 @@ log_location           STDOUT
 file_cache_path        File.join(tmpdir, "cache")
 ssl_verify_mode        :verify_none
 registration_url       "http://127.0.0.1:4000"
-openid_url             "http://127.0.0.1:4000"
 template_url           "http://127.0.0.1:4000"
 remotefile_url         "http://127.0.0.1:4000"
 search_url             "http://127.0.0.1:4000"
@@ -14,7 +13,8 @@ role_url               "http://127.0.0.1:4000"
 chef_server_url        "http://127.0.0.1:4000"
 client_url             "http://127.0.0.1:4000"
 cookbook_path          [File.join(tmpdir, "cookbooks"), File.join(supportdir, "cookbooks")]
-cookbook_tarball_path  File.join(tmpdir, "cookbook-tarballs")
+
+
 sandbox_path           File.join(tmpdir, "sandboxes")
 # checksum_path is where files in sandbox commits (during cookbook upload) are moved
 checksum_path          File.expand_path(File.join(File.dirname(__FILE__), "..", "repo", "checksums"))

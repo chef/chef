@@ -70,10 +70,6 @@ module Merb
       File.join(cookbook_base, cookbook_name)
     end
 
-    def cookbook_tarball_location(cookbook_name)
-      File.join(Chef::Config.cookbook_tarball_path, "#{cookbook_name}.tar.gz")
-    end
-
     def get_or_create_cookbook_tarball_location(cookbook_name)
       tarball_location = cookbook_tarball_location(cookbook_name)
       unless File.exists? tarball_location

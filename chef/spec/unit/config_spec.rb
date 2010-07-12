@@ -28,10 +28,6 @@ describe Chef::Config do
       Chef::Config.registration_url.should == "https://junglist.gen.nz" 
     end
 
-    it "should set the openid url" do
-      Chef::Config.openid_url.should == "https://junglist.gen.nz" 
-    end
-
     it "should set the template url" do
       Chef::Config.template_url.should == "https://junglist.gen.nz" 
     end
