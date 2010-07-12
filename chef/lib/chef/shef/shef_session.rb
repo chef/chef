@@ -15,6 +15,13 @@
 # limitations under the License.
 #
 
+require 'chef/recipe'
+require 'chef/run_context'
+require 'chef/config'
+require 'chef/client'
+require 'chef/cookbook/cookbook_collection'
+require 'chef/cookbook_loader'
+
 module Shef
   class ShefSession
     include Singleton
