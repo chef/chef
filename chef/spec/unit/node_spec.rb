@@ -294,6 +294,26 @@ describe Chef::Node do
 
   end
 
+  describe "when expanding its run list and merging attributes" do
+    before do
+      @expansion = Chef::RunList::RunListExpansion.new([])
+      @node.run_list.stub!(:expand).and_return(@expansion)
+    end
+
+    it "sets the 'recipes' automatic attribute to the recipes in the expanded run_list" do
+      @expansion.recipes << 'recipe[chef::client]' << 'recipe[nginx::default]'
+      @node.expand!
+      @node.automatic_attrs[:recipes].should == ['recipe[chef::client]', 'recipe[nginx::default]']
+    end
+
+    it "sets the 'roles' automatic attribute to the expanded role list" do
+      @expansion.instance_variable_set(:@applied_roles, {'lrf' => nil, 'countersnark' => nil})
+      @node.expand!
+      @node.automatic_attrs[:roles].should == ['lrf', 'countersnark']
+    end
+
+  end
+
   # TODO: timh, cw: 2010-5-19: Node.recipe? deprecated. See node.rb
   # describe "recipes" do
   #   it "should have a RunList of recipes that should be applied" do
