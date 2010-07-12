@@ -105,6 +105,10 @@ class Chef
         @applied_roles[role_name] = true
       end
 
+      def roles
+        @applied_roles.keys
+      end
+
       # In subclasses, this method will fetch the role from the data source.
       def fetch_role(name)
         raise NotImplementedError

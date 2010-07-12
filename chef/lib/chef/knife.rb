@@ -201,7 +201,7 @@ class Chef
             data = data.send(attr.to_sym)
           end
         end
-        { config[:attribute] => data.kind_of?(Chef::Node::Attribute) ? data.to_hash: data }
+        { config[:attribute] => data.kind_of?(Chef::Node::Attribute) ? data.to_hash : data }
       elsif config[:run_list]
         data = data.run_list.run_list
         { "run_list" => data }

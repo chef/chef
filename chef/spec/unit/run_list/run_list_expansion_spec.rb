@@ -79,6 +79,11 @@ describe Chef::RunList::RunListExpansion do
       @expansion.default_attrs.should == {'foo' => 'bar'}
       @expansion.override_attrs.should == {'baz' => 'qux'}
     end
+
+    it "has the list of all roles applied" do
+      @expansion.roles.should == ['rage']
+    end
+
   end
 
   describe "after expanding a run list with a non existant role" do

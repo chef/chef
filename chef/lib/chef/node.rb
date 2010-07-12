@@ -574,6 +574,9 @@ class Chef
       @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
       @override_attrs = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
 
+      @automatic_attrs[:recipes] = expansion.recipes
+      @automatic_attrs[:roles] = expansion.roles
+
       expansion.recipes
     end
     
