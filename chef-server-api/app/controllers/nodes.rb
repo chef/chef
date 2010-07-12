@@ -105,7 +105,11 @@ class Nodes < Application
 
   def satisfy(cookbook, req=nil)
     r = req.to_s
-    versions = Chef::CookbookVersion.cdb_by_name(cookbook)[cookbook].sort
+    begin
+      versions = Chef::CookbookVersion.cdb_by_name(cookbook)[cookbook].sort
+    rescue NoMethodError
+      raise PreconditionFailed, "cookbook #{cookbook} does not exist"
+    end
     if r.nil? or r.empty? or r == "latest"
       versions
     elsif r =~ PATTERN
