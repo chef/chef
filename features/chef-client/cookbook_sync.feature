@@ -48,5 +48,5 @@ Feature: Synchronize cookbooks from the server
       And it includes the recipe 'testcookbook_wrong_metadata'
      When I run the chef-client with '-l debug'
      Then the run should exit '1'
-      And 'stdout' should have '412 Precondition Failed: cookbook testcookbook_wrong_metadata depends on cookbook no_such_cookbook, but no_such_cookbook does not exist'
+      And 'stdout' should have '412 Precondition Failed: cookbook no_such_cookbook does not exist'
 
