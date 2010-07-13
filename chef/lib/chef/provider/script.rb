@@ -29,7 +29,7 @@ class Chef
 
         set_owner_and_group
 
-        @new_resource.command("#{@new_resource.interpreter} #{script_file.path}")
+        @new_resource.command("\"#{@new_resource.interpreter}\" \"#{script_file.path}\"")
         super
       ensure
         unlink_script_file

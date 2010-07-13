@@ -74,7 +74,7 @@ describe Chef::Provider::Script, "action_run" do
     describe "when running the script" do
       it "should set the command to 'interpreter tempfile'" do
         @provider.action_run
-        @new_resource.command.should == 'perl /tmp/the_script_file'
+        @new_resource.command.should == '"perl" "/tmp/the_script_file"'
       end
     end
   end
