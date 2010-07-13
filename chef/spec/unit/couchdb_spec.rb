@@ -206,23 +206,7 @@ describe Chef::CouchDB do
       @mock_response = mock("Chef::CouchDB::Response", :null_object => true)
     end
     
-    describe "on couchdb 0.8" do
-      before(:each) do
-        Chef::Config.stub!(:[]).with(:couchdb_version).and_return(0.8)
-      end
-      
-      it "should get the view for all objects if inflate is true" do
-        @mock_rest.should_receive(:get_rest).with("chef/_view/node/all").and_return(@mock_response)
-        @couchdb.list("node", true)
-      end
-
-      it "should get the view for just the object id's if inflate is false" do
-        @mock_rest.should_receive(:get_rest).with("chef/_view/node/all_id").and_return(@mock_response)
-        @couchdb.list("node", false)
-      end
-    end
-
-    describe "on couchdb 0.9" do
+    describe "on couchdb 0.9+" do
       before do
         Chef::Config.stub!(:[]).with(:couchdb_version).and_return(0.9)
       end
@@ -261,12 +245,6 @@ describe Chef::CouchDB, "get_view" do
     @mock_rest = mock("Chef::REST", :null_object => true, :url => "http://monkeypants")
     Chef::REST.stub!(:new).and_return(@mock_rest)
     @couchdb = Chef::CouchDB.new("http://localhost")
-    @old_version = Chef::Config[:couchdb_version]
-    Chef::Config[:couchdb_version] = 0.9
-  end
-
-  after do
-    Chef::Config[:couchdb_version] = @old_version
   end
 
   it "should construct a call to the view for the proper design document" do
@@ -287,54 +265,9 @@ describe Chef::CouchDB, "view_uri" do
     Chef::REST.stub!(:new).and_return(@mock_rest)
     @couchdb = Chef::CouchDB.new("http://localhost")    
   end
-  
-  describe "when the couchdb version is unknown" do
-    it "should set the couchdb version appropriately" do
-      ov = Chef::Config[:couchdb_version]
-      Chef::Config[:couchdb_version] = nil      
-      @mock_rest.should_receive(:run_request).with(
-        :GET, 
-        URI.parse("http://monkeypants/"), 
-        {},
-        10, 
-        false
-      ).and_return({ "version" => "0.9" })
-      @couchdb.view_uri("nodes", "all")
-      Chef::Config[:couchdb_version] = ov
-    end
+
+  it "should output an appropriately formed view URI" do
+    @couchdb.should_receive(:view_uri).with("nodes", "all").and_return("chef/_design/nodes/_view/all")
+    @couchdb.view_uri("nodes", "all")
   end
-  
-  describe "on couchdb 0.8" do
-    before do
-      Chef::Config.stub!(:[]).with(:couchdb_version).and_return(0.8)
-    end
-    
-    it "should output an appropriately formed view URI" do
-      @couchdb.should_receive(:view_uri).with("nodes", "all").and_return("chef/_view/nodes/all")
-      @couchdb.view_uri("nodes", "all")
-    end
-  end
-
-  describe "on couchdb 0.9" do
-    before do
-      Chef::Config.stub!(:[]).with(:couchdb_version).and_return(0.9)
-    end
-
-    it "should output an appropriately formed view URI" do
-      @couchdb.should_receive(:view_uri).with("nodes", "all").and_return("chef/_design/nodes/_view/all")
-      @couchdb.view_uri("nodes", "all")
-    end
-  end
-
-  describe "on couchdb 0.10" do
-    before do
-      Chef::Config.stub!(:[]).with(:couchdb_version).and_return(0.10)
-    end
-
-    it "should output an appropriately formed view URI" do
-      @couchdb.should_receive(:view_uri).with("nodes", "all").and_return("chef/_design/nodes/_view/all")
-      @couchdb.view_uri("nodes", "all")
-    end
-  end
-
 end
