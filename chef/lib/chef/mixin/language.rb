@@ -24,6 +24,68 @@ class Chef
   module Mixin
     module Language
 
+      # Implementation class for determining platform dependent values
+      class PlatformDependentValue
+
+        # Create a platform dependent value object.
+        # === Arguments
+        # platform_hash (Hash) a hash of the same structure as Chef::Platform,
+        # like this:
+        #   {
+        #     :debian => {:default => 'the value for all debian'}
+        #     [:centos, :redhat, :fedora] => {:default => "value for all EL variants"}
+        #     :ubuntu => { :default => "default for ubuntu", '10.04' => "value for 10.04 only"},
+        #     :default => "the default when nothing else matches"
+        #   }
+        # * platforms can be specified as Symbols or Strings
+        # * multiple platforms can be grouped by using an Array as the key
+        # * values for platforms need to be Hashes of the form:
+        #   {platform_version => value_for_that_version}
+        # * the exception to the above is the default value, which is given as
+        #   :default => default_value
+        def initialize(platform_hash)
+          @values = {}
+          platform_hash.each { |platforms, value| set(platforms, value)}
+        end
+
+        def value_for_node(node)
+          platform, version = node[:platform].to_s, node[:platform_version].to_s
+          if @values.key?(platform) && @values[platform].key?(version)
+            @values[platform][version]
+          elsif @values.key?(platform) && @values[platform].key?("default")
+            @values[platform]["default"]
+          elsif @values.key?("default")
+            @values["default"]
+          else
+            nil
+          end
+        end
+
+        private
+
+        def set(platforms, value)
+          if platforms.to_s == 'default'
+            @values["default"] = value
+          else
+            assert_valid_platform_values!(platforms, value)
+            Array(platforms).each { |platform| @values[platform.to_s] = format_values(value)}
+            value
+          end
+        end
+
+        def format_values(hash)
+          Hash[hash.map { |key, value| [key.to_s, value]}]
+        end
+
+        def assert_valid_platform_values!(platforms, value)
+          unless value.kind_of?(Hash)
+            msg = "platform dependent values must be specified in the format :platform => {:version => value} "
+            msg << "you gave a value #{value.inspect} for platform(s) #{platforms}"
+            raise ArgumentError, msg
+          end
+        end
+      end
+
       # Given a hash similar to the one we use for Platforms, select a value from the hash.  Supports
       # per platform defaults, along with a single base default. Arrays may be passed as hash keys and
       # will be expanded.
@@ -34,29 +96,7 @@ class Chef
       # === Returns
       # value:: Whatever the most specific value of the hash is.
       def value_for_platform(platform_hash)
-        result = nil
-        
-        platform_hash.each_pair do |key, value|
-          if key.is_a?(Array)
-            key.each { |array_key| platform_hash[array_key] = value }
-            platform_hash.delete(key)
-          end
-        end
-        if platform_hash.has_key?(node[:platform])
-          if platform_hash[node[:platform]].has_key?(node[:platform_version])
-            result = platform_hash[node[:platform]][node[:platform_version]]
-          elsif platform_hash[node[:platform]].has_key?("default")
-            result = platform_hash[node[:platform]]["default"]
-          end
-        end
-  
-        unless result
-          if platform_hash.has_key?("default")
-            result = platform_hash["default"]
-          end
-        end  
-  
-        result
+        PlatformDependentValue.new(platform_hash).value_for_node(node)
       end
 
       # Given a list of platforms, returns true if the current recipe is being run on a node with
