@@ -205,20 +205,20 @@ describe Chef::IndexQueue::AmqpClient do
     end
   
     it "resets the client upon a Bunny::ServerDownError when publishing" do
-      @exchange.should_receive(:publish).and_raise(Bunny::ServerDownError)
-      @publisher.should_receive(:disconnected!).twice
+      @exchange.should_receive(:publish).twice.and_raise(Bunny::ServerDownError)
+      @publisher.should_receive(:disconnected!).at_least(3).times
       lambda {@publisher.send_action(:hot_chef_on_queue, @data)}.should raise_error(Bunny::ServerDownError)
     end
     
     it "resets the client upon a Bunny::ConnectionError when publishing" do
-      @exchange.should_receive(:publish).and_raise(Bunny::ConnectionError)
-      @publisher.should_receive(:disconnected!).twice
+      @exchange.should_receive(:publish).twice.and_raise(Bunny::ConnectionError)
+      @publisher.should_receive(:disconnected!).at_least(3).times
       lambda {@publisher.send_action(:hot_chef_on_queue, @data)}.should raise_error(Bunny::ConnectionError)
     end
     
     it "resets the client upon a Errno::ECONNRESET when publishing" do
-      @exchange.should_receive(:publish).and_raise(Errno::ECONNRESET)
-      @publisher.should_receive(:disconnected!).twice
+      @exchange.should_receive(:publish).twice.and_raise(Errno::ECONNRESET)
+      @publisher.should_receive(:disconnected!).at_least(3).times
       lambda {@publisher.send_action(:hot_chef_on_queue, @data)}.should raise_error(Errno::ECONNRESET)
     end
     
