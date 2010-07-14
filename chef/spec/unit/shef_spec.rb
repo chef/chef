@@ -270,9 +270,11 @@ describe Shef do
     
     it "gives access to the stepable iterator" do
       Shef::StandAloneSession.instance.stub!(:reset!)
-      collection = mock("collection", :iterator => :ohai2u)
-      Shef.session.stub!(:collection).and_return(collection)
-      @root_context.chef_run.should == :ohai2u
+      Shef.session.stub!(:rebuild_context)
+      run_context = Chef::RunContext.new(Chef::Node.new, {})
+      run_context.resource_collection.instance_variable_set(:@iterator, :the_iterator)
+      Shef.session.run_context = run_context
+      @root_context.chef_run.should == :the_iterator
     end
     
     it "lists directory contents" do

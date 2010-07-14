@@ -241,7 +241,7 @@ class Object
               :skip_back    => "move back in the run list",
               :skip_forward => "move forward in the run list"
   def chef_run
-    Shef.session.collection.iterator
+    Shef.session.resource_collection.iterator
   end
   
   desc "resets the current recipe"
