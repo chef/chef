@@ -211,12 +211,10 @@ class Chef
     end
 
     def to_text
-      skip = 
       ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
       text = "# Declared in #{@source_line}\n"
       text << convert_to_snake_case(self.class.name, 'Chef::Resource') + "(\"#{name}\") do\n"
       ivars.each do |ivar|
-        #next if skip.include?(ivar)
         if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
           text << "  #{ivar.to_s.sub(/^@/,'')}(#{value.inspect})\n"
         end
@@ -242,8 +240,6 @@ class Chef
     def to_hash
       instance_vars = Hash.new
       self.instance_variables.each do |iv|
-        #iv = iv.to_s
-        #next if iv == "@run_context"
         key = iv.to_s.sub(/^@/,'').to_sym
         instance_vars[key] = self.instance_variable_get(iv) unless (key == :run_context) || (key == :node)
       end
