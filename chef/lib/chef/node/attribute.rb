@@ -23,6 +23,8 @@ require 'chef/log'
 class Chef
   class Node
     class Attribute
+      HIDDEN_ATTRIBUES = [:@override, :@attribute, :@default, :@normal, :@automatic]
+
       attr_accessor :normal,
                     :default,
                     :override,
@@ -428,10 +430,9 @@ class Chef
 
       def inspect
         determine_value(current_automatic, current_override, current_normal, current_default)
-        exclude_attrs = ["@override", "@attribute", "@default", "@normal", "@automatic"]
 
         "#<#{self.class} " << instance_variables.map{|iv|
-          iv + '=' + (exclude_attrs.include?(iv) ? "{...}" : instance_variable_get(iv).inspect)
+          iv.to_s + '=' + (HIDDEN_ATTRIBUES.include?(iv.to_sym) ? "{...}" : instance_variable_get(iv).inspect)
         }.join(', ') << ">"
       end
 
