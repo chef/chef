@@ -47,9 +47,9 @@ class Chef
           name = File.basename(full)
           case file_type
           when :remote_file
-            rf =~ /^.+#{cookbook_id}[\\|\/]files[\\|\/](.+?)[\\|\/]#{name}/
+            rf =~ /^.+#{Regexp.escape(cookbook_id)}[\\|\/]files[\\|\/](.+?)[\\|\/]#{Regexp.escape(name)}/
           when :template
-            rf =~ /^.+#{cookbook_id}[\\|\/]templates[\\|\/](.+?)[\\|\/]#{name}/
+            rf =~ /^.+#{Regexp.escape(cookbook_id)}[\\|\/]templates[\\|\/](.+?)[\\|\/]#{Regexp.escape(name)}/
           end
           singlecopy = $1
           files[full] = {
@@ -78,7 +78,7 @@ class Chef
         
         preferences.each do |pref|
           Chef::Log.debug("Looking for #{pref}")
-          matcher = /^(.+#{pref})$/
+          matcher = /^(.+#{Regexp.escape(pref)})$/
           if match = matcher.match(file_list_str)
             return match[1]
           end
