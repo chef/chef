@@ -171,10 +171,6 @@ class Chef::Application::Solo < Chef::Application
   
   def setup_application
     Chef::Daemon.change_privilege
-    
-    @chef_solo = Chef::Client.new
-    @chef_solo.json_attribs = @chef_solo_json
-    @chef_solo.node_name = Chef::Config[:node_name]
   end
   
   def run_application
@@ -190,8 +186,10 @@ class Chef::Application::Solo < Chef::Application
           sleep splay
         end
 
+        @chef_solo = Chef::Client.new(@chef_solo_json)
+        @chef_solo_json = nil
         @chef_solo.run
-        
+        @chef_solo = nil
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
           sleep Chef::Config[:interval]
@@ -210,6 +208,8 @@ class Chef::Application::Solo < Chef::Application
         else
           raise
         end
+      ensure
+        GC.start
       end
     end
   end

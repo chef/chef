@@ -26,7 +26,7 @@ class Chef
     class Checksum < Chef::Cache
       # singleton is inherited from Chef::Cache, but we like to be explicit.
       include ::Singleton
-    
+
       def self.checksum_for_file(*args)
         instance.checksum_for_file(*args)
       end
@@ -36,7 +36,7 @@ class Chef
         fstat = File.stat(file)
         lookup_checksum(key, fstat) || generate_checksum(key, file, fstat)
       end
-      
+
       def lookup_checksum(key, fstat)
         cached = @moneta.fetch(key)
         if cached && file_unchanged?(cached, fstat)
