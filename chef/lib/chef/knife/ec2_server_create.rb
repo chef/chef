@@ -77,6 +77,11 @@ class Chef
         :long => "--prerelease",
         :description => "Install the pre-release chef gems"
 
+      option :region,
+        :long => "--region REGION",
+        :description => "Your AWS region",
+        :default => "us-east-1"
+
       def h
         @highline ||= HighLine.new
       end
@@ -91,7 +96,8 @@ class Chef
 
         connection = Fog::AWS::EC2.new(
           :aws_access_key_id => Chef::Config[:knife][:aws_access_key_id],
-          :aws_secret_access_key => Chef::Config[:knife][:aws_secret_access_key]
+          :aws_secret_access_key => Chef::Config[:knife][:aws_secret_access_key],
+          :region => config[:region]
         )
 
         server = connection.servers.create(
