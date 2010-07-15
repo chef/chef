@@ -398,7 +398,11 @@ class Chef
         self.msg("Deleted #{fancy_name} #{name}")
       end
     end
-    
+
+    def msg(message)
+      stdout.puts message
+    end
+
     def stdout
       STDOUT
     end

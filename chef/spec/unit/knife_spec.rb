@@ -97,7 +97,6 @@ describe Chef::Knife do
 
       it "should exit 10 if the sub command is not found" do
         Chef::Knife.stub!(:list_commands).and_return(true)
-        Chef::Log.should_receive(:fatal)
         lambda {
           Chef::Knife.find_command([ "monkey", "man" ])
         }.should raise_error(SystemExit) { |e| e.status.should == 10 }
