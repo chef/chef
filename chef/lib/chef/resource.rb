@@ -28,7 +28,7 @@ require 'chef/mixin/deprecation'
 
 class Chef
   class Resource
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node]
 
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
@@ -214,7 +214,7 @@ class Chef
       skip = 
       ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
       text = "# Declared in #{@source_line}\n"
-      text << convert_to_snake_case(self.class.name, 'Chef::Resource') + "(#{name}) do\n"
+      text << convert_to_snake_case(self.class.name, 'Chef::Resource') + "(\"#{name}\") do\n"
       ivars.each do |ivar|
         #next if skip.include?(ivar)
         if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
