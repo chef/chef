@@ -37,6 +37,11 @@ class Chef
         :long => "--ssh-password PASSWORD",
         :description => "The ssh password"
 
+      option :identity_file,
+        :short => "-i IDENTITY_FILE",
+        :long => "--identity-file IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication"
+
       option :chef_node_name,
         :short => "-N NAME",
         :long => "--node-name NAME",
@@ -107,6 +112,7 @@ EOH
         ssh.name_args = [ server_name, "sudo #{command}" ]
         ssh.config[:ssh_user] = config[:ssh_user] 
         ssh.config[:password] = config[:ssh_password]
+        ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
 
         begin
