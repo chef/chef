@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,8 @@ require 'chef/log'
 class Chef
   class Node
     class Attribute
+      HIDDEN_ATTRIBUES = [:@override, :@attribute, :@default, :@normal, :@automatic]
+
       attr_accessor :normal,
                     :default,
                     :override,
@@ -46,8 +48,8 @@ class Chef
         @current_default = default
         @override = override
         @current_override = override
-        @automatic = automatic 
-        @current_automatic = automatic 
+        @automatic = automatic
+        @current_automatic = automatic
         @state = state
         @auto_vivifiy_on_read = false
         @set_unless_value_present = false
@@ -93,7 +95,7 @@ class Chef
         # See the comments in []= for more details.
         @has_been_read = true
 
-        # If we have a set type, our destiny is to write 
+        # If we have a set type, our destiny is to write
         if @set_type
           a_value = @set_type == :automatic ? value_or_descend(current_automatic, key, auto_vivifiy_on_read) : nil
           o_value = @set_type == :override ? value_or_descend(current_override, key, auto_vivifiy_on_read) : nil
@@ -101,7 +103,7 @@ class Chef
           d_value = @set_type == :default ? value_or_descend(current_default, key, auto_vivifiy_on_read) : nil
 
           determine_value(a_value, o_value, n_value, d_value)
-        # Our destiny is only to read, so we get the full list. 
+        # Our destiny is only to read, so we get the full list.
         else
           a_value = value_or_descend(current_automatic, key)
           o_value = value_or_descend(current_override, key)
@@ -249,7 +251,7 @@ class Chef
       def keys
         tkeys = current_automatic ? current_automatic.keys : []
         [ current_override, current_normal, current_default ].each do |attr_hash|
-          if attr_hash 
+          if attr_hash
             attr_hash.keys.each do |key|
               tkeys << key unless tkeys.include?(key)
             end
@@ -295,18 +297,18 @@ class Chef
           value = Chef::Mixin::DeepMerge.merge(value, d_value) if hash_and_not_cna?(d_value)
           value = Chef::Mixin::DeepMerge.merge(value, n_value) if hash_and_not_cna?(n_value)
           value = Chef::Mixin::DeepMerge.merge(value, o_value) if hash_and_not_cna?(o_value)
-          value = Chef::Mixin::DeepMerge.merge(value, a_value) 
+          value = Chef::Mixin::DeepMerge.merge(value, a_value)
           value
         elsif hash_and_not_cna?(o_value)
           value = {}
           value = Chef::Mixin::DeepMerge.merge(value, d_value) if hash_and_not_cna?(d_value)
           value = Chef::Mixin::DeepMerge.merge(value, n_value) if hash_and_not_cna?(n_value)
-          value = Chef::Mixin::DeepMerge.merge(value, o_value) 
+          value = Chef::Mixin::DeepMerge.merge(value, o_value)
           value
         elsif hash_and_not_cna?(n_value)
           value = {}
           value = Chef::Mixin::DeepMerge.merge(value, d_value) if hash_and_not_cna?(d_value)
-          value = Chef::Mixin::DeepMerge.merge(value, n_value) 
+          value = Chef::Mixin::DeepMerge.merge(value, n_value)
           value
         elsif hash_and_not_cna?(d_value)
           d_value
@@ -424,6 +426,14 @@ class Chef
         else
           self[by]
         end
+      end
+
+      def inspect
+        determine_value(current_automatic, current_override, current_normal, current_default)
+
+        "#<#{self.class} " << instance_variables.map{|iv|
+          iv.to_s + '=' + (HIDDEN_ATTRIBUES.include?(iv.to_sym) ? "{...}" : instance_variable_get(iv).inspect)
+        }.join(', ') << ">"
       end
 
       def to_hash
