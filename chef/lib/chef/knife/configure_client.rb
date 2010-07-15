@@ -21,7 +21,7 @@ require 'chef/knife'
 class Chef
   class Knife
     class ConfigureClient < Knife
-      banner "Sub-Command: configure client DIRECTORY"
+      banner "knife configure client DIRECTORY"
 
       def run
         unless @config_dir = @name_args[0]

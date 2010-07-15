@@ -24,7 +24,7 @@ class Chef
   class Knife
     class ClientShow < Knife
 
-      banner "Sub-Command: client show CLIENT (options)"
+      banner "knife client show CLIENT (options)"
 
       option :attribute,
         :short => "-a ATTR",

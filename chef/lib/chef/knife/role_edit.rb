@@ -24,7 +24,7 @@ class Chef
   class Knife
     class RoleEdit < Knife
 
-      banner "Sub-Command: role edit ROLE (options)"
+      banner "knife role edit ROLE (options)"
 
       def run 
         @role_name = @name_args[0]

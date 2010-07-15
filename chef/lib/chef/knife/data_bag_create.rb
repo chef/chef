@@ -23,7 +23,7 @@ class Chef
   class Knife
     class DataBagCreate < Knife
 
-      banner "Sub-Command: data bag create BAG [ITEM] (options)"
+      banner "knife data bag create BAG [ITEM] (options)"
 
       def run
         @data_bag_name, @data_bag_item_name = @name_args

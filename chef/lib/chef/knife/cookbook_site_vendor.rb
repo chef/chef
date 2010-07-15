@@ -23,7 +23,7 @@ class Chef
   class Knife
     class CookbookSiteVendor < Knife
 
-      banner "Sub-Command: cookbook site vendor COOKBOOK [VERSION] (options)"
+      banner "knife cookbook site vendor COOKBOOK [VERSION] (options)"
 
       option :deps,
        :short => "-d",

@@ -23,7 +23,7 @@ class Chef
   class Knife
     class SlicehostServerDelete < Knife
 
-      banner "Sub-Command: slicehost server delete SLICENAME"
+      banner "knife slicehost server delete SLICENAME"
 
       def run 
         require 'fog'

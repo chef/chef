@@ -23,7 +23,7 @@ class Chef
   class Knife
     class SlicehostServerCreate < Knife
 
-      banner "Sub-Command: slicehost server create [RUN LIST...] (options)"
+      banner "knife slicehost server create [RUN LIST...] (options)"
 
       option :flavor,
         :short => "-f FLAVOR",

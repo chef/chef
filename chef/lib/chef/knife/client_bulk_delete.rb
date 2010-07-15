@@ -24,7 +24,7 @@ class Chef
   class Knife
     class ClientBulkDelete < Knife
 
-      banner "Sub-Command: client bulk delete REGEX (options)"
+      banner "knife client bulk delete REGEX (options)"
 
       def run 
         if @name_args.length < 1

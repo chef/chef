@@ -24,7 +24,7 @@ class Chef
   class Knife
     class ClientEdit < Knife
 
-      banner "Sub-Command: client edit CLIENT (options)"
+      banner "knife client edit CLIENT (options)"
 
       def run
         @client_name = @name_args[0]

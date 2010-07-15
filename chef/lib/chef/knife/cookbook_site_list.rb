@@ -22,7 +22,7 @@ class Chef
   class Knife
     class CookbookSiteList < Knife
 
-      banner "Sub-Command: cookbook site list (options)"
+      banner "knife cookbook site list (options)"
 
       option :with_uri,
         :short => "-w",

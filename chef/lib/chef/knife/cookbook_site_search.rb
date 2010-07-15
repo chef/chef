@@ -21,7 +21,7 @@ class Chef
   class Knife
     class CookbookSiteSearch < Knife
 
-      banner "Sub-Command: cookbook site search QUERY (options)"
+      banner "knife cookbook site search QUERY (options)"
 
       def run
         output(search_cookbook(name_args[0]))

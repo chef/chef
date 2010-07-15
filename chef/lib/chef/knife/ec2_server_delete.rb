@@ -23,7 +23,7 @@ class Chef
   class Knife
     class Ec2ServerDelete < Knife
 
-      banner "Sub-Command: ec2 server delete SERVER [SERVER] (options)"
+      banner "knife ec2 server delete SERVER [SERVER] (options)"
       
       option :aws_access_key_id,
         :short => "-A ID",

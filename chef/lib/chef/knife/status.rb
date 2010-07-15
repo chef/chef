@@ -24,7 +24,7 @@ class Chef
   class Knife
     class Status < Knife
 
-      banner "Sub-Command: status"
+      banner "knife status"
 
       def highline
         @h ||= HighLine.new

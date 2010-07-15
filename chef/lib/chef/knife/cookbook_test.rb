@@ -25,7 +25,7 @@ class Chef
   class Knife
     class CookbookTest < Knife
 
-      banner "Sub-Command: cookbook test [COOKBOOKS...] (options)"
+      banner "knife cookbook test [COOKBOOKS...] (options)"
 
       option :cookbook_path,
         :short => "-o PATH:PATH",

@@ -23,7 +23,7 @@ class Chef
   class Knife
     class CookbookDownload < Knife
 
-      banner "Sub-Command: cookbook download COOKBOOK [VERSION] (options)"
+      banner "knife cookbook download COOKBOOK [VERSION] (options)"
 
       option :latest,
        :short => "-N",

@@ -24,7 +24,7 @@ class Chef
   class Knife
     class TerremarkServerCreate < Knife
 
-      banner "Sub-Command: terremark server create NAME [RUN LIST...] (options)"
+      banner "knife terremark server create NAME [RUN LIST...] (options)"
 
       option :terremark_password,
         :short => "-K PASSWORD",

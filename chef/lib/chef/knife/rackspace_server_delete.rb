@@ -23,7 +23,7 @@ class Chef
   class Knife
     class RackspaceServerDelete < Knife
 
-      banner "Sub-Command: rackspace server delete SERVER (options)"
+      banner "knife rackspace server delete SERVER (options)"
 
       def h
         @highline ||= HighLine.new

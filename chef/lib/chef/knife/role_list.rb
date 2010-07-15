@@ -24,7 +24,7 @@ class Chef
   class Knife
     class RoleList < Knife
 
-      banner "Sub-Command: role list (options)"
+      banner "knife role list (options)"
 
       option :with_uri,
         :short => "-w",

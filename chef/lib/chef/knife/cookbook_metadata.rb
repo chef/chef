@@ -23,7 +23,7 @@ class Chef
   class Knife
     class CookbookMetadata < Knife
 
-      banner "Sub-Command: cookbook metadata COOKBOOK (options)"
+      banner "knife cookbook metadata COOKBOOK (options)"
 
       option :cookbook_path,
         :short => "-o PATH:PATH",

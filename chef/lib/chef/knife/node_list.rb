@@ -24,7 +24,7 @@ class Chef
   class Knife
     class NodeList < Knife
 
-      banner "Sub-Command: node list (options)"
+      banner "knife node list (options)"
 
       option :with_uri,
         :short => "-w",

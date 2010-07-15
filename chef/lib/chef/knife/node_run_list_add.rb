@@ -24,7 +24,7 @@ class Chef
   class Knife
     class NodeRunListAdd < Knife
 
-      banner "Sub-Command: node run_list add [NODE] [ENTRY] (options)"
+      banner "knife node run_list add [NODE] [ENTRY] (options)"
 
       option :after,
         :short => "-a ITEM",

@@ -32,7 +32,7 @@ class Chef
     class CookbookUpload < Knife
       include Chef::Mixin::ShellOut
 
-      banner "Sub-Command: cookbook upload [COOKBOOKS...] (options)"
+      banner "knife cookbook upload [COOKBOOKS...] (options)"
 
       option :cookbook_path,
         :short => "-o PATH:PATH",

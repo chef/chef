@@ -23,7 +23,7 @@ class Chef
   class Knife
     class IndexRebuild < Knife
       
-      banner "Sub-Command: index rebuild (options)"
+      banner "knife index rebuild (options)"
       option :yes,
         :short        => "-y",
         :long         => "--yes",

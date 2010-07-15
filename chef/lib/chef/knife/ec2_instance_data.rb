@@ -23,7 +23,7 @@ class Chef
   class Knife
     class Ec2InstanceData < Knife
 
-      banner "Sub-Command: ec2 instance data [RUN LIST...] (options)"
+      banner "knife ec2 instance data [RUN LIST...] (options)"
 
       option :edit,
         :short => "-e",

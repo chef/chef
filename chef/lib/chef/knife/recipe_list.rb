@@ -19,7 +19,7 @@
 require 'chef/knife'
 class Chef::Knife::RecipeList < Chef::Knife
   
-  banner "Sub-Command: recipe list [PATTERN]"
+  banner "knife recipe list [PATTERN]"
 
   def run
     recipes = rest.get_rest('cookbooks/_recipes')

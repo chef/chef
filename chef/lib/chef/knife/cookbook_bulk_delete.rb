@@ -26,7 +26,7 @@ class Chef
 
       option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
       
-      banner "Sub-Command: cookbook bulk delete REGEX (options)"
+      banner "knife cookbook bulk delete REGEX (options)"
 
       def run
         unless regex_str = @name_args.first

@@ -24,7 +24,7 @@ class Chef
   class Knife
     class RoleFromFile < Knife
 
-      banner "Sub-Command: role from file FILE (options)"
+      banner "knife role from file FILE (options)"
 
       def run 
         updated = load_from_file(Chef::Role, @name_args[0])

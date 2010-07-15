@@ -23,7 +23,7 @@ class Chef
   class Knife
     class RackspaceServerCreate < Knife
 
-      banner "Sub-Command: rackspace server create [RUN LIST...] (options)"
+      banner "knife rackspace server create [RUN LIST...] (options)"
 
       option :flavor,
         :short => "-f FLAVOR",
