@@ -46,23 +46,34 @@ class Chef
       @sub_classes
     end
 
-    def self.list_commands
+    def self.list_commands(preferred_category=nil)
       load_commands
       puts "Available SUB-COMMANDS (for details, knife SUB-COMMAND --help)\n\n"
-      ch = Hash.new { |h, k| h[k] = [] }
-      @sub_classes.keys.sort.each do |c|
-        k = c
-        if c.index("_")
-          k = c.split("_").first
-        end
-        ch[k] << c
+
+      if preferred_category && subcommands_by_category.key?(preferred_category)
+        commands_to_show = {preferred_category => subcommands_by_category[preferred_category]}
+      else
+        commands_to_show = subcommands_by_category
       end
-      ch.keys.sort.each do |k|
-        ch[k].each do |c|
-          puts c
+
+      commands_to_show.sort.each do |category, commands|
+        puts "** #{category.upcase} COMMANDS **"
+        commands.each do |command|
+          puts Chef::Knife.const_get(@sub_classes[command]).banner
         end
         puts
       end
+    end
+
+    def self.subcommands_by_category
+      unless @subcommands_by_category
+        @subcommands_by_category = Hash.new { |h, k| h[k] = [] }
+        @sub_classes.keys.sort.each do |command|
+          category = command.split('_').first
+          @subcommands_by_category[category] << command
+        end
+      end
+      @subcommands_by_category
     end
 
     def self.build_sub_class(snake_case, merge_opts=nil)
@@ -95,14 +106,14 @@ class Chef
       end
 
       unless klass_instance
-        puts "Cannot find sub-command for: #{args.join(' ')}"
-        Chef::Knife.list_commands
+        puts "Cannot find sub-command for: #{args.join(' ')}" unless want_help?(args)
+        Chef::Knife.list_commands(non_dash_args.first)
         exit 10
       end
 
       extra = klass_instance.parse_options(args)
       if klass_instance.config[:help]
-        puts klass_instance.opt_parser
+        puts "Usage: " + klass_instance.opt_parser.to_s
         exit 1
       end
       klass_instance.name_args = extra.inject([]) { |c, i| cli_bits.include?(i) ? cli_bits.delete(i) : c << i; c } 
@@ -116,6 +127,13 @@ class Chef
       puts "Error: " + e.to_s
       show_usage
       exit(1)
+    end
+
+    # :nodoc:
+    # TODO: duplicated with chef/application/knife
+    # all logic should be removed from that and Chef::Knife should own it.
+    def self.want_help?(args)
+      (args.any? { |arg| arg =~ /^(:?(:?\-\-)?help|\-h)$/})
     end
 
     def ask_question(question, opts={})

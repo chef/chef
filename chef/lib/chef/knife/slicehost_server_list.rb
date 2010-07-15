@@ -23,7 +23,7 @@ class Chef
   class Knife
     class SlicehostServerList < Knife
 
-      banner "Sub-Command: slicehost server list (options)"
+      banner "knife slicehost server list (options)"
 
       def h
         @highline ||= HighLine.new

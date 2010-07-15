@@ -23,7 +23,7 @@ class Chef
   class Knife
     class SlicehostImagesList < Knife
 
-      banner "Sub-Command: slicehost images list"
+      banner "knife slicehost images list"
 
       def highline
         @highline ||= HighLine.new
