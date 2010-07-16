@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,14 +32,14 @@ class Chef
         :short => "-o PATH",
         :long => "--cookbook-path PATH",
         :description => "The parent directory to write the new cookbook to, without the cookbook name itself (optional). For example, knife cookbook new bar -o /home/foo will create 'bar' in /home/foo"
-        
+
       def run
          if @name_args.length < 1
             show_usage
             Chef::Log.fatal("You must specify a cookbook name")
             exit 1
         end
-                
+
         if default_cookbook_path_empty? && given_cookbook_path_empty?
           raise ArgumentError, "Default cookbook_path is not specified in the knife.rb config file, and a value to -o is not provided. Nowhere to write the new cookbook to."
         end
@@ -48,22 +48,22 @@ class Chef
         cookbook_name = @name_args.first
         company_name = @name_args[1].nil? || @name_args[1].empty? ? "YOUR_COMPANY_NAME" : @name_args[1]
         email = @name_args[2].nil? || @name_args[2].empty? ? "YOUR_EMAIL" : @name_args[2]
-        license = (@name_args[3].nil? || @name_args[3].to_s.empty? || @name_args[3] == false || @name_args[3] == 'false') ? :none : :apachev2        
+        license = (@name_args[3].nil? || @name_args[3].to_s.empty? || @name_args[3] == false || @name_args[3] == 'false') ? :none : :apachev2
         create_cookbook(cookbook_path,cookbook_name, company_name, license)
         create_readme(cookbook_path,cookbook_name)
         create_metadata(cookbook_path,cookbook_name, company_name, email, license)
     end
-    
+
     def create_cookbook(dir, cookbook_name, company_name, license)
       Chef::Log.info("** Creating cookbook #{cookbook_name}")
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "attributes")}" 
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "recipes")}" 
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "definitions")}" 
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "libraries")}" 
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "resources")}" 
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "providers")}" 
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "files", "default")}" 
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "templates", "default")}" 
+      shell_out "mkdir -p #{File.join(dir, cookbook_name, "attributes")}"
+      shell_out "mkdir -p #{File.join(dir, cookbook_name, "recipes")}"
+      shell_out "mkdir -p #{File.join(dir, cookbook_name, "definitions")}"
+      shell_out "mkdir -p #{File.join(dir, cookbook_name, "libraries")}"
+      shell_out "mkdir -p #{File.join(dir, cookbook_name, "resources")}"
+      shell_out "mkdir -p #{File.join(dir, cookbook_name, "providers")}"
+      shell_out "mkdir -p #{File.join(dir, cookbook_name, "files", "default")}"
+      shell_out "mkdir -p #{File.join(dir, cookbook_name, "templates", "default")}"
       unless File.exists?(File.join(dir, cookbook_name, "recipes", "default.rb"))
         open(File.join(dir, cookbook_name, "recipes", "default.rb"), "w") do |file|
           file.puts <<-EOH
@@ -80,9 +80,9 @@ EOH
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -97,7 +97,7 @@ EOH
 EOH
           end
         end
-      end    
+      end
     end
 
     def create_readme(dir, cookbook_name)
@@ -109,7 +109,7 @@ EOH
 
 = REQUIREMENTS:
 
-= ATTRIBUTES: 
+= ATTRIBUTES:
 
 = USAGE:
 
@@ -117,7 +117,7 @@ EOH
         end
       end
     end
-    
+
     def create_metadata(dir, cookbook_name, company_name, email, license)
       Chef::Log.info("** Creating metadata for cookbook: #{cookbook_name}")
 
@@ -144,16 +144,16 @@ EOH
         end
       end
     end
-    
+
     private
     def default_cookbook_path_empty?
       Chef::Config[:cookbook_path].nil? || Chef::Config[:cookbook_path].empty?
     end
-    
+
     def given_cookbook_path_empty?
       config[:cookbook_path].nil? || config[:cookbook_path].empty?
-    end  
-      
+    end
+
     end
   end
 end

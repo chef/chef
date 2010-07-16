@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ describe Chef::Knife::CookbookNew do
   end
 
   describe "run" do
-    
+
     it "should create a new cookbook with default values to company name, email and apache license if those are not supplied" do
       @dir = Dir.tmpdir
       @knife.config = {:cookbook_path => @dir}
@@ -38,7 +38,7 @@ describe Chef::Knife::CookbookNew do
       @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "YOUR_COMPANY_NAME", "YOUR_EMAIL", :none)
       @knife.run
     end
-    
+
     it "should create a new cookbook with specified company name in the copyright section if one is specified" do
       @dir = Dir.tmpdir
       @knife.config = {:cookbook_path => @dir}
@@ -48,7 +48,7 @@ describe Chef::Knife::CookbookNew do
       @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "YOUR_EMAIL", :none)
       @knife.run
     end
-    
+
     it "should create a new cookbook with specified company name and email if they are specified" do
       @dir = Dir.tmpdir
       @knife.config = {:cookbook_path => @dir}
@@ -58,7 +58,7 @@ describe Chef::Knife::CookbookNew do
       @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", :none)
       @knife.run
     end
-    
+
     it "should create a new cookbook with specified company name and email and license information (true) if they are specified" do
       @dir = Dir.tmpdir
       @knife.config = {:cookbook_path => @dir}
@@ -68,7 +68,7 @@ describe Chef::Knife::CookbookNew do
       @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", :apachev2)
       @knife.run
     end
-    
+
     it "should create a new cookbook with specified company name and email and license information (false) if they are specified" do
       @dir = Dir.tmpdir
       @knife.config = {:cookbook_path => @dir}
@@ -78,7 +78,7 @@ describe Chef::Knife::CookbookNew do
       @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", :none)
       @knife.run
     end
-    
+
     it "should create a new cookbook with specified company name and email and license information ('false' as string) if they are specified" do
       @dir = Dir.tmpdir
       @knife.config = {:cookbook_path => @dir}
@@ -88,7 +88,7 @@ describe Chef::Knife::CookbookNew do
       @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", :none)
       @knife.run
     end
-    
+
     it "should throw argument error if the cookbooks path is not specified in the config file nor supplied via parameter" do
       @dir = Dir.tmpdir
       Chef::Config[:cookbook_path]=nil
