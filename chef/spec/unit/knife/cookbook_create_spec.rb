@@ -19,9 +19,9 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 require 'tmpdir'
 
-describe Chef::Knife::CookbookNew do
+describe Chef::Knife::CookbookCreate do
   before(:each) do
-    @knife = Chef::Knife::CookbookNew.new
+    @knife = Chef::Knife::CookbookCreate.new
     @knife.config = {}
     @knife.name_args = ["foobar"]
     @stdout = StringIO.new

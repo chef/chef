@@ -23,15 +23,15 @@ require 'chef/mixin/shell_out'
 
 class Chef
   class Knife
-    class CookbookNew < Knife
+    class CookbookCreate < Knife
       include Chef::Mixin::ShellOut
 
-      banner "Sub-Command: cookbook new COOKBOOK [COMPANY_NAME_FOR_COPYRIGHT] [EMAIL] [APACHE_LICENSE=false] (options)"
+      banner "knife cookbook new COOKBOOK [COMPANY_NAME_FOR_COPYRIGHT] [EMAIL] [APACHE_LICENSE=false] (options)"
 
       option :cookbook_path,
         :short => "-o PATH",
         :long => "--cookbook-path PATH",
-        :description => "The parent directory to write the new cookbook to, without the cookbook name itself (optional). For example, knife cookbook new bar -o /home/foo will create 'bar' in /home/foo"
+        :description => "The directory where the cookbook will be created"
 
       def run
          if @name_args.length < 1
@@ -55,7 +55,7 @@ class Chef
     end
 
     def create_cookbook(dir, cookbook_name, company_name, license)
-      Chef::Log.info("** Creating cookbook #{cookbook_name}")
+      msg("** Creating cookbook #{cookbook_name}")
       shell_out "mkdir -p #{File.join(dir, cookbook_name, "attributes")}"
       shell_out "mkdir -p #{File.join(dir, cookbook_name, "recipes")}"
       shell_out "mkdir -p #{File.join(dir, cookbook_name, "definitions")}"
@@ -101,7 +101,7 @@ EOH
     end
 
     def create_readme(dir, cookbook_name)
-      Chef::Log.info("** Creating README for cookbook: #{cookbook_name}")
+      msg("** Creating README for cookbook: #{cookbook_name}")
       unless File.exists?(File.join(dir, cookbook_name, "README.rdoc"))
         open(File.join(dir, cookbook_name, "README.rdoc"), "w") do |file|
           file.puts <<-EOH
@@ -119,7 +119,7 @@ EOH
     end
 
     def create_metadata(dir, cookbook_name, company_name, email, license)
-      Chef::Log.info("** Creating metadata for cookbook: #{cookbook_name}")
+      msg("** Creating metadata for cookbook: #{cookbook_name}")
 
       license_name = case license
                      when :apachev2
