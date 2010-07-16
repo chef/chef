@@ -50,6 +50,7 @@ describe Chef::Application::Solo do
       end
 
       it "should set the interval to 1800" do
+        Chef::Config[:interval] = nil
         @app.reconfigure
         Chef::Config[:interval].should == 1800
       end
