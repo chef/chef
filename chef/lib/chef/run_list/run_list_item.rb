@@ -28,7 +28,7 @@ class Chef
       def initialize(item)
         case item
         when Hash
-          raise ArgumentError, "Initializing a #{self.class} from a hash requires that it have a 'type' and 'name' key" unless (item.has_key?('type')||item.has_key?(:type)) && (item.has_key?('name')||item.has_key?(:name))
+          assert_hash_is_valid_run_list_item!(item)
           @type = (item['type'] || item[:type]).to_sym
           @name = item['name'] || item[:name]
         when String
@@ -66,6 +66,13 @@ class Chef
           other.respond_to?(:type) && other.respond_to?(:name) && other.type == @type && other.name == @name
         end
       end
+
+      def assert_hash_is_valid_run_list_item!(item)
+        unless (item.key?('type')|| item.key?(:type)) && (item.key?('name') || item.key?(:name))
+          raise ArgumentError, "Initializing a #{self.class} from a hash requires that it have a 'type' and 'name' key"
+        end
+      end
+
     end
   end
 end

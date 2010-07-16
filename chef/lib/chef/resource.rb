@@ -381,7 +381,7 @@ class Chef
         begin
           self.class.provider_base.const_get(convert_to_class_name(name.to_s))
         rescue NameError => e
-          if e.to_s =~ /#{self.class.provider_base.to_s}/
+          if e.to_s =~ /#{Regexp.escape(self.class.provider_base.to_s)}/
             raise ArgumentError, "No provider found to match '#{name}'"
           else
             raise e

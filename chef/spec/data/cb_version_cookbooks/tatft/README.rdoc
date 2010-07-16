@@ -1,0 +1,3 @@
+= THIS RECIPE
+* is for testing CookbookLoader/CookbookVersion
+* has at least one of every kind of file that cookbooks can have

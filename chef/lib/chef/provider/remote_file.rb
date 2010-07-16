@@ -71,7 +71,7 @@ class Chef
       end
 
       def current_resource_matches_target_checksum?
-        @new_resource.checksum && @current_resource.checksum && @current_resource.checksum =~ /^#{@new_resource.checksum}/
+        @new_resource.checksum && @current_resource.checksum && @current_resource.checksum =~ /^#{Regexp.escape(@new_resource.checksum)}/
       end
 
       def matches_current_checksum?(candidate_file)

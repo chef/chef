@@ -30,22 +30,6 @@ class Chef
   class CookbookVersion
     include Chef::IndexQueue::Indexable
 
-    attr_accessor :definition_filenames, :template_filenames, :file_filenames, 
-      :library_filenames, :resource_filenames, :provider_filenames, :root_filenames, :name,
-      :metadata, :metadata_filenames, :status, :couchdb_rev, :couchdb
-    attr_reader :couchdb_id
-
-    # attribute_filenames also has a setter that has non-default
-    # functionality.
-    attr_reader :attribute_filenames
-
-    # recipe_filenames also has a setter that has non-default
-    # functionality.
-    attr_reader :recipe_filenames
-
-    attr_reader :recipe_filenames_by_name
-    attr_reader :attribute_filenames_by_short_filename
-    
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
     
     DESIGN_DOCUMENT = {
@@ -167,6 +151,33 @@ class Chef
         },
       }
     }
+
+    attr_accessor :definition_filenames
+    attr_accessor :template_filenames
+    attr_accessor :file_filenames
+    attr_accessor :library_filenames
+    attr_accessor :resource_filenames
+    attr_accessor :provider_filenames
+    attr_accessor :root_filenames
+    attr_accessor :name
+    attr_accessor :metadata
+    attr_accessor :metadata_filenames
+    attr_accessor :status
+    attr_accessor :couchdb_rev
+    attr_accessor :couchdb
+
+    attr_reader :couchdb_id
+
+    # attribute_filenames also has a setter that has non-default
+    # functionality.
+    attr_reader :attribute_filenames
+
+    # recipe_filenames also has a setter that has non-default
+    # functionality.
+    attr_reader :recipe_filenames
+
+    attr_reader :recipe_filenames_by_name
+    attr_reader :attribute_filenames_by_short_filename
     
     # This is the one and only method that knows how cookbook files'
     # checksums are generated.
@@ -200,7 +211,7 @@ class Chef
       @status = :ready
       @manifest = nil
       @file_vendor = nil
-      @metadata = {}
+      @metadata = Chef::Cookbook::Metadata.new
     end
 
     def version
@@ -308,17 +319,23 @@ class Chef
       unless recipe_filenames_by_name.has_key?(recipe_name)
         raise ArgumentError, "Cannot find a recipe matching #{recipe_name} in cookbook #{name}"
       end
+
       Chef::Log.debug("Found recipe #{recipe_name} in cookbook #{name}")
       recipe = Chef::Recipe.new(name, recipe_name, run_context)
       recipe_filename = recipe_filenames_by_name[recipe_name]
-      raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}" unless recipe_filename
+
+      unless recipe_filename
+        raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
+      end
       
       recipe.from_file(recipe_filename)
       recipe
     end
 
     def segment_filenames(segment)
-      raise ArgumentError, "invalid segment #{segment}: must be one of #{COOKBOOK_SEGMENTS.join(', ')}" unless COOKBOOK_SEGMENTS.include?(segment)
+      unless COOKBOOK_SEGMENTS.include?(segment)
+        raise ArgumentError, "invalid segment #{segment}: must be one of #{COOKBOOK_SEGMENTS.join(', ')}"
+      end
 
       case segment.to_sym
       when :resources
@@ -398,9 +415,9 @@ class Chef
         # we're just going to make cookbook_files out of these and make the
         # cookbook find them by filespecificity again. but it's the shortest
         # path to "success" for now.
-        if manifest_record_path =~ /(#{segment}\/[^\/]+\/#{dirname})\/.+$/
+        if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
           specificity_dirname = $1
-          non_specific_path = manifest_record_path[/#{segment}\/[^\/]+\/#{dirname}\/(.+)$/, 1]
+          non_specific_path = manifest_record_path[/#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)}\/(.+)$/, 1]
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
           if filenames_by_pref[specificity_dirname]
@@ -429,7 +446,7 @@ class Chef
         manifest_record_path = manifest_record[:path]
 
         # extract the preference part from the path.
-        if manifest_record_path =~ /(#{segment}\/[^\/]+\/#{dirname})\/.+$/
+        if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
           # Note the specificy_dirname includes the segment and
           # dirname argument as above, which is what
           # preferences_for_path returns. It could be
@@ -461,7 +478,7 @@ class Chef
           platform, version = Chef::Platform.find_platform_and_version(node)
         rescue ArgumentError => e
           # Skip platform/version if they were not found by find_platform_and_version
-          if e.message =~ /Cannot find a (platform|version)/
+          if e.message =~ /Cannot find a (?:platform|version)/
             platform = "/unknown_platform/"
             version = "/unknown_platform_version/"
           else
@@ -504,9 +521,9 @@ class Chef
         # we're just going to make cookbook_files out of these and make the
         # cookbook find them by filespecificity again. but it's the shortest
         # path to "success" for now.
-        if manifest_record_path =~ /(#{segment}\/[^\/]+\/#{dirname})\/.+$/
+        if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
           specificity_dirname = $1
-          non_specific_path = manifest_record_path[/#{segment}\/[^\/]+\/#{dirname}\/(.+)$/, 1]
+          non_specific_path = manifest_record_path[/#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)}\/(.+)$/, 1]
           # Record the specificity_dirname only if it's in the list of
           # valid preferences
           if filenames_by_pref[specificity_dirname]
@@ -535,7 +552,7 @@ class Chef
         manifest_record_path = manifest_record[:path]
 
         # extract the preference part from the path.
-        if manifest_record_path =~ /(#{segment}\/[^\/]+\/#{dirname})\/.+$/
+        if manifest_record_path =~ /(#{Regexp.escape(segment.to_s)}\/[^\/]+\/#{Regexp.escape(dirname)})\/.+$/
           # Note the specificy_dirname includes the segment and
           # dirname argument as above, which is what
           # preferences_for_path returns. It could be
@@ -567,7 +584,7 @@ class Chef
           platform, version = Chef::Platform.find_platform_and_version(node)
         rescue ArgumentError => e
           # Skip platform/version if they were not found by find_platform_and_version
-          if e.message =~ /Cannot find a (platform|version)/
+          if e.message =~ /Cannot find a (?:platform|version)/
             platform = "/unknown_platform/"
             version = "/unknown_platform_version/"
           else
@@ -780,11 +797,11 @@ class Chef
           specificity = "default"
           
           if segment == :root_files
-            matcher = segment_file.match(".+/#{name}/(.+)")
+            matcher = segment_file.match(".+/#{Regexp.escape(name.to_s)}/(.+)")
             file_name = matcher[1]
             path = file_name
           elsif segment == :templates || segment == :files
-            matcher = segment_file.match("/#{name}/(#{segment}/(.+?)/(.+))")
+            matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+?)/(.+))")
             unless matcher
               Chef::Log.debug("Skipping file #{segment_file}, as it doesn't have a proper segment.")
               next
@@ -793,7 +810,7 @@ class Chef
             specificity = matcher[2]
             file_name = matcher[3]
           else
-            matcher = segment_file.match("/#{name}/(#{segment}/(.+))")
+            matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+))")
             path = matcher[1]
             file_name = matcher[2]
           end

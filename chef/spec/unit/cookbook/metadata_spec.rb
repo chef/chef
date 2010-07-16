@@ -25,7 +25,63 @@ describe Chef::Cookbook::Metadata do
     @meta = Chef::Cookbook::Metadata.new(@cookbook)
   end
 
-  describe "initialize" do
+  describe "when comparing for equality" do
+    before do
+      @fields = [ :name, :description, :long_description, :maintainer,
+                  :maintainer_email, :license, :platforms, :dependencies,
+                  :recommendations, :suggestions, :conflicting, :providing,
+                  :replacing, :attributes, :groupings, :recipes, :version]
+    end
+
+    it "does not depend on object identity for equality" do
+      @meta.should == @meta.dup
+    end
+
+    it "is not equal to another object if it isn't have all of the metadata fields" do
+      @fields.each_index do |field_to_remove|
+        fields_to_include = @fields.dup
+        fields_to_include.delete_at(field_to_remove)
+        almost_duck_type = Struct.new(*fields_to_include).new
+        @fields.each do |field|
+          setter = "#{field}="
+          metadata_value = @meta.send(field)
+          almost_duck_type.send(setter, metadata_value) if almost_duck_type.respond_to?(setter)
+          @mets.should_not == almost_duck_type
+        end
+      end
+    end
+
+    it "is equal to another object if it has equal values for all metadata fields" do
+      duck_type = Struct.new(*@fields).new
+      @fields.each do |field|
+        setter = "#{field}="
+        metadata_value = @meta.send(field)
+        duck_type.send(setter, metadata_value)
+      end
+      @meta.should == duck_type
+    end
+
+    it "is not equal if any values are different" do
+      duck_type_class = Struct.new(*@fields)
+      @fields.each do |field_to_change|
+        duck_type = duck_type_class.new
+
+        @fields.each do |field|
+          setter = "#{field}="
+          metadata_value = @meta.send(field)
+          duck_type.send(setter, metadata_value)
+        end
+
+        field_to_change
+
+        duck_type.send("#{field_to_change}=".to_sym, :epic_fail)
+        @meta.should_not == duck_type
+      end
+    end
+
+  end
+
+  describe "when first created" do
     it "should return a Chef::Cookbook::Metadata object" do
       @meta.should be_a_kind_of(Chef::Cookbook::Metadata)
     end
