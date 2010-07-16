@@ -28,9 +28,10 @@ describe Chef::Provider::RubyBlock, "initialize" do
     @provider = Chef::Provider::RubyBlock.new(@new_resource, @run_context)
   end
 
-  it "should call the block" do
+  it "should call the block and flag the resource as updated" do
     @provider.action_create
     $evil_global_evil_laugh.should == :mwahahaha
+    @new_resource.updated.should be_true
   end
 end
 
