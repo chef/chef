@@ -20,6 +20,22 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Chef::RunList::RunListItem do
 
+  describe "when creating from a Hash" do
+    it "raises an exception when the hash doesn't have a :type key" do
+      lambda {Chef::RunList::RunListItem.new(:name => "tatft")}.should raise_error(ArgumentError)
+    end
+
+    it "raises an exception when the hash doesn't have an :name key" do
+      lambda {Chef::RunList::RunListItem.new(:type => 'R') }.should raise_error(ArgumentError)
+    end
+
+    it "sets the name and type as given in the hash" do
+      item = Chef::RunList::RunListItem.new(:type => 'fuuu', :name => 'uuuu')
+      item.to_s.should == 'fuuu[uuuu]'
+    end
+
+  end
+
   describe "when creating an item from a string" do
     it "parses a qualified recipe" do
       item = Chef::RunList::RunListItem.new("recipe[rage]")
