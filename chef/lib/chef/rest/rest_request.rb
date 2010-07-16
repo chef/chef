@@ -118,7 +118,9 @@ class Chef
           @http_client = Net::HTTP.new(host, port)
         else
           Chef::Log.debug("using #{http_proxy.host}:#{http_proxy.port} for proxy")
-          @http_client = Net::HTTP.Proxy(http_proxy.host, http_proxy.port).new(host, port)
+          user = Chef::Config["#{url.scheme}_proxy_user"]
+          pass = Chef::Config["#{url.scheme}_proxy_pass"]
+          @http_client = Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass).new(host, port)
         end
         if url.scheme == "https"
           @http_client.use_ssl = true
