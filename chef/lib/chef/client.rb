@@ -36,22 +36,25 @@ require 'ohai'
 
 class Chef
   class Client
-    # TODO: timh/cw: 5-19-2010: json_attribs should be moved to RunContext?
-    attr_accessor :node, :registration, :json_attribs, :node_name, :ohai, :rest, :runner
+    attr_accessor :node
+    attr_accessor :node_name
+    attr_accessor :ohai
+    attr_accessor :rest
+    attr_accessor :runner
+
     attr_reader :node_exists
-    
+
+    # TODO: timh/cw: 5-19-2010: json_attribs should be moved to RunContext?
+    attr_reader :json_attribs
+
     # Creates a new Chef::Client.
-    def initialize()
+    def initialize(json_attribs=nil)
+      @json_attribs = json_attribs
       @node = nil
-      @registration = nil
-      @json_attribs = nil
       @node_name = nil
       @node_exists = true
       @runner = nil
       @ohai = Ohai::System.new
-      Chef::Log.verbose = Chef::Config[:verbose_logging]
-      Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger
-      @ohai_has_run = false
     end
     
     # Do a full run for this Chef::Client.  Calls:

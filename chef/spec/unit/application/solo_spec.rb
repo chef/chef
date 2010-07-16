@@ -50,6 +50,7 @@ describe Chef::Application::Solo do
       end
 
       it "should set the interval to 1800" do
+        Chef::Config[:interval] = nil
         @app.reconfigure
         Chef::Config[:interval].should == 1800
       end
@@ -158,36 +159,12 @@ describe Chef::Application::Solo do
       @app.stub!(:configure_opt_parser).and_return(true)
       @app.stub!(:configure_chef).and_return(true)
       @app.stub!(:configure_logging).and_return(true)
-      Chef::Config[:interval] = false
-      Chef::Config[:splay] = false
-      Chef::Config[:recipe_url] = false
-      Chef::Config[:json_attribs] = "/etc/chef/dna.json"
-      @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
-      @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
     end
 
     it "should change privileges" do
       Chef::Daemon.should_receive(:change_privilege).and_return(true)
       @app.setup_application
     end
-
-    it "should instantiate a chef::client object" do
-      Chef::Client.should_receive(:new).and_return(@chef_client)
-      @app.setup_application
-    end
-
-    it "should assign the json attributes to the chef client instance" do
-      @chef_client.should_receive(:json_attribs=).with({"a"=>"b"}).and_return(true)
-      @app.reconfigure
-      @app.setup_application
-    end
-
-    it "should assign the node name to the chef client instance" do
-      Chef::Config.stub!(:[]).with(:node_name).and_return("testnode")
-      @chef_client.should_receive(:node_name=).with("testnode").and_return(true)
-      @app.setup_application
-    end
-
   end
 
 end

@@ -101,45 +101,17 @@ end
 
 describe Chef::Application::Client, "setup_application" do
   before do
-    Chef::Daemon.stub!(:change_privilege).and_return(true)
-    @chef_client = mock("Chef::Client", :null_object => true)
-    Chef::Client.stub!(:new).and_return(@chef_client)
     @app = Chef::Application::Client.new
     # this is all stuff the reconfigure method needs
     @app.stub!(:configure_opt_parser).and_return(true)
     @app.stub!(:configure_chef).and_return(true)
     @app.stub!(:configure_logging).and_return(true)
-    Chef::Config[:interval] = false
-    Chef::Config[:splay] = false
-    Chef::Config[:recipe_url] = false
-    Chef::Config[:json_attribs] = "/etc/chef/dna.json"
-    Chef::Config[:user] = nil
-    @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
-    @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
   end
   
   it "should change privileges" do
     Chef::Daemon.should_receive(:change_privilege).and_return(true)
     @app.setup_application
   end
-  
-  it "should instantiate a chef::client object" do
-    Chef::Client.should_receive(:new).and_return(@chef_client)
-    @app.setup_application
-  end
-  
-  it "should assign the json attributes to the chef client instance" do
-    @chef_client.should_receive(:json_attribs=).with({"a"=>"b"}).and_return(true)
-    @app.reconfigure
-    @app.setup_application
-  end
-  
-  it "should assign the node name to the chef client instance" do
-    Chef::Config[:node_name] = "testnode"
-    @chef_client.should_receive(:node_name=).with("testnode").and_return(true)
-    @app.setup_application
-  end
-    
   after do
     Chef::Config[:solo] = false
   end
