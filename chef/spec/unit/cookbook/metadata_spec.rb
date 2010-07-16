@@ -298,16 +298,25 @@ describe Chef::Cookbook::Metadata do
        @meta.attributes["db/mysql/databases"][:calculated].should == false
      end
 
-    it "should let type be string or array" do
+    it "accepts String for the attribute type" do
       lambda {
         @meta.attribute("db/mysql/databases", :type => "string")
       }.should_not raise_error(ArgumentError)
+    end
+
+    it "accepts Array for the attribute type" do
       lambda {
         @meta.attribute("db/mysql/databases", :type => "array")
       }.should_not raise_error(ArgumentError)
       lambda {
         @meta.attribute("db/mysql/databases", :type => Array.new)
       }.should raise_error(ArgumentError)
+    end
+
+    it "accepts symbol for the attribute type" do
+      lambda {
+        @meta.attribute("db/mysql/databases", :type => "symbol")
+      }.should_not raise_error(ArgumentError)
     end
     
      it "should let type be hash (backwards compatability only)" do
