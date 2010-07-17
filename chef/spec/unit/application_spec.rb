@@ -93,8 +93,11 @@ describe Chef::Application, "configure_chef" do
   describe "when a config_file is present" do
     before do
       @app.config[:config_file] = "/etc/chef/default.rb"
-      File.stub!(:exists?).and_return(true)
-      File.stub!(:readable?).and_return(true)
+      @cf = mock("cf")
+      @cf.stub!(:path).and_return(@app.config[:config_file])
+      @cf.stub!(:nil?).and_return(false)
+
+      File.stub!(:open).and_return(@cf)
     end
     
     it "should configure chef::config from a file" do
@@ -110,6 +113,24 @@ describe Chef::Application, "configure_chef" do
     
     it "should configure chef::config from a file" do
       Chef::Config.should_not_receive(:from_file).with("/etc/chef/default.rb")
+      @app.configure_chef
+    end
+  end
+  
+  describe "when the config_file is an URL" do
+    before do
+      @app.config[:config_file] = "http://example.com/foo.rb"
+      @cf = mock("cf")
+      @cf.stub!(:path).and_return("/tmp/some/path")
+      @cf.stub!(:nil?).and_return(false)
+      @rest = mock("rest")
+      @rest.stub!(:get_rest).and_return(@rest)
+      @rest.stub!(:open).and_yield(@cf)
+      Chef::REST.stub!(:new).and_return(@rest)
+    end
+    
+    it "should configure chef::config from an URL" do
+      Chef::REST.should_receive(:new).with(@app.config[:config_file], nil, nil).at_least(1).times.and_return(@rest)
       @app.configure_chef
     end
   end

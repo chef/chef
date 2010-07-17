@@ -66,13 +66,25 @@ class Chef::Application
   def configure_chef
     parse_options
 
-    unless config[:config_file] && File.file?(config[:config_file])
+    begin
+      cf =
+        case config[:config_file]
+        when /^(http|https):\/\//
+          Chef::REST.new(config[:config_file], nil, nil).
+            get_rest(config[:config_file], true).open
+        else
+          ::File::open(config[:config_file])
+        end
+    rescue SocketError => error
+      Chef::Application.fatal!("Error getting config file #{Chef::Config[:config_file]}", 2)
+    rescue Exception => error
       Chef::Log.warn("*****************************************")
       Chef::Log.warn("Can not find config file: #{config[:config_file]}, using defaults.")
+      Chef::Log.warn("#{error.message}")
       Chef::Log.warn("*****************************************")
     end
 
-    Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exists?(config[:config_file]) && File.readable?(config[:config_file])
+    Chef::Config.from_file(cf.path) unless cf.nil?
     Chef::Config.merge!(config)
   end
 
