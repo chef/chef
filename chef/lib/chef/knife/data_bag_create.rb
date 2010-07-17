@@ -24,6 +24,7 @@ class Chef
     class DataBagCreate < Knife
 
       banner "knife data bag create BAG [ITEM] (options)"
+      category "data bag"
 
       def run
         @data_bag_name, @data_bag_item_name = @name_args

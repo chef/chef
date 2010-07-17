@@ -22,6 +22,7 @@ class Chef
     class CookbookSiteShow < Knife
 
       banner "knife cookbook site show COOKBOOK [VERSION] (options)"
+      category "cookbook site"
 
       def run
         case @name_args.length

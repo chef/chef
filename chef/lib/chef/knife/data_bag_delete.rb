@@ -24,6 +24,7 @@ class Chef
     class DataBagDelete < Knife
 
       banner "knife data bag delete BAG [ITEM] (options)"
+      category "data bag"
 
       def run 
         if @name_args.length == 2

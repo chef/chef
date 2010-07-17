@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require 'chef/version'
 require 'mixlib/cli'
 require 'chef/mixin/convert_to_class_name'
 
@@ -27,23 +28,56 @@ class Chef
     include Mixlib::CLI
     extend Chef::Mixin::ConvertToClassName
 
+    DEFAULT_SUBCOMMAND_FILES = Dir[File.expand_path(File.join(File.dirname(__FILE__), 'knife', '*.rb'))]
+    DEFAULT_SUBCOMMAND_FILES.map! { |knife_file| knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1] }
+
     attr_accessor :name_args
 
     def self.msg(msg)
       puts msg
     end
 
+    def self.inherited(subclass)
+      unless subclass.nameless?
+        subcommands[subclass.snake_case_name] = subclass
+        #subcommands_by_category[subclass.subcommand_category] << subclass.snake_case_name
+      end
+    end
+
+    def self.category(new_category)
+      @category = new_category
+    end
+
+    def self.subcommand_category
+      @category || snake_case_name.split('_').first unless nameless?
+    end
+
+    def self.snake_case_name
+      convert_to_snake_case(name.split('::').last) unless nameless?
+    end
+
+    def self.nameless?
+      name.nil? || name.empty?
+    end
+
+    def self.subcommands
+      @@subcommands ||= {}
+    end
+
+    def self.subcommands_by_category
+      unless @subcommands_by_category
+        @subcommands_by_category = Hash.new { |hash, key| hash[key] = [] }
+        subcommands.each do |snake_cased, klass|
+          @subcommands_by_category[klass.subcommand_category] << snake_cased
+        end
+      end
+      @subcommands_by_category
+    end
+
     # Load all the sub-commands
     def self.load_commands
-      @sub_classes = Hash.new
-      Dir[
-        File.expand_path(File.join(File.dirname(__FILE__), 'knife', '*.rb'))
-      ].each do |knife_file|
-        require knife_file
-        snake_case_file_name = File.basename(knife_file).sub(/\.rb$/, '')
-        @sub_classes[snake_case_file_name] = convert_to_class_name(snake_case_file_name)
-      end
-      @sub_classes
+      DEFAULT_SUBCOMMAND_FILES.each { |subcommand| require subcommand }
+      subcommands
     end
 
     def self.list_commands(preferred_category=nil)
@@ -59,25 +93,14 @@ class Chef
       commands_to_show.sort.each do |category, commands|
         puts "** #{category.upcase} COMMANDS **"
         commands.each do |command|
-          puts Chef::Knife.const_get(@sub_classes[command]).banner
+          puts subcommands[command].banner
         end
         puts
       end
     end
 
-    def self.subcommands_by_category
-      unless @subcommands_by_category
-        @subcommands_by_category = Hash.new { |h, k| h[k] = [] }
-        @sub_classes.keys.sort.each do |command|
-          category = command.split('_').first
-          @subcommands_by_category[category] << command
-        end
-      end
-      @subcommands_by_category
-    end
-
     def self.build_sub_class(snake_case, merge_opts=nil)
-      klass = Chef::Knife.const_get(@sub_classes[snake_case])
+      klass = subcommands[snake_case]
       klass.options.merge!(merge_opts) if merge_opts 
       klass.new
     end
@@ -97,7 +120,7 @@ class Chef
         cli_bits = non_dash_args[0..to_try]
         snake_case_class_name = cli_bits.join("_")
 
-        if @sub_classes.has_key?(snake_case_class_name)
+        if subcommands.has_key?(snake_case_class_name)
           klass_instance = build_sub_class(snake_case_class_name, merge_opts)
           break
         end

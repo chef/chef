@@ -24,6 +24,7 @@ class Chef
     class CookbookSiteVendor < Knife
 
       banner "knife cookbook site vendor COOKBOOK [VERSION] (options)"
+      category "cookbook site"
 
       option :deps,
        :short => "-d",

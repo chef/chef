@@ -24,6 +24,7 @@ class Chef
     class DataBagList < Knife
 
       banner "knife data bag list (options)"
+      category "data bag"
 
       option :with_uri,
         :short => "-w",
