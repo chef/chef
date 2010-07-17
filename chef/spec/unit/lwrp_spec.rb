@@ -74,6 +74,8 @@ describe "Light-weight Chef::Provider" do
     node.platform(:ubuntu)
     node.platform_version('8.10')
     @run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new({}))
+
+    @runner = Chef::Runner.new(@run_context)
   end
   
   
@@ -130,25 +132,26 @@ describe "Light-weight Chef::Provider" do
   end
 
   it "should properly handle a new_resource reference" do
-    res = Chef::Resource::LwrpFoo.new("morpheus")
-    res.monkey("bob")
-    res.action(:twiddle_thumbs)
-    res.provider(:lwrp_monkey_name_printer)
-    @run_context.resource_collection.insert(res)
+    resource = Chef::Resource::LwrpFoo.new("morpheus")
+    resource.monkey("bob")
+    resource.provider(:lwrp_monkey_name_printer)
 
-    STDOUT.should_receive(:puts).with("my monkey's name is 'bob'").exactly(:once)
-    Chef::Runner.new(@run_context).converge
+    provider = @runner.build_provider(resource)
+    provider.action_twiddle_thumbs
+
+    provider.monkey_name.should == "my monkey's name is 'bob'"
   end
 
   it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
-    res = Chef::Resource::LwrpFoo.new("morpheus")
-    res.monkey("bob")
-    res.action(:twiddle_thumbs)
-    res.provider(:lwrp_embedded_resource_accesses_providers_scope)
-    @run_context.resource_collection.insert(res)
+
+    resource = Chef::Resource::LwrpFoo.new("morpheus")
+    resource.monkey("bob")
+    resource.provider(:lwrp_embedded_resource_accesses_providers_scope)
     
-    STDOUT.should_receive(:puts).with("my monkey's name is 'bob, the monkey'").exactly(:once)
-    Chef::Runner.new(@run_context).converge
+    provider = @runner.build_provider(resource)
+    provider.action_twiddle_thumbs
+
+    provider.enclosed_resource.monkey.should == 'bob, the monkey'
   end
   
 end
