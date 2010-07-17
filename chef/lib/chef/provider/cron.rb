@@ -25,7 +25,7 @@ class Chef
     class Cron < Chef::Provider
       include Chef::Mixin::Command
 
-      CRON_PATTERN = /([0-9\*\-\,\/]+)\s*([0-9\*\-\,\/]+)\s*([0-9\*\-\,\/]+)\s*([0-9\*\-\,\/]+)\s*([0-9\*\-\,\/]+)\s*(.*)/
+      CRON_PATTERN = /([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s(.*)/
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
