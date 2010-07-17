@@ -72,7 +72,7 @@ class Chef
       begin
         run_status = Chef::RunStatus.new(node)
         run_status.start_clock
-        Chef::Log.info("Starting Chef Run")
+        Chef::Log.info("Starting Chef Run (version #{::Chef::VERSION})")
         
         if Chef::Config[:solo]
           Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
