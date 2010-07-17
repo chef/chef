@@ -74,7 +74,8 @@ class Chef
         end
 
         def format_values(hash)
-          Hash[hash.map { |key, value| [key.to_s, value]}]
+          formatted_array = hash.map { |key, value| [key.to_s, value]}.flatten
+          Hash[*formatted_array]
         end
 
         def assert_valid_platform_values!(platforms, value)
