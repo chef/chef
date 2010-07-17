@@ -19,6 +19,7 @@
 require 'chef/knife'
 require 'json'
 require 'tempfile'
+require 'erubis'
 
 class Chef
   class Knife
@@ -51,9 +52,41 @@ class Chef
         :long => "--prerelease",
         :description => "Install the pre-release chef gems"
 
+      option :distro,
+        :short => "-d DISTRO",
+        :long => "--distro DISTRO",
+        :description => "Bootstrap a distro using a template",
+        :default => "ubuntu10.04-gems"
+
+      option :identity_file,
+        :short => "-i IDENTITY_FILE",
+        :long => "--identity-file IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication"
 
       def h
         @highline ||= HighLine.new
+      end
+
+      def load_template(template)
+        # Are we bootstrapping using an already shipped template?
+        bootstrap_files = []
+        bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
+        bootstrap_files << File.join(Dir.pwd, ".chef", "bootstrap", "#{config[:distro]}.erb")
+        bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb")
+
+        config[:bootstrap_template] = bootstrap_files.find do |bootstrap_template|
+          Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
+          File.exists?(bootstrap_template)
+        end
+
+        unless config[:bootstrap_template]
+          Chef::Log.info("Can not find bootstrap definition for #{config[:distro]}")
+          raise
+        end
+
+        Chef::Log.debug("Found bootstrap template in #{File.dirname(config[:bootstrap_template])}")
+        
+        config[:bootstrap_template]
       end
 
       def run 
@@ -61,52 +94,16 @@ class Chef
 
         server_name = @name_args[0]
 
-        puts "Bootstrapping Chef on #{h.color(server_name, :bold)}"
-
         $stdout.sync = true
 
-        command =  <<EOH
-bash -c '
-if [ ! -f /usr/bin/chef-client ]; then
-  apt-get update
-  apt-get install -y ruby ruby1.8-dev build-essential wget libruby-extras libruby1.8-extras
-  cd /tmp
-  wget http://rubyforge.org/frs/download.php/69365/rubygems-1.3.6.tgz
-  tar xvf rubygems-1.3.6.tgz
-  cd rubygems-1.3.6
-  ruby setup.rb
-  cp /usr/bin/gem1.8 /usr/bin/gem
-  gem install ohai chef --no-rdoc --no-ri --verbose #{"--prerelease" if config[:prerelease]}
-fi
+        
 
-mkdir -p /etc/chef
+        context = {}
+        context[:run_list] = @name_args[1..-1]
+        context[:config] = config
+        command = Erubis::Eruby.new(template).evaluate(context)
 
-(
-cat <<'EOP'
-#{IO.read(Chef::Config[:validation_key])}
-EOP
-) > /tmp/validation.pem
-awk NF /tmp/validation.pem > /etc/chef/validation.pem
-rm /tmp/validation.pem
-
-(
-cat <<'EOP'
-log_level        :info
-log_location     STDOUT
-chef_server_url  "#{Chef::Config[:chef_server_url]}" 
-validation_client_name "#{Chef::Config[:validation_client_name]}"
-#{config[:chef_node_name] == nil ? "# Using default node name" : "node_name \"#{config[:chef_node_name]}\""} 
-EOP
-) > /etc/chef/client.rb
-
-(
-cat <<'EOP'
-#{{ "run_list" => @name_args[1..-1] }.to_json}
-EOP
-) > /etc/chef/first-boot.json
-
-/usr/bin/chef-client -j /etc/chef/first-boot.json'
-EOH
+        Chef::Log.info("Bootstrapping Chef on #{h.color(server_name, :bold)}")
 
         ssh = Chef::Knife::Ssh.new
         ssh.name_args = [ server_name, "sudo #{command}" ]
