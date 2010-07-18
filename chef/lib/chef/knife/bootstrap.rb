@@ -63,50 +63,83 @@ class Chef
         :long => "--identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
+      option :use_sudo,
+        :short => "-s",
+        :long => "--sudo",
+        :description => "Execute the bootstrap via sudo",
+        :boolean => true
+
+      option :template_file,
+        :long => "--template-file TEMPLATE",
+        :description => "Full path to location of template to use",
+        :default => false
+
+      option :run_list,
+        :short => "-r RUN_LIST",
+        :long => "--run-list RUN_LIST",
+        :description => "Comma separated list of roles/recipes to apply",
+        :proc => lambda { |o| o.split(",") },
+        :default => nil
+
       def h
         @highline ||= HighLine.new
       end
 
-      def load_template(template)
+      def load_template(template=nil)
         # Are we bootstrapping using an already shipped template?
-        bootstrap_files = []
-        bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
-        bootstrap_files << File.join(Dir.pwd, ".chef", "bootstrap", "#{config[:distro]}.erb")
-        bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb")
+        if config[:template_file]
+          bootstrap_files = config[:template_file]
+        else
+          bootstrap_files = []
+          bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
+          bootstrap_files << File.join(Dir.pwd, ".chef", "bootstrap", "#{config[:distro]}.erb")
+          bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb")
+        end
 
-        config[:bootstrap_template] = bootstrap_files.find do |bootstrap_template|
+        template = bootstrap_files.find do |bootstrap_template|
           Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
           File.exists?(bootstrap_template)
         end
 
-        unless config[:bootstrap_template]
+        unless template
           Chef::Log.info("Can not find bootstrap definition for #{config[:distro]}")
-          raise
+          raise Errno::ENOENT
         end
 
-        Chef::Log.debug("Found bootstrap template in #{File.dirname(config[:bootstrap_template])}")
+        Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
         
-        config[:bootstrap_template]
+        IO.read(template).chomp
+      end
+
+      def render_template(template=nil)
+        context = {}
+        context[:run_list] = config[:run_list]
+        context[:config] = config
+        command = Erubis::Eruby.new(template).evaluate(context)
       end
 
       def run 
         require 'highline'
 
-        server_name = @name_args[0]
+        if @name_args.first == nil
+          Chef::Log.error("Must pass a node name/ip to bootstrap")
+          exit 1
+        end
+
+        config[:server_name] = @name_args.first
 
         $stdout.sync = true
 
-        
+        command = render_template(load_template(config[:bootstrap_template]))
 
-        context = {}
-        context[:run_list] = @name_args[1..-1]
-        context[:config] = config
-        command = Erubis::Eruby.new(template).evaluate(context)
+        if config[:use_sudo]
+          command = "sudo #{command}"
+        end
 
-        Chef::Log.info("Bootstrapping Chef on #{h.color(server_name, :bold)}")
+        Chef::Log.info("Bootstrapping Chef on #{h.color(config[:server_name], :bold)}")
 
         ssh = Chef::Knife::Ssh.new
-        ssh.name_args = [ server_name, "sudo #{command}" ]
+        ssh.name_args = [ config[:server_name], command ]
         ssh.config[:ssh_user] = config[:ssh_user] 
         ssh.config[:password] = config[:ssh_password]
         ssh.config[:identity_file] = config[:identity_file]
@@ -118,15 +151,15 @@ class Chef
           unless config[:ssh_password]
             puts "Failed to authenticate #{config[:ssh_user]} - trying password auth"
             ssh = Chef::Knife::Ssh.new
-            ssh.name_args = [ server_name, "sudo #{command}" ]
+            ssh.name_args = [ config[:server_name], command ]
             ssh.config[:ssh_user] = config[:ssh_user] 
             ssh.config[:manual] = true
             ssh.config[:password] = ssh.get_password
             ssh.run
           end
         end
-
       end
+
     end
   end
 end
