@@ -28,35 +28,45 @@ class Chef
     include Mixlib::CLI
     extend Chef::Mixin::ConvertToClassName
 
+    # The "require paths" of the core knife subcommands bundled with chef
     DEFAULT_SUBCOMMAND_FILES = Dir[File.expand_path(File.join(File.dirname(__FILE__), 'knife', '*.rb'))]
     DEFAULT_SUBCOMMAND_FILES.map! { |knife_file| knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1] }
 
     attr_accessor :name_args
 
-    def self.msg(msg)
+    def self.msg(msg="")
       puts msg
     end
 
     def self.inherited(subclass)
-      unless subclass.nameless?
+      unless subclass.unnamed?
         subcommands[subclass.snake_case_name] = subclass
-        #subcommands_by_category[subclass.subcommand_category] << subclass.snake_case_name
       end
     end
 
+    # Explicitly set the category for the current command to +new_category+
+    # The category is normally determined from the first word of the command
+    # name, but some commands make more sense using two or more words
+    # ===Arguments
+    # new_category::: A String to set the category to (see examples)
+    # ===Examples:
+    # Data bag commands would be in the 'data' category by default. To put them
+    # in the 'data bag' category:
+    #   category('data bag')
     def self.category(new_category)
       @category = new_category
     end
 
     def self.subcommand_category
-      @category || snake_case_name.split('_').first unless nameless?
+      @category || snake_case_name.split('_').first unless unnamed?
     end
 
     def self.snake_case_name
-      convert_to_snake_case(name.split('::').last) unless nameless?
+      convert_to_snake_case(name.split('::').last) unless unnamed?
     end
 
-    def self.nameless?
+    # Does this class have a name? (Classes created via Class.new don't)
+    def self.unnamed?
       name.nil? || name.empty?
     end
 
@@ -80,9 +90,12 @@ class Chef
       subcommands
     end
 
+    # Print the list of subcommands knife knows about. If +preferred_category+
+    # is given, only subcommands in that category are shown
     def self.list_commands(preferred_category=nil)
       load_commands
-      puts "Available SUB-COMMANDS (for details, knife SUB-COMMAND --help)\n\n"
+      category_desc = preferred_category ? preferred_category + " " : ''
+      msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
 
       if preferred_category && subcommands_by_category.key?(preferred_category)
         commands_to_show = {preferred_category => subcommands_by_category[preferred_category]}
@@ -91,57 +104,89 @@ class Chef
       end
 
       commands_to_show.sort.each do |category, commands|
-        puts "** #{category.upcase} COMMANDS **"
+        msg "** #{category.upcase} COMMANDS **"
         commands.each do |command|
-          puts subcommands[command].banner
+          msg subcommands[command].banner if subcommands[command]
         end
-        puts
+        msg
       end
     end
 
-    def self.build_sub_class(snake_case, merge_opts=nil)
-      klass = subcommands[snake_case]
-      klass.options.merge!(merge_opts) if merge_opts 
-      klass.new
-    end
-
-    def self.find_command(args=ARGV, merge_opts={})
+    # Run knife for the given +args+ (ARGV), adding +options+ to the list of
+    # CLI options that the subcommand knows how to handle.
+    # ===Arguments
+    # args::: usually ARGV
+    # options::: A Mixlib::CLI option parser hash. These +options+ are how
+    # subcommands know about global knife CLI options
+    def self.run(args, options={})
       load_commands
-      non_dash_args = Array.new
-      args.each do |arg|
-        non_dash_args << arg if arg =~ /^([[:alnum:]]|_)+$/
+      subcommand_class = subcommand_class_from(args)
+      subcommand_class.options.merge!(options)
+      subcommand_class.new(args).run
+    end
+
+    def self.guess_category(args)
+      category_words = args.select {|arg| arg =~ /^([[:alnum:]]|_)+$/ }
+      matching_category = nil
+      while (!matching_category) && (!category_words.empty?)
+        candidate_category = category_words.join(' ')
+        matching_category = candidate_category if subcommands_by_category.key?(candidate_category)
+        matching_category || category_words.pop
       end
+      matching_category
+    end
 
-      to_try = non_dash_args.length 
-      klass_instance = nil
-      cli_bits = nil 
+    def self.subcommand_class_from(args)
+      command_words = args.select {|arg| arg =~ /^([[:alnum:]]|_)+$/ }
+      subcommand_class = nil
 
-      while(to_try >= 0)
-        cli_bits = non_dash_args[0..to_try]
-        snake_case_class_name = cli_bits.join("_")
-
-        if subcommands.has_key?(snake_case_class_name)
-          klass_instance = build_sub_class(snake_case_class_name, merge_opts)
-          break
+      while ( !subcommand_class ) && ( !command_words.empty? )
+        snake_case_class_name = command_words.join("_")
+        unless subcommand_class = subcommands[snake_case_class_name]
+          command_words.pop
         end
-
-        to_try = to_try - 1
       end
+      subcommand_class || subcommand_not_found!(args)
+    end
 
-      unless klass_instance
-        puts "Cannot find sub-command for: #{args.join(' ')}" unless want_help?(args)
-        Chef::Knife.list_commands(non_dash_args.first)
-        exit 10
+    private
+
+    # :nodoc:
+    # Error out and print usage. probably becuase the arguments given by the
+    # user could not be resolved to a subcommand.
+    def self.subcommand_not_found!(args)
+      unless want_help?(args)
+        Chef::Log.fatal("Cannot find sub command for: '#{args.join(' ')}'")
       end
+      Chef::Knife.list_commands(guess_category(args))
+      exit 10
+    end
 
-      extra = klass_instance.parse_options(args)
-      if klass_instance.config[:help]
-        puts "Usage: " + klass_instance.opt_parser.to_s
+    # :nodoc:
+    # TODO: duplicated with chef/application/knife
+    # all logic should be removed from that and Chef::Knife should own it.
+    def self.want_help?(args)
+      (args.any? { |arg| arg =~ /^(:?(:?\-\-)?help|\-h)$/})
+    end
+
+    public
+
+    # Create a new instance of the current class configured for the given
+    # arguments and options
+    def initialize(argv=[])
+      super() # having to call super in initialize is the most annoying anti-pattern :(
+
+      command_name_words = self.class.snake_case_name.split('_')
+
+      # Mixlib::CLI ignores the embedded name_args
+      @name_args = parse_options(argv)
+      @name_args.reject! { |name_arg| command_name_words.delete(name_arg) }
+
+      if config[:help]
+        msg opt_parser
         exit 1
       end
-      klass_instance.name_args = extra.inject([]) { |c, i| cli_bits.include?(i) ? cli_bits.delete(i) : c << i; c } 
-      klass_instance.configure_chef
-      klass_instance
+      configure_chef
     end
 
     def parse_options(args)
@@ -150,13 +195,6 @@ class Chef
       puts "Error: " + e.to_s
       show_usage
       exit(1)
-    end
-
-    # :nodoc:
-    # TODO: duplicated with chef/application/knife
-    # all logic should be removed from that and Chef::Knife should own it.
-    def self.want_help?(args)
-      (args.any? { |arg| arg =~ /^(:?(:?\-\-)?help|\-h)$/})
     end
 
     def ask_question(question, opts={})
