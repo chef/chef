@@ -22,6 +22,7 @@ class Chef
     class CookbookSiteSearch < Knife
 
       banner "knife cookbook site search QUERY (options)"
+      category "cookbook site"
 
       def run
         output(search_cookbook(name_args[0]))

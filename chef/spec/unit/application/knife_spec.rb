@@ -17,6 +17,8 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
+require "#{CHEF_SPEC_DATA}/knife_subcommand/test_yourself"
+
 describe Chef::Application::Knife do
   before(:each) do
     @knife = Chef::Application::Knife.new
@@ -39,9 +41,9 @@ describe Chef::Application::Knife do
     end
 
     it "should run a sub command with the applications command line option prototype" do
-      with_argv("node", "show", "latte.local") do
+      with_argv(*%w{test yourself with some args}) do
         knife = mock(Chef::Knife, :null_object => true)
-        Chef::Knife.should_receive(:find_command).with(ARGV, Chef::Application::Knife.options).and_return(knife)
+        Chef::Knife.should_receive(:run).with(ARGV, @knife.options).and_return(knife)
         @knife.should_receive(:exit).with(0)
         @knife.run
       end

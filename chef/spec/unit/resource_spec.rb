@@ -26,6 +26,7 @@ end
 
 describe Chef::Resource do
   before(:each) do
+    Chef::Config[:cookbook_path] = File.join(CHEF_SPEC_DATA, 'cookbooks')
     @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
     @node = Chef::Node.new
     @run_context = Chef::RunContext.new(@node, @cookbook_collection)

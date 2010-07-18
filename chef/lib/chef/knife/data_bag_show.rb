@@ -24,6 +24,7 @@ class Chef
     class DataBagShow < Knife
 
       banner "knife data bag show BAG [ITEM] (options)"
+      category "data bag"
 
       def run
         display = case @name_args.length

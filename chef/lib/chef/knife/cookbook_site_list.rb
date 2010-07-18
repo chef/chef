@@ -23,6 +23,7 @@ class Chef
     class CookbookSiteList < Knife
 
       banner "knife cookbook site list (options)"
+      category "cookbook site"
 
       option :with_uri,
         :short => "-w",
