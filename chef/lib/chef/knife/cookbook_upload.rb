@@ -45,8 +45,6 @@ class Chef
         else
           config[:cookbook_path] = Chef::Config[:cookbook_path]
         end
-        # Ugh, manipulating globals causes bugs.
-        @user_cookbook_path = config[:cookbook_path]
 
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
 

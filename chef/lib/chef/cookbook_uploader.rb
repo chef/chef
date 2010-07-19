@@ -12,9 +12,9 @@ class Chef
 
       def upload_cookbook(cookbook)
         Chef::Log.info("Saving #{cookbook.name}")
-          
+
         rest = Chef::REST.new(Chef::Config[:chef_server_url])
-        
+
         # Validate the cookbook before staging it or else the syntax checker's
         # cache will not be helpful.
         validate_cookbook(cookbook)
@@ -93,14 +93,14 @@ class Chef
         Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
         FileUtils.rm_rf tmp_cookbook_dir
       end
-      
+
       def create_build_dir(cookbook)
         tmp_cookbook_path = Tempfile.new("chef-#{cookbook.name}-build")
         tmp_cookbook_path.close
         tmp_cookbook_dir = tmp_cookbook_path.path
         File.unlink(tmp_cookbook_dir)
         FileUtils.mkdir_p(tmp_cookbook_dir)
-        
+
         Chef::Log.debug("Staging at #{tmp_cookbook_dir}")
 
         checksums_to_on_disk_paths = cookbook.checksums
@@ -115,7 +115,7 @@ class Chef
             FileUtils.cp(on_disk_path, dest)
           end
         end
-        
+
         # First, generate metadata
         Chef::Log.debug("Generating metadata")
         kcm = Chef::Knife::CookbookMetadata.new
@@ -135,7 +135,7 @@ class Chef
         Chef::Log.info("Syntax OK")
         true
       end
-      
+
       private
       def catch_auth_exceptions
         begin
@@ -145,12 +145,12 @@ class Chef
           when "401"
             Chef::Log.fatal "Request failed due to authentication (#{e}), check your client configuration (username, key)"
             exit 18
-          else 
+          else
             raise
           end
         end
       end
-    
+
     end
   end
 end
