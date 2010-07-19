@@ -34,6 +34,7 @@ class Chef
         @status_command = nil
         @restart_command = nil
         @reload_command = nil
+        @priority = nil
         @action = "nothing"
         @startup_type = :automatic
         @supports = { :restart => false, :reload => false, :status => false }
@@ -117,6 +118,22 @@ class Chef
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )
+      end
+
+      # Priority arguments can have two forms:
+      #
+      # - a simple number, in which the default start runlevels get
+      #   that as the start value and stop runlevels get 100 - value.
+      #
+      # - a hash like { 2 => [:start, 20], 3 => [:stop, 55] }, where
+      #   the service will be marked as started with priority 20 in
+      #   runlevel 2, stopped in 3 with priority 55 and no symlinks or
+      #   similar for other runlevels
+      #
+      def priority(arg=nil)
+        set_or_return(:priority,
+                      arg,
+                      :kind_of => [ Integer, String, Hash ])
       end
 
       def supports(args={})
