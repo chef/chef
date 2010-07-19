@@ -20,6 +20,35 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::Application do
   before do
     Chef::Log.logger = Logger.new(StringIO.new)
+    @app = Chef::Application.new
+    Dir.stub!(:chdir).and_return(0)
+    Chef::Application.stub!(:fatal!)
+    @app.stub!(:reconfigure)
+  end
+  
+  it "should create an instance of Chef::Application" do
+    @app.should be_kind_of(Chef::Application)
+  end
+
+  it "traps SIGTERM and dies upon receipt" do
+    Chef::Application.should_receive(:fatal!).with("SIGTERM received, stopping", 1)
+    Process.kill("TERM", Process.pid)
+  end
+
+  it "traps SIGINT and dies upon receipt" do
+    Chef::Application.should_receive(:fatal!).with("SIGINT received, stopping", 2)
+    Process.kill("INT", Process.pid)
+  end
+
+  unless RUBY_PLATFORM =~ /mswin|mingw32|windows/
+    it "traps SIGHUP and reconfigures upon receipt" do
+      @app.should_receive(:reconfigure)
+      Process.kill("HUP", Process.pid)
+    end
+
+    it "traps SIGUSR1 and raises a Wakeup exception" do
+      lambda { Process.kill("USR1", Process.pid) }.should raise_error(Chef::Application::Wakeup)
+    end
   end
 
   describe "initialize" do
@@ -232,5 +261,4 @@ describe Chef::Application do
       lambda { @app.run_application }.should raise_error(Chef::Exceptions::Application)
     end
   end
-
 end
