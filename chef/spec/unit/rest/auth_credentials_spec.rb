@@ -277,6 +277,128 @@ describe Chef::REST::RESTRequest do
         end
       end
     end
+
+    describe "for proxy" do
+      before do
+        Chef::Config[:http_proxy]  = "http://proxy.example.com:3128"
+        Chef::Config[:https_proxy] = "http://sproxy.example.com:3129"
+        Chef::Config[:http_proxy_user] = nil
+        Chef::Config[:https_proxy_pass] = nil
+        Chef::Config[:https_proxy_user] = nil
+        Chef::Config[:https_proxy_pass] = nil
+        Chef::Config[:no_proxy] = nil
+      end
+
+      after do
+        Chef::Config[:http_proxy]  = nil
+        Chef::Config[:https_proxy] = nil
+        Chef::Config[:http_proxy_user] = nil
+        Chef::Config[:https_proxy_pass] = nil
+        Chef::Config[:https_proxy_user] = nil
+        Chef::Config[:https_proxy_pass] = nil
+        Chef::Config[:no_proxy] = nil
+      end
+
+      describe "with :no_proxy nil" do
+        it "configures the proxy address and port when using http scheme" do
+          http_client = new_request.http_client
+          http_client.proxy?.should == true
+          http_client.proxy_address.should == "proxy.example.com"
+          http_client.proxy_port.should == 3128
+          http_client.proxy_user.should be_nil
+          http_client.proxy_pass.should be_nil
+        end
+
+        it "configures the proxy address and port when using https scheme" do
+          @url.scheme = "https"
+          http_client = new_request.http_client
+          http_client.proxy?.should == true
+          http_client.proxy_address.should == "sproxy.example.com"
+          http_client.proxy_port.should == 3129
+          http_client.proxy_user.should be_nil
+          http_client.proxy_pass.should be_nil
+        end
+      end
+
+      describe "with :no_proxy set" do
+        before do
+          Chef::Config[:no_proxy] = "10.*,*.example.com"
+        end
+
+        it "does not configure the proxy address and port when using http scheme" do
+          http_client = new_request.http_client
+          http_client.proxy?.should == false
+          http_client.proxy_address.should be_nil
+          http_client.proxy_port.should be_nil
+          http_client.proxy_user.should be_nil
+          http_client.proxy_pass.should be_nil
+        end
+
+        it "does not configure the proxy address and port when using https scheme" do
+          @url.scheme = "https"
+          http_client = new_request.http_client
+          http_client.proxy?.should == false
+          http_client.proxy_address.should be_nil
+          http_client.proxy_port.should be_nil
+          http_client.proxy_user.should be_nil
+          http_client.proxy_pass.should be_nil
+        end
+      end
+
+      describe "with :http_proxy_user and :http_proxy_pass set" do
+        before do
+          Chef::Config[:http_proxy_user] = "homie"
+          Chef::Config[:http_proxy_pass] = "theclown"
+        end
+
+        after do
+          Chef::Config[:http_proxy_user] = nil
+          Chef::Config[:http_proxy_pass] = nil
+        end
+
+        it "configures the proxy user and pass when using http scheme" do
+          http_client = new_request.http_client
+          http_client.proxy?.should == true
+          http_client.proxy_user.should == "homie"
+          http_client.proxy_pass.should == "theclown"
+        end
+
+        it "does not configure the proxy user and pass when using https scheme" do
+          @url.scheme = "https"
+          http_client = new_request.http_client
+          http_client.proxy?.should == true
+          http_client.proxy_user.should be_nil
+          http_client.proxy_pass.should be_nil
+        end
+      end
+
+      describe "with :https_proxy_user and :https_proxy_pass set" do
+        before do
+          Chef::Config[:https_proxy_user] = "homie"
+          Chef::Config[:https_proxy_pass] = "theclown"
+        end
+
+        after do
+          Chef::Config[:https_proxy_user] = nil
+          Chef::Config[:https_proxy_pass] = nil
+        end
+
+        it "does not configure the proxy user and pass when using http scheme" do
+          http_client = new_request.http_client
+          http_client.proxy?.should == true
+          http_client.proxy_user.should be_nil
+          http_client.proxy_pass.should be_nil
+        end
+
+        it "configures the proxy user and pass when using https scheme" do
+          @url.scheme = "https"
+          http_client = new_request.http_client
+          http_client.proxy?.should == true
+          http_client.proxy_user.should == "homie"
+          http_client.proxy_pass.should == "theclown"
+        end
+      end
+    end
   end
 
 end

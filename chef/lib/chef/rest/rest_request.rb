@@ -103,8 +103,25 @@ class Chef
         end
       end
 
+      #adapted from buildr/lib/buildr/core/transports.rb
+      def proxy_uri
+        proxy = Chef::Config["#{url.scheme}_proxy"]
+        proxy = URI.parse(proxy) if String === proxy
+        excludes = Chef::Config[:no_proxy].to_s.split(/\s*,\s*/).compact
+        excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
+        return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
+      end
+
       def configure_http_client
-        @http_client = Net::HTTP.new(host, port)
+        http_proxy = proxy_uri
+        if http_proxy.nil?
+          @http_client = Net::HTTP.new(host, port)
+        else
+          Chef::Log.debug("using #{http_proxy.host}:#{http_proxy.port} for proxy")
+          user = Chef::Config["#{url.scheme}_proxy_user"]
+          pass = Chef::Config["#{url.scheme}_proxy_pass"]
+          @http_client = Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass).new(host, port)
+        end
         if url.scheme == "https"
           @http_client.use_ssl = true
           if config[:ssl_verify_mode] == :verify_none
