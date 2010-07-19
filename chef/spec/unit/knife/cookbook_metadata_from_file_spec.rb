@@ -22,6 +22,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Knife::CookbookMetadataFromFile do
   before(:each) do
+    Chef::Config[:node_name]  = "webmonkey.example.com"
     @src = File.expand_path(File.join(CHEF_SPEC_DATA, "metadata", "quick_start", "metadata.rb"))
     @tgt = File.expand_path(File.join(CHEF_SPEC_DATA, "metadata", "quick_start", "metadata.json"))
     @knife = Chef::Knife::CookbookMetadataFromFile.new

@@ -34,6 +34,7 @@ end
 
 describe Chef::Knife::DataBagCreate do
   before do
+    Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::DataBagCreate.new
     @rest = ChefSpecs::ChefRest.new
     @knife.stub!(:rest).and_return(@rest)

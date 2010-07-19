@@ -20,6 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Knife::IndexRebuild do
   before do
+    Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::IndexRebuild.new
     @knife.stub!(:edit_data)
     @rest_client = mock("null rest client", :post_rest => { :result => :true })
