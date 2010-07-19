@@ -36,7 +36,7 @@ class Chef
         # generate checksums of cookbook files and create a sandbox
         checksum_files = build_dir_cookbook.checksums
         checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
-        new_sandbox = catch_auth_exceptions{ rest.post_rest("/sandboxes", { :checksums => checksums }) }
+        new_sandbox = rest.post_rest("/sandboxes", { :checksums => checksums })
 
         Chef::Log.info("Uploading files")
         # upload the new checksums and commit the sandbox
@@ -76,7 +76,7 @@ class Chef
         # in eventual consistency)
         retries = 0
         begin
-          catch_auth_exceptions{ rest.put_rest(sandbox_url, {:is_completed => true}) }
+          rest.put_rest(sandbox_url, {:is_completed => true})
         rescue Net::HTTPServerException => e
           if e.message =~ /^400/ && (retries += 1) <= 5
             sleep 2
@@ -87,7 +87,7 @@ class Chef
         end
 
         # files are uploaded, so save the manifest
-        catch_auth_exceptions{ build_dir_cookbook.save }
+        build_dir_cookbook.save
 
         Chef::Log.info("Upload complete!")
         Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
@@ -134,21 +134,6 @@ class Chef
         exit(1) unless syntax_checker.validate_templates
         Chef::Log.info("Syntax OK")
         true
-      end
-
-      private
-      def catch_auth_exceptions
-        begin
-          yield
-        rescue Net::HTTPServerException => e
-          case e.response.code
-          when "401"
-            Chef::Log.fatal "Request failed due to authentication (#{e}), check your client configuration (username, key)"
-            exit 18
-          else
-            raise
-          end
-        end
       end
 
     end

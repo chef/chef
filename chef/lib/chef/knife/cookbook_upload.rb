@@ -49,26 +49,46 @@ class Chef
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
 
         cl = Chef::CookbookLoader.new
-        if config[:all]
-          cl.each do |cookbook_name, cookbook|
-            Chef::Log.info("** #{cookbook.name.to_s} **")
-            Chef::CookbookUploader.upload_cookbook(cookbook)
-          end
-        else
-          if @name_args.length < 1
-            show_usage
-            Chef::Log.fatal("You must specify the --all flag or at least one cookbook name")
-            exit 1
-          end
-          @name_args.each do |cookbook_name|
-            if cl.cookbook_exists?(cookbook_name)
-              Chef::CookbookUploader.upload_cookbook(cl[cookbook_name])
-            else
-              Chef::Log.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
+
+        humanize_auth_exceptions do
+          if config[:all]
+            cl.each do |cookbook_name, cookbook|
+              Chef::Log.info("** #{cookbook.name.to_s} **")
+              Chef::CookbookUploader.upload_cookbook(cookbook)
+            end
+          else
+            if @name_args.length < 1
+              show_usage
+              Chef::Log.fatal("You must specify the --all flag or at least one cookbook name")
+              exit 1
+            end
+            @name_args.each do |cookbook_name|
+              if cl.cookbook_exists?(cookbook_name)
+                Chef::CookbookUploader.upload_cookbook(cl[cookbook_name])
+              else
+                Chef::Log.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
+              end
             end
           end
         end
       end
+
+      private
+
+      def humanize_auth_exceptions
+        begin
+          yield
+        rescue Net::HTTPServerException => e
+          case e.response.code
+          when "401"
+            Chef::Log.fatal "Request failed due to authentication (#{e}), check your client configuration (username, key)"
+            exit 18
+          else
+            raise
+          end
+        end
+      end
+
 
     end
   end
