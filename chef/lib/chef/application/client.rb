@@ -223,6 +223,9 @@ class Chef::Application::Client < Chef::Application
         else
           Chef::Application.exit! "Exiting", 0
         end
+      rescue Chef::Application::Wakeup => e
+        Chef::Log.debug("Received Wakeup signal.  Starting run.")
+        next
       rescue SystemExit => e
         raise
       rescue Exception => e
