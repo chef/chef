@@ -4,13 +4,13 @@
       -if form_for == "login"
         %div.group
           .text_field= text_field :id => "user_name", :name => "name", :label => "Username: ", :value => params.has_key?(:name) ? h(params[:name]) : @user.name
-        %br
+        %br/
         
         %div.group
           .text_field= password_field :id=> "password", :name => "password", :label=>"Password: ", :class => "password_field"
-        %br
+        %br/
         =link_to("Or, log in with OpenID if you have one associated with an existing user account.", url(:openid_consumer))
-        %br 
+        %br/
       
       - if form_for == "edit"
         %div.group.form
