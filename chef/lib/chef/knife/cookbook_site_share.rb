@@ -17,6 +17,8 @@
 #
 
 require 'chef/knife'
+require 'chef/cookbook_uploader'
+require 'chef/cookbook_site_streaming_uploader'
 
 class Chef
   class Knife
@@ -43,47 +45,59 @@ class Chef
           exit 1
         end
         
-        
+        cookbook_name = @name_args[0]
+        category = @name_args[1]
         cl = Chef::CookbookLoader.new
-        if cl.cookbook_exists?(@name_args[0])
-          Chef::Mixin::Command.run_command(:command => "tar -cvzf #{@name_args[0]}.tgz #{@name_args[0]}", :cwd => config[:cookbook])
+        if cl.cookbook_exists?(cookbook_name)
+          cookbook = cl[cookbook_name]
+          Chef::CookbookUploader.validate_cookbook(cookbook)
+          tmp_cookbook_dir = Chef::CookbookUploader.create_build_dir(cookbook)          
+          begin
+            Chef::Log.info("Making tarball #{cookbook_name}.tgz")
+            Chef::Mixin::Command.run_command(:command => "tar -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
+          rescue => e
+            Chef::Log.error("Error making tarball #{cookbook_name}.tgz: #{e.message}. Set log level to debug (-l debug) for more information.")
+            Chef::Log.debug("\n#{e.backtrace.join("\n")}")
+          end
           
+          begin
+            do_upload("#{tmp_cookbook_dir}/#{cookbook_name}.tgz", category, Chef::Config[:node_name], Chef::Config[:client_key])
+          rescue => e
+            Chef::Log.error("Error uploading cookbook #{cookbook_name} to the Opscode Cookbook Site: #{e.message}. Set log level to debug (-l debug) for more information.")
+            Chef::Log.debug("\n#{e.backtrace.join("\n")}")
+          end
           
-          do_upload()
         else
-          Chef::Log.error("Could not find cookbook #{@name_args[0]} in your cookbook path, skipping it")
+          Chef::Log.error("Could not find cookbook #{cookbook_name} in your cookbook path.")
         end
 
       end
       
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)
-         cookbook_uploader = Chef::CookbookSiteStreamingUploader.new
-         uri = make_uri "api/v1/cookbooks"
+         uri = "http://cookbooks.opscode.com/api/v1/cookbooks"
 
          category_string = { 'category'=>cookbook_category }.to_json
 
-         http_resp = cookbook_uploader.post(uri, user_id, user_secret_filename, {
+         http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
            :tarball => File.open(cookbook_filename),
            :cookbook => category_string
          })
-
+         
          res = JSON.parse(http_resp.body)
          if http_resp.code.to_i != 201
            if !res['error_messages'].nil?
              if res['error_messages'][0] =~ /Version already exists/
-               raise "Version already exists"
+               raise "The same version of this cookbook already exists on the Opscode Cookbook Site."
              else
-               raise Exception, res
+               raise "#{res['error_messages'][0]}"
              end
-           else
-             raise Exception, "Error uploading: #{res}"
            end
+           raise "Internal Server Error"
          end
          res
        end
-      
-      
     end
+    
   end
 end
 

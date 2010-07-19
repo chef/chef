@@ -26,7 +26,7 @@ class Chef
     class CookbookCreate < Knife
       include Chef::Mixin::ShellOut
 
-      banner "knife cookbook new COOKBOOK [COMPANY_NAME_FOR_COPYRIGHT] [EMAIL] [APACHE_LICENSE=false] (options)"
+      banner "knife cookbook create COOKBOOK [COMPANY_NAME_FOR_COPYRIGHT] [EMAIL] [APACHE_LICENSE=false] (options)"
 
       option :cookbook_path,
         :short => "-o PATH",
