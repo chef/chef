@@ -22,6 +22,7 @@ class Clients < Application
   provides :json
   provides :html
   before :login_required
+  before :require_admin, :exclude => [:index, :show]
   
   # GET /clients
   def index
@@ -61,6 +62,7 @@ class Clients < Application
 
   # GET /clients/new
   def new
+    raise AdminAccessRequired unless params[:user_id] == session[:user] unless session[:level] == :admin
     @client = Chef::ApiClient.new
     render
   end

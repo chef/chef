@@ -45,9 +45,6 @@ Merb::Config.use do |c|
   c[:session_id_key]     = '_chef_server_session_id'
   c[:session_secret_key] = Chef::Config.manage_secret_key
   c[:session_store]      = 'cookie'
-  c[:exception_details]  = true
-  c[:reload_classes]     = true
-  c[:reload_templates]   = true
   
   c[:log_level] = Chef::Config[:log_level]
   if Chef::Config[:log_location].kind_of?(String)

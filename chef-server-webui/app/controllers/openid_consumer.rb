@@ -90,7 +90,11 @@ class OpenidConsumer < Application
           user = Chef::WebUIUser.load(u)
           if user.openid == oidresp.identity_url
             session[:user] = user.name
-            session[:level] = :admin              
+            if user.admin
+              session[:level] = :admin
+            else
+              session[:level] = :user
+            end
             break
           end
         end        

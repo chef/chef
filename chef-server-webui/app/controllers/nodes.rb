@@ -25,6 +25,7 @@ class Nodes < Application
   provides :html
   
   before :login_required
+  before :require_admin, :only => [:destroy]
   
   def index
     begin

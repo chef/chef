@@ -22,7 +22,8 @@ require 'chef/role'
 class Roles < Application
 
   provides :html
-  before :login_required 
+  before :login_required
+  before :require_admin, :only => [:destroy]
   
   # GET /roles
   def index
@@ -100,7 +101,7 @@ class Roles < Application
       @role = Chef::Role.new
       @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
       @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
-      @run_list = params[:for_role] ? params[:for_role] : []
+      @run_list = Chef::RunList.new.reset!(Array(params[:for_role]))
       @_message = { :error => "Could not create role" }
       render :new
     end
@@ -121,7 +122,8 @@ class Roles < Application
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @available_recipes = get_available_recipes 
       @available_roles = Chef::Role.list.keys.sort
-      @run_list = params[:for_role] ? params[:for_role] : []
+      @run_list = Chef::RunList.new.reset!( Array(params[:for_role]))
+      Chef::Log.error(@run_list.inspect)
       @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
       @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
       @_message = {:error => "Could not update role #{params[:id]}"}
