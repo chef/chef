@@ -81,9 +81,11 @@ class Chef
          if http_resp.code.to_i != 201
            if !res['error_messages'].nil?
              if res['error_messages'][0] =~ /Version already exists/
-               raise "The same version of this cookbook already exists on the Opscode Cookbook Site."
+               Chef::Log.error "The same version of this cookbook already exists on the Opscode Cookbook Site."
+               exit(1)
              else
-               raise "#{res['error_messages'][0]}"
+               Chef::Log.error "#{res['error_messages'][0]}"
+               exit(1)
              end
            end
            raise "Internal Server Error"
