@@ -62,6 +62,11 @@ class Chef
         :long => "--ssh-password PASSWORD",
         :description => "The ssh password"
 
+      option :identity_file,
+        :short => "-i IDENTITY_FILE",
+        :long => "--identity-file IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication"
+
       def session
         @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency])
       end
@@ -89,11 +94,14 @@ class Chef
       def session_from_list(list)
         list.each do |item|
           Chef::Log.debug("Adding #{item}")
-         
-          if config[:password]
-            session.use config[:ssh_user] ? "#{config[:ssh_user]}@#{item}" : item, :password => config[:password]
+          item = "#{config[:ssh_user]}@#{item}" if config[:ssh_user]
+
+          if config[:identity_file]
+            session.use item, :keys => File.expand_path(config[:identity_file])
+          elsif config[:password]
+            session.use item, :password => config[:password]
           else
-            session.use config[:ssh_user] ? "#{config[:ssh_user]}@#{item}" : item
+            session.use item
           end
           @longest = item.length if item.length > @longest
         end
