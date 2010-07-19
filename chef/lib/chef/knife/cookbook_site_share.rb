@@ -30,15 +30,9 @@ class Chef
         :short => "-o PATH:PATH",
         :long => "--cookbook-path PATH:PATH",
         :description => "A colon-separated path to look for cookbooks in",
-        :proc => lambda { |o| o.split(":") }
+        :proc => lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
-      def run
-        if config[:cookbook_path]
-          Chef::Config[:cookbook_path] = config[:cookbook_path]
-        else
-          config[:cookbook_path] = Chef::Config[:cookbook_path]
-        end
-        
+      def run        
         if @name_args.length < 2
           show_usage
           Chef::Log.fatal("You must specify the cookbook name and the category you want to share this cookbook to.")
