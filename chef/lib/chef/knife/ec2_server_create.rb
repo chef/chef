@@ -60,7 +60,12 @@ class Chef
         :long => "--ssh-user USERNAME",
         :description => "The ssh username",
         :default => "root" 
-
+ 
+      option :identity_file,
+        :short => "-i IDENTITY_FILE",
+        :long => "--identity-file IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication"
+ 
       option :aws_access_key_id,
         :short => "-A ID",
         :long => "--aws-access-key-id KEY",
@@ -130,7 +135,8 @@ class Chef
         begin
           bootstrap = Chef::Knife::Bootstrap.new
           bootstrap.name_args = [ server.ip_address, @name_args ].flatten
-          bootstrap.config[:ssh_user] = config[:ssh_user] 
+          bootstrap.config[:ssh_user] = config[:ssh_user]
+          bootstrap.config[:identity_file] = config[:identity_file]
           bootstrap.config[:chef_node_name] = server.id
           bootstrap.config[:prerelease] = config[:prerelease]
           bootstrap.run
