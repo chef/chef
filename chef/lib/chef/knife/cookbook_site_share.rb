@@ -52,17 +52,23 @@ class Chef
           rescue => e
             Chef::Log.error("Error making tarball #{cookbook_name}.tgz: #{e.message}. Set log level to debug (-l debug) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
+            exit(1)
           end
           
           begin
             do_upload("#{tmp_cookbook_dir}/#{cookbook_name}.tgz", category, Chef::Config[:node_name], Chef::Config[:client_key])
+            Chef::Log.info("Upload complete!")
+            Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
+            FileUtils.rm_rf tmp_cookbook_dir
           rescue => e
             Chef::Log.error("Error uploading cookbook #{cookbook_name} to the Opscode Cookbook Site: #{e.message}. Set log level to debug (-l debug) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
+            exit(1)
           end
           
         else
           Chef::Log.error("Could not find cookbook #{cookbook_name} in your cookbook path.")
+          exit(1)
         end
 
       end
