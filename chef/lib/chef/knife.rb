@@ -122,7 +122,9 @@ class Chef
       load_commands
       subcommand_class = subcommand_class_from(args)
       subcommand_class.options.merge!(options)
-      subcommand_class.new(args).run
+      instance = subcommand_class.new(args)
+      instance.configure_chef
+      instance.run
     end
 
     def self.guess_category(args)
@@ -186,7 +188,6 @@ class Chef
         msg opt_parser
         exit 1
       end
-      configure_chef
     end
 
     def parse_options(args)
