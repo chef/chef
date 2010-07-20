@@ -24,11 +24,16 @@ class Chef
     class DeployRevision < Chef::Resource::Deploy
       def initialize(*args, &block)
         super
+        @resource_name = :deploy_revision
         @provider = Chef::Provider::Deploy::Revision
       end
     end
     
     class DeployBranch < Chef::Resource::DeployRevision
+      def initialize(*args, &block)
+        super
+        @resource_name = :deploy_branch
+      end
     end
     
   end
