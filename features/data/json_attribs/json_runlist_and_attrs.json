@@ -1,0 +1,4 @@
+{
+  "attribute_priority_was": "from_json_file",
+  "run_list": ["recipe[integration_setup]","recipe[no_attributes::default]"]
+}

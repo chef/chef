@@ -23,10 +23,38 @@ describe Chef::Node do
     Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "nodes")))
     @node = Chef::Node.new()
   end
- 
-  describe "new method" do
-    it "should create a new Chef::Node" do
-       @node.should be_a_kind_of(Chef::Node)
+
+
+  it "creates a node and assigns it a name" do
+    node = Chef::Node.build('solo-node')
+    node.name.should == 'solo-node'
+  end
+
+  describe "when the node does not exist on the server" do
+    before do
+      response = OpenStruct.new(:code => '404')
+      exception = Net::HTTPServerException.new("404 not found", response)
+      Chef::Node.stub!(:load).and_raise(exception)
+      @node.name("created-node")
+    end
+
+    it "creates a new node for find_or_create" do
+      Chef::Node.stub!(:new).and_return(@node)
+      @node.should_receive(:create).and_return(@node)
+      node = Chef::Node.find_or_create("created-node")
+      node.name.should == 'created-node'
+      node.should equal(@node)
+    end
+  end
+
+  describe "when the node exists on the server" do
+    before do
+      @node.name('existing-node')
+      Chef::Node.stub!(:load).and_return(@node)
+    end
+
+    it "loads the node via the REST API for find_or_create" do
+      Chef::Node.find_or_create('existing-node').should equal(@node)
     end
   end
 
@@ -252,42 +280,30 @@ describe Chef::Node do
       @ohai_data = {:platform => 'foobuntu', :platform_version => '23.42'}
     end
 
-#    @json_attribs = node.consume_run_list(json_attribs)
-#  
-#    node.automatic_attrs = ohai.data
-#
-#    platform, version = Chef::Platform.find_platform_and_version(node)
-#    Chef::Log.debug("Platform is #{platform} version #{version}")
-#    @node.automatic_attrs[:platform] = platform
-#    @node.automatic_attrs[:platform_version] = version
-#    # We clear defaults and overrides, so that any deleted attributes between runs are
-#    # still gone.
-#    @node.default_attrs = Mash.new
-#    @node.override_attrs = Mash.new
-
     it "clears the default and override attributes" do
       @node.default_attrs["foo"] = "bar"
       @node.override_attrs["baz"] = "qux"
-      @node.prepare_for_run(@ohai_data, {})
+      @node.process_external_attrs(@ohai_data, {})
+      @node.reset_defaults_and_overrides
       @node.default_attrs.should be_empty
       @node.override_attrs.should be_empty
     end
 
     it "sets its platform according to platform detection" do
-      @node.prepare_for_run(@ohai_data, {})
+      @node.process_external_attrs(@ohai_data, {})
       @node.automatic_attrs[:platform].should == 'foobuntu'
       @node.automatic_attrs[:platform_version].should == '23.42'
     end
 
     it "consumes the run list from provided json attributes" do
-      @node.prepare_for_run(@ohai_data, {"run_list" => ['recipe[unicorn]']})
+      @node.process_external_attrs(@ohai_data, {"run_list" => ['recipe[unicorn]']})
       @node.run_list.should == ['recipe[unicorn]']
     end
 
     it "saves non-runlist json attrs for later" do
       expansion = Chef::RunList::RunListExpansion.new([])
       @node.run_list.stub!(:expand).and_return(expansion)
-      @node.prepare_for_run(@ohai_data, {"foo" => "bar"})
+      @node.process_external_attrs(@ohai_data, {"foo" => "bar"})
       @node.expand!
       @node.normal_attrs.should == {"foo" => "bar", "tags" => []}
     end

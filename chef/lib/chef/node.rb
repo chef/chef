@@ -460,6 +460,20 @@ class Chef
       end
     end
 
+    def self.find_or_create(node_name)
+      load(node_name)
+    rescue Net::HTTPServerException => e
+      raise unless e.response.code == '404'
+      node = build(node_name)
+      node.create
+    end
+
+    def self.build(node_name)
+      node = new
+      node.name(node_name)
+      node
+    end
+
     # Load a node by name
     def self.load(name)
       Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes/#{name}")
@@ -536,7 +550,11 @@ class Chef
       self
     end
 
-    def prepare_for_run(ohai_data, json_cli_attrs)
+    # Consume data from ohai and Attributes provided as JSON on the command line.
+    # The run_list from the command-line attributes will be applied immediately,
+    # other attributes from the command line will be saved for later. Ohai data
+    # is applied immediately
+    def process_external_attrs(ohai_data, json_cli_attrs)
       Chef::Log.debug("Extracting run list from JSON attributes provided on command line")
       @json_attrib_for_expansion = consume_run_list(json_cli_attrs)
 
@@ -546,8 +564,11 @@ class Chef
       Chef::Log.debug("Platform is #{platform} version #{version}")
       @automatic_attrs[:platform] = platform
       @automatic_attrs[:platform_version] = version
-      # We clear defaults and overrides, so that any deleted attributes between runs are
-      # still gone.
+    end
+
+    # Clear defaults and overrides, so that any deleted attributes between runs are
+    # still gone.
+    def reset_defaults_and_overrides
       @default_attrs = Mash.new
       @override_attrs = Mash.new
     end

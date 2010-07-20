@@ -37,12 +37,9 @@ require 'ohai'
 class Chef
   class Client
     attr_accessor :node
-    attr_accessor :node_name
     attr_accessor :ohai
     attr_accessor :rest
     attr_accessor :runner
-
-    attr_reader :node_exists
 
     # TODO: timh/cw: 5-19-2010: json_attribs should be moved to RunContext?
     attr_reader :json_attribs
@@ -51,8 +48,6 @@ class Chef
     def initialize(json_attribs=nil)
       @json_attribs = json_attribs
       @node = nil
-      @node_name = nil
-      @node_exists = true
       @runner = nil
       @ohai = Ohai::System.new
     end
@@ -68,11 +63,9 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def run
-      self.runner = nil
       run_context = nil
 
       run_ohai
-      determine_node_name
       register unless Chef::Config[:solo]
       build_node
       
@@ -106,7 +99,8 @@ class Chef
           assert_cookbook_path_not_empty(run_context)
           
           converge(run_context)
-          save_node
+          Chef::Log.debug("Saving the current state of node #{node_name}")
+          @node.save
           
           cleanup_file_cache(valid_cache_entries)
         end
@@ -143,25 +137,19 @@ class Chef
     end
     
     def run_ohai
-      if ohai.keys
-        ohai.refresh_plugins
-      else
-        ohai.all_plugins
-      end
+      ohai.all_plugins
     end
 
-    def determine_node_name
-      unless node_name
-        if Chef::Config[:node_name]
-          @node_name = Chef::Config[:node_name]
-        else
-          @node_name = ohai[:fqdn] ? ohai[:fqdn] : ohai[:hostname]
-          Chef::Config[:node_name] = node_name
-        end
+    def node_name
+      name = Chef::Config[:node_name] || ohai[:fqdn] || ohai[:hostname]
+      Chef::Config[:node_name] = name
 
-        raise RuntimeError, "Unable to determine node name from ohai" unless node_name
+      unless name
+        msg = "Unable to determine node name: configure node_name or configure the system's hostname and fqdn"
+        raise Chef::Exceptions::CannotDetermineNodeName, msg
       end
-      node_name
+
+      name
     end
     
     # Builds a new node object for this client.  Starts with querying for the FQDN of the current
@@ -171,24 +159,16 @@ class Chef
     # node<Chef::Node>:: Returns the created node object, also stored in @node
     def build_node
       Chef::Log.debug("Building node object for #{@node_name}")
-      
-      unless Chef::Config[:solo]
-        begin
-          @node = rest.get_rest("nodes/#{@node_name}")
-        rescue Net::HTTPServerException => e
-          raise unless e.message =~ /^404/
-        end
-      end
-      
-      unless node
-        @node_exists = false
-        @node = Chef::Node.new
-        @node.name(node_name)
+
+      if Chef::Config[:solo]
+        @node = Chef::Node.build(node_name)
+      else
+        @node = Chef::Node.find_or_create(node_name)
       end
 
-      @node.prepare_for_run(ohai.data, @json_attribs)
-      # Need to nil-ify the json attribs so they are not applied on subsequent runs
-      @json_attribs = nil
+      @node.process_external_attrs(ohai.data, @json_attribs)
+      @node.save unless Chef::Config[:solo]
+      @node.reset_defaults_and_overrides
 
       @node
     end
@@ -306,21 +286,6 @@ class Chef
           Chef::Log.info("Removing #{cache_filename} from the cache; it is no longer on the server.")
           Chef::FileCache.delete(cache_filename)
         end
-      end
-    end
-
-    # Updates the current node configuration on the server.
-    #
-    # === Returns
-    # Chef::Node - the current node
-    def save_node
-      Chef::Log.debug("Saving the current state of node #{node_name}")
-      if node_exists
-        @node.save
-      else
-        @node.create
-        @node_exists = true
-        @node
       end
     end
 

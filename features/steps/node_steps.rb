@@ -21,7 +21,6 @@
 ###
 Given /^a validated node$/ do
   # client should have cached ohai assigned to it
-  client.determine_node_name
   client.register
   client.build_node
   client.node.run_list << "integration_setup"
@@ -29,7 +28,6 @@ end
 
 Given /^a validated node with an empty runlist$/ do
   # client should have cached ohai assigned to it
-  client.determine_node_name
   client.register
   client.build_node
 end
@@ -38,19 +36,19 @@ end
 Given /^it includes the recipe '(.+)'$/ do |recipe|
   self.recipe = recipe
   client.node.run_list << recipe
-  client.save_node
+  client.node.save
 end
 
 Given /^it includes no recipes$/ do 
   self.recipe = "" 
   client.node.run_list.reset!
-  client.save_node
+  client.node.save
 end
 
 Given /^it includes the role '(.+)'$/ do |role|
   self.recipe = "role[#{role}]"
   client.node.run_list << "role[#{role}]" 
-  client.save_node
+  client.node.save
 end
 
 ###

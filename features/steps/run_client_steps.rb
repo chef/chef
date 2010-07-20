@@ -77,7 +77,12 @@ When 'I run the chef-client with json attributes' do
   @chef_args = "-j #{File.join(FEATURES_DATA, 'json_attribs', 'attribute_settings.json')}"
   When "I run the chef-client"
 end
-  
+
+When "I run the chef-client with json attributes '$json_file_basename'" do |json_file_basename|
+  @log_level = :debug
+  @chef_args = "-j #{File.join(FEATURES_DATA, 'json_attribs', "#{json_file_basename}.json")}"
+  When "I run the chef-client"
+end
 
 When /^I run the chef\-client with config file '(.+)'$/ do |config_file|
   @config_file = config_file
@@ -136,6 +141,10 @@ Then /^the run should exit '(.+)'$/ do |exit_code|
     raise
   end
   print_output if ENV["LOG_LEVEL"] == "debug"
+end
+
+Then "I print the debug log" do
+  print_output
 end
 
 Then /^the run should exit from being signaled$/ do 

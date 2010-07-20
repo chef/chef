@@ -30,6 +30,7 @@ class Chef
     class UnsupportedAction < RuntimeError; end
     class MissingLibrary < RuntimeError; end
     class MissingRole < RuntimeError; end
+    class CannotDetermineNodeName < RuntimeError; end
     class User < RuntimeError; end
     class Group < RuntimeError; end
     class Link < RuntimeError; end
