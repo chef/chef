@@ -94,8 +94,6 @@ class Chef
           # cache.
           valid_cache_entries = Hash.new
           
-          save_node
-
           # Sync_cookbooks eagerly loads all files except files and templates.
           # It returns the cookbook_hash -- the return result from
           # /nodes/#{nodename}/cookbooks -- which we will use for our
@@ -106,7 +104,6 @@ class Chef
           run_status.run_context = run_context
 
           assert_cookbook_path_not_empty(run_context)
-          save_node
           
           converge(run_context)
           save_node
@@ -319,11 +316,11 @@ class Chef
     def save_node
       Chef::Log.debug("Saving the current state of node #{node_name}")
       if node_exists
-        @node = @node.save
+        @node.save
       else
-        result = rest.post_rest("nodes", node)
+        @node.create
         @node_exists = true
-        @node = rest.get_rest(result['uri'])
+        @node
       end
     end
 

@@ -75,7 +75,7 @@ describe Chef::Client, "run" do
     # --Client.build_node
     #   looks up the node, which we will return, then later saves it.
     mock_chef_rest_for_node.should_receive(:get_rest).with("nodes/#{FQDN}").and_return(node)
-    mock_chef_rest_for_node.should_receive(:put_rest).with("nodes/#{FQDN}", node).at_least(3).times.and_return(node)
+    mock_chef_rest_for_node.should_receive(:put_rest).with("nodes/#{FQDN}", node).and_return(node)
 
     # --Client.sync_cookbooks -- downloads the list of cookbooks to sync
     #
