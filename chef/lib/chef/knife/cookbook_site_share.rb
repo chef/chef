@@ -85,7 +85,7 @@ class Chef
          
          res = JSON.parse(http_resp.body)
          if http_resp.code.to_i != 201
-           if !res['error_messages'].nil?
+           if res['error_messages']
              if res['error_messages'][0] =~ /Version already exists/
                Chef::Log.error "The same version of this cookbook already exists on the Opscode Cookbook Site."
                exit(1)
@@ -93,8 +93,11 @@ class Chef
                Chef::Log.error "#{res['error_messages'][0]}"
                exit(1)
              end
+           else
+             Chef::Log.error "Unknown error while sharing cookbook"
+             Chef::Log.error "Server response: #{http_resp.body}"
+             exit(1)
            end
-           raise "Internal Server Error"
          end
          res
        end
