@@ -15,26 +15,13 @@ class Chef
 
         rest = Chef::REST.new(Chef::Config[:chef_server_url])
 
-        # Validate the cookbook before staging it or else the syntax checker's
-        # cache will not be helpful.
+        # Syntax Check
         validate_cookbook(cookbook)
-        # create build directory
-        tmp_cookbook_dir = create_build_dir(cookbook)
-
-        # create a CookbookLoader that loads a Cookbook from the build directory
-        orig_cookbook_path = nil
-        build_dir_cookbook = nil
-        begin
-          orig_cookbook_path = Chef::Config.cookbook_path
-          Chef::Config.cookbook_path = tmp_cookbook_dir
-          build_dir_cookbook = Chef::CookbookLoader.new[cookbook.name]
-          Chef::Log.debug("Staged cookbook manifest:\n#{JSON.pretty_generate(build_dir_cookbook)}")
-        ensure
-          Chef::Config.cookbook_path = orig_cookbook_path
-        end
+        # Generate metadata.json from metadata.rb
+        build_metadata(cookbook)
 
         # generate checksums of cookbook files and create a sandbox
-        checksum_files = build_dir_cookbook.checksums
+        checksum_files = cookbook.checksums
         checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
         new_sandbox = rest.post_rest("/sandboxes", { :checksums => checksums })
 
@@ -87,43 +74,17 @@ class Chef
         end
 
         # files are uploaded, so save the manifest
-        build_dir_cookbook.save
+        cookbook.save
 
         Chef::Log.info("Upload complete!")
-        Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
-        FileUtils.rm_rf tmp_cookbook_dir
       end
 
-      def create_build_dir(cookbook)
-        tmp_cookbook_path = Tempfile.new("chef-#{cookbook.name}-build")
-        tmp_cookbook_path.close
-        tmp_cookbook_dir = tmp_cookbook_path.path
-        File.unlink(tmp_cookbook_dir)
-        FileUtils.mkdir_p(tmp_cookbook_dir)
-
-        Chef::Log.debug("Staging at #{tmp_cookbook_dir}")
-
-        checksums_to_on_disk_paths = cookbook.checksums
-
-        Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
-          cookbook.manifest[segment].each do |manifest_record|
-            path_in_cookbook = manifest_record[:path]
-            on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
-            dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
-            FileUtils.mkdir_p(File.dirname(dest))
-            Chef::Log.debug("Staging #{on_disk_path} to #{dest}")
-            FileUtils.cp(on_disk_path, dest)
-          end
-        end
-
-        # First, generate metadata
+      def build_metadata(cookbook)
         Chef::Log.debug("Generating metadata")
         kcm = Chef::Knife::CookbookMetadata.new
-        kcm.config[:cookbook_path] = [ tmp_cookbook_dir ]
+        kcm.config[:cookbook_path] = Chef::Config[:cookbook_path]
         kcm.name_args = [ cookbook.name.to_s ]
         kcm.run
-
-        tmp_cookbook_dir
       end
 
       def validate_cookbook(cookbook)
