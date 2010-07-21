@@ -24,6 +24,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Knife do
   before(:each) do
+    Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife.new
     @knife.stub!(:puts)
     @knife.stub!(:print)

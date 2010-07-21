@@ -20,6 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Knife::RoleBulkDelete do
   before(:each) do
+    Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::RoleBulkDelete.new
     @knife.config = {
       :print_after => nil

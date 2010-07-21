@@ -2,6 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Chef::Knife::Configure do
   before do
+    Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::Configure.new
     @rest_client = mock("null rest client", :post_rest => { :result => :true })
     @knife.stub!(:rest).and_return(@rest_client)
@@ -92,6 +93,7 @@ describe Chef::Knife::Configure do
   end
   
   it "creates a new client when given the --initial option" do
+    Chef::Config[:node_name]  = "webmonkey.example.com"
     client_command = Chef::Knife::ClientCreate.new
     client_command.should_receive(:run)
     

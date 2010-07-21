@@ -21,6 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Knife::CookbookShow do
   before(:each) do
+    Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::CookbookShow.new
     @knife.config = { }
     @knife.name_args = [ "cookbook_name" ]

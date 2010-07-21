@@ -20,6 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Knife::NodeShow do
   before(:each) do
+    Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::NodeShow.new
     @knife.config = {
       :attribute => nil,
