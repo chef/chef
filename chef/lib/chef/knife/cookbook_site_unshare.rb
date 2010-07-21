@@ -24,6 +24,7 @@ class Chef
     class CookbookSiteUnshare < Knife
       
       banner "knife cookbook site unshare COOKBOOK"
+      category "cookbook site"
       
       def run
         @cookbook_name = @name_args[0]

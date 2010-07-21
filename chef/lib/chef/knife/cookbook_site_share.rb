@@ -25,6 +25,7 @@ class Chef
     class CookbookSiteShare < Knife
 
       banner "knife cookbook site share COOKBOOK CATEGORY (options)"
+      category "cookbook site"
             
       option :cookbook_path,
         :short => "-o PATH:PATH",
