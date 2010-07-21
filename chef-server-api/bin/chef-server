@@ -27,6 +27,13 @@ require "merb-core"
 $:.unshift(File.expand_path(File.dirname(__FILE__) + '/../../chef/lib/'))
 $:.unshift(File.expand_path(File.dirname(__FILE__) + '/../lib'))
 
+# Print the version if we have -v or --version
+if ARGV.any? { |arg| arg =~ /\-v|\-\-version/ }
+  require 'chef-server-api/version'
+  puts "Chef Server (API) Version: #{ChefServerApi::VERSION}"
+  exit 1
+end
+
 require 'chef'
 require 'chef-server-api'
 
