@@ -19,6 +19,7 @@
 require 'chef/knife'
 require 'json'
 require 'tempfile'
+require 'erubis'
 
 class Chef
   class Knife
@@ -51,65 +52,94 @@ class Chef
         :long => "--prerelease",
         :description => "Install the pre-release chef gems"
 
+      option :distro,
+        :short => "-d DISTRO",
+        :long => "--distro DISTRO",
+        :description => "Bootstrap a distro using a template",
+        :default => "ubuntu10.04-gems"
+
+      option :identity_file,
+        :short => "-i IDENTITY_FILE",
+        :long => "--identity-file IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication"
+
+      option :use_sudo,
+        :short => "-s",
+        :long => "--sudo",
+        :description => "Execute the bootstrap via sudo",
+        :boolean => true
+
+      option :template_file,
+        :long => "--template-file TEMPLATE",
+        :description => "Full path to location of template to use",
+        :default => false
+
+      option :run_list,
+        :short => "-r RUN_LIST",
+        :long => "--run-list RUN_LIST",
+        :description => "Comma separated list of roles/recipes to apply",
+        :proc => lambda { |o| o.split(",") },
+        :default => nil
 
       def h
         @highline ||= HighLine.new
       end
 
+      def load_template(template=nil)
+        # Are we bootstrapping using an already shipped template?
+        if config[:template_file]
+          bootstrap_files = config[:template_file]
+        else
+          bootstrap_files = []
+          bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
+          bootstrap_files << File.join(Dir.pwd, ".chef", "bootstrap", "#{config[:distro]}.erb")
+          bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb")
+        end
+
+        template = bootstrap_files.find do |bootstrap_template|
+          Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
+          File.exists?(bootstrap_template)
+        end
+
+        unless template
+          Chef::Log.info("Can not find bootstrap definition for #{config[:distro]}")
+          raise Errno::ENOENT
+        end
+
+        Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
+        
+        IO.read(template).chomp
+      end
+
+      def render_template(template=nil)
+        context = {}
+        context[:run_list] = config[:run_list]
+        context[:config] = config
+        command = Erubis::Eruby.new(template).evaluate(context)
+      end
+
       def run 
         require 'highline'
 
-        server_name = @name_args[0]
+        if @name_args.first == nil
+          Chef::Log.error("Must pass a node name/ip to bootstrap")
+          exit 1
+        end
 
-        puts "Bootstrapping Chef on #{h.color(server_name, :bold)}"
+        config[:server_name] = @name_args.first
 
         $stdout.sync = true
 
-        command =  <<EOH
-bash -c '
-if [ ! -f /usr/bin/chef-client ]; then
-  apt-get update
-  apt-get install -y ruby ruby1.8-dev build-essential wget libruby-extras libruby1.8-extras
-  cd /tmp
-  wget http://rubyforge.org/frs/download.php/69365/rubygems-1.3.6.tgz
-  tar xvf rubygems-1.3.6.tgz
-  cd rubygems-1.3.6
-  ruby setup.rb
-  cp /usr/bin/gem1.8 /usr/bin/gem
-  gem install ohai chef --no-rdoc --no-ri --verbose #{"--prerelease" if config[:prerelease]}
-fi
+        command = render_template(load_template(config[:bootstrap_template]))
 
-mkdir -p /etc/chef
+        if config[:use_sudo]
+          command = "sudo #{command}"
+        end
 
-(
-cat <<'EOP'
-#{IO.read(Chef::Config[:validation_key])}
-EOP
-) > /tmp/validation.pem
-awk NF /tmp/validation.pem > /etc/chef/validation.pem
-rm /tmp/validation.pem
-
-(
-cat <<'EOP'
-log_level        :info
-log_location     STDOUT
-chef_server_url  "#{Chef::Config[:chef_server_url]}" 
-validation_client_name "#{Chef::Config[:validation_client_name]}"
-#{config[:chef_node_name] == nil ? "# Using default node name" : "node_name \"#{config[:chef_node_name]}\""} 
-EOP
-) > /etc/chef/client.rb
-
-(
-cat <<'EOP'
-#{{ "run_list" => @name_args[1..-1] }.to_json}
-EOP
-) > /etc/chef/first-boot.json
-
-/usr/bin/chef-client -j /etc/chef/first-boot.json'
-EOH
+        Chef::Log.info("Bootstrapping Chef on #{h.color(config[:server_name], :bold)}")
 
         ssh = Chef::Knife::Ssh.new
-        ssh.name_args = [ server_name, "sudo #{command}" ]
+        ssh.name_args = [ config[:server_name], command ]
         ssh.config[:ssh_user] = config[:ssh_user] 
         ssh.config[:password] = config[:ssh_password]
         ssh.config[:identity_file] = config[:identity_file]
@@ -121,15 +151,15 @@ EOH
           unless config[:ssh_password]
             puts "Failed to authenticate #{config[:ssh_user]} - trying password auth"
             ssh = Chef::Knife::Ssh.new
-            ssh.name_args = [ server_name, "sudo #{command}" ]
+            ssh.name_args = [ config[:server_name], command ]
             ssh.config[:ssh_user] = config[:ssh_user] 
             ssh.config[:manual] = true
             ssh.config[:password] = ssh.get_password
             ssh.run
           end
         end
-
       end
+
     end
   end
 end

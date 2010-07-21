@@ -199,14 +199,6 @@ describe Chef::Provider::File do
     lambda { @provider.set_group }.should_not raise_error
   end
 
-  it "should raise an exception if you are not root and try to change the group" do
-    @provider.load_current_resource
-    @provider.new_resource.stub!(:group).and_return(0)
-    if Process.uid != 0
-      lambda { @provider.set_group }.should raise_error
-    end
-  end
-
   it "should create the file if it is missing, then set the attributes on action_create" do
     @provider.load_current_resource
     @provider.new_resource.stub!(:owner).and_return(9982398)
