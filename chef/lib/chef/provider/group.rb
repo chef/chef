@@ -45,7 +45,7 @@ class Chef
         end
         
         if group_info
-          @new_resource.gid(group_info.gid)
+          @new_resource.gid(group_info.gid) unless @new_resource.gid
           @current_resource.gid(group_info.gid)
           @current_resource.members(group_info.mem)
         end

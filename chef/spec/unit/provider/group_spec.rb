@@ -54,6 +54,17 @@ describe Chef::Provider::User do
       @provider.load_current_resource
       @provider.current_resource.group_name.should == 'wheel'
     end
+
+    it "does not modify the desired gid if set" do
+      @provider.load_current_resource
+      @new_resource.gid.should == 500
+    end
+
+    it "sets the desired gid to the current gid if none is set" do
+      @new_resource.instance_variable_set(:@gid, nil)
+      @provider.load_current_resource
+      @new_resource.gid.should == 20
+    end
   
     it "looks up the group in /etc/group with getgrnam" do
       Etc.should_receive(:getgrnam).with(@new_resource.group_name).and_return(@pw_group)
