@@ -9,10 +9,12 @@
           .left
             %h3 Run List
             %table.table
-              %tr
-                %th.first Position
-                %th Name
-                %th.last Type
+              %thead
+                %tr
+                  %th.first Position
+                  %th Name
+                  %th.last Type
+              %tbody
                 - if @node.run_list.empty?
                   %tr
                     %td{:colspan => 2} This node has no roles or recipes applied.

@@ -3,8 +3,10 @@
     %h2.title Cookbooks
     .inner
       %table.table
-        %tr
-          %th.first Cookbook Name
+        %thead
+          %tr
+            %th.first Cookbook Name
+        %tbody
           - @cl.sort.each_with_index do |cookbook, index|
             %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
               %td= link_to cookbook[0], url(:cookbook, { :id => cookbook[0] })
