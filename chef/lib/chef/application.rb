@@ -66,14 +66,22 @@ class Chef::Application
   def configure_chef
     parse_options
 
-    unless config[:config_file] && File.file?(config[:config_file])
+    begin
+      case config[:config_file]
+      when /^(http|https):\/\//
+        Chef::REST.new("", nil, nil).fetch(config[:config_file]) { |f| apply_config(f.path) }
+      else
+        ::File::open(config[:config_file]) { |f| apply_config(f.path) }
+      end
+    rescue SocketError => error
+      Chef::Application.fatal!("Error getting config file #{Chef::Config[:config_file]}", 2)
+    rescue Exception => error
       Chef::Log.warn("*****************************************")
       Chef::Log.warn("Can not find config file: #{config[:config_file]}, using defaults.")
+      Chef::Log.warn("#{error.message}")
       Chef::Log.warn("*****************************************")
     end
 
-    Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exists?(config[:config_file]) && File.readable?(config[:config_file])
-    Chef::Config.merge!(config)
   end
 
   # Initialize and configure the logger
@@ -91,6 +99,14 @@ class Chef::Application
   def run_application
     raise Chef::Exceptions::Application, "#{self.to_s}: you must override run_application"
   end
+
+  private
+
+  def apply_config(config_file_path)
+    Chef::Config.from_file(config_file_path)
+    Chef::Config.merge!(config)
+  end
+
 
   class << self
     # Log a fatal error message to both STDERR and the Logger, exit the application

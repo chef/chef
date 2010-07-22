@@ -81,7 +81,7 @@ end
 describe Chef::Application, "configure_chef" do
   before do
     @app = Chef::Application.new
-    Chef::Config.stub!(:merge!).and_return(true)
+    #Chef::Config.stub!(:merge!).and_return(true)
     @app.stub!(:parse_options).and_return(true)
   end
   
@@ -89,18 +89,34 @@ describe Chef::Application, "configure_chef" do
     @app.should_receive(:parse_options).and_return(true)
     @app.configure_chef
   end
-  
+
   describe "when a config_file is present" do
     before do
+      Chef::Config.configuration.delete('rspec_ran')
+
+      @config_file = Tempfile.new("rspec-chef-config")
+      @config_file.puts("rspec_ran('true')")
+      @config_file.close
+
       @app.config[:config_file] = "/etc/chef/default.rb"
-      File.stub!(:exists?).and_return(true)
-      File.stub!(:readable?).and_return(true)
     end
-    
+
+    after do
+      @config_file.unlink
+    end
+
     it "should configure chef::config from a file" do
-      Chef::Config.should_receive(:from_file).with("/etc/chef/default.rb")
+      File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
+      Chef::Config.should_receive(:from_file).with(@config_file.path)
       @app.configure_chef
     end
+
+    it "should merge the local config hash into chef::config" do
+      File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
+      @app.configure_chef
+      Chef::Config.rspec_ran.should == "true"
+    end
+
   end
   
   describe "when there is no config_file defined" do
@@ -114,12 +130,35 @@ describe Chef::Application, "configure_chef" do
     end
   end
   
-  
-  it "should merge the local config hash into chef::config" do
-    Chef::Config.should_receive(:merge!).and_return(true)
-    @app.configure_chef
-  end
+  describe "when the config_file is an URL" do
+    before do
+      Chef::Config.configuration.delete('rspec_ran')
+ 
+      @app.config[:config_file] = "http://example.com/foo.rb"
 
+      @config_file = Tempfile.new("rspec-chef-config")
+      @config_file.puts("rspec_ran('true')")
+      @config_file.close
+
+
+      @cf = mock("cf")
+      #@cf.stub!(:path).and_return("/tmp/some/path")
+      #@cf.stub!(:nil?).and_return(false)
+      @rest = mock("rest")
+      #@rest.stub!(:get_rest).and_return(@rest)
+      #@rest.stub!(:open).and_yield(@cf)
+      Chef::REST.stub!(:new).and_return(@rest)
+    end
+
+    after {@config_file.unlink}
+
+    it "should configure chef::config from an URL" do
+      Chef::REST.should_receive(:new).with("", nil, nil).at_least(1).times.and_return(@rest)
+      @rest.should_receive(:fetch).with("http://example.com/foo.rb").and_yield(@config_file)
+      @app.configure_chef
+      Chef::Config.rspec_ran.should == "true"
+    end
+  end
 end
 
 describe Chef::Application, "configure_logging" do
