@@ -28,6 +28,9 @@ require 'chef/mixin/deprecation'
 
 class Chef
   class Resource
+    class Notification < Struct.new(:resource, :action)
+    end
+
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node]
 
     include Chef::Mixin::CheckHelper
@@ -400,7 +403,7 @@ class Chef
         
         resource_array = [resources].flatten
         resource_array.each do |resource|
-          new_notify = OpenStruct.new(:resource => resource, :action => action)
+          new_notify = Notification.new(resource, action)
           if timing == :delayed
             notifies_delayed << new_notify
           else
