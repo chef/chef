@@ -133,7 +133,6 @@ module Shef
       Chef::Config[:solo] = true
       @client = Chef::Client.new
       @client.run_ohai
-      @client.determine_node_name
       @client.build_node #(@client.node_name, true)
     end
     
@@ -156,7 +155,6 @@ module Shef
       Chef::Config[:solo] = true
       @client = Chef::Client.new
       @client.run_ohai
-      @client.determine_node_name
       @client.build_node #(@client.node_name, true)
     end
     
@@ -175,7 +173,6 @@ module Shef
       Chef::Config[:solo] = false
       @client = Chef::Client.new
       @client.run_ohai
-      @client.determine_node_name
       @client.register
       @client.build_node #(@client.node_name, false)
       
