@@ -198,6 +198,7 @@ Then /^'(.+)' should have '(.+)'$/ do |which, to_match|
 end
 
 Then /^'(.+)' should not have '(.+)'$/ do |which, to_match|
+  to_match = Regexp.escape(to_match)
   if which == "stdout" || which == "stderr"
     self.instance_variable_get("@#{which}".to_sym).should_not noinspect_match(/#{to_match}/m)
   else
