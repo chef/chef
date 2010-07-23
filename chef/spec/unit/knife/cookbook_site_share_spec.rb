@@ -94,6 +94,9 @@ describe Chef::Knife::CookbookSiteShare do
       @upload_response = mock('Net::HTTPResponse')
       Chef::CookbookSiteStreamingUploader.stub!(:post).and_return(@upload_response)
 
+      @log = StringIO.new
+      Chef::Log.logger = Logger.new(@log)
+
       File.stub(:open).and_return(true)
     end
 
@@ -109,24 +112,24 @@ describe Chef::Knife::CookbookSiteShare do
       response_text = {:error_messages => ['Version already exists']}.to_json
       @upload_response.stub!(:body).and_return(response_text)
       @upload_response.stub!(:code).and_return(409)
-      Chef::Log.should_receive(:error).with(/already exists/)
       lambda { @knife.run }.should raise_error(SystemExit)
+      @log.string.should match(/ERROR(.+)cookbook already exists/)
     end
 
     it 'should pass any errors on to the user' do
       response_text = {:error_messages => ["You're holding it wrong"]}.to_json
       @upload_response.stub!(:body).and_return(response_text)
       @upload_response.stub!(:code).and_return(403)
-      Chef::Log.should_receive(:error).with("You're holding it wrong")
       lambda { @knife.run }.should raise_error(SystemExit)
+      @log.string.should match("ERROR(.*)You're holding it wrong")
     end
 
     it 'should print the body if no errors are exposed on failure' do
       response_text = {:system_error => "Your call was dropped", :reason => "There's a map for that"}.to_json
       @upload_response.stub!(:body).and_return(response_text)
       @upload_response.stub!(:code).and_return(500)
-      Chef::Log.should_receive(:error).with(/Unknown error/)
-      Chef::Log.should_receive(:error).with(response_text)
+      Chef::Log.should_receive(:error).with(/#{response_text}/)#.ordered
+      Chef::Log.should_receive(:error).with(/Unknown error/)#.ordered
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 

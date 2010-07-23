@@ -96,7 +96,7 @@ class Chef
           bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb")
         end
 
-        template = bootstrap_files.find do |bootstrap_template|
+        template = Array(bootstrap_files).find do |bootstrap_template|
           Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
           File.exists?(bootstrap_template)
         end
