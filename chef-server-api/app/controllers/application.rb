@@ -28,28 +28,32 @@ class Application < Merb::Controller
   include Chef::Mixin::Checksum
 
   def authenticate_every
-    authenticator = Mixlib::Authentication::SignatureVerification.new
+    begin
+      # Raises an error if required auth headers are missing
+      authenticator = Mixlib::Authentication::SignatureVerification.new(request)
 
-    auth = begin
-             headers = request.env.inject({ }) { |memo, kv| memo[$2.downcase.gsub(/\-/,"_").to_sym] = kv[1] if kv[0] =~ /^(HTTP_)(.*)/; memo }
-             Chef::Log.debug("Headers in authenticate_every: #{headers.inspect}")
-             username = headers[:x_ops_userid].chomp
-             Chef::Log.info("Authenticating client #{username}")
-             user = Chef::ApiClient.cdb_load(username)
-             Chef::Log.debug("Found API Client: #{user.inspect}")
-             user_key = OpenSSL::PKey::RSA.new(user.public_key)
-             Chef::Log.debug "Authenticating:\n #{user.inspect}\n"
-             # Store this for later..
-             @auth_user = user
-             authenticator.authenticate_user_request(request, user_key)
-           rescue StandardError => se
-             Chef::Log.debug "Authentication failed: #{se}, #{se.backtrace.join("\n")}"
-             nil
-           end
+      username = authenticator.user_id
+      Chef::Log.info("Authenticating client #{username}")
 
-    raise Unauthorized, "Failed to authenticate!" unless auth
+      user = Chef::ApiClient.cdb_load(username)
+      user_key = OpenSSL::PKey::RSA.new(user.public_key)
+      Chef::Log.debug "Authenticating Client:\n #{user.inspect}\n"
 
-    auth
+      # Store this for later..
+      @auth_user = user
+      authenticator.authenticate_request(user_key)
+    rescue StandardError => se
+      Chef::Log.debug "Authentication failed: #{se}, #{se.backtrace.join("\n")}"
+    end
+
+    unless authenticator.valid_request?
+      if authenticator.valid_timestamp?
+        raise Unauthorized, "Failed to authenticate. Ensure that your client key is valid."
+      else
+        raise Unauthorized, "Failed to authenticate. Please synchronize the clock on your client"
+      end
+    end
+    true
   end
 
   def is_admin
