@@ -42,8 +42,12 @@ class Application < Merb::Controller
       # Store this for later..
       @auth_user = user
       authenticator.authenticate_request(user_key)
+    rescue Mixlib::Authentication::MissingAuthenticationHeader => e
+      Chef::Log.debug "Authentication failed: #{e.class.name}: #{e.message}\n#{e.backtrace.join("\n")}"
+      raise Unauthorized, "#{e.class.name}: #{e.message}"
     rescue StandardError => se
       Chef::Log.debug "Authentication failed: #{se}, #{se.backtrace.join("\n")}"
+      raise Unauthorized, "Failed to authenticate. Ensure that your client key is valid."
     end
 
     unless authenticator.valid_request?
