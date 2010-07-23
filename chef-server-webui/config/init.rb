@@ -1,24 +1,20 @@
 #
-# ==== Standalone Chefserver configuration
-# 
-# This configuration/environment file is only loaded by bin/slice, which can be 
-# used during development of the slice. It has no effect on this slice being
-# loaded in a host application. To run your slice in standalone mode, just
-# run 'slice' from its directory. The 'slice' command is very similar to
-# the 'merb' command, and takes all the same options, including -i to drop 
-# into an irb session for example.
+# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
+# License:: Apache License, Version 2.0
 #
-# The usual Merb configuration directives and init.rb setup methods apply,
-# including use_orm and before_app_loads/after_app_loads.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# If you need need different configurations for different environments you can 
-# even create the specific environment file in config/environments/ just like
-# in a regular Merb application. 
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-# In fact, a slice is no different from a normal # Merb application - it only
-# differs by the fact that seamlessly integrates into a so called 'host'
-# application, which in turn can override or finetune the slice implementation
-# code and views.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 
