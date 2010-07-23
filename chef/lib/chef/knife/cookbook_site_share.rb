@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,27 +26,27 @@ class Chef
 
       banner "knife cookbook site share COOKBOOK CATEGORY (options)"
       category "cookbook site"
-            
+
       option :cookbook_path,
         :short => "-o PATH:PATH",
         :long => "--cookbook-path PATH:PATH",
         :description => "A colon-separated path to look for cookbooks in",
         :proc => lambda { |o| Chef::Config.cookbook_path = o.split(":") }
 
-      def run        
+      def run
         if @name_args.length < 2
           show_usage
           Chef::Log.fatal("You must specify the cookbook name and the category you want to share this cookbook to.")
           exit 1
         end
-        
+
         cookbook_name = @name_args[0]
         category = @name_args[1]
         cl = Chef::CookbookLoader.new
         if cl.cookbook_exists?(cookbook_name)
           cookbook = cl[cookbook_name]
           Chef::CookbookUploader.validate_cookbook(cookbook)
-          tmp_cookbook_dir = Chef::CookbookUploader.create_build_dir(cookbook)          
+          tmp_cookbook_dir = Chef::CookbookUploader.create_build_dir(cookbook)
           begin
             Chef::Log.info("Making tarball #{cookbook_name}.tgz")
             Chef::Mixin::Command.run_command(:command => "tar -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
@@ -55,7 +55,7 @@ class Chef
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
             exit(1)
           end
-          
+
           begin
             do_upload("#{tmp_cookbook_dir}/#{cookbook_name}.tgz", category, Chef::Config[:node_name], Chef::Config[:client_key])
             Chef::Log.info("Upload complete!")
@@ -66,14 +66,14 @@ class Chef
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
             exit(1)
           end
-          
+
         else
           Chef::Log.error("Could not find cookbook #{cookbook_name} in your cookbook path.")
           exit(1)
         end
 
       end
-      
+
       def do_upload(cookbook_filename, cookbook_category, user_id, user_secret_filename)
          uri = "http://cookbooks.opscode.com/api/v1/cookbooks"
 
@@ -83,7 +83,7 @@ class Chef
            :tarball => File.open(cookbook_filename),
            :cookbook => category_string
          })
-         
+
          res = JSON.parse(http_resp.body)
          if http_resp.code.to_i != 201
            if res['error_messages']
@@ -103,11 +103,6 @@ class Chef
          res
        end
     end
-    
+
   end
 end
-
-
-
-
-
