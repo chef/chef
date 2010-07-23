@@ -29,7 +29,6 @@ spec = Gem::Specification.new do |s|
   s.homepage = HOMEPAGE
 
   s.add_dependency "merb-core", "~> 1.1.0"
-  s.add_dependency "merb-slices", "~> 1.1.0"
   s.add_dependency "merb-assets", "~> 1.1.0"
   s.add_dependency "merb-helpers", "~> 1.1.0"
   s.add_dependency "merb-haml", "~> 1.1.0"
