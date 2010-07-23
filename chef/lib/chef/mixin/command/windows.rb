@@ -23,8 +23,8 @@ require 'win32/open3'
 class Chef
   module Mixin
     module Command
-      class Windows
-        def self.popen4(cmd, args={}, &b)
+      module Windows
+        def popen4(cmd, args={}, &b)
 
           # By default, we are waiting before we yield the block.
           args[:waitlast] ||= false

@@ -21,12 +21,23 @@ require 'chef/exceptions'
 require 'tmpdir'
 require 'fcntl'
 require 'etc'
-require 'io/wait'
 
 class Chef
   module Mixin
     module Command
-      
+      extend self
+
+
+      if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+        require 'chef/mixin/command/windows'
+        include ::Chef::Mixin::Command::Windows
+        extend  ::Chef::Mixin::Command::Windows
+      else
+        require 'chef/mixin/command/unix'
+        include ::Chef::Mixin::Command::Unix
+        extend  ::Chef::Mixin::Command::Unix
+      end
+
       # If command is a block, returns true if the block returns true, false if it returns false.
       # ("Only run this resource if the block is true")
       #
@@ -55,8 +66,6 @@ class Chef
         end
         true
       end
-      
-      module_function :only_if
       
       # If command is a block, returns false if the block returns true, true if it returns false.
       # ("Do not run this resource if the block is true")
@@ -87,8 +96,6 @@ class Chef
         true
       end
       
-      module_function :not_if
-     
       # === Parameters
       # args<Hash>: A number of required and optional arguments
       #   command<String>, <Array>: A complete command with options to execute or a command and options as an Array 
@@ -125,8 +132,6 @@ class Chef
         
         status
       end
-      
-      module_function :run_command
       
       def output_of_command(command, args)
         Chef::Log.debug("Executing #{command}")
@@ -165,8 +170,6 @@ class Chef
         return status, stdout_string, stderr_string
       end
       
-      module_function :output_of_command
-      
       def handle_command_failures(status, command_output, opts={})
         unless opts[:ignore_failure]
           opts[:returns] ||= 0
@@ -183,8 +186,6 @@ class Chef
         end
       end
       
-      module_function :handle_command_failures
-           
       # Call #run_command but set LC_ALL to the system's current environment so it doesn't get changed to C.
       #
       # === Parameters
@@ -198,21 +199,11 @@ class Chef
         run_command args
       end
 
-      module_function :run_command_with_systems_locale
+      # def popen4(cmd, args={}, &b)
+      #   @@os_handler.popen4(cmd, args, &b)
+      # end
 
-      if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-        require 'chef/mixin/command/windows'
-        @@os_handler = ::Chef::Mixin::Command::Windows
-      else
-        require 'chef/mixin/command/unix'
-        @@os_handler = ::Chef::Mixin::Command::Unix
-      end
-
-      def popen4(cmd, args={}, &b)
-        @@os_handler.popen4(cmd, args, &b)
-      end
-
-      module_function :popen4
+      # module_function :popen4
 
       def chdir_or_tmpdir(dir, &block)
         dir ||= Dir.tmpdir
@@ -224,7 +215,6 @@ class Chef
         end
       end
 
-      module_function :chdir_or_tmpdir
     end
   end
 end

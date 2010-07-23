@@ -19,7 +19,7 @@
 class Chef
   module Mixin
     module Command
-      class Unix
+      module Unix
         # This is taken directly from Ara T Howard's Open4 library, and then
         # modified to suit the needs of Chef.  Any bugs here are most likely
         # my own, and not Ara's.
@@ -27,7 +27,7 @@ class Chef
         # The original appears in external/open4.rb in its unmodified form.
         #
         # Thanks Ara!
-        def self.popen4(cmd, args={}, &b)
+        def popen4(cmd, args={}, &b)
 
           # Waitlast - this is magic.
           #
