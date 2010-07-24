@@ -88,6 +88,14 @@ class Chef
         )
       end
 
+      def overwrite(arg=nil)
+        set_or_return(
+          :overwrite,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
       def cookbook(args=nil)
         set_or_return(
           :cookbook,
