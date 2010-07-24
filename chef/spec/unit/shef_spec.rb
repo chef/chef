@@ -18,8 +18,16 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 require "ostruct"
 
-class ObjectTestHarness
-  attr_accessor :conf
+ObjectTestHarness = Proc.new do
+  extend Shef::Extensions::ObjectCoreExtensions
+
+  def conf=(new_conf)
+    @conf = new_conf
+  end
+
+  def conf
+    @conf
+  end
   
   desc "rspecin'"
   def rspec_method
@@ -86,7 +94,8 @@ describe Shef do
       Shef.configure_irb
 
       conf = OpenStruct.new
-      conf.main = ObjectTestHarness.new
+      conf.main = Object.new
+      conf.main.instance_eval(&ObjectTestHarness)
       Shef.irb_conf[:IRB_RC].call(conf)
       conf.prompt_c.should      == "chef > "
       conf.return_format.should == " => %s \n"
@@ -125,11 +134,12 @@ describe Shef do
   describe "convenience macros for creating the chef object" do
     
     before do
-      @chef_object = ObjectTestHarness.new
+      @chef_object = Object.new
+      @chef_object.instance_eval(&ObjectTestHarness)
     end
     
     it "creates help text for methods with descriptions" do
-      ObjectTestHarness.help_descriptions.should == [["rspec_method", "rspecin'"]]
+      @chef_object.help_descriptions.should == [["rspec_method", "rspecin'"]]
     end
     
     it "adds help text when a new method is described then defined" do
@@ -138,8 +148,8 @@ describe Shef do
         def baz
         end
       EVAL
-      ObjectTestHarness.class_eval describe_define
-      ObjectTestHarness.help_descriptions.should == [["rspec_method", "rspecin'"],["baz", "foo2the Bar"]]
+      @chef_object.instance_eval describe_define
+      @chef_object.help_descriptions.should == [["rspec_method", "rspecin'"],["baz", "foo2the Bar"]]
     end
     
     it "adds help text for subcommands" do
@@ -148,10 +158,10 @@ describe Shef do
         def baz
         end
       EVAL
-      ObjectTestHarness.class_eval describe_define
-      expected_help_text_fragments = [["rspec_method", "rspecin'"],["baz", "foo2the Bar"]]
+      @chef_object.instance_eval describe_define
+      expected_help_text_fragments = [["rspec_method", "rspecin'"]]
       expected_help_text_fragments << ["baz.baz_obj_command", "something you can do with baz.baz_obj_command"]
-      ObjectTestHarness.help_descriptions.should == expected_help_text_fragments
+      @chef_object.help_descriptions.should == expected_help_text_fragments
     end
     
     it "doesn't add previous subcommand help to commands defined afterward" do
@@ -160,8 +170,8 @@ describe Shef do
         def monkey_time
         end
       EVAL
-      ObjectTestHarness.class_eval describe_define
-      ObjectTestHarness.help_descriptions.should_not include(["monkey_time.baz_obj_command", "something you can do with baz.baz_obj_command"])
+      @chef_object.instance_eval describe_define
+      @chef_object.help_descriptions.should_not include(["monkey_time.baz_obj_command", "something you can do with baz.baz_obj_command"])
     end
     
     it "creates a help banner with the command descriptions" do
@@ -176,7 +186,9 @@ describe Shef do
       @shef_client = TestableShefSession.instance
       Shef.stub!(:session).and_return(@shef_client)
       @job_manager = TestJobManager.new
-      @root_context = ObjectTestHarness.new
+      @root_context = Object.new
+      @root_context.instance_eval(&ObjectTestHarness)
+      Shef::Extensions.extend_context_object(@root_context)
       @root_context.conf = mock("irbconf")
     end
     
@@ -224,10 +236,7 @@ describe Shef do
     end
     
     it "has a help command" do
-      # note: irb whines like a 5yo with a broken toy if you define a help
-      # method on Object. have to override it in a sneaky way.
-      @root_context.stub!(:puts)
-      @root_context.shef_help
+      @root_context.should respond_to(:help)
     end
     
     it "turns irb tracing on and off" do
@@ -290,6 +299,7 @@ describe Shef do
     before do
       @run_context = Chef::RunContext.new(Chef::Node.new, {})
       @recipe_object = Chef::Recipe.new(nil, nil, @run_context)
+      Shef::Extensions.extend_context_recipe(@recipe_object)
     end
     
     it "gives a list of the resources" do
@@ -306,6 +316,7 @@ describe Shef do
       @node = @session.node = Chef::Node.new
       @run_context = @session.run_context = Chef::RunContext.new(@node, {})
       @recipe = @session.recipe = Chef::Recipe.new(nil, nil, @run_context)
+      Shef::Extensions.extend_context_recipe(@recipe)
     end
     
     it "has a run_context" do
@@ -332,7 +343,7 @@ describe Shef do
       @session.resource_collection
       
       Chef::Runner.should_receive(:new).with(@session.recipe.run_context).and_return(chef_runner)
-      @root_context.run_chef.should == :converged
+      @recipe.run_chef.should == :converged
     end
     
   end
@@ -344,10 +355,8 @@ describe Shef do
       @node = Chef::Node.new
       @run_context = @session.run_context = Chef::RunContext.new(@node, {})
       @session.node = @node
-      #@compile = @session.compile = Chef::Compile.new(@node)
-      # prevent dynamic re-compilation from raining on the parade
-      #Chef::Compile.stub!(:new).and_return(@compile)
       @recipe = @session.recipe = Chef::Recipe.new(nil, nil, @run_context)
+      Shef::Extensions.extend_context_recipe(@recipe)
     end
     
     after do
@@ -387,7 +396,7 @@ describe Shef do
       chef_runner = mock("Chef::Runner.new", :converge => :converged)
       Chef::Runner.should_receive(:new).with(an_instance_of(Chef::RunContext)).and_return(chef_runner)
 
-      @root_context.run_chef.should == :converged
+      @recipe.run_chef.should == :converged
     end
     
   end

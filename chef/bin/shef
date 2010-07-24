@@ -18,30 +18,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO::EVIL
-require "rubygems"
-require "mixlib/cli"
+begin
+  require "rubygems"
+rescue LoadError
+end
 
 require "irb"
 require "irb/completion"
 require 'irb/ext/save-history'
 
-# TODO::EVIL
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
 
 require "chef/shef"
 
-# dirty hack to make IRB initialize shef
-module IRB
-  class << self
-    alias :run_original_config :run_config
-  
-    def run_config
-      run_original_config
-      Shef.init
-    end
-  end
-end
-
-Shef.parse_opts
-IRB.start
+Shef.start
