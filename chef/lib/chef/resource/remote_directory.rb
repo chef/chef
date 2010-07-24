@@ -35,7 +35,8 @@ class Chef
         @files_owner = nil
         @files_group = nil
         @files_mode = 0644
-        @allowed_actions.push(:create, :delete)
+        @overwrite = true
+        @allowed_actions.push(:create, :create_if_missing, :delete)
         @cookbook = nil
       end
 
