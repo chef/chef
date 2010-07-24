@@ -40,10 +40,12 @@ module Shef
       loading do 
         rebuild_node
         @node = client.node
+        shorten_node_inspect
+        Shef::Extensions.extend_context_object(@node)
         rebuild_context
         node.consume_attributes(node_attributes) if node_attributes
-        shorten_node_inspect
         @recipe = Chef::Recipe.new(nil, nil, run_context)
+        Shef::Extensions.extend_context_recipe(@recipe)
         @node_built = true
       end
     end
