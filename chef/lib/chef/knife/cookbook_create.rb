@@ -33,6 +33,12 @@ class Chef
         :long => "--cookbook-path PATH",
         :description => "The directory where the cookbook will be created"
 
+      option :readme_format,
+        :short => "-r FORMAT",
+        :long => "--readme-format FORMAT",
+        :description => "Format of the README file, supported formats are 'md' (markdown) and 'rdoc' (rdoc)",
+        :default => "rdoc"
+
       def run
          if @name_args.length < 1
             show_usage
@@ -102,9 +108,11 @@ EOH
 
     def create_readme(dir, cookbook_name)
       msg("** Creating README for cookbook: #{cookbook_name}")
-      unless File.exists?(File.join(dir, cookbook_name, "README.rdoc"))
-        open(File.join(dir, cookbook_name, "README.rdoc"), "w") do |file|
-          file.puts <<-EOH
+      unless File.exists?(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"))
+        open(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"), "w") do |file|
+          case config[:readme_format]
+          when "rdoc"
+            file.puts <<-EOH
 = DESCRIPTION:
 
 = REQUIREMENTS:
@@ -114,6 +122,22 @@ EOH
 = USAGE:
 
 EOH
+          when "md"
+            file.puts <<-EOH
+Description
+===========
+
+Requirements
+============
+
+Attributes
+==========
+
+Usage
+=====
+
+EOH
+          end
         end
       end
     end
@@ -130,8 +154,8 @@ EOH
 
       unless File.exists?(File.join(dir, cookbook_name, "metadata.rb"))
         open(File.join(dir, cookbook_name, "metadata.rb"), "w") do |file|
-          if File.exists?(File.join(dir, cookbook_name, 'README.rdoc'))
-            long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.rdoc'))"
+          if File.exists?(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"))
+            long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.#{config[:readme_format]}'))"
           end
           file.puts <<-EOH
 maintainer       "#{company_name}"
