@@ -124,8 +124,10 @@ class Chef
 
         # wait for it to be ready to do stuff
         server.wait_for { print "."; ready? }
+        puts "#{h.color("\nWaiting 10 seconds for SSH Host Key generation on", :magenta)}: #{server.dns_name}"
+        sleep 10
 
-        print "\n\n"
+        print "\n"
 
         puts "#{h.color("Public DNS Name", :cyan)}: #{server.dns_name}"
         puts "#{h.color("Public IP Address", :cyan)}: #{server.ip_address}"
