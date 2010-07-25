@@ -78,7 +78,7 @@ class Chef
         :long => "--run-list RUN_LIST",
         :description => "Comma separated list of roles/recipes to apply",
         :proc => lambda { |o| o.split(",") },
-        :default => nil
+        :default => []
 
       def h
         @highline ||= HighLine.new
