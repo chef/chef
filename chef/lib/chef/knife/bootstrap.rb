@@ -58,11 +58,6 @@ class Chef
         :description => "Bootstrap a distro using a template",
         :default => "ubuntu10.04-gems"
 
-      option :identity_file,
-        :short => "-i IDENTITY_FILE",
-        :long => "--identity-file IDENTITY_FILE",
-        :description => "The SSH identity file used for authentication"
-
       option :use_sudo,
         :long => "--sudo",
         :description => "Execute the bootstrap via sudo",
