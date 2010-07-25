@@ -182,4 +182,75 @@ module Shef
     end
 
   end
+
+  class DoppelGangerClient < Chef::Client
+    attr_reader :node_name
+
+    def initialize(node_name)
+      @node_name = node_name
+      @ohai = Ohai::System.new
+    end
+
+    # Run the very smallest amount of ohai we can get away with and still
+    # hope to have things work. Otherwise we're not very good doppelgangers
+    def run_ohai
+      @ohai.require_plugin('os')
+    end
+
+    # DoppelGanger implementation of build_node. preserves as many of the node's
+    # attributes, and does not save updates to the server
+    def build_node
+      Chef::Log.debug("Building node object for #{@node_name}")
+
+      @node = Chef::Node.find_or_create(node_name)
+
+      ohai_data = @ohai.data.merge(@node.automatic_attrs)
+
+      @node.process_external_attrs(ohai_data,nil)
+      @node.reset_defaults_and_overrides
+
+      @node
+    end
+
+    def register
+      @rest = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:node_name], Chef::Config[:client_key])
+    end
+
+  end
+
+  class DoppelGangerSession < ClientSession
+
+    def save_node
+      puts "A doppelganger should think twice before saving the node"
+    end
+
+    def assume_identity(node_name)
+      Chef::Config[:doppelganger] = @node_name = node_name
+      reset!
+    rescue Exception => e
+      puts "#{e.class.name}: #{e.message}"
+      puts Array(e.backtrace).join("\n")
+      puts
+      puts "* " * 40
+      puts "failed to assume the identity of node '#{node_name}', resetting"
+      puts "* " * 40
+      puts
+      Chef::Config[:doppelganger] = false
+      @node_built = false
+      Shef.session
+    end
+
+    def rebuild_node
+      # Make sure the client knows this is not chef solo
+      Chef::Config[:solo] = false
+      @client = DoppelGangerClient.new(@node_name)
+      @client.run_ohai
+      @client.register
+      @client.build_node
+
+      @client.sync_cookbooks({})
+    end
+
+  end
+
 end

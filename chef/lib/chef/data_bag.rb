@@ -129,11 +129,11 @@ class Chef
     
     def self.list(inflate=false)
       if inflate
-        response = Hash.new
-        Chef::Search::Query.new.search(:data) do |n|
-          response[n.name] = n
+        # Can't search for all data bags like other objects, fall back to N+1 :(
+        list(false).inject({}) do |response, bag_and_uri|
+          response[bag_and_uri.first] = load(bag_and_uri.first)
+          response
         end
-        response
       else
         Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
       end

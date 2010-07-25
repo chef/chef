@@ -14,10 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require 'tempfile'
 require 'chef/recipe'
 require 'fileutils'
 require 'chef/version'
 require 'chef/shef/shef_session'
+require 'chef/shef/model_wrapper'
+require 'chef/shef/shef_rest'
 
 module Shef
   module Extensions
@@ -224,6 +228,13 @@ module Shef
         Shef.session.reset!
       end
 
+      desc "assume the identity of another node."
+      def become_node(node_name)
+        Shef::DoppelGangerSession.instance.assume_identity(node_name)
+        :doppelganger
+      end
+      alias :doppelganger :become_node
+
       desc "turns printout of return values on or off"
       def echo(on_or_off)
         conf.echo = on_or_off.on_off_to_bool
@@ -252,6 +263,72 @@ module Shef
         Dir.entries(directory)
       end
 
+      desc "edit an object in your EDITOR"
+      def edit(object)
+        unless Shef.editor
+          puts "Please set your editor with Shef.editor = \"vim|emacs|mate|ed\""
+          return :failburger
+        end
+
+        filename = "shef-edit-#{object.class.name}-"
+        if object.respond_to?(:name)
+          filename += object.name
+        elsif object.respond_to?(:id)
+          filename += object.id
+        end
+
+        edited_data = Tempfile.open([filename, ".js"]) do |tempfile|
+          tempfile.sync = true
+          tempfile.puts output
+          system("#{Shef.editor.to_s} #{tempfile.path}")
+          tempfile.rewind
+          tempfile.read
+        end
+
+        JSON.parse(edited_data)
+      end
+
+      desc "Find and edit cookbooks"
+      subcommands :all        => "list all cookbooks",
+                  :show       => "load a cookbook by name",
+                  :transform  => "edit all cookbooks via a code block and save them"
+      def cookbooks
+        @nodes ||= Shef::ModelWrapper.new(Chef::CookbookVersion)
+      end
+
+      desc "Find and edit nodes via the API"
+      subcommands :all        => "list all nodes",
+                  :show       => "load a node by name",
+                  :search     => "search for nodes",
+                  :transform  => "edit all nodes via a code block and save them"
+      def nodes
+        @nodes ||= Shef::ModelWrapper.new(Chef::Node)
+      end
+
+      desc "Find and edit roles via the API"
+      subcommands :all        => "list all roles",
+                  :show       => "load a role by name",
+                  :search     => "search for roles",
+                  :transform  => "edit all roles via a code block and save them"
+      def roles
+        @roles ||= Shef::ModelWrapper.new(Chef::Role)
+      end
+
+      desc "Find and edit +databag_name+ via the api"
+      subcommands :all        => "list all items in the data bag",
+                  :show       => "load a data bag item by id",
+                  :search     => "search for items in the data bag",
+                  :transform  => "edit all items via a code block and save them"
+      def databags(databag_name)
+        @named_databags_wrappers ||= {}
+        @named_databags_wrappers[databag_name] ||= Shef::NamedDataBagWrapper.new(databag_name)
+      end
+
+      desc "A REST Client configured to authenticate with the API"
+      def api
+        @rest = Shef::ShefREST.new(Chef::Config[:chef_server_url])
+      end
+
     end
 
     RecipeUIExtensions = Proc.new do
@@ -271,6 +348,7 @@ module Shef
     def self.extend_context_object(obj)
       obj.instance_eval(&ObjectUIExtensions)
       obj.extend(FileUtils)
+      obj.extend(Chef::Mixin::Language)
     end
 
     def self.extend_context_recipe(recipe_obj)

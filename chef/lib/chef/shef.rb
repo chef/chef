@@ -34,7 +34,10 @@ module Shef
   LEADERS[Chef::Node]   = ":attributes"
 
   class << self
-    attr_accessor :client_type, :options
+    attr_accessor :client_type
+    attr_accessor :options
+    attr_accessor :env
+    attr_writer   :editor
   end
 
   # Start the irb REPL with shef's customizations
@@ -95,14 +98,19 @@ module Shef
 
     irb_conf[:IRB_RC] = lambda do |conf|
       m = conf.main
-      leader = LEADERS[m.class]
+      #leader = LEADERS[m.class]
 
-      conf.prompt_c       = "chef#{leader} > "
+      conf.prompt_c       = "chef#{leader(m)} > "
       conf.return_format  = " => %s \n"
-      conf.prompt_i       = "chef#{leader} > "
-      conf.prompt_n       = "chef#{leader} ?> "
-      conf.prompt_s       = "chef#{leader}%l> "
+      conf.prompt_i       = "chef#{leader(m)} > "
+      conf.prompt_n       = "chef#{leader(m)} ?> "
+      conf.prompt_s       = "chef#{leader(m)}%l> "
     end
+  end
+
+  def self.leader(main_object)
+    env_string = Shef.env ? " (#{Shef.env})" : ""
+    LEADERS[main_object.class] + env_string
   end
 
   def self.session
@@ -129,7 +137,7 @@ module Shef
   end
 
   def self.greeting
-    " #{Etc.getlogin}@#{Shef.session.node.name}"
+    " #{Etc.getlogin}@#{Shef.session.node.fqdn}"
   rescue NameError
     ""
   end
@@ -167,12 +175,17 @@ module Shef
     type = Shef::StandAloneSession
     type = Shef::SoloSession   if Chef::Config[:shef_solo]
     type = Shef::ClientSession if Chef::Config[:client]
+    type = Shef::DoppelGangerSession if Chef::Config[:doppelganger]
     type
   end
 
   def self.parse_opts
     @options = Options.new
     @options.parse_opts
+  end
+
+  def self.editor
+    @editor || Chef::Config[:editor] || ENV['EDITOR']
   end
 
   class Options
@@ -285,6 +298,7 @@ FOOTER
       if config[:config_file]
         config[:config_file]
       elsif environment
+        Shef.env = environment
         config_file_to_try = ::File.join(ENV['HOME'], '.chef', environment, 'shef.rb')
         unless ::File.exist?(config_file_to_try)
           puts "could not find shef config for environment #{environment} at #{config_file_to_try}"
