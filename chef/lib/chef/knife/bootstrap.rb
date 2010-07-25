@@ -64,7 +64,6 @@ class Chef
         :description => "The SSH identity file used for authentication"
 
       option :use_sudo,
-        :short => "-s",
         :long => "--sudo",
         :description => "Execute the bootstrap via sudo",
         :boolean => true
