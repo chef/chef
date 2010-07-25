@@ -128,7 +128,7 @@ describe Chef::Knife::CookbookSiteShare do
       response_text = {:system_error => "Your call was dropped", :reason => "There's a map for that"}.to_json
       @upload_response.stub!(:body).and_return(response_text)
       @upload_response.stub!(:code).and_return(500)
-      Chef::Log.should_receive(:error).with(/#{response_text}/)#.ordered
+      Chef::Log.should_receive(:error).with(/#{Regexp.escape(response_text)}/)#.ordered
       Chef::Log.should_receive(:error).with(/Unknown error/)#.ordered
       lambda { @knife.run }.should raise_error(SystemExit)
     end
