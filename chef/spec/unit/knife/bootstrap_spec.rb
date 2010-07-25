@@ -41,7 +41,7 @@ describe Chef::Knife::Bootstrap do
 
   it "should return an empty run_list" do
     template_string = @knife.load_template(@knife.config[:template_file])
-    @knife.render_template(template_string).should == '{"run_list":null}'
+    @knife.render_template(template_string).should == '{"run_list":[]}'
   end
 
   it "should have role[base] in the run_list" do
