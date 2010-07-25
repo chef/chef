@@ -1,0 +1,27 @@
+Important Changes Since Chef 0.8
+================================
+
+  When upgrading from Chef 0.8.x to 0.9.x, be aware of a couple important changes.
+
+    * 0.9 clients can read from 0.8 servers, but cannot save to 0.8 servers.
+    * 0.8 clients cannot read or save from / to 0.9 servers.
+    * The cookbook upload method is changed and cookbooks have to be
+      uploaded to the server again.
+
+  First, upgrade the server packages. Then upgrade the clients.
+
+  Once the server is upgraded, cookbooks need to be uploaded again. Typically
+  this is done from the Chef Repository (chef-repo) with knife. If the Chef
+  Server is where the repository is located, simply:
+
+      knife cookbook upload -a
+
+  In the local chef-repo directory. If the repo is on another workstation,
+  then upgrade Chef there and run the knife command, above.
+
+  Two new configuration values are added to the server.rb:
+
+    * sandbox_path
+    * checksum_path
+
+  Which are used for the new cookbook upload scheme.
