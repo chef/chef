@@ -26,6 +26,11 @@ module Shef
   class ShefSession
     include Singleton
     
+    def self.session_type(type=nil)
+      @session_type = type if type
+      @session_type
+    end
+
     attr_accessor :node, :compile, :recipe, :run_context
     attr_reader :node_attributes, :client
     def initialize
@@ -41,7 +46,7 @@ module Shef
         rebuild_node
         @node = client.node
         shorten_node_inspect
-        Shef::Extensions.extend_context_object(@node)
+        Shef::Extensions.extend_context_node(@node)
         rebuild_context
         node.consume_attributes(node_attributes) if node_attributes
         @recipe = Chef::Recipe.new(nil, nil, run_context)
@@ -124,6 +129,8 @@ module Shef
   end
   
   class StandAloneSession < ShefSession
+
+    session_type :standalone
     
     def rebuild_context
       @run_context = Chef::RunContext.new(@node, {}) # no recipes
@@ -135,12 +142,14 @@ module Shef
       Chef::Config[:solo] = true
       @client = Chef::Client.new
       @client.run_ohai
-      @client.build_node #(@client.node_name, true)
+      @client.build_node
     end
     
   end
   
   class SoloSession < ShefSession
+
+    session_type :solo
     
     def definitions
       @run_context.definitions
@@ -157,12 +166,14 @@ module Shef
       Chef::Config[:solo] = true
       @client = Chef::Client.new
       @client.run_ohai
-      @client.build_node #(@client.node_name, true)
+      @client.build_node
     end
     
   end
   
   class ClientSession < SoloSession
+
+    session_type :solo
     
     def save_node
       @client.save_node
@@ -176,7 +187,7 @@ module Shef
       @client = Chef::Client.new
       @client.run_ohai
       @client.register
-      @client.build_node #(@client.node_name, false)
+      @client.build_node
       
       @client.sync_cookbooks({})
     end
@@ -184,6 +195,7 @@ module Shef
   end
 
   class DoppelGangerClient < Chef::Client
+
     attr_reader :node_name
 
     def initialize(node_name)
@@ -219,6 +231,8 @@ module Shef
   end
 
   class DoppelGangerSession < ClientSession
+
+    session_type "doppelganger client"
 
     def save_node
       puts "A doppelganger should think twice before saving the node"

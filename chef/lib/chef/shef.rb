@@ -98,7 +98,6 @@ module Shef
 
     irb_conf[:IRB_RC] = lambda do |conf|
       m = conf.main
-      #leader = LEADERS[m.class]
 
       conf.prompt_c       = "chef#{leader(m)} > "
       conf.return_format  = " => %s \n"
@@ -114,7 +113,10 @@ module Shef
   end
 
   def self.session
-    client_type.instance.reset! unless client_type.instance.node_built?
+    unless client_type.instance.node_built?
+      puts "Session type: #{client_type.session_type}"
+      client_type.instance.reset!
+    end
     client_type.instance
   end
 

@@ -63,8 +63,14 @@ module Shef
       else
         objects_to_transform = search(what_to_transform)
       end
-      objects_to_transform.each { |obj| yield obj; obj.save }
+      objects_to_transform.each do |obj|
+        if result = yield(obj)
+          obj.save
+        end
+      end
     end
+
+    alias :bulk_edit :transform
 
     private
 
