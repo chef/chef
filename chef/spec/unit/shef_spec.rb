@@ -139,7 +139,7 @@ describe Shef do
     end
     
     it "creates help text for methods with descriptions" do
-      @chef_object.help_descriptions.should == [["rspec_method", "rspecin'"]]
+      @chef_object.help_descriptions.should == [Shef::Extensions::Help.new("rspec_method", "rspecin'", nil)]
     end
     
     it "adds help text when a new method is described then defined" do
@@ -149,7 +149,8 @@ describe Shef do
         end
       EVAL
       @chef_object.instance_eval describe_define
-      @chef_object.help_descriptions.should == [["rspec_method", "rspecin'"],["baz", "foo2the Bar"]]
+      @chef_object.help_descriptions.should == [Shef::Extensions::Help.new("rspec_method", "rspecin'"),
+                                                Shef::Extensions::Help.new("baz", "foo2the Bar")]
     end
     
     it "adds help text for subcommands" do
@@ -159,8 +160,8 @@ describe Shef do
         end
       EVAL
       @chef_object.instance_eval describe_define
-      expected_help_text_fragments = [["rspec_method", "rspecin'"]]
-      expected_help_text_fragments << ["baz.baz_obj_command", "something you can do with baz.baz_obj_command"]
+      expected_help_text_fragments = [Shef::Extensions::Help.new("rspec_method", "rspecin'")]
+      expected_help_text_fragments << Shef::Extensions::Help.new("baz.baz_obj_command", "something you can do with baz.baz_obj_command")
       @chef_object.help_descriptions.should == expected_help_text_fragments
     end
     
@@ -169,9 +170,14 @@ describe Shef do
         desc "swingFromTree"
         def monkey_time
         end
+
+        def super_monkey_time
+        end
+
       EVAL
       @chef_object.instance_eval describe_define
-      @chef_object.help_descriptions.should_not include(["monkey_time.baz_obj_command", "something you can do with baz.baz_obj_command"])
+      @chef_object.help_descriptions.should have(2).descriptions
+      @chef_object.help_descriptions.select {|h| h.cmd == "super_monkey_time" }.should be_empty
     end
     
     it "creates a help banner with the command descriptions" do
