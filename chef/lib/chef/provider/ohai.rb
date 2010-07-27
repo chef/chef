@@ -28,10 +28,8 @@ class Chef
 
       def action_reload
         ohai = ::Ohai::System.new
-        if not @new_resource.plugin.empty?
-          @new_resource.plugin.each do |plugin|
-            ohai.require_plugin plugin
-          end
+        if not @new_resource.plugin
+          ohai.require_plugin @new_resource.plugin
         else
           ohai.all_plugins
         end
