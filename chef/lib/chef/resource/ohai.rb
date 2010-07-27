@@ -25,8 +25,16 @@ class Chef
         @resource_name = :ohai
         @allowed_actions.push(:reload)
         @action = :reload
+        @plugin = Array.new
       end
 
+      def plugin(arg=nil)
+        set_or_return(
+          :plugins,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
     end
   end
 end
