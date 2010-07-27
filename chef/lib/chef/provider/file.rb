@@ -179,6 +179,7 @@ class Chef
           time = Time.now
           savetime = time.strftime("%Y%m%d%H%M%S")
           backup_filename = "#{@new_resource.path}.chef-#{savetime}"
+          backup_filename = backup_filename.sub(/^([A-Za-z]:)/, "") #strip drive letter on Windows
           # if :file_backup_path is nil, we fallback to the old behavior of
           # keeping the backup in the same directory. We also need to to_s it
           # so we don't get a type error around implicit to_str conversions.
