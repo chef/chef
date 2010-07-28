@@ -24,6 +24,8 @@ module Shef
 
     include Chef::Mixin::ConvertToClassName
 
+    attr_reader :model_symbol
+
     def initialize(model_class, symbol=nil)
       @model_class = model_class
       @model_symbol = symbol || convert_to_snake_case(model_class.name, "Chef").to_sym
