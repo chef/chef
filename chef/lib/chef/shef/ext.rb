@@ -14,13 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require 'tempfile'
 require 'chef/recipe'
 require 'fileutils'
 require 'chef/version'
 require 'chef/shef/shef_session'
+require 'chef/shef/model_wrapper'
+require 'chef/shef/shef_rest'
 
 module Shef
   module Extensions
+
+    Help = Struct.new(:cmd, :desc, :explanation)
 
     # Extensions to be included in every 'main' object in shef. These objects
     # are extended with this module.
@@ -56,20 +62,38 @@ module Shef
         end
       end
 
-      def help_banner(title=nil)
+      def help_banner
         banner = []
         banner << ""
-        banner << title if title
+        banner << "Shef Help"
         banner << "".ljust(80, "=")
         banner << "| " + "Command".ljust(25) + "| " + "Description"
         banner << "".ljust(80, "=")
 
-        self.all_help_descriptions.each do |cmd, description|
-          banner << "| " + cmd.ljust(25) + "| " + description
+        self.all_help_descriptions.each do |help_text|
+          banner << "| " + help_text.cmd.ljust(25) + "| " + help_text.desc
         end
         banner << "".ljust(80, "=")
         banner << "\n"
+        banner << "Use help(:command) to get detailed help with individual commands"
+        banner << "\n"
         banner.join("\n")
+      end
+
+      def explain_command(method_name)
+        help = self.all_help_descriptions.find { |h| h.cmd.to_s == method_name.to_s }
+        if help
+          puts ""
+          puts "Command: #{method_name}"
+          puts "".ljust(80, "=")
+          puts help.explanation || help.desc
+          puts "".ljust(80, "=")
+          puts ""
+        else
+          puts ""
+          puts "command #{method_name} not found or no help available"
+          puts ""
+        end
       end
 
       # helpfully returns +:on+ so we can have sugary syntax like `tracing on'
@@ -87,15 +111,15 @@ module Shef
       end
 
       def all_help_descriptions
-        #if (sc = superclass) && superclass.respond_to?(:help_descriptions)
-        #  help_descriptions + sc.help_descriptions
-        #else
-          help_descriptions
-        #end
+        help_descriptions
       end
 
       def desc(help_text)
         @desc = help_text
+      end
+
+      def explain(explain_text)
+        @explain = explain_text
       end
 
       def subcommands(subcommand_help={})
@@ -104,12 +128,12 @@ module Shef
 
       def singleton_method_added(mname)
         if @desc
-          help_descriptions << [mname.to_s, @desc.to_s]
-          @desc = nil
+          help_descriptions << Help.new(mname.to_s, @desc.to_s, @explain)
+          @desc, @explain = nil, nil
         end
         if @subcommand_help
           @subcommand_help.each do |subcommand, text|
-            help_descriptions << ["#{mname}.#{subcommand}", text.to_s]
+            help_descriptions << Help.new("#{mname}.#{subcommand}", text.to_s, nil)
           end
         end
         @subcommand_help = {}
@@ -163,8 +187,18 @@ module Shef
       extend Shef::Extensions::ObjectCoreExtensions
 
       desc "prints this help message"
-      def help(title="Help: Shef")
-        puts help_banner(title)
+      explain(<<-E)
+## SUMMARY ##
+  When called with no argument, +help+ prints a table of all shef commands. When
+  called with an argument COMMAND, +help+ prints a detailed explanation of the
+  command if available, or the description if no explanation is available.
+E
+      def help(commmand=nil)
+        if commmand
+          explain_command(commmand)
+        else
+          puts help_banner
+        end
         :ucanhaz_halp
       end
       alias :halp :help
@@ -224,6 +258,13 @@ module Shef
         Shef.session.reset!
       end
 
+      desc "assume the identity of another node."
+      def become_node(node_name)
+        Shef::DoppelGangerSession.instance.assume_identity(node_name)
+        :doppelganger
+      end
+      alias :doppelganger :become_node
+
       desc "turns printout of return values on or off"
       def echo(on_or_off)
         conf.echo = on_or_off.on_off_to_bool
@@ -251,6 +292,224 @@ module Shef
       def ls(directory)
         Dir.entries(directory)
       end
+    end
+
+    RESTApiExtensions = Proc.new do
+      desc "edit an object in your EDITOR"
+      explain(<<-E)
+## SUMMARY ##
+  +edit(object)+ allows you to edit any object that can be converted to JSON.
+  When finished editing, this method will return the edited object:
+
+      new_node = edit(existing_node)
+
+## EDITOR SELECTION ##
+  Shef looks for an editor using the following logic
+  1. Looks for an EDITOR set by Shef.editor = "EDITOR"
+  2. Looks for an EDITOR configured in your shef config file
+  3. Uses the value of the EDITOR environment variable
+E
+      def edit(object)
+        unless Shef.editor
+          puts "Please set your editor with Shef.editor = \"vim|emacs|mate|ed\""
+          return :failburger
+        end
+
+        filename = "shef-edit-#{object.class.name}-"
+        if object.respond_to?(:name)
+          filename += object.name
+        elsif object.respond_to?(:id)
+          filename += object.id
+        end
+
+        edited_data = Tempfile.open([filename, ".js"]) do |tempfile|
+          tempfile.sync = true
+          tempfile.puts object.to_json
+          system("#{Shef.editor.to_s} #{tempfile.path}")
+          tempfile.rewind
+          tempfile.read
+        end
+
+        JSON.parse(edited_data)
+      end
+
+      desc "Find and edit API clients"
+      explain(<<-E)
+## SUMMARY ##
+  +clients+ allows you to query you chef server for information about your api
+  clients.
+
+## LIST ALL CLIENTS ##
+  To see all clients on the system, use
+
+      clients.all #=> [<Chef::ApiClient...>, ...]
+
+  If the output from all is too verbose, or you're only interested in a specific
+  value from each of the objects, you can give a code block to +all+:
+
+      clients.all { |client| client.name } #=> [CLIENT1_NAME, CLIENT2_NAME, ...]
+
+## SHOW ONE CLIENT ##
+  To see a specific client, use
+
+      clients.show(CLIENT_NAME)
+
+## SEARCH FOR CLIENTS ##
+  You can also search for clients using +find+ or +search+. You can use the
+  familiar string search syntax:
+
+      clients.search("KEY:VALUE")
+
+  Just as the +all+ subcommand, the +search+ subcommand can use a code block to
+  filter or transform the information returned from the search:
+
+      clients.search("KEY:VALUE") { |c| c.name }
+
+  You can also use a Hash based syntax, multiple search conditions will be 
+  joined with AND.
+
+      clients.find :KEY => :VALUE, :KEY2 => :VALUE2, ...
+
+## BULK-EDIT CLIENTS ##
+                    **BE CAREFUL, THIS IS DESTRUCTIVE**
+  You can bulk edit API Clients using the +transform+ subcommand, which requires
+  a code block. Each client will be saved after the code block is run. If the
+  code block returns +nil+ or +false+, that client will be skipped:
+
+      clients.transform("*:*") do |client|
+        if client.name =~ /borat/i
+          client.admin(false)
+          true
+        else
+          nil
+        end
+      end
+
+  This will strip the admin privileges from any client named after borat.
+E
+      subcommands :all        => "list all api clients",
+                  :show       => "load an api client by name",
+                  :search     => "search for API clients",
+                  :transform  => "edit all api clients via a code block and save them"
+      def clients
+        @clients ||= Shef::ModelWrapper.new(Chef::ApiClient, :client)
+      end
+
+      desc "Find and edit cookbooks"
+      subcommands :all        => "list all cookbooks",
+                  :show       => "load a cookbook by name",
+                  :transform  => "edit all cookbooks via a code block and save them"
+      def cookbooks
+        @cookbooks ||= Shef::ModelWrapper.new(Chef::CookbookVersion)
+      end
+
+      desc "Find and edit nodes via the API"
+      explain(<<-E)
+## SUMMARY ##
+  +nodes+ Allows you to query your chef server for information about your nodes.
+
+## LIST ALL NODES ##
+  You can list all nodes using +all+ or +list+
+
+      nodes.all #=> [<Chef::Node...>, <Chef::Node...>, ...]
+
+  To limit the information returned for each node, pass a code block to the +all+
+  subcommand:
+
+      nodes.all { |node| node.name } #=> [NODE1_NAME, NODE2_NAME, ...]
+
+## SHOW ONE NODE ##
+  You can show the data for a single node using the +show+ subcommand:
+
+      nodes.show("NODE_NAME") => <Chef::Node @name="NODE_NAME" ...>
+
+## SEARCH FOR NODES ##
+  You can search for nodes using the +search+ or +find+ subcommands:
+
+      nodes.find(:name => "app*") #=> [<Chef::Node @name="app1.example.com" ...>, ...]
+
+  Similarly to +all+, you can pass a code block to limit or transform the
+  information returned:
+
+      nodes.find(:name => "app#") { |node| node.ec2 } 
+
+## BULK EDIT NODES ##
+              **BE CAREFUL, THIS OPERATION IS DESTRUCTIVE**
+
+  Bulk edit nodes by passing a code block to the +transform+ or +bulk_edit+
+  subcommand. The block will be applied to each matching node, and then the node
+  will be saved. If the block returns +nil+ or +false+, that node will be 
+  skipped.
+
+      nodes.transform do |node|
+        if node.fqdn =~ /.*\\.preprod\\.example\\.com/
+          node.set[:environment] = "preprod"
+        end
+      end
+
+  This will assign the attribute to every node with a FQDN matching the regex.
+E
+      subcommands :all        => "list all nodes",
+                  :show       => "load a node by name",
+                  :search     => "search for nodes",
+                  :transform  => "edit all nodes via a code block and save them"
+      def nodes
+        @nodes ||= Shef::ModelWrapper.new(Chef::Node)
+      end
+
+      desc "Find and edit roles via the API"
+      explain(<<-E)
+## SUMMARY ##
+  +roles+ allows you to query and edit roles on your Chef server.
+
+## SUBCOMMANDS ##
+  * all       (list)
+  * show      (load)
+  * search    (find)
+  * transform (bulk_edit)
+
+## SEE ALSO ##
+  See the help for +nodes+ for more information about the subcommands.
+E
+      subcommands :all        => "list all roles",
+                  :show       => "load a role by name",
+                  :search     => "search for roles",
+                  :transform  => "edit all roles via a code block and save them"
+      def roles
+        @roles ||= Shef::ModelWrapper.new(Chef::Role)
+      end
+
+      desc "Find and edit +databag_name+ via the api"
+      explain(<<-E)
+## SUMMARY ##
+  +databags(DATABAG_NAME)+ allows you to query and edit data bag items on your
+  Chef server. Unlike other commands for working with data on the server, 
+  +databags+ requires the databag name as an argument, for example:
+    databags(:users).all
+
+## SUBCOMMANDS ##
+  * all       (list)
+  * show      (load)
+  * search    (find)
+  * transform (bulk_edit)
+
+## SEE ALSO ##
+  See the help for +nodes+ for more information about the subcommands.
+
+E
+      subcommands :all        => "list all items in the data bag",
+                  :show       => "load a data bag item by id",
+                  :search     => "search for items in the data bag",
+                  :transform  => "edit all items via a code block and save them"
+      def databags(databag_name)
+        @named_databags_wrappers ||= {}
+        @named_databags_wrappers[databag_name] ||= Shef::NamedDataBagWrapper.new(databag_name)
+      end
+
+      desc "A REST Client configured to authenticate with the API"
+      def api
+        @rest = Shef::ShefREST.new(Chef::Config[:chef_server_url])
+      end
 
     end
 
@@ -270,7 +529,13 @@ module Shef
 
     def self.extend_context_object(obj)
       obj.instance_eval(&ObjectUIExtensions)
+      obj.instance_eval(&RESTApiExtensions)
       obj.extend(FileUtils)
+      obj.extend(Chef::Mixin::Language)
+    end
+
+    def self.extend_context_node(node_obj)
+      node_obj.instance_eval(&ObjectUIExtensions)
     end
 
     def self.extend_context_recipe(recipe_obj)
