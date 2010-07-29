@@ -211,7 +211,15 @@ class Chef
     
     # As a string
     def to_s
-      "data_bag_item[#{@name}]"
+      "data_bag_item[#{id}]"
+    end
+
+    def pretty_print(pretty_printer)
+      pretty_printer.pp({"data_bag_item('#{data_bag}', '#{id}')" => self.to_hash})
+    end
+
+    def id
+      @raw_data['id']
     end
 
   end
