@@ -64,8 +64,8 @@ class Chef
         if absolute_uri?(source)
           Chef::Provider::RemoteFile
         else
-          # contentious...
           Chef::Log.warn("remote_file is deprecated for fetching files from cookbooks. Use cookbook_file instead")
+          Chef::Log.warn("From #{self.to_s} on #{source_line}")
           Chef::Provider::CookbookFile
         end
       end
