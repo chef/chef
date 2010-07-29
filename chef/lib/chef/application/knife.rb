@@ -89,6 +89,10 @@ class Chef::Application::Knife < Chef::Application
     :long => "--yes",
     :description => "Say yes to all prompts for confirmation"
 
+  option :defaults,
+    :long => "--defaults",
+    :description => "Accept default values for all questions"
+
   option :print_after,
     :short => "-p",
     :long => "--print-after",

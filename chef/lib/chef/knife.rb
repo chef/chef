@@ -200,15 +200,24 @@ class Chef
 
     def ask_question(question, opts={})
       question = question + "[#{opts[:default]}] " if opts[:default]
-        
-      stdout.print question
-      a = stdin.readline.strip
 
-      if opts[:default]
-        a.empty? ? opts[:default] : a
+      if opts[:default] and config[:defaults]
+
+        opts[:default]
+
       else
-        a
+
+        stdout.print question
+        a = stdin.readline.strip
+
+        if opts[:default]
+          a.empty? ? opts[:default] : a
+        else
+          a
+        end
+
       end
+
     end
 
     def configure_chef
