@@ -102,7 +102,7 @@ describe Chef::Provider::Package::Zypper do
   describe "upgrade_package" do
     it "should run zypper update with the package name and version" do
       @provider.should_receive(:run_command).with({
-          :command => "zypper -n --no-gpg-checks update -l  emacs=1.0",
+          :command => "zypper -n --no-gpg-checks install -l emacs=1.0",
         })
       @provider.upgrade_package("emacs", "1.0")
     end
