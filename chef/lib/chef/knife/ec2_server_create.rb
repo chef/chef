@@ -61,8 +61,13 @@ class Chef
         :description => "The ssh username",
         :default => "root" 
  
+      option :ssh_password,
+        :short => "-P PASSWORD",
+        :long => "--ssh-password PASSWORD",
+        :description => "The ssh password"
+
       option :identity_file,
-        :short => "-i IDENTITY_FILE",
+        :short => "-I IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
  
@@ -86,6 +91,17 @@ class Chef
         :long => "--region REGION",
         :description => "Your AWS region",
         :default => "us-east-1"
+
+      option :distro,
+        :short => "-d DISTRO",
+        :long => "--distro DISTRO",
+        :description => "Bootstrap a distro using a template",
+        :default => "ubuntu10.04-gems"
+
+      option :template_file,
+        :long => "--template-file TEMPLATE",
+        :description => "Full path to location of template to use",
+        :default => false
 
       def h
         @highline ||= HighLine.new
@@ -124,8 +140,10 @@ class Chef
 
         # wait for it to be ready to do stuff
         server.wait_for { print "."; ready? }
+        puts "#{h.color("\nWaiting 10 seconds for SSH Host Key generation on", :magenta)}: #{server.dns_name}"
+        sleep 10
 
-        print "\n\n"
+        print "\n"
 
         puts "#{h.color("Public DNS Name", :cyan)}: #{server.dns_name}"
         puts "#{h.color("Public IP Address", :cyan)}: #{server.ip_address}"
@@ -134,11 +152,15 @@ class Chef
 
         begin
           bootstrap = Chef::Knife::Bootstrap.new
-          bootstrap.name_args = [ server.ip_address, @name_args ].flatten
+          bootstrap.name_args = server.dns_name
+          bootstrap.config[:run_list] = @name_args
           bootstrap.config[:ssh_user] = config[:ssh_user]
           bootstrap.config[:identity_file] = config[:identity_file]
           bootstrap.config[:chef_node_name] = server.id
           bootstrap.config[:prerelease] = config[:prerelease]
+          bootstrap.config[:distro] = config[:distro]
+          bootstrap.config[:use_sudo] = true
+          bootstrap.config[:template_file] = config[:template_file]
           bootstrap.run
         rescue Errno::ECONNREFUSED
           puts h.color("Connection refused on SSH, retrying - CTRL-C to abort")
