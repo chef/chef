@@ -100,11 +100,11 @@ class Chef
         def upgrade_package(name, version)
           if version
             run_command(
-              :command => "zypper -n --no-gpg-checks update -l  #{name}=#{version}"
+              :command => "zypper -n --no-gpg-checks install -l #{name}=#{version}"
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks update -l  #{name}"
+              :command => "zypper -n --no-gpg-checks install -l #{name}"
             )
           end
         end
