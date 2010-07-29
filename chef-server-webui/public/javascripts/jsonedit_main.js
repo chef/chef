@@ -1,9 +1,9 @@
 /*
-         "version": "1.1", "www": "http://braincast.nl", "date": "april 2008", "description": "Braincast Json Tree object." },
+         "version": "1.1.1", "www": "http://braincast.nl", "date": "jul 2010", "description": "Braincast Json Tree object." },
 */
 var BCJT = function() {
     return {
-        info: { "version": "1.1", "www": "http://braincast.nl", "date": "april 2008", "description": "Braincast Json Tree object." },
+        info: { "version": "1.1.1", "www": "http://braincast.nl", "date": "jul 2010", "description": "Braincast Json Tree object." },
         util: function() {
             function addLoadEvent(func) { var oldonload = window.onload; if (typeof window.onload != 'function') { window.onload = func; } else { window.onload = function() { if (oldonload) { oldonload(); } func(); }; } }
             function addEvent(obj, type, fn) { if (obj.attachEvent) { obj['e' + type + fn] = fn; obj[type + fn] = function() { obj['e' + type + fn](window.event); }; obj.attachEvent('on' + type, obj[type + fn]); } else { obj.addEventListener(type, fn, false); } }
@@ -151,6 +151,8 @@ var BCJT = function() {
             function processList(ul) {
                 if (!ul.childNodes || ul.childNodes.length === 0) { return; }
                 var childNodesLength = ul.childNodes.length;
+				var folders = [];
+				var items = []
                 for (var itemi = 0; itemi < childNodesLength; itemi++) {
                     var item = ul.childNodes[itemi];
                     if (item.nodeName == "LI") {
@@ -167,11 +169,35 @@ var BCJT = function() {
                             if (item.className === null || item.className === "") { item.className = nodeClosedClass; }
                             if (item.firstChild.nodeName == "#text") { t = t + item.firstChild.nodeValue; item.removeChild(item.firstChild); }
                             s.onclick = treeNodeOnclick;
-                        } else { item.className = nodeBulletClass; s.onclick = retFalse; }
+							folders.push(item);
+                        } else { 
+							item.className = nodeBulletClass;
+							s.onclick = retFalse; 
+							items.push(item);
+						}
                         s.appendChild(document.createTextNode(t));
                         item.insertBefore(s, item.firstChild);
                     }
                 }
+				// sort
+				var sortNodes = function(a, b)
+				{
+					var ta = jQuery(a).text();
+					var tb = jQuery(b).text();
+					if (ta == tb) return 0;
+					return (ta < tb) ? -1 : 1;
+				};
+				folders.sort(sortNodes);
+				items.sort(sortNodes);
+				for (var i = 0; i < items.length; i++)
+				{
+					folders.push(items[i]);
+				}
+				items = null;
+				for (var i = 0; i < folders.length; i++)
+				{
+					ul.appendChild(folders[i]);
+				}
             }
             // Performs 3 functions:
             // a) Expand all nodes
