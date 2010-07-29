@@ -74,9 +74,17 @@ class Chef
         end
 
         def format_values(hash)
-          formatted_array = hash.map { |key, value| [key.to_s, value]}.flatten
+          formatted_array = flatten_one_level(hash.map { |key, value| [key.to_s, value]})
           Hash[*formatted_array]
         end
+
+        def flatten_one_level(array)
+          array.inject([]) do |flatter_array, values|
+            Array(values).each {|value| flatter_array << value }
+            flatter_array
+          end
+        end
+
 
         def assert_valid_platform_values!(platforms, value)
           unless value.kind_of?(Hash)

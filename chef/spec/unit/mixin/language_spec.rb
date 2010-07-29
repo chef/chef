@@ -44,7 +44,7 @@ describe Chef::Mixin::Language do
   end
 
   it "returns a default value when the current platform doesn't match" do
-        @node[:platform] = "not-a-known-platform"
+    @node[:platform] = "not-a-known-platform"
     @language.value_for_platform(@platform_hash).should == "default"
   end
 
@@ -63,6 +63,32 @@ describe Chef::Mixin::Language do
     @node[:platform] = "openbsd"
     @node[:platform_version] = "0.0.0"
     @language.value_for_platform(@platform_hash).should == "openbsd"
+  end
+
+  # NOTE: this is a regression test for bug CHEF-1514
+  describe "when the value is an array" do
+    before do
+      @platform_hash = {
+        "debian" => { "4.0" => [ :restart, :reload ], "default" => [ :restart, :reload, :status ] },
+        "ubuntu" => { "default" => [ :restart, :reload, :status ] },
+        "centos" => { "default" => [ :restart, :reload, :status ] },
+        "redhat" => { "default" => [ :restart, :reload, :status ] },
+        "fedora" => { "default" => [ :restart, :reload, :status ] },
+        "default" => { "default" => [:restart, :reload ] }}
+    end
+
+    it "returns the correct default for a given platform" do
+      @node[:platform] = "debian"
+      @node[:platform_version] = '9000'
+      @language.value_for_platform(@platform_hash).should == [ :restart, :reload, :status ]
+    end
+
+    it "returns the correct platform+version specific value " do
+      @node[:platform] = "debian"
+      @node[:platform_version] = '4.0'
+      @language.value_for_platform(@platform_hash).should == [:restart, :reload]
+    end
+
   end
 
 end
