@@ -1,2 +1,4 @@
-CHEF_SERVER_WEBUI_VERSION = "0.8.11"
+require 'chef-server-webui/version'
+
+CHEF_SERVER_WEBUI_VERSION = ::ChefServerWebui::VERSION
 CHEF_SERVER_WEBUI_ROOT = File.expand_path(File.dirname(__FILE__) + '/../')
