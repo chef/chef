@@ -141,6 +141,11 @@ describe Chef::Knife do
       command.name_args.should == %w{with some args}
     end
 
+    it "excludes the command name from the name args when parts are joined with underscores" do
+      command = Chef::Knife.run(%w{test_yourself with some args})
+      command.name_args.should == %w{with some args}
+    end
+
     it "exits if no subcommand matches the CLI args" do
       lambda {Chef::Knife.run(%w{fuuu uuuu fuuuu})}.should raise_error(SystemExit) { |e| e.status.should_not == 0 }
     end

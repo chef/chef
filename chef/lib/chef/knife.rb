@@ -184,6 +184,11 @@ class Chef
       @name_args = parse_options(argv)
       @name_args.reject! { |name_arg| command_name_words.delete(name_arg) }
 
+      # knife node run_list add requires that we have extra logic to handle
+      # the case that command name words could be joined by an underscore :/
+      command_name_words = command_name_words.join('_')
+      @name_args.reject! { |name_arg| command_name_words == name_arg }
+
       if config[:help]
         msg opt_parser
         exit 1
