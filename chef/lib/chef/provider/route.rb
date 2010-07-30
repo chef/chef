@@ -108,10 +108,7 @@ class Chef::Provider::Route < Chef::Provider
         if  is_running
             Chef::Log.debug("Route #{@new_resource.name} already active ")
         else
-            command =  "ip route replace #{@new_resource.target}"
-            command << "/#{MASK[@new_resource.netmask.to_s]}" if @new_resource.netmask 
-            command << " via #{@new_resource.gateway} "
-            command << " dev #{@new_resource.device} " if @new_resource.device
+            command = generate_command(:add)
             
             Chef::Log.info("Adding route: #{command} ")  
             run_command( :command => command )
@@ -125,9 +122,7 @@ class Chef::Provider::Route < Chef::Provider
 
     def action_delete
         if is_running
-            command = "ip route delete #{@new_resource.target}"
-            command << "/#{MASK[@new_resource.netmask.to_s]}" if @new_resource.netmask 
-            command << " via #{@new_resource.gateway} " 
+            command = generate_command(:delete)
             
             Chef::Log.info("Removing route: #{command}")  
             run_command( :command => command )
@@ -153,13 +148,11 @@ class Chef::Provider::Route < Chef::Provider
                    
                     conf[dev] = String.new if conf[dev].nil? 
                     if resource.action == :add
-                        conf[dev] << "#{resource.target}"
-                        conf[dev] << "/#{resource.netmask}" if resource.netmask
-                        conf[dev] << " via #{resource.gateway}\n" 
+                        conf[dev] = config_file_contents(:add, :target => resource.target, :netmask => resource.netmask, :gateway => resource.gateway)
                     else 
                         # need to do this for the case when the last route on an int
                         # is removed
-                        conf[dev] = ""
+                        conf[dev] = config_file_contents(:delete)
                     end
                 end
             end
@@ -170,5 +163,36 @@ class Chef::Provider::Route < Chef::Provider
                network_file.close
             end 
         end
-    end    
+    end 
+    
+    def generate_command(action)
+        common_route_items = ''
+        common_route_items << "/#{MASK[@new_resource.netmask.to_s]}" if @new_resource.netmask 
+        common_route_items << " via #{@new_resource.gateway} " if @new_resource.gateway
+      
+        case action
+        when :add
+            command = "ip route replace #{@new_resource.target}"
+            command << common_route_items
+            command << " dev #{@new_resource.device} " if @new_resource.device
+        when :delete
+            command = "ip route delete #{@new_resource.target}"
+            command << common_route_items
+        end
+      
+        return command
+    end
+    
+    def config_file_contents(action, options={})
+        content = ''
+        case action
+        when :add
+            content << "#{options[:target]}"
+            content << "/#{options[:netmask]}" if options[:netmask]
+            content << " via #{options[:gateway]}" if options[:gateway]
+            content << "\n"
+        end
+        
+        return content
+    end
 end
