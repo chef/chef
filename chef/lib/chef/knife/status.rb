@@ -31,10 +31,15 @@ class Chef
       end
 
       def run
+        all_nodes = []
         Chef::Search::Query.new.search(:node, '*:*') do |node|
-          current_time = DateTime.now
-          date = DateTime.parse(Time.at(node["ohai_time"]).to_s)
-          hours, minutes, seconds, frac = DateTime.day_fraction_to_time(current_time - date)
+          all_nodes << node
+        end
+        all_nodes.sort { |n1, n2| n1["ohai_time"] <=> n2["ohai_time"] }.each do |node|
+          # 59 seconds
+          # 1000 hours
+          # date = DateTime.parse(Time.at(node["ohai_time"]).to_s)
+          hours, minutes, seconds = time_difference_in_hms(node["ohai_time"])
           hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
           minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
           if hours > 24
@@ -45,7 +50,21 @@ class Chef
             highline.say("<%= color('#{minutes_text}', GREEN) %> ago, #{node['fqdn']} checked in as a #{node['platform']} #{node['platform_version']} node.")
           end
         end
+
       end
+
+      # :nodoc:
+      # TODO: this is duplicated from StatusHelper in the Webui. dedup.
+      def time_difference_in_hms(unix_time)
+        now = Time.now.to_i
+        difference = now - unix_time.to_i
+        hours = (difference / 3600).to_i
+        difference = difference % 3600
+        minutes = (difference / 60).to_i
+        seconds = (difference % 60)
+        return [hours, minutes, seconds]
+      end
+
     end
   end
 end
