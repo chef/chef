@@ -47,9 +47,29 @@ class Chef
     # Determine the appropriate provider for the given resource, then
     # execute it.
     def run_action(resource, action, delayed_actions)
+      # Check if this resource has an only_if block -- if it does,
+      # evaluate the only_if block and skip the resource if
+      # appropriate.
+      if resource.only_if
+        unless Chef::Mixin::Command.only_if(resource.only_if, resource.only_if_args)
+          Chef::Log.debug("Skipping #{resource} due to only_if")
+          return
+        end
+      end
+
+      # Check if this resource has a not_if block -- if it does,
+      # evaluate the not_if block and skip the resource if
+      # appropriate.
+      if resource.not_if
+        unless Chef::Mixin::Command.not_if(resource.not_if, resource.not_if_args)
+          Chef::Log.debug("Skipping #{resource} due to not_if")
+          return
+        end
+      end
+
       provider = build_provider(resource)
       provider.send("action_#{action}")
-      
+
       # Execute any immediate and queue up any delayed notifications
       # associated with the resource.
       if resource.updated
@@ -57,7 +77,7 @@ class Chef
           Chef::Log.info("#{resource} sending #{notify.action} action to #{notify.resource} (immediate)")
           run_action(notify.resource, notify.action, delayed_actions)
         end
-        
+
         resource.notifies_delayed.each do |notify|
           unless delayed_actions.include?(notify)
             delayed_actions << notify
@@ -82,26 +102,6 @@ class Chef
       run_context.resource_collection.execute_each_resource do |resource|
         begin
           Chef::Log.debug("Processing #{resource} on #{run_context.node.name}")
-          
-          # Check if this resource has an only_if block -- if it does,
-          # evaluate the only_if block and skip the resource if
-          # appropriate.
-          if resource.only_if
-            unless Chef::Mixin::Command.only_if(resource.only_if, resource.only_if_args)
-              Chef::Log.debug("Skipping #{resource} due to only_if")
-              next
-            end
-          end
-          
-          # Check if this resource has a not_if block -- if it does,
-          # evaluate the not_if block and skip the resource if
-          # appropriate.
-          if resource.not_if
-            unless Chef::Mixin::Command.not_if(resource.not_if, resource.not_if_args)
-              Chef::Log.debug("Skipping #{resource} due to not_if")
-              next
-            end
-          end
           
           # Execute each of this resource's actions.
           action_list = resource.action.kind_of?(Array) ? resource.action : [ resource.action ]
