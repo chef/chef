@@ -1,4 +1,4 @@
-#
+#--
 # Author:: Daniel DeLeo (<dan@opscode.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
 # Copyright:: Copyright (c) 2005 Sam Ruby
@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#
+#--
 # Portions of this code are adapted from Sam Ruby's xchar.rb
 # http://intertwingly.net/stories/2005/09/28/xchar.rb 
 #

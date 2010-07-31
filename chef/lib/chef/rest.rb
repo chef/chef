@@ -1,4 +1,4 @@
-#
+#--
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Thom May (<thom@clearairturbulence.org>)
 # Author:: Nuo Yan (<nuo@opscode.com>)
@@ -37,6 +37,10 @@ class Chef
     attr_reader :auth_credentials
     attr_accessor :url, :cookies, :sign_on_redirect, :redirect_limit
 
+    # Create a REST client object. The supplied +url+ is used as the base for
+    # all subsequent requests. For example, when initialized with a base url
+    # http://localhost:4000, a call to +get_rest+ with 'nodes' will make an
+    # HTTP GET request to http://localhost:4000/nodes
     def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
       @url = url
       @cookies = CookieJar.instance
@@ -93,7 +97,7 @@ class Chef
 
     # Send an HTTP GET request to the path
     #
-    # Using this method to #fetch a file is considered deprecated.
+    # Using this method to +fetch+ a file is considered deprecated.
     #
     # === Parameters
     # path:: The path to GET

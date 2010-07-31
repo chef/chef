@@ -63,8 +63,19 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-Rake::RDocTask.new do |rd|
-  rd.rdoc_files.include("lib/**/*.rb")
+begin
+  require 'sdoc'
+
+  Rake::RDocTask.new do |rdoc|
+    rdoc.title = "Chef Ruby API Documentation"
+    rdoc.main = "README.rdoc"
+    rdoc.options << '--fmt' << 'shtml' # explictly set shtml generator
+    rdoc.template = 'direct' # lighter template
+    rdoc.rdoc_files.include("README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb")
+    rdoc.rdoc_dir = "rdoc"
+  end
+rescue LoadError
+  puts "sdoc is not available. (sudo) gem install sdoc to generate rdoc documentation."
 end
 
 task :install => :package do

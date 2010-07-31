@@ -1,4 +1,4 @@
-#
+#--
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
@@ -21,6 +21,7 @@ require 'chef/resource'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/language'
 
+#--
 # UGH. this is a circular require that will cause an uninitialized constant
 # error, but this file really does depend on Chef::Recipe. oh well.
 # require 'chef/recipe'

@@ -1,4 +1,4 @@
-#
+#--
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
@@ -26,6 +26,8 @@ require 'chef/mixin/language_include_recipe'
 require 'chef/mixin/deprecation'
 
 class Chef
+  # == Chef::Recipe
+  # A Recipe object is the context in which Chef recipes are evaluated.
   class Recipe
     
     include Chef::Mixin::FromFile
@@ -42,6 +44,8 @@ class Chef
     # For example:
     #   "aws::elastic_ip" returns [:aws, "elastic_ip"]
     #   "aws" returns [:aws, "default"]
+    #--
+    # TODO: Duplicates functionality of RunListItem
     def self.parse_recipe_name(recipe_name)
       rmatch = recipe_name.match(/(.+?)::(.+)/)
       if rmatch
@@ -65,10 +69,10 @@ class Chef
       run_context.node
     end
     
+    # Used by the DSL to look up resources when executing in the context of a
+    # recipe.
+    #--
     # what does this do? and what is args? TODO 5-14-2010.
-    #
-    # We believe this is used by the DSL when it's executing in the
-    # context of a recipe in order to look up resources.
     def resources(*args)
       run_context.resource_collection.find(*args)
     end
@@ -83,9 +87,9 @@ class Chef
     #
     # === Returns
     # tags<Array>:: The contents of run_context.node[:tags]
-    def tag(*args)
-      if args.length > 0
-        args.each do |tag|
+    def tag(*tags)
+      if tags.length > 0
+        tags.each do |tag|
           run_context.node[:tags] << tag unless run_context.node[:tags].include?(tag)
         end
         run_context.node[:tags]
@@ -94,7 +98,7 @@ class Chef
       end
     end
     
-    # Returns true if the node is tagged with the supplied list of tags.
+    # Returns true if the node is tagged with *all* of the supplied +tags+.
     #
     # === Parameters
     # tags<Array>:: A list of tags
@@ -102,8 +106,8 @@ class Chef
     # === Returns
     # true<TrueClass>:: If all the parameters are present
     # false<FalseClass>:: If any of the parameters are missing
-    def tagged?(*args)
-      args.each do |tag|
+    def tagged?(*tags)
+      tags.each do |tag|
         return false unless run_context.node[:tags].include?(tag)
       end
       true
@@ -116,8 +120,8 @@ class Chef
     #
     # === Returns
     # tags<Array>:: The current list of run_context.node[:tags]
-    def untag(*args)
-      args.each do |tag|
+    def untag(*tags)
+      tags.each do |tag|
         run_context.node[:tags].delete(tag)
       end
     end

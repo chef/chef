@@ -1,4 +1,4 @@
-#
+#--
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Copyright:: Copyright (c) 2010 Opscode, Inc.

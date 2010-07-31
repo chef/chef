@@ -1,4 +1,4 @@
-#
+#--
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
 # Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
@@ -22,12 +22,6 @@ require 'chef/mixin/template'
 require 'chef/mixin/checksum'
 require 'chef/file_access_control'
 
-#require 'chef/mixin/find_preferred_file'
-#require 'chef/rest'
-#require 'chef/file_cache'
-#require 'uri'
-#require 'tempfile'
-
 class Chef
   class Provider
 
@@ -35,7 +29,6 @@ class Chef
 
       include Chef::Mixin::Checksum
       include Chef::Mixin::Template
-      #include Chef::Mixin::FindPreferredFile
 
       def load_current_resource
         super
@@ -98,44 +91,7 @@ class Chef
         @new_resource.updated = access_controls.modified?
       end
 
-      # def locate_or_fetch_template
-      #   Chef::Log.debug("looking for template #{@new_resource.source} in cookbook #{cookbook_name.inspect}")
-      # 
-      #   cache_file_name = "cookbooks/#{cookbook_name}/templates/default/#{@new_resource.source}"
-      #   template_cache_name = "#{cookbook_name}_#{@new_resource.source}"
-      # 
-      #   if @new_resource.local
-      #     cache_file_name = @new_resource.source
-      #   elsif Chef::Config[:solo]
-      #     cache_file_name = solo_cache_file_name
-      #   else
-      #     raw_template_file = fetch_template_via_rest(cache_file_name, template_cache_name)
-      #   end
-      # 
-      #   if template_updated?
-      #     Chef::Log.debug("Updating template for #{@new_resource} in the cache")
-      #     Chef::FileCache.move_to(raw_template_file.path, cache_file_name)
-      #   end
-      #   cache_file_name
-      # end
-
       private
-
-      # def template_updated
-      #   @template_updated = true
-      # end
-      # 
-      # def template_not_updated
-      #   @template_updated = false
-      # end
-      # 
-      # def template_updated?
-      #   @template_updated
-      # end
-      # 
-      # def cookbook_name
-      #   @cookbook_name = (@new_resource.cookbook || @new_resource.cookbook_name)
-      # end
 
       def render_with_context(template_location, &block)
         context = {}
@@ -143,55 +99,6 @@ class Chef
         context[:node] = node
         render_template(IO.read(template_location), context, &block)
       end
-
-      # def solo_cache_file_name
-      #   filename = find_preferred_file(
-      #     cookbook_name,
-      #     :template,
-      #     @new_resource.source,
-      #     node[:fqdn],
-      #     node[:platform],
-      #     node[:platform_version]
-      #   )
-      #   Chef::Log.debug("Using local file for template:#{filename}")
-      #   Pathname.new(filename).relative_path_from(Pathname.new(Chef::Config[:file_cache_path])).to_s
-      # end
-      # 
-      # def fetch_template_via_rest(cache_file_name, template_cache_name)
-      #   if node.run_state[:template_cache].has_key?(template_cache_name)
-      #     Chef::Log.debug("I have already fetched the template for #{@new_resource} once this run, not checking again.")
-      #     template_not_updated
-      #     return false
-      #   end
-      # 
-      #   r = Chef::REST.new(Chef::Config[:template_url])
-      # 
-      #   current_checksum = nil
-      # 
-      #   if Chef::FileCache.has_key?(cache_file_name)
-      #     current_checksum = self.checksum(Chef::FileCache.load(cache_file_name, false))
-      #   else
-      #     Chef::Log.debug("Template #{@new_resource} is not in the template cache")
-      #   end
-      # 
-      #   template_url = generate_url(@new_resource.source, "templates", :checksum => current_checksum)
-      # 
-      #   begin
-      #     raw_template_file = r.get_rest(template_url, true)
-      #     template_updated
-      #   rescue Net::HTTPRetriableError
-      #     if e.response.kind_of?(Net::HTTPNotModified)
-      #       Chef::Log.debug("Cached template for #{@new_resource} is unchanged")
-      #     else
-      #       raise
-      #     end
-      #   end
-      # 
-      #   # We have checked the cache for this template this run
-      #   node.run_state[:template_cache][template_cache_name] = true
-      # 
-      #   raw_template_file
-      # end
 
     end
   end

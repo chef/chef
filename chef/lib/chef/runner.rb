@@ -1,4 +1,4 @@
-#
+#--
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
