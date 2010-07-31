@@ -18,10 +18,10 @@
 require 'chef/log'
 require 'uuidtools'
 
-
-# Checksum for an individual file; e.g., used for sandbox/cookbook uploading
-# to track which files the system already manages.
 class Chef
+  # == Chef::Checksum
+  # Checksum for an individual file; e.g., used for sandbox/cookbook uploading
+  # to track which files the system already manages.
   class Checksum
     attr_accessor :checksum, :create_time
     attr_accessor :couchdb_id, :couchdb_rev
@@ -42,7 +42,10 @@ class Chef
       }
     }
     
-    # Creates a new Chef::Checksum object.  
+    # Creates a new Chef::Checksum object.
+    # === Arguments
+    # checksum::: the MD5 content hash of the file
+    # couchdb::: An instance of Chef::CouchDB
     #
     # === Returns
     # object<Chef::Checksum>:: Duh. :)

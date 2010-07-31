@@ -30,6 +30,9 @@ require 'chef/rest/rest_request'
 require 'chef/monkey_patches/string'
 
 class Chef
+  # == Chef::REST
+  # Chef's custom REST client with built-in JSON support and RSA signed header
+  # authentication.
   class REST
     attr_reader :auth_credentials
     attr_accessor :url, :cookies, :sign_on_redirect, :redirect_limit
@@ -90,6 +93,8 @@ class Chef
 
     # Send an HTTP GET request to the path
     #
+    # Using this method to #fetch a file is considered deprecated.
+    #
     # === Parameters
     # path:: The path to GET
     # raw:: Whether you want the raw body returned, or JSON inflated.  Defaults
@@ -138,6 +143,9 @@ class Chef
       auth_credentials.sign_requests? && @sign_request
     end
 
+    # ==== DEPRECATED
+    # Use +api_request+ instead
+    #--
     # Actually run an HTTP request.  First argument is the HTTP method,
     # which should be one of :GET, :PUT, :POST or :DELETE.  Next is the
     # URL, then an object to include in the body (which will be converted with
@@ -190,7 +198,7 @@ class Chef
       end
     end
 
-    # Similar to #run_request but only supports JSON APIs. File Download not supported.
+    # Runs an HTTP request to a JSON API. File Download not supported.
     def api_request(method, url, headers={}, data=false)
       json_body = data ? data.to_json : nil
       headers = build_headers(method, url, headers, json_body)
@@ -219,11 +227,11 @@ class Chef
       end
     end
 
-    # similar to #run_request but only supports streaming downloads.
-    # Only supports GET, doesn't speak JSON
+    # Makes a streaming download request. <b>Doesn't speak JSON.</b>
     # Streams the response body to a tempfile. If a block is given, it's
-    # passed to the tempfile, which means that the tempfile will automatically
+    # passed to Tempfile.open(), which means that the tempfile will automatically
     # be unlinked after the block is executed.
+    #
     # If no block is given, the tempfile is returned, which means it's up to
     # you to unlink the tempfile when you're done with it.
     def streaming_request(url, headers, &block)

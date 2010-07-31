@@ -23,8 +23,9 @@ require 'chef/node'
 require 'chef/resource_collection'
 require 'chef/platform'
 
-# This class is responsible for executing the steps in a Chef run.
 class Chef
+  # == Chef::Runner
+  # This class is responsible for executing the steps in a Chef run.
   class Runner
     
     attr_reader :run_context
@@ -72,7 +73,8 @@ class Chef
       end
     end
     
-    # Executes a Chef run.
+    # Iterates over the +resource_collection+ in the +run_context+ calling
+    # +run_action+ for each resource in turn.
     def converge
       delayed_actions = Array.new
       

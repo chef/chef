@@ -27,7 +27,9 @@ require "chef/config"
 require "chef/shef/shef_session"
 require "chef/shef/ext"
 
-
+# = Shef
+# Shef is Chef in an IRB session. Shef can interact with a Chef server via the
+# REST API, and run and debug recipes interactively.
 module Shef
   LEADERS = Hash.new("")
   LEADERS[Chef::Recipe] = ":recipe"

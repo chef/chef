@@ -16,6 +16,9 @@
 # limitations under the License.
 
 class Chef
+  # == Chef::Exceptions
+  # Chef's custom exceptions are all contained within the Chef::Exceptions
+  # namespace.
   class Exceptions
     class Application < RuntimeError; end
     class Cron < RuntimeError; end

@@ -18,10 +18,11 @@
 
 require 'chef/cookbook/file_vendor'
 
-# This FileVendor loads files by either fetching them from the local cache, or
-# if not available, loading them from the remote server.
 class Chef
   class Cookbook
+    # == Chef::Cookbook::RemoteFileVendor
+    # This FileVendor loads files by either fetching them from the local cache, or
+    # if not available, loading them from the remote server.
     class RemoteFileVendor < FileVendor
       
       def initialize(manifest, rest, valid_cache_entries)

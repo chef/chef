@@ -16,11 +16,15 @@
 # limitations under the License.
 #
 
+# == Tempfile (Patch)
 # Tempfile has a horrible bug where it causes an IOError: closed stream in its
 # finalizer, leading to intermittent application crashes with confusing stack
 # traces. Here we monkey patch the fix into place. You can track the bug on
 # ruby's redmine: http://redmine.ruby-lang.org/issues/show/3119
-class Tempfile
+#
+# The patch is slightly different for Ruby 1.8 and Ruby 1.9, both patches are
+# included here.
+class Tempfile # :nodoc:
   # Tempfile has changes between 1.8.x and 1.9.x
   # so we monkey patch separately
   if RUBY_VERSION =~ /^1\.8/

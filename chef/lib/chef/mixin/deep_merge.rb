@@ -17,13 +17,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Notice:
-# This code is imported from deep_merge by Steve Midgley. deep_merge is
-# available under the MIT license from
-# http://trac.misuse.org/science/wiki/DeepMerge
-
 class Chef
   module Mixin
+    # == Chef::Mixin::DeepMerge
+    # Implements a deep merging algorithm for nested data structures.
+    # ==== Notice:
+    #   This code is imported from deep_merge by Steve Midgley. deep_merge is
+    #   available under the MIT license from
+    #   http://trac.misuse.org/science/wiki/DeepMerge
     module DeepMerge
       def self.merge(first, second)
         first  = Mash.new(first)  unless first.kind_of?(Mash)

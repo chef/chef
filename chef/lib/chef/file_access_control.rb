@@ -21,6 +21,7 @@ require 'chef/log'
 
 class Chef
 
+  # == Chef::FileAccessControl
   # FileAccessControl objects set the owner, group and mode of +file+ to
   # the values specified by a value object, usually a Chef::Resource.
   class FileAccessControl

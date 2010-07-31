@@ -36,12 +36,16 @@ require 'chef/version'
 require 'ohai'
 
 class Chef
+  # == Chef::Client
+  # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
+  # syncs cookbooks if necessary, and triggers convergence.
   class Client
     attr_accessor :node
     attr_accessor :ohai
     attr_accessor :rest
     attr_accessor :runner
 
+    #--
     # TODO: timh/cw: 5-19-2010: json_attribs should be moved to RunContext?
     attr_reader :json_attribs
 

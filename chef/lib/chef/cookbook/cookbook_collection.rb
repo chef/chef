@@ -19,15 +19,16 @@
 
 require 'extlib'
 
-# This class is the consistent interface for a node to obtain its
-# cookbooks by name.
-#
-# This class is basically a glorified Hash, but since there are
-# several ways this cookbook information is collected,
-# (e.g. CookbookLoader for solo, hash of auto-vivified Cookbook
-# objects for lazily-loaded remote cookbooks), it gets transformed
-# into this.
 class Chef
+  # == Chef::CookbookCollection
+  # This class is the consistent interface for a node to obtain its
+  # cookbooks by name.
+  #
+  # This class is basically a glorified Hash, but since there are
+  # several ways this cookbook information is collected,
+  # (e.g. CookbookLoader for solo, hash of auto-vivified Cookbook
+  # objects for lazily-loaded remote cookbooks), it gets transformed
+  # into this.
   class CookbookCollection < Mash
 
     # The input is a mapping of cookbook name to CookbookVersion objects. We

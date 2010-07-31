@@ -18,9 +18,10 @@
 #
 
 
-# This class handles fetching of cookbook files based on specificity.
 class Chef
   class Cookbook
+    # == Chef::Cookbook::FileVendor
+    # This class handles fetching of cookbook files based on specificity.
     class FileVendor
 
       def self.on_create(&block)

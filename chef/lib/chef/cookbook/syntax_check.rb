@@ -21,11 +21,16 @@ require 'chef/mixin/shell_out'
 
 class Chef
   class Cookbook
+    # == Chef::Cookbook::SyntaxCheck
+    # Encapsulates the process of validating the ruby syntax of files in Chef
+    # cookbooks.
     class SyntaxCheck
       include Chef::Mixin::ShellOut
 
       attr_reader :cookbook_path
 
+      # Creates a new SyntaxCheck given the +cookbook_name+ and a +cookbook_path+.
+      # If no +cookbook_path+ is given, +Chef::Config.cookbook_path+ is used.
       def self.for_cookbook(cookbook_name, cookbook_path=nil)
         cookbook_path ||= Chef::Config.cookbook_path
         unless cookbook_path
@@ -34,6 +39,9 @@ class Chef
         new(File.join(cookbook_path, cookbook_name.to_s))
       end
 
+      # Create a new SyntaxCheck object
+      # === Arguments
+      # cookbook_path::: the (on disk) path to the cookbook
       def initialize(cookbook_path)
         @cookbook_path = cookbook_path
       end

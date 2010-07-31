@@ -24,9 +24,15 @@ require 'chef/resource_definition_list'
 require 'chef/recipe'
 require 'chef/cookbook/file_vendor'
 
-# TODO: timh/cw: 5-24-2010: mutators for files (e.g., recipe_filenames=,
-# recipe_filenames.insert) should dirty the manifest so it gets regenerated.
 class Chef
+  # == Chef::CookbookVersion
+  # CookbookVersion is a model object encapsulating the data about a Chef
+  # cookbook. Chef supports maintaining multiple versions of a cookbook on a
+  # single server; each version is represented by a distinct instance of this
+  # class.
+  #--
+  # TODO: timh/cw: 5-24-2010: mutators for files (e.g., recipe_filenames=,
+  # recipe_filenames.insert) should dirty the manifest so it gets regenerated.
   class CookbookVersion
     include Chef::IndexQueue::Indexable
 
@@ -228,23 +234,23 @@ class Chef
     # as well as describing cookbook metadata. The manifest follows a form
     # like the following:
     #
-    # {
-    #   :cookbook_name = "apache2",
-    #   :version = "1.0",
-    #   :name = "Apache 2"
-    #   :metadata = ???TODO: timh/cw: 5-24-2010: describe this format,
-    #
-    #   :files => [
-    #     {
-    #       :name => "afile.rb",
-    #       :path => "files/ubuntu-9.10/afile.rb",
-    #       :checksum => "2222",
-    #       :specificity => "ubuntu-9.10"
-    #     },
-    #   ],
-    #   :templates => [ manifest_record1, ... ],
-    #   ...
-    # }
+    #   {
+    #     :cookbook_name = "apache2",
+    #     :version = "1.0",
+    #     :name = "Apache 2"
+    #     :metadata = ???TODO: timh/cw: 5-24-2010: describe this format,
+    #   
+    #     :files => [
+    #       {
+    #         :name => "afile.rb",
+    #         :path => "files/ubuntu-9.10/afile.rb",
+    #         :checksum => "2222",
+    #         :specificity => "ubuntu-9.10"
+    #       },
+    #     ],
+    #     :templates => [ manifest_record1, ... ],
+    #     ...
+    #   }
     def manifest
       unless @manifest
         generate_manifest

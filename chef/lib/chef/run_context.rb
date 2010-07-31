@@ -23,8 +23,9 @@ require 'chef/role'
 require 'chef/log'
 require 'chef/mixin/language_include_recipe'
 
-# Value object that loads and tracks the context of a Chef run
 class Chef
+  # == Chef::RunContext
+  # Value object that loads and tracks the context of a Chef run
   class RunContext
 
     # Used to load the node's recipes after expanding its run list

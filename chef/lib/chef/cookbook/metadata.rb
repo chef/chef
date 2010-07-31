@@ -25,6 +25,9 @@ require 'chef/cookbook/metadata/version'
 
 class Chef
   class Cookbook
+    # == Chef::Cookbook::Metadata
+    # Chef::Cookbook::Metadata provides a convenient DSL for declaring metadata
+    # about Chef Cookbooks.
     class Metadata
 
       COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,

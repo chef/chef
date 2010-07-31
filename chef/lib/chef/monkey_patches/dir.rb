@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-# Adds a Dir.glob to Ruby 1.8.5, for compat
 if RUBY_VERSION < "1.8.6" || RUBY_PLATFORM =~ /mswin|mingw32|windows/
   class Dir 
     class << self 
       alias_method :glob_, :glob 
+      # Adds a Dir.glob to Ruby 1.8.5, for compat
       def glob(pattern, flags=0)
         raise ArgumentError unless (
           !pattern.nil? and (

@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+# == String (Patch)
 # On ruby 1.9, Strings are aware of multibyte characters, so #size and length
 # give the actual number of characters. In Chef::REST, we need the bytesize
 # so we can correctly set the Content-Length headers, but ruby 1.8.6 and lower

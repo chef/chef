@@ -22,8 +22,12 @@ require 'net/http'
 require 'mixlib/authentication/signedheaderauth'
 require 'openssl'
 
-# inspired by from http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
 class Chef
+  # == Chef::CookbookSiteStreamingUploader
+  # A streaming multipart HTTP upload implementation. Used to upload cookbooks
+  # (in tarball form) to http://cookbooks.opscode.com
+  #
+  # inspired by http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
   class CookbookSiteStreamingUploader
 
     DefaultHeaders = { 'accept' => 'application/json', 'x-chef-version' => ::Chef::VERSION }

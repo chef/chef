@@ -23,14 +23,15 @@ require 'fcntl'
 require 'chef/exceptions'
 
 class Chef
-  
+
+  # == Chef::ShellOut
   # Provides a simplified interface to shelling out yet still collecting both
   # standard out and standard error and providing full control over environment,
   # working directory, uid, gid, etc.
   # 
   # No means for passing input to the subprocess is provided, nor is there any
   # way to inspect the output of the command as it is being read. If you need 
-  # to do that, you have to use Chef::Mixin::Command.popen4
+  # to do that, you have to use popen4 (in Chef::Mixin::Command)
   #
   # == Platform Support
   # Chef::ShellOut uses Kernel.fork() and is therefore unsuitable for Windows
