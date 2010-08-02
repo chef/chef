@@ -1,4 +1,4 @@
-#
+#--
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -18,6 +18,42 @@
 require 'forwardable'
 
 class Chef
+  # == Chef::Handler
+  # The base class for an Exception or Notification Handler. Create your own
+  # handler by subclassing Chef::Handler. When a Chef run fails with an
+  # uncaught Exception, Chef will set the +run_status+ on your handler and call
+  # +report+
+  #
+  # ===Example:
+  #
+  #   require 'net/smtp'
+  #
+  #   module MyOrg
+  #     class OhNoes < Chef::Handler
+  #
+  #       def report
+  #         # Create the email message
+  #         message  = "From: Your Name <your@mail.address>\n"
+  #         message << "To: Destination Address <someone@example.com>\n"
+  #         message << "Subject: Chef Run Failure\n"
+  #         message << "Date: #{Time.now.rfc2822}\n\n"
+  #
+  #         # The Node is available as +node+
+  #         message << "Chef run failed on #{node.name}\n"
+  #         # +run_status+ is a value object with all of the run status data
+  #         message << "#{run_status.formatted_exception}\n"
+  #         # Join the backtrace lines. Coerce to an array just in case.
+  #         message << Array(backtrace).join("\n")
+  #
+  #         # Send the email
+  #         Net::SMTP.start('your.smtp.server', 25) do |smtp|
+  #           smtp.send_message message, 'from@address', 'to@address'
+  #         end
+  #       end
+  #
+  #     end
+  #   end
+  #
   class Handler
 
     extend Forwardable
