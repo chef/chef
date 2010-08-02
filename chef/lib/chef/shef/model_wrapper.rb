@@ -1,4 +1,4 @@
-#
+#--
 # Author:: Daniel DeLeo (<dan@opscode.com>)
 # Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
