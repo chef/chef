@@ -59,24 +59,24 @@ class Chef
     # === Options:
     # If the last argument is a Hash, it is removed from the list of args passed
     # to exec and used as an options hash. The following options are available:
-    # * user::: the user the commmand should run as. if an integer is given, it is
+    # * +user+: the user the commmand should run as. if an integer is given, it is
     #   used as a uid. A string is treated as a username and resolved to a uid
     #   with Etc.getpwnam
-    # * group::: the group the command should run as. works similarly to +user+
-    # * cwd: the directory to chdir to before running the command
-    # * umask::: a umask to set before running the command. If given as an Integer,
+    # * +group+: the group the command should run as. works similarly to +user+
+    # * +cwd+: the directory to chdir to before running the command
+    # * +umask+: a umask to set before running the command. If given as an Integer,
     #   be sure to use two leading zeros so it's parsed as Octal. A string will
     #   be treated as an octal integer
-    # * returns:::  one or more Integer values to use as valid exit codes for the
+    # * +returns+:  one or more Integer values to use as valid exit codes for the
     #   subprocess. This only has an effect if you call +error!+ after
     #   +run_command+.
-    # * environment::: a Hash of environment variables to set before the command
+    # * +environment+: a Hash of environment variables to set before the command
     #   is run. By default, the environment will *always* be set to 'LC_ALL' => 'C'
     #   to prevent issues with multibyte characters in Ruby 1.8. To avoid this,
     #   use :environment => nil for *no* extra environment settings, or
     #   :environment => {'LC_ALL'=>nil, ...} to set other environment settings
     #   without changing the locale.
-    # * timeout::: a Numeric value for the number of seconds to wait on the
+    # * +timeout+: a Numeric value for the number of seconds to wait on the
     #   child process before raising an Exception. This is calculated as the
     #   total amount of time that ShellOut waited on the child process without
     #   receiving any output (i.e., IO.select returned nil). Default is 60
@@ -91,6 +91,9 @@ class Chef
     #   puts "error messages" + find.stderr
     #   # Raise an exception if it didn't exit with 0
     #   find.error!
+    # Run a command as the +www+ user with no extra ENV settings from +/tmp+
+    #   cmd = Chef::ShellOut.new("apachectl", "start", :user => 'www', :env => nil, :cwd => '/tmp')
+    #   cmd.run_command # etc.
     def initialize(*command_args)
       @stdout, @stderr = '', ''
       @environment = DEFAULT_ENVIRONMENT
@@ -145,10 +148,10 @@ class Chef
     # returns   +self+; +stdout+, +stderr+, +status+, and +exitstatus+ will be
     # populated with results of the command
     # === Raises
-    # * Errno::EACCES:::   when you are not privileged to execute the command
-    # * Errno::ENOENT:::  when the command is not available on the system (or not
+    # * Errno::EACCES  when you are not privileged to execute the command
+    # * Errno::ENOENT  when the command is not available on the system (or not
     #   in the current $PATH)
-    # * Chef::Exceptions::CommandTimeout::: when the command does not complete
+    # * Chef::Exceptions::CommandTimeout  when the command does not complete
     #   within +timeout+ seconds (default: 60s)
     def run_command
       Chef::Log.debug("sh(#{@command})")
@@ -219,7 +222,7 @@ class Chef
     # Raises a Chef::Exceptions::ShellCommandFailed exception, appending the
     # command's stdout, stderr, and exitstatus to the exception message.
     # === Arguments
-    # +msg+:::  A String to use as the basis of the exception message. The
+    # +msg+:  A String to use as the basis of the exception message. The
     # default explanation is very generic, providing a more informative message
     # is highly encouraged.
     # === Raises
@@ -310,7 +313,7 @@ class Chef
     
     # replace stdout, and stderr with pipes to the parent, and close the
     # reader side of the error marshaling side channel. Close STDIN so when we
-    # exec, the new program will no it's never getting input ever.
+    # exec, the new program will know it's never getting input ever.
     def configure_subprocess_file_descriptors
       process_status_pipe.first.close
       
