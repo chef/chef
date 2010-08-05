@@ -63,11 +63,15 @@ describe Chef::RunList::RunListExpansion do
 
   describe "after expanding a run list" do
     before do
-      @inflated_role = Chef::Role.new
-      @inflated_role.run_list('recipe[crabrevenge]')
-      @inflated_role.default_attributes({'foo' => 'bar'})
-      @inflated_role.override_attributes({'baz' => 'qux'})
-      @expansion.stub!(:fetch_role).and_return(@inflated_role)
+      @first_role = Chef::Role.new
+      @first_role.run_list('role[mollusk]')
+      @first_role.default_attributes({'foo' => 'bar'})
+      @first_role.override_attributes({'baz' => 'qux'})
+      @second_role = Chef::Role.new
+      @second_role.run_list('recipe[crabrevenge]')
+      @second_role.default_attributes({'foo' => 'boo'})
+      @second_role.override_attributes({'baz' => 'bux'})
+      @expansion.stub!(:fetch_role).and_return(@first_role, @second_role)
       @expansion.expand("_default")
     end
 
@@ -75,13 +79,13 @@ describe Chef::RunList::RunListExpansion do
       @expansion.recipes.should == ['lobster', 'crabrevenge', 'fist']
     end
 
-    it "has the merged attributes from the roles" do
+    it "has the merged attributes from the roles with outer roles overridding inner" do
       @expansion.default_attrs.should == {'foo' => 'bar'}
       @expansion.override_attrs.should == {'baz' => 'qux'}
     end
 
     it "has the list of all roles applied" do
-      @expansion.roles.should == ['rage']
+      @expansion.roles.should == ['mollusk', 'rage']
     end
 
   end
