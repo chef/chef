@@ -21,7 +21,6 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::Template do
   before(:each) do
     Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")))
-    Chef::Config.file_backup_path=nil
     Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
 
     @node = Chef::Node.new
@@ -135,10 +134,12 @@ describe Chef::Provider::Template do
       end
 
       it "sets the file access controls if they have diverged" do
+        @provider.stub!(:backup).and_return(true)
         @resource.owner("adam")
         @resource.group("wheel")
         @resource.mode(00644)
         @provider.should_receive(:set_all_access_controls).with(an_instance_of(String))
+        @provider.should_receive(:backup)
         @provider.action_create
       end
     end
