@@ -18,6 +18,7 @@
 
 require 'chef/provider/package'
 require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/resource/package'
 require 'chef/mixin/shell_out'
 
@@ -29,15 +30,22 @@ class Chef
         include Chef::Mixin::ShellOut
 
         def install_check(name)
-          command = "python -c \"import sys; print sys.path\""
           check = false
-          status = popen4(command) do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              if line.include? "#{name}"
-                check = true
-              end
+  
+          begin
+            # first check to see if we can import it
+            output = shell_out!("python -c \"import #{name}\"").stderr
+            unless output.include? "ImportError"
+              check = true
             end
+          rescue
+            # then check to see if its on the path
+            output = shell_out!("python -c \"import sys; print sys.path\"").stdout
+            if output.downcase.include? "#{name.downcase}"
+              check = true
+            end            
           end
+  
           check
         end
 
@@ -54,14 +62,16 @@ class Chef
           # get the currently installed version if installed
           package_version = nil
           if install_check(@new_resource.package_name)
-            command = "python -c \"import #{@new_resource.package_name}; print #{@new_resource.package_name}.__path__\""
-            status = popen4(command) do |pid, stdin, stdout, stderr|
-              install_location = stdout.readline
-              install_location[/\S\S(.*)\/(.*)-(.*)-py(.*).egg\S/]
+            begin
+              output = shell_out!("python -c \"import #{@new_resource.package_name}; print #{@new_resource.package_name}.__version__\"").stdout
+              package_version = output.strip
+            rescue
+              output = shell_out!("python -c \"import #{@new_resource.package_name}; print #{@new_resource.package_name}.__path__\"").stdout
+              output[/\S\S(.*)\/(.*)-(.*)-py(.*).egg\S/]
               package_version = $3
             end
           end
-
+          
           if package_version == @new_resource.version
             Chef::Log.debug("#{@new_resource.package_name} at version #{@new_resource.version}")
             @current_resource.version(@new_resource.version)
