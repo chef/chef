@@ -19,10 +19,14 @@
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
+require 'chef/mixin/shell_out'
+
 class Chef
   class Provider
     class Package
       class EasyInstall < Chef::Provider::Package
+
+        include Chef::Mixin::ShellOut
 
         def install_check(name)
           command = "python -c \"import sys; print sys.path\""
@@ -73,17 +77,8 @@ class Chef
            return @candidate_version if @candidate_version
 
            # do a dry run to get the latest version
-           command = "#{easy_install_binary_path} -n #{@new_resource.package_name}"
-           pid, stdin, stdout, stderr = popen4(command)
-           dry_run_output = ""
-           stdout.each do |line|
-             dry_run_output << line
-           end
-           dry_run_output[/(.*)Best match: (.*) (.*)\n/]
-           @candidate_version = $3
-           stdin.close
-           stdout.close
-           stderr.close
+           result = shell_out!("#{easy_install_binary_path} -n #{@new_resource.package_name}", :returns=>[0,1])
+           @candidate_version = result.stdout[/(.*)Best match: (.*) (.*)$/, 3]
            @candidate_version
         end
 
