@@ -271,6 +271,7 @@ describe Chef::Provider::File do
     FileUtils.should_receive(:rm).with("/tmp/s-20080705111223").once.and_return(true)
     FileUtils.should_receive(:rm).with("/tmp/s-20080705111232").once.and_return(true)
     FileUtils.stub!(:cp).and_return(true)
+    FileUtils.stub!(:mkdir_p).and_return(true)
     File.stub!(:exist?).and_return(true)
     @provider.backup
   end
@@ -282,6 +283,7 @@ describe Chef::Provider::File do
     Dir.stub!(:[]).and_return([ "/tmp/s-20080705111233", "/tmp/s-20080705111232", "/tmp/s-20080705111223"])
     FileUtils.should_receive(:rm).with("/tmp/s-20080705111223").once.and_return(true)
     FileUtils.stub!(:cp).and_return(true)
+    FileUtils.stub!(:mkdir_p).and_return(true)
     File.stub!(:exist?).and_return(true)
     @provider.backup
   end
