@@ -31,7 +31,7 @@ class Chef
 
         def install_check(name)
           check = false
-  
+
           begin
             # first check to see if we can import it
             output = shell_out!("python -c \"import #{name}\"").stderr
@@ -43,9 +43,9 @@ class Chef
             output = shell_out!("python -c \"import sys; print sys.path\"").stdout
             if output.downcase.include? "#{name.downcase}"
               check = true
-            end            
+            end
           end
-  
+
           check
         end
 
@@ -71,10 +71,10 @@ class Chef
               package_version = $3
             end
           end
-          
+
           if package_version == @new_resource.version
             Chef::Log.debug("#{@new_resource.package_name} at version #{@new_resource.version}")
-            @current_resource.version(@new_resource.version)
+          @current_resource.version(@new_resource.version)
           else
             Chef::Log.debug("#{@new_resource.package_name} at version #{package_version}")
             @current_resource.version(package_version)
