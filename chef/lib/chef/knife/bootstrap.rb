@@ -116,7 +116,7 @@ class Chef
         require 'highline'
 
         if @name_args.first == nil
-          Chef::Log.error("Must pass a node name/ip to bootstrap")
+          Chef::Log.error("Must pass an FQDN or ip to bootstrap")
           exit 1
         end
 
