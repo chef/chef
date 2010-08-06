@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,11 +20,11 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::Route do
   before do
-    @node = Chef::Node.new    
+    @node = Chef::Node.new
     @run_context = Chef::RunContext.new(@node, {})
-    
+
     @new_resource = Chef::Resource::Route.new('0.0.0.0')
-    
+
     @new_resource = Chef::Resource::Route.new('10.0.0.10')
     @new_resource.gateway "10.0.0.9"
     @current_resource = Chef::Resource::Route.new('10.0.0.10')
@@ -93,7 +93,7 @@ describe Chef::Provider::Route do
       @provider.generate_command(:add).should_not match(/\svia\s#{@new_resource.gateway}\s/)
     end
   end
-  
+
   describe Chef::Provider::Route, "generate_command for action_delete" do
     it "should include a netmask when a one is specified" do
       @new_resource.stub!(:netmask).and_return('255.255.0.0')
@@ -104,7 +104,7 @@ describe Chef::Provider::Route do
       @new_resource.stub!(:netmask).and_return(nil)
       @provider.generate_command(:delete).should_not match(/\/\d{1,2}\s/)
     end
-    
+
     it "should include ' via $gateway ' when a gateway is specified" do
       @provider.generate_command(:delete).should match(/\svia\s#{@new_resource.gateway}\s/)
     end
@@ -114,17 +114,17 @@ describe Chef::Provider::Route do
       @provider.generate_command(:delete).should_not match(/\svia\s#{@new_resource.gateway}\s/)
     end
   end
-  
+
   describe Chef::Provider::Route, "config_file_contents for action_add" do
-    it "should include a netmask when a one is specified" do      
+    it "should include a netmask when a one is specified" do
       @new_resource.stub!(:netmask).and_return('255.255.0.0')
       @provider.config_file_contents(:add, { :target => @new_resource.target, :netmask => @new_resource.netmask}).should match(/\/\d{1,2}.*\n$/)
     end
 
-    it "should not include a netmask when a one is specified" do      
+    it "should not include a netmask when a one is specified" do
       @provider.config_file_contents(:add, { :target => @new_resource.target}).should_not match(/\/\d{1,2}.*\n$/)
     end
-    
+
     it "should include ' via $gateway ' when a gateway is specified" do
       @provider.config_file_contents(:add, { :target => @new_resource.target, :gateway => @new_resource.gateway}).should match(/\svia\s#{@new_resource.gateway}\n/)
     end
@@ -133,9 +133,9 @@ describe Chef::Provider::Route do
       @provider.generate_command(:add).should_not match(/\svia\s#{@new_resource.gateway}\n/)
     end
   end
-  
+
   describe Chef::Provider::Route, "config_file_contents for action_delete" do
-    it "should return an empty string" do      
+    it "should return an empty string" do
       @provider.config_file_contents(:delete).should match(/^$/)
     end
   end
