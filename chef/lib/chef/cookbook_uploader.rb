@@ -48,8 +48,8 @@ class Chef
             headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, :accept => 'application/json' }
             headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
             begin
-              RestClient::Request.execute(:method => :put, :url => info['url'], :headers => headers, :payload => file_contents)
-            rescue RestClient::RequestFailed => e
+              RestClient::Resource.new(info['url'], :headers=>headers, :timeout=>1800, :open_timeout=>1800).put(file_contents)
+            rescue RestClient::Exception => e
               Chef::Log.error("Upload failed: #{e.message}\n#{e.response.body}")
               raise
             end
