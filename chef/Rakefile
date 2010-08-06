@@ -48,7 +48,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "mixlib-authentication", ">= 1.1.0"
   s.add_dependency "ohai", ">= 0.5.7"
 
-  s.add_dependency "rest-client", ">= 1.0.4", "<= 1.5.1"
+  s.add_dependency "rest-client", ">= 1.0.4"
   s.add_dependency "bunny", ">= 0.6.0"
   s.add_dependency "json", ">= 1.4.4", "<= 1.4.6"
   %w{erubis extlib moneta highline uuidtools}.each { |gem| s.add_dependency gem }
