@@ -268,10 +268,10 @@ class Chef
       end
 
       def load_late_dependencies
-        require 'net/ssh/multi'
         require 'readline'
-        require 'highline'
-
+        %w[net/ssh/multi highline].each do |dep|
+          load_late_dependency dep
+        end
         assert_net_ssh_version_acceptable!
       end
 
