@@ -150,8 +150,8 @@ class Chef
           :solaris2 => {
             :default => {
               :service => Chef::Provider::Service::Solaris,
-        			:package => Chef::Provider::Package::Solaris,
-        			:cron => Chef::Provider::Cron
+              :package => Chef::Provider::Package::Solaris,
+              :cron => Chef::Provider::Cron::Solaris
             }
           },
           :default  => {
