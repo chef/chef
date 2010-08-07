@@ -133,8 +133,8 @@ class Chef::Provider::Route < Chef::Provider
       conf = Hash.new
       case node[:platform]
       when ("centos" || "redhat" || "fedora")
-          # walk the collection
-        @collection.each do |resource|
+        # walk the collection
+        run_context.resource_collection.each do |resource|
           if resource.is_a? Chef::Resource::Route
             # default to eth0
             if resource.device
