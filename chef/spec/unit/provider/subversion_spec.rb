@@ -172,12 +172,19 @@ describe Chef::Provider::Subversion do
   end
   
   it "generates an export command with default options" do
-    @provider.export_command.should eql("svn export -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+    @provider.export_command.should eql("svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
   end
   
-  it "generates an export command with the --force option" do
-    expected = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    @provider.export_command(:force => true).should == expected
+  it "doesn't try to find the current revision when loading the resource if running an export" do
+    @provider.new_resource.instance_variable_set :@action, :export
+    @provider.should_not_receive(:find_current_revision)
+    @provider.load_current_resource
+  end
+  
+  it "doesn't try to find the current revision when loading the resource if running a force export" do
+    @provider.new_resource.instance_variable_set :@action, :force_export
+    @provider.should_not_receive(:find_current_revision)
+    @provider.load_current_resource
   end
   
   it "runs an export with the --force option" do
@@ -227,7 +234,7 @@ describe Chef::Provider::Subversion do
   end
   
   it "runs the export_command on action_export" do
-    expected_cmd = "svn export -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
+    expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
     @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_export
