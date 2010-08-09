@@ -188,7 +188,7 @@ describe Chef::Node::Attribute do
                           "os_version"=>"9.7.0",
                           "hostname"=>"latte",
                           "macaddress"=>"00:23:6c:7f:67:6c",
-                          "music" => { "jimmy_eat_world" => "nice" }
+                          "music" => { "jimmy_eat_world" => "nice", "apophis" => false }
     }
     @default_hash = {
       "domain" => "opscode.com",
@@ -196,7 +196,8 @@ describe Chef::Node::Attribute do
       "music" => { 
         "jimmy_eat_world" => "is fun!",
         "mastodon" => "rocks",
-        "mars_volta" => "is loud and nutty"
+        "mars_volta" => "is loud and nutty",
+        "gates_of_ishtar" => nil
       }
     }
     @override_hash = {
@@ -415,6 +416,19 @@ describe Chef::Node::Attribute do
       @attributes.has_key?("ninja").should == false
     end
 
+    it "should return false if an attribute does not exist using dot notation" do
+      @attributes.has_key?("does_not_exist_at_all").should == false
+    end
+
+    it "should return true if an attribute exists but is set to nil using dot notation" do
+      @attributes.music.has_key?("gates_of_ishtar").should == true
+    end
+
+    it "should return true if an attribute exists but is set to false" do
+      @attributes["music"]
+      @attributes.has_key?("apophis").should == true
+    end
+    
     it "should be looking at the current position of the object" do
       @attributes["music"]
       @attributes.has_key?("mastodon").should == true 

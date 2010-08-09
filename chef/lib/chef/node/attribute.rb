@@ -123,6 +123,10 @@ class Chef
       end
 
       def has_key?(key)
+        return true if exists_in_hash(@default.to_hash,key)
+        return true if exists_in_hash(@automatic.to_hash,key)
+        return true if exists_in_hash(@normal.to_hash,key)
+        return true if exists_in_hash(@override.to_hash,key)
         attribute?(key)
       end
 
@@ -446,6 +450,11 @@ class Chef
         else
           result.to_hash
         end
+      end
+
+      def exists_in_hash(data_hash,key)
+        return true if (@state.length == 0 && data_hash.has_key?(key))
+        return true if (data_hash.has_key?(@state.to_s) && data_hash[@state.to_s].respond_to?(:has_key?) && data_hash[@state.to_s].has_key?(key) )
       end
 
     end
