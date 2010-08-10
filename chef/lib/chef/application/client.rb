@@ -149,6 +149,9 @@ class Chef::Application::Client < Chef::Application
    
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
+    else
+      Chef::Config[:interval] = nil
+      Chef::Config[:splay] = nil
     end
 
     if Chef::Config[:json_attribs]

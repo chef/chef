@@ -46,6 +46,18 @@ describe Chef::Application::Client, "reconfigure" do
     end
   end
 
+  describe "when in client mode and splay has been set" do
+    before do
+      Chef::Config[:daemonize] = false
+      Chef::Config[:splay] = 60
+    end
+
+    it "should ignore splay in client mode" do
+      @app.reconfigure
+      Chef::Config.splay.should == nil
+    end
+  end
+
   describe "when the json_attribs configuration option is specified" do
 
     describe "and the json_attribs matches a HTTP regex" do
