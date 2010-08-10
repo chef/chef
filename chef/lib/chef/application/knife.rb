@@ -126,6 +126,7 @@ class Chef::Application::Knife < Chef::Application
     # mangles ARGV in some situations
     if no_subcommand_given?
       print_help_and_exit if want_help?
+      print_help_and_exit if want_version?
       print_help_and_exit(2, "Sorry, you need to pass a sub-command first!")
     end
     print_help_and_exit if no_command_given?
@@ -141,6 +142,10 @@ class Chef::Application::Knife < Chef::Application
 
   def want_help?
     ARGV[0] =~ /^(--help|-h)$/
+  end
+
+  def want_version?
+    ARGV[0] =~ /^(--version|-v)$/
   end
   
   def print_help_and_exit(exitcode=1, fatal_message=nil)
