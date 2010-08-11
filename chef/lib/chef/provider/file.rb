@@ -139,10 +139,11 @@ class Chef
       def action_create
         unless ::File.exists?(@new_resource.path)
           Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
-          ::File.open(@new_resource.path, "w+") { |f| }
+          ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
           @new_resource.updated = true
+        else
+          set_content unless @new_resource.content.nil?
         end
-        set_content unless @new_resource.content.nil?
         set_owner unless @new_resource.owner.nil?
         set_group unless @new_resource.group.nil?
         set_mode unless @new_resource.mode.nil?
