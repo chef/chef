@@ -48,5 +48,50 @@ describe Chef::Application::Knife do
         @knife.run
       end
     end
+
+    describe "with environment configuration" do
+      it "should default to the 'default' environment" do
+        with_argv(*%w{test yourself}) do
+          @knife.should_receive(:exit).with(0)
+          @knife.run
+        end
+        Chef::Config[:environment].should == 'default'
+      end
+
+      it "should load the environment from the config file" do
+        config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
+        with_argv(*%W{test yourself -c #{config_file}}) do
+          @knife.should_receive(:exit).with(0)
+          @knife.run
+        end
+        Chef::Config[:environment].should == 'production'
+      end
+
+      it "should load the environment from the CLI options" do
+        with_argv(*%W{test yourself -E development}) do
+          @knife.should_receive(:exit).with(0)
+          @knife.run
+        end
+        Chef::Config[:environment].should == 'development'
+      end
+
+      it "should override the config file environment with the CLI environment" do
+        config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
+        with_argv(*%W{test yourself -c #{config_file} -E override}) do
+          @knife.should_receive(:exit).with(0)
+          @knife.run
+        end
+        Chef::Config[:environment].should == 'override'
+      end
+
+      it "should override the config file environment with the CLI environment regardless of order" do
+        config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
+        with_argv(*%W{test yourself -E override -c #{config_file}}) do
+          @knife.should_receive(:exit).with(0)
+          @knife.run
+        end
+        Chef::Config[:environment].should == 'override'
+      end
+    end
   end
 end
