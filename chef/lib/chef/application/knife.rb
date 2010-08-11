@@ -52,6 +52,11 @@ class Chef::Application::Knife < Chef::Application
     :description  => "Set the log file location, defaults to STDOUT",
     :proc         => nil
 
+  option :environment,
+    :short        => "-E ENVIRONMENT",
+    :long         => "--environment ENVIRONMENT",
+    :description  => "Set the Chef environment"
+
   option :editor,
     :short        => "-e EDITOR",
     :long         => "--editor EDITOR",
