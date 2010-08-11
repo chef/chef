@@ -4,8 +4,8 @@ if [ ! -f /usr/bin/chef-client ]; then
   [ -f /etc/apt/sources.list.d/opscode.list ] || echo "deb http://apt.opscode.com lucid main" > /etc/apt/sources.list.d/opscode.list
   wget -O- http://apt.opscode.com/packages@opscode.com.gpg.key | apt-key add -
   apt-get update
-  apt-get install -y chef
 fi
+apt-get install -y chef
 
 <% unless Chef::Config[:validation_client_name] == "chef-validator" -%>
 [  `grep -qx "validation_client_name \"<%= Chef::Config[:validation_client_name] %>\"" /etc/chef/client.rb` ] || echo "validation_client_name \"<%= Chef::Config[:validation_client_name] %>\"" >> /etc/chef/client.rb
