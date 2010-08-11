@@ -227,15 +227,26 @@ describe Chef::Provider::Git do
   end
 
   it "does a sync by running the sync command" do
-    ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
-    ::Dir.stub!(:entries).and_return(['.','..',"lib", "spec"])
+    ::File.should_receive(:exist?).with("/my/deploy/dir").and_return(true)
+    ::Dir.should_receive(:entries).and_return(['.','..',"lib", "spec"])
+    @provider.should_receive(:find_current_revision).at_least(2).times.and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
+    @provider.should_receive(:sync)
+    @resource.should_receive(:updated=).at_least(1).times.with(false)
+    @provider.action_sync
+  end
+
+  it "does a sync and gets a new version" do
+    ::File.should_receive(:exist?).with("/my/deploy/dir").and_return(true)
+    ::Dir.should_receive(:entries).and_return(['.','..',"lib", "spec"])
+    @provider.should_receive(:find_current_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
+    @provider.should_receive(:find_current_revision).and_return('28af684d8460ba4793eda3e7ac238c864a5d029a')
     @provider.should_receive(:sync)
     @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_sync
   end
   
   it "does a checkout instead of sync if the deploy directory doesn't exist" do
-    ::File.stub!(:exist?).with("/my/deploy/dir").and_return(false)
+    ::File.should_receive(:exist?).with("/my/deploy/dir").and_return(false)
     @provider.should_receive(:action_checkout)
     @provider.should_not_receive(:run_command)
     @resource.should_receive(:updated=).at_least(1).times.with(true)
@@ -243,8 +254,8 @@ describe Chef::Provider::Git do
   end
   
   it "does a checkout instead of sync if the deploy directory is empty" do
-    ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
-    ::Dir.stub!(:entries).with("/my/deploy/dir").and_return([".",".."])
+    ::File.should_receive(:exist?).with("/my/deploy/dir").and_return(true)
+    ::Dir.should_receive(:entries).with("/my/deploy/dir").and_return([".",".."])
     @provider.stub!(:sync_command).and_return("huzzah!")
     @provider.should_receive(:action_checkout)
     @provider.should_not_receive(:run_command).with(:command => "huzzah!", :cwd => "/my/deploy/dir")
