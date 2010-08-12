@@ -13,7 +13,7 @@ Feature: List environments via the REST API
     Examples:
       | user_type        |
       | an administrator |
-      | a non-admin      | 
+      | a non-admin      |
 
   Scenario Outline: List the environments when one has been created
     Given I am <user_type>
