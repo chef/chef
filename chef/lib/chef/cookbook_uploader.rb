@@ -23,7 +23,7 @@ class Chef
         # generate checksums of cookbook files and create a sandbox
         checksum_files = cookbook.checksums
         checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
-        new_sandbox = rest.post_rest("/sandboxes", { :checksums => checksums })
+        new_sandbox = rest.post_rest("sandboxes", { :checksums => checksums })
 
         Chef::Log.info("Uploading files")
         # upload the new checksums and commit the sandbox
@@ -72,10 +72,8 @@ class Chef
             raise
           end
         end
-
         # files are uploaded, so save the manifest
         cookbook.save
-
         Chef::Log.info("Upload complete!")
       end
 
