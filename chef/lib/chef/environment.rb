@@ -77,7 +77,7 @@ class Chef
       set_or_return(
         :name,
         arg,
-        :regex => /^[\-[:alnum:]_]+$/
+        { :regex => /^[\-[:alnum:]_]+$/, :kind_of => String }
       )
     end
 
