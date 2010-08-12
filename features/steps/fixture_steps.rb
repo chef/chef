@@ -197,6 +197,20 @@ Before do
       'nothing'   => Hash.new,
       'name only' => { :name => 'test_cookbook' }
     },
+    'environment' => {
+      'cucumber' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'cucumber'
+        e.description 'I like to run tests'
+        e
+      end,
+      'production' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'production'
+        e.description 'The real deal'
+        e
+      end
+    }
   }
   @stash = {}
 end

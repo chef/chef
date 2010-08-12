@@ -319,7 +319,7 @@ begin
     end
 
     namespace :api do
-      [ :nodes, :roles, :clients ].each do |api|
+      [ :nodes, :roles, :clients, :environments ].each do |api|
           Cucumber::Rake::Task.new(api) do |apitask|
             apitask.profile = "api_#{api.to_s}"
           end
