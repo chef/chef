@@ -29,6 +29,9 @@ Merb::Router.prepare do
   # Roles
   resources :roles
 
+  # Environments
+  resources :environments
+
   # Status
   match("/status").to(:controller => "status", :action => "index").name(:status)
 
