@@ -34,6 +34,35 @@ class Chef
 
     class << self
 
+       def create_build_dir(cookbook)
+         tmp_cookbook_path = Tempfile.new("chef-#{cookbook.name}-build")
+         tmp_cookbook_path.close
+         tmp_cookbook_dir = tmp_cookbook_path.path
+         File.unlink(tmp_cookbook_dir)
+         FileUtils.mkdir_p(tmp_cookbook_dir)
+         Chef::Log.debug("Staging at #{tmp_cookbook_dir}")
+         checksums_to_on_disk_paths = cookbook.checksums
+         Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
+           cookbook.manifest[segment].each do |manifest_record|
+             path_in_cookbook = manifest_record[:path]
+             on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
+             dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
+             FileUtils.mkdir_p(File.dirname(dest))
+             Chef::Log.debug("Staging #{on_disk_path} to #{dest}")
+             FileUtils.cp(on_disk_path, dest)
+          end
+        end
+
+        # First, generate metadata
+        Chef::Log.debug("Generating metadata")
+        kcm = Chef::Knife::CookbookMetadata.new
+        kcm.config[:cookbook_path] = [ tmp_cookbook_dir ]
+        kcm.name_args = [ cookbook.name.to_s ]
+        kcm.run
+
+        tmp_cookbook_dir
+      end
+
       def post(to_url, user_id, secret_key_filename, params = {}, headers = {})
         make_request(:post, to_url, user_id, secret_key_filename, params, headers)
       end
