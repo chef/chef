@@ -158,6 +158,7 @@ class Chef
       }
     }
 
+    attr_accessor :root_dir
     attr_accessor :definition_filenames
     attr_accessor :template_filenames
     attr_accessor :file_filenames
@@ -210,6 +211,7 @@ class Chef
       @resource_filenames = Array.new
       @provider_filenames = Array.new
       @metadata_filenames = Array.new
+      @root_dir = nil
       @root_filenames = Array.new
       @couchdb_id = nil
       @couchdb = couchdb || Chef::CouchDB.new
@@ -654,6 +656,20 @@ class Chef
         end
       end
       rendered_manifest
+    end
+
+    def metadata_json_file
+      File.join(root_dir, "metadata.json")
+    end
+
+    def metadata_rb_file
+      File.join(root_dir, "metadata.rb")
+    end
+
+    def reload_metadata!
+      if File.exists?(metadata_json_file)
+        metadata.from_json(IO.read(metadata_json_file))
+      end
     end
 
     ##

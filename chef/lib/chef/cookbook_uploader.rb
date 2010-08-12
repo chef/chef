@@ -79,10 +79,13 @@ class Chef
 
       def build_metadata(cookbook)
         Chef::Log.debug("Generating metadata")
+        # FIXME: This knife command should be factored out into a
+        # library for use here
         kcm = Chef::Knife::CookbookMetadata.new
         kcm.config[:cookbook_path] = Chef::Config[:cookbook_path]
         kcm.name_args = [ cookbook.name.to_s ]
         kcm.run
+        cookbook.reload_metadata!
       end
 
       def validate_cookbook(cookbook)

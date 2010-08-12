@@ -101,6 +101,7 @@ class Chef
             cookbook,
             cookbook_settings[cookbook_name][:root_filenames]
           )
+          cookbook_settings[cookbook_name][:root_dir] = cookbook
           if File.exists?(File.join(cookbook, "metadata.json"))
             cookbook_settings[cookbook_name][:metadata_filenames] << File.join(cookbook, "metadata.json")
           end
@@ -119,6 +120,7 @@ class Chef
 
       cookbook_settings.each_key do |cookbook|
         @cookbooks_by_name[cookbook] = Chef::CookbookVersion.new(cookbook)
+        @cookbooks_by_name[cookbook].root_dir = cookbook_settings[cookbook][:root_dir]
         @cookbooks_by_name[cookbook].attribute_filenames = cookbook_settings[cookbook][:attribute_filenames].values
         @cookbooks_by_name[cookbook].definition_filenames = cookbook_settings[cookbook][:definition_filenames].values
         @cookbooks_by_name[cookbook].recipe_filenames = cookbook_settings[cookbook][:recipe_filenames].values
