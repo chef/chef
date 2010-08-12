@@ -219,6 +219,8 @@ Then /I fully upload a sandboxed cookbook (force-)?named '([^\']+)' versioned '(
       full_path = File.join(datadir, "cookbooks_not_uploaded_at_feature_start", cookbook_name, manifest_record[:path])
 
       begin
+        csum_entry = @stash['sandbox_response']['checksums'][manifest_record[:checksum]]
+        next unless csum_entry['url']
         url = @stash['sandbox_response']['checksums'][manifest_record[:checksum]]['url']
         upload_to_sandbox(full_path, manifest_record[:checksum], url)
       rescue
@@ -310,3 +312,10 @@ Then /^the downloaded cookbook file contents should match the pattern '(.+)'$/ d
   @downloaded_cookbook_file_contents.should =~ /#{pattern}/
 end
 
+Then /^the dependencies in its metadata should be an empty hash$/ do
+  inflated_response.metadata.dependencies.should == {}
+end
+
+Then /^the metadata should include a dependency on '(.+)'$/ do |key|
+  inflated_response.metadata.dependencies.should have_key(key)
+end

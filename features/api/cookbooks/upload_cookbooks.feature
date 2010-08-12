@@ -68,6 +68,29 @@ Feature: CRUD cookbooks
      When I 'GET' the path '/cookbooks/testcookbook_valid/0.1.0'
      Then the inflated response should match '.*default.rb.*' as json
 
+  @create_multiple_cookbook_versions_positive
+  Scenario: Multiple cookbook versions successfully uploaded are visible
+    Given I am an administrator
+      And I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+      And I fully upload a sandboxed cookbook force-named 'testcookbook_valid' versioned '0.2.0' with 'testcookbook_valid_v0.2.0'
+     When I 'GET' the path '/cookbooks'
+     Then the inflated responses key 'testcookbook_valid' should exist
+     When I 'GET' the path '/cookbooks/testcookbook_valid'
+     Then the inflated responses key 'testcookbook_valid' should exist
+      And the inflated responses key 'testcookbook_valid' should include '0.1.0'
+      And the inflated responses key 'testcookbook_valid' should include '0.2.0'
+
+  @update_cookbook_version_metadata_positive
+  Scenario: A successful cookbook version upload that changes the metadata is properly reflected
+    Given I am an administrator
+      And I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+     When I 'GET' the path '/cookbooks/testcookbook_valid/0.1.0'
+     Then the inflated response should be a kind of 'Chef::CookbookVersion'
+      And the dependencies in its metadata should be an empty hash
+     When I fully upload a sandboxed cookbook force-named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid_v0.1.0_with_different_dependencies'
+     Then the inflated response should be a kind of 'Chef::CookbookVersion'
+      And the metadata should include a dependency on 'aws'
+
   # The sandbox is created missing 'metadata.json'. However, the cookbook's
   # manifest includes that file. We don't upload the file to the sandbox, but
   # the sandbox commits ok cuz it wasn't expecting that file. However, when we
