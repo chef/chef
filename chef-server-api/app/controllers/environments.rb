@@ -55,7 +55,7 @@ class Environments < Application
 
     env.cdb_save
     self.status = 201
-    display({:uri => absolute_url(:role, env.name)})
+    display({:uri => absolute_url(:environment, env.name)})
   end
 
   # PUT /environments/:id
