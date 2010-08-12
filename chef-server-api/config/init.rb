@@ -38,6 +38,7 @@ require 'chef/data_bag_item'
 require 'chef/cookbook_version'
 require 'chef/sandbox'
 require 'chef/checksum'
+require 'chef/environment'
 
 require 'mixlib/authentication'
 
@@ -71,6 +72,7 @@ unless Merb::Config.environment == "test"
   Chef::CookbookVersion.create_design_document
   Chef::Sandbox.create_design_document
   Chef::Checksum.create_design_document
+  Chef::Environment.create_design_document
 
   # Create the signing key and certificate
   Chef::Certificate.generate_signing_ca
