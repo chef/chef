@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,32 +24,38 @@ class Chef
   class Provider
     class Package
       class Portage < Chef::Provider::Package
-      
+
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
 
-          category = @new_resource.package_name.split('/').first
-          pkg = @new_resource.package_name.split('/').last
-
           @current_resource.version(nil)
+          possibilities = []
 
-          catdir = "/var/db/pkg/#{category}"
+          _, category_with_slash, category, pkg = %r{^(([^/]+)+/)?([^/]+)$}.match(@new_resource.package_name).to_a
 
-          if( ::File.exists?(catdir) )
-            Dir.entries(catdir).each do |entry|
-              if(entry =~ /^#{Regexp.escape(pkg)}\-(\d[\.\d]*((_(alpha|beta|pre|rc|p)\d*)*)?(-r\d+)?)/)
-                @current_resource.version($1)
-                Chef::Log.debug("Got current version #{$1}")
-                break
-              end
+          if category
+            catdir = "/var/db/pkg/#{category}"
+
+            if( ::File.exists?(catdir) )
+              possibilities = Dir.entries(catdir)
+            end
+          else
+            possibilities = Dir["/var/db/pkg/*/*"].map {|d| ::File.basename(d) }
+          end
+
+          possibilities.each do |entry|
+            if(entry =~ /^#{Regexp.escape(pkg)}\-(\d[\.\d]*((_(alpha|beta|pre|rc|p)\d*)*)?(-r\d+)?)/)
+              @current_resource.version($1)
+              Chef::Log.debug("Got current version #{$1}")
+              break
             end
           end
 
           @current_resource
         end
-      
-      
+
+
         def parse_emerge(package, txt)
           available, installed, pkg = nil
           txt.each do |line|
@@ -61,9 +67,9 @@ class Chef
                 available = $1
               elsif line =~ /Latest version installed: (.*)/
                 installed = $1
-              end  
+              end
             end
-          end  
+          end
           available = installed unless available
           [available, installed]
         end
@@ -83,29 +89,29 @@ class Chef
           @candidate_version
 
         end
-        
-        
+
+
         def install_package(name, version)
-          pkg = "=#{name}-#{version}" 
-          
+          pkg = "=#{name}-#{version}"
+
           if(version =~ /^\~(.+)/)
             # If we start with a tilde
             pkg = "~#{name}-#{$1}"
           end
-     
+
           run_command_with_systems_locale(
             :command => "emerge -g --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
           )
         end
-      
+
         def upgrade_package(name, version)
           install_package(name, version)
         end
-      
+
         def remove_package(name, version)
           if(version)
             pkg = "=#{@new_resource.package_name}-#{version}"
-          else            
+          else
             pkg = "#{@new_resource.package_name}"
           end
 
@@ -113,11 +119,11 @@ class Chef
             :command => "emerge --unmerge --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
           )
         end
-      
+
         def purge_package(name, version)
           remove_package(name, version)
         end
-      
+
       end
     end
   end
