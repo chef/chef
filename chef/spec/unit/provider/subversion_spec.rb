@@ -90,8 +90,9 @@ describe Chef::Provider::Subversion do
     
   end
   
-  it "creates the current_resource object and sets its revision to the current deployment's revision" do
+  it "creates the current_resource object and sets its revision to the current deployment's revision as long as we're not exporting" do
     @provider.stub!(:find_current_revision).and_return("11410")
+    @provider.new_resource.instance_variable_set :@action, [:checkout]
     @provider.load_current_resource
     @provider.current_resource.name.should eql(@resource.name)
     @provider.current_resource.revision.should eql("11410")
@@ -166,33 +167,33 @@ describe Chef::Provider::Subversion do
     @provider.checkout_command.should eql("svn checkout --no-auth-cache -q  -r12345 "+ 
                                           "http://svn.example.org/trunk/ /my/deploy/dir")
   end
-  
+
   it "generates a sync command with default options" do
     @provider.sync_command.should eql("svn update -q  -r12345 /my/deploy/dir")
   end
-  
+
   it "generates an export command with default options" do
     @provider.export_command.should eql("svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
   end
-  
+
   it "doesn't try to find the current revision when loading the resource if running an export" do
-    @provider.new_resource.instance_variable_set :@action, :export
+    @provider.new_resource.instance_variable_set :@action, [:export]
     @provider.should_not_receive(:find_current_revision)
     @provider.load_current_resource
   end
-  
+
   it "doesn't try to find the current revision when loading the resource if running a force export" do
-    @provider.new_resource.instance_variable_set :@action, :force_export
+    @provider.new_resource.instance_variable_set :@action, [:force_export]
     @provider.should_not_receive(:find_current_revision)
     @provider.load_current_resource
   end
-  
+
   it "runs an export with the --force option" do
     expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
     @provider.action_force_export
   end
-  
+
   it "runs the checkout command for action_checkout" do
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
