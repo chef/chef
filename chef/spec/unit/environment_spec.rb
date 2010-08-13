@@ -98,6 +98,18 @@ describe Chef::Environment do
     end
   end
 
+  describe "cookbook" do
+    it "should set the version of the cookbook in the cookbook_versions hash" do
+      @environment.cookbook("apt", "1.2.3")
+      @environment.cookbook_versions["apt"].should == "1.2.3"
+    end
+
+    it "should validate the cookbook version it is passed" do
+      Chef::Environment.should_receive(:validate_cookbook_version).with("1.2.3").and_return true
+      @environment.cookbook("apt", "1.2.3")
+    end
+  end
+
   describe "to_hash" do
     before(:each) do
       @environment.name("spec")
@@ -180,22 +192,31 @@ describe Chef::Environment do
       }
     end
 
-    it "should return true when all versions are strings" do
-      Chef::Environment.validate_cookbook_versions(@cookbook_versions).should == true
+    it "should validate the version string of each cookbook" do
+      @cookbook_versions.each do |cookbook, version|
+        Chef::Environment.should_receive(:validate_cookbook_version).with(version).and_return true
+      end
+      Chef::Environment.validate_cookbook_versions(@cookbook_versions)
+    end
+
+    it "should return false if anything other than a hash is passed as the argument" do
+      Chef::Environment.validate_cookbook_versions(Array.new).should == false
+      Chef::Environment.validate_cookbook_versions(42).should == false
+      Chef::Environment.validate_cookbook_versions(Chef::CookbookVersion.new("meta")).should == false
+      Chef::Environment.validate_cookbook_versions("cookbook => 1.2.3").should == false
+    end
+  end
+
+  describe "self.validate_cookbook_version" do
+    it "should return true when the value is a string" do
+      Chef::Environment.validate_cookbook_version("1.2.3").should == true
     end
 
     it "should return false when anything other than a string is passed as a version" do
-      a = @cookbook_versions.dup.merge :number => 2
-      Chef::Environment.validate_cookbook_versions(a).should == false
-
-      b = @cookbook_versions.dup.merge :hash => {:foo => 'bar'}
-      Chef::Environment.validate_cookbook_versions(b).should == false
-
-      c = @cookbook_versions.dup.merge :array => ['this', 'is', 'a', 'bad', 'version']
-      Chef::Environment.validate_cookbook_versions(c).should == false
-
-      d = @cookbook_versions.dup.merge :cookbook_versions => Chef::CookbookVersion.new("meta")
-      Chef::Environment.validate_cookbook_versions(d).should == false
+      Chef::Environment.validate_cookbook_version(42).should == false
+      Chef::Environment.validate_cookbook_version(Hash.new).should == false
+      Chef::Environment.validate_cookbook_version(Array.new).should == false
+      Chef::Environment.validate_cookbook_version(Chef::CookbookVersion.new("meta")).should == false
     end
   end
 end
