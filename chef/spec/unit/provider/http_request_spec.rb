@@ -130,5 +130,39 @@ describe Chef::Provider::HttpRequest do
         @provider.action_delete
       end
     end
+
+    describe "action_head" do
+      before do
+        @rest = mock("Chef::REST", :create_url => "http://www.opscode.com", :run_request => true)
+        @provider.rest = @rest
+      end
+
+      it "should create the url with a message argument" do
+        @rest.should_receive(:create_url).with("#{@new_resource.url}?message=#{@new_resource.message}")
+        @provider.action_head
+      end
+
+      it "should inflate a message block at runtime" do
+        @new_resource.stub!(:message).and_return(lambda { "return" })
+        @rest.should_receive(:create_url).with("#{@new_resource.url}?message=return")
+        @provider.action_head
+      end
+
+      it "should run a HEAD request" do
+        @rest.should_receive(:run_request).with(:HEAD, @rest.create_url, {}, false, 10, false)
+        @provider.action_head
+      end
+
+      it "should update the resource" do
+        @new_resource.should_receive(:updated=).with(true)
+        @provider.action_head
+      end
+
+      it "should run a HEAD request with If-Modified-Since header" do
+        @new_resource.headers "If-Modified-Since" => File.mtime(__FILE__).httpdate
+        @rest.should_receive(:run_request).with(:HEAD, @rest.create_url, @new_resource.headers, false, 10, false)
+        @provider.action_head
+      end
+    end
   end
 end
