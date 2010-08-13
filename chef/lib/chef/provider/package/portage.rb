@@ -30,20 +30,10 @@ class Chef
           @current_resource.package_name(@new_resource.package_name)
 
           @current_resource.version(nil)
-          possibilities = []
 
           _, category_with_slash, category, pkg = %r{^(([^/]+)+/)?([^/]+)$}.match(@new_resource.package_name).to_a
 
-          if category
-            catdir = "/var/db/pkg/#{category}"
-
-            if( ::File.exists?(catdir) )
-              possibilities = Dir.entries(catdir)
-            end
-          else
-            possibilities = Dir["/var/db/pkg/*/*"].map {|d| ::File.basename(d) }
-          end
-
+          possibilities = Dir["/var/db/pkg/#{category || "*"}/#{pkg}-*"].map {|d| ::File.basename(d) }
           possibilities.each do |entry|
             if(entry =~ /^#{Regexp.escape(pkg)}\-(\d[\.\d]*((_(alpha|beta|pre|rc|p)\d*)*)?(-r\d+)?)/)
               @current_resource.version($1)
