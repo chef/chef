@@ -68,6 +68,7 @@ class Nodes < Application
     @node.normal_attrs = updated.normal_attrs
     @node.override_attrs = updated.override_attrs
     @node.default_attrs = updated.default_attrs
+    @node.chef_environment(updated.chef_environment)
     @node.cdb_save
     @node.couchdb_rev = nil
     display(@node)

@@ -14,9 +14,10 @@ Feature: Update a node
      Then the inflated response should respond to '<method>' with '<updated_value>' 
 
     Examples:
-      | method       | updated_value    |
-      | run_list     | [ "recipe[one]", "recipe[two]" ] |
-      | snakes       | really arent so bad | 
+      | method           | updated_value                    |
+      | run_list         | [ "recipe[one]", "recipe[two]" ] |
+      | snakes           | really arent so bad              |
+      | chef_environment | prod                             |
 
   @PL-493
   Scenario: Update a node to include a role which includes another role
