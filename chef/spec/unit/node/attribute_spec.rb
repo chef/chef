@@ -197,7 +197,7 @@ describe Chef::Node::Attribute do
         "jimmy_eat_world" => "is fun!",
         "mastodon" => "rocks",
         "mars_volta" => "is loud and nutty",
-        "gates_of_ishtar" => nil
+        "deeper" => { "gates_of_ishtar" => nil }
       }
     }
     @override_hash = {
@@ -421,7 +421,7 @@ describe Chef::Node::Attribute do
     end
 
     it "should return true if an attribute exists but is set to nil using dot notation" do
-      @attributes.music.has_key?("gates_of_ishtar").should == true
+      @attributes.music.deeper.has_key?("gates_of_ishtar").should == true
     end
 
     it "should return true if an attribute exists but is set to false" do
