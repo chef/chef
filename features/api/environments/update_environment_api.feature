@@ -14,8 +14,9 @@ Feature: Update an environment via the REST API
      Then the inflated response should respond to '<method>' with '<updated_value>'
 
     Examples:
-      | method      | updated_value |
-      | description | I am a pickle |
+      | method            | updated_value    |
+      | description       | I am a pickle    |
+      | cookbook_versions | {"apt": "1.2.3"} |
 
   Scenario: Update an environment that does not exist
     Given I am an administrator

@@ -67,6 +67,7 @@ class Environments < Application
     end
 
     env.description(params["inflated_object"].description)
+    env.cookbook_versions(params["inflated_object"].cookbook_versions)
     env.cdb_save
     env.couchdb_rev = nil
     self.status = 200
