@@ -56,6 +56,7 @@ class Chef
     def initialize(couchdb=nil)
       @name = ''
       @description = ''
+      @cookbook_versions = Hash.new
       @couchdb_rev = nil
       @couchdb_id = nil
       @couchdb = couchdb || Chef::CouchDB.new
@@ -89,10 +90,24 @@ class Chef
       )
     end
 
+    def cookbook_versions(arg=nil)
+      set_or_return(
+        :cookbook_versions,
+        arg,
+        {
+          :kind_of => Hash,
+          :callbacks => {
+            "should be a valid set of cookbook versions" => lambda { |cv| Chef::Environment.validate_cookbook_versions(cv) }
+          }
+        }
+      )
+    end
+
     def to_hash
       result = {
         "name" => @name,
         "description" => @description,
+        "cookbook_versions" =>  @cookbook_versions,
         "json_class" => self.class.name,
         "chef_type" => "environment"
       }
@@ -108,6 +123,7 @@ class Chef
       environment = new
       environment.name(o["name"])
       environment.description(o["description"])
+      environment.cookbook_versions(o["cookbook_versions"])
       environment.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       environment.couchdb_id = o["_id"] if o.has_key?("_id")
       environment
@@ -180,5 +196,12 @@ class Chef
       @name
     end
 
+    def self.validate_cookbook_versions(cv)
+      return false unless cv.kind_of?(Hash)
+      cv.each do |cookbook, version|
+        return false unless version.kind_of?(String)
+      end
+      true
+    end
   end
 end

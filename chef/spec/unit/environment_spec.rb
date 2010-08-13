@@ -68,16 +68,70 @@ describe Chef::Environment do
     end
   end
 
+  describe "cookbook_versions" do
+    before(:each) do
+      @cookbook_versions = {
+        "apt"     => "1.0.0",
+        "god"     => "2.0.0",
+        "apache2" => "4.2.0"
+      }
+    end
+
+    it "should let you set the cookbook versions in a hash" do
+      @environment.cookbook_versions(@cookbook_versions).should == @cookbook_versions
+    end
+
+    it "should return the cookbook versions" do
+      @environment.cookbook_versions(@cookbook_versions)
+      @environment.cookbook_versions.should == @cookbook_versions
+    end
+
+    it "should not accept anything but a hash" do
+      lambda { @environment.cookbook_versions("I am a string!") }.should raise_error(ArgumentError)
+      lambda { @environment.cookbook_versions(Array.new) }.should raise_error(ArgumentError)
+      lambda { @environment.cookbook_versions(42) }.should raise_error(ArgumentError)
+    end
+
+    it "should validate the hash" do
+      Chef::Environment.should_receive(:validate_cookbook_versions).with(@cookbook_versions).and_return true
+      @environment.cookbook_versions(@cookbook_versions)
+    end
+  end
+
+  describe "to_hash" do
+    before(:each) do
+      @environment.name("spec")
+      @environment.description("Where we run the spec tests")
+      @environment.cookbook_versions({:apt => "1.2.3"})
+      @hash = @environment.to_hash
+    end
+
+    %w{name description cookbook_versions}.each do |t|
+      it "should include '#{t}'" do
+        @hash[t].should == @environment.send(t.to_sym)
+      end
+    end
+
+    it "should include 'json_class'" do
+      @hash["json_class"].should == "Chef::Environment"
+    end
+
+    it "should include 'chef_type'" do
+      @hash["chef_type"].should == "environment"
+    end
+  end
+
   describe "to_json" do
     before(:each) do
       @environment.name("spec")
       @environment.description("Where we run the spec tests")
+      @environment.cookbook_versions({:apt => "1.2.3"})
       @json = @environment.to_json
     end
 
-    %w{name description}.each do |t|
+    %w{name description cookbook_versions}.each do |t|
       it "should include '#{t}'" do
-        @json.should =~ /"#{t}":"#{@environment.send(t.to_sym)}"/
+        @json.should =~ /"#{t}":#{Regexp.escape(@environment.send(t.to_sym).to_json)}/
       end
     end
 
@@ -93,10 +147,15 @@ describe Chef::Environment do
   describe "from_json" do
     before(:each) do
       @data = {
-        :name => "production",
-        :description => "We are productive",
-        :json_class => "Chef::Environment",
-        :chef_type => "environment"
+        "name" => "production",
+        "description" => "We are productive",
+        "cookbook_versions" => {
+          "apt" => "1.2.3",
+          "god" => "4.2.0",
+          "apache2" => "2.0.0"
+        },
+        "json_class" => "Chef::Environment",
+        "chef_type" => "environment"
       }
       @environment = JSON.parse(@data.to_json)
     end
@@ -105,10 +164,38 @@ describe Chef::Environment do
       @environment.should be_a_kind_of(Chef::Environment)
     end
 
-    %w{name description}.each do |t|
+    %w{name description cookbook_versions}.each do |t|
       it "should match '#{t}'" do
-        @environment.send(t.to_sym).should == @data[t.to_sym]
+        @environment.send(t.to_sym).should == @data[t]
       end
+    end
+  end
+
+  describe "self.validate_cookbook_versions" do
+    before(:each) do
+      @cookbook_versions = {
+        "apt"     => "1.0.0",
+        "god"     => "2.0.0",
+        "apache2" => "4.2.0"
+      }
+    end
+
+    it "should return true when all versions are strings" do
+      Chef::Environment.validate_cookbook_versions(@cookbook_versions).should == true
+    end
+
+    it "should return false when anything other than a string is passed as a version" do
+      a = @cookbook_versions.dup.merge :number => 2
+      Chef::Environment.validate_cookbook_versions(a).should == false
+
+      b = @cookbook_versions.dup.merge :hash => {:foo => 'bar'}
+      Chef::Environment.validate_cookbook_versions(b).should == false
+
+      c = @cookbook_versions.dup.merge :array => ['this', 'is', 'a', 'bad', 'version']
+      Chef::Environment.validate_cookbook_versions(c).should == false
+
+      d = @cookbook_versions.dup.merge :cookbook_versions => Chef::CookbookVersion.new("meta")
+      Chef::Environment.validate_cookbook_versions(d).should == false
     end
   end
 end
