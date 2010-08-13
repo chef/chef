@@ -96,8 +96,33 @@ describe Chef::Node do
 
   end
 
-  describe "when modifying Node attributes" do
-    it "loads attributes from cookbooks" do
+  describe "chef_environment" do
+    it "should set an environment with chef_environment(something)" do
+      lambda { @node.chef_environment("latte") }.should_not raise_error
+    end
+    
+    it "should return the chef_environment with chef_environment()" do
+      @node.chef_environment("latte")
+      @node.chef_environment.should == "latte"
+    end
+    
+    it "should disallow non-strings (except for nil)" do
+      lambda { @node.chef_environment(Hash.new) }.should raise_error(ArgumentError)
+    end
+
+    it "can be nil" do
+      @node.chef_environment("foo")
+      @node.chef_environment(nil)
+      @node.chef_environment.should == nil
+    end
+    
+    it "cannot be blank" do
+      lambda { @node.chef_environment("")}.should raise_error(Chef::Exceptions::ValidationFailed)
+    end
+  end
+
+  describe "attributes" do
+    it "should be loaded from the node's cookbooks" do
       Chef::Config.cookbook_path = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
       @node.cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
       @node.load_attributes
@@ -439,6 +464,7 @@ describe Chef::Node do
     it "should load a node from a file by fqdn" do
       @node.find_file("test.example.com")
       @node.name.should == "test.example.com"
+      @node.chef_environment.should == "dev"
     end
     
     it "should load a node from a file by hostname" do
@@ -467,6 +493,7 @@ describe Chef::Node do
 
   describe "to_hash" do
     it "should serialize itself as a hash" do
+      @node.chef_environment("dev")
       @node.default_attrs = { "one" => { "two" => "three", "four" => "five", "eight" => "nine" } }
       @node.override_attrs = { "one" => { "two" => "three", "four" => "six" } }
       @node.normal_attrs = { "one" => { "two" => "seven" } }
@@ -482,6 +509,7 @@ describe Chef::Node do
       h["run_list"].should be_include("role[marxist]")
       h["run_list"].should be_include("role[leninist]")
       h["run_list"].should be_include("recipe[stalinist]")
+      h["chef_environment"].should == "dev"
     end
   end
 
@@ -491,6 +519,7 @@ describe Chef::Node do
       json = @node.to_json()
       json.should =~ /json_class/
       json.should =~ /name/
+      json.should =~ /chef_environment/
       json.should =~ /normal/
       json.should =~ /default/
       json.should =~ /override/
@@ -503,6 +532,7 @@ describe Chef::Node do
       serialized_node = JSON.parse(json)
       serialized_node.should be_a_kind_of(Chef::Node)
       serialized_node.name.should eql(@node.name)
+      serialized_node.chef_environment.should eql(@node.chef_environment)
       @node.each_attribute do |k,v|
         serialized_node[k].should eql(v)
       end

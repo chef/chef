@@ -21,6 +21,7 @@
 
 require 'chef/config'
 require 'chef/cookbook/cookbook_collection'
+require 'chef/nil_argument'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
@@ -78,7 +79,7 @@ class Chef
           "map" => <<-EOJS
             function(doc) {
               if (doc.chef_type == "node") {
-                var to_emit = { "name": doc.name };
+                var to_emit = { "name": doc.name, "chef_environment": doc.chef_environment };
                 if (doc["attributes"]["fqdn"]) {
                   to_emit["fqdn"] = doc["attributes"]["fqdn"];
                 } else {
@@ -138,7 +139,8 @@ class Chef
     # Create a new Chef::Node object.
     def initialize(couchdb=nil)
       @name = nil
-      
+
+      @chef_environment = nil
       @normal_attrs = Mash.new
       @override_attrs = Mash.new
       @default_attrs = Mash.new
@@ -203,6 +205,23 @@ class Chef
         @name = arg
       else
         @name
+      end
+    end
+
+    def chef_environment(arg=Chef::NIL_ARGUMENT)
+      if arg != Chef::NIL_ARGUMENT
+        if arg.nil?
+          @chef_environment = nil
+        else
+          validate(
+                   {:name => arg },
+                   {:name => { :kind_of => String,
+                       :cannot_be => :blank}
+                   })
+          @chef_environment = arg
+        end
+      else
+        @chef_environment
       end
     end
 
@@ -425,6 +444,7 @@ class Chef
       index_hash = Hash.new
       index_hash["chef_type"] = "node"
       index_hash["name"] = name
+      index_hash["chef_environment"] = chef_environment
       attribute.each do |key, value|
         index_hash[key] = value
       end
@@ -438,6 +458,7 @@ class Chef
     def to_json(*a)
       result = {
         "name" => name,
+        "chef_environment" => chef_environment,
         'json_class' => self.class.name,
         "automatic" => automatic_attrs,
         "normal" => normal_attrs,
@@ -454,7 +475,7 @@ class Chef
     def self.json_create(o)
       node = new
       node.name(o["name"])
-
+      node.chef_environment(o["chef_environment"])
       if o.has_key?("attributes")
         node.normal_attrs = o["attributes"]
       end
