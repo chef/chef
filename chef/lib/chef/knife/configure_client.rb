@@ -31,7 +31,7 @@ class Chef
         end
 
         Chef::Log.info("Creating client configuration")
-        system("mkdir -p #{@config_dir}")
+        FileUtils.mkdir_p(@config_dir)
         Chef::Log.info("Writing client.rb")
         File.open(File.join(@config_dir, "client.rb"), "w") do |file|
           file.puts('log_level        :info')
@@ -40,7 +40,9 @@ class Chef
           file.puts("validation_client_name '#{Chef::Config[:validation_client_name]}'")
         end
         Chef::Log.info("Writing validation.pem")
-        system("cp #{Chef::Config[:validation_key]} #{File.join(@config_dir, 'validation.pem')}")
+        File.open(File.join(@config_dir, 'validation.pem'), "w") do |validation|
+          validation.puts(IO.read(Chef::Config[:validation_key]))
+        end
       end
 
     end
