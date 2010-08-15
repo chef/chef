@@ -90,7 +90,7 @@ describe Chef::Solr do
   describe "solr_add" do
     before(:each) do
       @solr.stub!(:post_to_solr).and_return(true)
-      @data = { "foo" => "bar" }
+      @data = { "foo" => ["bar"] }
     end
 
     it "should send valid XML to solr" do
@@ -99,7 +99,7 @@ describe Chef::Solr do
     end
 
     it "XML escapes content before sending to SOLR" do
-      @data["foo"] = "<&>"
+      @data["foo"] = ["<&>"]
       @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<add><doc><field name=\"foo\">&lt;&amp;&gt;</field></doc></add>\n")
 
       @solr.solr_add(@data)

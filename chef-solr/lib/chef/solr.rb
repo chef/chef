@@ -75,27 +75,31 @@ class Chef
       res
     end
 
-    def solr_add(data)
-      data = [data] unless data.kind_of?(Array)
+    START_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<add><doc>"
+    END_XML   = "</doc></add>\n"
+    FIELD_ATTR = '<field name="'
+    FIELD_ATTR_END = '">'
+    CLOSE_FIELD = "</field>"
 
+    def solr_add(data)
       Chef::Log.debug("adding to SOLR: #{data.inspect}")
-      xml_document = LibXML::XML::Document.new
-      xml_add = LibXML::XML::Node.new("add")
-      data.each do |doc|
-        xml_doc = LibXML::XML::Node.new("doc")
-        doc.each do |field, values|
-          values = [values] unless values.kind_of?(Array)
-          values.each do |v|
-            xml_field = LibXML::XML::Node.new("field")
-            xml_field["name"] = field
-            xml_field.content = xml_escape(v.to_s)
-            xml_doc << xml_field
-          end
+
+      xml = ""
+      xml << START_XML
+
+      data.each do |field, values|
+        values.each do |v|
+          xml << FIELD_ATTR
+          xml << field
+          xml << FIELD_ATTR_END
+          xml <<  xml_escape(v)
+          xml << CLOSE_FIELD
         end
-        xml_add << xml_doc
       end
-      xml_document.root = xml_add
-      post_to_solr(xml_document.to_s(:indent => false))
+      xml << END_XML
+      xml
+
+      post_to_solr(xml)
     end
 
     def solr_commit(opts={})
