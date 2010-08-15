@@ -29,7 +29,7 @@
           = catch_content :for_layout
           #footer
             .block
-              %p Copyright &copy; 2010 Opscode
+              %p= "Version #{chef_version} &mdash; Copyright &copy; 2009-#{Time.now.year} Opscode"
         #sidebar
           .block.notice#sidebar_block_notice= catch_content :sidebar_block_notice
           .block#sidebar_block= catch_content :sidebar_block
