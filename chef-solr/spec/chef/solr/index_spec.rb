@@ -132,6 +132,41 @@ describe Chef::Solr::Index do
       end
     end
 
+    it "generates unlimited levels of expando fields when expanding" do
+      expected_keys = ["one",
+                       "one_two",
+                       "X_two",
+                       "one_X",
+                       "one_two_three",
+                       "X_two_three",
+                       "one_X_three",
+                       "one_two_X",
+                       "one_two_three_four",
+                       "X_two_three_four",
+                       "one_X_three_four",
+                       "one_two_X_four",
+                       "one_two_three_X",
+                       "one_two_three_four_five",
+                       "X_two_three_four_five",
+                       "one_X_three_four_five",
+                       "one_two_X_four_five",
+                       "one_two_three_X_five",
+                       "one_two_three_four_X",
+                       "six",
+                       "one_two_three_four_five_six",
+                       "X_two_three_four_five_six",
+                       "one_X_three_four_five_six",
+                       "one_two_X_four_five_six",
+                       "one_two_three_X_five_six",
+                       "one_two_three_four_X_six",
+                       "one_two_three_four_five_X"].sort
+
+      nested = {:one => {:two => {:three => {:four => {:five => {:six => :end}}}}}}
+      @fields = @index.flatten_and_expand(nested)
+
+      @fields.keys.sort.should include(*expected_keys)
+    end
+
   end
 
   describe "creating expando fields" do
