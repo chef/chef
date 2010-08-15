@@ -1,5 +1,7 @@
 require File.expand_path(File.join("#{File.dirname(__FILE__)}", '..', '..', 'spec_helper'))
 
+
+
 describe Chef::Solr::Index do
   before(:each) do
     @index = Chef::Solr::Index.new
@@ -25,37 +27,36 @@ describe Chef::Solr::Index do
 
     it "should index the object as a single flat hash, with only strings or arrays as values" do
       validate = {
-        "X_CHEF_id_CHEF_X" => 1,
-        "X_CHEF_database_CHEF_X" => "monkey",
-        "X_CHEF_type_CHEF_X" => "snakes", 
-        "foo" => "bar",
+        "X_CHEF_id_CHEF_X" => [1],
+        "X_CHEF_database_CHEF_X" => ["monkey"],
+        "X_CHEF_type_CHEF_X" => ["snakes"],
+        "foo" => ["bar"],
         "battles" => [ "often", "but", "for" ],
-        "battles_often" => "sings like smurfs",
-        "often" => "sings like smurfs",
-        "battles_but" => "still has good records",
-        "but" => "still has good records",
+        "battles_often" => ["sings like smurfs"],
+        "often" => ["sings like smurfs"],
+        "battles_but" => ["still has good records"],
+        "but" => ["still has good records"],
         "battles_for" => [ "all", "of", "that" ],
         "for" => [ "all", "of", "that" ],
-        "snoopy" => "sits_in_a_barn",
+        "snoopy" => ["sits-in-a-barn"],
         "battles_X" => [ "sings like smurfs", "still has good records", "all", "of", "that" ],
-        "X_often" => "sings like smurfs",
-        "X_but" => "still has good records",
+        "X_often" =>[ "sings like smurfs"],
+        "X_but" => ["still has good records"],
         "X_for" => [ "all", "of", "that" ]
-      } 
-      to_index = @index.add(1, "monkey", "snakes", { 
+      }
+      to_index = @index.add(1, "monkey", "snakes", {
         "foo" => :bar,
-        "battles" => { 
+        "battles" => {
           "often" => "sings like smurfs",
           "but" => "still has good records",
           "for" => [ "all", "of", "that" ]
         },
-        "snoopy" => "sits_in_a_barn"
+        "snoopy" => "sits-in-a-barn"
       })
+
       validate.each do |k, v|
         if v.kind_of?(Array)
-          # Every entry in to_index[k] should be in v
-          r = to_index[k] & v
-          r.length.should == to_index[k].length
+          to_index[k].sort.should == v.sort
         else
           to_index[k].should == v
         end
@@ -88,101 +89,99 @@ describe Chef::Solr::Index do
     end
 
     it "should set a value for the parent as key, with the key as the value" do
-      @index.flatten_and_expand({ "one" => "woot" }, @fields, "omerta")
-      @fields["omerta"].should == "one"
+      @fields = @index.flatten_and_expand("omerta" => { "one" => "woot" })
+      @fields["omerta"].should == ["one"]
     end
 
     it "should call itself recursively for values that are hashes" do
-      @index.flatten_and_expand({ "one" => { "two" => "three", "four" => { "five" => "six" } }}, @fields)
-      {
-        "one" => [ "two", "four" ],
-        "one_two" => "three",
-        "X_two" => "three",
-        "two" => "three",
-        "one_four" => "five",
-        "X_four" => "five",
-        "one_X" => [ "three", "five" ],
-        "one_four_five" => "six", 
-        "X_four_five" => "six",
-        "one_X_five" => "six",
-        "one_four_X" => "six",
-        "five" => "six"
-      }.each do |k, v|
+      @fields = @index.flatten_and_expand({ "one" => { "two" => "three", "four" => { "five" => "six" } }})
+      expected = {"one" => [ "two", "four" ],
+                  "one_two" => ["three"],
+                  "X_two" => ["three"],
+                  "two" => ["three"],
+                  "one_four" => ["five"],
+                  "X_four" => ["five"],
+                  "one_X" => [ "three", "five" ],
+                  "one_four_five" => ["six"],
+                  "X_four_five" => ["six"],
+                  "one_X_five" => ["six"],
+                  "one_four_X" => ["six"],
+                  "five" => ["six"]}
+      expected.each do |k, v|
         @fields[k].should == v
       end
     end
 
     it "should call itself recursively for hashes nested in arrays" do
-      @index.flatten_and_expand({ :one => [ { :two => "three" }, { :four => { :five => "six" } } ] }, @fields)
-      {
-        "one_X_five" => "six",
-        "one_four" => "five",
-        "one_X" => [ "three", "five" ],
-        "two" => "three",
-        "one_four_X" => "six",
-        "X_four" => "five",
-        "X_four_five" => "six",
-        "one" => [ "two", "four" ],
-        "one_four_five" => "six",
-        "five" => "six",
-        "X_two" => "three",
-        "one_two" => "three"
-      }.each do |k, v|
-        @fields[k].should == v
+      @fields = @index.flatten_and_expand({ :one => [ { :two => "three" }, { :four => { :five => "six" } } ] })
+      expected = {"one_X_five" => ["six"],
+                  "one_four" => ["five"],
+                  "one_X" => [ "three", "five" ],
+                  "two" => ["three"],
+                  "one_four_X" => ["six"],
+                  "X_four" => ["five"],
+                  "X_four_five" => ["six"],
+                  "one" => [ "two", "four" ],
+                  "one_four_five" => ["six"],
+                  "five" => ["six"],
+                  "X_two" => ["three"],
+                  "one_two" => ["three"]}
+
+      expected.each do |key, expected_value|
+        @fields[key].should == expected_value
       end
     end
 
+    it "generates unlimited levels of expando fields when expanding" do
+      expected_keys = ["one",
+                       "one_two",
+                       "X_two",
+                       "one_X",
+                       "one_two_three",
+                       "X_two_three",
+                       "one_X_three",
+                       "one_two_X",
+                       "one_two_three_four",
+                       "X_two_three_four",
+                       "one_X_three_four",
+                       "one_two_X_four",
+                       "one_two_three_X",
+                       "one_two_three_four_five",
+                       "X_two_three_four_five",
+                       "one_X_three_four_five",
+                       "one_two_X_four_five",
+                       "one_two_three_X_five",
+                       "one_two_three_four_X",
+                       "six",
+                       "one_two_three_four_five_six",
+                       "X_two_three_four_five_six",
+                       "one_X_three_four_five_six",
+                       "one_two_X_four_five_six",
+                       "one_two_three_X_five_six",
+                       "one_two_three_four_X_six",
+                       "one_two_three_four_five_X"].sort
+
+      nested = {:one => {:two => {:three => {:four => {:five => {:six => :end}}}}}}
+      @fields = @index.flatten_and_expand(nested)
+
+      @fields.keys.sort.should include(*expected_keys)
+    end
+
   end
 
-  describe "set_field_value" do
-    before(:each) do
-      @fields = Hash.new
+  describe "creating expando fields" do
+    def make_expando_fields(parts)
+      expando_fields = []
+      @index.each_expando_field(parts) { |ex| expando_fields << ex }
+      expando_fields
     end
 
-    it "should set a value in the fields hash" do
-      @index.set_field_value(@fields, "one", "two")
-      @fields["one"].should eql("two")
-    end
-
-    it "should create an array of all values, if a field is set twice" do
-      @index.set_field_value(@fields, "one", "two")
-      @index.set_field_value(@fields, "one", "three")
-      @fields["one"].should eql([ "two", "three" ])
-    end
-
-    it "should not add duplicate values to a field when there is one string entry" do
-      @index.set_field_value(@fields, "one", "two")
-      @index.set_field_value(@fields, "one", "two")
-      @fields["one"].should eql("two")
-    end
-
-    it "should not add duplicate values to a field when it is an array" do
-      @index.set_field_value(@fields, "one", "two")
-      @index.set_field_value(@fields, "one", "three")
-      @index.set_field_value(@fields, "one", "two")
-      @fields["one"].should eql([ "two", "three" ])
-    end
-
-    it "should accept arrays as values" do
-      @index.set_field_value(@fields, "one", [ "two", "three" ])
-      @fields["one"].should eql([ "two", "three" ]) 
-    end
-
-    it "should not duplicate values when a field has been set with multiple arrays" do
-      @index.set_field_value(@fields, "one", [ "two", "three" ])
-      @index.set_field_value(@fields, "one", [ "two", "four" ])
-      @fields["one"].should eql([ "two", "three", "four" ]) 
-    end
-
-
-    it "should allow you to set a value in the fields hash to an array" do
-      @index.set_field_value(@fields, "one", [ "foo", "bar", "baz" ])
-    end
-
-    it "should not allow you to set a value in the fields hash to a hash" do
-      lambda {
-        @index.set_field_value(@fields, "one", { "two" => "three" })
-      }.should raise_error(ArgumentError)
+    it "joins the fields with a big X" do
+      make_expando_fields(%w{foo bar baz qux}).should == ["X_bar_baz_qux", "foo_X_baz_qux", "foo_bar_X_qux", "foo_bar_baz_X"]
+      make_expando_fields(%w{foo bar baz}).should == ["X_bar_baz", "foo_X_baz", "foo_bar_X"]
+      make_expando_fields(%w{foo bar}).should == ["X_bar", "foo_X"]
+      make_expando_fields(%w{foo}).should == []
     end
   end
+
 end
