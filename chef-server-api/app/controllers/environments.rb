@@ -66,8 +66,7 @@ class Environments < Application
       raise NotFound, "Cannot load environment #{params[:id]}"
     end
 
-    env.description(params["inflated_object"].description)
-    env.cookbook_versions(params["inflated_object"].cookbook_versions)
+    env.update_from!(params["inflated_object"])
     env.cdb_save
     env.couchdb_rev = nil
     self.status = 200

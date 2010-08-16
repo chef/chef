@@ -110,6 +110,26 @@ describe Chef::Environment do
     end
   end
 
+  describe "update_from!" do
+    before(:each) do
+      @environment.name("prod")
+      @environment.description("this is prod")
+      @environment.cookbook_versions({ "apt" => "1.2.3" })
+
+      @example = Chef::Environment.new
+      @example.name("notevenprod")
+      @example.description("this is pre-prod")
+      @example.cookbook_versions({ "apt" => "2.3.4" })
+    end
+
+    it "should update everything but name" do
+      @environment.update_from!(@example)
+      @environment.name.should == "prod"
+      @environment.description.should == @example.description
+      @environment.cookbook_versions.should == @example.cookbook_versions
+    end
+  end
+
   describe "to_hash" do
     before(:each) do
       @environment.name("spec")
