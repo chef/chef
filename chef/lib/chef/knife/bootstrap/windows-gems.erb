@@ -1,12 +1,16 @@
 cscript /nologo client-install.vbs <%= @config[:proxy] %>
 
-> c:/chef/client.rb (
+> c:/chef/etc/client.rb (
  @echo.log_level        :info
  @echo.log_location     STDOUT
  @echo.chef_server_url  "<%= Chef::Config[:chef_server_url] %>"
  @echo.validation_client_name "<%= Chef::Config[:validation_client_name] %>"
- @echo.client_key "c:/chef/client.pem"
- @echo.validation_key "c:/chef/validation.pem"
+ @echo.client_key "c:/chef/etc/client.pem"
+ @echo.validation_key "c:/chef/etc/validation.pem"
+ @echo.checksum_path "c:/chef/var/checksums"
+ @echo.file_cache_path "c:/chef/var/cache"
+ @echo.file_backup_path "c:/chef/var/backup"
+ @echo.cache_options ^( {:path, "c:/chef/var/cache/checksums", :skip_expires, true} ^)
 <% if Chef::Config[:http_proxy] != nil %>
  @echo.http_proxy       "<%= Chef::Config[:http_proxy] %>"
 <% end %>
@@ -23,8 +27,8 @@ cscript /nologo client-install.vbs <%= @config[:proxy] %>
 <% end %> 
 )
 
-> c:/chef/first-boot.json (
+> c:/chef/etc/first-boot.json (
  @echo.<%= { "run_list" => @run_list }.to_json %>
 )
 
-c:/ruby/bin/ruby c:/ruby/bin/chef-client -c c:/chef/client.rb -j c:/chef/first-boot.json -l <%= Chef::Config[:log_level] %>"
+c:/ruby/bin/ruby c:/ruby/bin/chef-client -c c:/chef/etc/client.rb -j c:/chef/etc/first-boot.json -l <%= Chef::Config[:log_level] %>"

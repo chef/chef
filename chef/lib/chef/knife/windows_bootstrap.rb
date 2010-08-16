@@ -92,7 +92,7 @@ class Chef
       end
 
       def psexec(args)
-        cmd = ['psexec', @unc_path, "-w", 'c:\chef']
+        cmd = ['psexec', @unc_path, "-w", 'c:\chef\tmp']
         if config[:user]
           cmd << "-u" << config[:user]
         end
@@ -122,6 +122,8 @@ class Chef
         @unc_path = "\\\\#{config[:server_name]}"
         @admin_share = "#{@unc_path}\\c$"
         path = "#{@admin_share}\\chef"
+        etc = "#{path}\\etc"
+        tmp = "#{path}\\tmp"
 
         $stdout.sync = true
 
@@ -133,13 +135,15 @@ class Chef
         mount_admin_share
 
         begin
-          unless File.exists?(path)
-            Chef::Log.debug("mkdir #{path}")
-            FileUtils.mkdir(path)
+          [etc, tmp, "#{path}\\log"].each do |dir|
+            unless File.exists?(dir)
+              Chef::Log.debug("mkdir_p #{dir}")
+              FileUtils.mkdir_p(dir)
+            end
           end
-          File.open("#{path}\\bootstrap.bat", 'w') {|f| f.write(command) }
-          FileUtils.cp(File.join(File.dirname(__FILE__), 'bootstrap', 'client-install.vbs'), path)
-          FileUtils.cp(Chef::Config[:validation_key], path)
+          File.open("#{tmp}\\bootstrap.bat", 'w') {|f| f.write(command) }
+          FileUtils.cp(File.join(File.dirname(__FILE__), 'bootstrap', 'client-install.vbs'), tmp)
+          FileUtils.cp(Chef::Config[:validation_key], etc)
           psexec("cmd.exe /c bootstrap.bat")
         ensure
           unmount_admin_share
