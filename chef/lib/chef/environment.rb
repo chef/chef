@@ -131,6 +131,12 @@ class Chef
       to_hash.to_json(*a)
     end
 
+    def update_from!(o)
+      description(o.description)
+      cookbook_versions(o.cookbook_versions)
+      self
+    end
+
     def self.json_create(o)
       environment = new
       environment.name(o["name"])
