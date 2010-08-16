@@ -471,6 +471,16 @@ class Chef
       result.to_json(*a)
     end
 
+    def update_from!(o)
+      run_list.reset!(o.run_list)
+      @automatic_attrs = o.automatic_attrs
+      @normal_attrs = o.normal_attrs
+      @override_attrs = o.override_attrs
+      @default_attrs = o.default_attrs
+      chef_environment(o.chef_environment)
+      self
+    end
+
     # Create a Chef::Node from JSON
     def self.json_create(o)
       node = new
