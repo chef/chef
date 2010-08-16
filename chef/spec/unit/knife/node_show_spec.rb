@@ -24,7 +24,8 @@ describe Chef::Knife::NodeShow do
     @knife = Chef::Knife::NodeShow.new
     @knife.config = {
       :attribute => nil,
-      :run_list => nil
+      :run_list => nil,
+      :environment => nil
     }
     @knife.name_args = [ "adam" ]
     @knife.stub!(:output).and_return(true)

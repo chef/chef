@@ -121,7 +121,7 @@ class Chef
     def self.run(args, options={})
       load_commands
       subcommand_class = subcommand_class_from(args)
-      subcommand_class.options.merge!(options)
+      subcommand_class.options = options.merge!(subcommand_class.options)
       instance = subcommand_class.new(args)
       instance.configure_chef
       instance.run
@@ -324,6 +324,13 @@ class Chef
       elsif config[:run_list]
         data = data.run_list.run_list
         { "run_list" => data }
+      elsif config[:environment]
+        if data.class == Chef::Node
+          {"chef_environment" => data.chef_environment}
+        else
+          # this is a place holder for now. Feel free to modify (i.e. add other cases). [nuo]
+          data
+        end
       elsif config[:id_only]
         data.respond_to?(:name) ? data.name : data["id"]
       else
