@@ -491,6 +491,44 @@ describe Chef::Node do
     end
   end
 
+  describe "update_from!" do
+    before(:each) do
+      @node.name("orig")
+      @node.chef_environment("dev")
+      @node.default_attrs = { "one" => { "two" => "three", "four" => "five", "eight" => "nine" } }
+      @node.override_attrs = { "one" => { "two" => "three", "four" => "six" } }
+      @node.normal_attrs = { "one" => { "two" => "seven" } }
+      @node.run_list << "role[marxist]"
+      @node.run_list << "role[leninist]"
+      @node.run_list << "recipe[stalinist]"
+
+      @example = Chef::Node.new()
+      @example.name("newname")
+      @example.chef_environment("prod")
+      @example.default_attrs = { "alpha" => { "bravo" => "charlie", "delta" => "echo" } }
+      @example.override_attrs = { "alpha" => { "bravo" => "foxtrot", "delta" => "golf" } }
+      @example.normal_attrs = { "alpha" => { "bravo" => "hotel" } }
+      @example.run_list << "role[comedy]"
+      @example.run_list << "role[drama]"
+      @example.run_list << "recipe[mystery]"
+    end
+
+    it "allows update of everything except name" do
+      @node.update_from!(@example)
+      @node.name.should == "orig"
+      @node.chef_environment.should == @example.chef_environment
+      @node.default_attrs.should == @example.default_attrs
+      @node.override_attrs.should == @example.override_attrs
+      @node.normal_attrs.should == @example.normal_attrs
+      @node.run_list.should == @example.run_list
+    end
+
+    it "should not update the name of the node" do
+      @node.should_not_receive(:name).with(@example.name)
+      @node.update_from!(@example)
+    end
+  end
+
   describe "to_hash" do
     it "should serialize itself as a hash" do
       @node.chef_environment("dev")

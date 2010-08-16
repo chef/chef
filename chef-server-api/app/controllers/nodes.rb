@@ -62,13 +62,7 @@ class Nodes < Application
       raise NotFound, "Cannot load node #{params[:id]}"
     end
 
-    updated = params['inflated_object']
-    @node.run_list.reset!(updated.run_list)
-    @node.automatic_attrs = updated.automatic_attrs
-    @node.normal_attrs = updated.normal_attrs
-    @node.override_attrs = updated.override_attrs
-    @node.default_attrs = updated.default_attrs
-    @node.chef_environment(updated.chef_environment)
+    @node.update_from!(params['inflated_object'])
     @node.cdb_save
     @node.couchdb_rev = nil
     display(@node)
