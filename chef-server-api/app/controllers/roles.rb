@@ -48,11 +48,7 @@ class Roles < Application
       raise NotFound, "Cannot load role #{params[:id]}"
     end
 
-    @role.description(params["inflated_object"].description)
-    @role.recipes(params["inflated_object"].recipes) if defined?(params["inflated_object"].recipes)
-    @role.run_list(params["inflated_object"].run_list)
-    @role.default_attributes(params["inflated_object"].default_attributes)
-    @role.override_attributes(params["inflated_object"].override_attributes)
+    @role.update_from!(params["inflated_object"])
     @role.cdb_save
     self.status = 200
     @role.couchdb_rev = nil
