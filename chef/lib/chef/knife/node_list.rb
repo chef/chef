@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,8 +32,19 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run
-        output(format_list_for_display(Chef::Node.list))
+        output(format_list_for_display(retrieve_node_list))
       end
+      
+      def retrieve_node_list
+        if config[:environment]
+          response = Hash.new
+          Chef::Search::Query.new.search(:node, "chef_environment:#{config[:environment]}") {|n| response[n.name] = "#{Chef::Config[:chef_server_url]}/nodes/#{n.name}" unless n.nil?}
+          response
+        else
+          Chef::Node.list
+        end
+      end
+      
     end
   end
 end

@@ -27,11 +27,14 @@ describe Chef::Knife::NodeList do
       "foo" => "http://example.com/foo",
       "bar" => "http://example.com/foo"
     }
+    Chef::REST.stub!(:new).and_return("foo")
+    @chef_search_query = Chef::Search::Query.new
     Chef::Node.stub!(:list).and_return(@list)
+    Chef::Search::Query.stub!(:new).and_return(@chef_search_query)
   end
 
   describe "run" do
-    it "should list the nodes" do
+    it "should list all of the nodes if -E is not specified" do
       Chef::Node.should_receive(:list).and_return(@list)
       @knife.run
     end
@@ -42,6 +45,13 @@ describe Chef::Knife::NodeList do
       @knife.run
     end
 
+    it "should list nodes in the specific environment if -E ENVIRONMENT is specified" do
+      @knife.config = {:environment => "prod"}
+      Chef::Search::Query.should_receive(:new).and_return(@chef_search_query)
+      @chef_search_query.should_receive(:search).with(:node, "chef_environment:prod").and_return(["foo","bar"])
+      @knife.run
+    end
+    
     describe "with -w or --with-uri" do
       it "should pretty print the hash" do
         @knife.config[:with_uri] = true
