@@ -149,6 +149,15 @@ class Chef
       to_hash.to_json(*a)
     end
 
+    def update_from!(o)
+      description(o.description)
+      recipes(o.recipes) if defined?(o.recipes)
+      run_list(o.run_list)
+      default_attributes(o.default_attributes)
+      override_attributes(o.override_attributes)
+      self
+    end
+
     # Create a Chef::Role from JSON
     def self.json_create(o)
       role = new
