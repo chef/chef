@@ -86,20 +86,15 @@ class Nodes < Application
       raise NotFound, "Cannot load node #{params[:id]}"
     end
 
-    display(load_all_files(params[:id]))
+    display(load_all_files)
   end
 
   private
 
-  def load_all_files(node_name)
-    all_cookbooks = Chef::CookbookVersion.cdb_list(true).inject({}) do |res, cookbook|
-      version            = Gem::Version.new cookbook.version
-      newest_version     = res.has_key?(cookbook.name) ? version > Gem::Version.new(res[cookbook.name].version) : true
-      res[cookbook.name] = cookbook if newest_version
-      res
-    end
+  def load_all_files
+    all_cookbooks = Chef::CookbookVersion.cdb_list(true).inject({}) {|hsh,record| hsh[record.name] = record ; hsh}
 
-    included_cookbooks = cookbooks_for_node(node_name, all_cookbooks)
+    included_cookbooks = cookbooks_for_node(all_cookbooks)
     nodes_cookbooks = Hash.new
     included_cookbooks.each do |cookbook_name, cookbook|
       next unless cookbook
@@ -111,12 +106,9 @@ class Nodes < Application
   end
 
   # returns name -> CookbookVersion for all cookbooks included on the given node.
-  def cookbooks_for_node(node_name, all_cookbooks)
-    # get node's explicit dependencies
-    node = Chef::Node.cdb_load(node_name)
-
+  def cookbooks_for_node(all_cookbooks)
     # expand returns a RunListExpansion which contains recipes, default and override attrs [cb]
-    recipes = node.run_list.expand('couchdb').recipes
+    recipes = @node.run_list.expand('couchdb').recipes
 
     # walk run list and accumulate included dependencies
     recipes.inject({}) do |included_cookbooks, recipe|
