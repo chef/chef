@@ -336,6 +336,10 @@ begin
         Cucumber::Rake::Task.new("cookbooks") do |t|
           t.profile = "api_environments_cookbook_list"
         end
+
+        Cucumber::Rake::Task.new("nodes") do |t|
+          t.profile = "api_environments_node_list"
+        end
       end
 
       namespace :nodes do
