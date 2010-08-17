@@ -302,12 +302,12 @@ describe Chef::Environment do
   end
 
   describe "self.validate_cookbook_version" do
-    it "should return true when the value is a string" do
+    it "should validate the version number with the Gem::Requirement class" do
+      Gem::Requirement.should_receive(:parse).with("1.2.3")
       Chef::Environment.validate_cookbook_version("1.2.3").should == true
     end
 
-    it "should return false when anything other than a string is passed as a version" do
-      Chef::Environment.validate_cookbook_version(42).should == false
+    it "should return false when an invalid parameter is passed as a version" do
       Chef::Environment.validate_cookbook_version(Hash.new).should == false
       Chef::Environment.validate_cookbook_version(Array.new).should == false
       Chef::Environment.validate_cookbook_version(Chef::CookbookVersion.new("meta")).should == false

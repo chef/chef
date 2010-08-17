@@ -98,7 +98,7 @@ class Chef
         {
           :kind_of => Hash,
           :callbacks => {
-            "should be a valid set of cookbook versions" => lambda { |cv| Chef::Environment.validate_cookbook_versions(cv) }
+            "should be a valid set of cookbook version requirements" => lambda { |cv| Chef::Environment.validate_cookbook_versions(cv) }
           }
         }
       )
@@ -109,7 +109,7 @@ class Chef
         :version => version
       },{
         :version => {
-          :callbacks => { "should be a valid version number" => lambda { |v| Chef::Environment.validate_cookbook_version(v) } }
+          :callbacks => { "should be a valid version requirement" => lambda { |v| Chef::Environment.validate_cookbook_version(v) } }
         }
       })
       @cookbook_versions[cookbook] = version
@@ -240,8 +240,12 @@ class Chef
     end
 
     def self.validate_cookbook_version(version)
-      # TODO: check if version syntax is like rubygems syntax
-      version.kind_of?(String)
+      begin
+        Gem::Requirement.parse version
+        true
+      rescue ArgumentError
+        false
+      end
     end
   end
 end
