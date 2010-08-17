@@ -97,7 +97,7 @@ class Environments < Application
   # GET /environments/:environment_id/nodes
   def list_nodes
     node_list = Chef::Node.cdb_list_by_environment(params[:environment_id])
-    display(node_list.inject({}) {|r,n| r[n] = absolute_url(:node, n); r}
+    display(node_list.inject({}) {|r,n| r[n] = absolute_url(:node, n); r})
   end
 
   private
