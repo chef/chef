@@ -32,17 +32,7 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run
-        output(format_list_for_display(retrieve_node_list))
-      end
-      
-      def retrieve_node_list
-        if config[:environment]
-          response = Hash.new
-          Chef::Search::Query.new.search(:node, "chef_environment:#{config[:environment]}") {|n| response[n.name] = "#{Chef::Config[:chef_server_url]}/nodes/#{n.name}" unless n.nil?}
-          response
-        else
-          Chef::Node.list
-        end
+        output(format_list_for_display( config[:environment] ? Chef::Node.list_by_environment(config[:environment]) : Chef::Node.list ))
       end
       
     end
