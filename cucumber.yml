@@ -53,4 +53,5 @@ provider_package_macports: --tags @macports --format pretty -r features/steps -r
 provider_package_rubygems: --tags @rubygems --format pretty -r features/steps -r features/support features 
 lwrp: --tags @lwrp --format pretty -r features/steps -r features/support features 
 attribute_settings: --tags @attribute_settings --format pretty -r features/steps -r features/support features 
-
+knife: --tags @knife --format pretty -r features/steps -r features/support features
+knife_cookbook_upload: --tags @knife_cookbook_upload --format pretty -r features/steps -r features/support features

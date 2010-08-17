@@ -60,6 +60,10 @@ Then /^the inflated responses key '(.+)' item '(\d+)' key '(.+)' should be '(.+)
   inflated_response[key][index.to_i][sub_key].should == to_equal
 end
 
+Then /^the inflated responses key '(.+)' sub-key '(.+)' should be an empty hash$/ do |key, sub_key|
+  inflated_response[key][sub_key].should == {}
+end
+
 Then /^the inflated responses key '(.+)' should be '(\d+)' items long$/ do |key, length| 
   inflated_response[key].length.should == length.to_i
 end
@@ -127,7 +131,7 @@ Then /^the stringified response should be the stringified '(.+)'$/ do |stash_key
 end
 
 Then /^the inflated response should be a kind of '(.+)'$/ do |thing|
-  self.inflated_response.should be_a_kind_of(thing)
+  self.inflated_response.should be_a_kind_of(eval(thing))
 end
 
 Then /^the inflated response should respond to '(.+)' with '(.+)'$/ do |method, to_match|

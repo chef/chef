@@ -23,7 +23,7 @@ class Chef
         # generate checksums of cookbook files and create a sandbox
         checksum_files = cookbook.checksums
         checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
-        new_sandbox = rest.post_rest("/sandboxes", { :checksums => checksums })
+        new_sandbox = rest.post_rest("sandboxes", { :checksums => checksums })
 
         Chef::Log.info("Uploading files")
         # upload the new checksums and commit the sandbox
@@ -72,19 +72,20 @@ class Chef
             raise
           end
         end
-
         # files are uploaded, so save the manifest
         cookbook.save
-
         Chef::Log.info("Upload complete!")
       end
 
       def build_metadata(cookbook)
         Chef::Log.debug("Generating metadata")
+        # FIXME: This knife command should be factored out into a
+        # library for use here
         kcm = Chef::Knife::CookbookMetadata.new
         kcm.config[:cookbook_path] = Chef::Config[:cookbook_path]
         kcm.name_args = [ cookbook.name.to_s ]
         kcm.run
+        cookbook.reload_metadata!
       end
 
       def validate_cookbook(cookbook)

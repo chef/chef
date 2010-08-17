@@ -504,6 +504,12 @@ begin
           g.profile = "provider_package_rubygems"
         end
       end
+
+      desc "Run cucumber tests for knife"
+      Cucumber::Rake::Task.new(:knife) do |t|
+        t.profile = "knife"
+      end
+
     end
   end
 rescue LoadError
