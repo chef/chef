@@ -27,10 +27,8 @@ describe Chef::Knife::NodeList do
       "foo" => "http://example.com/foo",
       "bar" => "http://example.com/foo"
     }
-    Chef::REST.stub!(:new).and_return("foo")
-    @chef_search_query = Chef::Search::Query.new
     Chef::Node.stub!(:list).and_return(@list)
-    Chef::Search::Query.stub!(:new).and_return(@chef_search_query)
+    Chef::Node.stub!(:list_by_environment).and_return(@list)
   end
 
   describe "run" do
@@ -47,8 +45,7 @@ describe Chef::Knife::NodeList do
 
     it "should list nodes in the specific environment if -E ENVIRONMENT is specified" do
       @knife.config = {:environment => "prod"}
-      Chef::Search::Query.should_receive(:new).and_return(@chef_search_query)
-      @chef_search_query.should_receive(:search).with(:node, "chef_environment:prod").and_return(["foo","bar"])
+      Chef::Node.should_receive(:list_by_environment).with("prod").and_return(@list)
       @knife.run
     end
     

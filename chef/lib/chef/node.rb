@@ -132,6 +132,15 @@ class Chef
               }
             }
           EOJS
+        },
+        "by_environment" => {
+          "map" => <<-EOJS
+            function(doc) {
+              if (doc.chef_type == "node") {
+                emit(doc['chef_environment'], doc.name);
+              }
+            }
+          EOJS
         }
       },
     }
@@ -504,7 +513,22 @@ class Chef
       node.index_id = node.couchdb_id
       node
     end
-
+    
+    def self.cdb_list_by_environment(environment, inflate=false, couchdb=nil)      
+      rs = (couchdb || Chef::CouchDB.new).get_view("nodes", "by_environment", :include_docs => inflate, :startkey => environment, :endkey => environment)
+      inflate ? rs["rows"].collect {|r| r["doc"]} : rs["rows"].collect {|r| r["value"]}
+    end
+    
+    def self.list_by_environment(environment, inflate=false)
+      if inflate
+        response = Hash.new
+        Chef::Search::Query.new.search(:node, "chef_environment:#{config[:environment]}") {|n| response[n.name] = n unless n.nil?}
+        response
+      else
+        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("environments/#{environment}/nodes")
+      end
+    end
+    
     # List all the Chef::Node objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Nodes, fully inflated.
     def self.cdb_list(inflate=false, couchdb=nil)

@@ -150,6 +150,14 @@ Before do
       end
     },
     'node' => {
+      'opsmaster' => Proc.new do
+        n = Chef::Node.new
+        n.name 'opsmaster'
+        n.chef_environment 'production'
+        n.snakes "on a plane"
+        n.zombie "we're not unreasonable, I mean no-ones gonna eat your eyes"
+        n
+      end,
       'webserver' => Proc.new do
         n = Chef::Node.new
         n.name 'webserver'
