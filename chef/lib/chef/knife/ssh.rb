@@ -62,6 +62,12 @@ class Chef
         :long => "--identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
+      option :vpc_mode,
+        :short => "-V {TRUE/FALSE}",
+        :long => "--vpc_mode {TRUE/FALSE}",
+        :description => "Enable or disable features needed for Virtual Private Cloud mode",
+        :default => false
+
       def session
         ssh_error_handler = Proc.new do |server|
           if config[:manual]
@@ -101,6 +107,7 @@ class Chef
       end
 
       def session_from_list(list)
+
         list.each do |item|
           Chef::Log.debug("Adding #{item}")
 
@@ -114,6 +121,7 @@ class Chef
 
           @longest = item.length if item.length > @longest
         end
+
         session
       end
 
