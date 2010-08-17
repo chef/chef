@@ -113,6 +113,12 @@ class Chef
         :description => "Full path to location of template to use",
         :default => false
 
+      option :subnet_id,
+        :short => "-s SUBNET-ID",
+        :long => "--subnet SUBNET-ID",
+        :description => "Subnet ID to deploy node to in your Virtual Private Cloud (VPC)",
+        :default => false
+
       def h
         @highline ||= HighLine.new
       end
@@ -150,49 +156,90 @@ class Chef
           :region => Chef::Config[:knife][:region]
         )
 
+        Chef::Log.debug("Security Groups: #{config[:security_groups]}")
         server = connection.servers.create(
           :image_id => config[:image],
           :groups => config[:security_groups],
           :flavor_id => config[:flavor],
           :key_name => Chef::Config[:knife][:aws_ssh_key_id],
-          :availability_zone => Chef::Config[:availability_zone]
+          :availability_zone => Chef::Config[:availability_zone],
+          :subnet_id => config[:subnet_id]
         )
+
+        # Amazon Virtual Private Cloud requires a subnet_id. If present, do a few things differently
+        vpc_mode = !server.subnet_id.blank?
 
         puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
         puts "#{h.color("Flavor", :cyan)}: #{server.flavor_id}"
         puts "#{h.color("Image", :cyan)}: #{server.image_id}"
         puts "#{h.color("Availability Zone", :cyan)}: #{server.availability_zone}"
-        puts "#{h.color("Security Groups", :cyan)}: #{server.groups.join(", ")}"
+        puts "#{h.color("Security Groups", :cyan)}: #{server.groups.join(", ")}" if !vpc_mode
         puts "#{h.color("SSH Key", :cyan)}: #{server.key_name}"
+        puts "#{h.color("Subnet ID", :cyan)}: #{server.subnet_id}" if vpc_mode
      
         print "\n#{h.color("Waiting for server", :magenta)}"
+
+        if vpc_mode
+          display_name = server.private_ip_address
+        else
+          display_name = server.dns_name
+        end
 
         # wait for it to be ready to do stuff
         server.wait_for { print "."; ready? }
 
         puts("\n")
 
-        puts "#{h.color("Public DNS Name", :cyan)}: #{server.dns_name}"
-        puts "#{h.color("Public IP Address", :cyan)}: #{server.ip_address}"
-        puts "#{h.color("Private DNS Name", :cyan)}: #{server.private_dns_name}"
+        unless vpc_mode
+          puts "#{h.color("Public DNS Name", :cyan)}: #{server.dns_name}"
+          puts "#{h.color("Public IP Address", :cyan)}: #{server.ip_address}"
+          puts "#{h.color("Private DNS Name", :cyan)}: #{server.private_dns_name}"
+        end
         puts "#{h.color("Private IP Address", :cyan)}: #{server.private_ip_address}"
 
         print "\n#{h.color("Waiting for sshd", :magenta)}"
 
-        print(".") until tcp_test_ssh(server.dns_name) { sleep @initial_sleep_delay ||= 10; puts("done") }
+        print(".") until tcp_test_ssh(display_name) { sleep @initial_sleep_delay ||= 10; puts("done") }
 
         bootstrap_for_node(server).run
+
+        begin
+          bootstrap = Chef::Knife::Bootstrap.new
+          bootstrap.name_args = [display_name]
+          bootstrap.config[:run_list] = @name_args
+          bootstrap.config[:ssh_user] = config[:ssh_user]
+          bootstrap.config[:identity_file] = config[:identity_file]
+          bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.id
+          bootstrap.config[:prerelease] = config[:prerelease]
+          bootstrap.config[:distro] = config[:distro]
+          bootstrap.config[:use_sudo] = true
+          bootstrap.config[:template_file] = config[:template_file]
+          bootstrap.config[:vpc_mode] = vpc_mode.to_s
+          bootstrap.run
+        rescue Errno::ECONNREFUSED
+          puts h.color("Connection refused on SSH, retrying - CTRL-C to abort")
+          sleep 1
+          retry
+        rescue Errno::ETIMEDOUT
+          puts h.color("Connection timed out on SSH, retrying - CTRL-C to abort")
+          sleep 1
+          retry
+        end
 
         puts "\n"
         puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
         puts "#{h.color("Flavor", :cyan)}: #{server.flavor_id}"
         puts "#{h.color("Image", :cyan)}: #{server.image_id}"
         puts "#{h.color("Availability Zone", :cyan)}: #{server.availability_zone}"
-        puts "#{h.color("Security Groups", :cyan)}: #{server.groups.join(", ")}"
         puts "#{h.color("SSH Key", :cyan)}: #{server.key_name}"
-        puts "#{h.color("Public DNS Name", :cyan)}: #{server.dns_name}"
-        puts "#{h.color("Public IP Address", :cyan)}: #{server.ip_address}"
-        puts "#{h.color("Private DNS Name", :cyan)}: #{server.private_dns_name}"
+        if vpc_mode
+          puts "#{h.color("Subnet ID", :cyan)}: #{server.subnet_id}"
+        else
+          puts "#{h.color("Security Groups", :cyan)}: #{server.groups.join(", ")}"
+          puts "#{h.color("Public DNS Name", :cyan)}: #{server.dns_name}"
+          puts "#{h.color("Public IP Address", :cyan)}: #{server.ip_address}"
+          puts "#{h.color("Private DNS Name", :cyan)}: #{server.private_dns_name}"
+        end
         puts "#{h.color("Private IP Address", :cyan)}: #{server.private_ip_address}"
         puts "#{h.color("Run List", :cyan)}: #{@name_args.join(', ')}"
       end

@@ -68,9 +68,9 @@ class Chef
           puts "#{h.color("Availability Zone", :cyan)}: #{server.availability_zone}"
           puts "#{h.color("Security Groups", :cyan)}: #{server.groups.join(", ")}"
           puts "#{h.color("SSH Key", :cyan)}: #{server.key_name}"
-          puts "#{h.color("Public DNS Name", :cyan)}: #{server.dns_name}"
-          puts "#{h.color("Public IP Address", :cyan)}: #{server.ip_address}"
-          puts "#{h.color("Private DNS Name", :cyan)}: #{server.private_dns_name}"
+          puts "#{h.color("Public DNS Name", :cyan)}: #{server.dns_name}" if !server.dns_name.blank?
+          puts "#{h.color("Public IP Address", :cyan)}: #{server.ip_address}" if !server.ip_address.blank?
+          puts "#{h.color("Private DNS Name", :cyan)}: #{server.private_dns_name}" if !server.private_dns_name.blank?
           puts "#{h.color("Private IP Address", :cyan)}: #{server.private_ip_address}"
 
           puts "\n"

@@ -1,4 +1,13 @@
 bash -c '
+<% if @config[:vpc_mode].downcase == "true" %>
+# Forces nameserver and localhost entries to speed up build process
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+echo "127.0.0.1 <%= @config[:name_args] %>" > /etc/newhosts
+cat /etc/hosts >> /etc/newhosts
+mv /etc/hosts /etc/hosts.chef
+mv /etc/newhosts /etc/hosts
+<% end %>
 yum install -q -y ruby ruby-devel gcc gcc-c++ automake autoconf rubygems make
 
 gem update --system

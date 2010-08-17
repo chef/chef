@@ -75,6 +75,12 @@ class Chef
         :proc => lambda { |o| o.split(",") },
         :default => []
 
+      option :vpc_mode,
+        :short => "-V {TRUE/FALSE}",
+        :long => "--vpc-mode {TRUE/FALSE}",
+        :description => "Are we running a Virtual Private Cloud node?",
+        :default => false
+
       def h
         @highline ||= HighLine.new
       end
@@ -151,6 +157,7 @@ class Chef
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
+        ssh.config[:vpc_mode] = config[:vpc_mode]
         ssh
       end
 
