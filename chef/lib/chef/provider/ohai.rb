@@ -28,14 +28,13 @@ class Chef
 
       def action_reload
         ohai = ::Ohai::System.new
-        if not @new_resource.plugin
+        if @new_resource.plugin
           ohai.require_plugin @new_resource.plugin
         else
           ohai.all_plugins
         end
 
         node.automatic_attrs.merge! ohai.data
-        node.save
       end
     end
   end
