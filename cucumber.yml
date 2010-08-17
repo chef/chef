@@ -26,6 +26,7 @@ api_environments_list: --tags @environments_list --format pretty -r features/ste
 api_environments_show: --tags @environments_show --format pretty -r features/steps -r features/support features
 api_environments_update: --tags @environments_update --format pretty -r features/steps -r features/support features
 api_environments_cookbook_list: --tags @environments_cookbook_list --format pretty -r features/steps -r features/support features
+api_environments_node_list: --tags @environments_node_list --format pretty -r features/steps -r features/support features
 api_nodes: --tags @api_nodes --format pretty -r features/steps -r features/support features
 api_nodes_sync: --tags @cookbook_sync --format pretty -r features/steps -r features/support features
 api_nodes_create: --tags @nodes_create --format pretty -r features/steps -r features/support features
