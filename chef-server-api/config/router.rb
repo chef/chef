@@ -50,6 +50,8 @@ Merb::Router.prepare do
         :method => 'get'
         ).to(:controller => "cookbooks", :action => "index")
 
+  match("/cookbooks/_latest", :method=>'get').to(:controller=>'cookbooks',:action=>'index_latest')
+
   match("/cookbooks/_recipes", :method=>'get').to(:controller=>'cookbooks',:action=>'index_recipes')
 
   match("/cookbooks/:cookbook_name/:cookbook_version",

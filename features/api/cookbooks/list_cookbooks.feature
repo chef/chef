@@ -9,6 +9,20 @@ Feature: List cookbooks via the REST API
     Given I am <user_type>
       And I upload multiple versions of the 'version_test' cookbook
      When I 'GET' the path '/cookbooks'
+      And the inflated responses key 'attribute_include' should match 'http://.+/cookbooks/attribute_include'
+      And the inflated responses key 'deploy' should match 'http://.+/cookbooks/deploy'
+      And the inflated responses key 'metadata' should match 'http://.+/cookbooks/metadata'
+      And the inflated responses key 'version_test' should match 'http://.+/cookbooks/version_test'
+
+  Examples:
+    | user_type        |
+    | an administrator |
+    | a non-admin      |
+
+  Scenario Outline: List all cookbooks with the latest version
+    Given I am <user_type>
+      And I upload multiple versions of the 'version_test' cookbook
+     When I 'GET' the path '/cookbooks/_latest'
       And the inflated responses key 'attribute_include' should match 'http://.+/cookbooks/attribute_include/0\.1\.0'
       And the inflated responses key 'deploy' should match 'http://.+/cookbooks/deploy/0\.0\.0'
       And the inflated responses key 'metadata' should match 'http://.+/cookbooks/metadata/1\.0\.0'
