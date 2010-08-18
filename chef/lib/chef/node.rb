@@ -364,12 +364,10 @@ class Chef
       attrs
     end
 
-    # TODO: this code should be killed and removed, but it is used by shef and 
-    # I don't have time to fix it right now. [Dan - 09/Jun/2010]
     def consume_attributes(attrs)
-      attrs = consume_run_list(attrs)
+      normal_attrs_to_merge = consume_run_list(attrs)
       Chef::Log.debug("Applying attributes from json file")
-      @normal_attrs = Chef::Mixin::DeepMerge.merge(@normal_attrs,attrs)
+      @normal_attrs = Chef::Mixin::DeepMerge.merge(@normal_attrs,normal_attrs_to_merge)
       self[:tags] = Array.new unless attribute?(:tags)
     end
 
@@ -551,14 +549,11 @@ class Chef
     end
 
     # Consume data from ohai and Attributes provided as JSON on the command line.
-    # The run_list from the command-line attributes will be applied immediately,
-    # other attributes from the command line will be saved for later. Ohai data
-    # is applied immediately
-    def process_external_attrs(ohai_data, json_cli_attrs)
+    def consume_external_attrs(ohai_data, json_cli_attrs)
       Chef::Log.debug("Extracting run list from JSON attributes provided on command line")
-      @json_attrib_for_expansion = consume_run_list(json_cli_attrs)
+      consume_attributes(json_cli_attrs)
 
-      node.automatic_attrs = ohai_data
+      @automatic_attrs = ohai_data
 
       platform, version = Chef::Platform.find_platform_and_version(self)
       Chef::Log.debug("Platform is #{platform} version #{version}")
@@ -589,8 +584,6 @@ class Chef
       expansion = run_list.expand('server')
       raise Chef::Exceptions::MissingRole if expansion.errors?
 
-      Chef::Log.debug("Applying attributes from json file")
-      @normal_attrs = Chef::Mixin::DeepMerge.merge(@normal_attrs, @json_attrib_for_expansion)
       self[:tags] = Array.new unless attribute?(:tags)
       @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
       @override_attrs = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)

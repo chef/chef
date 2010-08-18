@@ -171,7 +171,7 @@ class Chef
         @node = Chef::Node.find_or_create(node_name)
       end
 
-      @node.process_external_attrs(ohai.data, @json_attribs)
+      @node.consume_external_attrs(ohai.data, @json_attribs)
       @node.save unless Chef::Config[:solo]
       @node.reset_defaults_and_overrides
 

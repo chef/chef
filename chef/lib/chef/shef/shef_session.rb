@@ -219,7 +219,7 @@ module Shef
 
       ohai_data = @ohai.data.merge(@node.automatic_attrs)
 
-      @node.process_external_attrs(ohai_data,nil)
+      @node.consume_external_attrs(ohai_data,nil)
       @node.reset_defaults_and_overrides
 
       @node
