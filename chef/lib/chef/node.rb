@@ -352,6 +352,28 @@ class Chef
       run_list.detect { |r| r == item } ? true : false
     end
 
+    # Consume data from ohai and Attributes provided as JSON on the command line.
+    def consume_external_attrs(ohai_data, json_cli_attrs)
+      Chef::Log.debug("Extracting run list from JSON attributes provided on command line")
+      consume_attributes(json_cli_attrs)
+
+      @automatic_attrs = ohai_data
+
+      platform, version = Chef::Platform.find_platform_and_version(self)
+      Chef::Log.debug("Platform is #{platform} version #{version}")
+      @automatic_attrs[:platform] = platform
+      @automatic_attrs[:platform_version] = version
+    end
+
+    # Consumes the combined run_list and other attributes in +attrs+
+    def consume_attributes(attrs)
+      normal_attrs_to_merge = consume_run_list(attrs)
+      Chef::Log.debug("Applying attributes from json file")
+      @normal_attrs = Chef::Mixin::DeepMerge.merge(@normal_attrs,normal_attrs_to_merge)
+      self[:tags] = Array.new unless attribute?(:tags)
+    end
+
+    # Extracts the run list from +attrs+ and applies it. Returns the remaining attributes
     def consume_run_list(attrs)
       attrs = attrs ? attrs.dup : {}
       if new_run_list = attrs.delete("recipes") || attrs.delete("run_list")
@@ -364,11 +386,37 @@ class Chef
       attrs
     end
 
-    def consume_attributes(attrs)
-      normal_attrs_to_merge = consume_run_list(attrs)
-      Chef::Log.debug("Applying attributes from json file")
-      @normal_attrs = Chef::Mixin::DeepMerge.merge(@normal_attrs,normal_attrs_to_merge)
+    # Clear defaults and overrides, so that any deleted attributes between runs are
+    # still gone.
+    def reset_defaults_and_overrides
+      @default_attrs = Mash.new
+      @override_attrs = Mash.new
+    end
+
+    # Expands the node's run list and deep merges the default and
+    # override attributes. Also applies stored attributes (from json provided
+    # on the command line)
+    #
+    # Returns the fully-expanded list of recipes.
+    #
+    # TODO: timh/cw, 5-14-2010: Should this method exist? Should we
+    # instead modify default_attrs and override_attrs whenever our
+    # run_list is mutated? Or perhaps do something smarter like
+    # on-demand generation of default_attrs and override_attrs,
+    # invalidated only when run_list is mutated?
+    def expand!
+      # This call should only be called on a chef-client run.
+      expansion = run_list.expand('server')
+      raise Chef::Exceptions::MissingRole if expansion.errors?
+
       self[:tags] = Array.new unless attribute?(:tags)
+      @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
+      @override_attrs = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
+
+      @automatic_attrs[:recipes] = expansion.recipes
+      @automatic_attrs[:roles] = expansion.roles
+
+      expansion.recipes
     end
 
     # Transform the node to a Hash
@@ -548,51 +596,5 @@ class Chef
       self
     end
 
-    # Consume data from ohai and Attributes provided as JSON on the command line.
-    def consume_external_attrs(ohai_data, json_cli_attrs)
-      Chef::Log.debug("Extracting run list from JSON attributes provided on command line")
-      consume_attributes(json_cli_attrs)
-
-      @automatic_attrs = ohai_data
-
-      platform, version = Chef::Platform.find_platform_and_version(self)
-      Chef::Log.debug("Platform is #{platform} version #{version}")
-      @automatic_attrs[:platform] = platform
-      @automatic_attrs[:platform_version] = version
-    end
-
-    # Clear defaults and overrides, so that any deleted attributes between runs are
-    # still gone.
-    def reset_defaults_and_overrides
-      @default_attrs = Mash.new
-      @override_attrs = Mash.new
-    end
-
-    # Expands the node's run list and deep merges the default and
-    # override attributes. Also applies stored attributes (from json provided
-    # on the command line)
-    #
-    # Returns the fully-expanded list of recipes.
-    #
-    # TODO: timh/cw, 5-14-2010: Should this method exist? Should we
-    # instead modify default_attrs and override_attrs whenever our
-    # run_list is mutated? Or perhaps do something smarter like
-    # on-demand generation of default_attrs and override_attrs,
-    # invalidated only when run_list is mutated?
-    def expand!
-      # This call should only be called on a chef-client run.
-      expansion = run_list.expand('server')
-      raise Chef::Exceptions::MissingRole if expansion.errors?
-
-      self[:tags] = Array.new unless attribute?(:tags)
-      @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
-      @override_attrs = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
-
-      @automatic_attrs[:recipes] = expansion.recipes
-      @automatic_attrs[:roles] = expansion.roles
-
-      expansion.recipes
-    end
-    
   end
 end
