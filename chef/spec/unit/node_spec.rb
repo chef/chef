@@ -213,6 +213,10 @@ describe Chef::Node do
   
   describe "consuming json" do
 
+    before do
+      @ohai_data = {:platform => 'foo', :platform_version => 'bar'}
+    end
+
     it "consumes the run list portion of a collection of attributes and returns the remainder" do
       attrs = {"run_list" => [ "role[base]", "recipe[chef::server]" ], "foo" => "bar"}
       @node.consume_run_list(attrs).should == {"foo" => "bar"}
@@ -242,34 +246,34 @@ describe Chef::Node do
     end
 
     it "should add json attributes to the node" do
-      @node.consume_attributes "one" => "two", "three" => "four"
+      @node.consume_external_attrs(@ohai_data, {"one" => "two", "three" => "four"})
       @node.one.should eql("two")
       @node.three.should eql("four")
     end
 
     it "should set the tags attribute to an empty array if it is not already defined" do
-      @node.consume_attributes({})
+      @node.consume_external_attrs(@ohai_data, {})
       @node.tags.should eql([])
     end
 
     it "should not set the tags attribute to an empty array if it is already defined" do
       @node[:tags] = [ "radiohead" ]
-      @node.consume_attributes({})
+      @node.consume_external_attrs(@ohai_data, {})
       @node.tags.should eql([ "radiohead" ])
     end
     
     it "deep merges attributes instead of overwriting them" do
-      @node.consume_attributes "one" => {"two" => {"three" => "four"}}
+      @node.consume_external_attrs(@ohai_data, "one" => {"two" => {"three" => "four"}})
       @node.one.to_hash.should == {"two" => {"three" => "four"}}
-      @node.consume_attributes "one" => {"abc" => "123"}
-      @node.consume_attributes "one" => {"two" => {"foo" => "bar"}}
+      @node.consume_external_attrs(@ohai_data, "one" => {"abc" => "123"})
+      @node.consume_external_attrs(@ohai_data, "one" => {"two" => {"foo" => "bar"}})
       @node.one.to_hash.should == {"two" => {"three" => "four", "foo" => "bar"}, "abc" => "123"}
     end
     
     it "gives attributes from JSON priority when deep merging" do
-      @node.consume_attributes "one" => {"two" => {"three" => "four"}}
+      @node.consume_external_attrs(@ohai_data, "one" => {"two" => {"three" => "four"}})
       @node.one.to_hash.should == {"two" => {"three" => "four"}}
-      @node.consume_attributes "one" => {"two" => {"three" => "forty-two"}}
+      @node.consume_external_attrs(@ohai_data, "one" => {"two" => {"three" => "forty-two"}})
       @node.one.to_hash.should == {"two" => {"three" => "forty-two"}}
     end
     
@@ -283,27 +287,27 @@ describe Chef::Node do
     it "clears the default and override attributes" do
       @node.default_attrs["foo"] = "bar"
       @node.override_attrs["baz"] = "qux"
-      @node.process_external_attrs(@ohai_data, {})
+      @node.consume_external_attrs(@ohai_data, {})
       @node.reset_defaults_and_overrides
       @node.default_attrs.should be_empty
       @node.override_attrs.should be_empty
     end
 
     it "sets its platform according to platform detection" do
-      @node.process_external_attrs(@ohai_data, {})
+      @node.consume_external_attrs(@ohai_data, {})
       @node.automatic_attrs[:platform].should == 'foobuntu'
       @node.automatic_attrs[:platform_version].should == '23.42'
     end
 
     it "consumes the run list from provided json attributes" do
-      @node.process_external_attrs(@ohai_data, {"run_list" => ['recipe[unicorn]']})
+      @node.consume_external_attrs(@ohai_data, {"run_list" => ['recipe[unicorn]']})
       @node.run_list.should == ['recipe[unicorn]']
     end
 
     it "saves non-runlist json attrs for later" do
       expansion = Chef::RunList::RunListExpansion.new([])
       @node.run_list.stub!(:expand).and_return(expansion)
-      @node.process_external_attrs(@ohai_data, {"foo" => "bar"})
+      @node.consume_external_attrs(@ohai_data, {"foo" => "bar"})
       @node.expand!
       @node.normal_attrs.should == {"foo" => "bar", "tags" => []}
     end
