@@ -39,7 +39,7 @@ class Chef
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
     
     DESIGN_DOCUMENT = {
-      "version" => 5,
+      "version" => 6,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -89,8 +89,8 @@ class Chef
                 continue;
               }
               
-              var valueParts = value[1].split('.').map(function(v) { return parseInt(v); });
-              var resultParts = result[1].split('.').map(function(v) { return parseInt(v); });
+              var valueParts = value.split('.').map(function(v) { return parseInt(v); });
+              var resultParts = result.split('.').map(function(v) { return parseInt(v); });
 
               if (valueParts[0] != resultParts[0]) {
                 if (valueParts[0] > resultParts[0]) {
@@ -129,29 +129,33 @@ class Chef
 
               if (idx == 0) {
                 result = value;
+                return_key = keys[idx][1]
                 continue;
               }
 
-              var valueParts = value[1].split('.').map(function(v) { return parseInt(v); });
-              var resultParts = result[1].split('.').map(function(v) { return parseInt(v); });
+              var valueParts = value.split('.').map(function(v) { return parseInt(v); });
+              var resultParts = result.split('.').map(function(v) { return parseInt(v); });
 
               if (valueParts[0] != resultParts[0]) {
                 if (valueParts[0] > resultParts[0]) {
                   result = value;
+                  return_key = keys[idx][1]
                 }
               }
               else if (valueParts[1] != resultParts[1]) {
                 if (valueParts[1] > resultParts[1]) {
                   result = value;
+                  return_key = keys[idx][1]
                 }
               }
               else if (valueParts[2] != resultParts[2]) {
                 if (valueParts[2] > resultParts[2]) {
                   result = value;
+                  return_key = keys[idx][1]
                 }
               }
             }
-            return keys[idx][1];
+            return return_key;
           }
           @
         },
