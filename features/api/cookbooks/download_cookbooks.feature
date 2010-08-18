@@ -1,4 +1,4 @@
-@api @cookbooks
+@api @cookbooks @api_cookbooks_download
 @manage_cookbook
 
 Feature: CRUD cookbooks

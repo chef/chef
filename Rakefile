@@ -338,10 +338,15 @@ begin
         end
       end
 
+      desc "Run cucumber tests for the cookbooks portion of the REST API"
+      Cucumber::Rake::Task.new(:cookbooks) do |t|
+        t.profile = "api_cookbooks"
+      end
       namespace :cookbooks do
-        desc "Run cucumber tests for the cookbooks portion of the REST API"
-        Cucumber::Rake::Task.new(:cookbooks) do |t|
-          t.profile = "api_cookbooks"
+        %w{list show upload download delete}.each do |action|
+          Cucumber::Rake::Task.new(action) do |t|
+            t.profile = "api_cookbooks_#{action}"
+          end
         end
 
         Cucumber::Rake::Task.new(:cookbook_tarballs) do |t|
