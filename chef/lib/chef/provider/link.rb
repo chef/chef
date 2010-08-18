@@ -118,7 +118,12 @@ class Chef
         if @current_resource.to != ::File.expand_path(@new_resource.to, @new_resource.target_file)
           Chef::Log.info("Creating a #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file} for #{@new_resource}")
           if @new_resource.link_type == :symbolic
-            shell_out! "ln -nfs #{@new_resource.to} #{@new_resource.target_file}"
+            unless (::File.symlink?(@new_resource.target_file) && ::File.readlink(@new_resource.target_file) == @new_resource.to)
+              if ::File.symlink?(@new_resource.target_file) || ::File.exist?(@new_resource.target_file)
+                ::File.unlink(@new_resource.target_file)
+              end
+              ::File.symlink(@new_resource.to,@new_resource.target_file)
+          end
           elsif @new_resource.link_type == :hard
             ::File.link(@new_resource.to, @new_resource.target_file)
           end

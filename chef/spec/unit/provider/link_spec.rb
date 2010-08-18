@@ -26,20 +26,13 @@ describe Chef::Resource::Link do
     @new_resource = Chef::Resource::Link.new("/tmp/fofile-link")
     @new_resource.to "/tmp/fofile"
 
-    # @current_resource = mock("Chef::Resource::Link",
-    #   :null_object => true,
-    #   :name => "linkytimes",
-    #   :to => "/tmp/fofile",
-    #   :target_file => "/tmp/fofile-link",
-    #   :link_type => :symbolic,
-    #   :updated => false
-    # )
-
     @provider = Chef::Provider::Link.new(@new_resource, @run_context)
-    #Chef::Resource::Link.stub!(:new).and_return(@current_resource)  
     File.stub!(:exists?).and_return(true)
     File.stub!(:symlink?).and_return(true)
     File.stub!(:readlink).and_return("")
+    File.stub!(:unlink).and_return("")
+    File.stub!(:delete).and_return("")
+    File.stub!(:symlink).and_return("")
 
     lstat = mock("stats", :null_object => true)
     lstat.stub!(:uid).and_return(501)
@@ -180,7 +173,6 @@ describe Chef::Resource::Link do
     before do
       @current_resource = Chef::Resource::Link.new('/tmp/fofile-link')
       @current_resource.to "/tmp/fofile"
-      
       @provider.current_resource = @current_resource
     end
     
@@ -192,50 +184,15 @@ describe Chef::Resource::Link do
                                   :expire => 0
         Etc.stub!(:getpwnam).and_return(getpwnam)
       end
-      # before do
-      #   @node = Chef::Node.new
-      # 
-      #   @new_resource = mock("Chef::Resource::Link",
-      #     :null_object => true,
-      #     :name => "linkytimes",
-      #     :to => "/tmp/fofile",
-      #     :target_file => "/tmp/fofile-link",
-      #     :link_type => :symbolic,
-      #     :updated => false,
-      #     :owner => "adam",
-      #     :group => "adam"
-      #   )
-      # 
-      #   @current_resource = mock("Chef::Resource::Link",
-      #     :null_object => true,
-      #     :name => "linkytimes",
-      #     :to => "/tmp/fofile",
-      #     :target_file => "/tmp/fofile-link",
-      #     :link_type => :symbolic,
-      #     :updated => false,
-      #     :owner => 501,
-      #     :group => 501
-      #   )
-      # 
-      #   @provider = Chef::Provider::Link.new(@node, @new_resource)
-      #   Chef::Resource::Link.stub!(:new).and_return(@current_resource)
-      #   @provider.current_resource = @current_resource
-      #   @provider.stub!(:run_command).and_return(true)
-      #   @new_resource.stub!(:to_s).and_return("link[/tmp/fofile]")
-      #   File.stub!(:link).and_return(true)
-      #   )
-      #   )
-      # end
 
       describe "when the source for the link contains expandable pieces" do
         before do
-          @new_resource.target_file("/etc/chef")
+          @new_resource.target_file("/tmp/fofile-link")
           @new_resource.to("../foo")
         end
 
         it "should expand the path" do
-          ::File.should_receive(:expand_path).with("../foo", "/etc/chef").and_return("/etc/foo")
-          @provider.stub!(:shell_out!)
+          ::File.should_receive(:expand_path).with("../foo", "/tmp/fofile-link").and_return("/tmp/fofile-link")
           @provider.action_create
         end
       end
@@ -313,8 +270,11 @@ describe Chef::Resource::Link do
             lambda { @provider.set_group }.should_not raise_error
           end
       
-          it "should run 'ln' with the parameters to create the link" do
-            @provider.should_receive(:shell_out!).with("ln -nfs /tmp/lolololol /tmp/fofile-link")
+          it "should create link using ruby builtin link function" do
+            @provider.new_resource.stub!(:group).and_return(9982398)
+            File.stub!(:lchown).and_return(1)
+            File.should_receive(:lchown).with(nil, 9982398, @provider.current_resource.target_file)
+            File.should_receive(:symlink).with("/tmp/lolololol", "/tmp/fofile-link").and_return(true)
             @provider.action_create
           end
 
@@ -323,7 +283,6 @@ describe Chef::Resource::Link do
             @provider.new_resource.stub!(:group).and_return(9982398)
             File.stub!(:lchown).and_return(1)
             File.should_receive(:lchown).with(nil, 9982398, @provider.new_resource.target_file)
-            File.stub!(:lchown).and_return(1)
             File.should_receive(:lchown).with(9982398, nil, @provider.new_resource.target_file)
             @provider.action_create
           end
@@ -356,36 +315,6 @@ describe Chef::Resource::Link do
     end
 
     describe "when deleting the link" do
-      before do
-      #   @node = Chef::Node.new
-      # 
-      #   @new_resource = mock("Chef::Resource::Link",
-      #     :null_object => true,
-      #     :name => "linkytimes",
-      #     :to => "/tmp/fofile",
-      #     :target_file => "/tmp/fofile-link",
-      #     :link_type => :symbolic,
-      #     :updated => false
-      #   )
-      # 
-      #   @current_resource = mock("Chef::Resource::Link",
-      #     :null_object => true,
-      #     :name => "linkytimes",
-      #     :to => "/tmp/fofile",
-      #     :target_file => "/tmp/fofile-link",
-      #     :link_type => :symbolic,
-      #     :updated => false
-      #   )
-      # 
-      #   @provider = Chef::Provider::Link.new(@node, @new_resource)
-      #   Chef::Resource::Link.stub!(:new).and_return(@current_resource)
-      #   @provider.current_resource = @current_resource
-      #   @new_resource.stub!(:to_s).and_return("link[/tmp/fofile]")
-      #   File.stub!(:symlink?).and_return(true)
-      #   File.stub!(:exists?).and_return(true)
-      #   File.stub!(:delete).and_return(true)
-      end
-  
       describe "when we're building a symbolic link" do
         before do
           @new_resource.link_type(:symbolic)
