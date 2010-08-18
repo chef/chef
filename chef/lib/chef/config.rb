@@ -236,8 +236,5 @@ class Chef
     # valid user and group name
     user_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
     group_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
-
-    # Environments
-    environment "default"
   end
 end
