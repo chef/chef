@@ -49,6 +49,11 @@ class Chef
         :description => "The Availability Zone",
         :default => "us-east-1b"
 
+      option :chef_node_name,
+        :short => "-N NAME",
+        :long => "--node-name NAME",
+        :description => "The Chef node name for your new node"
+
       option :ssh_key_name,
         :short => "-S KEY",
         :long => "--ssh-key KEY",
@@ -156,7 +161,7 @@ class Chef
           bootstrap.config[:run_list] = @name_args
           bootstrap.config[:ssh_user] = config[:ssh_user]
           bootstrap.config[:identity_file] = config[:identity_file]
-          bootstrap.config[:chef_node_name] = server.id
+          bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.id
           bootstrap.config[:prerelease] = config[:prerelease]
           bootstrap.config[:distro] = config[:distro]
           bootstrap.config[:use_sudo] = true
