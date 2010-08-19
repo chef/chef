@@ -18,7 +18,6 @@
 
 require 'chef/provider/package'
 require 'chef/mixin/command'
-require 'chef/mixin/shell_out'
 require 'chef/resource/package'
 
 class Chef
