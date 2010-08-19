@@ -29,11 +29,14 @@ class Chef
   class Runner
     
     attr_reader :run_context
-    
+
+    attr_reader :delayed_actions
+
     include Chef::Mixin::ParamsValidate
 
     def initialize(run_context)
-      @run_context = run_context
+      @run_context      = run_context
+      @delayed_actions  = []
     end
     
     def build_provider(resource)
@@ -46,48 +49,23 @@ class Chef
     
     # Determine the appropriate provider for the given resource, then
     # execute it.
-    def run_action(resource, action, delayed_actions)
-      # Check if this resource has an only_if block -- if it does,
-      # evaluate the only_if block and skip the resource if
-      # appropriate.
-      if resource.only_if
-        unless Chef::Mixin::Command.only_if(resource.only_if, resource.only_if_args)
-          Chef::Log.debug("Skipping #{resource} due to only_if")
-          return
-        end
-      end
-
-      # Check if this resource has a not_if block -- if it does,
-      # evaluate the not_if block and skip the resource if
-      # appropriate.
-      if resource.not_if
-        unless Chef::Mixin::Command.not_if(resource.not_if, resource.not_if_args)
-          Chef::Log.debug("Skipping #{resource} due to not_if")
-          return
-        end
-      end
-
-      provider = build_provider(resource)
-      provider.send("action_#{action}")
+    def run_action(resource, action)
+      resource.run_action(action)
 
       # Execute any immediate and queue up any delayed notifications
       # associated with the resource.
-      if resource.updated
+      if resource.updated?
         resource.notifies_immediate.each do |notify|
           Chef::Log.info("#{resource} sending #{notify.action} action to #{notify.resource} (immediate)")
-          run_action(notify.resource, notify.action, delayed_actions)
+          run_action(notify.resource, notify.action)
         end
 
         resource.notifies_delayed.each do |notify|
           unless delayed_actions.include?(notify)
             delayed_actions << notify
-            delayed_actions << lambda {
-              Chef::Log.info("#{resource} sending #{notify.action} action to #{notify.resource} (delayed)")
-            }
           else
-            delayed_actions << lambda {
-              Chef::Log.info("#{resource} not sending #{notify.action} action to #{notify.resource} (delayed), as it's already been queued")
-            }
+            Chef::Log.info( "#{resource} not queuing delayed action #{notify.action} on #{notify.resource}"\
+                            " (delayed), as it's already been queued")
           end
         end
       end
@@ -96,18 +74,13 @@ class Chef
     # Iterates over the +resource_collection+ in the +run_context+ calling
     # +run_action+ for each resource in turn.
     def converge
-      delayed_actions = Array.new
-      
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|
         begin
           Chef::Log.debug("Processing #{resource} on #{run_context.node.name}")
           
           # Execute each of this resource's actions.
-          action_list = resource.action.kind_of?(Array) ? resource.action : [ resource.action ]
-          action_list.each do |action|
-            run_action(resource, action, delayed_actions)
-          end
+          Array(resource.action).each {|action| run_action(resource, action)}
         rescue => e
           Chef::Log.error("#{resource} (#{resource.source_line}) had an error:\n#{e}\n#{e.backtrace.join("\n")}")
           raise e unless resource.ignore_failure
@@ -115,14 +88,11 @@ class Chef
       end
       
       # Run all our :delayed actions
-      delayed_actions.each do |notify_or_lambda|
-        if notify_or_lambda.is_a?(Proc)
-          # log message
-          notify_or_lambda.call
-        else
-          # OpenStruct of resource/action to call
-          run_action(notify_or_lambda.resource, notify_or_lambda.action, delayed_actions)
-        end
+      delayed_actions.each do |notification|
+        Chef::Log.info( "#{notification.notifying_resource} sending #{notification.action}"\
+                        " action to #{notification.resource} (delayed)")
+        # Struct of resource/action to call
+        run_action(notification.resource, notification.action)
       end
 
       true

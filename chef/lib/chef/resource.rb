@@ -21,6 +21,7 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/language'
 require 'chef/mixin/convert_to_class_name'
+require 'chef/mixin/command'
 require 'chef/resource_collection'
 require 'chef/node'
 
@@ -28,7 +29,7 @@ require 'chef/mixin/deprecation'
 
 class Chef
   class Resource
-    class Notification < Struct.new(:resource, :action)
+    class Notification < Struct.new(:resource, :action, :notifying_resource)
     end
 
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node]
@@ -44,7 +45,7 @@ class Chef
     attr_reader :resource_name, :not_if_args, :only_if_args
 
     # Each notify entry is a resource/action pair, modeled as an
-    # OpenStruct with a .resource and .action member
+    # Struct with a #resource and #action member
     attr_reader :notifies_immediate, :notifies_delayed
     
     def initialize(name, run_context=nil)
@@ -272,6 +273,26 @@ class Chef
     end
     
     def run_action(action)
+      # Check if this resource has an only_if block -- if it does,
+      # evaluate the only_if block and skip the resource if
+      # appropriate.
+      if only_if
+        unless Chef::Mixin::Command.only_if(only_if, only_if_args)
+          Chef::Log.debug("Skipping #{self} due to only_if")
+          return
+        end
+      end
+
+      # Check if this resource has a not_if block -- if it does,
+      # evaluate the not_if block and skip the resource if
+      # appropriate.
+      if not_if
+        unless Chef::Mixin::Command.not_if(not_if, not_if_args)
+          Chef::Log.debug("Skipping #{self} due to not_if")
+          return
+        end
+      end
+
       provider = Chef::Platform.provider_for_resource(self)
       provider.load_current_resource
       provider.send("action_#{action}")
@@ -377,41 +398,45 @@ class Chef
       end
       
     end
-    
+
     private
-    
-      def lookup_provider_constant(name)
-        begin
-          self.class.provider_base.const_get(convert_to_class_name(name.to_s))
-        rescue NameError => e
-          if e.to_s =~ /#{Regexp.escape(self.class.provider_base.to_s)}/
-            raise ArgumentError, "No provider found to match '#{name}'"
-          else
-            raise e
-          end
+
+    def lookup_provider_constant(name)
+      begin
+        self.class.provider_base.const_get(convert_to_class_name(name.to_s))
+      rescue NameError => e
+        if e.to_s =~ /#{Regexp.escape(self.class.provider_base.to_s)}/
+          raise ArgumentError, "No provider found to match '#{name}'"
+        else
+          raise e
         end
-      end
-      
-      def validate_timing(timing)
-        timing = timing.to_sym
-        raise ArgumentError, "invalid timing: #{timing}; must be one of: :delayed, :immediate, :immediately" unless (timing == :delayed || timing == :immediate || timing == :immediately)
-        timing == :immediately ? :immediate : timing
-      end
-      
-      def notifies_helper(action, resources, timing=:delayed)
-        timing = validate_timing(timing)
-        
-        resource_array = [resources].flatten
-        resource_array.each do |resource|
-          new_notify = Notification.new(resource, action)
-          if timing == :delayed
-            notifies_delayed << new_notify
-          else
-            notifies_immediate << new_notify
-          end
-        end
-        
-        true
       end
     end
+
+    def validate_timing(timing)
+      timing = timing.to_sym
+      unless (timing == :delayed || timing == :immediate || timing == :immediately)
+        raise ArgumentError, "invalid timing: #{timing}; must be one of: :delayed, :immediate, :immediately"
+      end
+
+      timing == :immediately ? :immediate : timing
+    end
+
+    def notifies_helper(action, resources, timing=:delayed)
+      timing = validate_timing(timing)
+
+      resource_array = [resources].flatten
+      resource_array.each do |resource|
+        new_notify = Notification.new(resource, action, self)
+        if timing == :delayed
+          notifies_delayed << new_notify
+        else
+          notifies_immediate << new_notify
+        end
+      end
+
+      true
+    end
+
+  end
 end

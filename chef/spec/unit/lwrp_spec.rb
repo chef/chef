@@ -90,10 +90,10 @@ describe "Light-weight Chef::Provider" do
   end
 
   it "should insert resources embedded in the provider into the middle of the resource collection" do
-    injector = Chef::Resource::LwrpFoo.new("morpheus")
+    injector = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
     injector.action(:pass_buck)
     injector.provider(:lwrp_buck_passer)
-    dummy = Chef::Resource::ZenMaster.new("keanu reeves")
+    dummy = Chef::Resource::ZenMaster.new("keanu reeves", @run_context)
     dummy.provider(Chef::Provider::Easy)
     @run_context.resource_collection.insert(injector)
     @run_context.resource_collection.insert(dummy)
@@ -107,13 +107,13 @@ describe "Light-weight Chef::Provider" do
   end
   
   it "should insert embedded resources from multiple providers, including from the last position, properly into the resource collection" do
-    injector = Chef::Resource::LwrpFoo.new("morpheus")
+    injector = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
     injector.action(:pass_buck)
     injector.provider(:lwrp_buck_passer)
-    injector2 = Chef::Resource::LwrpBar.new("tank")
+    injector2 = Chef::Resource::LwrpBar.new("tank", @run_context)
     injector2.action(:pass_buck)
     injector2.provider(:lwrp_buck_passer_2)
-    dummy = Chef::Resource::ZenMaster.new("keanu reeves")
+    dummy = Chef::Resource::ZenMaster.new("keanu reeves", @run_context)
     dummy.provider(Chef::Provider::Easy)
     
     @run_context.resource_collection.insert(injector)
