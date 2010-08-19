@@ -55,17 +55,17 @@ class Chef
       # Execute any immediate and queue up any delayed notifications
       # associated with the resource.
       if resource.updated?
-        resource.notifies_immediate.each do |notify|
-          Chef::Log.info("#{resource} sending #{notify.action} action to #{notify.resource} (immediate)")
-          run_action(notify.resource, notify.action)
+        resource.notifies_immediate.each do |notification|
+          Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (immediate)")
+          run_action(notification.resource, notification.action)
         end
 
-        resource.notifies_delayed.each do |notify|
-          unless delayed_actions.include?(notify)
-            delayed_actions << notify
-          else
-            Chef::Log.info( "#{resource} not queuing delayed action #{notify.action} on #{notify.resource}"\
+        resource.notifies_delayed.each do |notification|
+          if delayed_actions.any? { |existing_notification| existing_notification.duplicates?(notification) }
+            Chef::Log.info( "#{resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
                             " (delayed), as it's already been queued")
+          else
+            delayed_actions << notification
           end
         end
       end

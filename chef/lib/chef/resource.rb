@@ -30,6 +30,16 @@ require 'chef/mixin/deprecation'
 class Chef
   class Resource
     class Notification < Struct.new(:resource, :action, :notifying_resource)
+
+      def duplicates?(other_notification)
+        unless other_notification.respond_to?(:resource) && other_notification.respond_to?(:action)
+          msg = "only duck-types of Chef::Resource::Notification can be checked for duplication "\
+                "you gave #{other_notification.inspect}"
+          raise ArgumentError, msg
+        end
+        other_notification.resource == resource && other_notification.action == action
+      end
+
     end
 
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node]

@@ -242,3 +242,41 @@ describe Chef::Resource do
   end
 
 end
+
+describe Chef::Resource::Notification do
+  before do
+    @notification = Chef::Resource::Notification.new(:service_apache, :restart, :template_httpd_conf)
+  end
+
+  it "has a resource to be notified" do
+    @notification.resource.should == :service_apache
+  end
+
+  it "has an action to take on the service" do
+    @notification.action.should == :restart
+  end
+
+  it "has a notifying resource" do
+    @notification.notifying_resource.should == :template_httpd_conf
+  end
+
+  it "is a duplicate of another notification with the same target resource and action" do
+    other = Chef::Resource::Notification.new(:service_apache, :restart, :sync_web_app_code)
+    @notification.duplicates?(other).should be_true
+  end
+
+  it "is not a duplicate of another notification if the actions differ" do
+    other = Chef::Resource::Notification.new(:service_apache, :enable, :install_apache)
+    @notification.duplicates?(other).should be_false
+  end
+
+  it "is not a duplicate of another notification if the target resources differ" do
+    other = Chef::Resource::Notification.new(:service_sshd, :restart, :template_httpd_conf)
+    @notification.duplicates?(other).should be_false
+  end
+
+  it "raises an ArgumentError if you try to check a non-ducktype object for duplication" do
+    lambda {@notification.duplicates?(:not_a_notification)}.should raise_error(ArgumentError)
+  end
+
+end
