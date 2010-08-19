@@ -43,11 +43,13 @@ describe Chef::Provider::Package::Apt do
   describe "when loading current resource" do
 
     it "should create a current resource with the name of the new_resource" do
+      @provider.should_receive(:shell_out!).and_return(@shell_out)
       Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
       @provider.load_current_resource
     end
 
     it "should set the current resources package name to the new resources package name" do
+      @provider.should_receive(:shell_out!).and_return(@shell_out)
       @current_resource.should_receive(:package_name).with(@new_resource.package_name)
       @provider.load_current_resource
     end
@@ -107,6 +109,7 @@ describe Chef::Provider::Package::Apt do
     end
 
     it "should return the current resouce" do
+      @provider.should_receive(:shell_out!).and_return(@shell_out)
       @provider.load_current_resource.should eql(@current_resource)
     end
 
