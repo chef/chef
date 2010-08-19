@@ -179,6 +179,17 @@ describe Chef::Runner do
     provider.should_receive(:action_pur).once.ordered
     @runner.converge
   end
-  
+
+  it "should check a resource's only_if and not_if if notified by another resource" do
+    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
+    @run_context.resource_collection[0].action = :nothing
+    @run_context.resource_collection << Chef::Resource::Cat.new("carmel", @run_context)
+    @run_context.resource_collection[1].notifies :buy, @run_context.resource_collection[0], :delayed
+    @run_context.resource_collection[1].updated = true
+    # hits only_if first time when the resource is run in order, second on notify
+    @run_context.resource_collection[0].should_receive(:only_if).exactly(2).times.and_return(nil)
+    @run_context.resource_collection[0].should_receive(:not_if).exactly(2).times.and_return(nil)
+    @runner.converge
+  end
 
 end
