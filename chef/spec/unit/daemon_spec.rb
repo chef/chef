@@ -254,10 +254,14 @@ describe Chef::Daemon do
         Process.stub!(:euid).and_return(999)
         Process.stub!(:egid).and_return(999)
       end
-      
+
       it "should log an appropriate error message and fail miserably" do
         Process.stub!(:initgroups).and_raise(Errno::EPERM)
-        Chef::Application.should_receive(:fatal!).with("Permission denied when trying to change 999:999 to 501:20. Operation not permitted")
+        error = "Operation not permitted"
+        if RUBY_PLATFORM.match("solaris2")
+          error = "Not owner"
+        end
+        Chef::Application.should_receive(:fatal!).with("Permission denied when trying to change 999:999 to 501:20. #{error}")
         Chef::Daemon._change_privilege("aj")
       end
     end
