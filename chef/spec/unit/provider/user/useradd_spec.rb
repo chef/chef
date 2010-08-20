@@ -259,9 +259,24 @@ describe Chef::Provider::User::Useradd do
       @provider.check_lock.should eql(true)
     end
 
-    it "should raise a Chef::Exceptions::User if passwd -S fails" do
+    it "should raise a Chef::Exceptions::User if passwd -S fails on anything other than redhat/centos" do
+      @node.automatic_attrs[:platform] = 'ubuntu'
       @status.should_receive(:exitstatus).and_return(1)
       lambda { @provider.check_lock }.should raise_error(Chef::Exceptions::User)
+    end
+    
+    ['redhat', 'centos'].each do |os|
+      it "should not raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os}" do
+        @node.automatic_attrs[:platform] = os
+        @status.should_receive(:exitstatus).twice.and_return(1)
+        lambda { @provider.check_lock }.should_not raise_error(Chef::Exceptions::User)
+      end
+
+      it "should raise a Chef::Exceptions::User if passwd -S exits with something other than 0 or 1 on #{os}" do
+        @node.automatic_attrs[:platform] = os
+        @status.should_receive(:exitstatus).twice.and_return(2)
+        lambda { @provider.check_lock }.should raise_error(Chef::Exceptions::User)
+      end
     end
   end
 

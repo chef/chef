@@ -55,7 +55,10 @@ class Chef
           end
 
           unless status.exitstatus == 0
-            raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!"
+            # we can get an exit code of 1 even when it's successful on rhel/centos
+            unless status.exitstatus == 1 && ['redhat', 'centos'].include?(node[:platform])
+              raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!"
+            end
           end
 
           @locked
