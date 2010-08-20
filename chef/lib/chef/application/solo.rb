@@ -187,7 +187,6 @@ class Chef::Application::Solo < Chef::Application
         end
 
         @chef_solo = Chef::Client.new(@chef_solo_json)
-        @chef_solo_json = nil
         @chef_solo.run
         @chef_solo = nil
         if Chef::Config[:interval]
