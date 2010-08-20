@@ -29,6 +29,10 @@ describe Chef::Node do
     node = Chef::Node.build('solo-node')
     node.name.should == 'solo-node'
   end
+  
+  it "should validate the name of the node" do
+    lambda{Chef::Node.build('solo node')}.should raise_error(Chef::Exceptions::ValidationFailed)
+  end
 
   describe "when the node does not exist on the server" do
     before do
