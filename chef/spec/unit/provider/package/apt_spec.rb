@@ -115,19 +115,17 @@ describe Chef::Provider::Package::Apt do
 
     it "should set candidate version to new package name if virtual package" do
       @new_resource.package_name("libmysqlclient-dev")
-      virtual_package_out=<<-VIRTUAL_PACKAGE_OUT
-No current or candidate version found for libmysqlclient-dev
-Package: libmysqlclient-dev
-State: not a real package
-Provided by: libmysqlclient15-dev
-VIRTUAL_PACKAGE_OUT
+      virtual_package_out=mock("STDOUT", :null_object => true)
+      virtual_package_out.stub!(:each).and_yield("No current or candidate version found for libmysqlclient-dev").
+                                       and_yield("Package: libmysqlclient-dev").
+                                       and_yield("State: not a real package").
+                                       and_yield("Provided by: libmysqlclient15-dev")
       virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient-dev").and_return(virtual_package)
-      real_package_out=<<-REAL_PACKAGE_OUT
-Package: libmysqlclient15-dev
-State: not installed
-Version: 5.0.51a-24+lenny4
-REAL_PACKAGE_OUT
+      real_package_out=mock("STDOUT", :null_object => true)
+      real_package_out.stub!(:each).and_yield("Package: libmysqlclient15-dev").
+                                    and_yield("State: not installed").
+                                    and_yield("Version: 5.0.51a-24+lenny4")
       real_package = mock(:stdout => real_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient15-dev").and_return(real_package)
       @provider.load_current_resource
