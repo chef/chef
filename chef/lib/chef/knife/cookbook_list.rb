@@ -30,8 +30,19 @@ class Chef
         :long => "--with-uri",
         :description => "Show corresponding URIs"
 
-      def run 
-        output(format_list_for_display(rest.get_rest('cookbooks')))
+      def run
+        env          = config[:environment]
+        api_endpoint = env ? "/environments/#{env}/cookbooks" : "/cookbooks/_latest"
+        output(format_cookbooks_for_display(rest.get_rest(api_endpoint)))
+      end
+
+      def format_cookbooks_for_display(api_result)
+        api_result.map do |name, uri|
+          version = uri.split("/").last
+          result = [name, version]
+          result << uri if config[:with_uri]
+          result
+        end
       end
     end
   end
