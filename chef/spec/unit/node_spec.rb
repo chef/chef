@@ -29,7 +29,7 @@ describe Chef::Node do
     node = Chef::Node.build('solo-node')
     node.name.should == 'solo-node'
   end
-  
+
   it "should validate the name of the node" do
     lambda{Chef::Node.build('solo node')}.should raise_error(Chef::Exceptions::ValidationFailed)
   end
@@ -89,6 +89,11 @@ describe Chef::Node do
     it "cannot be blank" do
       lambda { @node.name("")}.should raise_error(Chef::Exceptions::ValidationFailed)
     end
+
+    it "should not accept name doesn't match /^[\-[:alnum:]_:.]+$/" do
+      lambda { @node.name("space in it")}.should raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
   end
 
   describe "attributes" do
