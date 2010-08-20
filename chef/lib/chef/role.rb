@@ -69,6 +69,7 @@ class Chef
       @default_attributes = Mash.new
       @override_attributes = Mash.new
       @run_list = Chef::RunList.new
+      @env_run_lists = {"_default" => {"default_attributes" => @default_attributes, "override_attributes" => @override_attributes, "run_list" => @run_list}}
       @couchdb_rev = nil
       @couchdb_id = nil
       @couchdb = couchdb || Chef::CouchDB.new
@@ -109,6 +110,10 @@ class Chef
 
     alias_method :recipes, :run_list
 
+    def env_run_list(*args)
+      (args.length > 0) ? @env_run_list = args : @env_run_list
+    end
+    
 #     def recipes(*args)
 #       Chef::Log.warn "Chef::Role#recipes method is deprecated.  Please use Chef::Role#run_list"
 #       run_list(*args)
@@ -138,7 +143,8 @@ class Chef
         "default_attributes" => @default_attributes,
         "override_attributes" => @override_attributes,
         "chef_type" => "role",
-        "run_list" => @run_list.run_list
+        "run_list" => @run_list.run_list,
+        "env_run_list" => @env_run_list
       }
       result["_rev"] = couchdb_rev if couchdb_rev
       result
@@ -155,6 +161,7 @@ class Chef
       run_list(o.run_list)
       default_attributes(o.default_attributes)
       override_attributes(o.override_attributes)
+      env_run_list(o.env_run_list.merge!({"_default"=>{"default_attributes"=>o.env_run_list["_default"]["default_attributes"], "override_attributes"=>o.env_run_list["_default"]["override_attributes"], "run_list"=>o.run_list}}))
       self
     end
 
@@ -170,6 +177,7 @@ class Chef
                     else
                       o["recipes"]
                     end)
+      role.env_run_list(o["env_run_list"].merge!({"_default"=>{"default_attributes"=>o["env_run_list"]["_default"]["default_attributes"], "override_attributes"=>o["env_run_list"]["_default"]["override_attributes"], "run_list"=>o["run_list"]}}))
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       role.index_id = role.couchdb_id
       role.couchdb_id = o["_id"] if o.has_key?("_id")
