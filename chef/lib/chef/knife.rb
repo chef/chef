@@ -151,6 +151,18 @@ class Chef
       subcommand_class || subcommand_not_found!(args)
     end
 
+    protected
+
+    def load_late_dependency(dep, gem_name = nil)
+      begin
+        require dep
+      rescue LoadError
+        gem_name ||= dep.gsub('/', '-')
+        Chef::Log.fatal "#{gem_name} is not installed. run \"gem install #{gem_name}\" to install it."
+        exit 1
+      end
+    end
+
     private
 
     # :nodoc:
