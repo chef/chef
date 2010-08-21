@@ -51,7 +51,7 @@ class Chef
                 else
                   @current_resource.version(nil)
                 end
-              when /Provided by: (.+)$/
+              when /Provided by: ([\w\d\-\.]*)/
                 Chef::Log.debug("Virtual package provided by #{$1}")
                 @virtual = true
                 installed = installed?($1)
