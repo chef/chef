@@ -55,10 +55,21 @@ class Chef
           end
 
           unless status.exitstatus == 0
-            # we can get an exit code of 1 even when it's successful on rhel/centos
-            unless status.exitstatus == 1 && ['redhat', 'centos'].include?(node[:platform])
-              raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!"
+            raise_lock_error = false
+            # we can get an exit code of 1 even when it's successful on rhel/centos (redhat bug 578534)
+            if status.exitstatus == 1 && ['redhat', 'centos'].include?(node[:platform])
+              passwd_version_status = popen4('rpm -q passwd') do |pid, stdin, stdout, stderr|
+                passwd_version = stdout.gets.chomp
+
+                unless passwd_version == 'passwd-0.73-1'
+                  raise_lock_error = true
+                end
+              end
+            else
+              raise_lock_error = true
             end
+
+            raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if raise_lock_error
           end
 
           @locked

@@ -264,12 +264,24 @@ describe Chef::Provider::User::Useradd do
       @status.should_receive(:exitstatus).and_return(1)
       lambda { @provider.check_lock }.should raise_error(Chef::Exceptions::User)
     end
-    
+
     ['redhat', 'centos'].each do |os|
-      it "should not raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os}" do
+      it "should not raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is version 0.73-1" do
         @node.automatic_attrs[:platform] = os
+        @stdout.stub!(:gets).and_return("passwd-0.73-1\n")
         @status.should_receive(:exitstatus).twice.and_return(1)
+        @provider.should_receive(:popen4).with("passwd -S #{@new_resource.username}")
+        @provider.should_receive(:popen4).with("rpm -q passwd").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         lambda { @provider.check_lock }.should_not raise_error(Chef::Exceptions::User)
+      end
+
+      it "should raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is not version 0.73-1" do
+        @node.automatic_attrs[:platform] = os
+        @stdout.stub!(:gets).and_return("passwd-0.73-2\n")
+        @status.should_receive(:exitstatus).twice.and_return(1)
+        @provider.should_receive(:popen4).with("passwd -S #{@new_resource.username}")
+        @provider.should_receive(:popen4).with("rpm -q passwd").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        lambda { @provider.check_lock }.should raise_error(Chef::Exceptions::User)
       end
 
       it "should raise a Chef::Exceptions::User if passwd -S exits with something other than 0 or 1 on #{os}" do
