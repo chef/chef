@@ -38,6 +38,7 @@ class Chef
         def installed?(package=@new_resource.package_name)
           Chef::Log.debug("Checking package status for #{package}")
           installed = false
+          depends = false
          
           status = shell_out!("aptitude show #{package}")
           status.stdout.each do |line|
@@ -51,11 +52,15 @@ class Chef
                 else
                   @current_resource.version(nil)
                 end
+              when /Depends: (.*)$/
+                depends = $1
               when /Provided by: ([\w\d\-\.]*)/
-                Chef::Log.debug("Virtual package provided by #{$1}")
+                virtual_provider = $1
+                virtual_provider = depends if depends
+                Chef::Log.debug("Virtual package provided by #{virtual_provider}")
                 @virtual = true
-                installed = installed?($1)
-                @candidate_version = $1
+                installed = installed?(virtual_provider)
+                @candidate_version = virtual_provider
             end
           end
 

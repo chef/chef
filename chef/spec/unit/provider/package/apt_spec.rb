@@ -132,14 +132,14 @@ describe Chef::Provider::Package::Apt do
       @provider.candidate_version.should eql("libmysqlclient15-dev")
     end
 
-    it "should set candidate version to the first package name if multiple virtual package providers" do
+    it "should set candidate version to the depends package name if multiple virtual package providers" do
       @new_resource.package_name("mysql-client")
       virtual_package_out=mock("STDOUT", :null_object => true)
       virtual_package_out.stub!(:each).and_yield("Package: mysql-client").
                                        and_yield("State: not installed").
                                        and_yield("Version: 5.1.41-3ubuntu12.6").
                                        and_yield("Depends: mysql-client-5.1").
-                                       and_yield("Provided by: mysql-client-5.1, mysql-cluster-client-5.1").
+                                       and_yield("Provided by: mysql-cluster-client-5.1, mysql-client-5.1").
                                        and_yield("Description: MySQL database client (metapackage depending on the latest version)")
       virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("aptitude show mysql-client").and_return(virtual_package)
