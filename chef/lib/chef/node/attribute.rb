@@ -404,27 +404,30 @@ class Chef
         end
       end
 
+      # Fetches or sets the value, depending on if any arguments are given.
+      # ==== Fetching
+      # If no arguments are given, fetches the value:
+      #   node.network
+      #   => {network data}
+      # Getters will find either a string or symbol key.
+      # ==== Setting
+      # If arguments are given, a value will be set. Both normal setter and DSL
+      # style setters are allowed:
+      #   node.foo = "bar"
+      #   node.foo("bar")
+      # Both set node[:foo] = "bar"
       def method_missing(symbol, *args)
-        by = symbol
-        if self.attribute?(symbol)
-          by = symbol
-        elsif self.attribute?(symbol.to_s)
-          by = symbol.to_s
-        else
-          if args.length != 0
-            by = symbol
+        if args.empty?
+          if key?(symbol)
+            self[symbol]
+          elsif key?(symbol.to_s)
+            self[symbol.to_s]
           else
-            raise ArgumentError, "Attribute #{symbol.to_s} is not defined!" unless auto_vivifiy_on_read
+            raise ArgumentError, "Attribute #{symbol} is not defined!" unless auto_vivifiy_on_read
           end
-        end
-
-        if args.length != 0
-          if by.to_s =~ /^(.+)=$/
-            by = $1
-          end
-          self[by] = args.length == 1 ? args[0] : args
         else
-          self[by]
+          key_to_set = symbol.to_s[/^(.+)=$/, 1] || symbol
+          self[key_to_set] = (args.length == 1 ? args[0] : args)
         end
       end
 
