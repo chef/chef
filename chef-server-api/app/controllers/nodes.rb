@@ -97,7 +97,12 @@ class Nodes < Application
   private
 
   def load_all_files(node_name)
-    all_cookbooks = Chef::CookbookVersion.cdb_list(true).inject({}) {|hsh,record| hsh[record.name] = record ; hsh}
+    all_cookbooks = Chef::CookbookVersion.cdb_list(true).inject({}) do |res, cookbook|
+      version            = Gem::Version.new cookbook.version
+      newest_version     = res.has_key?(cookbook.name) ? version > Gem::Version.new(res[cookbook.name].version) : true
+      res[cookbook.name] = cookbook if newest_version
+      res
+    end
 
     included_cookbooks = cookbooks_for_node(node_name, all_cookbooks)
     nodes_cookbooks = Hash.new
