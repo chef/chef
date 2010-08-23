@@ -64,7 +64,7 @@ Merb::Router.prepare do
         :method => 'get',
         :cookbook_name => /[\w\.]+/,
         :cookbook_version => /(\d+\.\d+\.\d+|_latest)/
-        ).to(:controller => "cookbooks", :action => "show")
+        ).to(:controller => "cookbooks", :action => "show").name(:cookbook_version)
 
   match("/cookbooks/:cookbook_name/:cookbook_version",
         :method => 'delete',
