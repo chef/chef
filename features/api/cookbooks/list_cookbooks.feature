@@ -33,6 +33,13 @@ Feature: List cookbooks via the REST API
     | an administrator |
     | a non-admin      |
 
+  @CHEF-1607
+  Scenario: List all cookbooks with the lastest version, when they cannot be lexically sorted
+    Given I am an administrator
+      And I upload multiple versions of the 'version_test' cookbook that do not lexically sort correctly
+     When I 'GET' the path '/cookbooks/_latest'
+      And the inflated responses key 'version_test' should match 'http://.+/cookbooks/version_test/0\.10\.0'
+
   Scenario: List cookbooks with a wrong private key
     Given I am an administrator
      When I 'GET' the path '/cookbooks' using a wrong private key

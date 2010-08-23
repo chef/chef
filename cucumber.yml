@@ -2,7 +2,7 @@ default: -f pretty features -r features/steps -r features/support
 api: --tags @api --format pretty -r features/steps -r features/support features 
 api_cookbooks: --tags @api --tags @cookbooks --format pretty -r features/steps -r features/support features
 api_cookbooks_list: --tags @api_cookbooks_list --format pretty -r features/steps -r features/support features
-api_cookbooks_show: --tags @spi_cookbooks_show --format pretty -r features/steps -r features/support features
+api_cookbooks_show: --tags @api_cookbooks_show --format pretty -r features/steps -r features/support features
 api_cookbooks_upload: --tags @api_cookbooks_upload --format pretty -r features/steps -r features/support features
 api_cookbooks_download: --tags @api_cookbooks_download --format pretty -r features/steps -r features/support features
 api_cookbooks_delete: --tags @api_cookbooks_delete --format pretty -r features/steps -r features/support features

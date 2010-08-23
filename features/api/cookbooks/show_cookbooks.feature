@@ -21,6 +21,13 @@ Feature: Show a cookbook via the REST API
      Then the inflated response should respond to 'templates' and match '^\[\]$' as json
      Then the inflated response should respond to 'resources' and match '^\[\]$' as json
 
+  @CHEF-1607
+  Scenario: Show the latest version of a cookbook
+    Given I am an administrator
+      And I upload multiple versions of the 'version_test' cookbook that do not lexically sort correctly
+     When I 'GET' the path '/cookbooks/version_test/_latest'
+     Then the inflated response should respond to 'version' and match '0.10.0'
+
   @show_cookbook_negative
   Scenario: Show a cookbook with a wrong private key
     Given I am an administrator
