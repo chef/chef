@@ -332,6 +332,12 @@ begin
         end
       end
 
+      namespace :environments do
+        Cucumber::Rake::Task.new("cookbooks") do |t|
+          t.profile = "api_environments_cookbook_list"
+        end
+      end
+
       namespace :nodes do
         Cucumber::Rake::Task.new("sync") do |t|
           t.profile = "api_nodes_sync"
