@@ -319,3 +319,9 @@ end
 Then /^the metadata should include a dependency on '(.+)'$/ do |key|
   inflated_response.metadata.dependencies.should have_key(key)
 end
+
+Given "I upload multiple versions of the 'version_test' cookbook" do
+  When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.1.0' with 'version_test_0.1.0'"
+  When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.1.1' with 'version_test_0.1.1'"
+  When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.2.0' with 'version_test_0.2.0'"
+end
