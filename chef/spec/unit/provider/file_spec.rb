@@ -229,8 +229,7 @@ describe Chef::Provider::File do
     File.should_receive(:chown).with(9982398, nil, @provider.new_resource.path)
     File.stub!(:open).and_return(1)
     File.should_receive(:chmod).with(0755, @provider.new_resource.path).and_return(1)
-    File.should_receive(:open).with(@provider.new_resource.path, "w+")
-    File.should_receive(:open).with(@provider.new_resource.path, "w").and_yield(io)
+    File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
     @provider.action_create
     io.string.should == "foobar"
   end
