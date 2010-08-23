@@ -324,3 +324,8 @@ Given "I upload multiple versions of the 'version_test' cookbook" do
   When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.2.0' with 'version_test_0.2.0'"
 end
 
+Given "I upload multiple versions of the 'version_test' cookbook that do not lexically sort correctly" do
+  When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.9.0' with 'version_test_0.9.0'"
+  When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.10.0' with 'version_test_0.10.0'"
+  When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.9.7' with 'version_test_0.9.7'"
+end
