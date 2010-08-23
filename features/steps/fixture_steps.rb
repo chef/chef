@@ -199,6 +199,13 @@ Before do
         n.name 'paradise'
         n.run_list << "version_test"
         n
+      end,
+      'has_environment' => Proc.new do
+        n = Chef::Node.new
+        n.name 'has_environment'
+        n.chef_environment 'cookbooks_test'
+        n.run_list << "version_test"
+        n
       end
     },
     'hash' => {
@@ -216,6 +223,27 @@ Before do
         e = Chef::Environment.new
         e.name 'production'
         e.description 'The real deal'
+        e
+      end,
+      'cookbooks-0.1.0' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'cookbooks_test'
+        e.description 'use cookbook version 0.1.0'
+        e.cookbook 'version_test', '0.1.0'
+        e
+      end,
+      'cookbooks-0.1.1' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'cookbooks_test'
+        e.description 'use cookbook version 0.1.1'
+        e.cookbook 'version_test', '0.1.1'
+        e
+      end,
+      'cookbooks-0.2.0' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'cookbooks_test'
+        e.description 'use cookbook version 0.2.0'
+        e.cookbook 'version_test', '0.2.0'
         e
       end
     }
