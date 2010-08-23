@@ -25,6 +25,8 @@ class Chef
 
       banner "knife ec2 server create [RUN LIST...] (options)"
 
+      attr_accessor :initial_sleep_delay
+
       option :flavor,
         :short => "-f FLAVOR",
         :long => "--flavor FLAVOR",
@@ -145,8 +147,8 @@ class Chef
 
         # wait for it to be ready to do stuff
         server.wait_for { print "."; ready? }
-        puts "#{h.color("\nWaiting 10 seconds for SSH Host Key generation on", :magenta)}: #{server.dns_name}"
-        sleep 10
+        puts "#{h.color("\nWaiting #{@initial_sleep_delay ||= 10} seconds for SSH Host Key generation on", :magenta)}: #{server.dns_name}"
+        sleep @initial_sleep_delay ||= 10
 
         print "\n"
 
@@ -157,7 +159,7 @@ class Chef
 
         begin
           bootstrap = Chef::Knife::Bootstrap.new
-          bootstrap.name_args = server.dns_name
+          bootstrap.name_args = [server.dns_name]
           bootstrap.config[:run_list] = @name_args
           bootstrap.config[:ssh_user] = config[:ssh_user]
           bootstrap.config[:identity_file] = config[:identity_file]
@@ -193,4 +195,3 @@ class Chef
     end
   end
 end
-
