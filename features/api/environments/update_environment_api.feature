@@ -10,7 +10,7 @@ Feature: Update an environment via the REST API
       And sending the method '<method>' to the 'environment' with '<updated_value>'
      When I 'PUT' the 'environment' to the path '/environments/cucumber'
      Then the inflated response should respond to '<method>' with '<updated_value>'
-     When I 'GET' the path '/envinronments/cucumber'
+     When I 'GET' the path '/environments/cucumber'
      Then the inflated response should respond to '<method>' with '<updated_value>'
 
     Examples:
