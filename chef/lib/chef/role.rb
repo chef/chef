@@ -110,8 +110,9 @@ class Chef
 
     alias_method :recipes, :run_list
 
-    def env_run_list(*args)
-      (args.length > 0) ? @env_run_list = args : @env_run_list
+    def env_run_lists(hash=nil)
+      # should have btter validation, but leaving it as it is for now to make everything work first [nuo]
+      (!hash.nil? && hash.length > 0) ? @env_run_lists = hash : @env_run_lists
     end
     
 #     def recipes(*args)
@@ -144,7 +145,7 @@ class Chef
         "override_attributes" => @override_attributes,
         "chef_type" => "role",
         "run_list" => @run_list.run_list,
-        "env_run_list" => @env_run_list
+        "env_run_lists" => @env_run_lists
       }
       result["_rev"] = couchdb_rev if couchdb_rev
       result
@@ -161,7 +162,7 @@ class Chef
       run_list(o.run_list)
       default_attributes(o.default_attributes)
       override_attributes(o.override_attributes)
-      env_run_list(o.env_run_list.merge!({"_default"=>{"default_attributes"=>o.env_run_list["_default"]["default_attributes"], "override_attributes"=>o.env_run_list["_default"]["override_attributes"], "run_list"=>o.run_list}}))
+      env_run_lists(o.env_run_lists.merge!({"_default"=>{"default_attributes"=>o.default_attributes, "override_attributes"=>o.override_attributes, "run_list"=>o.run_list}}))
       self
     end
 
@@ -177,7 +178,7 @@ class Chef
                     else
                       o["recipes"]
                     end)
-      role.env_run_list(o["env_run_list"].merge!({"_default"=>{"default_attributes"=>o["env_run_list"]["_default"]["default_attributes"], "override_attributes"=>o["env_run_list"]["_default"]["override_attributes"], "run_list"=>o["run_list"]}}))
+      role.env_run_lists(o["env_run_lists"].merge!({"_default"=>{"default_attributes"=>o["default_attributes"], "override_attributes"=>o["override_attributes"], "run_list"=>role.run_list}}))
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       role.index_id = role.couchdb_id
       role.couchdb_id = o["_id"] if o.has_key?("_id")
@@ -235,6 +236,7 @@ class Chef
 
     # Save this role to the CouchDB
     def cdb_save
+      
       self.couchdb_rev = couchdb.store("role", @name, self)["rev"]
     end
 
