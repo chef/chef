@@ -188,7 +188,7 @@ describe Chef::Node::Attribute do
                           "os_version"=>"9.7.0",
                           "hostname"=>"latte",
                           "macaddress"=>"00:23:6c:7f:67:6c",
-                          "music" => { "jimmy_eat_world" => "nice" }
+                          "music" => { "jimmy_eat_world" => "nice", "apophis" => false }
     }
     @default_hash = {
       "domain" => "opscode.com",
@@ -196,7 +196,9 @@ describe Chef::Node::Attribute do
       "music" => { 
         "jimmy_eat_world" => "is fun!",
         "mastodon" => "rocks",
-        "mars_volta" => "is loud and nutty"
+        "mars_volta" => "is loud and nutty",
+        "deeper" => { "gates_of_ishtar" => nil },
+        "this" => {"apparatus" => {"must" => "be unearthed"}}
       }
     }
     @override_hash = {
@@ -227,13 +229,10 @@ describe Chef::Node::Attribute do
       end
     end
 
-    it "should set the state to an empty array" do
-      @attributes.state.should == []
-    end
-
     it "should allow you to set the initial state" do
-      na = Chef::Node::Attribute.new({}, {}, {}, {}, [ "first", "second", "third" ])
-      na.state.should == [ "first", "second", "third" ]
+      attrs = {"first" => {"second" => {"third" => {"jackpot" => "jackpot!"}}}}
+      na = Chef::Node::Attribute.new(attrs, {}, {}, {}, [ "first", "second", "third" ])
+      na.should have_key("jackpot")
     end
 
     it "should be enumerable" do
@@ -312,15 +311,15 @@ describe Chef::Node::Attribute do
 
     it "should set the value for a second level key" do
       to_check = {}
-      @attributes.state = [ "one" ]
+      @attributes[ "one" ]
       @attributes.set_value(to_check, "two", "some value")
       to_check["one"]["two"].should == "some value"
     end
 
     it "should set the value for a very deep key" do
       to_check = {}
-      @attributes.state = [ "one", "two", "three", "four", "five" ]
-      @attributes.set_value(to_check, "six", "some value")
+      attributes = Chef::Node::Attribute.new({}, {}, {}, {}, %w{one two three four five})
+      attributes.set_value(to_check, "six", "some value")
       to_check["one"]["two"]["three"]["four"]["five"]["six"].should == "some value"
     end
   end
@@ -415,10 +414,31 @@ describe Chef::Node::Attribute do
       @attributes.has_key?("ninja").should == false
     end
 
-    it "should be looking at the current position of the object" do
+    it "should return false if an attribute does not exist using dot notation" do
+      @attributes.has_key?("does_not_exist_at_all").should == false
+    end
+
+    it "should return true if an attribute exists but is set to nil using dot notation" do
+      @attributes.music.deeper.has_key?("gates_of_ishtar").should == true
+    end
+
+    it "should return true if an attribute exists but is set to false" do
+      @attributes["music"]
+      @attributes.has_key?("apophis").should == true
+    end
+    
+    it "should find keys at the current nesting level" do
       @attributes["music"]
       @attributes.has_key?("mastodon").should == true 
       @attributes.has_key?("whitesnake").should == false
+    end
+
+    it "does not find keys above the current nesting level" do
+      @attributes["music"]["this"]["apparatus"].should_not have_key("this")
+    end
+
+    it "does not find keys below the current nesting level" do
+      @attributes["music"]["this"].should_not have_key("must")
     end
 
     [:include?, :key?, :member?].each do |method|
