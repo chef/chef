@@ -10,6 +10,9 @@
   "recipes": [
     "roles"
   ],
+  "env_run_lists": {
+    "_default" : {}
+  },
   "override_attributes": {
     "ossining": "whatever",
     "snakes": "on a plane"
