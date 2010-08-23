@@ -114,7 +114,7 @@ class Chef
       # should have btter validation, but leaving it as it is for now to make everything work first [nuo]
       (!hash.nil? && hash.length > 0) ? @env_run_lists = hash : @env_run_lists
     end
-    
+
 #     def recipes(*args)
 #       Chef::Log.warn "Chef::Role#recipes method is deprecated.  Please use Chef::Role#run_list"
 #       run_list(*args)
@@ -236,7 +236,6 @@ class Chef
 
     # Save this role to the CouchDB
     def cdb_save
-      
       self.couchdb_rev = couchdb.store("role", @name, self)["rev"]
     end
 
