@@ -35,7 +35,7 @@ describe Chef::Application::Knife do
 
     it "should exit 2 if run without a sub command" do
       with_argv("--user", "adam") do
-        Chef::Log.should_receive(:fatal).with(/you need to pass a sub\-command/)
+        Chef::Log.should_receive(:error).with(/you need to pass a sub\-command/i)
         lambda { @knife.run }.should raise_error(SystemExit) { |e| e.status.should == 2 }
       end
     end
