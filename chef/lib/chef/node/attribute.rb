@@ -29,14 +29,12 @@ class Chef
                     :default,
                     :override,
                     :automatic,
-                    :state,
                     :current_normal,
                     :current_default,
                     :current_override,
                     :current_automatic,
                     :auto_vivifiy_on_read,
                     :set_unless_value_present,
-                    :has_been_read,
                     :set_type
 
       include Enumerable
@@ -50,7 +48,7 @@ class Chef
         @current_override = override
         @automatic = automatic
         @current_automatic = automatic
-        @state = state
+        @current_nesting_level = state
         @auto_vivifiy_on_read = false
         @set_unless_value_present = false
         @set_type = nil
@@ -78,18 +76,18 @@ class Chef
         end
       end
 
-      # Reset our internal state to the top of every tree
+      # Reset our internal current_nesting_level to the top of every tree
       def reset
         @current_normal = @normal
         @current_default = @default
         @current_override = @override
         @current_automatic = @automatic
         @has_been_read = false
-        @state = []
+        @current_nesting_level = []
       end
 
       def [](key)
-        @state << key
+        @current_nesting_level << key
 
         # We set this to so that we can cope with ||= as a setting.
         # See the comments in []= for more details.
@@ -114,25 +112,18 @@ class Chef
         end
       end
 
-      def attribute?(key)
-        return true if get_value(automatic, key)
-        return true if get_value(override, key)
-        return true if get_value(normal, key)
-        return true if get_value(default, key)
+      def has_key?(key)
+        return true if component_has_key?(@default,key)
+        return true if component_has_key?(@automatic,key)
+        return true if component_has_key?(@normal,key)
+        return true if component_has_key?(@override,key)
         false
       end
 
-      def has_key?(key)
-        return true if exists_in_hash(@default.to_hash,key,@state)
-        return true if exists_in_hash(@automatic.to_hash,key,@state)
-        return true if exists_in_hash(@normal.to_hash,key,@state)
-        return true if exists_in_hash(@override.to_hash,key,@state)
-        attribute?(key)
-      end
-
-      alias :include? :has_key?
-      alias :key? :has_key?
-      alias :member? :has_key?
+      alias :attribute? :has_key?
+      alias :include?   :has_key?
+      alias :key?       :has_key?
+      alias :member?    :has_key?
 
       def each(&block)
         get_keys.each do |key|
@@ -267,7 +258,7 @@ class Chef
       def get_value(data_hash, key)
         last = nil
 
-        if state.length == 0
+        if @current_nesting_level.length == 0
           if data_hash.has_key?(key) && ! data_hash[key].nil?
             return data_hash[key]
           else
@@ -275,18 +266,18 @@ class Chef
           end
         end
 
-        0.upto(state.length) do |i|
+        0.upto(@current_nesting_level.length) do |i|
           if i == 0
-            last = auto_vivifiy(data_hash, state[i])
-          elsif i == state.length
-            fk = last[state[i - 1]]
+            last = auto_vivifiy(data_hash, @current_nesting_level[i])
+          elsif i == @current_nesting_level.length
+            fk = last[@current_nesting_level[i - 1]]
             if fk.has_key?(key) && ! fk[key].nil?
               return fk[key]
             else
               return nil
             end
           else
-            last = auto_vivifiy(last[state[i - 1]], state[i])
+            last = auto_vivifiy(last[@current_nesting_level[i - 1]], @current_nesting_level[i])
           end
         end
       end
@@ -331,7 +322,7 @@ class Chef
 
         if set_unless_value_present
           if get_value(set_type_hash, key) != nil
-            Chef::Log.debug("Not setting #{state.join("/")}/#{key} to #{value.inspect} because it has a #{@set_type} value already")
+            Chef::Log.debug("Not setting #{@current_nesting_level.join("/")}/#{key} to #{value.inspect} because it has a #{@set_type} value already")
             return false
           end
         end
@@ -342,7 +333,7 @@ class Chef
         #
         # In practice, these objects are single use - this is just
         # supporting one more single-use style.
-        @state.pop if @has_been_read && @state.last == key
+        @current_nesting_level.pop if @has_been_read && @current_nesting_level.last == key
 
         set_value(set_type_hash, key, value)
         value
@@ -351,23 +342,23 @@ class Chef
       def set_value(data_hash, key, value)
         last = nil
 
-        # If there is no state, just set the value
-        if state.length == 0
+        # If there is no current_nesting_level, just set the value
+        if @current_nesting_level.length == 0
           data_hash[key] = value
           return data_hash
         end
 
         # Walk all the previous places we have been
-        0.upto(state.length) do |i|
+        0.upto(@current_nesting_level.length) do |i|
           # If we are the first, we are top level, and should vivifiy the data_hash
           if i == 0
-            last = auto_vivifiy(data_hash, state[i])
-          # If we are one past the last state, we are adding a key to that hash with a value
-          elsif i == state.length
-            last[state[i - 1]][key] = value
+            last = auto_vivifiy(data_hash, @current_nesting_level[i])
+          # If we are one past the last current_nesting_level, we are adding a key to that hash with a value
+          elsif i == @current_nesting_level.length
+            last[@current_nesting_level[i - 1]][key] = value
           # Otherwise, we're auto-vivifiy-ing an interim mash
           else
-            last = auto_vivifiy(last[state[i - 1]], state[i])
+            last = auto_vivifiy(last[@current_nesting_level[i - 1]], @current_nesting_level[i])
           end
         end
         data_hash
@@ -376,7 +367,7 @@ class Chef
       def auto_vivifiy(data_hash, key)
         if data_hash.has_key?(key)
           unless data_hash[key].respond_to?(:has_key?)
-            raise ArgumentError, "You tried to set a nested key, where the parent is not a hash-like object: #{@state.join("/")}/#{key} " unless auto_vivifiy_on_read
+            raise ArgumentError, "You tried to set a nested key, where the parent is not a hash-like object: #{@current_nesting_level.join("/")}/#{key} " unless auto_vivifiy_on_read
           end
         else
           data_hash[key] = Mash.new
@@ -394,7 +385,7 @@ class Chef
         end
 
         if data_hash[key].respond_to?(:has_key?)
-          cna = Chef::Node::Attribute.new(@normal, @default, @override, @automatic, @state)
+          cna = Chef::Node::Attribute.new(@normal, @default, @override, @automatic, @current_nesting_level)
           cna.current_normal = current_normal.nil? ? Mash.new : current_normal[key]
           cna.current_default   = current_default.nil? ? Mash.new : current_default[key]
           cna.current_override  = current_override.nil? ? Mash.new : current_override[key]
@@ -452,12 +443,14 @@ class Chef
         end
       end
 
-      def exists_in_hash(data_hash,key,state)
-        return true if data_hash.has_key?(key)
-        if data_hash.has_key?(state.first)
-          k = state.dup
-          exists_in_hash(data_hash[k.shift],key,k)
-        end 
+      def component_has_key?(component_attrs,key)
+        # get the Hash-like object at the current nesting level:
+        nested_attrs = @current_nesting_level.inject(component_attrs) do |subtree, intermediate_key|
+          # if the intermediate value isn't a hash or doesn't have the intermediate key,
+          # it can't have the bottom-level key we're looking for.
+          (subtree.respond_to?(:key?) && subtree[intermediate_key]) or (return false)
+        end
+        nested_attrs.respond_to?(:key?) && nested_attrs.key?(key)
       end
 
     end
