@@ -210,6 +210,23 @@ class Chef
       (couchdb || Chef::CouchDB.new).create_design_document("environments", DESIGN_DOCUMENT)
     end
 
+    def self.cdb_load_filtered_cookbook_versions(name, couchdb=nil)
+      cvs = begin
+              name.nil? ? Hash.new : Chef::Environment.cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Gem::Requirement.new(v); res}
+            rescue Chef::Exceptions::CouchDBNotFound => e
+              raise e
+            end
+
+      # inject all cookbooks into the hash while filtering out restricted versions
+      Chef::CookbookVersion.cdb_list(true, couchdb).inject({}) do |res, cookbook|
+        version               = Gem::Version.new(cookbook.version)
+        requirement_satisfied = cvs.has_key?(cookbook.name) ? cvs[cookbook.name].satisfied_by?(version) : true
+        newest_version        = res.has_key?(cookbook.name) ? version > Gem::Version.new(res[cookbook.name].version) : true
+        res[cookbook.name]    = cookbook if requirement_satisfied && newest_version
+        res
+      end
+    end
+
     def to_s
       @name
     end

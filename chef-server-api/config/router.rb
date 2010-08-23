@@ -30,11 +30,10 @@ Merb::Router.prepare do
   resources :roles
 
   # Environments
-  resources :environments
-  match('/environments/:id/nodes',
-        :id => /^[\-[:alnum:]_]+$/,
-        :method => 'get').
-    to(:controller => "environments", :action => "nodes")
+  resources :environments do |e|
+    e.match("/cookbooks", :method => "get").to(:controller=>"environments", :action=>"list_cookbooks")
+    e.match("/nodes", :method => "get").to(:controller=>"environments", :action=>"list_nodes")
+  end
 
   # Status
   match("/status").to(:controller => "status", :action => "index").name(:status)

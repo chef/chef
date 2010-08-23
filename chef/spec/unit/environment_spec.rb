@@ -203,6 +203,80 @@ describe Chef::Environment do
     end
   end
 
+  describe "self.cdb_load_filtered_cookbook_versions" do
+    before(:each) do
+      @environment.name "prod"
+      @environment.cookbook_versions({
+        "apt" => "1.0.0",
+        "apache2" => "2.0.0"
+      })
+      Chef::Environment.stub!(:cdb_load).and_return @environment
+
+      @all_cookbooks = []
+      @all_cookbooks << begin
+        cv = Chef::CookbookVersion.new("apt")
+        cv.version = "1.0.0"
+        cv
+      end
+      @all_cookbooks << begin
+        cv = Chef::CookbookVersion.new("apt")
+        cv.version = "1.1.0"
+        cv
+      end
+      @all_cookbooks << begin
+        cv = Chef::CookbookVersion.new("apache2")
+        cv.version = "2.0.0"
+        cv
+      end
+      @all_cookbooks << begin
+        cv = Chef::CookbookVersion.new("god")
+        cv.version = "4.2.0"
+        cv
+      end
+      Chef::CookbookVersion.stub!(:cdb_list).and_return @all_cookbooks
+    end
+
+    it "should load the environment" do
+      Chef::Environment.should_receive(:cdb_load).with("prod", nil)
+      Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
+    end
+
+    it "should load all the cookbook versions" do
+      Chef::CookbookVersion.should_receive(:cdb_list)
+      Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
+    end
+
+    it "should restrict the cookbook versions, as specified in the environment" do
+      res = Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
+      res["apt"].version.should == "1.0.0"
+      res["apache2"].version.should == "2.0.0"
+      res["god"].version.should == "4.2.0"
+    end
+
+    it "should succeed if the environment is nil" do
+      Chef::Environment.should_not_receive(:cdb_load)
+      res = Chef::Environment.cdb_load_filtered_cookbook_versions(nil)
+      res["apt"].version.should == "1.1.0"
+      res["apache2"].version.should == "2.0.0"
+      res["god"].version.should == "4.2.0"
+    end
+
+    it "should produce correct results, regardless of the cookbook order in couch" do
+      # a bug present before the environments feature defaulted to the last CookbookVersion
+      # object for a cookbook as returned from couchdb when fetching cookbooks for a node
+      # this is a regression test
+      @all_cookbooks << begin
+        cv = Chef::CookbookVersion.new("god")
+        cv.version = "0.0.1"
+        cv
+      end
+      res = Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
+      res["apt"].version.should == "1.0.0"
+      res["apache2"].version.should == "2.0.0"
+      res["god"].version.should == "4.2.0"
+    end
+  end
+
   describe "self.validate_cookbook_versions" do
     before(:each) do
       @cookbook_versions = {
