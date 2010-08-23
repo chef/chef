@@ -92,7 +92,7 @@ class Nodes < Application
   private
 
   def load_all_files
-    all_cookbooks = Chef::CookbookVersion.cdb_list(true).inject({}) {|hsh,record| hsh[record.name] = record ; hsh}
+    all_cookbooks = Chef::Environment.cdb_load_filtered_cookbook_versions(@node.chef_environment)
 
     included_cookbooks = cookbooks_for_node(all_cookbooks)
     nodes_cookbooks = Hash.new

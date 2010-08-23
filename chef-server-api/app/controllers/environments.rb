@@ -77,19 +77,27 @@ class Environments < Application
   def destroy
     begin
       env = Chef::Environment.cdb_load(params[:id])
-    rescue
+    rescue Chef::Exceptions::CouchDBNotFound
       raise NotFound, "Cannot load environment #{params[:id]}"
     end
     env.cdb_destroy
     display(env)
   end
 
-  # GET /environments/:id/nodes
-  def nodes
-    node_list = Chef::Node.cdb_list_by_environment(params[:id])
-    display(node_list.inject({}) do |r,n|
-      r[n] = absolute_url(:node, n); r
-    end)
+  # GET /environments/:environment_id/cookbooks
+  def list_cookbooks
+    begin
+      filtered_cookbooks = Chef::Environment.cdb_load_filtered_cookbook_versions(params[:environment_id])
+    rescue Chef::Exceptions::CouchDBNotFound
+      raise NotFound, "Cannot load environment #{params[:environment_id]}"
+    end
+    display(filtered_cookbooks.inject({}) {|res, (k,v)| res[v.name] = absolute_url(:cookbook_version, :cookbook_name=>v.name, :cookbook_version=>v.version); res})
+  end
+
+  # GET /environments/:environment_id/nodes
+  def list_nodes
+    node_list = Chef::Node.cdb_list_by_environment(params[:environment_id])
+    display(node_list.inject({}) {|r,n| r[n] = absolute_url(:node, n); r}
   end
 
   private
