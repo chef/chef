@@ -39,7 +39,7 @@ class Chef
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
     
     DESIGN_DOCUMENT = {
-      "version" => 6,
+      "version" => 7,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -116,7 +116,7 @@ class Chef
           "map" => %q@
           function(doc) {
             if (doc.chef_type == "cookbook_version") {
-              emit(doc.cookbook_name, doc.version);
+              emit(doc.cookbook_name, {version: doc.version, id:doc._id});
             }
           }
           @,
@@ -129,33 +129,29 @@ class Chef
 
               if (idx == 0) {
                 result = value;
-                return_key = keys[idx][1]
                 continue;
               }
 
-              var valueParts = value.split('.').map(function(v) { return parseInt(v); });
-              var resultParts = result.split('.').map(function(v) { return parseInt(v); });
+              var valueParts = value.version.split('.').map(function(v) { return parseInt(v); });
+              var resultParts = result.version.split('.').map(function(v) { return parseInt(v); });
 
               if (valueParts[0] != resultParts[0]) {
                 if (valueParts[0] > resultParts[0]) {
                   result = value;
-                  return_key = keys[idx][1]
                 }
               }
               else if (valueParts[1] != resultParts[1]) {
                 if (valueParts[1] > resultParts[1]) {
                   result = value;
-                  return_key = keys[idx][1]
                 }
               }
               else if (valueParts[2] != resultParts[2]) {
                 if (valueParts[2] > resultParts[2]) {
                   result = value;
-                  return_key = keys[idx][1]
                 }
               }
             }
-            return return_key;
+            return result;
           }
           @
         },
@@ -747,7 +743,7 @@ class Chef
     def self.cdb_list_latest(inflate=false, couchdb=nil)
       couchdb ||= Chef::CouchDB.new
       if inflate
-        doc_ids = cdb_list_latest_ids
+        doc_ids = cdb_list_latest_ids.map {|i|i["id"]}
         couchdb.bulk_get(doc_ids)
       else
         results = couchdb.get_view("cookbooks", "all_latest_version", :group=>true)["rows"]
