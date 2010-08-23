@@ -55,12 +55,20 @@ class Chef
       def action_sync
         if !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination) == ['.','..']
           action_checkout
+          @new_resource.updated = true
         else
+          current_rev = find_current_revision
+          Chef::Log.debug "#{@new_resource} revision: #{current_rev}"
           sync
           enable_submodules
+          new_rev = find_current_revision
+          if current_rev == new_rev
+            @new_resource.updated = false
+          else
+            Chef::Log.info "#{@new_resource} updated revision is: #{new_rev}"
+            @new_resource.updated = true
+          end
         end
-
-        @new_resource.updated = true
       end
       
       def find_current_revision
