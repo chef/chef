@@ -231,8 +231,8 @@ describe Chef::Provider::Git do
     ::Dir.should_receive(:entries).and_return(['.','..',"lib", "spec"])
     @provider.should_receive(:find_current_revision).at_least(2).times.and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.should_receive(:sync)
-    @resource.should_receive(:updated=).at_least(1).times.with(false)
     @provider.action_sync
+    @resource.should_not be_updated
   end
 
   it "does a sync and gets a new version" do
