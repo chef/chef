@@ -55,7 +55,7 @@ class Chef
         with_metadata["type"]     ||= self.index_object_type
         with_metadata["id"]       ||= self.index_id
         with_metadata["database"] ||= Chef::Config[:couchdb_database]
-        with_metadata["item"]     ||= self
+        with_metadata["item"]     ||= self.to_hash
 
         raise ArgumentError, "Type, Id, or Database missing in index operation: #{with_metadata.inspect}" if (with_metadata["id"].nil? or with_metadata["type"].nil?)
         with_metadata        
