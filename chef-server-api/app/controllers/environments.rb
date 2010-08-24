@@ -102,8 +102,12 @@ class Environments < Application
   
   # GET /environments/:environment_id/roles/:role_id
   def role
-    
-    
+    begin
+      role = Chef::Role.cdb_load(params[:role_id])
+    rescue Chef::Exceptions::CouchDBNotFound
+      raise NotFound, "Cannot load role #{params[:role_id]}"
+    end
+    display(role.env_run_lists[params[:environment_id]])
   end
 
   private

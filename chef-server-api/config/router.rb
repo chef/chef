@@ -36,6 +36,7 @@ Merb::Router.prepare do
   resources :environments do |e|
     e.match("/cookbooks", :method => "get").to(:controller=>"environments", :action=>"list_cookbooks")
     e.match("/nodes", :method => "get").to(:controller=>"environments", :action=>"list_nodes")
+    e.match("/roles/:role_id", :method => "get").to(:controller=>"environments", :action => "role")
   end
 
   # Status
