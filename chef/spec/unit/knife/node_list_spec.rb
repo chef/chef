@@ -21,6 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Knife::NodeList do
   before(:each) do
     Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:environment] = nil # reset this value each time, as it is not reloaded
     @knife = Chef::Knife::NodeList.new
     @knife.stub!(:output).and_return(true)
     @list = {
@@ -44,7 +45,7 @@ describe Chef::Knife::NodeList do
     end
 
     it "should list nodes in the specific environment if -E ENVIRONMENT is specified" do
-      @knife.config = {:environment => "prod"}
+      Chef::Config[:environment] = "prod"
       Chef::Node.should_receive(:list_by_environment).with("prod").and_return(@list)
       @knife.run
     end

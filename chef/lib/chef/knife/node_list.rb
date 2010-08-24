@@ -32,7 +32,8 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run
-        output(format_list_for_display( config[:environment] ? Chef::Node.list_by_environment(config[:environment]) : Chef::Node.list ))
+        env = Chef::Config[:environment]
+        output(format_list_for_display( env ? Chef::Node.list_by_environment(env) : Chef::Node.list ))
       end
       
     end
