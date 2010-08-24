@@ -22,3 +22,8 @@ Feature: Show a role via the REST API
      When I 'GET' the path '/roles/webserver' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
+  Scenario: Show an environment specific run list and attribuets in a role
+    Given I am an administrator
+      And a 'role' named 'webserver' exists
+     When I 'GET' the path '/roles/webserver/environments/_default'
+     Then the inflated response should respond to 'run_list' with 'role[webserver], role[base]'

@@ -30,7 +30,7 @@ class Chef
         :short => "-a ATTR",
         :long => "--attribute ATTR",
         :description => "Show only one attribute"
-
+        
       def run 
         @role_name = @name_args[0]
 
@@ -39,9 +39,9 @@ class Chef
           Chef::Log.fatal("You must specify a role name")
           exit 1
         end
-        
-        role = Chef::Role.load(@role_name)
-        output(format_for_display(role))
+
+        role = Chef::Role.load(@role_name)  
+        output(format_for_display(config[:environment] ? role.environment(config[:environment]) : role))
       end
 
     end

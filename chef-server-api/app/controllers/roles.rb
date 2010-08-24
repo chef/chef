@@ -66,4 +66,26 @@ class Roles < Application
     display @role
   end
 
+  # GET /roles/:id/environments/:env_id
+  def environment
+    begin
+      @role = Chef::Role.cdb_load(params[:role_id])
+    rescue Chef::Exceptions::CouchDBNotFound => e
+      raise NotFound, "Cannot load role #{params[:role_id]}"
+    end
+    display(@role.env_run_lists[params[:env_id]])
+  end
+  
+  # GET /roles/:id/environments
+  def environments
+    begin
+      @role = Chef::Role.cdb_load(params[:role_id])
+    rescue Chef::Exceptions::CouchDBNotFound => e
+      raise NotFound, "Cannot load role #{params[:role_id]}"
+    end
+    
+    display(@role.env_run_lists.keys.sort)
+  end
+  
+
 end

@@ -105,7 +105,12 @@ class Chef
     end
 
     def run_list(*args)
-      (args.length > 0) ? @run_list.reset!(args) : @run_list
+      if (args.length > 0) 
+        @run_list.reset!(args) 
+        @env_run_lists["_default"]["run_list"] = @run_list
+      else
+        @run_list
+      end
     end
 
     alias_method :recipes, :run_list
@@ -224,6 +229,14 @@ class Chef
       end
     end
 
+    def environment(env_name)
+      chef_server_rest.get_rest("roles/#{@name}/environments/#{env_name}")
+    end
+    
+    def environments
+      chef_server_rest.get_rest("roles/#{@name}/environments")
+    end
+    
     # Remove this role from the CouchDB
     def cdb_destroy
       couchdb.delete("role", @name, couchdb_rev)
@@ -236,6 +249,9 @@ class Chef
 
     # Save this role to the CouchDB
     def cdb_save
+      @env_run_lists["_default"]["default_attributes"] = @default_attributes
+      @env_run_lists["_default"]["override_attributes"] = @override_attributes
+      @env_run_lists["_default"]["run_list"] = @run_list
       self.couchdb_rev = couchdb.store("role", @name, self)["rev"]
     end
 
