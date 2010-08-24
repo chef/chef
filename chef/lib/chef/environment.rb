@@ -212,7 +212,7 @@ class Chef
 
     def self.cdb_load_filtered_cookbook_versions(name, couchdb=nil)
       cvs = begin
-              name.nil? ? Hash.new : Chef::Environment.cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Gem::Requirement.new(v); res}
+              Chef::Environment.cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Gem::Requirement.new(v); res}
             rescue Chef::Exceptions::CouchDBNotFound => e
               raise e
             end
