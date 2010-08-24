@@ -11,7 +11,7 @@ Then /^the response code should be '(.+)'$/ do |response_code|
     when 200
       self.api_response.code.should == 200
     when 400
-      Then "I should get a 'Bad Request' exception"
+      self.exception.to_s.should match(/(Bad Request|400)/)
     when 404
       Then "I should get a 'RestClient::ResourceNotFound' exception"
   end
