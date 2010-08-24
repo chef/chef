@@ -167,7 +167,8 @@ class Chef
       run_list(o.run_list)
       default_attributes(o.default_attributes)
       override_attributes(o.override_attributes)
-      env_run_lists(o.env_run_lists.merge!({"_default"=>{"default_attributes"=>o.default_attributes, "override_attributes"=>o.override_attributes, "run_list"=>o.run_list}}))
+      default_env_run_list = {"_default"=>{"default_attributes"=>o.default_attributes, "override_attributes"=>o.override_attributes, "run_list"=>o.run_list}}
+      env_run_lists(o.env_run_lists.nil? ? default_env_run_list : o.env_run_lists.merge!(default_env_run_list))
       self
     end
 
@@ -183,7 +184,8 @@ class Chef
                     else
                       o["recipes"]
                     end)
-      role.env_run_lists(o["env_run_lists"].merge!({"_default"=>{"default_attributes"=>o["default_attributes"], "override_attributes"=>o["override_attributes"], "run_list"=>role.run_list}}))
+      default_env_run_list = {"_default"=>{"default_attributes"=>o["default_attributes"], "override_attributes"=>o["override_attributes"], "run_list"=>role.run_list}}              
+      role.env_run_lists(o["env_run_lists"].nil? ? default_env_run_list : o["env_run_lists"].merge!(default_env_run_list))
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       role.index_id = role.couchdb_id
       role.couchdb_id = o["_id"] if o.has_key?("_id")
