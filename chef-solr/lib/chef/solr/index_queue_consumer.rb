@@ -20,12 +20,6 @@ require 'chef/log'
 require 'chef/config'
 require 'chef/solr'
 require 'chef/solr/index'
-require 'chef/node'
-require 'chef/role'
-require 'chef/rest'
-require 'chef/data_bag'
-require 'chef/data_bag_item'
-require 'chef/api_client'
 require 'chef/couchdb'
 require 'chef/index_queue'
 
@@ -41,7 +35,10 @@ class Chef
         Chef::Log.debug("Dequeued item for indexing: #{payload.inspect}")
 
         begin
-          pitem = payload["item"].to_hash                  
+          # older producers will send the raw item, and we no longer inflate it
+          # to an object.
+          pitem = payload["item"].to_hash
+          pitem.delete("json_class")
           response = generate_response { index.add(payload["id"], payload["database"], payload["type"], pitem) }                  
         rescue NoMethodError
           response = generate_response() { raise ArgumentError, "Payload item does not respond to :keys or :to_hash, cannot index!" }

@@ -29,6 +29,11 @@ class Chef
     def index_id=(value)
         @index_id = value
     end
+
+    def to_hash
+      {:ohai_world => "I am IndexableTestHarness", :object_id => object_id}
+    end
+
   end
 end
 
@@ -57,6 +62,7 @@ describe Chef::IndexQueue::Indexable do
     Chef::IndexableTestHarness.reset_index_metadata!
     @publisher      = Chef::IndexQueue::AmqpClient.instance
     @indexable_obj  = Chef::IndexableTestHarness.new
+    @item_as_hash   = {:ohai_world => "I am IndexableTestHarness", :object_id => @indexable_obj.object_id}
   end
   
   it "downcases the class name for the index_object_type when it's not explicitly set" do
@@ -74,7 +80,7 @@ describe Chef::IndexQueue::Indexable do
     with_metadata.keys.should include("type", "id", "item", "database")
     with_metadata["type"].should      == "indexable_test_harness"
     with_metadata["database"].should  == "foo"
-    with_metadata["item"].should      == @indexable_obj
+    with_metadata["item"].should      == @item_as_hash
     with_metadata["id"].should match(a_uuid)
   end
   
@@ -86,7 +92,7 @@ describe Chef::IndexQueue::Indexable do
   end
   
   it "sends ``add'' actions" do
-    @publisher.should_receive(:send_action).with(:add, {"item" => @indexable_obj, 
+    @publisher.should_receive(:send_action).with(:add, {"item" => @item_as_hash,
                                                         "type" => "indexable_test_harness",
                                                         "database" => "couchdb@localhost,etc.", 
                                                         "id" => an_instance_of(String)})
@@ -94,9 +100,9 @@ describe Chef::IndexQueue::Indexable do
   end
   
   it "sends ``delete'' actions" do
-    @publisher.should_receive(:send_action).with(:delete, { "item" => @indexable_obj, 
+    @publisher.should_receive(:send_action).with(:delete, { "item" => @item_as_hash,
                                                             "type" => "indexable_test_harness",
-                                                            "database" => "couchdb2@localhost", 
+                                                            "database" => "couchdb2@localhost",
                                                             "id" => an_instance_of(String)})
     @indexable_obj.delete_from_index(:database => "couchdb2@localhost", :id=>UUIDTools::UUID.random_create.to_s)
   end
