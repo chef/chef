@@ -50,12 +50,12 @@ describe Chef::Application::Knife do
     end
 
     describe "with environment configuration" do
-      it "should default to the 'default' environment" do
+      it "should default to no environment" do
         with_argv(*%w{test yourself}) do
           @knife.should_receive(:exit).with(0)
           @knife.run
         end
-        Chef::Config[:environment].should == 'default'
+        Chef::Config[:environment].should == nil
       end
 
       it "should load the environment from the config file" do

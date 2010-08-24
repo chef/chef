@@ -31,7 +31,7 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run
-        env          = config[:environment]
+        env          = Chef::Config[:environment]
         api_endpoint = env ? "/environments/#{env}/cookbooks" : "/cookbooks/_latest"
         output(format_cookbooks_for_display(rest.get_rest(api_endpoint)))
       end

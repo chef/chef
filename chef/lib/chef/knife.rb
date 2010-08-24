@@ -267,6 +267,7 @@ class Chef
       Chef::Config[:node_name] = config[:node_name] if config[:node_name]
       Chef::Config[:client_key] = config[:client_key] if config[:client_key]
       Chef::Config[:chef_server_url] = config[:chef_server_url] if config[:chef_server_url]
+      Chef::Config[:environment] = config[:environment] if config[:environment]
       Mixlib::Log::Formatter.show_time = false
       Chef::Log.init(Chef::Config[:log_location])
       Chef::Log.level(Chef::Config[:log_level])
