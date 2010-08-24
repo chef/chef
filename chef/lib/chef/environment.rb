@@ -247,5 +247,16 @@ class Chef
         false
       end
     end
+
+    def self.create_default_environment
+      begin
+        Chef::Environment.cdb_load('_default')
+      rescue Chef::Exceptions::CouchDBNotFound
+        env = Chef::Environment.new
+        env.name '_default'
+        env.description 'The default Chef environment'
+        env.cdb_save
+      end
+    end
   end
 end

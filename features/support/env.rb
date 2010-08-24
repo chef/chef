@@ -96,6 +96,7 @@ def create_databases
   Chef::Certificate.generate_signing_ca
   Chef::Certificate.gen_validation_key
   Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
+  Chef::Environment.create_default_environment
   system("cp #{File.join(Dir.tmpdir, "chef_integration", "validation.pem")} #{Dir.tmpdir}")
   system("cp #{File.join(Dir.tmpdir, "chef_integration", "webui.pem")} #{Dir.tmpdir}")
 

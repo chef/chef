@@ -83,6 +83,9 @@ unless Merb::Config.environment == "test"
   # Generate the Web UI Key
   Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key], true)
 
+  # Create the '_default' Environment
+  Chef::Environment.create_default_environment
+
   Chef::Log.info('Loading roles')
   Chef::Role.sync_from_disk_to_couchdb
 end

@@ -253,14 +253,6 @@ describe Chef::Environment do
       res["god"].version.should == "4.2.0"
     end
 
-    it "should succeed if the environment is nil" do
-      Chef::Environment.should_not_receive(:cdb_load)
-      res = Chef::Environment.cdb_load_filtered_cookbook_versions(nil)
-      res["apt"].version.should == "1.1.0"
-      res["apache2"].version.should == "2.0.0"
-      res["god"].version.should == "4.2.0"
-    end
-
     it "should produce correct results, regardless of the cookbook order in couch" do
       # a bug present before the environments feature defaulted to the last CookbookVersion
       # object for a cookbook as returned from couchdb when fetching cookbooks for a node
@@ -311,6 +303,29 @@ describe Chef::Environment do
       Chef::Environment.validate_cookbook_version(Hash.new).should == false
       Chef::Environment.validate_cookbook_version(Array.new).should == false
       Chef::Environment.validate_cookbook_version(Chef::CookbookVersion.new("meta")).should == false
+    end
+  end
+
+  describe "self.create_default_environment" do
+    it "should check if the '_default' environment exists" do
+      Chef::Environment.should_receive(:cdb_load).with('_default')
+      Chef::Environment.create_default_environment
+    end
+
+    it "should not re-create the environment if it exists" do
+      Chef::Environment.should_receive(:cdb_load).with('_default').and_return true
+      Chef::Environment.should_not_receive(:new)
+      Chef::Environment.create_default_environment
+    end
+
+    it "should create the environment if it doesn't exist" do
+      @env = Chef::Environment.new
+      @env.stub!(:cdb_save).and_return true
+      Chef::Environment.stub!(:new).and_return @env
+
+      Chef::Environment.should_receive(:cdb_load).with('_default').and_raise(Chef::Exceptions::CouchDBNotFound)
+      Chef::Environment.should_receive(:new)
+      Chef::Environment.create_default_environment
     end
   end
 end
