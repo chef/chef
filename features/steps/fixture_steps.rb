@@ -97,7 +97,7 @@ Before do
         r = Chef::Role.new
         r.name "webserver"
         r.description "monkey"
-        r.recipes("role::webserver", "role::base")
+        r.run_list("role[webserver]", "role[base]")
         r.default_attributes({ 'a' => 'b' })
         r.override_attributes({ 'c' => 'd' })
         r 
