@@ -92,7 +92,7 @@ class Chef
       end
 
       def psexec(args)
-        cmd = ['psexec', @unc_path, "-w", 'c:\chef\tmp']
+        cmd = ['psexec', @unc_path, "-h", "-w", 'c:\chef\tmp']
         if config[:user]
           cmd << "-u" << config[:user]
         end
