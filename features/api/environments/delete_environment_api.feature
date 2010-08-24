@@ -26,3 +26,13 @@ Feature: Delete environments via the REST API
       And an 'environment' named 'cucumber' exists
      When I 'DELETE' the path '/environments/cucumber'
      Then I should get a '403 "Forbidden"' exception
+
+  Scenario Outline: Delete the '_default' environment
+    Given I am <user_type>
+     When I 'DELETE' the path '/environments/_default'
+     Then I should get a '403 "Forbidden"' exception
+
+  Examples:
+    | user_type        |
+    | an administrator |
+    | a non-admin      |

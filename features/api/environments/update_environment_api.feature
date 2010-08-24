@@ -38,3 +38,14 @@ Feature: Update an environment via the REST API
       And sending the method 'description' to the 'environment' with 'This will not work'
      When I 'PUT' the 'environment' to the path '/environments/cucumber'
      Then I should get a '403 "Forbidden"' exception
+
+  Scenario Outline: Update the '_default' environment
+    Given I am <user_type>
+      And an 'environment' named 'cucumber'
+     When I 'PUT' the 'environment' to the path '/environments/_default'
+     Then I should get a '403 "Forbidden"' exception
+  
+  Examples:
+    | user_type        |
+    | an administrator |
+    | a non-admin      |
