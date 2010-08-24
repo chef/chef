@@ -48,13 +48,11 @@ class Cookbooks < Application
     display response
   end
 
-  #FIXME: this is different from the rest of the API, but in a useful way...
   def index_latest
     cookbook_list = Chef::CookbookVersion.cdb_list_latest(true)
-    response = Hash.new
-    cookbook_list.map! do |cookbook_name, cookbook_version|
-      response[cookbook_name]={ :url=>absolute_url(:cookbook, :cookbook_name => cookbook_name, :cookbook_version => cookbook_version),
-                                :cookbook_name => cookbook_name, :cookbook_version=>cookbook_version}
+    response = cookbook_list.inject({}) do |res, cv|
+      res[cv.name] = absolute_url(:cookbook_version, :cookbook_name => cv.name, :cookbook_version => cv.version)
+      res
     end
     display response
   end
