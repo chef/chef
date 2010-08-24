@@ -8,7 +8,8 @@ Feature: List environments via the REST API
     Given I am <user_type>
       And there are no environments
      When I 'GET' the path '/environments'
-     Then the inflated response should be '0' items long
+     Then the inflated response should be '1' items long
+     Then the inflated responses key '_default' should match 'http://.+/environments/_default'
 
     Examples:
       | user_type        |
@@ -31,7 +32,7 @@ Feature: List environments via the REST API
       And an 'environment' named 'cucumber' exists
       And an 'environment' named 'production' exists
      When I 'GET' the path '/environments'
-     Then the inflated response should be '2' items long
+     Then the inflated response should be '3' items long
       And the inflated responses key 'cucumber' should match 'http://.+/environments/cucumber'
       And the inflated responses key 'production' should match 'http://.+/environments/production'
 
