@@ -99,6 +99,12 @@ class Environments < Application
     node_list = Chef::Node.cdb_list_by_environment(params[:environment_id])
     display(node_list.inject({}) {|r,n| r[n] = absolute_url(:node, n); r})
   end
+  
+  # GET /environments/:environment_id/roles/:role_id
+  def role
+    
+    
+  end
 
   private
 
