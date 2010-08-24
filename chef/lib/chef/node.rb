@@ -522,7 +522,7 @@ class Chef
     def self.list_by_environment(environment, inflate=false)
       if inflate
         response = Hash.new
-        Chef::Search::Query.new.search(:node, "chef_environment:#{config[:environment]}") {|n| response[n.name] = n unless n.nil?}
+        Chef::Search::Query.new.search(:node, "chef_environment:#{environment}") {|n| response[n.name] = n unless n.nil?}
         response
       else
         Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("environments/#{environment}/nodes")
