@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,6 @@ describe Chef::Node do
     Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "nodes")))
     @node = Chef::Node.new()
   end
-
 
   it "creates a node and assigns it a name" do
     node = Chef::Node.build('solo-node')
@@ -66,9 +65,16 @@ describe Chef::Node do
     it "should have a template_cache hash" do
       @node.run_state[:template_cache].should be_a_kind_of(Hash)
     end
-    
+
     it "should have a seen_recipes hash" do
       @node.run_state[:seen_recipes].should be_a_kind_of(Hash)
+    end
+  end
+
+  describe "initialize" do
+    it "should default to the '_default' chef_environment" do
+      n = Chef::Node.new
+      n.chef_environment.should == '_default'
     end
   end
 
@@ -76,16 +82,16 @@ describe Chef::Node do
     it "should allow you to set a name with name(something)" do
       lambda { @node.name("latte") }.should_not raise_error
     end
-    
+
     it "should return the name with name()" do
       @node.name("latte")
       @node.name.should eql("latte")
     end
-    
+
     it "should always have a string for name" do
       lambda { @node.name(Hash.new) }.should raise_error(ArgumentError)
     end
-    
+
     it "cannot be blank" do
       lambda { @node.name("")}.should raise_error(Chef::Exceptions::ValidationFailed)
     end
@@ -100,22 +106,17 @@ describe Chef::Node do
     it "should set an environment with chef_environment(something)" do
       lambda { @node.chef_environment("latte") }.should_not raise_error
     end
-    
+
     it "should return the chef_environment with chef_environment()" do
       @node.chef_environment("latte")
       @node.chef_environment.should == "latte"
     end
-    
-    it "should disallow non-strings (except for nil)" do
+
+    it "should disallow non-strings" do
       lambda { @node.chef_environment(Hash.new) }.should raise_error(ArgumentError)
+      lambda { @node.chef_environment(42) }.should raise_error(ArgumentError)
     end
 
-    it "can be nil" do
-      @node.chef_environment("foo")
-      @node.chef_environment(nil)
-      @node.chef_environment.should == nil
-    end
-    
     it "cannot be blank" do
       lambda { @node.chef_environment("")}.should raise_error(Chef::Exceptions::ValidationFailed)
     end
@@ -131,26 +132,26 @@ describe Chef::Node do
       @node.ldap_replication_password.should eql("forsure")
       @node.smokey.should eql("robinson")
     end
-    
+
     it "should have attributes" do
       @node.attribute.should be_a_kind_of(Hash)
     end
-    
+
     it "should allow attributes to be accessed by name or symbol directly on node[]" do
       @node.attribute["locust"] = "something"
       @node[:locust].should eql("something")
       @node["locust"].should eql("something")
     end
-    
+
     it "should return nil if it cannot find an attribute with node[]" do
       @node["secret"].should eql(nil)
     end
-    
+
     it "should allow you to set an attribute via node[]=" do
       @node["secret"] = "shush"
       @node["secret"].should eql("shush")
     end
-    
+
     it "should allow you to query whether an attribute exists with attribute?" do
       @node.attribute["locust"] = "something"
       @node.attribute?("locust").should eql(true)
@@ -160,14 +161,14 @@ describe Chef::Node do
     it "should let you go deep with attribute?" do
       @node.set["battles"]["people"]["wonkey"] = true
       @node["battles"]["people"].attribute?("wonkey").should == true
-      @node["battles"]["people"].attribute?("snozzberry").should == false 
+      @node["battles"]["people"].attribute?("snozzberry").should == false
     end
 
     it "should allow you to set an attribute via method_missing" do
       @node.sunshine "is bright"
       @node.attribute[:sunshine].should eql("is bright")
     end
-    
+
     it "should allow you get get an attribute via method_missing" do
       @node.sunshine "is bright"
       @node.sunshine.should eql("is bright")
@@ -180,14 +181,14 @@ describe Chef::Node do
       end
 
       it "should allow you to set an attribute with set_unless" do
-        @node.set_unless[:snoopy][:is_a_puppy] = false 
-        @node[:snoopy][:is_a_puppy].should == false 
+        @node.set_unless[:snoopy][:is_a_puppy] = false
+        @node[:snoopy][:is_a_puppy].should == false
       end
 
       it "should not allow you to set an attribute with set_unless if it already exists" do
-        @node.set[:snoopy][:is_a_puppy] = true 
-        @node.set_unless[:snoopy][:is_a_puppy] = false 
-        @node[:snoopy][:is_a_puppy].should == true 
+        @node.set[:snoopy][:is_a_puppy] = true
+        @node.set_unless[:snoopy][:is_a_puppy] = false
+        @node[:snoopy][:is_a_puppy].should == true
       end
 
       it "auto-vivifies attributes created via method syntax" do
@@ -204,14 +205,14 @@ describe Chef::Node do
       end
 
       it "should allow you to set with default_unless without pre-declaring a hash" do
-        @node.default_unless[:snoopy][:is_a_puppy] = false 
-        @node[:snoopy][:is_a_puppy].should == false 
+        @node.default_unless[:snoopy][:is_a_puppy] = false
+        @node[:snoopy][:is_a_puppy].should == false
       end
 
       it "should not allow you to set an attribute with default_unless if it already exists" do
-        @node.default[:snoopy][:is_a_puppy] = true 
-        @node.default_unless[:snoopy][:is_a_puppy] = false 
-        @node[:snoopy][:is_a_puppy].should == true 
+        @node.default[:snoopy][:is_a_puppy] = true
+        @node.default_unless[:snoopy][:is_a_puppy] = false
+        @node[:snoopy][:is_a_puppy].should == true
       end
 
       it "auto-vivifies attributes created via method syntax" do
@@ -228,14 +229,14 @@ describe Chef::Node do
       end
 
       it "should allow you to set with override_unless without pre-declaring a hash" do
-        @node.override_unless[:snoopy][:is_a_puppy] = false 
-        @node[:snoopy][:is_a_puppy].should == false 
+        @node.override_unless[:snoopy][:is_a_puppy] = false
+        @node[:snoopy][:is_a_puppy].should == false
       end
 
       it "should not allow you to set an attribute with override_unless if it already exists" do
-        @node.override[:snoopy][:is_a_puppy] = true 
-        @node.override_unless[:snoopy][:is_a_puppy] = false 
-        @node[:snoopy][:is_a_puppy].should == true 
+        @node.override[:snoopy][:is_a_puppy] = true
+        @node.override_unless[:snoopy][:is_a_puppy] = false
+        @node[:snoopy][:is_a_puppy].should == true
       end
 
       it "auto-vivifies attributes created via method syntax" do
@@ -244,7 +245,7 @@ describe Chef::Node do
       end
 
     end
-    
+
     it "should raise an ArgumentError if you ask for an attribute that doesn't exist via method_missing" do
       lambda { @node.sunshine }.should raise_error(ArgumentError)
     end
@@ -262,7 +263,7 @@ describe Chef::Node do
       seen_attributes["canada"].should == "is a nice place"
     end
   end
-  
+
   describe "consuming json" do
 
     before do
@@ -313,7 +314,7 @@ describe Chef::Node do
       @node.consume_external_attrs(@ohai_data, {})
       @node.tags.should eql([ "radiohead" ])
     end
-    
+
     it "deep merges attributes instead of overwriting them" do
       @node.consume_external_attrs(@ohai_data, "one" => {"two" => {"three" => "four"}})
       @node.one.to_hash.should == {"two" => {"three" => "four"}}
@@ -321,14 +322,14 @@ describe Chef::Node do
       @node.consume_external_attrs(@ohai_data, "one" => {"two" => {"foo" => "bar"}})
       @node.one.to_hash.should == {"two" => {"three" => "four", "foo" => "bar"}, "abc" => "123"}
     end
-    
+
     it "gives attributes from JSON priority when deep merging" do
       @node.consume_external_attrs(@ohai_data, "one" => {"two" => {"three" => "four"}})
       @node.one.to_hash.should == {"two" => {"three" => "four"}}
       @node.consume_external_attrs(@ohai_data, "one" => {"two" => {"three" => "forty-two"}})
       @node.one.to_hash.should == {"two" => {"three" => "forty-two"}}
     end
-    
+
   end
 
   describe "preparing for a chef client run" do
@@ -391,22 +392,22 @@ describe Chef::Node do
   #   it "should have a RunList of recipes that should be applied" do
   #     @node.recipes.should be_a_kind_of(Chef::RunList)
   #   end
-  #   
+  #
   #   it "should allow you to query whether or not it has a recipe applied with recipe?" do
   #     @node.recipes << "sunrise"
   #     @node.recipe?("sunrise").should eql(true)
   #     @node.recipe?("not at home").should eql(false)
   #   end
-  # 
+  #
   #   it "should allow you to query whether or not a recipe has been applied, even if it was included" do
   #     @node.run_state[:seen_recipes]["snakes"] = true
   #     @node.recipe?("snakes").should eql(true)
   #   end
-  # 
+  #
   #   it "should return false if a recipe has not been seen" do
   #     @node.recipe?("snakes").should eql(false)
   #   end
-  #   
+  #
   #   it "should allow you to set recipes with arguments" do
   #     @node.recipes "one", "two"
   #     @node.recipe?("one").should eql(true)
@@ -454,7 +455,7 @@ describe Chef::Node do
       @node.something.should eql("else")
       @node.recipes.should == ["operations-master", "operations-monitoring"]
     end
-    
+
     it "should raise an exception if the file cannot be found or read" do
       lambda { @node.from_file("/tmp/monkeydiving") }.should raise_error(IOError)
     end
@@ -466,14 +467,14 @@ describe Chef::Node do
       @node.name.should == "test.example.com"
       @node.chef_environment.should == "dev"
     end
-    
+
     it "should load a node from a file by hostname" do
       File.stub!(:exists?).and_return(true)
       File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
       @node.find_file("test.example.com")
       @node.name.should == "test.example.com-short"
     end
-    
+
     it "should load a node from the default file" do
       File.stub!(:exists?).and_return(true)
       File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
@@ -481,7 +482,7 @@ describe Chef::Node do
       @node.find_file("test.example.com")
       @node.name.should == "test.example.com-default"
     end
-    
+
     it "should raise an ArgumentError if it cannot find any node file at all" do
       File.stub!(:exists?).and_return(true)
       File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
@@ -563,7 +564,7 @@ describe Chef::Node do
       json.should =~ /override/
       json.should =~ /run_list/
     end
-    
+
     it "should deserialize itself from json" do
       @node.find_file("test.example.com")
       json = @node.to_json
@@ -586,7 +587,7 @@ describe Chef::Node do
   end
 
   describe "api model" do
-    before(:each) do 
+    before(:each) do
       @rest = mock("Chef::REST")
       Chef::REST.stub!(:new).and_return(@rest)
       @query = mock("Chef::Search::Query")
@@ -654,12 +655,12 @@ describe Chef::Node do
       @couchdb = Chef::CouchDB.new
     end
 
-    describe "when listing Nodes" do  
-      before do
-        @couchdb.stub!(:list).and_return(
+    describe "list" do
+      before(:each) do
+        @mock_couch.stub!(:list).and_return(
           { "rows" => [ { "value" => "a", "key" => "avenue" } ] }
         )
-        Chef::CouchDB.stub!(:new).and_return(@couchdb) 
+        Chef::CouchDB.stub!(:new).and_return(@mock_couch)
       end
 
       it "should retrieve a list of nodes from CouchDB" do
