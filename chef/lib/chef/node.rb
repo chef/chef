@@ -37,11 +37,11 @@ require 'json'
 
 class Chef
   class Node
-    
+
     attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list
     attr_accessor :override_attrs, :default_attrs, :normal_attrs, :automatic_attrs
     attr_reader :couchdb_id
-    
+
     # TODO: 5/18/2010 cw/timh. cookbook_collection should be removed
     # from here and for any place it's needed, it should be accessed
     # through a Chef::RunContext
@@ -149,7 +149,7 @@ class Chef
     def initialize(couchdb=nil)
       @name = nil
 
-      @chef_environment = nil
+      @chef_environment = '_default'
       @normal_attrs = Mash.new
       @override_attrs = Mash.new
       @default_attrs = Mash.new
@@ -174,7 +174,7 @@ class Chef
       @couchdb_id = value
       @index_id = value
     end
-    
+
     # Used by DSL
     def node
       self
@@ -184,7 +184,7 @@ class Chef
       Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
-    # Find a recipe for this Chef::Node by fqdn.  Will search first for 
+    # Find a recipe for this Chef::Node by fqdn.  Will search first for
     # Chef::Config["node_path"]/fqdn.rb, then hostname.rb, then default.rb.
     #
     # Returns a new Chef::Node object.
@@ -217,28 +217,19 @@ class Chef
       end
     end
 
-    def chef_environment(arg=Chef::NIL_ARGUMENT)
-      if arg != Chef::NIL_ARGUMENT
-        if arg.nil?
-          @chef_environment = nil
-        else
-          validate(
-                   {:name => arg },
-                   {:name => { :kind_of => String,
-                       :cannot_be => :blank}
-                   })
-          @chef_environment = arg
-        end
-      else
-        @chef_environment
-      end
+    def chef_environment(arg=nil)
+      set_or_return(
+        :chef_environment,
+        arg,
+        { :regex => /^[\-[:alnum:]_]+$/, :kind_of => String }
+      )
     end
 
     # Used by the DSL
     def attribute
       construct_attributes
     end
-    
+
     def construct_attributes
       Chef::Node::Attribute.new(normal_attrs, default_attrs, override_attrs, automatic_attrs)
     end
@@ -246,7 +237,7 @@ class Chef
     def attribute=(value)
       self.normal_attrs = value
     end
-    
+
     # Return an attribute of this node.  Returns nil if the attribute is not found.
     def [](attrib)
       construct_attributes[attrib]
@@ -263,7 +254,7 @@ class Chef
 
     # Set a normal attribute of this node, but auto-vivifiy any Mashes that
     # might be missing
-    def normal 
+    def normal
       attrs = construct_attributes
       attrs.set_type = :normal
       attrs.auto_vivifiy_on_read = true
@@ -282,10 +273,10 @@ class Chef
       attrs
     end
     alias_method :set_unless, :normal_unless
-  
+
     # Set a default of this node, but auto-vivifiy any Mashes that might
     # be missing
-    def default 
+    def default
       attrs = construct_attributes
       attrs.set_type = :default
       attrs.auto_vivifiy_on_read = true
@@ -304,7 +295,7 @@ class Chef
 
     # Set an override attribute of this node, but auto-vivifiy any Mashes that
     # might be missing
-    def override 
+    def override
       attrs = construct_attributes
       attrs.set_type = :override
       attrs.auto_vivifiy_on_read = true
@@ -359,7 +350,7 @@ class Chef
 #     def recipe?(recipe_name)
 #       run_list.include?(recipe_name) || run_state[:seen_recipes].include?(recipe_name)
 #     end
-    
+
     # Returns true if this Node expects a given role, false if not.
     def role?(role_name)
       run_list.include?("role[#{role_name}]")
@@ -513,12 +504,12 @@ class Chef
       node.index_id = node.couchdb_id
       node
     end
-    
-    def self.cdb_list_by_environment(environment, inflate=false, couchdb=nil)      
+
+    def self.cdb_list_by_environment(environment, inflate=false, couchdb=nil)
       rs = (couchdb || Chef::CouchDB.new).get_view("nodes", "by_environment", :include_docs => inflate, :startkey => environment, :endkey => environment)
       inflate ? rs["rows"].collect {|r| r["doc"]} : rs["rows"].collect {|r| r["value"]}
     end
-    
+
     def self.list_by_environment(environment, inflate=false)
       if inflate
         response = Hash.new
@@ -528,7 +519,7 @@ class Chef
         Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("environments/#{environment}/nodes")
       end
     end
-    
+
     # List all the Chef::Node objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Nodes, fully inflated.
     def self.cdb_list(inflate=false, couchdb=nil)
@@ -619,11 +610,11 @@ class Chef
     def self.create_design_document(couchdb=nil)
       (couchdb || Chef::CouchDB.new).create_design_document("nodes", DESIGN_DOCUMENT)
     end
-    
+
     def to_s
       "node[#{name}]"
     end
-    
+
     # Load all attribute files for all cookbooks associated with this
     # node.
     def load_attributes
@@ -634,7 +625,7 @@ class Chef
         end
       end
     end
-    
+
     # Used by DSL.
     # Loads the attribute file specified by the short name of the
     # file, e.g., loads specified cookbook's
@@ -644,7 +635,7 @@ class Chef
     def load_attribute_by_short_filename(name, src_cookbook_name)
       src_cookbook = cookbook_collection[src_cookbook_name]
       raise Chef::Exceptions::CookbookNotFound, "could not find cookbook #{src_cookbook_name} while loading attribute #{name}" unless src_cookbook
-      
+
       attribute_filename = src_cookbook.attribute_filenames_by_short_filename[name]
       raise Chef::Exceptions::AttributeNotFound, "could not find filename for attribute #{name} in cookbook #{src_cookbook_name}" unless attribute_filename
 
