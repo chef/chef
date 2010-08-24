@@ -60,6 +60,7 @@ class Environments < Application
 
   # PUT /environments/:id
   def update
+    raise Forbidden if params[:id] == "_default"
     begin
       env = Chef::Environment.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound
@@ -75,6 +76,7 @@ class Environments < Application
 
   # DELETE /environments/:id
   def destroy
+    raise Forbidden if params[:id] == "_default"
     begin
       env = Chef::Environment.cdb_load(params[:id])
     rescue Chef::Exceptions::CouchDBNotFound
