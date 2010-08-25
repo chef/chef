@@ -28,10 +28,13 @@ class Nodes < Application
   before :require_admin, :only => [:destroy]
   
   def index
+    @environments = Chef::Environment.list.keys.sort
     begin
-      node_hash = Chef::Node.list
-      require 'pp'
-      pp node_hash
+      if params[:environment_id] 
+        node_hash = Chef::Node.list_by_environment(params[:environment_id])
+      else
+        node_hash = Chef::Node.list
+      end
       @node_list = node_hash.keys.sort
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")

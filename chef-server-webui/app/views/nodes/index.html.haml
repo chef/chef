@@ -1,6 +1,14 @@
+%script{:type=>"text/javascript", :src => "/javascripts/drop_down_menu.js"}
 .block#block-tables
   .content
-    %h2.title Node List
+    %h2.title
+      Node List
+      %select{:name => "choice", :onchange => "jump(this)", :size => "1"}
+        %option{:value => ""} Environments
+        %option{:value => ""} ------------
+        %option{:value => url(:nodes)} All
+        - @environments.each do |environment|
+          %option{:value => url(:nodes_by_environment, :environment_id => environment), :selected => params[:environment_id] == environment}= environment
     .inner
       = partial('navigation', :active => 'index')
     .content
@@ -12,7 +20,10 @@
             %th.last &nbsp;
           - even = false
           - if @node_list.empty?
-            %td{:colspan => 4}= "You appear to have no nodes - try connecting one, or creating or editing a #{link_to('client', url(:clients))}"
+            - if params[:environment_id]
+              %td{:colspan => 4}= "The environment #{params[:environment_id]} has no nodes"
+            - else
+              %td{:colspan => 4}= "You have no nodes - try connecting one, or creating or editing a #{link_to('node', url(:nodes))}"
           - else
             - @node_list.each do |node|
               %tr{:class => even ? "even": "odd" }

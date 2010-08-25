@@ -19,6 +19,8 @@
 
 Merb::Router.prepare do
   resources :nodes, :id => /[^\/]+/
+  match("/nodes/_environments/:environment_id").to(:controller => "nodes", :action => "index").name(:nodes_by_environment)
+
   resources :clients, :id => /[^\/]+/
   resources :roles
   resources :environments do |e|
