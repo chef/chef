@@ -21,6 +21,10 @@ Merb::Router.prepare do
   resources :nodes, :id => /[^\/]+/
   resources :clients, :id => /[^\/]+/
   resources :roles
+  resources :environments do |e|
+    e.match("/cookbooks").to(:contoller => "environments", :action => "list_cookbooks").name(:cookbooks)
+    e.match("/nodes").to(:controller => "environments", :action => "list_nodes").name(:nodes)
+  end
 
   match("/status").to(:controller => "status", :action => "index").name(:status)
 
