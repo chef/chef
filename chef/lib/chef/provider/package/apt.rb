@@ -41,7 +41,7 @@ class Chef
           depends = false
          
           status = shell_out!("aptitude show #{package}")
-          status.stdout.each do |line|
+          status.stdout.each_line do |line|
             case line
               when /^State: installed/
                 installed = true
