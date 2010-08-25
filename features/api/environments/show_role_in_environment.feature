@@ -4,7 +4,6 @@ Feature: Show a role in an environment via the REST API
   As a Developer
   I want to show the run list for a specific Role in a specific environment
 
-@foo
   Scenario: Show an environment specific run list and attribuets in a role
     Given I am an administrator
       And an 'environment' named 'cucumber' exists
