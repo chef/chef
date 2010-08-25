@@ -33,8 +33,18 @@ class Cookbooks < Application
   end
   
   def index
+    @environments = Chef::Environment.list.keys.sort
     @cl = begin
-            Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks")
+            if params[:environment_id]
+              result = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("environments/#{params[:environment_id]}/cookbooks")
+            else
+              result = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks/_latest")
+            end
+            result.inject({}) do |res, (cookbook, url)|
+              # get the version number from the url
+              res[cookbook] = url.split("/").last
+              res
+            end
           rescue => e
             Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
             @_message = {:error => $!}
