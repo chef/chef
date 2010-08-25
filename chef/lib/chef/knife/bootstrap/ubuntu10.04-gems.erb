@@ -8,8 +8,8 @@ if [ ! -f /usr/bin/chef-client ]; then
   cd rubygems-1.3.6
   ruby setup.rb
   cp /usr/bin/gem1.8 /usr/bin/gem
-  gem install ohai chef --no-rdoc --no-ri --verbose <%= '--prerelease' if @config[:prerelease] %>
 fi
+gem install ohai chef --no-rdoc --no-ri --verbose <%= '--prerelease' if @config[:prerelease] %>
 
 mkdir -p /etc/chef
 
