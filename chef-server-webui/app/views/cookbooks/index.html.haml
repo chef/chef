@@ -1,12 +1,22 @@
+%script{:type=>"text/javascript", :src => "/javascripts/drop_down_menu.js"}
 .block#block-tables
   .content
-    %h2.title Cookbooks
+    %h2.title
+      = Cookbooks
+      %select{:name => "choice", :onchange => "jump(this)", :size => "1"}
+        %option{:value => ""} Environments
+        %option{:value => ""} ------------
+        %option{:value => url(:cookbooks)} None
+        - @environments.each do |environment|
+          %option{:value => url(:cookbooks_by_environment, :environment_id => environment), :selected => params[:environment_id] == environment}= environment
     .inner
       %table.table
         %thead
           %tr
             %th.first Cookbook Name
+            %th.last Version
         %tbody
-          - @cl.sort.each_with_index do |cookbook, index|
-            %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-              %td= link_to cookbook[0], url(:cookbook, { :id => cookbook[0] })
+          - @cl.each do |cookbook, version|
+            %tr
+              %td= link_to cookbook, url(:show_specific_version_cookbook, :cookbook_id => cookbook, :cb_version => version)
+              %td= version
