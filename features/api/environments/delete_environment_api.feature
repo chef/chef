@@ -30,9 +30,9 @@ Feature: Delete environments via the REST API
   Scenario Outline: Delete the '_default' environment
     Given I am <user_type>
      When I 'DELETE' the path '/environments/_default'
-     Then I should get a '403 "Forbidden"' exception
+     Then I should get a '<exception_type>' exception
 
   Examples:
-    | user_type        |
-    | an administrator |
-    | a non-admin      |
+    | user_type        | exception_type           |
+    | an administrator | 405 "Method Not Allowed" |
+    | a non-admin      | 403 "Forbidden"          |

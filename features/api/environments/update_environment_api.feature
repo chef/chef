@@ -43,9 +43,9 @@ Feature: Update an environment via the REST API
     Given I am <user_type>
       And an 'environment' named 'cucumber'
      When I 'PUT' the 'environment' to the path '/environments/_default'
-     Then I should get a '403 "Forbidden"' exception
+     Then I should get a '<exception_type>' exception
   
   Examples:
-    | user_type        |
-    | an administrator |
-    | a non-admin      |
+    | user_type        | exception_type           |
+    | an administrator | 405 "Method Not Allowed" |
+    | a non-admin      | 403 "Forbidden"          |
