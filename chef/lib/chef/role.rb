@@ -111,6 +111,8 @@ class Chef
       end
       @run_list
     end
+
+    alias_method :recipes, :run_list
     
     def run_list_for_environment(environment='_default')
       if env_run_lists[environment].nil? || env_run_lists[environment].empty? || env_run_lists[environment]["run_list"].nil?
@@ -120,11 +122,14 @@ class Chef
       end
     end
 
-    alias_method :recipes, :run_list
-
     def env_run_lists(hash=nil)
       # should have btter validation, but leaving it as it is for now to make everything work first [nuo]
-      (!hash.nil? && hash.length > 0) ? @env_run_lists = hash : @env_run_lists
+      if (!hash.nil? && hash.length > 0)
+        hash.values.map!{|r| r["run_list"] = Chef::RunList.new << r["run_list"] unless r["run_list"].class == Chef::RunList}
+        @env_run_lists = hash
+      else
+        @env_run_lists
+      end
     end
 
 #     def recipes(*args)

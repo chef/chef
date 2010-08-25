@@ -26,6 +26,14 @@ Given /^a validated node$/ do
   client.node.run_list << "integration_setup"
 end
 
+Given /^a validated node in the 'cucumber' environment$/ do
+  # client should have cached ohai assigned to it
+  client.register
+  client.build_node
+  client.node.chef_environment("cucumber")
+  client.node.run_list << "integration_setup"
+end
+
 Given /^a validated node with an empty runlist$/ do
   # client should have cached ohai assigned to it
   client.register
