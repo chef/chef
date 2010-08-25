@@ -32,7 +32,6 @@ class Chef
     attr_reader   :password, :salt, :couchdb_id, :couchdb_rev
     
     include Chef::Mixin::ParamsValidate
-    include Chef::IndexQueue::Indexable
     
     DESIGN_DOCUMENT = {
       "version" => 3,
