@@ -72,7 +72,16 @@ class Environments < Application
 
   # DELETE /environments/:id
   def destroy
-    # TODO: implement this
+    begin
+      @environment = Chef::Environment.load(params[:id])
+      @environment.destroy
+      redirect(absolute_url(:environments), :message => { :notice => "Environment #{@environment.name} deleted successfully." }, :permanent => true)
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @environment_list = Chef::Environment.list()
+      @_message = {:error => "Could not delete environment #{params[:id]}: #{e.message}"}
+      render :index
+    end
   end
 
   # GET /environments/:environment_id/cookbooks
