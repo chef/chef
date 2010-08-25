@@ -20,10 +20,12 @@
 
 require 'chef/run_list/run_list_item'
 require 'chef/run_list/run_list_expansion'
+require 'chef/mixin/params_validate'
 
 class Chef
   class RunList
     include Enumerable
+    include Chef::Mixin::ParamsValidate
 
     # @run_list_items is an array of RunListItems that describe the items to 
     # execute in order. RunListItems can load from and convert to the string
@@ -38,10 +40,19 @@ class Chef
     # For backwards compat
     alias :run_list :run_list_items
 
-    def initialize
+    def initialize(environment="_default")
       @run_list_items = Array.new
+      @chef_environment = environment
     end
 
+    def chef_environment(arg=nil)
+      set_or_return(
+        :chef_environment,
+        arg,
+        { :regex => /^[\-[:alnum:]_]+$/, :kind_of => String }
+      )
+    end
+    
     def role_names
       @run_list_items.inject([]){|memo, run_list_item| memo << run_list_item.name if run_list_item.role? ; memo}
     end
@@ -123,7 +134,7 @@ class Chef
       couchdb = couchdb ? couchdb : Chef::CouchDB.new
 
       expansion = expansion_for_data_source(data_source, :couchdb => couchdb, :rest => rest)
-      expansion.expand
+      expansion.expand(@chef_environment)
       expansion
     end
 

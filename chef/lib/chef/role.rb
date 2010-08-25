@@ -108,8 +108,15 @@ class Chef
       if (args.length > 0) 
         @run_list.reset!(args) 
         @env_run_lists.merge!({"_default" => {"default_attributes"=>@default_attributes, "override_attributes"=>@override_attributes, "run_list"=>@run_list}})
+      end
+      @run_list
+    end
+    
+    def run_list_for_environment(environment='_default')
+      if env_run_lists[environment].nil? || env_run_lists[environment].empty? || env_run_lists[environment]["run_list"].nil?
+        run_list
       else
-        @run_list
+        env_run_lists[environment]["run_list"]
       end
     end
 

@@ -218,6 +218,7 @@ class Chef
     end
 
     def chef_environment(arg=nil)
+      @run_list.chef_environment(arg)
       set_or_return(
         :chef_environment,
         arg,
