@@ -22,13 +22,13 @@ require 'chef/provider/package/rpm'
 class Chef
   class Resource
     class RpmPackage < Chef::Resource::Package
-      
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :rpm_package
         @provider = Chef::Provider::Package::Rpm
       end
-      
+
     end
   end
 end
