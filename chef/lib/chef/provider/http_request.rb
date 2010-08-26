@@ -27,14 +27,30 @@ class Chef
       def load_current_resource
         @rest = Chef::REST.new(@new_resource.url, nil, nil)
       end
-      
+
+      # Send a HEAD request to @new_resource.url, with ?message=@new_resource.message
+      def action_head
+        message = check_message(@new_resource.message)
+        modified = @rest.run_request(
+          :HEAD,
+          @rest.create_url("#{@new_resource.url}?message=#{message}"),
+          @new_resource.headers,
+          false,
+          10,
+          false
+        )
+        @new_resource.updated = modified
+        Chef::Log.info("#{@new_resource} HEAD to #{@new_resource.url} successful")
+        Chef::Log.debug("#{@new_resource} HEAD request response: #{modified}")
+      end
+
       # Send a GET request to @new_resource.url, with ?message=@new_resource.message
       def action_get  
         message = check_message(@new_resource.message)
         body = @rest.run_request(
           :GET, 
           @rest.create_url("#{@new_resource.url}?message=#{message}"),
-          {},
+          @new_resource.headers,
           false,
           10,
           false
@@ -50,7 +66,7 @@ class Chef
         body = @rest.run_request(
           :PUT,
           @rest.create_url("#{@new_resource.url}"),
-          {},
+          @new_resource.headers,
           message,
           10,
           false
@@ -66,7 +82,7 @@ class Chef
         body = @rest.run_request(
           :POST,
           @rest.create_url("#{@new_resource.url}"),
-          {},
+          @new_resource.headers,
           message,
           10,
           false
@@ -81,7 +97,7 @@ class Chef
         body = @rest.run_request(
           :DELETE,
           @rest.create_url("#{@new_resource.url}"),
-          {},
+          @new_resource.headers,
           false,
           10,
           false

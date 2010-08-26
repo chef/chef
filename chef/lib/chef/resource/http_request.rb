@@ -28,6 +28,7 @@ class Chef
         @message = name
         @url = nil
         @action = :get
+        @headers = {}
         @allowed_actions.push(:get, :put, :post, :delete, :head, :options)
       end
       
@@ -44,6 +45,14 @@ class Chef
           :message,
           args,
           :kind_of => Object
+        )
+      end
+
+      def headers(args=nil)
+        set_or_return(
+          :headers,
+          args,
+          :kind_of => Hash
         )
       end
       

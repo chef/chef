@@ -172,8 +172,10 @@ class Chef
           Net::HTTP::Put.new(req_path, headers)
         when "delete"
           Net::HTTP::Delete.new(req_path, headers)
+        when "head"
+          Net::HTTP::Head.new(req_path, headers)
         else
-          raise ArgumentError, "You must provide :GET, :PUT, :POST or :DELETE as the method"
+          raise ArgumentError, "You must provide :GET, :PUT, :POST, :DELETE or :HEAD as the method"
         end
 
         @http_request.body = request_body if (request_body && @http_request.request_body_permitted?)
