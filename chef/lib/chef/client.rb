@@ -325,7 +325,7 @@ class Chef
           if directory_not_empty?(cookbook_path)
             break
           else
-            msg = "No cookbook found in #{Chef::Config[:cookbook_path].inspect}, make sure cookboook_path is set correctly."
+            msg = "No cookbook found in #{Chef::Config[:cookbook_path].inspect}, make sure cookbook_path is set correctly."
             Chef::Log.fatal(msg)
             raise Chef::Exceptions::CookbookNotFound, msg if is_last_element?(index, Chef::Config[:cookbook_path])
           end
