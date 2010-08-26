@@ -101,6 +101,7 @@ describe Chef::Provider::User::Dscl do
   describe "when determining the uid to set" do
     it "raises RequestedUIDUnavailable if the requested uid is already in use" do
       @provider.stub!(:uid_used?).and_return(true)
+      @provider.should_receive(:get_free_uid).and_return(501)
       lambda { @provider.set_uid }.should raise_error(Chef::Exceptions::RequestedUIDUnavailable)
     end
   
@@ -153,6 +154,7 @@ describe Chef::Provider::User::Dscl do
     
       FileUtils.should_receive(:mkdir_p).with('/Users/toor').and_return(true)
       FileUtils.should_receive(:rmdir).with(current_home)
+      ::Dir.should_receive(:glob).with("#{CHEF_SPEC_DATA}/old_home_dir/*",::File::FNM_DOTMATCH).and_return(current_home_files)
       FileUtils.should_receive(:mv).with(current_home_files, "/Users/toor", :force => true)
       FileUtils.should_receive(:chown_R).with('toor','23','/Users/toor')
       
