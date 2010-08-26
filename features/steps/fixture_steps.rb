@@ -185,6 +185,12 @@ Before do
         n.name 'role_not_exist'
         n.run_list << "role[not_exist]"
         n
+      end,
+      'paradise' => Proc.new do
+        n = Chef::Node.new
+        n.name 'paradise'
+        n.run_list << "version_test"
+        n
       end
     },
     'hash' => {

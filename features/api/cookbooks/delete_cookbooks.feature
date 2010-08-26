@@ -1,4 +1,4 @@
-@api @cookbooks
+@api @cookbooks @api_cookbooks_delete
 @manage_cookbook
 
 Feature: CRUD cookbooks

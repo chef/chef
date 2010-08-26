@@ -18,6 +18,15 @@ Feature: Synchronize cookbooks to the edge
       And the inflated responses key 'node_cookbook_sync' should match '"attributes":' as json
       And the inflated responses key 'node_cookbook_sync' should match 'attr_file.rb' as json
 
+  @CHEF-1607
+  Scenario: Retrieve the correct versions of cookbook files to sync, especially when they do not lexically sort
+    Given I am an administrator
+      And I upload multiple versions of the 'version_test' cookbook that do not lexically sort correctly
+      And a 'node' named 'paradise' exists
+     When I 'GET' the path '/nodes/paradise/cookbooks'
+      And the inflated responses key 'version_test' should exist
+      And the inflated responses key 'version_test' should match '"version":"0.10.0"' as json
+
   Scenario: Retrieve the list of cookbook files to synchronize with a wrong private key
     Given I am an administrator
       And a 'node' named 'sync' exists
