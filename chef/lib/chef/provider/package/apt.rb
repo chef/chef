@@ -31,44 +31,39 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
-          installed?
+          check_package_state(@new_resource.package_name)
           @current_resource
         end
 
-        def installed?(package=@new_resource.package_name)
+        def check_package_state(package)
           Chef::Log.debug("Checking package status for #{package}")
           installed = false
           depends = false
-         
-          status = shell_out!("aptitude show #{package}")
-          status.stdout.each_line do |line|
+
+          shell_out!("aptitude show #{package}").stdout.each_line do |line|
             case line
-              when /^State: installed/
-                installed = true
-              when /^Version: (.*)/
-                @candidate_version = $1
-                if installed
-                  @current_resource.version($1)
-                else
-                  @current_resource.version(nil)
-                end
-              when /Depends: (.*)$/
-                depends = $1
-              when /Provided by: ([\w\d\-\.]*)/
-                virtual_provider = $1
-                virtual_provider = depends if depends
-                Chef::Log.debug("Virtual package provided by #{virtual_provider}")
-                @virtual = true
-                installed = installed?(virtual_provider)
-                @candidate_version = virtual_provider
+            when /^State: installed/
+              installed = true
+            when /^Version: (.*)/
+              @candidate_version = $1
+              if installed
+                @current_resource.version($1)
+              else
+                @current_resource.version(nil)
+              end
+            when /Depends: (.*)$/
+              depends = $1
+            when /Provided by: ([\w\d\-\.]*)/
+              virtual_provider = $1
+              virtual_provider = depends if depends
+              Chef::Log.debug("Virtual package provided by #{virtual_provider}")
+              @virtual = true
+              installed = check_package_state(virtual_provider)
+              @candidate_version = virtual_provider
             end
           end
 
-          unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "aptitude show failed - #{status.inspect}!"
-          end
-
-          if @candidate_version == nil
+          if @candidate_version.nil?
             raise Chef::Exceptions::Package, "apt does not have a version of package #{@new_resource.package_name}"
           end
 

@@ -31,10 +31,11 @@ describe Chef::Provider::Package::Apt do
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     @provider.stub!(:popen4).and_return(@status)
     @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
-    @stdout.stub!(:each_line).and_yield("Package: irssi").
-                         and_yield("State: not installed").
-                         and_yield("Version: 0.8.12-7")
+    @stdout =<<-PKG_STATUS
+Package: irssi
+State: not installed
+Version: 0.8.12-7
+PKG_STATUS
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
     @shell_out = OpenStruct.new(:stdout => @stdout,:stdin => @stdin,:stderr => @stderr,:status => @status,:exitstatus => 0)
@@ -59,12 +60,6 @@ describe Chef::Provider::Package::Apt do
       @provider.load_current_resource
     end
 
-    it "should read stdout on aptitude show" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      @stdout.should_receive(:each_line).and_return(true)
-      @provider.load_current_resource
-    end
-
     it "should set the installed version to nil on the current resource if package state is not installed" do
       @provider.should_receive(:shell_out!).and_return(@shell_out)
       @current_resource.should_receive(:version).with(nil).and_return(true)
@@ -72,38 +67,19 @@ describe Chef::Provider::Package::Apt do
     end
 
     it "should set the installed version if package has one" do
-      @stdout.stub!(:each_line).and_yield("Package: irssi").
-                           and_yield("State: installed").
-                           and_yield("Version: 0.8.12-7")
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      @current_resource.should_receive(:version).with("0.8.12-7").and_return(true)
-      @provider.load_current_resource
-    end
-
-    it "should set the candidate version if aptitude show has one" do
-      @stdout.stub!(:each_line).and_yield("Package: irssi").
-                          and_yield("State: installed").
-                          and_yield("Version: 0.8.12-7")
+      @stdout.replace(<<-INSTALLED)
+Package: irssi
+State: installed
+Version: 0.8.12-7
+INSTALLED
       @provider.should_receive(:shell_out!).and_return(@shell_out)
       @provider.load_current_resource
+      @current_resource.version.should == "0.8.12-7"
       @provider.candidate_version.should eql("0.8.12-7")
     end
 
-    it "should raise an exception if aptitude show fails" do
-      @shell_out.should_receive(:exitstatus).and_return(1)
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
-    end
-
-    it "should not raise an exception if aptitude show succeeds" do
-      @shell_out.should_receive(:exitstatus).and_return(0)
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Package)
-    end
-
     it "should raise an exception if aptitude show does not return a candidate version" do
-      @stdout.stub!(:each_line).and_yield("E: Unable to locate package magic")
-      @shell_out.should_receive(:exitstatus).and_return(255)
+      @stdout.replace("E: Unable to locate package magic")
       @provider.should_receive(:shell_out!).and_return(@shell_out)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
@@ -115,17 +91,20 @@ describe Chef::Provider::Package::Apt do
 
     it "should set candidate version to new package name if virtual package" do
       @new_resource.package_name("libmysqlclient-dev")
-      virtual_package_out=mock("STDOUT", :null_object => true)
-      virtual_package_out.stub!(:each_line).and_yield("No current or candidate version found for libmysqlclient-dev").
-                                       and_yield("Package: libmysqlclient-dev").
-                                       and_yield("State: not a real package").
-                                       and_yield("Provided by: libmysqlclient15-dev")
+      virtual_package_out=<<-VPKG_STDOUT
+"No current or candidate version found for libmysqlclient-dev").
+Package: libmysqlclient-dev
+State: not a real package
+Provided by: libmysqlclient15-dev
+VPKG_STDOUT
       virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient-dev").and_return(virtual_package)
       real_package_out=mock("STDOUT", :null_object => true)
-      real_package_out.stub!(:each_line).and_yield("Package: libmysqlclient15-dev").
-                                    and_yield("State: not installed").
-                                    and_yield("Version: 5.0.51a-24+lenny4")
+      real_package_out =<<-REALPKG_STDOUT
+Package: libmysqlclient15-dev
+State: not installed
+Version: 5.0.51a-24+lenny4
+REALPKG_STDOUT
       real_package = mock(:stdout => real_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient15-dev").and_return(real_package)
       @provider.load_current_resource
@@ -134,22 +113,24 @@ describe Chef::Provider::Package::Apt do
 
     it "should set candidate version to the depends package name if multiple virtual package providers" do
       @new_resource.package_name("mysql-client")
-      virtual_package_out=mock("STDOUT", :null_object => true)
-      virtual_package_out.stub!(:each_line).and_yield("Package: mysql-client").
-                                       and_yield("State: not installed").
-                                       and_yield("Version: 5.1.41-3ubuntu12.6").
-                                       and_yield("Depends: mysql-client-5.1").
-                                       and_yield("Provided by: mysql-cluster-client-5.1, mysql-client-5.1").
-                                       and_yield("Description: MySQL database client (metapackage depending on the latest version)")
+      virtual_package_out=<<-VPKG_STDOUT
+Package: mysql-client
+State: not installed
+Version: 5.1.41-3ubuntu12.6
+Depends: mysql-client-5.1
+Provided by: mysql-cluster-client-5.1, mysql-client-5.1
+Description: MySQL database client (metapackage depending on the latest version)
+VPKG_STDOUT
       virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("aptitude show mysql-client").and_return(virtual_package)
-      real_package_out=mock("STDOUT", :null_object => true)
-      real_package_out.stub!(:each_line).and_yield("Package: mysql-client-5.1").
-                                    and_yield("State: not installed").
-                                    and_yield("Version: Version: 5.1.41-3ubuntu12.6").
-                                    and_yield("Conflicts: mysql-client (< 5.1.41-3ubuntu12.6), mysql-client-5.0").
-                                    and_yield("Replaces: mysql-client (< 5.1.41-3ubuntu12.6), mysql-client-5.0").
-                                    and_yield("Provides: mysql-client, mysql-client-4.1, virtual-mysql-client")
+      real_package_out=<<-REALPKG_STDOUT
+Package: mysql-client-5.1
+State: not installed
+Version: Version: 5.1.41-3ubuntu12.6
+Conflicts: mysql-client (< 5.1.41-3ubuntu12.6), mysql-client-5.0
+Replaces: mysql-client (< 5.1.41-3ubuntu12.6), mysql-client-5.0
+Provides: mysql-client, mysql-client-4.1, virtual-mysql-client
+REALPKG_STDOUT
       real_package = mock(:stdout => real_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("aptitude show mysql-client-5.1").and_return(real_package)
       @provider.load_current_resource
