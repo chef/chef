@@ -63,6 +63,14 @@ describe Chef::Provider::Mount::Mount do
       ::File.stub!(:exists?).with("/dev/sdz1").and_return false
       lambda { @provider.load_current_resource();@provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
     end
+
+    it "should not call mountable? with load_current_resource - CHEF-1565" do
+      ::File.stub!(:exists?).with("/dev/sdz1").and_return false
+      @provider.should_receive(:mounted?).and_return(true)
+      @provider.should_receive(:enabled?).and_return(true)
+      @provider.should_not_receive(:mountable?)
+      @provider.load_current_resource
+    end
     
     it "should raise an error if the mount device (uuid) does not exist" do
       @new_resource.device_type :uuid
