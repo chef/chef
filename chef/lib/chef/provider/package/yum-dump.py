@@ -60,8 +60,11 @@ try:
     # Yum assumes it can update the cache directory. Disable this for non root 
     # users.
     y.conf.cache = os.geteuid() != 0
-    
-     # Spin up to lock_timeout.
+
+    # Override any setting in yum.conf - we only care about the newest
+    y.conf.showdupesfromrepos = False
+
+    # Spin up to lock_timeout.
     countdown = lock_timeout
     while True:
       try:
