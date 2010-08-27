@@ -30,8 +30,11 @@ class Chef
       
       def load_current_resource
         @current_resource = Chef::Resource::Subversion.new(@new_resource.name)
-        if current_revision = find_current_revision
-          @current_resource.revision current_revision
+
+        unless [:export, :force_export].include?(@new_resource.action.first)
+          if current_revision = find_current_revision
+            @current_resource.revision current_revision
+          end
         end
       end
       
@@ -46,7 +49,7 @@ class Chef
       end
       
       def action_force_export
-        run_command(run_options(:command => export_command(:force => true)))
+        run_command(run_options(:command => export_command))
         @new_resource.updated = true
       end
       
@@ -70,9 +73,9 @@ class Chef
             "-r#{revision_int}", @new_resource.repository, @new_resource.destination
       end
       
-      def export_command(opts={})
+      def export_command
         Chef::Log.info "exporting #{@new_resource.repository} at revision #{@new_resource.revision} to #{@new_resource.destination}"
-        args = opts[:force] ? ["--force"] : []
+        args = ["--force"]
         args << @new_resource.svn_arguments << verbose << authentication <<
             "-r#{revision_int}" << @new_resource.repository << @new_resource.destination
         scm :export, *args
