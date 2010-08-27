@@ -151,7 +151,8 @@ class Chef
             :default => {
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Solaris,
-              :cron => Chef::Provider::Cron::Solaris
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
             }
           },
           :default  => {
