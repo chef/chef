@@ -31,7 +31,7 @@ class Chef
         require 'net/ssh/multi'
       end
 
-      banner "knife bootstrap FQDN [RUN LIST...] (options)"
+      banner "knife bootstrap FQDN (options)"
 
       option :ssh_user,
         :short => "-x USERNAME",
