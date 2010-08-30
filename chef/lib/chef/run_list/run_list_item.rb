@@ -18,7 +18,7 @@
 class Chef
   class RunList
     class RunListItem
-      QUALIFIED_RECIPE = %r{^recipe\[([^\],]+)(,([0-9]+(\.[0-9]+){1,2}))?\]$}
+      QUALIFIED_RECIPE = %r{^recipe\[([^\]@]+)(@([0-9]+(\.[0-9]+){1,2}))?\]$}
       QUALIFIED_ROLE   = %r{^role\[([^\]]+)\]$}
 
       attr_reader :name, :type, :version
@@ -52,7 +52,7 @@ class Chef
       end
 
       def to_s
-        "#{@type}[#{@name}#{@version ? ",#{@version}" :""}]"
+        "#{@type}[#{@name}#{@version ? "@#{@version}" :""}]"
       end
 
       def role?
