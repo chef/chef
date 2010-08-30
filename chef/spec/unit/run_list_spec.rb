@@ -51,8 +51,8 @@ describe Chef::RunList do
     end
 
     it "should allow two versions of a recipe" do
-      @run_list << "recipe[needy,0.2.0]"
-      @run_list << "recipe[needy,0.1.0]"
+      @run_list << "recipe[needy@0.2.0]"
+      @run_list << "recipe[needy@0.1.0]"
       @run_list.run_list.length.should == 2
       @run_list.recipes.length.should == 2
       @run_list.recipes.include?('needy').should == true
@@ -60,8 +60,8 @@ describe Chef::RunList do
     
 
     it "should not allow duplicate versions of a recipe" do
-      @run_list << "recipe[needy,0.2.0]"
-      @run_list << "recipe[needy,0.2.0]"
+      @run_list << "recipe[needy@0.2.0]"
+      @run_list << "recipe[needy@0.2.0]"
       @run_list.run_list.length.should == 1
       @run_list.recipes.length.should == 1
     end

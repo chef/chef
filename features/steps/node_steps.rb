@@ -49,7 +49,7 @@ end
 
 Given /^it includes the recipe '([^\']+)' at version '([^\']+)'$/ do |recipe, version|
   self.recipe = "recipe[#{recipe},#{version}]"
-  client.node.run_list << "recipe[#{recipe},#{version}]"
+  client.node.run_list << "recipe[#{recipe}@#{version}]"
   client.node.save
 end
 
