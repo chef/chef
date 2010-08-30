@@ -76,9 +76,9 @@ class Chef
         :default => []
 
       option :vpc_mode,
-        :short => "-V {TRUE/FALSE}",
-        :long => "--vpc-mode {TRUE/FALSE}",
+        :long => "--vpc",
         :description => "Are we running a Virtual Private Cloud node?",
+        :boolean => true,
         :default => false
 
       def h
