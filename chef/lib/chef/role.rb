@@ -123,9 +123,18 @@ class Chef
     end
 
     def env_run_lists(hash=nil)
-      # should have btter validation, but leaving it as it is for now to make everything work first [nuo]
+      # TODO: should have btter validation, but leaving it as it is for now to make everything work first [nuo]
       if (!hash.nil? && hash.length > 0)
-        hash.values.map!{|r| r["run_list"] = Chef::RunList.new << r["run_list"] unless r["run_list"].class == Chef::RunList}
+        hash.each do |k,v|
+          rl = v["run_list"]
+          unless rl.nil? || rl.empty?
+            if rl.class == Chef::RunList
+              rl.chef_environment(k) if rl.chef_environment != k
+            else
+              rl = Chef::RunList.new(k) << rl
+            end  
+          end
+        end
         @env_run_lists = hash
       else
         @env_run_lists
