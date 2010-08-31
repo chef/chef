@@ -97,7 +97,7 @@ Before do
         r = Chef::Role.new
         r.name "webserver"
         r.description "monkey"
-        r.env_run_lists({"cucumber" => {"default_attributes" => {}, "override_attributes" => {}, "run_list" => Chef::RunList.new << "role[db]"}})
+        r.env_run_lists({"cucumber" => {"default_attributes" => {}, "override_attributes" => {}, "run_list" => "role[db]"}})
         r.run_list("role[webserver]", "role[base]")
         r.default_attributes({ 'a' => 'b' })
         r.override_attributes({ 'c' => 'd' })
