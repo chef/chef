@@ -38,6 +38,12 @@ class Chef
         :description => "A colon-separated path to look for cookbooks in",
         :proc => lambda { |o| o.split(":") }
 
+      option :branch,
+        :short => "-B BRANCH",
+        :long => "--branch BRANCH",
+        :description => "Default branch to work with",
+        :default => "master"
+
       def run
         if config[:cookbook_path]
           Chef::Config[:cookbook_path] = config[:cookbook_path]
@@ -61,8 +67,8 @@ class Chef
         download.name_args = name_args
         download.run
 
-        Chef::Log.info("Checking out the master branch.")
-        Chef::Mixin::Command.run_command(:command => "git checkout master", :cwd => vendor_path) 
+        Chef::Log.info("Checking out the #{branch} branch.")
+        Chef::Mixin::Command.run_command(:command => "git checkout #{branch}", :cwd => vendor_path) 
         Chef::Log.info("Checking the status of the vendor branch.")
         status, branch_output, branch_error = Chef::Mixin::Command.output_of_command("git branch --no-color | grep #{branch_name}", :cwd => vendor_path) 
         if branch_output =~ /#{Regexp.escape(branch_name)}$/m
@@ -85,17 +91,17 @@ class Chef
         begin
           Chef::Mixin::Command.run_command(:command => "git commit -a -m 'Import #{name_args[0]} version #{download.version}'", :cwd => vendor_path)
         rescue Chef::Exceptions::Exec => e
-          Chef::Log.warn("Checking out the master branch.")
+          Chef::Log.warn("Checking out the #{branch} branch.")
           Chef::Log.warn("No changes from current vendor #{name_args[0]}")
-          Chef::Mixin::Command.run_command(:command => "git checkout master", :cwd => vendor_path) 
+          Chef::Mixin::Command.run_command(:command => "git checkout #{branch}", :cwd => vendor_path) 
           changes = false
         end
 
         if changes
           Chef::Log.info("Creating tag chef-vendor-#{name_args[0]}-#{download.version}.")
           Chef::Mixin::Command.run_command(:command => "git tag -f chef-vendor-#{name_args[0]}-#{download.version}", :cwd => vendor_path)
-          Chef::Log.info("Checking out the master branch.")
-          Chef::Mixin::Command.run_command(:command => "git checkout master", :cwd => vendor_path)
+          Chef::Log.info("Checking out the #{branch} branch.")
+          Chef::Mixin::Command.run_command(:command => "git checkout #{branch}", :cwd => vendor_path)
           Chef::Log.info("Merging changes from #{name_args[0]} version #{download.version}.")
 
           Dir.chdir(vendor_path) do
