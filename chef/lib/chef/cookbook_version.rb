@@ -823,6 +823,11 @@ class Chef
       @index_id = value
     end
 
+    def <=>(o)
+      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != o.name
+      Gem::Version.new(self.version) <=> Gem::Version.new(o.version)
+    end
+
     private
     
     # For each filename, produce a mapping of base filename (i.e. recipe name

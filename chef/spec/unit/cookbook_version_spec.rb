@@ -263,5 +263,23 @@ describe Chef::CookbookVersion do
 
   end
 
+  describe "<=>" do
+    it "should sort based on the version number" do
+      one = Chef::CookbookVersion.new("apt")
+      one.version = "1.0"
+      two = Chef::CookbookVersion.new("apt")
+      two.version = "2.0"
+      (one <=> two).should == -1
+      (two <=> one).should == 1
+    end
+
+    it "should not allow you to sort cookbooks with different names" do
+      apt = Chef::CookbookVersion.new "apt"
+      apt.version = "1.0"
+      god = Chef::CookbookVersion.new "god"
+      god.version = "2.0"
+      lambda {apt <=> god}.should raise_error(Chef::Exceptions::CookbookVersionNameMismatch)
+    end
+  end
 
 end

@@ -210,6 +210,13 @@ class Chef
       (couchdb || Chef::CouchDB.new).create_design_document("environments", DESIGN_DOCUMENT)
     end
 
+    # Loads the set of Chef::CookbookVersion objects available to a given environment
+    # === Returns
+    # Hash
+    # i.e.
+    # {
+    #   "coobook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted lowest to highest
+    # }
     def self.cdb_load_filtered_cookbook_versions(name, couchdb=nil)
       cvs = begin
               Chef::Environment.cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Gem::Requirement.new(v); res}
@@ -217,14 +224,16 @@ class Chef
               raise e
             end
 
-      # inject all cookbooks into the hash while filtering out restricted versions
-      Chef::CookbookVersion.cdb_list(true, couchdb).inject({}) do |res, cookbook|
+      # inject all cookbooks into the hash while filtering out restricted versions, then sort the individual arrays
+      Chef::CookbookVersion.cdb_list(true, couchdb).inject({}) {|res, cookbook|
         version               = Gem::Version.new(cookbook.version)
         requirement_satisfied = cvs.has_key?(cookbook.name) ? cvs[cookbook.name].satisfied_by?(version) : true
-        newest_version        = res.has_key?(cookbook.name) ? version > Gem::Version.new(res[cookbook.name].version) : true
-        res[cookbook.name]    = cookbook if requirement_satisfied && newest_version
+        res[cookbook.name]    = (res[cookbook.name] || []) << cookbook if requirement_satisfied
         res
-      end
+      }.inject({}) {|res, (cookbook_name, versions)|
+        res[cookbook_name] = versions.sort
+        res
+      }
     end
 
     def to_s
