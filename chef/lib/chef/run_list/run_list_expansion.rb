@@ -53,7 +53,7 @@ class Chef
         @default_attrs = Mash.new
         @override_attrs = Mash.new
 
-        @recipes = []
+        @recipes = Chef::RunList::VersionedRecipeList.new
 
         @applied_roles = {}
       end
@@ -71,7 +71,7 @@ class Chef
         @run_list_items.each_with_index do |entry, index|
           case entry.type
           when :recipe
-            recipes << entry.name unless recipes.include?(entry.name)
+            recipes.add_recipe entry.name, entry.version
           when :role
             if role = inflate_role(entry.name)
               apply_role_attributes(role)
