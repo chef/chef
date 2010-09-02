@@ -27,3 +27,9 @@ Feature: Show a role via the REST API
       And a 'role' named 'webserver' exists
      When I 'GET' the path '/roles/webserver/environments/_default'
      Then the inflated response should respond to 'run_list' with 'role[webserver], role[base]'
+
+  Scenario: List environments in the role
+    Given I am an administrator
+      And a 'role' named 'webserver' exists
+     When I 'GET' the path '/roles/webserver/environments'
+     Then the inflated response should include 'cucumber'
