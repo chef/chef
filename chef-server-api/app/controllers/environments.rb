@@ -93,7 +93,14 @@ class Environments < Application
     rescue Chef::Exceptions::CouchDBNotFound
       raise NotFound, "Cannot load environment #{params[:environment_id]}"
     end
-    display(filtered_cookbooks.inject({}) {|res, (k,v)| res[v.name] = absolute_url(:cookbook_version, :cookbook_name=>v.name, :cookbook_version=>v.version); res})
+    display(filtered_cookbooks.inject({}) {|res, (cookbook_name,versions)|
+      # TODO:
+      # For now, we are only displaying the last cookbook in the sorted list (the newest version).
+      # We should display every cookbook version that is available in a given environment
+      # [stephen 9/2/10]
+      res[cookbook_name] = absolute_url(:cookbook_version, :cookbook_name=>cookbook_name, :cookbook_version=>versions.last.version)
+      res
+    })
   end
 
   # GET /environments/:environment_id/nodes

@@ -248,9 +248,9 @@ describe Chef::Environment do
 
     it "should restrict the cookbook versions, as specified in the environment" do
       res = Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
-      res["apt"].version.should == "1.0.0"
-      res["apache2"].version.should == "2.0.0"
-      res["god"].version.should == "4.2.0"
+      res["apt"].detect {|cb| cb.version == "1.0.0"}.should_not == nil
+      res["apache2"].detect {|cb| cb.version == "2.0.0"}.should_not == nil
+      res["god"].detect {|cb| cb.version == "4.2.0"}.should_not == nil
     end
 
     it "should produce correct results, regardless of the cookbook order in couch" do
@@ -263,9 +263,16 @@ describe Chef::Environment do
         cv
       end
       res = Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
-      res["apt"].version.should == "1.0.0"
-      res["apache2"].version.should == "2.0.0"
-      res["god"].version.should == "4.2.0"
+      res["apt"].detect {|cb| cb.version == "1.0.0"}.should_not == nil
+      res["apache2"].detect {|cb| cb.version == "2.0.0"}.should_not == nil
+      res["god"].detect {|cb| cb.version == "4.2.0"}.should_not == nil
+    end
+
+    it "should return all versions of a cookbook that meet the version requirement" do
+      @environment.cookbook "apt", ">= 1.0.0"
+      res = Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
+      res["apt"].detect {|cb| cb.version == "1.0.0"}.should_not == nil
+      res["apt"].detect {|cb| cb.version == "1.1.0"}.should_not == nil
     end
   end
 
