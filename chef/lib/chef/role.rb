@@ -126,12 +126,11 @@ class Chef
       # TODO: should have btter validation, but leaving it as it is for now to make everything work first [nuo]
       if (!hash.nil? && hash.length > 0)
         hash.each do |k,v|
-          rl = v["run_list"]
-          unless rl.nil? || rl.empty?
-            if rl.class == Chef::RunList
-              rl.chef_environment(k) if rl.chef_environment != k
+          unless v["run_list"].nil? || v["run_list"].empty?
+            if v["run_list"].class == Chef::RunList
+              v["run_list"].chef_environment(k) if v["run_list"].chef_environment != k
             else
-              rl = Chef::RunList.new(k) << rl
+              v["run_list"] = Chef::RunList.new(k) << v["run_list"]
             end  
           end
         end
