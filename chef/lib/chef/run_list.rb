@@ -20,6 +20,7 @@
 
 require 'chef/run_list/run_list_item'
 require 'chef/run_list/run_list_expansion'
+require 'chef/run_list/versioned_recipe_list'
 require 'chef/mixin/params_validate'
 
 class Chef
