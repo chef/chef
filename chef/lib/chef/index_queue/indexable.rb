@@ -56,6 +56,7 @@ class Chef
         with_metadata["id"]       ||= self.index_id
         with_metadata["database"] ||= Chef::Config[:couchdb_database]
         with_metadata["item"]     ||= self.to_hash
+        with_metadata["enqueued_at"] ||= Time.now.utc.to_i
 
         raise ArgumentError, "Type, Id, or Database missing in index operation: #{with_metadata.inspect}" if (with_metadata["id"].nil? or with_metadata["type"].nil?)
         with_metadata        
@@ -63,12 +64,20 @@ class Chef
       
       def add_to_index(metadata={})
         Chef::Log.debug("pushing item to index queue for addition: #{self.with_indexer_metadata(metadata)}")
-        AmqpClient.instance.send_action(:add, self.with_indexer_metadata(metadata))
+        object_with_metadata = with_indexer_metadata(metadata)
+        obj_id = object_with_metadata["id"]
+        AmqpClient.instance.queue_for_object(obj_id) do |queue|
+          queue.publish({:action => :add, :payload => self.with_indexer_metadata(metadata)}.to_json)
+        end
       end
 
       def delete_from_index(metadata={})
         Chef::Log.debug("pushing item to index queue for deletion: #{self.with_indexer_metadata(metadata)}")
-        AmqpClient.instance.send_action(:delete, self.with_indexer_metadata(metadata))
+        object_with_metadata = with_indexer_metadata(metadata)
+        obj_id = object_with_metadata["id"]
+        AmqpClient.instance.queue_for_object(obj_id) do |queue|
+          queue.publish({:action => :delete, :payload => self.with_indexer_metadata(metadata)}.to_json)
+        end
       end
       
     end
