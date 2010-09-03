@@ -19,6 +19,8 @@
 class Chef
   module IndexQueue
     class AmqpClient
+      VNODES = 1024
+
       include Singleton
 
       def initialize
@@ -72,13 +74,21 @@ class Chef
         reset!
       end
 
-      def send_action(action, data)
+      def queue_for_object(obj_id)
+        vnode_tag = UUIDTools::UUID.parse(obj_id).to_i % VNODES
+        queue = amqp_client.queue("vnode-#{vnode_tag}")
+        retries = 0
         begin
-          exchange.publish({"action" => action.to_s, "payload" => data}.to_json)
-        rescue Bunny::ServerDownError, Bunny::ConnectionError, Errno::ECONNRESET => e
-          Chef::Log.error("Disconnected from the AMQP Broker, cannot queue data to the indexer")
+          yield queue
+        rescue Bunny::ServerDownError, Bunny::ConnectionError, Errno::ECONNRESET
           disconnected!
-          raise e
+          if (retries += 1) < 2
+            Chef::Log.info("Attempting to reconnect to the AMQP broker")
+            retry
+          else
+            Chef::Log.fatal("Could not re-connect to the AMQP broker, giving up")
+            raise
+          end
         end
       end
 
