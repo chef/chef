@@ -19,6 +19,8 @@
 class Chef
   module IndexQueue
     class AmqpClient
+      VNODES = 1024
+
       include Singleton
 
       def initialize
@@ -73,10 +75,12 @@ class Chef
         reset!
       end
 
-      def send_action(action, data)
+      def queue_for_object(obj_id)
+        vnode_tag = UUIDTools::UUID.parse(obj_id).to_i % VNODES
+        queue = amqp_client.queue("vnode-#{vnode_tag}")
         retries = 0
         begin
-          exchange.publish({"action" => action.to_s, "payload" => data}.to_json)
+          yield queue
         rescue Bunny::ServerDownError, Bunny::ConnectionError, Errno::ECONNRESET
           disconnected!
           if (retries += 1) < 2
