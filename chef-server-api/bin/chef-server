@@ -79,4 +79,13 @@ end
 Chef::Log.init(Chef::Config[:log_location])
 Chef::Log.level = Chef::Config[:log_level]
 
-Merb.start
+begin
+  Merb.start
+rescue RuntimeError => e
+  if e.message =~ /no acceptor/
+    Chef::Log.fatal("Another process is already listening on port #{Merb::Config[:port]}. Is chef-server already running?")
+    exit 127
+  else
+    raise
+  end
+end
