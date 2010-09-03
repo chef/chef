@@ -98,8 +98,8 @@ class Chef
 
           if config[:identity_file]
             session.use item, :keys => File.expand_path(config[:identity_file])
-          elsif config[:password]
-            session.use item, :password => config[:password]
+          elsif config[:ssh_password]
+            session.use item, :password => config[:ssh_password]
           else
             session.use item
           end
