@@ -57,7 +57,9 @@ stop_server() {
 
 reload_server() {
   stop_server
+  [ -n "$DIETIME" ] && sleep $DIETIME
   start_server
+  [ -n "$STARTTIME" ] && sleep $STARTTIME
 }
 
 case "$1" in
@@ -69,7 +71,7 @@ case "$1" in
         exit 0
     fi
     if start_server ; then
-        sleep 1
+        [ -n "$STARTTIME" ] && sleep $STARTTIME # Wait some time
         if  running ;  then
             log_end_msg 0
         else
