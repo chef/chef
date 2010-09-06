@@ -127,11 +127,7 @@ class Chef
       if (!hash.nil? && hash.length > 0)
         hash.each do |k,v|
           unless v["run_list"].nil? || v["run_list"].empty?
-            if v["run_list"].class == Chef::RunList
-              v["run_list"].chef_environment(k) if v["run_list"].chef_environment != k
-            else
-              v["run_list"] = Chef::RunList.new(k) << v["run_list"]
-            end  
+            v["run_list"] = Chef::RunList.new(k).reset!(v["run_list"])
           end
         end
         @env_run_lists = hash
