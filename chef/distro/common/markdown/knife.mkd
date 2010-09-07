@@ -538,9 +538,19 @@ Show a specific role.
 
 The next sections describe sub-commands to work with various Cloud Computing APIs to launch server instances with validation and run-time configuration that Chef knows about. These sub-commands require the fog Ruby library. On Debian and Ubuntu systems with Opscode's apt repository (apt.opscode.com), this is the package `libfog-ruby`. It is also available as a RubyGem, `fog`.
 
-The Rackspace and Terremark server creation sub-commands are at an early stage of development. They do not yet use the `bootstrap` sub-command to install Chef, and make a few assumptions to be aware. Right now when creating instances of these types, knife will assume an Ubuntu image, install Ruby from packages, RubyGems from source and Chef as a RubyGem. As these commands are developed further, they will utilize the `bootstrap` sub-command.
+The Blue Box, Rackspace and Terremark server creation sub-commands are at an early stage of development. They do not yet use the `bootstrap` sub-command to install Chef, and make a few assumptions to be aware. Right now when creating instances of these types, knife will assume an Ubuntu image, install Ruby from packages, RubyGems from source and Chef as a RubyGem. As these commands are developed further, they will utilize the `bootstrap` sub-command.
 
 In order to use knife with the various __CLOUD COMPUTING SUB-COMMANDS__, credentials need to be added to the configuration file. See __CONFIGURATION__.
+
+## BLUE BOX SUB-COMMANDS
+
+__bluebox server create [RUN LIST...]__ _(options)_
+
+__bluebox server delete BLOCK-HOSTNAME 
+
+__bluebox server list
+
+__bluebox images list
 
 ## EC2 SUB-COMMANDS
 
