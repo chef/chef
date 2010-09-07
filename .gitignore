@@ -28,3 +28,4 @@ erl_crash.dump
 .idea
 features/data/repo/checksums/
 *.rbc
+.rvmrc
