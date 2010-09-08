@@ -3,12 +3,6 @@
   .content
     %h2.title
       Cookbooks
-      %select{:name => "choice", :onchange => "jump(this)", :size => "1"}
-        %option{:value => ""} Environments
-        %option{:value => ""} ------------
-        %option{:value => url(:cookbooks)} None
-        - @environments.each do |environment|
-          %option{:value => url(:cookbooks_by_environment, :environment_id => environment), :selected => params[:environment_id] == environment}= environment
     .inner
       %table.table
         %thead

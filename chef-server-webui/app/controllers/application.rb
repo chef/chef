@@ -48,7 +48,7 @@ class Application < Merb::Controller
   end
 
   def cleanup_session
-    [:user,:level].each { |n| session.delete(n) }
+    [:user,:level, :environment].each { |n| session.delete(n) }
   end
 
   def logout_and_redirect_to_login

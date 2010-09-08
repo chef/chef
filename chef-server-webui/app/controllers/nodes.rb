@@ -28,10 +28,9 @@ class Nodes < Application
   before :require_admin, :only => [:destroy]
   
   def index
-    @environments = Chef::Environment.list.keys.sort
     begin
-      if params[:environment_id] 
-        node_hash = Chef::Node.list_by_environment(params[:environment_id])
+      if session[:environment]
+        node_hash = Chef::Node.list_by_environment(session[:environment])
       else
         node_hash = Chef::Node.list
       end
