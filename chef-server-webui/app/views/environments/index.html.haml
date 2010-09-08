@@ -15,6 +15,11 @@
             %tr{ :class => even ? "even" : "odd" }
               %td{:colspan => 2}= link_to(env[0], url(:environment, env[0]))
               %td
+                - if session[:environment] != env[0]
+                  = link_to('Select', url(:environment_select, env[0]))
+                - else
+                  Select
+                |
                 = link_to('Edit', url(:edit_environment, env[0])) 
                 |
                 = link_to('Delete', url(:environment, env[0]), :method => "delete", :confirm => "Really delete Environment #{env[0]}?  there is no undo.")

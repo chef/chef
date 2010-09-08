@@ -118,4 +118,16 @@ class Environments < Application
     render
   end
 
+  # GET /environments/:environment_id/set
+  def select_environment
+    name = params[:environment_id]
+    referer = request.referer || "/nodes"
+    if name == '_none'
+      session[:environment] = nil
+    else
+      # TODO: check if environment exists
+      session[:environment] = name
+    end
+    redirect referer
+  end
 end

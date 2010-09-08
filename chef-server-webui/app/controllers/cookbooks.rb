@@ -33,10 +33,9 @@ class Cookbooks < Application
   end
   
   def index
-    @environments = Chef::Environment.list.keys.sort
     @cl = begin
-            if params[:environment_id]
-              result = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("environments/#{params[:environment_id]}/cookbooks")
+            if session[:environment]
+              result = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("environments/#{session[:environment]}/cookbooks")
             else
               result = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks/_latest")
             end
