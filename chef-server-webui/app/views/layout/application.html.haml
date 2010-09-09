@@ -35,9 +35,9 @@
           .clear
         #main-navigation
           %ul
+            %li= link_to "Environments", url(:environments)
             %li= link_to "Search", url(:searches)
             %li= link_to "Status", url(:status)
-            %li= link_to "Environments", url(:environments)
             %li= link_to "Roles", url(:roles)
             %li= link_to "Nodes", url(:nodes)
             %li= link_to "Cookbooks", url(:cookbooks)
