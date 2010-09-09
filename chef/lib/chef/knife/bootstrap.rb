@@ -135,7 +135,7 @@ class Chef
         ssh = Chef::Knife::Ssh.new
         ssh.name_args = [ config[:server_name], command ]
         ssh.config[:ssh_user] = config[:ssh_user] 
-        ssh.config[:password] = config[:ssh_password]
+        ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
 
@@ -148,8 +148,10 @@ class Chef
             ssh.name_args = [ config[:server_name], command ]
             ssh.config[:ssh_user] = config[:ssh_user] 
             ssh.config[:manual] = true
-            ssh.config[:password] = ssh.get_password
+            ssh.config[:ssh_password] = ssh.get_password
             ssh.run
+          else
+            raise $!
           end
         end
       end
