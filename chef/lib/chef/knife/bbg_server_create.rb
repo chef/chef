@@ -78,11 +78,12 @@ class Chef
         $stdout.sync = true
 
         puts "Instantiating box #{h.color(server_name, :bold)}"
+        puts "\nUsing key: #{Chef::Config[:knife][:ssh_key]}"
         box = bbg.servers.new(:flavor_id => Chef::Config[:knife][:product], 
                               :image_id => Chef::Config[:knife][:template],
                               :ssh_key => Chef::Config[:knife][:ssh_key])
                               
-        puts "\nProvisioning at BlueBox"
+        puts "\nProvisioning at BlueBox:"
         box.save
 
         puts "\nBootstrapping #{h.color(server_name, :bold)}..."
