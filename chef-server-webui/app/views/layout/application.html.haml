@@ -10,13 +10,21 @@
     = js_include_tag "jquery-ui-1.7.1.custom.min"
     = js_include_tag "jquery.treeTable.min"
     = js_include_tag "chef"
+    = js_include_tag "drop_down_menu"
 
     = catch_content :header_content
         
   %body
     #container
       #header
-        %h1= link_to "Chef Server", url(:top)
+        %h1
+          = link_to "Chef Server", url(:top)
+          %select{:name => 'select_environment', :onchange => 'jump(this)', :size => 1}
+            %option{:value => ""} Environments
+            %option{:value => ""} ------------
+            %option{:value => url(:environment_select, :environment_id => '_none')} None
+            - @org_environments.each do |env|
+              %option{:value => url(:environment_select, :environment_id => env)}= env
         #user-navigation
           %ul
             - if session[:user]
