@@ -135,7 +135,7 @@ EOH
           Net::SSH.start(public_ip, "deploy") do |ssh|
             # capture all stderr and stdout output from a remote process
             puts "Beginning bootstrap..."
-            ssh.exec!(command)
+            ssh.exec!("sudo " + command)
           end
         rescue Errno::ETIMEDOUT
           puts "Timed out on bootstrap, re-trying. Hit CTRL-C to abort."
