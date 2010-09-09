@@ -19,10 +19,9 @@
       #header
         %h1
           = link_to "Chef Server", url(:top)
-          %select{:name => 'select_environment', :onchange => 'jump(this)', :size => 1}
+          %label{:for => 'environment-select'} Environment:
+          %select{:name => 'environment-select', :onchange => 'jump(this)', :size => 1, :class => 'title-select'}
             - current_env = session[:environment]
-            %option{:value => ""} Environments
-            %option{:value => ""} ------------
             %option{:value => url(:environment_select, :environment_id => '_none'), :selected => current_env == nil} None
             - @org_environments.each do |env|
               %option{:value => url(:environment_select, :environment_id => env), :selected => current_env == env}= env
