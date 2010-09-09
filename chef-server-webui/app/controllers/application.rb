@@ -25,6 +25,8 @@ class Application < Merb::Controller
 
   include Chef::Mixin::Checksum
 
+  before :load_environments
+
   # Check if the user is logged in and if the user still exists
   def login_required
    if session[:user]
@@ -109,6 +111,10 @@ class Application < Merb::Controller
     else
       raise Unauthorized, "You must authenticate first!"
     end
+  end
+
+  def load_environments
+    @org_environments = Chef::Environment.list.keys.sort
   end
 
   # Load a cookbook and return a hash with a list of all the files of a
