@@ -57,6 +57,27 @@ class Chef
         :description => "Your rackspace API username",
         :proc => Proc.new { |username| Chef::Config[:knife][:rackspace_api_username] = username } 
 
+      option :ssh_user,
+        :short => "-x USERNAME",
+        :long => "--ssh-user USERNAME",
+        :description => "The ssh username",
+        :default => "root" 
+
+      option :prerelease,
+        :long => "--prerelease",
+        :description => "Install the pre-release chef gems"
+
+      option :distro,
+        :short => "-d DISTRO",
+        :long => "--distro DISTRO",
+        :description => "Bootstrap a distro using a template",
+        :default => "ubuntu10.04-gems"
+
+      option :template_file,
+        :long => "--template-file TEMPLATE",
+        :description => "Full path to location of template to use",
+        :default => false
+
       def h
         @highline ||= HighLine.new
       end
@@ -77,46 +98,6 @@ class Chef
         server.flavor_id = config[:flavor]
         server.image_id = config[:image]
         server.name = config[:server_name]
-        server.personality = [
-          { 
-            'path' => '/etc/install-chef',
-            'contents' => <<-EOH
-#!/bin/bash
-# Customized rc.local for chef installation
-
-if [ ! -f /usr/bin/chef-client ]; then
-  apt-get update
-  apt-get install -y ruby ruby1.8-dev build-essential wget libruby-extras libruby1.8-extras
-  cd /tmp
-  wget http://rubyforge.org/frs/download.php/69365/rubygems-1.3.6.tgz
-  tar xvf rubygems-1.3.6.tgz
-  cd rubygems-1.3.6
-  ruby setup.rb
-  cp /usr/bin/gem1.8 /usr/bin/gem
-  gem install chef ohai --no-rdoc --no-ri --verbose
-fi
-
-exit 0
-EOH
-          },
-          { 
-            'path' => "/etc/chef/validation.pem",
-            'contents' => IO.read(Chef::Config[:validation_key])
-          },
-          { 
-            'path' => "/etc/chef/client.rb",
-            'contents' => <<-EOH
-log_level        :info
-log_location     STDOUT
-chef_server_url  "#{Chef::Config[:chef_server_url]}" 
-validation_client_name "#{Chef::Config[:validation_client_name]}"
-EOH
-          },
-          {
-            'path' => "/etc/chef/first-boot.json",
-            'contents' => { "run_list" => @name_args }.to_json
-          },
-        ]
 
         server.save
 
@@ -140,13 +121,27 @@ EOH
 
         puts "\nBootstrapping #{h.color(server.name, :bold)}..."
 
-        ssh = Chef::Knife::Ssh.new
-        ssh.name_args = [ server.addresses["public"][0], "/bin/bash /etc/install-chef && /usr/bin/chef-client -j /etc/chef/first-boot.json" ]
-        ssh.config[:ssh_user] = "root"
-        ssh.config[:manual] = true
-        ssh.config[:password] = saved_password
-        ssh.password = saved_password
-        ssh.run
+	begin
+          bootstrap = Chef::Knife::Bootstrap.new
+          bootstrap.name_args = [server.addresses["public"][0]]
+          bootstrap.config[:run_list] = @name_args
+          bootstrap.config[:ssh_user] = config[:ssh_user]
+          bootstrap.config[:ssh_password] = saved_password
+          bootstrap.config[:chef_node_name] = server.name
+          bootstrap.config[:prerelease] = config[:prerelease]
+          bootstrap.config[:distro] = config[:distro]
+          bootstrap.config[:use_sudo] = false
+          bootstrap.config[:template_file] = config[:template_file]
+          bootstrap.run
+        rescue Errno::ECONNREFUSED
+          puts h.color("Connection refused on SSH, retrying - CTRL-C to abort")
+          sleep 1
+          retry
+        rescue Errno::ETIMEDOUT
+          puts h.color("Connection timed out on SSH, retrying - CTRL-C to abort")
+          sleep 1
+          retry
+        end
 
       end
     end
