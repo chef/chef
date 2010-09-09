@@ -39,7 +39,7 @@ class Chef
           Chef::Log.debug("Checking for mount point #{@current_resource.mount_point}")
 
           # only check for existence of non-remote devices
-          if(@new_resource.device !~ /:/ && @new_resource.device !~ /\/\// && !::File.exists?(device_real) )
+          if(@new_resource.device !~ /:/ && @new_resource.device !~ /\/\// && @new_resource.device != "tmpfs" && !::File.exists?(device_real) )
             raise Chef::Exceptions::Mount, "Device #{@new_resource.device} does not exist"
           elsif( !::File.exists?(@new_resource.mount_point) )
             raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
