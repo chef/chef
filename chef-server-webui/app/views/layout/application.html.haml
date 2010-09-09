@@ -20,11 +20,12 @@
         %h1
           = link_to "Chef Server", url(:top)
           %select{:name => 'select_environment', :onchange => 'jump(this)', :size => 1}
+            - current_env = session[:environment]
             %option{:value => ""} Environments
             %option{:value => ""} ------------
-            %option{:value => url(:environment_select, :environment_id => '_none')} None
+            %option{:value => url(:environment_select, :environment_id => '_none'), :selected => current_env == nil} None
             - @org_environments.each do |env|
-              %option{:value => url(:environment_select, :environment_id => env)}= env
+              %option{:value => url(:environment_select, :environment_id => env), :selected => current_env == env}= env
         #user-navigation
           %ul
             - if session[:user]
