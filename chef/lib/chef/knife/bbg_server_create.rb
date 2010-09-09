@@ -78,7 +78,6 @@ class Chef
         $stdout.sync = true
 
         puts "Instantiating box #{h.color(server_name, :bold)}"
-        puts "\nUsing key: #{Chef::Config[:knife][:ssh_key]}"
         box = bbg.servers.new(:flavor_id => Chef::Config[:knife][:product], 
                               :image_id => Chef::Config[:knife][:template],
                               :ssh_key => Chef::Config[:knife][:ssh_key])
@@ -86,8 +85,8 @@ class Chef
         puts "\nProvisioning at BlueBox:"
         box.save
 
-        puts "\nBootstrapping #{h.color(server_name, :bold)}..."
         public_ip = box.ips.first["address"]
+        puts "\nBootstrapping (#{public_ip}) #{h.color(server_name, :bold)}..."        
 
         command =  <<EOH
 bash -c '
@@ -133,10 +132,11 @@ EOP
 EOH
 
         begin
-          ssh = Chef::Knife::Ssh.new
-          ssh.name_args = [ public_ip, "sudo #{command}" ]
-          ssh.config[:ssh_user] = "deploy"
-          ssh.run
+          Net::SSH.start(public_ip, "deploy") do |ssh|
+            # capture all stderr and stdout output from a remote process
+            puts "Beginning bootstrap..."
+            ssh.exec!(command)
+          end
         rescue Errno::ETIMEDOUT
           puts "Timed out on bootstrap, re-trying. Hit CTRL-C to abort."
           retry
