@@ -87,7 +87,7 @@ class Chef
         box.save
 
         puts "\nBootstrapping #{h.color(server_name, :bold)}..."
-        public_ip = box.addresses.first
+        public_ip = box.ips.first["address"]
 
         command =  <<EOH
 bash -c '
