@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2009-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,13 +37,13 @@ class Chef
         :long => "--image IMAGE",
         :description => "The image of the server",
         :proc => Proc.new { |i| i.to_i },
-        :default => 14362
+        :default => 49
 
       option :server_name,
         :short => "-N NAME",
         :long => "--server-name NAME",
         :description => "The server name",
-        :default => "wtf"
+        :default => "my-server"
 
       option :api_key,
         :short => "-K KEY",
