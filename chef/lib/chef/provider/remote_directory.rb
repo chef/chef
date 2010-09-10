@@ -36,17 +36,21 @@ class Chef
         super
         Chef::Log.debug("Doing a remote recursive directory transfer for #{@new_resource}")
           
-        files_to_purge = Set.new(
-          Dir.glob(::File.join(@new_resource.path, '**', '*'), ::File::FNM_DOTMATCH).select do |name|
-            name !~ /(?:^|#{Regexp.escape(::File::SEPARATOR)})\.\.?$/
-          end
-        )
+        files_transferred = Set.new
         files_to_transfer.each do |cookbook_file_relative_path|
           create_cookbook_file(cookbook_file_relative_path)
-          files_to_purge.delete(::File.dirname(::File.join(@new_resource.path, cookbook_file_relative_path)))
-          files_to_purge.delete(::File.join(@new_resource.path, cookbook_file_relative_path))
+          files_transferred << ::File.dirname(::File.join(@new_resource.path, cookbook_file_relative_path))
+          files_transferred << ::File.join(@new_resource.path, cookbook_file_relative_path)
         end
-        purge_unmanaged_files(files_to_purge)
+        if @new_resource.purge
+          files_to_purge = Set.new(
+                                   Dir.glob(::File.join(@new_resource.path, '**', '*'), ::File::FNM_DOTMATCH).select do |name|
+                                     name !~ /(?:^|#{Regexp.escape(::File::SEPARATOR)})\.\.?$/
+                                   end
+                                   )
+          files_to_purge = files_to_purge - files_transferred
+          purge_unmanaged_files(files_to_purge)
+        end
       end
 
       def action_create_if_missing
@@ -56,15 +60,13 @@ class Chef
       protected
 
       def purge_unmanaged_files(unmanaged_files)
-        if @new_resource.purge
-          unmanaged_files.sort.reverse.each do |f|
-            if ::File.directory?(f)
-              Chef::Log.debug("Removing directory #{f}")
-              Dir::rmdir(f)
-            else
-              Chef::Log.debug("Deleting file #{f}")
-              ::File.delete(f)
-            end
+        unmanaged_files.sort.reverse.each do |f|
+          if ::File.directory?(f)
+            Chef::Log.debug("Removing directory #{f}")
+            Dir::rmdir(f)
+          else
+            Chef::Log.debug("Deleting file #{f}")
+            ::File.delete(f)
           end
         end
       end
