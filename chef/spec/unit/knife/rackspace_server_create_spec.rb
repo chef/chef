@@ -23,6 +23,7 @@ describe Chef::Knife::RackspaceServerCreate do
   before(:each) do
     @knife_rackspace_create = Chef::Knife::RackspaceServerCreate.new()
     @knife_rackspace_create.name_args = ['foo-name']
+    @knife_rackspace_create.initial_sleep_delay = 0
   end
 
   describe "run" do

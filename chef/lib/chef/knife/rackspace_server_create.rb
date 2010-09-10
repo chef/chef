@@ -25,6 +25,8 @@ class Chef
 
       banner "knife rackspace server create [RUN LIST...] (options)"
 
+      attr_accessor :initial_sleep_delay
+
       option :flavor,
         :short => "-f FLAVOR",
         :long => "--flavor FLAVOR",
@@ -116,8 +118,9 @@ class Chef
         # wait for it to be ready to do stuff
         server.wait_for { print "."; ready? }
 
-        puts "\nServer ready, waiting 15 seconds to bootstrap."
-        sleep 15
+        @initial_sleep_delay ||= 15
+        puts "\nServer ready, waiting #{@initial_sleep_delay} seconds to bootstrap."
+        sleep @initial_sleep_delay
 
         puts "\nBootstrapping #{h.color(server.name, :bold)}..."
 
