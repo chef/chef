@@ -44,11 +44,10 @@ class Chef
 		:default => "deploy"
 
       option :password,
-        :short => "-K KEY",
+        :short => "-P password",
         :long => "--password password",
         :description => "User password on new server",
 		:default => ""
-
 
       def h
         @highline ||= HighLine.new
@@ -73,7 +72,8 @@ class Chef
 							   :flavor_id => config[:flavor],
 							   :image_id => config[:image],
 							   :user => config[:username],
-							   :password => config[:password]
+							   :password => config[:password],
+							   :ssh_key => Chef::Config[:knife][:ssh_key]
 							   )
 		response = server.save
         $stdout.sync = true
