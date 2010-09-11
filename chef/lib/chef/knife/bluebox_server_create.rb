@@ -68,13 +68,14 @@ class Chef
   		images  = bluebox.images.inject({}) { |h,i| h[i.id] = i.description; h }
 
 		puts "#{h.color("Deploying a new Blue Box Block...", :green)}\n\n"
-        server = bluebox.servers.new(
-							   :flavor_id => config[:flavor],
-							   :image_id => config[:image],
-							   :user => config[:username],
-							   :password => config[:password],
-							   :ssh_key => Chef::Config[:knife][:ssh_key]
-							   )
+		server_args = {
+			:flavor_id => config[:flavor],
+			:image_id => config[:image],
+			:user => config[:username],
+			:password => config[:password]
+			}
+		server_args[:ssh_key] = Chef::Config[:knife][:ssh_key] if Chef::Config[:knife][:ssh_key]
+        server = bluebox.servers.new(server_args)
 		response = server.save
         $stdout.sync = true
         
