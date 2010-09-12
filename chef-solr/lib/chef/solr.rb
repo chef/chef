@@ -48,16 +48,16 @@ class Chef
       select_url = "/solr/select?#{to_params(options)}"
       Chef::Log.debug("Sending #{select_url} to Solr")
       req = Net::HTTP::Get.new(select_url)
-      
+
       description = 'Search Query to Solr'
-      
+
       http_request_handler description do
         res = @http.request(req)
         unless res.kind_of?(Net::HTTPSuccess)
           Chef::Log.fatal("#{description} '#{solr_url}#{select_url}' failed (#{res.class} #{res.code} #{res.message})")
           res.error!
         end
-        
+
         Chef::Log.debug("Parsing Solr result set:\n#{res.body}")
         return eval(res.body)
       end
@@ -67,9 +67,9 @@ class Chef
       Chef::Log.debug("POSTing document to SOLR:\n#{doc}")
       req = Net::HTTP::Post.new("/solr/update", "Content-Type" => "text/xml")
       req.body = doc.to_s
-      
+
       description = 'POST to Solr'
-      
+
       http_request_handler description do
         res = @http.request(req)
         unless res.kind_of?(Net::HTTPSuccess)
@@ -233,10 +233,10 @@ class Chef
         Chef::Log.debug(e.backtrace.join("\n"))
         raise Chef::Exceptions::SolrConnectionError, "Errno::ECONNREFUSED: Connection refused attempting to contact #{@solr_url}"
       end
-    
+
       Chef::Log.fatal("#{description} failed.  Chef::Exceptions::SolrConnectionError exception: #{e.class.name}: #{e.to_s} attempting to contact #{@solr_url}")
       Chef::Log.debug(e.backtrace.join("\n"))
-      
+
       raise Chef::Exceptions::SolrConnectionError, "#{e.class.name}: #{e.to_s}"
     end
 

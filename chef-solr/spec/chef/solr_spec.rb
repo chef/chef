@@ -27,7 +27,7 @@ describe Chef::Solr do
       @http = mock("Net::HTTP", :request => @http_response)
       @solr.http = @http
     end
-    
+
     describe "when the HTTP call is successful" do
       it "should call get to /solr/select with the escaped query" do
         Net::HTTP::Get.should_receive(:new).with(%r(q=hostname%3Alatte))
@@ -43,7 +43,7 @@ describe Chef::Solr do
         Net::HTTP::Get.should_receive(:new).with(%r(indent=off))
         @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
       end
-     
+
       it "should call get to /solr/select with filter query" do
         Net::HTTP::Get.should_receive(:new).with(/fq=%2BX_CHEF_database_CHEF_X%3Achef_opscode\+%2BX_CHEF_type_CHEF_X%3Anode/)
         @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
@@ -54,7 +54,7 @@ describe Chef::Solr do
         res.should == { :some => :hash }
       end
     end
-    
+
     describe "when the HTTP call is unsuccessful" do
       it "should call get to /solr/select with the escaped query" do
         Net::HTTP::Get.should_receive(:new).with(%r(q=hostname%3Alatte))
@@ -70,12 +70,12 @@ describe Chef::Solr do
         Net::HTTP::Get.should_receive(:new).with(%r(indent=off))
         @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
       end
-     
+
       it "should call get to /solr/select with filter query" do
         Net::HTTP::Get.should_receive(:new).with(/fq=%2BX_CHEF_database_CHEF_X%3Achef_opscode\+%2BX_CHEF_type_CHEF_X%3Anode/)
         @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
       end
-      
+
       [Timeout::Error, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError, Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ETIMEDOUT, Errno::EINVAL].each do |exception|
         it "should rescue, log an error message, and raise a SolrConnectionError encountering exception #{exception}" do
           lambda {
@@ -85,7 +85,7 @@ describe Chef::Solr do
           }.should raise_error(Chef::Exceptions::SolrConnectionError)
         end
       end
-      
+
       it "should rescue, log an error message, and raise a SolrConnectionError when encountering exception NoMethodError and net/http closed? bug" do
         lambda {
           @no_method_error = NoMethodError.new("undefined method 'closed\?' for nil:NilClass")
@@ -113,7 +113,7 @@ describe Chef::Solr do
       Net::HTTP::Post.stub!(:new).and_return(@http_request)
       @doc = { "foo" => "bar" }
     end
-    
+
     describe 'when the HTTP call is successful' do
       it "should post to /solr/update" do
         Net::HTTP::Post.should_receive(:new).with("/solr/update", "Content-Type" => "text/xml").and_return(@http_request)
@@ -130,7 +130,7 @@ describe Chef::Solr do
         @solr.post_to_solr(:foo)
       end
     end
-    
+
     describe "when the HTTP call is unsuccessful due to an exception" do
       it "should post to /solr/update" do
         Net::HTTP::Post.should_receive(:new).with("/solr/update", "Content-Type" => "text/xml").and_return(@http_request)
@@ -141,17 +141,17 @@ describe Chef::Solr do
         @http_request.should_receive(:body=).with("foo")
         @solr.post_to_solr(:foo)
       end
-      
+
       [Timeout::Error, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError, Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ETIMEDOUT, Errno::EINVAL].each do |exception|
         it "should rescue and log an error message when encountering exception #{exception} and then re-raise it" do
           lambda {
-            @http.should_receive(:request).with(@http_request).and_raise(exception)          
+            @http.should_receive(:request).with(@http_request).and_raise(exception)
             Chef::Log.should_receive(:fatal).with(/POST to Solr failed.  Chef::Exceptions::SolrConnectionError exception: #{exception}:.+/)
             @solr.post_to_solr(:foo)
           }.should raise_error(Chef::Exceptions::SolrConnectionError)
         end
       end
-      
+
       it "should rescue and log an error message when encountering exception NoMethodError and net/http closed? bug" do
         lambda {
           @no_method_error = NoMethodError.new("undefined method 'closed\?' for nil:NilClass")
