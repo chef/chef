@@ -1,4 +1,5 @@
 require File.expand_path(File.join("#{File.dirname(__FILE__)}", '..', 'spec_helper'))
+require 'net/http'
 
 describe Chef::Solr do
   before(:each) do 
@@ -26,33 +27,75 @@ describe Chef::Solr do
       @http = mock("Net::HTTP", :request => @http_response)
       @solr.http = @http
     end
+    
+    describe "when the HTTP call is successful" do
+      it "should call get to /solr/select with the escaped query" do
+        Net::HTTP::Get.should_receive(:new).with(%r(q=hostname%3Alatte))
+        @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
+      end
 
-    it "should call get to /solr/select with the escaped query" do
-      Net::HTTP::Get.should_receive(:new).with(%r(q=hostname%3Alatte))
-      @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
-    end
+      it "should call get to /solr/select with wt=ruby" do
+        Net::HTTP::Get.should_receive(:new).with(%r(wt=ruby))
+        @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
+      end
 
-    it "should call get to /solr/select with wt=ruby" do
-      Net::HTTP::Get.should_receive(:new).with(%r(wt=ruby))
-      @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
-    end
-
-    it "should call get to /solr/select with indent=off" do
-      Net::HTTP::Get.should_receive(:new).with(%r(indent=off))
-      @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
-    end
+      it "should call get to /solr/select with indent=off" do
+        Net::HTTP::Get.should_receive(:new).with(%r(indent=off))
+        @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
+      end
      
-    it "should call get to /solr/select with filter query" do
-      Net::HTTP::Get.should_receive(:new).with(/fq=%2BX_CHEF_database_CHEF_X%3Achef_opscode\+%2BX_CHEF_type_CHEF_X%3Anode/)
-      @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
-    end
+      it "should call get to /solr/select with filter query" do
+        Net::HTTP::Get.should_receive(:new).with(/fq=%2BX_CHEF_database_CHEF_X%3Achef_opscode\+%2BX_CHEF_type_CHEF_X%3Anode/)
+        @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
+      end
 
-    it "should return the evaluated response body" do
-      res = @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
-      res.should == { :some => :hash }
+      it "should return the evaluated response body" do
+        res = @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
+        res.should == { :some => :hash }
+      end
+    end
+    
+    describe "when the HTTP call is unsuccessful" do
+      it "should call get to /solr/select with the escaped query" do
+        Net::HTTP::Get.should_receive(:new).with(%r(q=hostname%3Alatte))
+        @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
+      end
+
+      it "should call get to /solr/select with wt=ruby" do
+        Net::HTTP::Get.should_receive(:new).with(%r(wt=ruby))
+        @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
+      end
+
+      it "should call get to /solr/select with indent=off" do
+        Net::HTTP::Get.should_receive(:new).with(%r(indent=off))
+        @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
+      end
+     
+      it "should call get to /solr/select with filter query" do
+        Net::HTTP::Get.should_receive(:new).with(/fq=%2BX_CHEF_database_CHEF_X%3Achef_opscode\+%2BX_CHEF_type_CHEF_X%3Anode/)
+        @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
+      end
+      
+      [Timeout::Error, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError, Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ETIMEDOUT, Errno::EINVAL].each do |exception|
+        it "should rescue and log an error message when encountering exception #{exception}" do
+          lambda {
+            @http.should_receive(:request).with(instance_of(Net::HTTP::Get)).and_raise(exception)
+            Chef::Log.should_receive(:fatal).with(/Search Query to Solr.+encountered exception #{exception}:.+/)
+            @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
+          }.should raise_error(exception)
+        end
+      end
+      
+      it "should rescue and log an error message when encountering exception NoMethodError and net/http closed? bug" do
+        lambda {
+          @no_method_error = NoMethodError.new("undefined method 'closed\?' for nil:NilClass")
+          @http.should_receive(:request).with(instance_of(Net::HTTP::Get)).and_raise(@no_method_error)
+          Chef::Log.should_receive(:fatal).with(/Search Query to Solr.+encountered exception Errno::ECONNREFUSED:.+net\/http undefined method closed.+/)
+          @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
+        }.should raise_error(Errno::ECONNREFUSED)
+      end
     end
   end
-
 
   describe "post_to_solr" do
     before(:each) do
@@ -70,20 +113,53 @@ describe Chef::Solr do
       Net::HTTP::Post.stub!(:new).and_return(@http_request)
       @doc = { "foo" => "bar" }
     end
-  
-    it "should post to /solr/update" do
-      Net::HTTP::Post.should_receive(:new).with("/solr/update", "Content-Type" => "text/xml").and_return(@http_request)
-      @solr.post_to_solr(@doc)
-    end
+    
+    describe 'when the HTTP call is successful' do
+      it "should post to /solr/update" do
+        Net::HTTP::Post.should_receive(:new).with("/solr/update", "Content-Type" => "text/xml").and_return(@http_request)
+        @solr.post_to_solr(@doc)
+      end
 
-    it "should set the body of the request to the stringified doc" do
-      @http_request.should_receive(:body=).with("foo")
-      @solr.post_to_solr(:foo)
-    end
+      it "should set the body of the request to the stringified doc" do
+        @http_request.should_receive(:body=).with("foo")
+        @solr.post_to_solr(:foo)
+      end
 
-    it "should send the request to solr" do
-      @http.should_receive(:request).with(@http_request).and_return(@http_response)
-      @solr.post_to_solr(:foo)
+      it "should send the request to solr" do
+        @http.should_receive(:request).with(@http_request).and_return(@http_response)
+        @solr.post_to_solr(:foo)
+      end
+    end
+    
+    describe "when the HTTP call is unsuccessful due to an exception" do
+      it "should post to /solr/update" do
+        Net::HTTP::Post.should_receive(:new).with("/solr/update", "Content-Type" => "text/xml").and_return(@http_request)
+        @solr.post_to_solr(@doc)
+      end
+
+      it "should set the body of the request to the stringified doc" do
+        @http_request.should_receive(:body=).with("foo")
+        @solr.post_to_solr(:foo)
+      end
+      
+      [Timeout::Error, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError, Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ETIMEDOUT, Errno::EINVAL].each do |exception|
+        it "should rescue and log an error message when encountering exception #{exception} and then re-raise it" do
+          lambda {
+            @http.should_receive(:request).with(@http_request).and_raise(exception)          
+            Chef::Log.should_receive(:fatal).with(/POST to Solr encountered exception #{exception}:.+/)
+            @solr.post_to_solr(:foo)
+          }.should raise_error(exception)
+        end
+      end
+      
+      it "should rescue and log an error message when encountering exception NoMethodError and net/http closed? bug" do
+        lambda {
+          @no_method_error = NoMethodError.new("undefined method 'closed\?' for nil:NilClass")
+          @http.should_receive(:request).with(@http_request).and_raise(@no_method_error)
+          Chef::Log.should_receive(:fatal).with(/POST to Solr encountered exception Errno::ECONNREFUSED:.+net\/http undefined method closed.+/)
+          @solr.post_to_solr(:foo)
+        }.should raise_error(Errno::ECONNREFUSED)
+      end
     end
   end
 
@@ -234,5 +310,4 @@ describe Chef::Solr do
       @solr.rebuild_index["Chef::DataBag"].should == "success"
     end
   end
-
 end
