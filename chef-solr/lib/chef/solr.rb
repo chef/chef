@@ -49,29 +49,17 @@ class Chef
       Chef::Log.debug("Sending #{select_url} to Solr")
       req = Net::HTTP::Get.new(select_url)
       
-      begin
+      description = 'Search Query to Solr'
+      
+      http_request_handler description do
         res = @http.request(req)
         unless res.kind_of?(Net::HTTPSuccess)
-          Chef::Log.fatal("Search Query to Solr '#{select_url}' failed")
+          Chef::Log.fatal("#{description} '#{solr_url}#{select_url}' failed (#{res.class} #{res.code} #{res.message})")
           res.error!
         end
+        
         Chef::Log.debug("Parsing Solr result set:\n#{res.body}")
-        eval(res.body)
-      rescue Timeout::Error, Errno::EINVAL, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError, Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ETIMEDOUT, NoMethodError => e
-        # http://redmine.ruby-lang.org/issues/show/2708
-        # http://redmine.ruby-lang.org/issues/show/2758
-        if e.to_s =~ /#{Regexp.escape(%q|undefined method 'closed?' for nil:NilClass|)}/
-          Chef::Log.fatal("Search Query to Solr encountered exception Errno::ECONNREFUSED: net/http undefined method closed?")
-          Chef::Log.debug("rescued error in http connect, treating it as Errno::ECONNREFUSED to hide bug in net/http")
-          Chef::Log.debug(e.backtrace.join("\n"))
-          
-          raise Errno::ECONNREFUSED, "Connection refused attempting to contact #{@solr_url}"
-        end
-        
-        Chef::Log.fatal("Search Query to Solr '#{select_url}' encountered exception #{e.class}: #{e.to_s}")
-        Chef::Log.debug(e.backtrace.join("\n"))
-        
-        raise e, e.to_s
+        return eval(res.body)
       end
     end
 
@@ -80,27 +68,17 @@ class Chef
       req = Net::HTTP::Post.new("/solr/update", "Content-Type" => "text/xml")
       req.body = doc.to_s
       
-      begin
+      description = 'POST to Solr'
+      
+      http_request_handler description do
         res = @http.request(req)
         unless res.kind_of?(Net::HTTPSuccess)
+          Chef::Log.fatal("#{description} '#{solr_url}' failed (#{res.class} #{res.code} #{res.message})")
           res.error!
         end
-      rescue Timeout::Error, Errno::EINVAL, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError, Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ETIMEDOUT, NoMethodError => e
-        # http://redmine.ruby-lang.org/issues/show/2708
-        # http://redmine.ruby-lang.org/issues/show/2758
-        if e.to_s =~ /#{Regexp.escape(%q|undefined method 'closed?' for nil:NilClass|)}/
-          Chef::Log.fatal("POST to Solr encountered exception Errno::ECONNREFUSED: net/http undefined method closed?")
-          Chef::Log.debug("rescued error in http connect, treating it as Errno::ECONNREFUSED to hide bug in net/http")
-          Chef::Log.debug(e.backtrace.join("\n"))
-          raise Errno::ECONNREFUSED, "Connection refused attempting to contact #{@solr_url}"
-        end
 
-        Chef::Log.fatal("POST to Solr encountered exception #{e.class.name}: #{e.to_s}")
-        Chef::Log.debug(e.backtrace.join("\n"))
-        
-        raise e, e.to_s
+        return res
       end
-      res
     end
 
     START_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<add><doc>"
@@ -241,6 +219,25 @@ class Chef
       s.to_s.gsub(/([^ a-zA-Z0-9_.-]+)/n) {
         '%'+$1.unpack('H2'*$1.size).join('%').upcase
       }.tr(' ', '+')
+    end
+    
+    # handles multiple net/http exceptions and no method closed? bug
+    def http_request_handler(description='HTTP call')
+      yield
+    rescue Timeout::Error, Errno::EINVAL, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError, Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ETIMEDOUT, NoMethodError => e
+      # http://redmine.ruby-lang.org/issues/show/2708
+      # http://redmine.ruby-lang.org/issues/show/2758
+      if e.to_s =~ /#{Regexp.escape(%q|undefined method 'closed?' for nil:NilClass|)}/
+        Chef::Log.fatal("#{description} failed.  Chef::Exceptions::SolrConnectionError exception: Errno::ECONNREFUSED (net/http undefined method closed?) attempting to contact #{@solr_url}")
+        Chef::Log.debug("rescued error in http connect, treating it as Errno::ECONNREFUSED to hide bug in net/http")
+        Chef::Log.debug(e.backtrace.join("\n"))
+        raise Chef::Exceptions::SolrConnectionError, "Errno::ECONNREFUSED: Connection refused attempting to contact #{@solr_url}"
+      end
+    
+      Chef::Log.fatal("#{description} failed.  Chef::Exceptions::SolrConnectionError exception: #{e.class.name}: #{e.to_s} attempting to contact #{@solr_url}")
+      Chef::Log.debug(e.backtrace.join("\n"))
+      
+      raise Chef::Exceptions::SolrConnectionError, "#{e.class.name}: #{e.to_s}"
     end
 
   end

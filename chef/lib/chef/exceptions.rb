@@ -60,5 +60,6 @@ class Chef
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
     class InvalidResourceSpecification < ArgumentError; end
+    class SolrConnectionError < RuntimeError; end
   end
 end
