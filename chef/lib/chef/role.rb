@@ -122,12 +122,13 @@ class Chef
       end
     end
 
-    def env_run_lists(hash=nil)
+    def env_run_lists(hash=nil, run_list_items_only=false)
       # TODO: should have btter validation, but leaving it as it is for now to make everything work first [nuo]
       if (!hash.nil? && hash.length > 0)
         hash.each do |k,v|
-          unless v["run_list"].nil? || v["run_list"].empty?
-            v["run_list"] = Chef::RunList.new(k).reset!(v["run_list"])
+          unless v["run_list"].nil?
+            rl = Chef::RunList.new(k).reset!(v["run_list"])
+            v["run_list"] = run_list_items_only ? rl.run_list_items : rl
           end
         end
         @env_run_lists = hash
@@ -166,7 +167,7 @@ class Chef
         "override_attributes" => @override_attributes,
         "chef_type" => "role",
         "run_list" => @run_list.run_list,
-        "env_run_lists" => @env_run_lists
+        "env_run_lists" => env_run_lists(@env_run_lists, true)
       }
       result["_rev"] = couchdb_rev if couchdb_rev
       result
