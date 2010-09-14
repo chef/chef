@@ -47,7 +47,7 @@ class Chef
         :short => "-N NAME",
         :long => "--node-name NAME",
         :description => "The Chef node name for your new node"
-
+      
       option :prerelease,
         :long => "--prerelease",
         :description => "Install the pre-release chef gems"
