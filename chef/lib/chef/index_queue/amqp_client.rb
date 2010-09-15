@@ -76,7 +76,7 @@ class Chef
       end
 
       def queue_for_object(obj_id)
-        vnode_tag = UUIDTools::UUID.parse(obj_id).to_i % VNODES
+        vnode_tag = obj_id_to_int(obj_id) % VNODES
         queue = amqp_client.queue("vnode-#{vnode_tag}")
         retries = 0
         begin
@@ -94,6 +94,15 @@ class Chef
       end
 
       private
+
+      # Sometimes object ids are "proper" UUIDs, like "64bc00eb-120b-b6a2-ec0e-34fc90d151be"
+      # and sometimes they omit the dashes, like "64bc00eb120bb6a2ec0e34fc90d151be"
+      # UUIDTools uses different methods to parse the different styles.
+      def obj_id_to_int(obj_id)
+        UUIDTools::UUID.parse(obj_id).to_i
+      rescue ArgumentError
+        UUIDTools::UUID.parse_hexdigest(obj_id).to_i
+      end
       
       def durable_queue?
         !!Chef::Config[:amqp_consumer_id]
