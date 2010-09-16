@@ -555,7 +555,9 @@ class Chef
     end
 
     def self.find_or_create(node_name)
-      load(node_name)
+      node = load(node_name)
+      node.chef_environment(Chef::Config[:environment]) unless Chef::Config[:environment].nil? || Chef::Config[:environment].chop.empty?
+      node
     rescue Net::HTTPServerException => e
       raise unless e.response.code == '404'
       node = build(node_name)
