@@ -210,7 +210,7 @@ class Chef
     # === Returns
     # node<Chef::Node>:: Returns the created node object, also stored in @node
     def build_node
-      Chef::Log.debug("Building node object for #{@node_name}")
+      Chef::Log.debug("Building node object for #{node_name}")
 
       if Chef::Config[:solo]
         @node = Chef::Node.build(node_name)
