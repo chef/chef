@@ -546,6 +546,24 @@ In order to use knife with the various __CLOUD COMPUTING SUB-COMMANDS__, credent
 
 __bluebox server create [RUN LIST...]__ _(options)_
 
+  * `-f`, `--flavor FLAVOR`:
+    This is the product type (Block size) you're requesting to deploy.  Requires the UUID of the image.
+
+  * `-i`, `--image IMAGE`:
+    The image (or OS distribution) to deploy.  This can be a pre-built Blue Box template, or this can be a template you've archived previously.  Requires the UUID of the image.
+
+  * `-U`, `--username USERNAME`:
+    Username created on the deployed server.  Defaults to "deploy".
+
+  * `-P`, `--password PASSWORD`:
+    Password installed for the created user on the deployed server.  Can be bypassed by defining a SSH key in your knife configuration ( Chef::Config[:knife][:ssh_key] ).
+
+  * `--bootstrap true/false`:
+    Allows you to disable boostrap process.
+
+Creates a new Blue Box Group Blocks instance and bootstraps it by checking out a pre
+
+
 __bluebox server delete BLOCK-HOSTNAME 
 
 __bluebox server list
