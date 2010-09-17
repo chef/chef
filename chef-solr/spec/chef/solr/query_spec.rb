@@ -5,10 +5,12 @@ describe Chef::Solr::Query do
     @query = Chef::Solr::Query.new
   end
 
-  describe "initialize" do
-    it "should return a Chef::Solr::Query" do
-      @query.should be_a_kind_of(Chef::Solr::Query)
+  it "should transform queries correctly" do
+    testcases = Hash[*(File.readlines("#{CHEF_SOLR_SPEC_DATA}/search_queries_to_transform.txt").select{|line| line !~ /^\s*$/}.map{|line| line.chomp})]
+    testcases.each do |input, expected|
+      @query.transform_search_query(input).should == expected
     end
   end
+
 end
 

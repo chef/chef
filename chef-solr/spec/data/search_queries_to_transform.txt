@@ -1,0 +1,56 @@
+*:*
+*:*
+
+role:mon
+content:role__=__mon
+
+role:mon AND role:prod
+content:role__=__mon AND content:role__=__prod
+
+run_list:role\[rubberband\] AND run_list:role\[whale\]
+content:run_list__=__role\[rubberband\] AND content:run_list__=__role\[whale\]
+
+sharable_server:[* TO *]
+content:sharable_server__=__*
+
+run_list:role\[nfs_server\] AND sharable_server:[* TO *]
+content:run_list__=__role\[nfs_server\] AND content:sharable_server__=__*
+
+run_list:role\[nfs_server\] AND sharable_server:[* TO *]
+content:run_list__=__role\[nfs_server\] AND content:sharable_server__=__*
+
+(role:prod AND x_y:true)
+(content:role__=__prod AND content:x_y__=__true)
+
+hostname:[* TO *] AND role:prod
+content:hostname__=__* AND content:role__=__prod
+
+role:t_mem AND role:prod NOT hostname:ip-1-2-3-4
+content:role__=__t_mem AND content:role__=__prod NOT content:hostname__=__ip-1-2-3-4
+
+ohai_time:[1234.567 TO *]
+content:[ohai_time__=__1234.567 TO ohai_time__=__\ufff0]
+
+ohai_time:{1234.567 TO *}
+content:{ohai_time__=__1234.567 TO ohai_time__=__\ufff0}
+
+ohai_time:[* TO baz]
+content:[ohai_time__=__ TO ohai_time__=__baz]
+
+ohai_time:{* TO baz}
+content:{ohai_time__=__ TO ohai_time__=__baz}
+
+tags:apples*.for.eating.com
+content:tags__=__apples*.for.eating.com
+
+role:safe AND ohai_time:[1234.567 TO *] AND whiz_bang:x5
+content:role__=__safe AND content:[ohai_time__=__1234.567 TO ohai_time__=__\ufff0] AND content:whiz_bang__=__x5
+
+role:safe AND ohai_time:[* TO 1234.567] AND whiz_bang:x5
+content:role__=__safe AND content:[ohai_time__=__ TO ohai_time__=__1234.567] AND content:whiz_bang__=__x5
+
+animal:[ape TO zebra]
+content:[animal__=__ape TO animal__=__zebra]
+
+animal:{ape TO zebra}
+content:{animal__=__ape TO animal__=__zebra}

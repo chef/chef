@@ -9,6 +9,8 @@ require 'chef/solr'
 require 'chef/solr/index'
 require 'chef/solr/query'
 
+CHEF_SOLR_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
+
 Spec::Runner.configure do |config|
   
 end
