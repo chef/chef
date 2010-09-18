@@ -1,6 +1,10 @@
+sudo bash -c '
+
 if [ -f /etc/redhat-release ]; then
+	echo "CentOS Distribution.  Continuing Bootstrapping Process."
     LINUX_DISTRO="centos"
 elif [ -f /etc/issue ]; then
+	echo "Ubuntu Distribution.  Continuing Bootstrapping Process."
     LINUX_DISTRO="ubuntu"
 else 
     echo "Unsupported linux distribution.  Submit your patch!  http://github.com/BlueBoxGroup/ChefBootstrapScripts"
@@ -42,3 +46,4 @@ EOP
 # Obtain chef-client path and execute first run.
 CHEF_CLIENT=`which chef-client`
 $CHEF_CLIENT -j /etc/chef/first-boot.json
+'
