@@ -24,8 +24,7 @@ require 'uri'
 require 'net/https'
 require 'stringio'
 
-SIGNING_KEY_DOT_PEM=<<-END_RSA_KEY
------BEGIN RSA PRIVATE KEY-----
+SIGNING_KEY_DOT_PEM="-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA49TA0y81ps0zxkOpmf5V4/c4IeR5yVyQFpX3JpxO4TquwnRh
 8VSUhrw8kkTLmB3cS39Db+3HadvhoqCEbqPE6915kXSuk/cWIcNozujLK7tkuPEy
 YVsyTioQAddSdfe+8EhQVf3oHxaKmUd6waXrWqYCnhxgOjxocenREYNhZ/OETIei
@@ -51,9 +50,7 @@ b857vWviwPX2/P6+E3GPdl8IVsKXCvGWOBZWTuNTjQtwbDzsUepWoMgXnlQJSn5I
 YSlLxQKBgQD16Gw9kajpKlzsPa6XoQeGmZALT6aKWJQlrKtUQIrsIWM0Z6eFtX12
 2jjHZ0awuCQ4ldqwl8IfRogWMBkHOXjTPVK0YKWWlxMpD/5+bGPARa5fir8O1Zpo
 Y6S6MeZ69Rp89ma4ttMZ+kwi1+XyHqC/dlcVRW42Zl5Dc7BALRlJjQ==
------END RSA PRIVATE KEY-----
-  END_RSA_KEY
-
+-----END RSA PRIVATE KEY-----"
 
 describe Chef::REST do
   before(:each) do
