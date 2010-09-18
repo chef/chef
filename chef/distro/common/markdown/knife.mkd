@@ -561,7 +561,7 @@ __bluebox server create [RUN LIST...]__ _(options)_
   * `--bootstrap true/false`:
     Allows you to disable boostrap process.
 
-Creates a new Blue Box Group Blocks instance and bootstraps it by checking out a pre
+Creates a new Blue Box Group Blocks instance and bootstraps it by checking out a github repo and 
 
 
 __bluebox server delete BLOCK-HOSTNAME 

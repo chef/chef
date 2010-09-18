@@ -80,7 +80,7 @@ class Chef
     			:user => config[:username],
     			:password => config[:password]
     			}
-    		server_args[:ssh_key] = Chef::Config[:knife][:ssh_key] if z
+    		server_args[:ssh_key] = Chef::Config[:knife][:ssh_key] if Chef::Config[:knife][:ssh_key]
     		
         server = bluebox.servers.new(server_args)
     		response = server.save
@@ -118,7 +118,7 @@ class Chef
   				  end
   				  
   				  # Bootstrap away!
-    				print "\n\n#{h.color("Starting bootstrapping process...", :green)}}"
+    				print "\n\n#{h.color("Starting bootstrapping process...", :green)}\n"
 				
 				    # Define the boostrap script URL.
 				    # This can be defined in your Knife configuration, or pulls the default Blue Box bootstrap
@@ -126,20 +126,20 @@ class Chef
 				    bootstrap_script = Chef::Config[:knife][:bluebox_bootstrap_url]
 				    bootstrap_script ||= "https://BlueBoxGroup@github.com/BlueBoxGroup/ChefBootstrapScripts.git"
 				
-    				# Init the bootstrap processes
-    				command = ERB.new(File.read('bootstrap/bluebox-bootstrap-init.erb')).result
-
             # Connect via SSH and make this all happen.
             begin
-              ssh = Chef::Knife::Ssh.new
-              ssh.name_args = [ server.ips[0]['address'], "sudo #{command}" ]
-              ssh.config[:ssh_user] = config[:username]
-              ssh.config[:manual] = true
+              bootstrap = Chef::Knife::Bootstrap.new
+              bootstrap.name_args = [ server.ips[0]['address'] ]
+              bootstrap.config[:run_list] = @name_args
               unless Chef::Config[:knife][:ssh_key]
-                ssh.config[:password] = password
-                ssh.password = password
+                bootstrap.config[:password] = password
               end
-              ssh.run
+              bootstrap.config[:ssh_user] = config[:username]
+              bootstrap.config[:identity_file] = config[:identity_file]
+              bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.hostname
+              bootstrap.config[:use_sudo] = true
+              bootstrap.config[:bootstrap_template] = config[:bootstrap_template] || 'bluebox-bootstrap-init.erb'
+              bootstrap.run
             rescue Errno::ECONNREFUSED
               puts h.color("Connection refused on SSH, retrying - CTRL-C to abort")
               sleep 1
