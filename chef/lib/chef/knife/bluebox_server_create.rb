@@ -120,12 +120,6 @@ class Chef
   				  # Bootstrap away!
     				print "\n\n#{h.color("Starting bootstrapping process...", :green)}\n"
 				
-				    # Define the boostrap script URL.
-				    # This can be defined in your Knife configuration, or pulls the default Blue Box bootstrap
-				    # scripts coming from the Blue Box managed GitHub repo.
-				    bootstrap_script = Chef::Config[:knife][:bluebox_bootstrap_url]
-				    bootstrap_script ||= "https://BlueBoxGroup@github.com/BlueBoxGroup/ChefBootstrapScripts.git"
-				
             # Connect via SSH and make this all happen.
             begin
               bootstrap = Chef::Knife::Bootstrap.new
@@ -138,7 +132,6 @@ class Chef
               bootstrap.config[:identity_file] = config[:identity_file]
               bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.hostname
               bootstrap.config[:use_sudo] = true
-              bootstrap.config[:bootstrap_template] = config[:bootstrap_template] || 'bluebox-bootstrap-init.erb'
               bootstrap.run
             rescue Errno::ECONNREFUSED
               puts h.color("Connection refused on SSH, retrying - CTRL-C to abort")
