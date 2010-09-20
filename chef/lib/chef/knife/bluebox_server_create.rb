@@ -49,7 +49,7 @@ class Chef
         :description => "User password on new server.",
 		    :default => ""
 		    
-		  option :boostrap,
+		  option :bootstrap,
 		    :long => "--bootstrap false",
 		    :description => "Disables the bootstrapping process.",
 		    :default => true
@@ -112,7 +112,7 @@ class Chef
             print "\n\n#{h.color("BBG Server startup succesful.  Accessible at #{server.hostname}\n", :green)}"
     				
     				# Make sure we should be bootstrapping.
-    				unless config[:password]
+    				unless config[:bootstrap]
       				puts "\n\n#{h.color("Boostrapping disabled per command line inputs.  Exiting here.}", :green)}"
     				  return true 
   				  end
