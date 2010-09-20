@@ -433,7 +433,7 @@ class Chef
 
       self[:tags] = Array.new unless attribute?(:tags)
       @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
-      @override_attrs = Chef::Mixin::DeepMerge.merge(Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs), Chef::Environment.load(chef_environment).attributes)
+      @override_attrs = Chef::Mixin::DeepMerge.merge(Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs), chef_environment == "_default" ? {} : Chef::Environment.load(chef_environment).attributes)
       @automatic_attrs[:recipes] = expansion.recipes
       @automatic_attrs[:roles] = expansion.roles
 

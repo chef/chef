@@ -68,6 +68,21 @@ describe Chef::Environment do
     end
   end
 
+  describe "attributes" do
+    it "should let you set the attributes hash explicitly" do
+      @environment.attributes({ :one => 'two' }).should == { :one => 'two' }
+    end
+
+    it "should let you return the attributes hash" do
+      @environment.attributes({ :one => 'two' })
+      @environment.attributes.should == { :one => 'two' }
+    end
+
+    it "should throw an ArgumentError if we aren't a kind of hash" do
+      lambda { @environment.attributes(Array.new) }.should raise_error(ArgumentError)
+    end
+  end
+  
   describe "cookbook_versions" do
     before(:each) do
       @cookbook_versions = {
@@ -315,12 +330,16 @@ describe Chef::Environment do
 
   describe "self.create_default_environment" do
     it "should check if the '_default' environment exists" do
-      Chef::Environment.should_receive(:cdb_load).with('_default')
+      @couchdb = Chef::CouchDB.new
+      Chef::CouchDB.stub!(:new).and_return @couchdb
+      Chef::Environment.should_receive(:cdb_load).with('_default', Chef::CouchDB.new)
       Chef::Environment.create_default_environment
     end
 
     it "should not re-create the environment if it exists" do
-      Chef::Environment.should_receive(:cdb_load).with('_default').and_return true
+      @couchdb = Chef::CouchDB.new
+      Chef::CouchDB.stub!(:new).and_return @couchdb      
+      Chef::Environment.should_receive(:cdb_load).with('_default', Chef::CouchDB.new).and_return true
       Chef::Environment.should_not_receive(:new)
       Chef::Environment.create_default_environment
     end
@@ -328,9 +347,11 @@ describe Chef::Environment do
     it "should create the environment if it doesn't exist" do
       @env = Chef::Environment.new
       @env.stub!(:cdb_save).and_return true
+      @couchdb = Chef::CouchDB.new
       Chef::Environment.stub!(:new).and_return @env
+      Chef::CouchDB.stub!(:new).and_return @couchdb
 
-      Chef::Environment.should_receive(:cdb_load).with('_default').and_raise(Chef::Exceptions::CouchDBNotFound)
+      Chef::Environment.should_receive(:cdb_load).with('_default', Chef::CouchDB.new).and_raise(Chef::Exceptions::CouchDBNotFound)
       Chef::Environment.should_receive(:new)
       Chef::Environment.create_default_environment
     end
