@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-node.override[:attribute_priority_was] = 8
+node.override[:attribute_priority_was] = 9
 
 execute "echo #{node[:attribute_priority_was]} > #{node[:tmpdir]}/attribute_setting.txt"
 

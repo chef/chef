@@ -57,6 +57,7 @@ class Chef
     def initialize(couchdb=nil)
       @name = ''
       @description = ''
+      @attributes = Mash.new
       @cookbook_versions = Hash.new
       @couchdb_rev = nil
       @couchdb_id = nil
@@ -91,6 +92,14 @@ class Chef
       )
     end
 
+    def attributes(arg=nil)
+      set_or_return(
+        :attributes,
+        arg,
+        :kind_of => Hash
+      )
+    end
+    
     def cookbook_versions(arg=nil)
       set_or_return(
         :cookbook_versions,
@@ -121,7 +130,8 @@ class Chef
         "description" => @description,
         "cookbook_versions" =>  @cookbook_versions,
         "json_class" => self.class.name,
-        "chef_type" => "environment"
+        "chef_type" => "environment",
+        "attributes" => @attributes
       }
       result["_rev"] = couchdb_rev if couchdb_rev
       result
@@ -134,6 +144,7 @@ class Chef
     def update_from!(o)
       description(o.description)
       cookbook_versions(o.cookbook_versions)
+      attributes(o.attributes)
       self
     end
 
@@ -142,6 +153,7 @@ class Chef
       environment.name(o["name"])
       environment.description(o["description"])
       environment.cookbook_versions(o["cookbook_versions"])
+      environment.attributes(o["attributes"])
       environment.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       environment.couchdb_id = o["_id"] if o.has_key?("_id")
       environment
