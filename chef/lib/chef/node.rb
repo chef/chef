@@ -27,6 +27,7 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/mixin/language_include_attribute'
 require 'chef/mixin/deep_merge'
+require 'chef/environment'
 require 'chef/couchdb'
 require 'chef/rest'
 require 'chef/run_list'
@@ -432,8 +433,7 @@ class Chef
 
       self[:tags] = Array.new unless attribute?(:tags)
       @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
-      @override_attrs = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
-
+      @override_attrs = Chef::Mixin::DeepMerge.merge(Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs), Chef::Environment.load(chef_environment).attributes)
       @automatic_attrs[:recipes] = expansion.recipes
       @automatic_attrs[:roles] = expansion.roles
 

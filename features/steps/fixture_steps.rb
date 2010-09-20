@@ -218,6 +218,7 @@ Before do
         e = Chef::Environment.new
         e.name 'cucumber'
         e.description 'I like to run tests'
+        e.attributes({"attribute_priority_was" => 8})
         e
       end,
       'production' => Proc.new do
