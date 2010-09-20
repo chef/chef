@@ -115,6 +115,13 @@ __ssh QUERY COMMAND__ _(options)_
 
 The _ssh_ sub-command opens an ssh session to each of the nodes in the search results of the _QUERY_. This sub-command requires that the net-ssh-multi and highline Ruby libraries are installed. On Debian systems, these are the libnet-ssh-multi-ruby and libhighline-ruby packages. They can also be installed as RubyGems (net-ssh-multi and highline, respectively).
 
+__status__ _(options)_
+
+  * `-r`, `--run-list RUN_LIST`:
+    Show the run list
+
+The _status_ sub-command searches the Chef Server for all nodes and displays information about the last time the node checked into the server and executed a `node.save`. The fields displayed are the relative checkin time, the node name, it's operating system platform and version, the fully-qualified domain name and the default IP address. If the `-r` option is given, the node's run list will also be displayed. Note that depending on the configuration of the nodes, the FQDN and IP displayed may not be publicly reachable.
+
 ## BOOTSTRAP SUB-COMMANDS
 
 __bootstrap FQDN__ _(options)_
