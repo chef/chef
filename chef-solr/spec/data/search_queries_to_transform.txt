@@ -54,3 +54,10 @@ content:[animal__=__ape TO animal__=__zebra]
 
 animal:{ape TO zebra}
 content:{animal__=__ape TO animal__=__zebra}
+
+((value:[1 TO 3] OR nested_b1_a2_a3:B1_A2_A3-c) OR value:[5 TO *])
+((content:[value__=__1 TO value__=__3] OR content:nested_b1_a2_a3__=__B1_A2_A3-c) OR content:[value__=__5 TO value__=__\ufff0])
+
+((value:{1 TO 3} OR value:{1 TO 3}) OR run_list:recipe\[alpha\])
+((content:{value__=__1 TO value__=__3} OR content:{value__=__1 TO value__=__3}) OR content:run_list__=__recipe\[alpha\])
+
