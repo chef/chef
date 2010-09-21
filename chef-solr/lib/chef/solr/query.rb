@@ -102,27 +102,26 @@ class Chef
         # TODO: this is a rough first attempt.  should verify edge cases for
         # query encoding and other special characters, e.g. %20
         return q if q == "*:*"
+
         # a:[* TO *] => a*
         q = q.gsub(/\[\*[+ ]TO[+ ]\*\]/, '*')
 
         keyp = '[^ \\+()]+'
         lbrak = '[\[{]'
         rbrak = '[\]}]'
-        # a:[blah TO *] => content\001[a__=__blah\002TO\002a__=__\ufff0]
-        q = q.gsub(/(#{keyp}):(#{lbrak})(.+)[+ ]TO[+ ]\*(#{rbrak})/) do |m|
-          "content#{TEMP_SEP}#{$2}#{$1}__=__#{$3}#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__\\ufff0#{$4}"
-        end
-
-        # a:[* TO blah] => content\001[a__=__\002TO\002a__=__blah]
-        q = q.gsub(/(#{keyp}):(#{lbrak})\*[+ ]TO[+ ]([^\]]+)(#{rbrak})/) do |m|
-          "content#{TEMP_SEP}#{$2}#{$1}__=__#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__#{$3}#{$4}"
-        end
 
         # a:[blah TO zah] =>
         # content\001[a__=__blah\002TO\002a__=__zah]
-
-        q = q.gsub(/(#{keyp}):(#{lbrak})([^\]}]+)[+ ]TO[+ ]([^\]]+)(#{rbrak})/) do |m|
-          "content#{TEMP_SEP}#{$2}#{$1}__=__#{$3}#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__#{$4}#{$5}"
+        # includes the cases a:[* TO zah] and a:[blah TO *], but not
+        # [* TO *]; that is caught above
+        q = q.gsub(/(#{keyp}):(#{lbrak})([^\]}]+)[+ ]TO[+ ]([^\]}]+)(#{rbrak})/) do |m|
+          if $3 == "*"
+            "content#{TEMP_SEP}#{$2}#{$1}__=__#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__#{$4}#{$5}"
+          elsif $4 == "*"
+            "content#{TEMP_SEP}#{$2}#{$1}__=__#{$3}#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__\\ufff0#{$5}"
+          else
+            "content#{TEMP_SEP}#{$2}#{$1}__=__#{$3}#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__#{$4}#{$5}"
+          end
         end
 
         # foo:bar => content:foo__=__bar
