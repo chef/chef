@@ -32,8 +32,6 @@ class Chef
   class Solr
     class Query < Chef::Solr
       ID_KEY = "X_CHEF_id_CHEF_X"
-      TEMP_SEP = "\001"
-      SPC_SEP = "\002"
       
       # Create a new Query object - takes the solr_url and optional
       # Chef::CouchDB object to inflate objects into.
@@ -98,10 +96,27 @@ class Chef
         end
       end
 
+      # Constants used for search query transformation
+      FLD_SEP = "\001"
+      SPC_SEP = "\002"
+      QUO_SEP = "\003"
+      QUO_KEY = "\004"
+
       def transform_search_query(q)
-        # TODO: this is a rough first attempt.  should verify edge cases for
-        # query encoding and other special characters, e.g. %20
         return q if q == "*:*"
+
+        # handled escaped quotes
+        q = q.gsub(/\\"/, QUO_SEP)
+
+        # handle quoted strings
+        i = 1
+        quotes = {}
+        q = q.gsub(/([^ \\+()]+):"([^"]+)"/) do |m|
+          key = QUO_KEY + i.to_s
+          quotes[key] = "content#{FLD_SEP}\"#{$1}__=__#{$2}\""
+          i += 1
+          key
+        end
 
         # a:[* TO *] => a*
         q = q.gsub(/\[\*[+ ]TO[+ ]\*\]/, '*')
@@ -116,22 +131,31 @@ class Chef
         # [* TO *]; that is caught above
         q = q.gsub(/(#{keyp}):(#{lbrak})([^\]}]+)[+ ]TO[+ ]([^\]}]+)(#{rbrak})/) do |m|
           if $3 == "*"
-            "content#{TEMP_SEP}#{$2}#{$1}__=__#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__#{$4}#{$5}"
+            "content#{FLD_SEP}#{$2}#{$1}__=__#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__#{$4}#{$5}"
           elsif $4 == "*"
-            "content#{TEMP_SEP}#{$2}#{$1}__=__#{$3}#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__\\ufff0#{$5}"
+            "content#{FLD_SEP}#{$2}#{$1}__=__#{$3}#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__\\ufff0#{$5}"
           else
-            "content#{TEMP_SEP}#{$2}#{$1}__=__#{$3}#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__#{$4}#{$5}"
+            "content#{FLD_SEP}#{$2}#{$1}__=__#{$3}#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__#{$4}#{$5}"
           end
         end
 
         # foo:bar => content:foo__=__bar
         q = q.gsub(/([^ \\+()]+):([^ +]+)/) { |m| "content:#{$1}__=__#{$2}" }
 
-        # /001 => ':'
-        q = q.gsub(/#{TEMP_SEP}/, ':')
-
         # /002 => ' '
-        q.gsub(/#{SPC_SEP}/, ' ')
+        q = q.gsub(/#{SPC_SEP}/, ' ')
+
+        # replace quoted query chunks
+        quotes.keys.each do |key|
+          q = q.gsub(key, quotes[key])
+        end
+
+        # replace escaped quotes
+        q = q.gsub(QUO_SEP, '\"')
+
+        # /001 => ':'
+        q = q.gsub(/#{FLD_SEP}/, ':')
+        q
       end
 
     end

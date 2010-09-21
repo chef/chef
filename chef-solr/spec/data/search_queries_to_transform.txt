@@ -61,3 +61,20 @@ content:{animal__=__ape TO animal__=__zebra}
 ((value:{1 TO 3} OR value:{1 TO 3}) OR run_list:recipe\[alpha\])
 ((content:{value__=__1 TO value__=__3} OR content:{value__=__1 TO value__=__3}) OR content:run_list__=__recipe\[alpha\])
 
+words:"one two three"
+content:"words__=__one two three"
+
+words:"one \"two\" three"
+content:"words__=__one \"two\" three"
+
+words:"\"one two\" three"
+content:"words__=__\"one two\" three"
+
+words:"one two \"three\""
+content:"words__=__one two \"three\""
+
+words:"one two \"three\"" OR words:"\"one two\" three" AND words:"one \"two\" three"
+content:"words__=__one two \"three\"" OR content:"words__=__\"one two\" three" AND content:"words__=__one \"two\" three"
+
+words:\"*
+content:words__=__\"*
