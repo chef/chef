@@ -25,7 +25,7 @@ describe Chef::CookbookVersion do
     @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
     @cookbook = @cookbook_collection[:openldap]
     @node = Chef::Node.new
-    @node.name "Julia Child"
+    @node.name "JuliaChild"
     @run_context = Chef::RunContext.new(@node, @cookbook_collection)
   end
   

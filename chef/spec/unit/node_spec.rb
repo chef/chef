@@ -57,6 +57,10 @@ describe Chef::Node do
     it "cannot be blank" do
       lambda { @node.name("")}.should raise_error(Chef::Exceptions::ValidationFailed)
     end
+    
+    it "should not accept name doesn't match /^[\-[:alnum:]_:.]+$/" do	
+      lambda { @node.name("space in it")}.should raise_error(Chef::Exceptions::ValidationFailed)
+    end
   end
 
   describe "attributes" do
@@ -357,7 +361,7 @@ describe Chef::Node do
   describe "from file" do
     it "should load a node from a ruby file" do
       @node.from_file(File.expand_path(File.join(CHEF_SPEC_DATA, "nodes", "test.rb")))
-      @node.name.should eql("test.example.com short")
+      @node.name.should eql("test.example.com-short")
       @node.sunshine.should eql("in")
       @node.something.should eql("else")
       @node.recipes.should == ["operations-master", "operations-monitoring"]
@@ -378,7 +382,7 @@ describe Chef::Node do
       File.stub!(:exists?).and_return(true)
       File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
       @node.find_file("test.example.com")
-      @node.name.should == "test.example.com short"
+      @node.name.should == "test.example.com-short"
     end
     
     it "should load a node from the default file" do
@@ -386,7 +390,7 @@ describe Chef::Node do
       File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
       File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.rb")).and_return(false)
       @node.find_file("test.example.com")
-      @node.name.should == "test.example.com default"
+      @node.name.should == "test.example.com-default"
     end
     
     it "should raise an ArgumentError if it cannot find any node file at all" do
