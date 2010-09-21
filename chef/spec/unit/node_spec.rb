@@ -99,7 +99,6 @@ describe Chef::Node do
     it "should not accept name doesn't match /^[\-[:alnum:]_:.]+$/" do
       lambda { @node.name("space in it")}.should raise_error(Chef::Exceptions::ValidationFailed)
     end
-
   end
 
   describe "chef_environment" do
