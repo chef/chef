@@ -392,6 +392,8 @@ class Chef
         relative_path = "nodes"
       elsif klass == Chef::DataBagItem
         relative_path = "data_bags/#{bag}"
+      elsif klass == Chef::Environment
+        relative_path = "environments"
       end
 
       relative_file = File.expand_path(File.join(Dir.pwd, relative_path, from_file))
