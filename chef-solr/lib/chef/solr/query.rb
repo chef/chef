@@ -55,7 +55,7 @@ class Chef
       # You'll wind up having to page things yourself.
       def raw(type, options={})
         qtype = case type
-                when "role",:role,"node",:node,"client",:client
+                when "role",:role,"node",:node,"client",:client, "environment", :environment
                   type
                 else
                   [ "data_bag_item", type ]

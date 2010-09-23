@@ -19,12 +19,16 @@
 require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/couchdb'
+require 'chef/index_queue'
+
 
 class Chef
   class Environment
 
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::FromFile
+    include Chef::IndexQueue::Indexable
+
 
     attr_accessor :couchdb, :couchdb_rev
     attr_reader :couchdb_id
@@ -66,6 +70,7 @@ class Chef
 
     def couchdb_id=(value)
       @couchdb_id = value
+      self.index_id = value
     end
 
     def chef_server_rest
