@@ -20,12 +20,12 @@ require 'chef/knife'
 
 class Chef::Knife::Exec < Chef::Knife
 
-  banner "Usage: knife exec [SCRIPT] (options)"
+  banner "knife exec [SCRIPT] (options)"
 
   option :exec,
     :short => "-E CODE",
     :long => "--exec CODE",
-    :description => "Chef code to execute"
+    :description => "a string of Chef code to execute"
 
   def late_load_deps
     require 'chef/shef/ext'
