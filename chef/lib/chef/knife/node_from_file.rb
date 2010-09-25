@@ -33,7 +33,7 @@ class Chef
         
         output(format_for_display(updated)) if config[:print_after]
 
-        Chef::Log.warn("Updated Node #{updated.name}!")
+        Chef::Log.info("Updated Node #{updated.name}!")
       end
 
     end
