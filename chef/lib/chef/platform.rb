@@ -72,6 +72,14 @@ class Chef
               :mdadm => Chef::Provider::Mdadm
             }
           },
+          :xenserver   => {
+            :default => {
+              :service => Chef::Provider::Service::Redhat,
+              :cron => Chef::Provider::Cron,
+              :package => Chef::Provider::Package::Yum,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
           :centos   => {
             :default => {
               :service => Chef::Provider::Service::Redhat,
