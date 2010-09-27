@@ -112,7 +112,7 @@ class Chef
       end
       res = @resources_by_name[lookup_by]
       unless res
-        raise ArgumentError, "Cannot find a resource matching #{lookup_by} (did you define it first?)"
+        raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{lookup_by} (did you define it first?)"
       end
       @resources[res]
     end
@@ -138,7 +138,8 @@ class Chef
         when String
           results << find_resource_by_string(arg)
         else
-          raise ArgumentError, "resources takes arguments as a hash or strings!"
+          msg = "arguments to #{self.class.name}#find should be of the form :resource => 'name' or resource[name]"
+          raise Chef::Exceptions::InvalidResourceSpecification, msg
         end
       end
       flat_results = results.flatten

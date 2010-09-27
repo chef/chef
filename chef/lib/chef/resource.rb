@@ -40,6 +40,32 @@ class Chef
         other_notification.resource == resource && other_notification.action == action
       end
 
+      def resolve_resource_reference(resource_collection)
+        return resource if resource.kind_of?(Chef::Resource)
+
+        matching_resource = resource_collection.find(resource)
+        if Array(matching_resource).size > 1
+          msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple resources, "\
+                "but can only notify one resource. Notifying resource was defined on #{notifying_resource.source_line}"
+          raise Chef::Exceptions::InvalidResourceReference, msg
+        end
+        self.resource = matching_resource
+      rescue Chef::Exceptions::ResourceNotFound
+        Chef::Log.fatal(<<-FAIL)
+Resource #{notifying_resource} is configured to notify resource #{resource} with action #{action},
+but #{resource} cannot be found in the resource collection. #{notifying_resource} is defined in
+#{notifying_resource.source_line}
+FAIL
+        raise
+      rescue Chef::Exceptions::InvalidResourceSpecification
+          Chef::Log.fatal(<<-F)
+Resource #{notifying_resource} is configured to notify resource #{resource} with action #{action},
+but #{resource} is not valid syntax to look up a resource in the resource collection. Notification
+is defined near #{notifying_resource.source_line}
+F
+        raise
+      end
+
     end
 
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node]
@@ -50,13 +76,24 @@ class Chef
     include Chef::Mixin::ConvertToClassName
     include Chef::Mixin::Deprecation
     
-    attr_accessor :params, :provider, :updated, :allowed_actions, :run_context, :cookbook_name, :recipe_name, :enclosing_provider
+    attr_accessor :params
+    attr_accessor :provider
+    attr_accessor :updated
+    attr_accessor :allowed_actions
+    attr_accessor :run_context
+    attr_accessor :cookbook_name
+    attr_accessor :recipe_name
+    attr_accessor :enclosing_provider
     attr_accessor :source_line
-    attr_reader :resource_name, :not_if_args, :only_if_args
+
+    attr_reader :resource_name
+    attr_reader :not_if_args
+    attr_reader :only_if_args
 
     # Each notify entry is a resource/action pair, modeled as an
     # Struct with a #resource and #action member
-    attr_reader :notifies_immediate, :notifies_delayed
+    attr_reader :immediate_notifications
+    attr_reader :delayed_notifications
     
     def initialize(name, run_context=nil)
       @name = name
@@ -74,8 +111,8 @@ class Chef
       @not_if_args = {}
       @only_if = nil
       @only_if_args = {}
-      @notifies_immediate = Array.new
-      @notifies_delayed = Array.new
+      @immediate_notifications = Array.new
+      @delayed_notifications = Array.new
       @source_line = nil
 
       @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
@@ -106,7 +143,7 @@ class Chef
           end
         end
         true
-      rescue ArgumentError => e
+      rescue Chef::Exceptions::ResourceNotFound => e
         true
       end
     end
@@ -177,31 +214,65 @@ class Chef
     def epic_fail(arg=nil)
       ignore_failure(arg)
     end
-    
+
     def notifies(*args)
-      raise ArgumentError, "Wrong number of arguments (should be 1, 2, or 3)" unless ( args.size > 0 && args.size < 4)
-      if args.size > 1
-        notifies_helper(*args)
+      unless ( args.size > 0 && args.size < 4)
+        raise ArgumentError, "Wrong number of arguments for notifies: should be 1-3 arguments, you gave #{args.inspect}"
+      end
+
+      if args.size > 1 # notifies(:action, resource) OR notifies(:action, resource, :immediately)
+        add_notification(*args)
       else
         # This syntax is so weird. surely people will just give us one hash?
         notifications = args.flatten
         notifications.each do |resources_notifications|
-          begin
-            resources_notifications.each do |resource, notification|
-              Chef::Log.error "resource KV: `#{resource.inspect}' => `#{notification.inspect}'"
-              notifies_helper(notification[0], resource, notification[1])    
-            end
-          rescue NoMethodError
-            Chef::Log.fatal("encountered NME processing resource #{resources_notifications.inspect}")
-            Chef::Log.fatal("incoming args: #{args.inspect}")
-            raise
+          resources_notifications.each do |resource, notification|
+            action, timing = notification[0], notification[1]
+            Chef::Log.debug "adding notification from resource #{self} to `#{resource.inspect}' => `#{notification.inspect}'"
+            add_notification(action, resource, timing)
           end
         end 
       end
+    rescue NoMethodError
+      Chef::Log.fatal("Error processing notifies(#{args.inspect}) on #{self}")
+      raise
     end
-    
+
+    def add_notification(action, resources, timing=:delayed)
+      resources = [resources].flatten
+      resources.each do |resource|
+        case timing.to_s
+        when 'delayed'
+          notifies_delayed(action, resource)
+        when 'immediate', 'immediately'
+          notifies_immediately(action, resource)
+        else
+          raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} "\
+                                "Valid timings are: :delayed, :immediate, :immediately"
+        end
+      end
+
+      true
+    end
+
+    # Iterates over all immediate and delayed notifications, calling
+    # resolve_resource_reference on each in turn, causing them to
+    # resolve lazy/forward references.
+    def resolve_notification_references
+      @immediate_notifications.each { |n| n.resolve_resource_reference(run_context.resource_collection) }
+      @delayed_notifications.each {|n| n.resolve_resource_reference(run_context.resource_collection) }
+    end
+
+    def notifies_immediately(action, resource_spec)
+      @immediate_notifications << Notification.new(resource_spec, action, self)
+    end
+
+    def notifies_delayed(action, resource_spec)
+      @delayed_notifications << Notification.new(resource_spec, action, self)
+    end
+
     def resources(*args)
-      run_context.resource_collection.resources(*args)
+      run_context.resource_collection.find(*args)
     end
     
     def subscribes(action, resources, timing=:delayed)
@@ -211,7 +282,7 @@ class Chef
       end
       true
     end
-    
+
     def is(*args)
       if args.size == 1
         args.first
@@ -421,31 +492,6 @@ class Chef
           raise e
         end
       end
-    end
-
-    def validate_timing(timing)
-      timing = timing.to_sym
-      unless (timing == :delayed || timing == :immediate || timing == :immediately)
-        raise ArgumentError, "invalid timing: #{timing}; must be one of: :delayed, :immediate, :immediately"
-      end
-
-      timing == :immediately ? :immediate : timing
-    end
-
-    def notifies_helper(action, resources, timing=:delayed)
-      timing = validate_timing(timing)
-
-      resource_array = [resources].flatten
-      resource_array.each do |resource|
-        new_notify = Notification.new(resource, action, self)
-        if timing == :delayed
-          notifies_delayed << new_notify
-        else
-          notifies_immediate << new_notify
-        end
-      end
-
-      true
     end
 
   end

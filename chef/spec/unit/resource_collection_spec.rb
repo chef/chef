@@ -152,7 +152,7 @@ describe Chef::ResourceCollection do
     end
   
     it "should raise an exception if it cannot find a resource with lookup" do
-      lambda { @rc.lookup("zen_master[dog]") }.should raise_error(ArgumentError)
+      lambda { @rc.lookup("zen_master[dog]") }.should raise_error(Chef::Exceptions::ResourceNotFound)
     end
   end
   
@@ -203,6 +203,11 @@ describe Chef::ResourceCollection do
     it "should raise an exception if you pass something other than a string or hash to resource" do
       lambda { @rc.resources([Array.new]) }.should raise_error(ArgumentError)
     end
+
+    it "raises an error when attempting to find a resource that does not exist" do
+      lambda {@rc.find("script[nonesuch]")}.should raise_error(Chef::Exceptions::ResourceNotFound)
+    end
+
   end
   
   describe "to_json" do
