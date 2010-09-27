@@ -1,59 +1,32 @@
 {
+  "name": "transfer_remote_files",
+  "description": "A fabulous new cookbook",
+  "long_description": "",
+  "maintainer": "Your Name",
   "maintainer_email": "youremail@example.com",
-  "recipes": {
-    "transfer_remote_files::transfer_a_file_from_a_cookbook": "",
-    "transfer_remote_files::should_prefer_the_file_for_this_specific_host": "",
-    "transfer_remote_files::transfer_a_file_from_a_specific_cookbook": "",
-    "transfer_remote_files::transfer_a_non-existent_file_from_a_cookbook": "",
-    "transfer_remote_files": "",
-    "transfer_remote_files::change_remote_file_perms_trickery": ""
-  },
-  "suggestions": {
-
-  },
   "license": "Apache v2.0",
-  "conflicting": {
-
+  "platforms": {
   },
   "dependencies": {
     "transfer_remote_files_definition": [
 
     ]
   },
-  "attributes": {
-
+  "recommendations": {
   },
-  "name": "transfer_remote_files",
+  "suggestions": {
+  },
+  "conflicting": {
+  },
   "providing": {
-    "transfer_remote_files": [
-
-    ],
-    "transfer_remote_files::transfer_a_file_from_a_cookbook": [
-
-    ],
-    "transfer_remote_files::should_prefer_the_file_for_this_specific_host": [
-
-    ],
-    "transfer_remote_files::transfer_a_file_from_a_specific_cookbook": [
-
-    ],
-    "transfer_remote_files::transfer_a_non-existent_file_from_a_cookbook": [
-
-    ],
-    "transfer_remote_files::change_remote_file_perms_trickery": [
-
-    ]
   },
   "replacing": {
-
   },
-  "long_description": "",
-  "description": "A fabulous new cookbook",
-  "maintainer": "Your Name",
-  "recommendations": {
-
+  "attributes": {
   },
-  "platforms": {
-
-  }
+  "groupings": {
+  },
+  "recipes": {
+  },
+  "version": "0.0.0"
 }
