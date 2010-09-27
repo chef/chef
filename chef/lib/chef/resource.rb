@@ -50,20 +50,22 @@ class Chef
           raise Chef::Exceptions::InvalidResourceReference, msg
         end
         self.resource = matching_resource
-      rescue Chef::Exceptions::ResourceNotFound
-        Chef::Log.fatal(<<-FAIL)
-Resource #{notifying_resource} is configured to notify resource #{resource} with action #{action},
-but #{resource} cannot be found in the resource collection. #{notifying_resource} is defined in
+      rescue Chef::Exceptions::ResourceNotFound => e
+        err = Chef::Exceptions::ResourceNotFound.new(<<-FAIL)
+Resource #{notifying_resource} is configured to notify resource #{resource} with action #{action}, \
+but #{resource} cannot be found in the resource collection. #{notifying_resource} is defined in \
 #{notifying_resource.source_line}
 FAIL
-        raise
-      rescue Chef::Exceptions::InvalidResourceSpecification
-          Chef::Log.fatal(<<-F)
-Resource #{notifying_resource} is configured to notify resource #{resource} with action #{action},
-but #{resource} is not valid syntax to look up a resource in the resource collection. Notification
+        err.set_backtrace(e.backtrace)
+        raise err
+      rescue Chef::Exceptions::InvalidResourceSpecification => e
+          err = Chef::Exceptions::InvalidResourceSpecification.new(<<-F)
+Resource #{notifying_resource} is configured to notify resource #{resource} with action #{action}, \
+but #{resource.inspect} is not valid syntax to look up a resource in the resource collection. Notification \
 is defined near #{notifying_resource.source_line}
 F
-        raise
+          err.set_backtrace(e.backtrace)
+        raise err
       end
 
     end
