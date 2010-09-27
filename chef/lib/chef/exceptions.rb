@@ -57,5 +57,8 @@ class Chef
     class DsclCommandFailed < RuntimeError; end
     class UserIDNotFound < ArgumentError; end
     class GroupIDNotFound < ArgumentError; end
+    class InvalidResourceReference < RuntimeError; end
+    class ResourceNotFound < RuntimeError; end
+    class InvalidResourceSpecification < ArgumentError; end
   end
 end
