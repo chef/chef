@@ -24,7 +24,7 @@ class Chef
       end
   
       def action_purr
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
         true
       end
 

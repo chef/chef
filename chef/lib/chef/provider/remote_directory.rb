@@ -96,7 +96,7 @@ class Chef
         
         file_to_fetch = cookbook_file_resource(full_path, cookbook_file_relative_path)
         file_to_fetch.run_action(:create)
-        @new_resource.updated = true if file_to_fetch.updated?
+        @new_resource.updated_by_last_action(true) if file_to_fetch.updated?
       end
       
       def cookbook_file_resource(target_path, relative_source_path)
@@ -115,7 +115,7 @@ class Chef
         unless ::File.directory?(path)
           directory_to_create = resource_for_directory(path)
           directory_to_create.run_action(:create)
-          @new_resource.updated = true if directory_to_create.updated?
+          @new_resource.updated_by_last_action(true) if directory_to_create.updated?
         end
       end
 

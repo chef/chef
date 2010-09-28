@@ -53,8 +53,9 @@ class Chef
       resource.run_action(action)
 
       # Execute any immediate and queue up any delayed notifications
-      # associated with the resource.
-      if resource.updated?
+      # associated with the resource, but only if it was updated *this time*
+      # we ran an action on it.
+      if resource.updated_by_last_action?
         resource.immediate_notifications.each do |notification|
           Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (immediate)")
           run_action(notification.resource, notification.action)

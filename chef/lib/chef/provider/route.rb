@@ -110,7 +110,7 @@ class Chef::Provider::Route < Chef::Provider
 
         Chef::Log.info("Adding route: #{command} ")
         run_command( :command => command )
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
       end
 
       #for now we always write the file (ugly but its what it is)
@@ -123,7 +123,7 @@ class Chef::Provider::Route < Chef::Provider
 
         Chef::Log.info("Removing route: #{command}")
         run_command( :command => command )
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
       else
         Chef::Log.debug("Route #{@new_resource.name} does not exist")
       end

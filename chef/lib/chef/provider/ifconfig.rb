@@ -80,7 +80,7 @@ class Chef
           run_command(
             :command => command
           )
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
 
         end
 
@@ -96,7 +96,7 @@ class Chef
           run_command(
             :command => command
           )
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         else
           Chef::Log.debug("Ifconfig #{@current_resource} does not exist")
         end

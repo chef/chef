@@ -56,7 +56,7 @@ class Chef
           #pid, stdin, stdout, stderr = popen4(command)
           shell_out!(command)
           Chef::Log.info("Created mdadm raid device (#{@new_resource.raid_device})")
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         else
           Chef::Log.debug("mdadm raid device already exists, skipping create (#{@new_resource.raid_device})")
         end
@@ -68,7 +68,7 @@ class Chef
           Chef::Log.debug("mdadm command: #{command}")
           shell_out!(command)
           Chef::Log.info("Assembled mdadm raid device (#{@new_resource.raid_device})")
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         else
           Chef::Log.debug("mdadm raid device already exists, skipping assemble (#{@new_resource.raid_device})")
         end
@@ -80,7 +80,7 @@ class Chef
           Chef::Log.debug("mdadm command: #{command}")
           shell_out!(command)
           Chef::Log.info("Stopped mdadm raid device (#{@new_resource.raid_device})")
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         else
           Chef::Log.debug("mdadm raid device doesn't exist (#{@new_resource.raid_device})")
         end

@@ -42,11 +42,11 @@ class Chef
              stage_file_to_tmpdir(staging_file.path)
              FileUtils.mv(staging_file.path, @new_resource.path)
            end
-           @new_resource.updated = true
+           @new_resource.updated_by_last_action(true)
          else
            set_all_access_controls(@new_resource.path)
          end
-         @new_resource.updated
+         @new_resource.updated_by_last_action(true)
        end
 
       def action_create_if_missing
@@ -81,7 +81,7 @@ class Chef
       def set_all_access_controls(file)
         access_controls = Chef::FileAccessControl.new(@new_resource, file)
         access_controls.set_all
-        @new_resource.updated = access_controls.modified?
+        @new_resource.updated_by_last_action(access_controls.modified?)
       end
 
       def backup_new_resource

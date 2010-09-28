@@ -74,12 +74,12 @@ class Chef
           if compare_value
             modify_env
             Chef::Log.info("Altered #{@new_resource}")
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
           end
         else
           create_env
           Chef::Log.debug("Created #{@new_resource}")
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
       end
 
@@ -106,7 +106,7 @@ class Chef
             old_value = @new_resource.value(new_value)
             create_env
             Chef::Log.debug("Deleted #{old_value} element")
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
             return true #we removed the element and updated; do not delete the key
           end
         end
@@ -116,7 +116,7 @@ class Chef
         if @key_exists && !delete_element
           delete_env
           Chef::Log.debug("Deleted #{@new_resource}")
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
       end
 
@@ -124,7 +124,7 @@ class Chef
         if @key_exists
           if compare_value
             modify_env
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("Modified #{@new_resource}")
           end
         else

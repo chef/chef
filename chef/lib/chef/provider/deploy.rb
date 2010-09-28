@@ -68,7 +68,7 @@ class Chef
           end
         else
           deploy
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
       end
       
@@ -78,7 +78,7 @@ class Chef
           FileUtils.rm_rf(release_path)
         end
         deploy
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
       end
       
       def action_rollback
@@ -102,7 +102,7 @@ class Chef
           FileUtils.rm_rf i 
           release_deleted(i)
         end
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
       end
       
       def deploy

@@ -113,7 +113,7 @@ class Chef
           if @current_resource.mounted and @new_resource.supports[:remount]
             shell_out!("mount -o remount #{@new_resource.mount_point}")
 
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("Remounted #{@new_resource.mount_point}")
           elsif @current_resource.mounted
             umount_fs

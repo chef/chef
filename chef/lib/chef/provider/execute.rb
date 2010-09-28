@@ -48,7 +48,7 @@ class Chef
         
         status = run_command(command_args)
         if status
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
           Chef::Log.info("Ran #{@new_resource} successfully")
         end
       end

@@ -133,7 +133,7 @@ class Chef
             crontab.each_line { |line| stdin.puts "#{line}" }
           end
           Chef::Log.info("Updated cron '#{@new_resource.name}'")
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         else
           unless @cron_empty
             status = popen4("crontab -l -u #{@new_resource.user}") do |pid, stdin, stdout, stderr|
@@ -147,7 +147,7 @@ class Chef
             crontab.each_line { |line| stdin.puts "#{line}" }
           end
           Chef::Log.info("Added cron '#{@new_resource.name}'")
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
       end
 
@@ -177,7 +177,7 @@ class Chef
             crontab.each_line { |line| stdin.puts "#{line}" }
           end
           Chef::Log.debug("Deleted cron '#{@new_resource.name}'")
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
       end
 

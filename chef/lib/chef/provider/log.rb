@@ -39,7 +39,7 @@ class Chef
         # true:: Always return true
         def action_write
           Chef::Log.send(@new_resource.level, @new_resource.name)
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
 
       end

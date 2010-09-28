@@ -211,8 +211,8 @@ describe Chef::Provider::Git do
     @provider.should_receive(:clone)
     @provider.should_receive(:checkout)
     @provider.should_receive(:enable_submodules)
-    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_checkout
+    @resource.should be_updated
   end
 
   it "should not checkout if the destination exists or is a non empty directory" do
@@ -221,9 +221,9 @@ describe Chef::Provider::Git do
     @provider.should_not_receive(:clone)
     @provider.should_not_receive(:checkout)
     @provider.should_not_receive(:enable_submodules)
-    @resource.should_not_receive(:updated=)
     Chef::Log.should_receive(:info).with("Taking no action, checkout destination /my/deploy/dir already exists or is a non-empty directory")
     @provider.action_checkout
+    @resource.should_not be_updated
   end
 
   it "does a sync by running the sync command" do
@@ -241,16 +241,16 @@ describe Chef::Provider::Git do
     @provider.should_receive(:find_current_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.should_receive(:find_current_revision).and_return('28af684d8460ba4793eda3e7ac238c864a5d029a')
     @provider.should_receive(:sync)
-    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_sync
+    @resource.should be_updated
   end
   
   it "does a checkout instead of sync if the deploy directory doesn't exist" do
     ::File.should_receive(:exist?).with("/my/deploy/dir").and_return(false)
     @provider.should_receive(:action_checkout)
     @provider.should_not_receive(:run_command)
-    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_sync
+    @resource.should be_updated
   end
   
   it "does a checkout instead of sync if the deploy directory is empty" do
@@ -259,15 +259,15 @@ describe Chef::Provider::Git do
     @provider.stub!(:sync_command).and_return("huzzah!")
     @provider.should_receive(:action_checkout)
     @provider.should_not_receive(:run_command).with(:command => "huzzah!", :cwd => "/my/deploy/dir")
-    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_sync
+    @resource.should be_updated
   end
   
   it "does an export by cloning the repo then removing the .git directory" do
     @provider.should_receive(:action_checkout)
     FileUtils.should_receive(:rm_rf).with(@resource.destination + "/.git")
-    @resource.should_receive(:updated=).at_least(1).times.with(true)
     @provider.action_export
+    @resource.should be_updated
   end
   
 end
