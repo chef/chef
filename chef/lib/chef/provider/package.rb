@@ -59,7 +59,7 @@ class Chef
           
         status = install_package(@new_resource.package_name, install_version)
         if status
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
       end
       
@@ -69,7 +69,7 @@ class Chef
           Chef::Log.info("Upgrading #{@new_resource} version from #{orig_version} to #{candidate_version}")
           status = upgrade_package(@new_resource.package_name, candidate_version)
           if status
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
           end
         end
       end
@@ -78,7 +78,7 @@ class Chef
         if removing_package?
           Chef::Log.info("Removing #{@new_resource}")
           remove_package(@current_resource.package_name, @new_resource.version)
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         else
         end
       end
@@ -99,7 +99,7 @@ class Chef
         if removing_package?
           Chef::Log.info("Purging #{@new_resource}")
           purge_package(@current_resource.package_name, @new_resource.version)
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
       end
       
@@ -128,7 +128,7 @@ class Chef
         Chef::Log.debug("Fetching preseed file to #{resource.path}")
         resource.run_action('create')
         
-        if resource.updated?
+        if resource.updated_by_last_action?
           resource.path
         else
           false

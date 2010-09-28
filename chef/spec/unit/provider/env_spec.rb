@@ -81,8 +81,8 @@ describe Chef::Provider::Env do
     end
 
     it "should set the the new_resources updated flag when it creates the key" do
-      @new_resource.should_receive(:updated=).with(true).and_return(true)
       @provider.action_create
+      @new_resource.should be_updated
     end
 
     it "should check to see if the values are the same if the key exists" do
@@ -102,8 +102,8 @@ describe Chef::Provider::Env do
       @provider.key_exists = true
       @provider.stub!(:compare_value).and_return(true)
       @provider.stub!(:modify_env).and_return(true)
-      @new_resource.should_receive(:updated=).with(true).and_return(true)
       @provider.action_create
+      @new_resource.should be_updated
     end
   end
 
@@ -133,8 +133,8 @@ describe Chef::Provider::Env do
 
     it "should set the new_resources updated flag to true if the key is deleted" do
       @provider.key_exists = true
-      @new_resource.should_receive(:updated=).with(true).and_return(true)
       @provider.action_delete
+      @new_resource.should be_updated
     end
   end
 

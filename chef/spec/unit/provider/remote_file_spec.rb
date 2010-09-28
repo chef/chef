@@ -132,8 +132,8 @@ describe Chef::Provider::RemoteFile, "action_create" do
       end
 
       it "should set the new resource to updated" do
-        @resource.should_receive(:updated=).with(true)
         @provider.action_create
+        @resource.should be_updated
       end
     end
 

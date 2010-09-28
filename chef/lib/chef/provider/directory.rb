@@ -46,7 +46,7 @@ class Chef
           else
             ::Dir.mkdir(@new_resource.path)
           end
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
         set_owner if @new_resource.owner != nil
         set_group if @new_resource.group != nil
@@ -62,7 +62,7 @@ class Chef
             Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.path}")
             ::Dir.delete(@new_resource.path)
           end
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         else
           raise RuntimeError, "Cannot delete #{@new_resource} at #{@new_resource_path}!" if ::File.exists?(@new_resource.path)
         end

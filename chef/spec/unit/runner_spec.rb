@@ -18,6 +18,40 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
+class SnitchyProvider < Chef::Provider
+  def self.all_actions_called
+    @all_actions_called ||= []
+  end
+
+  def self.action_called(action)
+    all_actions_called << action
+  end
+
+  def self.clear_action_record
+    @all_actions_called = nil
+  end
+
+  def load_current_resource
+    true
+  end
+
+  def action_first_action
+    @new_resource.updated_by_last_action(true)
+    self.class.action_called(:first)
+  end
+
+  def action_second_action
+    @new_resource.updated_by_last_action(true)
+    self.class.action_called(:second)
+  end
+
+  def action_third_action
+    @new_resource.updated_by_last_action(true)
+    self.class.action_called(:third)
+  end
+
+end
+
 describe Chef::Runner do
   def new_runner
     @node = Chef::Node.new
@@ -25,7 +59,8 @@ describe Chef::Runner do
     @node.platform "mac_os_x"
     @node.platform_version "10.5.1"
     @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}))
-    @run_context.resource_collection << Chef::Resource::Cat.new("loulou1", @run_context)
+    @first_resource = Chef::Resource::Cat.new("loulou1", @run_context)
+    @run_context.resource_collection << @first_resource
     Chef::Platform.set(
       :resource => :cat,
       :provider => Chef::Provider::SnakeOil
@@ -66,49 +101,7 @@ describe Chef::Runner do
     @runner.converge
   end
 
-  # TODO: 5/21/2010 cw/tim: the following tests really only test
-  # implementation, not behavior. They should probably be turned into
-  # feature tests that demonstrate that the different branches are
-  # followed based on the only_if condition.
-  
-  it "should not check a resource's only_if if it is not provided" do
-    @run_context.resource_collection[0].should_receive(:only_if).and_return(nil)
-    @runner.converge
-  end
-  
-  it "should send a resources only_if to Chef::Mixin::Command.only_if" do
-    @run_context.resource_collection[0].should_receive(:only_if).twice.and_return(true)
-    Chef::Mixin::Command.should_receive(:only_if).with(true, {}).and_return(false)
-    @runner.converge
-  end
-  
-  it "should change to the directory specified in cwd for only_if" do
-    @run_context.resource_collection[0].should_receive(:only_if).twice.and_return("/bin/true")
-    @run_context.resource_collection[0].should_receive(:only_if_args).and_return({:cwd => "/tmp"})
-    Chef::Mixin::Command.should_receive(:only_if).with("/bin/true", {:cwd => "/tmp"}).and_return(true)
-    @runner.converge
-  end
-  
-  it "should send a resources not_if to Chef::Mixin::Command.not_if" do
-    @run_context.resource_collection[0].should_receive(:not_if).twice.and_return(true)
-    Chef::Mixin::Command.should_receive(:not_if).with(true, {}).and_return(false)
-    @runner.converge
-  end
-  
-  it "should check a resources not_if, if it is provided" do
-    @run_context.resource_collection[0].should_receive(:not_if).and_return(nil)
-    @runner.converge
-  end
-  
-  it "should change to the directory specified in cwd for not_if" do
-    @run_context.resource_collection[0].should_receive(:not_if).twice.and_return("/bin/true")
-    @run_context.resource_collection[0].should_receive(:not_if_args).and_return({:cwd => "/tmp"})
-    Chef::Mixin::Command.should_receive(:not_if).with("/bin/true", {:cwd => "/tmp"}).and_return(true)
-    @runner.converge
-  end
-  
   it "should raise exceptions as thrown by a provider" do
-    Chef::Platform.stub!(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
     provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
     Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
     provider.stub!(:action_sell).once.and_raise(ArgumentError)
@@ -116,7 +109,6 @@ describe Chef::Runner do
   end
   
   it "should not raise exceptions thrown by providers if the resource has ignore_failure set to true" do
-    Chef::Platform.stub!(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
     @run_context.resource_collection[0].stub!(:ignore_failure).and_return(true)
     provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
     Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
@@ -125,71 +117,165 @@ describe Chef::Runner do
   end
   
   it "should execute immediate actions on changed resources" do
-    Chef::Platform.should_receive(:find_provider_for_node).exactly(3).times.and_return(Chef::Provider::SnakeOil)
-    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
-    Chef::Provider::SnakeOil.should_receive(:new).exactly(3).times.and_return(provider)   
-    @run_context.resource_collection << Chef::Resource::Cat.new("peanut", @run_context)
-    @run_context.resource_collection[1].notifies :buy, @run_context.resource_collection[0], :immediately
-    @run_context.resource_collection[1].updated = true
-    provider.should_receive(:action_buy).once.and_return(true)
+    notifying_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    notifying_resource.action = :purr # only action that will set updated on the resource
+
+    @run_context.resource_collection << notifying_resource
+    @first_resource.action = :nothing # won't be updated unless notified by other resource
+
+    notifying_resource.notifies(:purr, @first_resource, :immediately)
+
     @runner.converge
+
+    @first_resource.should be_updated
   end
-  
+
   it "should follow a chain of actions" do
-    Chef::Platform.should_receive(:find_provider_for_node).exactly(5).times.and_return(Chef::Provider::SnakeOil)
-    @run_context.resource_collection << Chef::Resource::Cat.new("peanut", @run_context)
-    @run_context.resource_collection[1].notifies :buy, @run_context.resource_collection[0], :immediately
-    @run_context.resource_collection << Chef::Resource::Cat.new("snuffles", @run_context)
-    @run_context.resource_collection[2].notifies :purr, @run_context.resource_collection[1], :immediately
-    @run_context.resource_collection[2].updated = true
-    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
-    p1 = Chef::Provider::SnakeOil.new(@run_context.resource_collection[1], @run_context)
-    p2 = Chef::Provider::SnakeOil.new( @run_context.resource_collection[2], @run_context)
-    Chef::Provider::SnakeOil.should_receive(:new).exactly(5).times.and_return(provider, p1, p2, p1, provider)   
-    provider.should_receive(:action_buy).once.and_return(true)
+    @first_resource.action = :nothing
+
+    middle_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    middle_resource.action = :nothing
+    @run_context.resource_collection << middle_resource
+    middle_resource.notifies(:purr, @first_resource, :immediately)
+
+    last_resource = Chef::Resource::Cat.new("snuffles", @run_context)
+    last_resource.action = :purr
+    @run_context.resource_collection << last_resource
+    last_resource.notifies(:purr, middle_resource, :immediately)
+
     @runner.converge
+
+    last_resource.should be_updated   # by action(:purr)
+    middle_resource.should be_updated # by notification from last_resource
+    @first_resource.should be_updated # by notification from middle_resource
   end
   
   it "should execute delayed actions on changed resources" do
-    Chef::Platform.should_receive(:find_provider_for_node).exactly(3).times.and_return(Chef::Provider::SnakeOil)
-    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
-    Chef::Provider::SnakeOil.should_receive(:new).exactly(3).times.and_return(provider)   
-    @run_context.resource_collection << Chef::Resource::Cat.new("peanut", @run_context)
-    @run_context.resource_collection[1].notifies :buy, @run_context.resource_collection[0], :delayed
-    @run_context.resource_collection[1].updated = true
-    provider.should_receive(:action_buy).once.and_return(true)
+    @first_resource.action = :nothing
+
+    second_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    second_resource.action = :purr
+
+    @run_context.resource_collection << second_resource
+    second_resource.notifies(:purr, @first_resource, :delayed)
+
     @runner.converge
+
+    @first_resource.should be_updated
   end
   
-  it "should collapse delayed actions on changed resources and execute them in the order they were encountered" do
-    Chef::Platform.stub!(:find_provider_for_node).and_return(Chef::Provider::SnakeOil)
-    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
-    Chef::Provider::SnakeOil.stub!(:new).and_return(provider)
-    cat = Chef::Resource::Cat.new("peanut", @run_context)
-    cat.notifies :buy, @run_context.resource_collection[0], :delayed
-    cat.updated = true
-    @run_context.resource_collection << cat
-    @run_context.resource_collection << cat
-    cat2 = Chef::Resource::Cat.new("snickers", @run_context)
-    cat2.notifies :pur, @run_context.resource_collection[1], :delayed
-    cat2.notifies :pur, @run_context.resource_collection[1], :delayed
-    cat2.updated = true
-    @run_context.resource_collection << cat2
-    provider.should_receive(:action_buy).once.ordered
-    provider.should_receive(:action_pur).once.ordered
+  it "does not duplicate delayed notifications" do
+    SnitchyProvider.clear_action_record
+
+    Chef::Platform.set(
+      :resource => :cat,
+      :provider => SnitchyProvider
+    )
+
+    @first_resource.action = :nothing
+
+    second_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    second_resource.action = :first_action
+    @run_context.resource_collection << second_resource
+
+    third_resource = Chef::Resource::Cat.new("snickers", @run_context)
+    third_resource.action = :first_action
+    @run_context.resource_collection << third_resource
+
+    second_resource.notifies(:second_action, @first_resource, :delayed)
+    second_resource.notifies(:third_action, @first_resource, :delayed)
+
+    third_resource.notifies(:second_action, @first_resource, :delayed)
+    third_resource.notifies(:third_action, @first_resource, :delayed)
+
     @runner.converge
+    # resources 2 and 3 call :first_action in the course of normal resource
+    # execution, and schedule delayed actions :second and :third on the first
+    # resource. The duplicate actions should "collapse" to a single notification
+    # and order should be preserved.
+    SnitchyProvider.all_actions_called.should == [:first, :first, :second, :third]
+  end
+
+  it "executes delayed notifications in the order they were declared" do
+    SnitchyProvider.clear_action_record
+
+    Chef::Platform.set(
+      :resource => :cat,
+      :provider => SnitchyProvider
+    )
+
+    @first_resource.action = :nothing
+
+    second_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    second_resource.action = :first_action
+    @run_context.resource_collection << second_resource
+
+    third_resource = Chef::Resource::Cat.new("snickers", @run_context)
+    third_resource.action = :first_action
+    @run_context.resource_collection << third_resource
+
+    second_resource.notifies(:second_action, @first_resource, :delayed)
+    second_resource.notifies(:second_action, @first_resource, :delayed)
+
+    third_resource.notifies(:third_action, @first_resource, :delayed)
+    third_resource.notifies(:third_action, @first_resource, :delayed)
+
+    @runner.converge
+    SnitchyProvider.all_actions_called.should == [:first, :first, :second, :third]
+  end
+
+  it "does not fire notifications if the resource was not updated by the last action executed" do
+    # REGRESSION TEST FOR CHEF-1452
+    SnitchyProvider.clear_action_record
+
+    Chef::Platform.set(
+      :resource => :cat,
+      :provider => SnitchyProvider
+    )
+
+    @first_resource.action = :first_action
+
+    second_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    second_resource.action = :nothing
+    @run_context.resource_collection << second_resource
+
+    third_resource = Chef::Resource::Cat.new("snickers", @run_context)
+    third_resource.action = :nothing
+    @run_context.resource_collection << third_resource
+
+    @first_resource.notifies(:second_action, second_resource, :immediately)
+    second_resource.notifies(:third_action, third_resource, :immediately)
+
+    @runner.converge
+
+    # All of the resources should only fire once:
+    SnitchyProvider.all_actions_called.should == [:first, :second, :third]
+
+    # all of the resources should be marked as updated for reporting purposes
+    @first_resource.should be_updated
+    second_resource.should be_updated
+    third_resource.should be_updated
   end
 
   it "should check a resource's only_if and not_if if notified by another resource" do
-    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
-    @run_context.resource_collection[0].action = :nothing
-    @run_context.resource_collection << Chef::Resource::Cat.new("carmel", @run_context)
-    @run_context.resource_collection[1].notifies :buy, @run_context.resource_collection[0], :delayed
-    @run_context.resource_collection[1].updated = true
+    @first_resource.action = :nothing
+
+    only_if_called_times = 0
+    @first_resource.only_if {only_if_called_times += 1; true}
+
+    not_if_called_times = 0
+    @first_resource.not_if {not_if_called_times += 1; false}
+
+    second_resource = Chef::Resource::Cat.new("carmel", @run_context)
+    @run_context.resource_collection << second_resource
+    second_resource.notifies(:purr, @first_resource, :delayed)
+    second_resource.action = :purr
+
     # hits only_if first time when the resource is run in order, second on notify
-    @run_context.resource_collection[0].should_receive(:only_if).exactly(2).times.and_return(nil)
-    @run_context.resource_collection[0].should_receive(:not_if).exactly(2).times.and_return(nil)
     @runner.converge
+
+    only_if_called_times.should == 2
+    not_if_called_times.should == 2
   end
 
 end

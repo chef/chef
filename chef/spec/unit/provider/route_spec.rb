@@ -40,18 +40,18 @@ describe Chef::Provider::Route do
       @provider.stub!(:run_command).and_return(true)
       @current_resource.stub!(:gateway).and_return(nil)
       @provider.should_receive(:generate_command).once.with(:add)
-      @new_resource.should_receive(:updated=).with(true)
       @provider.should_receive(:generate_config)
       @provider.action_add
+      @new_resource.should be_updated
     end
 
     it "should not add the route if it exists" do
       @provider.stub!(:run_command).and_return(true)
       @provider.stub!(:is_running).and_return(true)
       @provider.should_not_receive(:generate_command).with(:add)
-      @new_resource.should_not_receive(:updated=).with(true)
       @provider.should_receive(:generate_config)
       @provider.action_add
+      @new_resource.should_not be_updated
     end
   end
 
@@ -59,17 +59,17 @@ describe Chef::Provider::Route do
     it "should delete the route if it exists" do
       @provider.stub!(:run_command).and_return(true)
       @provider.should_receive(:generate_command).once.with(:delete)
-      @new_resource.should_receive(:updated=).with(true)
       @provider.stub!(:is_running).and_return(true)
       @provider.action_delete
+      @new_resource.should be_updated
     end
 
     it "should not delete the route if it does not exist" do
       @current_resource.stub!(:gateway).and_return(nil)
       @provider.stub!(:run_command).and_return(true)
       @provider.should_not_receive(:generate_command).with(:add)
-      @new_resource.should_not_receive(:updated=).with(true)
       @provider.action_delete
+      @new_resource.should_not be_updated
     end
   end
 

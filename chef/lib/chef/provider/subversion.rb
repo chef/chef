@@ -40,17 +40,17 @@ class Chef
       
       def action_checkout
         run_command(run_options(:command => checkout_command))
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
       end
       
       def action_export
         run_command(run_options(:command => export_command))
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
       end
       
       def action_force_export
         run_command(run_options(:command => export_command))
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
       end
       
       def action_sync
@@ -59,7 +59,7 @@ class Chef
         else
           run_command(run_options(:command => sync_command))
         end
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
       end
       
       def sync_command

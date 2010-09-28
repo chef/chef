@@ -80,13 +80,14 @@ F
     
     attr_accessor :params
     attr_accessor :provider
-    attr_accessor :updated
     attr_accessor :allowed_actions
     attr_accessor :run_context
     attr_accessor :cookbook_name
     attr_accessor :recipe_name
     attr_accessor :enclosing_provider
     attr_accessor :source_line
+
+    attr_reader :updated
 
     attr_reader :resource_name
     attr_reader :not_if_args
@@ -107,6 +108,7 @@ F
       @allowed_actions = [ :nothing ]
       @action = :nothing
       @updated = false
+      @updated_by_last_action = false
       @supports = {}
       @ignore_failure = false
       @not_if = nil
@@ -119,7 +121,15 @@ F
 
       @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
     end
-    
+
+    def updated=(true_or_false)
+      Chef::Log.warn("Chef::Resource#updated=(true|false) is deprecated. Please call #updated_by_last_action(true|false) instead.")
+      Chef::Log.warn("Called from:")
+      caller[0..3].each {|line| Chef::Log.warn(line)}
+      updated_by_last_action(true_or_false)
+      @updated = true_or_false
+    end
+
     def node
       run_context && run_context.node
     end
@@ -356,6 +366,10 @@ F
     end
     
     def run_action(action)
+      # ensure that we don't leave @updated_by_last_action set to true
+      # on accident
+      updated_by_last_action(false)
+
       # Check if this resource has an only_if block -- if it does,
       # evaluate the only_if block and skip the resource if
       # appropriate.
@@ -379,6 +393,15 @@ F
       provider = Chef::Platform.provider_for_resource(self)
       provider.load_current_resource
       provider.send("action_#{action}")
+    end
+
+    def updated_by_last_action(true_or_false)
+      @updated ||= true_or_false
+      @updated_by_last_action = true_or_false
+    end
+
+    def updated_by_last_action?
+      @updated_by_last_action
     end
     
     def updated?

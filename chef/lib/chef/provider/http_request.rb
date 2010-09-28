@@ -39,7 +39,7 @@ class Chef
           10,
           false
         )
-        @new_resource.updated = modified
+        @new_resource.updated_by_last_action(modified)
         Chef::Log.info("#{@new_resource} HEAD to #{@new_resource.url} successful")
         Chef::Log.debug("#{@new_resource} HEAD request response: #{modified}")
       end
@@ -55,7 +55,7 @@ class Chef
           10,
           false
         )
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
         Chef::Log.info("#{@new_resource} GET to #{@new_resource.url} successful")
         Chef::Log.debug("#{@new_resource} GET request response: #{body}")
       end
@@ -71,7 +71,7 @@ class Chef
           10,
           false
         )
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
         Chef::Log.info("#{@new_resource} PUT to #{@new_resource.url} successful")
         Chef::Log.debug("#{@new_resource} PUT request response: #{body}")
       end
@@ -87,7 +87,7 @@ class Chef
           10,
           false
         )
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
         Chef::Log.info("#{@new_resource} POST to #{@new_resource.url} message: #{message.inspect} successful")
         Chef::Log.debug("#{@new_resource} POST request response: #{body}")
       end
@@ -102,7 +102,7 @@ class Chef
           10,
           false
         )
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
         Chef::Log.info("#{@new_resource} DELETE to #{@new_resource.url} successful")
         Chef::Log.debug("#{@new_resource} DELETE request response: #{body}")
       end

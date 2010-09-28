@@ -40,7 +40,7 @@ class Chef
           clone
           checkout
           enable_submodules
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         else
           Chef::Log.info "Taking no action, checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
         end
@@ -49,13 +49,13 @@ class Chef
       def action_export
         action_checkout
         FileUtils.rm_rf(::File.join(@new_resource.destination,".git"))
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
       end
       
       def action_sync
         if !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination) == ['.','..']
           action_checkout
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         else
           current_rev = find_current_revision
           Chef::Log.debug "#{@new_resource} revision: #{current_rev}"
@@ -63,10 +63,10 @@ class Chef
           enable_submodules
           new_rev = find_current_revision
           if current_rev == new_rev
-            @new_resource.updated = false
+            @new_resource.updated_by_last_action(false)
           else
             Chef::Log.info "#{@new_resource} updated revision is: #{new_rev}"
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
           end
         end
       end

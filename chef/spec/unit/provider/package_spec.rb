@@ -127,8 +127,8 @@ describe Chef::Provider::Package do
     end
   
     it "should set the resource to updated if it installs the package" do
-      @new_resource.should_receive(:updated=).with(true)
       @provider.action_install
+      @new_resource.should be_updated
     end
   
   end
@@ -147,8 +147,8 @@ describe Chef::Provider::Package do
     end
   
     it "should set the resource to updated if it installs the package" do
-      @new_resource.should_receive(:updated=).with(true)
       @provider.action_upgrade
+      @new_resource.should be_updated
     end
   
     it "should not install the package if the current version is the candidate version" do
@@ -198,8 +198,8 @@ describe Chef::Provider::Package do
     end
 
     it "should set the resource to updated if it removes the package" do
-      @new_resource.should_receive(:updated=).with(true)
       @provider.action_remove
+      @new_resource.should be_updated
     end
 
   end
@@ -240,8 +240,8 @@ describe Chef::Provider::Package do
     end
 
     it "should set the resource to updated if it purges the package" do
-      @new_resource.should_receive(:updated=).with(true)
       @provider.action_purge
+      @new_resource.should be_updated
     end
 
   end
@@ -343,7 +343,10 @@ describe Chef::Provider::Package do
       end
 
       it "should return false if the response file has not been updated" do
-        @response_file_resource.stub!(:updated?).and_return false
+        @response_file_resource.updated_by_last_action(false)
+        @response_file_resource.should_not be_updated_by_last_action
+        # don't let the response_file_resource set updated to true
+        @response_file_resource.should_receive(:run_action).with("create")
         @provider.get_preseed_file("java", "6").should be(false)
       end
 

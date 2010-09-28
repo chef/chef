@@ -39,7 +39,7 @@ describe Chef::Provider::Breakpoint do
     @collection.stub!(:iterator).and_return(@iterator)
     @iterator.should_receive(:pause)
     @provider.action_break
-    @resource.updated.should == true
+    @resource.should be_updated
   end
 
   it "doesn't pause the iterator if Shef isn't running" do

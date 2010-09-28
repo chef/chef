@@ -36,7 +36,7 @@ class Chef
         else
           Chef::Log.debug("#{@new_resource}: attempting to enable")
           if enable_service
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource}: enabled successfully")
           end
         end
@@ -46,7 +46,7 @@ class Chef
         if @current_resource.enabled
           Chef::Log.debug("#{@new_resource}: attempting to disable")
           if disable_service
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource}: disabled successfully")
           end
         else
@@ -58,7 +58,7 @@ class Chef
         unless @current_resource.running
           Chef::Log.debug("#{@new_resource}: attempting to start")
           if start_service
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("Started service #{@new_resource} successfully")
           end
         else
@@ -70,7 +70,7 @@ class Chef
         if @current_resource.running
           Chef::Log.debug("#{@new_resource}: attempting to stop")
           if stop_service
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource}: stopped successfully")
           end
         else
@@ -81,7 +81,7 @@ class Chef
       def action_restart
         Chef::Log.debug("#{@new_resource}: attempting to restart")
         if restart_service
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
           Chef::Log.info("#{@new_resource}: restarted successfully")
         end
       end
@@ -93,7 +93,7 @@ class Chef
         if @current_resource.running
           Chef::Log.debug("#{@new_resource}: attempting to reload")
           if reload_service
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource}: reloaded successfully")
           end
         end

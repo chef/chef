@@ -26,7 +26,7 @@ class Chef
 
       def action_create
         @new_resource.block.call
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
       end
     end
   end
