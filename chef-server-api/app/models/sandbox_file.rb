@@ -18,7 +18,7 @@
 
 require 'chef/sandbox'
 require 'chef/exceptions'
-require 'chef/cache/checksum'
+require 'chef/checksum_cache'
 
 module ChefServerApi
   class SandboxFile
@@ -57,7 +57,7 @@ module ChefServerApi
     def actual_checksum
       @actual_checksum ||= begin
         @input.rewind
-        Chef::Cache::Checksum.instance.generate_md5_checksum(@input)
+        Chef::ChecksumCache.instance.generate_md5_checksum(@input)
       end
     end
 

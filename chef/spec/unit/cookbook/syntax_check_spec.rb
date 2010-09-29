@@ -20,7 +20,7 @@
 # OLD:
 ###################################################
 # def test_ruby(cookbook_dir)
-#   cache = Chef::Cache::Checksum.instance
+#   cache = Chef::ChecksumCache.instance
 #   Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
 #     key = cache.generate_key(ruby_file, "chef-test")
 #     fstat = File.stat(ruby_file)
@@ -36,7 +36,7 @@
 # end
 # 
 #def test_templates(cookbook_dir)
-#  cache = Chef::Cache::Checksum.instance
+#  cache = Chef::ChecksumCache.instance
 #  Dir[File.join(cookbook_dir, '**', '*.erb')].each do |erb_file|
 #    key = cache.generate_key(erb_file, "chef-test")
 #    fstat = File.stat(erb_file)
@@ -107,7 +107,7 @@ describe Chef::Cookbook::SyntaxCheck do
     end
 
     it "has access to the checksum cache" do
-      @syntax_check.cache.should equal(Chef::Cache::Checksum.instance)
+      @syntax_check.cache.should equal(Chef::ChecksumCache.instance)
     end
 
     it "lists the ruby files in the cookbook" do
@@ -123,7 +123,7 @@ describe Chef::Cookbook::SyntaxCheck do
 
   describe "when validating cookbooks" do
     before do
-      @checksum_cache_klass = Class.new(Chef::Cache::Checksum)
+      @checksum_cache_klass = Class.new(Chef::ChecksumCache)
       @checksum_cache = @checksum_cache_klass.instance
       @checksum_cache.reset!('Memory')
       @syntax_check.stub!(:cache).and_return(@checksum_cache)

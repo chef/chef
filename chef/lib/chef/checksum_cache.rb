@@ -25,7 +25,7 @@ require 'singleton'
 require 'moneta'
 
 class Chef 
-  class Cache
+  class ChecksumCache
     include Chef::Mixin::ConvertToClassName
     include ::Singleton
     
@@ -47,6 +47,64 @@ class Chef
       end
      
       @moneta = Moneta.const_get(backend).new(options)
+    end
+
+    def self.checksum_for_file(*args)
+      instance.checksum_for_file(*args)
+    end
+
+    def checksum_for_file(file, key=nil)
+      key ||= generate_key(file)
+      fstat = File.stat(file)
+      lookup_checksum(key, fstat) || generate_checksum(key, file, fstat)
+    end
+
+    def lookup_checksum(key, fstat)
+      cached = @moneta.fetch(key)
+      if cached && file_unchanged?(cached, fstat)
+        cached["checksum"]
+      else
+        nil
+      end
+    end
+
+    def generate_checksum(key, file, fstat)
+      checksum = checksum_file(file, Digest::SHA256.new)
+      moneta.store(key, {"mtime" => fstat.mtime.to_f, "checksum" => checksum})
+      checksum
+    end
+
+    def generate_key(file, group="chef")
+      "#{group}-file-#{file.gsub(/(#{File::SEPARATOR}|\.)/, '-')}"
+    end
+
+    def self.generate_md5_checksum_for_file(*args)
+      instance.generate_md5_checksum_for_file(*args)
+    end
+
+    def generate_md5_checksum_for_file(file)
+      checksum_file(file, Digest::MD5.new)
+    end
+
+    def generate_md5_checksum(io)
+      checksum_io(io, Digest::MD5.new)
+    end
+
+    private
+
+    def file_unchanged?(cached, fstat)
+      cached["mtime"].to_f == fstat.mtime.to_f
+    end
+
+    def checksum_file(file, digest)
+      File.open(file) { |f| checksum_io(f, digest) }
+    end
+
+    def checksum_io(io, digest)
+      while chunk = io.read(1024 * 8)
+        digest.update(chunk)
+      end
+      digest.hexdigest
     end
 
   end
