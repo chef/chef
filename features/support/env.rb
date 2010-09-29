@@ -101,11 +101,78 @@ def create_databases
   shell_out!(*cmd)
 end
 
+# Bulk GET all documents in the given db, using the given page size.
+# Calls the required block for each page size, passing in an array of
+# rows.
+def bulk_get_paged(chef_rest, db, page_size)
+  last_key = nil
+
+  paged_rows = nil
+  until (paged_rows && paged_rows.length == 0) do
+    url = "#{db}/_all_docs?limit=100&include_docs=true"
+    if last_key
+      url += "&startkey=#{CGI.escape(last_key.to_json)}&skip=1"
+    end
+    #puts "replicate_manually: url = #{url}"
+    
+    paged_results = chef_rest.get_rest(url)
+    paged_rows = paged_results['rows']
+
+    if paged_rows.length > 0
+      yield paged_rows
+      last_key = paged_rows.last['key']
+    end
+  end
+end
+
+# Replicate a (set of) source databases to a (set of) target databases. Uses
+# manual bulk GET/POST as Couch's internal _replicate endpoint crashes and
+# starts to time out after some number of runs.
+def replicate_dbs(replication_specs, delete_source_dbs = false)
+  replication_specs = [replication_specs].flatten
+  
+  Chef::Log.debug "replicate_dbs: replication_specs = #{replication_specs.inspect}, delete_source_dbs = #{delete_source_dbs}"
+  
+  chef_rest = Chef::REST.new(Chef::Config[:couchdb_url], nil, nil)
+  replication_specs.each do |spec|
+    source_db = spec[:source_db]
+    target_db = spec[:target_db]
+
+    # Delete and re-create the target db
+    begin
+      Chef::Log.debug("Deleting #{target_db}, if exists")
+      chef_rest.delete_rest("#{target_db}")
+    rescue Net::HTTPServerException => e
+      raise unless e.message =~ /Not Found/
+    end
+    Chef::Log.debug("Creating #{target_db}")
+    chef_rest.put_rest(target_db, nil)
+
+    Chef::Log.debug("Replicating #{source_db} to #{target_db} using bulk (batch) method")
+    bulk_get_paged(chef_rest, source_db, 100) do |paged_rows|
+      #puts "incoming paged_rows is #{paged_rows.inspect}"
+      paged_rows = paged_rows.map do |row|
+        doc_in_row = row['doc']
+        doc_in_row.delete '_rev'
+        doc_in_row
+      end
+
+      #puts "now, paged_rows is #{paged_rows.inspect}"
+      #pp({:_PAGED_ROWS => paged_rows})
+
+      chef_rest.post_rest("#{target_db}/_bulk_docs", {"docs" => paged_rows})
+    end
+
+    # Delete the source if asked to..
+    if delete_source_dbs
+      Chef::Log.debug("Deleting #{source_db}")
+      c.delete_rest(source_db)
+    end
+  end
+end
+
 def prepare_replicas
-  c = Chef::REST.new(Chef::Config[:couchdb_url], nil, nil)
-  c.put_rest("chef_integration_safe/", nil)
-  c.post_rest("_replicate", { "source" => "#{Chef::Config[:couchdb_url]}/chef_integration", "target" => "#{Chef::Config[:couchdb_url]}/chef_integration_safe" })
-  c.delete_rest("chef_integration")
+  replicate_dbs({ :source_db => "#{Chef::Config[:couchdb_url]}/chef_integration", :target_db => "#{Chef::Config[:couchdb_url]}/chef_integration_safe" })
 end
 
 def cleanup
@@ -241,13 +308,9 @@ Before do
   system("mkdir -p #{tmpdir}")
   system("cp -r #{File.join(Dir.tmpdir, "validation.pem")} #{File.join(tmpdir, "validation.pem")}")
   system("cp -r #{File.join(Dir.tmpdir, "webui.pem")} #{File.join(tmpdir, "webui.pem")}")
-  c = Chef::REST.new(Chef::Config[:couchdb_url], nil, nil)
-  c.delete_rest("chef_integration/") rescue nil
-  Chef::CouchDB.new(Chef::Config[:couchdb_url], "chef_integration").create_db
-  c.post_rest("_replicate", { 
-    "source" => "#{Chef::Config[:couchdb_url]}/chef_integration_safe",
-    "target" => "#{Chef::Config[:couchdb_url]}/chef_integration" 
-  })
+  
+  replicate_dbs({:source_db => "#{Chef::Config[:couchdb_url]}/chef_integration_safe",
+                 :target_db => "#{Chef::Config[:couchdb_url]}/chef_integration"})
 end
 
 After do
