@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require 'chef/cache'
+require 'chef/checksum_cache'
 require 'digest/md5'
 
 class Chef
