@@ -25,11 +25,10 @@ class Chef
     # if not available, loading them from the remote server.
     class RemoteFileVendor < FileVendor
       
-      def initialize(manifest, rest, valid_cache_entries)
+      def initialize(manifest, rest)
         @manifest = manifest
         @cookbook_name = @manifest[:cookbook_name]
         @rest = rest
-        @valid_cache_entries = valid_cache_entries
       end
       
       # Implements abstract base's requirement. It looks in the
@@ -50,7 +49,7 @@ class Chef
         
         # update valid_cache_entries so the upstream cache cleaner knows what
         # we've used.
-        @valid_cache_entries[cache_filename] = true
+        validate_cached_copy(cache_filename)
 
         current_checksum = nil
         if Chef::FileCache.has_key?(cache_filename)
@@ -73,6 +72,14 @@ class Chef
 
         # return the filename, not the contents (second argument= false)
         full_path_cache_filename
+      end
+
+      def validate_cached_copy(cache_filename)
+        valid_cache_entries[cache_filename] = true
+      end
+
+      def valid_cache_entries
+        Chef::CookbookVersion.valid_cache_entries
       end
       
     end

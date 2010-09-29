@@ -24,30 +24,30 @@ require 'chef/run_context'
 require 'chef/rest'
 
 describe Chef::Client, "run" do
+  before do
+    # Node/Ohai data
+    @hostname = "hostname"
+    @fqdn = "hostname.example.org"
+    Chef::Config[:node_name] = @fqdn
+    ohai_data = { :fqdn             => @fqdn,
+                  :hostname         => @hostname,
+                  :platform         => 'example-platform',
+                  :platform_version => 'example-platform',
+                  :data             => {} }
+    ohai_data.stub!(:all_plugins).and_return(true)
+    ohai_data.stub!(:data).and_return(ohai_data[:data])
+    Ohai::System.stub!(:new).and_return(ohai_data)
+
+    @node = Chef::Node.new(@hostname)
+    @node.name(@fqdn)
+    @node[:platform] = "example-platform"
+    @node[:platform_version] = "example-platform-1.0"
+
+    @client = Chef::Client.new
+    @client.node = @node
+  end
+
   it "should identify the node and run ohai, then register the client" do
-    # Fake data to identify the node
-    HOSTNAME = "hostname"
-    FQDN = "hostname.example.org"
-    Chef::Config[:node_name] = FQDN
-    mock_ohai = {
-      :fqdn => FQDN,
-      :hostname => HOSTNAME,
-      :platform => 'example-platform',
-      :platform_version => 'example-platform',
-      :data => {
-      }
-    }
-    mock_ohai.stub!(:all_plugins).and_return(true)
-    mock_ohai.stub!(:data).and_return(mock_ohai[:data])
-    Ohai::System.stub!(:new).and_return(mock_ohai)
-
-    # Fake node
-    node = Chef::Node.new(HOSTNAME)
-    node.name(FQDN)
-    node[:platform] = "example-platform"
-    node[:platform_version] = "example-platform-1.0"
-
-    #node.stub!(:expand!)
 
     mock_chef_rest_for_node = OpenStruct.new({ })
     mock_chef_rest_for_client = OpenStruct.new({ })
@@ -66,37 +66,75 @@ describe Chef::Client, "run" do
     #   Client.register will register with the validation client name.
     Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url]).at_least(1).times.and_return(mock_chef_rest_for_node)
     Chef::REST.should_receive(:new).with(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).and_return(mock_chef_rest_for_client)
-    mock_chef_rest_for_client.should_receive(:register).with(FQDN, Chef::Config[:client_key]).and_return(true)
+    mock_chef_rest_for_client.should_receive(:register).with(@fqdn, Chef::Config[:client_key]).and_return(true)
     #   Client.register will then turn around create another
     #   Chef::REST object, this time with the client key it got from the
     #   previous step.
-    Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url], FQDN, Chef::Config[:client_key]).and_return(mock_chef_rest_for_node)
+    Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url], @fqdn, Chef::Config[:client_key]).and_return(mock_chef_rest_for_node)
     
     # --Client.build_node
     #   looks up the node, which we will return, then later saves it.
-    mock_chef_rest_for_node.should_receive(:get_rest).with("nodes/#{FQDN}").and_return(node)
-    mock_chef_rest_for_node.should_receive(:put_rest).with("nodes/#{FQDN}", node).exactly(2).times.and_return(node)
+    mock_chef_rest_for_node.should_receive(:get_rest).with("nodes/#{@fqdn}").and_return(@node)
+    mock_chef_rest_for_node.should_receive(:put_rest).with("nodes/#{@fqdn}", @node).exactly(2).times.and_return(@node)
 
     # --Client.sync_cookbooks -- downloads the list of cookbooks to sync
     #
-#     cookbook_manifests = Chef::CookbookLoader.new.inject({}){|memo, entry| memo[entry.first] = entry.second.generate_manifest ; memo }
-#     pp cookbook_manifests
-#     mock_chef_rest_for_node.should_receive(:get_rest).with("nodes/#{FQDN}/cookbooks").and_return(cookbook_manifests)
     
     # after run, check proper mutation of node
     # e.g., node.automatic_attrs[:platform], node.automatic_attrs[:platform_version]
     Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "nodes")))
     Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")))
-    client = Chef::Client.new
 
-    client.node = node
-
-    client.stub!(:sync_cookbooks).and_return({})
-    client.run
+    @client.stub!(:sync_cookbooks).and_return({})
+    @client.run
     
     
     # check that node has been filled in correctly
-    node.automatic_attrs[:platform].should == "example-platform"
-    node.automatic_attrs[:platform_version].should == "example-platform-1.0"
+    @node.automatic_attrs[:platform].should == "example-platform"
+    @node.automatic_attrs[:platform_version].should == "example-platform-1.0"
   end
+
+  describe "when notifying other objects of the status of the chef run" do
+    before do
+      Chef::Client.clear_notifications
+      Chef::Node.stub!(:find_or_create).and_return(@node)
+      @node.stub!(:save)
+      @client.build_node
+    end
+
+    it "notifies observers that the run has started" do
+      notified = false
+      Chef::Client.when_run_starts do |run_status|
+        run_status.node.should == @node
+        notified = true
+      end
+
+      @client.run_started
+      notified.should be_true
+    end
+
+    it "notifies observers that the run has completed successfully" do
+      notified = false
+      Chef::Client.when_run_completes_successfully do |run_status|
+        run_status.node.should == @node
+        notified = true
+      end
+
+      @client.run_completed_successfully
+      notified.should be_true
+    end
+
+    it "notifies observers that the run failed" do
+      notified = false
+      Chef::Client.when_run_fails do |run_status|
+        run_status.node.should == @node
+        notified = true
+      end
+
+      @client.run_failed
+      notified.should be_true
+    end
+
+  end
+
 end
