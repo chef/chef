@@ -559,16 +559,21 @@ __bluebox server create [RUN LIST...]__ _(options)_
     Password installed for the created user on the deployed server.  Can be bypassed by defining a SSH key in your knife configuration ( Chef::Config[:knife][:ssh_key] ).
 
   * `--bootstrap true/false`:
-    Allows you to disable boostrap process.
+    Allows you to enable or disable the bootstrap process.
 
-Creates a new Blue Box Group Blocks instance and bootstraps it by checking out a github repo and 
+Creates a new Blue Box Group Blocks instance and bootstraps it by checking out a github repo and installs a bare minimum installation of chef on the instance; it then executes the specified run list.
 
+__bluebox server delete BLOCK-HOSTNAME__
 
-__bluebox server delete BLOCK-HOSTNAME 
+Deletes a running Blue Box Group Blocks server.
 
-__bluebox server list
+__bluebox server list__
 
-__bluebox images list
+Lists running Blue Box Group Blocks servers.
+
+__bluebox images list__
+
+Lists the available Blue Box Group Blocks server images to boot.
 
 ## EC2 SUB-COMMANDS
 
