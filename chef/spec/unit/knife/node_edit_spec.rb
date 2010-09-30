@@ -47,8 +47,16 @@ describe Chef::Knife::NodeEdit do
 
     it "should save the edited node data" do
       pansy = Chef::Node.new
+      @node.name("new_node_name")
       @knife.should_receive(:edit_data).with(@node).and_return(pansy)
       pansy.should_receive(:save)
+      @knife.run
+    end
+
+    it "should not save the unedited node data" do
+      pansy = Chef::Node.new
+      @knife.should_receive(:edit_data).with(@node).and_return(pansy)
+      pansy.should_not_receive(:save)
       @knife.run
     end
 
