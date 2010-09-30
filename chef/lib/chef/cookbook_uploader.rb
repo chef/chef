@@ -1,6 +1,6 @@
 require 'rest_client'
 require 'chef/cookbook_loader'
-require 'chef/cache/checksum'
+require 'chef/checksum_cache'
 require 'chef/sandbox'
 require 'chef/cookbook_version'
 require 'chef/cookbook/syntax_check'

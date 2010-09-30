@@ -52,6 +52,12 @@ When /^I run the chef\-client with '(.+)'$/ do |args|
   When "I run the chef-client"
 end
 
+When "I run the chef-client with '$options' and the '$config_file' config" do |options, config_file|
+  @config_file = File.expand_path(File.join(configdir, "#{config_file}.rb"))
+  @chef_args = options
+  When "I run the chef-client"
+end
+
 When /^I run the chef\-client with '(.+)' for '(.+)' seconds$/ do |args, run_for|
   @chef_args = args
   When "I run the chef-client for '#{run_for}' seconds"

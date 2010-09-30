@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'chef/client'
 require 'forwardable'
 
 class Chef
@@ -56,8 +57,50 @@ class Chef
   #
   class Handler
 
+    # The list of currently configured report handlers
+    def self.report_handlers
+      Array(Chef::Config[:report_handlers])
+    end
+
+    # Run the report handlers. This will usually be called by a notification
+    # from Chef::Client
+    def self.run_report_handlers(run_status)
+      Chef::Log.info("Running report handlers")
+      report_handlers.each do |handler|
+        handler.run_report_safely(run_status)
+      end
+      Chef::Log.info("Report handlers complete")
+    end
+
+    # Wire up a notification to run the report handlers if the chef run
+    # succeeds.
+    Chef::Client.when_run_completes_successfully do |run_status|
+      run_report_handlers(run_status)
+    end
+
+    # The list of currently configured exception handlers
+    def self.exception_handlers
+      Array(Chef::Config[:exception_handlers])
+    end
+
+    # Run the exception handlers. Usually will be called by a notification
+    # from Chef::Client when the run fails.
+    def self.run_exception_handlers(run_status)
+      Chef::Log.error("Running exception handlers")
+      exception_handlers.each do |handler|
+        handler.run_report_safely(run_status)
+      end
+      Chef::Log.error("Exception handlers complete")
+    end
+
+    # Wire up a notification to run the exception handlers if the chef run fails.
+    Chef::Client.when_run_fails do |run_status|
+      run_exception_handlers(run_status)
+    end
+
     extend Forwardable
 
+    # The Chef::RunStatus object containing data about the Chef run.
     attr_reader :run_status
 
     ##
