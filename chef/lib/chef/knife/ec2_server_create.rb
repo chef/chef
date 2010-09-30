@@ -59,7 +59,7 @@ class Chef
       option :ssh_key_name,
         :short => "-S KEY",
         :long => "--ssh-key KEY",
-        :description => "The SSH root key",
+        :description => "The AWS SSH key id",
         :proc => Proc.new { |key| Chef::Config[:knife][:aws_ssh_key_id] = key }
 
       option :ssh_user,
