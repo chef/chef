@@ -80,6 +80,14 @@ class Chef
               :mdadm => Chef::Provider::Mdadm
             }
           },
+          :amazon   => {
+            :default => {
+              :service => Chef::Provider::Service::Redhat,
+              :cron => Chef::Provider::Cron,
+              :package => Chef::Provider::Package::Yum,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
           :scientific => {
             :default => {
               :service => Chef::Provider::Service::Redhat,
