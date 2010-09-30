@@ -70,6 +70,7 @@ class Chef
 
     def self.all_cached_checksums
       all_checksums_with_filenames = {}
+
       Dir[File.join(Chef::Config[:cache_options][:path], '*')].each do |cksum_file|
         all_checksums_with_filenames[File.basename(cksum_file)] = cksum_file
       end
@@ -77,6 +78,7 @@ class Chef
     end
 
     def self.cleanup_checksum_cache
+      Chef::Log.info("cleaning the checksum cache")
       if (Chef::Config[:cache_type].to_s == "BasicFile")
         all_cached_checksums.each do |cache_key, cksum_cache_file|
           unless valid_cached_checksums.include?(cache_key)
