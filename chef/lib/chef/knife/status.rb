@@ -24,7 +24,12 @@ class Chef
   class Knife
     class Status < Knife
 
-      banner "knife status"
+      banner "knife status (options)"
+
+      option :run_list,
+        :short => "-r",
+        :long => "--run-list",
+        :description => "Show the run list"
 
       def highline
         @h ||= HighLine.new
@@ -36,19 +41,18 @@ class Chef
           all_nodes << node
         end
         all_nodes.sort { |n1, n2| n1["ohai_time"] <=> n2["ohai_time"] }.each do |node|
-          # 59 seconds
-          # 1000 hours
-          # date = DateTime.parse(Time.at(node["ohai_time"]).to_s)
           hours, minutes, seconds = time_difference_in_hms(node["ohai_time"])
           hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
           minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
+          run_list = ", #{node.run_list}." if config[:run_list]
           if hours > 24
-            highline.say("<%= color('#{hours_text}', RED) %> ago, #{node['fqdn']} checked in as a #{node['platform']} #{node['platform_version']} node.")
+            color = "RED"
           elsif hours > 1
-            highline.say("<%= color('#{hours_text}', YELLOW) %> ago, #{node['fqdn']} checked in as a #{node['platform']} #{node['platform_version']} node.")
+            color = "YELLOW"
           elsif hours == 0
-            highline.say("<%= color('#{minutes_text}', GREEN) %> ago, #{node['fqdn']} checked in as a #{node['platform']} #{node['platform_version']} node.")
+            color = "GREEN"
           end
+            highline.say("<%= color('#{hours_text}', #{color}) %> ago, #{node.name}, #{node['platform']} #{node['platform_version']}, #{node['fqdn']}, #{node['ipaddress']}#{run_list}")
         end
 
       end
