@@ -81,7 +81,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   def add(args)
     if args.class == String
       remote = args
-      args = Hash.new(USE_INFO_2)
+      args = Hash.new
       args[:remote] = remote
     end
     args[:local] ||= @localname
