@@ -48,7 +48,6 @@ describe Chef::ChecksumCache do
   describe "when caching checksums of cookbook files and templates" do
 
     before do
-      @cache = Chef::ChecksumCache.instance
       @cache.reset!("Memory", {})
     end
 
@@ -117,6 +116,76 @@ describe Chef::ChecksumCache do
       io = StringIO.new("riseofthemachines\nriseofthechefs\n")
       expected_md5 = '0e157ac1e2dd73191b76067fb6b4bceb'
       @cache.generate_md5_checksum(io).should == expected_md5
+    end
+
+  end
+
+  describe "when cleaning up after outdated checksums" do
+
+    before do
+      Chef::ChecksumCache.reset_cache_validity
+    end
+
+    it "initially has no valid cached checksums" do
+      Chef::ChecksumCache.valid_cached_checksums.should be_empty
+    end
+
+    it "adds a checksum to the list of valid cached checksums when it's created" do
+      @cache.checksum_for_file(File.join(CHEF_SPEC_DATA, 'checksum', 'random.txt'))
+      Chef::ChecksumCache.valid_cached_checksums.should have(1).valid_checksum
+    end
+
+    it "adds a checksum to the list of valid cached checksums when it's read" do
+      @cache.checksum_for_file(File.join(CHEF_SPEC_DATA, 'checksum', 'random.txt'))
+      Chef::ChecksumCache.reset_cache_validity
+      @cache.checksum_for_file(File.join(CHEF_SPEC_DATA, 'checksum', 'random.txt'))
+      Chef::ChecksumCache.valid_cached_checksums.should have(1).valid_checksum
+    end
+
+    context "with an existing set of cached checksums" do
+      before do
+        Chef::Config[:cache_type] = "BasicFile"
+        Chef::Config[:cache_options] = {:path => File.join(CHEF_SPEC_DATA, "checksum_cache")} 
+
+        @expected_cached_checksums = ["chef-file--tmp-chef-rendered-template20100929-10863-600hhz-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-6m8zdk-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-ahd2gq-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-api8ux-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-b0r1m1-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-bfygsi-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-el14l6-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-ivrl3y-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-kkbs85-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-ory1ux-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-pgsq76-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-ra8uim-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-t7k1g-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-t8g0sv-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-ufy6g3-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-x2d6j9-0",
+                                      "chef-file--tmp-chef-rendered-template20100929-10863-xi0l6h-0"]
+        @expected_cached_checksums.sort!
+      end
+
+      it "lists all of the cached checksums in the cache directory" do
+        Chef::ChecksumCache.all_cached_checksums.keys.sort.should == @expected_cached_checksums
+      end
+
+      it "clears all of the checksums not marked valid from the checksums directory" do
+        valid_cksum_key = "chef-file--tmp-chef-rendered-template20100929-10863-ivrl3y-0"
+        valid_cksum_file = File.join(CHEF_SPEC_DATA, "checksum_cache", valid_cksum_key)
+        @expected_cached_checksums.delete(valid_cksum_key)
+
+        Chef::ChecksumCache.valid_cached_checksums << valid_cksum_key
+
+        Chef::ChecksumCache.should_not_receive(:remove_unused_checksum).with(valid_cksum_file)
+        @expected_cached_checksums.each do |cksum_key|
+          full_path_to_cksum = File.join(CHEF_SPEC_DATA, "checksum_cache", cksum_key)
+          Chef::ChecksumCache.should_receive(:remove_unused_checksum).with(full_path_to_cksum)
+        end
+
+        Chef::ChecksumCache.cleanup_checksum_cache
+      end
     end
 
   end

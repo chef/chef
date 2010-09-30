@@ -18,8 +18,11 @@
 # limitations under the License.
 #
 
+require 'set'
+require 'fileutils'
 require 'chef/log'
 require 'chef/config'
+require 'chef/client'
 require 'chef/mixin/convert_to_class_name'
 require 'singleton'
 require 'moneta'
@@ -49,8 +52,55 @@ class Chef
       @moneta = Moneta.const_get(backend).new(options)
     end
 
+    def self.reset_cache_validity
+      @valid_cached_checksums = nil
+    end
+
+    Chef::Client.when_run_starts do |run_status|
+      reset_cache_validity
+    end
+
+    def self.valid_cached_checksums
+      @valid_cached_checksums ||= Set.new
+    end
+
+    def self.validate_checksum(checksum_key)
+      valid_cached_checksums << checksum_key
+    end
+
+    def self.all_cached_checksums
+      all_checksums_with_filenames = {}
+      Dir[File.join(Chef::Config[:cache_options][:path], '*')].each do |cksum_file|
+        all_checksums_with_filenames[File.basename(cksum_file)] = cksum_file
+      end
+      all_checksums_with_filenames
+    end
+
+    def self.cleanup_checksum_cache
+      if (Chef::Config[:cache_type].to_s == "BasicFile")
+        all_cached_checksums.each do |cache_key, cksum_cache_file|
+          unless valid_cached_checksums.include?(cache_key)
+            remove_unused_checksum(cksum_cache_file)
+          end
+        end
+      end
+    end
+
+    Chef::Client.when_run_completes_successfully do |run_status|
+      cleanup_checksum_cache
+    end
+
+    def self.remove_unused_checksum(checksum_file)
+      Chef::Log.debug("removing unused checksum cache file #{checksum_file}")
+      FileUtils.rm(checksum_file)
+    end
+
     def self.checksum_for_file(*args)
       instance.checksum_for_file(*args)
+    end
+
+    def validate_checksum(*args)
+      self.class.validate_checksum(*args)
     end
 
     def checksum_for_file(file, key=nil)
@@ -62,6 +112,7 @@ class Chef
     def lookup_checksum(key, fstat)
       cached = @moneta.fetch(key)
       if cached && file_unchanged?(cached, fstat)
+        validate_checksum(key)
         cached["checksum"]
       else
         nil
@@ -71,6 +122,7 @@ class Chef
     def generate_checksum(key, file, fstat)
       checksum = checksum_file(file, Digest::SHA256.new)
       moneta.store(key, {"mtime" => fstat.mtime.to_f, "checksum" => checksum})
+      validate_checksum(key)
       checksum
     end
 
