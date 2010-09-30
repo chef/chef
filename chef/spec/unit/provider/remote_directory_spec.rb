@@ -17,6 +17,7 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require 'digest/md5'
 
 describe Chef::Provider::RemoteDirectory do
   before do
@@ -34,10 +35,6 @@ describe Chef::Provider::RemoteDirectory do
 
     @provider = Chef::Provider::RemoteDirectory.new(@resource, @run_context)
     @provider.current_resource = @resource.clone
-  end
-  
-  it "doesn't support create_if_missing and explodes if you try to use it" do
-    lambda {@provider.send :action_create_if_missing}.should raise_error(Chef::Exceptions::UnsupportedAction)
   end
   
   describe "when access control is configured on the resource" do
@@ -128,6 +125,26 @@ describe Chef::Provider::RemoteDirectory do
         ::File.exist?(@destination_dir + '/a/multiply/bar.txt').should be_false
         ::File.exist?(@destination_dir + '/a/multiply/nested/baz.txt').should be_false
         ::File.exist?(@destination_dir + '/a/multiply/nested/directory/qux.txt').should be_false
+      end
+    end
+
+    describe "with overwrite disabled" do
+      before {@resource.purge(false)}
+      before {@resource.overwrite(false)}
+
+      it "leaves modifications alone" do
+        @provider.action_create
+        file1 = File.open(@destination_dir + '/remote_dir_file1.txt', 'a')
+        file1.puts "blah blah blah"
+        file1.close
+        subdirfile1 = File.open(@destination_dir + '/remotesubdir/remote_subdir_file1.txt', 'a')
+        subdirfile1.puts "blah blah blah"
+        subdirfile1.close
+        file1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + '/remote_dir_file1.txt'))
+        subdirfile1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))
+        @provider.action_create
+        file1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + '/remote_dir_file1.txt'))).should be_true
+        subdirfile1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))).should be_true
       end
     end
 
