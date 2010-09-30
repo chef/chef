@@ -1,0 +1,13 @@
+Source: chef-integration-test
+Section: ruby
+Priority: extra
+Maintainer: Joshua Timberman <Joshua Timberman <joshua@opscode.com>>
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.8.4
+Homepage: http://tickets.opscode.com
+
+Package: chef-integration-test
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Chef integration tests for APT in Cucumber
+ This package is used for cucumber integration testing in Chef.

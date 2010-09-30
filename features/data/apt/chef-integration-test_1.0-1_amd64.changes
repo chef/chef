@@ -1,0 +1,22 @@
+Format: 1.8
+Date: Thu, 30 Sep 2010 09:53:45 -0600
+Source: chef-integration-test
+Binary: chef-integration-test
+Architecture: amd64
+Version: 1.0-1
+Distribution: unstable
+Urgency: low
+Maintainer: Joshua Timberman <Joshua Timberman <joshua@opscode.com>>
+Changed-By: Joshua Timberman <joshua@opscode.com>
+Description: 
+ chef-integration-test - Chef integration tests for APT in Cucumber
+Changes: 
+ chef-integration-test (1.0-1) unstable; urgency=low
+ .
+   * Initial release (Closes: #CHEF-1718)
+Checksums-Sha1: 
+ b44685ff59626bc94c67e60665f06c4643fe9767 1680 chef-integration-test_1.0-1_amd64.deb
+Checksums-Sha256: 
+ da176f4405fa21fd7207d4785680c6996d395a1ca132f2d5565a61c5479b1116 1680 chef-integration-test_1.0-1_amd64.deb
+Files: 
+ 713722480408ecc8e7220aea52bdd76e 1680 ruby extra chef-integration-test_1.0-1_amd64.deb
