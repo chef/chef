@@ -23,6 +23,7 @@ include Chef::Mixin::ShellOut
 
 CHEF_CLIENT = File.join(CHEF_PROJECT_ROOT, "chef", "bin", "chef-client")
 
+
 ###
 # When
 ###

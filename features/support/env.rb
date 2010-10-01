@@ -266,7 +266,17 @@ module ChefWorld
       :AccessLog    => [ StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT ]
     )
   end
-  
+
+  def apt_server
+    @apt_server ||= WEBrick::HTTPServer.new(
+      :Port         => 9000,
+      :DocumentRoot => datadir + "/apt/",
+      # Make WEBrick STFU
+      :Logger       => Logger.new(STDERR),
+      :AccessLog    => [ STDERR, WEBrick::AccessLog::COMMON_LOG_FORMAT ]
+    )
+  end
+
   def make_admin
     admin_client
     @rest = Chef::REST.new(Chef::Config[:registration_url], 'bobo', "#{tmpdir}/bobo.pem")
