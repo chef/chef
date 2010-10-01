@@ -3,20 +3,21 @@ def debian_compatible?
 end
 
 def chef_test_dpkg_installed?
-  shell_out("dpkg -l chef-integration-test").exitstatus.success?
+  shell_out("dpkg -l chef-integration-test").status.success?
 end
 
 def purge_chef_integration_debs
   if debian_compatible? && chef_test_dpkg_installed?
     shell_out!("dpkg -r chef-integration-test")
+    shell_out("dpkg --clear-avail")
   end
 end
 
-Before('@dpkg', '@apt') do
+Before('@dpkg,@apt') do
   purge_chef_integration_debs
 end
 
-AfterStep('@dpkg', '@apt') do
+After('@dpkg,@apt') do
   purge_chef_integration_debs
 end
 
@@ -33,7 +34,7 @@ Given "my dpkg architecture is 'amd64'" do
 end
 
 Given "the deb package '$pkg_name' is available" do |pkg_name|
-  source = File.expand_path(File.dirname(__FILE__) + "/data/apt/#{pkg_name}-1_amd64.deb")
+  source = File.expand_path(File.dirname(__FILE__) + "/../data/apt/#{pkg_name}-1_amd64.deb")
   dest = File.join(tmpdir, File.basename(source))
   FileUtils.cp(source, dest)
 end
@@ -78,7 +79,12 @@ Then "the gem '$gem_name' version '$version' should not be installed" do |gem_na
   Then "a file named 'installed-gems/gems/#{gem_name}-#{version}' should not exist"
 end
 
+
+def dpkg_should_be_installed(pkg_name)
+  shell_out!("dpkg -l #{pkg_name}")
+end
+
 Then "the dpkg package '$package_name' should be installed" do |package_name|
-  pending # express the regexp above with the code you wish you had
+  dpkg_should_be_installed(package_name)
 end
 
