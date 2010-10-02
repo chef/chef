@@ -14,7 +14,7 @@ def purge_chef_integration_debs
 end
 
 Given /^I have configured my apt sources for integration tests$/ do
-  File.open("/etc/apt/source.list.d/chef-integration-test.list", "w+") do |f|
+  File.open("/etc/apt/sources.list.d/chef-integration-test.list", "w+") do |f|
     f.puts "deb http://localhost:9000/ sid main"
   end
 end
