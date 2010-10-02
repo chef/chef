@@ -267,10 +267,12 @@ module ChefWorld
     )
   end
 
+  attr_accessor :apt_server_thread
+
   def apt_server
     @apt_server ||= WEBrick::HTTPServer.new(
       :Port         => 9000,
-      :DocumentRoot => datadir + "/apt/",
+      :DocumentRoot => datadir + "/apt/var/www/apt",
       # Make WEBrick STFU
       :Logger       => Logger.new(STDERR),
       :AccessLog    => [ STDERR, WEBrick::AccessLog::COMMON_LOG_FORMAT ]

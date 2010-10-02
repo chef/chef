@@ -13,6 +13,22 @@ def purge_chef_integration_debs
   end
 end
 
+Given /^I have configured my apt sources for integration tests$/ do
+  File.open("/etc/apt/source.list.d/chef-integration-test.list", "w+") do |f|
+    f.puts "deb http://localhost:9000/ sid main"
+  end
+end
+
+def remove_integration_test_apt_source
+  FileUtils.rm("/etc/apt/sources.list.d/chef-integration-test.list")  
+rescue Errno::ENOENT
+  Chef::Log.info("Attempted to remove integration test from /etc/apt/sources.list.d but it didn't exist")
+end
+
+After("@apt") do
+  remove_integration_test_apt_source
+end
+
 Before('@dpkg,@apt') do
   purge_chef_integration_debs
 end
@@ -37,6 +53,21 @@ Given "the deb package '$pkg_name' is available" do |pkg_name|
   source = File.expand_path(File.dirname(__FILE__) + "/../data/apt/#{pkg_name}-1_amd64.deb")
   dest = File.join(tmpdir, File.basename(source))
   FileUtils.cp(source, dest)
+end
+
+Given "the apt server is running" do
+  self.apt_server_thread = Thread.new do
+    trap("INT") do
+      apt_server.shutdown
+      apt_server_thread.join
+    end
+    
+    apt_server.start
+  end
+end
+
+Given "I have updated my apt cache" do
+  shell_out!("apt-get update")
 end
 
 Given /^the gems server is running$/ do
