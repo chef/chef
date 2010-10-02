@@ -1,1 +1,3 @@
-package("chef-integration-test")
+package("chef-integration-test") do
+  options("--force-yes")
+end
