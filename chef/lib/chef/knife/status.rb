@@ -49,12 +49,15 @@ class Chef
           run_list = ", #{node.run_list}." if config[:run_list]
           if hours > 24
             color = "RED"
+            text = hours_text
           elsif hours > 1
             color = "YELLOW"
+            text = hours_text
           elsif hours == 0
             color = "GREEN"
+            text = minutes_text
           end
-            highline.say("<%= color('#{hours_text}', #{color}) %> ago, #{node.name}, #{node['platform']} #{node['platform_version']}, #{node['fqdn']}, #{node['ipaddress']}#{run_list}")
+            highline.say("<%= color('#{text}', #{color}) %> ago, #{node.name}, #{node['platform']} #{node['platform_version']}, #{node['fqdn']}, #{node['ipaddress']}#{run_list}")
         end
 
       end
