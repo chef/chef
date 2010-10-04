@@ -24,7 +24,7 @@ class Chef
   class Knife
     class Status < Knife
 
-      banner "knife status (options)"
+      banner "knife status QUERY (options)"
 
       option :run_list,
         :short => "-r",
@@ -37,7 +37,9 @@ class Chef
 
       def run
         all_nodes = []
-        Chef::Search::Query.new.search(:node, '*:*') do |node|
+        q = Chef::Search::Query.new
+        query = @name_args[0] || "*:*"
+        q.search(:node, query) do |node|
           all_nodes << node
         end
         all_nodes.sort { |n1, n2| n1["ohai_time"] <=> n2["ohai_time"] }.each do |node|
