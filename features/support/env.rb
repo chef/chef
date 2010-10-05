@@ -266,7 +266,19 @@ module ChefWorld
       :AccessLog    => [ StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT ]
     )
   end
-  
+
+  attr_accessor :apt_server_thread
+
+  def apt_server
+    @apt_server ||= WEBrick::HTTPServer.new(
+      :Port         => 9000,
+      :DocumentRoot => datadir + "/apt/var/www/apt",
+      # Make WEBrick STFU
+      :Logger       => Logger.new(StringIO.new),
+      :AccessLog    => [ StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT ]
+    )
+  end
+
   def make_admin
     admin_client
     @rest = Chef::REST.new(Chef::Config[:registration_url], 'bobo', "#{tmpdir}/bobo.pem")
@@ -319,7 +331,10 @@ After do
   s.solr_commit
   gemserver.shutdown
   gemserver_thread && gemserver_thread.join
-  
+
+  apt_server.shutdown
+  apt_server_thread && apt_server_thread.join
+
   cleanup_files.each do |file|
     system("rm #{file}")
   end
