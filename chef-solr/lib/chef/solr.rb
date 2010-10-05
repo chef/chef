@@ -49,18 +49,11 @@ class Chef
       Chef::Log.debug("Sending #{select_url} to Solr")
       req = Net::HTTP::Get.new(select_url)
 
-      description = 'Search Query to Solr'
+      description = "Search Query to Solr '#{solr_url}#{select_url}'"
 
-      http_request_handler description do
-        res = @http.request(req)
-        unless res.kind_of?(Net::HTTPSuccess)
-          Chef::Log.fatal("#{description} '#{solr_url}#{select_url}' failed (#{res.class} #{res.code} #{res.message})")
-          res.error!
-        end
-
-        Chef::Log.debug("Parsing Solr result set:\n#{res.body}")
-        return eval(res.body)
-      end
+      res = http_request_handler(req, description)
+      Chef::Log.debug("Parsing Solr result set:\n#{res.body}")
+      eval(res.body)
     end
 
     def post_to_solr(doc)
@@ -68,17 +61,9 @@ class Chef
       req = Net::HTTP::Post.new("/solr/update", "Content-Type" => "text/xml")
       req.body = doc.to_s
 
-      description = 'POST to Solr'
+      description = "POST to Solr '#{solr_url}'"
 
-      http_request_handler description do
-        res = @http.request(req)
-        unless res.kind_of?(Net::HTTPSuccess)
-          Chef::Log.fatal("#{description} '#{solr_url}' failed (#{res.class} #{res.code} #{res.message})")
-          res.error!
-        end
-
-        return res
-      end
+      http_request_handler(req, description)
     end
 
     START_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<add><doc>"
@@ -222,8 +207,13 @@ class Chef
     end
     
     # handles multiple net/http exceptions and no method closed? bug
-    def http_request_handler(description='HTTP call')
-      yield
+    def http_request_handler(req, description='HTTP call')
+      res = @http.request(req)
+      unless res.kind_of?(Net::HTTPSuccess)
+        Chef::Log.fatal("#{description} failed (#{res.class} #{res.code} #{res.message})")
+        res.error!
+      end
+      res
     rescue Timeout::Error, Errno::EINVAL, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError, Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ETIMEDOUT, NoMethodError => e
       # http://redmine.ruby-lang.org/issues/show/2708
       # http://redmine.ruby-lang.org/issues/show/2758

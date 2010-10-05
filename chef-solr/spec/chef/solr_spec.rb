@@ -56,31 +56,11 @@ describe Chef::Solr do
     end
 
     describe "when the HTTP call is unsuccessful" do
-      it "should call get to /solr/select with the escaped query" do
-        Net::HTTP::Get.should_receive(:new).with(%r(q=hostname%3Alatte))
-        @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
-      end
-
-      it "should call get to /solr/select with wt=ruby" do
-        Net::HTTP::Get.should_receive(:new).with(%r(wt=ruby))
-        @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
-      end
-
-      it "should call get to /solr/select with indent=off" do
-        Net::HTTP::Get.should_receive(:new).with(%r(indent=off))
-        @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
-      end
-
-      it "should call get to /solr/select with filter query" do
-        Net::HTTP::Get.should_receive(:new).with(/fq=%2BX_CHEF_database_CHEF_X%3Achef_opscode\+%2BX_CHEF_type_CHEF_X%3Anode/)
-        @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
-      end
-
       [Timeout::Error, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError, Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ETIMEDOUT, Errno::EINVAL].each do |exception|
         it "should rescue, log an error message, and raise a SolrConnectionError encountering exception #{exception}" do
           lambda {
             @http.should_receive(:request).with(instance_of(Net::HTTP::Get)).and_raise(exception)
-            Chef::Log.should_receive(:fatal).with(/Search Query to Solr failed.  Chef::Exceptions::SolrConnectionError exception: #{exception}:.+/)
+            Chef::Log.should_receive(:fatal).with(/Search Query to Solr '(.+?)' failed.  Chef::Exceptions::SolrConnectionError exception: #{exception}:.+/)
             @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
           }.should raise_error(Chef::Exceptions::SolrConnectionError)
         end
@@ -90,7 +70,7 @@ describe Chef::Solr do
         lambda {
           @no_method_error = NoMethodError.new("undefined method 'closed\?' for nil:NilClass")
           @http.should_receive(:request).with(instance_of(Net::HTTP::Get)).and_raise(@no_method_error)
-          Chef::Log.should_receive(:fatal).with(/Search Query to Solr failed.  Chef::Exceptions::SolrConnectionError exception: Errno::ECONNREFUSED.+net\/http undefined method closed.+/)
+          Chef::Log.should_receive(:fatal).with(/Search Query to Solr '(.+?)' failed.  Chef::Exceptions::SolrConnectionError exception: Errno::ECONNREFUSED.+net\/http undefined method closed.+/)
           @solr.solr_select("chef_opscode", "node", :q => "hostname:latte")
         }.should raise_error(Chef::Exceptions::SolrConnectionError)
       end
@@ -127,7 +107,7 @@ describe Chef::Solr do
 
       it "should send the request to solr" do
         @http.should_receive(:request).with(@http_request).and_return(@http_response)
-        @solr.post_to_solr(:foo)
+        @solr.post_to_solr(:foo).should
       end
     end
 
@@ -146,7 +126,7 @@ describe Chef::Solr do
         it "should rescue and log an error message when encountering exception #{exception} and then re-raise it" do
           lambda {
             @http.should_receive(:request).with(@http_request).and_raise(exception)
-            Chef::Log.should_receive(:fatal).with(/POST to Solr failed.  Chef::Exceptions::SolrConnectionError exception: #{exception}:.+/)
+            Chef::Log.should_receive(:fatal).with(/POST to Solr '(.+?)' failed.  Chef::Exceptions::SolrConnectionError exception: #{exception}:.+/)
             @solr.post_to_solr(:foo)
           }.should raise_error(Chef::Exceptions::SolrConnectionError)
         end
@@ -156,7 +136,7 @@ describe Chef::Solr do
         lambda {
           @no_method_error = NoMethodError.new("undefined method 'closed\?' for nil:NilClass")
           @http.should_receive(:request).with(@http_request).and_raise(@no_method_error)
-          Chef::Log.should_receive(:fatal).with(/POST to Solr failed.  Chef::Exceptions::SolrConnectionError exception: Errno::ECONNREFUSED.+net\/http undefined method closed.+/)
+          Chef::Log.should_receive(:fatal).with(/POST to Solr '(.+?)' failed.  Chef::Exceptions::SolrConnectionError exception: Errno::ECONNREFUSED.+net\/http undefined method closed.+/)
           @solr.post_to_solr(:foo)
         }.should raise_error(Chef::Exceptions::SolrConnectionError)
       end
