@@ -1,6 +1,8 @@
 #
 # Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
 # Copyright:: Copyright (c) 2010 Thomas Bishop
+# Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,49 +21,53 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Exceptions do
-  exceptions = [ { 'Application' => 'RuntimeError' },
-                 { 'Cron' => 'RuntimeError' },
-                 { 'Env' => 'RuntimeError' },
-                 { 'Exec' => 'RuntimeError' },
-                 { 'FileNotFound' => 'RuntimeError' },
-                 { 'Package' => 'RuntimeError' },
-                 { 'Service' => 'RuntimeError' },
-                 { 'Route' => 'RuntimeError' },
-                 { 'SearchIndex' => 'RuntimeError' },
-                 { 'Override' => 'RuntimeError' },
-                 { 'UnsupportedAction' => 'RuntimeError' },
-                 { 'MissingLibrary' => 'RuntimeError' },
-                 { 'MissingRole' => 'RuntimeError' },
-                 { 'CannotDetermineNodeName' => 'RuntimeError' },
-                 { 'User' => 'RuntimeError' },
-                 { 'Group' => 'RuntimeError' },
-                 { 'Link' => 'RuntimeError' },
-                 { 'Mount' => 'RuntimeError' },
-                 { 'CouchDBNotFound' => 'RuntimeError' },
-                 { 'PrivateKeyMissing' => 'RuntimeError' },
-                 { 'CannotWritePrivateKey' => 'RuntimeError' },
-                 { 'RoleNotFound' => 'RuntimeError' },
-                 { 'ValidationFailed' => 'ArgumentError' },
-                 { 'InvalidPrivateKey' => 'ArgumentError' },
-                 { 'ConfigurationError' => 'ArgumentError' },
-                 { 'RedirectLimitExceeded' => 'RuntimeError' },
-                 { 'AmbiguousRunlistSpecification' => 'ArgumentError' },
-                 { 'CookbookNotFound' => 'RuntimeError' },
-                 { 'AttributeNotFound' => 'RuntimeError' },
-                 { 'InvalidCommandOption' => 'RuntimeError' },
-                 { 'CommandTimeout' => 'RuntimeError' },
-                 { 'ShellCommandFailed' => 'RuntimeError' },
-                 { 'RequestedUIDUnavailable' => 'RuntimeError' },
-                 { 'InvalidHomeDirectory' => 'ArgumentError' },
-                 { 'DsclCommandFailed' => 'RuntimeError' },
-                 { 'UserIDNotFound' => 'ArgumentError' },
-                 { 'GroupIDNotFound' => 'ArgumentError' },
-                 { 'SolrConnectionError' => 'RuntimeError' } ]
+  exception_to_super_class = {
+    Chef::Exceptions::Application => RuntimeError,
+    Chef::Exceptions::Cron => RuntimeError,
+    Chef::Exceptions::Env => RuntimeError,
+    Chef::Exceptions::Exec => RuntimeError,
+    Chef::Exceptions::FileNotFound => RuntimeError,
+    Chef::Exceptions::Package => RuntimeError,
+    Chef::Exceptions::Service => RuntimeError,
+    Chef::Exceptions::Route => RuntimeError,
+    Chef::Exceptions::SearchIndex => RuntimeError,
+    Chef::Exceptions::Override => RuntimeError,
+    Chef::Exceptions::UnsupportedAction => RuntimeError,
+    Chef::Exceptions::MissingLibrary => RuntimeError,
+    Chef::Exceptions::MissingRole => RuntimeError,
+    Chef::Exceptions::CannotDetermineNodeName => RuntimeError,
+    Chef::Exceptions::User => RuntimeError,
+    Chef::Exceptions::Group => RuntimeError,
+    Chef::Exceptions::Link => RuntimeError,
+    Chef::Exceptions::Mount => RuntimeError,
+    Chef::Exceptions::CouchDBNotFound => RuntimeError,
+    Chef::Exceptions::PrivateKeyMissing => RuntimeError,
+    Chef::Exceptions::CannotWritePrivateKey => RuntimeError,
+    Chef::Exceptions::RoleNotFound => RuntimeError,
+    Chef::Exceptions::ValidationFailed => ArgumentError,
+    Chef::Exceptions::InvalidPrivateKey => ArgumentError,
+    Chef::Exceptions::ConfigurationError => ArgumentError,
+    Chef::Exceptions::RedirectLimitExceeded => RuntimeError,
+    Chef::Exceptions::AmbiguousRunlistSpecification => ArgumentError,
+    Chef::Exceptions::CookbookNotFound => RuntimeError,
+    Chef::Exceptions::AttributeNotFound => RuntimeError,
+    Chef::Exceptions::InvalidCommandOption => RuntimeError,
+    Chef::Exceptions::CommandTimeout => RuntimeError,
+    Chef::Exceptions::ShellCommandFailed => RuntimeError,
+    Chef::Exceptions::RequestedUIDUnavailable => RuntimeError,
+    Chef::Exceptions::InvalidHomeDirectory => ArgumentError,
+    Chef::Exceptions::DsclCommandFailed => RuntimeError,
+    Chef::Exceptions::UserIDNotFound => ArgumentError,
+    Chef::Exceptions::GroupIDNotFound => ArgumentError,
+    Chef::Exceptions::InvalidResourceReference => RuntimeError,
+    Chef::Exceptions::ResourceNotFound => RuntimeError,
+    Chef::Exceptions::InvalidResourceSpecification => ArgumentError,
+    Chef::Exceptions::SolrConnectionError => RuntimeError
+  }
 
-  exceptions.each do |exception|
-    it "should have an exception class of #{exception.keys.first} which inherits from #{exception.values.first}" do
-      Chef::Exceptions.constants.should include(exception.keys.first)
-      Chef::Exceptions.const_get(exception.keys.first).ancestors.should include(Kernel.const_get(exception.values.first))
+  exception_to_super_class.each do |exception, expected_super_class|
+    it "should have an exception class of #{exception} which inherits from #{expected_super_class}" do
+      lambda{ raise exception }.should raise_error(expected_super_class)
     end
   end
 end
