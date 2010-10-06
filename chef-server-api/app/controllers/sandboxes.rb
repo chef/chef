@@ -125,21 +125,13 @@ class Sandboxes < Application
         # we will undo the successful steps that came before it
         begin
           undo_steps = Array.new
-          existing_sandbox.checksums.each do |checksum|
-            checksum_filename_in_sandbox = sandbox_checksum_location(existing_sandbox.guid, checksum)
-            checksum_filename_final = checksum_location(checksum)
-            FileUtils.mkdir_p File.dirname(checksum_filename_final)
+          existing_sandbox.checksums.each do |file_checksum|
+            checksum_filename_in_sandbox = sandbox_checksum_location(existing_sandbox.guid, file_checksum)
+            checksum = Chef::Checksum.new(file_checksum)
+
+            checksum.commit_sandbox_file(checksum_filename_in_sandbox)
             
-            Chef::Log.info("sandbox finalization: move #{checksum_filename_in_sandbox} to #{checksum_filename_final}")
-            File.rename(checksum_filename_in_sandbox, checksum_filename_final)
-            
-            # mark the checksum as successfully updated
-            Chef::Checksum.new(checksum).cdb_save
-            
-            undo_steps << proc {
-              Chef::Log.warn("sandbox finalization undo: moving #{checksum_filename_final} back to #{checksum_filename_in_sandbox}")
-              File.rename(checksum_filename_final, checksum_filename_in_sandbox)
-            }
+            undo_steps << proc { checksum.revert_sandbox_file_commit }
           end
         rescue
           # undo the successful moves we did before

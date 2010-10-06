@@ -84,7 +84,7 @@ class Cookbooks < Application
     checksum = params[:checksum]
     raise NotFound, "Cookbook #{cookbook_name} version #{cookbook_version} does not contain a file with checksum #{checksum}" unless cookbook.checksums.keys.include?(checksum)
 
-    filename = checksum_location(checksum)
+    filename = Chef::Checksum.new(checksum).file_location
     raise InternalServerError, "File with checksum #{checksum} not found in the repository (this should not happen)" unless File.exists?(filename)
 
     send_file(filename)
@@ -138,7 +138,11 @@ class Cookbooks < Application
       raise NotFound, "Cannot find a cookbook named #{cookbook_name} with version #{cookbook_version}"
     end
 
-    display cookbook.cdb_destroy
+    if params["purge"] == "true"
+      display cookbook.purge
+    else
+      display cookbook.cdb_destroy
+    end
   end
 
   private

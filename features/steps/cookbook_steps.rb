@@ -69,6 +69,17 @@ Given "I upload the cookbook" do
   shell_out!("#{KNIFE_CMD} cookbook upload -c #{KNIFE_CONFIG} -a -o #{INTEGRATION_COOKBOOKS}")
 end
 
+Given /^I delete the cookbook's on disk checksum files$/ do
+  #pp :checksums => @last_uploaded_cookbook.checksums.keys
+  #pending # express the regexp above with the code you wish you had
+  @last_uploaded_cookbook.checksums.keys.each do |file_checksum|
+    file_location_in_checksum_repo = File.join(datadir, 'repo', 'checksums', file_checksum[0...2], file_checksum)
+    #pp :expected_cksum_path => {file_checksum => file_location_in_checksum_repo}
+    #puts "deleting checksum file #{file_location_in_checksum_repo}"
+    FileUtils.rm(file_location_in_checksum_repo)
+  end
+end
+
 When /^I run the task to generate cookbook metadata for '(.+)'$/ do |cb|
   self.cookbook = cb
   When('I run the task to generate cookbook metadata')
@@ -188,7 +199,7 @@ end
 # Shortcut for uploading a whole cookbook based on data in the
 # cookbooks_not_uploaded_at_feature_start directory
 Then /I fully upload a sandboxed cookbook (force-)?named '([^\']+)' versioned '([^\']+)' with '(.+)'/ do |forced, request_name, request_version, cookbook_name|
-  cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
+  @last_uploaded_cookbook = cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
   raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless cookbook
 
   # If they said 'force-named', we will reach into the cookbook and change its
@@ -318,6 +329,55 @@ end
 
 Then /^the metadata should include a dependency on '(.+)'$/ do |key|
   inflated_response.metadata.dependencies.should have_key(key)
+end
+
+Spec::Matchers.define :have_been_deleted do
+  match do |file_name|
+    ! File.exist?(file_name)
+  end
+  failure_message_for_should do |file_name|
+    "Expected file #{file_name} to have been deleted but it was not"
+  end
+  failure_message_for_should_not do |player|
+    "Expected file #{file_name} to not have been deleted but it was (i.e., it should exist)"
+  end
+  description do
+    "The file should have been deleted"
+  end
+end
+
+Then /^the cookbook's files should have been deleted$/ do
+  #pp @last_uploaded_cookbook
+  @last_uploaded_cookbook.checksums.keys.each do |file_checksum|
+    file_location_in_checksum_repo = File.join(datadir, 'repo', 'checksums', file_checksum[0...2], file_checksum)
+    #pp :expected_cksum_path => {file_checksum => file_location_in_checksum_repo}
+    file_location_in_checksum_repo.should have_been_deleted
+  end
+end
+
+Spec::Matchers.define :have_checksum_document do |checksum|
+  match do |checksum_list|
+    checksum_list.include?(checksum)
+  end
+  failure_message_for_should do |checksum_list|
+    "Expected checksum document #{checksum} to exist in couchdb but it is not in the list of existing checksums:\n#{checksum_list.sort.join("\n")}\n"
+  end
+  failure_message_for_should_not do |checksum_list|
+    "Expected checksum document #{checksum} not to exist in couchdb but it is in the list of existing checksums:\n#{checksum_list.sort.join("\n")}\n"
+  end
+  description do
+    "The checksum should exist"
+  end
+end
+
+Then /^the cookbook's checksums should be removed from couchdb$/ do
+  #pp @last_uploaded_cookbook
+  all_checksum_docs = couchdb_rest_client.get_rest('/_design/checksums/_view/all')["rows"]
+  checksums_in_couchdb = all_checksum_docs.map {|c| c["key"]}
+  #pp :checksums_in_couchdb => checksums_in_couchdb
+  @last_uploaded_cookbook.checksums.keys.each do |checksum|
+    checksums_in_couchdb.should_not have_checksum_document(checksum)
+  end
 end
 
 Given "I upload multiple versions of the 'version_test' cookbook" do

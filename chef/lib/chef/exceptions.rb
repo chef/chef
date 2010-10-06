@@ -61,5 +61,6 @@ class Chef
     class ResourceNotFound < RuntimeError; end
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
+    class IllegalChecksumRevert < RuntimeError; end
   end
 end

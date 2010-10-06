@@ -311,7 +311,12 @@ module ChefWorld
     #Chef::Config[:client_key] = "#{tmpdir}/not_admin.pem"
     #Chef::Config[:node_name] = "not_admin"
   end
-  
+
+  def couchdb_rest_client
+    Chef::REST.new('http://localhost:5984/chef_integration', false, false)
+  end
+
+
 end
 
 World(ChefWorld)
