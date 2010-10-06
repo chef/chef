@@ -57,14 +57,15 @@ class Chef
           if hours > 24
             color = "RED"
             text = hours_text
-          elsif hours > 1
+          elsif hours >= 1
             color = "YELLOW"
             text = hours_text
-          elsif hours == 0
+          else
             color = "GREEN"
             text = minutes_text
           end
-            highline.say("<%= color('#{text}', #{color}) %> ago, #{node.name}, #{node['platform']} #{node['platform_version']}, #{fqdn}, #{ipaddress}#{run_list}")
+
+          highline.say("<%= color('#{text}', #{color}) %> ago, #{node.name}, #{node['platform']} #{node['platform_version']}, #{fqdn}, #{ipaddress}#{run_list}")
         end
 
       end
