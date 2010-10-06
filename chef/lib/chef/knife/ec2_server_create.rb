@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'socket'
 require 'chef/knife'
 require 'json'
 
@@ -114,6 +115,24 @@ class Chef
         @highline ||= HighLine.new
       end
 
+      def tcp_test_ssh(hostname)
+        tcp_socket = TCPSocket.new(hostname, 22)
+        readable = IO.select([tcp_socket], nil, nil, 5)
+        if readable
+          yield
+          true
+        else
+          false
+        end
+      rescue Errno::ETIMEDOUT
+        false
+      rescue Errno::ECONNREFUSED
+        sleep 2
+        false
+      ensure
+        tcp_socket && tcp_socket.close
+      end
+
       def run 
         require 'fog'
         require 'highline'
@@ -147,37 +166,30 @@ class Chef
 
         # wait for it to be ready to do stuff
         server.wait_for { print "."; ready? }
-        puts "#{h.color("\nWaiting #{@initial_sleep_delay ||= 10} seconds for SSH Host Key generation on", :magenta)}: #{server.dns_name}"
-        sleep @initial_sleep_delay ||= 10
 
-        print "\n"
+        puts("\n")
+
 
         puts "#{h.color("Public DNS Name", :cyan)}: #{server.dns_name}"
         puts "#{h.color("Public IP Address", :cyan)}: #{server.ip_address}"
         puts "#{h.color("Private DNS Name", :cyan)}: #{server.private_dns_name}"
         puts "#{h.color("Private IP Address", :cyan)}: #{server.private_ip_address}"
 
-        begin
-          bootstrap = Chef::Knife::Bootstrap.new
-          bootstrap.name_args = [server.dns_name]
-          bootstrap.config[:run_list] = @name_args
-          bootstrap.config[:ssh_user] = config[:ssh_user]
-          bootstrap.config[:identity_file] = config[:identity_file]
-          bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.id
-          bootstrap.config[:prerelease] = config[:prerelease]
-          bootstrap.config[:distro] = config[:distro]
-          bootstrap.config[:use_sudo] = true
-          bootstrap.config[:template_file] = config[:template_file]
-          bootstrap.run
-        rescue Errno::ECONNREFUSED
-          puts h.color("Connection refused on SSH, retrying - CTRL-C to abort")
-          sleep 1
-          retry
-        rescue Errno::ETIMEDOUT
-          puts h.color("Connection timed out on SSH, retrying - CTRL-C to abort")
-          sleep 1
-          retry
-        end
+        print "\n#{h.color("Waiting for sshd", :magenta)}"
+
+        print(".") until tcp_test_ssh(server.dns_name) { sleep @initial_sleep_delay ||= 10; puts("done") }
+
+        bootstrap = Chef::Knife::Bootstrap.new
+        bootstrap.name_args = [server.dns_name]
+        bootstrap.config[:run_list] = @name_args
+        bootstrap.config[:ssh_user] = config[:ssh_user]
+        bootstrap.config[:identity_file] = config[:identity_file]
+        bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.id
+        bootstrap.config[:prerelease] = config[:prerelease]
+        bootstrap.config[:distro] = config[:distro]
+        bootstrap.config[:use_sudo] = true
+        bootstrap.config[:template_file] = config[:template_file]
+        bootstrap.run
 
         puts "\n"
         puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
