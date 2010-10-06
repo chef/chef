@@ -167,6 +167,13 @@ describe Chef::ChecksumCache do
         @expected_cached_checksums.sort!
       end
 
+      after do
+        Chef::Config[:cache_type] = "Memory"
+        Chef::Config[:cache_options] = { } 
+        @cache = Chef::ChecksumCache.instance
+        @cache.reset!
+      end
+
       it "lists all of the cached checksums in the cache directory" do
         Chef::ChecksumCache.all_cached_checksums.keys.sort.should == @expected_cached_checksums
       end
