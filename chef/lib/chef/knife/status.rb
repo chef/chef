@@ -43,6 +43,13 @@ class Chef
           all_nodes << node
         end
         all_nodes.sort { |n1, n2| n1["ohai_time"] <=> n2["ohai_time"] }.each do |node|
+          if node.has_key?("ec2")
+            fqdn = node['ec2']['public_hostname']
+            ipaddress = node['ec2']['public_ipv4']
+          else
+            fqdn = node['fqdn']
+            ipaddress = node['ipaddress']
+          end
           hours, minutes, seconds = time_difference_in_hms(node["ohai_time"])
           hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
           minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
@@ -57,7 +64,7 @@ class Chef
             color = "GREEN"
             text = minutes_text
           end
-            highline.say("<%= color('#{text}', #{color}) %> ago, #{node.name}, #{node['platform']} #{node['platform_version']}, #{node['fqdn']}, #{node['ipaddress']}#{run_list}")
+            highline.say("<%= color('#{text}', #{color}) %> ago, #{node.name}, #{node['platform']} #{node['platform_version']}, #{fqdn}, #{ipaddress}#{run_list}")
         end
 
       end
