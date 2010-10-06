@@ -793,6 +793,15 @@ class Chef
       (couchdb || Chef::CouchDB.new).delete("cookbook_version", full_name, couchdb_rev)
     end
 
+    # Runs on Chef Server (API); deletes the cookbook from couchdb and also destroys associated
+    # checksum documents 
+    def purge
+      checksums.keys.each do |checksum|
+        Chef::Checksum.cdb_load(checksum, couchdb).purge
+      end
+      cdb_destroy
+    end
+
     def cdb_save
       @couchdb_rev = couchdb.store("cookbook_version", full_name, self)["rev"]
     end
