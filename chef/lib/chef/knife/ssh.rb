@@ -94,15 +94,15 @@ class Chef
       def session_from_list(list)
         list.each do |item|
           Chef::Log.debug("Adding #{item}")
-          item = "#{config[:ssh_user]}@#{item}" if config[:ssh_user]
 
-          if config[:identity_file]
-            session.use item, :keys => File.expand_path(config[:identity_file])
-          elsif config[:ssh_password]
-            session.use item, :password => config[:ssh_password]
-          else
-            session.use item
-          end
+          hostspec = config[:ssh_user] ? "#{config[:ssh_user]}@#{item}" : item
+          session_opts = {}
+          session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
+          session_opts[:password] = config[:ssh_password] if config[:ssh_password]
+          session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
+
+          session.use(hostspec, session_opts)
+
           @longest = item.length if item.length > @longest
         end
         session
