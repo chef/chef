@@ -33,7 +33,7 @@ class Chef
 
 
       def action_create
-         if file_cache_location
+         if file_cache_location && content_stale?
            Chef::Log.debug("content of file #{@new_resource.path} requires update")
            backup_new_resource
            Tempfile.open(::File.basename(@new_resource.name)) do |staging_file|
@@ -46,7 +46,7 @@ class Chef
          else
            set_all_access_controls(@new_resource.path)
          end
-         @new_resource.updated_by_last_action(true)
+         @new_resource.updated_by_last_action?
        end
 
       def action_create_if_missing
@@ -89,6 +89,10 @@ class Chef
           Chef::Log.info "Backing up current file at #{@new_resource.path}"
           backup @new_resource.path
         end
+      end
+
+      def content_stale?
+        ( ! ::File.exist?(@new_resource.path)) || ( ! compare_content)
       end
 
     end
