@@ -76,7 +76,8 @@ class Chef
               node_name = n if format_for_display(n)[config[:attribute]] == server.host
             end
           end
-          Chef::Log.warn "#{node_name} failed. Exception info #{$!}"
+          Chef::Log.warn "Failed to connect to #{node_name} -- #{$!.class.name}: #{$!.message}"
+          $!.backtrace.each { |l| Chef::Log.debug(l) }
         end
 
         @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency], :on_error => ssh_error_handler)
