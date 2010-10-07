@@ -40,6 +40,7 @@ describe Chef::Client do
 
     @node = Chef::Node.new(@hostname)
     @node.name(@fqdn)
+    @node.chef_environment("_default")
     @node[:platform] = "example-platform"
     @node[:platform_version] = "example-platform-1.0"
 

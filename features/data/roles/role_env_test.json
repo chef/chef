@@ -10,8 +10,8 @@
   "run_list": [
   ],
   "env_run_lists": {
-		"cucumber" : {"default_attributes":{}, "override_attributes":{}, "run_list":"recipe[roles]"},
-    "_default" : {}
+		"cucumber" : "recipe[roles]",
+    "_default" : ""
   },
   "override_attributes": {
     "ossining": "whatever",

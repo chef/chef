@@ -116,7 +116,7 @@ class Environments < Application
     rescue Chef::Exceptions::CouchDBNotFound
       raise NotFound, "Cannot load role #{params[:role_id]}"
     end
-    display(role.env_run_lists[params[:environment_id]])
+    display("run_list" => role.env_run_lists[params[:environment_id]])
   end
 
   private

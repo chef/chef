@@ -69,7 +69,7 @@ class Chef
       @default_attributes = Mash.new
       @override_attributes = Mash.new
       @run_list = Chef::RunList.new
-      @env_run_lists = {"_default" => {"default_attributes" => @default_attributes, "override_attributes" => @override_attributes, "run_list" => @run_list}}
+      @env_run_lists = {"_default" =>  @run_list}
       @couchdb_rev = nil
       @couchdb_id = nil
       @couchdb = couchdb || Chef::CouchDB.new
@@ -107,28 +107,28 @@ class Chef
     def run_list(*args)
       if (args.length > 0) 
         @run_list.reset!(args) 
-        @env_run_lists.merge!({"_default" => {"default_attributes"=>@default_attributes, "override_attributes"=>@override_attributes, "run_list"=>@run_list}})
+        @env_run_lists.merge!({"_default" => @run_list})
       end
       @run_list
     end
 
     alias_method :recipes, :run_list
     
+    # For run_list expansion
     def run_list_for_environment(environment='_default')
-      if env_run_lists[environment].nil? || env_run_lists[environment].empty? || env_run_lists[environment]["run_list"].nil?
+      if env_run_lists[environment].nil? || env_run_lists[environment].empty?
         run_list
       else
-        env_run_lists[environment]["run_list"]
+        env_run_lists[environment]
       end
     end
 
+    # Per environment run lists
     def env_run_lists(hash=nil, run_list_items_only=false)
-      # TODO: should have btter validation, but leaving it as it is for now to make everything work first [nuo]
       if (!hash.nil? && hash.length > 0)
         hash.each do |k,v|
-          unless v["run_list"].nil?
-            rl = Chef::RunList.new(k).reset!(v["run_list"])
-            v["run_list"] = run_list_items_only ? rl.run_list_items : rl
+          unless v.nil?
+            hash[k] = run_list_items_only ? Chef::RunList.new(k).reset!(v).run_list_items : Chef::RunList.new(k).reset!(v)
           end
         end
         @env_run_lists = hash
@@ -184,8 +184,7 @@ class Chef
       run_list(o.run_list)
       default_attributes(o.default_attributes)
       override_attributes(o.override_attributes)
-      default_env_run_list = {"_default"=>{"default_attributes"=>o.default_attributes, "override_attributes"=>o.override_attributes, "run_list"=>o.run_list}}
-      env_run_lists(o.env_run_lists.nil? ? default_env_run_list : o.env_run_lists.merge!(default_env_run_list))
+      env_run_lists(o.env_run_lists.nil? ? {"_default"=>o.run_list} : o.env_run_lists.merge!({"_default"=>o.run_list}))
       self
     end
 
@@ -201,8 +200,7 @@ class Chef
                     else
                       o["recipes"]
                     end)
-      default_env_run_list = {"_default"=>{"default_attributes"=>o["default_attributes"], "override_attributes"=>o["override_attributes"], "run_list"=>role.run_list}}
-      role.env_run_lists(o["env_run_lists"].nil? ? default_env_run_list : o["env_run_lists"].merge!(default_env_run_list))
+      role.env_run_lists(o["env_run_lists"].nil? ? {"_default"=>role.run_list} : o["env_run_lists"].merge!({"_default"=>role.run_list}))
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       role.index_id = role.couchdb_id
       role.couchdb_id = o["_id"] if o.has_key?("_id")
@@ -268,7 +266,7 @@ class Chef
 
     # Save this role to the CouchDB
     def cdb_save
-      @env_run_lists.merge!({"_default" => {"default_attributes"=>@default_attributes, "override_attributes"=>@override_attributes, "run_list"=>@run_list}})
+      @env_run_lists.merge!({"_default" => @run_list})
       self.couchdb_rev = couchdb.store("role", @name, self)["rev"]
     end
 
