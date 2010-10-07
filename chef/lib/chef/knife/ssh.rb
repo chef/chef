@@ -68,7 +68,19 @@ class Chef
         :description => "The SSH identity file used for authentication"
 
       def session
-        @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency])
+        ssh_error_handler = Proc.new do |server|
+          if config[:manual]
+            node_name = server.host
+          else
+            @action_nodes.each do |n|
+              node_name = n if format_for_display(n)[config[:attribute]] == server.host
+            end
+          end
+          Chef::Log.warn "Failed to connect to #{node_name} -- #{$!.class.name}: #{$!.message}"
+          $!.backtrace.each { |l| Chef::Log.debug(l) }
+        end
+
+        @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency], :on_error => ssh_error_handler)
       end
 
       def h
@@ -82,10 +94,10 @@ class Chef
                when false
                  r = Array.new
                  q = Chef::Search::Query.new
-                 q.search(:node, @name_args[0]) do |item|
-                   r << format_for_display(item)[config[:attribute]]
+                 @action_nodes = q.search(:node, @name_args[0])[0]
+                 r = @action_nodes.map do |item|
+                   format_for_display(item)[config[:attribute]]
                  end
-                 r
                end
         (Chef::Log.fatal("No nodes returned from search!"); exit 10) if list.length == 0
         session_from_list(list)
