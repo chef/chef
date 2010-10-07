@@ -25,6 +25,7 @@ KNIFE_CMD = File.expand_path(File.join(CHEF_PROJECT_ROOT, "chef", "bin", "knife"
 FEATURES_DATA = File.join(CHEF_PROJECT_ROOT, "features", "data")
 INTEGRATION_COOKBOOKS = File.join(FEATURES_DATA, "cookbooks")
 
+$:.unshift(CHEF_PROJECT_ROOT)
 $:.unshift(CHEF_PROJECT_ROOT + '/chef/lib')
 $:.unshift(CHEF_PROJECT_ROOT + '/chef-server-api/lib')
 $:.unshift(CHEF_PROJECT_ROOT + '/chef-server-webui/lib')
