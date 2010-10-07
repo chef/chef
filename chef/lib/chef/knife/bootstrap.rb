@@ -120,7 +120,7 @@ class Chef
           exit 1
         end
 
-        config[:server_name] = @name_args.first
+        config[:server_name] = Array(@name_args).first
 
         $stdout.sync = true
 

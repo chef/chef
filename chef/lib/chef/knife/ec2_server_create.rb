@@ -119,6 +119,7 @@ class Chef
         tcp_socket = TCPSocket.new(hostname, 22)
         readable = IO.select([tcp_socket], nil, nil, 5)
         if readable
+          Chef::Log.debug("sshd accepting connections on #{hostname}, banner is #{tcp_socket.gets}")
           yield
           true
         else
@@ -179,17 +180,8 @@ class Chef
 
         print(".") until tcp_test_ssh(server.dns_name) { sleep @initial_sleep_delay ||= 10; puts("done") }
 
-        bootstrap = Chef::Knife::Bootstrap.new
-        bootstrap.name_args = [server.dns_name]
-        bootstrap.config[:run_list] = @name_args
-        bootstrap.config[:ssh_user] = config[:ssh_user]
-        bootstrap.config[:identity_file] = config[:identity_file]
-        bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.id
-        bootstrap.config[:prerelease] = config[:prerelease]
-        bootstrap.config[:distro] = config[:distro]
-        bootstrap.config[:use_sudo] = true
-        bootstrap.config[:template_file] = config[:template_file]
-        bootstrap.run
+
+        bootstrap_for_node(server).run
 
         puts "\n"
         puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
@@ -204,6 +196,21 @@ class Chef
         puts "#{h.color("Private IP Address", :cyan)}: #{server.private_ip_address}"
         puts "#{h.color("Run List", :cyan)}: #{@name_args.join(', ')}"
       end
+
+      def bootstrap_for_node(server)
+        bootstrap = Chef::Knife::Bootstrap.new
+        bootstrap.name_args = [server.dns_name]
+        bootstrap.config[:run_list] = @name_args
+        bootstrap.config[:ssh_user] = config[:ssh_user]
+        bootstrap.config[:identity_file] = config[:identity_file]
+        bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.id
+        bootstrap.config[:prerelease] = config[:prerelease]
+        bootstrap.config[:distro] = config[:distro]
+        bootstrap.config[:use_sudo] = true
+        bootstrap.config[:template_file] = config[:template_file]
+        bootstrap
+      end
+
     end
   end
 end
