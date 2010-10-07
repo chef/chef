@@ -220,6 +220,7 @@ class Chef
 
 
       @node.consume_external_attrs(ohai.data, @json_attribs)
+      @node.expand!
       @node.save unless Chef::Config[:solo]
       @node.reset_defaults_and_overrides
 
