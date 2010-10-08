@@ -96,8 +96,8 @@ describe Chef::Node do
 
   end
 
-  describe "attributes" do
-    it "should be loaded from the node's cookbooks" do
+  describe "when modifying Node attributes" do
+    it "loads attributes from cookbooks" do
       Chef::Config.cookbook_path = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
       @node.cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
       @node.load_attributes
@@ -164,6 +164,12 @@ describe Chef::Node do
         @node.set_unless[:snoopy][:is_a_puppy] = false 
         @node[:snoopy][:is_a_puppy].should == true 
       end
+
+      it "auto-vivifies attributes created via method syntax" do
+        @node.set.fuu.bahrr.baz = "qux"
+        @node.fuu.bahrr.baz.should == "qux"
+      end
+
     end
 
     describe "default attributes" do
@@ -182,6 +188,12 @@ describe Chef::Node do
         @node.default_unless[:snoopy][:is_a_puppy] = false 
         @node[:snoopy][:is_a_puppy].should == true 
       end
+
+      it "auto-vivifies attributes created via method syntax" do
+        @node.default.fuu.bahrr.baz = "qux"
+        @node.fuu.bahrr.baz.should == "qux"
+      end
+
     end
 
     describe "override attributes" do
@@ -200,6 +212,12 @@ describe Chef::Node do
         @node.override_unless[:snoopy][:is_a_puppy] = false 
         @node[:snoopy][:is_a_puppy].should == true 
       end
+
+      it "auto-vivifies attributes created via method syntax" do
+        @node.override.fuu.bahrr.baz = "qux"
+        @node.fuu.bahrr.baz.should == "qux"
+      end
+
     end
     
     it "should raise an ArgumentError if you ask for an attribute that doesn't exist via method_missing" do
@@ -563,17 +581,17 @@ describe Chef::Node do
     end
   end
 
-  describe "couchdb model" do
+  describe "acting as a CouchDB-backed model" do
     before(:each) do
-      @mock_couch = mock("Chef::CouchDB")
+      @couchdb = Chef::CouchDB.new
     end
 
-    describe "list" do  
-      before(:each) do
-        @mock_couch.stub!(:list).and_return(
+    describe "when listing Nodes" do  
+      before do
+        @couchdb.stub!(:list).and_return(
           { "rows" => [ { "value" => "a", "key" => "avenue" } ] }
         )
-        Chef::CouchDB.stub!(:new).and_return(@mock_couch) 
+        Chef::CouchDB.stub!(:new).and_return(@couchdb) 
       end
 
       it "should retrieve a list of nodes from CouchDB" do
@@ -589,18 +607,18 @@ describe Chef::Node do
       end
     end
 
-    describe "load" do
+    describe "when loading a given node" do
       it "should load a node from couchdb by name" do
-        @mock_couch.should_receive(:load).with("node", "coffee").and_return(true)
-        Chef::CouchDB.stub!(:new).and_return(@mock_couch)
+        @couchdb.should_receive(:load).with("node", "coffee").and_return(true)
+        Chef::CouchDB.stub!(:new).and_return(@couchdb)
         Chef::Node.cdb_load("coffee")
       end
     end
 
-    describe "destroy" do
+    describe "when destroying a Node" do
       it "should delete this node from couchdb" do
-        @mock_couch.should_receive(:delete).with("node", "bob", 1).and_return(true)
-        Chef::CouchDB.stub!(:new).and_return(@mock_couch)
+        @couchdb.should_receive(:delete).with("node", "bob", 1).and_return(true)
+        Chef::CouchDB.stub!(:new).and_return(@couchdb)
         node = Chef::Node.new
         node.name "bob"
         node.couchdb_rev = 1
@@ -608,17 +626,17 @@ describe Chef::Node do
       end
     end
 
-    describe "save" do
+    describe "when saving a Node" do
       before(:each) do
-        @mock_couch.stub!(:store).and_return({ "rev" => 33 })
-        Chef::CouchDB.stub!(:new).and_return(@mock_couch)
+        @couchdb.stub!(:store).and_return({ "rev" => 33 })
+        Chef::CouchDB.stub!(:new).and_return(@couchdb)
         @node = Chef::Node.new
         @node.name "bob"
         @node.couchdb_rev = 1
       end
 
       it "should save the node to couchdb" do
-        @mock_couch.should_receive(:store).with("node", "bob", @node).and_return({ "rev" => 33 })
+        @couchdb.should_receive(:store).with("node", "bob", @node).and_return({ "rev" => 33 })
         @node.cdb_save
       end
 
@@ -630,8 +648,8 @@ describe Chef::Node do
 
     describe "create_design_document" do
       it "should create our design document" do
-        @mock_couch.should_receive(:create_design_document).with("nodes", Chef::Node::DESIGN_DOCUMENT)
-        Chef::CouchDB.stub!(:new).and_return(@mock_couch)
+        @couchdb.should_receive(:create_design_document).with("nodes", Chef::Node::DESIGN_DOCUMENT)
+        Chef::CouchDB.stub!(:new).and_return(@couchdb)
         Chef::Node.create_design_document
       end
     end
