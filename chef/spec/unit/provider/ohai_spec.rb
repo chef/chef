@@ -23,16 +23,16 @@ require 'chef/run_context'
 describe Chef::Provider::Ohai do
   before(:each) do
     # Copied from client_spec
-    FQDN = "hostname.domainname"
-    HOSTNAME = "hostname"
-    PLATFORM = "example-platform"
-    PLATFORM_VERSION = "example-platform"
-    Chef::Config[:node_name] = FQDN
+    @fqdn = "hostname.domainname"
+    @hostname = "hostname"
+    @platform = "example-platform"
+    @platform_version = "example-platform"
+    Chef::Config[:node_name] = @fqdn
     mock_ohai = {
-      :fqdn => FQDN,
-      :hostname => HOSTNAME,
-      :platform => PLATFORM,
-      :platform_version => PLATFORM_VERSION,
+      :fqdn => @fqdn,
+      :hostname => @hostname,
+      :platform => @platform,
+      :platform_version => @platform_version,
       :data => {
         :origdata => "somevalue"      
       },
@@ -46,11 +46,11 @@ describe Chef::Provider::Ohai do
     mock_ohai.stub!(:data).and_return(mock_ohai[:data],
                                       mock_ohai[:data2])
     Ohai::System.stub!(:new).and_return(mock_ohai)
-    Chef::Platform.stub!(:find_platform_and_version).and_return({ "platform" => PLATFORM,
-                                                                  "platform_version" => PLATFORM_VERSION})
+    Chef::Platform.stub!(:find_platform_and_version).and_return({ "platform" => @platform,
+                                                                  "platform_version" => @platform_version})
     # Fake node with a dummy save
-    @node = Chef::Node.new(HOSTNAME)
-    @node.name(FQDN)
+    @node = Chef::Node.new(@hostname)
+    @node.name(@fqdn)
     @node.stub!(:save).and_return(@node)
     @run_context = Chef::RunContext.new(@node, {})
     @new_resource = Chef::Resource::Ohai.new("ohai_reload")
@@ -62,9 +62,13 @@ describe Chef::Provider::Ohai do
   end
 
   describe "when reloading ohai" do
-    it "should cause node to pick up new values" do
+    before do
+      @node[:origdata] = 'somevalue'
+    end
+
+    it "applies updated ohai data to the node" do
       @node[:origdata].should == 'somevalue'
-      @node[:newdata].should == nil
+      @node[:newdata].should be_nil
       @provider.action_reload
       @node[:origdata].should == 'somevalue'
       @node[:newdata].should == 'somevalue'
