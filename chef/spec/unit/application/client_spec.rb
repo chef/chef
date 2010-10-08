@@ -46,16 +46,24 @@ describe Chef::Application::Client, "reconfigure" do
     end
   end
 
-  describe "when in client mode and splay has been set" do
+  describe "when configured to run once" do
     before do
+      Chef::Config[:once] = true
       Chef::Config[:daemonize] = false
       Chef::Config[:splay] = 60
+      Chef::Config[:interval] = 1800
     end
 
-    it "should ignore splay in client mode" do
+    it "ignores the splay" do
       @app.reconfigure
-      Chef::Config.splay.should == nil
+      Chef::Config.splay.should be_nil
     end
+
+    it "forces the interval to nil" do
+      @app.reconfigure
+      Chef::Config.interval.should be_nil
+    end
+
   end
 
   describe "when the json_attribs configuration option is specified" do
