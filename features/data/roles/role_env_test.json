@@ -10,7 +10,7 @@
   "run_list": [
   ],
   "env_run_lists": {
-		"cucumber" : "recipe[roles]",
+		"cucumber" : ["recipe[roles]"],
     "_default" : ""
   },
   "override_attributes": {
