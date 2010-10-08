@@ -23,7 +23,12 @@ class Chef
   class Knife
     class Ec2ImageList < Knife
 
-      banner "knife rackspace image list (options)"
+      banner "knife ec2 image list (options)"
+
+      option :region,
+        :long => "--region REGION",
+        :description => "Your AWS region",
+        :default => "us-east-1"
 
       def h
         @highline ||= HighLine.new
