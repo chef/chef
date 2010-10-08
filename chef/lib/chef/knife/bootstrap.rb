@@ -109,49 +109,64 @@ class Chef
         context = {}
         context[:run_list] = config[:run_list]
         context[:config] = config
-        command = Erubis::Eruby.new(template).evaluate(context)
+        Erubis::Eruby.new(template).evaluate(context)
       end
 
       def run 
         require 'highline'
 
-        if @name_args.first == nil
-          Chef::Log.error("Must pass an FQDN or ip to bootstrap")
-          exit 1
-        end
-
-        config[:server_name] = Array(@name_args).first
+        validate_name_args!
 
         $stdout.sync = true
 
+        Chef::Log.info("Bootstrapping Chef on #{h.color(config[:server_name], :bold)}")
+
+        begin
+          knife_ssh.run
+        rescue Net::SSH::AuthenticationFailed
+          unless config[:ssh_password]
+            puts "Failed to authenticate #{config[:ssh_user]} - trying password auth"
+            knife_ssh_with_password_auth.run
+          end
+        end
+      end
+
+      def validate_name_args!
+        if Array(@name_args).first.nil?
+          Chef::Log.error("Must pass an FQDN or ip to bootstrap")
+          exit 1
+        end
+      end
+
+      def server_name
+        Array(@name_args).first
+      end
+
+      def knife_ssh
+        ssh = Chef::Knife::Ssh.new
+        ssh.name_args = [ server_name, ssh_command ]
+        ssh.config[:ssh_user] = config[:ssh_user] 
+        ssh.config[:ssh_password] = config[:ssh_password]
+        ssh.config[:identity_file] = config[:identity_file]
+        ssh.config[:manual] = true
+        ssh
+      end
+
+      def knife_ssh_with_password_auth
+        ssh = knife_ssh
+        ssh.config[:identity_file] = nil
+        ssh.config[:ssh_password] = ssh.get_password
+        ssh
+      end
+
+      def ssh_command
         command = render_template(load_template(config[:bootstrap_template]))
 
         if config[:use_sudo]
           command = "sudo #{command}"
         end
 
-        Chef::Log.info("Bootstrapping Chef on #{h.color(config[:server_name], :bold)}")
-
-        ssh = Chef::Knife::Ssh.new
-        ssh.name_args = [ config[:server_name], command ]
-        ssh.config[:ssh_user] = config[:ssh_user] 
-        ssh.config[:password] = config[:ssh_password]
-        ssh.config[:identity_file] = config[:identity_file]
-        ssh.config[:manual] = true
-
-        begin
-          ssh.run
-        rescue Net::SSH::AuthenticationFailed
-          unless config[:ssh_password]
-            puts "Failed to authenticate #{config[:ssh_user]} - trying password auth"
-            ssh = Chef::Knife::Ssh.new
-            ssh.name_args = [ config[:server_name], command ]
-            ssh.config[:ssh_user] = config[:ssh_user] 
-            ssh.config[:manual] = true
-            ssh.config[:password] = ssh.get_password
-            ssh.run
-          end
-        end
+        command
       end
 
     end
