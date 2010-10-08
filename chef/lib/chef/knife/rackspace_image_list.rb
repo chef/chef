@@ -1,5 +1,5 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Sean OMeara (<someara@gmail.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -21,9 +21,9 @@ require 'json'
 
 class Chef
   class Knife
-    class RackspaceServerDelete < Knife
+    class RackspaceImageList < Knife
 
-      banner "knife rackspace server delete SERVER (options)"
+      banner "knife rackspace image list (options)"
 
       def h
         @highline ||= HighLine.new
@@ -40,18 +40,18 @@ class Chef
           :rackspace_username => Chef::Config[:knife][:rackspace_username] 
         )
 
-        server = connection.servers.get(@name_args[0])
+        image_list = [ h.color('ID', :bold), h.color('Name', :bold), h.color('Updated', :bold) ]
+        connection.images.each do |image|
+          image_list << image.id.to_s
+          image_list << image.name
+          image_list << image.updated_at
+        end
+        puts h.list(image_list, :columns_across, 3)
 
-        confirm("Do you really want to delete server ID #{server.id} named #{server.name}")
-
-        server.destroy
-
-        Chef::Log.warn("Deleted server #{server.id} named #{server.name}")
       end
     end
   end
 end
-
 
 
 
