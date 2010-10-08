@@ -206,6 +206,7 @@ class Chef
         bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.id
         bootstrap.config[:prerelease] = config[:prerelease]
         bootstrap.config[:distro] = config[:distro]
+        #bootstrap.config[:use_sudo] = true
         bootstrap.config[:template_file] = config[:template_file]
         bootstrap
       end
