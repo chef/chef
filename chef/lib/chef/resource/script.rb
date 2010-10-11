@@ -28,6 +28,7 @@ class Chef
         @command = name
         @code = nil
         @interpreter = nil
+        @flags = nil
       end
       
       def code(arg=nil)
@@ -41,6 +42,14 @@ class Chef
       def interpreter(arg=nil)
         set_or_return(
           :interpreter,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def flags(arg=nil)
+        set_or_return(
+          :flags,
           arg,
           :kind_of => [ String ]
         )
