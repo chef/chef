@@ -43,9 +43,18 @@ describe Chef::Knife::EnvironmentEdit do
     @knife.should_receive(:edit_data).with(@environment)
     @knife.run
   end
+  
+  it "should save the edited environment data" do
+    pansy = Chef::Environment.new
 
-  it "should save the environment" do
-    @environment.should_receive(:save)
+    @environment.name("new_environment_name")
+    @knife.should_receive(:edit_data).with(@environment).and_return(pansy)
+    pansy.should_receive(:save)
+    @knife.run
+  end
+
+  it "should not save the unedited environment data" do
+    @environment.should_not_receive(:save)
     @knife.run
   end
 
