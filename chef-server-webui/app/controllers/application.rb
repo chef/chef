@@ -29,7 +29,7 @@ class Application < Merb::Controller
   def login_required
    if session[:user]
      begin
-       Chef::WebUIUser.load(session[:user]) rescue (raise NotFound, "Cannot find User #{session[:user]}, maybe it got deleted by an Administrator.")
+       load_session_user
      rescue
        logout_and_redirect_to_login
      else
@@ -39,6 +39,12 @@ class Application < Merb::Controller
      self.store_location
      throw(:halt, :access_denied)
    end
+  end
+
+  def load_session_user
+    Chef::WebUIUser.load(session[:user])
+  rescue
+    raise NotFound, "Cannot find User #{session[:user]}, maybe it got deleted by an Administrator."
   end
 
   def cleanup_session
@@ -212,6 +218,25 @@ class Application < Merb::Controller
       highlighted_file = CodeRay.encode_tokens(tokens, :span)
     end
     highlighted_file
+  end
+
+  def show_plain_file(file_url)
+    Chef::Log.debug("fetching file from '#{file_url}' for highlighting")
+    r = Chef::REST.new(Chef::Config[:chef_server_url])
+    r.fetch(file_url) do |tempfile|
+      if binary?(tempfile.path)
+        return "Binary file not shown"
+      elsif ((File.size(tempfile.path) / (1048576)) > 5)
+        return "File too large to display"
+      else
+        return IO.read(tempfile.path)
+      end
+    end
+  end
+
+  def binary?(file)
+    s = (File.read(file, File.stat(file).blksize) || "")
+    s.empty? || ( s.count( "^ -~", "^\r\n" ).fdiv(s.size) > 0.3 || s.index( "\x00" ))
   end
 
   def str_to_bool(str)
