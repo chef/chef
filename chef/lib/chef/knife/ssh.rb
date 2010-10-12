@@ -95,9 +95,10 @@ class Chef
                  r = Array.new
                  q = Chef::Search::Query.new
                  @action_nodes = q.search(:node, @name_args[0])[0]
-                 r = @action_nodes.map do |item|
-                   format_for_display(item)[config[:attribute]]
-                 end
+                 @action_nodes.each {|item|
+                   i = format_for_display(item)[config[:attribute]]
+                   r.push(i) unless i.nil?                   
+                 }
                end
         (Chef::Log.fatal("No nodes returned from search!"); exit 10) if list.length == 0
         session_from_list(list)
