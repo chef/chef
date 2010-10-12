@@ -46,4 +46,11 @@
             - @manifest["templates"].each do |f|
               .code
                 %h4.head= link_to File.basename(f["name"]), "JavaScript:void(0);"
-                %pre.ruby= syntax_highlight(f["url"])   
+                %pre.ruby= syntax_highlight(f["url"])
+        - unless @manifest["files"].empty?
+          %h2.head= link_to "Cookbook Files", "JavaScript:void(0);"
+          .files
+            - @manifest["files"].each do |f|
+              .code
+                %h4.head= link_to File.basename(f["name"]), "JavaScript:void(0);"
+                %pre= show_plain_file(f["url"])
