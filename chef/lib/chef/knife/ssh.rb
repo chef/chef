@@ -99,6 +99,7 @@ class Chef
                    i = format_for_display(item)[config[:attribute]]
                    r.push(i) unless i.nil?                   
                  }
+                 r
                end
         (Chef::Log.fatal("No nodes returned from search!"); exit 10) if list.length == 0
         session_from_list(list)
