@@ -36,7 +36,7 @@ class Chef
         require 'readline'
         
         bluebox = Fog::Bluebox.new(
-		  :bluebox_customer_id => Chef::Config[:knife][:bluebox_customer_id],
+  	  :bluebox_customer_id => Chef::Config[:knife][:bluebox_customer_id],
           :bluebox_api_key => Chef::Config[:knife][:bluebox_api_key]
         )
        
