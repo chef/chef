@@ -63,7 +63,30 @@ describe Chef::Knife::CookbookShow do
       end
     end
 
-    # FIXME: 3-argument test needed
+    describe "with 3 arguments: name, version, and segment" do
+      before(:each) do
+        @knife.name_args = [ "cookbook_name", "0.1.0", "recipes" ]
+        @cookbook_response = Chef::CookbookVersion.new("cookbook_name")
+        @manifest = {
+          "recipes" => [
+            {
+              :name => "default.rb",
+              :path => "recipes/default.rb",
+              :checksum => "1234",
+              :url => "http://example.org/files/default.rb"
+            }
+          ]
+        }
+        @cookbook_response.manifest = @manifest
+        @response = {"name"=>"default.rb", "url"=>"http://example.org/files/default.rb", "checksum"=>"1234", "path"=>"recipes/default.rb"}
+      end
+
+      it "should print the json of the part" do
+        @rest.should_receive(:get_rest).with("cookbooks/cookbook_name/0.1.0").and_return(@cookbook_response)
+        @knife.should_receive(:output).with(@cookbook_response.manifest["recipes"])
+        @knife.run
+      end
+    end
 
     describe "with 4 arguments: name, version, segment and filename" do
       before(:each) do
