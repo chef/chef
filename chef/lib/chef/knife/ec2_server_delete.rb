@@ -40,7 +40,8 @@ class Chef
       option :region,
         :long => "--region REGION",
         :description => "Your AWS region",
-        :default => "us-east-1"
+        :default => "us-east-1",
+        :proc => Proc.new { |key| Chef::Config[:knife][:region] = key }
 
       def h
         @highline ||= HighLine.new
@@ -55,7 +56,7 @@ class Chef
         connection = Fog::AWS::EC2.new(
           :aws_access_key_id => Chef::Config[:knife][:aws_access_key_id],
           :aws_secret_access_key => Chef::Config[:knife][:aws_secret_access_key],
-          :region => config[:region]
+          :region => Chef::Config[:knife][:region]
         )
 
         @name_args.each do |instance_id|
@@ -83,8 +84,4 @@ class Chef
     end
   end
 end
-
-
-
-
 
