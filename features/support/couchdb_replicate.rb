@@ -76,8 +76,15 @@ def replicate_dbs(replication_specs, delete_source_dbs = false)
       RestClient.delete(target_db)
     rescue RestClient::ResourceNotFound => e
     end
-    Chef::Log.debug("Creating #{target_db}")
-    RestClient.put(target_db, nil)
+
+    begin
+      # Other tasks may have created the database in the mean time, so we're going to
+      # ignore errors of re-creating the target database.
+      Chef::Log.debug("Creating #{target_db}")
+      RestClient.put(target_db, nil)
+    rescue RestClient::PreconditionFailed => e
+      Chef::Log.debug("In creating #{target_db}, got #{e}; ignoring it, as something else might have created it")
+    end
 
     Chef::Log.debug("Replicating #{source_db} to #{target_db} using bulk (batch) method")
     bulk_get_paged(source_db, 100) do |paged_rows|
