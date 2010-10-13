@@ -57,14 +57,13 @@ class Chef
 
           cookbook_name, cookbook_version, segment, filename = @name_args[0..3]
 
-          manifest = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}")
-          cookbook = Chef::CookbookVersion.new(cookbook_name)
-          cookbook.manifest = manifest
-          
+          cookbook = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}")
           manifest_entry = cookbook.preferred_manifest_record(node, segment, filename)
-          result = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}/files/#{manifest_entry[:checksum]}")
-          
-          pretty_print(result)
+          temp_file = rest.get_rest(manifest_entry[:url], true)
+
+          # the temp file is cleaned up elsewhere
+          pretty_print(temp_file.open.read)
+          temp_file.close
         when 3 # We are showing a specific part of the cookbook
           cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
           result = rest.get_rest("cookbooks/#{@name_args[0]}/#{cookbook_version}")
