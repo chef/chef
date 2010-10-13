@@ -79,15 +79,6 @@ class Chef
           exit 1
         end
       end
-
-      def make_query_params(req_opts)
-        query_part = Array.new 
-        req_opts.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |key|
-          query_part << "#{key}=#{URI.escape(req_opts[key])}"
-        end
-        query_part.join("&")
-      end
-
     end
   end
 end
