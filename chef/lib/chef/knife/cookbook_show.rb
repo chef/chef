@@ -62,8 +62,8 @@ class Chef
           temp_file = rest.get_rest(manifest_entry[:url], true)
 
           # the temp file is cleaned up elsewhere
-          pretty_print(temp_file.open.read)
-          temp_file.close
+          pretty_print(temp_file.read)
+
         when 3 # We are showing a specific part of the cookbook
           cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
           result = rest.get_rest("cookbooks/#{@name_args[0]}/#{cookbook_version}")
