@@ -155,9 +155,9 @@ class Chef
         )
 
         server = connection.servers.create(
-          :image_id => Chef::Config[:image],
+          :image_id => Chef::Config[:knife][:image],
           :groups => config[:security_groups],
-          :flavor_id => Chef::Config[:flavor],
+          :flavor_id => Chef::Config[:knife][:flavor],
           :key_name => Chef::Config[:knife][:aws_ssh_key_id],
           :availability_zone => config[:availability_zone]
         )
@@ -211,7 +211,7 @@ class Chef
         bootstrap.config[:identity_file] = Chef::Config[:knife][:identity_file]
         bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.id
         bootstrap.config[:prerelease] = config[:prerelease]
-        bootstrap.config[:distro] = Chef::Config[:distro]
+        bootstrap.config[:distro] = Chef::Config[:knife][:distro]
         bootstrap.config[:use_sudo] = true
         bootstrap.config[:template_file] = config[:template_file]
         bootstrap
