@@ -15,7 +15,7 @@
 # description: starts up chef-solr-indexer in daemon mode.
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/sbin/chef-solr-indexer
+DAEMON=/usr/bin/chef-solr-indexer
 NAME=chef-solr-indexer
 DESC=chef-solr-indexer
 PIDFILE=/var/run/chef/solr-indexer.pid
