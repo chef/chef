@@ -32,12 +32,14 @@ class Chef
         :short => "-f FLAVOR",
         :long => "--flavor FLAVOR",
         :description => "The flavor of server (m1.small, m1.medium, etc)",
-        :default => "m1.small"
+        :default => "m1.small",
+        :proc => Proc.new { |key| Chef::Config[:knife][:flavor] = key }
 
       option :image,
         :short => "-i IMAGE",
         :long => "--image IMAGE",
-        :description => "The AMI for the server"
+        :description => "The AMI for the server",
+        :proc => Proc.new { |key| Chef::Config[:knife][:image] = key }
 
       option :security_groups,
         :short => "-G X,Y,Z",
@@ -67,17 +69,20 @@ class Chef
         :short => "-x USERNAME",
         :long => "--ssh-user USERNAME",
         :description => "The ssh username",
-        :default => "root" 
+        :default => "root",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_user] = key }
  
       option :ssh_password,
         :short => "-P PASSWORD",
         :long => "--ssh-password PASSWORD",
-        :description => "The ssh password"
+        :description => "The ssh password",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_password] = key }
 
       option :identity_file,
         :short => "-I IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
-        :description => "The SSH identity file used for authentication"
+        :description => "The SSH identity file used for authentication",
+        :proc => Proc.new { |key| Chef::Config[:knife][:identity_file] = key }
  
       option :aws_access_key_id,
         :short => "-A ID",
@@ -104,7 +109,8 @@ class Chef
         :short => "-d DISTRO",
         :long => "--distro DISTRO",
         :description => "Bootstrap a distro using a template",
-        :default => "ubuntu10.04-gems"
+        :default => "ubuntu10.04-gems",
+        :proc => Proc.new { |key| Chef::Config[:knife][:distro] = key } 
 
       option :template_file,
         :long => "--template-file TEMPLATE",
@@ -149,9 +155,9 @@ class Chef
         )
 
         server = connection.servers.create(
-          :image_id => config[:image],
+          :image_id => Chef::Config[:image],
           :groups => config[:security_groups],
-          :flavor_id => config[:flavor],
+          :flavor_id => Chef::Config[:flavor],
           :key_name => Chef::Config[:knife][:aws_ssh_key_id],
           :availability_zone => config[:availability_zone]
         )
@@ -201,11 +207,11 @@ class Chef
         bootstrap = Chef::Knife::Bootstrap.new
         bootstrap.name_args = [server.dns_name]
         bootstrap.config[:run_list] = @name_args
-        bootstrap.config[:ssh_user] = config[:ssh_user]
-        bootstrap.config[:identity_file] = config[:identity_file]
+        bootstrap.config[:ssh_user] = Chef::Config[:knife][:ssh_user]
+        bootstrap.config[:identity_file] = Chef::Config[:knife][:identity_file]
         bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.id
         bootstrap.config[:prerelease] = config[:prerelease]
-        bootstrap.config[:distro] = config[:distro]
+        bootstrap.config[:distro] = Chef::Config[:distro]
         bootstrap.config[:use_sudo] = true
         bootstrap.config[:template_file] = config[:template_file]
         bootstrap
