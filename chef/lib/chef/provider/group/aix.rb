@@ -31,15 +31,19 @@ class Chef
 
         def create_group
           command = "mkgroup"
-          command << set_options
+          command << set_options << " #{@new_resource.group_name}"
           run_command(:command => command)
           modify_group_members
         end
 
         def manage_group
           command = "chgroup"
-          command << set_options
-          run_command(:command => command)
+          options = set_options
+          #Usage: chgroup [-R load_module] "attr=value" ... group
+          if options.size > 0
+            command << options << " #{@new_resource.group_name}"
+            run_command(:command => command)
+          end
           modify_group_members
         end
 
@@ -57,7 +61,7 @@ class Chef
               end
             end
           end
-          opts << " #{@new_resource.group_name}"
+          opts
         end
 
       end
