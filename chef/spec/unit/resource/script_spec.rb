@@ -47,4 +47,9 @@ describe Chef::Resource::Script do
     @resource.interpreter.should eql("naaaaNaNaNaaNaaNaaNaa")
   end
 
+  it "should accept a string for the flags" do
+    @resource.flags "-f"
+    @resource.flags.should eql("-f")
+  end
+
 end
