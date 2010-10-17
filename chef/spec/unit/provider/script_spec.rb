@@ -25,6 +25,7 @@ describe Chef::Provider::Script, "action_run" do
     @new_resource = Chef::Resource::Script.new('run some perl code')
     @new_resource.code "$| = 1; print 'i like beans'"
     @new_resource.interpreter 'perl'
+    @new_resource.flags '-f'
 
     @provider = Chef::Provider::Script.new(@new_resource, @run_context)
 
@@ -72,9 +73,9 @@ describe Chef::Provider::Script, "action_run" do
     end
 
     describe "when running the script" do
-      it "should set the command to 'interpreter tempfile'" do
+      it "should set the command to 'interpreter flags tempfile'" do
         @provider.action_run
-        @new_resource.command.should == '"perl" "/tmp/the_script_file"'
+        @new_resource.command.should == '"perl" -f "/tmp/the_script_file"'
       end
     end
   end
