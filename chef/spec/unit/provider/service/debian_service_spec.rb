@@ -46,16 +46,17 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
       @status = mock("Status", :exitstatus => 0)
       
       result=<<-UPDATE_RC_D_SUCCESS
-Removing any system startup links for /etc/init.d/chef ...
-  /etc/rc0.d/K20chef
-  /etc/rc1.d/K20chef
-  /etc/rc2.d/S20chef
-  /etc/rc3.d/S20chef
-  /etc/rc4.d/S20chef
-  /etc/rc5.d/S20chef
-  /etc/rc6.d/K20chef
+update-rc.d: using dependency based boot sequencing
+insserv: remove service /etc/init.d/../rc0.d/K20chef-client
+insserv: remove service /etc/init.d/../rc1.d/K20chef-client
+insserv: remove service /etc/init.d/../rc2.d/S20chef-client
+insserv: remove service /etc/init.d/../rc3.d/S20chef-client
+insserv: remove service /etc/init.d/../rc4.d/S20chef-client
+insserv: remove service /etc/init.d/../rc5.d/S20chef-client
+insserv: remove service /etc/init.d/../rc6.d/K20chef-client
   UPDATE_RC_D_SUCCESS
       @stdout = StringIO.new(result)
+      @stderr = StringIO.new(result)
       @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     end
 
@@ -88,7 +89,9 @@ Removing any system startup links for /etc/init.d/chef ...
       @provider.stub!(:run_command)
       @provider.stub!(:assert_update_rcd_available)
       @status = mock("Status", :exitstatus => 0)
-      @stdout = StringIO.new(" Removing any system startup links for /etc/init.d/chef ...")
+      result = "update-rc.d: using dependency based boot sequencing"
+      @stdout = StringIO.new(result)
+      @stderr = StringIO.new(result)
       @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     end
     
