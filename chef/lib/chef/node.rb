@@ -346,12 +346,11 @@ class Chef
     # run_state[:seen_recipes], which is populated by include_recipe
     # statements in the DSL (and thus would not be in the run list).
     #
-    # NOTE: We believe this is dead code, but if it's not, please
-    # email chef-dev@opscode.com. [cw,timh]
-#     def recipe?(recipe_name)
-#       run_list.include?(recipe_name) || run_state[:seen_recipes].include?(recipe_name)
-#     end
-
+    # NOTE: It's used by cookbook authors
+    def recipe?(recipe_name)
+      run_list.include?(recipe_name) || run_state[:seen_recipes].include?(recipe_name)
+    end
+ 
     # Returns true if this Node expects a given role, false if not.
     def role?(role_name)
       run_list.include?("role[#{role_name}]")
