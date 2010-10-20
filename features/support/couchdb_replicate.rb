@@ -77,13 +77,26 @@ def replicate_dbs(replication_specs, delete_source_dbs = false)
     rescue RestClient::ResourceNotFound => e
     end
 
-    begin
-      # Other tasks may have created the database in the mean time, so we're going to
-      # ignore errors of re-creating the target database.
-      Chef::Log.debug("Creating #{target_db}")
-      RestClient.put(target_db, nil)
-    rescue RestClient::PreconditionFailed => e
-      Chef::Log.debug("In creating #{target_db}, got #{e}; ignoring it, as something else might have created it")
+    # Sometimes Couch returns a '412 Precondition Failed' when creating a database,
+    # via a PUT to its URL. This condition disappears if you try again. So here we
+    # try up to 10 times if PreconditionFailed occurs. See 
+    # http://tickets.opscode.com/browse/CHEF-1788 and
+    # http://tickets.opscode.com/browse/CHEF-1764.
+    db_created = nil
+    max_tries = 10
+    num_tries = 1
+    while !db_created && num_tries <= max_tries
+      begin
+        Chef::Log.debug("Creating #{target_db}")
+        RestClient.put(target_db, nil)
+        db_created = true
+      rescue RestClient::PreconditionFailed => e
+        Chef::Log.error("In creating #{target_db} try #{num_tries}/#{max_tries}, got #{e}; try again")
+        if num_tries <= max_tries
+          sleep 0.25
+        end
+      end
+      num_tries += 1
     end
 
     Chef::Log.debug("Replicating #{source_db} to #{target_db} using bulk (batch) method")
