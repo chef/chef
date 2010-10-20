@@ -124,30 +124,46 @@ REALPKG_STDOUT
       @provider.candidate_version.should eql("libmysqlclient15-dev")
     end
 
-    it "should set candidate version to the depends package name if multiple virtual package providers" do
-      @new_resource.package_name("mysql-client")
+    it "should set candidate version to the first depends package name if multiple virtual package providers" do
+      @new_resource.package_name("vim")
       virtual_package_out=<<-VPKG_STDOUT
-Package: mysql-client
+Package: vim
 State: not installed
-Version: 5.1.41-3ubuntu12.6
-Depends: mysql-client-5.1
-Provided by: mysql-cluster-client-5.1, mysql-client-5.1
-Description: MySQL database client (metapackage depending on the latest version)
+Version: 2:7.2.330-1ubuntu3
+Priority: optional
+Section: editors
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Uncompressed Size: 1,946k
+Depends: vim-common (= 2:7.2.330-1ubuntu3), vim-runtime (= 2:7.2.330-1ubuntu3), libacl1 (>= 2.2.11-1), libc6 (>= 2.11),
+         libgpm2 (>= 1.20.4), libncurses5 (>= 5.6+20071006-3), libpython2.6 (>= 2.6), libselinux1 (>= 1.32)
+Suggests: ctags, vim-doc, vim-scripts
+Conflicts: vim-common (< 1:7.1-175+1)
+Replaces: vim-common (< 1:7.1-175+1)
+Provides: editor
+Provided by: vim-gnome, vim-gtk, vim-nox
+Description: Vi IMproved - enhanced vi editor
+ Vim is an almost compatible version of the UNIX editor Vi. 
 VPKG_STDOUT
       virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show mysql-client").and_return(virtual_package)
+      @provider.should_receive(:shell_out!).with("aptitude show vim").and_return(virtual_package)
       real_package_out=<<-REALPKG_STDOUT
-Package: mysql-client-5.1
+Package: vim-common
 State: not installed
-Version: Version: 5.1.41-3ubuntu12.6
-Conflicts: mysql-client (< 5.1.41-3ubuntu12.6), mysql-client-5.0
-Replaces: mysql-client (< 5.1.41-3ubuntu12.6), mysql-client-5.0
-Provides: mysql-client, mysql-client-4.1, virtual-mysql-client
+Automatically installed: no
+Version: 2:7.2.330-1ubuntu3
+Priority: important
+Section: editors
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Uncompressed Size: 389k
+Depends: libc6 (>= 2.4)
+Recommends: vim | vim-gnome | vim-gtk | vim-lesstif | vim-nox | vim-tiny
+Description: Vi IMproved - Common files
+ Vim is an almost compatible version of the UNIX editor Vi. 
 REALPKG_STDOUT
       real_package = mock(:stdout => real_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show mysql-client-5.1").and_return(real_package)
+      @provider.should_receive(:shell_out!).with("aptitude show vim-common").and_return(real_package)
       @provider.load_current_resource
-      @provider.candidate_version.should eql("mysql-client-5.1")
+      @provider.candidate_version.should eql("vim-common")
     end
 
   end
