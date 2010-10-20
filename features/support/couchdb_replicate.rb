@@ -78,10 +78,15 @@ def replicate_dbs(replication_specs, delete_source_dbs = false)
     end
 
     # Sometimes Couch returns a '412 Precondition Failed' when creating a database,
-    # via a PUT to its URL. This condition disappears if you try again. So here we
-    # try up to 10 times if PreconditionFailed occurs. See 
-    # http://tickets.opscode.com/browse/CHEF-1788 and
-    # http://tickets.opscode.com/browse/CHEF-1764.
+    # via a PUT to its URL, as the DELETE from the previous step has not yet finished. 
+    # This condition disappears if you try again. So here we try up to 10 times if 
+    # PreconditionFailed occurs. See
+    #   http://tickets.opscode.com/browse/CHEF-1788 and
+    #   http://tickets.opscode.com/browse/CHEF-1764.
+    #
+    # According to https://issues.apache.org/jira/browse/COUCHDB-449, setting the 
+    # 'X-Couch-Full-Commit: true' header on the DELETE should work around this issue, 
+    # but it does not.
     db_created = nil
     max_tries = 10
     num_tries = 1
