@@ -226,16 +226,6 @@ E
         :attributes
       end
 
-      desc "returns the current node (i.e., this host)"
-      def node
-        Shef.session.node
-      end
-
-      desc "pretty print the node's attributes"
-      def ohai(key=nil)
-        pp(key ? node.attribute[key] : node.attribute)
-      end
-
       desc "run chef using the current recipe"
       def run_chef
         Chef::Log.level = :debug
@@ -292,6 +282,18 @@ E
       desc "simple ls style command"
       def ls(directory)
         Dir.entries(directory)
+      end
+    end
+
+    MainContextExtensions = Proc.new do
+      desc "returns the current node (i.e., this host)"
+      def node
+        Shef.session.node
+      end
+
+      desc "pretty print the node's attributes"
+      def ohai(key=nil)
+        pp(key ? node.attribute[key] : node.attribute)
       end
     end
 
@@ -530,6 +532,7 @@ E
 
     def self.extend_context_object(obj)
       obj.instance_eval(&ObjectUIExtensions)
+      obj.instance_eval(&MainContextExtensions)
       obj.instance_eval(&RESTApiExtensions)
       obj.extend(FileUtils)
       obj.extend(Chef::Mixin::Language)
