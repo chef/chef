@@ -108,7 +108,7 @@ class Chef
 
         $stdout.sync = true
 
-        connection = Fog::Rackspace::Servers.new(
+        connection = Fog::Rackspace::Compute.new(
           :rackspace_api_key => Chef::Config[:knife][:rackspace_api_key],
           :rackspace_username => Chef::Config[:knife][:rackspace_username] 
         )

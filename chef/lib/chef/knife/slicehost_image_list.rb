@@ -33,7 +33,7 @@ class Chef
         require 'fog'
         require 'highline'
 
-        slicehost = Fog::Slicehost.new(
+        slicehost = Fog::Slicehost::Compute.new(
           :slicehost_password => Chef::Config[:knife][:slicehost_password]
         )
 
