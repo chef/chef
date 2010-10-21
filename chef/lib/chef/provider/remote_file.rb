@@ -53,7 +53,7 @@ class Chef
         end
         enforce_ownership_and_permissions
 
-        @new_resource.updated_by_last_action(true)
+        @new_resource.updated_by_last_action?
       end
 
       def action_create_if_missing
