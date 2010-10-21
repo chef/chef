@@ -22,21 +22,24 @@ class Chef
   class Provider
     class User 
       class Useradd < Chef::Provider::User
+        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]]
+
         def create_user
-          command = "useradd"
-          command << set_options
+          command = compile_command("useradd") do |useradd|
+            useradd << universal_options
+            useradd << useradd_options
+          end
           run_command(:command => command)
         end
         
         def manage_user
-          command = "usermod"
-          command << set_options
+          command = compile_command("usermod") { |u| u << universal_options }
           run_command(:command => command)
         end
         
         def remove_user
           command = "userdel"
-          command << " -r" if @new_resource.manage_home || @new_resource.supports[:manage_home]
+          command << " -r" if managing_home_dir?
           command << " #{@new_resource.username}"
           run_command(:command => command)
         end
@@ -82,41 +85,52 @@ class Chef
         def unlock_user
           run_command(:command => "usermod -U #{@new_resource.username}")
         end
+
+        def compile_command(base_command)
+          yield base_command
+          base_command << " #{@new_resource.username}"
+          base_command
+        end
         
-        def set_options
+        def universal_options
           opts = ''
           
-          field_list = {
-            'comment' => "-c",
-            'gid' => "-g",
-            'uid' => "-u",
-            'shell' => "-s",
-            'password' => "-p"
-          }
-          field_list.sort{ |a,b| a[0] <=> b[0] }.each do |field, option|
-            field_symbol = field.to_sym
-            if @current_resource.send(field_symbol) != @new_resource.send(field_symbol)
-              if @new_resource.send(field_symbol)
-                Chef::Log.debug("Setting #{@new_resource} #{field} to #{@new_resource.send(field_symbol)}")
-                opts << " #{option} '#{@new_resource.send(field_symbol)}'"
+          UNIVERSAL_OPTIONS.each do |field, option|
+            if @current_resource.send(field) != @new_resource.send(field)
+              if @new_resource.send(field)
+                Chef::Log.debug("Setting #{@new_resource} #{field} to #{@new_resource.send(field)}")
+                opts << " #{option} '#{@new_resource.send(field)}'"
               end
             end
           end
-          if @current_resource.home != @new_resource.home && @new_resource.home
-            if @new_resource.manage_home || @new_resource.supports[:manage_home]
+          if updating_home?
+            if managing_home_dir?
               Chef::Log.debug("Managing the home directory for #{@new_resource}")
-              opts << " -d '#{@new_resource.home}' -m"
+              opts << " -d '#{@new_resource.home}'"
             else
               Chef::Log.debug("Setting #{@new_resource} home to #{@new_resource.home}")
               opts << " -d '#{@new_resource.home}'"
             end
           end
-          opts << " -r" if @new_resource.system
           opts << " -o" if @new_resource.non_unique || @new_resource.supports[:non_unique]
-          opts << " #{@new_resource.username}"
           opts
         end
-      
+
+        def useradd_options
+          opts = ''
+          opts << " -m" if updating_home? && managing_home_dir?
+          opts << " -r" if @new_resource.system
+          opts
+        end
+
+        def updating_home?
+          @current_resource.home != @new_resource.home && @new_resource.home
+        end
+
+        def managing_home_dir?
+          @new_resource.manage_home || @new_resource.supports[:manage_home]
+        end
+
       end
     end
   end
