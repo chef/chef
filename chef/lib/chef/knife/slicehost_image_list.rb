@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Ian Meyer (<ianmmeyer@gmail.com>)
+# Copyright:: Copyright (c) 2010 Ian Meyer
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,37 +21,33 @@ require 'json'
 
 class Chef
   class Knife
-    class RackspaceServerDelete < Knife
+    class SlicehostImageList < Knife
 
-      banner "knife rackspace server delete SERVER (options)"
+      banner "knife slicehost image list"
 
-      def h
+      def highline
         @highline ||= HighLine.new
       end
 
-      def run 
+      def run
         require 'fog'
         require 'highline'
-        require 'net/ssh/multi'
-        require 'readline'
 
-        connection = Fog::Rackspace::Servers.new(
-          :rackspace_api_key => Chef::Config[:knife][:rackspace_api_key],
-          :rackspace_username => Chef::Config[:knife][:rackspace_username] 
+        slicehost = Fog::Slicehost.new(
+          :slicehost_password => Chef::Config[:knife][:slicehost_password]
         )
 
-        server = connection.servers.get(@name_args[0])
+        images  = slicehost.images.inject({}) { |h,i| h[i.id] = i.name; h }
 
-        confirm("Do you really want to delete server ID #{server.id} named #{server.name}")
+        image_list = [ highline.color('ID', :bold), highline.color('Name', :bold) ]
 
-        server.destroy
+        slicehost.images.each do |server|
+          image_list << server.id.to_s
+          image_list << server.name
+        end
+        puts highline.list(image_list, :columns_across, 2)
 
-        Chef::Log.warn("Deleted server #{server.id} named #{server.name}")
       end
     end
   end
 end
-
-
-
-

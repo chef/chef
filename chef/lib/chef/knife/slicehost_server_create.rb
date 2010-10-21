@@ -1,5 +1,6 @@
 #
 # Author:: Ian Meyer (<ianmmeyer@gmail.com>)
+# Author:: Sean OMeara (<someara@gmail.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -45,12 +46,28 @@ class Chef
         :description => "The server name",
         :default => "wtf"
 
+      option :distro,
+        :short => "-d DISTRO",
+        :long => "--distro DISTRO",
+        :description => "Bootstrap a distro using a template",
+        :default => "ubuntu10.04-gems"
+
+      option :template_file,
+        :long => "--template-file TEMPLATE",
+        :description => "Full path to location of template to use",
+        :default => false
+
+      option :ssh_user,
+        :short => "-x USERNAME",
+        :long => "--ssh-user USERNAME",
+        :description => "The ssh username",
+        :default => "root"
+
       option :slicehost_password,
         :short => "-K KEY",
-        :long => "--slicehost-password password",
+        :long => "--slicehost_password",
         :description => "Your slicehost API password",
         :proc => Proc.new { |password| Chef::Config[:knife][:slicehost_password] = password } 
-
 
       def h
         @highline ||= HighLine.new
@@ -62,39 +79,59 @@ class Chef
         require 'net/ssh/multi'
         require 'readline'
 
-        slicehost = Fog::Slicehost.new(
+        connection = Fog::Slicehost.new(
           :slicehost_password => Chef::Config[:knife][:slicehost_password]
         )
 
-        flavors = slicehost.flavors.inject({}) { |h,f| h[f.id] = f.name; h }
-        images  = slicehost.images.inject({}) { |h,i| h[i.id] = i.name; h }
+        server =  connection.servers.create(
+            :image_id => config[:image],
+            :flavor_id => config[:flavor],
+            :name => config[:server_name]
+        )
 
-        response = slicehost.create_slice(config[:flavor],
-                               config[:image],
-                               config[:server_name])
         $stdout.sync = true
 
-        puts "#{h.color("Name", :cyan)}: #{response.body['name']}"
-        puts "#{h.color("Flavor", :cyan)}: #{flavors[response.body['flavor-id']]}"
-        puts "#{h.color("Image", :cyan)}: #{images[response.body['image-id']]}"
-        puts "#{h.color("Public Address", :cyan)}: #{response.body['addresses'][1]}"
-        puts "#{h.color("Private Address", :cyan)}: #{response.body['addresses'][0]}"
-        puts "#{h.color("Password", :cyan)}: #{response.body['root-password']}"
+        puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
+        puts "#{h.color("Flavor", :cyan)}: #{server.flavor_id}"
+        puts "#{h.color("Image", :cyan)}: #{server.image_id}"
+        puts "#{h.color("Name", :cyan)}: #{server.name}"
+        puts "#{h.color("Public Address", :cyan)}: #{server.addresses[0]}"
+        puts "#{h.color("Private Address", :cyan)}: #{server.addresses[1]}"
+        puts "#{h.color("Password", :cyan)}: #{server.password}"
      
-        print "\n#{h.color("Requesting status of #{response.body['name']}", :magenta)}"
-        saved_password = response.body['root-password']
+        print "\n#{h.color("Waiting for server", :magenta)}"
 
         # wait for it to be ready to do stuff
-        loop do
-          sleep 15
-          host = slicehost.get_slice(response.body['id'])
-          if host.body['status'] == 'active'
-            break
-          end
+        server.wait_for { print "."; ready? }
+        puts "#{h.color("\nWaiting 10 seconds for SSH Host Key generation on", :magenta)}: #{server.name}"
+        sleep 10
+
+        begin
+          bootstrap = Chef::Knife::Bootstrap.new
+          bootstrap.name_args = server.addresses[0]
+          bootstrap.config[:run_list] = @name_args
+          bootstrap.config[:ssh_user] = config[:ssh_user]
+          bootstrap.config[:ssh_password] = "#{server.password}"
+          bootstrap.config[:identity_file] = config[:identity_file]
+          bootstrap.config[:chef_node_name] = "#{server.id}"
+          bootstrap.config[:prerelease] = config[:prerelease]
+          bootstrap.config[:distro] = config[:distro]
+          bootstrap.config[:use_sudo] = true
+          bootstrap.config[:template_file] = config[:template_file]
+          bootstrap.run
+        rescue Errno::ECONNREFUSED
+          puts h.color("Connection refused on SSH, retrying - CTRL-C to abort")
+          sleep 1
+          retry
+        rescue Errno::ETIMEDOUT
+          puts h.color("Connection timed out on SSH, retrying - CTRL-C to abort")
+          sleep 1
+          retry
         end
 
-        puts "\nServer ready!!"
-      
+        puts "\n"
+        puts "\nServer ready!"
+
       end
     end
   end

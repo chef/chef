@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 require 'chef/knife'
-require 'chef/checksum_cache'
+require 'chef/cache/checksum'
 
 class Chef
   class Knife
