@@ -136,7 +136,7 @@ class Chef
 
         print "\n#{h.color("Waiting for sshd", :magenta)}"
 
-        print(".") until tcp_test_ssh(server.dns_name) { sleep @initial_sleep_delay ||= 10; puts("done") }
+        print(".") until tcp_test_ssh(server.addresses["public"][0]) { sleep @initial_sleep_delay ||= 10; puts("done") }
 
 
         bootstrap_for_node(server).run
@@ -149,22 +149,22 @@ class Chef
         puts "#{h.color("Public Address", :cyan)}: #{server.addresses["public"]}"
         puts "#{h.color("Private Address", :cyan)}: #{server.addresses["private"]}"
         puts "#{h.color("Password", :cyan)}: #{server.password}"
+      end
 
-        def bootstrap_for_node(server)
-            bootstrap = Chef::Knife::Bootstrap.new
-			bootstrap.name_args = server.addresses["public"]
-			bootstrap.config[:run_list] = @name_args
-			bootstrap.config[:ssh_user] = config[:ssh_user]
-			bootstrap.config[:ssh_password] = "#{server.password}"
-			bootstrap.config[:identity_file] = config[:identity_file]
-			bootstrap.config[:chef_node_name] = "#{server.id}"
-			bootstrap.config[:prerelease] = config[:prerelease]
-			bootstrap.config[:distro] = config[:distro]
-			bootstrap.config[:use_sudo] = true
-			bootstrap.config[:template_file] = config[:template_file]
-			bootstrap
-        end
-
+      def bootstrap_for_node(server)
+        bootstrap = Chef::Knife::Bootstrap.new
+        bootstrap.name_args = server.addresses["public"]
+        bootstrap.config[:run_list] = @name_args
+        bootstrap.config[:ssh_user] = config[:ssh_user]
+        bootstrap.config[:ssh_password] = "#{server.password}"
+        bootstrap.config[:identity_file] = config[:identity_file]
+        bootstrap.config[:chef_node_name] = "#{server.id}"
+        bootstrap.config[:prerelease] = config[:prerelease]
+        bootstrap.config[:distro] = config[:distro]
+        bootstrap.config[:use_sudo] = true
+        bootstrap.config[:template_file] = config[:template_file]
+        bootstrap
+      end
     end
   end
 end
