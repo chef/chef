@@ -34,7 +34,7 @@ Feature: Create a sandbox via the REST API
     When I create a sandbox named 'sandbox1'
     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
     Then I upload a file named 'sandbox2_file1' to the sandbox
-    Then the response code should be '404'
+    Then I should get a '404 Resource Not Found' exception
     When I commit the sandbox
     Then I should get a '400 "Bad Request"' exception
 
@@ -46,7 +46,7 @@ Feature: Create a sandbox via the REST API
     Then I upload a file named 'sandbox1_file1' to the sandbox
     Then the response code should be '200'
     Then I upload a file named 'sandbox2_file1' to the sandbox
-    Then the response code should be '404'
+    Then I should get a '404 Resource Not Found' exception
     When I commit the sandbox
     # commit works as we did upload the only correct file.
     Then I should not get an exception

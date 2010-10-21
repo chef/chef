@@ -1,5 +1,5 @@
 Then /^I should get a '(.+)' exception$/ do |exception|
-  self.exception.to_s.should == exception
+  self.exception.message.to_s.should == exception
 end
 
 Then /^I should not get an exception$/ do
