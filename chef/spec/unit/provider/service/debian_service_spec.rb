@@ -30,21 +30,21 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
 
     @provider = Chef::Provider::Service::Debian.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
-    
+
     @pid, @stdin, @stdout, @stderr = nil, nil, nil, nil
   end
-  
+
   it "ensures /usr/sbin/update-rc.d is available" do
     File.should_receive(:exists?).with("/usr/sbin/update-rc.d").and_return(false)
     lambda { @provider.assert_update_rcd_available }.should raise_error(Chef::Exceptions::Service)
   end
-  
+
   describe "when update-rc.d shows the init script linked to rc*.d/" do
     before do
       @provider.stub!(:run_command)
       @provider.stub!(:assert_update_rcd_available)
       @status = mock("Status", :exitstatus => 0)
-      
+
       result=<<-UPDATE_RC_D_SUCCESS
 Removing any system startup links for /etc/init.d/chef ...
   /etc/rc0.d/K20chef
@@ -62,7 +62,7 @@ Removing any system startup links for /etc/init.d/chef ...
     it "says the service is enabled" do
       @provider.service_currently_enabled?.should be_true
     end
-    
+
     it "stores the 'enabled' state" do
       Chef::Resource::Service.stub!(:new).and_return(@current_resource)
       @provider.load_current_resource.should equal(@current_resource)
@@ -91,18 +91,18 @@ Removing any system startup links for /etc/init.d/chef ...
       @stdout = StringIO.new(" Removing any system startup links for /etc/init.d/chef ...")
       @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     end
-    
+
     it "says the service is disabled" do
       @provider.service_currently_enabled?.should be_false
     end
-    
+
     it "stores the 'disabled' state" do
       Chef::Resource::Service.stub!(:new).and_return(@current_resource)
       @provider.load_current_resource.should equal(@current_resource)
       @current_resource.enabled.should be_false
     end
   end
-    
+
   describe "when update-rc.d fails" do
     before do
       @status = mock("Status", :exitstatus => -1)
@@ -146,8 +146,8 @@ Removing any system startup links for /etc/init.d/chef ...
 
   describe "when disabling a service" do
 
-    it "should call update-rc.d 'service_name' disable" do
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} disable"})
+    it "should call update-rc.d -f 'service_name' remove" do
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove"})
       @provider.disable_service()
     end
   end

@@ -29,25 +29,17 @@ class Chef
 
         def load_current_resource
           super
-          
+
           @current_resource.enabled(service_currently_enabled?)
-          @current_resource        
+          @current_resource
         end
 
-        def enable_service()
-          run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults")
-        end
-
-        def disable_service()
-          run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
-        end
-        
         def assert_update_rcd_available
           unless ::File.exists? "/usr/sbin/update-rc.d"
             raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d does not exist!"
           end
         end
-        
+
         def service_currently_enabled?
           assert_update_rcd_available
 
@@ -65,7 +57,7 @@ class Chef
             end
             @current_resource.enabled enabled
             @current_resource.priority priority
-          end  
+          end
 
           unless status.exitstatus == 0
             raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
@@ -94,11 +86,9 @@ class Chef
         end
 
         def disable_service()
-          run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} disable")
-#          @new_resource.priority({2 => [:stop, 80]})
-#          enable_service
+          run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
         end
-        
+
       end
     end
   end
