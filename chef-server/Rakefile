@@ -20,30 +20,8 @@ require File.dirname(__FILE__) + '/lib/chef-server/version'
 require 'rake/gempackagetask'
 
 GEM_NAME = "chef-server"
-AUTHOR   = "Opscode"
-EMAIL    = "chef@opscode.com"
-HOMEPAGE = "http://wiki.opscode.com/display/chef"
-SUMMARY  = "A meta-gem to install all server components of the Chef configuration management system"
 
-spec = Gem::Specification.new do |s|
-  s.name = GEM_NAME
-  s.version = ChefServer::VERSION
-  s.platform = Gem::Platform::RUBY
-  s.has_rdoc = true
-  s.extra_rdoc_files = ["README.rdoc", "LICENSE" ]
-  s.summary = SUMMARY
-  s.description = s.summary
-  s.author = AUTHOR
-  s.email = EMAIL
-  s.homepage = HOMEPAGE
-
-  s.add_dependency "chef-server-api",   "= #{ChefServer::VERSION}"
-  s.add_dependency "chef-server-webui", "= #{ChefServer::VERSION}"
-  s.add_dependency "chef-solr",         "= #{ChefServer::VERSION}"
-
-  s.files = %w(LICENSE README.rdoc Rakefile lib/chef-server.rb lib/chef-server/version.rb)
-  s
-end
+spec = eval(File.read("chef-server.gemspec"))
 
 desc "Install the gem"
 task :install => :package do
