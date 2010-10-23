@@ -14,7 +14,6 @@ chef-server-api/pkg
 chef/log
 chef/rdoc
 chef-server/log
-chef-solr/chef-solr.gemspec
 log
 couchdb.stderr
 couchdb.stdout
