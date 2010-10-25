@@ -31,11 +31,9 @@ class Chef
         @amqp_client && amqp_client.connected? && amqp_client.stop
         @amqp_client = nil
         @exchange = nil
-        @queue = nil
       end
       
       def stop
-        @queue && @queue.subscription && @queue.unsubscribe
         @amqp_client && @amqp_client.stop
       end
       
@@ -61,25 +59,16 @@ class Chef
         @exchange ||= amqp_client.exchange("chef-indexer", :durable => true, :type => :fanout)
       end
       
-      def queue
-        unless @queue
-          @queue = amqp_client.queue("chef-index-consumer-" + consumer_id, :durable => durable_queue?)
-          @queue.bind(exchange)
-        end
-        @queue
-      end
-      
       def disconnected!
         @amqp_client = nil
         reset!
       end
 
       def queue_for_object(obj_id)
-        vnode_tag = obj_id_to_int(obj_id) % VNODES
-        queue = amqp_client.queue("vnode-#{vnode_tag}")
         retries = 0
+        vnode_tag = obj_id_to_int(obj_id) % VNODES
         begin
-          yield queue
+          yield amqp_client.queue("vnode-#{vnode_tag}")
         rescue Bunny::ServerDownError, Bunny::ConnectionError, Errno::ECONNRESET
           disconnected!
           if (retries += 1) < 2
