@@ -65,13 +65,29 @@ When /^I run the chef\-client with '(.+)' for '(.+)' seconds$/ do |args, run_for
 end
 
 When /^I run the chef\-client for '(.+)' seconds$/ do |run_for|
-  cid = Process.fork { 
+  cid = Process.fork {
     sleep run_for.to_i
-    Process.kill("INT", /^(.+chef\-client.+\-i.*)$/.match(`ps -ef`).to_s.split[1].to_i)
-    exit
-  } 
+
+    client_pid = `ps ax | grep chef-client | grep -v grep | grep -v rake | grep -v cucumber | awk '{ print $1 }'`.to_i
+
+    # Send a SIGINT to the child process so it has a chance to cleanly exit,
+    # including flushing its stdout.
+    Process.kill("INT", client_pid)
+
+    sleep 1
+
+    # Send KILL to the child chef-client. Due to OHAI-223, where ohai sometimes
+    # ignores/doesn't exit correctly on receipt of SIGINT, brutally kill the
+    # subprocess.
+    begin
+      Process.kill("KILL", client_pid)
+    rescue Errno::ESRCH
+      # SIGINT worked above, so the KILL failed. Ignore it as this means things
+      # are working the way they're supposed to.
+    end
+  }
   When 'I run the chef-client'
-  Process.wait2(cid)
+  Process.waitpid2(cid)
 end
 
 When /^I run the chef\-client at log level '(.+)'$/ do |log_level|
