@@ -227,60 +227,55 @@ describe Chef::IndexQueue::AmqpClient do
   end
   
   describe "publishing" do
+
     before do
-      @queue = FauxQueue.new
+      @queue_1 = FauxQueue.new
+      @queue_2 = FauxQueue.new
+
       @amqp_client.stub!(:qos)
-      @amqp_client.stub!(:queue).and_return(@queue)
+      #@amqp_client.stub!(:queue).and_return(@queue)
       @data = {"some_data" => "in_a_hash"}
     end
   
     it "resets the client upon a Bunny::ServerDownError when publishing" do
+      Bunny.stub!(:new).and_return(@amqp_client)
+      @amqp_client.should_receive(:queue).with("vnode-68").twice.and_return(@queue_1, @queue_2)
+
+      @queue_1.should_receive(:publish).with(@data).and_raise(Bunny::ServerDownError)
+      @queue_2.should_receive(:publish).with(@data).and_raise(Bunny::ServerDownError)
+
       @publisher.should_receive(:disconnected!).at_least(3).times
-      lambda {@publisher.queue_for_object("00000000-1111-2222-3333-444444444444") {|q| raise Bunny::ServerDownError}}.should raise_error(Bunny::ServerDownError)
+      lambda {@publisher.queue_for_object("00000000-1111-2222-3333-444444444444") {|q| q.publish(@data)}}.should raise_error(Bunny::ServerDownError)
     end
     
     it "resets the client upon a Bunny::ConnectionError when publishing" do
+      Bunny.stub!(:new).and_return(@amqp_client)
+      @amqp_client.should_receive(:queue).with("vnode-68").twice.and_return(@queue_1, @queue_2)
+
+      @queue_1.should_receive(:publish).with(@data).and_raise(Bunny::ConnectionError)
+      @queue_2.should_receive(:publish).with(@data).and_raise(Bunny::ConnectionError)
+
       @publisher.should_receive(:disconnected!).at_least(3).times
-      lambda {@publisher.queue_for_object("00000000-1111-2222-3333-444444444444") {|q| raise Bunny::ConnectionError}}.should raise_error(Bunny::ConnectionError)
+      lambda {@publisher.queue_for_object("00000000-1111-2222-3333-444444444444") {|q| q.publish(@data)}}.should raise_error(Bunny::ConnectionError)
     end
     
     it "resets the client upon a Errno::ECONNRESET when publishing" do
+      Bunny.stub!(:new).and_return(@amqp_client)
+      @amqp_client.should_receive(:queue).with("vnode-68").twice.and_return(@queue_1, @queue_2)
+
+      @queue_1.should_receive(:publish).with(@data).and_raise(Errno::ECONNRESET)
+      @queue_2.should_receive(:publish).with(@data).and_raise(Errno::ECONNRESET)
+
       @publisher.should_receive(:disconnected!).at_least(3).times
-      lambda {@publisher.queue_for_object("00000000-1111-2222-3333-444444444444") {|q| raise Errno::ECONNRESET}}.should raise_error(Errno::ECONNRESET)
+      lambda {@publisher.queue_for_object("00000000-1111-2222-3333-444444444444") {|q| q.publish(@data)}}.should raise_error(Errno::ECONNRESET)
     end
     
-  end
-  
-  it "creates a queue bound to its exchange with a temporary UUID" do
-    @amqp_client.stub!(:qos)
-    
-    a_queue_name = /chef\-index-consumer\-[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/
-    
-    @queue = mock("Bunny::Queue")
-    @amqp_client.should_receive(:queue).with(a_queue_name, :durable => false).and_return(@queue)
-    @queue.should_receive(:bind).with(@exchange)
-    @publisher.queue.should == @queue
-  end
-  
-  it "creates a durable queue bound to the exchange when a UUID is configured" do
-    expected_queue_id   = "aaaaaaaa-bbbb-cccc-dddd-eeee-ffffffffffffffff"
-    expected_queue_name = "chef-index-consumer-#{expected_queue_id}"
-    Chef::Config[:amqp_consumer_id] = expected_queue_id
-    @amqp_client.stub!(:qos)
-    
-    @queue = mock("Bunny::Queue")
-    @amqp_client.should_receive(:queue).with(expected_queue_name, :durable => true).and_return(@queue)
-    @queue.should_receive(:bind).with(@exchange)
-    @publisher.queue.should == @queue
   end
   
   it "stops bunny and clears subscriptions" do
     bunny_client  = mock("Bunny::Client")
-    queue         = mock("Bunny::Queue", :subscription => true)
     @publisher.instance_variable_set(:@amqp_client, bunny_client)
-    @publisher.instance_variable_set(:@queue, queue)
     bunny_client.should_receive(:stop)
-    queue.should_receive(:unsubscribe)
     @publisher.stop
   end
   
