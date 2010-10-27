@@ -316,8 +316,10 @@ describe Chef::Environment do
   end
 
   describe "self.validate_cookbook_version" do
-    it "should validate the version number with the Gem::Requirement class" do
-      Gem::Requirement.should_receive(:parse).with("1.2.3")
+    it "should validate correct version numbers" do
+      Chef::Environment.validate_cookbook_version("= 1.2.3").should == true
+      Chef::Environment.validate_cookbook_version(">= 0.0.3").should == true
+      # A lone version is allowed, interpreted as implicit '='
       Chef::Environment.validate_cookbook_version("1.2.3").should == true
     end
 
@@ -325,6 +327,9 @@ describe Chef::Environment do
       Chef::Environment.validate_cookbook_version(Hash.new).should == false
       Chef::Environment.validate_cookbook_version(Array.new).should == false
       Chef::Environment.validate_cookbook_version(Chef::CookbookVersion.new("meta")).should == false
+      Chef::Environment.validate_cookbook_version("= 1.2.3a").should == false
+      Chef::Environment.validate_cookbook_version("= 1").should == false
+      Chef::Environment.validate_cookbook_version("= 1.2.3.4").should == false
     end
   end
 
