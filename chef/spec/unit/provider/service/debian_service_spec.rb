@@ -38,15 +38,15 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
     File.should_receive(:exists?).with("/usr/sbin/update-rc.d").and_return(false)
     lambda { @provider.assert_update_rcd_available }.should raise_error(Chef::Exceptions::Service)
   end
-  
-  describe "when update-rc.d shows the init script linked to rc*.d/" do
+
+  describe "when using squeeze/earlier and update-rc.d shows the init script linked to rc*.d/" do
     before do
       @provider.stub!(:run_command)
       @provider.stub!(:assert_update_rcd_available)
       @status = mock("Status", :exitstatus => 0)
-      
-      result=<<-UPDATE_RC_D_SUCCESS
-update-rc.d: using dependency based boot sequencing
+
+      @stdout = StringIO.new("update-rc.d: using dependency based boot sequencing")
+      result2=<<-UPDATE_RC_D_SUCCESS
 insserv: remove service /etc/init.d/../rc0.d/K20chef-client
 insserv: remove service /etc/init.d/../rc1.d/K20chef-client
 insserv: remove service /etc/init.d/../rc2.d/S20chef-client
@@ -54,16 +54,16 @@ insserv: remove service /etc/init.d/../rc3.d/S20chef-client
 insserv: remove service /etc/init.d/../rc4.d/S20chef-client
 insserv: remove service /etc/init.d/../rc5.d/S20chef-client
 insserv: remove service /etc/init.d/../rc6.d/K20chef-client
-  UPDATE_RC_D_SUCCESS
-      @stdout = StringIO.new(result)
-      @stderr = StringIO.new(result)
+insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop
+UPDATE_RC_D_SUCCESS
+      @stderr = StringIO.new(result2)
       @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     end
 
     it "says the service is enabled" do
       @provider.service_currently_enabled?.should be_true
     end
-    
+
     it "stores the 'enabled' state" do
       Chef::Resource::Service.stub!(:new).and_return(@current_resource)
       @provider.load_current_resource.should equal(@current_resource)
@@ -81,17 +81,80 @@ insserv: remove service /etc/init.d/../rc6.d/K20chef-client
                              "5"=>[:start, "20"]}
       @provider.current_resource.priority.should == expected_priorities
     end
-
   end
 
-  describe "when update-rc.d shows the init script isn't linked to rc*.d" do
+  describe "when using squeeze/earlier and update-rc.d shows the init script isn't linked to rc*.d" do
     before do
       @provider.stub!(:run_command)
       @provider.stub!(:assert_update_rcd_available)
       @status = mock("Status", :exitstatus => 0)
-      result = "update-rc.d: using dependency based boot sequencing"
+      @stdout = StringIO.new("update-rc.d: using dependency based boot sequencing")
+      @stderr = StringIO.new("")
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    end
+
+    it "says the service is disabled" do
+      @provider.service_currently_enabled?.should be_false
+    end
+
+    it "stores the 'disabled' state" do
+      Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+      @provider.load_current_resource.should equal(@current_resource)
+      @current_resource.enabled.should be_false
+    end
+  end
+    
+  describe "when using lenny/older and update-rc.d shows the init script linked to rc*.d/" do
+    before do
+      @provider.stub!(:run_command)
+      @provider.stub!(:assert_update_rcd_available)
+      @status = mock("Status", :exitstatus => 0)
+
+      result=<<-UPDATE_RC_D_SUCCESS
+ Removing any system startup links for /etc/init.d/chef ...
+   /etc/rc0.d/K20chef
+   /etc/rc1.d/K20chef
+   /etc/rc2.d/S20chef
+   /etc/rc3.d/S20chef
+   /etc/rc4.d/S20chef
+   /etc/rc5.d/S20chef
+   /etc/rc6.d/K20chef
+UPDATE_RC_D_SUCCESS
       @stdout = StringIO.new(result)
-      @stderr = StringIO.new(result)
+      @stderr = StringIO.new("")
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+    end
+
+    it "says the service is enabled" do
+      @provider.service_currently_enabled?.should be_true
+    end
+
+    it "stores the 'enabled' state" do
+      Chef::Resource::Service.stub!(:new).and_return(@current_resource)
+      @provider.load_current_resource.should equal(@current_resource)
+      @current_resource.enabled.should be_true
+    end
+
+    it "stores the start/stop priorities of the service" do
+      @provider.load_current_resource
+      expected_priorities = {"6"=>[:stop, "20"],
+                             "0"=>[:stop, "20"],
+                             "1"=>[:stop, "20"],
+                             "2"=>[:start, "20"],
+                             "3"=>[:start, "20"],
+                             "4"=>[:start, "20"],
+                             "5"=>[:start, "20"]}
+      @provider.current_resource.priority.should == expected_priorities
+    end
+  end
+
+  describe "when using lenny/older and update-rc.d shows the init script isn't linked to rc*.d" do
+    before do
+      @provider.stub!(:run_command)
+      @provider.stub!(:assert_update_rcd_available)
+      @status = mock("Status", :exitstatus => 0)
+      @stdout = StringIO.new(" Removing any system startup links for /etc/init.d/chef ...")
+      @stderr = StringIO.new("")
       @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
     end
     
@@ -105,7 +168,7 @@ insserv: remove service /etc/init.d/../rc6.d/K20chef-client
       @current_resource.enabled.should be_false
     end
   end
-    
+
   describe "when update-rc.d fails" do
     before do
       @status = mock("Status", :exitstatus => -1)
@@ -115,7 +178,6 @@ insserv: remove service /etc/init.d/../rc6.d/K20chef-client
     it "raises an error" do
       lambda { @provider.service_currently_enabled? }.should raise_error(Chef::Exceptions::Service)
     end
-
   end
 
   describe "when enabling a service without priority" do
@@ -148,7 +210,6 @@ insserv: remove service /etc/init.d/../rc6.d/K20chef-client
   end
 
   describe "when disabling a service" do
-
     it "should call update-rc.d 'service_name' disable" do
       @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} disable"})
       @provider.disable_service()
