@@ -21,7 +21,7 @@ require 'chef/mixin/from_file'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/log'
-require 'chef/cookbook/metadata/version'
+require 'chef/version_class'
 
 class Chef
   class Cookbook
