@@ -1,7 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: AJ Christensen (<aj@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +23,7 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/log'
 require 'chef/version_class'
+require 'chef/version_constraint'
 
 class Chef
   class Cookbook
@@ -182,7 +184,7 @@ class Chef
       # version<String>:: Returns the current version 
       def version(arg=nil)
         if arg
-          @version = Version.new(arg)
+          @version = Chef::Version.new(arg)
         end
 
         @version.to_s
@@ -207,13 +209,15 @@ class Chef
       #
       # === Parameters
       # platform<String>,<Symbol>:: The platform (like :ubuntu or :mac_os_x)
-      # *versions<String>:: A list of versions matching << <= = >= >> followed by a version. 
+      # version<String>:: A version constraint of the form "OP VERSION",
+      # where OP is one of < <= = > >= ~> and VERSION has
+      # the form x.y.z or x.y. 
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform 
-      def supports(platform, *versions)
-        versions.each { |v| _check_version_expression(v) }
-        @platforms[platform] = versions
+      def supports(platform, version=">= 0.0.0")
+        Chef::VersionConstraint.new(version) # verify the version parses
+        @platforms[platform] = version
         @platforms[platform]
       end
 
@@ -221,13 +225,15 @@ class Chef
       #
       # === Parameters
       # cookbook<String>:: The cookbook 
-      # *versions<String>:: A list of versions matching << <= = >= >> followed by a version. 
+      # version<String>:: A version constraint of the form "OP VERSION",
+      # where OP is one of < <= = > >= ~> and VERSION has
+      # the form x.y.z or x.y. 
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform 
-      def depends(cookbook, *versions)
-        versions.each { |v| _check_version_expression(v) }
-        @dependencies[cookbook] = versions
+      def depends(cookbook, version=">= 0.0.0")
+        Chef::VersionConstraint.new(version)
+        @dependencies[cookbook] = version
         @dependencies[cookbook]
       end
 
@@ -235,27 +241,31 @@ class Chef
       #
       # === Parameters
       # cookbook<String>:: The cookbook 
-      # *versions<String>:: A list of versions matching << <= = >= >> followed by a version. 
+      # version<String>:: A version constraint of the form "OP VERSION",
+      # where OP is one of < <= = > >= ~> and VERSION has
+      # the form x.y.z or x.y. 
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform 
-      def recommends(cookbook, *versions)
-        versions.each { |v| _check_version_expression(v) }
-        @recommendations[cookbook] = versions
+      def recommends(cookbook, version=">= 0.0.0")
+        Chef::VersionConstraint.new(version)
+        @recommendations[cookbook] = version
         @recommendations[cookbook]
       end
 
       # Adds a suggestion for another cookbook, with version checking strings.
       #
       # === Parameters
-      # cookbook<String>:: The cookbook 
-      # *versions<String>:: A list of versions matching << <= = >= >> followed by a version. 
+      # cookbook<String>:: The cookbook
+      # version<String>:: A version constraint of the form "OP VERSION",
+      # where OP is one of < <= = > >= ~> and VERSION has the
+      # formx.y.z or x.y. 
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform 
-      def suggests(cookbook, *versions)
-        versions.each { |v| _check_version_expression(v) }
-        @suggestions[cookbook] = versions
+      def suggests(cookbook, version=">= 0.0.0")
+        Chef::VersionConstraint.new(version)
+        @suggestions[cookbook] = version
         @suggestions[cookbook] 
       end
 
@@ -263,13 +273,15 @@ class Chef
       #
       # === Parameters
       # cookbook<String>:: The cookbook 
-      # *versions<String>:: A list of versions matching << <= = >= >> followed by a version. 
+      # version<String>:: A version constraint of the form "OP VERSION",
+      # where OP is one of < <= = > >= ~> and VERSION has
+      # the form x.y.z or x.y. 
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform 
-      def conflicts(cookbook, *versions)
-        versions.each { |v| _check_version_expression(v) }
-        @conflicting[cookbook] = versions
+      def conflicts(cookbook, version=">= 0.0.0")
+        Chef::VersionConstraint.new(version)
+        @conflicting[cookbook] = version
         @conflicting[cookbook] 
       end
 
@@ -281,27 +293,30 @@ class Chef
       #
       # === Parameters
       # recipe, definition, resource<String>:: The thing we provide 
-      # *versions<String>:: A list of versions matching << <= = >= >> followed by a version. 
+      # version<String>:: A version constraint of the form "OP VERSION",
+      # where OP is one of < <= = > >= ~> and VERSION has
+      # the form x.y.z or x.y. 
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform 
-      def provides(cookbook, *versions)
-        versions.each { |v| _check_version_expression(v) }
-        @providing[cookbook] = versions
+      def provides(cookbook, version=">= 0.0.0")
+        Chef::VersionConstraint.new(version)
+        @providing[cookbook] = version
         @providing[cookbook] 
       end
 
       # Adds a cookbook that is replaced by this one, with version checking strings.
       #
       # === Parameters
-      # cookbook<String>:: The cookbook we replace 
-      # *versions<String>:: A list of versions matching << <= = >= >> followed by a version. 
+      # cookbook<String>:: The cookbook we replace
+      # version<String>:: A version constraint of the form "OP VERSION",
+      # where OP is one of < <= = > >= ~> and VERSION has the form x.y.z or x.y.
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform 
-      def replaces(cookbook, *versions)
-        versions.each { |v| _check_version_expression(v) }
-        @replacing[cookbook] = versions
+      def replaces(cookbook, version=">= 0.0.0")
+        Chef::VersionConstraint.new(version)
+        @replacing[cookbook] = version
         @replacing[cookbook] 
       end
 
@@ -369,14 +384,6 @@ class Chef
         )
         @groupings[name] = options 
         @groupings[name]
-      end
-
-      def _check_version_expression(version_string)
-        if version_string =~ /^(>>|>=|=|<=|<<) (.+)$/
-          [ $1, $2 ]
-        else
-          raise ArgumentError, "Version expression #{version_string} is invalid!"
-        end
       end
 
       def to_json(*a)
