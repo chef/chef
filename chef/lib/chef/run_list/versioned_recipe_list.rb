@@ -1,6 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+require 'chef/version_class'
 
 class Chef
   class RunList
@@ -26,7 +28,7 @@ class Chef
 
       def add_recipe(name, version=nil)
         if version && @versions.has_key?(name)
-          unless Gem::Version.new(@versions[name]) == Gem::Version.new(version)
+          unless Chef::Version.new(@versions[name]) == Chef::Version.new(version)
             raise Chef::Exceptions::RecipeVersionConflict, "Run list requires recipe #{name} at versions #{@versions[name]} and #{version}"
           end
         end
