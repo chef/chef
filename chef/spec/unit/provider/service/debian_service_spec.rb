@@ -197,6 +197,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
 
   describe "when enabling a service without priority" do
     it "should call update-rc.d 'service_name' defaults" do
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove"})
       @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults"})
       @provider.enable_service()
     end
@@ -208,6 +209,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
     end
 
     it "should call update-rc.d 'service_name' defaults" do
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove"})
       @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults 75 25"})
       @provider.enable_service()
     end
@@ -219,14 +221,29 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
     end
 
     it "should call update-rc.d 'service_name' defaults" do
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove"})
       @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} start 20 2 . stop 55 3 . "})
       @provider.enable_service()
     end
   end
 
-  describe "when disabling a service" do
-    it "should call update-rc.d -f 'service_name' remove" do
+  describe "when disabling a service without a priority" do
+
+    it "should call update-rc.d -f 'service_name' remove + stop with a default priority" do
       @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove"})
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop 20 2 3 4 5 ."})
+      @provider.disable_service()
+    end
+  end
+
+  describe "when disabling a service with simple priority" do
+    before do
+      @new_resource.priority(75)
+    end
+
+    it "should call update-rc.d -f 'service_name' remove + stop with a specified priority" do
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove"})
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop #{@new_resource.priority} 2 3 4 5 ."})
       @provider.disable_service()
     end
   end
