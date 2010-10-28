@@ -1,6 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@ospcode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Seth Falcon (<seth@ospcode.com>)
+# Copyright:: Copyright 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,9 +87,9 @@ describe Chef::Environment do
   describe "cookbook_versions" do
     before(:each) do
       @cookbook_versions = {
-        "apt"     => "1.0.0",
-        "god"     => "2.0.0",
-        "apache2" => "4.2.0"
+        "apt"     => "= 1.0.0",
+        "god"     => "= 2.0.0",
+        "apache2" => "= 4.2.0"
       }
     end
 
@@ -115,13 +116,13 @@ describe Chef::Environment do
 
   describe "cookbook" do
     it "should set the version of the cookbook in the cookbook_versions hash" do
-      @environment.cookbook("apt", "1.2.3")
-      @environment.cookbook_versions["apt"].should == "1.2.3"
+      @environment.cookbook("apt", "~> 1.2.3")
+      @environment.cookbook_versions["apt"].should == "~> 1.2.3"
     end
 
     it "should validate the cookbook version it is passed" do
-      Chef::Environment.should_receive(:validate_cookbook_version).with("1.2.3").and_return true
-      @environment.cookbook("apt", "1.2.3")
+      Chef::Environment.should_receive(:validate_cookbook_version).with(">= 1.2.3").and_return true
+      @environment.cookbook("apt", ">= 1.2.3")
     end
   end
 
@@ -129,12 +130,12 @@ describe Chef::Environment do
     before(:each) do
       @environment.name("prod")
       @environment.description("this is prod")
-      @environment.cookbook_versions({ "apt" => "1.2.3" })
+      @environment.cookbook_versions({ "apt" => "= 1.2.3" })
 
       @example = Chef::Environment.new
       @example.name("notevenprod")
       @example.description("this is pre-prod")
-      @example.cookbook_versions({ "apt" => "2.3.4" })
+      @example.cookbook_versions({ "apt" => "= 2.3.4" })
     end
 
     it "should update everything but name" do
@@ -149,7 +150,7 @@ describe Chef::Environment do
     before(:each) do
       @environment.name("spec")
       @environment.description("Where we run the spec tests")
-      @environment.cookbook_versions({:apt => "1.2.3"})
+      @environment.cookbook_versions({:apt => "= 1.2.3"})
       @hash = @environment.to_hash
     end
 
@@ -172,7 +173,7 @@ describe Chef::Environment do
     before(:each) do
       @environment.name("spec")
       @environment.description("Where we run the spec tests")
-      @environment.cookbook_versions({:apt => "1.2.3"})
+      @environment.cookbook_versions({:apt => "= 1.2.3"})
       @json = @environment.to_json
     end
 
@@ -197,9 +198,9 @@ describe Chef::Environment do
         "name" => "production",
         "description" => "We are productive",
         "cookbook_versions" => {
-          "apt" => "1.2.3",
-          "god" => "4.2.0",
-          "apache2" => "2.0.0"
+          "apt" => "= 1.2.3",
+          "god" => ">= 4.2.0",
+          "apache2" => "= 2.0.0"
         },
         "json_class" => "Chef::Environment",
         "chef_type" => "environment"
@@ -222,8 +223,8 @@ describe Chef::Environment do
     before(:each) do
       @environment.name "prod"
       @environment.cookbook_versions({
-        "apt" => "1.0.0",
-        "apache2" => "2.0.0"
+        "apt" => "= 1.0.0",
+        "apache2" => "= 2.0.0"
       })
       Chef::Environment.stub!(:cdb_load).and_return @environment
 
@@ -294,9 +295,9 @@ describe Chef::Environment do
   describe "self.validate_cookbook_versions" do
     before(:each) do
       @cookbook_versions = {
-        "apt"     => "1.0.0",
-        "god"     => "2.0.0",
-        "apache2" => "4.2.0"
+        "apt"     => "= 1.0.0",
+        "god"     => "= 2.0.0",
+        "apache2" => "= 4.2.0"
       }
     end
 
@@ -323,9 +324,7 @@ describe Chef::Environment do
       Chef::Environment.validate_cookbook_version("1.2.3").should == true
     end
 
-    it "should return false when an invalid parameter is passed as a version" do
-      Chef::Environment.validate_cookbook_version(Hash.new).should == false
-      Chef::Environment.validate_cookbook_version(Array.new).should == false
+    it "should return false when an invalid version is given" do
       Chef::Environment.validate_cookbook_version(Chef::CookbookVersion.new("meta")).should == false
       Chef::Environment.validate_cookbook_version("= 1.2.3a").should == false
       Chef::Environment.validate_cookbook_version("= 1").should == false
