@@ -231,21 +231,21 @@ Before do
         e = Chef::Environment.new
         e.name 'cookbooks_test'
         e.description 'use cookbook version 0.1.0'
-        e.cookbook 'version_test', '0.1.0'
+        e.cookbook 'version_test', '= 0.1.0'
         e
       end,
       'cookbooks-0.1.1' => Proc.new do
         e = Chef::Environment.new
         e.name 'cookbooks_test'
         e.description 'use cookbook version 0.1.1'
-        e.cookbook 'version_test', '0.1.1'
+        e.cookbook 'version_test', '= 0.1.1'
         e
       end,
       'cookbooks-0.2.0' => Proc.new do
         e = Chef::Environment.new
         e.name 'cookbooks_test'
         e.description 'use cookbook version 0.2.0'
-        e.cookbook 'version_test', '0.2.0'
+        e.cookbook 'version_test', '= 0.2.0'
         e
       end
     }
