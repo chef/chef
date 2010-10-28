@@ -5,7 +5,6 @@ Feature: Git
   As a Developer
   I want to clone and update git repositories
 
-@foo
   Scenario: Clone a git repo
     Given a test git repo in the temp directory
       And a validated node
