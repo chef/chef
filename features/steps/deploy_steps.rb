@@ -1,3 +1,6 @@
+require 'chef/shell_out'
+
+
 # Given /^I have a clone of typo in the data\/tmp dir$/ do
 #   cmd = "git clone #{datadir}/typo.bundle #{tmpdir}/gitrepo/typo"
 #   `#{cmd}`
@@ -17,6 +20,12 @@ Given /^that I have '(.*)' '(.*)' installed$/ do |gem_name, version|
   unless gem_installed?(gem_name, version)
     pending "This Cucumber feature will not execute, as #{gem_name} #{version} is not installed."
   end
+end
+
+Given /^a test git repo in the temp directory$/ do
+  test_git_repo_tarball_filename = "#{datadir}/test_git_repo.tar.gz"
+  cmd = Chef::ShellOut.new("tar xzvf #{test_git_repo_tarball_filename} -C #{tmpdir}")
+  cmd.run_command.exitstatus.should == 0
 end
 
 Then /^I should hear about it$/ do

@@ -54,6 +54,17 @@ end
 ###
 # When
 ###
+When /^I remove '([^']*)' from the node's run list$/ do |run_list_item|
+  client.node.run_list.remove(run_list_item)
+  client.node.save
+end
+
+When /^I add '([^']*)' to the node's run list$/ do |run_list_item|
+  client.node.run_list << run_list_item
+  client.node.save
+end
+
+
 When /^the node is converged$/ do
   client.run
 end
