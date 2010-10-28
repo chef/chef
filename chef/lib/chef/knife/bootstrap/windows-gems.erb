@@ -1,6 +1,8 @@
 cscript /nologo client-install.vbs <%= @config[:proxy] %>
 
 > c:/chef/etc/client.rb (
+ @echo.require 'win32ole'
+ @echo.WIN32OLE.codepage = WIN32OLE::CP_UTF8
  @echo.log_level        :info
  @echo.log_location     STDOUT
  @echo.chef_server_url  "<%= Chef::Config[:chef_server_url] %>"
