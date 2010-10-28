@@ -68,6 +68,9 @@ class Chef
         end
 
         def enable_service()
+          # clean up any latent links
+          run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
+
           # If we have a priority which is just a number, we have to
           # construct the actual priority object
 
@@ -88,7 +91,9 @@ class Chef
         end
 
         def disable_service()
+          priority = @new_resource.priority ? @new_resource.priority : "20"
           run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
+          run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop #{priority} 2 3 4 5 .")
         end
 
       end
