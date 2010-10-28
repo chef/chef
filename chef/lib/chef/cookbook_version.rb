@@ -827,7 +827,10 @@ class Chef
 
     def <=>(o)
       raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != o.name
-      Gem::Version.new(self.version) <=> Gem::Version.new(o.version)
+      # FIXME: can we change the interface to the Metadata class such
+      # that metadata.version returns a Chef::Version instance instead
+      # of a string?
+      Chef::Version.new(self.version) <=> Chef::Version.new(o.version)
     end
 
     private
