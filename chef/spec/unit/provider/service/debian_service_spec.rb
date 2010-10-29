@@ -61,7 +61,7 @@ Removing any system startup links for /etc/init.d/chef ...
     end
 
     it "says the service is enabled" do
-      @provider.service_currently_enabled?.should be_true
+      @provider.service_currently_enabled?(@provider.get_priority).should be_true
     end
 
     it "stores the 'enabled' state" do
@@ -158,7 +158,18 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
         @provider.load_current_resource.should equal(@current_resource)
         @current_resource.enabled.should be_false
       end
+    it "stores the start/stop priorities of the service" do
+      @provider.load_current_resource
+      expected_priorities = {"6"=>[:stop, "20"],
+                             "0"=>[:stop, "20"],
+                             "1"=>[:stop, "20"],
+                             "2"=>[:start, "20"],
+                             "3"=>[:start, "20"],
+                             "4"=>[:start, "20"],
+                             "5"=>[:start, "20"]}
+      @provider.current_resource.priority.should == expected_priorities
     end
+
   end
 
   describe "when update-rc.d fails" do
@@ -168,7 +179,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
     end
 
     it "raises an error" do
-      lambda { @provider.service_currently_enabled? }.should raise_error(Chef::Exceptions::Service)
+      lambda { @provider.service_currently_enabled?(@provider.get_priority) }.should raise_error(Chef::Exceptions::Service)
     end
   end
 
