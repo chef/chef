@@ -135,7 +135,7 @@ class Chef
       def enable_submodules
         if @new_resource.enable_submodules
           Chef::Log.info "#{@new_resource} enabling git submodules"
-          command = "git submodule init && git submodule update"
+          command = "git submodule update --init --recursive"
           shell_out!(command, run_options(:cwd => @new_resource.destination, :log_level => :info))
         end
       end
