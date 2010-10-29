@@ -231,7 +231,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
 
     it "should call update-rc.d -f 'service_name' remove + stop with a default priority" do
       @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove"})
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop 20 2 3 4 5 ."})
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop 80 2 3 4 5 ."})
       @provider.disable_service()
     end
   end
@@ -243,7 +243,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
 
     it "should call update-rc.d -f 'service_name' remove + stop with a specified priority" do
       @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove"})
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop #{@new_resource.priority} 2 3 4 5 ."})
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop #{100 - @new_resource.priority} 2 3 4 5 ."})
       @provider.disable_service()
     end
   end
