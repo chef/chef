@@ -77,7 +77,7 @@ When /^I run the chef\-client for '(.+)' seconds$/ do |run_for|
     client_pid = Process.fork do
       STDOUT.reopen(File.open(stdout_filename, "w"))
       STDERR.reopen(File.open(stderr_filename, "w"))
-      exec "#{chef_client_command_string}"
+      exec chef_client_command_string()
       exit 2
     end
   
