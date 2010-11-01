@@ -17,6 +17,12 @@
 # limitations under the License.
 #
 
+file "#{node[:tmpdir]}/octal0111.txt" do
+  owner 'nobody'
+  mode 0111
+  action :create
+end
+
 file "#{node[:tmpdir]}/octal0644.txt" do
   owner 'nobody'
   mode 0644
@@ -29,6 +35,12 @@ file "#{node[:tmpdir]}/octal2644.txt" do
   action :create
 end
 
+file "#{node[:tmpdir]}/decimal73.txt" do
+  owner 'nobody'
+  mode 73
+  action :create
+end
+
 file "#{node[:tmpdir]}/decimal644.txt" do
   owner 'nobody'
   mode 644
@@ -38,6 +50,12 @@ end
 file "#{node[:tmpdir]}/decimal2644.txt" do
   owner 'nobody'
   mode 2644
+  action :create
+end
+
+file "#{node[:tmpdir]}/string111.txt" do
+  owner 'nobody'
+  mode "111"
   action :create
 end
 
