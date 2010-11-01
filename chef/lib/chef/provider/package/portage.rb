@@ -24,6 +24,7 @@ class Chef
   class Provider
     class Package
       class Portage < Chef::Provider::Package
+        PACKAGE_NAME_PATTERN = %r{(([^/]+)/)?([^/]+)}
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -31,15 +32,21 @@ class Chef
 
           @current_resource.version(nil)
 
-          _, category_with_slash, category, pkg = %r{^(([^/]+)+/)?([^/]+)$}.match(@new_resource.package_name).to_a
+          _, category_with_slash, category, pkg = %r{^#{PACKAGE_NAME_PATTERN}$}.match(@new_resource.package_name).to_a
 
-          possibilities = Dir["/var/db/pkg/#{category || "*"}/#{pkg}-*"].map {|d| ::File.basename(d) }
-          possibilities.each do |entry|
-            if(entry =~ /^#{Regexp.escape(pkg)}\-(\d[\.\d]*((_(alpha|beta|pre|rc|p)\d*)*)?(-r\d+)?)/)
-              @current_resource.version($1)
-              Chef::Log.debug("Got current version #{$1}")
-              break
+          possibilities = Dir["/var/db/pkg/#{category || "*"}/#{pkg}-*"].map {|d| d.sub(%r{/var/db/pkg/}, "") }
+          versions = possibilities.map do |entry|
+            if(entry =~ %r{[^/]+/#{Regexp.escape(pkg)}\-(\d[\.\d]*((_(alpha|beta|pre|rc|p)\d*)*)?(-r\d+)?)})
+              [$&, $1]
             end
+          end.compact
+
+          if versions.size > 1
+            atoms = versions.map {|v| v.first }.sort
+            raise Chef::Exceptions::Package, "Multiple packages found for #{@new_resource.package_name}: #{atoms.join(" ")}. Specify a category."
+          elsif versions.size == 1
+            @current_resource.version(versions.first.last)
+            Chef::Log.debug("Got current version #{$1}")
           end
 
           @current_resource
@@ -47,21 +54,29 @@ class Chef
 
 
         def parse_emerge(package, txt)
-          available, installed, pkg = nil
+          availables = {}
+          package_without_category = package.split("/").last
+          found_package_name = nil
+
           txt.each do |line|
-            if line =~ /\*(.*)/
-              pkg = $1.strip
-            end
-            if (pkg == package) || (pkg.split('/').last == package rescue false)
-              if line =~ /Latest version available: (.*)/
-                available = $1
-              elsif line =~ /Latest version installed: (.*)/
-                installed = $1
+            if line =~ /\*\s+#{PACKAGE_NAME_PATTERN}/
+              found_package_name = $&.strip
+              if found_package_name == package || found_package_name.split("/").last == package_without_category
+                availables[found_package_name] = nil
               end
             end
+
+            if line =~ /Latest version available: (.*)/ && availables.has_key?(found_package_name)
+              availables[found_package_name] = $1.strip
+            end
           end
-          available = installed unless available
-          [available, installed]
+
+          if availables.size > 1
+            # shouldn't happen if a category is specified so just use `package`
+            raise Chef::Exceptions::Package, "Multiple emerge results found for #{package}: #{availables.keys.join(" ")}. Specify a category."
+          end
+
+          availables.values.first
         end
 
         def candidate_version
