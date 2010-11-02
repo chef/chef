@@ -132,6 +132,15 @@ describe "LWRP" do
 
     end
 
+    it "should properly handle a new_resource reference" do
+      resource = Chef::Resource::LwrpFoo.new("morpheus")
+      resource.monkey("bob")
+      resource.provider(:lwrp_monkey_name_printer)
+      resource.run_context = @run_context
+  
+      provider = Chef::Platform.provider_for_resource(resource)
+      provider.action_twiddle_thumbs
+    end
 
     it "should load the provider into a properly-named class" do
       Chef::Provider.const_get("LwrpBuckPasser").should be_kind_of(Class)
