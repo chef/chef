@@ -1002,4 +1002,32 @@ describe Chef::Node::Attribute do
       @attributes.inspect.should =~ /@normal=\{\.\.\.\}/
     end
   end
+
+  describe "when a value has been set at all four precedence levels" do
+    before do
+      @default_attrs = {"foo" => {"bar" => "default_value"}}
+      @normal_attrs = {"foo" => {"bar" => "normal_value"}}
+      @override_attrs = {"foo" => {"bar" => "override_value"}}
+      @automatic_attrs = {"foo" => {"bar" => "automatic_value"}}
+
+                                            #(normal, default, override, automatic, state=[])
+      @attributes = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs, @automatic_attrs)
+    end
+
+    it "deletes a key from all precedence levels" do
+      @attributes["foo"].delete("bar")
+      @attributes.reset
+      @attributes["foo"].should_not have_key("bar")
+      @default_attrs["foo"].should_not have_key("bar")
+      @normal_attrs["foo"].should_not have_key("bar")
+      @override_attrs["foo"].should_not have_key("bar")
+      @automatic_attrs["foo"].should_not have_key("bar")
+    end
+
+    it "returns the automatic (highest precedence) value when deleting a key" do
+      @attributes["foo"].delete("bar").should == "automatic_value"
+    end
+
+  end
+
 end
