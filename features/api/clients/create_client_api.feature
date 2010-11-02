@@ -10,6 +10,7 @@ Feature: Create a client via the REST API
      When I create the client 
       And the inflated responses key 'uri' should match '^http://.+/clients/isis$'
 
+  @oss_only
   Scenario: Create a new client as an admin
     Given I am an administrator
       And a 'client' named 'adminmonkey'
