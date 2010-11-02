@@ -175,3 +175,14 @@ div.tooltip {
 table.tooltip {
   width: 190px;
 }
+
+h1 a, h1 label, h1 .title-select {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+h1 label {
+  font-size: 12px;
+  color: #F7F7F8;
+  padding-left: 10px;
+}

@@ -25,6 +25,8 @@ class Application < Merb::Controller
 
   include Chef::Mixin::Checksum
 
+  before :load_environments
+
   # Check if the user is logged in and if the user still exists
   def login_required
    if session[:user]
@@ -48,7 +50,7 @@ class Application < Merb::Controller
   end
 
   def cleanup_session
-    [:user,:level].each { |n| session.delete(n) }
+    [:user,:level, :environment].each { |n| session.delete(n) }
   end
 
   def logout_and_redirect_to_login
@@ -109,6 +111,10 @@ class Application < Merb::Controller
     else
       raise Unauthorized, "You must authenticate first!"
     end
+  end
+
+  def load_environments
+    @org_environments = Chef::Environment.list.keys.sort
   end
 
   # Load a cookbook and return a hash with a list of all the files of a
@@ -255,7 +261,13 @@ class Application < Merb::Controller
 
   def get_available_recipes
     r = Chef::REST.new(Chef::Config[:chef_server_url])
-    r.get_rest('cookbooks/_recipes')
+    all_recipes = Array.new
+    r.get_rest('cookbooks/_recipes').keys.each do |cb|
+      all_recipes << all[cb].sort{|x,y| y <=> x }.map do |ver, recipes|
+        recipes.map{ |rn| rn == "default" ? "#{cb} #{ver}" : "#{cb}::#{rn} #{ver}" }
+      end
+    end
+    all_recipes.flatten.uniq
   end
 
   def convert_newline_to_br(string)

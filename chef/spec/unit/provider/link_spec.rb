@@ -269,7 +269,7 @@ describe Chef::Resource::Link do
             File.should_receive(:lchown).with(nil, 9982398, @provider.current_resource.target_file)
             lambda { @provider.set_group }.should_not raise_error
           end
-      
+
           it "should create link using ruby builtin link function" do
             @provider.new_resource.stub!(:group).and_return(9982398)
             File.stub!(:lchown).and_return(1)

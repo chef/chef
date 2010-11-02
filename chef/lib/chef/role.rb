@@ -69,6 +69,7 @@ class Chef
       @default_attributes = Mash.new
       @override_attributes = Mash.new
       @run_list = Chef::RunList.new
+      @env_run_lists = {"_default" =>  @run_list}
       @couchdb_rev = nil
       @couchdb_id = nil
       @couchdb = couchdb || Chef::CouchDB.new
@@ -104,10 +105,37 @@ class Chef
     end
 
     def run_list(*args)
-      (args.length > 0) ? @run_list.reset!(args) : @run_list
+      if (args.length > 0) 
+        @run_list.reset!(args) 
+        @env_run_lists.merge!({"_default" => @run_list})
+      end
+      @run_list
     end
 
     alias_method :recipes, :run_list
+    
+    # For run_list expansion
+    def run_list_for_environment(environment='_default')
+      if env_run_lists[environment].nil? || env_run_lists[environment].empty?
+        run_list
+      else
+        env_run_lists[environment]
+      end
+    end
+
+    # Per environment run lists
+    def env_run_lists(hash=nil, run_list_items_only=false)
+      if (!hash.nil? && hash.length > 0)
+        hash.each do |k,v|
+          unless v.nil?
+            hash[k] = run_list_items_only ? Chef::RunList.new(k).reset!(v).run_list_items : Chef::RunList.new(k).reset!(v)
+          end
+        end
+        @env_run_lists = hash
+      else
+        @env_run_lists
+      end
+    end
 
 #     def recipes(*args)
 #       Chef::Log.warn "Chef::Role#recipes method is deprecated.  Please use Chef::Role#run_list"
@@ -138,7 +166,8 @@ class Chef
         "default_attributes" => @default_attributes,
         "override_attributes" => @override_attributes,
         "chef_type" => "role",
-        "run_list" => @run_list.run_list
+        "run_list" => @run_list.run_list,
+        "env_run_lists" => env_run_lists(@env_run_lists, true)
       }
       result["_rev"] = couchdb_rev if couchdb_rev
       result
@@ -147,6 +176,16 @@ class Chef
     # Serialize this object as a hash
     def to_json(*a)
       to_hash.to_json(*a)
+    end
+
+    def update_from!(o)
+      description(o.description)
+      recipes(o.recipes) if defined?(o.recipes)
+      run_list(o.run_list)
+      default_attributes(o.default_attributes)
+      override_attributes(o.override_attributes)
+      env_run_lists(o.env_run_lists.nil? ? {"_default"=>o.run_list} : o.env_run_lists.merge!({"_default"=>o.run_list}))
+      self
     end
 
     # Create a Chef::Role from JSON
@@ -161,6 +200,7 @@ class Chef
                     else
                       o["recipes"]
                     end)
+      role.env_run_lists(o["env_run_lists"].nil? ? {"_default"=>role.run_list} : o["env_run_lists"].merge!({"_default"=>role.run_list}))
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       role.index_id = role.couchdb_id
       role.couchdb_id = o["_id"] if o.has_key?("_id")
@@ -206,6 +246,14 @@ class Chef
       end
     end
 
+    def environment(env_name)
+      chef_server_rest.get_rest("roles/#{@name}/environments/#{env_name}")
+    end
+    
+    def environments
+      chef_server_rest.get_rest("roles/#{@name}/environments")
+    end
+    
     # Remove this role from the CouchDB
     def cdb_destroy
       couchdb.delete("role", @name, couchdb_rev)
@@ -218,6 +266,7 @@ class Chef
 
     # Save this role to the CouchDB
     def cdb_save
+      @env_run_lists.merge!({"_default" => @run_list})
       self.couchdb_rev = couchdb.store("role", @name, self)["rev"]
     end
 

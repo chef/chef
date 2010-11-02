@@ -121,7 +121,7 @@ class Chef
     def self.run(args, options={})
       load_commands
       subcommand_class = subcommand_class_from(args)
-      subcommand_class.options.merge!(options)
+      subcommand_class.options = options.merge!(subcommand_class.options)
       instance = subcommand_class.new(args)
       instance.configure_chef
       instance.run
@@ -267,6 +267,8 @@ class Chef
       Chef::Config[:node_name] = config[:node_name] if config[:node_name]
       Chef::Config[:client_key] = config[:client_key] if config[:client_key]
       Chef::Config[:chef_server_url] = config[:chef_server_url] if config[:chef_server_url]
+      Chef::Config[:environment] = config[:environment] if config[:environment]
+      Mixlib::Log::Formatter.show_time = false
       Chef::Log.init(Chef::Config[:log_location])
       Chef::Log.level(Chef::Config[:log_level])
 
@@ -322,6 +324,13 @@ class Chef
       elsif config[:run_list]
         data = data.run_list.run_list
         { "run_list" => data }
+      elsif config[:environment]
+        if data.class == Chef::Node
+          {"chef_environment" => data.chef_environment}
+        else
+          # this is a place holder for now. Feel free to modify (i.e. add other cases). [nuo]
+          data
+        end
       elsif config[:id_only]
         data.respond_to?(:name) ? data.name : data["id"]
       else
@@ -383,6 +392,8 @@ class Chef
         relative_path = "nodes"
       elsif klass == Chef::DataBagItem
         relative_path = "data_bags/#{bag}"
+      elsif klass == Chef::Environment
+        relative_path = "environments"
       end
 
       relative_file = File.expand_path(File.join(Dir.pwd, relative_path, from_file))

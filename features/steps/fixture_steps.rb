@@ -97,7 +97,8 @@ Before do
         r = Chef::Role.new
         r.name "webserver"
         r.description "monkey"
-        r.recipes("role::webserver", "role::base")
+        r.env_run_lists({"cucumber" => ["role[db]"]})
+        r.run_list("role[webserver]", "role[base]")
         r.default_attributes({ 'a' => 'b' })
         r.override_attributes({ 'c' => 'd' })
         r 
@@ -150,6 +151,14 @@ Before do
       end
     },
     'node' => {
+      'opsmaster' => Proc.new do
+        n = Chef::Node.new
+        n.name 'opsmaster'
+        n.chef_environment 'production'
+        n.snakes "on a plane"
+        n.zombie "we're not unreasonable, I mean no-ones gonna eat your eyes"
+        n
+      end,
       'webserver' => Proc.new do
         n = Chef::Node.new
         n.name 'webserver'
@@ -191,12 +200,55 @@ Before do
         n.name 'paradise'
         n.run_list << "version_test"
         n
+      end,
+      'has_environment' => Proc.new do
+        n = Chef::Node.new
+        n.name 'has_environment'
+        n.chef_environment 'cookbooks_test'
+        n.run_list << "version_test"
+        n
       end
     },
     'hash' => {
       'nothing'   => Hash.new,
       'name only' => { :name => 'test_cookbook' }
     },
+    'environment' => {
+      'cucumber' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'cucumber'
+        e.description 'I like to run tests'
+        e.attributes({"attribute_priority_was" => 8})
+        e
+      end,
+      'production' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'production'
+        e.description 'The real deal'
+        e
+      end,
+      'cookbooks-0.1.0' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'cookbooks_test'
+        e.description 'use cookbook version 0.1.0'
+        e.cookbook 'version_test', '= 0.1.0'
+        e
+      end,
+      'cookbooks-0.1.1' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'cookbooks_test'
+        e.description 'use cookbook version 0.1.1'
+        e.cookbook 'version_test', '= 0.1.1'
+        e
+      end,
+      'cookbooks-0.2.0' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'cookbooks_test'
+        e.description 'use cookbook version 0.2.0'
+        e.cookbook 'version_test', '= 0.2.0'
+        e
+      end
+    }
   }
   @stash = {}
 end

@@ -319,7 +319,7 @@ begin
     end
 
     namespace :api do
-      [ :nodes, :roles, :clients ].each do |api|
+      [ :nodes, :roles, :clients, :environments ].each do |api|
           Cucumber::Rake::Task.new(api) do |apitask|
             apitask.profile = "api_#{api.to_s}"
           end
@@ -329,6 +329,16 @@ begin
               t.profile = "api_#{api.to_s}_#{action}"
             end
           end
+        end
+      end
+
+      namespace :environments do
+        Cucumber::Rake::Task.new("cookbooks") do |t|
+          t.profile = "api_environments_cookbook_list"
+        end
+
+        Cucumber::Rake::Task.new("nodes") do |t|
+          t.profile = "api_environments_node_list"
         end
       end
 

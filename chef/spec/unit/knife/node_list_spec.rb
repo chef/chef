@@ -21,6 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Knife::NodeList do
   before(:each) do
     Chef::Config[:node_name]  = "webmonkey.example.com"
+    Chef::Config[:environment] = nil # reset this value each time, as it is not reloaded
     @knife = Chef::Knife::NodeList.new
     @knife.stub!(:output).and_return(true)
     @list = {
@@ -28,10 +29,11 @@ describe Chef::Knife::NodeList do
       "bar" => "http://example.com/foo"
     }
     Chef::Node.stub!(:list).and_return(@list)
+    Chef::Node.stub!(:list_by_environment).and_return(@list)
   end
 
   describe "run" do
-    it "should list the nodes" do
+    it "should list all of the nodes if -E is not specified" do
       Chef::Node.should_receive(:list).and_return(@list)
       @knife.run
     end
@@ -42,6 +44,12 @@ describe Chef::Knife::NodeList do
       @knife.run
     end
 
+    it "should list nodes in the specific environment if -E ENVIRONMENT is specified" do
+      Chef::Config[:environment] = "prod"
+      Chef::Node.should_receive(:list_by_environment).with("prod").and_return(@list)
+      @knife.run
+    end
+    
     describe "with -w or --with-uri" do
       it "should pretty print the hash" do
         @knife.config[:with_uri] = true

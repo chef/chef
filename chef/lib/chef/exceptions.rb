@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,5 +63,10 @@ class Chef
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
     class IllegalChecksumRevert < RuntimeError; end
+    class RecipeVersionConflict < StandardError; end
+    class CookbookVersionConflict < StandardError; end
+    class CookbookVersionNameMismatch < ArgumentError; end
+    class InvalidCookbookVersion < ArgumentError; end
+    class InvalidVersionConstraint < ArgumentError; end
   end
 end

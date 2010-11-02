@@ -170,7 +170,6 @@ class Chef
 
         puts("\n")
 
-
         puts "#{h.color("Public DNS Name", :cyan)}: #{server.dns_name}"
         puts "#{h.color("Public IP Address", :cyan)}: #{server.ip_address}"
         puts "#{h.color("Private DNS Name", :cyan)}: #{server.private_dns_name}"
@@ -179,7 +178,6 @@ class Chef
         print "\n#{h.color("Waiting for sshd", :magenta)}"
 
         print(".") until tcp_test_ssh(server.dns_name) { sleep @initial_sleep_delay ||= 10; puts("done") }
-
 
         bootstrap_for_node(server).run
 
@@ -208,6 +206,7 @@ class Chef
         bootstrap.config[:distro] = config[:distro]
         bootstrap.config[:use_sudo] = true
         bootstrap.config[:template_file] = config[:template_file]
+        bootstrap.config[:environment] = config[:environment]
         bootstrap
       end
 

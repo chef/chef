@@ -50,7 +50,7 @@ class Chef
         :description => "Name of Copyright holder"
 
       option :cookbook_email,
-        :short => "-E EMAIL",
+        :short => "-m EMAIL",
         :long => "--email EMAIL",
         :description => "Email address of cookbook maintainer"
 

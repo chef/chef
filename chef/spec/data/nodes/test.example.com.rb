@@ -13,3 +13,5 @@ something "else"
 # Nodes should have recipes
 ##
 recipes "operations-master", "operations-monitoring"
+
+chef_environment "dev"

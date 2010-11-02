@@ -1,9 +1,9 @@
-#
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Nuo Yan (<nuo@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ require 'chef/node'
 require 'chef/resource_definition_list'
 require 'chef/recipe'
 require 'chef/cookbook/file_vendor'
+require 'chef/version_class'
 
 class Chef
   # == Chef::CookbookVersion
@@ -36,6 +37,7 @@ class Chef
   # recipe_filenames.insert) should dirty the manifest so it gets regenerated.
   class CookbookVersion
     include Chef::IndexQueue::Indexable
+    include Comparable
 
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
     
@@ -821,6 +823,14 @@ class Chef
     def couchdb_id=(value)
       @couchdb_id = value
       @index_id = value
+    end
+
+    def <=>(o)
+      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != o.name
+      # FIXME: can we change the interface to the Metadata class such
+      # that metadata.version returns a Chef::Version instance instead
+      # of a string?
+      Chef::Version.new(self.version) <=> Chef::Version.new(o.version)
     end
 
     private

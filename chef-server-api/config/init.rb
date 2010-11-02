@@ -38,6 +38,7 @@ require 'chef/data_bag_item'
 require 'chef/cookbook_version'
 require 'chef/sandbox'
 require 'chef/checksum'
+require 'chef/environment'
 
 require 'mixlib/authentication'
 
@@ -71,6 +72,7 @@ unless Merb::Config.environment == "test"
   Chef::CookbookVersion.create_design_document
   Chef::Sandbox.create_design_document
   Chef::Checksum.create_design_document
+  Chef::Environment.create_design_document
 
   # Create the signing key and certificate
   Chef::Certificate.generate_signing_ca
@@ -80,6 +82,9 @@ unless Merb::Config.environment == "test"
 
   # Generate the Web UI Key
   Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key], true)
+
+  # Create the '_default' Environment
+  Chef::Environment.create_default_environment
 
   Chef::Log.info('Loading roles')
   Chef::Role.sync_from_disk_to_couchdb
