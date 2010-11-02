@@ -51,6 +51,7 @@ Feature: Synchronize cookbooks from the server
       And 'stdout' should have '412 Precondition Failed.*no_such_cookbook'
 
   Scenario: Utilise versioned dependencies
+    Given this test is not pending
     Given I am an administrator
       And I fully upload a sandboxed cookbook named 'versions' versioned '0.2.0' with 'versions'
       And a validated node
