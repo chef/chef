@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -299,4 +300,151 @@ describe Chef::RunList do
 
   end
 
+  describe "constrain" do
+    @fake_db = Object.new
+
+    def cookbook_maker(name, version, deps)
+      book = Chef::CookbookVersion.new(name, @fake_db)
+      book.version = version
+      deps.each { |dep_name, vc| book.metadata.depends(dep_name, vc) }
+      book
+    end
+ 
+    def vc_maker(cookbook_name, version_constraint)
+        vc = Chef::VersionConstraint.new(version_constraint)
+        { :name => cookbook_name, :version_constraint => vc }
+    end
+
+    before(:each) do
+      a = cookbook_maker("a", "1.0", [["c", "< 4.0"]])
+      b = cookbook_maker("b", "1.0", [["c", "< 3.0"]])
+      
+      c3 = cookbook_maker("c", "3.0", [["d", "> 2.0"], ["e", nil]])
+      c2 = cookbook_maker("c", "2.0", [["d", "> 1.0"], ["f", nil]])
+
+      d1 = cookbook_maker("d", "1.1", [])
+      d2 = cookbook_maker("d", "2.1", [])
+      e = cookbook_maker("e", "1.0", [])
+      f = cookbook_maker("f", "1.0", [])
+      
+      @all_cookbooks = {
+        "a" => [a],
+        "b" => [b],
+        "c" => [c2, c3],
+        "d" => [d1, d2],
+        "e" => [e],
+        "f" => [f]
+      }
+    end
+
+    it "pulls in transitive dependencies" do
+      constraints = [vc_maker("a", "~> 1.0")]
+      cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+      %w(a c d e).each { |k| cookbooks.should have_key k }
+      cookbooks["c"].version.should == "3.0.0"
+      cookbooks["d"].version.should == "2.1.0"
+    end
+
+    it "selects 'd 2.1.0' given constraint 'd > 1.2.3'" do
+      constraints = [vc_maker("d", "> 1.2.3")]
+      cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+      cookbooks.size.should == 1
+      cookbooks["d"].version.should == "2.1.0"
+    end
+
+    it "selects largest version when constraint allows multiple" do
+      constraints = [vc_maker("d", "> 1.0")]
+      cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+      cookbooks.size.should == 1
+      cookbooks["d"].version.should == "2.1.0"
+    end
+
+    it "selects 'd 1.1.0' given constraint 'd ~> 1.0'" do
+      constraints = [vc_maker("d", "~> 1.0")]
+      cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+      cookbooks.size.should == 1
+      cookbooks["d"].version.should == "1.1.0"
+    end
+
+    it "raises CookbookVersionUnavailable for an unknown cookbook" do
+      constraints = [vc_maker("nosuch", "1.0.0")]
+      fun = lambda { @run_list.constrain(@all_cookbooks, constraints) }
+      fun.should raise_error(Chef::Exceptions::CookbookVersionUnavailable)
+    end
+
+    it "raises CookbookVersionUnavailable if constraint can't be met" do
+      constraints = [vc_maker("a", "99.9.9")]
+      fun = lambda { @run_list.constrain(@all_cookbooks, constraints) }
+      fun.should raise_error(Chef::Exceptions::CookbookVersionUnavailable)
+    end
+
+    it "raises CookbookVersionConflict for direct conflict" do
+      constraints = [vc_maker("d", "= 1.1.0"), vc_maker("d", ">= 2.0")]
+      fun = lambda { @run_list.constrain(@all_cookbooks, constraints) }
+      fun.should raise_error(Chef::Exceptions::CookbookVersionConflict)
+    end
+
+    it "raises CookbookVersionConflict a then b" do
+      # Cookbooks a and b both have a dependency on c, but with
+      # differing constraints.  When a is pulled in first, we should
+      # get a version of c that is too new for the constraint on c
+      # that b declares.
+      constraints = [vc_maker("a", "1.0"), vc_maker("b", "1.0")]
+      fun = lambda { @run_list.constrain(@all_cookbooks, constraints) }
+      fun.should raise_error(Chef::Exceptions::CookbookVersionConflict)
+    end
+
+    it "resolves b then a" do
+      # See above comment for a then b.  When b is pulled in first, we
+      # should get a version of c that satifies the constraints on the
+      # c dependency for both b and a.
+      constraints = [vc_maker("b", "1.0"), vc_maker("a", "1.0")]
+      cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+      cookbooks.should have_key "a"
+      cookbooks.should have_key "b"
+      cookbooks["c"].version.should == "2.0.0"
+    end
+
+    it "raises CookbookVersionConflict a then d" do
+      constraints = [vc_maker("a", "1.0"), vc_maker("d", "1.1")]
+      fun = lambda { @run_list.constrain(@all_cookbooks, constraints) }
+      fun.should raise_error(Chef::Exceptions::CookbookVersionConflict)
+    end
+
+    it "raises CookbookVersionConflict d then a" do
+      constraints = [vc_maker("a", "1.0"), vc_maker("d", "1.1")].reverse
+      fun = lambda { @run_list.constrain(@all_cookbooks, constraints) }
+      fun.should raise_error(Chef::Exceptions::CookbookVersionConflict)
+    end
+
+    describe "expand_cookbook_deps (parent paths)" do
+      before(:each) do
+        # we test at this level to be able to verify that tracking of
+        # the parent path is correct.
+        a = cookbook_maker("a", "1.0", [["b", nil], ["d", nil]])
+        b = cookbook_maker("b", "1.0", [["c", nil]])
+        c = cookbook_maker("c", "1.0", [])
+        d = cookbook_maker("d", "1.0", [["e", nil]])
+        e = cookbook_maker("e", "1.0", [])
+        @all_cookbooks = { }
+        constraint = { :name => "a",
+          :version_constraint => Chef::VersionConstraint.new }
+        [a, b, c, d, e].each { |cb| @all_cookbooks[cb.name] = [cb] }
+        @cookbooks = {}
+        @run_list.expand_cookbook_deps(@cookbooks, @all_cookbooks, constraint, ["Run list"])
+      end
+
+      # [cookbook, expected_parent_path]
+      [
+       ["a", ["Run list"]],
+       ["b", ["Run list", "a"]],
+       ["c", ["Run list", "a", "b"]],
+       ["d", ["Run list", "a"]],
+       ["e", ["Run list", "a", "d"]]].each do |book, path|
+        it "parent path for #{book} is #{path.inspect}" do
+          @cookbooks[book][:parent].should == path
+        end
+      end
+    end
+  end
 end

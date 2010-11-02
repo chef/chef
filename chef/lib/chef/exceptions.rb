@@ -66,6 +66,7 @@ class Chef
     class IllegalChecksumRevert < RuntimeError; end
     class RecipeVersionConflict < StandardError; end
     class CookbookVersionConflict < StandardError; end
+    class CookbookVersionUnavailable < StandardError; end
     class CookbookVersionNameMismatch < ArgumentError; end
     class InvalidCookbookVersion < ArgumentError; end
     class InvalidVersionConstraint < ArgumentError; end

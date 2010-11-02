@@ -19,6 +19,7 @@
 
 require 'chef' / 'node'
 require 'chef/version_class'
+require 'chef/version_constraint'
 
 class Nodes < Application
 
@@ -106,69 +107,11 @@ class Nodes < Application
 
   # returns name -> CookbookVersion for all cookbooks included on the given node.
   def cookbooks_for_node(all_cookbooks)
-    # expand returns a RunListExpansion which contains recipes, default and override attrs [cb]
-    # TODO: check for this on the client side before we make the http request [stephen 9/1/10]
     begin
-      recipes = @node.run_list.expand('couchdb', :environment => @node.chef_environment).recipes.with_versions
-    rescue Chef::Exceptions::RecipeVersionConflict => e
-      raise PreconditionFailed, "#Conflict: #{e.message}"
-    end
-
-    # TODO: make cookbook loading respect environment's versions [stephen 8/25/10]
-    # walk run list and accumulate included dependencies
-    recipes.inject({}) do |included_cookbooks, recipe|
-      expand_cookbook_deps(included_cookbooks, all_cookbooks, recipe, "Run list")
-      included_cookbooks
+      @node.constrain_cookbooks(all_cookbooks, 'couchdb')
+    rescue Chef::Exceptions::CookbookVersionConflict, Chef::Exceptions::CookbookVersionUnavailable => e
+      raise PreconditionFailed, e.message
     end
   end
 
-  # Accumulates transitive cookbook dependencies no more than once in included_cookbooks
-  #   included_cookbooks == hash of name -> CookbookVersion, which is used for returning
-  #                         result as well as for tracking which cookbooks we've already
-  #                         recursed into
-  #   all_cookbooks      == hash of name -> [ CookbookVersion ... ] , all cookbooks available, sorted by version number
-  #   recipe             == hash of :name => recipe_name, :version => recipe_version to include
-  #   parent_name        == the name of the parent cookbook (or run_list), for reporting broken dependencies
-  def expand_cookbook_deps(included_cookbooks, all_cookbooks, recipe, parent_name)
-    # determine the recipe's parent cookbook, which might be the
-    # recipe name in the default case
-    cookbook_name = (recipe[:name][/^(.+)::/, 1] || recipe[:name])
-    if recipe[:version]
-      version = Chef::Version.new(recipe[:version])
-      Chef::Log.debug "Node requires #{cookbook_name} at version #{version}"
-      # detect the correct cookbook version from the list of available cookbook versions
-      cookbook = all_cookbooks[cookbook_name].detect { |cb| Chef::Version.new(cb.version) == version }
-    else
-      Chef::Log.debug "Node requires #{cookbook_name} at latest version"
-      cookbook_versions = all_cookbooks[cookbook_name]
-      Chef::Log.debug { "Available versions of cookbook #{cookbook_name}: [#{Array(cookbook_versions).map {|v| v.version}.join(',')}]" }
-      # Chef::Environment.cdb_load_filtered_cookbook_versions returns cookbooks in DESCENDING order
-      # so the newest one is the FIRST one.
-      cookbook = cookbook_versions ? all_cookbooks[cookbook_name].first : nil
-    end
-    unless cookbook
-      msg = "#{parent_name} depends on cookbook #{cookbook_name} #{version}, which is not available to this node"
-      raise PreconditionFailed, msg
-    end
-
-    # we can't load more than one version of the same cookbook
-    if included_cookbooks[cookbook_name]
-      a = Chef::Version.new(included_cookbooks[cookbook_name].version)
-      b = Chef::Version.new(cookbook.version)
-      raise PreconditionFailed, "Conflict: Node requires cookbook #{cookbook_name} at versions #{a.to_s} and #{b.to_s}" if a != b
-    else
-      included_cookbooks[cookbook_name] = cookbook
-    end
-
-    # TODO:
-    # In the past, we have ignored the version constraints from dependency metadata.
-    # We will continue to do so for the time being, until the Gem::Version
-    # sytax for the environments feature is replaced with something more permanent
-    # [stephen 9/1/10]
-    cookbook.metadata.dependencies.each do |dependency_name, dependency_version_constraints|
-      Chef::Log.debug [included_cookbooks, all_cookbooks, dependency_name, "Cookbook #{cookbook_name}"].join(", ")
-      recipe = {:name => dependency_name, :version => nil}
-      expand_cookbook_deps(included_cookbooks, all_cookbooks, recipe, "Cookbook #{cookbook_name}")
-    end
-  end
 end

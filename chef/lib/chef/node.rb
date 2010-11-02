@@ -440,6 +440,11 @@ class Chef
       expansion.recipes
     end
 
+    def constrain_cookbooks(all_cookbooks, source)
+      cookbook_constraints = run_list.expand(source).recipes.with_version_constraints
+      run_list.constrain(all_cookbooks, cookbook_constraints)
+    end
+
     # Transform the node to a Hash
     def to_hash
       index_hash = Hash.new

@@ -3,6 +3,7 @@
 # Author:: Nuo Yan (<nuoyan@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Seth Falcon (<seth@opscode.com>)
 # Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -157,6 +158,107 @@ class Chef
       end
     end
 
+    # Return a hash mapping cookbook names to a CookbookVersion
+    # object.
+    #
+    # This is the final version-resolved list of cookbooks for the
+    # RunList.
+    #
+    # all_cookbooks - a hash mapping cookbook names to an array of
+    # available CookbookVersions.
+    #
+    # cookbook_constraints - an array of hashes describing the
+    # expanded run list.  Each element is a hash containing keys :name
+    # and :version_constraint.
+    #
+    def constrain(all_cookbooks, cookbook_constraints)
+      cookbooks = cookbook_constraints.inject({}) do |included_cookbooks, cookbook_constraint|
+        expand_cookbook_deps(included_cookbooks, all_cookbooks, cookbook_constraint, ["Run list"])
+        included_cookbooks
+      end
+      ans = {}
+      cookbooks.each do |k, v|
+        ans[k] = v[:cookbook]
+      end
+      ans
+    end
+
+    def path_to_s(path)
+      "[" + path.join(" -> ") + "]"
+    end
+
+    # Accumulates transitive cookbook dependencies no more than once
+    # in included_cookbooks
+    #
+    # included_cookbooks - accumulator for return value, a hash
+    # mapping cookbook name to a hash with keys :cookbook,
+    # :version_constraint, and :parent.
+    #
+    #  all_cookbooks - A hash mapping cookbook name to an array of
+    # CookbookVersion objects.  These represent all the cookbooks that
+    # are available in a given environment.
+    #
+    # recipe - A hash with keys :name and :version_constraint. 
+    #
+    # parent_path - A list of cookbook names (or "Run list" for
+    # top-level) that tracks where we are in the dependency
+    # tree.
+    #
+    def expand_cookbook_deps(included_cookbooks, all_cookbooks, recipe, parent_path)
+      # determine the recipe's parent cookbook, which might be the
+      # recipe name in the default case
+      cookbook_name = (recipe[:name][/^(.+)::/, 1] || recipe[:name])
+      constraint = recipe[:version_constraint]
+      if included_cookbooks[cookbook_name]
+        # If the new constraint includes the cookbook we have already
+        # selected, we will continue.  We can't swap at this point
+        # because we've already included the dependencies induced by
+        # the version we have.
+        already_selected = included_cookbooks[cookbook_name]
+        if !constraint.include?(already_selected[:cookbook])
+          prev_constraint = already_selected[:version_constraint]
+          prev_version = already_selected[:cookbook].version
+          prev_path = already_selected[:parent]
+          msg = ["Unable to satisfy constraint #{cookbook_name} (#{constraint})",
+                 "from #{path_to_s(parent_path)}.",
+                 "Already already selected #{cookbook_name}@#{prev_version} via",
+                 "#{cookbook_name} (#{prev_constraint}) #{path_to_s(prev_path)}"
+                ].join(" ")
+          raise Chef::Exceptions::CookbookVersionConflict, msg
+        end
+        # we've already processed this cookbook, no need to recurse
+        return
+      end
+
+      choices = all_cookbooks[cookbook_name] || []
+      choices = choices.select { |cb| constraint.include?(cb) }
+      Chef::Log.debug "Node requires #{cookbook_name} (#{constraint})"
+      if choices.empty?
+        msg = ("#{path_to_s(parent_path)} depends on cookbook #{cookbook_name} " +
+               "(#{constraint}), which is not available on this node")
+        raise Chef::Exceptions::CookbookVersionUnavailable, msg
+      end
+      # pick the highest version
+      cookbook = choices.sort.last
+      included_cookbooks[cookbook_name] = {
+        :cookbook => cookbook,
+        :version_constraint => constraint,
+        # store a copy of our path (not strictly necessary, but avoids
+        # a future code tweak from breaking)
+        :parent => parent_path.dup
+      }
+      # add current cookbook to a new copy of the parent path to
+      # pass to the recursive call
+      parent_path = parent_path.dup
+      parent_path << cookbook_name
+      cookbook.metadata.dependencies.each do |dep_name, version_constraint|
+        recipe = {
+          :name => dep_name,
+          :version_constraint => Chef::VersionConstraint.new(version_constraint)
+        }
+        expand_cookbook_deps(included_cookbooks, all_cookbooks, recipe, parent_path)
+      end
+    end
   end
 end
 
