@@ -4,7 +4,7 @@ Feature: Purge Cookbook Files
   As a sysadmin
   I want to purge cookbooks and all associated state from the Chef server
 
-  @api
+  @api @oss_only
   Scenario: Purge a cookbook when its files are on disk
     Given I am an administrator
       And I fully upload a sandboxed cookbook force-named 'testcookbook_valid' versioned '0.2.0' with 'testcookbook_valid_v0.2.0'
@@ -15,7 +15,7 @@ Feature: Purge Cookbook Files
       And the cookbook's files should have been deleted
       And the cookbook's checksums should be removed from couchdb
 
-  @knife
+  @knife @oss_only
   Scenario: Purge a cookbook using knife when its files are on disk
     Given I am an administrator
       And I fully upload a sandboxed cookbook force-named 'testcookbook_valid' versioned '0.2.0' with 'testcookbook_valid_v0.2.0'
@@ -26,7 +26,7 @@ Feature: Purge Cookbook Files
       And the cookbook's files should have been deleted
       And the cookbook's checksums should be removed from couchdb
 
-  @api
+  @api @oss_only
   Scenario: Purge a cookbook when its files are not on disk
     Given I am an administrator
       And I fully upload a sandboxed cookbook force-named 'testcookbook_valid' versioned '0.2.0' with 'testcookbook_valid_v0.2.0'
