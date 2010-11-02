@@ -15,8 +15,7 @@ Feature: List roles via the REST API
       And a 'role' named 'webserver' exists
       And a 'role' named 'db' exists
      When I 'GET' the path '/roles'
-     Then the inflated response should be '3' items long
-      And the inflated responses key 'role_test' should match '^http://.+/roles/role_test$'
+     Then the inflated responses key 'role_test' should match '^http://.+/roles/role_test$'
       And the inflated responses key 'webserver' should match '^http://.+/roles/webserver$'
       And the inflated responses key 'db' should match '^http://.+/roles/db$'
 
