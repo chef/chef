@@ -12,7 +12,8 @@ Feature: List search endpoints via the REST API
      Then the inflated responses key 'node' should match '^http://(.+)/search/node$'     
       And the inflated responses key 'role' should match '^http://(.+)/search/role$'
       And the inflated responses key 'client' should match '^http://(.+)/search/client$'
-      And the inflated response should be '3' items long
+      And the inflated responses key 'environment' should match '^http://(.+)/search/environment'
+      And the inflated response should be '4' items long
 
   Scenario: List search indexes when a data bag has been created
     Given I am an administrator
@@ -23,7 +24,8 @@ Feature: List search endpoints via the REST API
       And the inflated responses key 'role' should match '^http://(.+)/search/role$'
       And the inflated responses key 'client' should match '^http://(.+)/search/client$'
       And the inflated responses key 'users' should match '^http://(.+)/search/users$'
-      And the inflated response should be '4' items long
+      And the inflated responses key 'environment' should match '^http://(.+)/search/environment'
+      And the inflated response should be '5' items long
 
   Scenario: List search indexes when you are not authenticated 
      When I 'GET' the path '/search' 
