@@ -25,6 +25,7 @@ Feature: Delete a Data Bag Item via the REST API
      When I 'DELETE' the path '/data/users/francis'
      Then I should get a '401 "Unauthorized"' exception
 
+  @oss_only
   Scenario: Delete a Data Bag Item as a non-admin
     Given I am a non-admin
       And a 'data_bag' named 'users' exists

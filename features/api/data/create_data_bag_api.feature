@@ -24,6 +24,7 @@ Feature: Create a data bag via the REST API
      When I 'POST' the 'data_bag' to the path '/data' 
      Then I should get a '401 "Unauthorized"' exception
 
+  @oss_only
   Scenario: Create a new data bag as a non-admin
     Given I am a non-admin
       And a 'data_bag' named 'users'
