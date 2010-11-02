@@ -450,14 +450,36 @@ class Chef
         end
       end
 
+      def delete(key)
+        [@automatic, @override, @normal, @default].inject(nil) do |return_value, attrs|
+          deleted_value = delete_from_component(attrs, key)
+          return_value || deleted_value
+        end
+      end
+
+      def delete_from_component(component_attrs, key)
+        # get the Hash-like object at the current nesting level:
+        nested_attrs = value_at_current_nesting(component_attrs, key)
+
+        if nested_attrs.respond_to?(:delete)
+          nested_attrs.delete(key)
+        else
+          nil
+        end
+      end
+
       def component_has_key?(component_attrs,key)
         # get the Hash-like object at the current nesting level:
-        nested_attrs = @current_nesting_level.inject(component_attrs) do |subtree, intermediate_key|
+        nested_attrs = value_at_current_nesting(component_attrs, key)
+        nested_attrs.respond_to?(:key?) && nested_attrs.key?(key)
+      end
+
+      def value_at_current_nesting(component_attrs, key)
+        @current_nesting_level.inject(component_attrs) do |subtree, intermediate_key|
           # if the intermediate value isn't a hash or doesn't have the intermediate key,
           # it can't have the bottom-level key we're looking for.
           (subtree.respond_to?(:key?) && subtree[intermediate_key]) or (return false)
         end
-        nested_attrs.respond_to?(:key?) && nested_attrs.key?(key)
       end
 
     end
