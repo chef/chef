@@ -19,6 +19,7 @@
 
 require 'chef/cookbook/metadata/version'
 require 'chef' / 'node'
+require 'chef/version_class'
 
 class Nodes < Application
 
@@ -130,19 +131,28 @@ class Nodes < Application
   #   recipe             == hash of :name => recipe_name, :version => recipe_version to include
   #   parent_name        == the name of the parent cookbook (or run_list), for reporting broken dependencies
   def expand_cookbook_deps(included_cookbooks, all_cookbooks, recipe, parent_name)
-    # determine the recipe's parent cookbook, which might be the recipe name in the default case
+    # determine the recipe's parent cookbook, which might be the
+    # recipe name in the default case
     cookbook_name = (recipe[:name][/^(.+)::/, 1] || recipe[:name])
-    version       = recipe[:version] ? Gem::Version.new(recipe[:version]) : nil
-    Chef::Log.debug "Node requires #{cookbook_name} at version #{version.to_s}"
-
-    # detect the correct cookbook version from the list of available cookbook versions
-    cookbook = version ? all_cookbooks[cookbook_name].detect {|cb| Gem::Version.new(cb.version) == version} : all_cookbooks[cookbook_name].last
-    raise PreconditionFailed, "#{parent_name} depends on cookbook #{cookbook_name} #{version.to_s}, which is not available to this node" unless cookbook
+    if recipe[:version]
+      version = Chef::Version.new(recipe[:version])
+      Chef::Log.debug "Node requires #{cookbook_name} at version #{version.to_s}"
+      # detect the correct cookbook version from the list of available cookbook versions
+      cookbook = all_cookbooks[cookbook_name].detect { |cb| Chef::Version.new(cb.version) == version }
+    else
+      Chef::Log.debug "Node requires #{cookbook_name} at latest version"
+      cookbook_versions = all_cookbooks[cookbook_name]
+      cookbook = cookbook_versions ? all_cookbooks[cookbook_name].last : nil
+    end
+    unless cookbook
+      msg = "#{parent_name} depends on cookbook #{cookbook_name} #{version.to_s}, which is not available to this node"
+      raise PreconditionFailed, msg
+    end
 
     # we can't load more than one version of the same cookbook
     if included_cookbooks[cookbook_name]
-      a = Gem::Version.new(included_cookbooks[cookbook_name].version)
-      b = Gem::Version.new(cookbook.version)
+      a = Chef::Version.new(included_cookbooks[cookbook_name].version)
+      b = Chef::Version.new(cookbook.version)
       raise PreconditionFailed, "Conflict: Node requires cookbook #{cookbook_name} at versions #{a.to_s} and #{b.to_s}" if a != b
     else
       included_cookbooks[cookbook_name] = cookbook
@@ -154,7 +164,9 @@ class Nodes < Application
     # sytax for the environments feature is replaced with something more permanent
     # [stephen 9/1/10]
     cookbook.metadata.dependencies.each do |dependency_name, dependency_version_constraints|
-      expand_cookbook_deps(included_cookbooks, all_cookbooks, dependency_name, "Cookbook #{cookbook_name}")
+      Chef::Log.debug [included_cookbooks, all_cookbooks, dependency_name, "Cookbook #{cookbook_name}"].join(", ")
+      recipe = {:name => dependency_name, :version => nil}
+      expand_cookbook_deps(included_cookbooks, all_cookbooks, recipe, "Cookbook #{cookbook_name}")
     end
   end
 end

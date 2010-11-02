@@ -264,14 +264,41 @@ describe Chef::CookbookVersion do
   end
 
   describe "<=>" do
+
     it "should sort based on the version number" do
-      one = Chef::CookbookVersion.new("apt")
-      one.version = "1.0"
-      two = Chef::CookbookVersion.new("apt")
-      two.version = "2.0"
-      (one <=> two).should == -1
-      (two <=> one).should == 1
+      examples = [
+                  # smaller, larger
+                  ["1.0", "2.0"],
+                  ["1.2.3", "1.2.4"],
+                  ["1.2.3", "1.3.0"],
+                  ["1.2.3", "1.3"],
+                  ["1.2.3", "2.1.1"],
+                  ["1.2.3", "2.1"],
+                  ["1.2", "1.2.4"],
+                  ["1.2", "1.3.0"],
+                  ["1.2", "1.3"],
+                  ["1.2", "2.1.1"],
+                  ["1.2", "2.1"]
+                 ]
+      examples.each do |smaller, larger|
+        sm = Chef::CookbookVersion.new("foo")
+        lg = Chef::CookbookVersion.new("foo")
+        sm.version = smaller
+        lg.version = larger
+        sm.should be < lg
+        lg.should be > sm
+        sm.should_not == lg
+      end
     end
+
+    it "should equate versions 1.2 and 1.2.0" do
+      a = Chef::CookbookVersion.new("foo")
+      b = Chef::CookbookVersion.new("foo")
+      a.version = "1.2"
+      b.version = "1.2.0"
+      a.should == b
+    end
+    
 
     it "should not allow you to sort cookbooks with different names" do
       apt = Chef::CookbookVersion.new "apt"
@@ -280,6 +307,28 @@ describe Chef::CookbookVersion do
       god.version = "2.0"
       lambda {apt <=> god}.should raise_error(Chef::Exceptions::CookbookVersionNameMismatch)
     end
+  end
+
+  describe "when you set a version" do
+    before do
+      @cbv = Chef::CookbookVersion.new("version validation")
+    end
+    it "should accept valid cookbook versions" do
+      good_versions = %w(1.2 1.2.3 1000.80.50000 0.300.25)
+      good_versions.each do |v|
+        @cbv.version = v
+      end
+    end
+
+    it "should raise InvalidCookbookVersion for bad cookbook versions" do
+      bad_versions = ["1.2.3.4", "1.2.a4", "1", "a", "1.2 3", "1.2 a",
+                      "1 2 3", "1-2-3", "1_2_3", "1.2_3", "1.2-3"]
+      the_error = Chef::Exceptions::InvalidCookbookVersion
+      bad_versions.each do |v|
+        lambda {@cbv.version = v}.should raise_error(the_error)
+      end
+    end
+
   end
 
 end

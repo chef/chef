@@ -1,6 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@ospcode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Seth Falcon (<seth@ospcode.com>)
+# Copyright:: Copyright 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +30,7 @@ describe Chef::Knife::EnvironmentFromFile do
     @environment = Chef::Environment.new
     @environment.name("spec")
     @environment.description("runs the unit tests")
-    @environment.cookbook_versions({"apt" => "1.2.3"})
+    @environment.cookbook_versions({"apt" => "= 1.2.3"})
     @environment.stub!(:save).and_return true
     @knife.stub!(:load_from_file).and_return @environment
   end

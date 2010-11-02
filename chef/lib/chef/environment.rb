@@ -1,6 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Seth Falcon (<sseth@opscode.com>)
+# Copyright:: Copyright 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -236,15 +237,16 @@ class Chef
     # }
     def self.cdb_load_filtered_cookbook_versions(name, couchdb=nil)
       cvs = begin
-              Chef::Environment.cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Gem::Requirement.new(v); res}
+              Chef::Environment.cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Chef::VersionConstraint.new(v); res}
             rescue Chef::Exceptions::CouchDBNotFound => e
               raise e
             end
 
       # inject all cookbooks into the hash while filtering out restricted versions, then sort the individual arrays
       Chef::CookbookVersion.cdb_list(true, couchdb).inject({}) {|res, cookbook|
-        version               = Gem::Version.new(cookbook.version)
-        requirement_satisfied = cvs.has_key?(cookbook.name) ? cvs[cookbook.name].satisfied_by?(version) : true
+        # FIXME: should cookbook.version return a Chef::Version?
+        version               = Chef::Version.new(cookbook.version)
+        requirement_satisfied = cvs.has_key?(cookbook.name) ? cvs[cookbook.name].include?(version) : true
         res[cookbook.name]    = (res[cookbook.name] || []) << cookbook if requirement_satisfied
         res
       }.inject({}) {|res, (cookbook_name, versions)|
@@ -267,7 +269,7 @@ class Chef
 
     def self.validate_cookbook_version(version)
       begin
-        Gem::Requirement.parse version
+        Chef::VersionConstraint.new version
         true
       rescue ArgumentError
         false
