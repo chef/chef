@@ -1,0 +1,41 @@
+bash -c '
+if [ ! -f /usr/local/bin/chef-client ]; then
+  apt-get update &> /dev/null
+  apt-get install -y build-essential wget
+  cd /tmp
+  wget http://rubyforge.org/frs/download.php/71098/ruby-enterprise_1.8.7-2010.02_amd64_ubuntu10.04.deb &> /dev/null
+  dpkg -i ruby-enterprise_1.8.7-2010.02_amd64_ubuntu10.04.deb && rm ruby-enterprise_1.8.7-2010.02_amd64_ubuntu10.04.deb
+fi
+gem install chef --no-rdoc --no-ri <%= '--prerelease' if @config[:prerelease] %>
+
+mkdir -p /etc/chef
+
+(
+cat <<'EOP'
+<%= IO.read(Chef::Config[:validation_key]) %>
+EOP
+) > /tmp/validation.pem
+awk NF /tmp/validation.pem > /etc/chef/validation.pem
+rm /tmp/validation.pem
+
+(
+cat <<'EOP'
+log_level        :info
+log_location     STDOUT
+chef_server_url  "<%= Chef::Config[:chef_server_url] %>"
+validation_client_name "<%= Chef::Config[:validation_client_name] %>"
+<% if @config[:chef_node_name] == nil %>
+# Using default node name"
+<% else %>
+node_name "<%= @config[:chef_node_name] %>"
+<% end %> 
+EOP
+) > /etc/chef/client.rb
+
+(
+cat <<'EOP'
+<%= { "run_list" => @run_list }.to_json %>
+EOP
+) > /etc/chef/first-boot.json
+
+/usr/local/bin/chef-client -j /etc/chef/first-boot.json'
