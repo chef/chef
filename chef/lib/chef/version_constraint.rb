@@ -17,14 +17,21 @@ require 'chef/version_class'
 
 class Chef
   class VersionConstraint
+    DEFAULT_CONSTRAINT = ">= 0.0.0"
     STANDARD_OPS = %w(< > <= >=)
     OPS = %w(< > = <= >= ~>)
     PATTERN = /^(#{OPS.join('|')}) (.+)$/
 
-    def initialize(str=">= 0.0.0")
-      s = str.to_s
-      s = ">= 0.0.0" if s.empty?
-      parse(s)
+    def initialize(constraint_spec=DEFAULT_CONSTRAINT)
+      case constraint_spec
+      when Array
+        parse_from_array(constraint_spec)
+      when String
+        parse(constraint_spec)
+      else
+        msg = "VersionConstraint should be created from a String. You gave: #{constraint_spec.inspect}"
+        raise Chef::Exceptions::InvalidVersionConstraint, msg
+      end
     end
 
     def include?(v)
@@ -66,6 +73,18 @@ class Chef
 
     private
 
+    def parse_from_array(constraint_spec)
+      if constraint_spec.empty?
+        parse(DEFAULT_CONSTRAINT)
+      elsif constraint_spec.size == 1
+        parse(constraint_spec.first)
+      else
+        msg = "only one version constraint operation is supported, but you gave #{constraint_spec.size} "
+        msg << "['#{constraint_spec.join(', ')}']"
+        raise Chef::Exceptions::InvalidVersionConstraint, msg
+      end
+    end
+
     def parse(str)
       @missing_patch_level = false
       if str.index(" ").nil? && str =~ /^[0-9]/
@@ -80,7 +99,7 @@ class Chef
           @missing_patch_level = true
         end
       else
-        raise Chef::Exceptions::InvalidVersionConstraint.new "'#{str}'"
+        raise Chef::Exceptions::InvalidVersionConstraint, "'#{str}'"
       end
     end
 
