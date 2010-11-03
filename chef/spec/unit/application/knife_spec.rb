@@ -20,6 +20,13 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 require "#{CHEF_SPEC_DATA}/knife_subcommand/test_yourself"
 
 describe Chef::Application::Knife do
+  before(:all) do
+    class NoopKnifeCommand < Chef::Knife
+      def run
+      end
+    end
+  end
+
   before(:each) do
     @knife = Chef::Application::Knife.new
     @knife.stub!(:puts)
@@ -41,7 +48,7 @@ describe Chef::Application::Knife do
     end
 
     it "should run a sub command with the applications command line option prototype" do
-      with_argv(*%w{test yourself with some args}) do
+      with_argv(*%w{noop knife command with some args}) do
         knife = mock(Chef::Knife, :null_object => true)
         Chef::Knife.should_receive(:run).with(ARGV, @knife.options).and_return(knife)
         @knife.should_receive(:exit).with(0)
@@ -50,8 +57,12 @@ describe Chef::Application::Knife do
     end
 
     describe "with environment configuration" do
+      before do
+        Chef::Config[:environment] = nil
+      end
+
       it "should default to no environment" do
-        with_argv(*%w{test yourself}) do
+        with_argv(*%w{noop knife command}) do
           @knife.should_receive(:exit).with(0)
           @knife.run
         end
@@ -60,7 +71,7 @@ describe Chef::Application::Knife do
 
       it "should load the environment from the config file" do
         config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
-        with_argv(*%W{test yourself -c #{config_file}}) do
+        with_argv(*%W{noop knife command -c #{config_file}}) do
           @knife.should_receive(:exit).with(0)
           @knife.run
         end
@@ -68,7 +79,7 @@ describe Chef::Application::Knife do
       end
 
       it "should load the environment from the CLI options" do
-        with_argv(*%W{test yourself -E development}) do
+        with_argv(*%W{noop knife command -E development}) do
           @knife.should_receive(:exit).with(0)
           @knife.run
         end
@@ -77,7 +88,7 @@ describe Chef::Application::Knife do
 
       it "should override the config file environment with the CLI environment" do
         config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
-        with_argv(*%W{test yourself -c #{config_file} -E override}) do
+        with_argv(*%W{noop knife command -c #{config_file} -E override}) do
           @knife.should_receive(:exit).with(0)
           @knife.run
         end
@@ -86,7 +97,7 @@ describe Chef::Application::Knife do
 
       it "should override the config file environment with the CLI environment regardless of order" do
         config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
-        with_argv(*%W{test yourself -E override -c #{config_file}}) do
+        with_argv(*%W{noop knife command -E override -c #{config_file}}) do
           @knife.should_receive(:exit).with(0)
           @knife.run
         end

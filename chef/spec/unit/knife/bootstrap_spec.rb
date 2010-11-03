@@ -22,6 +22,8 @@ require 'net/ssh'
 
 describe Chef::Knife::Bootstrap do
   before(:each) do
+    Chef::Log.logger = Logger.new(StringIO.new)
+
     @knife = Chef::Knife::Bootstrap.new
     @knife.config[:template_file] = File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test.erb"))
   end

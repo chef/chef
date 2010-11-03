@@ -83,6 +83,8 @@ require "chef/cookbook/syntax_check"
 
 describe Chef::Cookbook::SyntaxCheck do
   before do
+    Chef::Log.logger = Logger.new(StringIO.new)
+
     @cookbook_path = File.join(CHEF_SPEC_DATA, 'cookbooks', 'openldap')
 
     @attr_files = %w{default.rb smokey.rb}.map { |f| File.join(@cookbook_path, 'attributes', f) }

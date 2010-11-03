@@ -38,6 +38,11 @@ class Chef
       puts msg
     end
 
+    def self.reset_subcommands!
+      @@subcommands = {}
+      @subcommands_by_category = nil
+    end
+
     def self.inherited(subclass)
       unless subclass.unnamed?
         subcommands[subclass.snake_case_name] = subclass

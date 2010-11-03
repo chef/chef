@@ -25,6 +25,8 @@ require 'chef/rest'
 
 describe Chef::Client do
   before do
+    Chef::Log.logger = Logger.new(StringIO.new)
+
     # Node/Ohai data
     @hostname = "hostname"
     @fqdn = "hostname.example.org"
@@ -78,6 +80,10 @@ describe Chef::Client do
       #   looks up the node, which we will return, then later saves it.
       mock_chef_rest_for_node.should_receive(:get_rest).with("nodes/#{@fqdn}").and_return(@node)
       mock_chef_rest_for_node.should_receive(:put_rest).with("nodes/#{@fqdn}", @node).exactly(2).times.and_return(@node)
+
+      ## Node expansion w/ environments
+      environment = mock("default Chef::Environment with empty attributes", :attributes => {})
+      Chef::Environment.stub!(:load).and_return(environment)
 
       # --Client.sync_cookbooks -- downloads the list of cookbooks to sync
       #

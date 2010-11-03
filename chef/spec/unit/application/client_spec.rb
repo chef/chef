@@ -28,6 +28,8 @@ describe Chef::Application::Client, "reconfigure" do
     Chef::Config[:json_attribs] = nil
     Chef::Config[:interval] = 10
     Chef::Config[:splay] = nil
+
+    Chef::Config[:once] = false
   end
 
   after do

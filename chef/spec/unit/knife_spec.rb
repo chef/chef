@@ -24,6 +24,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Knife do
   before(:each) do
+    Chef::Log.logger = Logger.new(StringIO.new)
+
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife.new
     @knife.stub!(:puts)
@@ -40,6 +42,8 @@ describe Chef::Knife do
 
   describe "after loading a subcommand" do
     before do
+      Chef::Knife.reset_subcommands!
+ 
       if KnifeSpecs.const_defined?(:TestNameMapping)
         KnifeSpecs.send(:remove_const, :TestNameMapping)
       end
@@ -76,12 +80,18 @@ describe Chef::Knife do
 
   describe "after loading all subcommands" do
     before do
+      Chef::Knife.reset_subcommands!
       Chef::Knife.load_commands
     end
 
     it "references a subcommand class by its snake cased name" do
-      Chef::Knife.subcommands.should have_key("node_show")
-      Chef::Knife.subcommands["node_show"].should == Chef::Knife::NodeShow
+      class SuperAwesomeCommand < Chef::Knife
+      end
+
+      Chef::Knife.load_commands
+      
+      Chef::Knife.subcommands.should have_key("super_awesome_command")
+      Chef::Knife.subcommands["super_awesome_command"].should == SuperAwesomeCommand
     end
 
     it "lists all of the commands" do
@@ -219,7 +229,8 @@ describe Chef::Knife do
   describe "confirm" do
     before(:each) do
       @question = "monkeys rule"
-      Kernel.stub!(:print).and_return(true)
+      @stdout = StringIO.new
+      @knife.stub(:stdout).and_return(@stdout)
       STDIN.stub!(:readline).and_return("y")
     end
 
