@@ -20,6 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Provider do
   before(:each) do
+    Chef::Config.cookbook_path = []
     @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
     @node = Chef::Node.new
     @node.name "latte"
