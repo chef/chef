@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2009-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,8 @@ class Chef
 
       banner "knife rackspace server create [RUN LIST...] (options)"
 
+      attr_accessor :initial_sleep_delay
+
       option :flavor,
         :short => "-f FLAVOR",
         :long => "--flavor FLAVOR",
@@ -37,13 +39,13 @@ class Chef
         :long => "--image IMAGE",
         :description => "The image of the server",
         :proc => Proc.new { |i| i.to_i },
-        :default => 14362
+        :default => 49
 
       option :server_name,
         :short => "-N NAME",
         :long => "--server-name NAME",
         :description => "The server name",
-        :default => "wtf"
+        :default => "my-server"
 
       option :api_key,
         :short => "-K KEY",
@@ -56,6 +58,27 @@ class Chef
         :long => "--rackspace-api-username USERNAME",
         :description => "Your rackspace API username",
         :proc => Proc.new { |username| Chef::Config[:knife][:rackspace_api_username] = username } 
+
+      option :ssh_user,
+        :short => "-x USERNAME",
+        :long => "--ssh-user USERNAME",
+        :description => "The ssh username",
+        :default => "root" 
+
+      option :prerelease,
+        :long => "--prerelease",
+        :description => "Install the pre-release chef gems"
+
+      option :distro,
+        :short => "-d DISTRO",
+        :long => "--distro DISTRO",
+        :description => "Bootstrap a distro using a template",
+        :default => "ubuntu10.04-gems"
+
+      option :template_file,
+        :long => "--template-file TEMPLATE",
+        :description => "Full path to location of template to use",
+        :default => false
 
       def h
         @highline ||= HighLine.new
@@ -77,46 +100,6 @@ class Chef
         server.flavor_id = config[:flavor]
         server.image_id = config[:image]
         server.name = config[:server_name]
-        server.personality = [
-          { 
-            'path' => '/etc/install-chef',
-            'contents' => <<-EOH
-#!/bin/bash
-# Customized rc.local for chef installation
-
-if [ ! -f /usr/bin/chef-client ]; then
-  apt-get update
-  apt-get install -y ruby ruby1.8-dev build-essential wget libruby-extras libruby1.8-extras
-  cd /tmp
-  wget http://rubyforge.org/frs/download.php/69365/rubygems-1.3.6.tgz
-  tar xvf rubygems-1.3.6.tgz
-  cd rubygems-1.3.6
-  ruby setup.rb
-  cp /usr/bin/gem1.8 /usr/bin/gem
-  gem install chef ohai --no-rdoc --no-ri --verbose
-fi
-
-exit 0
-EOH
-          },
-          { 
-            'path' => "/etc/chef/validation.pem",
-            'contents' => IO.read(Chef::Config[:validation_key])
-          },
-          { 
-            'path' => "/etc/chef/client.rb",
-            'contents' => <<-EOH
-log_level        :info
-log_location     STDOUT
-chef_server_url  "#{Chef::Config[:chef_server_url]}" 
-validation_client_name "#{Chef::Config[:validation_client_name]}"
-EOH
-          },
-          {
-            'path' => "/etc/chef/first-boot.json",
-            'contents' => { "run_list" => @name_args }.to_json
-          },
-        ]
 
         server.save
 
@@ -135,19 +118,28 @@ EOH
         # wait for it to be ready to do stuff
         server.wait_for { print "."; ready? }
 
-        puts "\nServer ready, waiting 15 seconds to bootstrap."
-        sleep 15
+        @initial_sleep_delay ||= 15
+        puts "\nServer ready, waiting #{@initial_sleep_delay} seconds to bootstrap."
+        sleep @initial_sleep_delay
 
-        puts "\nBootstrapping #{h.color(server.name, :bold)}..."
+        bootstrap_for_node(server).run
 
-        ssh = Chef::Knife::Ssh.new
-        ssh.name_args = [ server.addresses["public"][0], "/bin/bash /etc/install-chef && /usr/bin/chef-client -j /etc/chef/first-boot.json" ]
-        ssh.config[:ssh_user] = "root"
-        ssh.config[:manual] = true
-        ssh.config[:ssh_password] = saved_password
-        ssh.password = saved_password
-        ssh.run
+      end
 
+      def bootstrap_for_node(server)
+        bootstrap = Chef::Knife::Bootstrap.new
+        bootstrap.name_args = [server.addresses["public"][0]]
+        bootstrap.config[:run_list] = @name_args
+        bootstrap.config[:server_name] = server.name
+        bootstrap.config[:ssh_user] = config[:ssh_user]
+        bootstrap.config[:ssh_password] = config[:ssh_password] || server.password
+        bootstrap.config[:identity_file] = config[:identity_file]
+        bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.name
+        bootstrap.config[:prerelease] = config[:prerelease]
+        bootstrap.config[:distro] = config[:distro]
+        bootstrap.config[:use_sudo] = false
+        bootstrap.config[:template_file] = config[:template_file]
+        bootstrap
       end
     end
   end
