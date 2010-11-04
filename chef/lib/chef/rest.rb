@@ -195,7 +195,7 @@ class Chef
             end
           end
         elsif res.kind_of?(Net::HTTPFound) or res.kind_of?(Net::HTTPMovedPermanently)
-          follow_redirect {run_request(:GET, create_url(res['location']), {}, false, nil, raw)}
+          follow_redirect {run_request(method, create_url(res['location']), headers, false, nil, raw)}
         elsif res.kind_of?(Net::HTTPNotModified)
           false
         else
