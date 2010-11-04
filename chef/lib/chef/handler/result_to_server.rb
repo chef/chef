@@ -29,7 +29,7 @@ class Chef
 	node_name = Chef::Config[:node_name]
 
 	report = data.only(:start_time,:exception,:success,:end_time,:elapsed_time,:backtrace)
-	report[:updated_resources] = data[:updated_resources].map{|r| r.to_s} unless report[:updated_resources].nil?
+	report[:updated_resources] = data[:updated_resources].map{|r| r.to_s} unless data[:updated_resources].nil?
 
 	conn = Chef::REST.new(chef_server_url)
 	host_attributes = conn.get_rest("nodes/#{node_name}")
