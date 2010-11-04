@@ -29,5 +29,11 @@ module Merb
       return [hours, minutes, seconds]
     end
     
+    def tr_class(node,index)
+      index % 2 == 1 ? odd_even = 'odd' : odd_even = 'even'
+      node["last_run"]["success"] == false ? row_css = "#{odd_even}-fail" : row_css = odd_even
+      return row_css
+    end
+
   end
 end
