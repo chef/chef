@@ -2,6 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Chef::Knife::Configure do
   before do
+    Chef::Log.logger = Logger.new(StringIO.new)
+
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::Configure.new
     @rest_client = mock("null rest client", :post_rest => { :result => :true })

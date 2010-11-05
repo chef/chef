@@ -25,6 +25,8 @@ require 'chef/rest'
 
 describe Chef::Client do
   before do
+    Chef::Log.logger = Logger.new(StringIO.new)
+
     # Node/Ohai data
     @hostname = "hostname"
     @fqdn = "hostname.example.org"

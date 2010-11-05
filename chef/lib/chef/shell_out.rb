@@ -257,7 +257,7 @@ class Chef
           self.valid_exit_codes = Array(setting)
         when 'environment', 'env'
           # passing :environment => nil means don't set any new ENV vars
-          setting.nil? ? @environment = {} : @environment.merge!(setting)
+          @environment = setting.nil? ? {} : @environment.dup.merge!(setting)
         else
           raise Chef::Exceptions::InvalidCommandOption, "option '#{option.inspect}' is not a valid option for #{self.class.name}"
         end

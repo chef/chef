@@ -21,6 +21,8 @@ require 'chef/mixin/deprecation'
 
 describe Chef::Mixin::Deprecation::DeprecatedInstanceVariable do
   before do
+    Chef::Log.logger = Logger.new(StringIO.new)
+
     @deprecated_ivar = Chef::Mixin::Deprecation::DeprecatedInstanceVariable.new('value', 'an_ivar')
   end
 

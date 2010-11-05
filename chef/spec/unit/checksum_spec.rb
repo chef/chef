@@ -22,6 +22,8 @@ require 'chef/checksum'
 describe Chef::Checksum do
 
   before do
+    Chef::Log.logger = Logger.new(StringIO.new)
+
     @now = Time.now
 
     Time.stub!(:now).and_return(@now)
