@@ -96,9 +96,11 @@ def replicate_dbs(replication_specs, delete_source_dbs = false)
         RestClient.put(target_db, nil)
         db_created = true
       rescue RestClient::PreconditionFailed => e
-        Chef::Log.error("In creating #{target_db} try #{num_tries}/#{max_tries}, got #{e}; try again")
         if num_tries <= max_tries
+          Chef::Log.debug("In creating #{target_db} try #{num_tries}/#{max_tries}, got #{e}; try again")
           sleep 0.25
+        else
+          Chef::Log.error("In creating #{target_db}, tried #{max_tries} times: got #{e}; giving up")
         end
       end
       num_tries += 1
