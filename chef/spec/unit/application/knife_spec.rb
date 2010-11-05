@@ -133,5 +133,15 @@ describe Chef::Application::Knife do
       end
       Chef::Config[:environment].should == 'override'
     end
+
+    it "should run a sub command with the applications command line option prototype" do
+      with_argv(*%w{noop knife command with some args}) do
+        knife = mock(Chef::Knife, :null_object => true)
+        Chef::Knife.should_receive(:run).with(ARGV, @knife.options).and_return(knife)
+        @knife.should_receive(:exit).with(0)
+        @knife.run
+      end
+    end
+
   end
 end
