@@ -1,5 +1,5 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Andrew Fulcher (<andrew.fulcher@gmail.com>)
 # Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #

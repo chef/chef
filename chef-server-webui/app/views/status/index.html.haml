@@ -67,6 +67,11 @@
                                     = "#{minutes_text} ago" 
                                   - else
                                     = "#{hours_text}, #{minutes_text} ago"
+                              - unless node[1]['last_run'].nil?
+                                %tr
+                                  %td
+                                    = last_run_summary(node[1]).join("\n<br />\n")
+
                 - else
                   %td Not Checked In
                 - unless node[1].run_list.nil?
