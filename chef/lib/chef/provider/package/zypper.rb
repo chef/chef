@@ -86,7 +86,7 @@ class Chef
         end
 
         def install_package(name, version)
-          if version
+          if !version.to_s.strip.empty?
             run_command(
               :command => "zypper -n --no-gpg-checks install -l  #{name}=#{version}"
             )
@@ -98,7 +98,7 @@ class Chef
         end
 
         def upgrade_package(name, version)
-          if version
+          if !version.to_s.strip.empty?
             run_command(
               :command => "zypper -n --no-gpg-checks install -l #{name}=#{version}"
             )
@@ -110,7 +110,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          if version
+          if !version.to_s.strip.empty?
             run_command(
               :command => "zypper -n --no-gpg-checks remove  #{name}=#{version}"
             )
