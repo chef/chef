@@ -110,7 +110,6 @@ Then "the gem '$gem_name' version '$version' should not be installed" do |gem_na
   Then "a file named 'installed-gems/gems/#{gem_name}-#{version}' should not exist"
 end
 
-
 def dpkg_should_be_installed(pkg_name)
   shell_out!("dpkg -l #{pkg_name}")
 end
@@ -118,4 +117,3 @@ end
 Then "the dpkg package '$package_name' should be installed" do |package_name|
   dpkg_should_be_installed(package_name)
 end
-
