@@ -29,23 +29,23 @@ class Chef
         @highline ||= HighLine.new
       end
 
-      def run 
+      def run
         require 'fog'
         require 'highline'
         require 'net/ssh/multi'
         require 'readline'
-        
+
         bluebox = Fog::Bluebox.new(
   	  :bluebox_customer_id => Chef::Config[:knife][:bluebox_customer_id],
           :bluebox_api_key => Chef::Config[:knife][:bluebox_api_key]
         )
-       
+
         # Make hash of flavor id => name and image id => name
         flavors = bluebox.flavors.inject({}) { |h,f| h[f.id] = f.description; h }
         images  = bluebox.images.inject({}) { |h,i| h[i.id] = i.description; h }
- 
+
         server_list = [ h.color('ID', :bold), h.color('Hostname', :bold), h.color('IP Address', :bold) ]
- 
+
         bluebox.servers.each do |server|
           server_list << server.id.to_s
           server_list << server.hostname
@@ -57,6 +57,3 @@ class Chef
     end
   end
 end
-
-
-

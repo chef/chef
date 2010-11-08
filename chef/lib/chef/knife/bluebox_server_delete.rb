@@ -24,29 +24,29 @@ class Chef
     class BlueboxServerDelete < Knife
 
       banner "knife bluebox server delete BLOCK-HOSTNAME"
-      
+
     def h
         @highline ||= HighLine.new
       end
 
-      def run 
+      def run
         require 'fog'
         require 'highline'
         require 'readline'
-        
+
         bluebox = Fog::Bluebox.new(
   	  :bluebox_customer_id => Chef::Config[:knife][:bluebox_customer_id],
           :bluebox_api_key => Chef::Config[:knife][:bluebox_api_key]
         )
-      
-        # Build hash of hostname => id  
+
+        # Build hash of hostname => id
         servers = bluebox.servers.inject({}) { |h,f| h[f.hostname] = f.id; h }
 
         unless servers.has_key?(@name_args[0])
           Chef::Log.warn("I can't find a block named #{@name_args[0]}")
           return false
         end
- 
+
         confirm(h.color("Do you really want to delete block UUID #{servers[@name_args[0]]} with hostname #{@name_args[0]}", :green))
 
         begin
@@ -61,6 +61,3 @@ class Chef
     end
   end
 end
-
-
-

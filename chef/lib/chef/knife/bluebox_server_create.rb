@@ -48,7 +48,7 @@ class Chef
         :long => "--password password",
         :description => "User password on new server.",
         :default => ""
-        
+
       option :bootstrap,
         :long => "--bootstrap false",
         :description => "Disables the bootstrapping process.",
@@ -58,7 +58,7 @@ class Chef
         @highline ||= HighLine.new
       end
 
-      def run 
+      def run
         require 'fog'
         require 'highline'
         require 'net/ssh/multi'
@@ -81,11 +81,11 @@ class Chef
           :password => config[:password]
           }
         server_args[:ssh_key] = Chef::Config[:knife][:ssh_key] if Chef::Config[:knife][:ssh_key]
-        
+
         server = bluebox.servers.new(server_args)
         response = server.save
         $stdout.sync = true
-        
+
         # Wait for the server to start
         begin
 
@@ -96,7 +96,7 @@ class Chef
           puts "#{h.color("Flavor", :cyan)}: #{flavors[server.flavor_id]}"
           puts "#{h.color("Image", :cyan)}: #{images[server.image_id]}"
           puts "#{h.color("IP Address", :cyan)}: #{server.ips[0]['address']}"
-    
+
           # The server was succesfully queued... Now wait for it to spin up...
           print "\n#{h.color("Requesting status of #{server.hostname}\n", :magenta)}"
 
@@ -106,20 +106,20 @@ class Chef
 
             # The server wasn't started in 5 minutes... Send a destroy call to make sure it doesn't spin up on us later...
             server.destroy
-            raise Fog::Bluebox::BlockInstantiationError, "BBG server not available after 5 minutes" 
+            raise Fog::Bluebox::BlockInstantiationError, "BBG server not available after 5 minutes"
 
           else
             print "\n\n#{h.color("BBG Server startup succesful.  Accessible at #{server.hostname}\n", :green)}"
-            
+
             # Make sure we should be bootstrapping.
             unless config[:bootstrap]
               puts "\n\n#{h.color("Boostrapping disabled per command line inputs.  Exiting here.}", :green)}"
-              return true 
+              return true
             end
-            
+
             # Bootstrap away!
             print "\n\n#{h.color("Starting bootstrapping process...", :green)}\n"
-        
+
             # Connect via SSH and make this all happen.
             begin
               bootstrap = Chef::Knife::Bootstrap.new
@@ -142,15 +142,15 @@ class Chef
               sleep 1
               retry
             end
-        
-          end 
+
+          end
 
         rescue Fog::Bluebox::BlockInstantiationError => e
 
           puts "\n\n#{h.color("Encountered error starting up BBG block. Auto destroy called.  Please try again.", :red)}"
 
         end
-      
+
       end
     end
   end
