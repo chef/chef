@@ -100,7 +100,7 @@ def create_databases
       cdb.create_db
       db_created = true
     rescue Net::HTTPServerException => e
-      unless e.response.code == 412
+      unless e.response.code.to_i == 412
         # Re-raise if we got anything but 412.
         raise
       end
