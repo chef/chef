@@ -23,7 +23,7 @@ end
 
 Then /^the inflated responses key '(.+)' should match '(.+)'$/ do |key, regex|
   puts self.inflated_response.inspect if ENV['DEBUG']
-  self.inflated_response[key].should =~ /#{regex}/m  
+  self.inflated_response[key].should =~ /#{regex}/m
 end
 
 Then /^the inflated responses key '(.+)' should be literally '(.+)'$/ do |key, literal|
@@ -35,7 +35,7 @@ Then /^the inflated responses key '(.+)' should be literally '(.+)'$/ do |key, l
                false
              end
 
-  self.inflated_response[key].should == to_check 
+  self.inflated_response[key].should == to_check
 end
 
 Then /^the inflated response should match '(.+)' as json$/ do |regex|
@@ -64,7 +64,7 @@ Then /^the inflated responses key '(.+)' sub-key '(.+)' should be an empty hash$
   inflated_response[key][sub_key].should == {}
 end
 
-Then /^the inflated responses key '(.+)' should be '(\d+)' items long$/ do |key, length| 
+Then /^the inflated responses key '(.+)' should be '(\d+)' items long$/ do |key, length|
   inflated_response[key].length.should == length.to_i
 end
 
@@ -73,7 +73,7 @@ Then /^the inflated responses key '(.+)' should not exist$/ do |key|
 end
 
 Then /^the inflated responses key '(.+)' should exist$/ do |key|
-  self.inflated_response.has_key?(key).should == true 
+  self.inflated_response.has_key?(key).should == true
 end
 
 Then /^the inflated responses key '(.+)'.to_s should be '(.+)'$/ do |key, expected_value|
@@ -85,7 +85,7 @@ Then /^the inflated response should be an empty array$/ do
 end
 
 Then /^the inflated response should be an empty hash$/ do
-  self.inflated_response.should == {} 
+  self.inflated_response.should == {}
 end
 
 Then /^the inflated response should include '(.+)'$/ do |entry|
@@ -138,7 +138,7 @@ Then /^the inflated response should respond to '(.+)' with '(.+)'$/ do |method, 
   to_match = JSON.parse(to_match) if to_match =~ /^\[|\{/
   to_match = true if to_match == 'true'
   to_match = false if to_match == 'false'
-  self.inflated_response.to_hash[method].should == to_match 
+  self.inflated_response.to_hash[method].should == to_match
 end
 
 Then /^the inflated response should respond to '(.+)' and match '(.+)'$/ do |method, to_match|
