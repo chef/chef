@@ -106,10 +106,10 @@ def create_databases
       end
       
       if num_tries <= max_tries
-        Chef::Log.debug("In creating #{target_db} try #{num_tries}/#{max_tries}, got #{e}; try again")
+        Chef::Log.debug("In creating chef_integration try #{num_tries}/#{max_tries}, got #{e}; try again")
         sleep 0.25
       else
-        Chef::Log.error("In creating #{target_db}, tried #{max_tries} times: got #{e}; giving up")
+        Chef::Log.error("In creating chef_integration, tried #{max_tries} times: got #{e}; giving up")
       end
     end
     num_tries += 1
