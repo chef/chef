@@ -24,3 +24,7 @@ Then "a '$result_item_klass' with id '$result_item_id' should be in the search r
 
   result_item.should be_a_kind_of(expected_klass)
 end
+
+Given "PL-540 is resolved in favor of not removing this feature" do
+  pending
+end
