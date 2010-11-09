@@ -37,6 +37,7 @@ Feature: Search data via the REST API
 
   @oss_only
   Scenario: Search for objects with a manual ascending sort order
+    Given PL-450 is resolved in favor of not removing this feature
     Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
@@ -53,6 +54,7 @@ Feature: Search data via the REST API
 
   @oss_only
   Scenario: Search for objects with a manual descending sort order
+    Given PL-450 is resolved in favor of not removing this feature
     Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
@@ -69,6 +71,7 @@ Feature: Search data via the REST API
 
   @oss_only
   Scenario: Search for objects and page through the results
+    Given PL-450 is resolved in favor of not removing this feature
     Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
