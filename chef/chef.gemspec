@@ -1,4 +1,5 @@
-require File.dirname(__FILE__) + '/lib/chef/version'
+$:.unshift(File.dirname(__FILE__) + '/lib')
+require 'chef/version'
 
 Gem::Specification.new do |s|
   s.name = 'chef'
