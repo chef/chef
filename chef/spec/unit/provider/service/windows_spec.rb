@@ -29,8 +29,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
     @current_resource = Chef::Resource::Service.new("chef")
     @provider = Chef::Provider::Service::Windows.new(@new_resource, @run_context)
-    IO.stub!(:popen).with("#{@init_command} query #{@new_resource.service_name}").and_return(['','','','4'])
-    IO.stub!(:popen).with("#{@init_command} qc #{@new_resource.service_name}").and_return(['','','','','2'])
+    IO.stub!(:popen).with("#{@init_command} query #{@new_resource.service_name}").and_return(StringIO.new("\n\n\n4\n"))
+    IO.stub!(:popen).with("#{@init_command} qc #{@new_resource.service_name}").and_return(StringIO.new("\n\n\n\n2\n"))
   end
 
   it "should set the current resources service name to the new resources service name" do
