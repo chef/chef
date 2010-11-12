@@ -296,12 +296,13 @@ Before do
   
   replicate_dbs({:source_db => "#{Chef::Config[:couchdb_url]}/chef_integration_safe",
                  :target_db => "#{Chef::Config[:couchdb_url]}/chef_integration"})
-end
-
-After do
+                 
   s = Chef::Solr.new
   s.solr_delete_by_query("*:*")
   s.solr_commit
+end
+
+After do
   gemserver.shutdown
   gemserver_thread && gemserver_thread.join
 
