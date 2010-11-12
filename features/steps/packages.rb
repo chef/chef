@@ -27,13 +27,20 @@ end
 
 After("@apt") do
   remove_integration_test_apt_source
+  purge_chef_integration_debs
+  shell_out! "apt-get clean"
 end
 
-Before('@dpkg,@apt') do
+Before('@dpkg') do
   purge_chef_integration_debs
 end
 
-After('@dpkg,@apt') do
+Before('@apt') do
+  purge_chef_integration_debs
+  shell_out! "apt-get clean"
+end
+
+After('@dpkg') do
   purge_chef_integration_debs
 end
 
@@ -64,6 +71,13 @@ Given "the apt server is running" do
     
     apt_server.start
   end
+
+  Chef::Log.debug "Waiting for apt server to start"
+  until tcp_test_port("localhost", 9000) do
+    Chef::Log.debug "."
+    sleep 1
+  end
+  Chef::Log.debug "done"
 end
 
 Given "I have updated my apt cache" do
@@ -116,4 +130,15 @@ end
 
 Then "the dpkg package '$package_name' should be installed" do |package_name|
   dpkg_should_be_installed(package_name)
+end
+
+def tcp_test_port(hostname, port)
+  tcp_socket = TCPSocket.new(hostname, port)
+  true
+rescue Errno::ETIMEDOUT
+  false
+rescue Errno::ECONNREFUSED
+  false
+ensure
+  tcp_socket && tcp_socket.close
 end
