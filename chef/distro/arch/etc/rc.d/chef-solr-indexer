@@ -51,7 +51,7 @@ case "$1" in
 
   stop)
     stat_busy "Stopping $daemon_name daemon"
-    PID=$(gid_pid)
+    PID=$(get_pid)
     [ ! -z "$PID" ] && kill $PID &> /dev/null
     if [ $? -gt 0 ]; then
       stat_fail
