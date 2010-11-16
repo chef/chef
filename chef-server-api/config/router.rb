@@ -27,7 +27,17 @@ Merb::Router.prepare do
         :method => 'get').
     to(:controller => "nodes", :action => "cookbooks")
   # Roles
-  resources :roles
+  resources :roles do |r|
+    r.match('/environments', :method => 'get').to(:controller => "roles", :action => "environments")
+    r.match('/environments/:env_id', :method => 'get').to(:controller=>"roles", :action=>"environment")
+  end
+
+  # Environments
+  resources :environments do |e|
+    e.match("/cookbooks", :method => "get").to(:controller=>"environments", :action=>"list_cookbooks")
+    e.match("/nodes", :method => "get").to(:controller=>"environments", :action=>"list_nodes")
+    e.match("/roles/:role_id", :method => "get").to(:controller=>"environments", :action => "role")
+  end
 
   # Status
   match("/status").to(:controller => "status", :action => "index").name(:status)
@@ -63,13 +73,13 @@ Merb::Router.prepare do
   match("/cookbooks/:cookbook_name/:cookbook_version",
         :method => 'get',
         :cookbook_name => /[\w\.]+/,
-        :cookbook_version => /(\d+\.\d+\.\d+|_latest)/
+        :cookbook_version => /\d+\.\d+\.\d+|_latest/
         ).to(:controller => "cookbooks", :action => "show").name(:cookbook_version)
 
   match("/cookbooks/:cookbook_name/:cookbook_version",
         :method => 'delete',
         :cookbook_name => /[\w\.]+/,
-        :cookbook_version => /(\d+\.\d+\.\d+|_latest)/
+        :cookbook_version => /\d+\.\d+\.\d+|_latest/
         ).to(:controller => "cookbooks", :action => "destroy")
 
   match("/cookbooks/:cookbook_name",

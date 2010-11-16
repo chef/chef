@@ -114,6 +114,14 @@ Feature: Search data via the REST API
       And the inflated responses key 'rows' item '0' key 'three' should be 'four'
       And the inflated responses key 'rows' item '0' key 'walking' should be 'tall'
 
+  Scenario: Search for an environment
+    Given I am an administrator
+      And a 'environment' named 'cucumber' exists
+      And I wait for '15' seconds
+     When I authenticate as 'bobo'
+      And I 'GET' the path '/search/environment?q=name:cucumber'
+     Then the inflated responses key 'rows' item '0' should be a kind of 'Chef::Environment'
+
   Scenario: Search for a type of object that does not exist 
     Given I am an administrator
      When I authenticate as 'bobo'

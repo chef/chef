@@ -46,7 +46,7 @@ class Chef
             backup
             set_all_access_controls(rendered_template.path)
             FileUtils.mv(rendered_template.path, @new_resource.path)
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
           end
         end
       end
@@ -88,7 +88,7 @@ class Chef
       def set_all_access_controls(file)
         access_controls = Chef::FileAccessControl.new(@new_resource, file)
         access_controls.set_all
-        @new_resource.updated = access_controls.modified?
+        @new_resource.updated_by_last_action(access_controls.modified?)
       end
 
       private

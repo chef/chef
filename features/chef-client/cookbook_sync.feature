@@ -48,5 +48,15 @@ Feature: Synchronize cookbooks from the server
       And it includes the recipe 'testcookbook_wrong_metadata'
      When I run the chef-client with '-l debug'
      Then the run should exit '1'
-      And 'stdout' should have '412 Precondition Failed: cookbook testcookbook_wrong_metadata depends on cookbook no_such_cookbook, but no_such_cookbook does not exist'
+      And 'stdout' should have '412 Precondition Failed.*no_such_cookbook'
+
+  Scenario: Utilise versioned dependencies
+    Given this test is not pending
+    Given I am an administrator
+      And I fully upload a sandboxed cookbook named 'versions' versioned '0.2.0' with 'versions'
+      And a validated node
+      And it includes the recipe 'version_deps'
+     When I run the chef-client
+     Then the run should exit '0'
+      And a file named 'thundercats_are_go.txt' should contain '1'
 

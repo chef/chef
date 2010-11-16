@@ -15,6 +15,7 @@
               %tr
                 %th.first Position
                 %th Name
+                %th Version
                 %th.last Type
                 - if @role.run_list.empty?
                   %tr
@@ -24,6 +25,7 @@
                     %tr
                       %td.position= i
                       %td= run_list_item.name 
+                      %td= run_list_item.version 
                       %td= run_list_item.type 
           .left.accordion
             %h3.head= link_to("Recipes", "#")

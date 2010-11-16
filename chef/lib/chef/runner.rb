@@ -53,14 +53,15 @@ class Chef
       resource.run_action(action)
 
       # Execute any immediate and queue up any delayed notifications
-      # associated with the resource.
-      if resource.updated?
-        resource.notifies_immediate.each do |notification|
+      # associated with the resource, but only if it was updated *this time*
+      # we ran an action on it.
+      if resource.updated_by_last_action?
+        resource.immediate_notifications.each do |notification|
           Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (immediate)")
           run_action(notification.resource, notification.action)
         end
 
-        resource.notifies_delayed.each do |notification|
+        resource.delayed_notifications.each do |notification|
           if delayed_actions.any? { |existing_notification| existing_notification.duplicates?(notification) }
             Chef::Log.info( "#{resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
                             " (delayed), as it's already been queued")
@@ -74,6 +75,11 @@ class Chef
     # Iterates over the +resource_collection+ in the +run_context+ calling
     # +run_action+ for each resource in turn.
     def converge
+      # Resolve all lazy/forward references in notifications
+      run_context.resource_collection.each do |resource|
+        resource.resolve_notification_references
+      end
+
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|
         begin

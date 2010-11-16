@@ -45,8 +45,7 @@ describe Chef::Provider::User::Useradd do
     @current_resource.system false
     @current_resource.manage_home false
     @current_resource.non_unique false
-    @current_resource.stub!(:supports).and_return({:manage_home => false,
-                                                :non_unique => false})
+    @current_resource.supports({:manage_home => false, :non_unique => false})
     @provider = Chef::Provider::User::Useradd.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
@@ -64,26 +63,26 @@ describe Chef::Provider::User::Useradd do
       it "should check for differences in #{attribute} between the new and current resources" do
         @current_resource.should_receive(attribute)
         @new_resource.should_receive(attribute)
-        @provider.set_options
+        @provider.universal_options
       end
 
-      it "should set the option for #{attribute} if the new resources #{attribute} is not null" do
+      it "should set the option for #{attribute} if the new resources #{attribute} is not nil" do
         @new_resource.stub!(attribute).and_return("hola")
-        @provider.set_options.should eql(" #{option} '#{@new_resource.send(attribute)}' #{@new_resource.username}")
+        @provider.universal_options.should eql(" #{option} 'hola'")
       end
 
-      it "should set the option for #{attribute} if the new resources #{attribute} is not null, without homedir management" do
+      it "should set the option for #{attribute} if the new resources #{attribute} is not nil, without homedir management" do
         @new_resource.stub!(:supports).and_return({:manage_home => false,
                                                     :non_unique => false})
         @new_resource.stub!(attribute).and_return("hola")
-        @provider.set_options.should eql(" #{option} '#{@new_resource.send(attribute)}' #{@new_resource.username}")
+        @provider.universal_options.should eql(" #{option} 'hola'")
       end
 
-      it "should set the option for #{attribute} if the new resources #{attribute} is not null, without homedir management (using real attributes)" do
+      it "should set the option for #{attribute} if the new resources #{attribute} is not nil, without homedir management (using real attributes)" do
         @new_resource.stub!(:manage_home).and_return(false)
         @new_resource.stub!(:non_unique).and_return(false)
         @new_resource.stub!(attribute).and_return("hola")
-        @provider.set_options.should eql(" #{option} '#{@new_resource.send(attribute)}' #{@new_resource.username}")
+        @provider.universal_options.should eql(" #{option} 'hola'")
       end
     end
 
@@ -93,8 +92,7 @@ describe Chef::Provider::User::Useradd do
         @new_resource.stub!(attribute).and_return("hola")
         match_string << " #{option} 'hola'"
       end
-      match_string << " adam"
-      @provider.set_options.should eql(match_string)
+      @provider.universal_options.should eql(match_string)
     end
 
     describe "when we want to create a system user" do
@@ -105,7 +103,7 @@ describe Chef::Provider::User::Useradd do
 
       it "should set useradd -r" do
         @new_resource.system(true)
-        @provider.set_options.should eql(" -r adam")
+        @provider.useradd_options.should == " -r"
       end
     end
 
@@ -117,7 +115,8 @@ describe Chef::Provider::User::Useradd do
       end
 
       it "should set -d /homedir -m" do
-        @provider.set_options.should eql(" -d '/wowaweea' -m adam")
+        @provider.universal_options.should == " -d '/wowaweea'"
+        @provider.useradd_options.should == " -m"
       end
     end
 
@@ -129,7 +128,8 @@ describe Chef::Provider::User::Useradd do
       end
 
       it "should set -d /homedir -m" do
-        @provider.set_options.should eql(" -d '/wowaweea' -m adam")
+        @provider.universal_options.should eql(" -d '/wowaweea'")
+        @provider.useradd_options.should == " -m"
       end
     end
 
@@ -140,7 +140,7 @@ describe Chef::Provider::User::Useradd do
       end
 
       it "should set -m -o" do
-        @provider.set_options.should eql(" -o adam")
+        @provider.universal_options.should eql(" -o")
       end
     end
 
@@ -151,7 +151,7 @@ describe Chef::Provider::User::Useradd do
       end
 
       it "should set -m -o" do
-        @provider.set_options.should eql(" -o adam")
+        @provider.universal_options.should eql(" -o")
       end
     end
   end
@@ -167,6 +167,7 @@ describe Chef::Provider::User::Useradd do
       @provider.should_receive(:run_command).with({ :command => "useradd -g '23' -d '/Users/mud' -m adam" }).and_return(true)
       @provider.create_user
     end
+
   end
 
   describe "when managing a user" do
@@ -177,22 +178,19 @@ describe Chef::Provider::User::Useradd do
     end
 
     it "runs usermod with the computed command options" do
-      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -d '/Users/mud' -m adam" }).and_return(true)
+      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -d '/Users/mud' adam" }).and_return(true)
       @provider.manage_user
     end
+
+    it "does not set the -r option to usermod" do
+      @new_resource.system(true)
+      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -d '/Users/mud' adam" }).and_return(true)
+      @provider.manage_user
+    end
+
   end
 
   describe "when removing a user" do
-  # before(:each) do
-  #   @node = Chef::Node.new
-  #   @new_resource = mock("Chef::Resource::User",
-  #     :null_object => true,
-  #     :username => "adam",
-  #     :supports => { :manage_home => false,
-  #                    :non_unique => false}
-  #   )
-  #   @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
-  # end
 
     it "should run userdel with the new resources user name" do
       @provider.should_receive(:run_command).with({ :command => "userdel #{@new_resource.username}" }).and_return(true)
@@ -218,17 +216,17 @@ describe Chef::Provider::User::Useradd do
     before(:each) do
       # @node = Chef::Node.new
       # @new_resource = mock("Chef::Resource::User",
-      #   :null_object => true,
+      #   :nil_object => true,
       #   :username => "adam"
       # )
       @status = mock("Status", :exitstatus => 0)
       #@provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
       @provider.stub!(:popen4).and_return(@status)
-      @stdin = mock("STDIN", :null_object => true)
-      @stdout = mock("STDOUT", :null_object => true)
+      @stdin = mock("STDIN", :nil_object => true)
+      @stdout = mock("STDOUT", :nil_object => true)
       @stdout.stub!(:gets).and_return("root P 09/02/2008 0 99999 7 -1")
-      @stderr = mock("STDERR", :null_object => true)
-      @pid = mock("PID", :null_object => true)
+      @stderr = mock("STDERR", :nil_object => true)
+      @pid = mock("PID", :nil_object => true)
     end
 
     it "should call passwd -S to check the lock status" do
@@ -292,16 +290,7 @@ describe Chef::Provider::User::Useradd do
     end
   end
 
-  describe Chef::Provider::User::Useradd, "lock_user" do
-  # before(:each) do
-  #   @node = Chef::Node.new
-  #   @new_resource = mock("Chef::Resource::User",
-  #     :null_object => true,
-  #     :username => "adam"
-  #   )
-  #   @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
-  # end
-
+  describe "when locking the user" do
     it "should run usermod -L with the new resources username" do
       @provider.should_receive(:run_command).with({ :command => "usermod -L #{@new_resource.username}"})
       @provider.lock_user
@@ -309,15 +298,6 @@ describe Chef::Provider::User::Useradd do
   end
 
   describe "when unlocking the user" do
-  # before(:each) do
-  #   @node = Chef::Node.new
-  #   @new_resource = mock("Chef::Resource::User",
-  #     :null_object => true,
-  #     :username => "adam"
-  #   )
-  #   @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
-  # end
-
     it "should run usermod -L with the new resources username" do
       @provider.should_receive(:run_command).with({ :command => "usermod -U #{@new_resource.username}"})
       @provider.unlock_user

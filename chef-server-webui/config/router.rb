@@ -19,8 +19,15 @@
 
 Merb::Router.prepare do
   resources :nodes, :id => /[^\/]+/
+  match("/nodes/_environments/:environment_id").to(:controller => "nodes", :action => "index").name(:nodes_by_environment)
+
   resources :clients, :id => /[^\/]+/
   resources :roles
+  resources :environments do |e|
+    e.match("/cookbooks").to(:contoller => "environments", :action => "list_cookbooks").name(:cookbooks)
+    e.match("/nodes").to(:controller => "environments", :action => "list_nodes").name(:nodes)
+    e.match("/select").to(:controller => "environments", :action => "select_environment").name(:select)
+  end
 
   match("/status").to(:controller => "status", :action => "index").name(:status)
 
@@ -36,6 +43,7 @@ Merb::Router.prepare do
   match("/cookbooks/_recipe_files").to(:controller => "cookbooks", :action => "recipe_files")
   match("/cookbooks/_definition_files").to(:controller => "cookbooks", :action => "definition_files")
   match("/cookbooks/_library_files").to(:controller => "cookbooks", :action => "library_files")
+  match("/cookbooks/_environments/:environment_id").to(:controller => "cookbooks", :action => "index").name(:cookbooks_by_environment)
 
   match("/cookbooks/:cookbook_id/templates", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_templates", :action => "index")
   match("/cookbooks/:cookbook_id/libraries", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_libraries", :action => "index")

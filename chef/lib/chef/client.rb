@@ -40,6 +40,73 @@ class Chef
   # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
+
+    # Clears all notifications for client run status events.
+    # Primarily for testing purposes.
+    def self.clear_notifications
+      @run_start_notifications = nil
+      @run_completed_successfully_notifications = nil
+      @run_failed_notifications = nil
+    end
+
+    # The list of notifications to be run when the client run starts.
+    def self.run_start_notifications
+      @run_start_notifications ||= []
+    end
+
+    # The list of notifications to be run when the client run completes
+    # successfully.
+    def self.run_completed_successfully_notifications
+      @run_completed_successfully_notifications ||= []
+    end
+
+    # The list of notifications to be run when the client run fails.
+    def self.run_failed_notifications
+      @run_failed_notifications ||= []
+    end
+
+    # Add a notification for the 'client run started' event. The notification
+    # is provided as a block. The current Chef::RunStatus object will be passed
+    # to the notification_block when the event is triggered.
+    def self.when_run_starts(&notification_block)
+      run_start_notifications << notification_block
+    end
+
+    # Add a notification for the 'client run success' event. The notification
+    # is provided as a block. The current Chef::RunStatus object will be passed
+    # to the notification_block when the event is triggered.
+    def self.when_run_completes_successfully(&notification_block)
+      run_completed_successfully_notifications << notification_block
+    end
+
+    # Add a notification for the 'client run failed' event. The notification
+    # is provided as a block. The current Chef::RunStatus is passed to the
+    # notification_block when the event is triggered.
+    def self.when_run_fails(&notification_block)
+      run_failed_notifications << notification_block
+    end
+
+    # Callback to fire notifications that the Chef run is starting
+    def run_started
+      self.class.run_start_notifications.each do |notification|
+        notification.call(run_status)
+      end
+    end
+
+    # Callback to fire notifications that the run completed successfully
+    def run_completed_successfully
+      self.class.run_completed_successfully_notifications.each do |notification|
+        notification.call(run_status)
+      end
+    end
+
+    # Callback to fire notifications that the Chef run failed
+    def run_failed
+      self.class.run_failed_notifications.each do |notification|
+        notification.call(run_status)
+      end
+    end
+
     attr_accessor :node
     attr_accessor :ohai
     attr_accessor :rest
@@ -49,10 +116,13 @@ class Chef
     # TODO: timh/cw: 5-19-2010: json_attribs should be moved to RunContext?
     attr_reader :json_attribs
 
+    attr_reader :run_status
+
     # Creates a new Chef::Client.
     def initialize(json_attribs=nil)
       @json_attribs = json_attribs
       @node = nil
+      @run_status = nil
       @runner = nil
       @ohai = Ohai::System.new
     end
@@ -75,9 +145,10 @@ class Chef
       build_node
       
       begin
-        run_status = Chef::RunStatus.new(node)
+
         run_status.start_clock
         Chef::Log.info("Starting Chef Run (Version #{Chef::VERSION})")
+        run_started
         
         if Chef::Config[:solo]
           Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
@@ -86,18 +157,12 @@ class Chef
           assert_cookbook_path_not_empty(run_context)
           converge(run_context)
         else
-          # Keep track of the filenames that we use in both eager cookbook
-          # downloading (during sync_cookbooks) and lazy (during the run
-          # itself, through FileVendor). After the run is over, clean up the
-          # cache.
-          valid_cache_entries = Hash.new
-          
           # Sync_cookbooks eagerly loads all files except files and templates.
           # It returns the cookbook_hash -- the return result from
           # /nodes/#{nodename}/cookbooks -- which we will use for our
           # run_context.
-          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest, valid_cache_entries) }
-          cookbook_hash = sync_cookbooks(valid_cache_entries)
+          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest) }
+          cookbook_hash = sync_cookbooks
           run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
           run_status.run_context = run_context
 
@@ -106,41 +171,23 @@ class Chef
           converge(run_context)
           Chef::Log.debug("Saving the current state of node #{node_name}")
           @node.save
-          
-          cleanup_file_cache(valid_cache_entries)
         end
         
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
-        run_report_handlers(run_status)
+        run_completed_successfully
         true
       rescue Exception => e
         run_status.stop_clock
         run_status.exception = e
-        run_exception_handlers(run_status)
-        Chef::Log.error("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
+        run_failed
+        Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
         raise
       ensure
         run_status = nil
       end
     end
 
-    def run_report_handlers(run_status)
-      Chef::Log.info("Running report handlers")
-      Array(Chef::Config[:report_handlers]).each do |handler|
-        handler.run_report_safely(run_status)
-      end
-      Chef::Log.info("Report handlers complete")
-    end
-
-    def run_exception_handlers(run_status)
-      Chef::Log.error("Running exception handlers")
-      Array(Chef::Config[:exception_handlers]).each do |handler|
-        handler.run_report_safely(run_status)
-      end
-      Chef::Log.error("Exception handlers complete")
-    end
-    
     def run_ohai
       ohai.all_plugins
     end
@@ -163,7 +210,7 @@ class Chef
     # === Returns
     # node<Chef::Node>:: Returns the created node object, also stored in @node
     def build_node
-      Chef::Log.debug("Building node object for #{@node_name}")
+      Chef::Log.debug("Building node object for #{node_name}")
 
       if Chef::Config[:solo]
         @node = Chef::Node.build(node_name)
@@ -171,9 +218,13 @@ class Chef
         @node = Chef::Node.find_or_create(node_name)
       end
 
+
       @node.consume_external_attrs(ohai.data, @json_attribs)
+      @node.expand!
       @node.save unless Chef::Config[:solo]
       @node.reset_defaults_and_overrides
+
+      @run_status = Chef::RunStatus.new(@node)
 
       @node
     end
@@ -196,25 +247,10 @@ class Chef
     #
     # === Returns
     # true:: Always returns true
-    def sync_cookbooks(valid_cache_entries)
+    def sync_cookbooks
       Chef::Log.debug("Synchronizing cookbooks")
       cookbook_hash = rest.get_rest("nodes/#{node_name}/cookbooks")
-      Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
-      
-      # Remove all cookbooks no longer relevant to this node
-      Chef::FileCache.find(File.join(%w{cookbooks ** *})).each do |cache_file|
-        cache_file =~ /^cookbooks\/([^\/]+)\//
-        unless cookbook_hash.has_key?($1)
-          Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
-          Chef::FileCache.delete(cache_file) 
-        end
-      end
-
-      # Synchronize each of the node's cookbooks, and add to the
-      # valid_cache_entries hash.
-      cookbook_hash.values.each do |cookbook|
-        sync_cookbook_file_cache(cookbook, valid_cache_entries)
-      end
+      Chef::CookbookVersion.sync_cookbooks(cookbook_hash)
 
       # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
       Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
@@ -222,78 +258,6 @@ class Chef
       cookbook_hash
     end
     
-    # Update the file caches for a given cache segment.  Takes a segment name
-    # and a hash that matches one of the cookbooks/_attribute_files style
-    # remote file listings.
-    #
-    # === Parameters
-    # cookbook<Chef::Cookbook>:: The cookbook to update
-    # valid_cache_entries<Hash>:: Out-param; Added to this hash are the files that 
-    # were referred to by this cookbook
-    def sync_cookbook_file_cache(cookbook, valid_cache_entries)
-      Chef::Log.debug("Synchronizing cookbook #{cookbook.name}")
-
-      # files and templates are lazily loaded, and will be done later.
-      eager_segments = Chef::CookbookVersion::COOKBOOK_SEGMENTS.dup
-      eager_segments.delete(:files)
-      eager_segments.delete(:templates)
-      
-      eager_segments.each do |segment|
-        segment_filenames = Array.new
-        cookbook.manifest[segment].each do |manifest_record|
-          # segment = cookbook segment
-          # remote_list = list of file hashes
-          #
-          # We need the list of known good attribute files, so we can delete any that are
-          # just laying about.
-        
-          cache_filename = File.join("cookbooks", cookbook.name, manifest_record['path'])
-          valid_cache_entries[cache_filename] = true
-
-          current_checksum = nil
-          if Chef::FileCache.has_key?(cache_filename)
-            current_checksum = Chef::CookbookVersion.checksum_cookbook_file(Chef::FileCache.load(cache_filename, false))
-          end
-          
-          # If the checksums are different between on-disk (current) and on-server
-          # (remote, per manifest), do the update. This will also execute if there
-          # is no current checksum.
-          if current_checksum != manifest_record['checksum']
-            raw_file = rest.get_rest(manifest_record[:url], true)
-            
-            Chef::Log.info("Storing updated #{cache_filename} in the cache.")
-            Chef::FileCache.move_to(raw_file.path, cache_filename)
-          else
-            Chef::Log.debug("Not storing #{cache_filename}, as the cache is up to date.")
-          end
-          
-          # make the segment filenames a full path.
-          full_path_cache_filename = Chef::FileCache.load(cache_filename, false)
-          segment_filenames << full_path_cache_filename
-        end
-        
-        # replace segment filenames with a full-path one.
-        if segment.to_sym == :recipes
-          cookbook.recipe_filenames = segment_filenames
-        elsif segment.to_sym == :attributes
-          cookbook.attribute_filenames = segment_filenames
-        else
-          cookbook.segment_filenames(segment).replace(segment_filenames)
-        end
-      end
-    end
-    
-    def cleanup_file_cache(valid_cache_entries)
-      # Delete each file in the cache that we didn't encounter in the
-      # manifest.
-      Chef::FileCache.find(File.join(%w{cookbooks ** *})).each do |cache_filename|
-        unless valid_cache_entries[cache_filename]
-          Chef::Log.info("Removing #{cache_filename} from the cache; it is no longer on the server.")
-          Chef::FileCache.delete(cache_filename)
-        end
-      end
-    end
-
     # Converges the node.
     #
     # === Returns

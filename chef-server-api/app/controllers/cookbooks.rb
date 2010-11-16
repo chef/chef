@@ -58,13 +58,11 @@ class Cookbooks < Application
   end
 
   def index_recipes
-    all_cookbooks = Array(Chef::CookbookVersion.cdb_list_latest(true))
-    all_cookbooks.map! do |cookbook|
-      cookbook.manifest["recipes"].map { |r| "#{cookbook.name}::#{File.basename(r['name'], ".rb")}" }
+    display Chef::CookbookVersion.cdb_list(true).inject({}) do |memo, f| 
+      memo[f.name] ||= {}
+      memo[f.name][f.version] = f.recipe_filenames_by_name.keys
+      memo
     end
-    all_cookbooks.flatten!
-    all_cookbooks.sort!
-    display all_cookbooks
   end
 
   def show_versions
@@ -84,7 +82,7 @@ class Cookbooks < Application
     checksum = params[:checksum]
     raise NotFound, "Cookbook #{cookbook_name} version #{cookbook_version} does not contain a file with checksum #{checksum}" unless cookbook.checksums.keys.include?(checksum)
 
-    filename = checksum_location(checksum)
+    filename = Chef::Checksum.new(checksum).file_location
     raise InternalServerError, "File with checksum #{checksum} not found in the repository (this should not happen)" unless File.exists?(filename)
 
     send_file(filename)
@@ -138,7 +136,11 @@ class Cookbooks < Application
       raise NotFound, "Cannot find a cookbook named #{cookbook_name} with version #{cookbook_version}"
     end
 
-    display cookbook.cdb_destroy
+    if params["purge"] == "true"
+      display cookbook.purge
+    else
+      display cookbook.cdb_destroy
+    end
   end
 
   private

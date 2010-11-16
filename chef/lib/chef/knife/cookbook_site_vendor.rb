@@ -45,6 +45,12 @@ class Chef
           config[:cookbook_path] = Chef::Config[:cookbook_path]
         end
 
+        # Check to ensure we have a valid source of cookbooks before continuing
+        unless File.directory?(config[:cookbook_path].first)
+          Chef::Log.error( File.join(config[:cookbook_path].first, " doesn't exist!.  Make sure you have cookbook_path configured correctly"))
+          exit 1
+        end
+
         vendor_path = File.expand_path(File.join(config[:cookbook_path].first))
         cookbook_path = File.join(vendor_path, name_args[0])
         upstream_file = File.join(vendor_path, "#{name_args[0]}.tar.gz")

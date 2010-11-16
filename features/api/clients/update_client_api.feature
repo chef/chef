@@ -26,7 +26,7 @@ Feature: Update a client
      When I 'PUT' the 'client' to the path '/clients/isis'
      Then I should get a '403 "Forbidden"' exception
      
-  @privilege_escalation
+  @privilege_escalation @oss_only
   Scenario: Non-admin clients cannot update themselves
     Given I am a non-admin 
      When I edit the 'not_admin' client

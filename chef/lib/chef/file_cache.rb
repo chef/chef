@@ -57,9 +57,9 @@ class Chef
         true
       end
 
-      # Move a file in to the cache.  Useful with the REST raw file output.
+      # Move a file into the cache.  Useful with the REST raw file output.
       #
-      # === Parameteres
+      # === Parameters
       # file<String>:: The path to the file you want in the cache
       # path<String>:: The relative name you want the new file to use
       def move_to(file, path)

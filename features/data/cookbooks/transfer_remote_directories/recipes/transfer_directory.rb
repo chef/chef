@@ -24,6 +24,6 @@ remote_directory "#{node[:tmpdir]}/transfer_directory" do
   files_group "staff"
   files_mode "0644"
   owner "nobody"
-  group "nobody"
+  group "nogroup"
   mode "0755"
 end

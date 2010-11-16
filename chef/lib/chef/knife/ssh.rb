@@ -68,7 +68,19 @@ class Chef
         :description => "The SSH identity file used for authentication"
 
       def session
-        @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency])
+        ssh_error_handler = Proc.new do |server|
+          if config[:manual]
+            node_name = server.host
+          else
+            @action_nodes.each do |n|
+              node_name = n if format_for_display(n)[config[:attribute]] == server.host
+            end
+          end
+          Chef::Log.warn "Failed to connect to #{node_name} -- #{$!.class.name}: #{$!.message}"
+          $!.backtrace.each { |l| Chef::Log.debug(l) }
+        end
+
+        @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency], :on_error => ssh_error_handler)
       end
 
       def h
@@ -82,8 +94,10 @@ class Chef
                when false
                  r = Array.new
                  q = Chef::Search::Query.new
-                 q.search(:node, @name_args[0]) do |item|
-                   r << format_for_display(item)[config[:attribute]]
+                 @action_nodes = q.search(:node, @name_args[0])[0]
+                 @action_nodes.each do |item|
+                   i = format_for_display(item)[config[:attribute]]
+                   r.push(i) unless i.nil?
                  end
                  r
                end
@@ -94,15 +108,15 @@ class Chef
       def session_from_list(list)
         list.each do |item|
           Chef::Log.debug("Adding #{item}")
-          item = "#{config[:ssh_user]}@#{item}" if config[:ssh_user]
 
-          if config[:identity_file]
-            session.use item, :keys => File.expand_path(config[:identity_file])
-          elsif config[:password]
-            session.use item, :password => config[:password]
-          else
-            session.use item
-          end
+          hostspec = config[:ssh_user] ? "#{config[:ssh_user]}@#{item}" : item
+          session_opts = {}
+          session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
+          session_opts[:password] = config[:ssh_password] if config[:ssh_password]
+          session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
+
+          session.use(hostspec, session_opts)
+
           @longest = item.length if item.length > @longest
         end
         session

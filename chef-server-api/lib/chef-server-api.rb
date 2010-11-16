@@ -1,2 +1,4 @@
-CHEF_SERVER_VERSION = "0.8.11"
+require 'chef-server-api/version'
+
+CHEF_SERVER_VERSION = ChefServerApi::VERSION
 CHEF_SERVER_API_ROOT = File.expand_path(File.dirname(__FILE__) + '/../')

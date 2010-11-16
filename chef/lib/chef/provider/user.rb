@@ -98,18 +98,18 @@ class Chef
         if !@user_exists
           create_user
           Chef::Log.info("Created #{@new_resource}")
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         elsif compare_user
           manage_user
           Chef::Log.info("Altered #{@new_resource}")
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
       end
       
       def action_remove
         if @user_exists
           remove_user
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
           Chef::Log.info("Removed #{@new_resource}")
         end
       end
@@ -121,7 +121,7 @@ class Chef
       def action_manage
         if @user_exists && compare_user
           manage_user
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
           Chef::Log.info("Managed #{@new_resource}")
         end
       end
@@ -134,7 +134,7 @@ class Chef
         if @user_exists
           if compare_user
             manage_user
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("Modified #{@new_resource}")
           end
         else
@@ -146,7 +146,7 @@ class Chef
         if @user_exists
           if check_lock() == false
             lock_user
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("Locked #{@new_resource}")
           else
             Chef::Log.debug("No need to lock #{@new_resource}")
@@ -168,7 +168,7 @@ class Chef
         if @user_exists
           if check_lock() == true
             unlock_user
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("Unlocked #{@new_resource}")
           else
             Chef::Log.debug("No need to unlock #{@new_resource}")

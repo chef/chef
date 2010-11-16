@@ -56,7 +56,7 @@ class Chef
 
       def load_signing_key
         begin
-          @raw_key = IO.read(key_file)
+          @raw_key = IO.read(key_file).strip
         rescue SystemCallError, IOError => e
           Chef::Log.fatal "Failed to read the private key #{key_file}: #{e.inspect}, #{e.backtrace}"
           raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key_file}, which you told me to use to sign requests!"

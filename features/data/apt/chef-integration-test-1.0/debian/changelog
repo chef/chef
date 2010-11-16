@@ -1,0 +1,5 @@
+chef-integration-test (1.0-1) unstable; urgency=low
+
+  * Initial release (Closes: #CHEF-1718)
+
+ -- Joshua Timberman <joshua@opscode.com>  Thu, 30 Sep 2010 09:53:45 -0600

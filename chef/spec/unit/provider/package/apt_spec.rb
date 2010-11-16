@@ -23,118 +23,93 @@ describe Chef::Provider::Package::Apt do
     @node = Chef::Node.new
     @node.cookbook_collection = {}
     @run_context = Chef::RunContext.new(@node, {})
-    @new_resource = Chef::Resource::Package.new("irssi", @run_context)
-    @current_resource = Chef::Resource::Package.new("irssi", @run_context)
+    @new_resource = Chef::Resource::Package.new("emacs", @run_context)
+    @current_resource = Chef::Resource::Package.new("emacs", @run_context)
 
     @status = mock("Status", :exitstatus => 0)
     @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     @provider.stub!(:popen4).and_return(@status)
     @stdin = mock("STDIN", :null_object => true)
-    @stdout =<<-PKG_STATUS
-Package: irssi
-State: not installed
-Version: 0.8.12-7
-PKG_STATUS
+    @stdout = mock("STDOUT", :null_object => true)
+    @stdout.stub!(:each).and_yield("emacs:").
+                         and_yield("  Installed: (none)").
+                         and_yield("  Candidate: 0.1.1").
+                         and_yield("  Version Table:")
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
-    @shell_out = OpenStruct.new(:stdout => @stdout,:stdin => @stdin,:stderr => @stderr,:status => @status,:exitstatus => 0)
   end
 
   describe "when loading current resource" do
 
     it "should create a current resource with the name of the new_resource" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
       Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
       @provider.load_current_resource
     end
 
     it "should set the current resources package name to the new resources package name" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
       @current_resource.should_receive(:package_name).with(@new_resource.package_name)
       @provider.load_current_resource
     end
 
-    it "should run aptitude show with the package name" do
-      @provider.should_receive(:shell_out!).with("aptitude show #{@new_resource.package_name}").and_return(@shell_out)
+    it "should run apt-cache policy with the package name" do
+      @provider.should_receive(:popen4).with("apt-cache policy #{@new_resource.package_name}").and_return(@status)
       @provider.load_current_resource
     end
 
-    it "should set the installed version to nil on the current resource if package state is not installed" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
+    it "should read stdout on apt-cache policy" do
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @stdout.should_receive(:each).and_return(true)
+      @provider.load_current_resource
+    end
+
+    it "should set the installed version to nil on the current resource if apt-cache policy installed version is (none)" do
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @current_resource.should_receive(:version).with(nil).and_return(true)
       @provider.load_current_resource
     end
 
-    it "should set the installed version if package has one" do
-      @stdout.replace(<<-INSTALLED)
-Package: irssi
-State: installed
-Version: 0.8.12-7
-INSTALLED
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
+    it "should set the installed version if apt-cache policy has one" do
+      @stdout.stub!(:each).and_yield("emacs:").
+                           and_yield("  Installed: 0.1.1").
+                           and_yield("  Candidate: 0.1.1").
+                           and_yield("  Version Table:")
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @current_resource.should_receive(:version).with("0.1.1").and_return(true)
       @provider.load_current_resource
-      @current_resource.version.should == "0.8.12-7"
-      @provider.candidate_version.should eql("0.8.12-7")
     end
 
-    it "should raise an exception if aptitude show does not return a candidate version" do
-      @stdout.replace("E: Unable to locate package magic")
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
+    it "should set the candidate version if apt-cache policy has one" do
+      @stdout.stub!(:each).and_yield("emacs:").
+                           and_yield("  Installed: 0.1.1").
+                           and_yield("  Candidate: 10").
+                           and_yield("  Version Table:")
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.load_current_resource
+      @provider.candidate_version.should eql("10")
+    end
+
+    it "should raise an exception if apt-cache policy fails" do
+      @status.should_receive(:exitstatus).and_return(1)
+      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+    end
+
+    it "should not raise an exception if apt-cache policy succeeds" do
+      @status.should_receive(:exitstatus).and_return(0)
+      lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Package)
+    end
+
+    it "should raise an exception if apt-cache policy does not return a candidate version" do
+      @stdout.stub!(:each).and_yield("emacs:").
+                           and_yield("  Installed: 0.1.1").
+                           and_yield("  Candidate: (none)").
+                           and_yield("  Version Table:")
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
 
     it "should return the current resouce" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
       @provider.load_current_resource.should eql(@current_resource)
-    end
-
-    it "should set candidate version to new package name if virtual package" do
-      @new_resource.package_name("libmysqlclient-dev")
-      virtual_package_out=<<-VPKG_STDOUT
-"No current or candidate version found for libmysqlclient-dev").
-Package: libmysqlclient-dev
-State: not a real package
-Provided by: libmysqlclient15-dev
-VPKG_STDOUT
-      virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient-dev").and_return(virtual_package)
-      real_package_out=mock("STDOUT", :null_object => true)
-      real_package_out =<<-REALPKG_STDOUT
-Package: libmysqlclient15-dev
-State: not installed
-Version: 5.0.51a-24+lenny4
-REALPKG_STDOUT
-      real_package = mock(:stdout => real_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient15-dev").and_return(real_package)
-      @provider.load_current_resource
-      @provider.candidate_version.should eql("libmysqlclient15-dev")
-    end
-
-    it "should set candidate version to the depends package name if multiple virtual package providers" do
-      @new_resource.package_name("mysql-client")
-      virtual_package_out=<<-VPKG_STDOUT
-Package: mysql-client
-State: not installed
-Version: 5.1.41-3ubuntu12.6
-Depends: mysql-client-5.1
-Provided by: mysql-cluster-client-5.1, mysql-client-5.1
-Description: MySQL database client (metapackage depending on the latest version)
-VPKG_STDOUT
-      virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show mysql-client").and_return(virtual_package)
-      real_package_out=<<-REALPKG_STDOUT
-Package: mysql-client-5.1
-State: not installed
-Version: Version: 5.1.41-3ubuntu12.6
-Conflicts: mysql-client (< 5.1.41-3ubuntu12.6), mysql-client-5.0
-Replaces: mysql-client (< 5.1.41-3ubuntu12.6), mysql-client-5.0
-Provides: mysql-client, mysql-client-4.1, virtual-mysql-client
-REALPKG_STDOUT
-      real_package = mock(:stdout => real_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show mysql-client-5.1").and_return(real_package)
-      @provider.load_current_resource
-      @provider.candidate_version.should eql("mysql-client-5.1")
     end
 
   end
@@ -143,32 +118,32 @@ REALPKG_STDOUT
 
     it "should run apt-get install with the package name and version" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y install irssi=0.8.12-7",
+        :command => "apt-get -q -y install emacs=1.0",
         :environment => {
           "DEBIAN_FRONTEND" => "noninteractive"
         }
       })
-      @provider.install_package("irssi", "0.8.12-7")
+      @provider.install_package("emacs", "1.0")
     end
 
     it "should run apt-get install with the package name and version and options if specified" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y --force-yes install irssi=0.8.12-7",
+        :command => "apt-get -q -y --force-yes install emacs=1.0",
         :environment => {
           "DEBIAN_FRONTEND" => "noninteractive"
         }
       })
       @new_resource.stub!(:options).and_return("--force-yes")
 
-      @provider.install_package("irssi", "0.8.12-7")
+      @provider.install_package("emacs", "1.0")
     end
   end
 
   describe Chef::Provider::Package::Apt, "upgrade_package" do
 
     it "should run install_package with the name and version" do
-      @provider.should_receive(:install_package).with("irssi", "0.8.12-7")
-      @provider.upgrade_package("irssi", "0.8.12-7")
+      @provider.should_receive(:install_package).with("emacs", "1.0")
+      @provider.upgrade_package("emacs", "1.0")
     end
   end
 
@@ -176,24 +151,24 @@ REALPKG_STDOUT
 
     it "should run apt-get remove with the package name" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y remove irssi",
+        :command => "apt-get -q -y remove emacs",
         :environment => {
           "DEBIAN_FRONTEND" => "noninteractive"
         }
       })
-      @provider.remove_package("irssi", "0.8.12-7")
+      @provider.remove_package("emacs", "1.0")
     end
 
     it "should run apt-get remove with the package name and options if specified" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y --force-yes remove irssi",
+        :command => "apt-get -q -y --force-yes remove emacs",
         :environment => {
           "DEBIAN_FRONTEND" => "noninteractive"
         }
       })
       @new_resource.stub!(:options).and_return("--force-yes")
 
-      @provider.remove_package("irssi", "0.8.12-7")
+      @provider.remove_package("emacs", "1.0")
     end
   end
 
@@ -201,52 +176,52 @@ REALPKG_STDOUT
 
     it "should run apt-get purge with the package name" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y purge irssi",
+        :command => "apt-get -q -y purge emacs",
         :environment => {
           "DEBIAN_FRONTEND" => "noninteractive"
         }
       })
-      @provider.purge_package("irssi", "0.8.12-7")
+      @provider.purge_package("emacs", "1.0")
     end
 
     it "should run apt-get purge with the package name and options if specified" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y --force-yes purge irssi",
+        :command => "apt-get -q -y --force-yes purge emacs",
         :environment => {
           "DEBIAN_FRONTEND" => "noninteractive"
         }
       })
       @new_resource.stub!(:options).and_return("--force-yes")
 
-      @provider.purge_package("irssi", "0.8.12-7")
+      @provider.purge_package("emacs", "1.0")
     end
   end
 
   describe "when preseeding a package" do
     before(:each) do
-      @provider.stub!(:get_preseed_file).and_return("/tmp/irssi-0.8.12-7.seed")
+      @provider.stub!(:get_preseed_file).and_return("/tmp/emacs-10.seed")
       @provider.stub!(:run_command_with_systems_locale).and_return(true)
     end
 
     it "should get the full path to the preseed response file" do
-      @provider.should_receive(:get_preseed_file).with("irssi", "0.8.12-7").and_return("/tmp/irssi-0.8.12-7.seed")
-      @provider.preseed_package("irssi", "0.8.12-7")
+      @provider.should_receive(:get_preseed_file).with("emacs", "10").and_return("/tmp/emacs-10.seed")
+      @provider.preseed_package("emacs", "10")
     end
 
     it "should run debconf-set-selections on the preseed file if it has changed" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "debconf-set-selections /tmp/irssi-0.8.12-7.seed",
+        :command => "debconf-set-selections /tmp/emacs-10.seed",
         :environment => {
           "DEBIAN_FRONTEND" => "noninteractive"
         }
       }).and_return(true)
-      @provider.preseed_package("irssi", "0.8.12-7")
+      @provider.preseed_package("emacs", "10")
     end
 
     it "should not run debconf-set-selections if the preseed file has not changed" do
       @provider.stub!(:get_preseed_file).and_return(false)
       @provider.should_not_receive(:run_command_with_systems_locale)
-      @provider.preseed_package("irssi", "0.8.12-7")
+      @provider.preseed_package("emacs", "10")
     end
   end
 end

@@ -23,15 +23,19 @@ include Chef::Mixin::ShellOut
 
 CHEF_CLIENT = File.join(CHEF_PROJECT_ROOT, "chef", "bin", "chef-client")
 
+def chef_client_command_string
+  @log_level ||= ENV["LOG_LEVEL"] ? ENV["LOG_LEVEL"] : "error"
+  @chef_args ||= ""
+  @config_file ||= File.expand_path(File.join(configdir, 'client.rb'))
+
+  "#{File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "chef-client")} -l #{@log_level} -c #{@config_file} #{@chef_args}"
+end
+
 ###
 # When
 ###
 When /^I run the chef\-client$/ do
-  @log_level ||= ENV["LOG_LEVEL"] ? ENV["LOG_LEVEL"] : "error"
-  @chef_args ||= ""
-  @config_file ||= File.expand_path(File.join(configdir, 'client.rb'))
-  status = Chef::Mixin::Command.popen4(
-    "#{File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "chef-client")} -l #{@log_level} -c #{@config_file} #{@chef_args}") do |p, i, o, e|
+  status = Chef::Mixin::Command.popen4(chef_client_command_string()) do |p, i, o, e|
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
   end
@@ -52,19 +56,56 @@ When /^I run the chef\-client with '(.+)'$/ do |args|
   When "I run the chef-client"
 end
 
+When "I run the chef-client with '$options' and the '$config_file' config" do |options, config_file|
+  @config_file = File.expand_path(File.join(configdir, "#{config_file}.rb"))
+  @chef_args = options
+  When "I run the chef-client"
+end
+
 When /^I run the chef\-client with '(.+)' for '(.+)' seconds$/ do |args, run_for|
   @chef_args = args
   When "I run the chef-client for '#{run_for}' seconds"
 end
 
 When /^I run the chef\-client for '(.+)' seconds$/ do |run_for|
-  cid = Process.fork { 
-    sleep run_for.to_i
-    Process.kill("INT", /^(.+chef\-client.+\-i.*)$/.match(`ps -ef`).to_s.split[1].to_i)
-    exit
-  } 
-  When 'I run the chef-client'
-  Process.wait2(cid)
+  # Normal behavior depends on the run_interval/recipes/default.rb to count down
+  # and exit subordinate chef-client after two runs. However, we will forcably
+  # kill the client if that didn't work.
+  begin
+    stdout_filename = "/tmp/chef.run_interval.stdout.#{$$}.txt"
+    stderr_filename = "/tmp/chef.run_interval.stderr.#{$$}.txt"
+    client_pid = Process.fork do
+      STDOUT.reopen(File.open(stdout_filename, "w"))
+      STDERR.reopen(File.open(stderr_filename, "w"))
+      exec chef_client_command_string()
+      exit 2
+    end
+  
+    killer_pid = Process.fork {
+      sleep run_for.to_i
+
+      # Send KILL to the child chef-client. Due to OHAI-223, where ohai sometimes
+      # ignores/doesn't exit correctly on receipt of SIGINT, brutally kill the
+      # subprocess.
+      begin
+        Process.kill("KILL", client_pid)
+      rescue Errno::ESRCH
+        # Kill didn't work; the process exited while we were waiting, like
+        # it's supposed to.
+      end
+    }
+
+    Process.waitpid2(killer_pid)
+    @status = Process.waitpid2(client_pid).last
+    
+    # Read these in so they can be used in later steps.
+    @stdout = IO.read(stdout_filename)
+    @stderr = IO.read(stderr_filename)
+  ensure
+    # clean up after ourselves.
+    File.delete(stdout_filename)
+    File.delete(stderr_filename)
+  end
 end
 
 When /^I run the chef\-client at log level '(.+)'$/ do |log_level|

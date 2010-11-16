@@ -26,6 +26,14 @@ Given /^a validated node$/ do
   client.node.run_list << "integration_setup"
 end
 
+Given /^a validated node in the 'cucumber' environment$/ do
+  # client should have cached ohai assigned to it
+  client.register
+  client.build_node
+  client.node.chef_environment("cucumber")
+  client.node.run_list << "integration_setup"
+end
+
 Given /^a validated node with an empty runlist$/ do
   # client should have cached ohai assigned to it
   client.register
@@ -33,9 +41,15 @@ Given /^a validated node with an empty runlist$/ do
 end
 
 
-Given /^it includes the recipe '(.+)'$/ do |recipe|
+Given /^it includes the recipe '([^\']+)'$/ do |recipe|
   self.recipe = recipe
   client.node.run_list << recipe
+  client.node.save
+end
+
+Given /^it includes the recipe '([^\']+)' at version '([^\']+)'$/ do |recipe, version|
+  self.recipe = "recipe[#{recipe},#{version}]"
+  client.node.run_list << "recipe[#{recipe}@#{version}]"
   client.node.save
 end
 
@@ -45,7 +59,7 @@ Given /^it includes no recipes$/ do
   client.node.save
 end
 
-Given /^it includes the role '(.+)'$/ do |role|
+Given /^it includes the role '([^\']+)'$/ do |role|
   self.recipe = "role[#{role}]"
   client.node.run_list << "role[#{role}]" 
   client.node.save
@@ -54,6 +68,17 @@ end
 ###
 # When
 ###
+When /^I remove '([^']*)' from the node's run list$/ do |run_list_item|
+  client.node.run_list.remove(run_list_item)
+  client.node.save
+end
+
+When /^I add '([^']*)' to the node's run list$/ do |run_list_item|
+  client.node.run_list << run_list_item
+  client.node.save
+end
+
+
 When /^the node is converged$/ do
   client.run
 end

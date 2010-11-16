@@ -89,6 +89,11 @@ class Chef::Application::Client < Chef::Application
     :description => "Run chef-client periodically, in seconds",
     :proc => lambda { |s| s.to_i }
 
+  option :once,
+    :long => "--short",
+    :description => "Cancel any interval or splay options, run chef once and exit",
+    :boolean => true
+
   option :json_attribs,
     :short => "-j JSON_ATTRIBS",
     :long => "--json-attributes JSON_ATTRIBS",
@@ -149,7 +154,9 @@ class Chef::Application::Client < Chef::Application
    
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
-    else
+    end
+
+    if Chef::Config[:once]
       Chef::Config[:interval] = nil
       Chef::Config[:splay] = nil
     end
@@ -224,9 +231,8 @@ class Chef::Application::Client < Chef::Application
         raise
       rescue Exception => e
         if Chef::Config[:interval]
-          Chef::Log.error("#{e.class}")
-          Chef::Log.fatal("#{e}\n#{e.backtrace.join("\n")}")
-          Chef::Log.fatal("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
+          Chef::Log.error("#{e.class}:#{e}\n#{e.backtrace.join("\n")}")
+          Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
           sleep Chef::Config[:interval]
           retry
         else

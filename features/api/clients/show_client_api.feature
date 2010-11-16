@@ -3,7 +3,8 @@ Feature: Show a client via the REST API
   In order to know what the details are for a client 
   As a Developer
   I want to show the details for a specific client
-  
+
+  @oss_only
   Scenario: Show a client
     Given I am an administrator
       And a 'client' named 'isis' exists
@@ -23,6 +24,7 @@ Feature: Show a client via the REST API
      When I 'GET' the path '/clients/isis' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
+  @oss_only
   Scenario: Show a client when you are not an admin
     Given I am a non-admin
       And a 'client' named 'isis' exists

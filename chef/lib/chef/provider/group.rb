@@ -78,12 +78,12 @@ class Chef
         when false
           create_group
           Chef::Log.info("Created #{@new_resource}")
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         else 
           if compare_group
             manage_group
             Chef::Log.info("Altered #{@new_resource}")
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
           end
         end
       end
@@ -91,7 +91,7 @@ class Chef
       def action_remove
         if @group_exists
           remove_group
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
           Chef::Log.info("Removed #{@new_resource}")
         end
       end
@@ -99,7 +99,7 @@ class Chef
       def action_manage
         if @group_exists && compare_group
           manage_group 
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
           Chef::Log.info("Managed #{@new_resource}")
         end
       end
@@ -108,7 +108,7 @@ class Chef
         if @group_exists 
           if compare_group
             manage_group
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("Modified #{@new_resource}")
           end
         else

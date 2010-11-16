@@ -25,11 +25,13 @@ class Application < Merb::Controller
 
   include Chef::Mixin::Checksum
 
+  before :load_environments
+
   # Check if the user is logged in and if the user still exists
   def login_required
    if session[:user]
      begin
-       Chef::WebUIUser.load(session[:user]) rescue (raise NotFound, "Cannot find User #{session[:user]}, maybe it got deleted by an Administrator.")
+       load_session_user
      rescue
        logout_and_redirect_to_login
      else
@@ -41,8 +43,14 @@ class Application < Merb::Controller
    end
   end
 
+  def load_session_user
+    Chef::WebUIUser.load(session[:user])
+  rescue
+    raise NotFound, "Cannot find User #{session[:user]}, maybe it got deleted by an Administrator."
+  end
+
   def cleanup_session
-    [:user,:level].each { |n| session.delete(n) }
+    [:user,:level, :environment].each { |n| session.delete(n) }
   end
 
   def logout_and_redirect_to_login
@@ -103,6 +111,10 @@ class Application < Merb::Controller
     else
       raise Unauthorized, "You must authenticate first!"
     end
+  end
+
+  def load_environments
+    @org_environments = Chef::Environment.list.keys.sort
   end
 
   # Load a cookbook and return a hash with a list of all the files of a
@@ -214,6 +226,25 @@ class Application < Merb::Controller
     highlighted_file
   end
 
+  def show_plain_file(file_url)
+    Chef::Log.debug("fetching file from '#{file_url}' for highlighting")
+    r = Chef::REST.new(Chef::Config[:chef_server_url])
+    r.fetch(file_url) do |tempfile|
+      if binary?(tempfile.path)
+        return "Binary file not shown"
+      elsif ((File.size(tempfile.path) / (1048576)) > 5)
+        return "File too large to display"
+      else
+        return IO.read(tempfile.path)
+      end
+    end
+  end
+
+  def binary?(file)
+    s = (File.read(file, File.stat(file).blksize) || "")
+    s.empty? || ( s.count( "^ -~", "^\r\n" ).fdiv(s.size) > 0.3 || s.index( "\x00" ))
+  end
+
   def str_to_bool(str)
     str =~ /true/ ? true : false
   end
@@ -230,7 +261,13 @@ class Application < Merb::Controller
 
   def get_available_recipes
     r = Chef::REST.new(Chef::Config[:chef_server_url])
-    r.get_rest('cookbooks/_recipes')
+    all_recipes = Array.new
+    r.get_rest('cookbooks/_recipes').keys.each do |cb|
+      all_recipes << all[cb].sort{|x,y| y <=> x }.map do |ver, recipes|
+        recipes.map{ |rn| rn == "default" ? "#{cb} #{ver}" : "#{cb}::#{rn} #{ver}" }
+      end
+    end
+    all_recipes.flatten.uniq
   end
 
   def convert_newline_to_br(string)

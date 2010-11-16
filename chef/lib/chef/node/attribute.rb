@@ -364,6 +364,10 @@ class Chef
         data_hash
       end
 
+      def auto_vivifiy_on_read?
+        auto_vivifiy_on_read
+      end
+
       def auto_vivifiy(data_hash, key)
         if data_hash.has_key?(key)
           unless data_hash[key].respond_to?(:has_key?)
@@ -417,6 +421,9 @@ class Chef
             self[symbol]
           elsif key?(symbol.to_s)
             self[symbol.to_s]
+          elsif auto_vivifiy_on_read?
+            self[symbol] = Mash.new
+            self[symbol]
           else
             raise ArgumentError, "Attribute #{symbol} is not defined!" unless auto_vivifiy_on_read
           end

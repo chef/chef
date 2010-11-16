@@ -121,14 +121,14 @@ describe Chef::Provider::User do
       @provider.group_exists = false
       @provider.stub!(:create_group)
       @provider.action_create
-      @provider.new_resource.updated.should be_true
+      @provider.new_resource.should be_updated
     end
   
     it "should check to see if the group has mismatched attributes if the group exists" do
       @provider.group_exists = true
       @provider.stub!(:compare_group).and_return(false)
       @provider.action_create
-      @provider.new_resource.updated.should be_false
+      @provider.new_resource.should_not be_updated
     end
   
     it "should call manage_group if the group exists and has mismatched attributes" do
@@ -142,8 +142,8 @@ describe Chef::Provider::User do
       @provider.group_exists = true
       @provider.stub!(:compare_group).and_return(true)
       @provider.stub!(:manage_group).and_return(true)
-      @new_resource.should_receive(:updated=).with(true).and_return(true)
       @provider.action_create
+      @new_resource.should be_updated
     end
   end
 
@@ -153,14 +153,14 @@ describe Chef::Provider::User do
       @provider.group_exists = false
       @provider.should_not_receive(:remove_group) 
       @provider.action_remove
-      @provider.new_resource.updated.should be_false
+      @provider.new_resource.should_not be_updated
     end
   
     it "should call remove_group if the group exists" do
       @provider.group_exists = true
       @provider.should_receive(:remove_group)
       @provider.action_remove
-      @provider.new_resource.updated.should be_true
+      @provider.new_resource.should be_updated
     end
   end
 
@@ -179,8 +179,8 @@ describe Chef::Provider::User do
     it "should set the new resources updated flag to true if manage_group is called" do
       @provider.stub!(:compare_group).and_return(true)
       @provider.stub!(:manage_group).and_return(true)
-      @new_resource.should_receive(:updated=).with(true).and_return(true)
       @provider.action_manage
+      @new_resource.should be_updated
     end
   
     it "should not run manage_group if the group does not exist" do
@@ -211,8 +211,8 @@ describe Chef::Provider::User do
     it "should set the new resources updated flag to true if manage_group is called" do
       @provider.stub!(:compare_group).and_return(true)
       @provider.stub!(:manage_group).and_return(true)
-      @new_resource.should_receive(:updated=).with(true).and_return(true)
       @provider.action_modify
+      @new_resource.should be_updated
     end
   
     it "should not run manage_group if the group exists but has no differing attributes" do

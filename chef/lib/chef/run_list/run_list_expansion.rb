@@ -53,7 +53,7 @@ class Chef
         @default_attrs = Mash.new
         @override_attrs = Mash.new
 
-        @recipes = []
+        @recipes = Chef::RunList::VersionedRecipeList.new
 
         @applied_roles = {}
       end
@@ -67,15 +67,15 @@ class Chef
 
       # Iterates over the run list items, expanding roles. After this,
       # +recipes+ will contain the fully expanded recipe list
-      def expand
+      def expand(environment='_default')
         @run_list_items.each_with_index do |entry, index|
           case entry.type
           when :recipe
-            recipes << entry.name unless recipes.include?(entry.name)
+            recipes.add_recipe entry.name, entry.version
           when :role
             if role = inflate_role(entry.name)
               apply_role_attributes(role)
-              @run_list_items.insert(index + 1, *role.run_list.run_list_items)
+              @run_list_items.insert(index + 1, *role.run_list_for_environment(environment).run_list_items)
             end
           end
         end

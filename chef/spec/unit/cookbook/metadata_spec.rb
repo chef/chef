@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -139,12 +140,7 @@ describe Chef::Cookbook::Metadata do
   describe "adding a supported platform" do
     it "should support adding a supported platform with a single expression" do
       @meta.supports("ubuntu", ">= 8.04")
-      @meta.platforms["ubuntu"].should == [ '>= 8.04' ]
-    end
-
-    it "should support adding a supported platform with multiple expressions" do
-      @meta.supports("ubuntu", ">= 8.04", "= 9.04")
-      @meta.platforms["ubuntu"].should == [ '>= 8.04', "= 9.04" ]
+      @meta.platforms["ubuntu"].should == '>= 8.04'
     end
   end
 
@@ -183,22 +179,22 @@ describe Chef::Cookbook::Metadata do
 
   describe "dependency specification" do
     dep_types = {
-      :depends     => [ :dependencies, "foo::bar", ">> 0.2" ],
-      :recommends  => [ :recommendations, "foo::bar", ">> 0.2" ],
-      :suggests    => [ :suggestions, "foo::bar", ">> 0.2" ],
-      :conflicts   => [ :conflicting, "foo::bar", ">> 0.2" ],
-      :provides    => [ :providing, "foo::bar", ">> 0.2" ],
-      :replaces    => [ :replacing, "foo::bar", ">> 0.2" ],
+      :depends     => [ :dependencies, "foo::bar", "> 0.2" ],
+      :recommends  => [ :recommendations, "foo::bar", ">= 0.2" ],
+      :suggests    => [ :suggestions, "foo::bar", "> 0.2" ],
+      :conflicts   => [ :conflicting, "foo::bar", "~> 0.2" ],
+      :provides    => [ :providing, "foo::bar", "<= 0.2" ],
+      :replaces    => [ :replacing, "foo::bar", "= 0.2.1" ],
     }
     dep_types.sort { |a,b| a.to_s <=> b.to_s }.each do |dep, dep_args|
       check_with = dep_args.shift
       describe dep do
         it "should be set-able via #{dep}" do
-          @meta.send(dep, *dep_args).should == [dep_args[1]]
+          @meta.send(dep, *dep_args).should == dep_args[1]
         end
         it "should be get-able via #{check_with}" do
           @meta.send(dep, *dep_args)
-          @meta.send(check_with).should == { dep_args[0] => [dep_args[1]] }
+          @meta.send(check_with).should == { dep_args[0] => dep_args[1] }
         end
       end
     end
@@ -435,38 +431,7 @@ describe Chef::Cookbook::Metadata do
         @meta.attribute("db/mysql/databases", attrs)
       }.should raise_error(ArgumentError)
     end
-
-
   end
-
-  describe "checking version expression" do
-    it "should accept >> 8.04" do
-      @meta._check_version_expression(">> 8.04").should == [ ">>", "8.04" ]
-    end
-
-    it "should accept >= 8.04" do
-      @meta._check_version_expression(">= 8.04").should == [ ">=", "8.04" ]
-    end
-
-    it "should accept = 8.04" do
-      @meta._check_version_expression("= 8.04").should == [ "=", "8.04" ]
-    end
-
-    it "should accept <= 8.04" do
-      @meta._check_version_expression("<= 8.04").should == [ "<=", "8.04" ]
-    end
-
-    it "should accept << 8.04" do
-      @meta._check_version_expression("<< 8.04").should == [ "<<", "8.04" ]
-    end
-
-    it "should raise an exception on an invalid version expression" do
-      lambda {
-        @meta._check_version_expression("tried to << love you")
-      }.should raise_error(ArgumentError)
-    end
-  end
-
 
   describe "recipes" do
     before(:each) do 
@@ -499,11 +464,11 @@ describe Chef::Cookbook::Metadata do
       @meta.maintainer "Bobo T. Clown"
       @meta.maintainer_email "bobo@example.com"
       @meta.long_description "I have a long arm!"
-      @meta.supports :ubuntu, ">> 8.04"
+      @meta.supports :ubuntu, "> 8.04"
       @meta.depends "bobo", "= 1.0"
       @meta.depends "bobotclown", "= 1.1"
-      @meta.recommends "snark", "<< 3.0"
-      @meta.suggests "kindness", ">> 2.0", "<< 4.0"
+      @meta.recommends "snark", "< 3.0"
+      @meta.suggests "kindness", "> 2.0"
       @meta.conflicts "hatred"
       @meta.provides "foo(:bar, :baz)"
       @meta.replaces "snarkitron"

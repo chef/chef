@@ -25,6 +25,7 @@ require "merb-core"
 
 # Load chef and chef-server-api from source rather than gem, if present
 $:.unshift(File.expand_path(File.dirname(__FILE__) + '/../../chef/lib/'))
+$:.unshift(File.expand_path(File.dirname(__FILE__) + '/../../chef-solr/lib/'))
 $:.unshift(File.expand_path(File.dirname(__FILE__) + '/../lib'))
 
 # Print the version if we have -v or --version
@@ -79,4 +80,13 @@ end
 Chef::Log.init(Chef::Config[:log_location])
 Chef::Log.level = Chef::Config[:log_level]
 
-Merb.start
+begin
+  Merb.start
+rescue RuntimeError => e
+  if e.message =~ /no acceptor/
+    Chef::Log.fatal("Another process is already listening on port #{Merb::Config[:port]}. Is chef-server already running?")
+    exit 127
+  else
+    raise
+  end
+end

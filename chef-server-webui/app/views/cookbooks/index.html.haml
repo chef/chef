@@ -1,12 +1,15 @@
 .block#block-tables
   .content
-    %h2.title Cookbooks
+    %h2.title
+      Cookbooks
     .inner
       %table.table
         %thead
           %tr
             %th.first Cookbook Name
+            %th.last Version
         %tbody
-          - @cl.sort.each_with_index do |cookbook, index|
-            %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-              %td= link_to cookbook[0], url(:cookbook, { :id => cookbook[0] })
+          - @cl.each do |cookbook, version|
+            %tr
+              %td= link_to cookbook, url(:show_specific_version_cookbook, :cookbook_id => cookbook, :cb_version => version)
+              %td= version

@@ -63,8 +63,8 @@ describe Chef::Provider::HttpRequest do
       end
   
       it "should update the resource" do
-        @new_resource.should_receive(:updated=).with(true)
         @provider.action_get
+        @new_resource.should be_updated
       end
     end
 
@@ -86,8 +86,8 @@ describe Chef::Provider::HttpRequest do
       end
   
       it "should update the resource" do
-        @new_resource.should_receive(:updated=).with(true)
         @provider.action_put
+        @new_resource.should be_updated
       end
     end
 
@@ -109,8 +109,8 @@ describe Chef::Provider::HttpRequest do
       end
   
       it "should update the resource" do
-        @new_resource.should_receive(:updated=).with(true)
         @provider.action_post
+        @new_resource.should be_updated
       end
     end
 
@@ -126,8 +126,8 @@ describe Chef::Provider::HttpRequest do
       end
   
       it "should update the resource" do
-        @new_resource.should_receive(:updated=).with(true)
         @provider.action_delete
+        @new_resource.should be_updated
       end
     end
 
@@ -154,8 +154,8 @@ describe Chef::Provider::HttpRequest do
       end
 
       it "should update the resource" do
-        @new_resource.should_receive(:updated=).with(true)
         @provider.action_head
+        @new_resource.should be_updated
       end
 
       it "should run a HEAD request with If-Modified-Since header" do

@@ -18,7 +18,7 @@
 #
 # If the features are not being run from a git clone, you're out of luck.
 git "the chef repo" do
-  repository "file:///#{File.dirname(__FILE__) + "/../../../../../../../"}"
+  repository "#{node[:tmpdir]}/test_git_repo"
   reference "HEAD"
   destination "#{node[:tmpdir]}/gitchef"
   action :sync

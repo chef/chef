@@ -4,12 +4,6 @@ Feature: List clients via the REST API
   As a Developer
   I want to list all the clients
 
-  Scenario: List clients when none have been created
-    Given I am an administrator
-      And there are no clients 
-     When I 'GET' the path '/clients' 
-     Then the inflated response should be '3' items long 
-
   Scenario: List clients when one has been created
     Given I am an administrator
     Given a 'client' named 'isis' exists

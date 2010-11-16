@@ -108,6 +108,32 @@ describe Chef::Role do
     end
   end
 
+  describe "update_from!" do
+    before(:each) do
+      @role.name('mars_volta')
+      @role.description('Great band!')
+      @role.run_list('one', 'two', 'role[a]')
+      @role.default_attributes({ :el_groupo => 'nuevo' })
+      @role.override_attributes({ :deloused => 'in the comatorium' })
+
+      @example = Chef::Role.new
+      @example.name('newname')
+      @example.description('Really Great band!')
+      @example.run_list('alpha', 'bravo', 'role[alpha]')
+      @example.default_attributes({ :el_groupo => 'nuevo dos' })
+      @example.override_attributes({ :deloused => 'in the comatorium XOXO' })
+    end
+
+    it "should update all fields except for name" do
+      @role.update_from!(@example)
+      @role.name.should == "mars_volta"
+      @role.description.should == @example.description
+      @role.run_list.should == @example.run_list
+      @role.default_attributes.should == @example.default_attributes
+      @role.override_attributes.should == @example.override_attributes
+    end
+  end
+
   describe "serialize" do
     before(:each) do
       @role.name('mars_volta')

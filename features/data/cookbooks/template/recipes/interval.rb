@@ -17,8 +17,14 @@
 # limitations under the License.
 #
 
+# can no longer set chef to run repeatedly in the foreground
+# without some hackery like this:
+Chef::Config[:interval] = 1
+
 $run_count ||= %w{one two}
 exit!(108) if $run_count.empty?
+
+Chef::Log.info("run count: #{$run_count}")
 
 vars = {:value => $run_count.shift}
 

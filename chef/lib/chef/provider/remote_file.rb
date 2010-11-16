@@ -47,13 +47,13 @@ class Chef
               backup_new_resource
               Chef::Log.debug "copying remote file from origin #{raw_file.path} to destination #{@new_resource.path}"
               FileUtils.cp raw_file.path, @new_resource.path
-              @new_resource.updated = true
+              @new_resource.updated_by_last_action(true)
             end
           end
         end
         enforce_ownership_and_permissions
 
-        @new_resource.updated
+        @new_resource.updated_by_last_action?
       end
 
       def action_create_if_missing

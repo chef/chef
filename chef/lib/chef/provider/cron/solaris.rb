@@ -104,9 +104,9 @@ class Chef
         tempcron.chmod(0644)
         status = run_command(:command => "/usr/bin/crontab #{tempcron.path}",:user => @new_resource.user)
         if(status == 0)
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         else
-          @new_resource.updated = false
+          @new_resource.updated_by_last_action(false)
         end
         tempcron.close!
         return status

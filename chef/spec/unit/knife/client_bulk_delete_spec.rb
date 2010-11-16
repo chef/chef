@@ -20,6 +20,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Knife::ClientBulkDelete do
   before(:each) do
+    Chef::Log.logger = Logger.new(StringIO.new)
+
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::ClientBulkDelete.new
     @knife.config = {

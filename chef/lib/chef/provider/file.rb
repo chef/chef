@@ -66,7 +66,7 @@ class Chef
           Chef::Log.info("Setting content for #{@new_resource}")
           backup @new_resource.path if ::File.exists?(@new_resource.path)
           ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
       end
 
@@ -91,7 +91,7 @@ class Chef
           Chef::Log.info("Setting owner to #{@set_user_id} for #{@new_resource}")
           @set_user_id = negative_complement(@set_user_id)
           ::File.chown(@set_user_id, nil, @new_resource.path)
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
       end
 
@@ -114,7 +114,7 @@ class Chef
           Chef::Log.info("Setting group to #{@set_group_id} for #{@new_resource}")
           @set_group_id = negative_complement(@set_group_id)
           ::File.chown(nil, @set_group_id, @new_resource.path)
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
       end
 
@@ -132,7 +132,7 @@ class Chef
           Chef::Log.info("Setting mode to #{sprintf("%o" % octal_mode(@new_resource.mode))} for #{@new_resource}")
           # CHEF-174, bad mojo around treating integers as octal.  If a string is passed, we try to do the "right" thing
           ::File.chmod(octal_mode(@new_resource.mode), @new_resource.path)
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         end
       end
 
@@ -140,7 +140,7 @@ class Chef
         unless ::File.exists?(@new_resource.path)
           Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
           ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
-          @new_resource.updated = true
+          @new_resource.updated_by_last_action(true)
         else
           set_content unless @new_resource.content.nil?
         end
@@ -159,7 +159,7 @@ class Chef
             backup unless ::File.symlink?(@new_resource.path)
             Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.path}")
             ::File.delete(@new_resource.path)
-            @new_resource.updated = true
+            @new_resource.updated_by_last_action(true)
           else
             raise "Cannot delete #{@new_resource} at #{@new_resource_path}!"
           end
@@ -171,7 +171,7 @@ class Chef
         time = Time.now
         Chef::Log.info("Updating #{@new_resource} with new atime/mtime of #{time}")
         ::File.utime(time, time, @new_resource.path)
-        @new_resource.updated = true
+        @new_resource.updated_by_last_action(true)
       end
 
       def backup(file=nil)

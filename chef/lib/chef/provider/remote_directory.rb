@@ -50,7 +50,9 @@ class Chef
       end
 
       def action_create_if_missing
-        raise Chef::Exceptions::UnsupportedAction, "Remote Directories do not support create_if_missing."
+        # if this action is called, ignore the existing overwrite flag
+        @new_resource.overwrite = false
+        action_create
       end
 
       protected
@@ -95,8 +97,12 @@ class Chef
         ensure_directory_exists(::File.dirname(full_path))
         
         file_to_fetch = cookbook_file_resource(full_path, cookbook_file_relative_path)
-        file_to_fetch.run_action(:create)
-        @new_resource.updated = true if file_to_fetch.updated?
+        if @new_resource.overwrite
+          file_to_fetch.run_action(:create)
+        else
+          file_to_fetch.run_action(:create_if_missing)
+        end
+        @new_resource.updated_by_last_action(true) if file_to_fetch.updated?
       end
       
       def cookbook_file_resource(target_path, relative_source_path)
@@ -115,7 +121,7 @@ class Chef
         unless ::File.directory?(path)
           directory_to_create = resource_for_directory(path)
           directory_to_create.run_action(:create)
-          @new_resource.updated = true if directory_to_create.updated?
+          @new_resource.updated_by_last_action(true) if directory_to_create.updated?
         end
       end
 

@@ -82,6 +82,11 @@ describe Chef::REST::AuthCredentials do
       invalid_key_file = CHEF_SPEC_DATA + "/bad-config.rb"
       lambda {Chef::REST::AuthCredentials.new("client-name", invalid_key_file)}.should raise_error(Chef::Exceptions::InvalidPrivateKey)
     end
+
+    it "strips extra whitespace before checking the key" do
+      key_file_fixture = CHEF_SPEC_DATA + '/ssl/private_key_with_whitespace.pem'
+      lambda {Chef::REST::AuthCredentials.new("client-name", @key_file_fixture)}.should_not raise_error
+    end
   end
 
   describe "generating signature headers for a request" do

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/cache/checksum'
+require 'chef/checksum_cache'
 require 'chef/mixin/shell_out'
 
 class Chef
@@ -47,7 +47,7 @@ class Chef
       end
 
       def cache
-        Chef::Cache::Checksum.instance
+        Chef::ChecksumCache.instance
       end
 
       def ruby_files

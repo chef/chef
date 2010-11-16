@@ -80,6 +80,8 @@ class Chef::Application
       Chef::Log.warn("Can not find config file: #{config[:config_file]}, using defaults.")
       Chef::Log.warn("#{error.message}")
       Chef::Log.warn("*****************************************")
+
+      Chef::Config.merge!(config)
     end
 
   end

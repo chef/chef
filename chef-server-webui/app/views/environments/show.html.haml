@@ -1,0 +1,27 @@
+.block#block-tables
+  .content
+    %h2.title= "Environment #{h @environment.name}"
+    .inner
+      = partial("navigation", :active => "show")
+      .content
+        .inner
+          .left
+            %h3 Name
+            = @environment.name
+          .left
+            %h3 Description
+            = @environment.description
+          .left
+            %h3 Cookbook Versions
+            %table.table
+              %tr
+                %th.first Name
+                %th.last Version(s)
+              - if @environment.cookbook_versions.empty?
+                %tr
+                  %td{:colspan => 2} This environment does not include any cookbook version restrictions
+              - else
+                - @environment.cookbook_versions.each do |name, versions|
+                  %tr
+                    %td= name
+                    %td= versions

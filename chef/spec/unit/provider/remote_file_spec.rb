@@ -46,8 +46,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
       @rest.stub!(:fetch).and_yield(@tempfile)
 
       @resource.cookbook_name = "monkey"
-      @node = Chef::Node.new
-      #@provider = Chef::Provider::RemoteFile.new(@node, @resource)
+
       @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
       @provider.current_resource = @resource.clone
       @provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
@@ -66,29 +65,53 @@ describe Chef::Provider::RemoteFile, "action_create" do
 
     describe "and the resource specifies a checksum" do
 
-      it "should not download the file if the checksum matches" do
-        @resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-        @rest.should_not_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
-        @provider.action_create
+      describe "and the existing file matches the checksum exactly" do
+        before do
+          @resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+        end
+
+        it "does not download the file" do
+          @rest.should_not_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+          @provider.action_create
+        end
+
+        it "does not update the resource" do
+          @provider.action_create
+          @provider.new_resource.should_not be_updated
+        end
+
       end
 
-      it "should not download the file if the checksum is a partial match from the beginning" do
-        @resource.checksum("0fd012fd")
-        @rest.should_not_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
-        @provider.action_create
+      describe "and the existing file matches the given partial checksum" do
+        before do
+          @resource.checksum("0fd012fd")
+        end
+
+        it "should not download the file if the checksum is a partial match from the beginning" do
+          @rest.should_not_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+          @provider.action_create
+        end
+
+        it "does not update the resource" do
+          @provider.action_create
+          @provider.new_resource.should_not be_updated
+        end
+
       end
 
+      describe "and the existing file doesn't match the given checksum" do
+        it "downloads the file" do
+          @resource.checksum("this hash doesn't match")
+          @rest.should_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+          @provider.action_create
+        end
 
-      it "should download the file if the checksum does not match" do
-        @resource.checksum("this hash doesn't match")
-        @rest.should_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
-        @provider.action_create
-      end
-
-      it "should download the file if the checksum matches, but not from the beginning" do
-        @resource.checksum("fd012fd")
-        @rest.should_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
-        @provider.action_create
+        it "does not consider the checksum a match if the matching string is offset" do
+          # i.e., the existing file is      "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
+          @resource.checksum("fd012fd")
+          @rest.should_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+          @provider.action_create
+        end
       end
 
     end
@@ -132,8 +155,8 @@ describe Chef::Provider::RemoteFile, "action_create" do
       end
 
       it "should set the new resource to updated" do
-        @resource.should_receive(:updated=).with(true)
         @provider.action_create
+        @resource.should be_updated
       end
     end
 
@@ -147,6 +170,11 @@ describe Chef::Provider::RemoteFile, "action_create" do
         it "shouldn't backup the original file" do
           @provider.should_not_receive(:backup).with(@resource.path)
           @provider.action_create
+        end
+
+        it "doesn't mark the resource as updated" do
+          @provider.action_create
+          @provider.new_resource.should_not be_updated
         end
       end
 

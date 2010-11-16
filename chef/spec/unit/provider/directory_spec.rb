@@ -51,11 +51,11 @@ describe Chef::Provider::Directory do
     load_mock_provider
     File.should_receive(:exists?).once.and_return(false)
     Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
-    @directory.new_resource.should_receive(:updated=).with(true)
     @directory.should_receive(:set_owner).once.and_return(true)
     @directory.should_receive(:set_group).once.and_return(true)
     @directory.should_receive(:set_mode).once.and_return(true)
     @directory.action_create
+    @directory.new_resource.should be_updated
   end
   
   it "should not create the directory if it already exists" do

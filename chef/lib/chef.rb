@@ -17,7 +17,7 @@
 #
 
 require 'chef/version'
-
+require 'chef/nil_argument'
 require 'extlib'
 require 'chef/exceptions'
 require 'chef/log'

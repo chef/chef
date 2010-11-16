@@ -25,6 +25,7 @@ KNIFE_CMD = File.expand_path(File.join(CHEF_PROJECT_ROOT, "chef", "bin", "knife"
 FEATURES_DATA = File.join(CHEF_PROJECT_ROOT, "features", "data")
 INTEGRATION_COOKBOOKS = File.join(FEATURES_DATA, "cookbooks")
 
+$:.unshift(CHEF_PROJECT_ROOT)
 $:.unshift(CHEF_PROJECT_ROOT + '/chef/lib')
 $:.unshift(CHEF_PROJECT_ROOT + '/chef-server-api/lib')
 $:.unshift(CHEF_PROJECT_ROOT + '/chef-server-webui/lib')
@@ -33,6 +34,7 @@ $:.unshift(CHEF_PROJECT_ROOT + '/chef-solr/lib')
 require 'chef'
 require 'chef/config'
 require 'chef/client'
+require 'chef/environment'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
 require 'chef/api_client'
@@ -45,6 +47,7 @@ require 'tmpdir'
 require 'chef/streaming_cookbook_uploader'
 require 'webrick'
 require 'restclient'
+require 'features/support/couchdb_replicate'
 
 include Chef::Mixin::ShellOut
 
@@ -78,7 +81,40 @@ end
 def create_databases
   Chef::Log.info("Creating bootstrap databases")
   cdb = Chef::CouchDB.new(Chef::Config[:couchdb_url], "chef_integration")
-  cdb.create_db
+
+  # Sometimes Couch returns a '412 Precondition Failed' when creating a database,
+  # via a PUT to its URL, as the DELETE from the previous step in delete_databases
+  # has not yet finished. This condition disappears if you try again. So here we 
+  # try up to 10 times if PreconditionFailed occurs. See
+  #   http://tickets.opscode.com/browse/CHEF-1788 and
+  #   http://tickets.opscode.com/browse/CHEF-1764.
+  #
+  # According to https://issues.apache.org/jira/browse/COUCHDB-449, setting the 
+  # 'X-Couch-Full-Commit: true' header on the DELETE should work around this issue, 
+  # but it does not.
+  db_created = nil
+  max_tries = 10
+  num_tries = 1
+  while !db_created && num_tries <= max_tries
+    begin
+      cdb.create_db
+      db_created = true
+    rescue Net::HTTPServerException => e
+      unless e.response.code.to_i == 412
+        # Re-raise if we got anything but 412.
+        raise
+      end
+      
+      if num_tries <= max_tries
+        Chef::Log.debug("In creating chef_integration try #{num_tries}/#{max_tries}, got #{e}; try again")
+        sleep 0.25
+      else
+        Chef::Log.error("In creating chef_integration, tried #{max_tries} times: got #{e}; giving up")
+      end
+    end
+    num_tries += 1
+  end
+  
   cdb.create_id_map
   Chef::Node.create_design_document
   Chef::Role.create_design_document
@@ -87,11 +123,13 @@ def create_databases
   Chef::CookbookVersion.create_design_document
   Chef::Sandbox.create_design_document
   Chef::Checksum.create_design_document
+  Chef::Environment.create_design_document
   
   Chef::Role.sync_from_disk_to_couchdb
   Chef::Certificate.generate_signing_ca
   Chef::Certificate.gen_validation_key
   Chef::Certificate.gen_validation_key(Chef::Config[:web_ui_client_name], Chef::Config[:web_ui_key])
+  Chef::Environment.create_default_environment
   system("cp #{File.join(Dir.tmpdir, "chef_integration", "validation.pem")} #{Dir.tmpdir}")
   system("cp #{File.join(Dir.tmpdir, "chef_integration", "webui.pem")} #{Dir.tmpdir}")
 
@@ -102,10 +140,7 @@ def create_databases
 end
 
 def prepare_replicas
-  c = Chef::REST.new(Chef::Config[:couchdb_url], nil, nil)
-  c.put_rest("chef_integration_safe/", nil)
-  c.post_rest("_replicate", { "source" => "#{Chef::Config[:couchdb_url]}/chef_integration", "target" => "#{Chef::Config[:couchdb_url]}/chef_integration_safe" })
-  c.delete_rest("chef_integration")
+  replicate_dbs({ :source_db => "#{Chef::Config[:couchdb_url]}/chef_integration", :target_db => "#{Chef::Config[:couchdb_url]}/chef_integration_safe" })
 end
 
 def cleanup
@@ -199,7 +234,19 @@ module ChefWorld
       :AccessLog    => [ StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT ]
     )
   end
-  
+
+  attr_accessor :apt_server_thread
+
+  def apt_server
+    @apt_server ||= WEBrick::HTTPServer.new(
+      :Port         => 9000,
+      :DocumentRoot => datadir + "/apt/var/www/apt",
+      # Make WEBrick STFU
+      :Logger       => Logger.new(StringIO.new),
+      :AccessLog    => [ StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT ]
+    )
+  end
+
   def make_admin
     admin_client
     @rest = Chef::REST.new(Chef::Config[:registration_url], 'bobo', "#{tmpdir}/bobo.pem")
@@ -232,7 +279,12 @@ module ChefWorld
     #Chef::Config[:client_key] = "#{tmpdir}/not_admin.pem"
     #Chef::Config[:node_name] = "not_admin"
   end
-  
+
+  def couchdb_rest_client
+    Chef::REST.new('http://localhost:5984/chef_integration', false, false)
+  end
+
+
 end
 
 World(ChefWorld)
@@ -241,22 +293,22 @@ Before do
   system("mkdir -p #{tmpdir}")
   system("cp -r #{File.join(Dir.tmpdir, "validation.pem")} #{File.join(tmpdir, "validation.pem")}")
   system("cp -r #{File.join(Dir.tmpdir, "webui.pem")} #{File.join(tmpdir, "webui.pem")}")
-  c = Chef::REST.new(Chef::Config[:couchdb_url], nil, nil)
-  c.delete_rest("chef_integration/") rescue nil
-  Chef::CouchDB.new(Chef::Config[:couchdb_url], "chef_integration").create_db
-  c.post_rest("_replicate", { 
-    "source" => "#{Chef::Config[:couchdb_url]}/chef_integration_safe",
-    "target" => "#{Chef::Config[:couchdb_url]}/chef_integration" 
-  })
-end
-
-After do
+  
+  replicate_dbs({:source_db => "#{Chef::Config[:couchdb_url]}/chef_integration_safe",
+                 :target_db => "#{Chef::Config[:couchdb_url]}/chef_integration"})
+                 
   s = Chef::Solr.new
   s.solr_delete_by_query("*:*")
   s.solr_commit
+end
+
+After do
   gemserver.shutdown
   gemserver_thread && gemserver_thread.join
-  
+
+  apt_server.shutdown
+  apt_server_thread && apt_server_thread.join
+
   cleanup_files.each do |file|
     system("rm #{file}")
   end

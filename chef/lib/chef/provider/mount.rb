@@ -31,7 +31,7 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to mount")
           status = mount_fs()
           if status
-            @new_resource.updated = true            
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource}: mounted successfully")
           end
         else
@@ -44,7 +44,7 @@ class Chef
           Chef::Log.debug("#{@new_resource}: attempting to unmount")
           status = umount_fs()
           if status
-            @new_resource.updated = true            
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource}: unmounted successfully")
           end
         else
@@ -60,7 +60,7 @@ class Chef
             Chef::Log.debug("#{@new_resource}: attempting to remount")
             status = remount_fs()
             if status
-              @new_resource.updated = true            
+              @new_resource.updated_by_last_action(true)
               Chef::Log.info("#{@new_resource}: remounted successfully")
             end
           else
@@ -73,7 +73,7 @@ class Chef
         unless @current_resource.enabled
           status = enable_fs
           if status
-            @new_resource.updated = true            
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource}: enabled successfully")
           else
             Chef::Log.debug("#{@new_resource}: not enabling, already enabled")
@@ -85,7 +85,7 @@ class Chef
         if @current_resource.enabled
           status = disable_fs
           if status
-            @new_resource.updated = true            
+            @new_resource.updated_by_last_action(true)            
             Chef::Log.info("#{@new_resource}: disabled successfully")
           else
             Chef::Log.debug("#{@new_resource}: not disabling, already disabled")

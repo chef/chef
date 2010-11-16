@@ -42,14 +42,6 @@ module Merb
       File.join(sandbox_location(sandbox_guid), checksum)
     end
 
-    def checksum_base
-      Chef::Config.checksum_path
-    end
-    
-    def checksum_location(checksum)
-      File.join(checksum_base, checksum[0..1], checksum)
-    end
-    
     def cookbook_base
       [Chef::Config.cookbook_path].flatten.first
     end
