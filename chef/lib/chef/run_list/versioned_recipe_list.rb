@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 require 'chef/version_class'
+require 'chef/version_constraint'
 
 class Chef
   class RunList
@@ -38,6 +39,13 @@ class Chef
 
       def with_versions
         self.map {|i| {:name => i, :version => @versions[i]}}
+      end
+
+      def with_version_constraints
+        self.map do |i|
+          constraint = Chef::VersionConstraint.new(@versions[i])
+          { :name => i, :version_constraint => constraint }
+        end
       end
     end
   end
