@@ -120,6 +120,7 @@ def create_databases
   Chef::Role.create_design_document
   Chef::DataBag.create_design_document
   Chef::ApiClient.create_design_document
+  Chef::WebUIUser.create_design_document
   Chef::CookbookVersion.create_design_document
   Chef::Sandbox.create_design_document
   Chef::Checksum.create_design_document
