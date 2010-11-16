@@ -24,6 +24,8 @@ class Chef
 
     def initialize(constraint_spec=DEFAULT_CONSTRAINT)
       case constraint_spec
+      when nil
+        parse(DEFAULT_CONSTRAINT)
       when Array
         parse_from_array(constraint_spec)
       when String
