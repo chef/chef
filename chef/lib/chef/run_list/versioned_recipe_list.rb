@@ -30,7 +30,7 @@ class Chef
       def add_recipe(name, version=nil)
         if version && @versions.has_key?(name)
           unless Chef::Version.new(@versions[name]) == Chef::Version.new(version)
-            raise Chef::Exceptions::RecipeVersionConflict, "Run list requires recipe #{name} at versions #{@versions[name]} and #{version}"
+            raise Chef::Exceptions::CookbookVersionConflict, "Run list requires #{name} at versions #{@versions[name]} and #{version}"
           end
         end
         @versions[name] = version if version

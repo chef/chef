@@ -64,7 +64,6 @@ class Chef
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
     class IllegalChecksumRevert < RuntimeError; end
-    class RecipeVersionConflict < StandardError; end
     class CookbookVersionConflict < StandardError; end
     class CookbookVersionUnavailable < StandardError; end
     class CookbookVersionNameMismatch < ArgumentError; end

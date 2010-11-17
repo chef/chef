@@ -70,7 +70,7 @@ describe Chef::RunList::VersionedRecipeList do
 
     it "should not allow multiple versions of the same recipe" do
       @list.add_recipe "rails", "1.0.0"
-      lambda {@list.add_recipe "rails", "0.1.0"}.should raise_error Chef::Exceptions::RecipeVersionConflict
+      lambda {@list.add_recipe "rails", "0.1.0"}.should raise_error Chef::Exceptions::CookbookVersionConflict
     end
   end
 
