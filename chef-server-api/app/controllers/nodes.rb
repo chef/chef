@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-require 'chef/cookbook/metadata/version'
 require 'chef' / 'node'
 require 'chef/version_class'
 
