@@ -77,7 +77,7 @@ task :default => [ :test_cookbooks ]
 
 desc "Create a new cookbook (with COOKBOOK=name, optional CB_PREFIX=site-)"
 task :new_cookbook do
-  puts "***WARN: rake new_cookbook is deprecated. Please use 'knife cookbook new COOKBOOK' command.***"
+  puts "***WARN: rake new_cookbook is deprecated. Please use 'knife cookbook create COOKBOOK' command.***"
   create_cookbook(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
   create_readme(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
   create_metadata(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
