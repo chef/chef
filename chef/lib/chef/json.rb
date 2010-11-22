@@ -24,8 +24,9 @@ class Chef
     JSON_MAX_NESTING = 1000
 
     class <<self
-      # See PL-538. Increase the max nesting for JSON, which defaults to 19,
-      # and isn't enough for some deep node (for example) structures.
+      # See CHEF-1292/PL-538. Increase the max nesting for JSON, which defaults
+      # to 19, and isn't enough for some (for example, a Node within a Node)
+      # structures.
       def opts_add_max_nesting(opts)
         if opts.nil? || !opts.has_key?(:max_nesting)
           opts = opts.nil? ? Hash.new : opts.clone
