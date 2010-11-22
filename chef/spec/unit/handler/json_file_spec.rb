@@ -52,7 +52,7 @@ describe Chef::Handler::JsonFile do
     it "saves run status data to a file as JSON" do
       @handler.should_receive(:build_report_dir)
       @handler.run_report_unsafe(@run_status)
-      reported_data = JSON.parse(@file_mock.string)
+      reported_data = Chef::JSON.from_json(@file_mock.string)
       reported_data['exception'].should == "Exception: Boy howdy!"
       reported_data['start_time'].should == @expected_time.iso8601
       reported_data['end_time'].should == (@expected_time + 5).iso8601
