@@ -204,7 +204,7 @@ describe Chef::Resource do
   describe "self.json_create" do
     it "should deserialize itself from json" do
       json = @resource.to_json
-      serialized_node = JSON.parse(json)
+      serialized_node = Chef::JSON.from_json(json)
       serialized_node.should be_a_kind_of(Chef::Resource)
       serialized_node.name.should eql(@resource.name)
     end

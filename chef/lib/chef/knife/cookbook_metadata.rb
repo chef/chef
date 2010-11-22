@@ -69,7 +69,7 @@ class Chef
           md.from_file(file)
           json_file = File.join(File.dirname(file), 'metadata.json')
           File.open(json_file, "w") do |f|
-            f.write(JSON.pretty_generate(md))
+            f.write(Chef::JSON.to_json_pretty(md))
           end
           generated = true
           Chef::Log.debug("Generated #{json_file}")

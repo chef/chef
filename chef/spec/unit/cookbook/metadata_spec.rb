@@ -480,11 +480,11 @@ describe Chef::Cookbook::Metadata do
  
     describe "serialize" do
       before(:each) do
-        @serial = JSON.parse(@meta.to_json)
+        @serial = Chef::JSON.from_json(@meta.to_json)
       end
 
       it "should serialize to a json hash" do
-        JSON.parse(@meta.to_json).should be_a_kind_of(Hash)
+        Chef::JSON.from_json(@meta.to_json).should be_a_kind_of(Hash)
       end
 
       %w{

@@ -50,7 +50,7 @@ describe Chef::Knife::DataBagShow do
     Chef::DataBagItem.should_receive(:load).with('bag_o_data', 'an_item').and_return(data_item_content)
 
     @knife.run
-    JSON.parse(@stdout.string).should == data_item_content
+    Chef::JSON.from_json(@stdout.string).should == data_item_content
   end
 
 end

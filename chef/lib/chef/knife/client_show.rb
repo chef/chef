@@ -18,7 +18,7 @@
 
 require 'chef/knife'
 require 'chef/api_client'
-require 'json'
+require 'chef/json'
 
 class Chef
   class Knife

@@ -555,7 +555,7 @@ describe Chef::Node do
   describe "json" do
     it "should serialize itself as json" do
       @node.find_file("test.example.com")
-      json = @node.to_json()
+      json = Chef::JSON.to_json(@node)
       json.should =~ /json_class/
       json.should =~ /name/
       json.should =~ /chef_environment/
@@ -567,8 +567,8 @@ describe Chef::Node do
 
     it "should deserialize itself from json" do
       @node.find_file("test.example.com")
-      json = @node.to_json
-      serialized_node = JSON.parse(json)
+      json = Chef::JSON.to_json(@node)
+      serialized_node = Chef::JSON.from_json(json)
       serialized_node.should be_a_kind_of(Chef::Node)
       serialized_node.name.should eql(@node.name)
       serialized_node.chef_environment.should eql(@node.chef_environment)
