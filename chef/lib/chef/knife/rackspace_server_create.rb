@@ -18,6 +18,7 @@
 
 require 'chef/knife'
 require 'chef/json'
+require 'uuidtools'
 
 class Chef
   class Knife
@@ -36,14 +37,29 @@ class Chef
         :short => "-i IMAGE",
         :long => "--image IMAGE",
         :description => "The image of the server",
-        :proc => Proc.new { |i| i.to_i },
-        :default => 14362
+        :proc => Proc.new { |i| i.to_i }
 
       option :server_name,
-        :short => "-N NAME",
+        :short => "-S NAME",
         :long => "--server-name NAME",
-        :description => "The server name",
-        :default => "wtf"
+        :description => "The server name. Defaults to a random UUID.",
+        :default => UUIDTools::UUID.random_create.to_s
+
+      option :chef_node_name,
+        :short => "-N NAME",
+        :long => "--node-name NAME",
+        :description => "The Chef node name for your new node"
+
+      option :ssh_user,
+        :short => "-x USERNAME",
+        :long => "--ssh-user USERNAME",
+        :description => "The ssh username",
+        :default => "root"
+
+      option :ssh_password,
+        :short => "-P PASSWORD",
+        :long => "--ssh-password PASSWORD",
+        :description => "The ssh password"
 
       option :api_key,
         :short => "-K KEY",
@@ -57,8 +73,42 @@ class Chef
         :description => "Your rackspace API username",
         :proc => Proc.new { |username| Chef::Config[:knife][:rackspace_api_username] = username } 
 
+      option :prerelease,
+        :long => "--prerelease",
+        :description => "Install the pre-release chef gems"
+
+      option :distro,
+        :short => "-d DISTRO",
+        :long => "--distro DISTRO",
+        :description => "Bootstrap a distro using a template",
+        :default => "ubuntu10.04-gems"
+
+      option :template_file,
+        :long => "--template-file TEMPLATE",
+        :description => "Full path to location of template to use",
+        :default => false
+
       def h
         @highline ||= HighLine.new
+      end
+
+      def tcp_test_ssh(hostname)
+        tcp_socket = TCPSocket.new(hostname, 22)
+        readable = IO.select([tcp_socket], nil, nil, 5)
+        if readable
+          Chef::Log.debug("sshd accepting connections on #{hostname}, banner is #{tcp_socket.gets}")
+          yield
+          true
+        else
+          false
+        end
+      rescue Errno::ETIMEDOUT
+        false
+      rescue Errno::ECONNREFUSED
+        sleep 2
+        false
+      ensure
+        tcp_socket && tcp_socket.close
       end
 
       def run 
@@ -67,87 +117,65 @@ class Chef
         require 'net/ssh/multi'
         require 'readline'
 
+        $stdout.sync = true
+
         connection = Fog::Rackspace::Servers.new(
           :rackspace_api_key => Chef::Config[:knife][:rackspace_api_key],
           :rackspace_username => Chef::Config[:knife][:rackspace_api_username] 
         )
 
-        server = connection.servers.new
-       
-        server.flavor_id = config[:flavor]
-        server.image_id = config[:image]
-        server.name = config[:server_name]
-        server.personality = [
-          { 
-            'path' => '/etc/install-chef',
-            'contents' => <<-EOH
-#!/bin/bash
-# Customized rc.local for chef installation
+        server = connection.servers.create(
+          :name => config[:server_name],
+          :image_id => config[:image],
+          :flavor_id => config[:flavor]
+        )
 
-if [ ! -f /usr/bin/chef-client ]; then
-  apt-get update
-  apt-get install -y ruby ruby1.8-dev build-essential wget libruby-extras libruby1.8-extras
-  cd /tmp
-  wget http://rubyforge.org/frs/download.php/69365/rubygems-1.3.6.tgz
-  tar xvf rubygems-1.3.6.tgz
-  cd rubygems-1.3.6
-  ruby setup.rb
-  cp /usr/bin/gem1.8 /usr/bin/gem
-  gem install chef ohai --no-rdoc --no-ri --verbose
-fi
-
-exit 0
-EOH
-          },
-          { 
-            'path' => "/etc/chef/validation.pem",
-            'contents' => IO.read(Chef::Config[:validation_key])
-          },
-          { 
-            'path' => "/etc/chef/client.rb",
-            'contents' => <<-EOH
-log_level        :info
-log_location     STDOUT
-chef_server_url  "#{Chef::Config[:chef_server_url]}" 
-validation_client_name "#{Chef::Config[:validation_client_name]}"
-EOH
-          },
-          {
-            'path' => "/etc/chef/first-boot.json",
-            'contents' => { "run_list" => @name_args }.to_json
-          },
-        ]
-
-        server.save
-
-        $stdout.sync = true
-
+        puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
         puts "#{h.color("Name", :cyan)}: #{server.name}"
         puts "#{h.color("Flavor", :cyan)}: #{server.flavor_id}"
         puts "#{h.color("Image", :cyan)}: #{server.image_id}"
-        puts "#{h.color("Public Address", :cyan)}: #{server.addresses["public"]}"
-        puts "#{h.color("Private Address", :cyan)}: #{server.addresses["private"]}"
+        puts "#{h.color("Public IP Address", :cyan)}: #{server.addresses["public"][0]}"
+        puts "#{h.color("Private IP Address", :cyan)}: #{server.addresses["private"][0]}"
         puts "#{h.color("Password", :cyan)}: #{server.password}"
-     
+
         print "\n#{h.color("Requesting server", :magenta)}"
-        saved_password = server.password
 
         # wait for it to be ready to do stuff
         server.wait_for { print "."; ready? }
 
-        puts "\nServer ready, waiting 15 seconds to bootstrap."
-        sleep 15
+        puts("\n")
 
-        puts "\nBootstrapping #{h.color(server.name, :bold)}..."
+        print "\n#{h.color("Waiting for sshd", :magenta)}"
 
-        ssh = Chef::Knife::Ssh.new
-        ssh.name_args = [ server.addresses["public"][0], "/bin/bash /etc/install-chef && /usr/bin/chef-client -j /etc/chef/first-boot.json" ]
-        ssh.config[:ssh_user] = "root"
-        ssh.config[:manual] = true
-        ssh.config[:ssh_password] = saved_password
-        ssh.password = saved_password
-        ssh.run
+        print(".") until tcp_test_ssh(server.addresses["public"][0]) { sleep @initial_sleep_delay ||= 10; puts("done") }
 
+        bootstrap_for_node(server).run
+
+        puts "\n"
+        puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
+        puts "#{h.color("Name", :cyan)}: #{server.name}"
+        puts "#{h.color("Flavor", :cyan)}: #{server.flavor_id}"
+        puts "#{h.color("Image", :cyan)}: #{server.image_id}"
+        puts "#{h.color("Public IP Address", :cyan)}: #{server.addresses["public"][0]}"
+        puts "#{h.color("Private IP Address", :cyan)}: #{server.addresses["private"][0]}"
+        puts "#{h.color("Password", :cyan)}: #{server.password}"
+        puts "#{h.color("Run List", :cyan)}: #{@name_args.join(', ')}"
+      end
+
+      def bootstrap_for_node(server)
+        bootstrap = Chef::Knife::Bootstrap.new
+        bootstrap.name_args = [server.addresses["public"][0]]
+        bootstrap.config[:run_list] = @name_args
+        bootstrap.config[:ssh_user] = config[:ssh_user] || "root"
+        bootstrap.config[:ssh_password] = server.password
+        bootstrap.config[:identity_file] = config[:identity_file]
+        bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.id
+        bootstrap.config[:prerelease] = config[:prerelease]
+        bootstrap.config[:distro] = config[:distro]
+        bootstrap.config[:use_sudo] = true
+        bootstrap.config[:template_file] = config[:template_file]
+        bootstrap.config[:environment] = config[:environment]
+        bootstrap
       end
     end
   end
