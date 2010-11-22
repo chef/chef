@@ -25,7 +25,7 @@ require 'chef/couchdb'
 require 'chef/run_list'
 require 'chef/index_queue'
 require 'extlib'
-require 'json'
+require 'chef/json'
 
 class Chef
   class Role
@@ -304,7 +304,7 @@ class Chef
       rb_file = File.join(Chef::Config[:role_path], "#{name}.rb")
 
       if File.exists?(js_file) || force == "json"
-        JSON.parse(IO.read(js_file))
+        Chef::JSON.from_json(IO.read(js_file))
       elsif File.exists?(rb_file) || force == "ruby"
         role = Chef::Role.new
         role.name(name)

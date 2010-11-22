@@ -437,12 +437,12 @@ class Chef
       end
 
       def self.from_json(string)
-        o = JSON.parse(string)
+        o = Chef::JSON.from_json(string)
         self.from_hash(o)
       end
 
       def from_json(string)
-        o = JSON.parse(string)
+        o = Chef::JSON.from_json(string)
         from_hash(o)
       end
 

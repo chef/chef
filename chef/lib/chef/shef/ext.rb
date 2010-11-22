@@ -327,13 +327,13 @@ E
 
         edited_data = Tempfile.open([filename, ".js"]) do |tempfile|
           tempfile.sync = true
-          tempfile.puts object.to_json
+          tempfile.puts Chef::JSON.to_json(object)
           system("#{Shef.editor.to_s} #{tempfile.path}")
           tempfile.rewind
           tempfile.read
         end
 
-        JSON.parse(edited_data)
+        Chef::JSON.from_json(edited_data)
       end
 
       desc "Find and edit API clients"

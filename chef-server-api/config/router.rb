@@ -112,4 +112,37 @@ Merb::Router.prepare do
 
   match('/').to(:controller => 'main', :action =>'index').name(:top)
 
+  # Need to monkey patch Merb so that it inflates JSON input with a higher
+  # recursion depth allowed (the default is 19). See CHEF-1292/PL-538.
+  module Merb
+    class Request
+      # ==== Returns
+      # Hash:: Parameters from body if this is a JSON request.
+      #
+      # ==== Notes
+      # If the JSON object parses as a Hash, it will be merged with the
+      # parameters hash.  If it parses to anything else (such as an Array, or
+      # if it inflates to an Object) it will be accessible via the inflated_object
+      # parameter.
+      #
+      # :api: private
+      def json_params
+        @json_params ||= begin
+          if Merb::Const::JSON_MIME_TYPE_REGEXP.match(content_type)
+            begin
+              # Call Chef's JSON utility instead of the default in Merb, 
+              # JSON.parse.
+              jobj = Chef::JSON.from_json(raw_post)
+              jobj = jobj.to_mash if jobj.is_a?(Hash)
+            rescue JSON::ParserError
+              jobj = Mash.new
+            end
+            jobj.is_a?(Hash) ? jobj : { :inflated_object => jobj }
+          end
+        end
+      end
+
+    end
+  end
+
 end
