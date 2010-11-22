@@ -181,7 +181,7 @@ class Chef::Application::Client < Chef::Application
       end
 
       begin
-        @chef_client_json = JSON.parse(json_io.read)
+        @chef_client_json = Chef::JSON.from_json(json_io.read)
         json_io.close unless json_io.closed?
       rescue JSON::ParserError => error
         Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)

@@ -17,7 +17,7 @@
 #
 
 require 'chef/knife'
-require 'json'
+require 'chef/json'
 require 'tempfile'
 require 'erubis'
 
