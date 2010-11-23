@@ -60,7 +60,7 @@ Feature: Synchronize cookbooks to the edge
      Then I should get a '403 "Forbidden"' exception
 
   @cookbook_dependencies
-  Scenario: Retrieve the list of cookbook files to sync
+  Scenario: Retrieve the list of cookbooks when dependencies are resolvable
     Given I am an administrator
       And I upload the set of 'dep_test_*' cookbooks
       And a 'node' named 'empty' exists
@@ -70,3 +70,25 @@ Feature: Synchronize cookbooks to the edge
      Then cookbook 'dep_test_a' should have version '1.0.0'
      Then cookbook 'dep_test_b' should have version '1.0.0'
      Then cookbook 'dep_test_c' should have version '1.0.0'
+
+  @cookbook_dependencies
+  Scenario: Retrieve the list of cookbooks when there is a conflict in the dependencies
+    Given I am an administrator
+      And I upload the set of 'dep_test_*' cookbooks
+      And a 'node' named 'empty' exists
+      And changing the 'node' field 'run_list' to 'recipe[dep_test_b@2.0.0]'
+     When I 'PUT' the 'node' to the path 'nodes/empty'
+      And I 'GET' the path 'nodes/empty/cookbooks'
+     Then the response code should be '412'
+      And the Chef::Log should match 'Unable to satisfy constraint'
+
+  @cookbook_dependencies
+  Scenario: Retrieve the list of cookbooks when a cookbook is unavailable
+    Given I am an administrator
+      And I upload the set of 'dep_test_*' cookbooks
+      And a 'node' named 'empty' exists
+      And changing the 'node' field 'run_list' to 'recipe[dep_test_a@3.0.0]'
+     When I 'PUT' the 'node' to the path 'nodes/empty'
+      And I 'GET' the path 'nodes/empty/cookbooks'
+     Then the response code should be '412'
+      And the Chef::Log should match 'not available on this node'

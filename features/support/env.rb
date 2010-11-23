@@ -170,7 +170,7 @@ module ChefWorld
 
   attr_accessor :recipe, :cookbook, :api_response, :inflated_response, :log_level,
                 :chef_args, :config_file, :stdout, :stderr, :status, :exception,
-                :gemserver_thread, :sandbox_url
+                :gemserver_thread, :sandbox_url, :log_io
 
   def self.ohai
     # ohai takes a while, so only ever run it once.

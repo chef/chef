@@ -12,6 +12,7 @@
   "conflicting": {
   },
   "dependencies": {
+    "dep_test_b": "= 3.0.0"
   },
   "version": "3.0.0",
   "providing": {

@@ -39,6 +39,8 @@ Then /^the response code should be '(.+)'$/ do |response_code|
       self.exception.to_s.should match(/(Bad Request|400)/)
     when 404
       Then "I should get a 'RestClient::ResourceNotFound' exception"
+    when 412
+      self.exception.to_s.should match(/(Precondition Failed|412)/)
   end
 end
 
@@ -221,4 +223,8 @@ Then /^the data_bag named '(.+)' should not have an item named '(.+)'$/ do |data
     exists = false
   end
   exists.should == false
+end
+
+Then /^the Chef::Log should match '(.+)'$/ do |regex|
+  self.log_io.string.should match(/#{regex}/)
 end
