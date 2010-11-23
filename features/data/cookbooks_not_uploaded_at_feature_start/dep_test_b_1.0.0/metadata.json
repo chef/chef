@@ -1,0 +1,31 @@
+{
+  "recommendations": {
+  },
+  "description": "Tests cookbook versioning in environments",
+  "suggestions": {
+  },
+  "attributes": {
+  },
+  "platforms": {
+  },
+  "long_description": "",
+  "conflicting": {
+  },
+  "dependencies": {
+    "dep_test_a": "< 2.0.0",
+    "dep_test_c": "< 2.0.0"
+  },
+  "version": "1.0.0",
+  "providing": {
+  },
+  "maintainer": "Opscode",
+  "recipes": {
+  },
+  "replacing": {
+  },
+  "license": "Apache 2.0",
+  "name": "dep_test_b",
+  "maintainer_email": "do_not_reply@opscode.com",
+  "groupings": {
+  }
+}

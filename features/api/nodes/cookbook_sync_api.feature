@@ -59,3 +59,14 @@ Feature: Synchronize cookbooks to the edge
      When I 'GET' the path '/nodes/sync/cookbooks'
      Then I should get a '403 "Forbidden"' exception
 
+  @cookbook_dependencies
+  Scenario: Retrieve the list of cookbook files to sync
+    Given I am an administrator
+      And I upload the set of 'dep_test_*' cookbooks
+      And a 'node' named 'empty' exists
+      And changing the 'node' field 'run_list' to 'recipe[dep_test_a@1.0.0]'
+     When I 'PUT' the 'node' to the path 'nodes/empty'
+      And I 'GET' the path 'nodes/empty/cookbooks'
+     Then cookbook 'dep_test_a' should have version '1.0.0'
+     Then cookbook 'dep_test_b' should have version '1.0.0'
+     Then cookbook 'dep_test_c' should have version '1.0.0'
