@@ -290,6 +290,10 @@ end
 World(ChefWorld)
 
 Before do
+  data_tmp = File.join(File.dirname(__FILE__), "..", "data", "tmp")
+  system("rm -rf #{data_tmp}/*")
+  system("rm -rf #{tmpdir}")
+
   system("mkdir -p #{tmpdir}")
   system("cp -r #{File.join(Dir.tmpdir, "validation.pem")} #{File.join(tmpdir, "validation.pem")}")
   system("cp -r #{File.join(Dir.tmpdir, "webui.pem")} #{File.join(tmpdir, "webui.pem")}")
@@ -319,7 +323,4 @@ After do
   cj.keys.each do |key|
     cj.delete(key)
   end
-  data_tmp = File.join(File.dirname(__FILE__), "..", "data", "tmp")
-  system("rm -rf #{data_tmp}/*")
-  system("rm -rf #{tmpdir}")
 end
