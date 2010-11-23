@@ -34,16 +34,18 @@ class Chef
 
           begin
             # first check to see if we can import it
-            output = shell_out!("python -c \"import #{name}\"").stderr
-            unless output.include? "ImportError"
+            output = shell_out!("python -c \"import #{name}\"", :returns=>[0,1]).stderr
+            if output.include? "ImportError"
+              # then check to see if its on the path
+              output = shell_out!("python -c \"import sys; print sys.path\"", :returns=>[0,1]).stdout
+              if output.downcase.include? "#{name.downcase}"
+                check = true
+              end
+            else
               check = true
             end
           rescue
-            # then check to see if its on the path
-            output = shell_out!("python -c \"import sys; print sys.path\"").stdout
-            if output.downcase.include? "#{name.downcase}"
-              check = true
-            end
+            # it's probably not installed
           end
 
           check
@@ -66,8 +68,18 @@ class Chef
               output = shell_out!("python -c \"import #{@new_resource.package_name}; print #{@new_resource.package_name}.__version__\"").stdout
               package_version = output.strip
             rescue
-              output = shell_out!("python -c \"import #{@new_resource.package_name}; print #{@new_resource.package_name}.__path__\"").stdout
-              output[/\S\S(.*)\/(.*)-(.*)-py(.*).egg\S/]
+              output = shell_out!("python -c \"import sys; print sys.path\"", :returns=>[0,1]).stdout
+
+              output_array = output.gsub(/[\[\]]/,'').split(/\s*,\s*/)
+              package_path = ""
+
+              output_array.each do |entry|
+                if entry.downcase.include?(@new_resource.package_name)
+                  package_path = entry
+                end
+              end
+
+              package_path[/\S\S(.*)\/(.*)-(.*)-py(.*).egg\S/]
               package_version = $3
             end
           end
