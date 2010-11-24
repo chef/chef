@@ -210,17 +210,20 @@ Before do
       end,
       'really_deep_node' => Proc.new do
         array = []
+        hash = {}
         max_levels = 50
-        num_level = 0
-        begin
-          array = [num_level, "really_deep_string", array]
+        
+        max_levels.times do |num_level|
+          array = [num_level, "really_deep_string_in_array", array]
+          hash = {"really_deep_string_in_hash_#{num_level}" => hash}
           num_level += 1
-        end while num_level < max_levels
+        end
         
         n = Chef::Node.new
         n.name 'really_deep_node'
         n.run_list << "deep_node_recipe"
         n.deep_array = array
+        n.deep_hash = hash
         n
       end
     },
