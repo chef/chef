@@ -41,7 +41,6 @@ class Chef
       end
 
       def to_json(obj, opts = nil)
-        #::JSON.generate(obj, opts_add_max_nesting(opts))
         obj.to_json(opts_add_max_nesting(opts))
       end
 
