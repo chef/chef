@@ -1,3 +1,28 @@
+
+# Walk array/hash to determine maximum depth. A scalar (anything but an
+# Array or Hash) has depth 0.
+def count_structure_levels(obj)
+  if obj.respond_to?(:keys)
+    # empty hash also has depth 0.
+    max_depth = 0
+    obj.keys.each do |key|
+      child_levels = 1 + count_structure_levels(obj[key])
+      max_depth = [max_depth, child_levels].max
+    end
+    max_depth
+  elsif obj.is_a?(Array)
+    # empty array also has depth 0.
+    max_depth = 0
+    obj.each do |child|
+      child_levels = 1 + count_structure_levels(child)
+      max_depth = [max_depth, child_levels].max
+    end
+    max_depth
+  else
+    0
+  end
+end
+
 Then /^I should get a '(.+)' exception$/ do |exception|
   self.exception.message.to_s.should == exception
 end
@@ -147,6 +172,11 @@ end
 
 Then /^the inflated response should respond to '(.+)' and match '(.+)' as json$/ do |method, regex|
   Chef::JSON.to_json(self.inflated_response.to_hash[method]).should =~ /#{regex}/m
+end
+
+#And the 'deep_array' component has depth of '50' levels
+Then /^the '(.+)' component has depth of '(.+)' levels$/ do |method, levels|
+  count_structure_levels(self.inflated_response.to_hash[method]).should == levels.to_i
 end
 
 Then /^the fields in the inflated response should match the '(.+)'$/ do |stash_name|

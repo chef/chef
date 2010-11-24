@@ -23,6 +23,7 @@ require 'chef/version'
 require 'chef/shef/shef_session'
 require 'chef/shef/model_wrapper'
 require 'chef/shef/shef_rest'
+require 'chef/json'
 
 module Shef
   module Extensions

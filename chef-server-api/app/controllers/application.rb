@@ -119,13 +119,18 @@ class Application < Merb::Controller
     available_recipes
   end
 
-  # Use Chef's JSON conversion library for sending JSON instead of the
-  # default Merb, which calls obj.to_json. Fixes CHEF-1292/PL-538.
+  # Fix CHEF-1292/PL-538; cause Merb to pass the max nesting constant into
+  # obj.to_json, which it calls by default based on the original request's 
+  # accept headers and the type passed into Merb::Controller.display
+  #
+  # TODO: tim, 2010-11-24: would be nice to instead have Merb call 
+  # Chef::JSON.to_json, instead of obj.to_json, but changing that
+  # behavior is convoluted in Merb. This override is assuming that
+  # Merb is eventually calling obj.to_json, which takes the :max_nesting
+  # option.
   override! :display
   def display(obj)
     super(obj, nil, {:max_nesting => Chef::JSON::JSON_MAX_NESTING})
-    #super.display(Chef::JSON.to_json(obj))
-    #Chef::JSON.to_json(obj)
   end
 
 end
