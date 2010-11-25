@@ -15,17 +15,18 @@
 # limitations under the License.
 #
 
-require "singleton"
-require "pp"
-require "etc"
-require "mixlib/cli"
+require 'singleton'
+require 'pp'
+require 'etc'
+require 'mixlib/cli'
 
 require 'chef/version'
-require "chef/client"
-require "chef/config"
+require 'chef/client'
+require 'chef/config'
 
-require "chef/shef/shef_session"
-require "chef/shef/ext"
+require 'chef/shef/shef_session'
+require 'chef/shef/ext'
+require 'chef/json'
 
 # = Shef
 # Shef is Chef in an IRB session. Shef can interact with a Chef server via the
@@ -163,7 +164,7 @@ module Shef
       end
 
       begin
-        @json_attribs = JSON.parse(json_io.read)
+        @json_attribs = Chef::JSON.from_json(json_io.read)
       rescue JSON::ParserError => error
         fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
       end
