@@ -1,6 +1,8 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Author:: Seth Falcon (<seth@opscode.com>)
 # Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'chef/json'
 
 class Chef
   module IndexQueue
@@ -67,7 +70,8 @@ class Chef
         object_with_metadata = with_indexer_metadata(metadata)
         obj_id = object_with_metadata["id"]
         AmqpClient.instance.queue_for_object(obj_id) do |queue|
-          queue.publish({:action => :add, :payload => self.with_indexer_metadata(metadata)}.to_json)
+          obj = {:action => :add, :payload => self.with_indexer_metadata(metadata)}
+          queue.publish(Chef::JSON.to_json(obj))
         end
       end
 
@@ -76,7 +80,8 @@ class Chef
         object_with_metadata = with_indexer_metadata(metadata)
         obj_id = object_with_metadata["id"]
         AmqpClient.instance.queue_for_object(obj_id) do |queue|
-          queue.publish({:action => :delete, :payload => self.with_indexer_metadata(metadata)}.to_json)
+          obj = {:action => :delete, :payload => self.with_indexer_metadata(metadata)}
+          queue.publish(Chef::JSON.to_json(obj))
         end
       end
       
