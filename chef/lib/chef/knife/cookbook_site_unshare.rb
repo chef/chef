@@ -18,7 +18,6 @@
 #
 
 require 'chef/knife'
-require 'chef/environment'
 require 'chef/json'
 
 class Chef
