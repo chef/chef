@@ -38,6 +38,11 @@ class Chef
         :long => "--ssh-password PASSWORD",
         :description => "The ssh password"
 
+      option :ssh_gateway,
+        :short => "-G GATEWAY",
+        :long => "--ssh-gateway GATEWAY",
+        :description => "The ssh gateway"
+
       option :identity_file,
         :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
@@ -147,6 +152,7 @@ class Chef
         ssh.name_args = [ server_name, ssh_command ]
         ssh.config[:ssh_user] = config[:ssh_user] 
         ssh.config[:ssh_password] = config[:ssh_password]
+        ssh.config[:ssh_gateway] = config[:ssh_gateway]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
         ssh
