@@ -62,6 +62,11 @@ class Chef
         :long => "--ssh-password PASSWORD",
         :description => "The ssh password"
 
+      option :ssh_gateway,
+        :short => "-G GATEWAY",
+        :long => "--ssh-gateway GATEWAY",
+        :description => "The ssh gateway"
+
       option :identity_file,
         :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
@@ -106,6 +111,14 @@ class Chef
       end
 
       def session_from_list(list)
+        if config[:ssh_gateway]
+          gw_host, gw_user = config[:ssh_gateway].split('@').reverse
+          gw_host, gw_port = gw_host.split(':')
+          gw_opts = gw_port ? { :port => gw_port } : {}
+
+          session.via(gw_host, gw_user || config[:ssh_user], gw_opts)
+        end
+
         list.each do |item|
           Chef::Log.debug("Adding #{item}")
 
