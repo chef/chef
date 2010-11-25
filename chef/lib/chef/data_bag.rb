@@ -25,7 +25,7 @@ require 'chef/couchdb'
 require 'chef/data_bag_item'
 require 'chef/index_queue'
 require 'extlib'
-require 'json'
+require 'chef/json'
 
 class Chef
   class DataBag 

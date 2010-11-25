@@ -191,6 +191,24 @@ Before do
         n.name 'paradise'
         n.run_list << "version_test"
         n
+      end,
+      'really_deep_node' => Proc.new do
+        array = []
+        hash = {}
+        max_levels = 50
+        
+        max_levels.times do |num_level|
+          array = [num_level, "really_deep_string_in_array", array]
+          hash = {"really_deep_string_in_hash_#{num_level}" => hash}
+          num_level += 1
+        end
+        
+        n = Chef::Node.new
+        n.name 'really_deep_node'
+        n.run_list << "deep_node_recipe"
+        n.deep_array = array
+        n.deep_hash = hash
+        n
       end
     },
     'hash' => {
@@ -264,14 +282,14 @@ Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|
         :method => "POST",
         "HTTP_ACCEPT" => 'application/json',
         "CONTENT_TYPE" => 'application/json',
-        :input => @stash[stash_name].to_json
+        :input => Chef::JSON.to_json(@stash[stash_name])
       }.merge(sign_request("POST", request_path, OpenSSL::PKey::RSA.new(IO.read("#{tmpdir}/client.pem")), "bobo")))
     end
   end
 end
 
 Given /^sending the method '(.+)' to the '(.+)' with '(.+)'/ do |method, stash_name, update_value|
-  update_value = JSON.parse(update_value) if update_value =~ /^\[|\{/
+  update_value = Chef::JSON.from_json(update_value) if update_value =~ /^\[|\{/
   @stash[stash_name].send(method.to_sym, update_value)
 end
 

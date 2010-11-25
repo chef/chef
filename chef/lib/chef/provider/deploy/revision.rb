@@ -1,6 +1,9 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Author:: Seth Falcon (<seth@opscode.com>)
 # Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +18,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require 'chef/provider'
+require 'chef/provider/deploy'
+require 'chef/json'
 
 class Chef
   class Provider
@@ -56,7 +63,7 @@ class Chef
 
         def load_cache
           begin
-            JSON.parse(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
+            Chef::JSON.from_json(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
           rescue Chef::Exceptions::FileNotFound
             sorted_releases_from_filesystem
           end
