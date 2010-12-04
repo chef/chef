@@ -280,5 +280,23 @@ describe Chef::Runner do
     not_if_called_times.should == 2
   end
 
+  it "should resolve resource references in notifications when resources are defined lazily" do
+    @first_resource.action = :nothing
+
+    lazy_resources = lambda {
+      last_resource = Chef::Resource::Cat.new("peanut", @run_context)
+      @run_context.resource_collection << last_resource
+      last_resource.notifies(:purr, @first_resource.to_s, :delayed)
+      last_resource.action = :purr
+    }
+    second_resource = Chef::Resource::RubyBlock.new("myblock", @run_context)
+    @run_context.resource_collection << second_resource
+    second_resource.block { lazy_resources.call }
+
+    @runner.converge
+
+    @first_resource.should be_updated
+  end
+
 end
 
