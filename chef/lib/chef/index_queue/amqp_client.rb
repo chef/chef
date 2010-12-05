@@ -69,7 +69,7 @@ class Chef
         retries = 0
         vnode_tag = obj_id_to_int(obj_id) % VNODES
         begin
-          yield amqp_client.queue("vnode-#{vnode_tag}")
+          yield amqp_client.queue("vnode-#{vnode_tag}", :passive => false, :durable => true, :exclusive => false, :auto_delete => false)
         rescue Bunny::ServerDownError, Bunny::ConnectionError, Errno::ECONNRESET
           disconnected!
           if (retries += 1) < 2

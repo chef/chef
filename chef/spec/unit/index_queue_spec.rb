@@ -239,7 +239,7 @@ describe Chef::IndexQueue::AmqpClient do
   
     it "resets the client upon a Bunny::ServerDownError when publishing" do
       Bunny.stub!(:new).and_return(@amqp_client)
-      @amqp_client.should_receive(:queue).with("vnode-68").twice.and_return(@queue_1, @queue_2)
+      @amqp_client.should_receive(:queue).with("vnode-68", {:passive=>false, :durable=>true, :exclusive=>false, :auto_delete=>false}).twice.and_return(@queue_1, @queue_2)
 
       @queue_1.should_receive(:publish).with(@data).and_raise(Bunny::ServerDownError)
       @queue_2.should_receive(:publish).with(@data).and_raise(Bunny::ServerDownError)
@@ -250,7 +250,7 @@ describe Chef::IndexQueue::AmqpClient do
     
     it "resets the client upon a Bunny::ConnectionError when publishing" do
       Bunny.stub!(:new).and_return(@amqp_client)
-      @amqp_client.should_receive(:queue).with("vnode-68").twice.and_return(@queue_1, @queue_2)
+      @amqp_client.should_receive(:queue).with("vnode-68", {:passive=>false, :durable=>true, :exclusive=>false, :auto_delete=>false}).twice.and_return(@queue_1, @queue_2)
 
       @queue_1.should_receive(:publish).with(@data).and_raise(Bunny::ConnectionError)
       @queue_2.should_receive(:publish).with(@data).and_raise(Bunny::ConnectionError)
@@ -261,7 +261,7 @@ describe Chef::IndexQueue::AmqpClient do
     
     it "resets the client upon a Errno::ECONNRESET when publishing" do
       Bunny.stub!(:new).and_return(@amqp_client)
-      @amqp_client.should_receive(:queue).with("vnode-68").twice.and_return(@queue_1, @queue_2)
+      @amqp_client.should_receive(:queue).with("vnode-68", {:passive=>false, :durable=>true, :exclusive=>false, :auto_delete=>false}).twice.and_return(@queue_1, @queue_2)
 
       @queue_1.should_receive(:publish).with(@data).and_raise(Errno::ECONNRESET)
       @queue_2.should_receive(:publish).with(@data).and_raise(Errno::ECONNRESET)
