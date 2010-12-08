@@ -37,17 +37,22 @@ class Chef
   end
 end
 
+class IndexQueueSpecError < RuntimeError ; end
+
 class FauxQueue
 
-  attr_reader :published_message
+  attr_reader :published_message, :publish_options
 
+  # Note: If publish is not called, this published_message will cause
+  # JSON parsing to die with "can't convert Symbol into String"
   def initialize
     @published_message = :epic_fail!
+    @publish_options = :epic_fail!
   end
 
-  def publish(message)
+  def publish(message, options=nil)
     @published_message = message
-
+    @publish_options = options
   end
 end
 
@@ -109,31 +114,134 @@ describe Chef::IndexQueue::Indexable do
     metadata_id.should == expected_uuid
   end
 
-  it "adds items to the index" do
-    @queue = FauxQueue.new
-    @publisher.should_receive(:queue_for_object).with("0000000-1111-2222-3333-444444444444").and_yield(@queue)
-    @indexable_obj.add_to_index(:database => "couchdb@localhost,etc.", :id=>"0000000-1111-2222-3333-444444444444")
-    published_message = Chef::JSON.from_json(@queue.published_message)
-    published_message.should == {"action" => "add", "payload" => {"item" => @item_as_hash,
-                                                                  "type" => "indexable_test_harness",
-                                                                  "database" => "couchdb@localhost,etc.", 
-                                                                  "id" => "0000000-1111-2222-3333-444444444444",
-                                                                  "enqueued_at" => @now.utc.to_i}}
-  end
-  
-  it "removes items from the index" do
-    @queue = FauxQueue.new
-    @publisher.should_receive(:queue_for_object).with("0000000-1111-2222-3333-444444444444").and_yield(@queue)
+  describe "adds and removes items to and from the index and respects Chef::Config[:persistent_queue]" do
+    before do
+      @exchange = mock("Bunny::Exchange")
+      @amqp_client = mock("Bunny::Client", :start => true, :exchange => @exchange)
+      @publisher.stub!(:amqp_client).and_return(@amqp_client)
+      @queue = FauxQueue.new
+      @publisher.should_receive(:queue_for_object).with("0000000-1111-2222-3333-444444444444").and_yield(@queue)
+    end
 
-    @indexable_obj.delete_from_index(:database => "couchdb2@localhost", :id=>"0000000-1111-2222-3333-444444444444")
-    published_message = Chef::JSON.from_json(@queue.published_message)
-    published_message.should == {"action" => "delete", "payload" => { "item" => @item_as_hash,
-                                                                      "type" => "indexable_test_harness",
-                                                                      "database" => "couchdb2@localhost",
-                                                                      "id" => "0000000-1111-2222-3333-444444444444",
-                                                                      "enqueued_at" => @now.utc.to_i}}
-  end
+    it "adds items to the index" do
+      @amqp_client.should_not_receive(:tx_select)
+      @amqp_client.should_not_receive(:tx_commit)
+      @amqp_client.should_not_receive(:tx_rollback)
+
+      @indexable_obj.add_to_index(:database => "couchdb@localhost,etc.", :id=>"0000000-1111-2222-3333-444444444444")
+
+      published_message = Chef::JSON.from_json(@queue.published_message)
+      published_message.should == {"action" => "add", "payload" => {"item" => @item_as_hash,
+                                                                    "type" => "indexable_test_harness",
+                                                                    "database" => "couchdb@localhost,etc.",
+                                                                    "id" => "0000000-1111-2222-3333-444444444444",
+                                                                    "enqueued_at" => @now.utc.to_i}}
+      @queue.publish_options[:persistent].should == false
+    end
+
+    it "adds items to the index transactionactionally when Chef::Config[:persistent_queue] == true" do
+      @amqp_client.should_receive(:tx_select)
+      @amqp_client.should_receive(:tx_commit)
+      @amqp_client.should_not_receive(:tx_rollback)
+
+      # set and restore Chef::Config[:persistent_queue] to true
+      orig_value = Chef::Config[:persistent_queue]
+      Chef::Config[:persistent_queue] = true
+      begin
+        @indexable_obj.add_to_index(:database => "couchdb@localhost,etc.", :id=>"0000000-1111-2222-3333-444444444444")
+      ensure
+        Chef::Config[:persistent_queue] = orig_value
+      end
+
+      published_message = Chef::JSON.from_json(@queue.published_message)
+      published_message.should == {"action" => "add", "payload" => {"item" => @item_as_hash,
+                                                                    "type" => "indexable_test_harness",
+                                                                    "database" => "couchdb@localhost,etc.",
+                                                                    "id" => "0000000-1111-2222-3333-444444444444",
+                                                                    "enqueued_at" => @now.utc.to_i}}
+      @queue.publish_options[:persistent].should == true
+    end
+
+    it "adds items to the index transactionally when Chef::Config[:persistent_queue] == true and rolls it back when there is a failure" do
+      @amqp_client.should_receive(:tx_select)
+      @amqp_client.should_receive(:tx_rollback)
+      @amqp_client.should_not_receive(:tx_commit)
+
+      # cause the publish to fail, and make sure the failure is our own
+      # by using a specific class
+      @queue.should_receive(:publish).and_raise(IndexQueueSpecError)
+
+      # set and restore Chef::Config[:persistent_queue] to true
+      orig_value = Chef::Config[:persistent_queue]
+      Chef::Config[:persistent_queue] = true
+      begin
+        lambda{
+          @indexable_obj.add_to_index(:database => "couchdb@localhost,etc.", :id=>"0000000-1111-2222-3333-444444444444")
+        }.should raise_error(IndexQueueSpecError)
+      ensure
+        Chef::Config[:persistent_queue] = orig_value
+      end
+    end
+
+    it "removes items from the index" do
+      @amqp_client.should_not_receive(:tx_select)
+      @amqp_client.should_not_receive(:tx_commit)
+      @amqp_client.should_not_receive(:tx_rollback)
+
+      @indexable_obj.delete_from_index(:database => "couchdb2@localhost", :id=>"0000000-1111-2222-3333-444444444444")
+      published_message = Chef::JSON.from_json(@queue.published_message)
+      published_message.should == {"action" => "delete", "payload" => { "item" => @item_as_hash,
+                                                                        "type" => "indexable_test_harness",
+                                                                        "database" => "couchdb2@localhost",
+                                                                        "id" => "0000000-1111-2222-3333-444444444444",
+                                                                        "enqueued_at" => @now.utc.to_i}}
+      @queue.publish_options[:persistent].should == false
+    end
   
+    it "removes items from the index transactionactionally when Chef::Config[:persistent_queue] == true" do
+      @amqp_client.should_receive(:tx_select)
+      @amqp_client.should_receive(:tx_commit)
+      @amqp_client.should_not_receive(:tx_rollback)
+
+      # set and restore Chef::Config[:persistent_queue] to true
+      orig_value = Chef::Config[:persistent_queue]
+      Chef::Config[:persistent_queue] = true
+      begin
+        @indexable_obj.delete_from_index(:database => "couchdb2@localhost", :id=>"0000000-1111-2222-3333-444444444444")
+      ensure
+        Chef::Config[:persistent_queue] = orig_value
+      end
+
+      published_message = Chef::JSON.from_json(@queue.published_message)
+      published_message.should == {"action" => "delete", "payload" => { "item" => @item_as_hash,
+                                                                        "type" => "indexable_test_harness",
+                                                                        "database" => "couchdb2@localhost",
+                                                                        "id" => "0000000-1111-2222-3333-444444444444",
+                                                                        "enqueued_at" => @now.utc.to_i}}
+      @queue.publish_options[:persistent].should == true
+    end
+
+    it "remove items from the index transactionally when Chef::Config[:persistent_queue] == true and rolls it back when there is a failure" do
+      @amqp_client.should_receive(:tx_select)
+      @amqp_client.should_receive(:tx_rollback)
+      @amqp_client.should_not_receive(:tx_commit)
+
+      # cause the publish to fail, and make sure the failure is our own
+      # by using a specific class
+      @queue.should_receive(:publish).and_raise(IndexQueueSpecError)
+
+      # set and restore Chef::Config[:persistent_queue] to true
+      orig_value = Chef::Config[:persistent_queue]
+      Chef::Config[:persistent_queue] = true
+      begin
+        lambda{
+          @indexable_obj.delete_from_index(:database => "couchdb2@localhost", :id=>"0000000-1111-2222-3333-444444444444")      }.should raise_error(IndexQueueSpecError)
+      ensure
+        Chef::Config[:persistent_queue] = orig_value
+      end
+    end
+  end
+
 end
 
 describe Chef::IndexQueue::Consumer do
@@ -280,6 +388,3 @@ describe Chef::IndexQueue::AmqpClient do
   end
   
 end
-
-
-

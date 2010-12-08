@@ -64,27 +64,46 @@ class Chef
         raise ArgumentError, "Type, Id, or Database missing in index operation: #{with_metadata.inspect}" if (with_metadata["id"].nil? or with_metadata["type"].nil?)
         with_metadata        
       end
-      
+
       def add_to_index(metadata={})
-        Chef::Log.debug("pushing item to index queue for addition: #{self.with_indexer_metadata(metadata)}")
-        object_with_metadata = with_indexer_metadata(metadata)
-        obj_id = object_with_metadata["id"]
-        AmqpClient.instance.queue_for_object(obj_id) do |queue|
-          obj = {:action => :add, :payload => self.with_indexer_metadata(metadata)}
-          queue.publish(Chef::JSON.to_json(obj))
-        end
+       Chef::Log.debug("pushing item to index queue for addition: #{self.with_indexer_metadata(metadata)}")
+       object_with_metadata = with_indexer_metadata(metadata)
+       obj_id = object_with_metadata["id"]
+       obj = {:action => :add, :payload => self.with_indexer_metadata(metadata)}
+
+       publish_object(obj_id, obj)
       end
 
       def delete_from_index(metadata={})
         Chef::Log.debug("pushing item to index queue for deletion: #{self.with_indexer_metadata(metadata)}")
         object_with_metadata = with_indexer_metadata(metadata)
         obj_id = object_with_metadata["id"]
-        AmqpClient.instance.queue_for_object(obj_id) do |queue|
-          obj = {:action => :delete, :payload => self.with_indexer_metadata(metadata)}
-          queue.publish(Chef::JSON.to_json(obj))
-        end
+        obj = {:action => :delete, :payload => self.with_indexer_metadata(metadata)}
+
+        publish_object(obj_id, obj)
       end
-      
+
+      private
+
+      # Uses the publisher to update the object's queue. If
+      # Chef::Config[:persistent_queue] is true, the update is wrapped
+      # in a transaction.
+      def publish_object(object_id, object)
+        publisher = AmqpClient.instance
+        begin
+          publisher.amqp_client.tx_select if Chef::Config[:persistent_queue]
+          publisher.queue_for_object(object_id) do |queue|
+            queue.publish(Chef::JSON.to_json(object), :persistent => Chef::Config[:persistent_queue])
+          end
+          publisher.amqp_client.tx_commit if Chef::Config[:persistent_queue]
+        rescue
+          publisher.amqp_client.tx_rollback if Chef::Config[:persistent_queue]
+          raise
+        end
+
+        true
+      end
+
     end
   end
 end
