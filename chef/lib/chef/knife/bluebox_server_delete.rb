@@ -27,9 +27,14 @@ class Chef
       
       option :delete_node,
         :short => "-D",
-        :long => "--deletenode",
-        :description => "Removes the node data from the platform",
-        :default => 0
+        :description => "Removes the node and client data from the platform",
+        :default => nil
+
+        option :confirm_delete,
+          :short => "-y",
+          :description => "Says yes to every confirmation",
+          :default => nil
+
       
       def h
         @highline ||= HighLine.new
@@ -53,7 +58,7 @@ class Chef
           return false
         end
 
-        confirm(h.color("Do you really want to delete block UUID #{servers[@name_args[0]]} with hostname #{@name_args[0]}", :green))
+        confirm(h.color("Do you really want to delete block UUID #{servers[@name_args[0]]} with hostname #{@name_args[0]}", :green)) unless options[:confirm_delete].nil?
 
         begin
           response = bluebox.destroy_block(servers[@name_args[0]])
@@ -61,7 +66,10 @@ class Chef
             Chef::Log.warn("Deleted server #{servers[@name_args[0]]} named #{@name_args[0]}")
             
             # Now delete the node from the Platform if specified as an option
-            delete_object(Chef::Node, @name_args[0]) if options[:delete_node] != 0
+            unless options[:delete_node].nil?
+                Chef::Node.load(@name_args[0])).destroy
+                Chef::Client.load(@name_args[0])).destroy
+            end
           end
         rescue Excon::Errors::UnprocessableEntity
           Chef::Log.warn("There was a problem deleting #{@name_args[0]}.  Please check Box Panel.")

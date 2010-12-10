@@ -567,8 +567,11 @@ __bluebox server delete BLOCK-HOSTNAME__ _(options)_
 
 Deletes a running Blue Box Group Blocks server.
 
-  * `-D`, `--deletenode`:
-  Deletes the node from the Platform.
+  * `-y`
+  Says yes to every confirmation.
+
+  * `-D`
+  Deletes the node and client data from the Platform.
 
 __bluebox server list__
 
