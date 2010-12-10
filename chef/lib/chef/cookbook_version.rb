@@ -24,6 +24,7 @@ require 'chef/node'
 require 'chef/resource_definition_list'
 require 'chef/recipe'
 require 'chef/cookbook/file_vendor'
+require 'chef/checksum'
 
 class Chef
   # == Chef::CookbookVersion
@@ -809,7 +810,10 @@ class Chef
     # checksum documents 
     def purge
       checksums.keys.each do |checksum|
-        Chef::Checksum.cdb_load(checksum, couchdb).purge
+        begin
+          Chef::Checksum.cdb_load(checksum, couchdb).purge
+        rescue Chef::Exceptions::CouchDBNotFound
+        end
       end
       cdb_destroy
     end
