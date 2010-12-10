@@ -88,10 +88,10 @@ class Chef
         server_args = {
           :flavor_id => config[:flavor],
           :image_id => config[:image],
-          :user => config[:username],
+          :username => config[:username],
           :password => config[:password]
           }
-        server_args[:ssh_key] = Chef::Config[:knife][:ssh_key] if Chef::Config[:knife][:ssh_key]
+        server_args[:public_key] = Chef::Config[:knife][:ssh_key] if Chef::Config[:knife][:ssh_key]
 
         server = bluebox.servers.new(server_args)
         response = server.save
