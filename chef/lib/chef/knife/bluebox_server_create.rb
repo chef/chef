@@ -62,7 +62,7 @@ class Chef
 
       option :identity_file,
         :short => "-I IDENTITY_FILE",
-        :long => "--identity-file IDENTITY_FILE"
+        :long => "--identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
       def h
