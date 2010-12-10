@@ -204,10 +204,28 @@ describe Chef::Provider::Git do
     @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir")
     @provider.sync
   end
- 
-  it "does a checkout running the clone command then running the after clone command from the destination dir" do
-    ::File.stub!(:exist?).with("/my/deploy/dir").and_return(false)
+
+  it "raises an error if the git clone command would fail because the enclosing directory doesn't exist" do
+    lambda {@provider.action_sync}.should raise_error(Chef::Exceptions::MissingParentDirectory)
+  end
+
+  it "does a checkout by cloning the repo and then enabling submodules" do
+    ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::Dir.stub!(:entries).with("/my/deploy/dir").and_return(['.','..'])
+    @provider.should_receive(:clone)
+    @provider.should_receive(:checkout)
+    @provider.should_receive(:enable_submodules)
+    @provider.action_checkout
+    @resource.should be_updated
+  end
+
+  # REGRESSION TEST: on some OSes, the entries from an empty directory will be listed as
+  # ['..', '.'] but this shouldn't change the behavior
+  it "does a checkout by cloning the repo and then enabling submodules when the directory entries are listed as %w{.. .}" do
+    ::File.stub!(:exist?).with("/my/deploy/dir").and_return(false)
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
+    ::Dir.stub!(:entries).with("/my/deploy/dir").and_return(['..','.'])
     @provider.should_receive(:clone)
     @provider.should_receive(:checkout)
     @provider.should_receive(:enable_submodules)
@@ -217,6 +235,7 @@ describe Chef::Provider::Git do
 
   it "should not checkout if the destination exists or is a non empty directory" do
     ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::Dir.stub!(:entries).with("/my/deploy/dir").and_return(['.','..','foo','bar'])
     @provider.should_not_receive(:clone)
     @provider.should_not_receive(:checkout)
@@ -226,9 +245,9 @@ describe Chef::Provider::Git do
     @resource.should_not be_updated
   end
 
-  it "does a sync by running the sync command" do
-    ::File.should_receive(:exist?).with("/my/deploy/dir").and_return(true)
-    ::Dir.should_receive(:entries).and_return(['.','..',"lib", "spec"])
+  it "does a sync by updating the source when the code has already been checked out" do
+    ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     @provider.should_receive(:find_current_revision).at_least(2).times.and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.should_receive(:sync)
     @provider.action_sync
@@ -236,8 +255,8 @@ describe Chef::Provider::Git do
   end
 
   it "does a sync and gets a new version" do
-    ::File.should_receive(:exist?).with("/my/deploy/dir").and_return(true)
-    ::Dir.should_receive(:entries).and_return(['.','..',"lib", "spec"])
+    ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     @provider.should_receive(:find_current_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.should_receive(:find_current_revision).and_return('28af684d8460ba4793eda3e7ac238c864a5d029a')
     @provider.should_receive(:sync)
@@ -245,8 +264,9 @@ describe Chef::Provider::Git do
     @resource.should be_updated
   end
   
-  it "does a checkout instead of sync if the deploy directory doesn't exist" do
-    ::File.should_receive(:exist?).with("/my/deploy/dir").and_return(false)
+  it "does a clone instead of fetch if the deploy directory doesn't exist" do
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
+    ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(false)
     @provider.should_receive(:action_checkout)
     @provider.should_not_receive(:run_command)
     @provider.action_sync
@@ -254,8 +274,9 @@ describe Chef::Provider::Git do
   end
   
   it "does a checkout instead of sync if the deploy directory is empty" do
-    ::File.should_receive(:exist?).with("/my/deploy/dir").and_return(true)
-    ::Dir.should_receive(:entries).with("/my/deploy/dir").and_return([".",".."])
+    ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(false)
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
+    ::File.stub!(:directory?).with("/my/deploy/dir").and_return(true)
     @provider.stub!(:sync_command).and_return("huzzah!")
     @provider.should_receive(:action_checkout)
     @provider.should_not_receive(:run_command).with(:command => "huzzah!", :cwd => "/my/deploy/dir")

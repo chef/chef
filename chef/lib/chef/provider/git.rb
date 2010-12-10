@@ -36,7 +36,9 @@ class Chef
       end
       
       def action_checkout
-        if !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination) == ['.','..']
+        assert_target_directory_valid!
+
+        if target_dir_non_existant_or_empty?
           clone
           checkout
           enable_submodules
@@ -53,12 +55,11 @@ class Chef
       end
       
       def action_sync
-        if !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination) == ['.','..']
-          action_checkout
-          @new_resource.updated_by_last_action(true)
-        else
+        assert_target_directory_valid!
+
+        if existing_git_clone?
           current_rev = find_current_revision
-          Chef::Log.debug "#{@new_resource} revision: #{current_rev}"
+          Chef::Log.debug "#{@new_resource} currently at revision: #{current_rev}"
           sync
           enable_submodules
           new_rev = find_current_revision
@@ -68,9 +69,28 @@ class Chef
             Chef::Log.info "#{@new_resource} updated revision is: #{new_rev}"
             @new_resource.updated_by_last_action(true)
           end
+        else
+          action_checkout
+          @new_resource.updated_by_last_action(true)
         end
       end
-      
+
+      def assert_target_directory_valid!
+        target_parent_directory = ::File.dirname(@new_resource.destination)
+        unless ::File.directory?(target_parent_directory)
+          msg = "Cannot clone #{@new_resource} to #{@new_resource.destination}, the enclosing directory #{target_parent_directory} does not exist"
+          raise Chef::Exceptions::MissingParentDirectory, msg
+        end
+      end
+
+      def existing_git_clone?
+        ::File.exist?(::File.join(@new_resource.destination, ".git"))
+      end
+
+      def target_dir_non_existant_or_empty?
+        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == ['.','..']
+      end
+
       def find_current_revision
         if ::File.exist?(::File.join(cwd, ".git"))
           status, result, error_message = output_of_command("git rev-parse HEAD", run_options(:cwd=>cwd))
