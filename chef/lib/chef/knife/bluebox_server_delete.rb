@@ -23,9 +23,15 @@ class Chef
   class Knife
     class BlueboxServerDelete < Knife
 
-      banner "knife bluebox server delete BLOCK-HOSTNAME"
-
-    def h
+      banner "knife bluebox server delete BLOCK-HOSTNAME (options)"
+      
+      option :delete_node,
+        :short => "-D",
+        :long => "--deletenode",
+        :description => "Removes the node data from the platform",
+        :default => 0
+      
+      def h
         @highline ||= HighLine.new
       end
 
@@ -53,6 +59,9 @@ class Chef
           response = bluebox.destroy_block(servers[@name_args[0]])
           if response.status == 200
             Chef::Log.warn("Deleted server #{servers[@name_args[0]]} named #{@name_args[0]}")
+            
+            # Now delete the node from the Platform if specified as an option
+            delete_object(Chef::Node, @name_args[0]) if options[:delete_node] != 0
           end
         rescue Excon::Errors::UnprocessableEntity
           Chef::Log.warn("There was a problem deleting #{@name_args[0]}.  Please check Box Panel.")

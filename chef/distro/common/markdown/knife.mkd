@@ -563,9 +563,12 @@ __bluebox server create [RUN LIST...]__ _(options)_
 
 Creates a new Blue Box Group Blocks instance and bootstraps it by checking out a github repo and installs a bare minimum installation of chef on the instance; it then executes the specified run list.
 
-__bluebox server delete BLOCK-HOSTNAME__
+__bluebox server delete BLOCK-HOSTNAME__ _(options)_
 
 Deletes a running Blue Box Group Blocks server.
+
+  * `-D`, `--deletenode`:
+  Deletes the node from the Platform.
 
 __bluebox server list__
 
