@@ -33,7 +33,7 @@ class Chef
         require 'fog'
         require 'highline'
 
-        bluebox = Fog::Bluebox.new(
+        bluebox = Fog::Bluebox::Compute.new(
           :bluebox_customer_id => Chef::Config[:knife][:bluebox_customer_id],
           :bluebox_api_key => Chef::Config[:knife][:bluebox_api_key]
         )
