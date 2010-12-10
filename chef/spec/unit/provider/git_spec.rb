@@ -188,7 +188,7 @@ describe Chef::Provider::Git do
   it "runs a sync command with default options" do
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:run_command).with(:command=>expected_cmd, :cwd=> "/my/deploy/dir")
-    @provider.sync
+    @provider.fetch_updates
   end
   
   it "runs a sync command with the user and group specified in the resource" do
@@ -197,16 +197,17 @@ describe Chef::Provider::Git do
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir",
                                                 :user => "whois", :group => "thisis")
-    @provider.sync
+    @provider.fetch_updates
   end
   
-  it "compiles a sync command using remote tracking branches when remote is not ``origin''" do
+  it "configures remote tracking branches when remote is not ``origin''" do
     @resource.remote "opscode"
-    expected_cmd =  "git config remote.opscode.url git://github.com/opscode/chef.git && " +
-                    "git config remote.opscode.fetch +refs/heads/*:refs/remotes/opscode/* && " +
-                    "git fetch opscode && git fetch opscode --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir")
-    @provider.sync
+    conf_tracking_branches =  "git config remote.opscode.url git://github.com/opscode/chef.git && " +
+                              "git config remote.opscode.fetch +refs/heads/*:refs/remotes/opscode/*"
+    @provider.should_receive(:run_command).with(:command => conf_tracking_branches, :cwd => "/my/deploy/dir")
+    fetch_command = "git fetch opscode && git fetch opscode --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
+    @provider.should_receive(:run_command).with(:command => fetch_command, :cwd => "/my/deploy/dir")
+    @provider.fetch_updates
   end
 
   it "raises an error if the git clone command would fail because the enclosing directory doesn't exist" do
@@ -249,22 +250,22 @@ describe Chef::Provider::Git do
     @resource.should_not be_updated
   end
 
-  it "does a sync by updating the source when the code has already been checked out" do
+  it "syncs the code by updating the source when the repo has already been checked out" do
     ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     @provider.should_receive(:find_current_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
-    @provider.should_not_receive(:sync)
+    @provider.should_not_receive(:fetch_updates)
     @provider.action_sync
     @resource.should_not be_updated
   end
 
-  it "does a sync and gets a new version" do
+  it "marks the resource as updated when the repos is updated and gets a new version" do
     ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     @provider.should_receive(:find_current_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.should_receive(:find_current_revision).and_return('28af684d8460ba4793eda3e7ac238c864a5d029a')
     @provider.stub!(:revision_sha).and_return('28af684d8460ba4793eda3e7ac238c864a5d029a')
-    @provider.should_receive(:sync)
+    @provider.should_receive(:fetch_updates)
     @provider.should_receive(:enable_submodules)
     @provider.action_sync
     @resource.should be_updated
@@ -275,12 +276,12 @@ describe Chef::Provider::Git do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     @provider.stub!(:find_current_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.stub!(:revision_sha).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
-    @provider.should_not_receive(:sync)
+    @provider.should_not_receive(:fetch_updates)
     @provider.action_sync
     @resource.should_not be_updated
   end
 
-  it "does a clone instead of fetch if the deploy directory doesn't exist" do
+  it "clones the repo instead of fetching it if the deploy directory doesn't exist" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(false)
     @provider.should_receive(:action_checkout)
@@ -289,7 +290,7 @@ describe Chef::Provider::Git do
     @resource.should be_updated
   end
   
-  it "does a checkout instead of sync if the deploy directory is empty" do
+  it "clones the repo instead of fetching updates if the deploy directory is empty" do
     ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(false)
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.stub!(:directory?).with("/my/deploy/dir").and_return(true)

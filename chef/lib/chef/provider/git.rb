@@ -61,7 +61,7 @@ class Chef
           current_rev = find_current_revision
           Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{revision_sha}"
           unless current_revision_matches_target_revision?
-            sync
+            fetch_updates
             enable_submodules
             new_rev = find_current_revision
             Chef::Log.info "#{@new_resource} updated to revision: #{new_rev}"
@@ -111,7 +111,7 @@ class Chef
         
         Chef::Log.info "Cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
         
-        clone_cmd = "#{git} clone #{args.join(' ')} #{@new_resource.repository} #{@new_resource.destination}"
+        clone_cmd = "git clone #{args.join(' ')} #{@new_resource.repository} #{@new_resource.destination}"
         run_command(run_options(:command => clone_cmd))
       end
       
@@ -119,38 +119,42 @@ class Chef
         sha_ref = revision_sha
         Chef::Log.info "Checking out branch: #{@new_resource.revision} reference: #{sha_ref}"
         # checkout into a local branch rather than a detached HEAD
-        run_command(run_options(:command => "#{git} checkout -b deploy #{sha_ref}", :cwd => @new_resource.destination))
+        run_command(run_options(:command => "git checkout -b deploy #{sha_ref}", :cwd => @new_resource.destination))
       end
       
       def enable_submodules
         if @new_resource.enable_submodules
           Chef::Log.info "Enabling git submodules"
-          command = "#{git} submodule init && #{git} submodule update"
+          command = "git submodule init && git submodule update"
           run_command(run_options(:command => command, :cwd => @new_resource.destination))
         end
       end
       
-      def sync
+      def fetch_updates
         revision = revision_sha
-        sync_command = []
 
-        # Use git-config to setup a remote tracking branches. Could use
-        # git-remote but it complains when a remote of the same name already
-        # exists, git-config will just silenty overwrite the setting every
-        # time. This could cause wierd-ness in the remote cache if the url
-        # changes between calls, but as long as the repositories are all
-        # based from each other it should still work fine.
-        if @new_resource.remote != 'origin'
-          Chef::Log.info  "Configuring remote tracking branches for repository #{@new_resource.repository} "+
-                          "at remote #{@new_resource.remote}"
-          sync_command << "#{git} config remote.#{@new_resource.remote}.url #{@new_resource.repository}"
-          sync_command << "#{git} config remote.#{@new_resource.remote}.fetch +refs/heads/*:refs/remotes/#{@new_resource.remote}/*"
-        end
+        setup_remote_tracking_branches if @new_resource.remote != 'origin'
 
         # since we're in a local branch already, just reset to specified revision rather than merge
-        sync_command << "#{git} fetch #{@new_resource.remote} && #{git} fetch #{@new_resource.remote} --tags && #{git} reset --hard #{revision}"
+        fetch_command = "git fetch #{@new_resource.remote} && git fetch #{@new_resource.remote} --tags && git reset --hard #{revision}"
         Chef::Log.info "Fetching updates from #{new_resource.remote} and resetting to revison #{revision}"
-        run_command(run_options(:command => sync_command.join(" && "), :cwd => @new_resource.destination))
+        run_command(run_options(:command => fetch_command, :cwd => @new_resource.destination))
+      end
+
+      # Use git-config to setup a remote tracking branches. Could use
+      # git-remote but it complains when a remote of the same name already
+      # exists, git-config will just silenty overwrite the setting every
+      # time. This could cause wierd-ness in the remote cache if the url
+      # changes between calls, but as long as the repositories are all
+      # based from each other it should still work fine.
+      def setup_remote_tracking_branches
+        command = []
+
+        Chef::Log.info  "Configuring remote tracking branches for repository #{@new_resource.repository} "+
+                        "at remote #{@new_resource.remote}"
+        command << "git config remote.#{@new_resource.remote}.url #{@new_resource.repository}"
+        command << "git config remote.#{@new_resource.remote}.fetch +refs/heads/*:refs/remotes/#{@new_resource.remote}/*"
+        run_command(run_options(:command => command.join(" && "), :cwd => @new_resource.destination))
       end
 
       def current_revision_matches_target_revision?
@@ -173,7 +177,7 @@ class Chef
       alias :revision_slug :revision_sha
       
       def remote_resolve_reference
-        command = scm('ls-remote', @new_resource.repository, @new_resource.revision)
+        command = git('ls-remote', @new_resource.repository, @new_resource.revision)
         Chef::Log.debug("Executing #{command}")
         begin
           status, result, error_message = output_of_command(command, run_options)
@@ -199,14 +203,10 @@ class Chef
         @new_resource.destination
       end
       
-      def scm(*args)
-        [git, *args].compact.join(" ")
+      def git(*args)
+        ["git", *args].compact.join(" ")
       end
 
-      def git
-        'git'
-      end
-      
       def sha_hash?(string)
         string =~ /^[0-9a-f]{40}$/
       end
