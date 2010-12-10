@@ -65,12 +65,12 @@ class Chef
         require 'readline'
         require 'erb'
 
-        bluebox = Fog::Bluebox.new(
+        bluebox = Fog::Bluebox::Compute.new(
           :bluebox_customer_id => Chef::Config[:knife][:bluebox_customer_id],
           :bluebox_api_key => Chef::Config[:knife][:bluebox_api_key]
         )
 
-         flavors = bluebox.flavors.inject({}) { |h,f| h[f.id] = f.description; h }
+        flavors = bluebox.flavors.inject({}) { |h,f| h[f.id] = f.description; h }
         images  = bluebox.images.inject({}) { |h,i| h[i.id] = i.description; h }
 
         puts "#{h.color("Deploying a new Blue Box Block...", :green)}\n\n"
@@ -100,13 +100,13 @@ class Chef
           # The server was succesfully queued... Now wait for it to spin up...
           print "\n#{h.color("Requesting status of #{server.hostname}\n", :magenta)}"
 
-          # Allow for 5 minutes to time out...
-          # ready? will raise Fog::Bluebox::BlockInstantiationError if block creation fails.
-          unless server.wait_for( 5 * 60 ){ print "."; STDOUT.flush; ready? }
+          # Allow for 10 minutes to time out...
+          # ready? will raise Fog::Bluebox::Compute::BlockInstantiationError if block creation fails.
+          unless server.wait_for( 10 * 60 ){ print "."; STDOUT.flush; ready? }
 
-            # The server wasn't started in 5 minutes... Send a destroy call to make sure it doesn't spin up on us later...
+            # The server wasn't started in time... Send a destroy call to make sure it doesn't spin up on us later...
             server.destroy
-            raise Fog::Bluebox::BlockInstantiationError, "BBG server not available after 5 minutes"
+            raise Fog::Bluebox::Compute::BlockInstantiationError, "BBG server creation timed out."
 
           else
             print "\n\n#{h.color("BBG Server startup succesful.  Accessible at #{server.hostname}\n", :green)}"
@@ -145,7 +145,7 @@ class Chef
 
           end
 
-        rescue Fog::Bluebox::BlockInstantiationError => e
+        rescue Fog::Bluebox::Compute::BlockInstantiationError => e
 
           puts "\n\n#{h.color("Encountered error starting up BBG block. Auto destroy called.  Please try again.", :red)}"
 
