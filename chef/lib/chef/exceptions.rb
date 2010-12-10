@@ -62,5 +62,7 @@ class Chef
     class InvalidResourceSpecification < ArgumentError; end
     class SolrConnectionError < RuntimeError; end
     class IllegalChecksumRevert < RuntimeError; end
+    class MissingParentDirectory < RuntimeError; end
+    class UnresolvableGitReference < RuntimeError; end
   end
 end

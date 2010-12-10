@@ -142,7 +142,7 @@ class Chef
         end
         
         args[:cwd] ||= Dir.tmpdir
-        unless File.directory?(args[:cwd])
+        unless ::File.directory?(args[:cwd])
           raise Chef::Exceptions::Exec, "#{args[:cwd]} does not exist or is not a directory"
         end
         
