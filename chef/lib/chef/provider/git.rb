@@ -59,16 +59,15 @@ class Chef
 
         if existing_git_clone?
           current_rev = find_current_revision
-          Chef::Log.debug "#{@new_resource} currently at revision: #{current_rev}"
-          sync
-          enable_submodules
-          new_rev = find_current_revision
-          if current_rev == new_rev
-            @new_resource.updated_by_last_action(false)
-          else
-            Chef::Log.info "#{@new_resource} updated revision is: #{new_rev}"
+          Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{revision_sha}"
+          unless current_revision_matches_target_revision?
+            sync
+            enable_submodules
+            new_rev = find_current_revision
+            Chef::Log.info "#{@new_resource} updated to revision: #{new_rev}"
             @new_resource.updated_by_last_action(true)
           end
+
         else
           action_checkout
           @new_resource.updated_by_last_action(true)
@@ -153,7 +152,11 @@ class Chef
         Chef::Log.info "Fetching updates from #{new_resource.remote} and resetting to revison #{revision}"
         run_command(run_options(:command => sync_command.join(" && "), :cwd => @new_resource.destination))
       end
-      
+
+      def current_revision_matches_target_revision?
+        (!@current_resource.revision.nil?) && (revision_sha.strip.to_i(16) == @current_resource.revision.strip.to_i(16))
+      end
+
       def revision_sha
         @revision_sha ||= begin
           assert_revision_not_remote

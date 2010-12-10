@@ -21,6 +21,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::Git do
   
   before(:each) do
+    @current_resource = Chef::Resource::Git.new("web2.0 app")
+    @current_resource.revision("d35af14d41ae22b19da05d7d03a0bafc321b244c")
+
     @resource = Chef::Resource::Git.new("web2.0 app")
     @resource.repository "git://github.com/opscode/chef.git"
     @resource.destination "/my/deploy/dir"
@@ -28,6 +31,7 @@ describe Chef::Provider::Git do
     @node = Chef::Node.new
     @run_context = Chef::RunContext.new(@node, {})
     @provider = Chef::Provider::Git.new(@resource, @run_context)
+    @provider.current_resource = @current_resource
   end
   
   context "determining the revision of the currently deployed checkout" do
@@ -248,8 +252,8 @@ describe Chef::Provider::Git do
   it "does a sync by updating the source when the code has already been checked out" do
     ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
-    @provider.should_receive(:find_current_revision).at_least(2).times.and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
-    @provider.should_receive(:sync)
+    @provider.should_receive(:find_current_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
+    @provider.should_not_receive(:sync)
     @provider.action_sync
     @resource.should_not be_updated
   end
@@ -259,11 +263,23 @@ describe Chef::Provider::Git do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     @provider.should_receive(:find_current_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.should_receive(:find_current_revision).and_return('28af684d8460ba4793eda3e7ac238c864a5d029a')
+    @provider.stub!(:revision_sha).and_return('28af684d8460ba4793eda3e7ac238c864a5d029a')
     @provider.should_receive(:sync)
+    @provider.should_receive(:enable_submodules)
     @provider.action_sync
     @resource.should be_updated
   end
-  
+
+  it "does not fetch any updates if the remote revision matches the current revision" do
+    ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
+    @provider.stub!(:find_current_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
+    @provider.stub!(:revision_sha).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
+    @provider.should_not_receive(:sync)
+    @provider.action_sync
+    @resource.should_not be_updated
+  end
+
   it "does a clone instead of fetch if the deploy directory doesn't exist" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(false)
