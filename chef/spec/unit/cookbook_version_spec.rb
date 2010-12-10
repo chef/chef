@@ -331,4 +331,54 @@ describe Chef::CookbookVersion do
 
   end
 
+  describe "when deleting in the database" do
+    before do
+      @couchdb_driver = Chef::CouchDB.new
+      @cookbook_version = Chef::CookbookVersion.new("tatft", @couchdb_driver)
+      @cookbook_version.version = "1.2.3"
+      @couchdb_rev = "_123456789"
+      @cookbook_version.couchdb_rev = @couchdb_rev
+    end
+
+    it "deletes its document from couchdb" do
+      @couchdb_driver.should_receive(:delete).with("cookbook_version", "tatft-1.2.3", @couchdb_rev)
+      @cookbook_version.cdb_destroy
+    end
+
+    it "deletes associated checksum objects when purged" do
+      checksums = {"12345" => "/tmp/foo", "23456" => "/tmp/bar", "34567" => "/tmp/baz"}
+      @cookbook_version.stub!(:checksums).and_return(checksums)
+
+      chksum_docs = checksums.map do |md5, path|
+        cksum_doc = mock("Chef::Checksum for #{md5} at #{path}")
+        Chef::Checksum.should_receive(:cdb_load).with(md5, @couchdb_driver).and_return(cksum_doc)
+        cksum_doc.should_receive(:purge)
+        cksum_doc
+      end
+
+      @cookbook_version.should_receive(:cdb_destroy)
+      @cookbook_version.purge
+    end
+
+    it "successfully purges when associated checksum objects are missing" do
+      checksums = {"12345" => "/tmp/foo", "23456" => "/tmp/bar", "34567" => "/tmp/baz"}
+
+      chksum_docs = checksums.map do |md5, path|
+        cksum_doc = mock("Chef::Checksum for #{md5} at #{path}")
+        Chef::Checksum.should_receive(:cdb_load).with(md5, @couchdb_driver).and_return(cksum_doc)
+        cksum_doc.should_receive(:purge)
+        cksum_doc
+      end
+
+      missing_checksum = {"99999" => "/tmp/qux"}
+      Chef::Checksum.should_receive(:cdb_load).with("99999", @couchdb_driver).and_raise(Chef::Exceptions::CouchDBNotFound)
+
+      @cookbook_version.stub!(:checksums).and_return(checksums.merge(missing_checksum))
+
+      @cookbook_version.should_receive(:cdb_destroy)
+      lambda {@cookbook_version.purge}.should_not raise_error
+    end
+
+  end
+
 end
