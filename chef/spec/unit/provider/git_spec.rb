@@ -94,7 +94,7 @@ describe Chef::Provider::Git do
     end
     
     it "returns resource.revision as is if revision is already a full SHA" do
-      @provider.revision_sha.should eql("d35af14d41ae22b19da05d7d03a0bafc321b244c")
+      @provider.target_revision.should eql("d35af14d41ae22b19da05d7d03a0bafc321b244c")
     end
 
     it "converts resource.revision from a tag to a SHA" do
@@ -103,19 +103,19 @@ describe Chef::Provider::Git do
       @provider.should_receive(:popen4).with(@git_ls_remote + "v1.0", {:cwd => instance_of(String)}).
                                         and_yield("pid","stdin",@stdout,@stderr).
                                         and_return(@exitstatus)
-      @provider.revision_sha.should eql("503c22a5e41f5ae3193460cca044ed1435029f53")
+      @provider.target_revision.should eql("503c22a5e41f5ae3193460cca044ed1435029f53")
     end
     
     it "raises a runtime error if you try to deploy from ``origin''" do
       @resource.revision("origin/")
-      lambda {@provider.revision_sha}.should raise_error(RuntimeError)
+      lambda {@provider.target_revision}.should raise_error(RuntimeError)
     end
   
     it "raises a runtime error if the revision can't be resolved to any revision" do
       @resource.revision "FAIL, that's the revision I want"
       @stdout.stub!(:string).and_return("\n")
       @provider.should_receive(:popen4).and_yield("pid","stdin",@stdout,@stderr).and_return(@exitstatus)
-      lambda {@provider.revision_sha}.should raise_error(RuntimeError)
+      lambda {@provider.target_revision}.should raise_error(RuntimeError)
     end
     
     it "gives the latest HEAD revision SHA if nothing is specified" do
@@ -136,11 +136,11 @@ describe Chef::Provider::Git do
       @resource.revision ''
       @stdout.stub!(:string).and_return(lots_of_shas)
       @provider.should_receive(:popen4).and_yield("pid","stdin",@stdout,@stderr).and_return(@exitstatus)
-      @provider.revision_sha.should eql("28af684d8460ba4793eda3e7ac238c864a5d029a")
+      @provider.target_revision.should eql("28af684d8460ba4793eda3e7ac238c864a5d029a")
     end
   end
   
-  it "responds to :revision_slug as an alias for revision_sha" do
+  it "responds to :revision_slug as an alias for target_revision" do
     @provider.should respond_to(:revision_slug)
   end
   
@@ -259,12 +259,11 @@ describe Chef::Provider::Git do
     @resource.should_not be_updated
   end
 
-  it "marks the resource as updated when the repos is updated and gets a new version" do
+  it "marks the resource as updated when the repo is updated and gets a new version" do
     ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     @provider.should_receive(:find_current_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
-    @provider.should_receive(:find_current_revision).and_return('28af684d8460ba4793eda3e7ac238c864a5d029a')
-    @provider.stub!(:revision_sha).and_return('28af684d8460ba4793eda3e7ac238c864a5d029a')
+    @provider.stub!(:target_revision).and_return('28af684d8460ba4793eda3e7ac238c864a5d029a')
     @provider.should_receive(:fetch_updates)
     @provider.should_receive(:enable_submodules)
     @provider.action_sync
@@ -275,7 +274,7 @@ describe Chef::Provider::Git do
     ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     @provider.stub!(:find_current_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
-    @provider.stub!(:revision_sha).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
+    @provider.stub!(:target_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.should_not_receive(:fetch_updates)
     @provider.action_sync
     @resource.should_not be_updated

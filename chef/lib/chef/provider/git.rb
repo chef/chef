@@ -59,12 +59,11 @@ class Chef
 
         if existing_git_clone?
           current_rev = find_current_revision
-          Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{revision_sha}"
+          Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{target_revision}"
           unless current_revision_matches_target_revision?
             fetch_updates
             enable_submodules
-            new_rev = find_current_revision
-            Chef::Log.info "#{@new_resource} updated to revision: #{new_rev}"
+            Chef::Log.info "#{@new_resource} updated to revision: #{target_revision}"
             @new_resource.updated_by_last_action(true)
           end
 
@@ -116,7 +115,7 @@ class Chef
       end
       
       def checkout
-        sha_ref = revision_sha
+        sha_ref = target_revision
         Chef::Log.info "Checking out branch: #{@new_resource.revision} reference: #{sha_ref}"
         # checkout into a local branch rather than a detached HEAD
         run_command(run_options(:command => "git checkout -b deploy #{sha_ref}", :cwd => @new_resource.destination))
@@ -131,13 +130,11 @@ class Chef
       end
       
       def fetch_updates
-        revision = revision_sha
-
         setup_remote_tracking_branches if @new_resource.remote != 'origin'
 
         # since we're in a local branch already, just reset to specified revision rather than merge
-        fetch_command = "git fetch #{@new_resource.remote} && git fetch #{@new_resource.remote} --tags && git reset --hard #{revision}"
-        Chef::Log.info "Fetching updates from #{new_resource.remote} and resetting to revison #{revision}"
+        fetch_command = "git fetch #{@new_resource.remote} && git fetch #{@new_resource.remote} --tags && git reset --hard #{target_revision}"
+        Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revison #{target_revision}"
         run_command(run_options(:command => fetch_command, :cwd => @new_resource.destination))
       end
 
@@ -158,23 +155,23 @@ class Chef
       end
 
       def current_revision_matches_target_revision?
-        (!@current_resource.revision.nil?) && (revision_sha.strip.to_i(16) == @current_resource.revision.strip.to_i(16))
+        (!@current_resource.revision.nil?) && (target_revision.strip.to_i(16) == @current_resource.revision.strip.to_i(16))
       end
 
-      def revision_sha
-        @revision_sha ||= begin
+      def target_revision
+        @target_revision ||= begin
           assert_revision_not_remote
           
           if sha_hash?(@new_resource.revision)
-            @revision_sha = @new_resource.revision 
+            @target_revision = @new_resource.revision 
           else
             resolved_reference = remote_resolve_reference
-            @revision_sha = extract_revision(resolved_reference)
+            @target_revision = extract_revision(resolved_reference)
           end
         end
       end
       
-      alias :revision_slug :revision_sha
+      alias :revision_slug :target_revision
       
       def remote_resolve_reference
         command = git('ls-remote', @new_resource.repository, @new_resource.revision)
