@@ -69,5 +69,6 @@ class Chef
     class InvalidCookbookVersion < ArgumentError; end
     class InvalidVersionConstraint < ArgumentError; end
     class MissingParentDirectory < RuntimeError; end
+    class UnresolvableGitReference < RuntimeError; end
   end
 end

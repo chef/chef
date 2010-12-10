@@ -179,10 +179,11 @@ class Chef
         begin
           status, result, error_message = output_of_command(command, run_options)
           handle_command_failures(status, "STDOUT: #{result}\nSTDERR: #{error_message}")
-        rescue RuntimeError => e
-          raise RuntimeError, e.message + "\n" + "Could not access the remote Git repository. "+
-                "If this is a private repository, please verify that the deploy key for your application " +
-                "has been added to your remote Git account."
+        rescue Chef::Exceptions::Exec => e
+          msg =  "Could not access the remote Git repository. If this is a private repository, "
+          msg << "verify that the deploy key for your application has been added to your remote Git account.\n"
+          msg << e.message
+          raise Chef::Exceptions::Exec, msg
         end
         result
       end
@@ -221,7 +222,10 @@ class Chef
       
       def extract_revision(resolved_reference)
         unless resolved_reference =~ /^([0-9a-f]{40})\s+(\S+)/
-          raise "Unable to resolve reference for '#{resolved_reference}' on repository '#{@new_resource.repository}'."
+          msg = "Unable to parse SHA reference for '#{@new_resource.revision}' in repository '#{@new_resource.repository}'. "
+          msg << "Verify your (case-sensitive) repository URL and revision.\n"
+          msg << "`git ls-remote` output: #{resolved_reference}"
+          raise Chef::Exceptions::UnresolvableGitReference, msg
         end
         $1
       end
