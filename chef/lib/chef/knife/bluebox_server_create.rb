@@ -53,6 +53,12 @@ class Chef
         :long => "--bootstrap false",
         :description => "Disables the bootstrapping process.",
         :default => true
+      
+      option :distro,
+        :short => "-d DISTRO",
+        :long => "--distro DISTRO",
+        :description => "Bootstrap a distro using a template",
+        :default => "ubuntu10.04-gems"
 
       def h
         @highline ||= HighLine.new
@@ -132,6 +138,7 @@ class Chef
               bootstrap.config[:identity_file] = config[:identity_file]
               bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.hostname
               bootstrap.config[:use_sudo] = true
+              bootstrap.config[:distro] = config[:distro]
               bootstrap.run
             rescue Errno::ECONNREFUSED
               puts h.color("Connection refused on SSH, retrying - CTRL-C to abort")
