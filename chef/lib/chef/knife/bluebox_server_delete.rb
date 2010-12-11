@@ -68,7 +68,6 @@ class Chef
             # Now delete the node from the Platform if specified as an option
             unless options[:delete_node].nil?
                 Chef::Node.load(@name_args[0]).destroy
-                Chef::Client.load(@name_args[0]).destroy
             end
           end
         rescue Excon::Errors::UnprocessableEntity
