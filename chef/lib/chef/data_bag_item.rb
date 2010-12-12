@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+require 'forwardable'
+
 require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
@@ -29,6 +31,8 @@ require 'chef/json'
 
 class Chef
   class DataBagItem
+
+    extend Forwardable
     
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
@@ -58,6 +62,9 @@ class Chef
         }
       }
     }
+
+    # Define all Hash's instance methods as delegating to @raw_data
+    def_delegators(:@raw_data, *(Hash.instance_methods - Object.instance_methods))
 
     attr_accessor :couchdb_rev, :couchdb_id, :couchdb
     attr_reader :raw_data
@@ -156,11 +163,6 @@ class Chef
       bag_item
     end
 
-    # The Data Bag Item behaves like a hash - we pass all that stuff along to @raw_data.
-    def method_missing(method_symbol, *args, &block) 
-      self.raw_data.send(method_symbol, *args, &block)
-    end
-    
     # Load a Data Bag Item by name from CouchDB
     def self.cdb_load(data_bag, name, couchdb=nil)
       (couchdb || Chef::CouchDB.new).load("data_bag_item", object_name(data_bag, name))
