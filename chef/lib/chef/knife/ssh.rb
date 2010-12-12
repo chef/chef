@@ -245,16 +245,26 @@ class Chef
       end
 
       def macterm
-        require 'appscript'
+        begin
+          require 'appscript'
+        rescue LoadError
+          STDERR.puts "you need the rb-appscript gem to use knife ssh macterm. `(sudo) gem install rb-appscript` to install"
+          raise
+        end
+
         Appscript.app("/Applications/Utilities/Terminal.app").windows.first.activate  
         Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", :using=>:command_down)
         term = Appscript.app('Terminal')  
         window = term.windows.first.get
-        session.servers_for.each do |server|
+
+        (session.servers_for.size - 1).times do |i|
+          window.activate
           Appscript.app("System Events").application_processes["Terminal.app"].keystroke("t", :using=>:command_down)
+        end
+
+        session.servers_for.each_with_index do |server, tab_number|
           cmd = "unset PROMPT_COMMAND; echo -e \"\\033]0;#{server.host}\\007\"; ssh #{server.user ? "#{server.user}@#{server.host}" : server.host}"
-          Appscript.app('Terminal').do_script(cmd, :in => window.tabs.last.get)
-          sleep 1
+          Appscript.app('Terminal').do_script(cmd, :in => window.tabs[tab_number + 1].get)
         end
       end
 
