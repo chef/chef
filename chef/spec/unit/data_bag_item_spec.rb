@@ -164,5 +164,21 @@ describe Chef::DataBagItem do
       @deserial["snooze"].should == { "finally" => "world_will" }
     end
   end
+
+  describe "when converting to a string" do
+    it "converts to a string in the form data_bag_item[ID]" do
+      @data_bag_item['id'] = "heart of darkness"
+      @data_bag_item.to_s.should == 'data_bag_item[heart of darkness]'
+    end
+
+    it "inspects as data_bag_item[BAG, ID, RAW_DATA]" do
+      raw_data = {"id" => "heart_of_darkness", "author" => "Conrad"}
+      @data_bag_item.raw_data = raw_data
+      @data_bag_item.data_bag("books")
+
+      @data_bag_item.inspect.should == "data_bag_item[\"books\", \"heart_of_darkness\", #{raw_data.inspect}]"
+    end
+  end
+
 end
 

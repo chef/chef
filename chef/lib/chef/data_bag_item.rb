@@ -214,6 +214,10 @@ class Chef
       "data_bag_item[#{id}]"
     end
 
+    def inspect
+      "data_bag_item[#{data_bag.inspect}, #{raw_data['id'].inspect}, #{raw_data.inspect}]"
+    end
+
     def pretty_print(pretty_printer)
       pretty_printer.pp({"data_bag_item('#{data_bag}', '#{id}')" => self.to_hash})
     end
