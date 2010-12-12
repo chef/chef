@@ -48,7 +48,7 @@ describe Chef::Provider::Subversion do
     end
     
     it "sets the revision to nil if there isn't any deployed code yet" do
-      ::File.should_receive(:exist?).with("/my/deploy/dir").and_return(false)
+      ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(false)
       @provider.find_current_revision.should be_nil
     end
     
@@ -62,7 +62,7 @@ describe Chef::Provider::Subversion do
                           "Last Changed Author: codeninja\n" +
                           "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
                           "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
-      ::File.should_receive(:exist?).with("/my/deploy/dir").and_return(true)
+      ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
       ::File.should_receive(:directory?).with("/my/deploy/dir").and_return(true)
       ::Dir.should_receive(:chdir).with("/my/deploy/dir").and_yield
       @stdout.stub!(:string).and_return(example_svn_info)
@@ -77,7 +77,7 @@ describe Chef::Provider::Subversion do
     
     it "gives nil as the current revision if the deploy dir isn't a SVN working copy" do
       example_svn_info = "svn: '/tmp/deploydir' is not a working copy\n"
-      ::File.should_receive(:exist?).with("/my/deploy/dir").and_return(true)
+      ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
       ::File.should_receive(:directory?).with("/my/deploy/dir").and_return(true)
       ::Dir.should_receive(:chdir).with("/my/deploy/dir").and_yield
       @stdout.stub!(:string).and_return(example_svn_info)
@@ -218,8 +218,7 @@ describe Chef::Provider::Subversion do
   end
   
   it "does a checkout for action_sync if the deploy dir exists but is empty" do
-    ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
-    ::Dir.should_receive(:entries).with("/my/deploy/dir").and_return(['.','..'])
+    ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(false)
     @provider.should_receive(:action_checkout)
     @provider.action_sync
     @resource.should be_updated
@@ -227,7 +226,6 @@ describe Chef::Provider::Subversion do
   
   it "runs the sync_command on action_sync if the deploy dir exists and isn't empty" do
     ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
-    ::Dir.should_receive(:entries).with("/my/deploy/dir").and_return(['.','..','the','app','exists'])
     expected_cmd = "svn update -q  -r12345 /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
     @provider.action_sync

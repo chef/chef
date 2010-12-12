@@ -54,10 +54,10 @@ class Chef
       end
       
       def action_sync
-        if !::File.exist?(@new_resource.destination + "/.svn") || ::Dir.entries(@new_resource.destination) == ['.','..']
-          action_checkout
-        else
+        if ::File.exist?(::File.join(@new_resource.destination, ".svn"))
           run_command(run_options(:command => sync_command))
+        else
+          action_checkout
         end
         @new_resource.updated_by_last_action(true)
       end
@@ -100,7 +100,7 @@ class Chef
       alias :revision_slug :revision_int
       
       def find_current_revision
-        return nil unless ::File.exist?(@new_resource.destination)
+        return nil unless ::File.exist?(::File.join(@new_resource.destination, ".svn"))
         command = scm(:info)
         status, svn_info, error_message = output_of_command(command, run_options(:cwd => cwd))
         
