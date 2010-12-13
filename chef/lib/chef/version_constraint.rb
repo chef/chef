@@ -95,7 +95,7 @@ class Chef
         @op = $1
         raw_version = $2
         @version = Chef::Version.new(raw_version)
-        if raw_version.split('.').count == 2
+        if raw_version.split('.').size == 2
           @missing_patch_level = true
         end
       else
