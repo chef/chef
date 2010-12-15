@@ -125,7 +125,7 @@ class Chef
 
         $stdout.sync = true
 
-        Chef::Log.info("Bootstrapping Chef on #{h.color(config[:server_name], :bold)}")
+        Chef::Log.info("Bootstrapping Chef on #{h.color(Array(@name_args).first, :bold)}")
 
         knife_ssh.load_late_dependencies
 
