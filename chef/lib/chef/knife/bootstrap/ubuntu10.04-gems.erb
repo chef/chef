@@ -1,9 +1,13 @@
 bash -c '
-<% if @config[:vpc_mode] %>
+<%
+ if @config[:vpc_mode]
+   az_str = Chef::Config[:knife][:region]
+   az_ip = `dig #{az_str}.archive.ubuntu.com +short | head -1`.chomp %>
 # Forces localhost entry to speed up build process
 touch /etc/newhosts
 cat /etc/hosts >> /etc/newhosts
 echo "127.0.1.1 <%= @config[:name_args] %>" >> /etc/newhosts
+echo "<%= az_ip %> <%= az_str %>.ec2.archive.ubuntu.com" >> /etc/newhosts
 mv /etc/hosts /etc/hosts.chef
 mv /etc/newhosts /etc/hosts
 <% end %>
