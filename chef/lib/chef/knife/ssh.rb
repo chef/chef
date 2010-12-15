@@ -231,17 +231,31 @@ class Chef
       end
 
       def tmux
+        ssh_dest = lambda do |server|
+          prefix = server.user ? "#{server.user}@" : ""
+          "'ssh #{prefix}#{server.host}'"
+        end
+
+        new_window_cmds = lambda do
+          if session.servers_for.size > 1
+            [""] + session.servers_for[1..-1].map do |server|
+              "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
+            end
+          else
+            []
+          end.join(" \\; ")
+        end
+
+        tmux_name = "'knife ssh #{@name_args[0]}'"
         begin
-          Chef::Mixin::Command.run_command(:command => "tmux new-session -d -s 'knife'")
+          server = session.servers_for.first
+          cmd = ["tmux new-session -d -s #{tmux_name}",
+                 "-n '#{server.host}'", ssh_dest.call(server),
+                 new_window_cmds.call].join(" ")
+          Chef::Mixin::Command.run_command(:command => cmd)
+          exec("tmux attach-session -t #{tmux_name}")
         rescue Chef::Exceptions::Exec
         end
-        session.servers_for.each do |server|
-          begin
-            Chef::Mixin::Command.run_command(:command => "tmux new-window -d -n '#{server.host}' -t 'knife' 'ssh #{server.user ? "#{server.user}@#{server.host}" : server.host}'")
-          rescue Chef::Exceptions::Exec
-          end
-        end
-        exec("tmux attach-session -t knife")
       end
 
       def macterm
