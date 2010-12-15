@@ -221,7 +221,7 @@ class Chef
 
       def bootstrap_for_node(server)
         bootstrap = Chef::Knife::Bootstrap.new
-        bootstrap.name_args = [server.dns_name]
+        bootstrap.name_args = [vpc_mode? ? server.private_ip_address : server.dns_name ]
         bootstrap.config[:run_list] = @name_args
         bootstrap.config[:ssh_user] = config[:ssh_user]
         bootstrap.config[:identity_file] = config[:identity_file]
