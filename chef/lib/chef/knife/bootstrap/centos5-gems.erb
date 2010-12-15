@@ -1,8 +1,9 @@
 bash -c '
 <% if @config[:vpc_mode] %>
 # Forces localhost entry to speed up build process
-echo "127.0.0.1 <%= @config[:name_args] %>" > /etc/newhosts
+touch /etc/newhosts
 cat /etc/hosts >> /etc/newhosts
+echo "127.0.1.1 <%= @config[:name_args] %>" >> /etc/newhosts
 mv /etc/hosts /etc/hosts.chef
 mv /etc/newhosts /etc/hosts
 <% end %>
