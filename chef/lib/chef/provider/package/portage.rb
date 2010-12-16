@@ -58,7 +58,7 @@ class Chef
           package_without_category = package.split("/").last
           found_package_name = nil
 
-          txt.each do |line|
+          txt.each_line do |line|
             if line =~ /\*\s+#{PACKAGE_NAME_PATTERN}/
               found_package_name = $&.strip
               if found_package_name == package || found_package_name.split("/").last == package_without_category
