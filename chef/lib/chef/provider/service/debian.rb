@@ -24,8 +24,8 @@ class Chef
   class Provider
     class Service
       class Debian < Chef::Provider::Service::Init
-        UPDATE_RC_D_ENABLED_MATCHES = /etc\/rc[\dS].d\/S|not installed/i
-        UPDATE_RC_D_PRIORITIES = /etc\/rc([\dS]).d\/([SK])(\d\d)/i
+        UPDATE_RC_D_ENABLED_MATCHES = /\/rc[\dS].d\/S|not installed/i
+        UPDATE_RC_D_PRIORITIES = /\/rc([\dS]).d\/([SK])(\d\d)/i
 
         def load_current_resource
           super
@@ -55,12 +55,14 @@ class Chef
             priority = {}
             enabled = false
 
-            stdout.each_line do |line|
-              if UPDATE_RC_D_PRIORITIES =~ line
-                priority[$1] = [($2 == "S" ? :start : :stop), $3]
-              end
-              if line =~ UPDATE_RC_D_ENABLED_MATCHES
-                enabled = true
+            [stdout, stderr].each do |iop|
+              iop.each_line do |line|
+                if UPDATE_RC_D_PRIORITIES =~ line
+                  priority[$1] = [($2 == "S" ? :start : :stop), $3]
+                end
+                if line =~ UPDATE_RC_D_ENABLED_MATCHES
+                  enabled = true
+                end
               end
             end
             @current_resource.enabled enabled
