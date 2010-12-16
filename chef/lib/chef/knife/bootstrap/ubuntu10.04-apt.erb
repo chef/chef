@@ -6,10 +6,12 @@ bash -c '
 # Forces localhost entry to speed up build process
 touch /etc/newhosts
 cat /etc/hosts >> /etc/newhosts
-echo "127.0.1.1 <%= @config[:name_args] %>" >> /etc/newhosts
+echo "127.0.1.1 <%= @config[:chef_node_name] %>.`grep domain /etc/resolv.conf | sed s/^domain\ //` <%= @config[:chef_node_name] %>" >> /etc/newhosts
 echo "<%= az_ip %> <%= az_str %>.ec2.archive.ubuntu.com" >> /etc/newhosts
 mv /etc/hosts /etc/hosts.chef
 mv /etc/newhosts /etc/hosts
+hostname <%= @config[:chef_node_name] %>
+echo <%= @config[:chef_node_name] %> > /etc/hostname
 <% end %>
 if [ ! -f /usr/bin/chef-client ]; then
   echo "chef	chef/chef_server_url	string	<%= Chef::Config[:chef_server_url] %>" | debconf-set-selections 
