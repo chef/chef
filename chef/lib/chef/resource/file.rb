@@ -67,7 +67,14 @@ class Chef
         set_or_return(
           :mode,
           arg,
-          :regex => /^0?\d{3,4}$/
+          :callbacks => { 
+            "not in valid numeric range" => lambda { |m| 
+              if m.kind_of?(String)
+                m =~ /^0/ || m="0#{m}"
+              end 
+              Integer(m)<=07777 && Integer(m)>=0
+            }
+          }
         )
       end
 
