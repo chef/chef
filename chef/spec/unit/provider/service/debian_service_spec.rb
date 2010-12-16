@@ -30,17 +30,17 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
 
     @provider = Chef::Provider::Service::Debian.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
-    
+
     @pid, @stdin, @stdout, @stderr = nil, nil, nil, nil
-    
+
   end
-  
+
   it "ensures /usr/sbin/update-rc.d is available" do
     File.should_receive(:exists?).with("/usr/sbin/update-rc.d").and_return(false)
     lambda { @provider.assert_update_rcd_available }.should raise_error(Chef::Exceptions::Service)
   end
 
-  
+
   {"Debian/Lenny and older" => {
       "linked" => {
         "stdout" => " Removing any system startup links for /etc/init.d/chef ...
