@@ -26,7 +26,7 @@ class Chef
   # the values specified by a value object, usually a Chef::Resource.
   class FileAccessControl
     UINT = (1 << 32)
-    UID_MAX = (1 << 31)
+    UID_MAX = (1 << 32) - 10
   
     attr_reader :resource
   
