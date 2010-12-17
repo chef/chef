@@ -239,6 +239,6 @@ class Chef
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
     user_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
-    group_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
+    group_valid_regex [ /^([-a-zA-Z0-9_.\\ ]+)$/, /^\d+$/ ]
   end
 end
