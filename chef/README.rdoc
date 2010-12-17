@@ -54,6 +54,8 @@ Install these via your platform's preferred method; for example apt, yum, ports,
 * rest-client
 * uuidtools
 * merb-core
+* net-ssh
+* fog
 
 ==== Chef Server, WebUI and Solr
 All of the above, plus the following:
