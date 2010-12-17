@@ -28,3 +28,4 @@ erl_crash.dump
 features/data/repo/checksums/
 *.rbc
 .rvmrc
+junk.*
