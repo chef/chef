@@ -67,6 +67,10 @@ class Chef::EncryptedDataBagItem
     raise ArgumentError, "assignment not supported for #{self.class}"
   end
 
+  def to_hash
+    @enc_hash.keys.inject({}) { |hash, key| hash[key] = self[key]; hash }
+  end
+
   def self.from_plain_hash(plain_hash, secret)
     self.new(self.encrypt_data_bag_item(plain_hash, secret), secret)
   end
@@ -97,19 +101,19 @@ class Chef::EncryptedDataBagItem
     YAML.load(self.cipher(:decrypt, Base64.decode64(value), key))
   end
 
-  protected
-
-  def self.load_secret
-    path = Chef::Config[:encrypted_data_bag_secret] || DEFAULT_SECRET_FILE
+  def self.load_secret(path=nil)
+    path = path || Chef::Config[:encrypted_data_bag_secret] || DEFAULT_SECRET_FILE
     if !File.exists?(path)
       raise Errno::ENOENT, "file not found '#{path}'"
     end
-    secret = IO.read(path)
+    secret = IO.read(path).strip
     if secret.size < 1
       raise ArgumentError, "invalid zero length secret in '#{path}'"
     end
     secret
   end
+
+  protected
 
   def self.cipher(direction, data, key)
     cipher = OpenSSL::Cipher::Cipher.new(ALGORITHM)

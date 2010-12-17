@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright (c) 2009-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,12 +27,37 @@ class Chef
       banner "knife data bag create BAG [ITEM] (options)"
       category "data bag"
 
+      option :secret,
+      :short => "-s SECRET",
+      :long  => "--secret ",
+      :description => "The secret key to use to encrypt data bag item values"
+
+      option :secret_file,
+      :long => "--secret_file SECRET_FILE",
+      :description => "A file containing the secret key to use to encrypt data bag item values"
+
+      def read_secret
+        if config[:secret]
+          config[:secret]
+        else
+          Chef::EncryptedDataBagItem.load_secret(config[:secret_file])
+        end
+      end
+
+      def use_encryption
+        if config[:secret] && config[:secret_file]
+          stdout.puts "please specify only one of --secret, --secret_file"
+          exit(1)
+        end
+        config[:secret] || config[:secret_file]
+      end
+
       def run
         @data_bag_name, @data_bag_item_name = @name_args
 
         if @data_bag_name.nil?
           show_usage
-          Chef::Log.fatal("You must specify a data bag name")
+          stdout.puts("You must specify a data bag name")
           exit 1
         end
         
@@ -47,7 +73,13 @@ class Chef
         # if an item is specified, create it, as well
         if @data_bag_item_name
           create_object({ "id" => @data_bag_item_name }, "data_bag_item[#{@data_bag_item_name}]") do |output|
-            rest.post_rest("data/#{@data_bag_name}", output)
+            item = if use_encryption
+                     Chef::EncryptedDataBagItem.encrypt_data_bag_item(output,
+                                                                      read_secret)
+                   else
+                     output
+                   end
+            rest.post_rest("data/#{@data_bag_name}", item)
           end
         end
       end

@@ -71,6 +71,10 @@ describe Chef::EncryptedDataBagItem do
     it "decrypts 'nested'" do
       @eh["nested"].should == @plain_data["nested"]
     end
+
+    it "decrypts everyting via to_hash" do
+      @eh.to_hash.should == @plain_data
+    end
   end
 
   describe "loading" do
