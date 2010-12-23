@@ -39,6 +39,11 @@ class Chef
         :long => "--all",
         :description => "Upload all cookbooks, rather than just a single cookbook"
 
+      option :depends,
+        :short => "-d",
+        :long => "--include-dependencies",
+        :description => "Upload dependencies also"
+
       def run 
         if config[:cookbook_path]
           Chef::Config[:cookbook_path] = config[:cookbook_path]
@@ -64,6 +69,11 @@ class Chef
             end
             @name_args.each do |cookbook_name|
               if cl.cookbook_exists?(cookbook_name)
+                if config[:depends]
+                  cl[cookbook_name].metadata.dependencies.each do |dep, versions|
+                    @name_args.push dep
+                  end
+                end
                 Chef::CookbookUploader.upload_cookbook(cl[cookbook_name])
               else
                 Chef::Log.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
