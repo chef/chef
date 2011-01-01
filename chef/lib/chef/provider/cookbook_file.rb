@@ -49,14 +49,6 @@ class Chef
          @new_resource.updated_by_last_action?
        end
 
-      def action_create_if_missing
-        if ::File.exists?(@new_resource.path)
-          Chef::Log.debug("File #{@new_resource.path} exists, taking no action.")
-        else
-          action_create
-        end
-      end
-      
       def file_cache_location
         @file_cache_location ||= begin
           cookbook = run_context.cookbook_collection[resource_cookbook]
