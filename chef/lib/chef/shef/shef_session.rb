@@ -174,7 +174,7 @@ module Shef
   
   class ClientSession < SoloSession
 
-    session_type :solo
+    session_type :client
     
     def save_node
       @client.save_node
