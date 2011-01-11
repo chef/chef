@@ -31,6 +31,11 @@ class Chef
         :description => "The flavor of server",
         :default => "94fd37a7-2606-47f7-84d5-9000deda52ae"
 
+      option :chef_node_name,
+        :short => "-N NAME",
+        :long => "--node-name NAME",
+        :description => "The Chef node name for your new node"
+
       option :image,
         :short => "-i IMAGE",
         :long => "--image IMAGE",
