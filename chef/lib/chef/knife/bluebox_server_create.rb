@@ -42,11 +42,6 @@ class Chef
         :description => "The image of the server",
         :default => "03807e08-a13d-44e4-b011-ebec7ef2c928"
 
-      option :chef_node_name,
-        :short => "-N NAME",
-        :long => "--node-name NAME",
-        :description => "The Chef node name for your new node"
-
       option :username,
         :short => "-U KEY",
         :long => "--username username",
@@ -63,6 +58,17 @@ class Chef
         :long => "--bootstrap false",
         :description => "Disables the bootstrapping process.",
         :default => true
+      
+      option :distro,
+        :short => "-d DISTRO",
+        :long => "--distro DISTRO",
+        :description => "Bootstrap a distro using a template",
+        :default => "ubuntu10.04-gems"
+
+      option :identity_file,
+        :short => "-I IDENTITY_FILE",
+        :long => "--identity-file IDENTITY_FILE",
+        :description => "The SSH identity file used for authentication"
 
       def h
         @highline ||= HighLine.new
@@ -75,22 +81,22 @@ class Chef
         require 'readline'
         require 'erb'
 
-        bluebox = Fog::Bluebox.new(
+        bluebox = Fog::Bluebox::Compute.new(
           :bluebox_customer_id => Chef::Config[:knife][:bluebox_customer_id],
           :bluebox_api_key => Chef::Config[:knife][:bluebox_api_key]
         )
 
-         flavors = bluebox.flavors.inject({}) { |h,f| h[f.id] = f.description; h }
+        flavors = bluebox.flavors.inject({}) { |h,f| h[f.id] = f.description; h }
         images  = bluebox.images.inject({}) { |h,i| h[i.id] = i.description; h }
 
         puts "#{h.color("Deploying a new Blue Box Block...", :green)}\n\n"
         server_args = {
           :flavor_id => config[:flavor],
           :image_id => config[:image],
-          :user => config[:username],
+          :username => config[:username],
           :password => config[:password]
           }
-        server_args[:ssh_key] = Chef::Config[:knife][:ssh_key] if Chef::Config[:knife][:ssh_key]
+        server_args[:public_key] = Chef::Config[:knife][:ssh_key] if Chef::Config[:knife][:ssh_key]
 
         server = bluebox.servers.new(server_args)
         response = server.save
@@ -110,13 +116,13 @@ class Chef
           # The server was succesfully queued... Now wait for it to spin up...
           print "\n#{h.color("Requesting status of #{server.hostname}\n", :magenta)}"
 
-          # Allow for 5 minutes to time out...
-          # ready? will raise Fog::Bluebox::BlockInstantiationError if block creation fails.
-          unless server.wait_for( 5 * 60 ){ print "."; STDOUT.flush; ready? }
+          # Allow for 10 minutes to time out...
+          # ready? will raise Fog::Bluebox::Compute::BlockInstantiationError if block creation fails.
+          unless server.wait_for( 10 * 60 ){ print "."; STDOUT.flush; ready? }
 
-            # The server wasn't started in 5 minutes... Send a destroy call to make sure it doesn't spin up on us later...
+            # The server wasn't started in time... Send a destroy call to make sure it doesn't spin up on us later...
             server.destroy
-            raise Fog::Bluebox::BlockInstantiationError, "BBG server not available after 5 minutes"
+            raise Fog::Bluebox::Compute::BlockInstantiationError, "BBG server creation timed out."
 
           else
             print "\n\n#{h.color("BBG Server startup succesful.  Accessible at #{server.hostname}\n", :green)}"
@@ -142,6 +148,7 @@ class Chef
               bootstrap.config[:identity_file] = config[:identity_file]
               bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.hostname
               bootstrap.config[:use_sudo] = true
+              bootstrap.config[:distro] = config[:distro]
               bootstrap.run
             rescue Errno::ECONNREFUSED
               puts h.color("Connection refused on SSH, retrying - CTRL-C to abort")
@@ -155,7 +162,7 @@ class Chef
 
           end
 
-        rescue Fog::Bluebox::BlockInstantiationError => e
+        rescue Fog::Bluebox::Compute::BlockInstantiationError => e
 
           puts "\n\n#{h.color("Encountered error starting up BBG block. Auto destroy called.  Please try again.", :red)}"
 
