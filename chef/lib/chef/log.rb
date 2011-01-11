@@ -43,11 +43,35 @@ class Chef
         end
         self.verbose
       end
-      
-      def method_missing(method_symbol, *args)
-        self.verbose_logger.send(method_symbol, *args) if self.verbose
-        logger.send(method_symbol, *args)
+
+      [:debug, :info, :warn, :error, :fatal].each do |method_name|
+        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
+          def #{method_name}(msg=nil, &block)
+            @logger.#{method_name}(msg, &block)
+          end
+        METHOD_DEFN
       end
+
+      [:debug?, :info?, :warn?, :error?, :fatal?].each do |method_name|
+        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
+          def #{method_name}
+            @logger.#{method_name}
+          end
+        METHOD_DEFN
+      end
+
+      def <<(msg)
+        @logger << msg
+      end
+
+      def add(severity, message = nil, progname = nil, &block)
+        @logger.add(severity, message = nil, progname = nil, &block)
+      end
+
+      # def method_missing(method_symbol, *args)
+      #   self.verbose_logger.send(method_symbol, *args) if self.verbose
+      #   logger.send(method_symbol, *args)
+      # end
     end  
 
     class Formatter
