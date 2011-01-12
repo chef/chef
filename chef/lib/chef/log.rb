@@ -68,10 +68,6 @@ class Chef
         @logger.add(severity, message = nil, progname = nil, &block)
       end
 
-      # def method_missing(method_symbol, *args)
-      #   self.verbose_logger.send(method_symbol, *args) if self.verbose
-      #   logger.send(method_symbol, *args)
-      # end
     end  
 
     class Formatter
