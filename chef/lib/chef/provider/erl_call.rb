@@ -55,16 +55,28 @@ class Chef
 
         command = "erl_call -e #{distributed} #{node} #{cookie}"
 
-        status = popen4(command, :waitlast => true) do |pid, stdin, stdout, stderr|
+        begin
+          pid, stdin, stdout, stderr = popen4(command, :waitlast => true)
+
           Chef::Log.debug("Running erl_call[#{@new_resource.name}]")
           Chef::Log.debug("erl_call[#{@new_resource.name}] command: #{command}")
           Chef::Log.debug("erl_call[#{@new_resource.name}] code: #{@new_resource.code}")
-          @new_resource.code.each_line { |line| stdin.puts "#{line.chomp!}" }
+
+          @new_resource.code.each_line { |line| stdin.puts(line.chomp) }
+
           stdin.close
+
           Chef::Log.info("Ran erl_call[#{@new_resource.name}] successfully")
           Chef::Log.debug("erl_call[#{@new_resource.name}] output: ")
+
           stdout.each_line { |line| Chef::Log.debug("#{line}")}
+          stderr.each_line { |line| Chef::Log.debug("#{line}")}
+          stdout.close
+          stderr.close
+        ensure
+          Process.wait(pid) if pid
         end
+
       end
 
     end
