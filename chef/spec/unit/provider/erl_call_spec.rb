@@ -25,14 +25,11 @@ describe Chef::Provider::ErlCall do
 
     @new_resource = Chef::Resource::ErlCall.new("test", @node)
     @new_resource.code("io:format(\"burritos\", []).")
-    #@new_resource.distributed(true)
-    #@new_resource.name_type("sname")
     @new_resource.node_name("chef@localhost")
     @new_resource.name("test")
 
     @provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
 
-    #@status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
     @stdin = StringIO.new
     @stdout = mock("STDOUT", :null_object => true)
