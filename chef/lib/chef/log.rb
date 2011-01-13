@@ -68,14 +68,14 @@ class Chef
         @logger.add(severity, message = nil, progname = nil, &block)
       end
 
-      # NOTE: Mixlib::Log initially sets @logger to nil and depends on
-      # #init being called to initialize the logger. We don't want to
-      # incur extra method call overhead for every log message so we're
-      # accessing the logger by instance variable, which means we need to
-      # make Mixlib::Log initialize it.
-      init
-
     end  
+
+    # NOTE: Mixlib::Log initially sets @logger to nil and depends on
+    # #init being called to initialize the logger. We don't want to
+    # incur extra method call overhead for every log message so we're
+    # accessing the logger by instance variable, which means we need to
+    # make Mixlib::Log initialize it.
+    init
 
     class Formatter
       def self.show_time=(*args)
