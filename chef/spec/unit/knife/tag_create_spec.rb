@@ -8,7 +8,6 @@ describe Chef::Knife::TagCreate do
 
     @node = Chef::Node.new
     @node.stub! :save
-    # @node.tags # << "blah"
     Chef::Node.stub!(:load).and_return @node
   end
 
