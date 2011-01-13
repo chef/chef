@@ -32,45 +32,91 @@ describe Chef::Knife::Ssh do
     @server.stop
   end
 
-  context "when knife[:ssh_attribute] is set" do
-    before do
-      setup_knife(['*:*', 'uptime'])
-      Chef::Config[:knife][:ssh_attribute] = "ec2.public_hostname"
+  context "ssh user" do
+    context "when knife[:ssh_user] is set" do
+      before do
+        setup_knife(['*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_user] = "ubuntu"
+      end
+
+      it "uses the ssh_user" do
+        @knife.run
+        @knife.config[:ssh_user].should == "ubuntu"
+      end
     end
 
-    it "uses the ssh_attribute" do
-      @knife.run
-      @knife.config[:attribute].should == "ec2.public_hostname"
+    context "when -x is provided" do
+      before do
+        setup_knife(['-x ubuntu', '*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_user] = nil
+      end
+
+      it "should use the value on the command line" do
+        @knife.run
+        @knife.config[:ssh_user].should == "ubuntu"
+      end
+
+      it "should override what is set in knife.rb" do
+        Chef::Config[:knife][:ssh_user] = "root"
+        @knife.run
+        @knife.config[:ssh_user].should == "ubuntu"
+      end
+    end
+
+    context "when knife[:ssh_user] is not provided]" do
+      before do
+        setup_knife(['*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_user] = nil
+      end
+
+      it "uses the default" do
+        @knife.run
+        @knife.config[:ssh_user].should == nil
+      end
     end
   end
 
-  context "When knife[:ssh_attribte] is not provided]" do
-    before do
-      setup_knife(['*:*', 'uptime'])
-      Chef::Config[:knife][:ssh_attribute] = nil
+  context "ssh attribute" do
+    context "when knife[:ssh_attribute] is set" do
+      before do
+        setup_knife(['*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_attribute] = "ec2.public_hostname"
+      end
+
+      it "uses the ssh_attribute" do
+        @knife.run
+        @knife.config[:attribute].should == "ec2.public_hostname"
+      end
     end
 
-    it "uses the default" do
-      @knife.run
-      @knife.config[:attribute].should == "fqdn"
-    end
-  end
+    context "when knife[:ssh_attribte] is not provided]" do
+      before do
+        setup_knife(['*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_attribute] = nil
+      end
 
-  context "When -a ec2.public_ipv4 is provided" do
-    before do
-      setup_knife(['-a ec2.public_hostname', '*:*', 'uptime'])
-      Chef::Config[:knife][:ssh_attribute] = nil
-    end
-
-    it "should use the value on the command line" do
-      @knife.run
-      @knife.config[:attribute].should == "ec2.public_hostname"
+      it "uses the default" do
+        @knife.run
+        @knife.config[:attribute].should == "fqdn"
+      end
     end
 
-    it "should override what is set in knife.rb" do
-      Chef::Config[:knife][:ssh_attribute] = "fqdn"
-      @knife.run
-      @knife.config[:attribute].should == "ec2.public_hostname"
+    context "when -a ec2.public_ipv4 is provided" do
+      before do
+        setup_knife(['-a ec2.public_hostname', '*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_attribute] = nil
+      end
+
+      it "should use the value on the command line" do
+        @knife.run
+        @knife.config[:attribute].should == "ec2.public_hostname"
+      end
+
+      it "should override what is set in knife.rb" do
+        Chef::Config[:knife][:ssh_attribute] = "fqdn"
+        @knife.run
+        @knife.config[:attribute].should == "ec2.public_hostname"
+      end
     end
   end
 
@@ -84,7 +130,7 @@ describe Chef::Knife::Ssh do
     Chef::Config[:client_key] = false
     Chef::Config[:chef_server_url] = 'http://localhost:9000'
 
-    @api.get("/search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000", 200) { 
+    @api.get("/search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000", 200) {
       %({"total":1, "start":0, "rows":[{"name":"i-xxxxxxxx", "json_class":"Chef::Node", "automatic":{"fqdn":"the.fqdn", "ec2":{"public_hostname":"the_public_hostname"}},"recipes":[]}]})
     }
   end

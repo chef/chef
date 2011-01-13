@@ -303,16 +303,24 @@ class Chef
 
       def configure_attribute
         config[:attribute] = (config[:attribute] ||
-          Chef::Config[:knife][:ssh_attribute] ||
-          "fqdn").strip
+                              Chef::Config[:knife][:ssh_attribute] ||
+                              "fqdn").strip
       end
 
+      def configure_user
+        config[:ssh_user] = (config[:ssh_user] ||
+                             Chef::Config[:knife][:ssh_user])
+        config[:ssh_user].strip! unless config[:ssh_user].nil?
+      end
+      
       def run
         extend Chef::Mixin::Command
 
         @longest = 0
 
         configure_attribute
+
+        configure_user
 
         configure_session
 
