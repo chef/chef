@@ -5,7 +5,7 @@ class Chef
   class Knife
     class TagCreate < Knife
 
-      banner "knife tag create NODE TAG"
+      banner "knife tag create NODE TAG ..."
 
       def run
         name = @name_args[0]
