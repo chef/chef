@@ -42,7 +42,6 @@ describe Chef::Knife::Ssh do
       @knife.run
       @knife.config[:attribute].should == "ec2.public_hostname"
     end
-
   end
 
   context "When knife[:ssh_attribte] is not provided]" do
@@ -68,6 +67,11 @@ describe Chef::Knife::Ssh do
       @knife.config[:attribute].should == "ec2.public_hostname"
     end
 
+    it "should override what is set in knife.rb" do
+      Chef::Config[:knife][:ssh_attribute] = "fqdn"
+      @knife.run
+      @knife.config[:attribute].should == "ec2.public_hostname"
+    end
   end
 
   def setup_knife(params=[])

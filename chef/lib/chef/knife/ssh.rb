@@ -302,11 +302,9 @@ class Chef
       end
 
       def configure_attribute
-        if Chef::Config[:knife][:ssh_attribute]
-          config[:attribute] = Chef::Config[:knife][:ssh_attribute]
-        end
-        config[:attribute] ||= "fqdn"
-        config[:attribute].strip!
+        config[:attribute] = (config[:attribute] ||
+          Chef::Config[:knife][:ssh_attribute] ||
+          "fqdn").strip
       end
 
       def run
