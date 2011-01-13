@@ -392,7 +392,13 @@ class Chef
       normal_attrs_to_merge = consume_run_list(attrs)
       Chef::Log.debug("Applying attributes from json file")
       @normal_attrs = Chef::Mixin::DeepMerge.merge(@normal_attrs,normal_attrs_to_merge)
-      self[:tags] = Array.new unless attribute?(:tags)
+      self.tags # make sure they're defined
+    end
+
+    # Lazy initializer for tags attribute
+    def tags
+      self[:tags] = [] unless attribute?(:tags)
+      self[:tags]
     end
 
     # Extracts the run list from +attrs+ and applies it. Returns the remaining attributes
@@ -431,7 +437,7 @@ class Chef
       expansion = run_list.expand('server')
       raise Chef::Exceptions::MissingRole if expansion.errors?
 
-      self[:tags] = Array.new unless attribute?(:tags)
+      self.tags # make sure they're defined
       @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
       @override_attrs = Chef::Mixin::DeepMerge.merge(Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs), chef_environment == "_default" ? {} : Chef::Environment.load(chef_environment).attributes)
       @automatic_attrs[:recipes] = expansion.recipes
