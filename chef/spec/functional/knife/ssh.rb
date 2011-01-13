@@ -32,7 +32,51 @@ describe Chef::Knife::Ssh do
     @server.stop
   end
 
-  context "ssh user" do
+  describe "identity file" do
+    context "when knife[:ssh_identity_file] is set" do
+      before do
+        setup_knife(['*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_identity_file] = "~/.ssh/aws.rsa"
+      end
+
+      it "uses the ssh_identity_file" do
+        @knife.run
+        @knife.config[:identity_file].should == "~/.ssh/aws.rsa"
+      end
+    end
+
+    context "when -i is provided" do
+      before do
+        setup_knife(['-i ~/.ssh/aws.rsa', '*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_identity_file] = nil
+      end
+
+      it "should use the value on the command line" do
+        @knife.run
+        @knife.config[:identity_file].should == "~/.ssh/aws.rsa"
+      end
+
+      it "should override what is set in knife.rb" do
+        Chef::Config[:knife][:ssh_identity_file] = "~/.ssh/other.rsa"
+        @knife.run
+        @knife.config[:identity_file].should == "~/.ssh/aws.rsa"
+      end
+    end
+
+    context "when knife[:ssh_identity_file] is not provided]" do
+      before do
+        setup_knife(['*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_identity_file] = nil
+      end
+
+      it "uses the default" do
+        @knife.run
+        @knife.config[:identity_file].should == nil
+      end
+    end
+  end
+
+  describe "user" do
     context "when knife[:ssh_user] is set" do
       before do
         setup_knife(['*:*', 'uptime'])
@@ -76,7 +120,7 @@ describe Chef::Knife::Ssh do
     end
   end
 
-  context "ssh attribute" do
+  describe "attribute" do
     context "when knife[:ssh_attribute] is set" do
       before do
         setup_knife(['*:*', 'uptime'])
