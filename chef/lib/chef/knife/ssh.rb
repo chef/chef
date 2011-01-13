@@ -301,10 +301,20 @@ class Chef
         end
       end
 
+      def configure_attribute
+        if Chef::Config[:knife][:ssh_attribute]
+          config[:attribute] = Chef::Config[:knife][:ssh_attribute]
+        end
+        config[:attribute] ||= "fqdn"
+        config[:attribute].strip!
+      end
+
       def run
         extend Chef::Mixin::Command
 
         @longest = 0
+
+        configure_attribute
 
         configure_session
 
