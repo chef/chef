@@ -65,7 +65,19 @@ class Chef
             text = minutes_text
           end
 
-          highline.say("<%= color('#{text}', #{color}) %> ago, #{node.name}, #{node['platform']} #{node['platform_version']}, #{fqdn}, #{ipaddress}#{run_list}")
+          line_parts = Array.new
+          line_parts << "<%= color('#{text}', #{color}) %> ago" << node.name
+          if node['platform']
+            platform = node['platform']
+            if node['platform_version']
+              platform << " #{node['platform_version']}"
+            end
+            line_parts << platform
+          end
+          line_parts << ipaddress if ipaddress
+          line_parts << run_list if run_list
+
+          highline.say(line_parts.join(', ') + '.')
         end
 
       end
