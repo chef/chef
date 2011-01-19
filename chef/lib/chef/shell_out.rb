@@ -288,6 +288,10 @@ class Chef
       File.umask(umask) if umask
     end
     
+    def set_cwd
+      Dir.chdir(cwd) if cwd
+    end
+
     def initialize_ipc
       @stdout_pipe, @stderr_pipe, @process_status_pipe = IO.pipe, IO.pipe, IO.pipe
       @process_status_pipe.last.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
@@ -381,6 +385,7 @@ class Chef
         set_group
         set_environment
         set_umask
+        set_cwd
 
         begin
           command.kind_of?(Array) ? exec(*command) : exec(command)
