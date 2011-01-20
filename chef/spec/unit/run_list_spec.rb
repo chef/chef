@@ -148,7 +148,7 @@ describe Chef::RunList do
     end
   end
 
-  describe "expand" do
+  describe "when expanding the run list" do
     before(:each) do
       @role = Chef::Role.new
       @role.name "stubby"
@@ -188,6 +188,47 @@ describe Chef::RunList do
         @rest.should_receive(:get_rest).with("roles/stubby")
         @run_list.expand
       end
+
+      describe "with an environment set" do
+        before do
+          @role.env_run_list["production"] = Chef::RunList.new( "one", "two", "five")
+        end
+
+        it "expands the run list using the environment specific run list" do
+          expansion = @run_list.expand("server", :environment => "production")
+          expansion.recipes.should == %w{one two five kitty}
+        end
+
+        describe "and multiply nested roles" do
+          before do
+            @multiple_rest_requests = mock("Chef::REST")
+
+            @role.env_run_list["production"] << "role[prod-base]"
+
+            @role_prod_base = Chef::Role.new
+            @role_prod_base.name("prod-base")
+            @role_prod_base.env_run_list["production"] = Chef::RunList.new("role[nested-deeper]")
+
+
+            @role_nested_deeper = Chef::Role.new
+            @role_nested_deeper.name("nested-deeper")
+            @role_nested_deeper.env_run_list["production"] = Chef::RunList.new("recipe[prod-secret-sauce]")
+          end
+
+          it "expands the run list using the specified environment for all nested roles" do
+            Chef::REST.stub!(:new).and_return(@multiple_rest_requests)
+            @multiple_rest_requests.should_receive(:get_rest).with("roles/stubby").and_return(@role)
+            @multiple_rest_requests.should_receive(:get_rest).with("roles/prod-base").and_return(@role_prod_base)
+            @multiple_rest_requests.should_receive(:get_rest).with("roles/nested-deeper").and_return(@role_nested_deeper)
+
+            expansion = @run_list.expand("server", :environment => "production")
+            expansion.recipes.should == %w{one two five prod-secret-sauce kitty}
+          end
+
+        end
+
+      end
+
     end
 
     describe "from couchdb" do
@@ -241,6 +282,21 @@ describe Chef::RunList do
       expansion.recipes[3].should == "kitty"
       expansion.default_attrs[:seven].should == :nine
     end
+  end
+
+  describe "when converting to an alternate representation" do
+    before do
+      @run_list << "recipe[nagios::client]" << "role[production]" << "recipe[apache2]"
+    end
+
+    it "converts to an array of the string forms of its items" do
+      @run_list.to_a.should == ["recipe[nagios::client]", "role[production]", "recipe[apache2]"]
+    end
+
+    it "converts to json by converting its array form" do
+      @run_list.to_json.should == ["recipe[nagios::client]", "role[production]", "recipe[apache2]"].to_json
+    end
 
   end
+
 end

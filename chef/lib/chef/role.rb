@@ -107,7 +107,7 @@ class Chef
     def run_list(*args)
       if (args.length > 0) 
         @run_list.reset!(args) 
-        @env_run_lists.merge!({"_default" => @run_list})
+        @env_run_lists["_default"] = @run_list
       end
       @run_list
     end
@@ -115,8 +115,8 @@ class Chef
     alias_method :recipes, :run_list
     
     # For run_list expansion
-    def run_list_for_environment(environment='_default')
-      if env_run_lists[environment].nil? || env_run_lists[environment].empty?
+    def run_list_for(environment='_default')
+      if env_run_lists[environment].nil?
         run_list
       else
         env_run_lists[environment]
@@ -124,23 +124,16 @@ class Chef
     end
 
     # Per environment run lists
-    def env_run_lists(hash=nil, run_list_items_only=false)
-      if (!hash.nil? && hash.length > 0)
-        hash.each do |k,v|
-          unless v.nil?
-            hash[k] = run_list_items_only ? Chef::RunList.new(k).reset!(v).run_list_items : Chef::RunList.new(k).reset!(v)
-          end
-        end
-        @env_run_lists = hash
-      else
-        @env_run_lists
+    def env_run_lists(env_run_lists=nil)
+      if (!env_run_lists.nil? && !env_run_lists.empty?)
+        @env_run_lists.clear
+        env_run_lists.each { |k,v| @env_run_lists[k] = Chef::RunList.new(*Array(v))}
+        @env_run_lists["_default"] = run_list
       end
+      @env_run_lists
     end
 
-#     def recipes(*args)
-#       Chef::Log.warn "Chef::Role#recipes method is deprecated.  Please use Chef::Role#run_list"
-#       run_list(*args)
-#     end
+    alias :env_run_list :env_run_lists
 
     def default_attributes(arg=nil)
       set_or_return(
@@ -167,7 +160,7 @@ class Chef
         "override_attributes" => @override_attributes,
         "chef_type" => "role",
         "run_list" => @run_list.run_list,
-        "env_run_lists" => env_run_lists(@env_run_lists, true)
+        "env_run_lists" => @env_run_lists
       }
       result["_rev"] = couchdb_rev if couchdb_rev
       result
@@ -184,7 +177,7 @@ class Chef
       run_list(o.run_list)
       default_attributes(o.default_attributes)
       override_attributes(o.override_attributes)
-      env_run_lists(o.env_run_lists.nil? ? {"_default"=>o.run_list} : o.env_run_lists.merge!({"_default"=>o.run_list}))
+      env_run_lists(o.env_run_lists) unless o.env_run_lists.nil?
       self
     end
 
@@ -195,12 +188,8 @@ class Chef
       role.description(o["description"])
       role.default_attributes(o["default_attributes"])
       role.override_attributes(o["override_attributes"])
-      role.run_list(if o.has_key?("run_list")
-                      o["run_list"]
-                    else
-                      o["recipes"]
-                    end)
-      role.env_run_lists(o["env_run_lists"].nil? ? {"_default"=>role.run_list} : o["env_run_lists"].merge!({"_default"=>role.run_list}))
+      role.run_list(o.has_key?("run_list") ? o["run_list"] : o["recipes"])
+      role.env_run_lists(o["env_run_lists"]) unless o["env_run_lists"].nil?
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       role.index_id = role.couchdb_id
       role.couchdb_id = o["_id"] if o.has_key?("_id")

@@ -197,5 +197,36 @@ describe Chef::Role do
     end
 
   end
+
+  describe "when selecting a run list based on the current environment" do
+    before do
+      @role.name("base")
+      @role.run_list << "recipe[nagios::client]" << "recipe[tims-acl::bork]"
+      @role.env_run_list["prod"] = Chef::RunList.new(*(@role.run_list.to_a << "recipe[prod-base]"))
+      @role.env_run_list["dev"]  = Chef::RunList.new
+    end
+
+    it "uses the default run list as *the* run_list" do
+      @role.run_list.should == Chef::RunList.new("recipe[nagios::client]", "recipe[tims-acl::bork]")
+    end
+
+    it "gives the default run list as the when getting the _default run list" do
+      @role.run_list_for("_default").should == @role.run_list
+    end
+
+    it "gives an environment specific run list" do
+      @role.run_list_for("prod").should == Chef::RunList.new("recipe[nagios::client]", "recipe[tims-acl::bork]", "recipe[prod-base]")
+    end
+
+    it "gives the default run list when no run list exists for the given environment" do
+      @role.run_list_for("qa").should == @role.run_list
+    end
+
+    it "gives the environment specific run list even if it is empty" do
+      @role.run_list_for("dev").should == Chef::RunList.new
+    end
+
+  end
+
 end
 

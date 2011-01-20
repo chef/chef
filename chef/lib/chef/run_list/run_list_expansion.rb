@@ -75,7 +75,7 @@ class Chef
           when :role
             if role = inflate_role(entry.name)
               apply_role_attributes(role)
-              @run_list_items.insert(index + 1, *role.run_list_for_environment(environment).run_list_items)
+              @run_list_items.insert(index + 1, *role.run_list_for(environment).run_list_items)
             end
           end
         end
