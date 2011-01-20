@@ -360,4 +360,58 @@ describe Chef::Environment do
       Chef::Environment.create_default_environment
     end
   end
+
+  describe "when updating from a parameter hash" do
+    before do
+      @environment = Chef::Environment.new
+    end
+
+    it "updates the name from parameters[:name]" do
+      @environment.update_from_params(:name => "kurrupt")
+      @environment.name.should == "kurrupt"
+    end
+
+    it "validates the name given in the params" do
+      @environment.update_from_params(:name => "@$%^&*()").should be_false
+      @environment.invalid_fields[:name].should == %q|Option name's value @$%^&*() does not match regular expression /^[\-[:alnum:]_]+$/|
+    end
+
+    it "updates the description from parameters[:description]" do
+      @environment.update_from_params(:description => "wow, writing your own object mapper is kinda painful")
+      @environment.description.should == "wow, writing your own object mapper is kinda painful"
+    end
+
+    it "updates cookbook version constraints from the hash in parameters[:cookbook_version_constraints]" do
+      # NOTE: I'm only choosing this (admittedly weird) structure for the hash b/c the better more obvious
+      # one, i.e, {:cookbook_version_constraints => {COOKBOOK_NAME => CONSTRAINT}} is difficult to implement
+      # the way merb does params
+      params = {:cookbook_version => {"0" => "apache2 ~> 1.0.0", "1" => "nginx < 2.0"}}
+      @environment.update_from_params(params)
+      @environment.cookbook_versions.should == {"apache2" => "~> 1.0.0", "nginx" => "< 2.0"}
+    end
+
+    it "validates the cookbook constraints" do
+      params = {:cookbook_version => {"0" => "apache2 >>> 1.0.0"}}
+      @environment.update_from_params(params).should be_false
+      err_msg = @environment.invalid_fields[:cookbook_version]["0"]
+      err_msg.should == "apache2 >>> 1.0.0 is not a valid cookbook constraint"
+    end
+
+    it "is not valid if the name is not present" do
+      @environment.validate_required_attrs_present.should be_false
+      @environment.invalid_fields[:name].should == "name cannot be empty"
+    end
+
+    it "is not valid after updating from params if the name is not present" do
+      @environment.update_from_params({}).should be_false
+      @environment.invalid_fields[:name].should == "name cannot be empty"
+    end
+
+    it "updates attributes from a JSON string in params[:attributes]" do
+      @environment.update_from_params(:name => "fuuu", :attributes => %q|{"fuuu":"RAGE"}|)
+      @environment.attributes.should == {"fuuu" => "RAGE"}
+    end
+
+  end
+
 end
