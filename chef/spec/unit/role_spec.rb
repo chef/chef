@@ -197,5 +197,18 @@ describe Chef::Role do
     end
 
   end
+
+  describe "when selecting a run list based on the current environment" do
+    before do
+      @role.name("base")
+      @role.run_list << "recipe[nagios::client]" << "recipe[tims-acl::bork]"
+    end
+
+    it "returns the default run list when no environment is selected" do
+      @role.run_list.should == Chef::RunList.new("recipe[nagios::client]", "recipe[tims-acl::bork]")
+    end
+
+  end
+
 end
 

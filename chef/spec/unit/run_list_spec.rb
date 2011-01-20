@@ -148,7 +148,7 @@ describe Chef::RunList do
     end
   end
 
-  describe "expand" do
+  describe "when expanding the run list" do
     before(:each) do
       @role = Chef::Role.new
       @role.name "stubby"
@@ -241,6 +241,21 @@ describe Chef::RunList do
       expansion.recipes[3].should == "kitty"
       expansion.default_attrs[:seven].should == :nine
     end
+  end
+
+  describe "when converting to an alternate representation" do
+    before do
+      @run_list << "recipe[nagios::client]" << "role[production]" << "recipe[apache2]"
+    end
+
+    it "converts to an array of the string forms of its items" do
+      @run_list.to_a.should == ["recipe[nagios::client]", "role[production]", "recipe[apache2]"]
+    end
+
+    it "converts to json by converting its array form" do
+      @run_list.to_json.should == ["recipe[nagios::client]", "role[production]", "recipe[apache2]"].to_json
+    end
 
   end
+
 end
