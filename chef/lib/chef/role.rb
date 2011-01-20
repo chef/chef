@@ -115,8 +115,8 @@ class Chef
     alias_method :recipes, :run_list
     
     # For run_list expansion
-    def run_list_for_environment(environment='_default')
-      if env_run_lists[environment].nil? || env_run_lists[environment].empty?
+    def run_list_for(environment='_default')
+      if env_run_lists[environment].nil?
         run_list
       else
         env_run_lists[environment]
@@ -127,18 +127,13 @@ class Chef
     def env_run_lists(env_run_lists=nil)
       if (!env_run_lists.nil? && !env_run_lists.empty?)
         @env_run_lists.clear
-        env_run_lists.each do |k,v|
-          @env_run_lists[k] = Chef::RunList.new(*Array(v)) unless v.nil?
-        end
+        env_run_lists.each { |k,v| @env_run_lists[k] = Chef::RunList.new(*Array(v))}
         @env_run_lists["_default"] = run_list
       end
       @env_run_lists
     end
 
-#     def recipes(*args)
-#       Chef::Log.warn "Chef::Role#recipes method is deprecated.  Please use Chef::Role#run_list"
-#       run_list(*args)
-#     end
+    alias :env_run_list :env_run_lists
 
     def default_attributes(arg=nil)
       set_or_return(

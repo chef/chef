@@ -130,11 +130,11 @@ class Chef
     alias :delete :remove
 
 
-    def expand(data_source='server', couchdb=nil, rest=nil)
+    def expand(data_source='server', expansion_opts={})
       couchdb = couchdb ? couchdb : Chef::CouchDB.new
 
-      expansion = expansion_for_data_source(data_source, :couchdb => couchdb, :rest => rest)
-      expansion.expand(@chef_environment)
+      expansion = expansion_for_data_source(data_source, expansion_opts)
+      expansion.expand(expansion_opts[:environment])
       expansion
     end
 

@@ -419,15 +419,15 @@ class Chef
     # on the command line)
     #
     # Returns the fully-expanded list of recipes.
-    #
+    #--
     # TODO: timh/cw, 5-14-2010: Should this method exist? Should we
     # instead modify default_attrs and override_attrs whenever our
     # run_list is mutated? Or perhaps do something smarter like
     # on-demand generation of default_attrs and override_attrs,
     # invalidated only when run_list is mutated?
     def expand!
-      # This call should only be called on a chef-client run.
-      expansion = run_list.expand('server')
+      # This call should only be called on a chef-client run if you're going to save it later
+      expansion = run_list.expand('server', :environment => chef_environment)
       raise Chef::Exceptions::MissingRole if expansion.errors?
 
       self[:tags] = Array.new unless attribute?(:tags)
