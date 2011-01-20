@@ -1,0 +1,6 @@
+<%= partial "environments/navigation", :environment => @environment, :active => 'create'%>
+
+<%= partial 'environments/form',  :environment => @environment,
+                                  :route => :environments,
+                                  :method => :post,
+                                  :new_object => true %>

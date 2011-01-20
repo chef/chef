@@ -25,3 +25,6 @@
                   %tr
                     %td= name
                     %td= versions
+          .left
+            %h3 Attributes
+            = build_tree('attrs', @environment.attributes)

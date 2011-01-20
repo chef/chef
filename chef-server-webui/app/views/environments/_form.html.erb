@@ -1,0 +1,34 @@
+<div id="#block-tables" class="block">
+  <div class="content">
+    <% if new_object %>
+      <h3>New Environment</h3>
+    <% else %>
+      <h3><%= @environment.name -%></h3>
+    <% end %>
+    <%= form(:action => url(*route), :method => method) do -%>
+      <div id="environment_name_control_container" class="block">
+        <span class="label"><label for="name">name</label></span>
+        <span><%= text_field(:name => "name", :value => @environment.name, :disabled => !new_object)%></span>
+      </div>
+      <div id="environment_description_control_container" class="block">
+        <span class="label"><label for="description">description:</label></span>
+        <span><%= text_area(@environment.description, :name => "description")%></span>
+      </div>
+      <div id="attributes_control_container">
+        <span class="label"><label for="attributes">attributes:</label></span>
+        <span><%= text_area(@environment.attributes.to_json, :name => "attributes")%></span>
+      </div>
+      <% cookbook_version_index = 0 -%>
+      <% @environment.cookbook_versions.each do |cookbook_name, constraint| -%>
+        <%= partial "environments/version_selector",:cookbook_version_index => cookbook_version_index, 
+                                                    :cookbook_name => cookbook_name,
+                                                    :constraint => constraint %>
+        <% cookbook_version_index += 1 -%>
+      <% end %>
+      <%= partial "environments/version_selector",:cookbook_version_index => cookbook_version_index, 
+                                                  :cookbook_name => nil,
+                                                  :constraint => nil %>
+      <%= submit("#{new_object ? 'create' : 'update'}")%>
+    <% end =%>
+  </div>
+</div>
