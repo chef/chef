@@ -1,0 +1,6 @@
+<%= partial "environments/navigation", :environment => @environment, :active => 'edit'%>
+
+<%= partial 'environments/form',  :environment => @environment,
+                                  :route => [:environment, @environment.name],
+                                  :method => :put,
+                                  :new_object => false %>

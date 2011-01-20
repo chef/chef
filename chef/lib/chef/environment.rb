@@ -21,7 +21,7 @@ require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/couchdb'
 require 'chef/index_queue'
-
+require 'chef/version_constraint'
 
 class Chef
   class Environment
@@ -30,6 +30,7 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::IndexQueue::Indexable
 
+    COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/.freeze
 
     attr_accessor :couchdb, :couchdb_rev
     attr_reader :couchdb_id
@@ -153,6 +154,68 @@ class Chef
       attributes(o.attributes)
       self
     end
+
+    def update_from_params(params)
+      valid = true
+
+      begin
+        name(params[:name])
+      rescue Chef::Exceptions::ValidationFailed => e
+        invalid_fields[:name] = e.message
+        valid = false
+      end
+      description(params[:description])
+
+      unless params[:cookbook_version].nil?
+        params[:cookbook_version].each do |index, cookbook_constraint_spec|
+          unless (cookbook_constraint_spec.nil? || cookbook_constraint_spec.size == 0)
+            valid = valid && update_cookbook_constraint_from_param(index, cookbook_constraint_spec)
+          end
+        end
+      end
+
+      unless params[:attributes].nil? || params[:attributes].size == 0
+        attributes(Chef::JSON.from_json(params[:attributes]))
+      end
+
+      valid = validate_required_attrs_present && valid
+
+      valid
+    end
+
+    def update_cookbook_constraint_from_param(index, cookbook_constraint_spec)
+      valid = true
+      md = cookbook_constraint_spec.match(COMBINED_COOKBOOK_CONSTRAINT)
+      if md.nil? || md[2].nil?
+        valid = false
+        add_cookbook_constraint_error(index, cookbook_constraint_spec)
+      elsif self.class.validate_cookbook_version(md[2])
+        cookbook_versions[md[1]] = md[2]
+      else
+        valid = false
+        add_cookbook_constraint_error(index, cookbook_constraint_spec)
+      end
+      valid
+    end
+
+    def add_cookbook_constraint_error(index, cookbook_constraint_spec)
+      invalid_fields[:cookbook_version] ||= {}
+      invalid_fields[:cookbook_version][index] = "#{cookbook_constraint_spec} is not a valid cookbook constraint"
+    end
+
+    def invalid_fields
+      @invalid_fields ||= {}
+    end
+
+    def validate_required_attrs_present
+      if name.nil? || name.size == 0
+        invalid_fields[:name] ||= "name cannot be empty"
+        false
+      else
+        true
+      end
+    end
+
 
     def self.json_create(o)
       environment = new

@@ -38,36 +38,46 @@ class Environments < Application
 
   # GET /environments/:id
   def show
-    @environment = begin
-                     Chef::Environment.load(params[:id])
-                   rescue => e
-                     Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                     @_message = "Could not load environment #{params[:id]}"
-                     Chef::Environment.new
-                   end
+    load_environment
     render
   end
 
   # GET /environemnts/new
   def new
-    # TODO: implement this
-    render
+    @environment = Chef::Environment.new
+    render :new
   end
 
   # POST /environments
   def create
-    # TODO: implement this
+    @environment = Chef::Environment.new
+    if @environment.update_from_params(params)
+      @environment.save
+      render :show
+    else
+      raise "TODO"
+      render :new
+      # redirect to new, tell them what they did wrong
+    end
   end
 
   # GET /environments/:id/edit
   def edit
-    # TODO: implement this
+    load_environment
     render
   end
 
   # PUT /environments/:id
   def update
-    # TODO: implement this
+    load_environment
+    @environment.update_from_params(params)
+    if @environment.invalid_fields.empty? #success
+      @environment.save
+      render :show
+    else
+      @environment.update_from_params(params)
+      render :edit
+    end
   end
 
   # DELETE /environments/:id
@@ -130,4 +140,18 @@ class Environments < Application
     end
     redirect referer
   end
+
+  private
+
+  def load_environment
+    @environment = begin
+      Chef::Environment.load(params[:id])
+    rescue Net::HTTPServerException => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = "Could not load environment #{params[:id]}"
+      @environment = Chef::Environment.new
+      false
+    end
+  end
+
 end
