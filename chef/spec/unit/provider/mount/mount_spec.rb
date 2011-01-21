@@ -134,10 +134,20 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should set enabled to true if the mount point is last in fstab" do
-      fstab = "/dev/sdy1  /tmp/foo  ext3  defaults  1 2\n"
-      fstab << "/dev/sdz1 /tmp/foo  ext3 defaults  1 2\n"
+      fstab1 = "/dev/sdy1  /tmp/foo  ext3  defaults  1 2\n"
+      fstab2 = "#{@new_resource.device} #{@new_resource.mount_point}  ext3  defaults  1 2\n"
 
-      ::File.stub!(:foreach).with("/etc/fstab").and_yield fstab
+      ::File.stub!(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
+
+      @provider.load_current_resource
+      @provider.current_resource.enabled.should be_true
+    end
+
+    it "should set enabled to true if the mount point is not last in fstab and mount_point is a substring of another mount" do
+      fstab1 = "#{@new_resource.device} #{@new_resource.mount_point}  ext3  defaults  1 2\n"
+      fstab2 = "/dev/sdy1  /tmp/foo/bar  ext3  defaults  1 2\n"
+
+      ::File.stub!(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
 
       @provider.load_current_resource
       @provider.current_resource.enabled.should be_true
