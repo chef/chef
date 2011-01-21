@@ -49,35 +49,75 @@ dl dt { font-weight: bold; }
   padding-top: 2px;
 }
 
-div.sortable {
+div.roleFormContainer, div.nodeFormContainer{
+  padding: 0 15px 15px;
+  min-width:1000px;
+}
+
+div#run_list_editor_container {
+  min-height:450px;
+  min-width:1000px;
+}
+
+div.runListEditorColumn {
+  float:left;
+}
+
+span#environment_run_list_selection_control{
+  float:right;
+  margin-right:10px;
+}
+
+span.runListEditorLabel{
+  font-size: 1.2em;
+  padding: 1px 0 3px 0;
+  margin: 0;
+  display: inline-block;
+  font-weight: bold;
+}
+
+div.runListAvailableItemContainer, div.runListContainer {
+  width: 300px;
+  margin-right: 10px;
+  border: 1px solid black;
+  overflow-y: scroll;
+  background: #eee;
+}
+
+div.runListAvailableItemContainer{
   height: 200px;
-  width: 350px;
-  margin-right: 10px;
-  border: 1px solid black;
-  overflow-y: scroll;
-  background: #777777;
 }
 
-div.sortable.run-list {
-  height: 430px;
-  width: 350px;
-  margin-right: 10px;
-  border: 1px solid black;
-  overflow-y: scroll;
-  background: #777777;
+div.runListContainer{
+  height: 423px;
 }
 
-div.run-list ul.ui-sortable#for_node, div.run-list ul.ui-sortable#for_role {
-  min-height: 420px;
+ul.runListAvailableItemList, ul.runListItemList {
+  padding:5px 0px 0px 0px;
+  min-height:185px;
+  width:100%;
+  list-style-type: none;
+  margin: 0px;
+  background: #eee;
 }
 
+ul.runListItemList{
+  min-height:410px;
+}
+
+li.runListItem{
+  margin: 0px 5px 5px 5px;
+  padding: 5px;
+  width: 93%;
+  overflow:hidden;
+  cursor:pointer;
+}
 
 div.clear {
   clear: left;
 }
 
 table.form th {
-  /* vertical-align: top; */
   font-weight: bold;
   text-align: right;
   padding-right: 10px;
@@ -91,7 +131,6 @@ div.help {
 
 table.form td {
   text-align: left;
-  /* vertical-align: top; */
 }
 
 table.sortable td {
@@ -121,7 +160,7 @@ div#tree {
   float: left;
 }
 
-div#jform { 
+div#jform {
   float: left;
   margin-left: 50px;
 }
@@ -130,23 +169,17 @@ div.editor {
   border: 1px solid black;
 }
 
-#node_available_roles, #node_available_recipes, #for_node, #for_role, #available_recipes { 
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  float: left;
-  margin-right: 10px; 
-  background: #eee; 
-  padding: 5px; 
-  width: 325px;
-  min-height:200px;
+div.attrEditor{
+  clear:both;
 }
 
-#node_available_roles li, #node_available_recipes li, #for_node li, #for_role li, #available_recipes li { 
-  margin: 0 5px 5px 5px; 
-  padding: 5px; 
-  width: 310px; 
-  overflow:hidden;
+div.attrEditor #treecontainer, div.attrEditor #tabcontainer{
+  float:left;
+}
+
+div.attrEditor #tabcontainer{
+  position:relative;
+  top:0px;
 }
 
 #sidebar_block {
@@ -157,19 +190,19 @@ div.editor {
   display: none;
 }
 
-div.tooltip { 
-    background-color: #000; 
-    outline: 1px solid #669; 
-    border: 2px solid #fff; 
-    padding: 10px 15px; 
+div.tooltip {
+    background-color: #000;
+    outline: 1px solid #669;
+    border: 2px solid #fff;
+    padding: 10px 15px;
     /* width: 200px;  */
-    display: none; 
-    color: #fff; 
-    text-align: left; 
-    font-size: 12px; 
-    outline-radius: 4px; 
-    -moz-outline-radius: 4px; 
-    -webkit-outline-radius: 4px; 
+    display: none;
+    color: #fff;
+    text-align: left;
+    font-size: 12px;
+    outline-radius: 4px;
+    -moz-outline-radius: 4px;
+    -webkit-outline-radius: 4px;
 }
 
 table.tooltip {

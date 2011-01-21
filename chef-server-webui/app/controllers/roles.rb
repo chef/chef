@@ -56,6 +56,9 @@ class Roles < Application
       @role = Chef::Role.new
       @available_roles = Chef::Role.list.keys.sort
       @run_list = @role.run_list
+      @environments = ['_default']
+      @current_env = "_default"
+      @selected
       render
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
@@ -72,6 +75,8 @@ class Roles < Application
       @available_recipes = get_available_recipes 
       @available_roles = Chef::Role.list.keys.sort
       @run_list = @role.run_list
+      @environments = @role.env_run_lists.keys
+      @current_env = @role.env_run_lists.key?(session[:environment]) ? session[:environment] : "_default"
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @role = Chef::Role.new

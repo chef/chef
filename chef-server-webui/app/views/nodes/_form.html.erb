@@ -1,0 +1,63 @@
+<div class="content nodeFormContainer">
+    <%= form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do -%>
+    <% unless form_for == 'edit' %>
+      <div class="group form">
+        <label class="label" for="node_name">Name</label>
+        <%= text_field :id => "node_name", :name => "name", :class => "text_field", :value => params.has_key?(:name) ? h(params[:name]) : @node.name %>
+        <span class="description">The name of the Node</span>
+      </div>
+    <% end %>
+
+    <div class="group form" id="run_list_editor_container">
+      <div id="availableRunListItemContainer" class="runListEditorColumn">
+        <div id="available_nodes_container" >
+          <span class="runListEditorLabel">Available Roles</span>
+          <div class="sortable runListAvailableItemContainer">
+            <ul id="node_available_roles" class="connectedSortable runListAvailableItemList">
+              <% @available_roles.each do |role| %>
+                <li id="role[<%=h(role)  -%>]" class="ui-state-highlight runListItem"><%= h(role) -%></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+        <div id="available_recipes_container">
+          <span class="runListEditorLabel">Available Recipes</span>
+          <div class="sortable runListAvailableItemContainer">
+            <ul id="node_available_recipes" class="connectedSortable runListAvailableItemList">
+              <% @available_recipes.each do |recipe|
+                 versioned_recipe = recipe.split(/\s+/).join('@') %>
+                <li id="recipe[<%= h(versioned_recipe) -%>]" class="ui-state-default runListItem"><%= h(versioned_recipe) -%></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="run_list_container" class="runListEditorColumn">
+        <div id="environment_run_list_selector">
+          <span class="runListEditorLabel">Run List</span>
+        </div>
+        <div class="sortable runListContainer">
+          <ul class="ui-sortable connectedSortable runListItemList" id="for_node">
+            <% @run_list.each do |entry| %>
+              <li id="<%=h(entry.to_s)%>" class="<%= class_for_run_list_item(entry) -%> runListItem"><%=h "#{entry.name} #{entry.version}"-%></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="group form attrEditor">
+      <label class="label">Attributes</label>
+      <%= partial 'layout/jsonedit', :json => @node.normal_attrs.to_json %>
+      <span class="description">
+        A JSON hash for default attributes for nodes of this node.  These attributes will only be applied if the node does not already have a value for the attributes.
+      </span>
+    </div>
+
+    <div class="group">
+      <div class="actions-bar">
+        <%= submit(submit_name, :id => submit_id, :class => 'button') -%>
+      </div>
+    </div>
+  <% end =%>
+</div>
