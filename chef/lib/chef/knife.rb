@@ -28,9 +28,19 @@ class Chef
     include Mixlib::CLI
     extend Chef::Mixin::ConvertToClassName
 
+    begin
+      require 'rubygems'
+      files = Gem.find_files 'chef/knife/*.rb'
+      files.map! do |file|
+        file[/(#{Regexp.escape File.join('chef', 'knife', '')}.*\.rb)/, 1]
+      end.uniq!
+    rescue LoadError
+      files = Dir[File.expand_path(File.join(File.dirname(__FILE__), 'knife', '*.rb'))]
+      files.map! { |knife_file| knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1] }
+    end
+
     # The "require paths" of the core knife subcommands bundled with chef
-    DEFAULT_SUBCOMMAND_FILES = Dir[File.expand_path(File.join(File.dirname(__FILE__), 'knife', '*.rb'))]
-    DEFAULT_SUBCOMMAND_FILES.map! { |knife_file| knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1] }
+    DEFAULT_SUBCOMMAND_FILES = files
 
     attr_accessor :name_args
 
