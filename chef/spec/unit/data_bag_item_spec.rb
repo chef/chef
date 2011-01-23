@@ -101,19 +101,32 @@ describe Chef::DataBagItem do
     end
   end
 
-  describe "hash behaviour" do
+  describe "when used like a Hash" do
     before(:each) do
       @data_bag_item.raw_data = { "id" => "journey", "trials" => "been through" }
     end
 
-    it "should respond to keys" do
+    it "responds to keys" do
       @data_bag_item.keys.should include("id")
       @data_bag_item.keys.should include("trials")
     end
 
-    it "should allow lookups with []" do
+    it "supports element reference with []" do
       @data_bag_item["id"].should == "journey"
     end
+
+    it "implements all the methods of Hash" do
+      methods = [:rehash, :to_hash, :[], :fetch, :[]=, :store, :default,
+      :default=, :default_proc, :default_proc=, :key, :index, :size, :length,
+      :empty?, :each_value, :each_key, :each_pair, :each, :keys, :values,
+      :values_at, :delete, :delete_if, :keep_if, :select!, :reject!, :clear,
+      :invert, :update, :replace, :merge!, :merge, :has_key?, :has_value?,
+      :key?, :value?]
+      methods.each do |m|
+        @data_bag_item.should respond_to(m)
+      end
+    end
+
   end
 
   describe "to_hash" do
@@ -141,7 +154,7 @@ describe Chef::DataBagItem do
     end
   end
 
-  describe "deserialize" do
+  describe "when deserializing from JSON" do
     before(:each) do
       @data_bag_item.data_bag('mars_volta')
       @data_bag_item.raw_data = { "id" => "octahedron", "snooze" => { "finally" => :world_will }}
@@ -178,6 +191,29 @@ describe Chef::DataBagItem do
 
       @data_bag_item.inspect.should == "data_bag_item[\"books\", \"heart_of_darkness\", #{raw_data.inspect}]"
     end
+  end
+
+  describe "when loading from an API call" do
+    before do
+      @data_bag_item.raw_data = {"id" => "charlie", "shell" => "zsh", "ssh_keys" => %w{key1 key2}}
+      @http_client = mock("Chef::REST")
+      Chef::REST.stub!(:new).and_return(@http_client)
+    end
+
+    it "converts raw data to a data bag item" do
+      @http_client.should_receive(:get_rest).with("data/users/charlie").and_return(@data_bag_item.to_hash)
+      item = Chef::DataBagItem.load(:users, "charlie")
+      item.should be_a_kind_of(Chef::DataBagItem)
+      item.should == @data_bag_item
+    end
+
+    it "does not convert when a DataBagItem is returned from the API call" do
+      @http_client.should_receive(:get_rest).with("data/users/charlie").and_return(@data_bag_item)
+      item = Chef::DataBagItem.load(:users, "charlie")
+      item.should be_a_kind_of(Chef::DataBagItem)
+      item.should equal(@data_bag_item)
+    end
+
   end
 
 end
