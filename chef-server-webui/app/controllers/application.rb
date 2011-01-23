@@ -259,15 +259,9 @@ class Application < Merb::Controller
     end
   end
 
-  def get_available_recipes
+  def list_available_recipes
     r = Chef::REST.new(Chef::Config[:chef_server_url])
-    all_recipes = Array.new
-    r.get_rest('cookbooks/_recipes').each do |cb, versions|
-      all_recipes << versions.sort{|x,y| y <=> x }.map do |ver, recipes|
-        recipes.map{ |rn| rn == "default" ? "#{cb} #{ver}" : "#{cb}::#{rn} #{ver}" }
-      end
-    end
-    all_recipes.flatten.uniq
+    r.get_rest('cookbooks/_recipes').keys
   end
 
   def convert_newline_to_br(string)

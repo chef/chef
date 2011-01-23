@@ -24,9 +24,8 @@
           <span class="runListEditorLabel">Available Recipes</span>
           <div class="sortable runListAvailableItemContainer">
             <ul id="node_available_recipes" class="connectedSortable runListAvailableItemList">
-              <% @available_recipes.each do |recipe|
-                 versioned_recipe = recipe.split(/\s+/).join('@') %>
-                <li id="recipe[<%= h(versioned_recipe) -%>]" class="ui-state-default runListItem"><%= h(versioned_recipe) -%></li>
+              <% @available_recipes.each do |recipe| %>
+                <li id="recipe[<%= h(recipe) -%>]" class="ui-state-default runListItem"><%= h(recipe) -%></li>
               <% end %>
             </ul>
           </div>
@@ -39,7 +38,7 @@
         <div class="sortable runListContainer">
           <ul class="ui-sortable connectedSortable runListItemList" id="for_node">
             <% @run_list.each do |entry| %>
-              <li id="<%=h(entry.to_s)%>" class="<%= class_for_run_list_item(entry) -%> runListItem"><%=h "#{entry.name} #{entry.version}"-%></li>
+              <li id="<%=h(entry)%>" class="<%= class_for_run_list_item(entry) -%> runListItem"><%=h(entry.name) -%></li>
             <% end %>
           </ul>
         </div>

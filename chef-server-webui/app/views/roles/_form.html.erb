@@ -1,5 +1,5 @@
 <div class="content roleFormContainer">
-    <%= form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do -%>
+  <%= form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do -%>
     <% unless form_for == 'edit' %>
       <div class="group form">
         <label class="label" for="role_name">Name</label>
@@ -31,7 +31,7 @@
           <div class="sortable runListAvailableItemContainer">
             <ul id="node_available_recipes" class="connectedSortable runListAvailableItemList">
               <% @available_recipes.each do |recipe| %>
-                <li id="recipe[<%= h(recipe.split(/\s+/).join('@')) -%>]" class="ui-state-default runListItem"><%= h(recipe.split(/\s+/).join('@')) -%></li>
+                <li id="recipe[<%= h(recipe) -%>]" class="ui-state-default runListItem"><%= h(recipe) -%></li>
               <% end %>
             </ul>
           </div>
@@ -44,18 +44,19 @@
         </div>
         <div class="sortable runListContainer">
           <ul class="ui-sortable connectedSortable runListItemList" id="for_role">
-            <% @run_list.each do |entry| %>
-              <li id="<%=h(entry.to_s)%>" class="<%= class_for_run_list_item(entry) -%> runListItem"><%=h "#{entry.name} #{entry.version}"-%></li>
+            <% @run_list.each do |item| %>
+              <li id="<%=h(item)%>" class="<%= class_for_run_list_item(item) -%> runListItem"><%=h display_run_list_item(item)-%></li>
             <% end %>
           </ul>
         </div>
       </div>
       <div id="current_run_list_display_container" class="runListEditorColumn">
         <span class="runListEditorLabel">Active Run List for <%= h(@current_env) -%></span>
-        <div class="sortable runListContainer">
-          <ul class="ui-sortable runListItemList" id="active_run_list">
+        <div class="sortable activeRunListContainer">
+          <div id="activeRunListName" class="todo">PREPROD</div>
+          <ul class="runListItemList" id="active_run_list">
             <% @role.run_list_for(@current_env).each do |item| %>
-              <li class="<%= class_for_run_list_item(item) -%> runListItem"><%= h(item) -%></li>
+              <li class="displayRunListItem"><%= h(item) -%></li>
             <% end %>
           </ul>
         </div>

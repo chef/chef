@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,12 +21,12 @@
 require 'chef/node'
 
 class Nodes < Application
-  
+
   provides :html
-  
+
   before :login_required
   before :require_admin, :only => [:destroy]
-  
+
   def index
     begin
       if session[:environment]
@@ -44,20 +44,20 @@ class Nodes < Application
   end
 
   def show
-    begin      
+    begin
       @node =Chef::Node.load(params[:id])
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @_message = {:error => "Could not load node #{params[:id]}"}
       @node = Chef::Node.new
-    end 
+    end
     render
   end
 
   def new
     begin
       @node = Chef::Node.new
-      @available_recipes = get_available_recipes 
+      @available_recipes = list_available_recipes
       @available_roles = Chef::Role.list.keys.sort
       @run_list = @node.run_list
       render
@@ -66,13 +66,13 @@ class Nodes < Application
       @node_list = Chef::Node.list()
       @_message = {:error => "Could not load available recipes, roles, or the run list"}
       render :index
-    end 
+    end
   end
 
   def edit
     begin
       @node = Chef::Node.load(params[:id])
-      @available_recipes = get_available_recipes 
+      @available_recipes = list_available_recipes
       @available_roles = Chef::Role.list.keys.sort
       @run_list = @node.run_list
       render
@@ -84,11 +84,11 @@ class Nodes < Application
       @run_list = []
       @_message = {:error => "Could not load node #{params[:id]}"}
       render
-    end 
+    end
   end
 
   def create
-    begin      
+    begin
       @node = Chef::Node.new
       @node.name params[:name]
       @node.normal_attrs = Chef::JSON.from_json(params[:attributes])
@@ -99,7 +99,7 @@ class Nodes < Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @node.normal_attrs = Chef::JSON.from_json(params[:attributes])
-      @available_recipes = get_available_recipes 
+      @available_recipes = list_available_recipes
       @available_roles = Chef::Role.list.keys.sort
       @node.run_list params[:for_node]
       @run_list = @node.run_list
@@ -118,7 +118,7 @@ class Nodes < Application
       render :show
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @available_recipes = get_available_recipes 
+      @available_recipes = list_available_recipes
       @available_roles = Chef::Role.list.keys.sort
       @run_list = Chef::RunList.new
       @run_list.reset!(params[:for_node])
@@ -137,7 +137,7 @@ class Nodes < Application
       @node_list = Chef::Node.list()
       @_message = {:error => "Could not delete the node"}
       render :index
-    end 
+    end
   end
-  
+
 end

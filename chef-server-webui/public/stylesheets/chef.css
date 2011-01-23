@@ -17,6 +17,10 @@
 .ruby .expr { color: #227; }
 .ruby .escape { color: #277; }
 
+.todo{
+  color:red;
+}
+
 .files {
   padding-left: 20px;
 }
@@ -63,17 +67,29 @@ div.runListEditorColumn {
   float:left;
 }
 
+div#current_run_list_display_container{
+  margin-left:20px;
+}
+
 span#environment_run_list_selection_control{
   float:right;
   margin-right:10px;
 }
 
-span.runListEditorLabel{
+span.runListEditorLabel, div#activeRunListName{
   font-size: 1.2em;
+  font-weight: bold;
+}
+
+span.runListEditorLabel{
   padding: 1px 0 3px 0;
   margin: 0;
   display: inline-block;
-  font-weight: bold;
+}
+
+div#activeRunListName{
+  padding:2px;
+  text-align:center;
 }
 
 div.runListAvailableItemContainer, div.runListContainer {
@@ -98,7 +114,6 @@ ul.runListAvailableItemList, ul.runListItemList {
   width:100%;
   list-style-type: none;
   margin: 0px;
-  background: #eee;
 }
 
 ul.runListItemList{
@@ -111,6 +126,13 @@ li.runListItem{
   width: 93%;
   overflow:hidden;
   cursor:pointer;
+}
+
+li.displayRunListItem{
+  padding: 5px 5px 5px 5px;
+  margin: 0px 5px 0px 5px;
+  width: 93%;
+  border-bottom:1px solid #eee;
 }
 
 div.clear {
