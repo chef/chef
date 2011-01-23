@@ -177,7 +177,13 @@ class Chef
     # Load a Data Bag Item by name via RESTful API
     def self.load(data_bag, name)
       item = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{data_bag}/#{name}")
-      item.kind_of?(DataBagItem) ? item : from_hash(item)
+      if item.kind_of?(DataBagItem)
+        item
+      else
+        item = from_hash(item)
+        item.data_bag(data_bag)
+        item
+      end
     end
     
     # Remove this Data Bag Item from CouchDB
@@ -219,7 +225,10 @@ class Chef
     end
 
     def ==(other)
-      other.respond_to?(:to_hash) && (other.to_hash == to_hash)
+      other.respond_to?(:to_hash) &&
+      other.respond_to?(:data_bag) &&
+      (other.to_hash == to_hash) &&
+      (other.data_bag.to_s == data_bag.to_s)
     end
 
     # As a string

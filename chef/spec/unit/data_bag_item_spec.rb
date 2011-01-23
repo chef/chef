@@ -196,6 +196,7 @@ describe Chef::DataBagItem do
   describe "when loading from an API call" do
     before do
       @data_bag_item.raw_data = {"id" => "charlie", "shell" => "zsh", "ssh_keys" => %w{key1 key2}}
+      @data_bag_item.data_bag("users")
       @http_client = mock("Chef::REST")
       Chef::REST.stub!(:new).and_return(@http_client)
     end
@@ -205,6 +206,7 @@ describe Chef::DataBagItem do
       item = Chef::DataBagItem.load(:users, "charlie")
       item.should be_a_kind_of(Chef::DataBagItem)
       item.should == @data_bag_item
+      
     end
 
     it "does not convert when a DataBagItem is returned from the API call" do
