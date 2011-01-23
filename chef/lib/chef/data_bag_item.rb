@@ -141,7 +141,13 @@ class Chef
       result["_rev"] = @couchdb_rev if @couchdb_rev
       result.to_json(*a)
     end
-    
+
+    def self.from_hash(h)
+      item = new
+      item.raw_data = h
+      item
+    end
+
     # Create a Chef::DataBagItem from JSON
     def self.json_create(o)
       bag_item = new
@@ -170,7 +176,8 @@ class Chef
     
     # Load a Data Bag Item by name via RESTful API
     def self.load(data_bag, name)
-      Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{data_bag}/#{name}")
+      item = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{data_bag}/#{name}")
+      item.kind_of?(DataBagItem) ? item : from_hash(item)
     end
     
     # Remove this Data Bag Item from CouchDB
@@ -210,7 +217,11 @@ class Chef
     def self.create_design_document(couchdb=nil)
       (couchdb || Chef::CouchDB.new).create_design_document("data_bag_items", DESIGN_DOCUMENT)
     end
-    
+
+    def ==(other)
+      other.respond_to?(:to_hash) && (other.to_hash == to_hash)
+    end
+
     # As a string
     def to_s
       "data_bag_item[#{id}]"
