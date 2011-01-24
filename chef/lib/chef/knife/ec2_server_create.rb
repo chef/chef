@@ -53,6 +53,18 @@ class Chef
         :default => "us-east-1b",
         :proc => Proc.new { |key| Chef::Config[:knife][:availability_zone] = key }
 
+      option :root_device,
+        :short => "-r ROOT_DEVICE",
+        :long => "--root-device ROOT_DEVICE",
+        :description => "The kind of root device.  Either 'ebs' or 'instance'.",
+        :default => "instance"
+
+      option :size,
+        :short => "-s SIZE",
+        :long => "--size SIZE",
+        :description => "The size of the EBS volume in GB, for EBS-backed instances.  NOTE: You will very likely need to use resize2fs or xfs_growfs, if the boot partition of your AMI was created on a smaller volume!",
+        :default => "10"
+
       option :chef_node_name,
         :short => "-N NAME",
         :long => "--node-name NAME",
@@ -150,13 +162,26 @@ class Chef
           :region => Chef::Config[:knife][:region]
         )
 
-        server = connection.servers.create(
+        server_def = {
           :image_id => config[:image],
           :groups => config[:security_groups],
           :flavor_id => config[:flavor],
           :key_name => Chef::Config[:knife][:aws_ssh_key_id],
-          :availability_zone => Chef::Config[:availability_zone]
-        )
+          :availability_zone => Chef::Config[:availability_zone],
+          :root_device => config[:root_device].to_sym
+        }
+
+        if(server_def[:root_device] == :ebs)
+          # A proper implementation would make device name and DeleteOnTermination
+          # configurable at the least...
+          server_def[:block_device_mapping] = [{
+            'DeviceName' => '/dev/sda1',
+            'Ebs.VolumeSize' => config[:size],
+            'Ebs.DeleteOnTermination' => true
+          }]
+        end
+
+        server = connection.servers.create(server_def)
 
         puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
         puts "#{h.color("Flavor", :cyan)}: #{server.flavor_id}"
