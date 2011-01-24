@@ -39,3 +39,13 @@ task :gemspec do
   end
 end
 
+desc "Create a new Balsamiq Mockups project"
+task :new_mockup, :name do |t, args|
+  if args[:name].nil?
+    puts "You must supply a name for your mockups project directory: `rake new_mockup[project-name]`"
+    exit
+  end
+  src = "mockups/base-mockup/."
+  dest =  "mockups/#{args[:name]}"
+  FileUtils.cp_r src, dest
+end
