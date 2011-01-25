@@ -157,4 +157,18 @@ $(document).ready(function(){
   if (sidebar_block_children > 0) {
     $("#sidebar_block").fadeIn();
   }
+
+
+
+  if ($('ul#role_available_recipes').size() !== 0) {
+    var currentEnvironment = $('#environment_run_list_selection_control select').val();
+    $.getJSON('/environments/' + currentEnvironment + '/recipes', function(data) {
+      $('div#available_recipes_container img.spinner').remove();
+      for (var i = data['recipes'].length - 1; i >= 0; i--){
+        var recipe = data['recipes'][i];
+        $('ul#role_available_recipes').append('<li id="recipe[' + recipe + ']" class="ui-state-default runListItem">' +  recipe + '</li>');
+      };
+    })
+  };
+
 });

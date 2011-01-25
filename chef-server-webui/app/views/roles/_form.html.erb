@@ -19,7 +19,7 @@
         <div id="available_roles_container" >
           <span class="runListEditorLabel">Available Roles</span>
           <div class="sortable runListAvailableItemContainer">
-            <ul id="node_available_roles" class="connectedSortable runListAvailableItemList">
+            <ul id="role_available_roles" class="connectedSortable runListAvailableItemList">
               <% @available_roles.each do |role| %>
                 <li id="role[<%=h(role)  -%>]" class="ui-state-highlight runListItem"><%= h(role) -%></li>
               <% end %>
@@ -29,10 +29,8 @@
         <div id="available_recipes_container">
           <span class="runListEditorLabel">Available Recipes</span>
           <div class="sortable runListAvailableItemContainer">
-            <ul id="node_available_recipes" class="connectedSortable runListAvailableItemList">
-              <% @available_recipes.each do |recipe| %>
-                <li id="recipe[<%= h(recipe) -%>]" class="ui-state-default runListItem"><%= h(recipe) -%></li>
-              <% end %>
+            <%= image_tag('indicator.gif', :class => 'spinner') -%>
+            <ul id="role_available_recipes" class="connectedSortable runListAvailableItemList">
             </ul>
           </div>
         </div>
@@ -43,11 +41,15 @@
           <span id="environment_run_list_selection_control"><%= select :environment, :collection => @environments, :selected => @current_env%></span>
         </div>
         <div class="sortable runListContainer">
-          <ul class="ui-sortable connectedSortable runListItemList" id="for_role">
-            <% @run_list.each do |item| %>
-              <li id="<%=h(item)%>" class="<%= class_for_run_list_item(item) -%> runListItem"><%=h display_run_list_item(item)-%></li>
-            <% end %>
-          </ul>
+          <% if @run_list %>
+            <ul class="ui-sortable connectedSortable runListItemList" id="for_role">
+              <% @run_list.each do |item| %>
+                <li id="<%=h(item)%>" class="<%= class_for_run_list_item(item) -%> runListItem"><%=h display_run_list_item(item)-%></li>
+              <% end %>
+            </ul>
+          <% else %>
+            <span class="todo">Run List Creator goes here</span>
+          <% end %>
         </div>
       </div>
       <div id="current_run_list_display_container" class="runListEditorColumn">

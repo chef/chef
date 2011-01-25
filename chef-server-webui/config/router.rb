@@ -25,6 +25,7 @@ Merb::Router.prepare do
   resources :roles
 
   resources :environments do |e|
+    e.match("/recipes", :method => "get").to(:controller=>"environments", :action=>"list_recipes")
     e.match("/cookbooks").to(:contoller => "environments", :action => "list_cookbooks").name(:cookbooks)
     e.match("/nodes").to(:controller => "environments", :action => "list_nodes").name(:nodes)
     e.match("/select").to(:controller => "environments", :action => "select_environment").name(:select)

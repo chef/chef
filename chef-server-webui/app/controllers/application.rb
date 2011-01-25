@@ -259,9 +259,8 @@ class Application < Merb::Controller
     end
   end
 
-  def list_available_recipes
-    r = Chef::REST.new(Chef::Config[:chef_server_url])
-    r.get_rest('cookbooks/_recipes').keys
+  def list_available_recipes_for(environment)
+    Chef::Environment.load_filtered_recipe_list(environment)
   end
 
   def convert_newline_to_br(string)

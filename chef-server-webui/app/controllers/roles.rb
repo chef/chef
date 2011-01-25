@@ -52,13 +52,12 @@ class Roles < Application
   # GET /roles/new
   def new
     begin
-      @available_recipes = list_available_recipes
       @role = Chef::Role.new
       @available_roles = Chef::Role.list.keys.sort
       @run_list = @role.run_list
-      @environments = ['_default']
+      @environments = Chef::Environment.list.keys.sort
       @current_env = "_default"
-      @selected
+      @available_recipes = list_available_recipes_for(@current_env)
       render
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
@@ -72,11 +71,11 @@ class Roles < Application
   def edit
     begin
       @role = Chef::Role.load(params[:id])
-      @available_recipes = list_available_recipes
       @available_roles = Chef::Role.list.keys.sort
-      @run_list = @role.run_list
-      @environments = @role.env_run_lists.keys
-      @current_env = @role.env_run_lists.key?(session[:environment]) ? session[:environment] : "_default"
+      @environments = Chef::Environment.list.keys.sort
+      @current_env = session[:environment] || "_default"
+      @run_list = @role.env_run_lists[@current_env]
+      @available_recipes = list_available_recipes_for(@current_env)
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @role = Chef::Role.new

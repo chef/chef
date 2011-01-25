@@ -57,7 +57,7 @@ class Nodes < Application
   def new
     begin
       @node = Chef::Node.new
-      @available_recipes = list_available_recipes
+      @available_recipes = list_available_recipes_for(@node.chef_environment)
       @available_roles = Chef::Role.list.keys.sort
       @run_list = @node.run_list
       render
@@ -72,7 +72,7 @@ class Nodes < Application
   def edit
     begin
       @node = Chef::Node.load(params[:id])
-      @available_recipes = list_available_recipes
+      @available_recipes = list_available_recipes_for(@node.chef_environment)
       @available_roles = Chef::Role.list.keys.sort
       @run_list = @node.run_list
       render
@@ -99,7 +99,7 @@ class Nodes < Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @node.normal_attrs = Chef::JSON.from_json(params[:attributes])
-      @available_recipes = list_available_recipes
+      @available_recipes = list_available_recipes_for(@node.chef_environment)
       @available_roles = Chef::Role.list.keys.sort
       @node.run_list params[:for_node]
       @run_list = @node.run_list
@@ -118,7 +118,7 @@ class Nodes < Application
       render :show
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @available_recipes = list_available_recipes
+      @available_recipes = list_available_recipes_for(@node.chef_environment)
       @available_roles = Chef::Role.list.keys.sort
       @run_list = Chef::RunList.new
       @run_list.reset!(params[:for_node])

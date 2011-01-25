@@ -128,6 +128,12 @@ class Environments < Application
     render
   end
 
+  # GET /environments/:environment/recipes
+  def list_recipes
+    provides :json
+    display(:recipes => list_available_recipes_for(params[:environment_id]))
+  end
+
   # GET /environments/:environment_id/set
   def select_environment
     name = params[:environment_id]
