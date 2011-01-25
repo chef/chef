@@ -219,7 +219,7 @@ describe Chef::Environment do
     end
   end
 
-  describe "self.cdb_load_filtered_cookbook_versions" do
+  describe "when listing the available cookbooks filtered by policy" do
     before(:each) do
       @environment.name "prod"
       @environment.cookbook_versions({
