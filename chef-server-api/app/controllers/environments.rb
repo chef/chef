@@ -93,6 +93,7 @@ class Environments < Application
     rescue Chef::Exceptions::CouchDBNotFound
       raise NotFound, "Cannot load environment #{params[:environment_id]}"
     end
+
     display(filtered_cookbooks.inject({}) {|res, (cookbook_name,versions)|
       # TODO:
       # For now, we are only displaying the last cookbook in the sorted list (the newest version).
@@ -101,6 +102,11 @@ class Environments < Application
       res[cookbook_name] = absolute_url(:cookbook_version, :cookbook_name=>cookbook_name, :cookbook_version=>versions.last.version)
       res
     })
+  end
+
+  # GET /environments/:environment/recipes
+  def list_recipes
+    display(Chef::Environment.cdb_load_filtered_recipe_list(params[:environment_id]))
   end
 
   # GET /environments/:environment_id/nodes
