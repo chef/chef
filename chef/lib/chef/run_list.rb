@@ -131,8 +131,6 @@ class Chef
 
 
     def expand(data_source='server', expansion_opts={})
-      couchdb = couchdb ? couchdb : Chef::CouchDB.new
-
       expansion = expansion_for_data_source(data_source, expansion_opts)
       expansion.expand(expansion_opts[:environment])
       expansion
