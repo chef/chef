@@ -10,8 +10,8 @@
 
     <div class="group form" id="run_list_editor_container">
       <div id="availableRunListItemContainer" class="runListEditorColumn">
-        <div id="available_nodes_container" >
-          <span class="runListEditorLabel">Available Roles</span>
+        <div id="available_roles_container" class="runListItemListContainer">
+          <div class="runListEditorLabel">Available Roles</div>
           <div class="sortable runListAvailableItemContainer">
             <ul id="node_available_roles" class="connectedSortable runListAvailableItemList">
               <% @available_roles.each do |role| %>
@@ -20,8 +20,8 @@
             </ul>
           </div>
         </div>
-        <div id="available_recipes_container">
-          <span class="runListEditorLabel">Available Recipes</span>
+        <div id="available_recipes_container" class="runListItemListContainer">
+          <div class="runListEditorLabel">Available Recipes</div>
           <div class="sortable runListAvailableItemContainer">
             <ul id="node_available_recipes" class="connectedSortable runListAvailableItemList">
               <% @available_recipes.each do |recipe| %>
@@ -32,15 +32,15 @@
         </div>
       </div>
       <div id="run_list_container" class="runListEditorColumn">
-        <div id="environment_run_list_selector">
-          <span class="runListEditorLabel">Run List</span>
-        </div>
-        <div class="sortable runListContainer">
-          <ul class="ui-sortable connectedSortable runListItemList" id="for_node">
-            <% @run_list.each do |entry| %>
-              <li id="<%=h(entry)%>" class="<%= class_for_run_list_item(entry) -%> runListItem"><%=h(entry.name) -%></li>
-            <% end %>
-          </ul>
+        <div class="runListItemListContainer">
+          <div class="runListEditorLabel">Run List</div>
+          <div class="sortable runListContainer">
+            <ul class="ui-sortable connectedSortable runListItemList" id="for_node">
+              <% @run_list.each do |entry| %>
+                <li id="<%=h(entry)%>" class="<%= class_for_run_list_item(entry) -%> runListItem"><%=h(entry.name) -%></li>
+              <% end %>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

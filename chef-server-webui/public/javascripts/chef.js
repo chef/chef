@@ -19,23 +19,29 @@
 
 $(document).ready(function(){
 
-  $('form#edit_role, form#create_role').submit(function(event) {
-    var form = $(this);
-    var to_role = $('ul#for_role').sortable('toArray');
-    if (form.attr('id') == 'edit_role') {
-      form.append('<input type="hidden" name="_method" value="put">');
-    }
-    form.append($('input#role_name')).css('display', 'none');
-    form.append($('textarea#role_description')).css('display', 'none');
+  var buildHiddenFormFromDragDrop = function(form, runListSet) {
+    runListSet.each(function(i, envRunListUl) {
+      $(envRunListUl).find('li.runListItem').each(function(i, field) {
+        form.append('<input type="hidden" name="env_run_lists[' + envRunListUl.id + '][]" value="' + field.id + '"/>');
+      });
+    });
+  };
+
+  var buildHiddenFormFromJSONEditor = function(form) {
     form.append('<input type="hidden" id="default_attributes" name="default_attributes"/>');
-    $('input#default_attributes').attr('value', BCJTEP.save('json["defaults"]'))
+    $('input#default_attributes').attr('value', BCJTEP.save('json["defaults"]'));
     form.append('<input type="hidden" id="override_attributes" name="override_attributes"/>');
     $('input#override_attributes').attr('value', BCJTEP.save('json["overrides"]'));
-    jQuery.each(to_role, function(i, field) {
-      form.append('<input type="hidden" name="for_role[]" value="' + field + '"/>');
-    });
-  });
+  };
 
+  $('a#debugFormBuild').click(function(event) {buildHiddenFormFromDragDrop(event)});
+
+
+  $('form.roleForm').submit(function(event) {
+    buildHiddenFormFromDragDrop($(this), $('ul.runListItemList'));
+    buildHiddenFormFromJSONEditor($(this));
+  });
+  
   $('form#edit_node, form#create_node').submit(function(event) {
     var form = $(this);
     var to_node = $('ul#for_node').sortable('toArray');
@@ -108,10 +114,10 @@ $(document).ready(function(){
         return;
       }
       
-      if (method == 'post' || method == 'put' || method == 'delete') {
+      if (method === 'post' || method === 'put' || method === 'delete') {
         event.preventDefault();
         var form = $("<form/>").attr('method', 'post').attr('action', this.href).attr('style', 'display: none');
-        if (method != "post") {
+        if (method !== "post") {
           form.append($('<input type="hidden" name="_method"/>').attr('value', method));
         }
         form.insertAfter(this).submit();
@@ -129,10 +135,18 @@ $(document).ready(function(){
 	$('a[rel*=facebox]').facebox();
 	
 
-  $('.connectedSortable').sortable({
-    placeholder: 'ui-state-highlight',
-    connectWith: $('.connectedSortable')
-  }).disableSelection();
+  var enableDragDropBehavior = function() {
+    $('.connectedSortable').sortable({
+      placeholder: 'ui-state-highlight',
+      connectWith: $('.connectedSortable')
+    }).disableSelection();
+  };
+
+  var disableDragDropBehavior = function() {
+    $('.connectedSortable').sortable("destroy");
+  };
+
+  enableDragDropBehavior();
 
   // The table tree!
   $('table.tree').treeTable({ expandable: true });
@@ -158,17 +172,62 @@ $(document).ready(function(){
     $("#sidebar_block").fadeIn();
   }
 
+  // Run list editor with per-env run lists for roles
 
-
-  if ($('ul#role_available_recipes').size() !== 0) {
-    var currentEnvironment = $('#environment_run_list_selection_control select').val();
+  var populateAvailableRecipesForEnv = function(currentEnvironment, callback) {
     $.getJSON('/environments/' + currentEnvironment + '/recipes', function(data) {
-      $('div#available_recipes_container img.spinner').remove();
-      for (var i = data['recipes'].length - 1; i >= 0; i--){
+      $('div#available_recipes_container .spinner').hide();
+      for (var i=0; i < data['recipes'].length; i++) {
         var recipe = data['recipes'][i];
         $('ul#role_available_recipes').append('<li id="recipe[' + recipe + ']" class="ui-state-default runListItem">' +  recipe + '</li>');
       };
     })
+    if (callback) { callback(); }
   };
+
+  var depopulateAvailableRecipesForEnv = function() {
+    $('ul#role_available_recipes li').remove();
+    $('div#available_recipes_container .spinner').show();
+  };
+
+  if ($('ul#role_available_recipes').size() !== 0) {
+    populateAvailableRecipesForEnv(window.initialCurrentEnv);
+  }
+
+  $('a.createEmptyRunListControl').each(function(i) {
+    var environment = $(this).attr('id');
+    $(this).click(function(event) {
+      $('div.emptyRunListControlsContainer#' + environment).remove();
+      var runListContainerForEnv = $('div.runListContainer#' + environment + 'RunListContainer');
+      runListContainerForEnv.append('<ul class="ui-sortable connectedSortable runListItemList ohai" id="' + environment + '"></ul>');
+      // remove all previous drag/drop events/behavior/whatever, then re-add it for the new run list container
+      disableDragDropBehavior();
+      enableDragDropBehavior();
+    });
+  });
+
+  var setActiveRunListLabelFor = function(environment) {
+    var labelElement = $('span#selectedRunListEditorLabel');
+    if (environment === '_default') {
+      labelElement.html('Default Run List');
+    }
+    else {
+      labelElement.html('Run List for ' + environment);
+    }
+  };
+
+
+  $('select#activeEnvironment').change(function() {
+    // set the active run list editor
+    var newActiveEnvironment = $(this).val();
+    if (newActiveEnvironment !== 'noop') {
+      $('div.runListWithControlsContainer.active').removeClass('active').addClass('inactive');
+      $('div.runListWithControlsContainer#' + newActiveEnvironment).addClass('active', 10000).removeClass('inactive');
+      setActiveRunListLabelFor(newActiveEnvironment);
+      depopulateAvailableRecipesForEnv();
+      var selector = $(this);
+      populateAvailableRecipesForEnv(newActiveEnvironment, function() { selector.val('noop');});
+    }
+  });
 
 });

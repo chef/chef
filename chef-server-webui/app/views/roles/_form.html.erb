@@ -1,5 +1,5 @@
 <div class="content roleFormContainer">
-  <%= form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do -%>
+  <%= form(:action => form_url, :method => (method || :post), :id => form_id, :class => 'form roleForm') do -%>
     <% unless form_for == 'edit' %>
       <div class="group form">
         <label class="label" for="role_name">Name</label>
@@ -16,8 +16,8 @@
 
     <div class="group form" id="run_list_editor_container">
       <div id="availableRunListItemContainer" class="runListEditorColumn">
-        <div id="available_roles_container" >
-          <span class="runListEditorLabel">Available Roles</span>
+        <div id="available_roles_container" class="runListItemListContainer">
+          <div class="runListEditorLabel">Available Roles</div>
           <div class="sortable runListAvailableItemContainer">
             <ul id="role_available_roles" class="connectedSortable runListAvailableItemList">
               <% @available_roles.each do |role| %>
@@ -26,41 +26,74 @@
             </ul>
           </div>
         </div>
-        <div id="available_recipes_container">
-          <span class="runListEditorLabel">Available Recipes</span>
+        <div id="available_recipes_container" class="runListItemListContainer">
+          <div class="runListEditorLabel">Available Recipes</div>
           <div class="sortable runListAvailableItemContainer">
-            <%= image_tag('indicator.gif', :class => 'spinner') -%>
+            <div class="spinner">
+              <%= image_tag('indicator.gif') -%>
+            </div>
             <ul id="role_available_recipes" class="connectedSortable runListAvailableItemList">
             </ul>
           </div>
         </div>
       </div>
       <div id="run_list_container" class="runListEditorColumn">
-        <div id="environment_run_list_selector">
-          <span class="runListEditorLabel">Run List for Environment:</span>
-          <span id="environment_run_list_selection_control"><%= select :environment, :collection => @environments, :selected => @current_env%></span>
-        </div>
-        <div class="sortable runListContainer">
-          <% if @run_list %>
-            <ul class="ui-sortable connectedSortable runListItemList" id="for_role">
-              <% @run_list.each do |item| %>
-                <li id="<%=h(item)%>" class="<%= class_for_run_list_item(item) -%> runListItem"><%=h display_run_list_item(item)-%></li>
-              <% end %>
-            </ul>
-          <% else %>
-            <span class="todo">Run List Creator goes here</span>
+        <div class="runListItemListContainer">
+          <div id="environment_run_list_selector">
+            <div class="runListEditorLabel">
+              <span id="selectedRunListEditorLabel">
+                <% if @current_env == '_default'%>
+                  Default Run List
+                <% else %>
+                  Run List for <%= @current_env -%>
+                <% end %>
+              </span>
+              <span id="environment_run_list_selection_control" currentEnvironment="">
+                <%= select :environment, :collection => [['noop','Other Environments']].concat(@environments.map {|e| [e,e]}), :id => 'activeEnvironment'%>
+              </span>
+            </div>
+          </div>
+          <% @run_lists.each do |environment, run_list| %>
+            <div class="runListWithControlsContainer <%= environment == @current_env ? 'active' : 'inactive' -%>" id="<%= environment %>">
+              <div class="sortable runListContainer">
+                <% if run_list %>
+                  <ul class="ui-sortable connectedSortable runListItemList" id="<%= environment %>">
+                    <% run_list.each do |item| %>
+                      <li id="<%=h(item)%>" class="<%= class_for_run_list_item(item) -%> runListItem"><%=h display_run_list_item(item)-%></li>
+                    <% end %>
+                  </ul>
+                <% else %>
+                  <div class="emptyRunListControlsContainer" id="<%=environment -%>">
+                    <div class="cloneRunListTitle">This role has no environment specific run list for the (<%= environment -%>) environment.</div>
+                    <div class="cloneRunListOption">
+                      <a href="javascript:void(0)" class="createEmptyRunListControl" id="<%= environment -%>">Create a new empty run list</a>
+                    </div>
+                    <div class="cloneRunListOption">
+                      Or, clone an existing run list: <%= select :environment_to_clone, :collection => @existing_run_list_environments, :id => 'environmentToClone'%>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+                <div class="runListAdditionalControls">
+                  <% if run_list && (environment != '_default')%>
+                    <a href="javascript:void(0);" class="runList" id="<%= environment %>">Remove environment specific run list for <%= environment %></a>
+                  <% end %>
+                </div>
+            </div>
           <% end %>
         </div>
       </div>
       <div id="current_run_list_display_container" class="runListEditorColumn">
-        <span class="runListEditorLabel">Active Run List for <%= h(@current_env) -%></span>
-        <div class="sortable activeRunListContainer">
-          <div id="activeRunListName" class="todo">PREPROD</div>
-          <ul class="runListItemList" id="active_run_list">
-            <% @role.run_list_for(@current_env).each do |item| %>
-              <li class="displayRunListItem"><%= h(item) -%></li>
-            <% end %>
-          </ul>
+        <div class="runListItemListContainer">
+          <div class="runListEditorLabel activeRunListLabel">Active Run List for <%= h(@current_env) -%></div>
+          <div class="sortable activeRunListContainer">
+            <div id="activeRunListName"><%= @role.active_run_list_for(@current_env).gsub('_default', 'default') -%></div>
+            <ul class="runListItemList" id="active_run_list">
+              <% @role.run_list_for(@current_env).each do |item| %>
+                <li class="displayRunListItem"><%= h(item) -%></li>
+              <% end %>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -69,7 +102,7 @@
       <label class="label">Default and Override Attributes</label>
       <%= partial 'layout/jsonedit', :json => { :defaults => @role.default_attributes, :overrides => @role.override_attributes }.to_json%>
       <span class="description">
-        A JSON hash for default attributes for nodes of this role.  These attributes will only be applied if the node does not already have a value for the attributes.
+        A JSON hash for default attributes for nodes of this role. These attributes will be applied according to the attribute precedence rules.
       </span>
     </div>
 
@@ -79,4 +112,9 @@
       </div>
     </div>
   <% end =%>
+  <a class="todo" href="javascript:void(0);" id="debugFormBuild">BUILD TEH HIDDEN FORMZ</a>
 </div>
+
+<script type="text/javascript" charset="utf-8">
+  window.initialCurrentEnv = '<%= @current_env %>';
+</script>

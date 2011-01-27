@@ -31,7 +31,6 @@
 }
 
 .search td {
-  /*overflow: auto;*/
   font-size: 0.8em;
 }
 
@@ -55,12 +54,12 @@ dl dt { font-weight: bold; }
 
 div.roleFormContainer, div.nodeFormContainer{
   padding: 0 15px 15px;
-  min-width:1000px;
+  min-width:1050px;
 }
 
 div#run_list_editor_container {
   min-height:450px;
-  min-width:1000px;
+  min-width:1050px;
 }
 
 div.runListEditorColumn {
@@ -71,20 +70,32 @@ div#current_run_list_display_container{
   margin-left:20px;
 }
 
+
 span#environment_run_list_selection_control{
   float:right;
   margin-right:10px;
 }
 
-span.runListEditorLabel, div#activeRunListName{
+div.runListEditorLabel, div#activeRunListName{
   font-size: 1.2em;
   font-weight: bold;
 }
 
-span.runListEditorLabel{
-  padding: 1px 0 3px 0;
+div.runListEditorLabel{
+  padding: 3px 0 5px 0;
   margin: 0;
-  display: inline-block;
+  color:white;
+  background:#005573;
+  background: -moz-linear-gradient(top,  #007BA7,  #005573);
+  background:-webkit-gradient(linear, left top, left bottom, from(#007BA7), to(#005573));
+  text-shadow: #005573 0px -1px 0px;
+  display: block;
+  text-align:center;
+}
+
+div.activeRunListLabel{
+  padding-right:15px;
+  padding-left:15px;
 }
 
 div#activeRunListName{
@@ -92,10 +103,19 @@ div#activeRunListName{
   text-align:center;
 }
 
-div.runListAvailableItemContainer, div.runListContainer {
-  width: 300px;
+div.runListItemListContainer{
+  border: 1px solid #999;
+  margin-top:5px;
   margin-right: 10px;
-  border: 1px solid black;
+  box-shadow:2px 2px 2px #dfdfdf;
+}
+
+div.emptyRunListControlsContainer{
+  padding:10px;
+}
+
+div.runListAvailableItemContainer, div.runListContainer {
+  width: 360px;
   overflow-y: scroll;
   background: #eee;
 }
@@ -104,8 +124,20 @@ div.runListAvailableItemContainer{
   height: 200px;
 }
 
+div.runListAvailableItemContainer .spinner{
+  position: relative;
+  top: 100px;
+  left: 0;
+  z-index: 1000;
+  text-align: center;
+}
+
 div.runListContainer{
-  height: 423px;
+  height: 407px;
+}
+
+div.inactive{
+  display:none;
 }
 
 ul.runListAvailableItemList, ul.runListItemList {
@@ -117,8 +149,9 @@ ul.runListAvailableItemList, ul.runListItemList {
 }
 
 ul.runListItemList{
-  min-height:410px;
+  min-height:405.5px;
 }
+
 
 li.runListItem{
   margin: 0px 5px 5px 5px;
@@ -133,6 +166,23 @@ li.displayRunListItem{
   margin: 0px 5px 0px 5px;
   width: 93%;
   border-bottom:1px solid #eee;
+}
+
+div.cloneRunListOption{
+  padding: 5px 5px 5px 5px;
+  margin: 0px 5px 0px 5px;
+  width: 93%;
+}
+
+div.runListAdditionalControls{
+  min-height:15px;
+  padding:5px;
+  color:#fff;
+  background:#005573;
+  background:-webkit-gradient(linear, left top, left bottom, from(#006589), to(#005573));
+}
+div.runListAdditionalControls a{
+  color:#fff;
 }
 
 div.clear {
