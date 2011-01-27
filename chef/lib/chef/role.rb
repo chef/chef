@@ -123,9 +123,16 @@ class Chef
       end
     end
 
+    def active_run_list_for(environment)
+      @env_run_lists.has_key?(environment) ? environment : '_default'
+    end
+
     # Per environment run lists
     def env_run_lists(env_run_lists=nil)
       if (!env_run_lists.nil? && !env_run_lists.empty?)
+        if default_run_list = env_run_lists.delete("_default")
+          @run_list = Chef::RunList.new(*Array(default_run_list))
+        end
         @env_run_lists.clear
         env_run_lists.each { |k,v| @env_run_lists[k] = Chef::RunList.new(*Array(v))}
         @env_run_lists["_default"] = run_list
