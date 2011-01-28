@@ -42,6 +42,10 @@ body {
   float: left;
 }
 
+#main.loginPage {
+  width: 80%;
+}
+
 .actions-bar {
   padding: 10px 1px;
 }
