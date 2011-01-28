@@ -181,7 +181,7 @@ $(document).ready(function(){
         var recipe = data['recipes'][i];
         $('ul.availableRecipes').append('<li id="recipe[' + recipe + ']" class="ui-state-default runListItem">' +  recipe + '</li>');
       }
-    })
+    });
     if (callback) { callback(); }
   };
 
