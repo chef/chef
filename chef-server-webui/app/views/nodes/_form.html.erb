@@ -8,6 +8,10 @@
       </div>
     <% end %>
 
+    <div>
+      <%= select :chef_environment, :collection => @environments, :id => 'nodeEnvironment', :selected => @env %>
+    </div>
+
     <div class="group form" id="run_list_editor_container">
       <div id="availableRunListItemContainer" class="runListEditorColumn">
         <div id="available_roles_container" class="runListItemListContainer">
@@ -23,7 +27,7 @@
         <div id="available_recipes_container" class="runListItemListContainer">
           <div class="runListEditorLabel">Available Recipes</div>
           <div class="sortable runListAvailableItemContainer">
-            <ul id="node_available_recipes" class="connectedSortable runListAvailableItemList">
+            <ul id="node_available_recipes" class="connectedSortable runListAvailableItemList availableRecipes">
               <% @available_recipes.each do |recipe| %>
                 <li id="recipe[<%= h(recipe) -%>]" class="ui-state-default runListItem"><%= h(recipe) -%></li>
               <% end %>

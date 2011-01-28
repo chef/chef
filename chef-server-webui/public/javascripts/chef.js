@@ -289,4 +289,11 @@ $(document).ready(function(){
     addEnvironmentToCloneControls(targetEnvironment);
   });
 
+  $('select#nodeEnvironment').change(function() {
+    // set the active run list editor
+    var newNodeEnvironment = $(this).val();
+    depopulateAvailableRecipesForEnv();
+    populateAvailableRecipesForEnv(newNodeEnvironment);
+  });
+
 });
