@@ -19,7 +19,7 @@
         <div id="available_roles_container" class="runListItemListContainer">
           <div class="runListEditorLabel">Available Roles</div>
           <div class="sortable runListAvailableItemContainer">
-            <ul id="role_available_roles" class="connectedSortable runListAvailableItemList">
+            <ul id="availableRoles" class="connectedSortable runListAvailableItemList" data-role-list='<%= @available_roles.to_json -%>'>
               <% @available_roles.each do |role| %>
                 <li id="role[<%=h(role)  -%>]" class="ui-state-highlight runListItem"><%= h(role) -%></li>
               <% end %>
@@ -32,23 +32,23 @@
             <div class="spinner">
               <%= image_tag('indicator.gif') -%>
             </div>
-            <ul id="role_available_recipes" class="connectedSortable runListAvailableItemList">
+            <ul id="role" class="connectedSortable runListAvailableItemList availableRecipes">
             </ul>
           </div>
         </div>
       </div>
       <div id="run_list_container" class="runListEditorColumn">
         <div class="runListItemListContainer">
-          <div id="environment_run_list_selector">
+          <div id="environmentRunListSelector" data-intial-env="<%=h @current_env -%>">
             <div class="runListEditorLabel">
               <span id="selectedRunListEditorLabel">
-                <% if @current_env == '_default'%>
+                <% if @current_env == '_default' -%>
                   Default Run List
-                <% else %>
+                <% else -%>
                   Run List for <%= @current_env -%>
-                <% end %>
+                <% end -%>
               </span>
-              <span id="environment_run_list_selection_control" currentEnvironment="">
+              <span id="environment_run_list_selection_control">
                 <%= select :environment, :collection => [['noop','Other Environments']].concat(@environments.map {|e| [e,e]}), :id => 'activeEnvironment'%>
               </span>
             </div>
@@ -56,27 +56,27 @@
           <% @run_lists.each do |environment, run_list| %>
             <div class="runListWithControlsContainer <%= environment == @current_env ? 'active' : 'inactive' -%>" id="<%= environment %>">
               <div class="sortable runListContainer">
-                <% if run_list %>
-                  <ul class="ui-sortable connectedSortable runListItemList" id="<%= environment %>">
-                    <% run_list.each do |item| %>
-                      <li id="<%=h(item)%>" class="<%= class_for_run_list_item(item) -%> runListItem"><%=h display_run_list_item(item)-%></li>
-                    <% end %>
-                  </ul>
-                <% else %>
-                  <div class="emptyRunListControlsContainer" id="<%=environment -%>">
-                    <div class="cloneRunListTitle">This role has no environment specific run list for the (<%= environment -%>) environment.</div>
-                    <div class="cloneRunListOption">
-                      <a href="javascript:void(0)" class="createEmptyRunListControl" id="<%= environment -%>">Create a new empty run list</a>
-                    </div>
-                    <div class="cloneRunListOption">
-                      Or, clone an existing run list: <%= select :environment_to_clone, :collection => @existing_run_list_environments, :id => 'environmentToClone'%>
-                    </div>
+
+                <% run_list_class, empty_controls_class = run_list ? %w{active inactive} : %w{inactive active} -%>
+
+                <ul class="ui-sortable connectedSortable runListItemList <%= run_list_class -%>" id="<%= environment %>">
+                  <% Array(run_list).each do |item| %>
+                    <li id="<%=h(item)%>" class="<%= class_for_run_list_item(item) -%> runListItem"><%=h display_run_list_item(item)-%></li>
+                  <% end %>
+                </ul>
+                <div class="emptyRunListControlsContainer <%= empty_controls_class -%>" id="<%=environment -%>">
+                  <div class="cloneRunListTitle">This role has no environment specific run list for the (<%= environment -%>) environment.</div>
+                  <div class="cloneRunListOption">
+                    <a href="javascript:void(0)" class="createEmptyRunListControl" id="<%= environment -%>">Create a new empty run list</a>
                   </div>
-                <% end %>
+                  <div class="cloneRunListOption">
+                    Or, clone an existing run list: <%= select :environment_to_clone, :collection => @existing_run_list_environments, :id => environment, :class => 'environmentToClone' %>
+                  </div>
+                </div>
               </div>
-                <div class="runListAdditionalControls">
+                <div class="runListAdditionalControls" id="<%= environment -%>">
                   <% if run_list && (environment != '_default')%>
-                    <a href="javascript:void(0);" class="runList" id="<%= environment %>">Remove environment specific run list for <%= environment %></a>
+                    <a href="javascript:void(0);" class="deleteEnvRunList" id="<%= environment -%>">Remove environment specific run list for <%= environment %></a>
                   <% end %>
                 </div>
             </div>
@@ -114,7 +114,3 @@
   <% end =%>
   <a class="todo" href="javascript:void(0);" id="debugFormBuild">BUILD TEH HIDDEN FORMZ</a>
 </div>
-
-<script type="text/javascript" charset="utf-8">
-  window.initialCurrentEnv = '<%= @current_env %>';
-</script>
