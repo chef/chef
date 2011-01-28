@@ -56,8 +56,12 @@ class Roles < Application
       @available_roles = Chef::Role.list.keys.sort
       @run_list = @role.run_list
       @environments = Chef::Environment.list.keys.sort
+      @run_lists = @environments.inject({}) { |run_lists, env| run_lists[env] = @role.env_run_lists[env] ; run_lists}
       @current_env = "_default"
       @available_recipes = list_available_recipes_for(@current_env)
+      @existing_run_list_environments = @role.env_run_lists.keys
+      # merb select helper has no :include_blank => true, so fix the view in the controller.
+      @existing_run_list_environments.unshift('')
       render
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
@@ -95,7 +99,7 @@ class Roles < Application
     begin
       @role = Chef::Role.new
       @role.name(params[:name])
-      @role.run_list(params[:for_role] ? params[:for_role] : [])
+      @role.env_run_lists(params[:env_run_lists])
       @role.description(params[:description]) if params[:description] != ''
       @role.default_attributes(Chef::JSON.from_json(params[:default_attributes])) if params[:default_attributes] != ''
       @role.override_attributes(Chef::JSON.from_json(params[:override_attributes])) if params[:override_attributes] != ''
