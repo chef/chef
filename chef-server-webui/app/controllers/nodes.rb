@@ -57,9 +57,11 @@ class Nodes < Application
   def new
     begin
       @node = Chef::Node.new
+      @node.chef_environment(session[:environment] || "_default")
       @available_recipes = list_available_recipes_for(@node.chef_environment)
       @available_roles = Chef::Role.list.keys.sort
       @run_list = @node.run_list
+      @env = session[:environment]
       render
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
@@ -72,6 +74,7 @@ class Nodes < Application
   def edit
     begin
       @node = Chef::Node.load(params[:id])
+      @env = @node.chef_environment
       @available_recipes = list_available_recipes_for(@node.chef_environment)
       @available_roles = Chef::Role.list.keys.sort
       @run_list = @node.run_list
@@ -91,6 +94,7 @@ class Nodes < Application
     begin
       @node = Chef::Node.new
       @node.name params[:name]
+      @node.chef_environment params[:chef_environment]
       @node.normal_attrs = Chef::JSON.from_json(params[:attributes])
       @node.run_list.reset!(params[:for_node] ? params[:for_node] : [])
       raise ArgumentError, "Node name cannot be blank" if (params[:name].nil? || params[:name].length==0)
@@ -111,6 +115,7 @@ class Nodes < Application
   def update
     begin
       @node = Chef::Node.load(params[:id])
+      @node.chef_environment(params[:chef_environment])
       @node.run_list.reset!(params[:for_node] ? params[:for_node] : [])
       @node.normal_attrs = Chef::JSON.from_json(params[:attributes])
       @node.save
