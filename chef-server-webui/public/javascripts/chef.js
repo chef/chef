@@ -179,30 +179,72 @@ $(document).ready(function(){
       $('div#available_recipes_container .spinner').hide();
       for (var i=0; i < data['recipes'].length; i++) {
         var recipe = data['recipes'][i];
-        $('ul#role_available_recipes').append('<li id="recipe[' + recipe + ']" class="ui-state-default runListItem">' +  recipe + '</li>');
-      };
+        $('ul.availableRecipes').append('<li id="recipe[' + recipe + ']" class="ui-state-default runListItem">' +  recipe + '</li>');
+      }
     })
     if (callback) { callback(); }
   };
 
   var depopulateAvailableRecipesForEnv = function() {
-    $('ul#role_available_recipes li').remove();
+    $('ul.availableRecipes li').remove();
     $('div#available_recipes_container .spinner').show();
   };
 
-  if ($('ul#role_available_recipes').size() !== 0) {
-    populateAvailableRecipesForEnv(window.initialCurrentEnv);
+  if ($('ul.availableRecipes').size() !== 0) {
+    var initialEnvironment = $('div#environmentRunListSelector').data('intial-env');
+    populateAvailableRecipesForEnv(initialEnvironment);
   }
+
+  var resetAvailableRoleList = function() {
+    $('ul#availableRoles li').remove();
+    var allRoles = $('ul#availableRoles').data('role-list');
+    for (var i=0; i < allRoles.length; i++) {
+      var role = allRoles[i];
+      $('ul#availableRoles').append('<li id="role[' + role + ']" class="ui-state-highlight runListItem">' + role + '</li>');
+    }
+    
+  };
+
+  var clearRunListFor = function(environment) {
+    $('ul.runListItemList#' + environment).children().remove();
+  };
+
+  var removeEnvironmentFromCloneControls = function(environment) {
+    $('select.environmentToClone option[value="' + environment + '"]').remove();
+  };
+
+  var addEnvironmentToCloneControls = function(environment) {
+    $('select.environmentToClone').append('<option value="' + environment + '">' + environment + '</option>');
+  };
+
+  var deleteEnvRunList = function(environment) {
+    clearRunListFor(environment);
+    $('ul.runListItemList#' + environment).removeClass('active').addClass('inactive');
+    $('div.emptyRunListControlsContainer#' + environment).removeClass('inactive').addClass('active');
+    $('div.runListAdditionalControls#' + environment + " a").remove();
+    removeEnvironmentFromCloneControls(environment);
+  };
+
+  var createRunListDeleteLinkFor = function(environment) {
+    // remove any existing link
+    $('a.deleteEnvRunList#' + environment).remove();
+    var containerDiv = $('div.runListAdditionalControls#' + environment);
+    var link = '<a href="javascript:void(0);" class="deleteEnvRunList" id="' + environment  + '">Remove environment specific run list for ' + environment + '</a>';
+    containerDiv.append(link);
+    containerDiv.find('a').click(function(j) {deleteEnvRunList(environment);});
+  };
 
   $('a.createEmptyRunListControl').each(function(i) {
     var environment = $(this).attr('id');
     $(this).click(function(event) {
-      $('div.emptyRunListControlsContainer#' + environment).remove();
+      $('div.emptyRunListControlsContainer#' + environment).removeClass('active').addClass('inactive');
       var runListContainerForEnv = $('div.runListContainer#' + environment + 'RunListContainer');
-      runListContainerForEnv.append('<ul class="ui-sortable connectedSortable runListItemList ohai" id="' + environment + '"></ul>');
+      $('ul.runListItemList#' + environment).removeClass('inactive').addClass('active');
       // remove all previous drag/drop events/behavior/whatever, then re-add it for the new run list container
       disableDragDropBehavior();
       enableDragDropBehavior();
+      createRunListDeleteLinkFor(environment);
+      addEnvironmentToCloneControls(environment);
     });
   });
 
@@ -216,6 +258,10 @@ $(document).ready(function(){
     }
   };
 
+  $('a.deleteEnvRunList').each(function(i) {
+   var environment = $(this).attr('id');
+   $(this).click(function(j) {deleteEnvRunList(environment);});
+  });
 
   $('select#activeEnvironment').change(function() {
     // set the active run list editor
@@ -227,7 +273,20 @@ $(document).ready(function(){
       depopulateAvailableRecipesForEnv();
       var selector = $(this);
       populateAvailableRecipesForEnv(newActiveEnvironment, function() { selector.val('noop');});
+      resetAvailableRoleList();
     }
+  });
+
+  $('select.environmentToClone').change(function() {
+    var environmentToClone = $(this).val();
+    var targetEnvironment = $(this).attr('id');
+    var targetRunList = $('ul.runListItemList#' + targetEnvironment);
+    clearRunListFor(targetEnvironment); // be sure we start with a clean slate
+    $('ul.runListItemList#' + environmentToClone).children().clone().appendTo(targetRunList);
+    $('ul.runListItemList#' + targetEnvironment).removeClass('inactive').addClass('active');
+    $('div.emptyRunListControlsContainer#' + targetEnvironment).removeClass('active').addClass('inactive');
+    createRunListDeleteLinkFor(targetEnvironment);
+    addEnvironmentToCloneControls(targetEnvironment);
   });
 
 });

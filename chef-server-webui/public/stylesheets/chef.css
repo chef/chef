@@ -136,7 +136,7 @@ div.runListContainer{
   height: 407px;
 }
 
-div.inactive{
+div.inactive, ul.inactive{
   display:none;
 }
 
