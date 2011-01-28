@@ -17,6 +17,7 @@
 // limitations under the License.
 //
 
+
 $(document).ready(function(){
 
   var buildHiddenFormFromDragDrop = function(form, runListSet) {
@@ -190,8 +191,10 @@ $(document).ready(function(){
     $('div#available_recipes_container .spinner').show();
   };
 
-  if ($('ul.availableRecipes').size() !== 0) {
-    var initialEnvironment = $('div#environmentRunListSelector').data('intial-env');
+  // If the attribute 'data-initial-env' exists on this element, use it to load
+  // the recipes for that environment via ajax.
+  var initialEnvironment = $('div#environmentRunListSelector').data('initial-env');
+  if (initialEnvironment) {
     populateAvailableRecipesForEnv(initialEnvironment);
   }
 
