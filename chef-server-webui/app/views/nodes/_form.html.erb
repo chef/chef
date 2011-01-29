@@ -38,7 +38,7 @@
       <div id="run_list_container" class="runListEditorColumn">
         <div class="runListItemListContainer">
           <div class="runListEditorLabel">Run List</div>
-          <div class="sortable runListContainer">
+          <div class="sortable runListContainer runListContainerForNode">
             <ul class="ui-sortable connectedSortable runListItemList" id="for_node">
               <% @run_list.each do |entry| %>
                 <li id="<%=h(entry)%>" class="<%= class_for_run_list_item(entry) -%> runListItem"><%=h(entry.name) -%></li>

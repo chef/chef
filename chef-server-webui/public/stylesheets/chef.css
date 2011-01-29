@@ -136,6 +136,10 @@ div.runListContainer{
   height: 407px;
 }
 
+div.runListContainerForNode{
+  height:432px;
+}
+
 div.inactive, ul.inactive{
   display:none;
 }
@@ -152,6 +156,9 @@ ul.runListItemList{
   min-height:405.5px;
 }
 
+ul#for_node.runListItemList{
+  min-height:420.5px;
+}
 
 li.runListItem{
   margin: 0px 5px 5px 5px;
