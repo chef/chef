@@ -39,9 +39,6 @@ class Chef
           :go_grid_shared_secret => Chef::Config[:knife][:go_grid_shared_secret] 
         )
 
-        #passwords = connection.passwords.inject({}) { |h,i| h[i.id] = i.password_id; h }
-	#servers  = connection.servers.inject({}) { |h,i| h[i.id] = i.description; h }
-
         password_list = [ h.color('id', :bold), h.color('password', :bold), h.color('server id', :bold), h.color('server name', :bold) ]
 
         connection.passwords.each do |p| 
@@ -55,14 +52,7 @@ class Chef
           end
         end     
 
-	#connection.servers.each do |server|
-        #  server_list << server.id.to_s
-        #  server_list << server.name
-        #end
-
         puts h.list(password_list, :columns_across, 4)
-
-        #puts password_list
 
       end
     end

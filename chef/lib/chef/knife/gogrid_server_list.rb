@@ -43,13 +43,11 @@ class Chef
         images   = connection.images.inject({}) { |h,i| h[i.id] = i.os; h }
 
         server_list = [ h.color('id', :bold), h.color('name', :bold), h.color('ip', :bold), h.color('os', :bold) ]
-#        server_list = [ h.color('id', :bold), h.color('name', :bold), h.color('ip', :bold) ]
 
         connection.servers.each do |server| 
           server_list << server.id.to_s
           server_list << server.name
           server_list << server.ip["ip"]
-#          server_list << server.memory["name"]
           server_list << images[server.image_id]["name"].to_s
         end     
         puts h.list(server_list, :columns_across, 4)
@@ -58,6 +56,3 @@ class Chef
     end
   end
 end
-
-
-

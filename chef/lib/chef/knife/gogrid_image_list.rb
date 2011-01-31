@@ -42,12 +42,9 @@ class Chef
         images  = connection.images.inject({}) { |h,i| h[i.id] = i.description; h }
 
         image_list = [ h.color('id', :bold), h.color('friendly_name', :bold), h.color('name', :bold) ]
-        #image_list = [ h.color('friendly_name', :bold), h.color('name', :bold) ]
 
         connection.images.each do |image|
-          #image_list << image.id.to_s
           image_list << image.server_id.to_s
-          #image_list << image.server_id
           image_list << image.friendly_name
           image_list << image.name
         end

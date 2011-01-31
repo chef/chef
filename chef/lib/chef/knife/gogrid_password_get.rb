@@ -54,7 +54,6 @@ class Chef
         password_list = [ h.color('id', :bold), h.color('password', :bold), h.color('server id', :bold), h.color('server name', :bold) ]
 
 	@test = (config[:id])
-#	password = connection.support_password_get(config[:id])
 	
 	connection.passwords.each do |p|
 	  if p.server.nil?
@@ -75,41 +74,13 @@ class Chef
 	  end
         end
 
-#        if password_list.include?(config[:id])
-#                puts "yes"
-#        else
-#                puts "no"
-#        end
-
 	puts config[:id]
 	puts @root_passwd
 
 	@public_ip = (config[:address])
 	puts @public_ip
-	#puts password.inspect
 
-	#password_list = [ h.color('id', :bold), h.color('password', :bold), h.color('server id', :bold) ]
-
-        #connection.passwords.each do |p| 
-         # password_list << p.password_id.to_s
-         # password_list << p.password
-         # if p.server.nil?
-         #   password_list << "unknown"
-         # else
-         #   password_list << p.server['id'].to_s
-         # end
-        #end     
-
-        #puts h.list(password_list, :columns_across, 4)
         puts password_list
-
-#        ssh = Chef::Knife::Ssh.new
- #       ssh.name_args = [ @public_ip, "touch /tmp/lum_was_here" ]
-  #      ssh.config[:ssh_user] = "root"
-#        ssh.config[:manual] = true
- #       ssh.config[:password] = @root_passwd
-  #      ssh.password = @root_passwd
-   #     ssh.run
 
       end
     end
