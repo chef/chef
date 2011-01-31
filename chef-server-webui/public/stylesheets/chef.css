@@ -108,6 +108,9 @@ div.runListItemListContainer{
   margin-top:5px;
   margin-right: 10px;
   box-shadow:2px 2px 2px #dfdfdf;
+  /* Safari 5 has a weird problem where these divs increase in width by 15px after updating contents with ajax. 
+  Problem doesn't occur in webkit nightlies. setting max-width works around.*/
+  max-width:360px;
 }
 
 div.emptyRunListControlsContainer{
