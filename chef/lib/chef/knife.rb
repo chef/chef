@@ -267,12 +267,19 @@ class Chef
         self.msg("No knife configuration file found")
       end
 
-      Chef::Config[:log_level] = config[:log_level] if config[:log_level]
-      Chef::Config[:log_location] = config[:log_location] if config[:log_location]
-      Chef::Config[:node_name] = config[:node_name] if config[:node_name]
-      Chef::Config[:client_key] = config[:client_key] if config[:client_key]
-      Chef::Config[:chef_server_url] = config[:chef_server_url] if config[:chef_server_url]
-      Chef::Config[:environment] = config[:environment] if config[:environment]
+      Chef::Config[:log_level]         = config[:log_level]       if config[:log_level]
+      Chef::Config[:log_location]      = config[:log_location]    if config[:log_location]
+      Chef::Config[:node_name]         = config[:node_name]       if config[:node_name]
+      Chef::Config[:client_key]        = config[:client_key]      if config[:client_key]
+      Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
+      Chef::Config[:environment]       = config[:environment]     if config[:environment]
+
+      # Expand a relative path from the config directory. Config from command
+      # line should already be expanded, and absolute paths will be unchanged.
+      if Chef::Config[:client_key] && config[:config_file]
+        Chef::Config[:client_key] = File.expand_path(Chef::Config[:client_key], File.dirname(config[:config_file]))
+      end
+
       Mixlib::Log::Formatter.show_time = false
       Chef::Log.init(Chef::Config[:log_location])
       Chef::Log.level(Chef::Config[:log_level])

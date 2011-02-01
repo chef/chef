@@ -38,7 +38,8 @@ class Chef::Application::Knife < Chef::Application
   option :config_file, 
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :description => "The configuration file to use"
+    :description => "The configuration file to use",
+    :proc => lambda { |path| File.expand_path(path, Dir.pwd) }
 
   option :log_level, 
     :short        => "-l LEVEL",
@@ -84,7 +85,8 @@ class Chef::Application::Knife < Chef::Application
   option :client_key,
     :short => "-k KEY",
     :long => "--key KEY",
-    :description => "API Client Key"
+    :description => "API Client Key",
+    :proc => lambda { |path| File.expand_path(path, Dir.pwd) }
 
   option :chef_server_url,
     :short => "-s URL",
