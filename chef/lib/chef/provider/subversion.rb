@@ -55,11 +55,17 @@ class Chef
 
       def action_sync
         if ::File.exist?(::File.join(@new_resource.destination, ".svn"))
-          run_command(run_options(:command => sync_command))
+          current_rev = find_current_revision
+          Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{revision_int}"
+          unless current_revision_matches_target_revision?
+            run_command(run_options(:command => sync_command))
+            Chef::Log.info "#{@new_resource} updated to revision: #{revision_int}"
+            @new_resource.updated_by_last_action(true)
+          end
         else
           action_checkout
+          @new_resource.updated_by_last_action(true)
         end
-        @new_resource.updated_by_last_action(true)
       end
 
       def sync_command
@@ -108,6 +114,10 @@ class Chef
           handle_command_failures(status, "STDOUT: #{svn_info}\nSTDERR: #{error_message}")
         end
         extract_revision_info(svn_info)
+      end
+
+      def current_revision_matches_target_revision?
+        (!@current_resource.revision.nil?) && (revision_int.strip.to_i == @current_resource.revision.strip.to_i)
       end
 
       def run_options(run_opts={})
