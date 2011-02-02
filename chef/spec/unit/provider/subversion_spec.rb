@@ -226,10 +226,21 @@ describe Chef::Provider::Subversion do
   
   it "runs the sync_command on action_sync if the deploy dir exists and isn't empty" do
     ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
+    @provider.stub!(:find_current_revision).and_return("11410")
+    @provider.stub!(:current_revision_matches_target_revision?).and_return(false)
     expected_cmd = "svn update -q  -r12345 /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
     @provider.action_sync
     @resource.should be_updated
+  end
+  
+  it "does not fetch any updates if the remote revision matches the current revision" do
+    ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
+    #::File.stub!(:directory?).with("/my/deploy").and_return(true)
+    @provider.stub!(:find_current_revision).and_return('12345')
+    @provider.stub!(:current_revision_matches_target_revision?).and_return(true)
+    @provider.action_sync
+    @resource.should_not be_updated
   end
   
   it "runs the export_command on action_export" do
