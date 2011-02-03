@@ -1,18 +1,17 @@
 require File.expand_path(File.join("#{File.dirname(__FILE__)}", '..', 'spec_helper'))
+
+require 'chef/solr_query'
 require 'net/http'
 
-describe Chef::Solr do
+describe Chef::SolrQuery do
   before(:each) do 
-    @solr = Chef::Solr.new
+    @solr = Chef::SolrQuery.new
   end
 
-  describe "initialize" do
-    it "should create a new Chef::Solr object" do
-      @solr.should be_a_kind_of(Chef::Solr)
-    end
+  describe "when first created" do
 
     it "should accept an alternate solr url" do
-      solr = Chef::Solr.new("http://example.com")
+      solr = Chef::SolrQuery .new("http://example.com")
       solr.solr_url.should eql("http://example.com")
     end
   end
@@ -290,4 +289,20 @@ describe Chef::Solr do
       @solr.rebuild_index["Chef::DataBag"].should == "success"
     end
   end
+
+  describe "when transforming queries to match to support backwards compatibility with the old solr schema" do
+    before(:each) do
+      @query = Chef::SolrQuery.new
+    end
+
+    it "should transform queries correctly" do
+      testcases = Hash[*(File.readlines("#{CHEF_SPEC_DATA}/search_queries_to_transform.txt").select{|line| line !~ /^\s*$/}.map{|line| line.chomp})]
+      testcases.each do |input, expected|
+        @query.transform_search_query(input).should == expected
+      end
+    end
+    
+  end
+
+
 end
