@@ -142,25 +142,6 @@ describe Chef::SolrQuery do
     end
   end
 
-  describe "solr_add" do
-    before(:each) do
-      @solr.stub!(:post_to_solr).and_return(true)
-      @data = { "foo" => ["bar"] }
-    end
-
-    it "should send valid XML to solr" do
-      @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<add><doc><field name=\"foo\">bar</field></doc></add>\n")
-      @solr.solr_add(@data)
-    end
-
-    it "XML escapes content before sending to SOLR" do
-      @data["foo"] = ["<&>"]
-      @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<add><doc><field name=\"foo\">&lt;&amp;&gt;</field></doc></add>\n")
-
-      @solr.solr_add(@data)
-    end
-  end
-
   describe "solr_commit" do
     before(:each) do
       @solr.stub!(:post_to_solr).and_return(true)
@@ -169,44 +150,6 @@ describe Chef::SolrQuery do
     it "should send valid commit xml to solr" do
       @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<commit/>\n")
       @solr.solr_commit
-    end
-  end
-
-  describe "solr_optimize" do
-    before(:each) do
-      @solr.stub!(:post_to_solr).and_return(true)
-    end
-
-    it "should send valid commit xml to solr" do
-      @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<optimize/>\n")
-      @solr.solr_optimize
-    end
-  end
-
-  describe "solr_rollback" do
-    before(:each) do
-      @solr.stub!(:post_to_solr).and_return(true)
-    end
-
-    it "should send valid commit xml to solr" do
-      @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rollback/>\n")
-      @solr.solr_rollback
-    end
-  end
-
-  describe "solr_delete_by_id" do
-    before(:each) do
-      @solr.stub!(:post_to_solr).and_return(true)
-    end
-
-    it "should send valid delete id xml to solr" do
-      @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<delete><id>1</id></delete>\n")
-      @solr.solr_delete_by_id(1)
-    end
-
-    it "should accept multiple ids" do
-      @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<delete><id>1</id><id>2</id></delete>\n")
-      @solr.solr_delete_by_id([ 1, 2 ])
     end
   end
 

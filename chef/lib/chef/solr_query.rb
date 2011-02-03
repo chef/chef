@@ -197,41 +197,8 @@ class Chef
     FIELD_ATTR_END = '">'
     CLOSE_FIELD = "</field>"
 
-    def solr_add(data)
-      Chef::Log.debug("adding to SOLR: #{data.inspect}")
-
-      xml = ""
-      xml << START_XML
-
-      data.each do |field, values|
-        values.each do |v|
-          xml << FIELD_ATTR
-          xml << field
-          xml << FIELD_ATTR_END
-          xml <<  xml_escape(v)
-          xml << CLOSE_FIELD
-        end
-      end
-      xml << END_XML
-      xml
-
-      post_to_solr(xml)
-    end
-
     def solr_commit(opts={})
       post_to_solr(generate_single_element("commit", opts))
-    end
-
-    def solr_optimize(opts={})
-      post_to_solr(generate_single_element("optimize", opts))
-    end
-
-    def solr_rollback
-      post_to_solr(generate_single_element("rollback"))
-    end
-
-    def solr_delete_by_id(ids)
-      post_to_solr(generate_delete_document("id", ids))
     end
 
     def solr_delete_by_query(queries)
