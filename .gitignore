@@ -28,3 +28,6 @@ erl_crash.dump
 features/data/repo/checksums/
 *.rbc
 .rvmrc
+.bundle
+chef-expander/conf/chef-expander.rb
+
