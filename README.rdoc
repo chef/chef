@@ -35,8 +35,6 @@ Install these via your platform's preferred method; for example apt, yum, ports,
 * Git
 * CouchDB
 * RabbitMQ
-* libxml2 development package (for webrat)
-* libxslt develoment package (for webrat)
 
 Install the following RubyGems.
 
@@ -44,7 +42,6 @@ Install the following RubyGems.
 * rake
 * rspec
 * cucumber
-* webrat
 * merb-core
 * merb-assets
 * merb-haml
@@ -52,7 +49,6 @@ Install the following RubyGems.
 * merb-param-protection
 * merb_cucumber
 * coderay
-* libxml-ruby
 
 Ohai is also by Opscode and available on GitHub, http://github.com/opscode/ohai/tree/master.
 

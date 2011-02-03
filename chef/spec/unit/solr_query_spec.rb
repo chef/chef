@@ -153,19 +153,14 @@ describe Chef::SolrQuery do
     end
   end
 
-  describe "solr_delete_by_query" do
+  describe "when deleting a database from Solr" do
     before(:each) do
       @solr.stub!(:post_to_solr).and_return(true)
     end
 
-    it "should send valid delete id xml to solr" do
-      @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<delete><query>foo:bar</query></delete>\n")
-      @solr.solr_delete_by_query("foo:bar")
-    end
-
-    it "should accept multiple ids" do
-      @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<delete><query>foo:bar</query><query>baz:bum</query></delete>\n")
-      @solr.solr_delete_by_query([ "foo:bar", "baz:bum" ])
+    it "should send a valid delete query to solr" do
+      @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<delete><query>X_CHEF_database_CHEF_X:chef</query></delete>\n")
+      @solr.delete_database("chef")
     end
   end
   
@@ -175,7 +170,7 @@ describe Chef::SolrQuery do
     end
     
     it "deletes the index and commits" do
-      @solr.should_receive(:solr_delete_by_query).with("X_CHEF_database_CHEF_X:chunky_bacon")
+      @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<delete><query>X_CHEF_database_CHEF_X:chunky_bacon</query></delete>\n")
       @solr.should_receive(:solr_commit)
       @solr.stub!(:reindex_all)
       Chef::DataBag.stub!(:cdb_list).and_return([])

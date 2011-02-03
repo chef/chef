@@ -41,9 +41,6 @@ class Search < Application
     end
 
     query = Chef::SolrQuery.new(Chef::Config[:solr_url])
-    params[:sort]  ||= nil
-    params[:rows]  ||= 20
-    
     params[:type] = params[:id]
     objects, start, total = query.search(params)
 

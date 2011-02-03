@@ -21,7 +21,6 @@ require 'chef/log'
 require 'chef/config'
 require 'chef/couchdb'
 require 'net/http'
-require 'libxml'
 require 'uri'
 
 class Chef
@@ -191,23 +190,24 @@ class Chef
       http_request_handler(req, description)
     end
 
-    START_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<add><doc>"
-    END_XML   = "</doc></add>\n"
-    FIELD_ATTR = '<field name="'
-    FIELD_ATTR_END = '">'
-    CLOSE_FIELD = "</field>"
+    START_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".freeze
+    START_DELETE_BY_QUERY = "<delete><query>".freeze
+    END_DELETE_BY_QUERY = "</query></delete>\n".freeze
+    COMMIT = "<commit/>\n".freeze
 
     def solr_commit(opts={})
-      post_to_solr(generate_single_element("commit", opts))
+      post_to_solr("#{START_XML}#{COMMIT}")
     end
 
-    def solr_delete_by_query(queries)
-      post_to_solr(generate_delete_document("query", queries))
+    def delete_database(db)
+      query_data = xml_escape("X_CHEF_database_CHEF_X:#{db}")
+      xml = "#{START_XML}#{START_DELETE_BY_QUERY}#{query_data}#{END_DELETE_BY_QUERY}"
+      post_to_solr(xml)
+      solr_commit
     end
 
     def rebuild_index(url=Chef::Config[:couchdb_url], db=Chef::Config[:couchdb_database])
-      solr_delete_by_query("X_CHEF_database_CHEF_X:#{db}")
-      solr_commit
+      delete_database(db)
 
       results = {}
       [Chef::ApiClient, Chef::Node, Chef::Role].each do |klass|
@@ -240,27 +240,6 @@ class Chef
         raise e
       end
       true
-    end
-
-    def generate_single_element(elem, opts={})
-      xml_document = LibXML::XML::Document.new
-      xml_elem = LibXML::XML::Node.new(elem)
-      opts.each { |k,v| xml_elem[k.to_s] = xml_escape(v.to_s) }
-      xml_document.root = xml_elem
-      xml_document.to_s(:indent => false)
-    end
-
-    def generate_delete_document(type, list)
-      list = [list] unless list.is_a?(Array)
-      xml_document = LibXML::XML::Document.new
-      xml_delete = LibXML::XML::Node.new("delete")
-      xml_document.root = xml_delete
-      list.each do |id|
-        xml_id = LibXML::XML::Node.new(type)
-        xml_id.content = id.to_s
-        xml_delete << xml_id
-      end
-      xml_document.to_s(:indent => false)
     end
 
     # Thanks to Merb!
