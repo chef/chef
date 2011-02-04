@@ -39,21 +39,33 @@ class Chef
       end
 
       def action_checkout
-        run_command(run_options(:command => checkout_command))
-        @new_resource.updated_by_last_action(true)
+        assert_target_directory_valid!
+        if target_dir_non_existant_or_empty?
+          run_command(run_options(:command => checkout_command))
+          @new_resource.updated_by_last_action(true)
+        else
+          Chef::Log.info "Taking no action, checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
+        end
       end
 
       def action_export
-        run_command(run_options(:command => export_command))
-        @new_resource.updated_by_last_action(true)
+        assert_target_directory_valid!
+        if target_dir_non_existant_or_empty?
+          run_command(run_options(:command => export_command))
+          @new_resource.updated_by_last_action(true)
+        else
+          Chef::Log.info "Taking no action, export destination #{@new_resource.destination} already exists or is a non-empty directory"
+        end
       end
 
       def action_force_export
+        assert_target_directory_valid!
         run_command(run_options(:command => export_command))
         @new_resource.updated_by_last_action(true)
       end
 
       def action_sync
+        assert_target_directory_valid!
         if ::File.exist?(::File.join(@new_resource.destination, ".svn"))
           current_rev = find_current_revision
           Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{revision_int}"
@@ -163,7 +175,20 @@ class Chef
       def scm(*args)
         ['svn', *args].compact.join(" ")
       end
+      
+      # TODO these methods are the same as the git provider...need to REFACTOR
+      # ...the subversion and git providers should extend from the same parent
+      def assert_target_directory_valid!
+        target_parent_directory = ::File.dirname(@new_resource.destination)
+        unless ::File.directory?(target_parent_directory)
+          msg = "Cannot clone #{@new_resource} to #{@new_resource.destination}, the enclosing directory #{target_parent_directory} does not exist"
+          raise Chef::Exceptions::MissingParentDirectory, msg
+        end
+      end
 
+      def target_dir_non_existant_or_empty?
+        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == ['.','..']
+      end
     end
   end
 end

@@ -189,19 +189,36 @@ describe Chef::Provider::Subversion do
   end
 
   it "runs an export with the --force option" do
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
     @provider.action_force_export
   end
 
   it "runs the checkout command for action_checkout" do
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
     @provider.action_checkout
     @resource.should be_updated
   end
   
+  it "raises an error if the svn checkout command would fail because the enclosing directory doesn't exist" do
+    lambda {@provider.action_sync}.should raise_error(Chef::Exceptions::MissingParentDirectory)
+  end
+  
+  it "should not checkout if the destination exists or is a non empty directory" do
+    ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
+    ::Dir.stub!(:entries).with("/my/deploy/dir").and_return(['.','..','foo','bar'])
+    @provider.should_not_receive(:checkout_command)
+    Chef::Log.should_receive(:info).with("Taking no action, checkout destination /my/deploy/dir already exists or is a non-empty directory")
+    @provider.action_checkout
+    @resource.should_not be_updated
+  end
+  
   it "runs commands with the user and group specified in the resource" do
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     @resource.user "whois"
     @resource.group "thisis"
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
@@ -211,6 +228,7 @@ describe Chef::Provider::Subversion do
   end
   
   it "does a checkout for action_sync if there's no deploy dir" do
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(false)
     @provider.should_receive(:action_checkout)
     @provider.action_sync
@@ -218,6 +236,7 @@ describe Chef::Provider::Subversion do
   end
   
   it "does a checkout for action_sync if the deploy dir exists but is empty" do
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(false)
     @provider.should_receive(:action_checkout)
     @provider.action_sync
@@ -225,6 +244,7 @@ describe Chef::Provider::Subversion do
   end
   
   it "runs the sync_command on action_sync if the deploy dir exists and isn't empty" do
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
     @provider.stub!(:find_current_revision).and_return("11410")
     @provider.stub!(:current_revision_matches_target_revision?).and_return(false)
@@ -235,6 +255,7 @@ describe Chef::Provider::Subversion do
   end
   
   it "does not fetch any updates if the remote revision matches the current revision" do
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
     #::File.stub!(:directory?).with("/my/deploy").and_return(true)
     @provider.stub!(:find_current_revision).and_return('12345')
@@ -244,6 +265,7 @@ describe Chef::Provider::Subversion do
   end
   
   it "runs the export_command on action_export" do
+    ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
     @provider.action_export
