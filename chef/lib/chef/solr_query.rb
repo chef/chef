@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Copyright:: Copyright (c) 2009-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,11 +19,9 @@
 
 require 'chef/mixin/xml_escape'
 require 'chef/log'
-require 'chef/json'
 require 'chef/config'
 require 'chef/couchdb'
-require 'net/http'
-require 'uri'
+require 'chef/solr_query/solr_http_request'
 
 class Chef
   class SolrQuery
@@ -250,96 +249,6 @@ class Chef
       true
     end
 
-    class SolrHTTPRequest
-      CLASS_FOR_METHOD = {:GET => Net::HTTP::Get, :POST => Net::HTTP::Post}
-
-      UPDATE_URL = '/solr/update'
-      TEXT_XML = {"Content-Type" => "text/xml"}
-
-      def self.solr_url=(solr_url)
-        @solr_url = solr_url
-        @http_client = nil
-      end
-
-      def self.solr_url
-        @solr_url || Chef::Config[:solr_url]
-      end
-
-      def self.http_client
-        @http_client ||= begin
-          uri = URI.parse(solr_url)
-          Net::HTTP.new(uri.host, uri.port)
-        end
-      end
-
-      def self.select(params={})
-        url = "/solr/select?#{url_join(params)}"
-        Chef::Log.debug("Sending #{url} to Solr")
-        request = new(:GET, url)
-        json_response = request.run("Search Query to Solr '#{solr_url}#{url}'")
-        Chef::JSON.from_json(json_response)
-      end
-
-      def self.update(doc)
-        Chef::Log.debug("POSTing document to SOLR:\n#{doc}")
-        request = new(:POST, UPDATE_URL, TEXT_XML) { |req| req.body = doc.to_s }
-        request.run("POST to Solr '#{UPDATE_URL}', data: #{doc}")
-      end
-
-      def self.url_join(params_hash={})
-        params = params_hash.inject("") do |param_str, params|
-          param_str << "#{params[0]}=#{escape(params[1])}&"
-        end
-        params.chop! # trailing &
-        params
-      end
-
-      def self.escape(s)
-        s.to_s.gsub(/([^ a-zA-Z0-9_.-]+)/n) {
-          '%'+$1.unpack('H2'*$1.size).join('%').upcase
-        }.tr(' ', '+')
-      end
-
-      def initialize(method, url, headers=nil)
-        args = headers ? [url, headers] : url
-        @request = CLASS_FOR_METHOD[method].new(*args)
-        yield @request if block_given?
-      end
-
-      def http_client
-        self.class.http_client
-      end
-
-      def solr_url
-        self.class.solr_url
-      end
-
-      def run(description="HTTP Request to Solr")
-        response = http_client.request(@request)
-        request_failed!(response, description) unless response.kind_of?(Net::HTTPSuccess)
-        response.body
-      rescue NoMethodError => e
-        # http://redmine.ruby-lang.org/issues/show/2708
-        # http://redmine.ruby-lang.org/issues/show/2758
-        if e.to_s =~ /#{Regexp.escape(%q|undefined method 'closed?' for nil:NilClass|)}/
-          Chef::Log.fatal("#{description} failed.  Chef::Exceptions::SolrConnectionError exception: Errno::ECONNREFUSED (net/http undefined method closed?) attempting to contact #{solr_url}")
-          Chef::Log.debug("rescued error in http connect, treating it as Errno::ECONNREFUSED to hide bug in net/http")
-          Chef::Log.debug(e.backtrace.join("\n"))
-          raise Chef::Exceptions::SolrConnectionError, "Errno::ECONNREFUSED: Connection refused attempting to contact #{solr_url}"
-        else
-          raise
-        end
-      end
-
-      def request_failed!(response, description='HTTP call')
-        Chef::Log.fatal("#{description} failed (#{response.class} #{response.code} #{response.message})")
-        response.error!
-      rescue Timeout::Error, Errno::EINVAL, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError, Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ETIMEDOUT => e
-        Chef::Log.debug(e.backtrace.join("\n"))
-        raise Chef::Exceptions::SolrConnectionError, "#{e.class.name}: #{e.to_s}"
-      end
-
-    end
 
   end
 end
