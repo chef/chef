@@ -163,7 +163,7 @@ module Shef
       end
 
       begin
-        @json_attribs = JSON.parse(json_io.read)
+        @json_attribs = Chef::JSON.from_json(json_io.read)
       rescue JSON::ParserError => error
         fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
       end

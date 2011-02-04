@@ -18,7 +18,7 @@
 
 require 'chef/knife'
 require 'chef/node'
-require 'json'
+require 'chef/json'
 
 class Chef
   class Knife

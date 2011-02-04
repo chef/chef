@@ -204,7 +204,7 @@ describe Chef::REST do
 
       it "should inflate the body as to an object if JSON is returned" do
         @http_response.add_field("content-type", "application/json")
-        JSON.should_receive(:parse).with("ninja").and_return("ohai2u_success")
+        Chef::JSON.should_receive(:from_json).with("ninja").and_return("ohai2u_success")
         @rest.run_request(:GET, @url, {}).should == "ohai2u_success"
       end
 

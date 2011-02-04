@@ -32,7 +32,7 @@ require 'chef/run_list'
 require 'chef/node/attribute'
 require 'chef/index_queue'
 require 'extlib'
-require 'json'
+require 'chef/json'
 
 class Chef
   class Node
@@ -596,6 +596,5 @@ class Chef
       self.from_file(attribute_filename)
       self
     end
-
   end
 end

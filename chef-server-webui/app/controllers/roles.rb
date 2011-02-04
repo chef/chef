@@ -90,8 +90,8 @@ class Roles < Application
       @role.name(params[:name])
       @role.run_list(params[:for_role] ? params[:for_role] : [])
       @role.description(params[:description]) if params[:description] != ''
-      @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
-      @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
+      @role.default_attributes(Chef::JSON.from_json(params[:default_attributes])) if params[:default_attributes] != ''
+      @role.override_attributes(Chef::JSON.from_json(params[:override_attributes])) if params[:override_attributes] != ''
       @role.create
       redirect(url(:roles), :message => { :notice => "Created Role #{@role.name}" })
     rescue => e
@@ -99,8 +99,8 @@ class Roles < Application
       @available_recipes = get_available_recipes 
       @available_roles = Chef::Role.list.keys.sort
       @role = Chef::Role.new
-      @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
-      @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
+      @role.default_attributes(Chef::JSON.from_json(params[:default_attributes])) if params[:default_attributes] != ''
+      @role.override_attributes(Chef::JSON.from_json(params[:override_attributes])) if params[:override_attributes] != ''
       @run_list = Chef::RunList.new.reset!(Array(params[:for_role]))
       @_message = { :error => "Could not create role" }
       render :new
@@ -113,8 +113,8 @@ class Roles < Application
       @role = Chef::Role.load(params[:id])
       @role.run_list(params[:for_role] ? params[:for_role] : [])
       @role.description(params[:description]) if params[:description] != ''
-      @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
-      @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
+      @role.default_attributes(Chef::JSON.from_json(params[:default_attributes])) if params[:default_attributes] != ''
+      @role.override_attributes(Chef::JSON.from_json(params[:override_attributes])) if params[:override_attributes] != ''
       @role.save
       @_message = { :notice => "Updated Role" }
       render :show
@@ -124,8 +124,8 @@ class Roles < Application
       @available_roles = Chef::Role.list.keys.sort
       @run_list = Chef::RunList.new.reset!( Array(params[:for_role]))
       Chef::Log.error(@run_list.inspect)
-      @role.default_attributes(JSON.parse(params[:default_attributes])) if params[:default_attributes] != ''
-      @role.override_attributes(JSON.parse(params[:override_attributes])) if params[:override_attributes] != ''
+      @role.default_attributes(Chef::JSON.from_json(params[:default_attributes])) if params[:default_attributes] != ''
+      @role.override_attributes(Chef::JSON.from_json(params[:override_attributes])) if params[:override_attributes] != ''
       @_message = {:error => "Could not update role #{params[:id]}"}
       render :edit
     end

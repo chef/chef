@@ -22,6 +22,7 @@
 require "chef/mixin/checksum"
 require "chef/cookbook_loader"
 require "mixlib/authentication/signatureverification"
+require "chef/json"
 
 class Application < Merb::Controller
 
@@ -102,11 +103,11 @@ class Application < Merb::Controller
   def access_denied
     raise Unauthorized, "You must authenticate first!"
   end
-  
+
   def get_available_recipes
     all_cookbooks_list = Chef::CookbookVersion.cdb_list(true)
     available_recipes = all_cookbooks_list.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
-      element.recipes.sort.each do |r| 
+      element.recipes.sort.each do |r|
         if r =~ /^(.+)::default$/
           result << $1
         else
@@ -116,6 +117,15 @@ class Application < Merb::Controller
       result
     end
     available_recipes
+  end
+
+  # Use Chef's JSON conversion library for sending JSON instead of the
+  # default Merb, which calls obj.to_json. Fixes CHEF-1292/PL-538.
+  override! :display
+  def display(obj)
+    super(obj, nil, {:max_nesting => Chef::JSON::JSON_MAX_NESTING})
+    #super.display(Chef::JSON.to_json(obj))
+    #Chef::JSON.to_json(obj)
   end
 
 end
