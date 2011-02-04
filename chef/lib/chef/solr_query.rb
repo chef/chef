@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Seth Falcon (<seth@opscode.com>)
 # Copyright:: Copyright (c) 2009-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -22,6 +23,7 @@ require 'chef/log'
 require 'chef/config'
 require 'chef/couchdb'
 require 'chef/solr_query/solr_http_request'
+require 'chef/solr_query/query_transform'
 
 class Chef
   class SolrQuery
@@ -36,11 +38,13 @@ class Chef
     include Chef::Mixin::XMLEscape
 
     attr_accessor :query
+    attr_accessor :params
     
     # Create a new Query object - takes the solr_url and optional
     # Chef::CouchDB object to inflate objects into.
     def initialize(couchdb = nil)
       @filter_query = {}
+      @params = {}
 
       if couchdb.nil?
         @database = Chef::Config[:couchdb_database]
@@ -55,6 +59,17 @@ class Chef
           @couchdb = couchdb
         end
       end 
+    end
+
+    def self.from_params(params, couchdb=nil)
+      query = new(couchdb)
+      query.params = VALID_PARAMS.inject({}) do |p, param_name|
+        p[param_name] = params[param_name] if params.key?(param_name)
+        p
+      end
+      query.update_filter_query_from_params
+      query.update_query_from_params
+      query
     end
 
     def filter_by(filter_query_params)
@@ -76,127 +91,45 @@ class Chef
       end
     end
 
-    def update_filter_query_from_params(params)
+    def update_filter_query_from_params
       filter_by(:database => @database)
       filter_by_type(params.delete(:type))
     end
 
-    def update_query_from_params(params)
+    def update_query_from_params
       original_query = params.delete(:q) || "*:*"
-      @query = transform_search_query(original_query)
+      @query = Chef::SolrQuery::QueryTransform.transform(original_query)
     end
 
-    # Search Solr for objects of a given type, for a given query. If
-    # you give it a block, it will handle the paging for you
-    # dynamically.
-    def search(params)
-      params = VALID_PARAMS.inject({}) do |p, param_name|
-        p[param_name] = params[param_name] if params.key?(param_name)
-        p
+    def objects
+      if !object_ids.empty?
+        @bulk_objects ||= @couchdb.bulk_get(@result_object_ids)
+        Chef::Log.debug { "bulk get of objects: #{bulk_objects.inspect}" }
+        @bulk_objects
+      else
+        []
       end
-      update_filter_query_from_params(params)
-      update_query_from_params(params)
-      objects, start, total, response_header = execute_query(params)
-      [ objects, start, total ]
     end
 
-    # A raw query against CouchDB - takes the type of object to find, and raw
-    # Solr options.
-    #
-    # You'll wind up having to page things yourself.
-    def execute_query(options)
-      results = solr_select(options)
-      Chef::Log.debug("Bulk loading from #{@database}:\n#{results.inspect}") 
-      objects = if results["response"]["docs"].length > 0
-                  bulk_objects = @couchdb.bulk_get( results["response"]["docs"].collect { |d| d[ID_KEY] } )
-                  Chef::Log.debug("bulk get of objects: #{bulk_objects.inspect}")
-                  bulk_objects
-                else
-                  []
-                end
-      [ objects, results["response"]["start"], results["response"]["numFound"], results["responseHeader"] ] 
+    def object_ids
+      @object_ids ||= results["response"]["docs"].map { |d| d[ID_KEY] }
     end
 
-
-    # Constants used for search query transformation
-    FLD_SEP = "\001"
-    SPC_SEP = "\002"
-    QUO_SEP = "\003"
-    QUO_KEY = "\004"
-
-    def transform_search_query(q)
-      return q if q == "*:*"
-
-      # handled escaped quotes
-      q = q.gsub(/\\"/, QUO_SEP)
-
-      # handle quoted strings
-      i = 1
-      quotes = {}
-      q = q.gsub(/([^ \\+()]+):"([^"]+)"/) do |m|
-        key = QUO_KEY + i.to_s
-        quotes[key] = "content#{FLD_SEP}\"#{$1}__=__#{$2}\""
-        i += 1
-        key
-      end
-
-      # a:[* TO *] => a*
-      q = q.gsub(/\[\*[+ ]TO[+ ]\*\]/, '*')
-
-      keyp = '[^ \\+()]+'
-      lbrak = '[\[{]'
-      rbrak = '[\]}]'
-
-      # a:[blah TO zah] =>
-      # content\001[a__=__blah\002TO\002a__=__zah]
-      # includes the cases a:[* TO zah] and a:[blah TO *], but not
-      # [* TO *]; that is caught above
-      q = q.gsub(/(#{keyp}):(#{lbrak})([^\]}]+)[+ ]TO[+ ]([^\]}]+)(#{rbrak})/) do |m|
-        if $3 == "*"
-          "content#{FLD_SEP}#{$2}#{$1}__=__#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__#{$4}#{$5}"
-        elsif $4 == "*"
-          "content#{FLD_SEP}#{$2}#{$1}__=__#{$3}#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__\\ufff0#{$5}"
-        else
-          "content#{FLD_SEP}#{$2}#{$1}__=__#{$3}#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__#{$4}#{$5}"
-        end
-      end
-
-      # foo:bar => content:foo__=__bar
-      q = q.gsub(/([^ \\+()]+):([^ +]+)/) { |m| "content:#{$1}__=__#{$2}" }
-
-      # /002 => ' '
-      q = q.gsub(/#{SPC_SEP}/, ' ')
-
-      # replace quoted query chunks
-      quotes.keys.each do |key|
-        q = q.gsub(key, quotes[key])
-      end
-
-      # replace escaped quotes
-      q = q.gsub(QUO_SEP, '\"')
-
-      # /001 => ':'
-      q = q.gsub(/#{FLD_SEP}/, ':')
-      q
+    def results
+      @results ||= SolrHTTPRequest.select(self.to_hash)
     end
 
-    # TODO: dead code, only exercised by tests
-    def select_url_from(params={})
-      options = DEFAULT_PARAMS.merge(params)
-      options[:fq] = filter_query
-      options[:q] = @query
-      "/solr/select?#{SolrHTTPRequest.url_join(options)}"
+    # Search Solr for objects of a given type, for a given query.
+    def search
+      { "rows" => objects, "start" => results["response"]["start"],
+        "total" => results["response"]["numFound"] }
     end
 
-    def to_hash(params={})
+    def to_hash
       options = DEFAULT_PARAMS.merge(params)
       options[:fq] = filter_query
       options[:q] = @query
       options
-    end
-
-    def solr_select(params={})
-      SolrHTTPRequest.select(self.to_hash(params))
     end
 
     START_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".freeze

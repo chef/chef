@@ -1,3 +1,12 @@
+afield:[* TO *]
+content:afield__=__*
+
+afield:[a TO *]
+content:[afield__=__a TO afield__=__\ufff0]
+
+afield:[* TO b]
+content:[afield__=__ TO afield__=__b]
+
 *:*
 *:*
 
@@ -78,3 +87,13 @@ content:"words__=__one two \"three\"" OR content:"words__=__\"one two\" three" A
 
 words:\"*
 content:words__=__\"*
+
+-version:0.9.12
+-content:version__=__0.9.12
+
+- version:0.9.12
+- content:version__=__0.9.12
+
+!version:0.9.12
+NOT content:version__=__0.9.12
+
