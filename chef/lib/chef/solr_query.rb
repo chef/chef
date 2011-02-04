@@ -18,6 +18,7 @@
 
 require 'chef/mixin/xml_escape'
 require 'chef/log'
+require 'chef/json'
 require 'chef/config'
 require 'chef/couchdb'
 require 'net/http'
@@ -26,18 +27,21 @@ require 'uri'
 class Chef
   class SolrQuery
 
+    ID_KEY = "X_CHEF_id_CHEF_X"
+    DEFAULT_PARAMS = Mash.new(:start => 0, :rows => 1000, :sort => "#{ID_KEY} asc", :wt => 'json', :indent => 'off').freeze
+    FILTER_PARAM_MAP = {:database => 'X_CHEF_database_CHEF_X', :type => "X_CHEF_type_CHEF_X", :data_bag  => 'data_bag'}
+    VALID_PARAMS = [:start,:rows,:sort,:q,:type]
+    BUILTIN_SEARCH_TYPES = ["role","node","client","environment"]
+    DATA_BAG_ITEM = 'data_bag_item'
+
     include Chef::Mixin::XMLEscape
 
-    attr_accessor :solr_url, :http
-
-    ID_KEY = "X_CHEF_id_CHEF_X"
+    attr_accessor :query
     
     # Create a new Query object - takes the solr_url and optional
     # Chef::CouchDB object to inflate objects into.
-    def initialize(solr_url=Chef::Config[:solr_url], couchdb = nil)
-      @solr_url = solr_url
-      uri = URI.parse(@solr_url)
-      @http = Net::HTTP.new(uri.host, uri.port)
+    def initialize(couchdb = nil)
+      @filter_query = {}
 
       if couchdb.nil?
         @database = Chef::Config[:couchdb_database]
@@ -54,19 +58,56 @@ class Chef
       end 
     end
 
+    def filter_by(filter_query_params)
+      filter_query_params.each do |key, value|
+        @filter_query[FILTER_PARAM_MAP[key]] = value
+      end
+    end
+
+    def filter_query
+      @filter_query.map { |param, value| "+#{param}:#{value}" }.join(' ')
+    end
+
+    def filter_by_type(type)
+      case type
+      when *BUILTIN_SEARCH_TYPES
+        filter_by(:type => type)
+      else
+        filter_by(:type => DATA_BAG_ITEM, :data_bag => type)
+      end
+    end
+
+    def update_filter_query_from_params(params)
+      filter_by(:database => @database)
+      filter_by_type(params.delete(:type))
+    end
+
+    def update_query_from_params(params)
+      original_query = params.delete(:q) || "*:*"
+      @query = transform_search_query(original_query)
+    end
+
+    # Search Solr for objects of a given type, for a given query. If
+    # you give it a block, it will handle the paging for you
+    # dynamically.
+    def search(params)
+      params = VALID_PARAMS.inject({}) do |p, param_name|
+        p[param_name] = params[param_name] if params.key?(param_name)
+        p
+      end
+      update_filter_query_from_params(params)
+      update_query_from_params(params)
+      objects, start, total, response_header = execute_query(params)
+      [ objects, start, total ]
+    end
+
     # A raw query against CouchDB - takes the type of object to find, and raw
     # Solr options.
     #
     # You'll wind up having to page things yourself.
-    def raw(type, options={})
-      qtype = case options[:type].to_s
-              when "role","node","client","environment"
-                options[:type]
-              else
-                [ "data_bag_item", options[:type] ]
-              end
-      results = solr_select(@database, qtype, options)
-      Chef::Log.debug("Searching #{@database} #{qtype.inspect} for #{options.inspect} with results:\n#{results.inspect}") 
+    def execute_query(options)
+      results = solr_select(options)
+      Chef::Log.debug("Bulk loading from #{@database}:\n#{results.inspect}") 
       objects = if results["response"]["docs"].length > 0
                   bulk_objects = @couchdb.bulk_get( results["response"]["docs"].collect { |d| d[ID_KEY] } )
                   Chef::Log.debug("bulk get of objects: #{bulk_objects.inspect}")
@@ -77,26 +118,6 @@ class Chef
       [ objects, results["response"]["start"], results["response"]["numFound"], results["responseHeader"] ] 
     end
 
-    # Search Solr for objects of a given type, for a given query. If
-    # you give it a block, it will handle the paging for you
-    # dynamically.
-    def search(params, &block)
-      defaults = Mash.new({:q => "*:*", :start => 0, :rows => 1000})
-      options = defaults.merge(params)
-      options[:sort] = "#{ID_KEY} asc" if options[:sort].nil? || options[:sort].empty?
-      options[:q] = transform_search_query(options[:q])
-      objects, start, total, response_header = raw(options)
-      if block
-        objects.each { |o| block.call(o) }
-        unless (start + objects.length) >= total
-          nstart = start + rows
-          search(type, query, sort, nstart, rows, &block)
-        end
-        true
-      else
-        [ objects, start, total ]
-      end
-    end
 
     # Constants used for search query transformation
     FLD_SEP = "\001"
@@ -160,34 +181,23 @@ class Chef
       q
     end
 
-
-    def solr_select(database, type, options={})
-      options[:wt] = :ruby
-      options[:indent] = "off"
-      options[:fq] = if type.kind_of?(Array)
-                       "+X_CHEF_database_CHEF_X:#{database} +X_CHEF_type_CHEF_X:#{type[0]} +data_bag:#{type[1]}"
-                     else
-                       "+X_CHEF_database_CHEF_X:#{database} +X_CHEF_type_CHEF_X:#{type}"
-                     end
-      select_url = "/solr/select?#{to_params(options)}"
-      Chef::Log.debug("Sending #{select_url} to Solr")
-      req = Net::HTTP::Get.new(select_url)
-
-      description = "Search Query to Solr '#{solr_url}#{select_url}'"
-
-      res = http_request_handler(req, description)
-      Chef::Log.debug("Parsing Solr result set:\n#{res.body}")
-      eval(res.body)
+    # TODO: dead code, only exercised by tests
+    def select_url_from(params={})
+      options = DEFAULT_PARAMS.merge(params)
+      options[:fq] = filter_query
+      options[:q] = @query
+      "/solr/select?#{SolrHTTPRequest.url_join(options)}"
     end
 
-    def post_to_solr(doc)
-      Chef::Log.debug("POSTing document to SOLR:\n#{doc}")
-      req = Net::HTTP::Post.new("/solr/update", "Content-Type" => "text/xml")
-      req.body = doc.to_s
+    def to_hash(params={})
+      options = DEFAULT_PARAMS.merge(params)
+      options[:fq] = filter_query
+      options[:q] = @query
+      options
+    end
 
-      description = "POST to Solr '#{solr_url}'"
-
-      http_request_handler(req, description)
+    def solr_select(params={})
+      SolrHTTPRequest.select(self.to_hash(params))
     end
 
     START_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".freeze
@@ -195,18 +205,18 @@ class Chef
     END_DELETE_BY_QUERY = "</query></delete>\n".freeze
     COMMIT = "<commit/>\n".freeze
 
-    def solr_commit(opts={})
-      post_to_solr("#{START_XML}#{COMMIT}")
+    def commit(opts={})
+      SolrHTTPRequest.update("#{START_XML}#{COMMIT}")
     end
 
     def delete_database(db)
       query_data = xml_escape("X_CHEF_database_CHEF_X:#{db}")
       xml = "#{START_XML}#{START_DELETE_BY_QUERY}#{query_data}#{END_DELETE_BY_QUERY}"
-      post_to_solr(xml)
-      solr_commit
+      SolrHTTPRequest.update(xml)
+      commit
     end
 
-    def rebuild_index(url=Chef::Config[:couchdb_url], db=Chef::Config[:couchdb_database])
+    def rebuild_index(db=Chef::Config[:couchdb_database])
       delete_database(db)
 
       results = {}
@@ -219,8 +229,6 @@ class Chef
       results[Chef::DataBag.name] = "success"
       results
     end
-
-    private
 
     def reindex_all(klass, metadata={})
       begin
@@ -242,65 +250,96 @@ class Chef
       true
     end
 
-    # Thanks to Merb!
-    def to_params(params_hash)
-      params = ''
-      stack = []
+    class SolrHTTPRequest
+      CLASS_FOR_METHOD = {:GET => Net::HTTP::Get, :POST => Net::HTTP::Post}
 
-      params_hash.each do |k, v|
-        if v.is_a?(Hash)
-          stack << [k,v]
+      UPDATE_URL = '/solr/update'
+      TEXT_XML = {"Content-Type" => "text/xml"}
+
+      def self.solr_url=(solr_url)
+        @solr_url = solr_url
+        @http_client = nil
+      end
+
+      def self.solr_url
+        @solr_url || Chef::Config[:solr_url]
+      end
+
+      def self.http_client
+        @http_client ||= begin
+          uri = URI.parse(solr_url)
+          Net::HTTP.new(uri.host, uri.port)
+        end
+      end
+
+      def self.select(params={})
+        url = "/solr/select?#{url_join(params)}"
+        Chef::Log.debug("Sending #{url} to Solr")
+        request = new(:GET, url)
+        json_response = request.run("Search Query to Solr '#{solr_url}#{url}'")
+        Chef::JSON.from_json(json_response)
+      end
+
+      def self.update(doc)
+        Chef::Log.debug("POSTing document to SOLR:\n#{doc}")
+        request = new(:POST, UPDATE_URL, TEXT_XML) { |req| req.body = doc.to_s }
+        request.run("POST to Solr '#{UPDATE_URL}', data: #{doc}")
+      end
+
+      def self.url_join(params_hash={})
+        params = params_hash.inject("") do |param_str, params|
+          param_str << "#{params[0]}=#{escape(params[1])}&"
+        end
+        params.chop! # trailing &
+        params
+      end
+
+      def self.escape(s)
+        s.to_s.gsub(/([^ a-zA-Z0-9_.-]+)/n) {
+          '%'+$1.unpack('H2'*$1.size).join('%').upcase
+        }.tr(' ', '+')
+      end
+
+      def initialize(method, url, headers=nil)
+        args = headers ? [url, headers] : url
+        @request = CLASS_FOR_METHOD[method].new(*args)
+        yield @request if block_given?
+      end
+
+      def http_client
+        self.class.http_client
+      end
+
+      def solr_url
+        self.class.solr_url
+      end
+
+      def run(description="HTTP Request to Solr")
+        response = http_client.request(@request)
+        request_failed!(response, description) unless response.kind_of?(Net::HTTPSuccess)
+        response.body
+      rescue NoMethodError => e
+        # http://redmine.ruby-lang.org/issues/show/2708
+        # http://redmine.ruby-lang.org/issues/show/2758
+        if e.to_s =~ /#{Regexp.escape(%q|undefined method 'closed?' for nil:NilClass|)}/
+          Chef::Log.fatal("#{description} failed.  Chef::Exceptions::SolrConnectionError exception: Errno::ECONNREFUSED (net/http undefined method closed?) attempting to contact #{solr_url}")
+          Chef::Log.debug("rescued error in http connect, treating it as Errno::ECONNREFUSED to hide bug in net/http")
+          Chef::Log.debug(e.backtrace.join("\n"))
+          raise Chef::Exceptions::SolrConnectionError, "Errno::ECONNREFUSED: Connection refused attempting to contact #{solr_url}"
         else
-          params << "#{k}=#{escape(v)}&"
+          raise
         end
       end
 
-      stack.each do |parent, hash|
-        hash.each do |k, v|
-          if v.is_a?(Hash)
-            stack << ["#{parent}[#{k}]", escape(v)]
-          else
-            params << "#{parent}[#{k}]=#{escape(v)}&"
-          end
-        end
-      end
-
-      params.chop! # trailing &
-      params
-    end
-
-    # escapes a query key/value for http
-    # Thanks to RSolr!
-    def escape(s)
-      s.to_s.gsub(/([^ a-zA-Z0-9_.-]+)/n) {
-        '%'+$1.unpack('H2'*$1.size).join('%').upcase
-      }.tr(' ', '+')
-    end
-    
-    # handles multiple net/http exceptions and no method closed? bug
-    def http_request_handler(req, description='HTTP call')
-      res = @http.request(req)
-      unless res.kind_of?(Net::HTTPSuccess)
-        Chef::Log.fatal("#{description} failed (#{res.class} #{res.code} #{res.message})")
-        res.error!
-      end
-      res
-    rescue Timeout::Error, Errno::EINVAL, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError, Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ETIMEDOUT, NoMethodError => e
-      # http://redmine.ruby-lang.org/issues/show/2708
-      # http://redmine.ruby-lang.org/issues/show/2758
-      if e.to_s =~ /#{Regexp.escape(%q|undefined method 'closed?' for nil:NilClass|)}/
-        Chef::Log.fatal("#{description} failed.  Chef::Exceptions::SolrConnectionError exception: Errno::ECONNREFUSED (net/http undefined method closed?) attempting to contact #{@solr_url}")
-        Chef::Log.debug("rescued error in http connect, treating it as Errno::ECONNREFUSED to hide bug in net/http")
+      def request_failed!(response, description='HTTP call')
+        Chef::Log.fatal("#{description} failed (#{response.class} #{response.code} #{response.message})")
+        response.error!
+      rescue Timeout::Error, Errno::EINVAL, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError, Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ETIMEDOUT => e
         Chef::Log.debug(e.backtrace.join("\n"))
-        raise Chef::Exceptions::SolrConnectionError, "Errno::ECONNREFUSED: Connection refused attempting to contact #{@solr_url}"
+        raise Chef::Exceptions::SolrConnectionError, "#{e.class.name}: #{e.to_s}"
       end
 
-      Chef::Log.fatal("#{description} failed.  Chef::Exceptions::SolrConnectionError exception: #{e.class.name}: #{e.to_s} attempting to contact #{@solr_url}")
-      Chef::Log.debug(e.backtrace.join("\n"))
-
-      raise Chef::Exceptions::SolrConnectionError, "#{e.class.name}: #{e.to_s}"
     end
-
 
   end
 end
