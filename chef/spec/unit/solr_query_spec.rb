@@ -175,19 +175,4 @@ describe Chef::SolrQuery do
       @solr.rebuild_index["Chef::DataBag"].should == "success"
     end
   end
-
-  describe "when transforming queries to match to support backwards compatibility with the old solr schema" do
-    before(:each) do
-      @query = Chef::SolrQuery.new
-    end
-
-    it "should transform queries correctly" do
-      testcases = Hash[*(File.readlines("#{CHEF_SPEC_DATA}/search_queries_to_transform.txt").select{|line| line !~ /^\s*$/}.map{|line| line.chomp})]
-      testcases.each do |input, expected|
-        @query.transform_search_query(input).should == expected
-      end
-    end
-
-  end
-
 end

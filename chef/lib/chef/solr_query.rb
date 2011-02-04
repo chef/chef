@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Seth Falcon (<seth@opscode.com>)
 # Copyright:: Copyright (c) 2009-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -22,6 +23,7 @@ require 'chef/log'
 require 'chef/config'
 require 'chef/couchdb'
 require 'chef/solr_query/solr_http_request'
+require 'chef/solr_query/query_transform'
 
 class Chef
   class SolrQuery
@@ -83,7 +85,7 @@ class Chef
 
     def update_query_from_params(params)
       original_query = params.delete(:q) || "*:*"
-      @query = transform_search_query(original_query)
+      @query = Chef::SolrQuery::QueryTransform.transform(original_query)
     end
 
     # Search Solr for objects of a given type, for a given query. If
@@ -115,69 +117,6 @@ class Chef
                   []
                 end
       [ objects, results["response"]["start"], results["response"]["numFound"], results["responseHeader"] ] 
-    end
-
-
-    # Constants used for search query transformation
-    FLD_SEP = "\001"
-    SPC_SEP = "\002"
-    QUO_SEP = "\003"
-    QUO_KEY = "\004"
-
-    def transform_search_query(q)
-      return q if q == "*:*"
-
-      # handled escaped quotes
-      q = q.gsub(/\\"/, QUO_SEP)
-
-      # handle quoted strings
-      i = 1
-      quotes = {}
-      q = q.gsub(/([^ \\+()]+):"([^"]+)"/) do |m|
-        key = QUO_KEY + i.to_s
-        quotes[key] = "content#{FLD_SEP}\"#{$1}__=__#{$2}\""
-        i += 1
-        key
-      end
-
-      # a:[* TO *] => a*
-      q = q.gsub(/\[\*[+ ]TO[+ ]\*\]/, '*')
-
-      keyp = '[^ \\+()]+'
-      lbrak = '[\[{]'
-      rbrak = '[\]}]'
-
-      # a:[blah TO zah] =>
-      # content\001[a__=__blah\002TO\002a__=__zah]
-      # includes the cases a:[* TO zah] and a:[blah TO *], but not
-      # [* TO *]; that is caught above
-      q = q.gsub(/(#{keyp}):(#{lbrak})([^\]}]+)[+ ]TO[+ ]([^\]}]+)(#{rbrak})/) do |m|
-        if $3 == "*"
-          "content#{FLD_SEP}#{$2}#{$1}__=__#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__#{$4}#{$5}"
-        elsif $4 == "*"
-          "content#{FLD_SEP}#{$2}#{$1}__=__#{$3}#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__\\ufff0#{$5}"
-        else
-          "content#{FLD_SEP}#{$2}#{$1}__=__#{$3}#{SPC_SEP}TO#{SPC_SEP}#{$1}__=__#{$4}#{$5}"
-        end
-      end
-
-      # foo:bar => content:foo__=__bar
-      q = q.gsub(/([^ \\+()]+):([^ +]+)/) { |m| "content:#{$1}__=__#{$2}" }
-
-      # /002 => ' '
-      q = q.gsub(/#{SPC_SEP}/, ' ')
-
-      # replace quoted query chunks
-      quotes.keys.each do |key|
-        q = q.gsub(key, quotes[key])
-      end
-
-      # replace escaped quotes
-      q = q.gsub(QUO_SEP, '\"')
-
-      # /001 => ':'
-      q = q.gsub(/#{FLD_SEP}/, ':')
-      q
     end
 
     # TODO: dead code, only exercised by tests
