@@ -1,59 +1,78 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
+require 'pp'
 require 'appscript'
+require 'mixlib/cli'
 
-include Appscript
+class MacDevStart
+  include Mixlib::CLI
+  include Appscript
 
-SRCDIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
-DELAY  = 1
-BASE_CMD = case ARGV[0]
-           when "features"
-             "cd #{SRCDIR} && rake dev:features:start:"
-           when "dev"
-             "cd #{SRCDIR} && rake dev:start:"
-           else
-             "cd #{SRCDIR} && rake dev:start:"
-           end
-SERVICES = ["couchdb","rabbitmq","chef_solr","chef_solr_indexer","chef_server","chef_webui"]
+  SERVICES = %w{couchdb rabbitmq chef_solr chef_expander chef_server chef_webui}
 
-def auth_up
-  #system("sudo echo")
-end
+  option :environment,
+    :short => '-e ENV',
+    :long => '--environment ENV',
+    :default => 'test',
+    :description => 'Set the environment (test|dev), defaults to test'
 
-def create_tab
-  app("System Events").application_processes["Terminal.app"].keystroke("t", :using=>:command_down)
-end
+  def run
+    @srcdir = File.expand_path(File.dirname(__FILE__))
 
-def activate_terminal
-  app("/Applications/Utilities/Terminal.app").windows.first.activate  
-  app("System Events").application_processes["Terminal.app"].keystroke("n", :using=>:command_down)
-  app('Terminal')  
-end
+    @base_cmd = case config[:environment]
+      when 'test'
+        "cd #{@srcdir} && rake dev:features:start:"
+      when 'dev'
+        "cd #{@srcdir} && rake dev:start:"
+      else
+        puts "--environment must be set to either 'test' or 'dev'"
+        puts @opt_parser
+        exit 1
+    end
 
-def start_service_in_last_tab(window,service)
-  # use xterm escape codes to set the tab title to the service running in the tab.
-  cmd = 
-    "unset PROMPT_COMMAND; echo -e \"\\033]0;#{service}\\007\"; " + 
-    BASE_CMD +
-    service
+    STDOUT.puts "Starting services:"
+    pp SERVICES
+    start_services(SERVICES)
+  end
 
-  app('Terminal').do_script(cmd, :in => window.tabs.last.get)
-  sleep DELAY  
-end
+  def create_tab
+    @window.activate
+    app("System Events").application_processes["Terminal.app"].keystroke("t", :using=>:command_down)
+  end
 
-def start_services
-  auth_up
-  term = activate_terminal
-  window = term.windows.first.get
-  
-  SERVICES.each do |service|
-    create_tab
-    start_service_in_last_tab(window,service)
+  def terminal_app
+    @terminal_app ||= app("Terminal")
+  end
+
+  def create_term_window
+    terminal_app.windows.first.activate
+    app("System Events").application_processes["Terminal.app"].keystroke("n", :using=>:command_down)
+    @window = terminal_app.windows.first.get
+  end
+
+  def start_service_in_tab(service, tab)
+    # use xterm escape codes to set the tab title to the service running in the tab.
+    cmd = "unset PROMPT_COMMAND; echo -e \"\\033]0;#{service}\\007\"; #{@base_cmd}#{service}"
+    app('Terminal').do_script(cmd, :in => @window.tabs[tab].get)
+  end
+
+  def start_services(services)
+    create_term_window
+
+    tab_index = 1 # applescript indexes from 1 instead of 0
+
+    (services.size - 1).times { create_tab }
+
+    services.each do |service|
+      start_service_in_tab(service, tab_index)
+      tab_index += 1
+    end
   end
 end
 
 if __FILE__ == $0
-  start_services
+  os = MacDevStart.new
+  os.parse_options
+  os.run
 end
-

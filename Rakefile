@@ -102,17 +102,14 @@ def start_chef_solr(type="normal")
   end
 end
 
-def start_chef_solr_indexer(type="normal")
+def start_chef_expander(type="normal")
   @chef_solr_indexer   = nil
-  cid = fork
-  if cid
-    @chef_solr_indexer_pid = cid
-  else
+  @chef_solr_indexer_pid = fork do
     case type
     when "normal"
-      exec("./chef-solr/bin/chef-solr-indexer -l debug")
+      exec("./chef-expander/bin/chef-expander -n 1 -i 1 -l debug")
     when "features"
-      exec("./chef-solr/bin/chef-solr-indexer -c #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug")
+      exec("./chef-expander/bin/chef-expander -c #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug -n 1 -i 1")
     end
   end
 end
@@ -245,8 +242,8 @@ namespace :dev do
       end
 
       desc "Start Chef Solr Indexer for testing"
-      task :chef_solr_indexer do
-        start_chef_solr_indexer("features")
+      task :chef_expander do
+        start_chef_expander("features")
         wait_for_ctrlc
       end
 
@@ -287,7 +284,7 @@ namespace :dev do
 
     desc "Start Chef Solr Indexer"
     task :chef_solr_indexer do
-      start_chef_solr_indexer
+      start_chef_expander
       wait_for_ctrlc
     end
 

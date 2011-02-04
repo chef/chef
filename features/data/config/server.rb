@@ -1,3 +1,5 @@
+require 'tmpdir'
+
 supportdir = File.expand_path(File.join(File.dirname(__FILE__), ".."))
 tmpdir = File.expand_path(File.join(File.dirname(__FILE__), "..", "tmp"))
 

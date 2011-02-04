@@ -109,7 +109,7 @@ class Nodes < Application
     # expand returns a RunListExpansion which contains recipes, default and override attrs [cb]
     # TODO: check for this on the client side before we make the http request [stephen 9/1/10]
     begin
-      recipes = @node.run_list.expand('couchdb', @node.chef_environment).recipes.with_versions
+      recipes = @node.run_list.expand('couchdb', :environment => @node.chef_environment).recipes.with_versions
     rescue Chef::Exceptions::RecipeVersionConflict => e
       raise PreconditionFailed, "#Conflict: #{e.message}"
     end
