@@ -18,6 +18,7 @@
 #
 
 require 'chef/knife'
+require 'chef/json'
 
 class Chef
   class Knife

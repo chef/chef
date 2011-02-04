@@ -17,7 +17,7 @@
 # limitations under the License.
 
 
-require 'chef/solr/query'
+require 'chef/solr_query'
 
 class Search < Application
   provides :json
@@ -40,12 +40,10 @@ class Search < Application
       raise NotFound, "I don't know how to search for #{params[:id]} data objects."
     end
 
-    query = Chef::Solr::Query.new(Chef::Config[:solr_url])
-    params[:q]     ||= "*:*"
-    params[:sort]  ||= nil
-    params[:start] ||= 0
-    params[:rows]  ||= 20
-    objects, start, total = query.search(params[:id], params[:q], params[:sort], params[:start], params[:rows])
+    query = Chef::SolrQuery.new
+    params[:type] = params[:id]
+    objects, start, total = query.search(params)
+
     display({
       "rows" => objects,
       "start" => start,
@@ -54,7 +52,7 @@ class Search < Application
   end
 
   def reindex
-    display(Chef::Solr.new.rebuild_index)
+    display(Chef::SolrQuery.new.rebuild_index)
   end
 
 end

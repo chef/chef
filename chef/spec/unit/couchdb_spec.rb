@@ -20,6 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::CouchDB do
   before(:each) do
+    Chef::Config[:couchdb_database] = "chef"
     @mock_rest = mock("Chef::REST", :null_object => true)
     @mock_rest.stub!(:run_request).and_return({"couchdb" => "Welcome", "version" =>"0.9.0"})
     @mock_rest.stub!(:url).and_return("http://localhost:5984")
@@ -235,39 +236,28 @@ describe Chef::CouchDB do
     end
   end
 
+  describe "get_view" do
+    it "should construct a call to the view for the proper design document" do
+      @mock_rest.should_receive(:get_rest).with("chef/_design/nodes/_view/mastodon")
+      @couchdb.get_view("nodes", "mastodon")
+    end
+
+    it "should allow arguments to the view" do
+      @mock_rest.should_receive(:get_rest).with("chef/_design/nodes/_view/mastodon?startkey=%22dont%20stay%22")
+      @couchdb.get_view("nodes", "mastodon", :startkey => "dont stay")
+    end
+
+  end
+
+  describe "view_uri" do
+    it "should output an appropriately formed view URI" do
+      @couchdb.should_receive(:view_uri).with("nodes", "all").and_return("chef/_design/nodes/_view/all")
+      @couchdb.view_uri("nodes", "all")
+    end
+  end
+
 end
 
 
 
 
-describe Chef::CouchDB, "get_view" do
-  before do
-    @mock_rest = mock("Chef::REST", :null_object => true, :url => "http://monkeypants")
-    Chef::REST.stub!(:new).and_return(@mock_rest)
-    @couchdb = Chef::CouchDB.new("http://localhost")
-  end
-
-  it "should construct a call to the view for the proper design document" do
-    @mock_rest.should_receive(:get_rest).with("chef/_design/nodes/_view/mastodon")
-    @couchdb.get_view("nodes", "mastodon")
-  end
-
-  it "should allow arguments to the view" do
-    @mock_rest.should_receive(:get_rest).with("chef/_design/nodes/_view/mastodon?startkey=%22dont%20stay%22")
-    @couchdb.get_view("nodes", "mastodon", :startkey => "dont stay")
-  end
-
-end
-
-describe Chef::CouchDB, "view_uri" do
-  before do
-    @mock_rest = mock("Chef::REST", :null_object => true, :url => "http://monkeypants")
-    Chef::REST.stub!(:new).and_return(@mock_rest)
-    @couchdb = Chef::CouchDB.new("http://localhost")    
-  end
-
-  it "should output an appropriately formed view URI" do
-    @couchdb.should_receive(:view_uri).with("nodes", "all").and_return("chef/_design/nodes/_view/all")
-    @couchdb.view_uri("nodes", "all")
-  end
-end

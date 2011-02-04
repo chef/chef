@@ -1,6 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: Chris Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +18,17 @@
 # limitations under the License.
 #
 
-require 'chef/log'
-require 'chef/config'
-require 'chef/solr'
-require 'libxml'
-require 'net/http'
+require 'chef/expander/configuration'
 
-class Chef
-  class Solr
-    class Index < Solr
-
+module Chef
+  module Expander
+    # Flattens and expands nested Hashes representing Chef objects
+    # (e.g, Nodes, Roles, DataBagItems, etc.) into flat Hashes so the
+    # objects are suitable to be saved into Solr. This code is more or
+    # less copy-pasted from chef/solr/index which may or may not be a
+    # great idea, though that does minimize the dependencies and
+    # hopefully minimize the memory use of chef-expander.
+    class Flattener
       UNDERSCORE              = '_'
       X                       = 'X'
 
@@ -33,33 +36,18 @@ class Chef
       X_CHEF_database_CHEF_X  = 'X_CHEF_database_CHEF_X'
       X_CHEF_type_CHEF_X      = 'X_CHEF_type_CHEF_X'
 
-      def add(id, database, type, item)
-        unless item.respond_to?(:keys)
-          raise ArgumentError, "#{self.class.name} can only index Hash-like objects. You gave #{item.inspect}"
-        end
-
-        to_index = flatten_and_expand(item)
-
-        to_index[X_CHEF_id_CHEF_X]        = [id]
-        to_index[X_CHEF_database_CHEF_X]  = [database]
-        to_index[X_CHEF_type_CHEF_X]      = [type]
-
-        solr_add(to_index)
-        to_index
+      def initialize(item)
+        @item = item
       end
 
-      def delete(id)
-        solr_delete_by_id(id)
+      def flattened_item
+        @flattened_item || flatten_and_expand
       end
 
-      def delete_by_query(query)
-        solr_delete_by_query(query)
-      end
-
-      def flatten_and_expand(item)
+      def flatten_and_expand
         @flattened_item = Hash.new {|hash, key| hash[key] = []}
 
-        item.each do |key, value|
+        @item.each do |key, value|
           flatten_each([key.to_s], value)
         end
 
@@ -83,21 +71,9 @@ class Chef
 
       def add_field_value(keys, value)
         value = value.to_s
-        each_expando_field(keys) { |expando_field| @flattened_item[expando_field] << value }
         @flattened_item[keys.join(UNDERSCORE)] << value
         @flattened_item[keys.last] << value
       end
-
-      def each_expando_field(keys)
-        return if keys.size == 1
-        0.upto(keys.size - 1) do |index|
-          original = keys[index]
-          keys[index] = X
-          yield keys.join(UNDERSCORE)
-          keys[index] = original
-        end
-      end
-
     end
   end
 end
