@@ -175,9 +175,9 @@ class Application < Merb::Controller
   def append_tree(name, html, node, count, parent)
     to_do = node
     #to_do = node.kind_of?(Chef::Node) ? node.attribute : node
-    Chef::Log.error("I have #{to_do.inspect}")
+    Chef::Log.debug("I have #{to_do.inspect}")
     to_do.sort{ |a,b| a[0] <=> b[0] }.each do |key, value|
-      Chef::Log.error("I am #{key.inspect} #{value.inspect}")
+      Chef::Log.debug("I am #{key.inspect} #{value.inspect}")
       to_send = Array.new
       count += 1
       is_parent = false
@@ -265,6 +265,29 @@ class Application < Merb::Controller
 
   def convert_newline_to_br(string)
     string.to_s.gsub(/\n/, '<br />') unless string.nil?
+  end
+
+  def format_exception(exception)
+    require 'pp'
+    pretty_params = StringIO.new
+    PP.pp({:request_params => params}, pretty_params)
+    "#{exception.class.name}: #{exception.message}\n#{pretty_params.string}\n#{exception.backtrace.join("\n")}"
+  end
+
+  def conflict?(exception)
+    exception.kind_of?(Net::HTTPServerException) && exception.message =~ /409/
+  end
+
+  def forbidden?(exception)
+    exception.kind_of?(Net::HTTPServerException) && exception.message =~ /403/
+  end
+
+  def not_found?(exception)
+    exception.kind_of?(Net::HTTPServerException) && exception.message =~ /404/
+  end
+
+  def bad_request?(exception)
+    exception.kind_of?(Net::HTTPServerException) && exception.message =~ /400/
   end
 
 end
