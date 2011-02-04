@@ -8,7 +8,7 @@ describe Chef::SolrQuery do
     Chef::SolrQuery::SolrHTTPRequest.solr_url = "http://example.com:8983"
 
     @http_response = mock(
-      "Net::HTTP::Response", 
+      "Net::HTTP::Response",
       :kind_of? => Net::HTTPSuccess,
       :body => "{ :some => :hash }"
     )
@@ -23,7 +23,7 @@ describe Chef::SolrQuery do
     @doc = { "foo" => "bar" }
   end
 
-  before(:each) do 
+  before(:each) do
     @solr = Chef::SolrQuery.new
   end
 
@@ -39,7 +39,7 @@ describe Chef::SolrQuery do
 
   it "filters by type for data bag items" do
     @solr.filter_by_type("users")
-    @solr.filter_query.should == '+X_CHEF_type_CHEF_X:data_bag +data_bag:users'
+    @solr.filter_query.should == '+X_CHEF_type_CHEF_X:data_bag_item +data_bag:users'
   end
 
   it "stores the main query" do
@@ -47,82 +47,39 @@ describe Chef::SolrQuery do
     @solr.query.should == "role:prod AND tags:chef-server"
   end
 
-  describe "when executing a query" do
+  describe "when generating query params for select" do
     before(:each) do
-      @http_response = mock(
-        "Net::HTTP::Response", 
-        :kind_of? => Net::HTTPSuccess,
-        :body => '{"some": "hash" }'
-      )
       @solr.update_filter_query_from_params(:type => 'node')
       @solr.query = "hostname:latte"
-      @http = mock("Net::HTTP", :request => @http_response)
-      #@solr.http = @http
-      Chef::SolrQuery::SolrHTTPRequest.stub!(:http_client).and_return(@http)
+      @params = @solr.to_hash
     end
 
-    describe "when the HTTP call is successful" do
-      it "should call get to /solr/select with the escaped query" do
-        Net::HTTP::Get.should_receive(:new).with(%r(q=hostname%3Alatte))
-        @solr.solr_select
-      end
-
-      it "uses Solr's JSON response format" do
-        Net::HTTP::Get.should_receive(:new).with(%r(wt=json))
-        @solr.solr_select
-      end
-
-      it "uses indent=off to get a compact response" do
-        Net::HTTP::Get.should_receive(:new).with(%r(indent=off))
-        @solr.solr_select
-      end
-
-      it "uses the filter query to restrict the result set" do
-        filter_query =@solr.filter_query.gsub('+', '%2B').gsub(':', "%3A").gsub(' ', '+')
-        Net::HTTP::Get.should_receive(:new).with(/fq=#{Regexp.escape(filter_query)}/)
-        @solr.solr_select
-      end
-
-      it "returns the evaluated response body" do
-        res = @solr.solr_select
-        res.should == {"some" => "hash" }
-      end
-
-      it "defaults to returning 1000 rows" do
-        @solr.select_url_from({}).should match(/rows=1000/)
-      end
-
-      it "returns the number of rows requested" do
-        @solr.select_url_from({:rows => 500}).should match(/rows=500/)
-      end
-
-      it "offsets the row selection if requested" do
-        @solr.select_url_from(:start => 500).should match(/start=500/)
-      end
-
+    it "includes the query as q" do
+      @params[:q].should == "hostname:latte"
     end
 
-  end
-
-  describe "when POSTing an update" do
-    before(:each) do
-      @http_response = mock(
-        "Net::HTTP::Response", 
-        :kind_of? => Net::HTTPSuccess,
-        :body => "{ :some => :hash }"
-      )
-      @http_request = mock(
-        "Net::HTTP::Request",
-        :body= => true
-      )
-      @http = mock("Net::HTTP", :request => @http_response)
-      Chef::SolrQuery::SolrHTTPRequest.stub!(:http_client).and_return(@http)
-      Net::HTTP::Post.stub!(:new).and_return(@http_request)
-      @doc = { "foo" => "bar" }
+    it "sets the response format to json" do
+      @params[:wt].should == "json"
     end
 
-    describe 'when the HTTP call is successful' do
+    it "uses indent=off to get a compact response" do
+      @params[:indent].should == "off"
+    end
 
+    it "includes the filter query to restrict the result set" do
+      @params[:fq].should == @solr.filter_query
+    end
+
+    it "defaults to returning 1000 rows" do
+      @params[:rows].should == 1000
+    end
+
+    it "returns the number of rows requested" do
+      @solr.to_hash(:rows => 500)[:rows].should == 500
+    end
+
+    it "offsets the row selection if requested" do
+      @solr.to_hash(:start => 500)[:start].should == 500
     end
 
   end
@@ -141,32 +98,32 @@ describe Chef::SolrQuery do
       @solr.delete_database("chef")
     end
   end
-  
+
   describe "rebuilding the index" do
     before do
       Chef::Config[:couchdb_database] = "chunky_bacon"
     end
-    
+
     it "deletes the index and commits" do
       @solr.should_receive(:delete_database).with("chunky_bacon")
       @solr.stub!(:reindex_all)
       Chef::DataBag.stub!(:cdb_list).and_return([])
       @solr.rebuild_index
     end
-    
+
     it "reindexes Chef::ApiClient, Chef::Node, and Chef::Role objects, reporting the results as a hash" do
       @solr.should_receive(:delete_database).with("chunky_bacon")
       @solr.should_receive(:reindex_all).with(Chef::ApiClient).and_return(true)
       @solr.should_receive(:reindex_all).with(Chef::Node).and_return(true)
       @solr.should_receive(:reindex_all).with(Chef::Role).and_return(true)
       Chef::DataBag.stub!(:cdb_list).and_return([])
-      
+
       result = @solr.rebuild_index
       result["Chef::ApiClient"].should == "success"
       result["Chef::Node"].should == "success"
       result["Chef::Role"].should == "success"
     end
-    
+
     it "does not reindex Chef::OpenIDRegistration or Chef::WebUIUser objects" do
       # hi there. the reason we're specifying this behavior is because these objects
       # are not properly indexed in the first place and trying to reindex them
@@ -178,10 +135,10 @@ describe Chef::SolrQuery do
       @solr.should_not_receive(:reindex_all).with(Chef::OpenIDRegistration)
       @solr.should_not_receive(:reindex_all).with(Chef::WebUIUser)
       Chef::DataBag.stub!(:cdb_list).and_return([])
-      
+
       @solr.rebuild_index
     end
-    
+
     it "reindexes databags" do
       one_data_item = Chef::DataBagItem.new
       one_data_item.raw_data = {"maybe"=>"snakes actually are evil", "id" => "just_sayin"}
@@ -189,15 +146,15 @@ describe Chef::SolrQuery do
       two_data_item.raw_data = {"tone_depth"=>"rumble_fish", "id" => "eff_yes"}
       data_bag = Chef::DataBag.new
       data_bag.stub!(:list).and_return([one_data_item, two_data_item])
-      
+
       @solr.should_receive(:delete_database).with("chunky_bacon")
       @solr.stub!(:reindex_all)
       Chef::DataBag.stub!(:cdb_list).and_return([data_bag])
-      
+
       data_bag.should_receive(:add_to_index)
       one_data_item.should_receive(:add_to_index)
       two_data_item.should_receive(:add_to_index)
-      
+
       @solr.rebuild_index["Chef::DataBag"].should == "success"
     end
   end
@@ -213,7 +170,7 @@ describe Chef::SolrQuery do
         @query.transform_search_query(input).should == expected
       end
     end
-    
+
   end
 
 end
@@ -245,7 +202,7 @@ describe Chef::SolrQuery::SolrHTTPRequest do
   describe "when configured with the Solr URL" do
     before do
       @http_response = mock(
-        "Net::HTTP::Response", 
+        "Net::HTTP::Response",
         :kind_of? => Net::HTTPSuccess,
         :body => "{ :some => :hash }"
       )
@@ -255,6 +212,50 @@ describe Chef::SolrQuery::SolrHTTPRequest do
       )
       @http = mock("Net::HTTP", :request => @http_response)
       Chef::SolrQuery::SolrHTTPRequest.stub!(:http_client).and_return(@http)
+    end
+
+    describe "when executing a select query" do
+      before(:each) do
+        @http_response = mock(
+          "Net::HTTP::Response",
+          :kind_of? => Net::HTTPSuccess,
+          :body => '{"some": "hash" }'
+        )
+        @solr = Chef::SolrQuery.new
+        @solr.update_filter_query_from_params(:type => 'node')
+        @solr.query = "hostname:latte"
+        @params = @solr.to_hash
+        @http = mock("Net::HTTP", :request => @http_response)
+        Chef::SolrQuery::SolrHTTPRequest.stub!(:http_client).and_return(@http)
+      end
+
+      describe "when the HTTP call is successful" do
+        it "should call get to /solr/select with the escaped query" do
+          Net::HTTP::Get.should_receive(:new).with(%r(q=hostname%3Alatte))
+          Chef::SolrQuery::SolrHTTPRequest.select(@params)
+        end
+
+        it "uses Solr's JSON response format" do
+          Net::HTTP::Get.should_receive(:new).with(%r(wt=json))
+          Chef::SolrQuery::SolrHTTPRequest.select(@params)
+        end
+
+        it "uses indent=off to get a compact response" do
+          Net::HTTP::Get.should_receive(:new).with(%r(indent=off))
+          Chef::SolrQuery::SolrHTTPRequest.select(@params)
+        end
+
+        it "uses the filter query to restrict the result set" do
+          filter_query =@solr.filter_query.gsub('+', '%2B').gsub(':', "%3A").gsub(' ', '+')
+          Net::HTTP::Get.should_receive(:new).with(/fq=#{Regexp.escape(filter_query)}/)
+          Chef::SolrQuery::SolrHTTPRequest.select(@params)
+        end
+
+        it "returns the evaluated response body" do
+          res = Chef::SolrQuery::SolrHTTPRequest.select(@params)
+          res.should == {"some" => "hash" }
+        end
+      end
     end
 
     describe "when updating" do
@@ -301,6 +302,6 @@ describe Chef::SolrQuery::SolrHTTPRequest do
         }.should raise_error(Chef::Exceptions::SolrConnectionError)
       end
     end
-    
+
   end
 end
