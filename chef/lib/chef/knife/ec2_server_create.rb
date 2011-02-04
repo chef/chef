@@ -50,7 +50,8 @@ class Chef
         :short => "-Z ZONE",
         :long => "--availability-zone ZONE",
         :description => "The Availability Zone",
-        :default => "us-east-1b"
+        :default => "us-east-1b",
+        :proc => Proc.new { |key| Chef::Config[:knife][:availability_zone] = key }
 
       option :chef_node_name,
         :short => "-N NAME",
@@ -154,7 +155,7 @@ class Chef
           :groups => config[:security_groups],
           :flavor_id => config[:flavor],
           :key_name => Chef::Config[:knife][:aws_ssh_key_id],
-          :availability_zone => config[:availability_zone]
+          :availability_zone => Chef::Config[:availability_zone]
         )
 
         puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
