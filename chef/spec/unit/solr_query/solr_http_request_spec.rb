@@ -66,9 +66,8 @@ describe Chef::SolrQuery::SolrHTTPRequest do
           :kind_of? => Net::HTTPSuccess,
           :body => '{"some": "hash" }'
         )
-        @solr = Chef::SolrQuery.new
-        @solr.update_filter_query_from_params(:type => 'node')
-        @solr.query = "hostname:latte"
+        @solr = Chef::SolrQuery.from_params(:type => 'node',
+                                            :q => "hostname:latte")
         @params = @solr.to_hash
         @http = mock("Net::HTTP", :request => @http_response)
         Chef::SolrQuery::SolrHTTPRequest.stub!(:http_client).and_return(@http)
@@ -76,7 +75,8 @@ describe Chef::SolrQuery::SolrHTTPRequest do
 
       describe "when the HTTP call is successful" do
         it "should call get to /solr/select with the escaped query" do
-          Net::HTTP::Get.should_receive(:new).with(%r(q=hostname%3Alatte))
+          txfm_query = "q=content%3Ahostname__%3D__latte"
+          Net::HTTP::Get.should_receive(:new).with(%r(#{txfm_query}))
           Chef::SolrQuery::SolrHTTPRequest.select(@params)
         end
 

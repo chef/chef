@@ -39,16 +39,8 @@ class Search < Application
     unless valid_indexes.include?(params[:id])
       raise NotFound, "I don't know how to search for #{params[:id]} data objects."
     end
-
-    query = Chef::SolrQuery.new
-    params[:type] = params[:id]
-    objects, start, total = query.search(params)
-
-    display({
-      "rows" => objects,
-      "start" => start,
-      "total" => total
-    })
+    params[:type] = params.delete(:id)
+    display(Chef::SolrQuery.from_params(params).search)
   end
 
   def reindex

@@ -66,13 +66,12 @@ describe Chef::SolrQuery do
 
   describe "when generating query params for select" do
     before(:each) do
-      @solr.update_filter_query_from_params(:type => 'node')
-      @solr.query = "hostname:latte"
+      @solr = Chef::SolrQuery.from_params(:type => 'node', :q => "hostname:latte")
       @params = @solr.to_hash
     end
 
     it "includes the query as q" do
-      @params[:q].should == "hostname:latte"
+      @params[:q].should == "content:hostname__=__latte"
     end
 
     it "sets the response format to json" do
@@ -92,11 +91,13 @@ describe Chef::SolrQuery do
     end
 
     it "returns the number of rows requested" do
-      @solr.to_hash(:rows => 500)[:rows].should == 500
+      @solr.params[:rows] = 500
+      @solr.to_hash[:rows].should == 500
     end
 
     it "offsets the row selection if requested" do
-      @solr.to_hash(:start => 500)[:start].should == 500
+      @solr.params[:start] = 500
+      @solr.to_hash[:start].should == 500
     end
 
   end
