@@ -54,7 +54,7 @@ module Chef
 
       def load(file)
         file = File.expand_path(file)
-        instance_eval(IO.read(file), file, 1)
+        instance_eval(IO.read(file), file, 1) if File.readable?(file)
       end
 
       def method_missing(method_name, *args, &block)
@@ -116,7 +116,14 @@ module Chef
           setting
         end
 
-        configurable :config_file, File.expand_path(File.dirname(__FILE__) + '/../../../conf/chef-expander.rb')
+        configurable :config_file, "/etc/chef/solr.rb" do
+          unless (config_file && File.exist?(config_file) && File.readable?(config_file))
+            log.warn {"* " * 40}
+            log.warn {"Config file #{config_file} does not exist or cannot be read by user (#{Process.euid})"}
+            log.warn {"Default configuration settings will be used"}
+            log.warn {"* " * 40}
+          end
+        end
 
         configurable :index do
           invalid("You must specify this node's position in the ring as an integer") unless index.kind_of?(Integer)
