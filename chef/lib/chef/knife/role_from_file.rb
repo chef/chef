@@ -33,7 +33,7 @@ class Chef
         
         output(format_for_display(updated)) if config[:print_after]
 
-        Chef::Log.warn("Updated Role #{updated.name}!")
+        Chef::Log.info("Updated Role #{updated.name}!")
       end
 
     end
