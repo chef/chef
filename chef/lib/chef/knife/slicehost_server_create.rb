@@ -62,7 +62,7 @@ class Chef
         require 'net/ssh/multi'
         require 'readline'
 
-        slicehost = Fog::Slicehost.new(
+        slicehost = Fog::Slicehost::Compute.new(
           :slicehost_password => Chef::Config[:knife][:slicehost_password]
         )
 
