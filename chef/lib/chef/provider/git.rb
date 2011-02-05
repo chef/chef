@@ -194,6 +194,7 @@ class Chef
         run_opts[:user] = @new_resource.user if @new_resource.user
         run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts[:environment] = {"GIT_SSH" => @new_resource.ssh_wrapper} if @new_resource.ssh_wrapper
+        run_opts[:environment] = {"GIT_SSH" => generate_GIT_SSH(@new_resource.ssh_key)} if @new_resource.ssh_key
         run_opts
       end
       
@@ -228,6 +229,10 @@ class Chef
           raise Chef::Exceptions::UnresolvableGitReference, msg
         end
         $1
+      end
+
+      def generate_GIT_SSH(private_key)
+        GitSSHWrapper.new(:private_key => private_key).git_ssh[/^GIT_SSH='(.+)'$/, 1]
       end
       
     end

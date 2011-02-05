@@ -31,6 +31,7 @@ class Chef
         @revision = "HEAD"
         @remote = "origin"
         @ssh_wrapper = nil
+        @ssh_key_path = nil
         @depth = nil
         @allowed_actions.push(:checkout, :export, :sync, :diff, :log)
       end
@@ -136,6 +137,14 @@ class Chef
       def ssh_wrapper(arg=nil)
         set_or_return(
           :ssh_wrapper,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def ssh_key(arg=nil)
+        set_or_return(
+          :ssh_key,
           arg,
           :kind_of => String
         )

@@ -166,6 +166,20 @@ describe Chef::Provider::Git do
     @provider.should_receive(:run_command).with(:command => expected_cmd)
     @provider.clone
   end
+
+  it "compiles a clone command with an ssh key" do
+    #mock out GitSSHWrapper stuff
+    wrapper = GitSSHWrapper.new(:private_key => 'KEY DATA')
+    GitSSHWrapper.stub(:new).and_return(wrapper)
+    wrapper.stub(:git_ssh).and_return("GIT_SSH='/path/to/wrapper.sh'")
+
+    #chef specific test
+    @resource.ssh_key "KEY DATA"
+    expected_cmd = 'git clone  git://github.com/opscode/chef.git /my/deploy/dir'
+    @provider.should_receive(:run_command).with(:command => expected_cmd,
+                                                :environment => {"GIT_SSH"=>"/path/to/wrapper.sh"})
+    @provider.clone
+  end
   
   it "runs a checkout command with default options" do
     expected_cmd = 'git checkout -b deploy d35af14d41ae22b19da05d7d03a0bafc321b244c'

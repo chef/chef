@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-log", ">= 1.2.0"
   s.add_dependency "mixlib-authentication", ">= 1.1.0"
   s.add_dependency "ohai", ">= 0.5.7"
+  s.add_dependency "git-ssh-wrapper", ">= 0.0.1"
 
   s.add_dependency "rest-client", ">= 1.0.4", "< 1.7.0"
   s.add_dependency "bunny", ">= 0.6.0"

@@ -34,6 +34,7 @@ require 'chef/cookbook/file_system_file_vendor'
 require 'chef/cookbook/remote_file_vendor'
 require 'chef/version'
 require 'ohai'
+require 'git-ssh-wrapper'
 
 class Chef
   # == Chef::Client
