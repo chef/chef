@@ -102,6 +102,27 @@ describe Chef::SolrQuery do
 
   end
 
+  describe "when querying solr" do
+    before do
+      @couchdb = mock("CouchDB Test Double", :couchdb_database => "chunky_bacon")
+      @couchdb.stub!(:kind_of?).with(Chef::CouchDB).and_return(true) #ugh.
+      @solr = Chef::SolrQuery.from_params({:type => 'node', :q => "hostname:latte", :start => 10, :rows => 5}, @couchdb)
+      @docs = [1,2,3,4,5].map { |doc_id| {'X_CHEF_id_CHEF_X' => doc_id} }
+      @solr_response = {"response" => {"docs" => @docs, "start" => 10, "results" => 123}}
+      Chef::SolrQuery::SolrHTTPRequest.should_receive(:select).with(@solr.to_hash).and_return(@solr_response)
+    end
+
+    it "it collects the document ids from the response" do
+      @solr.object_ids.should == [1,2,3,4,5]
+    end
+
+    it "does a bulk get of the objects from CouchDB" do
+      @couchdb.should_receive(:bulk_get).with([1,2,3,4,5]).and_return(%w{obj1 obj2 obj3 obj4 obj5})
+      @solr.objects.should == %w{obj1 obj2 obj3 obj4 obj5}
+    end
+
+  end
+
   describe "when forcing a Solr commit" do
     it "sends valid commit xml to solr" do
       Chef::SolrQuery::SolrHTTPRequest.should_receive(:update).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<commit/>\n")

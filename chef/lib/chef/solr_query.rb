@@ -103,8 +103,8 @@ class Chef
 
     def objects
       if !object_ids.empty?
-        @bulk_objects ||= @couchdb.bulk_get(@result_object_ids)
-        Chef::Log.debug { "bulk get of objects: #{bulk_objects.inspect}" }
+        @bulk_objects ||= @couchdb.bulk_get(object_ids)
+        Chef::Log.debug { "bulk get of objects: #{@bulk_objects.inspect}" }
         @bulk_objects
       else
         []
