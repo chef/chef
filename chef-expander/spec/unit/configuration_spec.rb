@@ -49,6 +49,7 @@ describe Expander::Configuration do
     stdout = StringIO.new
     @config.reset!(stdout)
     @config.node_count = nil
+    @config.log.stub!(:warn)
     lambda {@config.fail_if_invalid}.should raise_error(SystemExit)
     stdout.string.should match(/You must specify this node's position in the ring as an integer/)
   end
@@ -75,6 +76,10 @@ describe Expander::Configuration do
 
   it "has a setting for the amqp vhost, defaulting to /chef" do
     @config.amqp_vhost.should == '/chef'
+  end
+
+  it "uses /etc/chef/solr.rb as the default configuration file" do
+    @config.config_file.should == '/etc/chef/solr.rb'
   end
 
   it "generates an AMQP configuration hash suitable for passing to Bunny.new or AMQP.start" do
