@@ -53,7 +53,7 @@ class Chef
         require 'net/ssh/multi'
         require 'readline'
 
-        connection = Fog::AWS::EC2.new(
+        connection = Fog::AWS::Compute.new(
           :aws_access_key_id => Chef::Config[:knife][:aws_access_key_id],
           :aws_secret_access_key => Chef::Config[:knife][:aws_secret_access_key],
           :region => Chef::Config[:knife][:region]
