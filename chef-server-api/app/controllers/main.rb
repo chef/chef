@@ -11,7 +11,13 @@ class Main < Application
               absolute_url(:data) => "Manage Data Bags",
               absolute_url(:search) => "Search"
     else
-      @webui_host_with_port = request.host[/(.*):4000/, 1] << ':4040'
+      @webui_url = if Chef::Config[:chef_webui_url]
+        Chef::Config[:chef_webui_url]
+      elsif request.host =~ /(.*):4000/
+        absolute_url(:top, :host => "#{$1}:4040")
+      else
+        nil
+      end
       render
     end
   end
