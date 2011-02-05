@@ -47,19 +47,19 @@ describe Chef::Knife::Ec2ServerCreate do
   end
 
   describe "run" do
-    before do
+
+    it "creates an EC2 instance and bootstraps it" do
       @new_ec2_server.should_receive(:wait_for).and_return(true)
       @ec2_servers.should_receive(:create).and_return(@new_ec2_server)
       @ec2_connection.should_receive(:servers).and_return(@ec2_servers)
 
-      Fog::AWS::EC2.should_receive(:new).and_return(@ec2_connection)
+      Fog::AWS::Compute.should_receive(:new).and_return(@ec2_connection)
 
       @knife_ec2_create.stub!(:puts)
       @knife_ec2_create.stub!(:print)
+      @knife_ec2_create.config[:image] = '12345'
 
-    end
 
-    it "creates an EC2 instance and bootstraps it" do
       @bootstrap = Chef::Knife::Bootstrap.new
       Chef::Knife::Bootstrap.stub!(:new).and_return(@bootstrap)
       @bootstrap.should_receive(:run)

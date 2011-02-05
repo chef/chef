@@ -117,9 +117,9 @@ describe Chef::DataBagItem do
 
     it "implements all the methods of Hash" do
       methods = [:rehash, :to_hash, :[], :fetch, :[]=, :store, :default,
-      :default=, :default_proc, :default_proc=, :key, :index, :size, :length,
+      :default=, :default_proc, :index, :size, :length,
       :empty?, :each_value, :each_key, :each_pair, :each, :keys, :values,
-      :values_at, :delete, :delete_if, :keep_if, :select!, :reject!, :clear,
+      :values_at, :delete, :delete_if, :reject!, :clear,
       :invert, :update, :replace, :merge!, :merge, :has_key?, :has_value?,
       :key?, :value?]
       methods.each do |m|
