@@ -55,16 +55,17 @@ class Chef
             end
           end
 
-          cookbook_name, cookbook_version, segment, filename = @name_args[0..3]
+          cookbook_name, segment, filename = @name_args[0], @name_args[2], @name_args[3]
+          cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
 
-          manifest = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}")
-          cookbook = Chef::CookbookVersion.new(cookbook_name)
-          cookbook.manifest = manifest
-          
+          cookbook = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}")
           manifest_entry = cookbook.preferred_manifest_record(node, segment, filename)
-          result = rest.get_rest("cookbooks/#{cookbook_name}/#{cookbook_version}/files/#{manifest_entry[:checksum]}")
-          
-          pretty_print(result)
+          temp_file = rest.get_rest(manifest_entry[:url], true)
+
+          # the temp file is cleaned up elsewhere
+          temp_file.open if temp_file.closed?
+          pretty_print(temp_file.read)
+
         when 3 # We are showing a specific part of the cookbook
           cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
           result = rest.get_rest("cookbooks/#{@name_args[0]}/#{cookbook_version}")
@@ -80,15 +81,6 @@ class Chef
           exit 1
         end
       end
-
-      def make_query_params(req_opts)
-        query_part = Array.new 
-        req_opts.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |key|
-          query_part << "#{key}=#{URI.escape(req_opts[key])}"
-        end
-        query_part.join("&")
-      end
-
     end
   end
 end
