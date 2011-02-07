@@ -290,8 +290,16 @@ ul.list li .item .avatar {
   width:30%;
 }
 
+.table th.operator#CookbookVersionConstraints{
+  width:15%;
+}
+
+.table th.version#CookbookVersionConstraints{
+  width:20%;
+}
+
 .table th.last#CookbookVersionConstraints{
-  width:50%;
+  width:40%;
 }
 
 .table th.last {
