@@ -1,34 +1,71 @@
-<div id="#block-tables" class="block">
-  <div class="content">
-    <% if new_object %>
-      <h3>New Environment</h3>
-    <% else %>
-      <h3><%= @environment.name -%></h3>
+<div class="content environmentFormContainer">
+  <%= form(:action => form_url, :method => (method || :post), :id => form_id, :class => 'form') do -%>
+    <% unless form_for == 'edit' %>
+      <div class="group form">
+        <label class="label" for="environment_name">Name</label>
+        <% if !@environment.invalid_fields[:name].nil? && @environment.invalid_fields[:name].size != 0 %>
+          <span class="inline_error_message">The environment name contains illegal characters. The following characters are allowed: a-z, A-Z, 0-9, _, and -.</span>
+        <% end %>
+
+        <%= text_field :id => "environment_name", :name => "name", :class => "text_field", :value => params.has_key?(:name) ? h(params[:name]) : @environment.name %>
+        <span class="description">The name of the Environment</span>
+      </div>
     <% end %>
-    <%= form(:action => url(*route), :method => method) do -%>
-      <div id="environment_name_control_container" class="block">
-        <span class="label"><label for="name">name</label></span>
-        <span><%= text_field(:name => "name", :value => @environment.name, :disabled => !new_object)%></span>
-      </div>
-      <div id="environment_description_control_container" class="block">
-        <span class="label"><label for="description">description:</label></span>
-        <span><%= text_area(@environment.description, :name => "description")%></span>
-      </div>
-      <div id="attributes_control_container">
-        <span class="label"><label for="attributes">attributes:</label></span>
-        <span><%= text_area(@environment.attributes.to_json, :name => "attributes")%></span>
-      </div>
-      <% cookbook_version_index = 0 -%>
-      <% @environment.cookbook_versions.each do |cookbook_name, constraint| -%>
-        <%= partial "environments/version_selector",:cookbook_version_index => cookbook_version_index, 
-                                                    :cookbook_name => cookbook_name,
-                                                    :constraint => constraint %>
-        <% cookbook_version_index += 1 -%>
+
+    <div class="group form">
+      <label class="label" for="environment_description">Description</label>
+      <%= text_area(params.has_key?(:description) ? h(params[:description]) : @environment.description, :name => "description", :class => "text_area", :id => "environment_description") %>
+      <span class="description">A description of this Environment</span>
+    </div>
+
+    <div class="group form cbVerPicker" id=<%=form_for%>>
+      <label class="label" for="cookbook_version_constraints">Cookbook Version Constraints</label>
+      <% if !@environment.invalid_fields[:cookbook_version].nil? && !@environment.invalid_fields[:cookbook_version].empty? %>
+        <span class="inline_error_message" id='error'>There was a problem in one of your constraints. Please enter version constraints in acceptable formats (e.g. 0.0.0). </span>
       <% end %>
-      <%= partial "environments/version_selector",:cookbook_version_index => cookbook_version_index, 
-                                                  :cookbook_name => nil,
-                                                  :constraint => nil %>
-      <%= submit("#{new_object ? 'create' : 'update'}")%>
-    <% end =%>
-  </div>
+      <table class="table" id="cbVerPickerTable">
+        <tbody>
+          <tr>
+            <th class = "first" id="CookbookVersionConstraints">Name</th>
+            <th class="operator" id="CookbookVersionConstraints">Operator</th>
+            <th class="version" id="CookbookVersionConstraints">Version</th>
+            <th class="last" id="CookbookVersionConstraints">&nbsp;</th>
+          </tr>
+        </tbody>
+      </table>
+      <a href='javascript:void(0)' onclick='addTableRow(null, ">=", "0.0.0")'>Add Cookbook Version Constraint</a>
+    </div>
+
+    <div class="group form attrEditor">
+      <label class="label">Environment Attributes</label>
+      <%= partial 'layout/jsonedit', :json =>  @environment.attributes.to_json%>
+      <span class="description">
+        A JSON hash for attributes of this environment. These attributes will be applied according to the attribute precedence rules.
+      </span>
+    </div>
+
+    <div class="group">
+      <div class="actions-bar">
+        <%= submit(submit_name, :id => submit_id, :class => 'button') -%>
+      </div>
+    </div>
+  <% end =%>
 </div>
+
+
+<script type='text/javascript'>
+var cookbook_names = <%= @cookbooks.to_json %>;
+
+isEdit = document.getElementById('edit');
+if (isEdit != null){
+  <%unless @environment.cookbook_versions.nil? || @environment.cookbook_versions.empty?%>
+    var existing_env_cookbook_version_constraints = <%= @environment.cookbook_versions.to_json %>;
+    for (var cookbook in existing_env_cookbook_version_constraints){
+      var operator = existing_env_cookbook_version_constraints[cookbook].split(" ")[0];
+      var version = existing_env_cookbook_version_constraints[cookbook].split(" ")[1];
+      addTableRow(cookbook, operator, version);
+    }
+  <% end %>
+}
+</script>
+<script type='text/javascript' charset="utf-8" src="/javascripts/cookbook_constraint_ctrl.js"></script>

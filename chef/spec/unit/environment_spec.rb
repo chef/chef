@@ -83,7 +83,7 @@ describe Chef::Environment do
       lambda { @environment.attributes(Array.new) }.should raise_error(ArgumentError)
     end
   end
-  
+
   describe "cookbook_versions" do
     before(:each) do
       @cookbook_versions = {
@@ -342,7 +342,7 @@ describe Chef::Environment do
 
     it "should not re-create the environment if it exists" do
       @couchdb = Chef::CouchDB.new
-      Chef::CouchDB.stub!(:new).and_return @couchdb      
+      Chef::CouchDB.stub!(:new).and_return @couchdb
       Chef::Environment.should_receive(:cdb_load).with('_default', Chef::CouchDB.new).and_return true
       Chef::Environment.should_not_receive(:new)
       Chef::Environment.create_default_environment
@@ -385,9 +385,9 @@ describe Chef::Environment do
       # NOTE: I'm only choosing this (admittedly weird) structure for the hash b/c the better more obvious
       # one, i.e, {:cookbook_version_constraints => {COOKBOOK_NAME => CONSTRAINT}} is difficult to implement
       # the way merb does params
-      params = {:cookbook_version => {"0" => "apache2 ~> 1.0.0", "1" => "nginx < 2.0"}}
+      params = {:name=>"superbowl", :cookbook_version => {"0" => "apache2 ~> 1.0.0", "1" => "nginx < 2.0.0"}}
       @environment.update_from_params(params)
-      @environment.cookbook_versions.should == {"apache2" => "~> 1.0.0", "nginx" => "< 2.0"}
+      @environment.cookbook_versions.should == {"apache2" => "~> 1.0.0", "nginx" => "< 2.0.0"}
     end
 
     it "validates the cookbook constraints" do

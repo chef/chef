@@ -45,37 +45,64 @@ class Environments < Application
   # GET /environemnts/new
   def new
     @environment = Chef::Environment.new
+    load_cookbooks
     render :new
   end
 
   # POST /environments
   def create
     @environment = Chef::Environment.new
-    if @environment.update_from_params(params)
-      @environment.save
-      render :show
+    if @environment.update_from_params(processed_params=process_params)
+      begin
+        @environment.create
+        redirect(url(:environments), :message => { :notice => "Created Environment #{@environment.name}" })
+      rescue Net::HTTPServerException => e
+        if conflict?(e)
+          Chef::Log.debug("Got 409 conflict creating environment #{params[:name]}\n#{format_exception(e)}")
+          redirect(url(:new_environment), :message => { :error => "An environment with that name already exists"})
+        elsif forbidden?(e)
+          # Currently it's not possible to get 403 here. I leave the code here for completeness and may be useful in the future.[nuo]
+          Chef::Log.debug("Got 403 forbidden creating environment #{params[:name]}\n#{format_exception(e)}")
+          redirect(url(:new_environment), :message => { :error => "Permission Denied. You do not have permission to create an environment."})
+        else
+          Chef::Log.error("Error communicating with the API server\n#{format_exception(e)}")
+          raise
+        end
+      end
     else
-      raise "TODO"
+      load_cookbooks
+      # By rendering :new, the view shows errors from @environment.invalid_fields
       render :new
-      # redirect to new, tell them what they did wrong
     end
   end
 
   # GET /environments/:id/edit
   def edit
     load_environment
+    load_cookbooks
     render
   end
 
   # PUT /environments/:id
   def update
     load_environment
-    @environment.update_from_params(params)
-    if @environment.invalid_fields.empty? #success
-      @environment.save
-      render :show
+    if @environment.update_from_params(process_params(params[:id]))
+      begin
+        @environment.save
+        redirect(url(:environment, @environment.name), :message => { :notice => "Updated Environment #{@environment.name}" })
+      rescue Net::HTTPServerException => e
+        if forbidden?(e)
+          # Currently it's not possible to get 403 here. I leave the code here for completeness and may be useful in the future.[nuo]
+          Chef::Log.debug("Got 403 forbidden updating environment #{params[:name]}\n#{format_exception(e)}")
+          redirect(url(:edit_environment), :message => { :error => "Permission Denied. You do not have permission to update an environment."})
+        else
+          Chef::Log.error("Error communicating with the API server\n#{format_exception(e)}")
+          raise
+        end
+      end
     else
-      @environment.update_from_params(params)
+      load_cookbooks
+      # By rendering :new, the view shows errors from @environment.invalid_fields
       render :edit
     end
   end
@@ -159,5 +186,34 @@ class Environments < Application
       false
     end
   end
+
+  def load_cookbooks
+    begin
+      # @cookbooks is a hash, keys are cookbook names, values are their URIs.
+      @cookbooks = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks").keys
+    rescue Net::HTTPServerException => e
+      Chef::Log.error(format_exception(e))
+      redirect(url(:new_environment), :message => { :error => "Could not load the list of available cookbooks."})
+    end
+  end
+
+  def process_params(name=params[:name])
+    {:name => name, :description => params[:description], :attributes => params[:attributes], :cookbook_version => search_params_for_cookbook_version_constraints}
+  end
+
+  def search_params_for_cookbook_version_constraints
+    cookbook_version_constraints = {}
+    index = 0
+    params.each do |k,v|
+      cookbook_name_box_id = k[/cookbook_name_(\d+)/, 1]
+      unless cookbook_name_box_id.nil? || v.nil? || v.empty?
+        cookbook_version_constraints[index] = v + " " + params["operator_#{cookbook_name_box_id}"] + " " + params["cookbook_version_#{cookbook_name_box_id}"].strip # e.g. {"0" => "foo > 0.3.0"}
+        index = index + 1
+      end
+    end
+    Chef::Log.debug("cookbook version constraints are: #{cookbook_version_constraints.inspect}")
+    cookbook_version_constraints
+  end
+
 
 end

@@ -108,7 +108,7 @@ class Chef
         :kind_of => Hash
       )
     end
-    
+
     def cookbook_versions(arg=nil)
       set_or_return(
         :cookbook_versions,
@@ -158,6 +158,10 @@ class Chef
     end
 
     def update_from_params(params)
+      # reset because everything we need will be in the params, this is necessary because certain constraints
+      # may have been removed in the params and need to be removed from cookbook_versions as well.
+      bkup_cb_versions = cookbook_versions
+      cookbook_versions(Hash.new)
       valid = true
 
       begin
@@ -181,7 +185,7 @@ class Chef
       end
 
       valid = validate_required_attrs_present && valid
-
+      cookbook_versions(bkup_cb_versions) unless valid # restore the old cookbook_versions if valid is false
       valid
     end
 
