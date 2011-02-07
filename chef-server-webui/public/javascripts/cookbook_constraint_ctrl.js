@@ -19,7 +19,7 @@ function clearVersionBox(box, timestamp){
 }
 
 function validateVersionBoxValue(box, timestamp){
-  if (box.value.match(/\d+\.\d+\.\d+$/) == null){
+  if (box.value.match(/^\d+\.\d+\.\d+$/) == null){
     if (box.value.length != 0 && document.getElementById('inline_error_message_' + timestamp) == null)
       $(box).parent().append('<span class="inline_error_message" id="inline_error_message_' + timestamp + '" >Invalid version format. The version should be in the format of 0.0.0.</span>');
       if (box.value.length==0)
