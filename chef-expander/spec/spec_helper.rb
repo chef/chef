@@ -73,3 +73,4 @@ EXPLAIN
   exit(2)
 end
 
+FIXTURE_PATH = File.expand_path('../fixtures', __FILE__)

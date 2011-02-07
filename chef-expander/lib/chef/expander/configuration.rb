@@ -161,6 +161,13 @@ module Chef
           level
         end
 
+        configurable :log_location, STDOUT
+
+        # override the setter for log_location to re-init the logger
+        def log_location=(location)
+          Loggable::LOGGER.init(location) unless location.nil?
+        end
+
         def initialize
           reset!
         end

@@ -82,6 +82,16 @@ describe Expander::Configuration do
     @config.config_file.should == '/etc/chef/solr.rb'
   end
 
+  it "sets the log location to an IO object" do
+    @config.log_location = STDERR
+    @config.log.log_device.should == STDERR
+  end
+
+  it "sets the log location to a File" do
+    @config.log_location = File.join(FIXTURE_PATH, 'expander.log')
+    @config.log.log_device.path.should == File.join(FIXTURE_PATH, 'expander.log')
+  end
+
   it "generates an AMQP configuration hash suitable for passing to Bunny.new or AMQP.start" do
     @config.amqp_config.should == {:host => '0.0.0.0', :port => '5672', :user => 'chef', :pass => 'testing', :vhost => '/chef'}
   end
