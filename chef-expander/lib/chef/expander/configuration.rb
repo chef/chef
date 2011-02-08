@@ -76,6 +76,8 @@ module Chef
 
       class Base
 
+        DEFAULT_PIDFILE = Object.new
+
         include Loggable
 
         def self.from_chef_compat_config(file)
@@ -149,6 +151,24 @@ module Chef
 
         configurable :amqp_vhost, '/chef'
 
+        configurable :user, nil
+
+        configurable :group, nil
+
+        configurable :daemonize, false
+
+        alias :daemonize? :daemonize
+
+        configurable :pidfile, DEFAULT_PIDFILE
+
+        def pidfile
+          if @pidfile.equal?(DEFAULT_PIDFILE)
+            Process.euid == 0 ? '/var/run/chef-expander.pid' : '/tmp/chef-expander.pid'
+          else
+            @pidfile
+          end
+        end
+
         configurable :log_level, :info
 
         # override the setter for log_level to also actually set the level
@@ -159,6 +179,13 @@ module Chef
             @log_level = log_level
           end
           level
+        end
+
+        configurable :log_location, STDOUT
+
+        # override the setter for log_location to re-init the logger
+        def log_location=(location)
+          Loggable::LOGGER.init(location) unless location.nil?
         end
 
         def initialize
@@ -236,6 +263,18 @@ module Chef
 
           o.on('-l', '--log-level LOG_LEVEL', 'set the log level') do |l|
             @config.log_level = l
+          end
+
+          o.on('-L', '--logfile LOG_LOCATION', 'Logfile to use') do |l|
+            @config.log_location = l
+          end
+
+          o.on('-d', '--daemonize', 'fork into the background') do
+            @config.daemonize = true
+          end
+
+          o.on('-P', '--pid PIDFILE') do |p|
+            @config.pidfile = p
           end
 
           o.on_tail('-h', '--help', 'show this message') do

@@ -30,4 +30,5 @@ features/data/repo/checksums/
 .rvmrc
 .bundle
 chef-expander/conf/chef-expander.rb
+chef-expander/spec/fixtures/expander.log
 
