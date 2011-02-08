@@ -66,7 +66,7 @@ module Shef
     end
 
     def run_context
-      @run_context || rebuild_context
+      @run_context ||= rebuild_context
     end
     
     def definitions
@@ -157,7 +157,9 @@ module Shef
     end
     
     def rebuild_context
+      Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
       @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
+      run_status.run_context = run_context
     end
     
     private
@@ -179,7 +181,15 @@ module Shef
     def save_node
       @client.save_node
     end
-    
+
+    def rebuild_context
+      @run_status = Chef::RunStatus.new(@node)
+      Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, Chef::REST.new(Chef::Config[:server_url])) }
+      cookbook_hash = @client.sync_cookbooks
+      run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
+      @run_status.run_context = run_context
+    end
+
     private
 
     def rebuild_node
@@ -189,8 +199,6 @@ module Shef
       @client.run_ohai
       @client.register
       @client.build_node
-      
-      @client.sync_cookbooks
     end
 
   end
