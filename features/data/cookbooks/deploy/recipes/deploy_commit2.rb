@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: scm
-# Recipe:: git
+# Cookbook Name:: deploy
+# Recipe:: deploy_commit2
 #
-# Copyright 2009, Opscode
+# Copyright 2010, Opscode
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# If the features are not being run from a git clone, you're out of luck.
-git "the chef repo" do
-  repository "#{node[:tmpdir]}/test_git_repo"
-  reference "HEAD"
-  destination "#{node[:tmpdir]}/gitchef"
-  action :sync
+
+deploy "deploy" do
+  deploy_to "#{node[:tmpdir]}/deploy"
+  repo "#{node[:tmpdir]}/test_git_repo"
+  revision "commit2"
+  action :deploy
 end

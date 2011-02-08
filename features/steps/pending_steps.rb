@@ -1,8 +1,7 @@
 #
-# Cookbook Name:: scm
-# Recipe:: git
-#
-# Copyright 2009, Opscode
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,10 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# If the features are not being run from a git clone, you're out of luck.
-git "the chef repo" do
-  repository "#{node[:tmpdir]}/test_git_repo"
-  reference "HEAD"
-  destination "#{node[:tmpdir]}/gitchef"
-  action :sync
+
+When "I haven't yet fixed CHEF-1816, this test should be pending" do
+  pending "CHEF-1816: Timestamp deploy provider rollback doesn't work"
 end
