@@ -19,6 +19,7 @@
 #
 
 require 'chef/expander/loggable'
+require 'chef/expander/daemonizable'
 require 'chef/expander/version'
 require 'chef/expander/configuration'
 require 'chef/expander/vnode_supervisor'
@@ -48,6 +49,7 @@ module Chef
     #   meatcloud for now.
     class ClusterSupervisor
       include Loggable
+      include Daemonizable
 
       def initialize
         @workers = {}
@@ -61,9 +63,15 @@ module Chef
         Expander.init_config(ARGV)
 
         log.info("Chef Expander #{Expander.version} starting cluster with #{Expander.config.node_count} nodes")
-        
+        configure_process
         start_workers
         maintain_workers
+        release_locks
+      rescue Exception => e
+        raise if SystemExit === e
+
+        log.fatal {e}
+        exit(1)
       end
 
       def start_workers

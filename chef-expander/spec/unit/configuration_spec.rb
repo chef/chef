@@ -82,6 +82,28 @@ describe Expander::Configuration do
     @config.config_file.should == '/etc/chef/solr.rb'
   end
 
+  it "has a pidfile, using /var/run/chef-expander.pid as the default when running as root" do
+    Process.stub!(:euid).and_return(0)
+    @config.pidfile.should == "/var/run/chef-expander.pid"
+  end
+
+  it "has a pidfile, using /tmp/chef-expander.pid as the default when running as non-root" do
+    Process.stub!(:euid).and_return(1000)
+    @config.pidfile.should == "/tmp/chef-expander.pid"
+  end
+
+  it "has a user setting, defaulting to nil" do
+    @config.user.should be_nil
+  end
+
+  it "has a group setting, defaulting to nil" do
+    @config.group.should be_nil
+  end
+
+  it "configures whether the process should daemonize" do
+    @config.daemonize?.should be_false
+  end
+
   it "sets the log location to an IO object" do
     @config.log_location = STDERR
     @config.log.log_device.should == STDERR
