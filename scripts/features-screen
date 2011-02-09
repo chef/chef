@@ -15,8 +15,8 @@ screen -t "chef_solr" 2
 stuff "sudo rake dev:features:start:chef_solr\012"
 sleep 3
 
-screen -t "chef_solr_indexer" 3
-stuff "sudo rake dev:features:start:chef_solr_indexer\012"
+screen -t "chef_expander" 3
+stuff "sudo rake dev:features:start:chef_expander\012"
 sleep 3
 
 screen -t "chef_server" 4
