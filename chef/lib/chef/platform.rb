@@ -70,6 +70,9 @@ class Chef
               :service => Chef::Provider::Service::Debian,
               :cron => Chef::Provider::Cron,
               :mdadm => Chef::Provider::Mdadm
+            },
+            "6.0" => {
+              :service => Chef::Provider::Service::Insserv
             }
           },
           :xenserver   => {
