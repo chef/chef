@@ -87,19 +87,21 @@ class Environments < Application
   end
 
   # GET /environments/:environment_id/cookbooks
+  # returns data in the format of:
+  # {"apache2" => {
+  #     :url => "http://url",
+  #     :versions => [{:url => "http://url/1.0.0", :version => "1.0.0"}, {:url => "http://url/0.0.1", :version=>"0.0.1"}]
+  #   }
+  # }
   def list_cookbooks
     begin
       filtered_cookbooks = Chef::Environment.cdb_load_filtered_cookbook_versions(params[:environment_id])
     rescue Chef::Exceptions::CouchDBNotFound
       raise NotFound, "Cannot load environment #{params[:environment_id]}"
     end
-
+    num_versions = params[:num_versions].nil? || params[:num_versions].empty? || params[:num_versions].to_i < 0 ? "1" : params[:num_versions]
     display(filtered_cookbooks.inject({}) {|res, (cookbook_name,versions)|
-      # TODO:
-      # For now, we are only displaying the last cookbook in the sorted list (the newest version).
-      # We should display every cookbook version that is available in a given environment
-      # [stephen 9/2/10]
-      res[cookbook_name] = absolute_url(:cookbook_version, :cookbook_name=>cookbook_name, :cookbook_version=>versions.last.version)
+      res[cookbook_name] = {:url => absolute_url(:cookbook, :cookbook_name => cookbook_name), :versions => versions.inject([]){|r, val| r.push({:url => absolute_url(:cookbook_version, :cookbook_name => cookbook_name, :cookbook_version => val.version), :version => val.version}) if num_versions.to_i > r.size; r}}
       res
     })
   end
@@ -114,7 +116,7 @@ class Environments < Application
     node_list = Chef::Node.cdb_list_by_environment(params[:environment_id])
     display(node_list.inject({}) {|r,n| r[n] = absolute_url(:node, n); r})
   end
-  
+
   # GET /environments/:environment_id/roles/:role_id
   def role
     begin

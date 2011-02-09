@@ -39,11 +39,19 @@ class Cookbooks < Application
   include Chef::Mixin::Checksum
   include Merb::TarballHelper
 
+  # returns data in the format of:
+  # {"apache2" => {
+  #     :url => "http://url",
+  #     :versions => [{:url => "http://url/1.0.0", :version => "1.0.0"}, {:url => "http://url/0.0.1", :version=>"0.0.1"}]
+  #   }
+  # }
   def index
-    cookbook_list = Chef::CookbookVersion.cdb_list_latest.keys.sort
+    cookbook_list = Chef::CookbookVersion.cdb_list
+    # cookbook_list is in the format of {"apache2" => ["0.0.1", "0.0.0"]}
+    num_versions = params[:num_versions].nil? || params[:num_versions].empty? || params[:num_versions].to_i < 0 ? "1" : params[:num_versions]
     response = Hash.new
-    cookbook_list.map! do |cookbook_name|
-      response[cookbook_name] = absolute_url(:cookbook, :cookbook_name => cookbook_name)
+    cookbook_list.each do |k, v|
+      response[k] = {:url=>absolute_url(:cookbook, :cookbook_name => k), :versions => v.inject([]){ |r,val| r.push({:url => absolute_url(:cookbook_version, :cookbook_name => k, :cookbook_version => val), :version => val}) if num_versions.to_i > r.size; r}}
     end
     display response
   end

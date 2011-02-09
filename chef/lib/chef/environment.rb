@@ -302,7 +302,7 @@ class Chef
     # Hash
     # i.e.
     # {
-    #   "coobook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted lowest to highest
+    #   "coobook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted highest to lowest
     # }
     def self.cdb_load_filtered_cookbook_versions(name, couchdb=nil)
       version_constraints = cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Chef::VersionConstraint.new(v); res}
@@ -319,7 +319,7 @@ class Chef
       end
 
       sorted_list = filtered_list.inject({}) do |res, (cookbook_name, versions)|
-        res[cookbook_name] = versions.sort
+        res[cookbook_name] = versions.sort.reverse
         res
       end
 
