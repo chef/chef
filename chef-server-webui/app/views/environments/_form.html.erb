@@ -23,7 +23,7 @@
       <% if !@environment.invalid_fields[:cookbook_version].nil? && !@environment.invalid_fields[:cookbook_version].empty? %>
         <span class="inline_error_message" id='error'>There was a problem in one of your constraints. Please enter version constraints in acceptable formats (e.g. 0.0.0). </span>
       <% end %>
-      <table class="table" id="cbVerPickerTable">
+      <table class="table" id="cbVerPickerTable" data-cookbook_names=<%= @cookbooks.to_json %>>
         <tbody>
           <tr>
             <th class = "first" id="CookbookVersionConstraints">Name</th>
@@ -54,17 +54,12 @@
 
 <script type='text/javascript' charset="utf-8" src="/javascripts/cookbook_constraint_ctrl.js"></script>
 <script type='text/javascript'>
-var cookbook_names = <%= @cookbooks.to_json %>;
-
-isEdit = document.getElementById('edit');
-if (isEdit != null){
-  <%unless @environment.cookbook_versions.nil? || @environment.cookbook_versions.empty?%>
-    var existing_env_cookbook_version_constraints = <%= @environment.cookbook_versions.to_json %>;
-    for (var cookbook in existing_env_cookbook_version_constraints){
-      var operator = existing_env_cookbook_version_constraints[cookbook].split(" ")[0];
-      var version = existing_env_cookbook_version_constraints[cookbook].split(" ")[1];
+  $('body').data('cookbook_versions', <%=@environment.cookbook_versions.to_json%>);
+  if (document.getElementById('edit') != null){
+    for (var cookbook in $('body').data('cookbook_versions')){
+      var operator = $('body').data('cookbook_versions')[cookbook].split(" ")[0];
+      var version = $('body').data('cookbook_versions')[cookbook].split(" ")[1];
       addTableRow(cookbook, operator, version);
     }
-  <% end %>
-}
+  }
 </script>

@@ -33,7 +33,6 @@ class Cookbooks < Application
   end
 
   def index
-    provides :html, :json # Because the Environment web form needs to retrieve the list of cookbooks, this method needs to provide both html and json results.
     @cl = begin
             if session[:environment]
               result = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("environments/#{session[:environment]}/cookbooks")

@@ -57,6 +57,8 @@ function retrieveCbName(timestamp){
 }
 
 function addTableRow(default_cookbook, default_operator, default_version){
+    var cookbook_names_string = document.getElementById('cbVerPickerTable').getAttribute('data-cookbook_names');
+    var cookbook_names = cookbook_names_string.substring(2, cookbook_names_string.length-2).split('","');
     var timestamp = new Date().getTime();
     var row = '<tr id=' + '"' + timestamp + '"><td>' + '<select size="1" name="cookbook_name_' + timestamp + '" ' + 'id="cookbook_name_' + timestamp + '" class="cookbook_version_constraints_cb_name" onchange="jQuerySuggest(' + timestamp + ')"'+'>'
             + buildCookbookList(cookbook_names, default_cookbook) + '</select>'
