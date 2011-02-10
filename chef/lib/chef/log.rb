@@ -25,21 +25,25 @@ class Chef
     extend Mixlib::Log
     
     class << self
-      attr_accessor :verbose
       attr_reader :verbose_logger
-      protected :verbose_logger
+
+      @verbose_logger = nil
+      @verbose = false
       
-      def verbose
-        !(@verbose_logger.nil?)
+      def verbose?
+        @verbose
       end
+
+      alias :verbose :verbose?
 
       def verbose=(value)
         if value
+          @verbose = true
           @verbose_logger ||= Logger.new(STDOUT)
           @verbose_logger.level = self.logger.level
           @verbose_logger.formatter = self.logger.formatter
         else
-          @verbose_logger = nil
+          @verbose, @verbose_logger = false, nil
         end
         self.verbose
       end
@@ -48,6 +52,7 @@ class Chef
         class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{method_name}(msg=nil, &block)
             @logger.#{method_name}(msg, &block)
+            @verbose_logger.#{method_name}(msg, &block) if verbose?
           end
         METHOD_DEFN
       end
