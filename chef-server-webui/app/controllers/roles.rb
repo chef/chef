@@ -65,9 +65,7 @@ class Roles < Application
       render
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @role_list = Chef::Role.list()
-      @_message = {:error => "Could not load available recipes, roles, or the run list."}
-      render :index
+      redirect url(:roles), :message => {:error => "Could not load available recipes, roles, or the run list."}
     end
   end
 
@@ -83,15 +81,11 @@ class Roles < Application
       # merb select helper has no :include_blank => true, so fix the view in the controller.
       @existing_run_list_environments.unshift('')
       @available_recipes = list_available_recipes_for(@current_env)
+      render
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @role = Chef::Role.new
-      @available_recipes = []
-      @available_roles = []
-      @run_list = []
-      @_message = {:error => "Could not load role #{params[:id]}, the available recipes, roles, or the run list"}
+      redirect url(:roles), :message => {:error => "Could not load role #{params[:id]}. #{e.message}"}
     end
-    render
   end
 
   # POST /roles
@@ -107,14 +101,7 @@ class Roles < Application
       redirect(url(:roles), :message => { :notice => "Created Role #{@role.name}" })
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @available_recipes = list_available_recipes
-      @available_roles = Chef::Role.list.keys.sort
-      @role = Chef::Role.new
-      @role.default_attributes(Chef::JSON.from_json(params[:default_attributes])) if params[:default_attributes] != ''
-      @role.override_attributes(Chef::JSON.from_json(params[:override_attributes])) if params[:override_attributes] != ''
-      @run_list = Chef::RunList.new.reset!(Array(params[:for_role]))
-      @_message = { :error => "Could not create role" }
-      render :new
+      redirect(url(:new_role), :message => { :error => "Could not create role. #{e.message}" })
     end
   end
 
@@ -127,18 +114,10 @@ class Roles < Application
       @role.default_attributes(Chef::JSON.from_json(params[:default_attributes])) if params[:default_attributes] != ''
       @role.override_attributes(Chef::JSON.from_json(params[:override_attributes])) if params[:override_attributes] != ''
       @role.save
-      @_message = { :notice => "Updated Role" }
-      render :show
+      redirect(url(:role, params[:id]), :message => { :notice => "Updated Role" })
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @available_recipes = list_available_recipes
-      @available_roles = Chef::Role.list.keys.sort
-      @run_list = Chef::RunList.new.reset!( Array(params[:for_role]))
-      Chef::Log.error(@run_list.inspect)
-      @role.default_attributes(Chef::JSON.from_json(params[:default_attributes])) if params[:default_attributes] != ''
-      @role.override_attributes(Chef::JSON.from_json(params[:override_attributes])) if params[:override_attributes] != ''
-      @_message = {:error => "Could not update role #{params[:id]}"}
-      render :edit
+      redirect url(:edit_role, params[:id]), :message => {:error => "Could not update role #{params[:id]}. #{e.message}"}
     end
   end
 
@@ -150,9 +129,7 @@ class Roles < Application
       redirect(absolute_url(:roles), :message => { :notice => "Role #{@role.name} deleted successfully." }, :permanent => true)
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @role_list = Chef::Role.list()
-      @_message = {:error => "Could not delete role #{params[:id]}"}
-      render :index
+      redirect url(:roles), :message => {:error => "Could not delete role #{params[:id]}"}
     end
   end
 
