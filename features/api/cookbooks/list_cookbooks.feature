@@ -9,10 +9,19 @@ Feature: List cookbooks via the REST API
     Given I am <user_type>
       And I upload multiple versions of the 'version_test' cookbook
      When I 'GET' the path '/cookbooks'
-      And the inflated responses key 'attribute_include' should match 'http://.+/cookbooks/attribute_include'
-      And the inflated responses key 'deploy' should match 'http://.+/cookbooks/deploy'
-      And the inflated responses key 'metadata' should match 'http://.+/cookbooks/metadata'
-      And the inflated responses key 'version_test' should match 'http://.+/cookbooks/version_test'
+     Then the inflated responses key 'version_test' sub-key 'url' should match 'http://.+/cookbooks/version_test'
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'url' should match 'http://.+/cookbooks/version_test/(\d+.\d+.\d+)'
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'version' should equal '0.2.0'
+      And the inflated responses key 'version_test' sub-key 'versions' should be '1' items long
+     When I 'GET' the path '/cookbooks?num_versions=2'
+     Then the inflated responses key 'version_test' sub-key 'versions' should be '2' items long
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'version' should equal '0.2.0'
+     When I 'GET' the path '/cookbooks?num_versions=-1'
+     Then the inflated responses key 'version_test' sub-key 'versions' should be '1' items long
+     When I 'GET' the path '/cookbooks?num_versions=invalid-input'
+     Then the inflated responses key 'version_test' sub-key 'versions' should be '0' items long
+     When I 'GET' the path '/cookbooks?num_versions=all'
+     Then the inflated responses key 'version_test' sub-key 'versions' should be '3' items long
 
   Examples:
     | user_type        |

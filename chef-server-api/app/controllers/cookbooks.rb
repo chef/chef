@@ -51,7 +51,7 @@ class Cookbooks < Application
     num_versions = params[:num_versions].nil? || params[:num_versions].empty? || params[:num_versions].to_i < 0 ? "1" : params[:num_versions]
     response = Hash.new
     cookbook_list.each do |k, v|
-      response[k] = {:url=>absolute_url(:cookbook, :cookbook_name => k), :versions => v.inject([]){ |r,val| r.push({:url => absolute_url(:cookbook_version, :cookbook_name => k, :cookbook_version => val), :version => val}) if num_versions.to_i > r.size; r}}
+      response[k] = {:url=>absolute_url(:cookbook, :cookbook_name => k), :versions => v.inject([]){ |r,val| r.push({:url => absolute_url(:cookbook_version, :cookbook_name => k, :cookbook_version => val), :version => val}) if num_versions.to_i > r.size || num_versions == 'all'; r}}
     end
     display response
   end

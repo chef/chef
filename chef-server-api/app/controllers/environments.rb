@@ -101,7 +101,7 @@ class Environments < Application
     end
     num_versions = params[:num_versions].nil? || params[:num_versions].empty? || params[:num_versions].to_i < 0 ? "1" : params[:num_versions]
     display(filtered_cookbooks.inject({}) {|res, (cookbook_name,versions)|
-      res[cookbook_name] = {:url => absolute_url(:cookbook, :cookbook_name => cookbook_name), :versions => versions.inject([]){|r, val| r.push({:url => absolute_url(:cookbook_version, :cookbook_name => cookbook_name, :cookbook_version => val.version), :version => val.version}) if num_versions.to_i > r.size; r}}
+      res[cookbook_name] = {:url => absolute_url(:cookbook, :cookbook_name => cookbook_name), :versions => versions.inject([]){|r, val| r.push({:url => absolute_url(:cookbook_version, :cookbook_name => cookbook_name, :cookbook_version => val.version), :version => val.version}) if num_versions.to_i > r.size || num_versions == 'all'; r}}
       res
     })
   end

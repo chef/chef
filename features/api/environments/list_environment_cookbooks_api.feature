@@ -7,10 +7,22 @@ Feature: List cookbook versions for an environment via the REST API
   Scenario Outline: List cookbook versions for an environment
     Given I am an administrator
       And I upload multiple versions of the 'version_test' cookbook
-      And an 'environment' named 'cookbooks-0.1.0' exists
+      And an 'environment' named 'skynet' exists
       And I am <user_type>
-     When I 'GET' the path '/environments/cookbooks_test/cookbooks'
-     Then the inflated responses key 'version_test' should match 'http://.+/cookbooks/version_test/0\.1\.0'
+     When I 'GET' the path '/environments/skynet/cookbooks'
+     Then the inflated responses key 'version_test' sub-key 'url' should match 'http://.+/cookbooks/version_test'
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'url' should match 'http://.+/cookbooks/version_test/(\d+.\d+.\d+)'
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'version' should equal '0.2.0'
+      And the inflated responses key 'version_test' sub-key 'versions' should be '1' items long
+     When I 'GET' the path '/environments/skynet/cookbooks?num_versions=2'
+     Then the inflated responses key 'version_test' sub-key 'versions' should be '2' items long
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'version' should equal '0.2.0'
+     When I 'GET' the path '/environments/skynet/cookbooks?num_versions=-1'
+     Then the inflated responses key 'version_test' sub-key 'versions' should be '1' items long
+     When I 'GET' the path '/environments/skynet/cookbooks?num_versions=invalid-input'
+     Then the inflated responses key 'version_test' sub-key 'versions' should be '0' items long
+     When I 'GET' the path '/environments/skynet/cookbooks?num_versions=all'
+     Then the inflated responses key 'version_test' sub-key 'versions' should be '2' items long
 
     Examples:
       | user_type        |
@@ -22,10 +34,8 @@ Feature: List cookbook versions for an environment via the REST API
       And I upload multiple versions of the 'version_test' cookbook
       And an 'environment' named '<env_name>' exists
      When I 'GET' the path '/environments/cookbooks_test/cookbooks'
-     Then the inflated responses key 'version_test' should match 'http://.+/cookbooks/version_test/<version_regexp>'
-      And the inflated responses key 'attribute_include' should match 'http://.+/cookbooks/attribute_include/0.1.0'
-      And the inflated responses key 'attribute_settings' should match 'http://.+/cookbooks/attribute_settings/0.1.0'
-      And the inflated responses key 'deploy' should match 'http://.+/cookbooks/deploy/0.0.0'
+      And the inflated responses key 'version_test' sub-key 'url' should match 'http://.+/cookbooks/version_test'
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'url' should match 'http://.+/cookbooks/version_test/<version_regexp>'
 
   Examples:
     | env_name        | version_regexp |
