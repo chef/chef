@@ -314,3 +314,21 @@ h1 label {
 .cookbook_version_constraints_cb_name{
   width:80%;
 }
+
+a.cookbook_version_toggle{
+    text-decoration:none;
+    font-weight:bold;
+    font-size: 24px;
+}
+
+ul.cookbook_versions{
+    list-style-type:none;
+}
+
+#cookbook_version_table{
+    width: auto;
+}
+
+tbody.cookbook_versions td {
+    vertical-align:top;
+}
