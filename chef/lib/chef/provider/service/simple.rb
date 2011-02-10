@@ -49,7 +49,7 @@ class Chef
               @current_resource.running false
               nil
             end
-          elsif
+          else
             Chef::Log.debug "#{@new_resource}: falling back to process table inspection"
             if ps_cmd.nil? or ps_cmd.empty?
               raise Chef::Exceptions::Service, "#{@new_resource}: could not determine how to inspect the process table, please set this nodes 'command.ps' attribute"

@@ -33,12 +33,13 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     @status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
     @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
-    @stdout.stub!(:each).and_yield("aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb").
-                         and_yield("aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash").
-                         and_yield("aj        8119  6041  0 21:34 pts/3    00:00:03 vi simple_service_spec.rb")
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
+    @stdout = StringIO.new(<<-STDOUT)
+aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
+aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
+aj        8119  6041  0 21:34 pts/3    00:00:03 vi simple_service_spec.rb
+STDOUT
+    @stderr = StringIO.new
+    @pid = 2342
   end
   
   it "should create a current resource with the name of the new resource" do
@@ -53,6 +54,7 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
 
   it "should set running to false if the node has a nil ps attribute" do
     @node[:command] = {:ps => nil}
+    @run_context.node[:command][:ps].should be_nil
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
   end
 
