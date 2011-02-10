@@ -15,8 +15,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require 'chef/version_class'
-require 'chef/version_constraint'
+
+require 'dep_selector'
 
 class Chef
   class RunList
@@ -29,7 +29,7 @@ class Chef
 
       def add_recipe(name, version=nil)
         if version && @versions.has_key?(name)
-          unless Chef::Version.new(@versions[name]) == Chef::Version.new(version)
+          unless DepSelector::Version.new(@versions[name]) == DepSelector::Version.new(version)
             raise Chef::Exceptions::CookbookVersionConflict, "Run list requires #{name} at versions #{@versions[name]} and #{version}"
           end
         end
@@ -43,7 +43,7 @@ class Chef
 
       def with_version_constraints
         self.map do |i|
-          constraint = Chef::VersionConstraint.new(@versions[i])
+          constraint = DepSelector::VersionConstraint.new(@versions[i])
           { :name => i, :version_constraint => constraint }
         end
       end

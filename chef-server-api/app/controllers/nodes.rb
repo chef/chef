@@ -18,8 +18,6 @@
 #
 
 require 'chef' / 'node'
-require 'chef/version_class'
-require 'chef/version_constraint'
 
 class Nodes < Application
 

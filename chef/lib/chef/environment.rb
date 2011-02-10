@@ -21,7 +21,8 @@ require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/couchdb'
 require 'chef/index_queue'
-require 'chef/version_constraint'
+require 'dep_selector/version'
+require 'dep_selector/version_constraint'
 
 class Chef
   class Environment
@@ -32,7 +33,7 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::IndexQueue::Indexable
 
-    COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/.freeze
+    COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{DepSelector::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/.freeze
 
     attr_accessor :couchdb, :couchdb_rev
     attr_reader :couchdb_id
@@ -310,14 +311,14 @@ class Chef
     # empty list.
     #
     def self.cdb_load_filtered_cookbook_versions(name, couchdb=nil)
-      version_constraints = cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Chef::VersionConstraint.new(v); res}
+      version_constraints = cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = DepSelector::VersionConstraint.new(v); res}
 
       # inject all cookbooks into the hash while filtering out restricted versions, then sort the individual arrays
       cookbook_list = Chef::CookbookVersion.cdb_list(true, couchdb)
 
       filtered_list = cookbook_list.inject({}) do |res, cookbook|
-        # FIXME: should cookbook.version return a Chef::Version?
-        version               = Chef::Version.new(cookbook.version)
+        # FIXME: should cookbook.version return a DepSelector::Version?
+        version               = DepSelector::Version.new(cookbook.version)
         requirement_satisfied = version_constraints.has_key?(cookbook.name) ? version_constraints[cookbook.name].include?(version) : true
         # we want a key for every cookbook, even if no versions are available
         res[cookbook.name] ||= []
@@ -364,7 +365,7 @@ class Chef
 
     def self.validate_cookbook_version(version)
       begin
-        Chef::VersionConstraint.new version
+        DepSelector::VersionConstraint.new version
         true
       rescue ArgumentError
         false
