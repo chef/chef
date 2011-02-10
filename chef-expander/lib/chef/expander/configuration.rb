@@ -143,7 +143,7 @@ module Chef
 
         configurable :amqp_host, '0.0.0.0'
 
-        configurable :amqp_port, '5672'
+        configurable :amqp_port, 5672
 
         configurable :amqp_user, 'chef'
 
