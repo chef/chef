@@ -43,9 +43,14 @@ class Roles < Application
               Chef::Role.load(params[:id])
             rescue => e
               Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-              @_message = {:error => "Could not load role #{params[:id]}"}
+              @_message = {:error => "Could not load role #{params[:id]}."}
               Chef::Role.new
             end
+
+    @current_env = session[:environment] || "_default"
+    @env_run_list_exists = @role.env_run_lists.has_key?(@current_env)
+    @run_list = @role.run_list_for(@current_env)
+    @recipes = @run_list.expand('server').recipes
     render
   end
 
