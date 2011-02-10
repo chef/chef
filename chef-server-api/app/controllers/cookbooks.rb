@@ -47,20 +47,11 @@ class Cookbooks < Application
   # }
   def index
     cookbook_list = Chef::CookbookVersion.cdb_list
-    # cookbook_list is in the format of {"apache2" => ["0.0.1", "0.0.0"]}
+    # cookbook_list is in the format of {"apache2" => [0.0.1, 0.0.0]} where the version numbers are Chef::Version objects
     num_versions = params[:num_versions].nil? || params[:num_versions].empty? || params[:num_versions].to_i < 0 ? "1" : params[:num_versions]
     response = Hash.new
     cookbook_list.each do |k, v|
-      response[k] = {:url=>absolute_url(:cookbook, :cookbook_name => k), :versions => v.inject([]){ |r,val| r.push({:url => absolute_url(:cookbook_version, :cookbook_name => k, :cookbook_version => val), :version => val}) if num_versions.to_i > r.size || num_versions == 'all'; r}}
-    end
-    display response
-  end
-
-  def index_latest
-    cookbook_list = Chef::CookbookVersion.cdb_list_latest(true)
-    response = cookbook_list.inject({}) do |res, cv|
-      res[cv.name] = absolute_url(:cookbook_version, :cookbook_name => cv.name, :cookbook_version => cv.version)
-      res
+      response[k] = {:url=>absolute_url(:cookbook, :cookbook_name => k), :versions => v.inject([]){ |r,val| r.push({:url => absolute_url(:cookbook_version, :cookbook_name => k, :cookbook_version => val.to_s), :version => val.to_s}) if num_versions.to_i > r.size || num_versions == 'all'; r}}
     end
     display response
   end

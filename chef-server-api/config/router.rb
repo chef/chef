@@ -62,8 +62,6 @@ Merb::Router.prepare do
         :method => 'get'
         ).to(:controller => "cookbooks", :action => "index").name(:cookbooks)
 
-  match("/cookbooks/_latest", :method=>'get').to(:controller=>'cookbooks',:action=>'index_latest')
-
   match("/cookbooks/_recipes", :method=>'get').to(:controller=>'cookbooks',:action=>'index_recipes')
 
   match("/cookbooks/:cookbook_name/:cookbook_version",
@@ -132,7 +130,7 @@ Merb::Router.prepare do
         @json_params ||= begin
           if Merb::Const::JSON_MIME_TYPE_REGEXP.match(content_type)
             begin
-              # Call Chef's JSON utility instead of the default in Merb, 
+              # Call Chef's JSON utility instead of the default in Merb,
               # JSON.parse.
               jobj = Chef::JSON.from_json(raw_post)
               jobj = jobj.to_mash if jobj.is_a?(Hash)
