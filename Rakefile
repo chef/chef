@@ -97,6 +97,8 @@ def start_chef_solr(type="normal")
     when "normal"
       exec("./chef-solr/bin/chef-solr -l debug")
     when "features"
+      p = fork { exec("./chef-solr/bin/chef-solr-installer -p /tmp/chef_solr_for_features --force") }
+      Process.wait(p)
       exec("./chef-solr/bin/chef-solr -c #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug")
     end
   end
