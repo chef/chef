@@ -29,6 +29,15 @@ Feature: List cookbook versions for an environment via the REST API
       | an administrator |
       | a non-admin      |
 
+  @CHEF-1607
+  Scenario: List all cookbooks with the lastest version, when they cannot be lexically sorted
+    Given I am an administrator
+      And I upload multiple versions of the 'version_test' cookbook that do not lexically sort correctly
+      And an 'environment' named 'chef-1607' exists
+     When I 'GET' the path '/environments/chef-1607/cookbooks?num_versions=all'
+     Then the inflated responses key 'version_test' sub-key 'versions' should be '3' items long
+     And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'version' should equal '0.10.0'
+
   Scenario Outline: List cookbook versions for an environment should restrict only the specified cookbooks
     Given I am an administrator
       And I upload multiple versions of the 'version_test' cookbook

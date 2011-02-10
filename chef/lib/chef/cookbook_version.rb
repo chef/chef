@@ -793,7 +793,8 @@ class Chef
       if inflate
         couchdb.list("cookbooks", true)["rows"].collect{|r| r["value"]}
       else
-        couchdb.get_view("cookbooks", "all_with_version")["rows"].inject({}) { |mapped, row| mapped[row["key"]]||=Array.new; mapped[row["key"]].push(row["value"]); mapped[row["key"]].sort!.reverse!; mapped}
+        # If you modify this, please make sure the desc sorted order on the versions doesn't get broken.
+        couchdb.get_view("cookbooks", "all_with_version")["rows"].inject({}) { |mapped, row| mapped[row["key"]]||=Array.new; mapped[row["key"]].push(Chef::Version.new(row["value"])); mapped[row["key"]].sort!.reverse!; mapped}
       end
     end
 

@@ -252,6 +252,13 @@ Before do
         e.cookbook 'version_test', '> 0.1.0'
         e
       end,
+      'chef-1607' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'chef-1607'
+        e.description 'test cookbook version constraints'
+        e.cookbook 'version_test', '> 0.0.0'
+        e
+      end,
       'cookbooks-0.1.0' => Proc.new do
         e = Chef::Environment.new
         e.name 'cookbooks_test'
