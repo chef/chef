@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,11 +24,11 @@ def compare_manifests(manifest1, manifest2)
   Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
     next unless manifest1[segment]
     manifest2.should have_key(segment)
-    
+
     manifest2_records_by_path = manifest2[segment].inject({}) {|memo,manifest2_record| memo[manifest2_record[:path]] = manifest2_record; memo}
     manifest1[segment].each do |manifest1_record|
       path = manifest1_record[:path]
-      
+
       manifest2_records_by_path.should have_key(path)
       manifest1_record.should == manifest2_records_by_path[path]
     end
@@ -44,7 +44,7 @@ Before do
   Chef::Config[:cookbook_path] = save_cookbook_path
 end
 
-Given /^a local cookbook repository$/ do 
+Given /^a local cookbook repository$/ do
   Dir.mkdir(File.join(tmpdir, 'cookbooks_dir'))
   Dir.mkdir(File.join(tmpdir, 'cookbooks_dir', 'cookbooks'))
   Dir.mkdir(File.join(tmpdir, 'cookbooks_dir', 'config'))
@@ -88,7 +88,7 @@ end
 When /^I run the task to generate cookbook metadata$/ do
   to_run = "#{KNIFE_CMD} cookbook metadata"
   if cookbook
-    to_run += " #{cookbook}" 
+    to_run += " #{cookbook}"
   else
     to_run += " -a"
   end
@@ -108,7 +108,7 @@ end
 When /^I create a versioned cookbook(?: named '(.*?)')?(?: versioned '(.*?)')? with '(.*?)'$/ do |request_name, request_version, cookbook_name|
   cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
   raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless cookbook
-  
+
   begin
     self.api_response = rest.put_rest("/cookbooks/#{request_name}/#{request_version}", cookbook)
     self.inflated_response = api_response
@@ -135,7 +135,7 @@ end
 When /^I create a sandbox named '(.+)' for cookbook '([^\']+)'(?: minus files '(.+)')?$/ do |sandbox_name, cookbook_name, filenames_to_exclude|
   cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
   raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless cookbook
-  
+
   if filenames_to_exclude
     filenames_to_exclude = filenames_to_exclude.split(",").inject({}) { |memo, filename| memo[filename] = 1; memo }
   else
@@ -151,18 +151,18 @@ When /^I create a sandbox named '(.+)' for cookbook '([^\']+)'(?: minus files '(
       checksums[manifest_record[:checksum]] = nil unless filenames_to_exclude.has_key?(manifest_record[:path])
     end
   end
-  
+
   sandbox = {
     :checksums => checksums
   }
-    
+
   begin
     self.api_response = self.inflated_response = nil
     self.exception = nil
-    
+
     self.inflated_response = rest.post_rest('/sandboxes', sandbox)
     self.sandbox_url = self.inflated_response['uri']
-    
+
     @stash['sandbox_response'] = self.inflated_response
   rescue
     Chef::Log.debug("Caught exception in sandbox create (POST) request: #{$!.message}: #{$!.backtrace.join("\n")}")
@@ -186,7 +186,7 @@ Then /^I upload a file named '(.+)' from cookbook '(.+)' to the sandbox/ do |pat
   raise ArgumentError, "no such file in cookbooks_not_uploaded_at_feature_start/#{cookbook_name}: #{path}" unless manifest_record
 
   full_path = File.join(datadir, "cookbooks_not_uploaded_at_feature_start", cookbook_name, path)
-    
+
   begin
     url = @stash['sandbox_response']['checksums'][manifest_record[:checksum]]['url']
     upload_to_sandbox(full_path, manifest_record[:checksum], url)
@@ -220,10 +220,10 @@ Then /I fully upload a sandboxed cookbook (force-)?named '([^\']+)' versioned '(
     cookbook.manifest[:cookbook_name] = request_name
     cookbook.manifest[:name] = "#{cookbook.manifest[:cookbook_name]}-#{cookbook.manifest[:version]}"
   end
-  
+
   When "I create a sandbox named 'sandbox1' for cookbook '#{cookbook_name}'"
   Then "the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'"
-  
+
   Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
     next unless cookbook.manifest[segment]
     cookbook.manifest[segment].each do |manifest_record|
@@ -241,7 +241,7 @@ Then /I fully upload a sandboxed cookbook (force-)?named '([^\']+)' versioned '(
       Then "the response code should be '200'"
     end
   end
-  
+
   When "I commit the sandbox"
   Then "I should not get an exception"
   When "I create a versioned cookbook named '#{request_name}' versioned '#{request_version}' with '#{cookbook_name}'"
@@ -258,7 +258,7 @@ end
 Then /the downloaded cookbook manifest contents should match '(.+)'$/ do |cookbook_name|
   expected_cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
   raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless expected_cookbook
-  
+
   downloaded_cookbook_manifest = Mash.new(@downloaded_cookbook.manifest)
   downloaded_cookbook_manifest.delete("uri")
 
@@ -269,7 +269,7 @@ Then /the downloaded cookbook manifest contents should match '(.+)'$/ do |cookbo
       downloaded_manifest_record.delete("url")
     end
   end
-  
+
   # ensure that each file expected (from the cookbook on disk) was downloaded,
   # and then do the opposite.
   begin
@@ -278,7 +278,7 @@ Then /the downloaded cookbook manifest contents should match '(.+)'$/ do |cookbo
   rescue
     pp({:expected_cookbook_manifest => expected_cookbook.manifest})
     pp({:downloaded_cookbook_manifest => downloaded_cookbook_manifest})
-    
+
     raise
   end
 end
@@ -298,13 +298,13 @@ When /I download the file '([^\']+)' from the downloaded cookbook manifest/ do |
   raise "no such file #{path}" unless @downloaded_cookbook.manifest[segment]
   found_manifest_record = @downloaded_cookbook.manifest[segment].find {|manifest_record| manifest_record[:path] == path}
   raise "no such file #{path}" unless found_manifest_record
-  
+
   begin
     cookbook_name = @downloaded_cookbook.name
     cookbook_version = @downloaded_cookbook.version
 
     checksum = found_manifest_record[:checksum]
-    
+
     self.api_response = nil
     self.inflated_response = nil
     self.exception = nil
@@ -319,7 +319,7 @@ end
 
 Then /^the downloaded cookbook file contents should match the pattern '(.+)'$/ do |pattern|
   raise "no @downloaded_cookbook_file_contents" unless @downloaded_cookbook_file_contents
-  
+
   @downloaded_cookbook_file_contents.should =~ /#{pattern}/
 end
 

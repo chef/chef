@@ -29,7 +29,7 @@ Before do
       end
     },
     'sandbox' => {
-      # The filename part of these 'checksums' hashes isn't used by the API (the 
+      # The filename part of these 'checksums' hashes isn't used by the API (the
       # value side of that hash is ignored), and is here for documentation's sake.
       'sandbox1' => {
         :checksums => {
@@ -49,10 +49,10 @@ Before do
       "sandbox2_file1" => File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "attributes", "attr1.rb"),
       "sandbox2_file2" => File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "attributes", "attr2.rb"),
     },
-    'signing_caller' =>{ 
+    'signing_caller' =>{
       :user_id=>'bobo', :secret_key => "/tmp/poop.pem"
     },
-    'registration' => { 
+    'registration' => {
       'bobo' => Proc.new do
         OpenStruct.new({ :save => true })
       end,
@@ -101,7 +101,7 @@ Before do
         r.run_list("role[webserver]", "role[base]")
         r.default_attributes({ 'a' => 'b' })
         r.override_attributes({ 'c' => 'd' })
-        r 
+        r
       end,
       'db' => Proc.new do
         r = Chef::Role.new
@@ -110,7 +110,7 @@ Before do
         r.recipes("role::db", "role::base")
         r.default_attributes({ 'a' => 'bake' })
         r.override_attributes({ 'c' => 'down' })
-        r 
+        r
       end,
       'role_not_exist' => Proc.new do
         r = Chef::Role.new
@@ -125,7 +125,7 @@ Before do
         r.description "sets a default value"
         r.run_list("recipe[attribute_settings]")
         r.default_attributes({ 'attribute_priority_was' => 2 })
-        r 
+        r
       end,
       'attribute_settings_override' => Proc.new do
         r = Chef::Role.new
@@ -188,7 +188,7 @@ Before do
         n.name 'sync'
         n.run_list << "node_cookbook_sync"
         n
-      end, 
+      end,
       'role_not_exist' => Proc.new do
         n = Chef::Node.new
         n.name 'role_not_exist'
@@ -212,13 +212,13 @@ Before do
         array = []
         hash = {}
         max_levels = 50
-        
+
         max_levels.times do |num_level|
           array = [num_level, "really_deep_string_in_array", array]
           hash = {"really_deep_string_in_hash_#{num_level}" => hash}
           num_level += 1
         end
-        
+
         n = Chef::Node.new
         n.name 'really_deep_node'
         n.run_list << "deep_node_recipe"
@@ -243,6 +243,13 @@ Before do
         e = Chef::Environment.new
         e.name 'production'
         e.description 'The real deal'
+        e
+      end,
+      'skynet' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'skynet'
+        e.description 'test cookbook version constraints'
+        e.cookbook 'version_test', '> 0.1.0'
         e
       end,
       'cookbooks-0.1.0' => Proc.new do
@@ -320,7 +327,7 @@ Given "I am a non-admin" do
   make_non_admin
 end
 
-Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|  
+Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|
   call_as_admin do
     @stash[stash_name] = get_fixture(stash_name, stash_key)
 

@@ -46,7 +46,7 @@ Then /^the inflated responses key '(.+)' should be the integer '(\d+)'$/ do |key
   inflated_response[key].should == int.to_i
 end
 
-Then /^the inflated responses key '(.+)' should match '(.+)'$/ do |key, regex|
+Then /^the inflated responses key '(\w+)' should match '(.+)'$/ do |key, regex|
   puts self.inflated_response.inspect if ENV['DEBUG']
   self.inflated_response[key].should =~ /#{regex}/m
 end
@@ -89,7 +89,23 @@ Then /^the inflated responses key '(.+)' sub-key '(.+)' should be an empty hash$
   inflated_response[key][sub_key].should == {}
 end
 
-Then /^the inflated responses key '(.+)' should be '(\d+)' items long$/ do |key, length|
+Then /^the inflated responses key '(\w+)' sub-key '(\w+)' should match '(.+)'$/ do |key, sub_key, regex|
+  inflated_response[key][sub_key].should =~ /#{regex}/m
+end
+
+Then /^the inflated responses key '(\w+)' sub-key '(\w+)' item '(\d+)' sub-key '(\w+)' should match '(.+)'$/ do |key, sub_key, index, second_sub_key, regex|
+  inflated_response[key][sub_key][index.to_i][second_sub_key].should =~ /#{regex}/m
+end
+
+Then /^the inflated responses key '(\w+)' sub-key '(\w+)' item '(\d+)' sub-key '(\w+)' should equal '(.+)'$/ do |key, sub_key, index, second_sub_key, equal|
+  inflated_response[key][sub_key][index.to_i][second_sub_key].should == equal
+end
+
+Then /^the inflated responses key '(\w+)' sub-key '(\w+)' should be '(\d+)' items long$/ do |key, sub_key, length|
+  inflated_response[key][sub_key].length.should == length.to_i
+end
+
+Then /^the inflated responses key '(\w+)' should be '(\d+)' items long$/ do |key, length|
   inflated_response[key].length.should == length.to_i
 end
 
