@@ -80,7 +80,7 @@ class Cookbooks < Application
   end
 
   # GET /cookbooks/cookbook_id
-``# provides :json, for the javascript on the environments web form.
+  # provides :json, for the javascript on the environments web form.
   def cb_versions
     provides :json
     @versions =  {cookbook_id => get_versions}
