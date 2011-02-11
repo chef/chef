@@ -35,7 +35,7 @@ describe Chef::Provider::ErlCall do
     #@status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
     @stdin = StringIO.new
-    @stdout = mock("STDOUT", :null_object => true)
+    @stdout = StringIO.new("{ok, woohoo}")
     @stderr = mock("STDERR", :null_object => true)
     @pid = 2342999
   end

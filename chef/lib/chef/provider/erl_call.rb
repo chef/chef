@@ -66,13 +66,29 @@ class Chef
 
           stdin.close
 
-          Chef::Log.info("Ran erl_call[#{@new_resource.name}] successfully")
           Chef::Log.debug("erl_call[#{@new_resource.name}] output: ")
 
-          stdout.each_line { |line| Chef::Log.debug("#{line}")}
-          stderr.each_line { |line| Chef::Log.debug("#{line}")}
+          stdout_output = ""
+          stdout.each_line { |line| stdout_output << line }
           stdout.close
+
+          stderr_output = ""
+          stderr.each_line { |line| stderr_output << line }
           stderr.close
+
+          # fail if stderr contains anything
+          if stderr_output.length > 0
+            raise Chef::Exceptions::ErlCall, stderr_output
+          end
+
+          # fail if the first 4 characters aren't "{ok,"
+          unless stdout_output[0..3].include?('{ok,')
+            raise Chef::Exceptions::ErlCall, stdout_output
+          end
+
+          Chef::Log.debug("#{stdout_output}")
+          Chef::Log.info("Ran erl_call[#{@new_resource.name}] successfully")
+
         ensure
           Process.wait(pid) if pid
         end
