@@ -80,7 +80,7 @@ class Chef
           }
           stderr.close
           
-          if stdout_output.include?('{ok,')
+          if stdout_output[0..3].include?('{ok,')
             Chef::Log.debug("#{stdout_output}")
             Chef::Log.info("Ran erl_call[#{@new_resource.name}] successfully")
           elsif stderr_output.length > 0
