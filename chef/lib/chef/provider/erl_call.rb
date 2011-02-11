@@ -76,10 +76,12 @@ class Chef
           stderr.each_line { |line| stderr_output << line }
           stderr.close
           
+          # fail if stderr contains anything
           if stderr_output.length > 0
             raise Chef::Exceptions::ErlCall, stderr_output
           end
           
+          # fail if the first 4 characters aren't "{ok,"
           unless stdout_output[0..3].include?('{ok,')
             raise Chef::Exceptions::ErlCall, stdout_output
           end
