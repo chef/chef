@@ -20,6 +20,8 @@ require 'chef/environment'
 
 class Environments < Application
 
+  include Merb::CookbookVersionHelper
+
   provides :json
 
   before :authenticate_every
@@ -99,11 +101,31 @@ class Environments < Application
     rescue Chef::Exceptions::CouchDBNotFound
       raise NotFound, "Cannot load environment #{params[:environment_id]}"
     end
-    num_versions = params[:num_versions].nil? || params[:num_versions].empty? || params[:num_versions].to_i < 0 ? "1" : params[:num_versions]
+    num_versions = params[:num_versions] || 1
     display(filtered_cookbooks.inject({}) {|res, (cookbook_name,versions)|
-      res[cookbook_name] = {:url => absolute_url(:cookbook, :cookbook_name => cookbook_name), :versions => versions.inject([]){|r, val| r.push({:url => absolute_url(:cookbook_version, :cookbook_name => cookbook_name, :cookbook_version => val.version), :version => val.version}) if num_versions.to_i > r.size || num_versions == 'all'; r}}
+      versions.map!{|v| v.version.to_s}
+      res[cookbook_name] = expand_cookbook_urls(cookbook_name, versions, num_versions)
       res
     })
+  end
+
+  # GET /environments/:environment_id/cookbooks/:cookbook_id
+  # returns data in the format of:
+  # {"apache2" => {
+  #     :url => "http://url",
+  #     :versions => [{:url => "http://url/1.0.0", :version => "1.0.0"}, {:url => "http://url/0.0.1", :version=>"0.0.1"}]
+  #   }
+  # }
+  def cookbook
+    cookbook_name = params[:cookbook_id]
+    begin
+      filtered_cookbooks = Chef::Environment.cdb_load_filtered_cookbook_versions(params[:environment_id])
+    rescue Chef::Exceptions::CouchDBNotFound
+      raise NotFound, "Cannot load environment #{params[:environment_id]}"
+    end
+    versions = filtered_cookbooks[cookbook_name].map{|v| v.version.to_s}
+    num_versions = params[:num_versions] || "all"
+    display({ cookbook_name => expand_cookbook_urls(cookbook_name, versions, num_versions) })
   end
 
   # GET /environments/:environment/recipes

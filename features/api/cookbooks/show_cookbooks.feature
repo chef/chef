@@ -40,3 +40,32 @@ Feature: Show a cookbook via the REST API
     When I 'GET' the path '/cookbooks/non_existent'
     Then I should get a '404 "Not Found"' exception
 
+  Scenario: Show all the available versions for a cookbook, sorted
+    Given I am an administrator
+      And I upload multiple versions of the 'version_test' cookbook that do not lexically sort correctly
+     When I 'GET' the path '/cookbooks/version_test'
+     Then the inflated responses key 'version_test' sub-key 'url' should match 'http://.+/cookbooks/version_test'
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'url' should match 'http://.+/cookbooks/version_test/(\d+.\d+.\d+)'
+      And the inflated responses key 'version_test' sub-key 'versions' should be '3' items long
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'version' should equal '0.10.0'
+      And the inflated responses key 'version_test' sub-key 'versions' item '1' sub-key 'version' should equal '0.9.7'
+      And the inflated responses key 'version_test' sub-key 'versions' item '2' sub-key 'version' should equal '0.9.0'
+
+  Scenario: Show the latest available version for a cookbook
+    Given I am an administrator
+      And I upload multiple versions of the 'version_test' cookbook that do not lexically sort correctly
+     When I 'GET' the path '/cookbooks/version_test?num_versions=1'
+     Then the inflated responses key 'version_test' sub-key 'url' should match 'http://.+/cookbooks/version_test'
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'url' should match 'http://.+/cookbooks/version_test/(\d+.\d+.\d+)'
+      And the inflated responses key 'version_test' sub-key 'versions' should be '1' items long
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'version' should equal '0.10.0'
+
+  Scenario: Show a given number available version for a cookbook, sorted by latest date
+    Given I am an administrator
+      And I upload multiple versions of the 'version_test' cookbook that do not lexically sort correctly
+     When I 'GET' the path '/cookbooks/version_test?num_versions=2'
+     Then the inflated responses key 'version_test' sub-key 'url' should match 'http://.+/cookbooks/version_test'
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'url' should match 'http://.+/cookbooks/version_test/(\d+.\d+.\d+)'
+      And the inflated responses key 'version_test' sub-key 'versions' should be '2' items long
+      And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'version' should equal '0.10.0'
+      And the inflated responses key 'version_test' sub-key 'versions' item '1' sub-key 'version' should equal '0.9.7'
