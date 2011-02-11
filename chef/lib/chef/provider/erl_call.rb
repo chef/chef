@@ -65,14 +65,31 @@ class Chef
           @new_resource.code.each_line { |line| stdin.puts(line.chomp) }
 
           stdin.close
-
-          Chef::Log.info("Ran erl_call[#{@new_resource.name}] successfully")
+          
           Chef::Log.debug("erl_call[#{@new_resource.name}] output: ")
-
-          stdout.each_line { |line| Chef::Log.debug("#{line}")}
-          stderr.each_line { |line| Chef::Log.debug("#{line}")}
+          
+          stdout_output = ""
+          stdout.each_line { |line| 
+            Chef::Log.debug("#{line}")
+            stdout_output << line
+          }
           stdout.close
+          
+          stderr_output = ""
+          stderr.each_line { |line| 
+            Chef::Log.debug("#{line}")
+            stderr_output << line
+          }
           stderr.close
+          
+          if stdout_output.include?('{ok,')
+            Chef::Log.info("Ran erl_call[#{@new_resource.name}] successfully")
+          elsif stderr_output.length > 0
+            raise Chef::Exceptions::ErlCall, stderr_output
+          else
+            raise Chef::Exceptions::ErlCall, stdout_output
+          end
+          
         ensure
           Process.wait(pid) if pid
         end
