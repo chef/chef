@@ -70,19 +70,18 @@ class Chef
           
           stdout_output = ""
           stdout.each_line { |line| 
-            Chef::Log.debug("#{line}")
             stdout_output << line
           }
           stdout.close
           
           stderr_output = ""
           stderr.each_line { |line| 
-            Chef::Log.debug("#{line}")
             stderr_output << line
           }
           stderr.close
           
           if stdout_output.include?('{ok,')
+            Chef::Log.debug("#{stdout_output}")
             Chef::Log.info("Ran erl_call[#{@new_resource.name}] successfully")
           elsif stderr_output.length > 0
             raise Chef::Exceptions::ErlCall, stderr_output
