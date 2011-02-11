@@ -80,12 +80,12 @@ class Chef
             raise Chef::Exceptions::ErlCall, stderr_output
           end
           
-          if stdout_output[0..3].include?('{ok,')
-            Chef::Log.debug("#{stdout_output}")
-            Chef::Log.info("Ran erl_call[#{@new_resource.name}] successfully")
-          else
+          unless stdout_output[0..3].include?('{ok,')
             raise Chef::Exceptions::ErlCall, stdout_output
           end
+          
+          Chef::Log.debug("#{stdout_output}")
+          Chef::Log.info("Ran erl_call[#{@new_resource.name}] successfully")
           
         ensure
           Process.wait(pid) if pid
