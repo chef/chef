@@ -4,9 +4,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,7 +40,7 @@ require 'chef/data_bag_item'
 require 'chef/api_client'
 require 'chef/checksum'
 require 'chef/sandbox'
-require 'chef/solr'
+require 'chef/solr_query'
 require 'chef/certificate'
 require 'chef/mixin/shell_out'
 require 'tmpdir'
@@ -62,10 +62,10 @@ def setup_logging
     Chef::Config[:log_level] = :debug
     Chef::Log.level = :debug
   else
-    Chef::Config[:log_level] = ENV['LOG_LEVEL'].to_sym 
+    Chef::Config[:log_level] = ENV['LOG_LEVEL'].to_sym
     Chef::Log.level = ENV['LOG_LEVEL'].to_sym
   end
-  Ohai::Log.logger = Chef::Log.logger 
+  Ohai::Log.logger = Chef::Log.logger
 end
 
 def delete_databases
@@ -84,13 +84,13 @@ def create_databases
 
   # Sometimes Couch returns a '412 Precondition Failed' when creating a database,
   # via a PUT to its URL, as the DELETE from the previous step in delete_databases
-  # has not yet finished. This condition disappears if you try again. So here we 
+  # has not yet finished. This condition disappears if you try again. So here we
   # try up to 10 times if PreconditionFailed occurs. See
   #   http://tickets.opscode.com/browse/CHEF-1788 and
   #   http://tickets.opscode.com/browse/CHEF-1764.
   #
-  # According to https://issues.apache.org/jira/browse/COUCHDB-449, setting the 
-  # 'X-Couch-Full-Commit: true' header on the DELETE should work around this issue, 
+  # According to https://issues.apache.org/jira/browse/COUCHDB-449, setting the
+  # 'X-Couch-Full-Commit: true' header on the DELETE should work around this issue,
   # but it does not.
   db_created = nil
   max_tries = 10
@@ -104,7 +104,7 @@ def create_databases
         # Re-raise if we got anything but 412.
         raise
       end
-      
+
       if num_tries <= max_tries
         Chef::Log.debug("In creating chef_integration try #{num_tries}/#{max_tries}, got #{e}; try again")
         sleep 0.25
@@ -114,7 +114,7 @@ def create_databases
     end
     num_tries += 1
   end
-  
+
   cdb.create_id_map
   Chef::Node.create_design_document
   Chef::Role.create_design_document
@@ -125,7 +125,7 @@ def create_databases
   Chef::Sandbox.create_design_document
   Chef::Checksum.create_design_document
   Chef::Environment.create_design_document
-  
+
   Chef::Role.sync_from_disk_to_couchdb
   Chef::Certificate.generate_signing_ca
   Chef::Certificate.gen_validation_key
@@ -205,7 +205,7 @@ module ChefWorld
   def server_tmpdir
     @server_tmpdir ||= File.expand_path(File.join(datadir, "tmp"))
   end
-  
+
   def datadir
     @datadir ||= File.join(File.dirname(__FILE__), "..", "data")
   end
@@ -225,7 +225,7 @@ module ChefWorld
   def stash
     @stash ||= Hash.new
   end
-  
+
   def gemserver
     @gemserver ||= WEBrick::HTTPServer.new(
       :Port         => 8000,
@@ -254,12 +254,12 @@ module ChefWorld
     #Chef::Config[:client_key] = "#{tmpdir}/bobo.pem"
     #Chef::Config[:node_name] = "bobo"
   end
-  
+
   def admin_rest
     admin_client
     @admin_rest ||= Chef::REST.new(Chef::Config[:registration_url], 'bobo', "#{tmpdir}/bobo.pem")
   end
-  
+
   def admin_client
     unless @admin_client
       r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
@@ -270,7 +270,7 @@ module ChefWorld
       @admin_client = c
     end
   end
-  
+
   def make_non_admin
     r = Chef::REST.new(Chef::Config[:registration_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
     r.register("not_admin", "#{tmpdir}/not_admin.pem")
@@ -294,13 +294,13 @@ Before do
   system("mkdir -p #{tmpdir}")
   system("cp -r #{File.join(Dir.tmpdir, "validation.pem")} #{File.join(tmpdir, "validation.pem")}")
   system("cp -r #{File.join(Dir.tmpdir, "webui.pem")} #{File.join(tmpdir, "webui.pem")}")
-  
+
   replicate_dbs({:source_db => "#{Chef::Config[:couchdb_url]}/chef_integration_safe",
                  :target_db => "#{Chef::Config[:couchdb_url]}/chef_integration"})
-                 
-  s = Chef::Solr.new
-  s.solr_delete_by_query("*:*")
-  s.solr_commit
+
+  s = Chef::SolrQuery.new
+  s.delete_database("chef_integration")
+  s.commit
 end
 
 After do
