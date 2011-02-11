@@ -78,7 +78,20 @@ class Chef
 
       configurable :config_file, '/etc/chef/solr.rb'
 
-      configurable :solr_base_path, '/var/chef'
+      # Defaults to /var/chef
+      configurable :solr_base_path, nil
+
+      def solr_base_path
+        @solr_base_path || '/var/chef'
+      end
+
+      # Sets the solr_base_path. Also resets solr_home_path, solr_jetty_path,
+      # and solr_data_path.
+      def solr_base_path=(base_path)
+        @solr_home_path, @solr_jetty_path, @solr_data_path = nil,nil,nil
+        @solr_base_path = base_path
+      end
+
 
       # Computed from base path, defaults to /var/chef/solr
       configurable :solr_home_path, nil
@@ -130,7 +143,11 @@ class Chef
       end
 
       def to_hash
-        self.class.configurables.inject({}) { |hash, config_option| hash[config_option] = send(config_option); hash }
+        self.class.configurables.inject({}) do |hash, config_option|
+          value = instance_variable_get("@#{config_option}".to_sym)
+          hash[config_option] = value if value
+          hash
+        end
       end
 
       def apply_hash(hash)
@@ -150,7 +167,7 @@ class Chef
         @option_parser = OptionParser.new do |o|
           o.banner = "Usage: chef-solr-installer [options]"
 
-          o.on('-c', '--config CONFIG_FILE', 'a configuration file to use') do |conf|
+          o.on('-c', '--config CONFIG_FILE', 'The configuration file to use') do |conf|
             @config.config_file = File.expand_path(conf)
           end
 
@@ -162,20 +179,20 @@ class Chef
             @config.group = g
           end
 
-          o.on('-p', '--base-path PATH', "The base path where solr components will be installed.") do |path|
+          o.on('-p', '--base-path PATH', "The base path for the installation. Must be given before any -H -W or -D options") do |path|
             @config.solr_base_path = path
           end
 
-          o.on('-W', '--solr-jetty-path PATH', 'Where to install Jetty for Solr') do |path|
+          o.on('-H', '--solr-home-dir PATH', 'Where to create the Solr home directory. Defaults to BASE_PATH/solr') do |path|
+            @config.solr_home_path = path
+          end
+
+          o.on('-W', '--solr-jetty-path PATH', 'Where to install Jetty for Solr. Defaults to BASE_PATH/solr-jetty ') do |path|
             @config.solr_jetty_path = path
           end
 
-          o.on('-D', '--solr-data-path PATH', 'Where to create the Solr data directory') do |path|
+          o.on('-D', '--solr-data-path PATH', 'Where to create the Solr data directory. Defaults to BASE_PATH/solr/data') do |path|
             @config.solr_data_path = path
-          end
-
-          o.on('-H', '--solr-home-dir PATH', 'Where to create the Solr home directory') do |path|
-            @config.solr_home_path = path
           end
 
           o.on('-n', '--noop', "Don't actually install, just show what would be done by the install") do
