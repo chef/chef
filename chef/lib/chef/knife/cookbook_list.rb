@@ -32,6 +32,7 @@ class Chef
         :description => "Show corresponding URIs"
 
       option :all_versions,
+        :short => "-a",
         :long => "--show-all-versions",
         :description => "Show all available versions."
 
