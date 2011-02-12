@@ -5,26 +5,35 @@ function jQuerySuggest(timestamp){
 }
 
 function populateVersionBoxContent(timestamp, cb_name){
-  $.getJSON('/cookbooks/'+cb_name, function(result){
-                                     jQuery('#cookbook_version_'+timestamp).suggest(result[cb_name]);
+  // Ignore environments when editing the environments constraints
+  $.getJSON('/cookbooks/'+cb_name+'?num_versions=all&ignore_environments=true',
+            function(result){
+              console.log("result");
+              console.log(result);
+              var versions = $.map(result[cb_name],
+                                   function(item, i) {
+                                     return item["version"];
                                    });
+              jQuery('#cookbook_version_'+timestamp).suggest(versions);
+            });
 }
 
 function clearVersionBox(box, timestamp){
   populateVersionBoxContent(timestamp, retrieveCbName(timestamp));
-  //if (box.value == "0.0.0"){box.value = "";}
   error_message = document.getElementById('inline_error_message_' + timestamp);
   if (error_message != null)
     $(error_message).remove();
 }
 
 function validateVersionBoxValue(box, timestamp){
-  if (box.value.match(/^\d+\.\d+\.\d+$/) == null){
+  setTimeout(function() {
+  if (box.value.match(/^[0-9]+\.[0-9]+\.[0-9]+$/) == null){
     if (box.value.length != 0 && document.getElementById('inline_error_message_' + timestamp) == null)
-      $(box).parent().append('<span class="inline_error_message" id="inline_error_message_' + timestamp + '" >Invalid version format. The version should be in the format of 0.0.0.</span>');
+      $(box).parent().append('<span class="inline_error_message" id="inline_error_message_' + timestamp + '" >Invalid version format. The version should be in the format of x.y.z.</span>');
       if (box.value.length==0)
         box.value = "0.0.0";
   }
+  }, 100);
 }
 
 function buildCookbookList(cookbook_names, default_cookbook){

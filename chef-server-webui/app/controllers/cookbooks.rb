@@ -31,11 +31,10 @@ class Cookbooks < Application
   attr_reader :cookbook_id
   def params_helper
     @cookbook_id = params[:id] || params[:cookbook_id]
-    @num_versions = params[:num_versions] || 6
   end
 
-  def fetch_cookbook_versions(num_versions=6)
-    url = if session[:environment]
+  def fetch_cookbook_versions(num_versions, use_envs=true)
+    url = if use_envs
             "environments/#{session[:environment]}/cookbooks"
           else
             "cookbooks"
@@ -96,7 +95,9 @@ class Cookbooks < Application
   # provides :json, for the javascript on the environments web form.
   def cb_versions
     provides :json
-    all_books = fetch_cookbook_versions(@num_versions)
+    use_envs = session[:environment] && !params[:ignore_environments]
+    num_versions = params[:num_versions] || "all"
+    all_books = fetch_cookbook_versions(num_versions, use_envs)
     display({ cookbook_id => all_books[cookbook_id] })
   end
 
