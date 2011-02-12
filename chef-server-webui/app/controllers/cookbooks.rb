@@ -33,14 +33,16 @@ class Cookbooks < Application
     @cookbook_id = params[:id] || params[:cookbook_id]
   end
 
-  def fetch_cookbook_versions(num_versions, use_envs=true)
+  def fetch_cookbook_versions(cookbook, num_versions, use_envs=true)
     url = if use_envs
-            "environments/#{session[:environment]}/cookbooks"
+            env = session[:environment] || "_default"
+            "environments/#{env}/cookbooks"
           else
             "cookbooks"
           end
     # we want to display at most 5 versions, but we ask for 6.  This
     # tells us if we should display a show all button or not.
+    url += "/#{cookbook}" if cookbook
     url += "?num_versions=#{num_versions}"
     begin
       result = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest(url)
@@ -60,13 +62,13 @@ class Cookbooks < Application
   end
 
   def index
-    @cl = fetch_cookbook_versions(6)
+    @cl = fetch_cookbook_versions(nil, 6)
     display @cl
   end
 
   def show
     begin
-      all_books = fetch_cookbook_versions("all")
+      all_books = fetch_cookbook_versions(cookbook_id, "all")
       versions = all_books[cookbook_id].map { |v| v["version"] }
       # if version is not specified in the url, get the most recent
       # version, otherwise get the specified version
@@ -97,7 +99,7 @@ class Cookbooks < Application
     provides :json
     use_envs = session[:environment] && !params[:ignore_environments]
     num_versions = params[:num_versions] || "all"
-    all_books = fetch_cookbook_versions(num_versions, use_envs)
+    all_books = fetch_cookbook_versions(cookbook_id, num_versions, use_envs)
     display({ cookbook_id => all_books[cookbook_id] })
   end
 
