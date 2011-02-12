@@ -28,7 +28,7 @@ end
 After("@apt") do
   remove_integration_test_apt_source
   purge_chef_integration_debs
-  shell_out! "apt-get clean"
+  shell_out! "apt-get clean" if debian_compatible?
 end
 
 Before('@dpkg') do
@@ -37,7 +37,7 @@ end
 
 Before('@apt') do
   purge_chef_integration_debs
-  shell_out! "apt-get clean"
+  shell_out!("apt-get clean") if debian_compatible?
 end
 
 After('@dpkg') do
