@@ -155,6 +155,7 @@ end
 def start_dev_environment(type="normal")
   start_couchdb(type)
   start_rabbitmq(type)
+  sleep 2
   configure_rabbitmq(type)
   start_chef_solr(type)
   start_chef_solr_indexer(type)

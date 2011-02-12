@@ -226,7 +226,8 @@ class Chef
     # === Returns
     # true:: Always returns true
     def self.sync_cookbooks(cookbook_hash)
-      Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
+      Chef::Log.info("Loading cookbooks [#{cookbook_hash.keys.sort.join(', ')}]")
+      Chef::Log.debug("Cookbooks detail: #{cookbook_hash.inspect}")
 
       clear_obsoleted_cookbooks(cookbook_hash)
 

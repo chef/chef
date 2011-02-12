@@ -7,12 +7,10 @@
     "ossining": "this time around"
   },
   "description": "A simple test role",
-  "recipes": [
+  "run_list": [
     "roles"
   ],
-  "env_run_lists": {
-    "_default" : {}
-  },
+  "env_run_lists": {},
   "override_attributes": {
     "ossining": "whatever",
     "snakes": "on a plane"

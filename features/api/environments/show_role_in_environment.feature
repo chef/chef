@@ -9,4 +9,4 @@ Feature: Show a role in an environment via the REST API
       And an 'environment' named 'cucumber' exists
       And a 'role' named 'webserver' exists
      When I 'GET' the path '/environments/cucumber/roles/webserver'
-     Then the inflated response should respond to 'run_list' with 'role[db]'
+     Then the inflated response should respond to 'run_list' with '["role[db]"]'

@@ -135,16 +135,19 @@ class Nodes < Application
     cookbook_name = (recipe[:name][/^(.+)::/, 1] || recipe[:name])
     if recipe[:version]
       version = Chef::Version.new(recipe[:version])
-      Chef::Log.debug "Node requires #{cookbook_name} at version #{version.to_s}"
+      Chef::Log.debug "Node requires #{cookbook_name} at version #{version}"
       # detect the correct cookbook version from the list of available cookbook versions
       cookbook = all_cookbooks[cookbook_name].detect { |cb| Chef::Version.new(cb.version) == version }
     else
       Chef::Log.debug "Node requires #{cookbook_name} at latest version"
       cookbook_versions = all_cookbooks[cookbook_name]
-      cookbook = cookbook_versions ? all_cookbooks[cookbook_name].last : nil
+      Chef::Log.debug { "Available versions of cookbook #{cookbook_name}: [#{Array(cookbook_versions).map {|v| v.version}.join(',')}]" }
+      # Chef::Environment.cdb_load_filtered_cookbook_versions returns cookbooks in DESCENDING order
+      # so the newest one is the FIRST one.
+      cookbook = cookbook_versions ? all_cookbooks[cookbook_name].first : nil
     end
     unless cookbook
-      msg = "#{parent_name} depends on cookbook #{cookbook_name} #{version.to_s}, which is not available to this node"
+      msg = "#{parent_name} depends on cookbook #{cookbook_name} #{version}, which is not available to this node"
       raise PreconditionFailed, msg
     end
 

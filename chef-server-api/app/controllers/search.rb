@@ -27,7 +27,7 @@ class Search < Application
 
   def index
     indexes = valid_indexes
-    display(indexes.inject({}) { |r,i| r[i] = absolute_url(:search, i); r })
+    display(indexes.inject({}) { |r,i| r[i] = absolute_url(:search_show, i); r })
   end
 
   def valid_indexes
