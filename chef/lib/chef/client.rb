@@ -150,29 +150,10 @@ class Chef
         Chef::Log.info("Starting Chef Run (Version #{Chef::VERSION})")
         run_started
         
-        if Chef::Config[:solo]
-          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
-          run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
-          run_status.run_context = run_context
-          assert_cookbook_path_not_empty(run_context)
-          converge(run_context)
-        else
-          # Sync_cookbooks eagerly loads all files except files and templates.
-          # It returns the cookbook_hash -- the return result from
-          # /nodes/#{nodename}/cookbooks -- which we will use for our
-          # run_context.
-          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest) }
-          cookbook_hash = sync_cookbooks
-          run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
-          run_status.run_context = run_context
+        run_context = setup_run_context
+        converge(run_context)
+        save_updated_node
 
-          assert_cookbook_path_not_empty(run_context)
-          
-          converge(run_context)
-          Chef::Log.debug("Saving the current state of node #{node_name}")
-          @node.save
-        end
-        
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
@@ -185,6 +166,37 @@ class Chef
         raise
       ensure
         run_status = nil
+      end
+      true
+    end
+
+
+    # Configures the Chef::Cookbook::FileVendor class to fetch file from the
+    # server or disk as appropriate, creates the run context for this run, and
+    # sanity checks the cookbook collection.
+    #===Returns
+    # Chef::RunContext:: the run context for this run.
+    def setup_run_context
+      if Chef::Config[:solo]
+        Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
+        run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
+        run_status.run_context = run_context
+        assert_cookbook_path_not_empty(run_context)
+      else
+        Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest) }
+        cookbook_hash = sync_cookbooks
+        run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
+        run_status.run_context = run_context
+
+        assert_cookbook_path_not_empty(run_context)
+      end
+      run_context
+    end
+
+    def save_updated_node
+      unless Chef::Config[:solo]
+        Chef::Log.debug("Saving the current state of node #{node_name}")
+        @node.save
       end
     end
 
@@ -220,7 +232,9 @@ class Chef
 
 
       @node.consume_external_attrs(ohai.data, @json_attribs)
-      @node.expand!
+      expanded_run_list = @node.expand!
+      Chef::Log.info("Run List is [#{@node.run_list}]")
+      Chef::Log.info("Run List expands to [#{expanded_run_list.join(', ')}]")
       @node.save unless Chef::Config[:solo]
       @node.reset_defaults_and_overrides
 
@@ -243,10 +257,13 @@ class Chef
       self.rest = Chef::REST.new(Chef::Config[:chef_server_url], node_name, Chef::Config[:client_key])
     end
     
-    # Synchronizes all the cookbooks from the chef-server.
+    # Sync_cookbooks eagerly loads all files except files and templates.
+    # It returns the cookbook_hash -- the return result from
+    # /nodes/#{nodename}/cookbooks -- which we will use for our
+    # run_context.
     #
     # === Returns
-    # true:: Always returns true
+    # Hash:: The hash of cookbooks with download URLs as given by the server
     def sync_cookbooks
       Chef::Log.debug("Synchronizing cookbooks")
       cookbook_hash = rest.get_rest("nodes/#{node_name}/cookbooks")
