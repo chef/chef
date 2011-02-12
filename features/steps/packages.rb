@@ -32,7 +32,7 @@ After("@apt") do
 end
 
 Before('@dpkg') do
-  purge_chef_integration_debs
+  purge_chef_integration_debs if debian_compatible?
 end
 
 Before('@apt') do
