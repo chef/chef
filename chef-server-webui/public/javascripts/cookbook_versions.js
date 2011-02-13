@@ -1,24 +1,3 @@
-// function cookbook_versions_show_more() {
-//   var cookbook = this.attributes["data"].textContent;
-//   // do AJAX here and get back something like this:
-//   var extra_versions = [{version : "0.0.1", url : "/cookbooks/" + cookbook + "/0.0.1/"}, 
-//                         {version : "0.0.3", url : "/cookbooks/" + cookbook + "/0.0.3"}];
-
-//   // NOTE: we're going to try not caching and will repeat ajax calls
-//   // on repeated click because the data could have changed on the
-//   // server.  We can revisit if this feels wrong for real-world UX
-//   var version_list = $("#" + cookbook + "_versions");
-//   var tmp_list = $('<ol/>');
-//   $.each(extra_versions, function(i, x) {
-//     var link = $('<a/>').attr("href", x.url).text(x.version);
-//     var item = $('<li/>').append(link);
-//     tmp_list.append(item);
-//   });
-//   version_list.html(tmp_list.html());
-//   $(this).unbind("click");
-//   $(this).click(cookbook_versions_show_less);
-//   return false;
-// }
 function cookbook_versions_show_more() {
   var cookbook = $(this).attr("data");
   var version_list = $("#" + cookbook + "_versions");
@@ -28,7 +7,7 @@ function cookbook_versions_show_more() {
   version_list.children('.other_version').show();
   $("#" + cookbook + "_show_all").show();
   $(this).unbind("click");
-  $(this).html("&#8211;"); // FIXME: set css class here, to determine icon image
+  $(this).html("&#8211;").attr("title", "hide other versions of " + cookbook);
   $(this).click(cookbook_versions_show_less);
 }
 
@@ -40,7 +19,7 @@ function cookbook_versions_show_less() {
   version_list.children('.all_version').hide();
   $("#" + cookbook + "_show_all").hide();
   $(this).unbind("click");
-  $(this).text("+"); // FIXME: set css class here, to determine icon image
+  $(this).text("+").attr("title", "show other versions of " + cookbook);
   $(this).click(cookbook_versions_show_more);
 }
 
@@ -94,7 +73,7 @@ function fetch_all_versions0(cookbook) {
     error : function(jqXHR, textStatus, errorThrown) {
       console.log(textStatus);
     }
-    
+
   })
 }
 

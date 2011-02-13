@@ -137,7 +137,7 @@ class Cookbooks < Application
   end
 
   def all_versions_link(cookbook)
-    link_to("show all", "JavaScript:void(0);",
+    link_to("show all versions...", "JavaScript:void(0);",
             :class => "show_all",
             :id => "#{cookbook}_show_all",
             :data => cookbook,
