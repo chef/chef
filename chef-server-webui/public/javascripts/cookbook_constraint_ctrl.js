@@ -1,30 +1,46 @@
 function jQuerySuggest(timestamp){
   var cb_name = retrieveCbName(timestamp);
   populateVersionBoxContent(timestamp, cb_name);
-  document.getElementById("cookbook_version_" + timestamp).value = "0.0.0";
+  $("cookbook_version_" + timestamp).value = "0.0.0";
 }
 
 function populateVersionBoxContent(timestamp, cb_name){
-  $.getJSON('/cookbooks/'+cb_name, function(result){
-                                     jQuery('#cookbook_version_'+timestamp).suggest(result[cb_name]);
+  // Ignore environments when editing the environments constraints
+  $.getJSON('/cookbooks/'+cb_name+'?num_versions=all&ignore_environments=true',
+            function(result){
+              var versions = $.map(result[cb_name],
+                                   function(item, i) {
+                                     return item["version"];
                                    });
+              jQuery('#cookbook_version_'+timestamp).suggest(versions);
+            });
 }
 
 function clearVersionBox(box, timestamp){
   populateVersionBoxContent(timestamp, retrieveCbName(timestamp));
-  //if (box.value == "0.0.0"){box.value = "";}
-  error_message = document.getElementById('inline_error_message_' + timestamp);
-  if (error_message != null)
-    $(error_message).remove();
+  $('#invalid_version_error_' + timestamp).remove();
 }
 
-function validateVersionBoxValue(box, timestamp){
-  if (box.value.match(/^\d+\.\d+\.\d+$/) == null){
-    if (box.value.length != 0 && document.getElementById('inline_error_message_' + timestamp) == null)
-      $(box).parent().append('<span class="inline_error_message" id="inline_error_message_' + timestamp + '" >Invalid version format. The version should be in the format of 0.0.0.</span>');
-      if (box.value.length==0)
+function validateVersionBoxValue(box, timestamp) {
+  // a short delay prevents validation from firing
+  // when user clicks on one of the suggestions.
+  setTimeout(function() {
+    var msg_class = 'invalid_version_error';
+    var msg_id = 'invalid_version_error_' + timestamp;
+    var xyz_match = box.value.match(/^\d+\.\d+\.\d+$/);
+    var xy_match = box.value.match(/^\d+\.\d+$/);
+    if (!xyz_match && !xy_match) {
+      if (box.value.length != 0 && $('.' + msg_class).length == 0) {
+        var error_msg = $('<div/>')
+          .addClass(msg_class)
+          .attr('id', msg_id).text("Version must be x.y.z or x.y");
+        $(box).parent().append(error_msg);
+      }
+      if (box.value.length == 0) {
         box.value = "0.0.0";
-  }
+      }
+    }
+  }, 100);
 }
 
 function buildCookbookList(cookbook_names, default_cookbook){

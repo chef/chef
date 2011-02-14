@@ -2,7 +2,8 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Nuo Yan (<nuo@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,36 +34,21 @@ class Cookbooks < Application
   end
 
   def index
-    @cl = begin
-            if session[:environment]
-              result = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("environments/#{session[:environment]}/cookbooks")
-            else
-              result = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks/_latest")
-            end
-            result.inject({}) do |res, (cookbook, url)|
-              # get the version number from the url
-              res[cookbook] = url.split("/").last
-              res
-            end
-          rescue => e
-            Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-            @_message = {:error => $!}
-            {}
-          end
+    @cl = fetch_cookbook_versions(6)
     display @cl
   end
 
   def show
     begin
-      # array of versions, sorted from large to small e.g. ["0.20.0", "0.1.0"]
-      versions = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks/#{cookbook_id}")[cookbook_id].sort!{|x,y| y <=> x }
-      # if version is not specified in the url, get the most recent version, otherwise get the specified version
+      all_books = fetch_cookbook_versions("all", :cookbook => cookbook_id)
+      versions = all_books[cookbook_id].map { |v| v["version"] }
+      # if version is not specified in the url, get the most recent
+      # version, otherwise get the specified version
       version = if params[:cb_version].nil? || params[:cb_version].empty?
                   versions.first
                 else
                   params[:cb_version]
                 end
-
       @cookbook = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks/#{cookbook_id}/#{version}")
 
       # by default always show the largest version number (assuming largest means most recent)
@@ -83,8 +69,11 @@ class Cookbooks < Application
   # provides :json, for the javascript on the environments web form.
   def cb_versions
     provides :json
-    @versions =  {cookbook_id => get_versions}
-    display @versions
+    use_envs = session[:environment] && !params[:ignore_environments]
+    num_versions = params[:num_versions] || "all"
+    all_books = fetch_cookbook_versions(num_versions, :cookbook => cookbook_id,
+                                        :use_envs => use_envs)
+    display({ cookbook_id => all_books[cookbook_id] })
   end
 
   def recipe_files
@@ -113,10 +102,50 @@ class Cookbooks < Application
     display @lib_files
   end
 
+  def more_versions_link(cookbook)
+    link_to("+", "JavaScript:void(0);",
+            :title => "show other versions of #{cookbook}",
+            :data => cookbook,
+            :class => "cookbook_version_toggle")
+  end
+
+  def all_versions_link(cookbook)
+    link_to("show all versions...", "JavaScript:void(0);",
+            :class => "show_all",
+            :id => "#{cookbook}_show_all",
+            :data => cookbook,
+            :title => "show all versions of #{cookbook}")
+  end
+
   private
 
-  def get_versions
-    Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks/#{cookbook_id}")[cookbook_id].sort!{|x,y| y <=> x }
+  def fetch_cookbook_versions(num_versions, options={})
+    opts = { :use_envs => true, :cookbook => nil }.merge(options)
+    url = if opts[:use_envs]
+            env = session[:environment] || "_default"
+            "environments/#{env}/cookbooks"
+          else
+            "cookbooks"
+          end
+    # we want to display at most 5 versions, but we ask for 6.  This
+    # tells us if we should display a 'show all' button or not.
+    url += "/#{opts[:cookbook]}" if opts[:cookbook]
+    url += "?num_versions=#{num_versions}"
+    begin
+      result = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest(url)
+      result.inject({}) do |ans, (name, cb)|
+        cb["versions"].each do |v|
+          v["url"] = url(:show_specific_version_cookbook, :cookbook_id => name,
+                         :cb_version => v["version"])
+        end
+        ans[name] = cb["versions"]
+        ans
+      end
+    rescue => e
+      Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
+      @_message = {:error => $!}
+      {}
+    end
   end
 
 end

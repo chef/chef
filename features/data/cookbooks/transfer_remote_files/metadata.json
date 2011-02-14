@@ -1,32 +1,30 @@
 {
-  "name": "transfer_remote_files",
-  "description": "A fabulous new cookbook",
-  "long_description": "",
-  "maintainer": "Your Name",
-  "maintainer_email": "youremail@example.com",
-  "license": "Apache v2.0",
-  "platforms": {
+  "recipes": {
   },
-  "dependencies": {
-    "transfer_remote_files_definition": [
-
-    ]
+  "maintainer": "Your Name",
+  "replacing": {
+  },
+  "license": "Apache v2.0",
+  "maintainer_email": "youremail@example.com",
+  "groupings": {
+  },
+  "platforms": {
   },
   "recommendations": {
   },
+  "long_description": "",
+  "description": "A fabulous new cookbook",
   "suggestions": {
-  },
-  "conflicting": {
-  },
-  "providing": {
-  },
-  "replacing": {
   },
   "attributes": {
   },
-  "groupings": {
+  "conflicting": {
   },
-  "recipes": {
+  "name": "transfer_remote_files",
+  "version": "0.0.0",
+  "dependencies": {
+    "transfer_remote_files_definition": ">= 0.0.0"
   },
-  "version": "0.0.0"
+  "providing": {
+  }
 }
