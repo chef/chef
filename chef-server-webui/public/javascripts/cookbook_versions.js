@@ -13,7 +13,6 @@ function cookbook_versions_show_more() {
 }
 
 function cookbook_versions_show_less() {
-  console.log($(this));
   var cookbook = $(this).attr("data");
   var version_list = $("#" + cookbook + "_versions");
   version_list.children('.other_version').hide();

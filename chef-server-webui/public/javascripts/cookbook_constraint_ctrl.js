@@ -1,15 +1,13 @@
 function jQuerySuggest(timestamp){
   var cb_name = retrieveCbName(timestamp);
   populateVersionBoxContent(timestamp, cb_name);
-  document.getElementById("cookbook_version_" + timestamp).value = "0.0.0";
+  $("cookbook_version_" + timestamp).value = "0.0.0";
 }
 
 function populateVersionBoxContent(timestamp, cb_name){
   // Ignore environments when editing the environments constraints
   $.getJSON('/cookbooks/'+cb_name+'?num_versions=all&ignore_environments=true',
             function(result){
-              console.log("result");
-              console.log(result);
               var versions = $.map(result[cb_name],
                                    function(item, i) {
                                      return item["version"];
@@ -23,7 +21,9 @@ function clearVersionBox(box, timestamp){
   $('#invalid_version_error_' + timestamp).remove();
 }
 
-function validateVersionBoxValue(box, timestamp) {  
+function validateVersionBoxValue(box, timestamp) {
+  // a short delay prevents validation from firing
+  // when user clicks on one of the suggestions.
   setTimeout(function() {
     var msg_class = 'invalid_version_error';
     var msg_id = 'invalid_version_error_' + timestamp;
