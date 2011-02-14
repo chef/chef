@@ -147,15 +147,15 @@ class Chef
         connection = Fog::AWS::Compute.new(
           :aws_access_key_id => Chef::Config[:knife][:aws_access_key_id],
           :aws_secret_access_key => Chef::Config[:knife][:aws_secret_access_key],
-          :region => Chef::Config[:knife][:region]
+          :region => config[:region]
         )
 
         server = connection.servers.create(
           :image_id => config[:image],
           :groups => config[:security_groups],
           :flavor_id => config[:flavor],
-          :key_name => Chef::Config[:knife][:aws_ssh_key_id],
-          :availability_zone => Chef::Config[:availability_zone]
+          :key_name => config[:aws_access_key_id],
+          :availability_zone => config[:availability_zone]
         )
 
         puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
