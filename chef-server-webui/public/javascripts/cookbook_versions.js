@@ -7,6 +7,7 @@ function cookbook_versions_show_more() {
   version_list.children('.other_version').show();
   $("#" + cookbook + "_show_all").show();
   $(this).unbind("click");
+  // en-dash == &#8211;
   $(this).html("&#8211;").attr("title", "hide other versions of " + cookbook);
   $(this).click(cookbook_versions_show_less);
 }
@@ -33,9 +34,13 @@ function cookbook_versions_show_all() {
     self.hide();
     return;
   }
+  var spinner = $('<img/>')
+    .attr("src", "/images/indicator.gif")
+    .attr("id", "show_all_versions_spinner");
+  self.after(spinner);
+  self.hide();
   var callback = function(data, textStatus, jqXHR) {
     var all_versions = $('<ol/>');
-    console.log("got " + data[cookbook].length + " items for " + cookbook);
     for (var i in data[cookbook]) {
       var v = data[cookbook][i];
       klass = "all_version";
@@ -50,30 +55,16 @@ function cookbook_versions_show_all() {
       all_versions.append(item);
     }
     version_list.html(all_versions.html());
-    self.hide();
+    spinner.remove();
   }
   $.ajax({
     url : "/cookbooks/" + cookbook + "?num_versions=all",
     dataType: "json",
     success : callback,
     error : function(jqXHR, textStatus, errorThrown) {
-      // FIXME
-      console.log(textStatus);
+      spinner.remove();
+      self.show();
     }
-  })
-}
-
-function fetch_all_versions0(cookbook) {
-  $.ajax({
-    url : "/cookbooks/" + cookbook,
-    dataType: "json",
-    success : function(data, textStatus, jqXHR) {
-      console.log(data);
-    },
-    error : function(jqXHR, textStatus, errorThrown) {
-      console.log(textStatus);
-    }
-
   })
 }
 
