@@ -20,19 +20,26 @@ function populateVersionBoxContent(timestamp, cb_name){
 
 function clearVersionBox(box, timestamp){
   populateVersionBoxContent(timestamp, retrieveCbName(timestamp));
-  error_message = document.getElementById('inline_error_message_' + timestamp);
-  if (error_message != null)
-    $(error_message).remove();
+  $('#invalid_version_error_' + timestamp).remove();
 }
 
-function validateVersionBoxValue(box, timestamp){
+function validateVersionBoxValue(box, timestamp) {  
   setTimeout(function() {
-  if (box.value.match(/^[0-9]+\.[0-9]+\.[0-9]+$/) == null){
-    if (box.value.length != 0 && document.getElementById('inline_error_message_' + timestamp) == null)
-      $(box).parent().append('<span class="inline_error_message" id="inline_error_message_' + timestamp + '" >Invalid version format. The version should be in the format of x.y.z.</span>');
-      if (box.value.length==0)
+    var msg_class = 'invalid_version_error';
+    var msg_id = 'invalid_version_error_' + timestamp;
+    var xyz_match = box.value.match(/^\d+\.\d+\.\d+$/);
+    var xy_match = box.value.match(/^\d+\.\d+$/);
+    if (!xyz_match && !xy_match) {
+      if (box.value.length != 0 && $('.' + msg_class).length == 0) {
+        var error_msg = $('<div/>')
+          .addClass(msg_class)
+          .attr('id', msg_id).text("Version must be x.y.z or x.y");
+        $(box).parent().append(error_msg);
+      }
+      if (box.value.length == 0) {
         box.value = "0.0.0";
-  }
+      }
+    }
   }, 100);
 }
 

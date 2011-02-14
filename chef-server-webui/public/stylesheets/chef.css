@@ -332,3 +332,8 @@ ul.cookbook_versions{
 tbody.cookbook_versions td {
     vertical-align:top;
 }
+
+.invalid_version_error {
+    color: red;
+    font-weight: bold;
+}
