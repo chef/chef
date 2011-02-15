@@ -128,11 +128,12 @@ class Cookbooks < Application
 
   def cookbook_parts
     Chef::CookbookVersion::COOKBOOK_SEGMENTS.map do |p|
-      case p
+      part = p.to_s
+      case part
       when "files"
-        [p.to_s, "plain"]
+        [part, "plain"]
       else
-        [p.to_s, "ruby"]
+        [part, "ruby"]
       end
     end.sort { |a, b| a[0] <=> b[0] }
   end
