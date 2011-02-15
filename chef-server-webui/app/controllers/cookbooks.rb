@@ -41,20 +41,18 @@ class Cookbooks < Application
   def show
     begin
       all_books = fetch_cookbook_versions("all", :cookbook => cookbook_id)
-      versions = all_books[cookbook_id].map { |v| v["version"] }
+      @versions = all_books[cookbook_id].map { |v| v["version"] }
       # if version is not specified in the url, get the most recent
       # version, otherwise get the specified version
-      version = if params[:cb_version].nil? || params[:cb_version].empty?
+      @version = if params[:cb_version].nil? || params[:cb_version].empty?
                   versions.first
                 else
                   params[:cb_version]
-                end
-      @cookbook = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks/#{cookbook_id}/#{version}")
-
-      # by default always show the largest version number (assuming largest means most recent)
-      @other_versions = versions - [version]
+                 end
+      cookbook_url = "cookbooks/#{cookbook_id}/#{@version}"
+      rest = Chef::REST.new(Chef::Config[:chef_server_url])
+      @cookbook = rest.get_rest(cookbook_url)
       raise NotFound unless @cookbook
-
       @manifest = @cookbook.manifest
       display @cookbook
     rescue => e
@@ -75,6 +73,12 @@ class Cookbooks < Application
                                         :use_envs => use_envs)
     display({ cookbook_id => all_books[cookbook_id] })
   end
+
+  ## ------
+  ## Helpers
+  ##
+  ## TODO: move these to a cookbooks helper module
+  ## ------
 
   def recipe_files
     # node = params.has_key?('node') ? params[:node] : nil
@@ -115,6 +119,31 @@ class Cookbooks < Application
             :id => "#{cookbook}_show_all",
             :data => cookbook,
             :title => "show all versions of #{cookbook}")
+  end
+
+  def cookbook_link(version)
+    url(:show_specific_version_cookbook,
+        :cookbook_id => @cookbook_id, :cb_version => version)
+  end
+
+  def cookbook_parts
+    Chef::CookbookVersion::COOKBOOK_SEGMENTS.map do |p|
+      case p
+      when "files"
+        [p.to_s, "plain"]
+      else
+        [p.to_s, "ruby"]
+      end
+    end.sort { |a, b| a[0] <=> b[0] }
+  end
+
+  def highlight_content(url, type)
+    case type
+    when "plain"
+      show_plain_file(url)
+    else
+      syntax_highlight(url)
+    end
   end
 
   private
