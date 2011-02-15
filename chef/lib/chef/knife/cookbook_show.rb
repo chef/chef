@@ -41,6 +41,11 @@ class Chef
        :long => "--platform-version VERSION",
        :description => "The platform version to see the file for"
 
+      option :with_uri,
+        :short => "-w",
+        :long => "--with-uri",
+        :description => "Show corresponding URIs"
+
       def run 
         case @name_args.length
         when 4 # We are showing a specific file
@@ -73,8 +78,11 @@ class Chef
         when 2 # We are showing the whole cookbook data
           cookbook_version = @name_args[1] == 'latest' ? '_latest' : @name_args[1]
           output(rest.get_rest("cookbooks/#{@name_args[0]}/#{cookbook_version}"))
-        when 1 # We are showing the cookbook versions 
-          output(rest.get_rest("cookbooks/#{@name_args[0]}"))
+        when 1 # We are showing the cookbook versions (all of them)
+          cookbook_name = @name_args[0]
+          env           = config[:environment]
+          api_endpoint  = env ? "environments/#{env}/cookbooks/#{cookbook_name}" : "cookbooks/#{cookbook_name}"
+          output(format_cookbook_list_for_display(rest.get_rest(api_endpoint)))
         when 0
           show_usage
           Chef::Log.fatal("You must specify a cookbook name")

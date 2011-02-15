@@ -42,10 +42,29 @@ describe Chef::Knife::CookbookShow do
     end
 
     describe "with 1 argument: versions" do
+      before(:each) do
+        @response = {
+          "cookbook_name" => {
+            "url" => "http://url/cookbooks/cookbook_name",
+            "versions" => [
+              { "version" => "0.10.0", "url" => "http://url/cookbooks/cookbook_name/0.10.0" },
+              { "version" => "0.9.0", "url" => "http://url/cookbookx/cookbook_name/0.9.0" },
+              { "version" => "0.8.0", "url" => "http://url/cookbooks/cookbook_name/0.8.0" }
+            ]
+          }
+        }
+      end
+
       it "should show the raw cookbook data" do
-        @response = ["0.1.0"]
         @rest.should_receive(:get_rest).with("cookbooks/cookbook_name").and_return(@response)
-        @knife.should_receive(:output).with(@response)
+        @knife.should_receive(:format_cookbook_list_for_display).with(@response)
+        @knife.run
+      end
+
+      it "should respect the user-supplied environment" do
+        @knife.config[:environment] = "foo"
+        @rest.should_receive(:get_rest).with("environments/foo/cookbooks/cookbook_name").and_return(@response)
+        @knife.should_receive(:format_cookbook_list_for_display).with(@response)
         @knife.run
       end
     end

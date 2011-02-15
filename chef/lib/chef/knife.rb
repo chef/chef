@@ -350,6 +350,17 @@ class Chef
       end
     end
 
+    def format_cookbook_list_for_display(item)
+      if config[:with_uri]
+        item
+      else
+        item.inject({}){|result, (k,v)|
+          result[k] = v["versions"].inject([]){|res, ver| res.push(ver["version"]); res}
+          result
+        }
+      end
+    end
+
     def edit_data(data, parse_output=true)
       output = Chef::JSON.to_json_pretty(data)
       
