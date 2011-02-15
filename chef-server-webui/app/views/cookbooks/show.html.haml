@@ -8,7 +8,7 @@
             %option{:value => ""} Other Versions
             %option{:value => ""} --------------
             - @other_versions.each do |v|
-              %option{:value => url(:show_specific_version_cookbook, :cookbook_id => @cookbook_id, :cb_version => v)} "#{v}"
+              %option{:value => url(:show_specific_version_cookbook, :cookbook_id => @cookbook_id, :cb_version => v)} #{v}
     .inner
       .accordion
         - unless @manifest["libraries"].empty?
