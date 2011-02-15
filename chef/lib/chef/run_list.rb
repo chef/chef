@@ -23,6 +23,7 @@ require 'chef/run_list/run_list_item'
 require 'chef/run_list/run_list_expansion'
 require 'chef/run_list/versioned_recipe_list'
 require 'chef/mixin/params_validate'
+require 'dep_selector'
 
 class Chef
   class RunList
@@ -158,8 +159,40 @@ class Chef
       end
     end
 
+    # Creates a DependencyGraph from CookbookVersion objects
+    def create_dependency_graph_from_cookbooks(all_cookbooks)
+      dep_graph = DepSelector::DependencyGraph.new
+      all_cookbooks.each do |cb_name, cb_versions|
+        cb_versions.each do |cb_version|
+          cb_version_deps = cb_version.metadata.dependencies
+          # TODO [cw. 2011/2/10]: CookbookVersion#version returns a
+          # String even though we're storing as a DepSelector::Version
+          # object underneath. This should be changed so that we
+          # return the object and handle proper serialization and
+          # de-serialization. For now, I'm just going to create a
+          # Version object from the String representation.
+          pv = dep_graph.package(cb_name).add_version(DepSelector::Version.new(cb_version.version))
+          cb_version_deps.each_pair do |dep_name, constraint_str|
+            constraint = DepSelector::VersionConstraint.new(constraint_str)
+            # TODO [cw, 2011/2/10]: do we want to throw this error
+            # here even if there is a version of cb_name that can be
+            # solved for that has only valid dependencies? See related
+            # note in DepSelector::Selector#solve.
+            unless all_cookbooks.has_key?(dep_name)
+              raise Chef::Exceptions::CookbookVersionUnavailable.new("Cookbook #{cb_name} version #{cb_version.version} lists a dependency on cookbook #{dep_name}, which does not exist")
+            end
+            pv.dependencies << DepSelector::Dependency.new(dep_graph.package(dep_name), constraint)
+          end
+        end
+      end
+
+      dep_graph
+    end
+
     # Return a hash mapping cookbook names to a CookbookVersion
-    # object.
+    # object. If there is no solution that satisfies the constraints,
+    # the first run list item that caused unsatisfiability is
+    # returned.
     #
     # This is the final version-resolved list of cookbooks for the
     # RunList.
@@ -167,98 +200,48 @@ class Chef
     # all_cookbooks - a hash mapping cookbook names to an array of
     # available CookbookVersions.
     #
-    # cookbook_constraints - an array of hashes describing the
-    # expanded run list.  Each element is a hash containing keys :name
-    # and :version_constraint.
-    #
-    def constrain(all_cookbooks, cookbook_constraints)
-      cookbooks = cookbook_constraints.inject({}) do |included_cookbooks, cookbook_constraint|
-        expand_cookbook_deps(included_cookbooks, all_cookbooks, cookbook_constraint, ["Run list"])
-        included_cookbooks
-      end
-      ans = {}
-      cookbooks.each do |k, v|
-        ans[k] = v[:cookbook]
-      end
-      ans
-    end
+    # recipe_constraints - an array of hashes describing the expanded
+    # run list.  Each element is a hash containing keys :name and
+    # :version_constraint. The :name component is either the
+    # fully-qualified recipe name (e.g. "cookbook1::non_default_recipe")
+    # or just a cookbook name, indicating the default recipe is to be
+    # run (e.g. "cookbook1").
 
-    def path_to_s(path)
-      "[" + path.join(" -> ") + "]"
-    end
+    def constrain(all_cookbooks, recipe_constraints)
+      dep_graph = create_dependency_graph_from_cookbooks(all_cookbooks)
 
-    # Accumulates transitive cookbook dependencies no more than once
-    # in included_cookbooks
-    #
-    # included_cookbooks - accumulator for return value, a hash
-    # mapping cookbook name to a hash with keys :cookbook,
-    # :version_constraint, and :parent.
-    #
-    #  all_cookbooks - A hash mapping cookbook name to an array of
-    # CookbookVersion objects.  These represent all the cookbooks that
-    # are available in a given environment.
-    #
-    # recipe - A hash with keys :name and :version_constraint. 
-    #
-    # parent_path - A list of cookbook names (or "Run list" for
-    # top-level) that tracks where we are in the dependency
-    # tree.
-    #
-    def expand_cookbook_deps(included_cookbooks, all_cookbooks, recipe, parent_path)
-      # determine the recipe's parent cookbook, which might be the
-      # recipe name in the default case
-      cookbook_name = (recipe[:name][/^(.+)::/, 1] || recipe[:name])
-      constraint = recipe[:version_constraint]
-      if included_cookbooks[cookbook_name]
-        # If the new constraint includes the cookbook we have already
-        # selected, we will continue.  We can't swap at this point
-        # because we've already included the dependencies induced by
-        # the version we have.
-        already_selected = included_cookbooks[cookbook_name]
-        if !constraint.include?(already_selected[:cookbook])
-          prev_constraint = already_selected[:version_constraint]
-          prev_version = already_selected[:cookbook].version
-          prev_path = already_selected[:parent]
-          msg = ["Unable to satisfy constraint #{cookbook_name} (#{constraint})",
-                 "from #{path_to_s(parent_path)}.",
-                 "Already already selected #{cookbook_name}@#{prev_version} via",
-                 "#{cookbook_name} (#{prev_constraint}) #{path_to_s(prev_path)}"
-                ].join(" ")
-          raise Chef::Exceptions::CookbookVersionConflict, msg
+      # extract cookbook names from (possibly) fully-qualified recipe names
+      cookbook_constraints = recipe_constraints.map do |recipe_spec|
+        cookbook_name = (recipe_spec[:name][/^(.+)::/, 1] || recipe_spec[:name])
+        unless dep_graph.packages.has_key?(cookbook_name)
+          raise Chef::Exceptions::CookbookVersionUnavailable.new("Cookbook #{cookbook_name} does not exist")
         end
-        # we've already processed this cookbook, no need to recurse
-        return
+        pkg = dep_graph.package(cookbook_name)
+        DepSelector::SolutionConstraint.new(pkg, recipe_spec[:version_constraint])
       end
 
-      choices = all_cookbooks[cookbook_name] || []
-      choices = choices.select { |cb| constraint.include?(cb) }
-      Chef::Log.debug "Node requires #{cookbook_name} (#{constraint})"
-      if choices.empty?
-        msg = ("#{path_to_s(parent_path)} depends on cookbook #{cookbook_name} " +
-               "(#{constraint}), which is not available on this node")
-        raise Chef::Exceptions::CookbookVersionUnavailable, msg
+      # find a valid assignment of CoookbookVersions. If no valid
+      # assignment exists, indicate which run_list_item causes the
+      # unsatisfiability and try to hint at what might be wrong.
+      soln =
+        begin
+          DepSelector::Selector.new(dep_graph).find_solution(cookbook_constraints)
+        rescue DepSelector::Exceptions::NoSolutionExists => nse
+          raise Chef::Exceptions::CookbookVersionConflict, nse.message
+        end
+
+      # map assignment back to CookbookVersion objects
+      selected_cookbooks = {}
+      soln.each_pair do |cb_name, cb_version|
+        # TODO [cw, 2011/2/10]: related to the TODO in
+        # RunList#create_dependency_graph_from_cookbooks, cbv.version
+        # currently returns a String, so we must compare to
+        # cb_version.to_s, since it's a for-real Version object.
+        selected_cookbooks[cb_name] = all_cookbooks[cb_name].find{|cbv| cbv.version == cb_version.to_s}
       end
-      # pick the highest version
-      cookbook = choices.sort.last
-      included_cookbooks[cookbook_name] = {
-        :cookbook => cookbook,
-        :version_constraint => constraint,
-        # store a copy of our path (not strictly necessary, but avoids
-        # a future code tweak from breaking)
-        :parent => parent_path.dup
-      }
-      # add current cookbook to a new copy of the parent path to
-      # pass to the recursive call
-      parent_path = parent_path.dup
-      parent_path << cookbook_name
-      cookbook.metadata.dependencies.each do |dep_name, version_constraint|
-        recipe = {
-          :name => dep_name,
-          :version_constraint => Chef::VersionConstraint.new(version_constraint)
-        }
-        expand_cookbook_deps(included_cookbooks, all_cookbooks, recipe, parent_path)
-      end
+      selected_cookbooks
     end
+
   end
 end
 

@@ -1,7 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +19,9 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
+
+require 'dep_selector/version'
+require 'dep_selector/version_constraint'
 
 describe Chef::RunList do
   before(:each) do
@@ -311,29 +315,45 @@ describe Chef::RunList do
     end
  
     def vc_maker(cookbook_name, version_constraint)
-        vc = Chef::VersionConstraint.new(version_constraint)
-        { :name => cookbook_name, :version_constraint => vc }
+      vc = DepSelector::VersionConstraint.new(version_constraint)
+      { :name => cookbook_name, :version_constraint => vc }
+    end
+
+    def assert_failure(run_list, all_cookbooks, constraints, exception_class, expected_message)
+      begin
+        run_list.constrain(all_cookbooks, constraints)
+        fail "Should have raised a Chef::Exceptions::CookbookVersionConflict exception"
+      rescue exception_class => cvc
+        cvc.message.should include(expected_message)
+      end
     end
 
     before(:each) do
       a = cookbook_maker("a", "1.0", [["c", "< 4.0"]])
       b = cookbook_maker("b", "1.0", [["c", "< 3.0"]])
       
-      c3 = cookbook_maker("c", "3.0", [["d", "> 2.0"], ["e", nil]])
       c2 = cookbook_maker("c", "2.0", [["d", "> 1.0"], ["f", nil]])
+      c3 = cookbook_maker("c", "3.0", [["d", "> 2.0"], ["e", nil]])
 
       d1 = cookbook_maker("d", "1.1", [])
       d2 = cookbook_maker("d", "2.1", [])
       e = cookbook_maker("e", "1.0", [])
       f = cookbook_maker("f", "1.0", [])
-      
+      g = cookbook_maker("g", "1.0", [["d", "> 5.0"]])
+
+      n1_1 = cookbook_maker("n", "1.1", [])
+      n1_2 = cookbook_maker("n", "1.2", [])
+      n1_10 = cookbook_maker("n", "1.10", [])
+
       @all_cookbooks = {
         "a" => [a],
         "b" => [b],
         "c" => [c2, c3],
         "d" => [d1, d2],
         "e" => [e],
-        "f" => [f]
+        "f" => [f],
+        "g" => [g],
+        "n" => [n1_1, n1_2, n1_10]
       }
     end
 
@@ -341,8 +361,26 @@ describe Chef::RunList do
       constraints = [vc_maker("a", "~> 1.0")]
       cookbooks = @run_list.constrain(@all_cookbooks, constraints)
       %w(a c d e).each { |k| cookbooks.should have_key k }
+      cookbooks.size.should == 4
       cookbooks["c"].version.should == "3.0.0"
       cookbooks["d"].version.should == "2.1.0"
+    end
+
+    it "properly sorts version triples, treating each term numerically" do
+      constraints = [vc_maker("n", "> 1.2")]
+      cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+      cookbooks.size.should == 1
+      cookbooks["n"].version.should == "1.10.0"
+    end
+
+    it "should fail to find a solution when a run list item is constrained to a range that includes no cookbooks" do
+      constraints = [vc_maker("d", "> 5.0")]
+      assert_failure(@run_list, @all_cookbooks, constraints, Chef::Exceptions::CookbookVersionConflict, "unsatisfiability introduced at solution constraint (d > 5.0.0)")
+    end
+
+    it "should fail to find a solution when a run list item's dependency is constrained to a range that includes no cookbooks" do
+      constraints = [vc_maker("g", nil)]
+      assert_failure(@run_list, @all_cookbooks, constraints, Chef::Exceptions::CookbookVersionConflict, "unsatisfiability introduced at solution constraint (g >= 0.0.0)")
     end
 
     it "selects 'd 2.1.0' given constraint 'd > 1.2.3'" do
@@ -366,85 +404,72 @@ describe Chef::RunList do
       cookbooks["d"].version.should == "1.1.0"
     end
 
-    it "raises CookbookVersionUnavailable for an unknown cookbook" do
+    it "raises CookbookVersionUnavailable for an unknown cookbook in the run list" do
       constraints = [vc_maker("nosuch", "1.0.0")]
-      fun = lambda { @run_list.constrain(@all_cookbooks, constraints) }
-      fun.should raise_error(Chef::Exceptions::CookbookVersionUnavailable)
+      assert_failure(@run_list, @all_cookbooks, constraints, Chef::Exceptions::CookbookVersionUnavailable, "Cookbook nosuch does not exist")
     end
 
-    it "raises CookbookVersionUnavailable if constraint can't be met" do
-      constraints = [vc_maker("a", "99.9.9")]
-      fun = lambda { @run_list.constrain(@all_cookbooks, constraints) }
-      fun.should raise_error(Chef::Exceptions::CookbookVersionUnavailable)
+    it "raises CookbookVersionUnavailable for an unknown cookbook in a cookbook's depencies" do
+      depends_on_nosuch = cookbook_maker("depends_on_nosuch", "1.0", [["nosuch", nil]])
+      cbs = @all_cookbooks.merge({"depends_on_nosuch" => [depends_on_nosuch]})
+      constraints = [vc_maker("depends_on_nosuch", "1.0.0")]
+      assert_failure(@run_list, cbs, constraints, Chef::Exceptions::CookbookVersionUnavailable, "Cookbook depends_on_nosuch version 1.0.0 lists a dependency on cookbook nosuch, which does not exist")
     end
 
     it "raises CookbookVersionConflict for direct conflict" do
       constraints = [vc_maker("d", "= 1.1.0"), vc_maker("d", ">= 2.0")]
-      fun = lambda { @run_list.constrain(@all_cookbooks, constraints) }
-      fun.should raise_error(Chef::Exceptions::CookbookVersionConflict)
+      assert_failure(@run_list, @all_cookbooks, constraints, Chef::Exceptions::CookbookVersionConflict, "unsatisfiability introduced at solution constraint (d >= 2.0.0)")
     end
 
-    it "raises CookbookVersionConflict a then b" do
-      # Cookbooks a and b both have a dependency on c, but with
-      # differing constraints.  When a is pulled in first, we should
-      # get a version of c that is too new for the constraint on c
-      # that b declares.
-      constraints = [vc_maker("a", "1.0"), vc_maker("b", "1.0")]
-      fun = lambda { @run_list.constrain(@all_cookbooks, constraints) }
-      fun.should raise_error(Chef::Exceptions::CookbookVersionConflict)
-    end
+    describe "should solve regardless of constraint order" do
 
-    it "resolves b then a" do
-      # See above comment for a then b.  When b is pulled in first, we
-      # should get a version of c that satifies the constraints on the
-      # c dependency for both b and a.
-      constraints = [vc_maker("b", "1.0"), vc_maker("a", "1.0")]
-      cookbooks = @run_list.constrain(@all_cookbooks, constraints)
-      cookbooks.should have_key "a"
-      cookbooks.should have_key "b"
-      cookbooks["c"].version.should == "2.0.0"
-    end
-
-    it "raises CookbookVersionConflict a then d" do
-      constraints = [vc_maker("a", "1.0"), vc_maker("d", "1.1")]
-      fun = lambda { @run_list.constrain(@all_cookbooks, constraints) }
-      fun.should raise_error(Chef::Exceptions::CookbookVersionConflict)
-    end
-
-    it "raises CookbookVersionConflict d then a" do
-      constraints = [vc_maker("a", "1.0"), vc_maker("d", "1.1")].reverse
-      fun = lambda { @run_list.constrain(@all_cookbooks, constraints) }
-      fun.should raise_error(Chef::Exceptions::CookbookVersionConflict)
-    end
-
-    describe "expand_cookbook_deps (parent paths)" do
-      before(:each) do
-        # we test at this level to be able to verify that tracking of
-        # the parent path is correct.
-        a = cookbook_maker("a", "1.0", [["b", nil], ["d", nil]])
-        b = cookbook_maker("b", "1.0", [["c", nil]])
-        c = cookbook_maker("c", "1.0", [])
-        d = cookbook_maker("d", "1.0", [["e", nil]])
-        e = cookbook_maker("e", "1.0", [])
-        @all_cookbooks = { }
-        constraint = { :name => "a",
-          :version_constraint => Chef::VersionConstraint.new }
-        [a, b, c, d, e].each { |cb| @all_cookbooks[cb.name] = [cb] }
-        @cookbooks = {}
-        @run_list.expand_cookbook_deps(@cookbooks, @all_cookbooks, constraint, ["Run list"])
+      it "raises CookbookVersionConflict a then b" do
+        # Cookbooks a and b both have a dependency on c, but with
+        # differing constraints.
+        constraints = [vc_maker("a", "1.0"), vc_maker("b", "1.0")]
+        cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+        cookbooks.size.should == 5
+        %w(a b c d f).each { |k| cookbooks.should have_key k }
+        cookbooks["a"].version.should == "1.0.0"
+        cookbooks["b"].version.should == "1.0.0"
+        cookbooks["c"].version.should == "2.0.0"
+        cookbooks["d"].version.should == "2.1.0"
       end
 
-      # [cookbook, expected_parent_path]
-      [
-       ["a", ["Run list"]],
-       ["b", ["Run list", "a"]],
-       ["c", ["Run list", "a", "b"]],
-       ["d", ["Run list", "a"]],
-       ["e", ["Run list", "a", "d"]]].each do |book, path|
-        it "parent path for #{book} is #{path.inspect}" do
-          @cookbooks[book][:parent].should == path
-        end
+      it "resolves b then a" do
+        # See above comment for a then b.  When b is pulled in first,
+        # we should get a version of c that satifies the constraints
+        # on the c dependency for both b and a.
+        constraints = [vc_maker("b", "1.0"), vc_maker("a", "1.0")]
+        cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+        cookbooks.size.should == 5
+        %w(a b c d f).each { |k| cookbooks.should have_key k }
+        cookbooks["a"].version.should == "1.0.0"
+        cookbooks["b"].version.should == "1.0.0"
+        cookbooks["c"].version.should == "2.0.0"
+        cookbooks["d"].version.should == "2.1.0"
       end
+
+      it "resolves a then d" do
+        constraints = [vc_maker("a", "1.0"), vc_maker("d", "1.1")]
+        cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+        cookbooks.size.should == 4
+        %w(a c d f).each { |k| cookbooks.should have_key k }
+        cookbooks["a"].version.should == "1.0.0"
+        cookbooks["c"].version.should == "2.0.0"
+        cookbooks["d"].version.should == "1.1.0"
+      end
+
+      it "resolves d then a" do
+        constraints = [vc_maker("d", "1.1"), vc_maker("a", "1.0")]
+        cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+        cookbooks.size.should == 4
+        %w(a c d f).each { |k| cookbooks.should have_key k }
+        cookbooks["a"].version.should == "1.0.0"
+        cookbooks["c"].version.should == "2.0.0"
+        cookbooks["d"].version.should == "1.1.0"
+      end
+
     end
   end
 end
