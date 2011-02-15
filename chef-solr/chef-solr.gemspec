@@ -9,7 +9,7 @@ Gem::Specification.new do |gem|
   gem.authors = ["Adam Jacob"]
   gem.add_dependency "chef", Chef::Solr::VERSION
   # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-  gem.executables = [ 'chef-solr', 'chef-solr-indexer', 'chef-solr-rebuild' ]
+  gem.executables = [ 'chef-solr', 'chef-solr-rebuild' ]
   gem.files = [
     "README.rdoc",
     "Rakefile"
