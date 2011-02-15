@@ -64,6 +64,7 @@ div#run_list_editor_container {
 
 div.runListEditorColumn {
   float:left;
+  margin-top: 20px;
 }
 
 div#current_run_list_display_container{

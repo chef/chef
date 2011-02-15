@@ -9,7 +9,10 @@
     <% end %>
 
     <div>
+      <label class="label" for="nodeEnvironment">Environment:</label>
       <%= select :chef_environment, :collection => @environments, :id => 'nodeEnvironment', :selected => @env %>
+      <br />
+      <span class="description">The node's environment</span>
     </div>
 
     <div class="group form" id="run_list_editor_container">
