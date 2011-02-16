@@ -91,6 +91,7 @@ body {
 
 #wrapper {
   padding-top: 20px;
+  background: #F4F4F6;
 }
 
 #main .block {
@@ -124,6 +125,7 @@ body {
 
 #user-navigation ul li, #main-navigation ul li, .secondary-navigation ul li {
   float: left;
+  padding-top: 0;
 }
 
 #main-navigation ul li {
@@ -131,7 +133,7 @@ body {
 }
 
 #user-navigation ul li {
-  padding: 5px 10px;
+  padding: 60px 10px;
 }
 
 #main-navigation ul li a:link, #main-navigation ul li a:visited, #main-navigation ul li a:hover, #main-navigation ul li a:active,

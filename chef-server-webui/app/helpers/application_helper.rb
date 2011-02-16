@@ -36,5 +36,11 @@ module Merb
       end
     end
 
+    def nav_link_item(title, dest)
+      name = title.gsub(/ /, "").downcase
+      klass = controller_name == name ? 'class="active"' : ""
+      link = link_to(title, url(dest))
+      "<li #{klass}>#{link}</li>"
+    end
   end
 end

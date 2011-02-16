@@ -35,15 +35,15 @@
           .clear
         #main-navigation
           %ul
-            %li= link_to "Environments", url(:environments)
-            %li= link_to "Search", url(:searches)
-            %li= link_to "Status", url(:status)
-            %li= link_to "Roles", url(:roles)
-            %li= link_to "Nodes", url(:nodes)
-            %li= link_to "Cookbooks", url(:cookbooks)
-            %li= link_to "Databags", url(:databags)
-            %li= link_to "Clients", url(:clients)
-            %li= link_to "Users", url(:users)
+            = nav_link_item("Environments", :environments)
+            = nav_link_item("Search", :searches)
+            = nav_link_item("Status", :status)
+            = nav_link_item("Roles", :roles)
+            = nav_link_item("Nodes", :nodes)
+            = nav_link_item("Cookbooks", :cookbooks)
+            = nav_link_item("Databags", :databags)
+            = nav_link_item("Clients", :clients)
+            = nav_link_item("Users", :users)
           .clear
       #wrapper
         #main
