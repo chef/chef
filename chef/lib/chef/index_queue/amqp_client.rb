@@ -76,7 +76,7 @@ class Chef
       def send_action(action, data)
         retries = 0
         begin
-          exchange.publish(Chef::JSON.to_json({"action" => action.to_s, "payload" => data}))
+          exchange.publish(Chef::JSONCompat.to_json({"action" => action.to_s, "payload" => data}))
         rescue Bunny::ServerDownError, Bunny::ConnectionError, Errno::ECONNRESET
           disconnected!
           if (retries += 1) < 2
