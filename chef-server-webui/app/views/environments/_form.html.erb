@@ -23,7 +23,7 @@
       <% if !@environment.invalid_fields[:cookbook_version].nil? && !@environment.invalid_fields[:cookbook_version].empty? %>
         <span class="inline_error_message" id='error'>There was a problem in one of your constraints. Please enter version constraints in acceptable formats (e.g. 0.0.0). </span>
       <% end %>
-      <table class="table" id="cbVerPickerTable" data-cookbook_names=<%= @cookbooks.to_json %>>
+      <table class="table" id="cbVerPickerTable">
         <tbody>
           <tr>
             <th class = "first" id="CookbookVersionConstraints">Name</th>
