@@ -79,6 +79,11 @@ class Environments < Application
   # GET /environments/:id/edit
   def edit
     load_environment
+    if @environment.name == "_default"
+      msg = { :warning => "The '_default' environment cannot be edited." }
+      redirect(url(:environments), :message => msg)
+      return
+    end
     load_cookbooks
     render
   end
