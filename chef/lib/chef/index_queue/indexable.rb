@@ -70,7 +70,6 @@ class Chef
         Chef::Log.debug("pushing item to index queue for deletion: #{self.with_indexer_metadata(metadata)}")
         AmqpClient.instance.send_action(:delete, self.with_indexer_metadata(metadata))
       end
-      
     end
   end
 end

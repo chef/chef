@@ -18,6 +18,7 @@
 
 require 'chef/resource/package'
 require 'chef/provider/package/solaris'
+require 'chef/json_compat'
 
 class Chef
   class Resource

@@ -284,7 +284,7 @@ class Chef
     def output(data)
       case config[:format]
       when "json", nil
-        stdout.puts Chef::JSON.to_json_pretty(data)
+        stdout.puts Chef::JSONCompat.to_json_pretty(data)
       when "yaml"
         require 'yaml'
         stdout.puts YAML::dump(data)
@@ -330,7 +330,7 @@ class Chef
     end
 
     def edit_data(data, parse_output=true)
-      output = Chef::JSON.to_json_pretty(data)
+      output = Chef::JSONCompat.to_json_pretty(data)
       
       if (!config[:no_editor])
         filename = "knife-edit-"
@@ -348,7 +348,7 @@ class Chef
         File.unlink(filename)
       end
 
-      parse_output ? Chef::JSON.from_json(output) : output
+      parse_output ? Chef::JSONCompat.from_json(output) : output
     end
 
     def confirm(question, append_instructions=true)
@@ -399,7 +399,7 @@ class Chef
 
       case from_file
       when /\.(js|json)$/
-        Chef::JSON.from_json(IO.read(filename))
+        Chef::JSONCompat.from_json(IO.read(filename))
       when /\.rb$/
         r = klass.new
         r.from_file(filename)
@@ -429,8 +429,8 @@ class Chef
       # We wouldn't have to do these shenanigans if all the editable objects 
       # implemented to_hash, or if to_json against a hash returned a string 
       # with stable key order.
-      object_parsed_again = Chef::JSON.from_json(Chef::JSON.to_json(object), :create_additions => false)
-      output_parsed_again = Chef::JSON.from_json(Chef::JSON.to_json(output), :create_additions => false)
+      object_parsed_again = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(object), :create_additions => false)
+      output_parsed_again = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(output), :create_additions => false)
       if object_parsed_again != output_parsed_again
         output.save
         self.msg("Saved #{output}")

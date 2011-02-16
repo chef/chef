@@ -20,7 +20,7 @@
 require 'json'
 
 class Chef
-  class JSON
+  class JSONCompat
     JSON_MAX_NESTING = 1000
 
     class <<self

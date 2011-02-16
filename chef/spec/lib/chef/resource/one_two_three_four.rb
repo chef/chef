@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/json_compat'
+
 class Chef
   class Resource
     class OneTwoThreeFour < Chef::Resource

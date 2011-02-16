@@ -24,7 +24,7 @@ require 'chef/couchdb'
 require 'chef/certificate'
 require 'chef/index_queue'
 require 'extlib'
-require 'chef/json'
+require 'chef/json_compat'
 
 class Chef
   class ApiClient 

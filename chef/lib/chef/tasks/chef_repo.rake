@@ -17,7 +17,7 @@
 #
 
 require 'rubygems'
-require 'chef/json'
+require 'chef/json_compat'
 require 'chef'
 require 'chef/role'
 require 'chef/cookbook/metadata'

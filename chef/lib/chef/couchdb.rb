@@ -21,7 +21,7 @@ require 'chef/config'
 require 'chef/rest'
 require 'chef/log'
 require 'digest/sha2'
-require 'chef/json'
+require 'chef/json_compat'
 
 # We want to fail on create if uuidtools isn't installed
 begin

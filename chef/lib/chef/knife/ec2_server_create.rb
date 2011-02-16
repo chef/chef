@@ -18,7 +18,7 @@
 
 require 'socket'
 require 'chef/knife'
-require 'chef/json'
+require 'chef/json_compat'
 
 class Chef
   class Knife
