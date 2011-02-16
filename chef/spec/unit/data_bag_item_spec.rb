@@ -158,7 +158,7 @@ describe Chef::DataBagItem do
     before(:each) do
       @data_bag_item.data_bag('mars_volta')
       @data_bag_item.raw_data = { "id" => "octahedron", "snooze" => { "finally" => :world_will }}
-      @deserial = Chef::JSON.from_json(@data_bag_item.to_json)
+      @deserial = Chef::JSONCompat.from_json(@data_bag_item.to_json)
     end
 
     it "should deserialize to a Chef::DataBagItem object" do

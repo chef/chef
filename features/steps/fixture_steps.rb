@@ -348,14 +348,14 @@ Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|
         :method => "POST",
         "HTTP_ACCEPT" => 'application/json',
         "CONTENT_TYPE" => 'application/json',
-        :input => Chef::JSON.to_json(@stash[stash_name])
+        :input => Chef::JSONCompat.to_json(@stash[stash_name])
       }.merge(sign_request("POST", request_path, OpenSSL::PKey::RSA.new(IO.read("#{tmpdir}/client.pem")), "bobo")))
     end
   end
 end
 
 Given /^sending the method '(.+)' to the '(.+)' with '(.+)'/ do |method, stash_name, update_value|
-  update_value = Chef::JSON.from_json(update_value) if update_value =~ /^\[|\{/
+  update_value = Chef::JSONCompat.from_json(update_value) if update_value =~ /^\[|\{/
   @stash[stash_name].send(method.to_sym, update_value)
 end
 

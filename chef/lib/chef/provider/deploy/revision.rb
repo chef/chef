@@ -21,7 +21,7 @@
 
 require 'chef/provider'
 require 'chef/provider/deploy'
-require 'chef/json'
+require 'chef/json_compat'
 
 class Chef
   class Provider
@@ -63,7 +63,7 @@ class Chef
 
         def load_cache
           begin
-            Chef::JSON.from_json(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
+            Chef::JSONCompat.from_json(Chef::FileCache.load("revision-deploys/#{new_resource.name}"))
           rescue Chef::Exceptions::FileNotFound
             sorted_releases_from_filesystem
           end

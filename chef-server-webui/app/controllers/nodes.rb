@@ -95,14 +95,14 @@ class Nodes < Application
       @node = Chef::Node.new
       @node.name params[:name]
       @node.chef_environment params[:chef_environment]
-      @node.normal_attrs = Chef::JSON.from_json(params[:attributes])
+      @node.normal_attrs = Chef::JSONCompat.from_json(params[:attributes])
       @node.run_list.reset!(params[:for_node] ? params[:for_node] : [])
       raise ArgumentError, "Node name cannot be blank" if (params[:name].nil? || params[:name].length==0)
       @node.create
       redirect(url(:nodes), :message => { :notice => "Created Node #{@node.name}" })
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @node.normal_attrs = Chef::JSON.from_json(params[:attributes])
+      @node.normal_attrs = Chef::JSONCompat.from_json(params[:attributes])
       @available_recipes = list_available_recipes_for(@node.chef_environment)
       @available_roles = Chef::Role.list.keys.sort
       @node.run_list params[:for_node]
@@ -117,7 +117,7 @@ class Nodes < Application
       @node = Chef::Node.load(params[:id])
       @node.chef_environment(params[:chef_environment])
       @node.run_list.reset!(params[:for_node] ? params[:for_node] : [])
-      @node.normal_attrs = Chef::JSON.from_json(params[:attributes])
+      @node.normal_attrs = Chef::JSONCompat.from_json(params[:attributes])
       @node.save
       @_message = { :notice => "Updated Node" }
       render :show

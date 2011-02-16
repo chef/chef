@@ -65,12 +65,12 @@ end
 
 Then /^the inflated response should match '(.+)' as json$/ do |regex|
   puts self.inflated_response.inspect if ENV["DEBUG"]
-  Chef::JSON.to_json(self.inflated_response).should =~ /#{regex}/m
+  Chef::JSONCompat.to_json(self.inflated_response).should =~ /#{regex}/m
 end
 
 Then /^the inflated responses key '(.+)' should match '(.+)' as json$/ do |key, regex|
   puts self.inflated_response.inspect if ENV["DEBUG"]
-  Chef::JSON.to_json(self.inflated_response[key]).should =~ /#{regex}/m
+  Chef::JSONCompat.to_json(self.inflated_response[key]).should =~ /#{regex}/m
 end
 
 Then /^the inflated responses key '(.+)' item '(\d+)' should be '(.+)'$/ do |key, index, to_equal|
@@ -176,7 +176,7 @@ Then /^the inflated response should be a kind of '(.+)'$/ do |thing|
 end
 
 Then /^the inflated response should respond to '(.+)' with '(.+)'$/ do |method, to_match|
-  to_match = Chef::JSON.from_json(to_match) if to_match =~ /^\[|\{/
+  to_match = Chef::JSONCompat.from_json(to_match) if to_match =~ /^\[|\{/
   to_match = true if to_match == 'true'
   to_match = false if to_match == 'false'
   self.inflated_response.to_hash[method].should == to_match
@@ -187,7 +187,7 @@ Then /^the inflated response should respond to '(.+)' and match '(.+)'$/ do |met
 end
 
 Then /^the inflated response should respond to '(.+)' and match '(.+)' as json$/ do |method, regex|
-  Chef::JSON.to_json(self.inflated_response.to_hash[method]).should =~ /#{regex}/m
+  Chef::JSONCompat.to_json(self.inflated_response.to_hash[method]).should =~ /#{regex}/m
 end
 
 #And the 'deep_array' component has depth of '50' levels

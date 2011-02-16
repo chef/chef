@@ -99,7 +99,7 @@ describe Chef::Application::Client, "reconfigure" do
       end
 
       it "should parse the json out of the file" do
-        Chef::JSON.should_receive(:from_json).with(@json.read)
+        Chef::JSONCompat.should_receive(:from_json).with(@json.read)
         @app.reconfigure
       end
     end
@@ -109,7 +109,7 @@ describe Chef::Application::Client, "reconfigure" do
         Chef::Config[:json_attribs] = "/etc/chef/dna.json"
         @json = mock("Tempfile", :read => {:a=>"b"}.to_json, :null_object => true)
         @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
-        Chef::JSON.stub!(:from_json).with(@json.read).and_raise(JSON::ParserError)
+        Chef::JSONCompat.stub!(:from_json).with(@json.read).and_raise(JSON::ParserError)
         Chef::Application.stub!(:fatal!).and_return(true)
       end
       
