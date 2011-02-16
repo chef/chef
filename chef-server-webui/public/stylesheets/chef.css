@@ -338,3 +338,7 @@ tbody.cookbook_versions td {
     color: red;
     font-weight: bold;
 }
+
+#cbVerAddRow td {
+    background: #c1c8d2;
+}
