@@ -17,7 +17,7 @@
 #
 
 require 'chef/knife'
-require 'chef/json'
+require 'chef/json_compat'
 require 'uri'
 require 'chef/mixin/shell_out'
 

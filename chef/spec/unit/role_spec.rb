@@ -141,11 +141,11 @@ describe Chef::Role do
       @role.run_list('one', 'two', 'role[a]')
       @role.default_attributes({ :el_groupo => 'nuevo' })
       @role.override_attributes({ :deloused => 'in the comatorium' })
-      @serial = Chef::JSON.to_json(@role)
+      @serial = Chef::JSONCompat.to_json(@role)
     end
 
     it "should serialize to a json hash" do
-      Chef::JSON.to_json(@role).should match(/^\{.+\}$/)
+      Chef::JSONCompat.to_json(@role).should match(/^\{.+\}$/)
     end
 
     %w{
@@ -177,7 +177,7 @@ describe Chef::Role do
       @role.run_list('one', 'two', 'role[a]')
       @role.default_attributes({ 'el_groupo' => 'nuevo' })
       @role.override_attributes({ 'deloused' => 'in the comatorium' })
-      @deserial = Chef::JSON.from_json(Chef::JSON.to_json(@role))
+      @deserial = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@role))
     end
 
     it "should deserialize to a Chef::Role object" do

@@ -19,7 +19,7 @@
 
 require 'net/http'
 require 'uri'
-require 'chef/json'
+require 'chef/json_compat'
 require 'chef/config'
 
 class Chef
@@ -51,7 +51,7 @@ class Chef
         Chef::Log.debug("Sending #{url} to Solr")
         request = new(:GET, url)
         json_response = request.run("Search Query to Solr '#{solr_url}#{url}'")
-        Chef::JSON.from_json(json_response)
+        Chef::JSONCompat.from_json(json_response)
       end
 
       def self.update(doc)

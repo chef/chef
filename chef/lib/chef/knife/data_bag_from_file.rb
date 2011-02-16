@@ -19,7 +19,7 @@
 require 'chef/knife'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
-require 'chef/json'
+require 'chef/json_compat'
 
 class Chef
   class Knife

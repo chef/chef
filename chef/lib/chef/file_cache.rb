@@ -18,7 +18,7 @@
 require 'chef/mixin/params_validate'
 require 'chef/mixin/create_path'
 require 'chef/exceptions'
-require 'chef/json'
+require 'chef/json_compat'
 require 'fileutils'
 
 class Chef

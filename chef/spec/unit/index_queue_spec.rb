@@ -130,7 +130,7 @@ describe Chef::IndexQueue::Indexable do
 
       @indexable_obj.add_to_index(:database => "couchdb@localhost,etc.", :id=>"0000000-1111-2222-3333-444444444444")
 
-      published_message = Chef::JSON.from_json(@queue.published_message)
+      published_message = Chef::JSONCompat.from_json(@queue.published_message)
       published_message.should == {"action" => "add", "payload" => {"item" => @item_as_hash,
                                                                     "type" => "indexable_test_harness",
                                                                     "database" => "couchdb@localhost,etc.",
@@ -153,7 +153,7 @@ describe Chef::IndexQueue::Indexable do
         Chef::Config[:persistent_queue] = orig_value
       end
 
-      published_message = Chef::JSON.from_json(@queue.published_message)
+      published_message = Chef::JSONCompat.from_json(@queue.published_message)
       published_message.should == {"action" => "add", "payload" => {"item" => @item_as_hash,
                                                                     "type" => "indexable_test_harness",
                                                                     "database" => "couchdb@localhost,etc.",
@@ -189,7 +189,7 @@ describe Chef::IndexQueue::Indexable do
       @amqp_client.should_not_receive(:tx_rollback)
 
       @indexable_obj.delete_from_index(:database => "couchdb2@localhost", :id=>"0000000-1111-2222-3333-444444444444")
-      published_message = Chef::JSON.from_json(@queue.published_message)
+      published_message = Chef::JSONCompat.from_json(@queue.published_message)
       published_message.should == {"action" => "delete", "payload" => { "item" => @item_as_hash,
                                                                         "type" => "indexable_test_harness",
                                                                         "database" => "couchdb2@localhost",
@@ -212,7 +212,7 @@ describe Chef::IndexQueue::Indexable do
         Chef::Config[:persistent_queue] = orig_value
       end
 
-      published_message = Chef::JSON.from_json(@queue.published_message)
+      published_message = Chef::JSONCompat.from_json(@queue.published_message)
       published_message.should == {"action" => "delete", "payload" => { "item" => @item_as_hash,
                                                                         "type" => "indexable_test_harness",
                                                                         "database" => "couchdb2@localhost",

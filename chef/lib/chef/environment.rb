@@ -181,7 +181,7 @@ class Chef
       end
 
       unless params[:attributes].nil? || params[:attributes].size == 0
-        attributes(Chef::JSON.from_json(params[:attributes]))
+        attributes(Chef::JSONCompat.from_json(params[:attributes]))
       end
 
       valid = validate_required_attrs_present && valid

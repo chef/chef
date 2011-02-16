@@ -17,7 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/json'
+require 'chef/json_compat'
 
 class Chef
   module IndexQueue
@@ -93,7 +93,7 @@ class Chef
         begin
           publisher.amqp_client.tx_select if Chef::Config[:persistent_queue]
           publisher.queue_for_object(object_id) do |queue|
-            queue.publish(Chef::JSON.to_json(object), :persistent => Chef::Config[:persistent_queue])
+            queue.publish(Chef::JSONCompat.to_json(object), :persistent => Chef::Config[:persistent_queue])
           end
           publisher.amqp_client.tx_commit if Chef::Config[:persistent_queue]
         rescue
