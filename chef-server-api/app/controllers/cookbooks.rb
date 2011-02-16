@@ -49,10 +49,10 @@ class Cookbooks < Application
   # }
   def index
     cookbook_list = Chef::CookbookVersion.cdb_list
-    # cookbook_list is in the format of {"apache2" => [0.0.1, 0.0.0]} where the version numbers are Chef::Version objects
+    # cookbook_list is in the format of {"apache2" => [0.0.1, 0.0.0]} where the version numbers are DepSelector::Version objects
     num_versions = num_versions!
     display(cookbook_list.inject({}) {|res, (cookbook_name, versions)|
-      versions = versions.map{ |x| Chef::Version.new(x) }.sort.reverse.map{ |x| x.to_s }
+      versions = versions.map{ |x| DepSelector::Version.new(x) }.sort.reverse.map{ |x| x.to_s }
       res[cookbook_name] = expand_cookbook_urls(cookbook_name, versions, num_versions)
       res
     })
@@ -79,7 +79,7 @@ class Cookbooks < Application
     versions = Chef::CookbookVersion.cdb_by_name(cookbook_name)
     raise NotFound, "Cannot find a cookbook named #{cookbook_name}" unless versions && versions.size > 0
     num_versions = num_versions!("all")
-    cb_versions = versions[cookbook_name].map{ |x| Chef::Version.new(x) }.sort.reverse.map{ |x| x.to_s }
+    cb_versions = versions[cookbook_name].map{ |x| DepSelector::Version.new(x) }.sort.reverse.map{ |x| x.to_s }
     display({ cookbook_name => expand_cookbook_urls(cookbook_name, cb_versions, num_versions) })
   end
 
@@ -102,7 +102,7 @@ class Cookbooks < Application
 
   def update
     raise(BadRequest, "You didn't pass me a valid object!") unless params.has_key?('inflated_object')
-    raise(BadRequest, "You didn't pass me a Chef::CookbookVersion object!") unless params['inflated_object'].kind_of?(Chef::CookbookVersion)
+    raise(BadRequest, "You didn't pass me a DepSelector::CookbookVersion object!") unless params['inflated_object'].kind_of?(Chef::CookbookVersion)
     unless params["inflated_object"].name == cookbook_name
       raise(BadRequest, "You said the cookbook was named #{params['inflated_object'].name}, but the URL says it should be #{cookbook_name}.")
     end
