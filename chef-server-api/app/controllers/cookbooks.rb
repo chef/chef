@@ -50,8 +50,7 @@ class Cookbooks < Application
   def index
     cookbook_list = Chef::CookbookVersion.cdb_list
     # cookbook_list is in the format of {"apache2" => [0.0.1, 0.0.0]} where the version numbers are Chef::Version objects
-    # num_versions = params[:num_versions].nil? || params[:num_versions].empty? || params[:num_versions].to_i < 0 ? "1" : params[:num_versions]
-    num_versions = params[:num_versions] || 1
+    num_versions = num_versions!
     display(cookbook_list.inject({}) {|res, (cookbook_name, versions)|
       versions = versions.map{ |x| Chef::Version.new(x) }.sort.reverse.map{ |x| x.to_s }
       res[cookbook_name] = expand_cookbook_urls(cookbook_name, versions, num_versions)
@@ -79,7 +78,7 @@ class Cookbooks < Application
   def show_versions
     versions = Chef::CookbookVersion.cdb_by_name(cookbook_name)
     raise NotFound, "Cannot find a cookbook named #{cookbook_name}" unless versions && versions.size > 0
-    num_versions = params[:num_versions] || "all"
+    num_versions = num_versions!("all")
     cb_versions = versions[cookbook_name].map{ |x| Chef::Version.new(x) }.sort.reverse.map{ |x| x.to_s }
     display({ cookbook_name => expand_cookbook_urls(cookbook_name, cb_versions, num_versions) })
   end

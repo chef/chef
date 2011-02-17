@@ -18,9 +18,9 @@ Feature: List cookbook versions for an environment via the REST API
      Then the inflated responses key 'version_test' sub-key 'versions' should be '2' items long
       And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'version' should equal '0.2.0'
      When I 'GET' the path '/environments/skynet/cookbooks?num_versions=-1'
-     Then the inflated responses key 'version_test' sub-key 'versions' should be '1' items long
+     Then I should get a '400 "Bad Request"' exception
      When I 'GET' the path '/environments/skynet/cookbooks?num_versions=invalid-input'
-     Then the inflated responses key 'version_test' sub-key 'versions' should be '0' items long
+     Then I should get a '400 "Bad Request"' exception
      When I 'GET' the path '/environments/skynet/cookbooks?num_versions=all'
      Then the inflated responses key 'version_test' sub-key 'versions' should be '2' items long
 

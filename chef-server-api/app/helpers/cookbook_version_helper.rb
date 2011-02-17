@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Delano (<stephen@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,8 @@
 
 module Merb
   module CookbookVersionHelper
+
+    include Merb::ControllerExceptions
 
     # takes a cookbook_name and an array of versions and returns a hash
     # params:
@@ -45,5 +47,26 @@ module Merb
       {:url => url, :versions => version_list}
     end
 
+    # validate and return the number of versions requested
+    # by the user
+    #
+    # raises an exception if an invalid number is requested
+    #
+    # params:
+    # - default: the number of versions to default to
+    #
+    # valid num_versions query parameter:
+    # - an integer >= 0
+    # - the string "all"
+    def num_versions!(default="1")
+      input = params[:num_versions]
+      result = if input
+                 valid_input = (input == "all" || Integer(input) >= 0) rescue ArgumentError false
+                 raise BadRequest, "You have requested an invalid number of versions (x >= 0 || 'all')" unless valid_input
+                 input
+               else
+                 default
+               end
+    end
   end
 end
