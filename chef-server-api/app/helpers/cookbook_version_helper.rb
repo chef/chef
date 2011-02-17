@@ -61,7 +61,7 @@ module Merb
     def num_versions!(default="1")
       input = params[:num_versions]
       result = if input
-                 valid_input = (input == "all" || Integer(input) >= 0) rescue ArgumentError false
+                 valid_input = (input == "all" || Integer(input) >= 0) rescue false
                  raise BadRequest, "You have requested an invalid number of versions (x >= 0 || 'all')" unless valid_input
                  input
                else
