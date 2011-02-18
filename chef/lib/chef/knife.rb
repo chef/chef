@@ -28,20 +28,6 @@ class Chef
     include Mixlib::CLI
     extend Chef::Mixin::ConvertToClassName
 
-    begin
-      require 'rubygems'
-      files = Gem.find_files 'chef/knife/*.rb'
-      files.map! do |file|
-        file[/(#{Regexp.escape File.join('chef', 'knife', '')}.*\.rb)/, 1]
-      end.uniq!
-    rescue LoadError
-      files = Dir[File.expand_path(File.join(File.dirname(__FILE__), 'knife', '*.rb'))]
-      files.map! { |knife_file| knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1] }
-    end
-
-    # The "require paths" of the core knife subcommands bundled with chef
-    DEFAULT_SUBCOMMAND_FILES = files
-
     attr_accessor :name_args
 
     def self.msg(msg="")
@@ -101,7 +87,7 @@ class Chef
 
     # Load all the sub-commands
     def self.load_commands
-      DEFAULT_SUBCOMMAND_FILES.each { |subcommand| require subcommand }
+      find_subcommand_files.each { |subcommand| require subcommand }
       subcommands
     end
 
@@ -196,6 +182,34 @@ class Chef
     # all logic should be removed from that and Chef::Knife should own it.
     def self.want_help?(args)
       (args.any? { |arg| arg =~ /^(:?(:?\-\-)?help|\-h)$/})
+    end
+
+    def self.find_subcommand_files
+      @@subcommand_files ||= begin
+        # search all gems for chef/knife/*.rb
+        begin
+          require 'rubygems'
+          files = Gem.find_files 'chef/knife/*.rb'
+          files.map! do |file|
+            file[/(#{Regexp.escape File.join('chef', 'knife', '')}.*\.rb)/, 1]
+          end.uniq!
+        rescue LoadError
+          # The "require paths" of the core knife subcommands bundled with chef
+          files = Dir[File.expand_path(File.join(File.dirname(__FILE__), 'knife', '*.rb'))]
+          files.map! { |knife_file| knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1] }
+        end
+
+        # search upward from current_dir/.chef/plugins/knife/*.rb
+        full_path = Dir.pwd.split(File::SEPARATOR)
+        (full_path.length - 1).downto(0) do |i|
+          files << Dir.glob(File.join([ full_path[0..i], ".chef", "plugins", "knife"].flatten, '*.rb'))
+        end
+
+        # finally search ~/.chef/plugins/knife/*.rb
+        files << Dir.glob(File.join(ENV['HOME'], '.chef', 'plugins', 'knife', '*.rb'))
+
+        files.flatten.uniq
+      end
     end
 
     public

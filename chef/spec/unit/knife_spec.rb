@@ -34,9 +34,9 @@ describe Chef::Knife do
   end
 
   it "builds a list of the core subcommand file require paths" do
-    Chef::Knife::DEFAULT_SUBCOMMAND_FILES.should_not be_empty
-    Chef::Knife::DEFAULT_SUBCOMMAND_FILES.each do |require_path|
-      require_path.should match(%w{chef knife .*}.join(Regexp.escape(File::SEPARATOR)))
+    Chef::Knife.find_subcommand_files.should_not be_empty
+    Chef::Knife.find_subcommand_files.each do |require_path|
+      require_path.should match(/chef\/knife\/.*|plugins\/knife\/.*/)
     end
   end
 
