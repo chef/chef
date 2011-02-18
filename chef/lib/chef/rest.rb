@@ -79,9 +79,10 @@ class Chef
             Chef::Log.debug("Registration response: #{response.inspect}")
             raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
             # Write out the private key
-            file = ::File.open(destination, File::WRONLY|File::EXCL|File::CREAT, 0600)
-            file.print(response["private_key"])
-            file.close
+            ::File.open(destination, "w") {|f|
+              f.chmod(0600)
+              f.print(response["private_key"])
+            }
             throw :done
           rescue IOError
             raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination}"
@@ -246,7 +247,7 @@ class Chef
       headers = build_headers(:GET, url, headers, nil, true)
       retriable_rest_request(:GET, url, nil, headers) do |rest_request|
         tempfile = nil
-        response = rest_request.call do |r| 
+        response = rest_request.call do |r|
           if block_given? && r.kind_of?(Net::HTTPSuccess)
             begin
               tempfile = stream_to_tempfile(url, r, &block)
