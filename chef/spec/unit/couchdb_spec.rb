@@ -158,6 +158,21 @@ describe Chef::CouchDB do
 
   end
 
+  describe "when fetching the database status" do
+    it "gets couchdb's version string'" do
+      @mock_rest.should_receive(:get_rest).with('/').and_return({"couchdb" => "Welcome","version" => "1.0.1"})
+      @couchdb.server_stats.should == {"couchdb" => "Welcome","version" => "1.0.1"}
+    end
+
+    it "gets database stats" do
+      db_stats = {"db_name" => "opscode_account","doc_count" => 206,"doc_del_count" => 1,"update_seq" => 208,"purge_seq" => 0,
+                  "compact_running" => false,"disk_size" => 122969,"instance_start_time" => "1298070021394804","disk_format_version" => 5,"committed_update_seq" => 208}
+      @mock_rest.should_receive(:get_rest).with('/chef').and_return(db_stats)
+      @couchdb.db_stats.should == db_stats
+    end
+
+  end
+
   describe "load" do
     before(:each) do 
       @mock_node = Chef::Node.new()
