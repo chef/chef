@@ -234,6 +234,14 @@ class Chef
     def view_uri(design, view)
       "#{couchdb_database}/_design/#{design}/_view/#{view}"
     end
-    
+
+    def server_stats
+      @rest.get_rest('/')
+    end
+ 
+    def db_stats
+      @rest.get_rest("/#{@db}")
+    end
+ 
   end
 end
