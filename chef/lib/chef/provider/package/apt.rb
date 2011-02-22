@@ -43,7 +43,7 @@ class Chef
                   @current_resource.version(installed_version)
                 end
               when /^\s{2}Candidate: (.+)$/
-                Chef::Log.debug("Current version is #{$1}")                
+                Chef::Log.debug("Candidate version is #{$1}")                
                 @candidate_version = $1
               end
             end
