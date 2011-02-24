@@ -38,6 +38,7 @@ require 'chef/data_bag_item'
 require 'chef/cookbook_version'
 require 'chef/sandbox'
 require 'chef/checksum'
+require 'chef/monkey_patches/regexp'
 
 require 'mixlib/authentication'
 
