@@ -45,7 +45,7 @@ class Cookbooks < Application
       # if version is not specified in the url, get the most recent
       # version, otherwise get the specified version
       @version = if params[:cb_version].nil? || params[:cb_version].empty?
-                  versions.first
+                  @versions.first
                 else
                   params[:cb_version]
                  end
