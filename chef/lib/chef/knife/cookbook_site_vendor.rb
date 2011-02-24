@@ -104,6 +104,7 @@ class Chef
           Chef::Mixin::Command.run_command(:command => "git checkout #{config[:branch_default]}", :cwd => vendor_path)
           Chef::Log.info("Merging changes from #{name_args[0]} version #{download.version}.")
 
+          Dir.mkdir(vendor_path) unless File.directory?(vendor_path)
           Dir.chdir(vendor_path) do
             if system("git merge #{branch_name}")
               Chef::Log.info("Cookbook #{name_args[0]} version #{download.version} successfully vendored!")
