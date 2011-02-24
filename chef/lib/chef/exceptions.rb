@@ -25,6 +25,7 @@ class Chef
     class Cron < RuntimeError; end
     class Env < RuntimeError; end
     class Exec < RuntimeError; end
+    class ErlCall < RuntimeError; end
     class FileNotFound < RuntimeError; end  
     class Package < RuntimeError; end
     class Service < RuntimeError; end
