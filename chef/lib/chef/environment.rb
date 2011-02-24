@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@opscode.com>)
-# Author:: Seth Falcon (<sseth@opscode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -304,6 +304,11 @@ class Chef
     # {
     #   "coobook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted highest to lowest
     # }
+    #
+    # There will be a key for every cookbook.  If no CookbookVersions
+    # are available for the specified environment the value will be an
+    # empty list.
+    #
     def self.cdb_load_filtered_cookbook_versions(name, couchdb=nil)
       version_constraints = cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Chef::VersionConstraint.new(v); res}
 
@@ -314,7 +319,9 @@ class Chef
         # FIXME: should cookbook.version return a Chef::Version?
         version               = Chef::Version.new(cookbook.version)
         requirement_satisfied = version_constraints.has_key?(cookbook.name) ? version_constraints[cookbook.name].include?(version) : true
-        res[cookbook.name]    = (res[cookbook.name] || []) << cookbook if requirement_satisfied
+        # we want a key for every cookbook, even if no versions are available
+        res[cookbook.name] ||= []
+        res[cookbook.name] << cookbook if requirement_satisfied
         res
       end
 
