@@ -143,6 +143,13 @@ describe Chef::ShellOut do
       msg   = "option ':frab' is not a valid option for Chef::ShellOut"
       lambda { Chef::ShellOut.new("foo", :frab => :jab) }.should raise_error(klass, msg)
     end
+
+    it "chdir to the cwd directory if given" do
+      # /bin should exists on all systems, and is not the default cwd
+      cmd = Chef::ShellOut.new('pwd', :cwd => '/bin')
+      cmd.run_command
+      cmd.stdout.should == "/bin\n"
+    end
   end
   
   context "when initialized with an array of command+args and an options hash" do
