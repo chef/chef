@@ -151,7 +151,7 @@ class Chef
     end
 
     def checksum_file(file, digest)
-      File.open(file) { |f| checksum_io(f, digest) }
+      File.open(file, 'rb') { |f| checksum_io(f, digest) }
     end
 
     def checksum_io(io, digest)
