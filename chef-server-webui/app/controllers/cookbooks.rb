@@ -42,6 +42,13 @@ class Cookbooks < Application
     begin
       all_books = fetch_cookbook_versions("all", :cookbook => cookbook_id)
       @versions = all_books[cookbook_id].map { |v| v["version"] }
+      if @versions.empty?
+        msg = { :warning => ("Cookbook #{cookbook_id} (#{params[:cb_version]})"
+                             + " is not available in the #{session[:environment]}"
+                             + " environment.") }
+        redirect(url(:cookbooks), :message => msg)
+        return
+      end
       # if version is not specified in the url, get the most recent
       # version, otherwise get the specified version
       @version = if params[:cb_version].nil? || params[:cb_version].empty?

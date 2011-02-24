@@ -123,6 +123,7 @@ class Environments < Application
     rescue Chef::Exceptions::CouchDBNotFound
       raise NotFound, "Cannot load environment #{params[:environment_id]}"
     end
+    raise NotFound, "Cannot load cookbook #{cookbook_name}" unless filtered_cookbooks.has_key?(cookbook_name)
     versions = filtered_cookbooks[cookbook_name].map{|v| v.version.to_s}
     num_versions = num_versions!("all")
     display({ cookbook_name => expand_cookbook_urls(cookbook_name, versions, num_versions) })
