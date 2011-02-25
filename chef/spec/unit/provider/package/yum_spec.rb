@@ -29,7 +29,8 @@ describe Chef::Provider::Package::Yum do
       :refresh => true,
       :flush => true,
       :installed_version => "1.2.4-11.18.el5",
-      :candidate_version => "1.2.4-11.18.el5_2.3"
+      :candidate_version => "1.2.4-11.18.el5_2.3",
+      :version_available? => true
     )
     Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -101,6 +102,20 @@ describe Chef::Provider::Package::Yum do
         :command => "yum -d0 -e0 -y --disablerepo epmd install cups-11"
       })
       @provider.install_package(@new_resource.name, @provider.candidate_version)
+    end
+
+    it "should fail if the package is not available" do
+      @yum_cache = mock(
+        'Chef::Provider::Yum::YumCache',
+        :refresh => true,
+        :flush => true,
+        :installed_version => "1.2.4-11.18.el5",
+        :candidate_version => "1.2.4-11.18.el5_2.3",
+        :version_available? => nil
+      )
+      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      lambda { @provider.install_package("lolcats", "0.99") }.should raise_error(ArgumentError)
     end
   end
 

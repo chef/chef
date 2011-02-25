@@ -104,6 +104,26 @@ class Chef
             nil
           end
 
+          def version_available?(package_name, desired_version, arch)
+            if (package_data = @data[package_name])
+              if (available_versions = package_data[:available])
+                if arch
+                  matching_versions = available_versions[arch]
+                else
+                  matching_versions = available_versions.values
+                end
+
+                matching_versions.each do |ver|
+                  if (desired_version == "#{ver[:version]}-#{ver[:release]}")
+                    return true
+                  end
+                end
+              end
+            end
+
+            nil
+          end
+
           def installed_version(package_name, arch)
             version(package_name, :installed, arch)
           end
@@ -168,6 +188,7 @@ class Chef
           else
             @candidate_version = installed_version
           end
+          Chef::Log.debug("#{@current_resource.name}: Installed version: #{installed_version} Candidate version: #{candidate_version}")
 
           @current_resource
         end
@@ -178,9 +199,14 @@ class Chef
               :command => "yum -d0 -e0 -y #{@new_resource.options} localinstall #{@new_resource.source}"
             )
           else
-            run_command_with_systems_locale(
-              :command => "yum -d0 -e0 -y #{@new_resource.options} install #{name}-#{version}#{yum_arch}"
-            )
+            # Work around yum not exiting with an error if a package doesn't exist for CHEF-2062
+            if @yum.version_available?(name, version, yum_arch)
+              run_command_with_systems_locale(
+                :command => "yum -d0 -e0 -y #{@new_resource.options} install #{name}-#{version}#{yum_arch}"
+              )
+            else
+              raise ArgumentError, "#{new_resource.name}: Version #{version} of #{name} not found. Did you specify both version and release? (version-release, e.g. 1.84-10.fc6)"
+            end
           end
           @yum.flush
         end
