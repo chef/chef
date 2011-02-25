@@ -320,7 +320,7 @@ describe Chef::CookbookVersion do
       end
     end
 
-    it "should raise InvalidCookbookVersion for bad cookbook versions" do
+    it "should raise InvalidVersion for bad cookbook versions" do
       bad_versions = ["1.2.3.4", "1.2.a4", "1", "a", "1.2 3", "1.2 a",
                       "1 2 3", "1-2-3", "1_2_3", "1.2_3", "1.2-3"]
       the_error = DepSelector::Exceptions::InvalidVersion

@@ -159,6 +159,21 @@ class Chef
       end
     end
 
+    # This method replaces verbage from DepSelector messages with
+    # Chef-domain-specific verbage, such as replacing package with
+    # cookbook.
+    #
+    # TODO [cw, 2011/2/25]: this is a near-term hack. In the long run,
+    # we'll do this better.
+    def filter_dep_selector_message(message)
+      m = message
+      m.gsub!("Package", "Cookbook")
+      m.gsub!("package", "cookbook")
+      m.gsub!("Solution constraint", "Run list item")
+      m.gsub!("solution constraint", "run list item")
+      m
+    end
+
     # Creates a DependencyGraph from CookbookVersion objects
     def create_dependency_graph_from_cookbooks(all_cookbooks)
       dep_graph = DepSelector::DependencyGraph.new
@@ -174,13 +189,6 @@ class Chef
           pv = dep_graph.package(cb_name).add_version(DepSelector::Version.new(cb_version.version))
           cb_version_deps.each_pair do |dep_name, constraint_str|
             constraint = DepSelector::VersionConstraint.new(constraint_str)
-            # TODO [cw, 2011/2/10]: do we want to throw this error
-            # here even if there is a version of cb_name that can be
-            # solved for that has only valid dependencies? See related
-            # note in DepSelector::Selector#solve.
-            unless all_cookbooks.has_key?(dep_name)
-              raise Chef::Exceptions::CookbookVersionUnavailable.new("Cookbook #{cb_name} version #{cb_version.version} lists a dependency on cookbook #{dep_name}, which does not exist")
-            end
             pv.dependencies << DepSelector::Dependency.new(dep_graph.package(dep_name), constraint)
           end
         end
@@ -206,18 +214,14 @@ class Chef
     # fully-qualified recipe name (e.g. "cookbook1::non_default_recipe")
     # or just a cookbook name, indicating the default recipe is to be
     # run (e.g. "cookbook1").
-
     def constrain(all_cookbooks, recipe_constraints)
       dep_graph = create_dependency_graph_from_cookbooks(all_cookbooks)
 
       # extract cookbook names from (possibly) fully-qualified recipe names
       cookbook_constraints = recipe_constraints.map do |recipe_spec|
         cookbook_name = (recipe_spec[:name][/^(.+)::/, 1] || recipe_spec[:name])
-        unless dep_graph.packages.has_key?(cookbook_name)
-          raise Chef::Exceptions::CookbookVersionUnavailable.new("Cookbook #{cookbook_name} does not exist")
-        end
-        pkg = dep_graph.package(cookbook_name)
-        DepSelector::SolutionConstraint.new(pkg, recipe_spec[:version_constraint])
+        DepSelector::SolutionConstraint.new(dep_graph.package(cookbook_name),
+                                            recipe_spec[:version_constraint])
       end
 
       # find a valid assignment of CoookbookVersions. If no valid
@@ -226,15 +230,16 @@ class Chef
       soln =
         begin
           DepSelector::Selector.new(dep_graph).find_solution(cookbook_constraints)
-        rescue DepSelector::Exceptions::NoSolutionExists => nse
-          raise Chef::Exceptions::CookbookVersionConflict, nse.message
+        rescue DepSelector::Exceptions::InvalidSolutionConstraint,
+               DepSelector::Exceptions::NoSolutionExists
+          raise Chef::Exceptions::CookbookVersionConflict, filter_dep_selector_message($!.message)
         end
 
       # map assignment back to CookbookVersion objects
       selected_cookbooks = {}
       soln.each_pair do |cb_name, cb_version|
         # TODO [cw, 2011/2/10]: related to the TODO in
-        # RunList#create_dependency_graph_from_cookbooks, cbv.version
+        # create_dependency_graph_from_cookbooks, cbv.version
         # currently returns a String, so we must compare to
         # cb_version.to_s, since it's a for-real Version object.
         selected_cookbooks[cb_name] = all_cookbooks[cb_name].find{|cbv| cbv.version == cb_version.to_s}

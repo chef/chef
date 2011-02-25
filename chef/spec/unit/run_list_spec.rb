@@ -319,41 +319,44 @@ describe Chef::RunList do
       { :name => cookbook_name, :version_constraint => vc }
     end
 
-    def assert_failure(run_list, all_cookbooks, constraints, exception_class, expected_message)
+    def assert_failure(run_list, all_cookbooks, constraints, expected_message)
       begin
         run_list.constrain(all_cookbooks, constraints)
         fail "Should have raised a Chef::Exceptions::CookbookVersionConflict exception"
-      rescue exception_class => cvc
+      rescue Chef::Exceptions::CookbookVersionConflict => cvc
         cvc.message.should include(expected_message)
       end
     end
 
     before(:each) do
-      a = cookbook_maker("a", "1.0", [["c", "< 4.0"]])
-      b = cookbook_maker("b", "1.0", [["c", "< 3.0"]])
+      a1 = cookbook_maker("a", "1.0", [["c", "< 4.0"]])
+      b1 = cookbook_maker("b", "1.0", [["c", "< 3.0"]])
       
       c2 = cookbook_maker("c", "2.0", [["d", "> 1.0"], ["f", nil]])
       c3 = cookbook_maker("c", "3.0", [["d", "> 2.0"], ["e", nil]])
 
-      d1 = cookbook_maker("d", "1.1", [])
-      d2 = cookbook_maker("d", "2.1", [])
-      e = cookbook_maker("e", "1.0", [])
-      f = cookbook_maker("f", "1.0", [])
-      g = cookbook_maker("g", "1.0", [["d", "> 5.0"]])
+      d1_1 = cookbook_maker("d", "1.1", [])
+      d2_1 = cookbook_maker("d", "2.1", [])
+      e1 = cookbook_maker("e", "1.0", [])
+      f1 = cookbook_maker("f", "1.0", [])
+      g1 = cookbook_maker("g", "1.0", [["d", "> 5.0"]])
 
       n1_1 = cookbook_maker("n", "1.1", [])
       n1_2 = cookbook_maker("n", "1.2", [])
       n1_10 = cookbook_maker("n", "1.10", [])
 
+      depends_on_nosuch = cookbook_maker("depends_on_nosuch", "1.0", [["nosuch", nil]])
+
       @all_cookbooks = {
-        "a" => [a],
-        "b" => [b],
+        "a" => [a1],
+        "b" => [b1],
         "c" => [c2, c3],
-        "d" => [d1, d2],
-        "e" => [e],
-        "f" => [f],
-        "g" => [g],
-        "n" => [n1_1, n1_2, n1_10]
+        "d" => [d1_1, d2_1],
+        "e" => [e1],
+        "f" => [f1],
+        "g" => [g1],
+        "n" => [n1_1, n1_2, n1_10],
+        "depends_on_nosuch" => [depends_on_nosuch]
       }
     end
 
@@ -375,12 +378,12 @@ describe Chef::RunList do
 
     it "should fail to find a solution when a run list item is constrained to a range that includes no cookbooks" do
       constraints = [vc_maker("d", "> 5.0")]
-      assert_failure(@run_list, @all_cookbooks, constraints, Chef::Exceptions::CookbookVersionConflict, "unsatisfiability introduced at solution constraint (d > 5.0.0)")
+      assert_failure(@run_list, @all_cookbooks, constraints, "Run list item (d > 5.0.0) does not match any versions")
     end
 
     it "should fail to find a solution when a run list item's dependency is constrained to a range that includes no cookbooks" do
       constraints = [vc_maker("g", nil)]
-      assert_failure(@run_list, @all_cookbooks, constraints, Chef::Exceptions::CookbookVersionConflict, "unsatisfiability introduced at solution constraint (g >= 0.0.0)")
+      assert_failure(@run_list, @all_cookbooks, constraints, "Unable to satisfy constraints on cookbook d due to run list item (g >= 0.0.0)")
     end
 
     it "selects 'd 2.1.0' given constraint 'd > 1.2.3'" do
@@ -404,21 +407,19 @@ describe Chef::RunList do
       cookbooks["d"].version.should == "1.1.0"
     end
 
-    it "raises CookbookVersionUnavailable for an unknown cookbook in the run list" do
+    it "raises CookbookVersionConflict for an unknown cookbook in the run list" do
       constraints = [vc_maker("nosuch", "1.0.0")]
-      assert_failure(@run_list, @all_cookbooks, constraints, Chef::Exceptions::CookbookVersionUnavailable, "Cookbook nosuch does not exist")
+      assert_failure(@run_list, @all_cookbooks, constraints, "Run list item (nosuch = 1.0.0) specifies a cookbook that does not exist in the dependency graph")
     end
 
-    it "raises CookbookVersionUnavailable for an unknown cookbook in a cookbook's depencies" do
-      depends_on_nosuch = cookbook_maker("depends_on_nosuch", "1.0", [["nosuch", nil]])
-      cbs = @all_cookbooks.merge({"depends_on_nosuch" => [depends_on_nosuch]})
+    it "raises CookbookVersionConflict for an unknown cookbook in a cookbook's dependencies" do
       constraints = [vc_maker("depends_on_nosuch", "1.0.0")]
-      assert_failure(@run_list, cbs, constraints, Chef::Exceptions::CookbookVersionUnavailable, "Cookbook depends_on_nosuch version 1.0.0 lists a dependency on cookbook nosuch, which does not exist")
+      assert_failure(@run_list, @all_cookbooks, constraints, "Unable to satisfy constraints on cookbook nosuch, which does not exist, due to run list item (depends_on_nosuch = 1.0.0)")
     end
 
     it "raises CookbookVersionConflict for direct conflict" do
       constraints = [vc_maker("d", "= 1.1.0"), vc_maker("d", ">= 2.0")]
-      assert_failure(@run_list, @all_cookbooks, constraints, Chef::Exceptions::CookbookVersionConflict, "unsatisfiability introduced at solution constraint (d >= 2.0.0)")
+      assert_failure(@run_list, @all_cookbooks, constraints, "Unable to satisfy constraints on cookbook d due to run list item (d >= 2.0.0)")
     end
 
     describe "should solve regardless of constraint order" do

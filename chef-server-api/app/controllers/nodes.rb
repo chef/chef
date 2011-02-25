@@ -107,7 +107,7 @@ class Nodes < Application
   def cookbooks_for_node(all_cookbooks)
     begin
       @node.constrain_cookbooks(all_cookbooks, 'couchdb')
-    rescue Chef::Exceptions::CookbookVersionConflict, Chef::Exceptions::CookbookVersionUnavailable => e
+    rescue Chef::Exceptions::CookbookVersionConflict => e
       raise PreconditionFailed, e.message
     end
   end
