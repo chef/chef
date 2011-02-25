@@ -80,7 +80,7 @@ Feature: Synchronize cookbooks to the edge
      When I 'PUT' the 'node' to the path 'nodes/empty'
       And I 'GET' the path 'nodes/empty/cookbooks'
      Then the response code should be '412'
-      And the Chef::Log should match 'Unable to satisfy constraint'
+      And the Chef::Log should match 'Unable to satisfy constraints on cookbook dep_test_b due to run list item (dep_test_b = 2.0.0)'
 
   @cookbook_dependencies
   Scenario: Retrieve the list of cookbooks when a cookbook is unavailable
@@ -91,4 +91,4 @@ Feature: Synchronize cookbooks to the edge
      When I 'PUT' the 'node' to the path 'nodes/empty'
       And I 'GET' the path 'nodes/empty/cookbooks'
      Then the response code should be '412'
-      And the Chef::Log should match 'not available on this node'
+      And the Chef::Log should match 'Unable to satisfy constraints on cookbook dep_test_c due to run list item (dep_test_a = 3.0.0)'

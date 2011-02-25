@@ -226,5 +226,5 @@ Then /^the data_bag named '(.+)' should not have an item named '(.+)'$/ do |data
 end
 
 Then /^the Chef::Log should match '(.+)'$/ do |regex|
-  self.log_io.string.should match(/#{regex}/)
+  self.log_io.string.should match(/#{Regexp.escape(regex)}/)
 end
