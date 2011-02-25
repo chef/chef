@@ -155,7 +155,7 @@ class Chef
           :groups => config[:security_groups],
           :flavor_id => config[:flavor],
           :key_name => Chef::Config[:knife][:aws_ssh_key_id],
-          :availability_zone => Chef::Config[:availability_zone]
+          :availability_zone => Chef::Config[:knife][:availability_zone]
         )
 
         puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
