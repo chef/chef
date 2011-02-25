@@ -21,7 +21,8 @@
                 %tr
                   %td{:colspan => 2} This environment does not include any cookbook version constraints.
               - else
-                - @environment.cookbook_versions.each do |name, versions|
+                - @environment.cookbook_versions.keys.sort.each do |name|
+                  - versions = @environment.cookbook_versions[name]
                   %tr
                     %td= name
                     %td= versions
