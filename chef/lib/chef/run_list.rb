@@ -159,8 +159,8 @@ class Chef
       end
     end
 
-    # This method replaces verbage from DepSelector messages with
-    # Chef-domain-specific verbage, such as replacing package with
+    # This method replaces verbiage from DepSelector messages with
+    # Chef-domain-specific verbiage, such as replacing package with
     # cookbook.
     #
     # TODO [cw, 2011/2/25]: this is a near-term hack. In the long run,

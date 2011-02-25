@@ -102,7 +102,7 @@ class Cookbooks < Application
 
   def update
     raise(BadRequest, "You didn't pass me a valid object!") unless params.has_key?('inflated_object')
-    raise(BadRequest, "You didn't pass me a DepSelector::CookbookVersion object!") unless params['inflated_object'].kind_of?(Chef::CookbookVersion)
+    raise(BadRequest, "You didn't pass me a Chef::CookbookVersion object!") unless params['inflated_object'].kind_of?(Chef::CookbookVersion)
     unless params["inflated_object"].name == cookbook_name
       raise(BadRequest, "You said the cookbook was named #{params['inflated_object'].name}, but the URL says it should be #{cookbook_name}.")
     end
