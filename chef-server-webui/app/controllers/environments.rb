@@ -195,7 +195,7 @@ class Environments < Application
   def load_cookbooks
     begin
       # @cookbooks is a hash, keys are cookbook names, values are their URIs.
-      @cookbooks = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks").keys
+      @cookbooks = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("cookbooks").keys.sort
     rescue Net::HTTPServerException => e
       Chef::Log.error(format_exception(e))
       redirect(url(:new_environment), :message => { :error => "Could not load the list of available cookbooks."})

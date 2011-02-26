@@ -1,10 +1,16 @@
 $(document).ready(function() {
+  // add version constraints, sorted by cookbook name
+  var cookbook, versions, constraints = [], i = 0, max, row;
   if (document.getElementById('edit') != null) {
-    var versions = cookbook_versions();
-    for (var cookbook in versions){
-      var operator = versions[cookbook]["op"];
-      var version = versions[cookbook]["version"];
-      addTableRow(cookbook, operator, version);
+    versions = cookbook_versions();
+    for (cookbook in versions) {
+      constraints.push([cookbook, versions[cookbook]["op"],
+                     versions[cookbook]["version"]]);
+    }
+    constraints.sort();
+    for (i = constraints.length - 1; i >= 0; i--) {
+      row = constraints[i];
+      addTableRow(row[0], row[1], row[2]);
     }
   }
 })

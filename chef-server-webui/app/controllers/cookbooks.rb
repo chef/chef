@@ -42,20 +42,21 @@ class Cookbooks < Application
     begin
       all_books = fetch_cookbook_versions("all", :cookbook => cookbook_id)
       @versions = all_books[cookbook_id].map { |v| v["version"] }
-      if @versions.empty?
-        msg = { :warning => ("Cookbook #{cookbook_id} (#{params[:cb_version]})"
-                             + " is not available in the #{session[:environment]}"
-                             + " environment.") }
+      if params[:cb_version] == "_latest"
+        redirect(url(:show_specific_version_cookbook,
+                     :cookbook_id => cookbook_id,
+                     :cb_version => @versions.first))
+        return
+      end
+      @version = params[:cb_version]
+      if !@versions.include?(@version)
+        msg = { :warning => ["Cookbook #{cookbook_id} (#{params[:cb_version]})",
+                             "is not available in the #{session[:environment]}",
+                             "environment."
+                            ].join(" ") }
         redirect(url(:cookbooks), :message => msg)
         return
       end
-      # if version is not specified in the url, get the most recent
-      # version, otherwise get the specified version
-      @version = if params[:cb_version].nil? || params[:cb_version].empty?
-                  @versions.first
-                else
-                  params[:cb_version]
-                 end
       cookbook_url = "cookbooks/#{cookbook_id}/#{@version}"
       rest = Chef::REST.new(Chef::Config[:chef_server_url])
       @cookbook = rest.get_rest(cookbook_url)
