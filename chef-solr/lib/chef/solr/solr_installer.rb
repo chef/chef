@@ -347,7 +347,7 @@ FAIL
       opts = args[1, args.size - 1]
       opts_msg = opts.empty? ? '' : " #{opts.to_s}"
       say "#{args.first}#{opts_msg}"
-      shell_out!(*args) unless config.noop?
+      shell_out!(*(args << {:cwd => false})) unless config.noop?
     end
 
     def chown(file)
