@@ -69,7 +69,7 @@ class Chef
       @default_attributes = Mash.new
       @override_attributes = Mash.new
       @run_list = Chef::RunList.new
-      @env_run_lists = {"_default" =>  @run_list}
+      @env_run_lists = {}
       @couchdb_rev = nil
       @couchdb_id = nil
       @couchdb = couchdb || Chef::CouchDB.new
@@ -107,7 +107,6 @@ class Chef
     def run_list(*args)
       if (args.length > 0) 
         @run_list.reset!(args) 
-        @env_run_lists["_default"] = @run_list
       end
       @run_list
     end
@@ -130,12 +129,13 @@ class Chef
     # Per environment run lists
     def env_run_lists(env_run_lists=nil)
       if (!env_run_lists.nil? && !env_run_lists.empty?)
-        if default_run_list = env_run_lists.delete("_default")
-          @run_list = Chef::RunList.new(*Array(default_run_list))
+        if env_run_lists.key?("_default")
+          msg = "You cannot set the default run list via env_run_lists. Use run_list.\n"
+          msg << "(env_run_lists: #{env_run_lists.inspect})"
+          raise Chef::Exceptions::InvalidEnvironmentRunListSpecification, msg
         end
         @env_run_lists.clear
         env_run_lists.each { |k,v| @env_run_lists[k] = Chef::RunList.new(*Array(v))}
-        @env_run_lists["_default"] = run_list
       end
       @env_run_lists
     end
@@ -169,6 +169,12 @@ class Chef
         "run_list" => @run_list.run_list,
         "env_run_lists" => @env_run_lists
       }
+      # In case someone was sneaky and modified @env_run_lists directly:
+      if result["env_run_lists"].key?("_default")
+        msg = "You cannot set the default run list via env_run_lists. Use run_list.\n"
+        msg << "(role: #{@name}, env_run_lists: #{env_run_lists.inspect})"
+        raise Chef::Exceptions::InvalidEnvironmentRunListSpecification, msg
+      end
       result["_rev"] = couchdb_rev if couchdb_rev
       result
     end
@@ -262,7 +268,6 @@ class Chef
 
     # Save this role to the CouchDB
     def cdb_save
-      @env_run_lists.merge!({"_default" => @run_list})
       self.couchdb_rev = couchdb.store("role", @name, self)["rev"]
     end
 

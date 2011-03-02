@@ -71,5 +71,6 @@ class Chef
     class InvalidVersionConstraint < ArgumentError; end
     class MissingParentDirectory < RuntimeError; end
     class UnresolvableGitReference < RuntimeError; end
+    class InvalidEnvironmentRunListSpecification < ArgumentError; end
   end
 end

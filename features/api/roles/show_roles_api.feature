@@ -3,7 +3,7 @@ Feature: Show a role via the REST API
   In order to know what the details are for a Role 
   As a Developer
   I want to show the details for a specific Role
-  
+
   Scenario: Show a role
     Given I am an administrator
       And a 'role' named 'webserver' exists

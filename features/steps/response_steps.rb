@@ -131,7 +131,7 @@ end
 
 Then /^the inflated response should include '(.+)'$/ do |entry|
   if inflated_response.size == 1
-    inflated_response.should match(/#{entry}/)
+    Array(inflated_response).first.should match(/#{entry}/)
   else
     inflated_response.detect { |n| n =~ /#{entry}/ }.should_not be_empty
   end
