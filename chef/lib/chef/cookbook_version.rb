@@ -26,7 +26,7 @@ require 'chef/recipe'
 require 'chef/cookbook/file_vendor'
 require 'chef/checksum'
 
-require 'dep_selector/version'
+require 'chef/version_class'
 
 class Chef
   # == Chef::CookbookVersion
@@ -796,7 +796,7 @@ class Chef
         couchdb.list("cookbooks", true)["rows"].collect{|r| r["value"]}
       else
         # If you modify this, please make sure the desc sorted order on the versions doesn't get broken.
-        couchdb.get_view("cookbooks", "all_with_version")["rows"].inject({}) { |mapped, row| mapped[row["key"]]||=Array.new; mapped[row["key"]].push(DepSelector::Version.new(row["value"])); mapped[row["key"]].sort!.reverse!; mapped}
+        couchdb.get_view("cookbooks", "all_with_version")["rows"].inject({}) { |mapped, row| mapped[row["key"]]||=Array.new; mapped[row["key"]].push(Chef::Version.new(row["value"])); mapped[row["key"]].sort!.reverse!; mapped}
       end
     end
 
@@ -838,9 +838,9 @@ class Chef
     def <=>(o)
       raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != o.name
       # FIXME: can we change the interface to the Metadata class such
-      # that metadata.version returns a DepSelector::Version instance instead
+      # that metadata.version returns a Chef::Version instance instead
       # of a string?
-      DepSelector::Version.new(self.version) <=> DepSelector::Version.new(o.version)
+      Chef::Version.new(self.version) <=> Chef::Version.new(o.version)
     end
 
     private
