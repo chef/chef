@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ require 'chef/knife'
 class Chef
   class Knife
     class CookbookDelete < Knife
-      
+
       option :all, :short => '-a', :long => '--all', :boolean => true, :description => 'delete all versions'
 
       option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
@@ -79,7 +79,9 @@ class Chef
       end
 
       def available_versions
-        @available_versions ||= rest.get_rest("cookbooks/#{@cookbook_name}").values.flatten
+        @available_versions ||= rest.get_rest("cookbooks/#{@cookbook_name}").map do |name, url_and_version|
+          url_and_version["versions"].map {|url_by_version| url_by_version["version"]}
+        end.flatten
       rescue Net::HTTPServerException => e
         if e.to_s =~ /^404/
           Chef::Log.error("Cannot find a cookbook named #{@cookbook_name} to delete")
@@ -99,7 +101,7 @@ class Chef
         valid_responses[(available_versions.size + 1).to_s] = :all
         question << "#{available_versions.size + 1}. All versions\n\n"
         responses = ask_question(question).split(',').map { |response| response.strip }
-        
+
         if responses.empty?
           Chef::Log.error("No versions specified, exiting")
           exit(1)
@@ -130,9 +132,9 @@ class Chef
           end
         end
       end
-      
+
       private
-      
+
       def delete_request(path)
         path += "?purge=true" if config[:purge]
         rest.delete_rest(path)

@@ -175,6 +175,12 @@ Then /^the inflated response should be a kind of '(.+)'$/ do |thing|
   self.inflated_response.should be_a_kind_of(eval(thing))
 end
 
+Then "the inflated response should equal '$code'" do |code|
+  # cucumber can suck it, I'm using real code.
+  expected = eval(code)
+  inflated_response.should == expected
+end
+
 Then /^the inflated response should respond to '(.+)' with '(.+)'$/ do |method, to_match|
   to_match = Chef::JSONCompat.from_json(to_match) if to_match =~ /^\[|\{/
   to_match = true if to_match == 'true'
