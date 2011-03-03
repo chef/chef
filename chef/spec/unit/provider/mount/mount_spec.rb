@@ -91,6 +91,12 @@ describe Chef::Provider::Mount::Mount do
       @new_resource.device("tmpfs")
       lambda { @provider.load_current_resource() }.should_not raise_error
     end
+    
+    it "does not expect the device to exist for Fuse filesystems" do
+      @new_resource.fstype("fuse")
+      @new_resource.device("nilfs#xxx")
+      lambda { @provider.load_current_resource() }.should_not raise_error
+    end
 
     it "should set mounted true if the mount point is found in the mounts list" do
       @provider.stub!(:shell_out!).and_return(OpenStruct.new(:stdout => '/dev/sdz1 on /tmp/foo'))
