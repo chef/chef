@@ -108,12 +108,25 @@ class Chef
             if (package_data = @data[package_name])
               if (available_versions = package_data[:available])
                 if arch
-                  matching_versions = available_versions[arch]
+                  # arch gets passed like ".x86_64"
+                  matching_versions = [ available_versions[arch.sub(/^./, '')]]
                 else
                   matching_versions = available_versions.values
                 end
 
+                if matching_versions.nil?
+                  if arch.empty?
+                    arch_msg = ""
+                  else
+                    arch_msg = "with arch #{arch.sub(/^./, '')} "
+                  end
+
+                  raise ArgumentError, "#{package_name}: Found no available versions #{arch_msg}to match"
+                end
+
+                # Expect [ { :version => "ver", :release => "rel" }, { :version => "ver", :release => "rel" }, { :version => "ver", :release => "rel" } ] ???
                 matching_versions.each do |ver|
+                  Chef::Log.debug("#{package_name}: trying to match #{desired_version} to version #{ver[:version]} and release #{ver[:release]}")
                   if (desired_version == "#{ver[:version]}-#{ver[:release]}")
                     return true
                   end
@@ -205,7 +218,7 @@ class Chef
                 :command => "yum -d0 -e0 -y #{@new_resource.options} install #{name}-#{version}#{yum_arch}"
               )
             else
-              raise ArgumentError, "#{new_resource.name}: Version #{version} of #{name} not found. Did you specify both version and release? (version-release, e.g. 1.84-10.fc6)"
+              raise ArgumentError, "#{@new_resource.name}: Version #{version} of #{name} not found. Did you specify both version and release? (version-release, e.g. 1.84-10.fc6)"
             end
           end
           @yum.flush
