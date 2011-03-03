@@ -31,18 +31,33 @@ describe Chef::RunContext do
     @node.find_file("run_context")
     @run_context = Chef::RunContext.new(@node, @cookbook_collection)
   end
-  
-  it "should load all the definitions in the cookbooks for this node" do
-    @run_context.definitions.should have_key(:new_cat)
-    @run_context.definitions.should have_key(:new_badger)
-    @run_context.definitions.should have_key(:new_dog)
+
+  it "has a cookbook collection" do
+    @run_context.cookbook_collection.should == @cookbook_collection
   end
-  
-  it "should load all the recipes specified for this node" do
-    @run_context.resource_collection[0].to_s.should == "cat[einstein]"  
-    @run_context.resource_collection[1].to_s.should == "cat[loulou]"
-    @run_context.resource_collection[2].to_s.should == "cat[birthday]"
-    @run_context.resource_collection[3].to_s.should == "cat[peanut]"
-    @run_context.resource_collection[4].to_s.should == "cat[fat peanut]"
+
+  it "has a node" do
+    @run_context.node.should == @node
   end
+
+  describe "after loading the cookbooks" do
+    before do
+      @run_context.load
+    end
+
+    it "should load all the definitions in the cookbooks for this node" do
+      @run_context.definitions.should have_key(:new_cat)
+      @run_context.definitions.should have_key(:new_badger)
+      @run_context.definitions.should have_key(:new_dog)
+    end
+
+    it "should load all the recipes specified for this node" do
+      @run_context.resource_collection[0].to_s.should == "cat[einstein]"  
+      @run_context.resource_collection[1].to_s.should == "cat[loulou]"
+      @run_context.resource_collection[2].to_s.should == "cat[birthday]"
+      @run_context.resource_collection[3].to_s.should == "cat[peanut]"
+      @run_context.resource_collection[4].to_s.should == "cat[fat peanut]"
+    end
+  end
+
 end

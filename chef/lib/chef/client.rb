@@ -180,16 +180,14 @@ class Chef
       if Chef::Config[:solo]
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
         run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
-        run_status.run_context = run_context
-        assert_cookbook_path_not_empty(run_context)
       else
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest) }
         cookbook_hash = sync_cookbooks
         run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
-        run_status.run_context = run_context
-
-        assert_cookbook_path_not_empty(run_context)
       end
+      run_status.run_context = run_context
+      run_context.load
+      assert_cookbook_path_not_empty(run_context)
       run_context
     end
 

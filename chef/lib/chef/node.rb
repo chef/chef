@@ -350,7 +350,7 @@ class Chef
     def recipe?(recipe_name)
       run_list.include?(recipe_name) || run_state[:seen_recipes].include?(recipe_name)
     end
- 
+
     # Returns true if this Node expects a given role, false if not.
     def role?(role_name)
       run_list.include?("role[#{role_name}]")
@@ -431,7 +431,9 @@ class Chef
 
       self[:tags] = Array.new unless attribute?(:tags)
       @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
-      @override_attrs = Chef::Mixin::DeepMerge.merge(Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs), chef_environment == "_default" ? {} : Chef::Environment.load(chef_environment).attributes)
+      environment_attrs = chef_environment == "_default" ? {} : Chef::Environment.load(chef_environment).attributes
+      overrides_before_environment = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
+      @override_attrs = Chef::Mixin::DeepMerge.merge(overrides_before_environment, environment_attrs)
       @automatic_attrs[:recipes] = expansion.recipes
       @automatic_attrs[:roles] = expansion.roles
 
