@@ -108,7 +108,7 @@ describe Chef::RunList::VersionedRecipeList do
       @recipes.each {|i| @list.add_recipe i[:name], i[:version]}
       @constraints = @recipes.map do |x|
         { :name => x[:name],
-          :version_constraint => DepSelector::VersionConstraint.new(x[:version])
+          :version_constraint => Chef::VersionConstraint.new(x[:version])
         }
       end
     end

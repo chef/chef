@@ -20,8 +20,8 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
-require 'dep_selector/version'
-require 'dep_selector/version_constraint'
+require 'chef/version_class'
+require 'chef/version_constraint'
 
 describe Chef::RunList do
   before(:each) do
@@ -315,7 +315,7 @@ describe Chef::RunList do
     end
  
     def vc_maker(cookbook_name, version_constraint)
-      vc = DepSelector::VersionConstraint.new(version_constraint)
+      vc = Chef::VersionConstraint.new(version_constraint)
       { :name => cookbook_name, :version_constraint => vc }
     end
 

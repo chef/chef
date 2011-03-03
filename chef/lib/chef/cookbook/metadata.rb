@@ -22,8 +22,8 @@ require 'chef/mixin/from_file'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/log'
-require 'dep_selector/version'
-require 'dep_selector/version_constraint'
+require 'chef/version_class'
+require 'chef/version_constraint'
 
 class Chef
   class Cookbook
@@ -82,7 +82,7 @@ class Chef
         @attributes = Mash.new
         @groupings = Mash.new
         @recipes = Mash.new
-        @version = DepSelector::Version.new "0.0.0"
+        @version = Version.new "0.0.0"
         if cookbook
           @recipes = cookbook.fully_qualified_recipe_names.inject({}) do |r, e|
             e = self.name if e =~ /::default$/
@@ -184,7 +184,7 @@ class Chef
       # version<String>:: Returns the current version
       def version(arg=nil)
         if arg
-          @version = DepSelector::Version.new(arg)
+          @version = Chef::Version.new(arg)
         end
 
         @version.to_s
@@ -216,7 +216,7 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def supports(platform, version=">= 0.0.0")
-        DepSelector::VersionConstraint.new(version) # verify the version parses
+        Chef::VersionConstraint.new(version) # verify the version parses
         @platforms[platform] = version
         @platforms[platform]
       end
@@ -232,7 +232,7 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def depends(cookbook, version=">= 0.0.0")
-        DepSelector::VersionConstraint.new(version)
+        Chef::VersionConstraint.new(version)
         @dependencies[cookbook] = version
         @dependencies[cookbook]
       end
@@ -248,7 +248,7 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def recommends(cookbook, version=">= 0.0.0")
-        DepSelector::VersionConstraint.new(version)
+        Chef::VersionConstraint.new(version)
         @recommendations[cookbook] = version
         @recommendations[cookbook]
       end
@@ -264,7 +264,7 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def suggests(cookbook, version=">= 0.0.0")
-        DepSelector::VersionConstraint.new(version)
+        Chef::VersionConstraint.new(version)
         @suggestions[cookbook] = version
         @suggestions[cookbook]
       end
@@ -280,7 +280,7 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def conflicts(cookbook, version=">= 0.0.0")
-        DepSelector::VersionConstraint.new(version)
+        Chef::VersionConstraint.new(version)
         @conflicting[cookbook] = version
         @conflicting[cookbook]
       end
@@ -300,7 +300,7 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def provides(cookbook, version=">= 0.0.0")
-        DepSelector::VersionConstraint.new(version)
+        Chef::VersionConstraint.new(version)
         @providing[cookbook] = version
         @providing[cookbook]
       end
@@ -315,7 +315,7 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def replaces(cookbook, version=">= 0.0.0")
-        DepSelector::VersionConstraint.new(version)
+        Chef::VersionConstraint.new(version)
         @replacing[cookbook] = version
         @replacing[cookbook]
       end
