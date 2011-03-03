@@ -1,5 +1,6 @@
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,6 +40,17 @@ class Chef
       0
     end
 
+    def hash
+      # Didn't put any thought or research into this, probably can be
+      # done better
+      to_s.hash
+    end
+
+    # For hash
+    def eql?(other)
+      other.is_a?(Version) && self == other
+    end
+    
     private
 
     def parse(str="")

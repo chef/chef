@@ -1,5 +1,6 @@
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +22,8 @@ class Chef
     STANDARD_OPS = %w(< > <= >=)
     OPS = %w(< > = <= >= ~>)
     PATTERN = /^(#{OPS.join('|')}) (.+)$/
+
+    attr_reader :op, :version
 
     def initialize(constraint_spec=DEFAULT_CONSTRAINT)
       case constraint_spec
@@ -45,6 +48,21 @@ class Chef
      do_op(version)
     end
 
+    def inspect
+      "(#{@op} #{@version})"
+    end
+
+    def to_s
+      "#{@op} #{@version}"
+    end
+
+    def eql?(o)
+      o.class == self.class && @op == o.op && @version == o.version
+    end
+    alias_method :==, :eql?
+
+    private
+
     def do_op(other_version)
       if STANDARD_OPS.include? @op
         other_version.send(@op.to_sym, @version)
@@ -63,17 +81,6 @@ class Chef
         raise "bad op #{@op}"
       end
     end
-
-    def inspect
-      "(#{@op} #{@version})"
-    end
-
-    def to_s
-      "#{@op} #{@version}"
-    end
-
-
-    private
 
     def parse_from_array(constraint_spec)
       if constraint_spec.empty?
