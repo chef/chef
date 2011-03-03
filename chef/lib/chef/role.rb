@@ -105,14 +105,14 @@ class Chef
     end
 
     def run_list(*args)
-      if (args.length > 0) 
-        @run_list.reset!(args) 
+      if (args.length > 0)
+        @run_list.reset!(args)
       end
       @run_list
     end
 
     alias_method :recipes, :run_list
-    
+
     # For run_list expansion
     def run_list_for(environment='_default')
       if env_run_lists[environment].nil?
@@ -128,7 +128,7 @@ class Chef
 
     # Per environment run lists
     def env_run_lists(env_run_lists=nil)
-      if (!env_run_lists.nil? && !env_run_lists.empty?)
+      if (!env_run_lists.nil?)
         if env_run_lists.key?("_default")
           msg = "You cannot set the default run list via env_run_lists. Use run_list.\n"
           msg << "(env_run_lists: #{env_run_lists.inspect})"
@@ -251,11 +251,11 @@ class Chef
     def environment(env_name)
       chef_server_rest.get_rest("roles/#{@name}/environments/#{env_name}")
     end
-    
+
     def environments
       chef_server_rest.get_rest("roles/#{@name}/environments")
     end
-    
+
     # Remove this role from the CouchDB
     def cdb_destroy
       couchdb.delete("role", @name, couchdb_rev)

@@ -22,9 +22,23 @@ $(document).ready(function(){
 
   var buildHiddenFormFromDragDrop = function(form, runListSet) {
     runListSet.each(function(i, envRunListUl) {
-      $(envRunListUl).find('li.runListItem').each(function(i, field) {
-        form.append('<input type="hidden" name="env_run_lists[' + envRunListUl.id + '][]" value="' + field.id + '"/>');
-      });
+      runListItemList = $(envRunListUl).find('li.runListItem')
+      if(runListItemList.length == 0){
+        activeRunListUl = envRunListUl.getAttribute("class").split(" ").indexOf('active')
+        if(activeRunListUl >= 0 && envRunListUl.id != '_default'){
+          form.append('<input type="hidden" name="env_run_lists[' + envRunListUl.id + ']"/>');
+        }
+      }
+      else{
+        runListItemList.each(function(i, field) {
+          if (envRunListUl.id == '_default'){
+            form.append('<input type="hidden" name="run_list[]" value="' + field.id + '"/>');
+          }
+          else{
+            form.append('<input type="hidden" name="env_run_lists[' + envRunListUl.id + '][]" value="' + field.id + '"/>');
+          }
+        });
+      }
     });
   };
 
