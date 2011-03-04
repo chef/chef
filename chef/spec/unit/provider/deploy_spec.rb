@@ -192,6 +192,7 @@ describe Chef::Provider::Deploy do
   end
 
   it "syncs the cached copy of the repo" do
+    @provider.scm_provider.should_receive(:load_current_resource)
     @provider.scm_provider.should_receive(:action_sync)
     @provider.update_cached_repo
   end
