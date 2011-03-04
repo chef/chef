@@ -33,7 +33,7 @@ require 'chef/rest'
 require 'chef/run_list'
 require 'chef/node/attribute'
 require 'chef/index_queue'
-require 'extlib'
+require 'chef/mash'
 require 'chef/json_compat'
 
 class Chef

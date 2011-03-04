@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'extlib'
+require 'chef/mash'
 
 class Chef
   # == Chef::CookbookCollection

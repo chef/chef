@@ -24,7 +24,7 @@ require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/data_bag_item'
 require 'chef/index_queue'
-require 'extlib'
+require 'chef/mash'
 require 'chef/json_compat'
 
 class Chef
