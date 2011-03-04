@@ -15,7 +15,6 @@ chef:
 *  ruby-openid  
 *  json  
 *  erubis  
-*  extlib  
 *  stomp  
 *  ohai  
 

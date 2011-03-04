@@ -135,7 +135,7 @@ Merb::Router.prepare do
               # Call Chef's JSON utility instead of the default in Merb,
               # JSON.parse.
               jobj = Chef::JSONCompat.from_json(raw_post)
-              jobj = jobj.to_mash if jobj.is_a?(Hash)
+              jobj = Mash.from_hash(jobj) if jobj.is_a?(Hash)
             rescue JSON::ParserError
               jobj = Mash.new
             end
