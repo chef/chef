@@ -34,8 +34,8 @@ describe Chef::Provider::Package::Yum do
     )
     Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
+    @stderr = StringIO.new
+    @pid = mock("PID")
   end
 
   describe "when loading the current system state" do

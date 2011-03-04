@@ -15,13 +15,15 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join("#{File.dirname(__FILE__)}", '..', 'spec_helper'))
+require File.expand_path("../../spec_helper", __FILE__)
 
 require 'chef/solr_query'
 require 'net/http'
 
+#require 'rspec/mocks'
+
 describe Chef::SolrQuery do
-  before(:all) do
+  before do
     Chef::SolrQuery::SolrHTTPRequest.solr_url = "http://example.com:8983"
 
     @http_response = mock(

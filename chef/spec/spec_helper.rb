@@ -23,6 +23,7 @@ module Shef
 end
 
 require 'rubygems'
+require 'rspec/mocks'
 
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 

@@ -30,14 +30,15 @@ describe Chef::Provider::Package::Apt do
     @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     @provider.stub!(:popen4).and_return(@status)
-    @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
-    @stdout.stub!(:each).and_yield("emacs:").
-                         and_yield("  Installed: (none)").
-                         and_yield("  Candidate: 0.1.1").
-                         and_yield("  Version Table:")
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
+    @stdin = StringIO.new
+    @stdout = StringIO.new(<<-SAMPLE_STDOUT)
+emacs:
+  Installed: (none)
+  Candidate: 0.1.1
+  Version Table:
+SAMPLE_STDOUT
+    @stderr = StringIO.new
+    @pid = mock("PID")
   end
 
   describe "when loading current resource" do
