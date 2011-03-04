@@ -21,7 +21,7 @@ require 'chef/search/query'
 
 describe Chef::Search::Query do 
   before(:each) do
-    @rest = mock("Chef::REST", :null_object => true)
+    @rest = mock("Chef::REST")
     Chef::REST.stub!(:new).and_return(@rest)
     @query = Chef::Search::Query.new
   end

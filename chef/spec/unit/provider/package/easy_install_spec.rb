@@ -31,11 +31,11 @@ describe Chef::Provider::Package::EasyInstall do
     @provider = Chef::Provider::Package::EasyInstall.new(@new_resource, @run_context)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
 
-    @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
+    @stdin = StringIO.new
+    @stdout = StringIO.new
     @status = mock("Status", :exitstatus => 0)
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
+    @stderr = StringIO.new
+    @pid = 2342
     @provider.stub!(:popen4).and_return(@status)
   end
   
@@ -63,19 +63,6 @@ describe Chef::Provider::Package::EasyInstall do
   end
 
   describe "actions_on_package" do
-    # before(:each) do
-    #   @node = Chef::Node.new
-    #   @new_resource = mock("Chef::Resource::Package",
-    #     :null_object => true,
-    #     :name => "boto",
-    #     :version => nil,
-    #     :package_name => "boto",
-    #     :easy_install_binary => nil
-    #   )
-    # 
-    #   @provider = Chef::Provider::Package::EasyInstall.new(@node, @new_resource)
-    # end
-
     it "should run easy_install with the package name and version" do
       @provider.should_receive(:run_command).with({
         :command => "easy_install \"boto==1.8d\""

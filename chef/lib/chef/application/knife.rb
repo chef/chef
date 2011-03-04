@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,13 +35,13 @@ class Chef::Application::Knife < Chef::Application
 
   banner "Usage: #{$0} sub-command (options)"
 
-  option :config_file, 
+  option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
     :description => "The configuration file to use",
     :proc => lambda { |path| File.expand_path(path, Dir.pwd) }
 
-  option :log_level, 
+  option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
     :description  => "Set the log level (debug, info, warn, error, fatal)",
@@ -63,20 +63,20 @@ class Chef::Application::Knife < Chef::Application
     :long         => "--editor EDITOR",
     :description  => "Set the editor to use for interactive commands",
     :default      => ENV['EDITOR']
-  
+
   option :no_editor,
     :short        => "-n",
     :long         => "--no-editor",
     :description  => "Do not open EDITOR, just accept the data as is",
     :boolean      => true
-  
+
   option :help,
     :short        => "-h",
     :long         => "--help",
     :description  => "Show this message",
     :on           => :tail,
     :boolean      => true
-    
+
   option :node_name,
     :short => "-u USER",
     :long => "--user USER",
@@ -121,16 +121,16 @@ class Chef::Application::Knife < Chef::Application
     :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
     :exit         => 0
 
-  # Run knife 
+  # Run knife
   def run
     Mixlib::Log::Formatter.show_time = false
     validate_and_parse_options
     Chef::Knife.run(ARGV, options)
     exit 0
   end
-  
+
   private
-  
+
   def validate_and_parse_options
     # Checking ARGV validity *before* parse_options because parse_options
     # mangles ARGV in some situations
@@ -139,16 +139,16 @@ class Chef::Application::Knife < Chef::Application
     elsif no_subcommand_given?
       if (want_help? || want_version?)
         print_help_and_exit
-      else 
+      else
         print_help_and_exit(2, NO_COMMAND_GIVEN)
       end
     end
   end
-  
+
   def no_subcommand_given?
     ARGV[0] =~ /^-/
   end
-  
+
   def no_command_given?
     ARGV.empty?
   end
@@ -160,10 +160,10 @@ class Chef::Application::Knife < Chef::Application
   def want_version?
     ARGV[0] =~ /^(--version|-v)$/
   end
-  
+
   def print_help_and_exit(exitcode=1, fatal_message=nil)
     Chef::Log.error(fatal_message) if fatal_message
-  
+
     begin
       self.parse_options
     rescue OptionParser::InvalidOption => e
@@ -174,5 +174,5 @@ class Chef::Application::Knife < Chef::Application
     Chef::Knife.list_commands
     exit exitcode
   end
-  
+
 end

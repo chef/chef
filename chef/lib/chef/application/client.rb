@@ -138,6 +138,8 @@ class Chef::Application::Client < Chef::Application
     :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
     :exit         => 0
 
+  attr_reader :chef_client_json
+
   def initialize
     super
 

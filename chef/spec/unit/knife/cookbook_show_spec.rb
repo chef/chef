@@ -25,7 +25,7 @@ describe Chef::Knife::CookbookShow do
     @knife = Chef::Knife::CookbookShow.new
     @knife.config = { }
     @knife.name_args = [ "cookbook_name" ]
-    @rest = mock(Chef::REST, :null_object => true)
+    @rest = mock(Chef::REST)
     @knife.stub!(:rest).and_return(@rest)
     @knife.stub!(:pretty_print).and_return(true)
     @knife.stub!(:output).and_return(true)

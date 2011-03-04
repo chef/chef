@@ -18,15 +18,12 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
 require "#{CHEF_SPEC_DATA}/knife_subcommand/test_yourself"
+class NoopKnifeCommand < Chef::Knife
+  def run
+  end
+end
 
 describe Chef::Application::Knife do
-  before(:all) do
-    class NoopKnifeCommand < Chef::Knife
-      def run
-      end
-    end
-  end
-
   before(:each) do
     @knife = Chef::Application::Knife.new
     @knife.stub!(:puts)
@@ -48,7 +45,7 @@ describe Chef::Application::Knife do
 
   it "should run a sub command with the applications command line option prototype" do
     with_argv(*%w{noop knife command with some args}) do
-      knife = mock(Chef::Knife, :null_object => true)
+      knife = mock(Chef::Knife)
       Chef::Knife.should_receive(:run).with(ARGV, @knife.options).and_return(knife)
       @knife.should_receive(:exit).with(0)
       @knife.run
@@ -136,7 +133,7 @@ describe Chef::Application::Knife do
 
     it "should run a sub command with the applications command line option prototype" do
       with_argv(*%w{noop knife command with some args}) do
-        knife = mock(Chef::Knife, :null_object => true)
+        knife = mock(Chef::Knife)
         Chef::Knife.should_receive(:run).with(ARGV, @knife.options).and_return(knife)
         @knife.should_receive(:exit).with(0)
         @knife.run

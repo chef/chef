@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,10 +29,10 @@ describe Chef::Provider::Package::Macports do
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
 
     @status = mock("Status", :exitstatus => 0)
-    @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
+    @stdin = StringIO.new
+    @stdout = StringIO.new
+    @stderr = StringIO.new
+    @pid = 2342
   end
 
   describe "load_current_resource" do
@@ -43,11 +43,11 @@ describe Chef::Provider::Package::Macports do
       @provider.load_current_resource
       @provider.current_resource.name.should == "zsh"
     end
-    
+
     it "should create a current resource with the version if the package is installed" do
       @provider.should_receive(:macports_candidate_version).and_return("4.2.7")
       @provider.should_receive(:current_installed_version).and_return("4.2.7")
-      
+
       @provider.load_current_resource
       @provider.candidate_version.should == "4.2.7"
     end
