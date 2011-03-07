@@ -17,3 +17,5 @@ Feature: Macports integration
     | packages::macports_upgrade_yydecode    | yydecode | should     | 0        |
     | packages::macports_purge_yydecode      | yydecode | should not | 0        |
     | packages::macports_install_bad_package | fdsafdsa | should not | 1        |
+    | packages::macports_install_git_svn     | git      | should     | 0        |
+    | packages::macports_remove_git_svn      | git      | should not | 0        |
