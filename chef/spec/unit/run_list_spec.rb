@@ -172,26 +172,26 @@ describe Chef::RunList do
     describe "from disk" do
       it "should load the role from disk" do
         Chef::Role.should_receive(:from_disk).with("stubby")
-        @run_list.expand("disk")
+        @run_list.expand("_default", "disk")
       end
 
       it "should log a helpful error if the role is not available" do
         Chef::Role.stub!(:from_disk).and_raise(Chef::Exceptions::RoleNotFound)
         Chef::Log.should_receive(:error).with("Role stubby is in the runlist but does not exist. Skipping expand.")
-        @run_list.expand("disk")
+        @run_list.expand("_default", "disk")
       end
     end
 
     describe "from the chef server" do
       it "should load the role from the chef server" do
         #@rest.should_receive(:get_rest).with("roles/stubby")
-        expansion = @run_list.expand("server")
+        expansion = @run_list.expand("_default", "server")
         expansion.recipes.should == ['one', 'two', 'kitty']
       end
 
       it "should default to expanding from the server" do
         @rest.should_receive(:get_rest).with("roles/stubby")
-        @run_list.expand
+        @run_list.expand("_default")
       end
 
       describe "with an environment set" do
@@ -200,7 +200,7 @@ describe Chef::RunList do
         end
 
         it "expands the run list using the environment specific run list" do
-          expansion = @run_list.expand("server", :environment => "production")
+          expansion = @run_list.expand("production", "server")
           expansion.recipes.should == %w{one two five kitty}
         end
 
@@ -226,7 +226,7 @@ describe Chef::RunList do
             @multiple_rest_requests.should_receive(:get_rest).with("roles/prod-base").and_return(@role_prod_base)
             @multiple_rest_requests.should_receive(:get_rest).with("roles/nested-deeper").and_return(@role_nested_deeper)
 
-            expansion = @run_list.expand("server", :environment => "production")
+            expansion = @run_list.expand("production", "server")
             expansion.recipes.should == %w{one two five prod-secret-sauce kitty}
           end
 
@@ -239,23 +239,23 @@ describe Chef::RunList do
     describe "from couchdb" do
       it "should load the role from couchdb" do
         Chef::Role.should_receive(:cdb_load).and_return(@role)
-        @run_list.expand("couchdb")
+        @run_list.expand("_default", "couchdb")
       end
     end
 
     it "should return the list of expanded recipes" do
-      expansion = @run_list.expand
+      expansion = @run_list.expand("_default")
       expansion.recipes[0].should == "one"
       expansion.recipes[1].should == "two"
     end
 
     it "should return the list of default attributes" do
-      expansion = @run_list.expand
+      expansion = @run_list.expand("_default")
       expansion.default_attrs[:one].should == :two
     end
 
     it "should return the list of override attributes" do
-      expansion = @run_list.expand
+      expansion = @run_list.expand("_default")
       expansion.override_attrs[:three].should == :four
     end
 
@@ -268,7 +268,7 @@ describe Chef::RunList do
       Chef::Role.stub!(:from_disk).with("stubby").and_return(@role)
       Chef::Role.stub!(:from_disk).with("dog").and_return(dog)
 
-      expansion = @run_list.expand('disk')
+      expansion = @run_list.expand("_default", 'disk')
       expansion.recipes[2].should == "three"
       expansion.default_attrs[:seven].should == :nine
     end
@@ -282,7 +282,7 @@ describe Chef::RunList do
       Chef::Role.stub!(:from_disk).with("stubby").and_return(@role)
       Chef::Role.should_receive(:from_disk).with("dog").once.and_return(dog)
 
-      expansion = @run_list.expand('disk')
+      expansion = @run_list.expand("_default", 'disk')
       expansion.recipes[2].should == "three"
       expansion.recipes[3].should == "kitty"
       expansion.default_attrs[:seven].should == :nine

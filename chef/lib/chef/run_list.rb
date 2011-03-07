@@ -131,11 +131,23 @@ class Chef
     end
     alias :delete :remove
 
-
-    def expand(data_source='server', expansion_opts={})
+    def expand(environment, data_source='server', expansion_opts={})
       expansion = expansion_for_data_source(data_source, expansion_opts)
-      expansion.expand(expansion_opts[:environment])
+      expansion.expand(environment)
       expansion
+    end
+
+    # Expands this run_list, constrained to the environment's CookbookVersion
+    # constraints.
+    # 
+    # Returns:
+    #   Hash of: name to CookbookVersion
+    def expand_to_cookbook_versions(environment, data_source='server', expansion_opts={})
+      # expand any roles in this run_list.
+      expanded_run_list = expand(environment, data_source, expansion_opts).recipes.with_version_constraints
+      
+      cookbooks_for_environment = Chef::Environment.cdb_load_filtered_cookbook_versions(environment)
+      constrain(cookbooks_for_environment, expanded_run_list)
     end
 
     # Converts a string run list entry to a RunListItem object.

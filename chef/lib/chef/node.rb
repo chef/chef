@@ -426,7 +426,7 @@ class Chef
     # invalidated only when run_list is mutated?
     def expand!
       # This call should only be called on a chef-client run if you're going to save it later
-      expansion = run_list.expand('server', :environment => chef_environment)
+      expansion = run_list.expand(chef_environment, 'server')
       raise Chef::Exceptions::MissingRole if expansion.errors?
 
       self[:tags] = Array.new unless attribute?(:tags)
@@ -441,7 +441,7 @@ class Chef
     end
 
     def constrain_cookbooks(all_cookbooks, source)
-      cookbook_constraints = run_list.expand(source).recipes.with_version_constraints
+      cookbook_constraints = run_list.expand(chef_environment, source).recipes.with_version_constraints
       run_list.constrain(all_cookbooks, cookbook_constraints)
     end
 

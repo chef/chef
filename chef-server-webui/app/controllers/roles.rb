@@ -50,7 +50,7 @@ class Roles < Application
     @current_env = session[:environment] || "_default"
     @env_run_list_exists = @role.env_run_lists.has_key?(@current_env)
     @run_list = @role.run_list_for(@current_env)
-    @recipes = @run_list.expand('server').recipes
+    @recipes = @run_list.expand(@current_env, 'server').recipes
     render
   end
 

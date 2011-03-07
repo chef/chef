@@ -67,7 +67,7 @@ class Chef
 
       # Iterates over the run list items, expanding roles. After this,
       # +recipes+ will contain the fully expanded recipe list
-      def expand(environment='_default')
+      def expand(environment)
         @run_list_items.each_with_index do |entry, index|
           case entry.type
           when :recipe

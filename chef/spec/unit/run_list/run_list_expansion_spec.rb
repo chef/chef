@@ -68,7 +68,7 @@ describe Chef::RunList::RunListExpansion do
       @inflated_role.default_attributes({'foo' => 'bar'})
       @inflated_role.override_attributes({'baz' => 'qux'})
       @expansion.stub!(:fetch_role).and_return(@inflated_role)
-      @expansion.expand
+      @expansion.expand("_default")
     end
 
     it "has the ordered list of recipes" do
@@ -89,7 +89,7 @@ describe Chef::RunList::RunListExpansion do
   describe "after expanding a run list with a non existant role" do
     before do
       @expansion.stub!(:fetch_role) { @expansion.role_not_found('crabrevenge') }
-      @expansion.expand
+      @expansion.expand("_default")
     end
 
     it "is invalid" do
