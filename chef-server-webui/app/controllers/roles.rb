@@ -114,8 +114,7 @@ class Roles < Application
   def update
     begin
       @role = Chef::Role.load(params[:id])
-      @role.run_list(params[:run_list] || [])
-      @role.env_run_lists(params[:env_run_lists] || {})
+      @role.env_run_lists(params[:env_run_lists])
       @role.description(params[:description]) if params[:description] != ''
       @role.default_attributes(Chef::JSONCompat.from_json(params[:default_attributes])) if params[:default_attributes] != ''
       @role.override_attributes(Chef::JSONCompat.from_json(params[:override_attributes])) if params[:override_attributes] != ''
