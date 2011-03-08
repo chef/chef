@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -76,9 +76,9 @@ describe Chef::Role do
         @role.run_list_for("dev").should == Chef::RunList.new
       end
 
-      it "does not allow you to set the primary run list via environment run lists" do
+      it "env_run_lists can only be set with _default run list in it" do
         long_exception_name = Chef::Exceptions::InvalidEnvironmentRunListSpecification
-        lambda {@role.env_run_lists("_default" => %w[])}.should raise_error(long_exception_name)
+        lambda {@role.env_run_lists({})}.should raise_error(long_exception_name)
       end
 
     end
@@ -100,7 +100,7 @@ describe Chef::Role do
       end
 
     end
-    
+
   end
 
 
@@ -197,7 +197,7 @@ describe Chef::Role do
 
     describe "and it has per-environment run lists" do
       before do
-        @role.env_run_lists("production" => ['role[monitoring]', 'role[auditing]', 'role[apache]'], "dev" => ["role[nginx]"])
+        @role.env_run_lists("_default" => ['one', 'two', 'role[a]'], "production" => ['role[monitoring]', 'role[auditing]', 'role[apache]'], "dev" => ["role[nginx]"])
         @serialized_role = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@role), :create_additions => false)
       end
 
@@ -233,7 +233,7 @@ describe Chef::Role do
       default_attributes
       override_attributes
       run_list
-    }.each do |t| 
+    }.each do |t|
       it "should preserves the '#{t}' attribute from the JSON object" do
         @deserial.send(t.to_sym).should == @role.send(t.to_sym)
       end
