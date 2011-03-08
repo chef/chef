@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -119,36 +119,45 @@ class Chef
       # false:: If the current platform is not in the list
       def platform?(*args)
         has_platform = false
-  
+
         args.flatten.each do |platform|
           has_platform = true if platform == node[:platform]
         end
-  
+
         has_platform
       end
 
       def search(*args, &block)
         # If you pass a block, or have at least the start argument, do raw result parsing
-        # 
+        #
         # Otherwise, do the iteration for the end user
-        if Kernel.block_given? || args.length >= 4 
+        if Kernel.block_given? || args.length >= 4
           Chef::Search::Query.new.search(*args, &block)
-        else 
+        else
           results = Array.new
           Chef::Search::Query.new.search(*args) do |o|
-            results << o 
+            results << o
           end
           results
         end
       end
 
       def data_bag(bag)
-        rbag = Chef::DataBag.load(bag)
+        DataBag.validate_name!(bag)
+        rbag = DataBag.load(bag)
         rbag.keys
+      rescue Exception
+        Log.error("Failed to list data bag items in data bag: #{bag.inspect}")
+        raise
       end
 
       def data_bag_item(bag, item)
-        Chef::DataBagItem.load(bag, item)
+        DataBag.validate_name!(bag)
+        DataBagItem.validate_id!(item)
+        DataBagItem.load(bag, item)
+      rescue Exception
+        Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")
+        raise
       end
 
     end

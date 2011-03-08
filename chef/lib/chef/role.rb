@@ -68,8 +68,7 @@ class Chef
       @description = ''
       @default_attributes = Mash.new
       @override_attributes = Mash.new
-      @run_list = Chef::RunList.new
-      @env_run_lists = {}
+      @env_run_lists = {"_default" => Chef::RunList.new}
       @couchdb_rev = nil
       @couchdb_id = nil
       @couchdb = couchdb || Chef::CouchDB.new
@@ -106,17 +105,17 @@ class Chef
 
     def run_list(*args)
       if (args.length > 0)
-        @run_list.reset!(args)
+        @env_run_lists["_default"].reset!(args)
       end
-      @run_list
+      @env_run_lists["_default"]
     end
 
     alias_method :recipes, :run_list
 
     # For run_list expansion
-    def run_list_for(environment='_default')
+    def run_list_for(environment)
       if env_run_lists[environment].nil?
-        run_list
+        env_run_lists["_default"]
       else
         env_run_lists[environment]
       end
@@ -129,8 +128,8 @@ class Chef
     # Per environment run lists
     def env_run_lists(env_run_lists=nil)
       if (!env_run_lists.nil?)
-        if env_run_lists.key?("_default")
-          msg = "You cannot set the default run list via env_run_lists. Use run_list.\n"
+        unless env_run_lists.key?("_default")
+          msg = "_default key is required in env_run_lists.\n"
           msg << "(env_run_lists: #{env_run_lists.inspect})"
           raise Chef::Exceptions::InvalidEnvironmentRunListSpecification, msg
         end
@@ -159,6 +158,8 @@ class Chef
     end
 
     def to_hash
+      env_run_lists_without_default = @env_run_lists.dup
+      env_run_lists_without_default.delete("_default")
       result = {
         "name" => @name,
         "description" => @description,
@@ -166,15 +167,9 @@ class Chef
         "default_attributes" => @default_attributes,
         "override_attributes" => @override_attributes,
         "chef_type" => "role",
-        "run_list" => @run_list.run_list,
-        "env_run_lists" => @env_run_lists
+        "run_list" => run_list,
+        "env_run_lists" => env_run_lists_without_default
       }
-      # In case someone was sneaky and modified @env_run_lists directly:
-      if result["env_run_lists"].key?("_default")
-        msg = "You cannot set the default run list via env_run_lists. Use run_list.\n"
-        msg << "(role: #{@name}, env_run_lists: #{env_run_lists.inspect})"
-        raise Chef::Exceptions::InvalidEnvironmentRunListSpecification, msg
-      end
       result["_rev"] = couchdb_rev if couchdb_rev
       result
     end
@@ -187,7 +182,6 @@ class Chef
     def update_from!(o)
       description(o.description)
       recipes(o.recipes) if defined?(o.recipes)
-      run_list(o.run_list)
       default_attributes(o.default_attributes)
       override_attributes(o.override_attributes)
       env_run_lists(o.env_run_lists) unless o.env_run_lists.nil?
@@ -201,8 +195,8 @@ class Chef
       role.description(o["description"])
       role.default_attributes(o["default_attributes"])
       role.override_attributes(o["override_attributes"])
-      role.run_list(o.has_key?("run_list") ? o["run_list"] : o["recipes"])
-      role.env_run_lists(o["env_run_lists"]) unless o["env_run_lists"].nil?
+      default_run_list_hash = {"_default" => (o.has_key?("run_list") ? o["run_list"] : o["recipes"])}
+      role.env_run_lists(o["env_run_lists"].nil? ? default_run_list_hash : default_run_list_hash.merge(o["env_run_lists"]))
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       role.index_id = role.couchdb_id
       role.couchdb_id = o["_id"] if o.has_key?("_id")
