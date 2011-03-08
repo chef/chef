@@ -320,7 +320,7 @@ class Chef
         # manifest.
         cache.find(File.join(%w{cookbooks ** *})).each do |cache_filename|
           unless valid_cache_entries[cache_filename]
-            Chef::Log.info("Removing #{cache_filename} from the cache; it is no longer on the server.")
+            Chef::Log.info("Removing #{cache_filename} from the cache; it is no longer needed by chef-client.")
             cache.delete(cache_filename)
           end
         end
