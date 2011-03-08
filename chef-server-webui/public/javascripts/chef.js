@@ -25,18 +25,13 @@ $(document).ready(function(){
       runListItemList = $(envRunListUl).find('li.runListItem')
       if(runListItemList.length == 0){
         activeRunListUl = envRunListUl.getAttribute("class").split(" ").indexOf('active')
-        if(activeRunListUl >= 0 && envRunListUl.id != '_default'){
+        if(activeRunListUl >= 0){
           form.append('<input type="hidden" name="env_run_lists[' + envRunListUl.id + ']"/>');
         }
       }
       else{
         runListItemList.each(function(i, field) {
-          if (envRunListUl.id == '_default'){
-            form.append('<input type="hidden" name="run_list[]" value="' + field.id + '"/>');
-          }
-          else{
-            form.append('<input type="hidden" name="env_run_lists[' + envRunListUl.id + '][]" value="' + field.id + '"/>');
-          }
+          form.append('<input type="hidden" name="env_run_lists[' + envRunListUl.id + '][]" value="' + field.id + '"/>');
         });
       }
     });

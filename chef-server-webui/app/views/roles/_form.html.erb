@@ -53,7 +53,6 @@
               </span>
             </div>
           </div>
-          <%= partial('run_lists', :environment => "_default", :run_list => @run_list)%>
           <% @run_lists.each do |environment, run_list| %>
             <%= partial('run_lists', :environment => environment, :run_list => run_list)%>
           <% end %>
