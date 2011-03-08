@@ -72,5 +72,7 @@ class Chef
     class MissingParentDirectory < RuntimeError; end
     class UnresolvableGitReference < RuntimeError; end
     class InvalidEnvironmentRunListSpecification < ArgumentError; end
+    class InvalidDataBagItemID < ArgumentError; end
+    class InvalidDataBagName < ArgumentError; end
   end
 end
