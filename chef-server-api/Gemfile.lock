@@ -4,7 +4,6 @@ PATH
     chef (0.10.0.beta.0)
       bunny (>= 0.6.0)
       erubis
-      extlib
       highline
       json (>= 1.4.4, <= 1.4.6)
       mixlib-authentication (>= 1.1.0)

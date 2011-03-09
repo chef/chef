@@ -17,9 +17,10 @@
 # limitations under the License.
 #
 
-require 'chef' / 'node'
+require 'chef/node'
 require 'chef/version_class'
 require 'chef/version_constraint'
+require 'chef/cookbook_version_selector'
 
 class Nodes < Application
 
@@ -81,6 +82,8 @@ class Nodes < Application
     display @node
   end
 
+  # Return a hash, cookbook_name => cookbook manifest, of the cookbooks
+  # appropriate for this node, using its run_list and environment.
   def cookbooks
     begin
       @node = Chef::Node.cdb_load(params[:id])
@@ -88,30 +91,15 @@ class Nodes < Application
       raise NotFound, "Cannot load node #{params[:id]}"
     end
 
-    display(load_all_files)
-  end
+    # Get the mapping of cookbook_name => CookbookVersion applicable to
+    # this node's run_list and its environment.
+    included_cookbooks = Chef::CookbookVersionSelector.expand_to_cookbook_versions(@node.run_list, @node.chef_environment)
 
-  private
-
-  def load_all_files
-    all_cookbooks = Chef::Environment.cdb_load_filtered_cookbook_versions(@node.chef_environment)
-
-    included_cookbooks = cookbooks_for_node(all_cookbooks)
-    nodes_cookbooks = Hash.new
-    included_cookbooks.each do |cookbook_name, cookbook|
-      nodes_cookbooks[cookbook_name.to_s] = cookbook.generate_manifest_with_urls{|opts| absolute_url(:cookbook_file, opts) }
-    end
-
-    nodes_cookbooks
-  end
-
-  # returns name -> CookbookVersion for all cookbooks included on the given node.
-  def cookbooks_for_node(all_cookbooks)
-    begin
-      @node.constrain_cookbooks(all_cookbooks, 'couchdb')
-    rescue Chef::Exceptions::CookbookVersionConflict => e
-      raise PreconditionFailed, e.message
-    end
+    # Then map it to the return format.
+    display(included_cookbooks.inject({}) do |acc, (cookbook_name, cookbook)|
+      acc[cookbook_name.to_s] = cookbook.generate_manifest_with_urls{|opts| absolute_url(:cookbook_file, opts) }
+      acc
+    end)
   end
 
 end

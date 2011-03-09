@@ -18,6 +18,7 @@
 #
 
 require 'chef/environment'
+require 'chef/cookbook_version_selector'
 
 class Environments < Application
 
@@ -153,10 +154,18 @@ class Environments < Application
       end
 
       # Expand the run list in the scope of the specified environment.
-      names_to_cookbook_version = run_list.expand_to_cookbook_versions(environment_input, 'couchdb')
+      names_to_cookbook_version = Chef::CookbookVersionSelector.expand_to_cookbook_versions(run_list, environment_input)
     rescue Chef::Exceptions::CouchDBNotFound
       raise NotFound, "Cannot load environment #{params[:environment_id]}"
+    rescue Chef::Exceptions::CookbookVersionConflict => e
+      error = { :message => e.message,
+                #:unsatisfiable_solution_constraint => e.unsatisfiable_solution_constraint,
+                #:non_existent_cookbooks => e.disabled_non_existent_packages,
+                #:most_constrained_cookbooks => e.disabled_most_constrained_packages
+      }
+      raise PreconditionFailed, error.to_json
     end
+      
 
     # convert the hash which is
     #  name => CookbookVersion
