@@ -39,8 +39,7 @@ describe "Nodes controller - environments" do
     @node1.run_list << "role[role1]"
 
     @role1 = make_role("role1")
-    @role1.env_run_lists({"env1" => make_runlist("recipe[cb_for_env1]")})
-    @role1.run_list(make_runlist("recipe[cb_for_default]"))
+    @role1.env_run_lists({"_default" => make_runlist("recipe[cb_for_default]"), "env1" => make_runlist("recipe[cb_for_env1]")})
 
     @all_filtered_cookbook_list = 
       make_filtered_cookbook_hash(make_cookbook("cb_for_default", "1.0.0"),
