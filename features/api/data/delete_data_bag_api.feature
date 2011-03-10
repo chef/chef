@@ -30,7 +30,7 @@ Feature: Delete a Data Bag via the REST API
   Scenario: Delete a Data Bag without authenticating
     Given a 'data_bag' named 'users' exists
      When I 'DELETE' the path '/data/users'
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '400 "Bad Request"' exception
 
   Scenario: Delete a data bag with a wrong private key
     Given a 'registration' named 'bobo' exists

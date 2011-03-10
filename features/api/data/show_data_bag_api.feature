@@ -39,7 +39,7 @@ Feature: Show a data_bag via the REST API
   Scenario: Show a data_bag without authenticating
     Given a 'data_bag' named 'users' exists
       And I 'GET' the path '/data/users'
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '400 "Bad Request"' exception
 
   Scenario: Show a data_bag with a wrong private key
     Given a 'registration' named 'bobo' exists

@@ -30,10 +30,11 @@ Feature: List data bags via the REST API
 
   Scenario: List data bags when you are not authenticated
      When I 'GET' the path '/data'
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '400 "Bad Request"' exception
 
   Scenario: List data bags with the wrong key
     Given a 'registration' named 'bobo' exists
      When I 'GET' the path '/data' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
+
 

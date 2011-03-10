@@ -139,5 +139,5 @@ Feature: Search data via the REST API
 
   Scenario: Search for objects when you are not authenticated
      When I 'GET' the path '/search/users'
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '400 "Bad Request"' exception
 

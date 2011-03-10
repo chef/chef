@@ -23,7 +23,7 @@ Feature: Show a data_bag item via the REST API
     Given a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
       And I 'GET' the path '/data/users/francis'
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '400 "Bad Request"' exception
 
   Scenario: Show a data_bag item with a wrong private key
     Given a 'registration' named 'bobo' exists

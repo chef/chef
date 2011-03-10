@@ -29,5 +29,5 @@ Feature: List search endpoints via the REST API
 
   Scenario: List search indexes when you are not authenticated 
      When I 'GET' the path '/search' 
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '400 "Bad Request"' exception
 

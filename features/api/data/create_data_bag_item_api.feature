@@ -26,7 +26,7 @@ Feature: Create a data bag item via the REST API
     Given a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis'
      When I 'PUT' the 'data_bag_item' to the path '/data/users/francis'
-     Then I should get a '401 "Unauthorized"' exception
+     Then I should get a '400 "Bad Request"' exception
 
   Scenario: Create a new data bag item with a wrong private key
     Given I am an administrator
