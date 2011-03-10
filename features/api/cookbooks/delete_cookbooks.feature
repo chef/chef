@@ -49,6 +49,6 @@ Feature: CRUD cookbooks
   @delete_cookbook_negative
   Scenario: I should not be able to delete a cookbook that doesn't exist'
     Given I am an administrator
-     When I 'DELETE' to the path '/cookbooks/testcookbook_nonexistent'
+     When I 'DELETE' to the path '/cookbooks/testcookbook_nonexistent/1.2.3'
      Then I should get a '404 "Not Found"' exception
 

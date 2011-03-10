@@ -6,8 +6,9 @@ Feature: List cookbooks via the REST API
   I want to be able to list all cookbooks via the REST API
 
   Scenario Outline: List all cookbooks
-    Given I am <user_type>
+    Given I am an administrator
       And I upload multiple versions of the 'version_test' cookbook
+      And I am <user_type>
      When I 'GET' the path '/cookbooks'
      Then the inflated responses key 'version_test' sub-key 'url' should match 'http://.+/cookbooks/version_test'
       And the inflated responses key 'version_test' sub-key 'versions' item '0' sub-key 'url' should match 'http://.+/cookbooks/version_test/(\d+.\d+.\d+)'
