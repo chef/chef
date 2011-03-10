@@ -148,6 +148,39 @@ Before do
         r.description "role2 is included by role1"
         r.run_list("recipe[attribute_settings_override]")
         r
+      end,
+      'role_test' => Proc.new do
+        r = Chef::Role.new
+        r.name "role_test"
+        r.description "A simple test role"
+        r.run_list("recipe[roles]")
+        r.default_attributes({
+           "reason" => "unbalancing",
+           "ossing" => "this time around"
+        })
+        r.override_attributes({
+          "ossining" => "whatever",
+          "snakes" => "on a plane"
+        })
+        r
+      end,
+      'role_env_test' => Proc.new do
+        r = Chef::Role.new
+        r.name "role_env_test"
+        r.description "A simple test role with environment specific run list"
+        r.env_run_lists({
+          "_default" => [],
+          "cucumber" => ["recipe[roles]"]
+        })
+        r.default_attributes({
+           "reason" => "unbalancing",
+           "ossining" => "this time around"
+        })
+        r.override_attributes({
+          "ossining" => "whatever",
+          "snakes" => "on a plane"
+        })
+        r
       end
     },
     'node' => {

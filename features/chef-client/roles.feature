@@ -7,6 +7,7 @@ Feature: Configure nodes based on their role
   Scenario: Apply a role to a node
     Given a validated node
       And it includes the role 'role_test'
+      And a 'role' named 'role_test' exists
      When I run the chef-client with '-l debug'
      Then the run should exit '0'
       And 'stdout' should have 'DEBUG: Loading Recipe roles'
@@ -16,8 +17,9 @@ Feature: Configure nodes based on their role
 
   Scenario: Apply a role with multiple environment specific run_lists to a node
     Given an 'environment' named 'cucumber' exists
-    Given a validated node in the 'cucumber' environment
+      And a validated node in the 'cucumber' environment
       And it includes the role 'role_env_test'
+      And a 'role' named 'role_env_test' exists
      When I run the chef-client with '-l debug'
      Then the run should exit '0'
       And 'stdout' should have 'DEBUG: Loading Recipe roles'

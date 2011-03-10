@@ -8,7 +8,7 @@ Feature: List roles via the REST API
     Given I am an administrator
       And there are no roles 
      When I 'GET' the path '/roles' 
-     Then the inflated response should be '2' items long 
+     Then the inflated response should be '0' items long
 
   Scenario: List roles when one has been created
     Given I am an administrator
