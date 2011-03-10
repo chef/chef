@@ -85,6 +85,10 @@ Then /^the inflated responses key '(.+)' item '(\d+)' key '(.+)' should be '(.+)
   inflated_response[key][index.to_i][sub_key].should == to_equal
 end
 
+Then /^the inflated responses key '(.+)' item '(\d+)' should respond to '(.+)' with '(.*)'$/ do |key, index, method_name, method_value|
+  inflated_response[key][index.to_i].send(method_name.to_sym).should == method_value
+end
+
 Then /^the inflated responses key '(.+)' sub-key '(.+)' should be an empty hash$/ do |key, sub_key|
   inflated_response[key][sub_key].should == {}
 end
