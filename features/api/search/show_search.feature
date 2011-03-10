@@ -37,7 +37,7 @@ Feature: Search data via the REST API
 
   @oss_only
   Scenario: Search for objects with a manual ascending sort order
-    Given PL-450 is resolved in favor of not removing this feature
+    Given PL-540 is resolved in favor of not removing this feature
     Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
@@ -54,7 +54,7 @@ Feature: Search data via the REST API
 
   @oss_only
   Scenario: Search for objects with a manual descending sort order
-    Given PL-450 is resolved in favor of not removing this feature
+    Given PL-540 is resolved in favor of not removing this feature
     Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
@@ -71,7 +71,7 @@ Feature: Search data via the REST API
 
   @oss_only
   Scenario: Search for objects and page through the results
-    Given PL-450 is resolved in favor of not removing this feature
+    Given PL-540 is resolved in favor of not removing this feature
     Given I am an administrator
       And a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
@@ -121,7 +121,7 @@ Feature: Search data via the REST API
       And I 'GET' the path '/search/environment?q=name:cucumber'
      Then the inflated responses key 'rows' item '0' should be a kind of 'Chef::Environment'
 
-  Scenario: Search for a type of object that does not exist 
+  Scenario: Search for a type of object that does not exist
     Given I am an administrator
      When I authenticate as 'bobo'
       And I 'GET' the path '/search/funkensteins'
