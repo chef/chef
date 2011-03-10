@@ -121,17 +121,7 @@ class Environments < Application
   #  ["recipe[apache2]", "recipe[runit]"]
   #
   # OUT:
-  #  Hash of cookbook names to version/url hash, e.g.,
-  #    {
-  #      "apache2": {
-  #        "version": "1.2.3",
-  #        "url" => "http://.../cookbooks/apache2/1.2.3"
-  #      },
-  #      "runit": {
-  #        "version": "2.3.4",
-  #        "url" => "http://.../cookbooks/runit/2.3.4"
-  #      }
-  #    }
+  #  Hash of cookbook names cookbook manifest
   #
   # NOTE: This method is a POST, not because it's a mutator (it's idempotent),
   # but the run_list can likely exceed Merb's query string limit for GET
@@ -165,22 +155,17 @@ class Environments < Application
       }
       raise PreconditionFailed, error.to_json
     end
-      
 
     # convert the hash which is
     #  name => CookbookVersion
     # to
-    #  name => {:version => version, :url => url}
-    names_to_url_and_version = names_to_cookbook_version.values.inject({}) do |res, cb_version|
-      name = cb_version.name
-      res[name] = {
-        :version => cb_version.version,
-        :url => absolute_url(:cookbook_version, :cookbook_name => name, :cookbook_version => cb_version.version)
-      }
+    #  name => cookbook manifest
+    names_to_manifest = names_to_cookbook_version.values.inject({}) do |res, cb_version|
+      res[cb_version.name] = cb_version.generate_manifest_with_urls {|opts| absolute_url(:cookbook_file, opts) }
       res
     end
 
-    display(names_to_url_and_version)
+    display(names_to_manifest)
   end
 
 

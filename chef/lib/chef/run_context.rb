@@ -53,17 +53,17 @@ class Chef
       node.cookbook_collection = cookbook_collection
     end
 
-    def load(expanded_run_list)
+    def load(expanded_recipe_names)
       load_libraries
       load_lwrp_providers
       load_lwrp_resources
       load_attributes
       load_resource_definitions
 
-      expanded_run_list.each do |run_list_item|
+      expanded_recipe_names.each do |recipe|
         # TODO: timh/cw, 5-14-2010: It's distasteful to be including
         # the DSL in a class outside the context of the DSL
-        include_recipe(run_list_item.name)
+        include_recipe(recipe)
       end
     end
 

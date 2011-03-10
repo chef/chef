@@ -52,7 +52,6 @@ describe "Environments controller" do
       response.keys.size.should == 1
       response["cookbook1"].should_not == nil
       response["cookbook1"]['version'].should == "1.0.0"
-      response["cookbook1"]['url'].should == "#{root_url}/cookbooks/cookbook1/1.0.0"
     end
 
     it "should expect the passed-in run_list using the correct environment: two run_list items" do
@@ -64,10 +63,8 @@ describe "Environments controller" do
       response.keys.size.should == 2
       response["cookbook1"].should_not == nil
       response["cookbook1"]['version'].should == "2.0.0"
-      response["cookbook1"]['url'].should == "#{root_url}/cookbooks/cookbook1/2.0.0"
       response["cookbook2"].should_not == nil
       response["cookbook2"]['version'].should == "2.0.0"
-      response["cookbook2"]['url'].should == "#{root_url}/cookbooks/cookbook2/2.0.0"
     end
 
     it "should report no_such_cookbook if given a dependency on a non-existant cookbook" do
