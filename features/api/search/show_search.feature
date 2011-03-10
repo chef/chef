@@ -120,6 +120,16 @@ Feature: Search data via the REST API
      When I authenticate as 'bobo'
       And I 'GET' the path '/search/environment?q=name:cucumber'
      Then the inflated responses key 'rows' item '0' should be a kind of 'Chef::Environment'
+     And the inflated responses key 'rows' item '0' should respond to 'name' with 'cucumber'
+
+  Scenario: Search for a client
+    Given I am an administrator
+      And a 'client' named 'isis' exists
+      And the search index has been committed
+     When I authenticate as 'bobo'
+      And I 'GET' the path '/search/client?q=*:*'
+     Then the inflated responses key 'rows' item '0' should be a kind of 'Chef::ApiClient'
+      And the inflated responses key 'rows' item '0' should respond to 'name' with 'isis'
 
   Scenario: Search for a type of object that does not exist
     Given I am an administrator
