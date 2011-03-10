@@ -424,9 +424,9 @@ class Chef
     # run_list is mutated? Or perhaps do something smarter like
     # on-demand generation of default_attrs and override_attrs,
     # invalidated only when run_list is mutated?
-    def expand!
+    def expand!(data_source = 'server')
       # This call should only be called on a chef-client run if you're going to save it later
-      expansion = run_list.expand(chef_environment, 'server')
+      expansion = run_list.expand(chef_environment, data_source)
       raise Chef::Exceptions::MissingRole if expansion.errors?
 
       self[:tags] = Array.new unless attribute?(:tags)
@@ -438,11 +438,6 @@ class Chef
       @automatic_attrs[:roles] = expansion.roles
 
       expansion.recipes
-    end
-
-    def constrain_cookbooks(all_cookbooks, source)
-      cookbook_constraints = run_list.expand(chef_environment, source).recipes.with_version_constraints
-      run_list.constrain(all_cookbooks, cookbook_constraints)
     end
 
     # Transform the node to a Hash

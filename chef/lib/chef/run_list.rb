@@ -146,7 +146,6 @@ class Chef
     end
 
     def expansion_for_data_source(data_source, opts={})
-      data_source = 'disk' if Chef::Config[:solo]
       case data_source.to_s
       when 'disk'
         RunListExpansionFromDisk.new(@run_list_items)
