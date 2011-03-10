@@ -1,9 +1,11 @@
 $:.unshift(File.dirname(__FILE__) + '/lib')
-require 'chef/expander/version'
+
+sandbox = Module.new
+sandbox.module_eval(IO.read(File.expand_path('../lib/chef/expander/version.rb', __FILE__)))
 
 Gem::Specification.new do |s|
   s.name = 'chef-expander'
-  s.version = Chef::Expander::VERSION
+  s.version = sandbox::Chef::Expander::VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README.rdoc", "LICENSE" ]
