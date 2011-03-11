@@ -70,7 +70,9 @@ describe "Environments controller" do
     it "should report no_such_cookbook if given a dependency on a non-existant cookbook" do
       Chef::Environment.should_receive(:cdb_load_filtered_cookbook_versions).with("env1").and_return(@filtered_cookbook_list_env1)
       expected_error = {
-        "message" => "Run list item (cookbook_nosuch >= 0.0.0) specifies a cookbook that does not exist in the dependency graph",
+        "message" => "Run list contains invalid items: no such cookbook cookbook_nosuch.",
+        "non_existent_cookbooks" => ["cookbook_nosuch"],
+        "cookbooks_with_no_versions" => []
       }.to_json
 
       lambda {
@@ -81,7 +83,9 @@ describe "Environments controller" do
     it "should report no_such_version if given a dependency on a cookbook that doesn't have any valid versions for an environment" do
       Chef::Environment.should_receive(:cdb_load_filtered_cookbook_versions).with("env1").and_return(@filtered_cookbook_list_env1)
       expected_error = {
-        "message" => "Run list item (cookbook_noversions >= 0.0.0) does not match any versions",
+        "message" => "Run list contains invalid items: no versions match the constraints on cookbook cookbook_noversions.",
+        "non_existent_cookbooks" => [],
+        "cookbooks_with_no_versions" => ["cookbook_noversions"]
       }.to_json
 
       lambda {
@@ -89,21 +93,21 @@ describe "Environments controller" do
       }.should raise_error(Merb::ControllerExceptions::PreconditionFailed, expected_error)
     end
 
-
     # TODO; have top-level cookbooks depend on other, non-existent cookbooks,
     # to get the other kind of exceptions.
     it "should report multiple failures (compound exceptions) if there is more than one error in dependencies" do
       Chef::Environment.should_receive(:cdb_load_filtered_cookbook_versions).with("env1").and_return(@filtered_cookbook_list_env1)
-      begin
-        response = post_json("/environments/env1/cookbook_versions", 
-                             {"run_list" => ["recipe[cookbook_nosuch_1]", "recipe[cookbook_nosuch_2]"]})
-      rescue => e
-        puts "e is #{e}"
-        puts "e.stacktrace =\n  #{e.backtrace.join("  \n")}"
 
-        require 'pp'
-        pp(:e => e)
-      end
+      expected_error = {
+        "message" => "Run list contains invalid items: no such cookbooks cookbook_nosuch_1, cookbook_nosuch_2; no versions match the constraints on cookbook cookbook_noversions.",
+        "non_existent_cookbooks" => ["cookbook_nosuch_1", "cookbook_nosuch_2"],
+        "cookbooks_with_no_versions" => ["cookbook_noversions"]
+      }.to_json
+
+      lambda {
+        response = post_json("/environments/env1/cookbook_versions", 
+                             {"run_list" => ["recipe[cookbook_nosuch_1]", "recipe[cookbook_nosuch_2]", "recipe[cookbook_noversions]"]})
+      }.should raise_error(Merb::ControllerExceptions::PreconditionFailed, expected_error)
     end
   end
 end

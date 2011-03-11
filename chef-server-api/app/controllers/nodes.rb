@@ -93,13 +93,23 @@ class Nodes < Application
 
     # Get the mapping of cookbook_name => CookbookVersion applicable to
     # this node's run_list and its environment.
-    included_cookbooks = Chef::CookbookVersionSelector.expand_to_cookbook_versions(@node.run_list, @node.chef_environment)
+    begin
+      included_cookbooks = Chef::CookbookVersionSelector.expand_to_cookbook_versions(@node.run_list, @node.chef_environment)
+    rescue Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems => e
+      raise PreconditionFailed, e.to_json
+    rescue Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem => e
+      raise PreconditionFailed, e.to_json
+    end
 
-    # Then map it to the return format.
+    # Convert from
+    #  name => CookbookVersion
+    # to
+    #  name => cookbook manifest
+    # and display.
     display(included_cookbooks.inject({}) do |acc, (cookbook_name, cookbook)|
-      acc[cookbook_name.to_s] = cookbook.generate_manifest_with_urls{|opts| absolute_url(:cookbook_file, opts) }
-      acc
-    end)
+              acc[cookbook_name.to_s] = cookbook.generate_manifest_with_urls{|opts| absolute_url(:cookbook_file, opts) }
+              acc
+            end)
   end
 
 end

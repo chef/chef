@@ -22,6 +22,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 require 'chef/version_class'
 require 'chef/version_constraint'
+require 'chef/cookbook_version_selector'
 
 describe Chef::RunList do
   before(:each) do
@@ -321,7 +322,7 @@ describe Chef::RunList do
 
     def assert_failure(run_list, all_cookbooks, constraints, expected_message)
       begin
-        run_list.constrain(all_cookbooks, constraints)
+        Chef::CookbookVersionSelector.constrain(all_cookbooks, run_list.recipes.with_version_constraints)
         fail "Should have raised a Chef::Exceptions::CookbookVersionConflict exception"
       rescue Chef::Exceptions::CookbookVersionConflict => cvc
         cvc.message.should include(expected_message)
@@ -362,7 +363,7 @@ describe Chef::RunList do
 
     it "pulls in transitive dependencies" do
       constraints = [vc_maker("a", "~> 1.0")]
-      cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+      cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
       %w(a c d e).each { |k| cookbooks.should have_key k }
       cookbooks.size.should == 4
       cookbooks["c"].version.should == "3.0.0"
@@ -371,7 +372,7 @@ describe Chef::RunList do
 
     it "properly sorts version triples, treating each term numerically" do
       constraints = [vc_maker("n", "> 1.2")]
-      cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+      cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
       cookbooks.size.should == 1
       cookbooks["n"].version.should == "1.10.0"
     end
@@ -388,21 +389,21 @@ describe Chef::RunList do
 
     it "selects 'd 2.1.0' given constraint 'd > 1.2.3'" do
       constraints = [vc_maker("d", "> 1.2.3")]
-      cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+      cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
       cookbooks.size.should == 1
       cookbooks["d"].version.should == "2.1.0"
     end
 
     it "selects largest version when constraint allows multiple" do
       constraints = [vc_maker("d", "> 1.0")]
-      cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+      cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
       cookbooks.size.should == 1
       cookbooks["d"].version.should == "2.1.0"
     end
 
     it "selects 'd 1.1.0' given constraint 'd ~> 1.0'" do
       constraints = [vc_maker("d", "~> 1.0")]
-      cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+      cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
       cookbooks.size.should == 1
       cookbooks["d"].version.should == "1.1.0"
     end
@@ -428,7 +429,7 @@ describe Chef::RunList do
         # Cookbooks a and b both have a dependency on c, but with
         # differing constraints.
         constraints = [vc_maker("a", "1.0"), vc_maker("b", "1.0")]
-        cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+        cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
         cookbooks.size.should == 5
         %w(a b c d f).each { |k| cookbooks.should have_key k }
         cookbooks["a"].version.should == "1.0.0"
@@ -442,7 +443,7 @@ describe Chef::RunList do
         # we should get a version of c that satifies the constraints
         # on the c dependency for both b and a.
         constraints = [vc_maker("b", "1.0"), vc_maker("a", "1.0")]
-        cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+        cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
         cookbooks.size.should == 5
         %w(a b c d f).each { |k| cookbooks.should have_key k }
         cookbooks["a"].version.should == "1.0.0"
@@ -453,7 +454,7 @@ describe Chef::RunList do
 
       it "resolves a then d" do
         constraints = [vc_maker("a", "1.0"), vc_maker("d", "1.1")]
-        cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+        cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
         cookbooks.size.should == 4
         %w(a c d f).each { |k| cookbooks.should have_key k }
         cookbooks["a"].version.should == "1.0.0"
@@ -463,7 +464,7 @@ describe Chef::RunList do
 
       it "resolves d then a" do
         constraints = [vc_maker("d", "1.1"), vc_maker("a", "1.0")]
-        cookbooks = @run_list.constrain(@all_cookbooks, constraints)
+        cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
         cookbooks.size.should == 4
         %w(a c d f).each { |k| cookbooks.should have_key k }
         cookbooks["a"].version.should == "1.0.0"

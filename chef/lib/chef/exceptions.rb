@@ -71,9 +71,78 @@ class Chef
     class InvalidDataBagItemID < ArgumentError; end
     class InvalidDataBagName < ArgumentError; end
     class EnclosingDirectoryDoesNotExist < ArgumentError; end
+
+    # A different version of a cookbook was added to a
+    # VersionedRecipeList than the one already there.
     class CookbookVersionConflict < ArgumentError ; end
-    class CookbookVersionUnavailable < StandardError; end
+
+    # does not follow X.Y.Z format. ArgumentError?
     class InvalidCookbookVersion < ArgumentError; end
+
+    # version constraint should be a string or array, or it doesn't
+    # match OP VERSION. ArgumentError?
     class InvalidVersionConstraint < ArgumentError; end
+
+    class CookbookVersionSelection
+
+      # Compound exception: In run_list expansion and resolution,
+      # run_list items referred to cookbooks that don't exist and/or
+      # have no versions available.
+      class InvalidRunListItems < StandardError
+        attr_reader :non_existent_cookbooks
+        attr_reader :cookbooks_with_no_matching_versions
+
+        def initialize(message, non_existent_cookbooks, cookbooks_with_no_matching_versions)
+          super(message)
+
+          @non_existent_cookbooks = non_existent_cookbooks
+          @cookbooks_with_no_matching_versions = cookbooks_with_no_matching_versions
+        end
+
+        def to_json(*a)
+          result = {
+            "message" => message,
+            "non_existent_cookbooks" => non_existent_cookbooks,
+            "cookbooks_with_no_versions" => cookbooks_with_no_matching_versions
+          }
+          result.to_json(*a)
+        end
+      end
+
+      # In run_list expansion and resolution, a constraint was
+      # unsatisfiable.
+      #
+      # This exception may not be the complete error report. If you
+      # resolve the misconfiguration represented by this exception and
+      # re-solve, you may get another exception
+      class UnsatisfiableRunListItem < StandardError
+        attr_reader :run_list_item
+        attr_reader :non_existent_cookbooks, :most_constrained_cookbooks
+
+        # most_constrained_cookbooks: if I were to remove constraints
+        # regarding these cookbooks, I would get a solution or move on
+        # to the next error (deeper in the graph). An item in this list
+        # may be unsatisfiable, but when resolved may also reveal
+        # further unsatisfiable constraints; this condition would not be
+        # reported.
+        def initialize(message, run_list_item, non_existent_cookbooks, most_constrained_cookbooks)
+          super(message)
+
+          @run_list_item = run_list_item
+          @non_existent_cookbooks = non_existent_cookbooks
+          @most_constrained_cookbooks = most_constrained_cookbooks
+        end
+
+        def to_json(*a)
+          result = {
+            "message" => e.message,
+            "unsatisfiable_run_list_item" => run_list_item,
+            "non_existent_cookbooks" => non_existent_cookbooks,
+            "most_constrained_cookbooks" => most_constrained_cookbooks
+          }
+          result.to_json(*a)
+        end
+      end
+    end
   end
 end

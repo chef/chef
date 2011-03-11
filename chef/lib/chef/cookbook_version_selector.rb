@@ -103,17 +103,36 @@ class Chef
       soln =
         begin
           DepSelector::Selector.new(dep_graph).find_solution(cookbook_constraints, all_packages)
-        rescue DepSelector::Exceptions::NoSolutionExists
-          puts <<EOM
-NoSolutionExists:
-  message = #{$!.message}
-  unsatisfiable_solution_constraint = #{$!.unsatisfiable_solution_constraint.inspect}
-  disabled_non_existent_packages = #{$!.disabled_non_existent_packages}
-  disabled_most_constrained_packages = #{$!.disabled_most_constrained_packages}
-EOM
-          raise Chef::Exceptions::CookbookVersionConflict, filter_dep_selector_message($!.message)
+        rescue DepSelector::Exceptions::InvalidSolutionConstraints => e
+          non_existent_cookbooks = e.non_existent_packages.map {|constraint| constraint.package.name}
+          cookbooks_with_no_matching_versions = e.constrained_to_no_versions.map {|constraint| constraint.package.name}
+
+          # Spend a whole lot of effort for pluralizing and
+          # prettifying the message.
+          message = ""
+          if non_existent_cookbooks.length > 0
+            message += "no such " + (non_existent_cookbooks.length > 1 ? "cookbooks" : "cookbook")
+            message += " #{non_existent_cookbooks.join(", ")}"
+          end
+
+          if cookbooks_with_no_matching_versions.length > 0
+            if message.length > 0
+              message += "; "
+            end
+
+            message += "no versions match the constraints on " + (cookbooks_with_no_matching_versions.length > 1 ? "cookbooks" : "cookbook")
+            message += " #{cookbooks_with_no_matching_versions.join(", ")}"
+          end
+
+          message = "Run list contains invalid items: #{message}."
+
+          raise Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems.new(message, non_existent_cookbooks, cookbooks_with_no_matching_versions)
+        rescue DepSelector::Exceptions::NoSolutionExists => e
+          #message = "Could not resolve run_list due to constraint: #{e.unsatisfiable_solution_constraint}."
+
+          raise Chef::Exceptions::CookbookVersionSelect::UnsatisfiableRunListItem.new(filter_dep_selector_message(e.message), e.unsatisfiable_solution_constraint, e.disabled_non_existent_packages, e.disabled_most_constrained_packages)
         end
-        
+
 
       # map assignment back to CookbookVersion objects
       selected_cookbooks = {}
@@ -129,18 +148,15 @@ EOM
 
     # Expands the run_list, constrained to the environment's CookbookVersion
     # constraints.
-    # 
+    #
     # Returns:
     #   Hash of: name to CookbookVersion
     def self.expand_to_cookbook_versions(run_list, environment)
-
       # expand any roles in this run_list.
       expanded_run_list = run_list.expand(environment, 'couchdb').recipes.with_version_constraints
-      
+
       cookbooks_for_environment = Chef::Environment.cdb_load_filtered_cookbook_versions(environment)
       constrain(cookbooks_for_environment, expanded_run_list)
     end
   end
 end
-
-

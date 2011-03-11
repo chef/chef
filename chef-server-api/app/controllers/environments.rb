@@ -147,25 +147,21 @@ class Environments < Application
       names_to_cookbook_version = Chef::CookbookVersionSelector.expand_to_cookbook_versions(run_list, environment_input)
     rescue Chef::Exceptions::CouchDBNotFound
       raise NotFound, "Cannot load environment #{params[:environment_id]}"
-    rescue Chef::Exceptions::CookbookVersionConflict => e
-      error = { :message => e.message,
-                #:unsatisfiable_solution_constraint => e.unsatisfiable_solution_constraint,
-                #:non_existent_cookbooks => e.disabled_non_existent_packages,
-                #:most_constrained_cookbooks => e.disabled_most_constrained_packages
-      }
-      raise PreconditionFailed, error.to_json
+    rescue Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems => e
+      raise PreconditionFailed, e.to_json
+    rescue Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem => e
+      raise PreconditionFailed, e.to_json
     end
 
-    # convert the hash which is
+    # Convert from
     #  name => CookbookVersion
     # to
     #  name => cookbook manifest
-    names_to_manifest = names_to_cookbook_version.values.inject({}) do |res, cb_version|
-      res[cb_version.name] = cb_version.generate_manifest_with_urls {|opts| absolute_url(:cookbook_file, opts) }
-      res
-    end
-
-    display(names_to_manifest)
+    # and display.
+    display(names_to_cookbook_version.inject({}) do |res, (cb_name, cb_version)|
+              res[cb_name] = cb_version.generate_manifest_with_urls {|opts| absolute_url(:cookbook_file, opts) }
+              res
+            end)
   end
 
 
