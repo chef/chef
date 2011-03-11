@@ -170,7 +170,7 @@ Before do
         r.description "A simple test role with environment specific run list"
         r.env_run_lists({
           "_default" => [],
-          "cucumber" => ["recipe[roles]"]
+          "cucumber" => ['recipe[roles::env_test]']
         })
         r.default_attributes({
            "reason" => "unbalancing",
