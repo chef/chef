@@ -39,7 +39,7 @@ class Chef
 
     attr_accessor :query
     attr_accessor :params
-    
+
     # Create a new Query object - takes the solr_url and optional
     # Chef::CouchDB object to inflate objects into.
     def initialize(couchdb = nil)
@@ -58,7 +58,7 @@ class Chef
           @database = couchdb.couchdb_database
           @couchdb = couchdb
         end
-      end 
+      end
     end
 
     def self.from_params(params, couchdb=nil)
@@ -97,7 +97,7 @@ class Chef
     end
 
     def update_query_from_params
-      original_query = params.delete(:q) || "*:*"
+      original_query = URI.decode(params.delete(:q) || "*:*")
       @query = Chef::SolrQuery::QueryTransform.transform(original_query)
     end
 
