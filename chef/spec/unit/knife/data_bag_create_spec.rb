@@ -1,6 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright (c) 2009-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +18,7 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require 'tempfile'
 
 module ChefSpecs
   class ChefRest
@@ -43,8 +45,7 @@ describe Chef::Knife::DataBagCreate do
 
 
   it "creates a data bag when given one argument" do
-    # TODO: OMG use accessors, especially when you didn't set the GDMF ivar, kthx
-    @knife.instance_variable_set(:@name_args, ['sudoing_admins'])
+    @knife.name_args = ['sudoing_admins']
     @rest.should_receive(:post_rest).with("data", {"name" => "sudoing_admins"})
     @log.should_receive(:info).with("Created data_bag[sudoing_admins]")
 
@@ -52,13 +53,39 @@ describe Chef::Knife::DataBagCreate do
   end
 
   it "creates a data bag item when given two arguments" do
-    @knife.instance_variable_set(:@name_args, ['sudoing_admins', 'ME'])
+    @knife.name_args = ['sudoing_admins', 'ME']
     user_supplied_json = {"login_name" => "alphaomega", "id" => "ME"}.to_json
     @knife.should_receive(:create_object).and_yield(user_supplied_json)
     @rest.should_receive(:post_rest).with("data", {'name' => 'sudoing_admins'}).ordered
     @rest.should_receive(:post_rest).with("data/sudoing_admins", user_supplied_json).ordered
 
     @knife.run
+  end
+
+  describe "encrypted data bag items" do
+    before(:each) do
+      @secret = "abc123SECRET"
+      @plain_data = {"login_name" => "alphaomega", "id" => "ME"}
+      @enc_data = Chef::EncryptedDataBagItem.encrypt_data_bag_item(@plain_data,
+                                                                   @secret)
+      @knife.name_args = ['sudoing_admins', 'ME']
+      @knife.should_receive(:create_object).and_yield(@plain_data)
+      @rest.should_receive(:post_rest).with("data", {'name' => 'sudoing_admins'}).ordered
+      @rest.should_receive(:post_rest).with("data/sudoing_admins", @enc_data).ordered
+    end
+
+    it "creates an encrypted data bag item via --secret" do
+      @knife.stub!(:config).and_return({:secret => @secret})
+      @knife.run
+    end
+
+    it "creates an encrypted data bag item via --secret_file" do
+      secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
+      secret_file.puts(@secret)
+      secret_file.flush
+      @knife.stub!(:config).and_return({:secret_file => secret_file.path})
+      @knife.run
+    end
   end
 
 end
