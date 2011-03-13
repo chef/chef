@@ -9,9 +9,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,18 +24,18 @@ require 'chef/cookbook/metadata'
 
 class Chef
   class CookbookLoader
-    
+
     attr_accessor :cookbook, :metadata
-    
+
     include Enumerable
-    
+
     def initialize()
       @cookbooks_by_name = Mash.new
       @metadata = Hash.new
       @ignore_regexes = Hash.new { |hsh, key| hsh[key] = Array.new }
       load_cookbooks
     end
-    
+
     def load_cookbooks
       cookbook_settings = Hash.new
       [Chef::Config.cookbook_path].flatten.each do |cb_path|
@@ -44,7 +44,7 @@ class Chef
           next unless File.directory?(cookbook)
           cookbook_name = File.basename(cookbook).to_sym
           unless cookbook_settings.has_key?(cookbook_name)
-            cookbook_settings[cookbook_name] = { 
+            cookbook_settings[cookbook_name] = {
               :attribute_filenames  => Hash.new,
               :definition_filenames => Hash.new,
               :recipe_filenames     => Hash.new,
@@ -59,21 +59,21 @@ class Chef
           end
           ignore_regexes = load_ignore_file(File.join(cookbook, "ignore"))
           @ignore_regexes[cookbook_name].concat(ignore_regexes)
-          
+
           load_files_unless_basename(
-            File.join(cookbook, "attributes", "*.rb"), 
+            File.join(cookbook, "attributes", "*.rb"),
             cookbook_settings[cookbook_name][:attribute_filenames]
           )
           load_files_unless_basename(
-            File.join(cookbook, "definitions", "*.rb"), 
+            File.join(cookbook, "definitions", "*.rb"),
             cookbook_settings[cookbook_name][:definition_filenames]
           )
           load_files_unless_basename(
-            File.join(cookbook, "recipes", "*.rb"), 
+            File.join(cookbook, "recipes", "*.rb"),
             cookbook_settings[cookbook_name][:recipe_filenames]
           )
           load_files_unless_basename(
-            File.join(cookbook, "libraries", "*.rb"),               
+            File.join(cookbook, "libraries", "*.rb"),
             cookbook_settings[cookbook_name][:library_filenames]
           )
           load_cascading_files(
@@ -143,7 +143,7 @@ class Chef
         @cookbooks_by_name[cookbook].metadata = @metadata[cookbook]
       end
     end
-    
+
     def [](cookbook)
       if @cookbooks_by_name.has_key?(cookbook.to_sym)
         @cookbooks_by_name[cookbook.to_sym]
@@ -156,7 +156,7 @@ class Chef
       @cookbooks_by_name.has_key?(cookbook_name)
     end
     alias :cookbook_exists? :has_key?
-    
+
     def each
       @cookbooks_by_name.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |cname|
         yield(cname, @cookbooks_by_name[cname])
@@ -173,7 +173,7 @@ class Chef
     alias :cookbooks :values
 
     private
-    
+
       def load_ignore_file(ignore_file)
         results = Array.new
         if File.exists?(ignore_file) && File.readable?(ignore_file)
@@ -186,11 +186,11 @@ class Chef
         end
         results
       end
-      
+
       def remove_ignored_files_from(cookbook_settings)
-        file_types_to_inspect = [ :attribute_filenames, :definition_filenames, :recipe_filenames, :template_filenames, 
+        file_types_to_inspect = [ :attribute_filenames, :definition_filenames, :recipe_filenames, :template_filenames,
                                   :file_filenames, :library_filenames, :resource_filenames, :provider_filenames]
-        
+
         @ignore_regexes.each do |cookbook_name, regexes|
           regexes.each do |regex|
             settings = cookbook_settings[cookbook_name]
@@ -212,16 +212,16 @@ class Chef
           result_hash[rm_base_path.match(file)[1]] = file
         end
       end
-      
+
       def load_cascading_files(file_glob, base_path, result_hash)
         load_files(file_glob, base_path, result_hash, true)
       end
-      
+
       def load_files_unless_basename(file_glob, result_hash)
         Dir[file_glob].each do |file|
           result_hash[File.basename(file)] = file
         end
       end
-      
+
   end
 end
