@@ -11,6 +11,7 @@ chef/pkg
 chef-server/pkg
 chef-server-webui/pkg
 chef-server-api/pkg
+chef-expander/pkg
 chef/log
 chef/rdoc
 chef-server/log
