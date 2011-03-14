@@ -39,12 +39,9 @@ class Chef
         }
 
         @metadata_filenames = []
-        @ignore_regexes     = []
       end
 
       def load_cookbooks
-        @ignore_regexes = load_ignore_file(File.join(@cookbook_name, "ignore"))
-
         load_as(:attribute_filenames, 'attributes', '*.rb')
         load_as(:definition_filenames, 'definitions', '*.rb')
         load_as(:recipe_filenames, 'recipes', '*.rb')
@@ -62,16 +59,13 @@ class Chef
         if empty?
           Chef::Log.warn "found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
         end
-
-        remove_ignored_files
+        @cookbook_settings
       end
 
       def cookbook_version
-        return nil if emtpy?
+        return nil if empty?
 
-        cb_version = Chef::CookbookVersion.new(@cookbook_name)
-
-        Chef::CookbookVersion.new(cookbook).tap do |c|
+        Chef::CookbookVersion.new(@cookbook_name.to_sym).tap do |c|
           c.root_dir             = cookbook_settings[:root_dir]
           c.attribute_filenames  = cookbook_settings[:attribute_filenames].values
           c.definition_filenames = cookbook_settings[:definition_filenames].values
@@ -83,12 +77,13 @@ class Chef
           c.provider_filenames   = cookbook_settings[:provider_filenames].values
           c.root_filenames       = cookbook_settings[:root_filenames].values
           c.metadata_filenames   = cookbook_settings[:metadata_filenames]
-          c.metadata             = metadata
+          c.metadata             = metadata(c)
         end
       end
 
-      def metadata
-        @metadata = Chef::Cookbook::Metadata.new(@cookbook_name)
+      # Generates the Cookbook::Metadata object
+      def metadata(cookbook_version)
+        @metadata = Chef::Cookbook::Metadata.new(cookbook_version)
         @metadata_filenames.each do |meta_json|
           begin
             @metadata.from_json(IO.read(meta_json))
@@ -107,42 +102,23 @@ class Chef
       end
 
       def merge!(other_cookbook_loader)
-        @cookbook_settings.merge!(other_cookbook_loader.cookbook_settings)
+        other_cookbook_settings = other_cookbook_loader.cookbook_settings
+        @cookbook_settings.each do |file_type, file_list|
+          file_list.merge!(other_cookbook_settings[file_type])
+        end
         @metadata_filenames.concat(other_cookbook_loader.metadata_filenames)
       end
 
-      def load_ignore_file(ignore_file)
-        results = Array.new
-        if File.exists?(ignore_file) && File.readable?(ignore_file)
-          IO.foreach(ignore_file) do |line|
-            next if line =~ /^#/
-            next if line =~ /^\w*$/
-            line.chomp!
-            results << Regexp.new(line)
-          end
-        end
-        results
-      end
-
-      def remove_ignored_files
-        @ignore_regexes.each do |regex|
-          settings = cookbook_settings
-          FILETYPES_SUBJECT_TO_IGNORE.each do |file_type|
-            settings[file_type].delete_if { |uniqname, fullpath| fullpath.match(regex) }
-          end
-        end
-      end
-
       def load_root_files
-        Dir[File.join(@cookbook_path, '*'), File::FNM_DOTMATCH].each do |file|
+        Dir.glob(File.join(@cookbook_path, '*'), File::FNM_DOTMATCH).each do |file|
           next if File.directory?(file)
-          @cookbook_settings[:root_files][file[@relative_path, 1]] = file
+          @cookbook_settings[:root_filenames][file[@relative_path, 1]] = file
         end
       end
 
       def load_recursively_as(category, category_dir, glob)
         file_spec = File.join(@cookbook_path, category_dir, '**', glob)
-        Dir[file_spec, File::FNM_DOTMATCH].each do |file|
+        Dir.glob(file_spec, File::FNM_DOTMATCH).each do |file|
           next if File.directory?(file)
           @cookbook_settings[category][file[@relative_path, 1]] = file
         end
@@ -150,7 +126,7 @@ class Chef
 
       def load_as(category, *path_glob)
         Dir[File.join(@cookbook_path, *path_glob)].each do |file|
-          @cookbook_settings[File.basename(file)] = file
+          @cookbook_settings[category][File.basename(file)] = file
         end
       end
 
