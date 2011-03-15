@@ -22,7 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Scm < Chef::Resource
-      
+
       def initialize(name, run_context=nil)
         super
         @destination = name
@@ -33,6 +33,7 @@ class Chef
         @ssh_wrapper = nil
         @depth = nil
         @allowed_actions.push(:checkout, :export, :sync, :diff, :log)
+        @action = [:sync]
       end
 
       def destination(arg=nil)

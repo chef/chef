@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,16 +25,16 @@ require 'fileutils'
 class Chef
   class Provider
     class Git < Chef::Provider
-      
+
       include Chef::Mixin::Command
-      
+
       def load_current_resource
         @current_resource = Chef::Resource::Git.new(@new_resource.name)
         if current_revision = find_current_revision
           @current_resource.revision current_revision
         end
       end
-      
+
       def action_checkout
         assert_target_directory_valid!
 
@@ -47,13 +47,13 @@ class Chef
           Chef::Log.info "Taking no action, checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
         end
       end
-      
+
       def action_export
         action_checkout
         FileUtils.rm_rf(::File.join(@new_resource.destination,".git"))
         @new_resource.updated_by_last_action(true)
       end
-      
+
       def action_sync
         assert_target_directory_valid!
 
@@ -92,7 +92,7 @@ class Chef
       def find_current_revision
         if ::File.exist?(::File.join(cwd, ".git"))
           status, result, error_message = output_of_command("git rev-parse HEAD", run_options(:cwd=>cwd))
-          
+
           # 128 is returned when we're not in a git repo. this is fine
           unless [0,128].include?(status.exitstatus)
             handle_command_failures(status, "STDOUT: #{result}\nSTDERR: #{error_message}")
@@ -100,27 +100,27 @@ class Chef
         end
         sha_hash?(result) ? result : nil
       end
-      
+
       def clone
         remote = @new_resource.remote
 
         args = []
         args << "-o #{remote}" unless remote == 'origin'
         args << "--depth #{@new_resource.depth}" if @new_resource.depth
-        
+
         Chef::Log.info "Cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
-        
+
         clone_cmd = "git clone #{args.join(' ')} #{@new_resource.repository} #{@new_resource.destination}"
         run_command(run_options(:command => clone_cmd))
       end
-      
+
       def checkout
         sha_ref = target_revision
         Chef::Log.info "Checking out branch: #{@new_resource.revision} reference: #{sha_ref}"
         # checkout into a local branch rather than a detached HEAD
         run_command(run_options(:command => "git checkout -b deploy #{sha_ref}", :cwd => @new_resource.destination))
       end
-      
+
       def enable_submodules
         if @new_resource.enable_submodules
           Chef::Log.info "Enabling git submodules"
@@ -128,7 +128,7 @@ class Chef
           run_command(run_options(:command => command, :cwd => @new_resource.destination))
         end
       end
-      
+
       def fetch_updates
         setup_remote_tracking_branches if @new_resource.remote != 'origin'
 
@@ -161,18 +161,18 @@ class Chef
       def target_revision
         @target_revision ||= begin
           assert_revision_not_remote
-          
+
           if sha_hash?(@new_resource.revision)
-            @target_revision = @new_resource.revision 
+            @target_revision = @new_resource.revision
           else
             resolved_reference = remote_resolve_reference
             @target_revision = extract_revision(resolved_reference)
           end
         end
       end
-      
+
       alias :revision_slug :target_revision
-      
+
       def remote_resolve_reference
         command = git('ls-remote', @new_resource.repository, @new_resource.revision)
         Chef::Log.debug("Executing #{command}")
@@ -187,20 +187,20 @@ class Chef
         end
         result
       end
-      
+
       private
-      
+
       def run_options(run_opts={})
         run_opts[:user] = @new_resource.user if @new_resource.user
         run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts[:environment] = {"GIT_SSH" => @new_resource.ssh_wrapper} if @new_resource.ssh_wrapper
         run_opts
       end
-      
+
       def cwd
         @new_resource.destination
       end
-      
+
       def git(*args)
         ["git", *args].compact.join(" ")
       end
@@ -208,18 +208,18 @@ class Chef
       def sha_hash?(string)
         string =~ /^[0-9a-f]{40}$/
       end
-      
+
       def assert_revision_not_remote
         if @new_resource.revision =~ /^origin\//
           reference = @new_resource.revision
           error_text =  "Deploying remote branches is not supported. " +
                         "Specify the remote branch as a local branch for " +
-                        "the git repository you're deploying from " + 
+                        "the git repository you're deploying from " +
                         "(ie: '#{reference.gsub('origin/', '')}' rather than '#{reference}')."
           raise RuntimeError, error_text
         end
       end
-      
+
       def extract_revision(resolved_reference)
         unless resolved_reference =~ /^([0-9a-f]{40})\s+(\S+)/
           msg = "Unable to parse SHA reference for '#{@new_resource.revision}' in repository '#{@new_resource.repository}'. "
@@ -229,7 +229,7 @@ class Chef
         end
         $1
       end
-      
+
     end
   end
 end

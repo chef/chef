@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,7 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 describe Chef::Provider::Git do
-  
+
   before(:each) do
     @current_resource = Chef::Resource::Git.new("web2.0 app")
     @current_resource.revision("d35af14d41ae22b19da05d7d03a0bafc321b244c")
@@ -33,20 +33,20 @@ describe Chef::Provider::Git do
     @provider = Chef::Provider::Git.new(@resource, @run_context)
     @provider.current_resource = @current_resource
   end
-  
+
   context "determining the revision of the currently deployed checkout" do
-    
+
     before do
       @stdout = mock("standard out")
       @stderr = mock("standard error")
       @exitstatus = mock("exitstatus")
     end
-    
+
     it "sets the current revison to nil if the deploy dir does not exist" do
       ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(false)
       @provider.find_current_revision.should be_nil
     end
-    
+
     it "determines the current revision when there is one" do
       ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
       ::File.should_receive(:directory?).with("/my/deploy/dir").and_return(true)
@@ -57,7 +57,7 @@ describe Chef::Provider::Git do
       @provider.should_receive(:popen4).and_yield("fake-pid","no-stdin", @stdout, @stderr).and_return(@exitstatus)
       @provider.find_current_revision.should eql("9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13")
     end
-  
+
     it "gives the current revision as nil when there is no current revision" do
       ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
       ::File.should_receive(:directory?).with("/my/deploy/dir").and_return(true)
@@ -69,21 +69,21 @@ describe Chef::Provider::Git do
       @provider.find_current_revision.should be_nil
     end
   end
-  
+
   it "creates a current_resource with the currently deployed revision when a clone exists in the destination dir" do
     @provider.stub!(:find_current_revision).and_return("681c9802d1c62a45b490786c18f0b8216b309440")
     @provider.load_current_resource
     @provider.current_resource.name.should eql(@resource.name)
     @provider.current_resource.revision.should eql("681c9802d1c62a45b490786c18f0b8216b309440")
   end
-  
+
   it "keeps the node and resource passed to it on initialize" do
     @provider.node.should equal(@node)
     @provider.new_resource.should equal(@resource)
   end
-  
+
   context "resolving revisions to a SHA" do
-    
+
     before do
       @stderr = mock("standard error")
       @stderr.stub!(:string).and_return("")
@@ -92,7 +92,7 @@ describe Chef::Provider::Git do
       @exitstatus.stub!(:exitstatus).and_return(0)
       @git_ls_remote = "git ls-remote git://github.com/opscode/chef.git "
     end
-    
+
     it "returns resource.revision as is if revision is already a full SHA" do
       @provider.target_revision.should eql("d35af14d41ae22b19da05d7d03a0bafc321b244c")
     end
@@ -105,19 +105,19 @@ describe Chef::Provider::Git do
                                         and_return(@exitstatus)
       @provider.target_revision.should eql("503c22a5e41f5ae3193460cca044ed1435029f53")
     end
-    
+
     it "raises a runtime error if you try to deploy from ``origin''" do
       @resource.revision("origin/")
       lambda {@provider.target_revision}.should raise_error(RuntimeError)
     end
-  
+
     it "raises a runtime error if the revision can't be resolved to any revision" do
       @resource.revision "FAIL, that's the revision I want"
       @stdout.stub!(:string).and_return("\n")
       @provider.should_receive(:popen4).and_yield("pid","stdin",@stdout,@stderr).and_return(@exitstatus)
       lambda {@provider.target_revision}.should raise_error(RuntimeError)
     end
-    
+
     it "gives the latest HEAD revision SHA if nothing is specified" do
       lots_of_shas =  "28af684d8460ba4793eda3e7ac238c864a5d029a\tHEAD\n"+
                       "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n"+
@@ -139,58 +139,58 @@ describe Chef::Provider::Git do
       @provider.target_revision.should eql("28af684d8460ba4793eda3e7ac238c864a5d029a")
     end
   end
-  
+
   it "responds to :revision_slug as an alias for target_revision" do
     @provider.should respond_to(:revision_slug)
   end
-  
+
   it "runs a clone command with default git options" do
     @resource.user "deployNinja"
     @resource.ssh_wrapper "do_it_this_way.sh"
     expected_cmd = 'git clone  git://github.com/opscode/chef.git /my/deploy/dir'
-    @provider.should_receive(:run_command).with(:command => expected_cmd, :user => "deployNinja", 
+    @provider.should_receive(:run_command).with(:command => expected_cmd, :user => "deployNinja",
                                                 :environment =>{"GIT_SSH"=>"do_it_this_way.sh"})
     @provider.clone
   end
-  
+
   it "compiles a clone command using --depth for shallow cloning" do
     @resource.depth 5
     expected_cmd = 'git clone --depth 5 git://github.com/opscode/chef.git /my/deploy/dir'
     @provider.should_receive(:run_command).with(:command => expected_cmd)
     @provider.clone
   end
-  
+
   it "compiles a clone command with a remote other than ``origin''" do
     @resource.remote "opscode"
     expected_cmd = 'git clone -o opscode git://github.com/opscode/chef.git /my/deploy/dir'
     @provider.should_receive(:run_command).with(:command => expected_cmd)
     @provider.clone
   end
-  
+
   it "runs a checkout command with default options" do
     expected_cmd = 'git checkout -b deploy d35af14d41ae22b19da05d7d03a0bafc321b244c'
     @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir")
     @provider.checkout
   end
-  
+
   it "runs an enable_submodule command" do
     @resource.enable_submodules true
     expected_cmd = "git submodule init && git submodule update"
     @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir")
     @provider.enable_submodules
   end
-  
+
   it "does nothing for enable_submodules if resource.enable_submodules #=> false" do
     @provider.should_not_receive(:run_command)
     @provider.enable_submodules
   end
-  
+
   it "runs a sync command with default options" do
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:run_command).with(:command=>expected_cmd, :cwd=> "/my/deploy/dir")
     @provider.fetch_updates
   end
-  
+
   it "runs a sync command with the user and group specified in the resource" do
     @resource.user("whois")
     @resource.group("thisis")
@@ -199,7 +199,7 @@ describe Chef::Provider::Git do
                                                 :user => "whois", :group => "thisis")
     @provider.fetch_updates
   end
-  
+
   it "configures remote tracking branches when remote is not ``origin''" do
     @resource.remote "opscode"
     conf_tracking_branches =  "git config remote.opscode.url git://github.com/opscode/chef.git && " +
@@ -288,7 +288,7 @@ describe Chef::Provider::Git do
     @provider.action_sync
     @resource.should be_updated
   end
-  
+
   it "clones the repo instead of fetching updates if the deploy directory is empty" do
     ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(false)
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
@@ -299,12 +299,12 @@ describe Chef::Provider::Git do
     @provider.action_sync
     @resource.should be_updated
   end
-  
+
   it "does an export by cloning the repo then removing the .git directory" do
     @provider.should_receive(:action_checkout)
     FileUtils.should_receive(:rm_rf).with(@resource.destination + "/.git")
     @provider.action_export
     @resource.should be_updated
   end
-  
+
 end
