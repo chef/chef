@@ -30,6 +30,11 @@ describe Chef::Knife do
     @knife = Chef::Knife.new
     @knife.stub!(:puts)
     @knife.stub!(:print)
+    Chef::Log.stub!(:init)
+    Chef::Log.stub!(:level)
+    [:debug, :info, :warn, :error, :crit].each do |level_sym|
+      Chef::Log.stub!(level_sym)
+    end
     Chef::Knife.stub!(:puts)
   end
 
