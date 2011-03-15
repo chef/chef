@@ -4,7 +4,7 @@
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -130,6 +130,9 @@ class Chef
     end
     alias :delete :remove
 
+    # Expands this run_list: recursively expand roles into their included
+    # recipes.
+    # Returns a RunListExpansion object.
     def expand(environment, data_source='server', expansion_opts={})
       expansion = expansion_for_data_source(data_source, expansion_opts)
       expansion.expand(environment)

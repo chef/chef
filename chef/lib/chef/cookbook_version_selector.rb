@@ -128,9 +128,7 @@ class Chef
 
           raise Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems.new(message, non_existent_cookbooks, cookbooks_with_no_matching_versions)
         rescue DepSelector::Exceptions::NoSolutionExists => e
-          #message = "Could not resolve run_list due to constraint: #{e.unsatisfiable_solution_constraint}."
-
-          raise Chef::Exceptions::CookbookVersionSelect::UnsatisfiableRunListItem.new(filter_dep_selector_message(e.message), e.unsatisfiable_solution_constraint, e.disabled_non_existent_packages, e.disabled_most_constrained_packages)
+          raise Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem.new(filter_dep_selector_message(e.message), e.unsatisfiable_solution_constraint, e.disabled_non_existent_packages, e.disabled_most_constrained_packages)
         end
 
 

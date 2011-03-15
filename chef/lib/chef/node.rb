@@ -3,7 +3,7 @@
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -406,15 +406,8 @@ class Chef
       attrs
     end
 
-    # Clear defaults and overrides, so that any deleted attributes between runs are
-    # still gone.
-    def reset_defaults_and_overrides
-      @default_attrs = Mash.new
-      @override_attrs = Mash.new
-    end
-
-    # Expands the node's run list and deep merges the default and
-    # override attributes. Also applies stored attributes (from json provided
+    # Expands the node's run list and sets the default and override
+    # attributes. Also applies stored attributes (from json provided
     # on the command line)
     #
     # Returns the fully-expanded list of recipes.
@@ -425,15 +418,17 @@ class Chef
     # on-demand generation of default_attrs and override_attrs,
     # invalidated only when run_list is mutated?
     def expand!(data_source = 'server')
-      # This call should only be called on a chef-client run if you're going to save it later
+      # This call should only be called on a chef-client run
       expansion = run_list.expand(chef_environment, data_source)
       raise Chef::Exceptions::MissingRole if expansion.errors?
 
+      @default_attrs = Mash.new
+      @override_attrs = Mash.new
+
       self[:tags] = Array.new unless attribute?(:tags)
-      @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
+      @default_attrs = expansion.default_attrs
       environment_attrs = chef_environment == "_default" ? {} : Chef::Environment.load(chef_environment).attributes
-      overrides_before_environment = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
-      @override_attrs = Chef::Mixin::DeepMerge.merge(overrides_before_environment, environment_attrs)
+      @override_attrs = Chef::Mixin::DeepMerge.merge(expansion.override_attrs, environment_attrs)
       @automatic_attrs[:recipes] = expansion.recipes
       @automatic_attrs[:roles] = expansion.roles
 

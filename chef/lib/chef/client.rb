@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -240,8 +240,7 @@ class Chef
 
       Chef::Log.info("Run List is [#{@node.run_list}]")
       Chef::Log.info("Run List expands to [#{@expanded_run_list.join(', ')}]")
-      @node.reset_defaults_and_overrides
-
+ 
       @run_status = Chef::RunStatus.new(@node)
 
       @node

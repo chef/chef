@@ -135,7 +135,7 @@ module Shef
 
     def rebuild_context
       @run_context = Chef::RunContext.new(@node, {}) # no recipes
-      @run_context.load
+      @run_context.load([]) # no recipe names
     end
 
     private
@@ -231,7 +231,6 @@ module Shef
       ohai_data = @ohai.data.merge(@node.automatic_attrs)
 
       @node.consume_external_attrs(ohai_data,nil)
-      @node.reset_defaults_and_overrides
 
       @node
     end

@@ -45,7 +45,6 @@ describe Chef::RunList do
     it "should accept recipes that are unqualified" do
       @run_list << "needy"
       @run_list.should include('recipe[needy]')
-      #@run_list.include?('recipe[needy]').should == true
       @run_list.recipes.include?('needy').should == true
     end
 
@@ -320,12 +319,21 @@ describe Chef::RunList do
       { :name => cookbook_name, :version_constraint => vc }
     end
 
-    def assert_failure(run_list, all_cookbooks, constraints, expected_message)
+    def assert_failure_unsatisfiable_item(run_list, all_cookbooks, constraints, expected_message)
       begin
-        Chef::CookbookVersionSelector.constrain(all_cookbooks, run_list.recipes.with_version_constraints)
-        fail "Should have raised a Chef::Exceptions::CookbookVersionConflict exception"
-      rescue Chef::Exceptions::CookbookVersionConflict => cvc
-        cvc.message.should include(expected_message)
+        Chef::CookbookVersionSelector.constrain(all_cookbooks, constraints)
+        fail "Should have raised a Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem exception"
+      rescue Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem => urli
+        urli.message.should include(expected_message)
+      end
+    end
+
+    def assert_failure_invalid_items(run_list, all_cookbooks, constraints, expected_message)
+      begin
+        Chef::CookbookVersionSelector.constrain(all_cookbooks, constraints)
+        fail "Should have raised a Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems exception"
+      rescue Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems => irli
+        irli.message.should include(expected_message)
       end
     end
 
@@ -379,12 +387,12 @@ describe Chef::RunList do
 
     it "should fail to find a solution when a run list item is constrained to a range that includes no cookbooks" do
       constraints = [vc_maker("d", "> 5.0")]
-      assert_failure(@run_list, @all_cookbooks, constraints, "Run list item (d > 5.0.0) does not match any versions")
+      assert_failure_invalid_items(@run_list, @all_cookbooks, constraints, "Run list contains invalid items: no versions match the constraints on cookbook d.")
     end
 
     it "should fail to find a solution when a run list item's dependency is constrained to a range that includes no cookbooks" do
       constraints = [vc_maker("g", nil)]
-      assert_failure(@run_list, @all_cookbooks, constraints, "Unable to satisfy constraints on cookbook d due to run list item (g >= 0.0.0)")
+      assert_failure_unsatisfiable_item(@run_list, @all_cookbooks, constraints, "Unable to satisfy constraints on cookbook d due to run list item (g >= 0.0.0)")
     end
 
     it "selects 'd 2.1.0' given constraint 'd > 1.2.3'" do
@@ -408,19 +416,19 @@ describe Chef::RunList do
       cookbooks["d"].version.should == "1.1.0"
     end
 
-    it "raises CookbookVersionConflict for an unknown cookbook in the run list" do
+    it "raises InvalidRunListItems for an unknown cookbook in the run list" do
       constraints = [vc_maker("nosuch", "1.0.0")]
-      assert_failure(@run_list, @all_cookbooks, constraints, "Run list item (nosuch = 1.0.0) specifies a cookbook that does not exist in the dependency graph")
+      assert_failure_invalid_items(@run_list, @all_cookbooks, constraints, "Run list contains invalid items: no such cookbook nosuch.")
     end
 
     it "raises CookbookVersionConflict for an unknown cookbook in a cookbook's dependencies" do
       constraints = [vc_maker("depends_on_nosuch", "1.0.0")]
-      assert_failure(@run_list, @all_cookbooks, constraints, "Unable to satisfy constraints on cookbook nosuch, which does not exist, due to run list item (depends_on_nosuch = 1.0.0)")
+      assert_failure_unsatisfiable_item(@run_list, @all_cookbooks, constraints, "Unable to satisfy constraints on cookbook nosuch, which does not exist, due to run list item (depends_on_nosuch = 1.0.0). Run list items that may result in a constraint on nosuch: [(depends_on_nosuch = 1.0.0) -> (nosuch >= 0.0.0)]")
     end
 
-    it "raises CookbookVersionConflict for direct conflict" do
+    it "raises UnsatisfiableRunListItem for direct conflict" do
       constraints = [vc_maker("d", "= 1.1.0"), vc_maker("d", ">= 2.0")]
-      assert_failure(@run_list, @all_cookbooks, constraints, "Unable to satisfy constraints on cookbook d due to run list item (d >= 2.0.0)")
+      assert_failure_unsatisfiable_item(@run_list, @all_cookbooks, constraints, "Unable to satisfy constraints on cookbook d due to run list item (d >= 2.0.0)")
     end
 
     describe "should solve regardless of constraint order" do
