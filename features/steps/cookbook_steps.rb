@@ -331,7 +331,7 @@ Then /^the metadata should include a dependency on '(.+)'$/ do |key|
   inflated_response.metadata.dependencies.should have_key(key)
 end
 
-Spec::Matchers.define :have_been_deleted do
+RSpec::Matchers.define :have_been_deleted do
   match do |file_name|
     ! File.exist?(file_name)
   end
@@ -355,7 +355,7 @@ Then /^the cookbook's files should have been deleted$/ do
   end
 end
 
-Spec::Matchers.define :have_checksum_document do |checksum|
+RSpec::Matchers.define :have_checksum_document do |checksum|
   match do |checksum_list|
     checksum_list.include?(checksum)
   end
