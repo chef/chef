@@ -59,7 +59,7 @@ $(document).ready(function(){
   $('form#edit_node, form#create_node').submit(function(event) {
     var form = $(this);
     var to_node = $('ul#for_node').sortable('toArray');
-    if (form.attr('id') == 'edit_node') {
+    if (form.attr('id') === 'edit_node') {
       form.append('<input type="hidden" name="_method" value="put">');
     }
     form.append($('input#node_name')).css('display', 'none');
@@ -72,7 +72,7 @@ $(document).ready(function(){
 
   $('form#edit_databag_item, form#create_databag_item').submit(function(event) {
     var form = $(this);
-    if (form.attr('id') == 'edit_databag_item') {
+    if (form.attr('id') === 'edit_databag_item') {
       form.append('<input type="hidden" name="_method" value="put">');
     }
     form.append('<input type="hidden" id="json_data" name="json_data"/>');
@@ -81,7 +81,7 @@ $(document).ready(function(){
 
   $('form#edit_databag, form#create_databag').submit(function(event) {
     var form = $(this);
-    if (form.attr('id') == 'edit_databag') {
+    if (form.attr('id') === 'edit_databag') {
       form.append('<input type="hidden" name="_method" value="put">');
     }
     form.append($('input#databag_name')).css('display', 'none');
@@ -89,7 +89,7 @@ $(document).ready(function(){
 
   $('form#edit_client, form#create_client').submit(function(event) {
     var form = $(this);
-    if (form.attr('id') == 'edit_client') {
+    if (form.attr('id') === 'edit_client') {
       form.append('<input type="hidden" name="_method" value="put">');
     }
     form.append($('input#client_name')).css('display', 'none');
@@ -102,14 +102,14 @@ $(document).ready(function(){
 
   $('form#edit_user, form#login').submit(function(event) {
     var form = $(this);
-    if (form.attr('id') == 'edit_user') {
+    if (form.attr('id') === 'edit_user') {
       form.append('<input type="hidden" name="_method" value="put">');
       form.append($('input#user_new_password')).css('display', 'none');
       form.append($('input#user_admin')).css('display', 'none');
       form.append($('input#user_confirm_new_password')).css('display', 'none');
       form.append($('input#openid')).css('display', 'none');
     }
-    if (form.attr('id') == 'login') {
+    if (form.attr('id') === 'login') {
       form.append($('input#user_name')).css('display', 'none');
       form.append($('input#password')).css('display', 'none');
     }
@@ -118,9 +118,11 @@ $(document).ready(function(){
   // livequery hidden form for link_to ajax magic
   $(document.body).delegate('a[method]', 'click', function(e){
     var $this = $(this);
-    var message = $this.attr('confirm'), method  = $this.attr('method');
+    var message = $this.attr('confirm'), method = $this.attr('method');
 
-    if (!method && !message) return;
+    if (!method && !message) {
+      return;
+    }
 
     if (message && !confirm(message)) {
       event.preventDefault();
@@ -135,7 +137,6 @@ $(document).ready(function(){
         }
         form.insertAfter(this).submit();
       }
-    });
   });
 
   // accordion for the cookbooks show view
