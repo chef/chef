@@ -21,6 +21,7 @@
 require 'chef/config'
 require 'chef/cookbook/cookbook_version_loader'
 require 'chef/cookbook_version'
+require 'chef/cookbook/chefignore'
 require 'chef/cookbook/metadata'
 
 class Chef
@@ -42,10 +43,12 @@ class Chef
       cookbook_settings = Hash.new
       Array(Chef::Config.cookbook_path).each do |repo_path|
         repo_path = File.expand_path(repo_path)
+        chefignore = Cookbook::Chefignore.new(repo_path)
         Dir[File.join(repo_path, "*")].each do |cookbook_path|
           next unless File.directory?(cookbook_path)
-          loader = Cookbook::CookbookVersionLoader.new(cookbook_path)
+          loader = Cookbook::CookbookVersionLoader.new(cookbook_path, chefignore)
           loader.load_cookbooks
+          next if loader.empty?
           if @loaded_cookbooks.key?(loader.cookbook_name)
             @loaded_cookbooks[loader.cookbook_name].merge!(loader)
           else

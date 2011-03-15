@@ -1,6 +1,7 @@
 
 require 'chef/config'
 require 'chef/cookbook_version'
+require 'chef/cookbook/chefignore'
 require 'chef/cookbook/metadata'
 
 class Chef
@@ -21,9 +22,10 @@ class Chef
       attr_reader :cookbook_settings
       attr_reader :metadata_filenames
 
-      def initialize(path)
+      def initialize(path, chefignore=nil)
         @cookbook_path = File.expand_path( path )
         @cookbook_name = File.basename( path )
+        @chefignore = chefignore
         @metadata = Hash.new
         @relative_path = /#{Regexp.escape(@cookbook_path)}\/(.+)$/
         @cookbook_settings = {
@@ -52,8 +54,10 @@ class Chef
         load_recursively_as(:provider_filenames, "providers", "*.rb")
         load_root_files
 
-        if File.exists?(File.join(@cookbook_name, "metadata.json"))
-          cookbook_settings[:metadata_filenames] << File.join(@cookbook_name, "metadata.json")
+        remove_ignored_files
+
+        if File.exists?(File.join(@cookbook_path, "metadata.json"))
+          @metadata_filenames << File.join(@cookbook_path, "metadata.json")
         end
 
         if empty?
@@ -66,7 +70,7 @@ class Chef
         return nil if empty?
 
         Chef::CookbookVersion.new(@cookbook_name.to_sym).tap do |c|
-          c.root_dir             = cookbook_settings[:root_dir]
+          c.root_dir             = @cookbook_path
           c.attribute_filenames  = cookbook_settings[:attribute_filenames].values
           c.definition_filenames = cookbook_settings[:definition_filenames].values
           c.recipe_filenames     = cookbook_settings[:recipe_filenames].values
@@ -76,7 +80,7 @@ class Chef
           c.resource_filenames   = cookbook_settings[:resource_filenames].values
           c.provider_filenames   = cookbook_settings[:provider_filenames].values
           c.root_filenames       = cookbook_settings[:root_filenames].values
-          c.metadata_filenames   = cookbook_settings[:metadata_filenames]
+          c.metadata_filenames   = @metadata_filenames
           c.metadata             = metadata(c)
         end
       end
@@ -88,7 +92,7 @@ class Chef
           begin
             @metadata.from_json(IO.read(meta_json))
           rescue JSON::ParserError
-            Chef::Log.fatal("Couldn't parse JSON in " + meta_json)
+            Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in " + meta_json)
             raise
           end
         end
@@ -109,6 +113,10 @@ class Chef
         @metadata_filenames.concat(other_cookbook_loader.metadata_filenames)
       end
 
+      def chefignore
+        @chefignore ||= Chefignore.new(File.basename(@cookbook_path))
+      end
+
       def load_root_files
         Dir.glob(File.join(@cookbook_path, '*'), File::FNM_DOTMATCH).each do |file|
           next if File.directory?(file)
@@ -126,7 +134,15 @@ class Chef
 
       def load_as(category, *path_glob)
         Dir[File.join(@cookbook_path, *path_glob)].each do |file|
-          @cookbook_settings[category][File.basename(file)] = file
+          @cookbook_settings[category][file[@relative_path, 1]] = file
+        end
+      end
+
+      def remove_ignored_files
+        @cookbook_settings.each_value do |file_list|
+          file_list.reject! do |relative_path, full_path|
+            chefignore.ignored?(relative_path)
+          end
         end
       end
 
