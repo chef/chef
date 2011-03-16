@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,14 +25,14 @@ require 'chef/rest'
 
 
 class Chef::Application::Client < Chef::Application
-  
-  option :config_file, 
+
+  option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
     :default => "/etc/chef/client.rb",
     :description => "The configuration file to use"
 
-  option :log_level, 
+  option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
     :description  => "Set the log level (debug, info, warn, error, fatal)",
@@ -44,12 +44,6 @@ class Chef::Application::Client < Chef::Application
     :description  => "Set the log file location, defaults to STDOUT - recommended for daemonizing",
     :proc         => nil
 
-  option :verbose_logging,
-    :short        => "-V",
-    :long         => "--verbose",
-    :description  => "Ensures logging goes to STDOUT as well as to other configured log location(s).",
-    :proc         => lambda { |p| true }
-
   option :help,
     :short        => "-h",
     :long         => "--help",
@@ -58,7 +52,7 @@ class Chef::Application::Client < Chef::Application
     :boolean      => true,
     :show_options => true,
     :exit         => 0
-    
+
   option :user,
     :short => "-u USER",
     :long => "--user USER",
@@ -90,7 +84,7 @@ class Chef::Application::Client < Chef::Application
     :proc => lambda { |s| s.to_i }
 
   option :once,
-    :long => "--short",
+    :long => "--once",
     :description => "Cancel any interval or splay options, run chef once and exit",
     :boolean => true
 
@@ -146,14 +140,14 @@ class Chef::Application::Client < Chef::Application
     @chef_client = nil
     @chef_client_json = nil
   end
-  
+
   # Reconfigure the chef client
   # Re-open the JSON attributes and load them into the node
-  def reconfigure 
-    super 
+  def reconfigure
+    super
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
-   
+
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
     end
@@ -196,11 +190,11 @@ class Chef::Application::Client < Chef::Application
     Mixlib::Authentication::Log.use_log_devices( Chef::Log )
     Ohai::Log.use_log_devices( Chef::Log )
   end
-  
+
   def setup_application
     Chef::Daemon.change_privilege
   end
-  
+
   # Run the chef client, optionally daemonizing or looping at intervals.
   def run_application
     if Chef::Config[:version]
@@ -210,7 +204,7 @@ class Chef::Application::Client < Chef::Application
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
     end
-    
+
     loop do
       begin
         if Chef::Config[:splay]
