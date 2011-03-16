@@ -34,6 +34,11 @@ describe "Environments controller" do
     @filtered_cookbook_list_env2 = make_filtered_cookbook_hash(make_cookbook("cookbook1", "2.0.0"),
                                                                make_cookbook("cookbook2", "2.0.0"))
 
+    @filtered_cookbook_list_env_many_versions = make_filtered_cookbook_hash(make_cookbook("cookbook1", "1.0.0"),
+                                                                            make_cookbook("cookbook1", "2.0.0"),
+                                                                            make_cookbook("cookbook1", "3.0.0"),
+                                                                            make_cookbook("cookbook1", "4.0.0"))
+
     @cookbook_deps_on_nosuch = make_cookbook("cookbook_deps_on_nosuch", "1.0.0")
     @cookbook_deps_on_nosuch.metadata.depends("cookbook_nosuch")
 
@@ -65,6 +70,26 @@ describe "Environments controller" do
       response["cookbook1"]['version'].should == "2.0.0"
       response["cookbook2"].should_not == nil
       response["cookbook2"]['version'].should == "2.0.0"
+    end
+
+    it "should return the newest version of a cookbook when given multiple versions" do
+      Chef::Environment.should_receive(:cdb_load_filtered_cookbook_versions).with("env_many_versions").and_return(@filtered_cookbook_list_env_many_versions)
+      response = post_json("/environments/env_many_versions/cookbook_versions", {"run_list" => ["recipe[cookbook1]"]})
+
+      response.should be_kind_of(Hash)
+      response.keys.size.should == 1
+      response["cookbook1"].should_not == nil
+      response["cookbook1"]['version'].should == "4.0.0"
+    end
+
+    it "should return the asked-for, older version of a cookbook if the version is specified in the run_list" do
+      Chef::Environment.should_receive(:cdb_load_filtered_cookbook_versions).with("env_many_versions").and_return(@filtered_cookbook_list_env_many_versions)
+      response = post_json("/environments/env_many_versions/cookbook_versions", {"run_list" => ["recipe[cookbook1@1.0.0]"]})
+
+      response.should be_kind_of(Hash)
+      response.keys.size.should == 1
+      response["cookbook1"].should_not == nil
+      response["cookbook1"]['version'].should == "1.0.0"
     end
 
     it "should report no_such_cookbook if given a dependency on a non-existant cookbook" do
