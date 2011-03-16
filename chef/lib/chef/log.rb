@@ -73,7 +73,12 @@ class Chef
         @logger.add(severity, message = nil, progname = nil, &block)
       end
 
-    end  
+      def init(*opts)
+        STDOUT.sync = true if opts.empty?
+        opts.first.sync = true if !opts.empty? && opts.first.respond_to?(:sync=)
+        super(*opts)
+      end
+    end
 
     # NOTE: Mixlib::Log initially sets @logger to nil and depends on
     # #init being called to initialize the logger. We don't want to
