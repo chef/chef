@@ -86,9 +86,18 @@ class Chef::Application
 
   end
 
-  # Initialize and configure the logger
+  # Initialize and configure the logger. If the configured log location is not
+  # STDOUT, but stdout is a TTY and we're not daemonizing, we set up a secondary
+  # logger with output to stdout. This way, we magically do the right thing when
+  # the user has configured logging to a file but they're running chef in the
+  # shell to debug something.
   def configure_logging
     Chef::Log.init(Chef::Config[:log_location])
+    if ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && (!Chef::Config[:daemonize])
+      stdout_logger = Logger.new(STDOUT)
+      stdout_logger.formatter = Chef::Log.logger.formatter
+      Chef::Log.loggers <<  stdout_logger
+    end
     Chef::Log.level = Chef::Config[:log_level]
   end
 
