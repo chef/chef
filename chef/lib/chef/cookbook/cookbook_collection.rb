@@ -35,7 +35,8 @@ class Chef
     # simply extract them
     def initialize(cookbook_versions={})
       super() do |hash, key|
-        raise Chef::Exceptions::CookbookNotFound, "Cookbook #{key} not found"
+        raise Chef::Exceptions::CookbookNotFound, "Cookbook #{key} not found. " <<
+          "If you're loading #{key} from another cookbook, make sure you configure the dependency in your metadata"
       end
       cookbook_versions.each{ |cookbook_name, cookbook_version| self[cookbook_name] = cookbook_version }
     end
