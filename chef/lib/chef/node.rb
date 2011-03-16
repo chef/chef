@@ -406,11 +406,19 @@ class Chef
       attrs
     end
 
+    # Clear defaults and overrides, so that any deleted attributes
+    # between runs are still gone.
+    def reset_defaults_and_overrides
+      @default_attrs = Mash.new
+      @override_attrs = Mash.new
+    end
+
     # Expands the node's run list and sets the default and override
     # attributes. Also applies stored attributes (from json provided
     # on the command line)
     #
-    # Returns the fully-expanded list of recipes.
+    # Returns the fully-expanded list of recipes, a RunListExpansion.
+    #
     #--
     # TODO: timh/cw, 5-14-2010: Should this method exist? Should we
     # instead modify default_attrs and override_attrs whenever our
@@ -418,21 +426,23 @@ class Chef
     # on-demand generation of default_attrs and override_attrs,
     # invalidated only when run_list is mutated?
     def expand!(data_source = 'server')
-      # This call should only be called on a chef-client run
       expansion = run_list.expand(chef_environment, data_source)
       raise Chef::Exceptions::MissingRole if expansion.errors?
 
-      @default_attrs = Mash.new
-      @override_attrs = Mash.new
-
       self[:tags] = Array.new unless attribute?(:tags)
-      @default_attrs = expansion.default_attrs
-      environment_attrs = chef_environment == "_default" ? {} : Chef::Environment.load(chef_environment).attributes
-      @override_attrs = Chef::Mixin::DeepMerge.merge(expansion.override_attrs, environment_attrs)
       @automatic_attrs[:recipes] = expansion.recipes
       @automatic_attrs[:roles] = expansion.roles
 
-      expansion.recipes
+      expansion
+    end
+
+    # Apply the default and overrides attributes from the expansion
+    # passed in, which came from roles.
+    def apply_expansion_attributes(expansion)
+      @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
+      environment_attrs = chef_environment == "_default" ? {} : Chef::Environment.load(chef_environment).attributes
+      overrides_before_environments = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
+      @override_attrs = Chef::Mixin::DeepMerge.merge(overrides_before_environments, environment_attrs)
     end
 
     # Transform the node to a Hash
@@ -550,9 +560,7 @@ class Chef
     end
 
     def self.find_or_create(node_name)
-      node = load(node_name)
-      node.chef_environment(Chef::Config[:environment]) unless Chef::Config[:environment].nil? || Chef::Config[:environment].chop.empty?
-      node
+      load(node_name)
     rescue Net::HTTPServerException => e
       raise unless e.response.code == '404'
       node = build(node_name)

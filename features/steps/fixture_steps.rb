@@ -124,7 +124,7 @@ Before do
         r.name "attribute_settings_default"
         r.description "sets a default value"
         r.run_list("recipe[attribute_settings]")
-        r.default_attributes({ 'attribute_priority_was' => 2 })
+        r.default_attributes({ 'attribute_priority_was' => "came from role[attribute_settings_default] default attributes" })
         r
       end,
       'attribute_settings_override' => Proc.new do
@@ -132,7 +132,7 @@ Before do
         r.name "attribute_settings_override"
         r.description "sets a default value"
         r.run_list("recipe[attribute_settings_override]")
-        r.override_attributes({ 'attribute_priority_was' => 7 })
+        r.override_attributes({ 'attribute_priority_was' => "came from role[attribute_settings_override] override attributes" })
         r
       end,
       'role1_includes_role2' => Proc.new do
@@ -274,7 +274,7 @@ Before do
         e = Chef::Environment.new
         e.name 'cucumber'
         e.description 'I like to run tests'
-        e.attributes({"attribute_priority_was" => 8})
+        e.attributes({"attribute_priority_was" => "came from environment cucumber"})
         e
       end,
       'production' => Proc.new do

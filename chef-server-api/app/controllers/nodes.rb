@@ -106,8 +106,8 @@ class Nodes < Application
     # to
     #  name => cookbook manifest
     # and display.
-    display(included_cookbooks.inject({}) do |acc, (cookbook_name, cookbook)|
-              acc[cookbook_name.to_s] = cookbook.generate_manifest_with_urls{|opts| absolute_url(:cookbook_file, opts) }
+    display(included_cookbooks.inject({}) do |acc, (cookbook_name, cookbook_version)|
+              acc[cookbook_name.to_s] = cookbook_version.generate_manifest_with_urls{|opts| absolute_url(:cookbook_file, opts) }
               acc
             end)
   end

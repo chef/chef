@@ -135,7 +135,7 @@ class Chef
 
         def to_json(*a)
           result = {
-            "message" => e.message,
+            "message" => message,
             "unsatisfiable_run_list_item" => run_list_item,
             "non_existent_cookbooks" => non_existent_cookbooks,
             "most_constrained_cookbooks" => most_constrained_cookbooks

@@ -1,2 +1,2 @@
-normal[:attribute_priority_was] = 4 
+normal[:attribute_priority_was] = "came from recipe[attribute_settings_normal] attributes"
 

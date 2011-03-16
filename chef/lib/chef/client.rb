@@ -186,7 +186,7 @@ class Chef
         run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
       end
       run_status.run_context = run_context
-      run_context.load(@expanded_run_list)
+      run_context.load(@run_list_expansion)
       assert_cookbook_path_not_empty(run_context)
       run_context
     end
@@ -228,18 +228,35 @@ class Chef
         @node = Chef::Node.find_or_create(node_name)
       end
 
+      # Allow user to override the environment of a node by specifying
+      # a config parameter.
+      if Chef::Config[:environment] && !Chef::Config[:environment].chop.empty?
+        @node.chef_environment(Chef::Config[:environment])
+      end
+
       # consume_external_attrs may add items to the run_list. Save the
       # expanded run_list, which we will pass to the server later to
       # determine which versions of cookbooks to use.
+      @node.reset_defaults_and_overrides
       @node.consume_external_attrs(ohai.data, @json_attribs)
       if Chef::Config[:solo]
-        @expanded_run_list = @node.expand!('disk')
+        @run_list_expansion = @node.expand!('disk')
       else
-        @expanded_run_list = @node.expand!('server')
+        @run_list_expansion = @node.expand!('server')
       end
 
+      # @run_list_expansion is a RunListExpansion.
+      #
+      # Convert @expanded_run_list, which is an
+      # Array of Hashes of the form 
+      #   {:name => NAME, :version_constraint => Chef::VersionConstraint },
+      # into @expanded_run_list_with_versions, an 
+      # Array of Strings of the form
+      #   "#{NAME}@#{VERSION}"
+      @expanded_run_list_with_versions = @run_list_expansion.recipes.with_version_constraints_strings
+
       Chef::Log.info("Run List is [#{@node.run_list}]")
-      Chef::Log.info("Run List expands to [#{@expanded_run_list.join(', ')}]")
+      Chef::Log.info("Run List expands (with versions) to [#{@expanded_run_list_with_versions.join(', ')}]")
  
       @run_status = Chef::RunStatus.new(@node)
 
@@ -270,7 +287,7 @@ class Chef
     def sync_cookbooks
       Chef::Log.debug("Synchronizing cookbooks")
       cookbook_hash = rest.post_rest("environments/#{@node.chef_environment}/cookbook_versions",
-                                     {:run_list => @expanded_run_list})
+                                     {:run_list => @expanded_run_list_with_versions})
       Chef::CookbookVersion.sync_cookbooks(cookbook_hash)
 
       # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks

@@ -10,9 +10,9 @@ Feature: Set default, normal, and override attributes
       And it includes the recipe 'attribute_settings'
      When I run the chef-client
      Then the run should exit '0'
-     Then a file named 'attribute_setting.txt' should contain '1'
+     Then a file named 'attribute_setting.txt' should contain 'came from recipe\[attribute_settings\] attributes'
      When the node is retrieved from the API
-     Then the inflated responses key 'attribute_priority_was' should be the integer '1'
+     Then the inflated responses key 'attribute_priority_was' should match 'came from recipe\[attribute_settings\] attributes'
 
   Scenario: Set the default attribute in a role 
     Given a 'role' named 'attribute_settings_default' exists
@@ -20,9 +20,9 @@ Feature: Set default, normal, and override attributes
       And it includes the role 'attribute_settings_default'
      When I run the chef-client
      Then the run should exit '0'
-      And a file named 'attribute_setting.txt' should contain '2'
+      And a file named 'attribute_setting.txt' should contain 'came from role\[attribute_settings_default\] default attributes'
      When the node is retrieved from the API
-     Then the inflated responses key 'attribute_priority_was' should be the integer '2'
+     Then the inflated responses key 'attribute_priority_was' should match 'came from role\[attribute_settings_default\] default attributes'
      
   Scenario: Set the default attribute in a recipe 
     Given a 'role' named 'attribute_settings_default' exists
@@ -31,9 +31,9 @@ Feature: Set default, normal, and override attributes
       And it includes the recipe 'attribute_settings::default_in_recipe'
      When I run the chef-client
      Then the run should exit '0'
-      And a file named 'attribute_setting.txt' should contain '3'
+      And a file named 'attribute_setting.txt' should contain 'came from recipe\[attribute_settings::default_in_recipe\]'
      When the node is retrieved from the API
-     Then the inflated responses key 'attribute_priority_was' should be the integer '3'
+     Then the inflated responses key 'attribute_priority_was' should match 'came from recipe\[attribute_settings::default_in_recipe\]'
 
   Scenario: Set a normal attribute in a cookbook attribute file
     Given a validated node
@@ -43,9 +43,9 @@ Feature: Set default, normal, and override attributes
       And it includes the recipe 'attribute_settings_normal'
      When I run the chef-client
      Then the run should exit '0'
-     Then a file named 'attribute_setting.txt' should contain '4'
+     Then a file named 'attribute_setting.txt' should contain 'came from recipe\[attribute_settings_normal\] attributes'
      When the node is retrieved from the API
-     Then the inflated responses key 'attribute_priority_was' should be the integer '4'
+     Then the inflated responses key 'attribute_priority_was' should match 'came from recipe\[attribute_settings_normal\] attributes'
 
   Scenario: Set a normal attribute in a cookbook recipe 
     Given a validated node
@@ -55,11 +55,11 @@ Feature: Set default, normal, and override attributes
       And it includes the recipe 'attribute_settings_normal::normal_in_recipe'
      When I run the chef-client
      Then the run should exit '0'
-     Then a file named 'attribute_setting.txt' should contain '5'
+     Then a file named 'attribute_setting.txt' should contain 'came from recipe\[attribute_settings_normal::normal_in_recipe\]'
      When the node is retrieved from the API
-     Then the inflated responses key 'attribute_priority_was' should be the integer '5'
+     Then the inflated responses key 'attribute_priority_was' should match 'came from recipe\[attribute_settings_normal::normal_in_recipe\]'
 
-  Scenario: Set a override attribute in a cookbook attribute file
+  Scenario: Set an override attribute in a cookbook attribute file
     Given a validated node
       And a 'role' named 'attribute_settings_default' exists
       And it includes the role 'attribute_settings_default'
@@ -68,9 +68,9 @@ Feature: Set default, normal, and override attributes
       And it includes the recipe 'attribute_settings_override'
      When I run the chef-client
      Then the run should exit '0'
-     Then a file named 'attribute_setting.txt' should contain '6'
+     Then a file named 'attribute_setting.txt' should contain 'came from recipe\[attribute_settings_override\] override attributes'
      When the node is retrieved from the API
-     Then the inflated responses key 'attribute_priority_was' should be the integer '6'
+     Then the inflated responses key 'attribute_priority_was' should match 'came from recipe\[attribute_settings_override\] override attributes'
 
   Scenario: Set the override attribute in a role 
     Given a 'role' named 'attribute_settings_default' exists
@@ -83,9 +83,9 @@ Feature: Set default, normal, and override attributes
       And it includes the role 'attribute_settings_override'
      When I run the chef-client
      Then the run should exit '0'
-      And a file named 'attribute_setting.txt' should contain '7'
+      And a file named 'attribute_setting.txt' should contain 'came from role\[attribute_settings_override\] override attributes'
      When the node is retrieved from the API
-     Then the inflated responses key 'attribute_priority_was' should be the integer '7'
+     Then the inflated responses key 'attribute_priority_was' should match 'came from role\[attribute_settings_override\] override attributes'
   
  Scenario: Set the attribute in a environment
    Given an 'environment' named 'cucumber' exists
@@ -99,9 +99,9 @@ Feature: Set default, normal, and override attributes
      And it includes the role 'attribute_settings_override'
     When I run the chef-client with '-l debug'
     Then the run should exit '0'
-     And a file named 'attribute_setting.txt' should contain '8'
+     And a file named 'attribute_setting.txt' should contain 'came from environment cucumber'
     When the node is retrieved from the API
-    Then the inflated responses key 'attribute_priority_was' should be the integer '8'
+    Then the inflated responses key 'attribute_priority_was' should match 'came from environment cucumber'
      
   Scenario: Set the override attribute in a recipe 
     Given a 'role' named 'attribute_settings_default' exists
@@ -115,9 +115,9 @@ Feature: Set default, normal, and override attributes
       And it includes the recipe 'attribute_settings_override::override_in_recipe'
      When I run the chef-client
      Then the run should exit '0'
-      And a file named 'attribute_setting.txt' should contain '9'
+      And a file named 'attribute_setting.txt' should contain 'came from recipe\[attribute_settings_override::override_in_recipe\]'
      When the node is retrieved from the API
-     Then the inflated responses key 'attribute_priority_was' should be the integer '9'
+     Then the inflated responses key 'attribute_priority_was' should match 'came from recipe\[attribute_settings_override::override_in_recipe\]'
 
   Scenario: Data is removed from override attribute in a recipe 
     Given a 'role' named 'attribute_settings_override' exists
@@ -125,9 +125,9 @@ Feature: Set default, normal, and override attributes
       And it includes the role 'attribute_settings_override'
      When I run the chef-client
      Then the run should exit '0'
-      And a file named 'attribute_setting.txt' should contain '7'
+      And a file named 'attribute_setting.txt' should contain 'came from role\[attribute_settings_override\] override attributes'
      When the node is retrieved from the API
-     Then the inflated responses key 'attribute_priority_was' should be the integer '7'
+     Then the inflated responses key 'attribute_priority_was' should match 'came from role\[attribute_settings_override\] override attributes'
     Given it includes no recipes
       And it includes the recipe 'integration_setup'
       And it includes the recipe 'no_attributes'
@@ -143,9 +143,9 @@ Feature: Set default, normal, and override attributes
       And it includes the recipe 'attribute_settings_normal'
      When I run the chef-client with json attributes
      Then the run should exit '0'
-     Then a file named 'attribute_setting.txt' should contain '4'
+     Then a file named 'attribute_setting.txt' should contain 'came from recipe\[attribute_settings_normal\] attributes'
      When the node is retrieved from the API
-     Then the inflated responses key 'attribute_priority_was' should be the integer '4'
+     Then the inflated responses key 'attribute_priority_was' should match 'came from recipe\[attribute_settings_normal\] attributes'
   
   @chef1286
   Scenario: Attributes from JSON files have higher precedence than defaults
