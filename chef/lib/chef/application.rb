@@ -95,6 +95,7 @@ class Chef::Application
     Chef::Log.init(Chef::Config[:log_location])
     if ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && (!Chef::Config[:daemonize])
       stdout_logger = Logger.new(STDOUT)
+      STDOUT.sync = true
       stdout_logger.formatter = Chef::Log.logger.formatter
       Chef::Log.loggers <<  stdout_logger
     end
