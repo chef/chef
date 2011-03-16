@@ -55,10 +55,8 @@ Y6S6MeZ69Rp89ma4ttMZ+kwi1+XyHqC/dlcVRW42Zl5Dc7BALRlJjQ==
 describe Chef::REST do
   before(:each) do
     @log_stringio = StringIO.new
-    @logger = Logger.new(@log_stringio)
-    @original_chef_logger = Chef::Log.logger
-    Chef::Log.logger = @logger
-    
+    Chef::Log.init(@log_stringio)
+
     Chef::REST::CookieJar.stub!(:instance).and_return({})
     @base_url   = "http://chef.example.com:4000"
     @monkey_uri = URI.parse("http://chef.example.com:4000/monkey")
@@ -66,10 +64,7 @@ describe Chef::REST do
 
     Chef::REST::CookieJar.instance.clear
   end
-  
-  after do
-    Chef::Log.logger = @original_chef_logger
-  end
+
 
   describe "calling an HTTP verb on a path or absolute URL" do
     it "adds a relative URL to the base url it was initialized with" do
@@ -212,7 +207,7 @@ describe Chef::REST do
         http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_response.add_field("location", @url.path)
         http_response.stub!(:read_body)
-        
+
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         lambda { @rest.run_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
       end
@@ -232,7 +227,7 @@ describe Chef::REST do
         http_response.stub!(:read_body)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
-        @log_stringio.string.should match(Regexp.escape('WARN -- : HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
+        @log_stringio.string.should match(Regexp.escape('WARN: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
       end
 
       it "should raise an exception on an unsuccessful request" do
@@ -363,9 +358,9 @@ describe Chef::REST do
         http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_response.add_field("location", @url.path)
         http_response.stub!(:read_body)
-        
+
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        
+
         lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
       end
 
@@ -374,7 +369,7 @@ describe Chef::REST do
         http_response.add_field("location", @url.path)
         http_response.stub!(:read_body)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        
+
         lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
       end
 
@@ -384,9 +379,9 @@ describe Chef::REST do
         http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
         http_response.stub!(:read_body)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        
+
         lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
-        @log_stringio.string.should match(Regexp.escape('WARN -- : HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
+        @log_stringio.string.should match(Regexp.escape('WARN: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
       end
 
       it "should raise an exception on an unsuccessful request" do
@@ -478,11 +473,11 @@ describe Chef::REST do
         tempfile = mock("die", :path => "/tmp/ragefist", :close => true)
         tempfile.should_receive(:close!).at_least(2).times
         Tempfile.stub!(:new).with("chef-rest").and_return(tempfile)
-        
+
         http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_response.add_field("location", @url.path)
         http_response.stub!(:read_body)
-        
+
         @http_client.stub!(:request).and_yield(http_response).and_yield(@http_response).and_return(http_response, @http_response)
         @rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
       end
@@ -491,7 +486,7 @@ describe Chef::REST do
         http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_response.add_field("location","/that-thing-is-here-now")
         http_response.stub!(:read_body)
-        
+
         block_called = false
         @http_client.stub!(:request).and_yield(@http_response).and_return(http_response, @http_response)
         @rest.fetch("cookbooks/a_cookbook") do |tmpfile|

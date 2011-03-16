@@ -193,8 +193,8 @@ class Chef::Application::Client < Chef::Application
 
   def configure_logging
     super
-    Chef::Log.verbose = Chef::Config[:verbose_logging]
-    Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger
+    Mixlib::Authentication::Log.use_log_devices( Chef::Log )
+    Ohai::Log.use_log_devices( Chef::Log )
   end
   
   def setup_application

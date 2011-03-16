@@ -95,7 +95,7 @@ describe Chef::Knife::CookbookSiteShare do
       Chef::CookbookSiteStreamingUploader.stub!(:post).and_return(@upload_response)
 
       @log = StringIO.new
-      Chef::Log.logger = Logger.new(@log)
+      Chef::Log.init(@log)
 
       File.stub(:open).and_return(true)
     end
