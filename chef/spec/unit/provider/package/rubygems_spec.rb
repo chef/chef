@@ -371,7 +371,7 @@ describe Chef::Provider::Package::Rubygems do
       @new_resource.source('http://mygems.example.com')
       version = Gem::Version.new(@spec_version)
       @provider.gem_env.should_receive(:candidate_version_from_remote).
-                        with(Gem::Dependency.new('rspec', @spec_version), "http://mygems.example.com", "http://rubygems.org").
+                        with(Gem::Dependency.new('rspec', @spec_version), "http://mygems.example.com").
                         and_return(version)
       @provider.candidate_version.should == @spec_version
     end
@@ -400,7 +400,7 @@ describe Chef::Provider::Package::Rubygems do
 
       it "installs the gem via the gems api when a remote source is provided" do
         @new_resource.source('http://gems.example.org')
-        sources = ['http://gems.example.org', 'http://rubygems.org']
+        sources = ['http://gems.example.org']
         @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => sources)
         @provider.action_install.should be_true
       end
