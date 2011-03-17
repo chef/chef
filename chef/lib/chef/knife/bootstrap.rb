@@ -77,7 +77,7 @@ class Chef
 
       option :vpc_mode,
         :long => "--vpc",
-        :description => "Are we running a Virtual Private Cloud node?",
+        :description => "Are we running a Virtual Private Cloud node? (will use ssh --no-host-key-verify)",
         :boolean => true,
         :default => false
 
@@ -156,7 +156,7 @@ class Chef
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
-        ssh.config[:vpc_mode] = config[:vpc_mode]
+        ssh.config[:no_host_key_verify] = config[:vpc_mode]
         ssh
       end
 
