@@ -49,7 +49,7 @@ Feature: Synchronize cookbooks from the server
       And it includes the recipe 'testcookbook_wrong_metadata'
      When I run the chef-client with '-l debug'
      Then the run should exit '1'
-      And 'stdout' should have '412 Precondition Failed.*Unable to satisfy constraints on cookbook no_such_cookbook, which does not exist, due to run list item (testcookbook_wrong_metadata >= 0.0.0)'
+      And 'stdout' should have '412 Precondition Failed.*Unable to satisfy constraints on cookbook no_such_cookbook, which does not exist, due to run list item \(testcookbook_wrong_metadata >= 0.0.0\)'
 
   Scenario: Utilise versioned dependencies
     Given I am an administrator
