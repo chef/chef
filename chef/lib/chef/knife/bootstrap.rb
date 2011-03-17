@@ -75,9 +75,9 @@ class Chef
         :proc => lambda { |o| o.split(/[\s,]+/) },
         :default => []
 
-      option :vpc_mode,
-        :long => "--vpc",
-        :description => "Are we running a Virtual Private Cloud node? (will use ssh --no-host-key-verify)",
+      option :no_host_key_verify,
+        :long => "--no-host-key-verify",
+        :description => "Disable host key verification",
         :boolean => true,
         :default => false
 
@@ -156,7 +156,7 @@ class Chef
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
-        ssh.config[:no_host_key_verify] = config[:vpc_mode]
+        ssh.config[:no_host_key_verify] = config[:no_host_key_verify]
         ssh
       end
 
