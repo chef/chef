@@ -28,3 +28,43 @@ end
 Given "PL-540 is resolved in favor of not removing this feature" do
   pending
 end
+
+Given /^a set of nodes pre-populated with known, searchable data$/ do
+  node_script = File.join(datadir, 'search-tests', 'search-test-nodes.rb')
+  shell_out! "knife exec #{get_knife_config} < #{node_script}", :timeout => 240
+end
+
+When /^I execute a randomized set of searches across my infrastructure$/ do
+  search_script = File.join(datadir, 'search-tests', 'do_knife_search_test.rb')
+  @shell_result = shell_out "knife exec #{get_knife_config} < #{search_script}"
+end
+
+Then /^all of the searches should return the expected results$/ do
+  io = StringIO.new(@shell_result.stdout)
+  while io.eof? == false
+    l = io.readline
+    next unless l =~ /^(OK|FAIL|ERROR)/
+    case $1
+    when "OK"
+      next
+    when "FAIL"
+      message = [l, io.readline, io.readline].join("\n")
+      puts @shell_result.stdout
+      raise message
+    when "ERROR"
+      puts @shell_result.stdout
+      raise l
+    end
+  end
+end
+
+# return a set of knife command line parameters that
+# are based on the current Chef::Rest config being
+# used by the feature tests
+def get_knife_config
+  [
+    "--user",       @rest.auth_credentials.client_name,
+    "--server-url", @rest.url,
+    "--key",        @rest.auth_credentials.key_file
+  ].join(" ")
+end
