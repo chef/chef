@@ -63,6 +63,15 @@ EXPECTED
     end
   end
 
+  describe "when the enclosing directory of the target file location doesn't exist" do
+    before do
+      @new_resource.path("/tmp/no/such/intermediate/path/file.txt")
+    end
+
+    it "raises a specific error alerting the user to the problem" do
+      lambda {@provider.action_create}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+    end
+  end
   describe "when the file doesn't yet exist" do
     before do
       @install_to = Dir.tmpdir + '/apache2_modconf.pl'

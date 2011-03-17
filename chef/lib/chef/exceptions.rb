@@ -74,5 +74,6 @@ class Chef
     class InvalidEnvironmentRunListSpecification < ArgumentError; end
     class InvalidDataBagItemID < ArgumentError; end
     class InvalidDataBagName < ArgumentError; end
+    class EnclosingDirectoryDoesNotExist < ArgumentError; end
   end
 end
