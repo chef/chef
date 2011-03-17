@@ -75,12 +75,12 @@ class Chef
         return false if @new_resource.owner.nil?
 
         @set_user_id = case @new_resource.owner
-                       when /^\d+$/, Integer
-                         @new_resource.owner.to_i
-                       else
-                         # This raises an ArgumentError if you can't find the user
-                         Etc.getpwnam(@new_resource.owner).uid
-                       end
+        when /^\d+$/, Integer
+          @new_resource.owner.to_i
+        else
+          # This raises an ArgumentError if you can't find the user
+          Etc.getpwnam(@new_resource.owner).uid
+        end
 
         @set_user_id == @current_resource.owner
       end
@@ -100,11 +100,11 @@ class Chef
         return false if @new_resource.group.nil?
 
         @set_group_id = case @new_resource.group
-                        when /^\d+$/, Integer
-                          @new_resource.group.to_i
-                        else
-                          Etc.getgrnam(@new_resource.group).gid
-                        end
+        when /^\d+$/, Integer
+          @new_resource.group.to_i
+        else
+          Etc.getgrnam(@new_resource.group).gid
+        end
 
         @set_group_id == @current_resource.group
       end
@@ -137,6 +137,7 @@ class Chef
       end
 
       def action_create
+        assert_enclosing_directory_exists!
         unless ::File.exists?(@new_resource.path)
           Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
           ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
@@ -204,6 +205,14 @@ class Chef
       end
 
       private
+
+      def assert_enclosing_directory_exists!
+        enclosing_dir = ::File.dirname(@new_resource.path)
+        unless ::File.directory?(enclosing_dir)
+          msg = "Cannot create a file at #{@new_resource.path} because the enclosing directory (#{enclosing_dir}) does not exist"
+          raise Chef::Exceptions::EnclosingDirectoryDoesNotExist, msg
+        end
+      end
 
       def new_resource_content_checksum
         @new_resource.content && Digest::SHA2.hexdigest(@new_resource.content)

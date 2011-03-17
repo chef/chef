@@ -63,6 +63,16 @@ describe Chef::Provider::RemoteFile, "action_create" do
       @resource.source("http://opscode.com/seattle.txt")
     end
 
+    describe "and the target location's enclosing directory does not exist" do
+      before do
+        @resource.path("/tmp/this/path/does/not/exist/file.txt")
+      end
+
+      it "raises a specific error describing the problem" do
+        lambda {@provider.action_create}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+      end
+    end
+
     describe "and the resource specifies a checksum" do
 
       describe "and the existing file matches the checksum exactly" do
