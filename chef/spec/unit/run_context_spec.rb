@@ -42,7 +42,7 @@ describe Chef::RunContext do
 
   describe "after loading the cookbooks" do
     before do
-      @run_context.load(@node.run_list.expand('_default').recipes)
+      @run_context.load(@node.run_list.expand('_default'))
     end
 
     it "should load all the definitions in the cookbooks for this node" do
