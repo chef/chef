@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,11 +21,15 @@ require 'chef/resource/package'
 class Chef
   class Resource
     class GemPackage < Chef::Resource::Package
-      
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :gem_package
         @provider = Chef::Provider::Package::Rubygems
+      end
+
+      def source(arg=nil)
+        set_or_return(:source, arg, :kind_of => [ String, Array ])
       end
 
       # Sets a custom gem_binary to run for gem commands.
