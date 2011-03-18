@@ -348,7 +348,7 @@ describe Chef::Node do
     end
 
     it "saves non-runlist json attrs for later" do
-      expansion = Chef::RunList::RunListExpansion.new([])
+      expansion = Chef::RunList::RunListExpansion.new('_default', [])
       @node.run_list.stub!(:expand).and_return(expansion)
       @node.consume_external_attrs(@ohai_data, {"foo" => "bar"})
       @node.expand!
@@ -359,7 +359,7 @@ describe Chef::Node do
 
   describe "when expanding its run list and merging attributes" do
     before do
-      @expansion = Chef::RunList::RunListExpansion.new([])
+      @expansion = Chef::RunList::RunListExpansion.new("_default", [])
       @node.run_list.stub!(:expand).and_return(@expansion)
     end
 
