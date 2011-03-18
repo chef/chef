@@ -26,6 +26,9 @@ validation_client_name "<%= Chef::Config[:validation_client_name] %>"
 <% else %>
 node_name "<%= @config[:chef_node_name] %>"
 <% end %> 
+<% if Chef::Config[:environment] != nil %>
+environment "<%= Chef::Config[:environment]%>"
+<% end %>
 # ArchLinux follows the Filesystem Hierarchy Standard
 file_cache_path    "/var/cache/chef"
 file_backup_path   "/var/lib/chef/backup"
