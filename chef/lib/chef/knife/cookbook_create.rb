@@ -20,6 +20,7 @@ require 'chef/knife'
 require 'chef/json_compat'
 require 'uri'
 require 'chef/mixin/shell_out'
+require 'fileutils'
 
 class Chef
   class Knife
@@ -78,14 +79,14 @@ class Chef
 
     def create_cookbook(dir, cookbook_name, copyright, license)
       msg("** Creating cookbook #{cookbook_name}")
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "attributes")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "recipes")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "definitions")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "libraries")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "resources")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "providers")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "files", "default")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "templates", "default")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "attributes")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "recipes")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "definitions")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "libraries")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "resources")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "providers")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "files", "default")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "templates", "default")}"
       unless File.exists?(File.join(dir, cookbook_name, "recipes", "default.rb"))
         open(File.join(dir, cookbook_name, "recipes", "default.rb"), "w") do |file|
           file.puts <<-EOH
