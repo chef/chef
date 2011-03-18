@@ -47,6 +47,13 @@ class Chef
               :group => Chef::Provider::Group::Dscl
             }
           },
+          :mac_os_x_server => {
+            :default => {
+              :package => Chef::Provider::Package::Macports,
+              :user => Chef::Provider::User::Dscl,
+              :group => Chef::Provider::Group::Dscl
+            }
+          },
           :freebsd => {
             :default => {
               :group   => Chef::Provider::Group::Pw,
