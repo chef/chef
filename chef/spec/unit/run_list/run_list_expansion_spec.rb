@@ -103,7 +103,8 @@ describe Chef::RunList::RunListExpansion do
     end
 
     it "has the list of all roles applied" do
-      @expansion.roles.should == ['rage', 'mollusk']
+      # this is the correct order, but 1.8 hash order is not stable
+      @expansion.roles.should =~ ['rage', 'mollusk']
     end
 
   end
