@@ -182,6 +182,16 @@ class Chef
               :group => Chef::Provider::Group::Usermod
             }
           },
+          :netbsd => {
+            :default => {
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :openbsd => {
+            :default => {
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
           :hpux => {
             :default => {
               :group => Chef::Provider::Group::Usermod
