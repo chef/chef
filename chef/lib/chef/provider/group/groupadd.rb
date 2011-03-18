@@ -21,12 +21,15 @@ class Chef
     class Group
       class Groupadd < Chef::Provider::Group
         
-        def load_current_resource
-          super
-          
+        def required_binaries
           [ "/usr/sbin/groupadd",
             "/usr/sbin/groupmod",
-            "/usr/sbin/groupdel" ].each do |required_binary|
+            "/usr/sbin/groupdel" ]
+        end
+
+        def load_current_resource
+          super
+          required_binaries.each do |required_binary|
             raise Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{@new_resource}" unless ::File.exists?(required_binary)
           end
         end

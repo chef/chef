@@ -197,6 +197,11 @@ class Chef
               :group => Chef::Provider::Group::Usermod
             }
           },
+          :aix => {
+            :default => {
+              :group => Chef::Provider::Group::Aix
+            }
+          },
           :default  => {
             :file => Chef::Provider::File,
             :directory => Chef::Provider::Directory,

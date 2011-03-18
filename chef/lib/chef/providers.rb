@@ -78,6 +78,7 @@ require 'chef/provider/user/pw'
 require 'chef/provider/user/useradd'
 require 'chef/provider/user/windows'
 
+require 'chef/provider/group/aix'
 require 'chef/provider/group/dscl'
 require 'chef/provider/group/gpasswd'
 require 'chef/provider/group/groupadd'
