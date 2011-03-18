@@ -42,12 +42,15 @@ class Chef
 
       attr_reader :errors
 
+      attr_reader :environment
+
       # The data source passed to the constructor. Not used in this class.
       # In subclasses, this is a couchdb or Chef::REST object pre-configured
       # to fetch roles from their correct location.
       attr_reader :source
 
-      def initialize(run_list_items, source=nil)
+      def initialize(environment, run_list_items, source=nil)
+        @environment = environment
         @errors = Array.new
 
         @run_list_items = run_list_items.dup
@@ -70,27 +73,11 @@ class Chef
 
       # Recurses over the run list items, expanding roles. After this,
       # +recipes+ will contain the fully expanded recipe list
-      def expand(environment, items=nil)
-        if items == nil
-          expand(@run_list_items)
-        else
-          if items.empty?
-            return
-          end
-          entry = items.pop
-          expand(environment, items)
-
-          case entry.type
-          when :recipe
-            recipes.add_recipe entry.name, entry.version
-          when :role
-            if role = inflate_role(entry.name)
-              expand(environment, role.run_list.run_list_items)
-              apply_role_attributes(role)
-            end
-          end
-        end
+      def expand
+        # Sure do miss function arity when being recursive
+        expand_run_list_items(@run_list_items)
       end
+
       # Fetches and inflates a role
       # === Returns
       # Chef::Role  in most cases
@@ -109,10 +96,6 @@ class Chef
 
       def applied_role?(role_name)
         @applied_roles.has_key?(role_name)
-      end
-
-      def applied_role(role_name)
-        @applied_roles[role_name] = true
       end
 
       # Returns an array of role names that were expanded; this
@@ -137,6 +120,30 @@ class Chef
         @errors << name
         nil
       end
+
+      private
+
+      # these methods modifies internal state based on arguments, so hide it.
+
+      def applied_role(role_name)
+        @applied_roles[role_name] = true
+      end
+
+      def expand_run_list_items(items)
+        if entry = items.shift
+          case entry.type
+          when :recipe
+            recipes.add_recipe(entry.name, entry.version)
+          when :role
+            if role = inflate_role(entry.name)
+              expand_run_list_items(role.run_list.run_list_items)
+              apply_role_attributes(role)
+            end
+          end
+          expand_run_list_items(items)
+        end
+      end
+
     end
 
     # Expand a run list from disk. Suitable for chef-solo

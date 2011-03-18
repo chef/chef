@@ -134,8 +134,8 @@ class Chef
     # recipes.
     # Returns a RunListExpansion object.
     def expand(environment, data_source='server', expansion_opts={})
-      expansion = expansion_for_data_source(data_source, expansion_opts)
-      expansion.expand(environment)
+      expansion = expansion_for_data_source(environment, data_source, expansion_opts)
+      expansion.expand
       expansion
     end
 
@@ -148,14 +148,14 @@ class Chef
       item.kind_of?(RunListItem) ? item : parse_entry(item)
     end
 
-    def expansion_for_data_source(data_source, opts={})
+    def expansion_for_data_source(environment, data_source, opts={})
       case data_source.to_s
       when 'disk'
-        RunListExpansionFromDisk.new(@run_list_items)
+        RunListExpansionFromDisk.new(environment, @run_list_items)
       when 'server'
-        RunListExpansionFromAPI.new(@run_list_items, opts[:rest])
+        RunListExpansionFromAPI.new(environment, @run_list_items, opts[:rest])
       when 'couchdb'
-        RunListExpansionFromCouchDB.new(@run_list_items, opts[:couchdb])
+        RunListExpansionFromCouchDB.new(environment, @run_list_items, opts[:couchdb])
       end
     end
 

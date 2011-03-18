@@ -22,7 +22,7 @@ describe Chef::RunList::RunListExpansion do
   before do
     @run_list = Chef::RunList.new
     @run_list << 'recipe[lobster]' << 'role[rage]' << 'recipe[fist]'
-    @expansion = Chef::RunList::RunListExpansion.new(@run_list.run_list_items)
+    @expansion = Chef::RunList::RunListExpansion.new("_default", @run_list.run_list_items)
   end
 
   describe "before expanding the run list" do
@@ -49,7 +49,8 @@ describe Chef::RunList::RunListExpansion do
 
   describe "after applying a role" do
     before do
-      @expansion.applied_role('rage')
+      @expansion.stub!(:fetch_role).and_return(Chef::Role.new)
+      @expansion.inflate_role('rage')
     end
 
     it "tracks the applied role" do
@@ -72,7 +73,7 @@ describe Chef::RunList::RunListExpansion do
       @second_role.default_attributes({'foo' => 'boo'})
       @second_role.override_attributes({'baz' => 'bux'})
       @expansion.stub!(:fetch_role).and_return(@first_role, @second_role)
-      @expansion.expand("_default")
+      @expansion.expand
     end
 
     it "has the ordered list of recipes" do
@@ -85,7 +86,7 @@ describe Chef::RunList::RunListExpansion do
     end
 
     it "has the list of all roles applied" do
-      @expansion.roles.should == ['mollusk', 'rage']
+      @expansion.roles.should == ['rage', 'mollusk']
     end
 
   end
@@ -93,7 +94,7 @@ describe Chef::RunList::RunListExpansion do
   describe "after expanding a run list with a non existant role" do
     before do
       @expansion.stub!(:fetch_role) { @expansion.role_not_found('crabrevenge') }
-      @expansion.expand("_default")
+      @expansion.expand
     end
 
     it "is invalid" do
