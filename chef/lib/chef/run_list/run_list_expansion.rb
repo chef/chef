@@ -136,7 +136,7 @@ class Chef
             recipes.add_recipe(entry.name, entry.version)
           when :role
             if role = inflate_role(entry.name)
-              expand_run_list_items(role.run_list.run_list_items)
+              expand_run_list_items(role.run_list_for(@environment).run_list_items)
               apply_role_attributes(role)
             end
           end

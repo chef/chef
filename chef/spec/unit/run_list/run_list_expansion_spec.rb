@@ -47,6 +47,23 @@ describe Chef::RunList::RunListExpansion do
     end
   end
 
+  describe "after applying a role with environment-specific run lists" do
+    before do
+      @rage_role = Chef::Role.new.tap do |r|
+        r.name("rage")
+        r.env_run_lists('_default' => [], "prod" => ["recipe[prod-only]"])
+      end
+      @expansion = Chef::RunList::RunListExpansion.new("prod", @run_list.run_list_items)
+      @expansion.should_receive(:fetch_role).and_return(@rage_role)
+      @expansion.expand
+    end
+
+    it "has the correct list of recipes for the given environment" do
+      @expansion.recipes.should == ["lobster", "prod-only", "fist"]
+    end
+
+  end
+
   describe "after applying a role" do
     before do
       @expansion.stub!(:fetch_role).and_return(Chef::Role.new)
