@@ -112,6 +112,51 @@ describe Chef::Knife::CookbookCreate do
       @knife.run
     end
 
+    it "should allow specifying a gpl2 license" do
+      @dir = Dir.tmpdir
+      @knife.config = {
+        :cookbook_path => @dir,
+        :cookbook_copyright => "Opscode, Inc",
+        :cookbook_email => "nuo@opscode.com",
+        :cookbook_license => "gplv2"
+      }
+      @knife.name_args=["foobar"]
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv2")
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first)
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "gplv2")
+      @knife.run
+    end
+
+    it "should allow specifying a gplv3 license" do
+      @dir = Dir.tmpdir
+      @knife.config = {
+        :cookbook_path => @dir,
+        :cookbook_copyright => "Opscode, Inc",
+        :cookbook_email => "nuo@opscode.com",
+        :cookbook_license => "gplv3"
+      }
+      @knife.name_args=["foobar"]
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv3")
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first)
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "gplv3")
+      @knife.run
+    end
+
+    it "should allow specifying the mit license" do
+      @dir = Dir.tmpdir
+      @knife.config = {
+        :cookbook_path => @dir,
+        :cookbook_copyright => "Opscode, Inc",
+        :cookbook_email => "nuo@opscode.com",
+        :cookbook_license => "mit"
+      }
+      @knife.name_args=["foobar"]
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first)
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit")
+      @knife.run
+    end
+
     it "should throw argument error if the cookbooks path is not specified in the config file nor supplied via parameter" do
       @dir = Dir.tmpdir
       Chef::Config[:cookbook_path]=nil
