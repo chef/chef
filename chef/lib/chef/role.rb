@@ -195,8 +195,18 @@ class Chef
       role.description(o["description"])
       role.default_attributes(o["default_attributes"])
       role.override_attributes(o["override_attributes"])
-      default_run_list_hash = {"_default" => (o.has_key?("run_list") ? o["run_list"] : o["recipes"])}
-      role.env_run_lists(o["env_run_lists"].nil? ? default_run_list_hash : default_run_list_hash.merge(o["env_run_lists"]))
+
+      # _default run_list is in 'run_list' for newer clients, and
+      # 'recipes' for older clients.
+      env_run_list_hash = {"_default" => (o.has_key?("run_list") ? o["run_list"] : o["recipes"])}
+
+      # Clients before 0.10 do not include env_run_lists, so only
+      # merge if it's there.
+      if o["env_run_lists"]
+        env_run_list_hash.merge!(o["env_run_lists"])
+      end
+      role.env_run_lists(env_run_list_hash)
+
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       role.index_id = role.couchdb_id
       role.couchdb_id = o["_id"] if o.has_key?("_id")

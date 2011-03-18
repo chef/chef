@@ -39,6 +39,7 @@ Merb::Router.prepare do
     e.match("/recipes", :method => "get").to(:controller=>"environments", :action=>"list_recipes")
     e.match("/nodes", :method => "get").to(:controller=>"environments", :action=>"list_nodes")
     e.match("/roles/:role_id", :method => "get").to(:controller=>"environments", :action => "role")
+    e.match("/cookbook_versions", :method => "post").to(:controller=>"environments", :action=>"cookbook_versions_for_run_list")
   end
 
   # Status

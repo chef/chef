@@ -302,7 +302,7 @@ class Chef
     # Hash
     # i.e.
     # {
-    #   "coobook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted highest to lowest
+    #   "cookbook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted highest to lowest
     # }
     #
     # There will be a key for every cookbook.  If no CookbookVersions

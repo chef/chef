@@ -1,0 +1,8 @@
+name             "dep_test_b"
+maintainer       "Opscode"
+maintainer_email "do_not_reply@opscode.com"
+license          "Apache 2.0"
+description      "Tests cookbook versioning in environments"
+version          "2.0.0"
+depends          "dep_test_a", "= 1.0.0"
+depends          "dep_test_c", "< 3.0.0"

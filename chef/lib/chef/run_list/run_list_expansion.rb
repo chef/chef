@@ -1,6 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Copyright:: Copyright (c) 2010, 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,6 +32,8 @@ class Chef
 
       attr_reader :run_list_items
 
+      # A VersionedRecipeList of recipes. Populated only after #expand
+      # is called.
       attr_reader :recipes
 
       attr_reader :default_attrs
@@ -67,7 +70,7 @@ class Chef
 
       # Iterates over the run list items, expanding roles. After this,
       # +recipes+ will contain the fully expanded recipe list
-      def expand(environment='_default')
+      def expand(environment)
         @run_list_items.each_with_index do |entry, index|
           case entry.type
           when :recipe
@@ -105,6 +108,10 @@ class Chef
         @applied_roles[role_name] = true
       end
 
+      # Returns an array of role names that were expanded; this
+      # includes any roles that were in the original, pre-expansion
+      # run_list as well as roles processed during
+      # expansion. Populated only after #expand is called.
       def roles
         @applied_roles.keys
       end

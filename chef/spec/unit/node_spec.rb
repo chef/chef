@@ -336,15 +336,6 @@ describe Chef::Node do
       @ohai_data = {:platform => 'foobuntu', :platform_version => '23.42'}
     end
 
-    it "clears the default and override attributes" do
-      @node.default_attrs["foo"] = "bar"
-      @node.override_attrs["baz"] = "qux"
-      @node.consume_external_attrs(@ohai_data, {})
-      @node.reset_defaults_and_overrides
-      @node.default_attrs.should be_empty
-      @node.override_attrs.should be_empty
-    end
-
     it "sets its platform according to platform detection" do
       @node.consume_external_attrs(@ohai_data, {})
       @node.automatic_attrs[:platform].should == 'foobuntu'
