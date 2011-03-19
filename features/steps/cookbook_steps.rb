@@ -331,7 +331,7 @@ Then /^the metadata should include a dependency on '(.+)'$/ do |key|
   inflated_response.metadata.dependencies.should have_key(key)
 end
 
-Spec::Matchers.define :have_been_deleted do
+RSpec::Matchers.define :have_been_deleted do
   match do |file_name|
     ! File.exist?(file_name)
   end
@@ -355,7 +355,7 @@ Then /^the cookbook's files should have been deleted$/ do
   end
 end
 
-Spec::Matchers.define :have_checksum_document do |checksum|
+RSpec::Matchers.define :have_checksum_document do |checksum|
   match do |checksum_list|
     checksum_list.include?(checksum)
   end
@@ -390,4 +390,17 @@ Given "I upload multiple versions of the 'version_test' cookbook that do not lex
   When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.9.0' with 'version_test_0.9.0'"
   When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.10.0' with 'version_test_0.10.0'"
   When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.9.7' with 'version_test_0.9.7'"
+end
+
+Given "I upload the set of 'dep_test_*' cookbooks" do
+  %w{a b c}.each do |letter|
+    %w{1 2 3}.each do |number|
+      When "I fully upload a sandboxed cookbook force-named 'dep_test_#{letter}' versioned '#{number}.0.0' with 'dep_test_#{letter}_#{number}.0.0'"
+    end
+  end
+end
+
+Then /^cookbook '(.+)' should have version '(.+)'$/ do |cookbook, version|
+  Then "the inflated responses key '#{cookbook}' should exist"
+  Then "the inflated responses key 'dep_test_a' should match '\"version\":\"#{version}\"' as json"
 end

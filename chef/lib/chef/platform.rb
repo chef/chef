@@ -47,6 +47,13 @@ class Chef
               :group => Chef::Provider::Group::Dscl
             }
           },
+          :mac_os_x_server => {
+            :default => {
+              :package => Chef::Provider::Package::Macports,
+              :user => Chef::Provider::User::Dscl,
+              :group => Chef::Provider::Group::Dscl
+            }
+          },
           :freebsd => {
             :default => {
               :group   => Chef::Provider::Group::Pw,
@@ -180,6 +187,26 @@ class Chef
               :package => Chef::Provider::Package::Solaris,
               :cron => Chef::Provider::Cron::Solaris,
               :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :netbsd => {
+            :default => {
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :openbsd => {
+            :default => {
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :hpux => {
+            :default => {
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :aix => {
+            :default => {
+              :group => Chef::Provider::Group::Aix
             }
           },
           :default  => {

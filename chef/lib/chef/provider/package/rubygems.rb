@@ -353,7 +353,7 @@ class Chef
         end
 
         def gem_sources
-          @new_resource.source ? [@new_resource.source, 'http://rubygems.org'] : nil
+          @new_resource.source ? Array(@new_resource.source) : nil
         end
 
         def load_current_resource

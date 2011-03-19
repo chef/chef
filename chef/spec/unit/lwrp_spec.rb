@@ -171,23 +171,23 @@ describe "LWRP" do
     end
 
     it "should properly handle a new_resource reference" do
-      resource = Chef::Resource::LwrpFoo.new("morpheus")
+      resource = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
       resource.monkey("bob")
       resource.provider(:lwrp_monkey_name_printer)
 
-      provider = @runner.build_provider(resource)
+      provider = Chef::Platform.provider_for_resource(resource)
       provider.action_twiddle_thumbs
 
       provider.monkey_name.should == "my monkey's name is 'bob'"
     end
 
     it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
-
-      resource = Chef::Resource::LwrpFoo.new("morpheus")
+      resource = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
       resource.monkey("bob")
       resource.provider(:lwrp_embedded_resource_accesses_providers_scope)
 
-      provider = @runner.build_provider(resource)
+      provider = Chef::Platform.provider_for_resource(resource)
+      #provider = @runner.build_provider(resource)
       provider.action_twiddle_thumbs
 
       provider.enclosed_resource.monkey.should == 'bob, the monkey'

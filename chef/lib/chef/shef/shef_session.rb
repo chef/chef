@@ -1,6 +1,8 @@
 #--
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Author:: Tim Hinderliter (<tim@opscode.com>)
 # Copyright:: Copyright (c) 2009 Daniel DeLeo
+# Copyright:: Copyright (c) 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -135,7 +137,7 @@ module Shef
 
     def rebuild_context
       @run_context = Chef::RunContext.new(@node, {}) # no recipes
-      @run_context.load
+      @run_context.load(RunListExpansionFromDisk.new) # empty recipe list
     end
 
     private
@@ -160,7 +162,7 @@ module Shef
     def rebuild_context
       Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
       @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
-      @run_context.load
+      @run_context.load(RunListExpansionFromDisk.new)
       run_status.run_context = run_context
     end
 
@@ -189,7 +191,7 @@ module Shef
       Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, Chef::REST.new(Chef::Config[:server_url])) }
       cookbook_hash = @client.sync_cookbooks
       @run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
-      @run_context.load
+      @run_context.load(RunListExpansionFromAPI.new)
       @run_status.run_context = run_context
     end
 
@@ -231,7 +233,6 @@ module Shef
       ohai_data = @ohai.data.merge(@node.automatic_attrs)
 
       @node.consume_external_attrs(ohai_data,nil)
-      @node.reset_defaults_and_overrides
 
       @node
     end

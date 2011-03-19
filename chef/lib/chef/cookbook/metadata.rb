@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,12 +36,12 @@ class Chef
                             :maintainer_email, :license, :platforms, :dependencies,
                             :recommendations, :suggestions, :conflicting, :providing,
                             :replacing, :attributes, :groupings, :recipes, :version]
-    
+
       include Chef::Mixin::CheckHelper
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
 
-      attr_reader   :cookbook, 
+      attr_reader   :cookbook,
                     :platforms,
                     :dependencies,
                     :recommendations,
@@ -55,7 +55,7 @@ class Chef
                     :version
 
       # Builds a new Chef::Cookbook::Metadata object.
-      # 
+      #
       # === Parameters
       # cookbook<String>:: An optional cookbook object
       # maintainer<String>:: An optional maintainer
@@ -66,7 +66,7 @@ class Chef
       # metadata<Chef::Cookbook::Metadata>
       def initialize(cookbook=nil, maintainer='Your Name', maintainer_email='youremail@example.com', license='Apache v2.0')
         @cookbook = cookbook
-        @name = cookbook ? cookbook.name : "" 
+        @name = cookbook ? cookbook.name : ""
         @long_description = ""
         self.maintainer(maintainer)
         self.maintainer_email(maintainer_email)
@@ -84,8 +84,8 @@ class Chef
         @recipes = Mash.new
         @version = Version.new "0.0.0"
         if cookbook
-          @recipes = cookbook.fully_qualified_recipe_names.inject({}) do |r, e| 
-            e = self.name if e =~ /::default$/ 
+          @recipes = cookbook.fully_qualified_recipe_names.inject({}) do |r, e|
+            e = self.name if e =~ /::default$/
             r[e] = ""
             self.provides e
             r
@@ -117,7 +117,7 @@ class Chef
       # Sets the maintainers email address, or returns it.
       #
       # === Parameters
-      # maintainer_email<String>:: The maintainers email address 
+      # maintainer_email<String>:: The maintainers email address
       #
       # === Returns
       # maintainer_email<String>:: Returns the current maintainer email.
@@ -135,7 +135,7 @@ class Chef
       # license<String>:: The current license.
       #
       # === Returns
-      # license<String>:: Returns the current license 
+      # license<String>:: Returns the current license
       def license(arg=nil)
         set_or_return(
           :license,
@@ -147,10 +147,10 @@ class Chef
       # Sets the current description, or returns it. Should be short - one line only!
       #
       # === Parameters
-      # description<String>:: The new description 
+      # description<String>:: The new description
       #
       # === Returns
-      # description<String>:: Returns the description 
+      # description<String>:: Returns the description
       def description(arg=nil)
         set_or_return(
           :description,
@@ -159,13 +159,13 @@ class Chef
         )
       end
 
-      # Sets the current long description, or returns it. Might come from a README, say. 
+      # Sets the current long description, or returns it. Might come from a README, say.
       #
       # === Parameters
       # long_description<String>:: The new long description
       #
       # === Returns
-      # long_description<String>:: Returns the long description 
+      # long_description<String>:: Returns the long description
       def long_description(arg=nil)
         set_or_return(
           :long_description,
@@ -181,7 +181,7 @@ class Chef
       # version<String>:: The curent version, as a string
       #
       # === Returns
-      # version<String>:: Returns the current version 
+      # version<String>:: Returns the current version
       def version(arg=nil)
         if arg
           @version = Chef::Version.new(arg)
@@ -193,10 +193,10 @@ class Chef
       # Sets the name of the cookbook, or returns it.
       #
       # === Parameters
-      # name<String>:: The curent cookbook name. 
+      # name<String>:: The curent cookbook name.
       #
       # === Returns
-      # name<String>:: Returns the current cookbook name. 
+      # name<String>:: Returns the current cookbook name.
       def name(arg=nil)
         set_or_return(
           :name,
@@ -205,16 +205,16 @@ class Chef
         )
       end
 
-      # Adds a supported platform, with version checking strings. 
+      # Adds a supported platform, with version checking strings.
       #
       # === Parameters
       # platform<String>,<Symbol>:: The platform (like :ubuntu or :mac_os_x)
       # version<String>:: A version constraint of the form "OP VERSION",
       # where OP is one of < <= = > >= ~> and VERSION has
-      # the form x.y.z or x.y. 
+      # the form x.y.z or x.y.
       #
       # === Returns
-      # versions<Array>:: Returns the list of versions for the platform 
+      # versions<Array>:: Returns the list of versions for the platform
       def supports(platform, version=">= 0.0.0")
         Chef::VersionConstraint.new(version) # verify the version parses
         @platforms[platform] = version
@@ -224,13 +224,13 @@ class Chef
       # Adds a dependency on another cookbook, with version checking strings.
       #
       # === Parameters
-      # cookbook<String>:: The cookbook 
+      # cookbook<String>:: The cookbook
       # version<String>:: A version constraint of the form "OP VERSION",
       # where OP is one of < <= = > >= ~> and VERSION has
-      # the form x.y.z or x.y. 
+      # the form x.y.z or x.y.
       #
       # === Returns
-      # versions<Array>:: Returns the list of versions for the platform 
+      # versions<Array>:: Returns the list of versions for the platform
       def depends(cookbook, version=">= 0.0.0")
         Chef::VersionConstraint.new(version)
         @dependencies[cookbook] = version
@@ -240,13 +240,13 @@ class Chef
       # Adds a recommendation for another cookbook, with version checking strings.
       #
       # === Parameters
-      # cookbook<String>:: The cookbook 
+      # cookbook<String>:: The cookbook
       # version<String>:: A version constraint of the form "OP VERSION",
       # where OP is one of < <= = > >= ~> and VERSION has
-      # the form x.y.z or x.y. 
+      # the form x.y.z or x.y.
       #
       # === Returns
-      # versions<Array>:: Returns the list of versions for the platform 
+      # versions<Array>:: Returns the list of versions for the platform
       def recommends(cookbook, version=">= 0.0.0")
         Chef::VersionConstraint.new(version)
         @recommendations[cookbook] = version
@@ -259,50 +259,50 @@ class Chef
       # cookbook<String>:: The cookbook
       # version<String>:: A version constraint of the form "OP VERSION",
       # where OP is one of < <= = > >= ~> and VERSION has the
-      # formx.y.z or x.y. 
+      # formx.y.z or x.y.
       #
       # === Returns
-      # versions<Array>:: Returns the list of versions for the platform 
+      # versions<Array>:: Returns the list of versions for the platform
       def suggests(cookbook, version=">= 0.0.0")
         Chef::VersionConstraint.new(version)
         @suggestions[cookbook] = version
-        @suggestions[cookbook] 
+        @suggestions[cookbook]
       end
 
       # Adds a conflict for another cookbook, with version checking strings.
       #
       # === Parameters
-      # cookbook<String>:: The cookbook 
+      # cookbook<String>:: The cookbook
       # version<String>:: A version constraint of the form "OP VERSION",
       # where OP is one of < <= = > >= ~> and VERSION has
-      # the form x.y.z or x.y. 
+      # the form x.y.z or x.y.
       #
       # === Returns
-      # versions<Array>:: Returns the list of versions for the platform 
+      # versions<Array>:: Returns the list of versions for the platform
       def conflicts(cookbook, version=">= 0.0.0")
         Chef::VersionConstraint.new(version)
         @conflicting[cookbook] = version
-        @conflicting[cookbook] 
+        @conflicting[cookbook]
       end
 
-      # Adds a recipe, definition, or resource provided by this cookbook. 
+      # Adds a recipe, definition, or resource provided by this cookbook.
       #
       # Recipes are specified as normal
       # Definitions are followed by (), and can include :params for prototyping
       # Resources are the stringified version (service[apache2])
       #
       # === Parameters
-      # recipe, definition, resource<String>:: The thing we provide 
+      # recipe, definition, resource<String>:: The thing we provide
       # version<String>:: A version constraint of the form "OP VERSION",
       # where OP is one of < <= = > >= ~> and VERSION has
-      # the form x.y.z or x.y. 
+      # the form x.y.z or x.y.
       #
       # === Returns
-      # versions<Array>:: Returns the list of versions for the platform 
+      # versions<Array>:: Returns the list of versions for the platform
       def provides(cookbook, version=">= 0.0.0")
         Chef::VersionConstraint.new(version)
         @providing[cookbook] = version
-        @providing[cookbook] 
+        @providing[cookbook]
       end
 
       # Adds a cookbook that is replaced by this one, with version checking strings.
@@ -313,23 +313,23 @@ class Chef
       # where OP is one of < <= = > >= ~> and VERSION has the form x.y.z or x.y.
       #
       # === Returns
-      # versions<Array>:: Returns the list of versions for the platform 
+      # versions<Array>:: Returns the list of versions for the platform
       def replaces(cookbook, version=">= 0.0.0")
         Chef::VersionConstraint.new(version)
         @replacing[cookbook] = version
-        @replacing[cookbook] 
+        @replacing[cookbook]
       end
 
-      # Adds a description for a recipe. 
+      # Adds a description for a recipe.
       #
       # === Parameters
       # recipe<String>:: The recipe
       # description<String>:: The description of the recipe
       #
       # === Returns
-      # description<String>:: Returns the current description 
+      # description<String>:: Returns the current description
       def recipe(name, description)
-        @recipes[name] = description 
+        @recipes[name] = description
       end
 
       # Adds an attribute that a user needs to configure for this cookbook. Takes
@@ -346,11 +346,11 @@ class Chef
       #   default<String>,<Array>,<Hash>:: The default value
       #
       # === Parameters
-      # name<String>:: The name of the attribute ('foo', or 'apache2/log_dir') 
-      # options<Hash>:: The description of the options 
+      # name<String>:: The name of the attribute ('foo', or 'apache2/log_dir')
+      # options<Hash>:: The description of the options
       #
       # === Returns
-      # options<Hash>:: Returns the current options hash 
+      # options<Hash>:: Returns the current options hash
       def attribute(name, options)
         validate(
           options,
@@ -370,7 +370,7 @@ class Chef
         validate_calculated_default_rule(options)
         validate_choice_default_rule(options)
 
-        @attributes[name] = options 
+        @attributes[name] = options
         @attributes[name]
       end
 
@@ -382,7 +382,7 @@ class Chef
             :description => { :kind_of => String }
           }
         )
-        @groupings[name] = options 
+        @groupings[name] = options
         @groupings[name]
       end
 
@@ -410,7 +410,7 @@ class Chef
       end
 
       def self.from_hash(o)
-        cm = self.new() 
+        cm = self.new()
         cm.from_hash(o)
         cm
       end

@@ -35,6 +35,8 @@ class Chef
       end
 
       def action_create
+        assert_enclosing_directory_exists!
+
         Chef::Log.debug("Checking #{@new_resource} for changes")
 
         if current_resource_matches_target_checksum?

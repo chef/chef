@@ -3,7 +3,8 @@
 # Author:: Nuo Yan (<nuoyan@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
-# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -129,10 +130,12 @@ class Chef
     end
     alias :delete :remove
 
-
-    def expand(data_source='server', expansion_opts={})
-      expansion = expansion_for_data_source(data_source, expansion_opts)
-      expansion.expand(expansion_opts[:environment])
+    # Expands this run_list: recursively expand roles into their included
+    # recipes.
+    # Returns a RunListExpansion object.
+    def expand(environment, data_source='server', expansion_opts={})
+      expansion = expansion_for_data_source(environment, data_source, expansion_opts)
+      expansion.expand
       expansion
     end
 
@@ -145,17 +148,17 @@ class Chef
       item.kind_of?(RunListItem) ? item : parse_entry(item)
     end
 
-    def expansion_for_data_source(data_source, opts={})
-      data_source = 'disk' if Chef::Config[:solo]
+    def expansion_for_data_source(environment, data_source, opts={})
       case data_source.to_s
       when 'disk'
-        RunListExpansionFromDisk.new(@run_list_items)
+        RunListExpansionFromDisk.new(environment, @run_list_items)
       when 'server'
-        RunListExpansionFromAPI.new(@run_list_items, opts[:rest])
+        RunListExpansionFromAPI.new(environment, @run_list_items, opts[:rest])
       when 'couchdb'
-        RunListExpansionFromCouchDB.new(@run_list_items, opts[:couchdb])
+        RunListExpansionFromCouchDB.new(environment, @run_list_items, opts[:couchdb])
       end
     end
+
 
   end
 end

@@ -1,6 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Copyright:: Copyright (c) 2010, 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +18,7 @@
 #
 
 require 'chef/environment'
+require 'chef/cookbook_version_selector'
 
 class Environments < Application
 
@@ -150,6 +152,56 @@ class Environments < Application
     display("run_list" => role.env_run_lists[params[:environment_id]])
   end
 
-  private
+  # POST /environments/:environment_id/cookbook_versions
+  #
+  # Take the given run_list and return the versions of cookbooks that would
+  # be used after applying the constraints of the given environment.
+  #
+  # INPUT: 
+  #  :run_list = an Array of String's, e.g.,
+  #  ["recipe[apache2]", "recipe[runit]"]
+  #
+  # OUT:
+  #  Hash of cookbook names cookbook manifest
+  #
+  # NOTE: This method is a POST, not because it's a mutator (it's idempotent),
+  # but the run_list can likely exceed Merb's query string limit for GET
+  # of 1024 characters.
+  def cookbook_versions_for_run_list
+    begin
+      # not possible to be nil due to the route to get us to this API
+      # endpoint
+      environment_input = params[:environment_id]
 
+      run_list_input = params[:run_list]
+      raise BadRequest, "Missing param: run_list" unless run_list_input
+      raise BadRequest, "Param run_list is not an Array: #{run_list_input.class}" unless run_list_input.is_a?(Array)
+
+      # Convert the input array of strings to a RunList containing
+      # RunListItem's.
+      run_list = Chef::RunList.new
+      run_list_input.each do |run_list_item_string|
+        run_list << run_list_item_string
+      end
+
+      # Expand the run list in the scope of the specified environment.
+      names_to_cookbook_version = Chef::CookbookVersionSelector.expand_to_cookbook_versions(run_list, environment_input)
+    rescue Chef::Exceptions::CouchDBNotFound
+      raise NotFound, "Cannot load environment #{params[:environment_id]}"
+    rescue Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems => e
+      raise PreconditionFailed, e.to_json
+    rescue Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem => e
+      raise PreconditionFailed, e.to_json
+    end
+
+    # Convert from
+    #  name => CookbookVersion
+    # to
+    #  name => cookbook manifest
+    # and display.
+    display(names_to_cookbook_version.inject({}) do |res, (cookbook_name, cookbook_version)|
+              res[cookbook_name] = cookbook_version.generate_manifest_with_urls {|opts| absolute_url(:cookbook_file, opts) }
+              res
+            end)
+  end
 end

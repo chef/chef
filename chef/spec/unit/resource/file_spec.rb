@@ -24,11 +24,6 @@ describe Chef::Resource::File do
     @resource = Chef::Resource::File.new("fakey_fakerton")
   end
 
-  it "should create a new Chef::Resource::File" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::File)
-  end
-
   it "should have a name" do
     @resource.name.should eql("fakey_fakerton")
   end

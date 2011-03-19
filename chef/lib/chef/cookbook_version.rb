@@ -24,8 +24,9 @@ require 'chef/node'
 require 'chef/resource_definition_list'
 require 'chef/recipe'
 require 'chef/cookbook/file_vendor'
-require 'chef/version_class'
 require 'chef/checksum'
+
+require 'chef/version_class'
 
 class Chef
   # == Chef::CookbookVersion

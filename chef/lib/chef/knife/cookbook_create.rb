@@ -20,6 +20,7 @@ require 'chef/knife'
 require 'chef/json_compat'
 require 'uri'
 require 'chef/mixin/shell_out'
+require 'fileutils'
 
 class Chef
   class Knife
@@ -42,7 +43,7 @@ class Chef
       option :cookbook_license,
         :short => "-I LICENSE",
         :long => "--license LICENSE",
-        :description => "License for cookbook, apachev2 or none"
+        :description => "License for cookbook, apachev2, gplv2, gplv3, mit or none"
 
       option :cookbook_copyright,
         :short => "-C COPYRIGHT",
@@ -78,14 +79,14 @@ class Chef
 
     def create_cookbook(dir, cookbook_name, copyright, license)
       msg("** Creating cookbook #{cookbook_name}")
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "attributes")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "recipes")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "definitions")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "libraries")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "resources")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "providers")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "files", "default")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "templates", "default")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "attributes")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "recipes")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "definitions")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "libraries")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "resources")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "providers")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "files", "default")}"
+      FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "templates", "default")}"
       unless File.exists?(File.join(dir, cookbook_name, "recipes", "default.rb"))
         open(File.join(dir, cookbook_name, "recipes", "default.rb"), "w") do |file|
           file.puts <<-EOH
@@ -110,6 +111,61 @@ EOH
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+EOH
+          when "gplv2"
+            file.puts <<-EOH
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+EOH
+          when "gplv3"
+            file.puts <<-EOH
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+EOH
+          when "mit"
+            file.puts <<-EOH
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 EOH
           when "none"
@@ -175,6 +231,12 @@ EOH
       license_name = case license
                      when "apachev2"
                        "Apache 2.0"
+                     when "gplv2"
+                       "GNU Public License 2.0"
+                     when "gplv3"
+                       "GNU Public License 3.0"
+                     when "mit"
+                       "MIT"
                      when "none"
                        "All rights reserved"
                      end
