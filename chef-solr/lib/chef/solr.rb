@@ -81,7 +81,7 @@ class Chef
       data.each do |field, values|
         values.each do |v|
           xml << FIELD_ATTR
-          xml << field
+          xml << xml_escape(field)
           xml << FIELD_ATTR_END
           xml <<  xml_escape(v)
           xml << CLOSE_FIELD

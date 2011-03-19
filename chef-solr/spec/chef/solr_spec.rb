@@ -160,6 +160,14 @@ describe Chef::Solr do
 
       @solr.solr_add(@data)
     end
+
+    it "XML escapes keys before sending to SOLR" do
+      @data.delete("foo")
+      @data["foo&bar"] = ["baz"]
+      @solr.should_receive(:post_to_solr).with("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<add><doc><field name=\"foo&amp;bar\">baz</field></doc></add>\n")
+
+      @solr.solr_add(@data)
+    end
   end
 
   describe "solr_commit" do
