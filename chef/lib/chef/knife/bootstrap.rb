@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ class Chef
         :short => "-x USERNAME",
         :long => "--ssh-user USERNAME",
         :description => "The ssh username",
-        :default => "root" 
+        :default => "root"
 
       option :ssh_password,
         :short => "-P PASSWORD",
@@ -47,7 +47,7 @@ class Chef
         :short => "-N NAME",
         :long => "--node-name NAME",
         :description => "The Chef node name for your new node"
-      
+
       option :prerelease,
         :long => "--prerelease",
         :description => "Install the pre-release chef gems"
@@ -72,7 +72,7 @@ class Chef
         :short => "-r RUN_LIST",
         :long => "--run-list RUN_LIST",
         :description => "Comma separated list of roles/recipes to apply",
-        :proc => lambda { |o| o.split(",") },
+        :proc => lambda { |o| o.split(/[\s,]+/) },
         :default => []
 
       def h
@@ -101,7 +101,7 @@ class Chef
         end
 
         Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
-        
+
         IO.read(template).chomp
       end
 
@@ -112,7 +112,7 @@ class Chef
         Erubis::Eruby.new(template).evaluate(context)
       end
 
-      def run 
+      def run
         require 'highline'
 
         validate_name_args!
@@ -147,7 +147,7 @@ class Chef
       def knife_ssh
         ssh = Chef::Knife::Ssh.new
         ssh.name_args = [ server_name, ssh_command ]
-        ssh.config[:ssh_user] = config[:ssh_user] 
+        ssh.config[:ssh_user] = config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
