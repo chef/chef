@@ -60,11 +60,31 @@ class Chef
         :long => "--id-only",
         :description => "Show only the ID of matching objects"
 
+      option :query,
+        :short => "-q QUERY",
+        :long => "--query QUERY",
+        :description => "The search query; useful to protect queries starting with -"
+
       def run
+        if config[:query] && @name_args[1]
+          puts "please specify query as an argument or an option via -q, not both"
+          puts opt_parser
+          exit 1
+        end
+        raw_query = config[:query] || @name_args[1]
+        if !raw_query || raw_query.empty?
+          puts "no query specified"
+          puts opt_parser
+          exit 1
+        end
+
         q = Chef::Search::Query.new
         display = { :total => 0, :start => config[:start] ? config[:start] : 0, :rows => [ ] }
-
-        q.search(@name_args[0], URI.escape(@name_args[1], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")), config[:sort], config[:start] ? config[:start] : 0, config[:rows] ? config[:rows] : 20) do |item|
+        query = URI.escape(raw_query,
+                           Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+        rows = config[:rows] ? config[:rows] : 20
+        start = config[:start] ? config[:start] : 0
+        q.search(@name_args[0], query, config[:sort], start, rows) do |item|
           formatted_item = format_for_display(item)
           if formatted_item.respond_to?(:has_key?) && !formatted_item.has_key?('id')
             formatted_item['id'] = item.has_key?('id') ? item['id'] : item.name
