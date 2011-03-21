@@ -44,7 +44,6 @@ end
 desc "Run the rspec tests"
 task :spec do
   Dir.chdir("chef") { sh "rake spec" }
-  Dir.chdir("chef-solr") { sh "rake spec" }
 end
 
 task :default => :spec
