@@ -55,7 +55,7 @@ class Chef
     include Chef::IndexQueue::Indexable
 
     DESIGN_DOCUMENT = {
-      "version" => 9,
+      "version" => 10,
       "language" => "javascript",
       "views" => {
         "all" => {
