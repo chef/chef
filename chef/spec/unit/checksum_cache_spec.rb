@@ -193,6 +193,14 @@ describe Chef::ChecksumCache do
 
         Chef::ChecksumCache.cleanup_checksum_cache
       end
+
+      it "cleans all 0byte checksum files when it encounters a Marshal error" do
+        @cache.moneta.stub!(:fetch).and_raise(ArgumentError)
+        # This cache file is 0 bytes, raises an argument error when
+        # attempting to Marshal.load
+        File.should_receive(:unlink).with(File.join(CHEF_SPEC_DATA, "checksum_cache", "chef-file--tmp-chef-rendered-template20100929-10863-6m8zdk-0"))
+        @cache.lookup_checksum("chef-file--tmp-chef-rendered-template20100929-10863-6m8zdk-0", "foo")
+      end
     end
 
   end
