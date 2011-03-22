@@ -149,11 +149,11 @@ class Chef
     #
     # Returns:
     #   Hash of: name to CookbookVersion
-    def self.expand_to_cookbook_versions(run_list, environment)
+    def self.expand_to_cookbook_versions(run_list, environment, couchdb=nil)
       # expand any roles in this run_list.
-      expanded_run_list = run_list.expand(environment, 'couchdb').recipes.with_version_constraints
+      expanded_run_list = run_list.expand(environment, 'couchdb', :couchdb => couchdb).recipes.with_version_constraints
 
-      cookbooks_for_environment = Chef::Environment.cdb_load_filtered_cookbook_versions(environment)
+      cookbooks_for_environment = Chef::Environment.cdb_load_filtered_cookbook_versions(environment, couchdb)
       constrain(cookbooks_for_environment, expanded_run_list)
     end
   end

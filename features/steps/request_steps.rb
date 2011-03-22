@@ -7,16 +7,11 @@ end
 
 When /^I '([^']*)' (?:to )?the path '([^']*)'$/ do |http_method, request_uri|
   begin
-    old_logger = Chef::Log.logger
-    self.log_io = StringIO.new
-    Chef::Log.logger = Logger.new(self.log_io)
     self.api_response = rest.send("#{http_method}_rest".downcase.to_sym, request_uri)
     self.inflated_response = self.api_response
   rescue
     Chef::Log.debug("Caught exception in request: #{$!.message}")
     self.exception = $!
-  ensure
-    Chef::Log.logger = old_logger
   end
 end
 
