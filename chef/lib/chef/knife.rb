@@ -28,6 +28,9 @@ class Chef
     include Mixlib::CLI
     extend Chef::Mixin::ConvertToClassName
 
+    CHEF_FILE_IN_GEM = /chef-[\d]+\.[\d]+\.[\d]+/
+    CURRENT_CHEF_GEM = /chef-#{Regexp.escape(Chef::VERSION)}/
+
     attr_accessor :name_args
 
     def self.msg(msg="")
@@ -225,6 +228,12 @@ class Chef
         # search all gems for chef/knife/*.rb
         require 'rubygems'
         files = Gem.find_files 'chef/knife/*.rb'
+        # wow, this is a sad hack :(
+        # Gem.find_files finds files in all versions of a gem, which
+        # means that if chef 0.10 and 0.9.x are installed, we'll try to
+        # require, e.g., chef/knife/ec2_server_create, which will cause
+        # a gem activation error. So remove files from older chef gems.
+        files.reject! {|f| f =~ CHEF_FILE_IN_GEM && f !~ CURRENT_CHEF_GEM }
         files.map! do |file|
           file[/(#{Regexp.escape File.join('chef', 'knife', '')}.*\.rb)/, 1]
         end.uniq!
