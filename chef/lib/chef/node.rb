@@ -55,7 +55,7 @@ class Chef
     include Chef::IndexQueue::Indexable
 
     DESIGN_DOCUMENT = {
-      "version" => 10,
+      "version" => 11,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -138,7 +138,8 @@ class Chef
           "map" => <<-EOJS
             function(doc) {
               if (doc.chef_type == "node") {
-                emit(doc['chef_environment'], doc.name);
+                env = (doc['chef_environment'] == NULL ? "_default" : doc['chef_environment']);
+                emit(env, doc.name);
               }
             }
           EOJS
