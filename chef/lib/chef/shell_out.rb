@@ -43,7 +43,13 @@ class Chef
     DEFAULT_READ_TIMEOUT = 60
     DEFAULT_ENVIRONMENT = {'LC_ALL' => 'C'}
 
-    include ShellOut::Unix
+    if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+      require 'chef/shell_out/windows'
+      include ShellOut::Windows
+    else
+      require 'chef/shell_out/unix'
+      include ShellOut::Unix
+    end
 
     attr_accessor :user, :group, :cwd, :valid_exit_codes
     attr_reader :command, :umask, :environment
