@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,8 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Provider do
   before(:each) do
-    Chef::Config.cookbook_path = []
-    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+    @cookbook_collection = Chef::CookbookCollection.new([])
     @node = Chef::Node.new
     @node.name "latte"
     @run_context = Chef::RunContext.new(@node, @cookbook_collection)
@@ -29,23 +28,23 @@ describe Chef::Provider do
     @resource.cookbook_name = "a_delicious_pie"
     @provider = Chef::Provider.new(@resource, @run_context)
   end
-  
+
   it "should store the resource passed to new as new_resource" do
     @provider.new_resource.should eql(@resource)
   end
-  
+
   it "should store the node passed to new as node" do
     @provider.node.should eql(@node)
   end
-  
+
   it "should have nil for current_resource by default" do
     @provider.current_resource.should eql(nil)
-  end    
-  
+  end
+
   it "should return true for action_nothing" do
     @provider.action_nothing.should eql(true)
   end
-  
+
   it "evals embedded recipes with a pristine resource collection" do
     @provider.run_context.instance_variable_set(:@resource_collection, "doesn't matter what this is")
     temporary_collection = nil

@@ -9,9 +9,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,15 +38,11 @@ class Chef
         :long => "--all",
         :description => "Test all cookbooks, rather than just a single cookbook"
 
-      def run 
-        if config[:cookbook_path]
-          Chef::Config[:cookbook_path] = config[:cookbook_path]
-        else
-          config[:cookbook_path] = Chef::Config[:cookbook_path]
-        end
+      def run
+        config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
         if config[:all]
-          cl = Chef::CookbookLoader.new
+          cl = Chef::CookbookLoader.new(config[:cookbook_path])
           cl.each do |key, cookbook|
             test_cookbook(key)
           end
@@ -71,7 +67,7 @@ class Chef
         Chef::Log.info("Validating ruby files")
         exit(1) unless syntax_checker.validate_ruby_files
       end
-      
+
       def test_templates(syntax_checker)
         Chef::Log.info("Validating templates")
         exit(1) unless syntax_checker.validate_templates

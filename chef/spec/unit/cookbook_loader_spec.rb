@@ -20,11 +20,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::CookbookLoader do
   before(:each) do
-    Chef::Config.cookbook_path [
-      File.expand_path(File.join(CHEF_SPEC_DATA, "kitchen")),
-      File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
-    ]
-    @cookbook_loader = Chef::CookbookLoader.new()
+    @repo_paths = [ File.expand_path(File.join(CHEF_SPEC_DATA, "kitchen")),
+                    File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")) ]
+    @cookbook_loader = Chef::CookbookLoader.new(@repo_paths)
   end
 
   describe "[]" do
