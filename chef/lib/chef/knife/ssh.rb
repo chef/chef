@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,11 +18,6 @@
 
 require 'chef/knife'
 require 'chef/data_bag_item'
-
-begin
-  gem "net-ssh", ">= 2.0.23"
-rescue LoadError
-end
 
 class Chef
   class Knife
@@ -43,7 +38,7 @@ class Chef
         :short => "-a ATTR",
         :long => "--attribute ATTR",
         :description => "The attribute to use for opening the connection - default is fqdn",
-        :default => "fqdn" 
+        :default => "fqdn"
 
       option :manual,
         :short => "-m",
@@ -203,7 +198,7 @@ class Chef
             raw_list = $1.split(" ")
             server_list = Array.new
             session.servers.each do |session_server|
-              server_list << session_server if raw_list.include?(session_server.host) 
+              server_list << session_server if raw_list.include?(session_server.host)
             end
             command = $2
             ssh_command(command, session.on(*server_list))
@@ -266,9 +261,9 @@ class Chef
           raise
         end
 
-        Appscript.app("/Applications/Utilities/Terminal.app").windows.first.activate  
+        Appscript.app("/Applications/Utilities/Terminal.app").windows.first.activate
         Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", :using=>:command_down)
-        term = Appscript.app('Terminal')  
+        term = Appscript.app('Terminal')
         window = term.windows.first.get
 
         (session.servers_for.size - 1).times do |i|
@@ -282,16 +277,17 @@ class Chef
         end
       end
 
-      def run 
-        @longest = 0
+      def run
+        require 'net/ssh'
+        require 'net/ssh/multi'
 
-        load_late_dependencies
+        @longest = 0
 
         configure_session
 
         case @name_args[1]
         when "interactive"
-          interactive 
+          interactive
         when "screen"
           screen
         when "tmux"
@@ -303,33 +299,6 @@ class Chef
         end
 
         session.close
-      end
-
-      def load_late_dependencies
-        require 'readline'
-        %w[net/ssh/multi highline].each do |dep|
-          load_late_dependency dep
-        end
-        assert_net_ssh_version_acceptable!
-      end
-
-      # :nodoc:
-      # TODO: remove this stuff entirely and package knife ssh as a knife plugin. (Dan - 08 Jul 2010)
-      #
-      # The correct way to specify version deps is in the gemspec or other packaging.
-      # However, we don't want to have a gem dep on net-ssh, because it's a hassle
-      # when you only need the chef-client (e.g., on a managed node). So we have to
-      # check here that you have a decent version of Net::SSH.
-      #
-      # net-ssh of lower versions has a bug that causes 'knife ssh (searchterm) (commandname)" 
-      # to loop infinitely and consume all the CPU of one core.
-      def assert_net_ssh_version_acceptable!
-        netssh_version = Net::SSH::Version
-        # we want version 2.0.23 and higher:
-        unless (netssh_version::MAJOR == 2) && (netssh_version::TINY >= 23 || netssh_version::MINOR >= 1)
-          STDERR.puts "ERROR: Please install net-ssh version 2.0.23 or higher, as lower versions cause issues."
-          exit 1
-        end
       end
 
     end
