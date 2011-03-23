@@ -114,14 +114,13 @@ class Chef
 
       def run
         require 'highline'
+        require 'net/ssh'
 
         validate_name_args!
 
         $stdout.sync = true
 
         Chef::Log.info("Bootstrapping Chef on #{h.color(config[:server_name], :bold)}")
-
-        knife_ssh.load_late_dependencies
 
         begin
           knife_ssh.run
