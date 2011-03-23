@@ -138,7 +138,7 @@ class Chef
           "map" => <<-EOJS
             function(doc) {
               if (doc.chef_type == "node") {
-                env = (doc['chef_environment'] == NULL ? "_default" : doc['chef_environment']);
+                var env = (doc['chef_environment'] == null ? "_default" : doc['chef_environment']);
                 emit(env, doc.name);
               }
             }
