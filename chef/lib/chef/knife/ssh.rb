@@ -62,6 +62,12 @@ class Chef
         :long => "--identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
+      option :no_host_key_verify,
+        :long => "--no-host-key-verify",
+        :description => "Disable host key verification",
+        :boolean => true,
+        :default => false
+
       def session
         ssh_error_handler = Proc.new do |server|
           if config[:manual]
@@ -110,10 +116,16 @@ class Chef
           session_opts[:password] = config[:ssh_password] if config[:ssh_password]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
 
+          if config[:no_host_key_verify]
+            session_opts[:paranoid] = false
+            session_opts[:user_known_hosts_file] = "/dev/null"
+          end
+
           session.use(hostspec, session_opts)
 
           @longest = item.length if item.length > @longest
         end
+
         session
       end
 

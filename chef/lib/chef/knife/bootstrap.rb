@@ -75,6 +75,12 @@ class Chef
         :proc => lambda { |o| o.split(/[\s,]+/) },
         :default => []
 
+      option :no_host_key_verify,
+        :long => "--no-host-key-verify",
+        :description => "Disable host key verification",
+        :boolean => true,
+        :default => false
+
       def h
         @highline ||= HighLine.new
       end
@@ -120,7 +126,7 @@ class Chef
 
         $stdout.sync = true
 
-        Chef::Log.info("Bootstrapping Chef on #{h.color(config[:server_name], :bold)}")
+        Chef::Log.info("Bootstrapping Chef on #{h.color(Array(@name_args).first, :bold)}")
 
         begin
           knife_ssh.run
@@ -150,6 +156,7 @@ class Chef
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
+        ssh.config[:no_host_key_verify] = config[:no_host_key_verify]
         ssh
       end
 
