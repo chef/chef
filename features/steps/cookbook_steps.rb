@@ -36,12 +36,10 @@ def compare_manifests(manifest1, manifest2)
 end
 
 Before do
-  save_cookbook_path = Chef::Config[:cookbook_path]
   FileUtils.mkdir "#{datadir}/cookbooks_not_uploaded_at_feature_start/testcookbook_invalid_empty" unless File.exist?("#{datadir}/cookbooks_not_uploaded_at_feature_start/testcookbook_invalid_empty")
-  Chef::Config[:cookbook_path] = File.join(datadir, "cookbooks_not_uploaded_at_feature_start")
-  Chef::Cookbook::FileVendor.on_create {|manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
-  @cookbook_loader_not_uploaded_at_feature_start = Chef::CookbookLoader.new
-  Chef::Config[:cookbook_path] = save_cookbook_path
+  extra_cookbook_repo = File.join(datadir, "cookbooks_not_uploaded_at_feature_start")
+  Chef::Cookbook::FileVendor.on_create {|manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, extra_cookbook_repo) }
+  @cookbook_loader_not_uploaded_at_feature_start = Chef::CookbookLoader.new(extra_cookbook_repo)
 end
 
 Given /^a local cookbook repository$/ do

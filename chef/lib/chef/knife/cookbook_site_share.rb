@@ -40,9 +40,11 @@ class Chef
           exit 1
         end
 
+        config[:cookbook_path] ||= Chef::Config[:cookbook_path]
+
         cookbook_name = @name_args[0]
         category = @name_args[1]
-        cl = Chef::CookbookLoader.new
+        cl = Chef::CookbookLoader.new(config[:cookbook_path])
         if cl.cookbook_exists?(cookbook_name)
           cookbook = cl[cookbook_name]
           Chef::CookbookUploader.validate_cookbook(cookbook)
