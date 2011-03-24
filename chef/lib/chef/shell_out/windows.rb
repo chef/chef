@@ -30,7 +30,6 @@ class Chef
         Chef::Log.debug("sh(#{@command})")
         # win32 open4 is really just open3.
         Open3.popen3(@command) do |stdin,stdout,stderr|
-          @child_pid = child_pid
           @finished_stdout = false
           @finished_stderr = false
           stdin.close
