@@ -27,8 +27,6 @@ class Chef
   class Provider
     class RemoteFile < Chef::Provider::File
 
-      include Chef::Mixin::FindPreferredFile
-
       def load_current_resource
         super
         @current_resource.checksum(checksum(@current_resource.path)) if ::File.exist?(@current_resource.path)
