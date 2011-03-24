@@ -51,7 +51,12 @@ class Chef
       include ShellOut::Unix
     end
 
-    attr_accessor :user, :group, :cwd, :valid_exit_codes
+    attr_accessor :user
+    attr_accessor :group
+    attr_accessor :cwd
+    attr_accessor :valid_exit_codes
+    attr_accessor :live_stream
+
     attr_reader :command, :umask, :environment
     attr_writer :timeout
     attr_reader :execution_time
@@ -105,6 +110,7 @@ class Chef
     #   cmd.run_command # etc.
     def initialize(*command_args)
       @stdout, @stderr = '', ''
+      @live_stream = nil
       @environment = DEFAULT_ENVIRONMENT
       @cwd = nil
       @valid_exit_codes = [0]
@@ -217,6 +223,8 @@ class Chef
           self.timeout = setting
         when 'returns'
           self.valid_exit_codes = Array(setting)
+        when 'live_stream'
+          self.live_stream = setting
         when 'environment', 'env'
           # passing :environment => nil means don't set any new ENV vars
           @environment = setting.nil? ? {} : @environment.dup.merge!(setting)

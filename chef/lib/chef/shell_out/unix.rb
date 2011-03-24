@@ -164,6 +164,7 @@ class Chef
       def read_stdout_to_buffer
         while chunk = child_stdout.read_nonblock(READ_SIZE)
           @stdout << chunk
+          @live_stream << chunk if @live_stream
         end
       rescue Errno::EAGAIN
       rescue EOFError
