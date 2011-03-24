@@ -9,7 +9,7 @@ describe Chef::ShellOut do
     @shell_cmd.command.should == "apt-get install chef"
   end
 
-  it "by default does not haave a working dir" do
+  it "defaults to not setting a working directory" do
     @shell_cmd.cwd.should == nil
   end
 
@@ -93,10 +93,21 @@ describe Chef::ShellOut do
     @shell_cmd.valid_exit_codes.should == [0,23,42]
   end
 
+  it "defaults to not having a live stream" do
+    @shell_cmd.live_stream.should be_nil
+  end
+
+  it "sets a live stream" do
+    stream = StringIO.new
+    @shell_cmd.live_stream = stream
+    @shell_cmd.live_stream.should == stream
+  end
+
   context "when initialized with a hash of options" do
     before do
       @opts = { :cwd => '/tmp', :user => 'toor', :group => 'wheel', :umask => '2222',
-                :timeout => 5, :environment => {'RUBY_OPTS' => '-w'}, :returns => [0,1,42]}
+                :timeout => 5, :environment => {'RUBY_OPTS' => '-w'}, :returns => [0,1,42],
+                :live_stream => StringIO.new}
       @shell_cmd = Chef::ShellOut.new("brew install couchdb", @opts)
     end
 
@@ -138,6 +149,10 @@ describe Chef::ShellOut do
       @shell_cmd.valid_exit_codes.should == [0,1,42]
     end
 
+    it "sets the live stream specified in the options" do
+      @shell_cmd.live_stream.should == @opts[:live_stream]
+    end
+
     it "raises an error when given an invalid option" do
       klass = Chef::Exceptions::InvalidCommandOption
       msg   = "option ':frab' is not a valid option for Chef::ShellOut"
@@ -177,6 +192,18 @@ describe Chef::ShellOut do
       @shell_cmd.command.should == ['ruby', '-e', %q{'puts "hello"'}]
     end
 
+  end
+
+  context "when created with a live stream" do
+    before do
+      @stream = StringIO.new
+      @shell_cmd = Chef::ShellOut.new(%q{ruby -e 'puts "hello"'}, :live_stream => @stream)
+    end
+
+    it "copies the subprocess' stdout to the live stream" do
+      @shell_cmd.run_command
+      @stream.string.should == "hello\n"
+    end
   end
 
   describe "handling various subprocess behaviors" do
