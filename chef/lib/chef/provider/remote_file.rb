@@ -18,7 +18,6 @@
 
 require 'chef/provider/file'
 require 'chef/rest'
-require 'chef/mixin/find_preferred_file'
 require 'uri'
 require 'tempfile'
 require 'net/https'
