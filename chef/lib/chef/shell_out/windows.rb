@@ -53,6 +53,9 @@ class Chef
               end
             end
 
+            out_reader.join
+            err_reader.join
+
             @status = $?
           end
         end
