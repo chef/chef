@@ -30,21 +30,32 @@ class Chef
         Chef::Log.debug("sh(#{@command})")
         # win32 open4 is really just open3.
         Open3.popen3(@command) do |stdin,stdout,stderr|
-          @child_pid = child_pid
           @finished_stdout = false
           @finished_stderr = false
           stdin.close
           stdout.sync = true
           stderr.sync = true
 
+          # TBH, I really don't know what this will do when it times out.
+          # However, I'm powerless to make windows have non-blocking IO, so
+          # thread party it is.
           Timeout.timeout(timeout) do
-            loop do
-
-              read_stdout(stdout)
-              read_stderr(stderr)
-
-              break if (@finished_stdout && @finished_stderr)
+            out_reader = Thread.new do
+              loop do
+                read_stdout(stdout)
+                break if @finished_stdout
+              end
             end
+            err_reader = Thread.new do
+              loop do
+                read_stderr(stderr)
+                break if @finished_stderr
+              end
+            end
+
+            out_reader.join
+            err_reader.join
+
             @status = $?
           end
         end
@@ -57,8 +68,10 @@ class Chef
 
       def read_stdout(stdout)
         return nil if @finished_stdout
-        if chunk = stdout.read_nonblock(8096)
+        if chunk = stdout.sysread(8096)
           @stdout << chunk
+        else
+          @finished_stdout = true
         end
       rescue EOFError
         @finished_stdout = true
@@ -67,8 +80,10 @@ class Chef
 
       def read_stderr(stderr)
         return nil if @finished_stderr
-        if chunk = stderr.read_nonblock(8096)
+        if chunk = stderr.sysread(8096)
           @stderr << chunk
+        else
+          @finished_stderr = true
         end
       rescue EOFError
         @finished_stderr = true
