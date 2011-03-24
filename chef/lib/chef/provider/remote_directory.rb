@@ -18,8 +18,6 @@
 
 require 'chef/provider/file'
 require 'chef/provider/directory'
-#require 'chef/rest'
-#require 'chef/mixin/find_preferred_file'
 require 'chef/resource/directory'
 require 'chef/resource/remote_file'
 require 'chef/platform'
