@@ -477,7 +477,7 @@ describe Chef::Cookbook::Metadata do
         :display_name => "You have nothing" 
       @meta.version "1.2.3"
     end
- 
+
     describe "serialize" do
       before(:each) do
         @serial = Chef::JSONCompat.from_json(@meta.to_json)
