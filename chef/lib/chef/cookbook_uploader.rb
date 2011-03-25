@@ -1,5 +1,5 @@
 require 'rest_client'
-require 'chef/cookbook_loader'
+require 'chef/exceptions'
 require 'chef/checksum_cache'
 require 'chef/sandbox'
 require 'chef/cookbook_version'
@@ -11,9 +11,21 @@ class Chef
 
     attr_reader :cookbook
     attr_reader :path
+    attr_reader :opts
 
-    def initialize(cookbook, path)
-      @cookbook, @path = cookbook, path
+    # Creates a new CookbookUploader.
+    # ===Arguments:
+    # * cookbook::: A Chef::CookbookVersion describing the cookbook to be uploaded
+    # * path::: A String or Array of Strings representing the base paths to the
+    #           cookbook repositories.
+    # * opts::: (optional) An options Hash
+    # ===Options:
+    # * :force  indicates that the uploader should set the force option when
+    #           uploading the cookbook. This allows frozen CookbookVersion
+    #           documents on the server to be overwritten (otherwise a 409 is
+    #           returned by the server)
+    def initialize(cookbook, path, opts={})
+      @cookbook, @path, @opts = cookbook, path, opts
     end
 
     def upload_cookbook
@@ -53,6 +65,7 @@ class Chef
                                                                              )
           headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, :accept => 'application/json' }
           headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
+
           begin
             RestClient::Resource.new(info['url'], :headers=>headers, :timeout=>1800, :open_timeout=>1800).put(file_contents)
           rescue RestClient::Exception => e
@@ -79,7 +92,7 @@ class Chef
         end
       end
       # files are uploaded, so save the manifest
-      cookbook.save
+      opts[:force] ? cookbook.force_save : cookbook.save
       Chef::Log.info("Upload complete!")
     end
 

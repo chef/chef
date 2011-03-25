@@ -60,6 +60,15 @@ describe Chef::CookbookVersion do
       @cookbook_version.metadata_filenames.should be_empty
     end
 
+    it "is not frozen" do
+      @cookbook_version.should_not be_frozen_version
+    end
+
+    it "can be frozen" do
+      @cookbook_version.freeze_version
+      @cookbook_version.should be_frozen_version
+    end
+
     it "has no couchdb id" do
       @cookbook_version.couchdb_id.should be_nil
     end

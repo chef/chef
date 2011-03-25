@@ -339,6 +339,7 @@ class Chef
     # object<Chef::CookbookVersion>:: Duh. :)
     def initialize(name, couchdb=nil)
       @name = name
+      @frozen = false
       @attribute_filenames = Array.new
       @definition_filenames = Array.new
       @template_filenames = Array.new
@@ -362,6 +363,17 @@ class Chef
 
     def version
       metadata.version
+    end
+
+    # Indicates if this version is frozen or not. Freezing a coobkook version
+    # indicates that a new cookbook with the same name and version number 
+    # shoule
+    def frozen_version?
+      @frozen
+    end
+
+    def freeze_version
+      @frozen = true
     end
 
     def version=(new_version)
@@ -650,6 +662,7 @@ class Chef
 
     def to_hash
       result = manifest.dup
+      result['frozen?'] = frozen_version?
       result['chef_type'] = 'cookbook_version'
       result["_rev"] = couchdb_rev if couchdb_rev
       result.to_hash
@@ -675,6 +688,7 @@ class Chef
       cookbook_version.manifest = o
       # We want the Chef::Cookbook::Metadata object to always be inflated
       cookbook_version.metadata = Chef::Cookbook::Metadata.from_hash(o["metadata"])
+      cookbook_version.freeze_version if o["frozen?"]
       cookbook_version
     end
 
@@ -716,11 +730,22 @@ class Chef
       self.class.chef_server_rest
     end
 
+    # Save this object to the server via the REST api. If there is an existing
+    # document on the server and it is marked frozen, a
+    # Net::HTTPServerException will be raised for 409 Conflict.
     def save
       chef_server_rest.put_rest("cookbooks/#{name}/#{version}", self)
       self
     end
     alias :create :save
+
+    # Adds the `force=true` parameter to the upload. This allows the user to
+    # overwrite a frozen cookbook (normal #save raises a
+    # Net::HTTPServerException for 409 Conflict in this case).
+    def force_save
+      chef_server_rest.put_rest("cookbooks/#{name}/#{version}?force=true", self)
+      self
+    end
 
     def destroy
       chef_server_rest.delete_rest("cookbooks/#{name}/#{version}")
