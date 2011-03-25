@@ -53,7 +53,7 @@ class Chef
           pv = dep_graph.package(cb_name).add_version(Chef::Version.new(cb_version.version))
           cb_version_deps.each_pair do |dep_name, constraint_str|
             constraint = Chef::VersionConstraint.new(constraint_str)
-            pv.dependencies << Chef::Dependency.new(dep_graph.package(dep_name), constraint)
+            pv.dependencies << DepSelector::Dependency.new(dep_graph.package(dep_name), constraint)
           end
         end
       end
