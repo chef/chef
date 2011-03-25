@@ -388,23 +388,23 @@ class Chef
 
       def to_hash
         {
-          :name             => self.name,
-          :description      => self.description,
-          :long_description => self.long_description,
-          :maintainer       => self.maintainer,
-          :maintainer_email => self.maintainer_email,
-          :license          => self.license,
-          :platforms        => self.platforms,
-          :dependencies     => self.dependencies,
-          :recommendations  => self.recommendations,
-          :suggestions      => self.suggestions,
-          :conflicting      => self.conflicting,
-          :providing        => self.providing,
-          :replacing        => self.replacing,
-          :attributes       => self.attributes,
-          :groupings        => self.groupings,
-          :recipes          => self.recipes,
-          :version          => self.version
+          'name'             => self.name,
+          'description'      => self.description,
+          'long_description' => self.long_description,
+          'maintainer'       => self.maintainer,
+          'maintainer_email' => self.maintainer_email,
+          'license'          => self.license,
+          'platforms'        => self.platforms,
+          'dependencies'     => self.dependencies,
+          'recommendations'  => self.recommendations,
+          'suggestions'      => self.suggestions,
+          'conflicting'      => self.conflicting,
+          'providing'        => self.providing,
+          'replacing'        => self.replacing,
+          'attributes'       => self.attributes,
+          'groupings'        => self.groupings,
+          'recipes'          => self.recipes,
+          'version'          => self.version
         }
       end
 
@@ -517,8 +517,9 @@ class Chef
       # constraint, we are replacing the old << and >> with the new <
       # and >.
       def handle_deprecated_constraints(specification)
-        specification.inject(Mash.new) do |acc, (cb, *constraints)|
-          acc[cb] = constraints.size > 1 ? [] : constraints.first.gsub(/>>/, '>').gsub(/<</, '<')
+        specification.inject(Mash.new) do |acc, (cb, constraints)|
+          constraints = Array(constraints)
+          acc[cb] = (constraints.empty? || constraints.size > 1) ? [] : constraints.first.gsub(/>>/, '>').gsub(/<</, '<')
           acc
         end
       end
