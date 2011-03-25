@@ -119,6 +119,12 @@ class Cookbooks < Application
       cookbook = params['inflated_object']
     end
 
+    if cookbook.frozen_version? && params[:force].nil?
+      raise Conflict, "The cookbook #{cookbook.name} at version #{cookbook.version} is frozen. Use the 'force' option to override."
+    end
+
+    cookbook.freeze_version if params["inflated_object"].frozen_version?
+
     # ensure that all checksums referred to by the manifest have been uploaded.
     Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
       next unless cookbook.manifest[segment]

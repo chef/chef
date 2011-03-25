@@ -19,6 +19,7 @@
 # limitations under the License.
 
 require 'chef/config'
+require 'chef/exceptions'
 require 'chef/cookbook/cookbook_version_loader'
 require 'chef/cookbook_version'
 require 'chef/cookbook/chefignore'
@@ -71,7 +72,7 @@ class Chef
       if @cookbooks_by_name.has_key?(cookbook.to_sym)
         @cookbooks_by_name[cookbook.to_sym]
       else
-        raise ArgumentError, "Cannot find a cookbook named #{cookbook.to_s}; did you forget to add metadata to a cookbook? (http://wiki.opscode.com/display/chef/Metadata)"
+        raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook.to_s}; did you forget to add metadata to a cookbook? (http://wiki.opscode.com/display/chef/Metadata)"
       end
     end
 
