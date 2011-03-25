@@ -356,3 +356,6 @@ class Chef
   end
 end
 
+# HACK cannot load this first, but it must be loaded.
+require 'chef/cookbook_version'
+

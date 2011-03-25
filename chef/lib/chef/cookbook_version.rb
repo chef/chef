@@ -25,7 +25,7 @@ require 'chef/resource_definition_list'
 require 'chef/recipe'
 require 'chef/cookbook/file_vendor'
 require 'chef/checksum'
-
+require 'chef/cookbook/metadata'
 require 'chef/version_class'
 
 class Chef
