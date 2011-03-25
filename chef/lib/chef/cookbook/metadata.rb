@@ -386,27 +386,30 @@ class Chef
         @groupings[name]
       end
 
-      def to_json(*a)
-        result = {
-          :name             => self.name,
-          :description      => self.description,
-          :long_description => self.long_description,
-          :maintainer       => self.maintainer,
-          :maintainer_email => self.maintainer_email,
-          :license          => self.license,
-          :platforms        => self.platforms,
-          :dependencies     => self.dependencies,
-          :recommendations  => self.recommendations,
-          :suggestions      => self.suggestions,
-          :conflicting      => self.conflicting,
-          :providing        => self.providing,
-          :replacing        => self.replacing,
-          :attributes       => self.attributes,
-          :groupings        => self.groupings,
-          :recipes          => self.recipes,
-          :version          => self.version
+      def to_hash
+        {
+          'name'             => self.name,
+          'description'      => self.description,
+          'long_description' => self.long_description,
+          'maintainer'       => self.maintainer,
+          'maintainer_email' => self.maintainer_email,
+          'license'          => self.license,
+          'platforms'        => self.platforms,
+          'dependencies'     => self.dependencies,
+          'recommendations'  => self.recommendations,
+          'suggestions'      => self.suggestions,
+          'conflicting'      => self.conflicting,
+          'providing'        => self.providing,
+          'replacing'        => self.replacing,
+          'attributes'       => self.attributes,
+          'groupings'        => self.groupings,
+          'recipes'          => self.recipes,
+          'version'          => self.version
         }
-        result.to_json(*a)
+      end
+
+      def to_json(*a)
+        self.to_hash.to_json(*a)
       end
 
       def self.from_hash(o)
@@ -423,12 +426,12 @@ class Chef
         @maintainer_email             = o['maintainer_email'] if o.has_key?('maintainer_email')
         @license                      = o['license'] if o.has_key?('license')
         @platforms                    = o['platforms'] if o.has_key?('platforms')
-        @dependencies                 = o['dependencies'] if o.has_key?('dependencies')
-        @recommendations              = o['recommendations'] if o.has_key?('recommendations')
-        @suggestions                  = o['suggestions'] if o.has_key?('suggestions')
-        @conflicting                  = o['conflicting'] if o.has_key?('conflicting')
+        @dependencies                 = handle_deprecated_constraints(o['dependencies']) if o.has_key?('dependencies')
+        @recommendations              = handle_deprecated_constraints(o['recommendations']) if o.has_key?('recommendations')
+        @suggestions                  = handle_deprecated_constraints(o['suggestions']) if o.has_key?('suggestions')
+        @conflicting                  = handle_deprecated_constraints(o['conflicting']) if o.has_key?('conflicting')
         @providing                    = o['providing'] if o.has_key?('providing')
-        @replacing                    = o['replacing'] if o.has_key?('replacing')
+        @replacing                    = handle_deprecated_constraints(o['replacing']) if o.has_key?('replacing')
         @attributes                   = o['attributes'] if o.has_key?('attributes')
         @groupings                    = o['groupings'] if o.has_key?('groupings')
         @recipes                      = o['recipes'] if o.has_key?('recipes')
@@ -499,6 +502,25 @@ class Chef
           options[:default].each do |val|
             raise ArgumentError, "Default values must be a subset of your choice values!" if options[:choice].index(val) == nil
           end
+        end
+      end
+
+      # This method translates version constraint strings from
+      # cookbooks with the old format.
+      #
+      # Before we began respecting version constraints, we allowed
+      # multiple constraints to be placed on cookbooks, as well as the
+      # << and >> operators, which are now just < and >. For
+      # specifications with more than one constraint, we return an
+      # empty array (otherwise, we're silently abiding only part of
+      # the contract they have specified to us). If there is only one
+      # constraint, we are replacing the old << and >> with the new <
+      # and >.
+      def handle_deprecated_constraints(specification)
+        specification.inject(Mash.new) do |acc, (cb, constraints)|
+          constraints = Array(constraints)
+          acc[cb] = (constraints.empty? || constraints.size > 1) ? [] : constraints.first.gsub(/>>/, '>').gsub(/<</, '<')
+          acc
         end
       end
 
