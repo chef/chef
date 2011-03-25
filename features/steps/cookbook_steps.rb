@@ -19,6 +19,7 @@
 #
 
 require 'chef/cookbook/file_system_file_vendor'
+require 'chef/cookbook_uploader'
 
 def compare_manifests(manifest1, manifest2)
   Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
@@ -67,6 +68,10 @@ Given "I upload the cookbook" do
   shell_out!("#{KNIFE_CMD} cookbook upload -c #{KNIFE_CONFIG} -a -o #{INTEGRATION_COOKBOOKS}")
 end
 
+Given "I have uploaded a frozen cookbook named '$cookbook_name' at version '$cookbook_version'" do |name, version|
+  shell_out!("#{KNIFE_CMD} cookbook upload #{name} -c #{KNIFE_CONFIG} -o #{EXTRA_COOKBOOKS} --freeze --force")
+end
+
 Given /^I delete the cookbook's on disk checksum files$/ do
   #pp :checksums => @last_uploaded_cookbook.checksums.keys
   #pending # express the regexp above with the code you wish you had
@@ -102,6 +107,21 @@ end
 #####
 # Cookbook upload/download-specific steps
 #####
+
+When "I upload a cookbook named '$name' at version '$version'" do |name, version|
+
+  # This is total crap :(
+  Chef::Config[:client_key] = rest.auth_credentials.key_file
+  Chef::Config[:node_name] = rest.auth_credentials.client_name
+
+  cookbook = @cookbook_loader_not_uploaded_at_feature_start[name]
+  uploader = Chef::CookbookUploader.new(cookbook, [EXTRA_COOKBOOKS], :rest => rest)
+  begin
+    uploader.upload_cookbook
+  rescue Exception => e
+    @exception = e
+  end
+end
 
 When /^I create a versioned cookbook(?: named '(.*?)')?(?: versioned '(.*?)')? with '(.*?)'$/ do |request_name, request_version, cookbook_name|
   cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
@@ -327,6 +347,10 @@ end
 
 Then /^the metadata should include a dependency on '(.+)'$/ do |key|
   inflated_response.metadata.dependencies.should have_key(key)
+end
+
+Then "the cookbook version document should be frozen" do
+  inflated_response.should be_frozen_version
 end
 
 RSpec::Matchers.define :have_been_deleted do

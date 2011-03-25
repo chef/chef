@@ -1,5 +1,6 @@
 require 'rest_client'
 require 'chef/exceptions'
+require 'chef/knife/cookbook_metadata'
 require 'chef/checksum_cache'
 require 'chef/sandbox'
 require 'chef/cookbook_version'
@@ -12,6 +13,7 @@ class Chef
     attr_reader :cookbook
     attr_reader :path
     attr_reader :opts
+    attr_reader :rest
 
     # Creates a new CookbookUploader.
     # ===Arguments:
@@ -24,14 +26,16 @@ class Chef
     #           uploading the cookbook. This allows frozen CookbookVersion
     #           documents on the server to be overwritten (otherwise a 409 is
     #           returned by the server)
+    # * :rest   A Chef::REST object that you have configured the way you like it.
+    #           If you don't provide this, one will be created using the values
+    #           in Chef::Config.
     def initialize(cookbook, path, opts={})
       @cookbook, @path, @opts = cookbook, path, opts
+      @rest = opts[:rest] || Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     def upload_cookbook
       Chef::Log.info("Saving #{cookbook.name}")
-
-      rest = Chef::REST.new(Chef::Config[:chef_server_url])
 
       # Syntax Check
       validate_cookbook
