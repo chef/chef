@@ -514,8 +514,8 @@ class Chef
       # constraint, we are replacing the old << and >> with the new <
       # and >.
       def handle_deprecated_constraints(specification)
-        specification.inject(Mash.new) do |acc, (cb, constraints)|
-          acc[cb] = constraints.size > 1 ? [] : constraints.map{|c| c.gsub(/>>/, '>').gsub(/<</, '<')}
+        specification.inject(Mash.new) do |acc, (cb, *constraints)|
+          acc[cb] = constraints.size > 1 ? [] : constraints.first.gsub(/>>/, '>').gsub(/<</, '<')
           acc
         end
       end
