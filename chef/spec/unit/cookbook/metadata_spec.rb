@@ -177,7 +177,7 @@ describe Chef::Cookbook::Metadata do
     end
   end
 
-  describe "dependency specification" do
+  describe "describing dependencies" do
     dep_types = {
       :depends     => [ :dependencies, "foo::bar", "> 0.2" ],
       :recommends  => [ :recommendations, "foo::bar", ">= 0.2" ],
@@ -195,6 +195,24 @@ describe Chef::Cookbook::Metadata do
         it "should be get-able via #{check_with}" do
           @meta.send(dep, *dep_args)
           @meta.send(check_with).should == { dep_args[0] => dep_args[1] }
+        end
+      end
+    end
+
+
+    describe "in the obsoleted format" do
+      dep_types = {
+        :depends     => [ :dependencies, "foo::bar", "> 0.2", "< 1.0" ],
+        :recommends  => [ :recommendations, "foo::bar", ">= 0.2", "< 1.0" ],
+        :suggests    => [ :suggestions, "foo::bar", "> 0.2", "< 1.0" ],
+        :conflicts   => [ :conflicting, "foo::bar", "> 0.2", "< 1.0" ],
+        :provides    => [ :providing, "foo::bar", "> 0.2", "< 1.0" ],
+        :replaces    => [ :replacing, "foo::bar", "> 0.2.1", "< 1.0" ],
+      }
+
+      dep_types.each do |dep, dep_args|
+        it "for #{dep} raises an informative error instead of vomiting on your shoes" do
+          lambda {@meta.send(dep, *dep_args)}.should raise_error(Chef::Exceptions::ObsoleteDependencySyntax)
         end
       end
     end

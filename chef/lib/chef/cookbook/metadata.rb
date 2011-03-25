@@ -215,7 +215,8 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def supports(platform, version=">= 0.0.0")
+      def supports(platform, *version_args)
+        version = new_args_format(:supports, version_args)
         Chef::VersionConstraint.new(version) # verify the version parses
         @platforms[platform] = version
         @platforms[platform]
@@ -231,7 +232,8 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def depends(cookbook, version=">= 0.0.0")
+      def depends(cookbook, *version_args)
+        version = new_args_format(:depends, version_args)
         Chef::VersionConstraint.new(version)
         @dependencies[cookbook] = version
         @dependencies[cookbook]
@@ -247,7 +249,8 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def recommends(cookbook, version=">= 0.0.0")
+      def recommends(cookbook, *version_args)
+        version = new_args_format(:recommends, version_args)
         Chef::VersionConstraint.new(version)
         @recommendations[cookbook] = version
         @recommendations[cookbook]
@@ -263,7 +266,8 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def suggests(cookbook, version=">= 0.0.0")
+      def suggests(cookbook, *version_args)
+        version = new_args_format(:suggests, version_args)
         Chef::VersionConstraint.new(version)
         @suggestions[cookbook] = version
         @suggestions[cookbook]
@@ -279,7 +283,8 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def conflicts(cookbook, version=">= 0.0.0")
+      def conflicts(cookbook, *version_args)
+        version = new_args_format(:conflicts, version_args)
         Chef::VersionConstraint.new(version)
         @conflicting[cookbook] = version
         @conflicting[cookbook]
@@ -299,7 +304,8 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def provides(cookbook, version=">= 0.0.0")
+      def provides(cookbook, *version_args)
+        version = new_args_format(:provides, version_args)
         Chef::VersionConstraint.new(version)
         @providing[cookbook] = version
         @providing[cookbook]
@@ -314,7 +320,8 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def replaces(cookbook, version=">= 0.0.0")
+      def replaces(cookbook, *version_args)
+        version = new_args_format(:replaces, version_args)
         Chef::VersionConstraint.new(version)
         @replacing[cookbook] = version
         @replacing[cookbook]
@@ -332,7 +339,7 @@ class Chef
         @recipes[name] = description
       end
 
-      # Adds an attribute that a user needs to configure for this cookbook. Takes
+      # Adds an attribute )hat a user needs to configure for this cookbook. Takes
       # a name (with the / notation for a nested attribute), followed by any of
       # these options
       #
@@ -450,6 +457,24 @@ class Chef
       end
 
     private
+
+      def new_args_format(caller_name, version_constraints)
+        if version_constraints.empty?
+          ">= 0.0.0"
+        elsif version_constraints.size == 1
+          version_constraints.first
+        else
+          msg=<<-OBSOLETED
+The dependency specification syntax you are using is no longer valid.
+Consult http://wiki.opscode.com/display/chef/Metadata for the updated syntax.
+
+Called by: #{caller_name} #{version_constraints.map {|vc| vc.inspect}.join(", ")}
+Called from:
+#{caller[0...5].map {|line| "  " + line}.join("\n")}
+OBSOLETED
+          raise Exceptions::ObsoleteDependencySyntax, msg
+        end
+      end
 
       # Verify that the given array is an array of strings
       #
