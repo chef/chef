@@ -386,8 +386,8 @@ class Chef
         @groupings[name]
       end
 
-      def to_json(*a)
-        result = {
+      def to_hash
+        {
           :name             => self.name,
           :description      => self.description,
           :long_description => self.long_description,
@@ -406,7 +406,10 @@ class Chef
           :recipes          => self.recipes,
           :version          => self.version
         }
-        result.to_json(*a)
+      end
+
+      def to_json(*a)
+        self.to_hash.to_json(*a)
       end
 
       def self.from_hash(o)
