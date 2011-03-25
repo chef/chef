@@ -42,6 +42,8 @@ class Chef
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
 
+    SANE_PATHS = %w[/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin]
+
     # Clears all notifications for client run status events.
     # Primarily for testing purposes.
     def self.clear_notifications
@@ -141,6 +143,7 @@ class Chef
     def run
       run_context = nil
 
+      enforce_path_sanity
       run_ohai
       register unless Chef::Config[:solo]
       build_node
@@ -306,6 +309,18 @@ class Chef
       @runner = Chef::Runner.new(run_context)
       runner.converge
       true
+    end
+
+    def enforce_path_sanity(env=ENV)
+      if Chef::Config[:enforce_path_sanity] && RUBY_PLATFORM !~ /mswin|mingw32|windows/
+        existing_paths = env["PATH"].split(':')
+        SANE_PATHS.each do |sane_path|
+          unless existing_paths.include?(sane_path)
+            env["PATH"] << ':' unless env["PATH"].empty?
+            env["PATH"] << sane_path
+          end
+        end
+      end
     end
 
     private
