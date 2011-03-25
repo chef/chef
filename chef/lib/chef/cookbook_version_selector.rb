@@ -50,10 +50,10 @@ class Chef
           # return the object and handle proper serialization and
           # de-serialization. For now, I'm just going to create a
           # Version object from the String representation.
-          pv = dep_graph.package(cb_name).add_version(DepSelector::Version.new(cb_version.version))
+          pv = dep_graph.package(cb_name).add_version(Chef::Version.new(cb_version.version))
           cb_version_deps.each_pair do |dep_name, constraint_str|
-            constraint = DepSelector::VersionConstraint.new(constraint_str)
-            pv.dependencies << DepSelector::Dependency.new(dep_graph.package(dep_name), constraint)
+            constraint = Chef::VersionConstraint.new(constraint_str)
+            pv.dependencies << Chef::Dependency.new(dep_graph.package(dep_name), constraint)
           end
         end
       end
