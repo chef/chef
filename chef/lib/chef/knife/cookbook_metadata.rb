@@ -81,7 +81,16 @@ class Chef
       end
 
       def validate_metadata_json(path, cookbook)
-        #TODO
+        json_file = File.join(path, cookbook, 'metadata.json')
+        if File.exist?(json_file)
+          Chef::Cookbook::Metadata.validate_json(IO.read(json_file))
+        end
+      rescue Exceptions::ObsoleteDependencySyntax, Exceptions::InvalidVersionConstraint => e
+        STDERR.puts "ERROR: The cookbook '#{cookbook}' contains invalid or obsolete metadata syntax."
+        STDERR.puts "in #{json_file}:"
+        STDERR.puts
+        STDERR.puts e.message
+        exit 1
       end
 
     end

@@ -37,6 +37,13 @@ class Chef
                             :recommendations, :suggestions, :conflicting, :providing,
                             :replacing, :attributes, :groupings, :recipes, :version]
 
+      VERSION_CONSTRAINTS = {:depends     => "dependencies",
+                             :recommends  => "recommendations",
+                             :suggests    => "suggestions",
+                             :conflicts   => "conflicting",
+                             :provides    => "providing",
+                             :replaces    => "replacing" }
+
       include Chef::Mixin::CheckHelper
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
@@ -216,8 +223,8 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def supports(platform, *version_args)
-        version = new_args_format(:supports, version_args)
-        validate_version_constraint(:supports, version)
+        version = new_args_format(:supports, platform, version_args)
+        validate_version_constraint(:supports, platform, version)
         @platforms[platform] = version
         @platforms[platform]
       end
@@ -233,8 +240,8 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def depends(cookbook, *version_args)
-        version = new_args_format(:depends, version_args)
-        validate_version_constraint(:depends, version)
+        version = new_args_format(:depends, cookbook, version_args)
+        validate_version_constraint(:depends, cookbook, version)
         @dependencies[cookbook] = version
         @dependencies[cookbook]
       end
@@ -250,8 +257,8 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def recommends(cookbook, *version_args)
-        version = new_args_format(:recommends, version_args)
-        validate_version_constraint(:recommends, version)
+        version = new_args_format(:recommends, cookbook,  version_args)
+        validate_version_constraint(:recommends, cookbook, version)
         @recommendations[cookbook] = version
         @recommendations[cookbook]
       end
@@ -267,8 +274,8 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def suggests(cookbook, *version_args)
-        version = new_args_format(:suggests, version_args)
-        validate_version_constraint(:suggests, version)
+        version = new_args_format(:suggests, cookbook, version_args)
+        validate_version_constraint(:suggests, cookbook, version)
         @suggestions[cookbook] = version
         @suggestions[cookbook]
       end
@@ -284,8 +291,8 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def conflicts(cookbook, *version_args)
-        version = new_args_format(:conflicts, version_args)
-        validate_version_constraint(:conflicts, version)
+        version = new_args_format(:conflicts, cookbook, version_args)
+        validate_version_constraint(:conflicts, cookbook, version)
         @conflicting[cookbook] = version
         @conflicting[cookbook]
       end
@@ -305,8 +312,8 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def provides(cookbook, *version_args)
-        version = new_args_format(:provides, version_args)
-        validate_version_constraint(:provides, version)
+        version = new_args_format(:provides, cookbook, version_args)
+        validate_version_constraint(:provides, cookbook, version)
         @providing[cookbook] = version
         @providing[cookbook]
       end
@@ -321,8 +328,8 @@ class Chef
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
       def replaces(cookbook, *version_args)
-        version = new_args_format(:replaces, version_args)
-        validate_version_constraint(:replaces, version)
+        version = new_args_format(:replaces, cookbook, version_args)
+        validate_version_constraint(:replaces, cookbook, version)
         @replacing[cookbook] = version
         @replacing[cookbook]
       end
@@ -451,6 +458,19 @@ class Chef
         self.from_hash(o)
       end
 
+      def self.validate_json(json_str)
+        o = Chef::JSONCompat.from_json(json_str)
+        metadata = new()
+        VERSION_CONSTRAINTS.each do |method_name, hash_key|
+          if constraints = o[hash_key]
+           constraints.each do |cb_name, constraints|
+             metadata.send(method_name, cb_name, *Array(constraints))
+           end
+          end
+        end
+        true
+      end
+
       def from_json(string)
         o = Chef::JSONCompat.from_json(string)
         from_hash(o)
@@ -458,7 +478,7 @@ class Chef
 
     private
 
-      def new_args_format(caller_name, version_constraints)
+      def new_args_format(caller_name, dep_name, version_constraints)
         if version_constraints.empty?
           ">= 0.0.0"
         elsif version_constraints.size == 1
@@ -469,7 +489,7 @@ The dependency specification syntax you are using is no longer valid. You may no
 specify more than one version constraint for a particular cookbook.
 Consult http://wiki.opscode.com/display/chef/Metadata for the updated syntax.
 
-Called by: #{caller_name} #{version_constraints.map {|vc| vc.inspect}.join(", ")}
+Called by: #{caller_name} '#{dep_name}', #{version_constraints.map {|vc| vc.inspect}.join(", ")}
 Called from:
 #{caller[0...5].map {|line| "  " + line}.join("\n")}
 OBSOLETED
@@ -477,7 +497,7 @@ OBSOLETED
         end
       end
 
-      def validate_version_constraint(caller_name, constraint_str)
+      def validate_version_constraint(caller_name, dep_name, constraint_str)
         Chef::VersionConstraint.new(constraint_str)
       rescue Chef::Exceptions::InvalidVersionConstraint => e
         Log.debug(e)
@@ -488,7 +508,7 @@ upgraded to Chef 0.10.0, be aware that you no may longer use "<<" and ">>" for
 'less than' and 'greater than'; use '<' and '>' instead.
 Consult http://wiki.opscode.com/display/chef/Metadata for more information.
 
-Called by: #{caller_name} '#{constraint_str}'
+Called by: #{caller_name} '#{dep_name}', '#{constraint_str}'
 Called from:
 #{caller[0...5].map {|line| "  " + line}.join("\n")}
 INVALID

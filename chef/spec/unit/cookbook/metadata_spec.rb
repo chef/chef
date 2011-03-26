@@ -230,7 +230,6 @@ describe Chef::Cookbook::Metadata do
 
       dep_types.each do |dep, dep_args|
         it "for #{dep} raises an informative error instead of vomiting on your shoes" do
-          @meta.send(dep, *dep_args)
           lambda {@meta.send(dep, *dep_args)}.should raise_error(Chef::Exceptions::InvalidVersionConstraint)
         end
       end
