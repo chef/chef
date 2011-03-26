@@ -206,6 +206,7 @@ describe Chef::Provider::Service::Upstart do
 
   describe "start and stop service" do
     before(:each) do
+      @new_resource.supports(:restart => true)
       @current_resource = Chef::Resource::Service.new('rsyslog')
 
       Chef::Resource::Service.stub!(:new).and_return(@current_resource)
@@ -245,6 +246,13 @@ describe Chef::Provider::Service::Upstart do
     it "should call '/sbin/start service_name' if restart_service is called for a stopped service" do
       @current_resource.stub!(:running).and_return(false)
       @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/start #{@new_resource.service_name}"}).and_return(0)
+      @provider.restart_service()
+    end
+
+    it "should start & stop the service if @new_resource.supports[:restart] == false" do
+      @new_resource.supports(:restart => false)
+      @provider.should_receive(:stop_service).and_return(true)
+      @provider.should_receive(:start_service).and_return(true)
       @provider.restart_service()
     end
 
