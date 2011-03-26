@@ -141,7 +141,11 @@ class Chef
           if @new_resource.restart_command
             super
           else
-            run_command_with_systems_locale(:command => "/sbin/restart #{@new_resource.service_name}")
+            if @current_resource.running
+              run_command_with_systems_locale(:command => "/sbin/restart #{@new_resource.service_name}")
+            else
+              start_service
+            end
           end
         end
 
