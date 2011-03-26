@@ -202,17 +202,36 @@ describe Chef::Cookbook::Metadata do
 
     describe "in the obsoleted format" do
       dep_types = {
-        :depends     => [ :dependencies, "foo::bar", "> 0.2", "< 1.0" ],
-        :recommends  => [ :recommendations, "foo::bar", ">= 0.2", "< 1.0" ],
-        :suggests    => [ :suggestions, "foo::bar", "> 0.2", "< 1.0" ],
-        :conflicts   => [ :conflicting, "foo::bar", "> 0.2", "< 1.0" ],
-        :provides    => [ :providing, "foo::bar", "> 0.2", "< 1.0" ],
-        :replaces    => [ :replacing, "foo::bar", "> 0.2.1", "< 1.0" ],
+        :depends     => [ "foo::bar", "> 0.2", "< 1.0" ],
+        :recommends  => [ "foo::bar", ">= 0.2", "< 1.0" ],
+        :suggests    => [ "foo::bar", "> 0.2", "< 1.0" ],
+        :conflicts   => [ "foo::bar", "> 0.2", "< 1.0" ],
+        :provides    => [ "foo::bar", "> 0.2", "< 1.0" ],
+        :replaces    => [ "foo::bar", "> 0.2.1", "< 1.0" ],
       }
 
       dep_types.each do |dep, dep_args|
         it "for #{dep} raises an informative error instead of vomiting on your shoes" do
           lambda {@meta.send(dep, *dep_args)}.should raise_error(Chef::Exceptions::ObsoleteDependencySyntax)
+        end
+      end
+    end
+
+
+    describe "with obsolete operators" do
+      dep_types = {
+        :depends     => [ "foo::bar", ">> 0.2"],
+        :recommends  => [ "foo::bar", ">> 0.2"],
+        :suggests    => [ "foo::bar", ">> 0.2"],
+        :conflicts   => [ "foo::bar", ">> 0.2"],
+        :provides    => [ "foo::bar", ">> 0.2"],
+        :replaces    => [ "foo::bar", ">> 0.2.1"],
+      }
+
+      dep_types.each do |dep, dep_args|
+        it "for #{dep} raises an informative error instead of vomiting on your shoes" do
+          @meta.send(dep, *dep_args)
+          lambda {@meta.send(dep, *dep_args)}.should raise_error(Chef::Exceptions::InvalidVersionConstraint)
         end
       end
     end

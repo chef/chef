@@ -53,26 +53,37 @@ class Chef
         Chef::Log.info("Generating Metadata")
         Array(config[:cookbook_path]).reverse.each do |path|
           file = File.expand_path(File.join(path, cookbook, 'metadata.rb'))
-          generate_metadata_from_file(cookbook, file)
+          if File.exists?(file)
+            generate_metadata_from_file(cookbook, file)
+          else
+            validate_metadata_json(path, cookbook)
+          end
         end
       end
 
       def generate_metadata_from_file(cookbook, file)
-        if File.exists?(file)
-          Chef::Log.debug("Generating metadata for #{cookbook} from #{file}")
-          md = Chef::Cookbook::Metadata.new
-          md.name(cookbook)
-          md.from_file(file)
-          json_file = File.join(File.dirname(file), 'metadata.json')
-          File.open(json_file, "w") do |f|
-            f.write(Chef::JSONCompat.to_json_pretty(md))
-          end
-          generated = true
-          Chef::Log.debug("Generated #{json_file}")
-        else
-          Chef::Log.debug("No #{file} found; skipping!")
+        Chef::Log.debug("Generating metadata for #{cookbook} from #{file}")
+        md = Chef::Cookbook::Metadata.new
+        md.name(cookbook)
+        md.from_file(file)
+        json_file = File.join(File.dirname(file), 'metadata.json')
+        File.open(json_file, "w") do |f|
+          f.write(Chef::JSONCompat.to_json_pretty(md))
         end
+        generated = true
+        Chef::Log.debug("Generated #{json_file}")
+      rescue Exceptions::ObsoleteDependencySyntax, Exceptions::InvalidVersionConstraint => e
+        STDERR.puts "ERROR: The cookbook '#{cookbook}' contains invalid or obsolete metadata syntax."
+        STDERR.puts "in #{file}:"
+        STDERR.puts
+        STDERR.puts e.message
+        exit 1
       end
+
+      def validate_metadata_json(path, cookbook)
+        #TODO
+      end
+
     end
   end
 end

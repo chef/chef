@@ -217,7 +217,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def supports(platform, *version_args)
         version = new_args_format(:supports, version_args)
-        Chef::VersionConstraint.new(version) # verify the version parses
+        validate_version_constraint(:supports, version)
         @platforms[platform] = version
         @platforms[platform]
       end
@@ -234,7 +234,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def depends(cookbook, *version_args)
         version = new_args_format(:depends, version_args)
-        Chef::VersionConstraint.new(version)
+        validate_version_constraint(:depends, version)
         @dependencies[cookbook] = version
         @dependencies[cookbook]
       end
@@ -251,7 +251,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def recommends(cookbook, *version_args)
         version = new_args_format(:recommends, version_args)
-        Chef::VersionConstraint.new(version)
+        validate_version_constraint(:recommends, version)
         @recommendations[cookbook] = version
         @recommendations[cookbook]
       end
@@ -268,7 +268,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def suggests(cookbook, *version_args)
         version = new_args_format(:suggests, version_args)
-        Chef::VersionConstraint.new(version)
+        validate_version_constraint(:suggests, version)
         @suggestions[cookbook] = version
         @suggestions[cookbook]
       end
@@ -285,7 +285,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def conflicts(cookbook, *version_args)
         version = new_args_format(:conflicts, version_args)
-        Chef::VersionConstraint.new(version)
+        validate_version_constraint(:conflicts, version)
         @conflicting[cookbook] = version
         @conflicting[cookbook]
       end
@@ -306,7 +306,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def provides(cookbook, *version_args)
         version = new_args_format(:provides, version_args)
-        Chef::VersionConstraint.new(version)
+        validate_version_constraint(:provides, version)
         @providing[cookbook] = version
         @providing[cookbook]
       end
@@ -322,7 +322,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def replaces(cookbook, *version_args)
         version = new_args_format(:replaces, version_args)
-        Chef::VersionConstraint.new(version)
+        validate_version_constraint(:replaces, version)
         @replacing[cookbook] = version
         @replacing[cookbook]
       end
@@ -465,7 +465,8 @@ class Chef
           version_constraints.first
         else
           msg=<<-OBSOLETED
-The dependency specification syntax you are using is no longer valid.
+The dependency specification syntax you are using is no longer valid. You may not
+specify more than one version constraint for a particular cookbook.
 Consult http://wiki.opscode.com/display/chef/Metadata for the updated syntax.
 
 Called by: #{caller_name} #{version_constraints.map {|vc| vc.inspect}.join(", ")}
@@ -476,6 +477,23 @@ OBSOLETED
         end
       end
 
+      def validate_version_constraint(caller_name, constraint_str)
+        Chef::VersionConstraint.new(constraint_str)
+      rescue Chef::Exceptions::InvalidVersionConstraint => e
+        Log.debug(e)
+
+        msg=<<-INVALID
+The version constraint syntax you are using is not valid. If you recently
+upgraded to Chef 0.10.0, be aware that you no may longer use "<<" and ">>" for
+'less than' and 'greater than'; use '<' and '>' instead.
+Consult http://wiki.opscode.com/display/chef/Metadata for more information.
+
+Called by: #{caller_name} '#{constraint_str}'
+Called from:
+#{caller[0...5].map {|line| "  " + line}.join("\n")}
+INVALID
+        raise Exceptions::InvalidVersionConstraint, msg
+      end
       # Verify that the given array is an array of strings
       #
       # Raise an exception if the members of the array are not Strings
