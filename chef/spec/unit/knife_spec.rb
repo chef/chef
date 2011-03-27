@@ -39,13 +39,6 @@ describe Chef::Knife do
     Chef::Knife.stub!(:puts)
   end
 
-  it "builds a list of the core subcommand file require paths" do
-    Chef::Knife.find_subcommand_files.should_not be_empty
-    Chef::Knife.find_subcommand_files.each do |require_path|
-      require_path.should match(/chef\/knife\/.*|plugins\/knife\/.*/)
-    end
-  end
-
   describe "after loading a subcommand" do
     before do
       Chef::Knife.reset_subcommands!

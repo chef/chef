@@ -20,6 +20,7 @@
 require 'chef/version'
 require 'mixlib/cli'
 require 'chef/mixin/convert_to_class_name'
+require 'chef/knife/subcommand_loader'
 
 require 'pp'
 
@@ -27,9 +28,6 @@ class Chef
   class Knife
     include Mixlib::CLI
     extend Chef::Mixin::ConvertToClassName
-
-    CHEF_FILE_IN_GEM = /chef-[\d]+\.[\d]+\.[\d]+/
-    CURRENT_CHEF_GEM = /chef-#{Regexp.escape(Chef::VERSION)}/
 
     attr_accessor :name_args
 
@@ -74,6 +72,14 @@ class Chef
       name.nil? || name.empty?
     end
 
+    def self.subcommand_loader
+      @subcommand_loader ||= Knife::SubcommandLoader.new(chef_config_dir)
+    end
+
+    def self.load_commands
+      subcommand_loader.load_commands
+    end
+
     def self.subcommands
       @@subcommands ||= {}
     end
@@ -86,12 +92,6 @@ class Chef
         end
       end
       @subcommands_by_category
-    end
-
-    # Load all the sub-commands
-    def self.load_commands
-      find_subcommand_files.each { |subcommand| require subcommand }
-      subcommands
     end
 
     # Print the list of subcommands knife knows about. If +preferred_category+
@@ -205,49 +205,6 @@ class Chef
       @@chef_config_dir
     end
 
-    # Returns an Array of paths to knife commands located in chef_config_dir/plugins/knife/
-    # and ~/.chef/plugins/knife/
-    def self.site_subcommands
-      user_specific_files = []
-
-      if chef_config_dir
-        user_specific_files.concat Dir.glob(File.expand_path("plugins/knife/*.rb", chef_config_dir))
-      end
-
-      # finally search ~/.chef/plugins/knife/*.rb
-      user_specific_files.concat Dir.glob(File.join(ENV['HOME'], '.chef', 'plugins', 'knife', '*.rb'))
-
-      user_specific_files.map! { |path| path[/(.+).rb/, 1] }
-      user_specific_files
-    end
-
-    # Returns an Array of paths to knife commands built-in to chef, or installed via gem.
-    # If rubygems is not installed, falls back to globbing the knife directory.
-    def self.gem_and_builtin_subcommands
-      begin
-        # search all gems for chef/knife/*.rb
-        require 'rubygems'
-        files = Gem.find_files 'chef/knife/*.rb'
-        # wow, this is a sad hack :(
-        # Gem.find_files finds files in all versions of a gem, which
-        # means that if chef 0.10 and 0.9.x are installed, we'll try to
-        # require, e.g., chef/knife/ec2_server_create, which will cause
-        # a gem activation error. So remove files from older chef gems.
-        files.reject! {|f| f =~ CHEF_FILE_IN_GEM && f !~ CURRENT_CHEF_GEM }
-        files.map! do |file|
-          file[/(#{Regexp.escape File.join('chef', 'knife', '')}.*\.rb)/, 1]
-        end.uniq!
-      rescue LoadError
-        # The "require paths" of the core knife subcommands bundled with chef
-        files = Dir[File.expand_path(File.join(File.dirname(__FILE__), 'knife', '*.rb'))]
-        files.map! { |knife_file| knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1] }
-      end
-      files
-    end
-
-    def self.find_subcommand_files
-      @@subcommand_files ||= (gem_and_builtin_subcommands + site_subcommands).flatten.uniq
-    end
 
     public
 
