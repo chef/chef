@@ -31,7 +31,7 @@ describe Chef::Knife::DataBagShow do
     @rest = mock("Chef::REST")
     @knife.stub!(:rest).and_return(@rest)
     @stdout = StringIO.new
-    @knife.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
 

@@ -10,11 +10,14 @@ describe Chef::Knife::Configure do
     @knife.stub!(:rest).and_return(@rest_client)
 
     @out = StringIO.new
-    @knife.stub!(:stdout).and_return(@out)
+    @knife.ui.stub!(:stdout).and_return(@out)
     @knife.config[:config_file] = '/home/you/.chef/knife.rb'
 
     @in = StringIO.new("\n" * 7)
-    @knife.stub!(:stdin).and_return(@in)
+    @knife.ui.stub!(:stdin).and_return(@in)
+
+    @err = StringIO.new
+    @knife.ui.stub!(:stderr).and_return(@err)
   end
 
   it "asks the user for the URL of the chef server" do
@@ -29,13 +32,13 @@ describe Chef::Knife::Configure do
     @out.string.should match(Regexp.escape("Please enter a clientname for the new client: [#{Etc.getlogin}]"))
     @knife.new_client_name.should == Etc.getlogin
   end
-  
+
   it "asks the user for the existing API username or clientname if -i is not specified" do
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter an existing username or clientname for the API: [#{Etc.getlogin}]"))
     @knife.new_client_name.should == Etc.getlogin
-  end  
-  
+  end
+
   it "asks the user for the existing admin client's name if -i is specified" do
      @knife.config[:initial] = true
      @knife.ask_user_for_config
@@ -61,25 +64,25 @@ describe Chef::Knife::Configure do
      @out.string.should_not match(Regexp.escape("Please enter the location of the existing admin client's private key: [/etc/chef/webui.pem]"))
      @knife.admin_client_key.should_not == '/etc/chef/webui.pem'
    end
-  
+
   it "asks the user for the location of a chef repo" do
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter the path to a chef repository (or leave blank):"))
     @knife.chef_repo.should == ''
   end
-  
+
   it "asks the users for the name of the validation client" do
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter the validation clientname: [chef-validator]"))
     @knife.validation_client_name.should == 'chef-validator'
   end
-  
+
   it "asks the users for the location of the validation key" do
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter the location of the validation key: [/etc/chef/validation.pem]"))
     @knife.validation_key.should == '/etc/chef/validation.pem'
   end
-  
+
   it "writes the new data to a config file" do
     FileUtils.should_receive(:mkdir_p).with("/home/you/.chef")
     config_file = StringIO.new
@@ -93,12 +96,12 @@ describe Chef::Knife::Configure do
     config_file.string.should match(%r{^chef_server_url\s+'http://localhost:4000'$})
     config_file.string.should match(%r{cookbook_path\s+\[ '/home/you/chef-repo/cookbooks', '/home/you/chef-repo/site-cookbooks' \]})
   end
-  
+
   it "creates a new client when given the --initial option" do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     client_command = Chef::Knife::ClientCreate.new
     client_command.should_receive(:run)
-    
+
     Chef::Knife::ClientCreate.stub!(:new).and_return(client_command)
     FileUtils.should_receive(:mkdir_p).with("/home/you/.chef")
     ::File.should_receive(:open).with("/home/you/.chef/knife.rb", "w")

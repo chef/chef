@@ -22,17 +22,16 @@ describe Chef::Knife::IndexRebuild do
   before do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::IndexRebuild.new
-    @knife.stub!(:edit_data)
-    @rest_client = mock("null rest client", :post_rest => { :result => :true })
-    @knife.stub!(:output)
+    @rest_client = mock("Chef::REST (mock)", :post_rest => { :result => :true })
+    @knife.ui.stub!(:output)
     @knife.stub!(:rest).and_return(@rest_client)
 
     @out = StringIO.new
-    @knife.stub!(:stdout).and_return(@out)
+    @knife.ui.stub!(:stdout).and_return(@out)
   end
 
   it "asks a yes/no confirmation and aborts on 'no'" do
-    @knife.stub!(:stdin).and_return(StringIO.new("NO\n"))
+    @knife.ui.stub!(:stdin).and_return(StringIO.new("NO\n"))
     @knife.should_receive(:puts)
     @knife.should_receive(:exit).with(7)
     @knife.run
@@ -40,7 +39,7 @@ describe Chef::Knife::IndexRebuild do
   end
 
   it "asks a confirmation and continues on 'yes'" do
-    @knife.stub!(:stdin).and_return(StringIO.new("yes\n"))
+    @knife.ui.stub!(:stdin).and_return(StringIO.new("yes\n"))
     @knife.should_not_receive(:exit)
     @knife.run
     @out.string.should match(/yes\/no/)
@@ -48,10 +47,10 @@ describe Chef::Knife::IndexRebuild do
 
   describe "after confirming the operation" do
     before do
-      @knife.stub!(:print)
-      @knife.stub!(:puts)
+      @knife.ui.stub!(:print)
+      @knife.ui.stub!(:puts)
       @knife.stub!(:nag)
-      @knife.stub!(:output)
+      @knife.ui.stub!(:output)
     end
 
     it "POSTs to /search/reindex and displays the result" do
