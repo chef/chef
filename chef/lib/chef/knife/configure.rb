@@ -73,7 +73,7 @@ EOH
         end
 
         if config[:initial]
-          Chef::Log.warn("Creating initial API user...")
+          ui.msg("Creating initial API user...")
           Chef::Config[:chef_server_url] = chef_server
           Chef::Config[:node_name] = admin_client_name
           Chef::Config[:client_key] = admin_client_key
@@ -85,22 +85,22 @@ EOH
           client_create.config[:no_editor] = true
           client_create.run
         else
-          Chef::Log.warn("*****")
-          Chef::Log.warn("")
-          Chef::Log.warn("You must place your client key in:")
-          Chef::Log.warn("  #{new_client_key}")
-          Chef::Log.warn("Before running commands with Knife!")
-          Chef::Log.warn("")
-          Chef::Log.warn("*****")
-          Chef::Log.warn("")
-          Chef::Log.warn("You must place your validation key in:")
-          Chef::Log.warn("  #{validation_key}")
-          Chef::Log.warn("Before generating instance data with Knife!")
-          Chef::Log.warn("")
-          Chef::Log.warn("*****")
+          ui.msg("*****")
+          ui.msg("")
+          ui.msg("You must place your client key in:")
+          ui.msg("  #{new_client_key}")
+          ui.msg("Before running commands with Knife!")
+          ui.msg("")
+          ui.msg("*****")
+          ui.msg("")
+          ui.msg("You must place your validation key in:")
+          ui.msg("  #{validation_key}")
+          ui.msg("Before generating instance data with Knife!")
+          ui.msg("")
+          ui.msg("*****")
         end
 
-        Chef::Log.warn("Configuration file written to #{config[:config_file]}")
+        ui.msg("Configuration file written to #{config[:config_file]}")
       end
 
       def ask_user_for_config_path

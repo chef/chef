@@ -21,9 +21,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Knife::EnvironmentEdit do
   before(:each) do
     @knife = Chef::Knife::EnvironmentEdit.new
-    @knife.stub!(:msg).and_return true
-    @knife.stub!(:output).and_return true
-    @knife.stub!(:show_usage).and_return true
+    @knife.ui.stub!(:msg).and_return true
+    @knife.ui.stub!(:output).and_return true
+    @knife.ui.stub!(:show_usage).and_return true
     @knife.name_args = [ "production" ]
 
     @environment = Chef::Environment.new
@@ -31,7 +31,7 @@ describe Chef::Knife::EnvironmentEdit do
     @environment.description("Please edit me")
     @environment.stub!(:save).and_return true
     Chef::Environment.stub!(:load).and_return @environment
-    @knife.stub(:edit_data).and_return @environment
+    @knife.ui.stub(:edit_data).and_return @environment
   end
 
   it "should load the environment" do
@@ -40,15 +40,15 @@ describe Chef::Knife::EnvironmentEdit do
   end
 
   it "should let you edit the environment" do
-    @knife.should_receive(:edit_data).with(@environment)
+    @knife.ui.should_receive(:edit_data).with(@environment)
     @knife.run
   end
-  
+
   it "should save the edited environment data" do
     pansy = Chef::Environment.new
 
     @environment.name("new_environment_name")
-    @knife.should_receive(:edit_data).with(@environment).and_return(pansy)
+    @knife.ui.should_receive(:edit_data).with(@environment).and_return(pansy)
     pansy.should_receive(:save)
     @knife.run
   end
@@ -71,7 +71,7 @@ describe Chef::Knife::EnvironmentEdit do
   describe "with --print-after" do
     it "should pretty print the environment, formatted for display" do
       @knife.config[:print_after] = true
-      @knife.should_receive(:output).with(@environment)
+      @knife.ui.should_receive(:output).with(@environment)
       @knife.run
     end
   end

@@ -29,8 +29,8 @@ describe Chef::Knife do
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife.new
-    @knife.stub!(:puts)
-    @knife.stub!(:print)
+    @knife.ui.stub!(:puts)
+    @knife.ui.stub!(:print)
     Chef::Log.stub!(:init)
     Chef::Log.stub!(:level)
     [:debug, :info, :warn, :error, :crit].each do |level_sym|
@@ -42,7 +42,7 @@ describe Chef::Knife do
   describe "after loading a subcommand" do
     before do
       Chef::Knife.reset_subcommands!
- 
+
       if KnifeSpecs.const_defined?(:TestNameMapping)
         KnifeSpecs.send(:remove_const, :TestNameMapping)
       end
@@ -88,7 +88,7 @@ describe Chef::Knife do
       end
 
       Chef::Knife.load_commands
-      
+
       Chef::Knife.subcommands.should have_key("super_awesome_command")
       Chef::Knife.subcommands["super_awesome_command"].should == SuperAwesomeCommand
     end
@@ -257,29 +257,29 @@ describe Chef::Knife do
     before(:each) do
       @question = "monkeys rule"
       @stdout = StringIO.new
-      @knife.stub(:stdout).and_return(@stdout)
-      STDIN.stub!(:readline).and_return("y")
+      @knife.ui.stub(:stdout).and_return(@stdout)
+      @knife.ui.stdin.stub!(:readline).and_return("y")
     end
 
     it "should return true if you answer Y" do
-      STDIN.stub!(:readline).and_return("Y")
+      @knife.ui.stdin.stub!(:readline).and_return("Y")
       @knife.confirm(@question).should == true
     end
 
     it "should return true if you answer y" do
-      STDIN.stub!(:readline).and_return("y")
+      @knife.ui.stdin.stub!(:readline).and_return("y")
       @knife.confirm(@question).should == true
     end
 
     it "should exit 3 if you answer N" do
-      STDIN.stub!(:readline).and_return("N")
+      @knife.ui.stdin.stub!(:readline).and_return("N")
       lambda {
         @knife.confirm(@question)
       }.should raise_error(SystemExit) { |e| e.status.should == 3 }
     end
 
     it "should exit 3 if you answer n" do
-      STDIN.stub!(:readline).and_return("n")
+      @knife.ui.stdin.stub!(:readline).and_return("n")
       lambda {
         @knife.confirm(@question)
       }.should raise_error(SystemExit) { |e| e.status.should == 3 }
@@ -295,16 +295,16 @@ describe Chef::Knife do
     describe "when asking for free-form user input" do
       it "asks a question and returns the answer provided by the user" do
         out = StringIO.new
-        @knife.stub!(:stdout).and_return(out)
-        @knife.stub!(:stdin).and_return(StringIO.new("http://mychefserver.example.com\n"))
+        @knife.ui.stub!(:stdout).and_return(out)
+        @knife.ui.stub!(:stdin).and_return(StringIO.new("http://mychefserver.example.com\n"))
         @knife.ask_question("your chef server URL?").should == "http://mychefserver.example.com"
         out.string.should == "your chef server URL?"
       end
 
       it "suggests a default setting and returns the default when the user's response only contains whitespace" do
         out = StringIO.new
-        @knife.stub!(:stdout).and_return(out)
-        @knife.stub!(:stdin).and_return(StringIO.new(" \n"))
+        @knife.ui.stub!(:stdout).and_return(out)
+        @knife.ui.stub!(:stdin).and_return(StringIO.new(" \n"))
         @knife.ask_question("your chef server URL? ", :default => 'http://localhost:4000').should == "http://localhost:4000"
         out.string.should == "your chef server URL? [http://localhost:4000] "
       end
