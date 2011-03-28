@@ -364,17 +364,6 @@ class Chef
       metadata.version
     end
 
-    # Indicates if this version is frozen or not. Freezing a coobkook version
-    # indicates that a new cookbook with the same name and version number
-    # shoule
-    def frozen_version?
-      @frozen
-    end
-
-    def freeze_version
-      @frozen = true
-    end
-
     def version=(new_version)
       manifest["version"] = new_version
       metadata.version(new_version)
@@ -690,7 +679,6 @@ class Chef
       # We don't need the following step when we decide to stop supporting deprecated operators in the metadata (e.g. <<, >>)
       cookbook_version.manifest["metadata"] = JSON.parse(cookbook_version.metadata.to_json)
 
-      cookbook_version.freeze_version if o["frozen?"]
       cookbook_version
     end
 
