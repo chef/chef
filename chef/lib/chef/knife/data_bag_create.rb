@@ -64,10 +64,10 @@ class Chef
         # create the data bag
         begin
           rest.post_rest("data", { "name" => @data_bag_name })
-          Chef::Log.info("Created data_bag[#{@data_bag_name}]")
+          ui.info("Created data_bag[#{@data_bag_name}]")
         rescue Net::HTTPServerException => e
           raise unless e.to_s =~ /^409/
-          Chef::Log.info("Data bag #{@data_bag_name} already exists")
+          ui.info("Data bag #{@data_bag_name} already exists")
         end
         
         # if an item is specified, create it, as well

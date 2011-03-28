@@ -46,7 +46,7 @@ class Chef
 
         if @node_name.nil?
           show_usage
-          Chef::Log.fatal("You must specify a node name")
+          ui.fatal("You must specify a node name")
           exit 1
         end
         

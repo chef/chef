@@ -40,7 +40,7 @@ class Chef
         env          = config[:environment]
         num_versions = config[:all_versions] ? "num_versions=all" : "num_versions=1"
         api_endpoint = env ? "/environments/#{env}/cookbooks?#{num_versions}" : "/cookbooks?#{num_versions}"
-        Chef::Log.info("Showing latest versions. Use --show-all to list all available versions.") unless config[:all_versions]
+        ui.info("Showing latest versions. Use --show-all to list all available versions.") unless config[:all_versions]
         output(format_cookbook_list_for_display(rest.get_rest(api_endpoint)))
       end
     end

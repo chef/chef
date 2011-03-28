@@ -70,7 +70,7 @@ class Chef
         else
           if @name_args.empty?
             show_usage
-            Chef::Log.fatal("You must specify the --all flag or at least one cookbook name")
+            ui.fatal("You must specify the --all flag or at least one cookbook name")
             exit 1
           end
           @name_args.each do |cookbook_name|
@@ -80,7 +80,7 @@ class Chef
               upload(cookbook)
               version_constraints_to_update[cookbook_name] = cookbook.version
             rescue Exceptions::CookbookNotFoundInRepo => e
-              Log.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
+              ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
               Log.debug(e)
             end
           end
@@ -114,7 +114,7 @@ class Chef
         environment
       rescue Net::HTTPServerException => e
         if e.response.code.to_s == "404"
-          Log.error "The environment #{config[:environment]} does not exist on the server"
+          ui.error "The environment #{config[:environment]} does not exist on the server"
           Log.debug(e)
           exit 1
         else
@@ -123,17 +123,17 @@ class Chef
       end
 
       def upload(cookbook)
-        Chef::Log.info("** #{cookbook.name} **")
+        ui.info("** #{cookbook.name} **")
         Chef::CookbookUploader.new(cookbook, config[:cookbook_path], :force => config[:force]).upload_cookbook
       rescue Net::HTTPServerException => e
         case e.response.code
         when "401"
           # The server has good messages for 401s now, so use them:
-          Log.error Array(Chef::JSONCompat.from_json(e.response.body)["error"]).first
+          ui.error Array(Chef::JSONCompat.from_json(e.response.body)["error"]).first
           Log.debug(e)
           exit 18
         when "409"
-          Log.error "Version #{cookbook.version} of cookbook #{cookbook.name} is frozen. Use --force to override."
+          ui.error "Version #{cookbook.version} of cookbook #{cookbook.name} is frozen. Use --force to override."
           Log.debug(e)
         else
           raise

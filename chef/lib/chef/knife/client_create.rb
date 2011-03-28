@@ -42,7 +42,7 @@ class Chef
 
         if @client_name.nil?
           show_usage
-          Chef::Log.fatal("You must specify a client name")
+          ui.fatal("You must specify a client name")
           exit 1
         end
         
@@ -54,7 +54,7 @@ class Chef
 
         key = output.save
 
-        Chef::Log.info("Created (or updated) #{output}")
+        ui.info("Created (or updated) #{output}")
         
         if config[:file]
           File.open(config[:file], "w") do |f|

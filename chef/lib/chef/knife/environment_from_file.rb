@@ -25,14 +25,14 @@ class Chef
       def run
         if @name_args[0].nil?
           show_usage
-          Chef::Log.fatal("You must specify a file to load")
+          ui.fatal("You must specify a file to load")
           exit 1
         end
 
         updated = load_from_file(Chef::Environment, @name_args[0])
         updated.save
         output(format_for_display(updated)) if config[:print_after]
-        Chef::Log.warn("Updated Environment #{updated.name}!")
+        ui.warn("Updated Environment #{updated.name}!")
       end
     end
   end

@@ -37,7 +37,7 @@ class Chef
           end
         else
           show_usage
-          Chef::Log.fatal("You must specify at least a data bag name")
+          ui.fatal("You must specify at least a data bag name")
           exit 1
         end
       end

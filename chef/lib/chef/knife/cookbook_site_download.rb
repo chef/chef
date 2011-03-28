@@ -41,14 +41,14 @@ class Chef
 
         @version = cookbook_data['version']
 
-        Chef::Log.info("Downloading #{@name_args[0]} from the cookbooks site at version #{cookbook_data['version']}")
+        ui.info("Downloading #{@name_args[0]} from the cookbooks site at version #{cookbook_data['version']}")
         rest.sign_on_redirect = false
         tf = rest.get_rest(cookbook_data["file"], true)
         unless config[:file]
           config[:file] = File.join(Dir.pwd, "#{@name_args[0]}-#{cookbook_data['version']}.tar.gz")
         end
         FileUtils.cp(tf.path, config[:file])
-        Chef::Log.info("Cookbook saved: #{config[:file]}")
+        ui.info("Cookbook saved: #{config[:file]}")
       end
 
     end

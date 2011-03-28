@@ -102,7 +102,7 @@ class Chef
         end
 
         unless template
-          Chef::Log.info("Can not find bootstrap definition for #{config[:distro]}")
+          ui.info("Can not find bootstrap definition for #{config[:distro]}")
           raise Errno::ENOENT
         end
 
@@ -126,7 +126,7 @@ class Chef
 
         $stdout.sync = true
 
-        Chef::Log.info("Bootstrapping Chef on #{h.color(Array(@name_args).first, :bold)}")
+        ui.info("Bootstrapping Chef on #{h.color(Array(@name_args).first, :bold)}")
 
         begin
           knife_ssh.run
@@ -140,7 +140,7 @@ class Chef
 
       def validate_name_args!
         if Array(@name_args).first.nil?
-          Chef::Log.error("Must pass an FQDN or ip to bootstrap")
+          ui.error("Must pass an FQDN or ip to bootstrap")
           exit 1
         end
       end

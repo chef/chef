@@ -14,7 +14,7 @@ class Chef
         unless name or tags.empty?
           show_usage
           # TODO: blah blah
-          Chef::Log.fatal("You must specify a name name")
+          ui.fatal("You must specify a name name")
           exit 1
         end
 

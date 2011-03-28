@@ -30,7 +30,7 @@ class Chef
 
       def run
         unless regex_str = @name_args.first
-          Chef::Log.fatal("You must supply a regular expression to match the results against")
+          ui.fatal("You must supply a regular expression to match the results against")
           exit 42
         end
 
@@ -49,7 +49,7 @@ class Chef
           versions = rest.get_rest("cookbooks/#{cookbook_name}").values.flatten
           versions.each do |version|
             object = rest.delete_rest("cookbooks/#{cookbook_name}/#{version}#{config[:purge] ? "?purge=true" : ""}")
-            Chef::Log.info("Deleted cookbook  #{cookbook_name.ljust(25)} [#{version}]")
+            ui.info("Deleted cookbook  #{cookbook_name.ljust(25)} [#{version}]")
           end
         end
       end

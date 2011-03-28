@@ -71,7 +71,7 @@ class Chef
         dbag.data_bag(@name_args[0])
         dbag.raw_data = item
         dbag.save
-        Chef::Log.info("Updated data_bag_item[#{@name_args[1]}]")
+        ui.info("Updated data_bag_item[#{@name_args[1]}]")
       end
     end
   end

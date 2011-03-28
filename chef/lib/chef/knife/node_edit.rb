@@ -135,17 +135,17 @@ class Chef
 
         if node_name.nil?
           show_usage
-          Chef::Log.fatal("You must specify a node name")
+          ui.fatal("You must specify a node name")
           exit 1
         end
 
         load_node(node_name)
         updated_node = edit_node
         if updated_values = updated?
-          Log.info "Saving updated #{updated_values.join(', ')} on node #{node.name}"
+          ui.info "Saving updated #{updated_values.join(', ')} on node #{node.name}"
           updated_node.save
         else
-          Log.info "Node not updated, skipping node save"
+          ui.info "Node not updated, skipping node save"
         end
       end
 

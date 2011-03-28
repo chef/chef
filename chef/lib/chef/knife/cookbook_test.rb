@@ -54,7 +54,7 @@ class Chef
       end
 
       def test_cookbook(cookbook)
-        Chef::Log.info("Running syntax check on #{cookbook}")
+        ui.info("Running syntax check on #{cookbook}")
         Array(config[:cookbook_path]).reverse.each do |path|
           syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cookbook, path)
           test_ruby(syntax_checker)
@@ -64,12 +64,12 @@ class Chef
 
 
       def test_ruby(syntax_checker)
-        Chef::Log.info("Validating ruby files")
+        ui.info("Validating ruby files")
         exit(1) unless syntax_checker.validate_ruby_files
       end
 
       def test_templates(syntax_checker)
-        Chef::Log.info("Validating templates")
+        ui.info("Validating templates")
         exit(1) unless syntax_checker.validate_templates
       end
 
