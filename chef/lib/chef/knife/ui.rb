@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+require 'highline'
+
 class Chef
   class Knife
     class UI
@@ -29,6 +31,7 @@ class Chef
 
       def initialize(stdout, stderr, stdin, config)
         @stdout, @stderr, @stdin, @config = stdout, stderr, stdin, config
+        @highline = HighLine.new
       end
 
       def msg(message)
@@ -47,6 +50,18 @@ class Chef
 
       def fatal(message)
         msg("FATAL: #{message}")
+      end
+
+      def color(*args)
+        @highline.color(*args)
+      end
+
+      def ask(*args, &block)
+        @highline.ask(*args, &block)
+      end
+
+      def list(*args)
+        @highline.list(*args)
       end
 
       def ask_question(question, opts={})

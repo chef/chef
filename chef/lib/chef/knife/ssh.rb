@@ -84,10 +84,6 @@ class Chef
         @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency], :on_error => ssh_error_handler)
       end
 
-      def h
-        @highline ||= HighLine.new
-      end
-
       def configure_session
         list = case config[:manual]
                when true
@@ -138,7 +134,7 @@ class Chef
           data.split(/\n/).each { |d| print_data(host, d) }
         else
           padding = @longest - host.length
-          print h.color(host, :cyan)
+          print ui.color(host, :cyan)
           padding.downto(0) { print " " }
           puts data
         end
@@ -163,7 +159,7 @@ class Chef
       end
 
       def get_password
-        @password ||= h.ask("Enter your password: ") { |q| q.echo = false }
+        @password ||= ui.ask("Enter your password: ") { |q| q.echo = false }
       end
 
       # Present the prompt and read a single line from the console. It also
@@ -172,7 +168,7 @@ class Chef
       # line is input.
       def read_line
         loop do
-          command = reader.readline("#{h.color('knife-ssh>', :bold)} ", true)
+          command = reader.readline("#{ui.color('knife-ssh>', :bold)} ", true)
 
           if command.nil?
             command = "exit"
@@ -192,7 +188,7 @@ class Chef
       end
 
       def interactive
-        puts "Connected to #{h.list(session.servers_for.collect { |s| h.color(s.host, :cyan) }, :inline, " and ")}"
+        puts "Connected to #{ui.list(session.servers_for.collect { |s| ui.color(s.host, :cyan) }, :inline, " and ")}"
         puts
         puts "To run a command on a list of servers, do:"
         puts "  on SERVER1 SERVER2 SERVER3; COMMAND"
