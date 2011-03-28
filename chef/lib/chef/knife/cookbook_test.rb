@@ -19,11 +19,15 @@
 # limitations under the License.
 #
 require 'chef/knife'
-require 'chef/checksum_cache'
 
 class Chef
   class Knife
     class CookbookTest < Knife
+
+      deps do
+        require 'chef/checksum_cache'
+        require 'chef/cookbook/syntax_check'
+      end
 
       banner "knife cookbook test [COOKBOOKS...] (options)"
 

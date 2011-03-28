@@ -17,11 +17,14 @@
 #
 
 require 'chef/knife'
-require 'chef/data_bag'
 
 class Chef
   class Knife
     class DataBagDelete < Knife
+
+      deps do
+        require 'chef/data_bag'
+      end
 
       banner "knife data bag delete BAG [ITEM] (options)"
       category "data bag"

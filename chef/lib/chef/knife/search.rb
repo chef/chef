@@ -17,11 +17,14 @@
 #
 
 require 'chef/knife'
-require 'chef/data_bag_item'
 
 class Chef
   class Knife
     class Search < Knife
+
+      deps do
+        require 'chef/search/query'
+      end
 
       banner "knife search INDEX QUERY (options)"
 

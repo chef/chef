@@ -17,12 +17,15 @@
 #
 
 require 'chef/knife'
-require 'chef/api_client'
-require 'chef/json_compat'
 
 class Chef
   class Knife
     class ClientBulkDelete < Knife
+
+      deps do
+        require 'chef/api_client'
+        require 'chef/json_compat'
+      end
 
       banner "knife client bulk delete REGEX (options)"
 

@@ -18,11 +18,14 @@
 #
 
 require 'chef/knife'
-require 'chef/json_compat'
 
 class Chef
   class Knife
     class CookbookSiteUnshare < Knife
+
+      deps do
+        require 'chef/json_compat'
+      end
 
       banner "knife cookbook site unshare COOKBOOK"
       category "cookbook site"

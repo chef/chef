@@ -17,12 +17,15 @@
 #
 
 require 'chef/knife'
-require 'chef/cookbook_uploader'
-require 'chef/cookbook_site_streaming_uploader'
 
 class Chef
   class Knife
     class CookbookSiteShare < Knife
+
+      deps do
+        require 'chef/cookbook_uploader'
+        require 'chef/cookbook_site_streaming_uploader'
+      end
 
       banner "knife cookbook site share COOKBOOK CATEGORY (options)"
       category "cookbook site"

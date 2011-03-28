@@ -17,11 +17,14 @@
 #
 
 require 'chef/knife'
-require 'chef/cookbook/metadata'
 
 class Chef
   class Knife
     class CookbookSiteVendor < Knife
+
+      deps do
+        require 'chef/cookbook/metadata'
+      end
 
       banner "knife cookbook site vendor COOKBOOK [VERSION] (options)"
       category "cookbook site"

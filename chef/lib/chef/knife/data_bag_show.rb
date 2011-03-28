@@ -18,11 +18,15 @@
 #
 
 require 'chef/knife'
-require 'chef/data_bag'
 
 class Chef
   class Knife
     class DataBagShow < Knife
+
+      deps do
+        require 'chef/data_bag'
+        require 'chef/encrypted_data_bag_item'
+      end
 
       banner "knife data bag show BAG [ITEM] (options)"
       category "data bag"
