@@ -378,6 +378,14 @@ describe Chef::RunList do
       cookbooks["d"].version.should == "2.1.0"
     end
 
+    it "should satisfy recipe-specific dependencies" do
+      depends_on_recipe = cookbook_maker("depends_on_recipe", "1.0", [["f::recipe", "1.0"]])
+      @all_cookbooks["depends_on_recipe"] = [depends_on_recipe]
+      constraints = [vc_maker("depends_on_recipe", "= 1.0")]
+      cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
+      cookbooks["f"].version.should == "1.0.0"
+    end
+
     it "properly sorts version triples, treating each term numerically" do
       constraints = [vc_maker("n", "> 1.2")]
       cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
