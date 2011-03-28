@@ -270,15 +270,15 @@ class Chef
     #
     # === Returns
     # rest<Chef::REST>:: returns Chef::REST connection object
-    def register
-      if File.exists?(Chef::Config[:client_key])
-        Chef::Log.debug("Client key #{Chef::Config[:client_key]} is present - skipping registration")
+    def register(client_name=node_name, config=Chef::Config)
+      if File.exists?(config[:client_key])
+        Chef::Log.debug("Client key #{config[:client_key]} is present - skipping registration")
       else
-        Chef::Log.info("Client key #{Chef::Config[:client_key]} is not present - registering")
-        Chef::REST.new(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).register(node_name, Chef::Config[:client_key])
+        Chef::Log.info("Client key #{config[:client_key]} is not present - registering")
+        Chef::REST.new(config[:client_url], config[:validation_client_name], config[:validation_key]).register(client_name, config[:client_key])
       end
       # We now have the client key, and should use it from now on.
-      self.rest = Chef::REST.new(Chef::Config[:chef_server_url], node_name, Chef::Config[:client_key])
+      self.rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
     end
 
     # Sync_cookbooks eagerly loads all files except files and
@@ -357,5 +357,6 @@ class Chef
 end
 
 # HACK cannot load this first, but it must be loaded.
+require 'chef/cookbook_loader'
 require 'chef/cookbook_version'
 

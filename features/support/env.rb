@@ -196,6 +196,10 @@ module ChefWorld
     end
   end
 
+  def client_key
+    File.join(tmpdir, "client.pem")
+  end
+
   def rest
     @rest ||= Chef::REST.new('http://localhost:4000', nil, nil)
   end

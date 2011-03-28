@@ -27,10 +27,10 @@ When /^I run chef-solo with the '(.+)' recipe$/ do |recipe_name|
 
   binary_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'chef', 'bin', 'chef-solo'))
   command = "#{binary_path} -c #{config_file} -j #{dna_file}"
-  command += " -l debug" if ENV['LOG_LEVEL'] == 'debug'
+  command += " -l debug" if Chef::Log.debug?
 
   # Run it
-  puts "Running solo: #{command}" if ENV['LOG_LEVEL'] == 'debug'
+  puts "Running solo: #{command}" if Chef::Log.debug?
 
   status = Chef::Mixin::Command.popen4(command) do |p, i, o, e|
     @stdout = o.gets(nil)
@@ -38,7 +38,7 @@ When /^I run chef-solo with the '(.+)' recipe$/ do |recipe_name|
   end
   @status = status
 
-  print_output if ENV['LOG_LEVEL'] == 'debug'
+  print_output if Chef::Log.debug?
 end
 
 

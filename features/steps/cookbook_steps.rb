@@ -110,16 +110,15 @@ end
 
 When "I upload a cookbook named '$name' at version '$version'" do |name, version|
 
-  # This is total crap :(
-  Chef::Config[:client_key] = rest.auth_credentials.key_file
-  Chef::Config[:node_name] = rest.auth_credentials.client_name
 
-  cookbook = @cookbook_loader_not_uploaded_at_feature_start[name]
-  uploader = Chef::CookbookUploader.new(cookbook, [EXTRA_COOKBOOKS], :rest => rest)
-  begin
-    uploader.upload_cookbook
-  rescue Exception => e
-    @exception = e
+  call_as_admin do
+    cookbook = @cookbook_loader_not_uploaded_at_feature_start[name]
+    uploader = Chef::CookbookUploader.new(cookbook, [EXTRA_COOKBOOKS], :rest => rest)
+    begin
+      uploader.upload_cookbook
+    rescue Exception => e
+      @exception = e
+    end
   end
 end
 
