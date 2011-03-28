@@ -81,10 +81,6 @@ class Chef
         :boolean => true,
         :default => false
 
-      def h
-        @highline ||= HighLine.new
-      end
-
       def load_template(template=nil)
         # Are we bootstrapping using an already shipped template?
         if config[:template_file]
@@ -126,7 +122,7 @@ class Chef
 
         $stdout.sync = true
 
-        ui.info("Bootstrapping Chef on #{h.color(Array(@name_args).first, :bold)}")
+        ui.info("Bootstrapping Chef on #{ui.color(Array(@name_args).first, :bold)}")
 
         begin
           knife_ssh.run
