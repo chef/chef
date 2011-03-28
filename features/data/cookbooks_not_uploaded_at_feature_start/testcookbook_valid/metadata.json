@@ -1,0 +1,29 @@
+{
+  "name": "testcookbook_valid",
+  "description": "Description",
+  "long_description": "Long description",
+  "maintainer": "Opscode",
+  "maintainer_email": "do_not_reply@opscode.com",
+  "license": "Apache 2.0",
+  "platforms": {
+  },
+  "dependencies": {
+  },
+  "recommendations": {
+  },
+  "suggestions": {
+  },
+  "conflicting": {
+  },
+  "providing": {
+  },
+  "replacing": {
+  },
+  "attributes": {
+  },
+  "groupings": {
+  },
+  "recipes": {
+  },
+  "version": "0.1.0"
+}
