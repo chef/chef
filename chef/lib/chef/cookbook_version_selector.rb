@@ -52,8 +52,11 @@ class Chef
           # Version object from the String representation.
           pv = dep_graph.package(cb_name).add_version(Chef::Version.new(cb_version.version))
           cb_version_deps.each_pair do |dep_name, constraint_str|
+            # if the dependency is specified as cookbook::recipe,
+            # extract the cookbook component
+            dep_cb_name = dep_name.split("::").first
             constraint = Chef::VersionConstraint.new(constraint_str)
-            pv.dependencies << DepSelector::Dependency.new(dep_graph.package(dep_name), constraint)
+            pv.dependencies << DepSelector::Dependency.new(dep_graph.package(dep_cb_name), constraint)
           end
         end
       end
