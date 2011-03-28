@@ -76,9 +76,9 @@ class Chef
           }
           @net_use.add(use)
           if is_mounted
-            Chef::Log.info("Mounted #{@admin_share} for copying files")
+            ui.info("Mounted #{@admin_share} for copying files")
           else
-            Chef::Log.fatal("Failed to mount #{@admin_share}")
+            ui.fatal("Failed to mount #{@admin_share}")
             exit 1
           end
         end
@@ -109,7 +109,7 @@ class Chef
         require 'chef/util/windows/net_use'
 
         if @name_args.first == nil
-          Chef::Log.error("Must pass a node name/ip to windows bootstrap")
+          ui.error("Must pass a node name/ip to windows bootstrap")
           exit 1
         end
 
@@ -129,7 +129,7 @@ class Chef
 
         command = render_template(load_template(config[:bootstrap_template]))
 
-        Chef::Log.info("Bootstrapping Chef on #{config[:server_name]}")
+        ui.info("Bootstrapping Chef on #{config[:server_name]}")
 
         @add_mount = config[:user] != nil && !is_mounted
         mount_admin_share

@@ -41,6 +41,14 @@ class Chef
         msg("WARNING: #{message}")
       end
 
+      def error(message)
+        msg("ERROR: #{message}")
+      end
+
+      def fatal(message)
+        msg("FATAL: #{message}")
+      end
+
       def ask_question(question, opts={})
         question = question + "[#{opts[:default]}] " if opts[:default]
 

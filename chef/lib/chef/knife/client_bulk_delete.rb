@@ -28,7 +28,7 @@ class Chef
 
       def run 
         if @name_args.length < 1
-          Chef::Log.fatal("You must supply a regular expression to match the results against")
+          ui.fatal("You must supply a regular expression to match the results against")
           exit 42
         else
           bulk_delete(Chef::ApiClient, "client", nil, nil, @name_args[0])

@@ -52,8 +52,12 @@ class Chef
     attr_accessor :name_args
     attr_reader :ui
 
+    def self.ui
+      @ui ||= Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
+    end
+
     def self.msg(msg="")
-      puts msg
+      ui.msg(msg)
     end
 
     def self.reset_subcommands!
@@ -183,7 +187,7 @@ class Chef
         require dep
       rescue LoadError
         gem_name ||= dep.gsub('/', '-')
-        Chef::Log.fatal "#{gem_name} is not installed. run \"gem install #{gem_name}\" to install it."
+        ui.fatal "#{gem_name} is not installed. run \"gem install #{gem_name}\" to install it."
         exit 1
       end
     end
@@ -195,9 +199,9 @@ class Chef
     # user could not be resolved to a subcommand.
     def self.subcommand_not_found!(args)
       unless want_help?(args)
-        Chef::Log.fatal("Cannot find sub command for: '#{args.join(' ')}'")
+        ui.fatal("Cannot find sub command for: '#{args.join(' ')}'")
       end
-      Chef::Knife.list_commands(guess_category(args))
+      list_commands(guess_category(args))
       exit 10
     end
 
@@ -296,7 +300,7 @@ class Chef
 
       Mixlib::Log::Formatter.show_time = false
       Chef::Log.init(Chef::Config[:log_location])
-      Chef::Log.level(Chef::Config[:log_level])
+      Chef::Log.level(Chef::Config[:log_level] || :error)
 
       Chef::Log.debug("Using configuration from #{config[:config_file]}")
 
@@ -330,7 +334,7 @@ class Chef
       elsif file_exists_and_is_readable?(relative_file)
         filename = relative_file
       else
-        Chef::Log.fatal("Cannot find file #{from_file}")
+        ui.fatal("Cannot find file #{from_file}")
         exit 30
       end
 
@@ -342,7 +346,7 @@ class Chef
         r.from_file(filename)
         r
       else
-        Chef::Log.fatal("File must end in .js, .json, or .rb")
+        ui.fatal("File must end in .js, .json, or .rb")
         exit 30
       end
     end

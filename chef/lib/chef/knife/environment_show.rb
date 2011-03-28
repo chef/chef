@@ -31,7 +31,7 @@ class Chef
 
         if env_name.nil?
           show_usage
-          Chef::Log.fatal("You must specify an environment name")
+          ui.fatal("You must specify an environment name")
           exit 1
         end
 

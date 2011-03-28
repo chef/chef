@@ -59,7 +59,7 @@ class Chef
         self.config = Chef::Config.merge!(config)
         if @name_args.length < 1
           show_usage
-          Chef::Log.fatal("You must specify a cookbook name")
+          ui.fatal("You must specify a cookbook name")
           exit 1
         end
 

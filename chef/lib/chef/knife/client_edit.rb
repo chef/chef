@@ -31,7 +31,7 @@ class Chef
 
         if @client_name.nil?
           show_usage
-          Chef::Log.fatal("You must specify a client name")
+          ui.fatal("You must specify a client name")
           exit 1
         end
         

@@ -77,7 +77,7 @@ class Chef
               node_name = n if format_for_display(n)[config[:attribute]] == server.host
             end
           end
-          Chef::Log.warn "Failed to connect to #{node_name} -- #{$!.class.name}: #{$!.message}"
+          ui.warn "Failed to connect to #{node_name} -- #{$!.class.name}: #{$!.message}"
           $!.backtrace.each { |l| Chef::Log.debug(l) }
         end
 
@@ -102,7 +102,7 @@ class Chef
                  end
                  r
                end
-        (Chef::Log.fatal("No nodes returned from search!"); exit 10) if list.length == 0
+        (ui.fatal("No nodes returned from search!"); exit 10) if list.length == 0
         session_from_list(list)
       end
 
