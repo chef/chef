@@ -122,10 +122,13 @@ class Chef
         require 'net/ssh'
 
         validate_name_args!
+        @node_name = Array(@name_args).first
+        # back compat--templates may use this setting:
+        config[:server_name] = @node_name
 
         $stdout.sync = true
 
-        ui.info("Bootstrapping Chef on #{ui.color(Array(@name_args).first, :bold)}")
+        ui.info("Bootstrapping Chef on #{ui.color(@node_name, :bold)}")
 
         begin
           knife_ssh.run
