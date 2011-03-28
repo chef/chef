@@ -20,6 +20,7 @@
 
 require 'chef/cookbook/file_system_file_vendor'
 require 'chef/cookbook_uploader'
+require 'chef/cookbook_loader'
 
 def compare_manifests(manifest1, manifest2)
   Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
