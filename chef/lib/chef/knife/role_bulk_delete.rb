@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,16 +17,19 @@
 #
 
 require 'chef/knife'
-require 'chef/node'
-require 'chef/json_compat'
 
 class Chef
   class Knife
     class RoleBulkDelete < Knife
 
+      deps do
+        require 'chef/role'
+        require 'chef/json_compat'
+      end
+
       banner "knife role bulk delete REGEX (options)"
 
-      def run 
+      def run
         if @name_args.length < 1
           ui.fatal("You must supply a regular expression to match the results against")
           exit 42

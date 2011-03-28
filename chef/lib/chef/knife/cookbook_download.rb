@@ -23,6 +23,10 @@ class Chef
   class Knife
     class CookbookDownload < Knife
 
+      deps do
+        require 'chef/cookbook_version'
+      end
+
       banner "knife cookbook download COOKBOOK [VERSION] (options)"
 
       option :latest,

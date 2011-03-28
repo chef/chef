@@ -17,15 +17,17 @@
 # limitations under the License.
 #
 
-require 'chef/exceptions'
 require 'chef/knife'
-require 'chef/cookbook_loader'
-require 'chef/cookbook_uploader'
 
 class Chef
   class Knife
     class CookbookUpload < Knife
-      include Chef::Mixin::ShellOut
+
+      deps do
+        require 'chef/exceptions'
+        require 'chef/cookbook_loader'
+        require 'chef/cookbook_uploader'
+      end
 
       banner "knife cookbook upload [COOKBOOKS...] (options)"
 
@@ -58,7 +60,7 @@ class Chef
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
-        assert_environment_valid! if config[:environment]
+        assert_environment_valid!
         version_constraints_to_update = {}
 
         if config[:all]
@@ -70,7 +72,7 @@ class Chef
         else
           if @name_args.empty?
             show_usage
-            ui.fatal("You must specify the --all flag or at least one cookbook name")
+            Chef::Log.fatal("You must specify the --all flag or at least one cookbook name")
             exit 1
           end
           @name_args.each do |cookbook_name|
@@ -80,7 +82,7 @@ class Chef
               upload(cookbook)
               version_constraints_to_update[cookbook_name] = cookbook.version
             rescue Exceptions::CookbookNotFoundInRepo => e
-              ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
+              Log.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
               Log.debug(e)
             end
           end
@@ -114,7 +116,7 @@ class Chef
         environment
       rescue Net::HTTPServerException => e
         if e.response.code.to_s == "404"
-          ui.error "The environment #{config[:environment]} does not exist on the server"
+          Log.error "The environment #{config[:environment]} does not exist on the server"
           Log.debug(e)
           exit 1
         else
@@ -123,17 +125,16 @@ class Chef
       end
 
       def upload(cookbook)
-        ui.info("** #{cookbook.name} **")
+        Chef::Log.info("** #{cookbook.name} **")
         Chef::CookbookUploader.new(cookbook, config[:cookbook_path], :force => config[:force]).upload_cookbook
       rescue Net::HTTPServerException => e
         case e.response.code
         when "401"
-          # The server has good messages for 401s now, so use them:
-          ui.error Array(Chef::JSONCompat.from_json(e.response.body)["error"]).first
+          Log.error "Request failed due to authentication (#{e}), check your client configuration (username, key)"
           Log.debug(e)
           exit 18
         when "409"
-          ui.error "Version #{cookbook.version} of cookbook #{cookbook.name} is frozen. Use --force to override."
+          Log.error "Version #{cookbook.version} of cookbook #{cookbook.name} is frozen. Use --force to override."
           Log.debug(e)
         else
           raise

@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,14 +18,17 @@
 #
 
 require 'chef/knife'
-require 'chef/knife/cookbook_delete'
 
 class Chef
   class Knife
     class CookbookBulkDelete < Knife
 
+      deps do
+        require 'chef/knife/cookbook_delete'
+      end
+
       option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
-      
+
       banner "knife cookbook bulk delete REGEX (options)"
 
       def run
@@ -42,9 +45,9 @@ class Chef
         output(format_list_for_display(cookbooks_to_delete))
 
         confirm("Do you really want to delete these cookbooks? All versions will be deleted. (Y/N) ", false)
-        
+
         confirm("Files that are common to multiple cookbooks are shared, so purging the files may disable other cookbooks. Are you sure you want to purge files instead of just deleting the cookbooks") if config[:purge]
-        
+
         cookbooks_names.each do |cookbook_name|
           versions = rest.get_rest("cookbooks/#{cookbook_name}").values.flatten
           versions.each do |version|

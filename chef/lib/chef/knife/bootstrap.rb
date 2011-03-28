@@ -17,13 +17,16 @@
 #
 
 require 'chef/knife'
-require 'chef/json_compat'
-require 'tempfile'
-require 'erubis'
 
 class Chef
   class Knife
     class Bootstrap < Knife
+
+      deps do
+        require 'chef/json_compat'
+        require 'tempfile'
+        require 'erubis'
+      end
 
       banner "knife bootstrap FQDN [RUN LIST...] (options)"
 

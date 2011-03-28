@@ -151,6 +151,7 @@ class Chef
       load_commands
       subcommand_class = subcommand_class_from(args)
       subcommand_class.options = options.merge!(subcommand_class.options)
+      subcommand_class.load_deps
       instance = subcommand_class.new(args)
       instance.configure_chef
       instance.run
@@ -178,6 +179,14 @@ class Chef
         end
       end
       subcommand_class || subcommand_not_found!(args)
+    end
+
+    def self.deps(&block)
+      @dependency_loader = block
+    end
+
+    def self.load_deps
+      @dependency_loader && @dependency_loader.call
     end
 
     protected

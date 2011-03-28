@@ -17,11 +17,14 @@
 #
 
 require 'fileutils'
-require 'chef/knife/bootstrap.rb'
 
 class Chef
   class Knife
     class WindowsBootstrap < Chef::Knife::Bootstrap
+
+      deps do
+        require 'chef/knife/bootstrap.rb'
+      end
 
       banner "knife windows bootstrap FQDN [RUN LIST...] (options)"
 

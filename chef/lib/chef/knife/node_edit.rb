@@ -17,8 +17,6 @@
 #
 
 require 'chef/knife'
-require 'chef/node'
-require 'chef/json_compat'
 
 class Chef
   class Knife
@@ -118,6 +116,11 @@ class Chef
 
     class NodeEdit < Knife
       include NodeEditController
+
+      deps do
+        require 'chef/node'
+        require 'chef/json_compat'
+      end
 
       attr_reader :node_name
       attr_reader :node

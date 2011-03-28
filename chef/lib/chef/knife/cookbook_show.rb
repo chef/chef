@@ -17,12 +17,15 @@
 #
 
 require 'chef/knife'
-require 'chef/json_compat'
-require 'uri'
 
 class Chef
   class Knife
     class CookbookShow < Knife
+
+      deps do
+        require 'chef/json_compat'
+        require 'uri'
+      end
 
       banner "knife cookbook show COOKBOOK [VERSION] [PART] [FILENAME] (options)"
 

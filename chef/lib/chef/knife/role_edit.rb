@@ -17,12 +17,15 @@
 #
 
 require 'chef/knife'
-require 'chef/role'
-require 'chef/json_compat'
 
 class Chef
   class Knife
     class RoleEdit < Knife
+
+      deps do
+        require 'chef/role'
+        require 'chef/json_compat'
+      end
 
       banner "knife role edit ROLE (options)"
 

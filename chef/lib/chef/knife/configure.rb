@@ -47,10 +47,6 @@ class Chef
       def run
         ask_user_for_config_path
 
-        Mixlib::Log::Formatter.show_time = false
-        Chef::Log.init(STDOUT)
-        Chef::Log.level(:info)
-
         FileUtils.mkdir_p(chef_config_path)
 
         ask_user_for_config

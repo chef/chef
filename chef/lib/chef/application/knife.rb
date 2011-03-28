@@ -17,17 +17,8 @@
 
 require 'chef/knife'
 require 'chef/application'
-require 'chef/client'
-require 'chef/config'
-require 'chef/log'
-require 'chef/node'
-require 'chef/role'
-require 'chef/data_bag'
-require 'chef/data_bag_item'
-require 'chef/rest'
-require 'chef/search/query'
-require 'tmpdir'
-require 'uri'
+require 'mixlib/log'
+require 'ohai'
 
 class Chef::Application::Knife < Chef::Application
 

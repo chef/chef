@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,20 +17,23 @@
 #
 
 require 'chef/knife'
-require 'chef/role'
-require 'chef/json_compat'
 
 class Chef
   class Knife
     class RoleFromFile < Knife
 
+      deps do
+        require 'chef/role'
+        require 'chef/json_compat'
+      end
+
       banner "knife role from file FILE (options)"
 
-      def run 
+      def run
         updated = load_from_file(Chef::Role, @name_args[0])
 
         updated.save
-        
+
         output(format_for_display(updated)) if config[:print_after]
 
         ui.info("Updated Role #{updated.name}!")

@@ -22,6 +22,10 @@ class Chef
   class Knife
     class CookbookDelete < Knife
 
+      deps do
+        require 'chef/cookbook_version'
+      end
+
       option :all, :short => '-a', :long => '--all', :boolean => true, :description => 'delete all versions'
 
       option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'

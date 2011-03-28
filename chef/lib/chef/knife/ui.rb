@@ -18,7 +18,6 @@
 # limitations under the License.
 #
 
-require 'highline'
 
 class Chef
   class Knife
@@ -31,7 +30,13 @@ class Chef
 
       def initialize(stdout, stderr, stdin, config)
         @stdout, @stderr, @stdin, @config = stdout, stderr, stdin, config
-        @highline = HighLine.new
+      end
+
+      def highline
+        @highline ||= begin
+          require 'highline'
+          HighLine.new
+        end
       end
 
       def msg(message)
@@ -53,15 +58,15 @@ class Chef
       end
 
       def color(*args)
-        @highline.color(*args)
+        highline.color(*args)
       end
 
       def ask(*args, &block)
-        @highline.ask(*args, &block)
+        highline.ask(*args, &block)
       end
 
       def list(*args)
-        @highline.list(*args)
+        highline.list(*args)
       end
 
       def ask_question(question, opts={})

@@ -1,9 +1,12 @@
 require 'chef/knife'
-require 'chef/node'
 
 class Chef
   class Knife
     class TagDelete < Knife
+
+      deps do
+        require 'chef/node'
+      end
 
       banner "knife tag delete NODE TAG ..."
 
@@ -14,7 +17,7 @@ class Chef
         unless name or tags.empty?
           show_usage
           # TODO: blah blah
-          ui.fatal("You must specify a name name")
+          ui.fatal("You must specify a node name")
           exit 1
         end
 

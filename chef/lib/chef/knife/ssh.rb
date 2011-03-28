@@ -17,11 +17,16 @@
 #
 
 require 'chef/knife'
-require 'chef/data_bag_item'
 
 class Chef
   class Knife
     class Ssh < Knife
+
+      deps do
+        require 'net/ssh'
+        require 'net/ssh/multi'
+        require 'chef/search/query'
+      end
 
       attr_writer :password
 
@@ -286,8 +291,6 @@ class Chef
       end
 
       def run
-        require 'net/ssh'
-        require 'net/ssh/multi'
 
         @longest = 0
 

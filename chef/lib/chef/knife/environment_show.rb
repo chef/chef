@@ -17,12 +17,15 @@
 #
 
 require 'chef/knife'
-require 'chef/environment'
-require 'chef/json_compat'
 
 class Chef
   class Knife
     class EnvironmentShow < Knife
+
+      deps do
+        require 'chef/environment'
+        require 'chef/json_compat'
+      end
 
       banner "knife environment show ENVIRONMENT (options)"
 
