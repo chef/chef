@@ -87,13 +87,19 @@ class Chef
                            Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
         rows = config[:rows] ? config[:rows] : 20
         start = config[:start] ? config[:start] : 0
-        q.search(@name_args[0], query, config[:sort], start, rows) do |item|
-          formatted_item = format_for_display(item)
-          if formatted_item.respond_to?(:has_key?) && !formatted_item.has_key?('id')
-            formatted_item['id'] = item.has_key?('id') ? item['id'] : item.name
+        begin
+          q.search(@name_args[0], query, config[:sort], start, rows) do |item|
+            formatted_item = format_for_display(item)
+            if formatted_item.respond_to?(:has_key?) && !formatted_item.has_key?('id')
+              formatted_item['id'] = item.has_key?('id') ? item['id'] : item.name
+            end
+            display[:rows] << formatted_item
+            display[:total] += 1
           end
-          display[:rows] << formatted_item
-          display[:total] += 1
+        rescue Net::HTTPServerException => e
+          msg = Chef::JSONCompat.from_json(e.response.body)["error"].first
+          ui.msg("knife search failed: #{msg}")
+          exit 1
         end
 
         if config[:id_only]
