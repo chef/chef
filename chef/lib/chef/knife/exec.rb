@@ -32,7 +32,6 @@ class Chef::Knife::Exec < Chef::Knife
   end
 
   def run
-    late_load_deps
     scripts = Array(name_args)
     context = Object.new
     Shef::Extensions.extend_context_object(context)
