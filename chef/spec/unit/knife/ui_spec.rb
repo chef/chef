@@ -45,14 +45,6 @@ describe Chef::Knife::UI do
       @ui.format_for_display(input).should == input
     end
 
-    describe "with a data bag item" do
-      it "should use the raw data" do
-        dbi = mock(Chef::DataBagItem, :kind_of? => true)
-        dbi.should_receive(:raw_data).and_return({ "monkey" => "soup" })
-        @ui.format_for_display(dbi).should == { "monkey" => "soup" }
-      end
-    end
-
     describe "with --attribute passed" do
       it "should return the deeply nested attribute" do
         input = { "gi" => { "go" => "ge" } }

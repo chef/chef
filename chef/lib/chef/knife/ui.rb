@@ -114,9 +114,7 @@ class Chef
         config[:with_uri] ? list : list.keys.sort { |a,b| a <=> b }
       end
 
-      def format_for_display(item)
-        data = item.kind_of?(Chef::DataBagItem) ? item.raw_data : item
-
+      def format_for_display(data)
         if config[:attribute]
           config[:attribute].split(".").each do |attr|
             if data.respond_to?(:[])
@@ -127,12 +125,12 @@ class Chef
               data = data.send(attr.to_sym)
             end
           end
-          { config[:attribute] => data.kind_of?(Chef::Node::Attribute) ? data.to_hash : data }
+          { config[:attribute] => data.respond_to?(:to_hash) ? data.to_hash : data }
         elsif config[:run_list]
           data = data.run_list.run_list
           { "run_list" => data }
         elsif config[:environment]
-          if data.class == Chef::Node
+          if data.respond_to?(:chef_environment)
             {"chef_environment" => data.chef_environment}
           else
             # this is a place holder for now. Feel free to modify (i.e. add other cases). [nuo]
