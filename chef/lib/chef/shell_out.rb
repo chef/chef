@@ -169,8 +169,7 @@ class Chef
     # * Chef::Exceptions::CommandTimeout  when the command does not complete
     #   within +timeout+ seconds (default: 60s)
     def run_command
-      # Implemented by unix/windows backend module, we just want to define it
-      # here for documentation purposes
+      Chef::Log.info("sh(#{@command})")
       super
     end
 
