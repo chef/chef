@@ -14,7 +14,6 @@ class Chef
       # * Chef::Exceptions::CommandTimeout  when the command does not complete
       #   within +timeout+ seconds (default: 60s)
       def run_command
-        Chef::Log.debug("sh(#{@command})")
         @child_pid = fork_subprocess
 
         configure_parent_process_file_descriptors

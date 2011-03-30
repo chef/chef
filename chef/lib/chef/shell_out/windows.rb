@@ -27,7 +27,6 @@ class Chef
       # Missing lots of features from the UNIX version, such as
       # environment, cwd, etc.
       def run_command
-        Chef::Log.debug("sh(#{@command})")
         # win32 open4 is really just open3.
         Open3.popen3(@command) do |stdin,stdout,stderr|
           @finished_stdout = false
