@@ -57,8 +57,14 @@ describe "Chef::SolrQuery::QueryTransform" do
         @parser.parse("foo???bar").should == "T:foo???bar"
       end
 
-      it "does not allow a leading wildcard with *" do
-        lambda {  @parser.parse("*foobar") }.should raise_error(@parseError)
+      it "allows a leading wildcard with *" do
+        # NOTE: This is not valid lucene query syntax.  However, our
+        # index format and query transformation can allow it because
+        # the transformed query ends up with the '*' not in leading
+        # position.  We decided that allowing it makes sense because
+        # queries like ec2:* are useful and many users expect this
+        # behavior to work.
+        @parser.parse("*foobar").should == "T:*foobar"
       end
 
       it "does not allow a leading wildcard with ?" do
@@ -87,7 +93,11 @@ describe "Chef::SolrQuery::QueryTransform" do
     end
 
     describe "special characters in terms are not allowed" do
-      prefix_ok = ["!", "+", "-"]
+      # NOTE: '*' is not a valid start letter for a lucene search
+      # term, however, we can support it because of our index
+      # structure and query transformation.  We decided to keep this
+      # flexibility because queries like ec2:* are common and useful.
+      prefix_ok = ["!", "+", "-", "*"]
       suffix_ok = ["*", "?", "~", "-"]
       # FIXME: ideally, '!' would not be allowed in the middle of a
       # term.  Currently we parse foo!bar the same as foo !bar.
@@ -429,7 +439,8 @@ describe "Chef::SolrQuery::QueryTransform" do
     lines = File.readlines(testcase_file).map { |line| line.strip }
     lines = lines.select { |line| !line.empty? }
     testcases = Hash[*(lines)]
-    testcases.each do |input, expected|
+    testcases.keys.sort.each do |input|
+      expected = testcases[input]
       it "from> #{input}\n    to> #{expected}\n" do
         @parser.transform(input).should == expected
       end
