@@ -27,7 +27,7 @@ grammar Lucene
   end
 
   rule term
-    keyword valid_letter+ <Term> / !keyword !"?" !"*" valid_letter <Term>
+    keyword valid_letter+ <Term> / !keyword !"?" valid_letter <Term>
   end
 
   rule field
@@ -133,7 +133,7 @@ grammar Lucene
   end
 
   rule start_letter
-    [a-zA-Z0-9._] / '\\' special_char
+    [a-zA-Z0-9._*] / '\\' special_char
   end
 
   rule end_letter
