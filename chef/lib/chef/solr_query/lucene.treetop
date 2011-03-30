@@ -27,7 +27,7 @@ grammar Lucene
   end
 
   rule term
-    keyword valid_letter+ <Term> / !keyword valid_letter+ <Term> 
+    keyword valid_letter+ <Term> / !keyword !"?" valid_letter <Term>
   end
 
   rule field
@@ -45,7 +45,7 @@ grammar Lucene
   end
 
   rule range_value
-    valid_letter+ <RangeValue>
+    valid_letter+ <RangeValue> / "*" <RangeValue>
   end
 
   rule group
@@ -102,8 +102,6 @@ grammar Lucene
 
   rule prohibited_op
     !valid_letter prohibited_operator (field/field_range/term/string) <UnaryOp>
-    /
-    prohibited_operator (field/field_range/term/string) <UnaryOp>
   end
 
   rule prohibited_operator
@@ -115,7 +113,7 @@ grammar Lucene
   end
 
   rule fuzzy_op
-    (term/string) '~' fuzzy_param? <FuzzyOp>
+    (term/string) '~' fuzzy_param? (space / !valid_letter) <FuzzyOp>
   end
 
   rule fuzzy_param
@@ -123,7 +121,6 @@ grammar Lucene
   end
 
   rule string
-    #'"' (!'"' . / '\"')* '"' <Phrase>
     '"' term (space term)* '"' <Phrase>
   end
 
@@ -132,11 +129,19 @@ grammar Lucene
   end
 
   rule valid_letter
-    [a-zA-Z0-9*_+.-] / '\\' special_char
+    start_letter+ ([a-zA-Z0-9*?_.-] / '\\' special_char)*
+  end
+
+  rule start_letter
+    [a-zA-Z0-9._*] / '\\' special_char
+  end
+
+  rule end_letter
+    [a-zA-Z0-9*?_.] / '\\' special_char
   end
 
   rule special_char
-    [!(){}\[\]^"~*?:\\]
+    [-+&|!(){}\[\]^"~*?:\\]
   end
 
   rule space

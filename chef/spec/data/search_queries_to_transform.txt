@@ -91,9 +91,8 @@ content:words__=__\"*
 -version:0.9.12
 -content:version__=__0.9.12
 
-- version:0.9.12
-- content:version__=__0.9.12
-
 !version:0.9.12
 NOT content:version__=__0.9.12
 
+ec2:*
+content:ec2__=__*
