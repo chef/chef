@@ -19,14 +19,14 @@
 
 require 'chef/log'
 require 'chef/provider'
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'fileutils'
 
 class Chef
   class Provider
     class Git < Chef::Provider
 
-      include Chef::Mixin::Command
+      include Chef::Mixin::ShellOut
 
       def load_current_resource
         @current_resource = Chef::Resource::Git.new(@new_resource.name)
@@ -91,12 +91,8 @@ class Chef
 
       def find_current_revision
         if ::File.exist?(::File.join(cwd, ".git"))
-          status, result, error_message = output_of_command("git rev-parse HEAD", run_options(:cwd=>cwd))
-
           # 128 is returned when we're not in a git repo. this is fine
-          unless [0,128].include?(status.exitstatus)
-            handle_command_failures(status, "STDOUT: #{result}\nSTDERR: #{error_message}")
-          end
+          result = shell_out!('git rev-parse HEAD', :cwd => cwd, :returns => [0,128]).stdout.strip
         end
         sha_hash?(result) ? result : nil
       end
@@ -111,21 +107,21 @@ class Chef
         Chef::Log.info "Cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
 
         clone_cmd = "git clone #{args.join(' ')} #{@new_resource.repository} #{@new_resource.destination}"
-        run_command(run_options(:command => clone_cmd))
+        shell_out!(clone_cmd, run_options)
       end
 
       def checkout
         sha_ref = target_revision
         Chef::Log.info "Checking out branch: #{@new_resource.revision} reference: #{sha_ref}"
         # checkout into a local branch rather than a detached HEAD
-        run_command(run_options(:command => "git checkout -b deploy #{sha_ref}", :cwd => @new_resource.destination))
+        shell_out!("git checkout -b deploy #{sha_ref}", run_options(:cwd => @new_resource.destination))
       end
 
       def enable_submodules
         if @new_resource.enable_submodules
           Chef::Log.info "Enabling git submodules"
           command = "git submodule init && git submodule update"
-          run_command(run_options(:command => command, :cwd => @new_resource.destination))
+          shell_out!(command, run_options(:cwd => @new_resource.destination))
         end
       end
 
@@ -135,7 +131,7 @@ class Chef
         # since we're in a local branch already, just reset to specified revision rather than merge
         fetch_command = "git fetch #{@new_resource.remote} && git fetch #{@new_resource.remote} --tags && git reset --hard #{target_revision}"
         Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revison #{target_revision}"
-        run_command(run_options(:command => fetch_command, :cwd => @new_resource.destination))
+        shell_out!(fetch_command, run_options(:cwd => @new_resource.destination))
       end
 
       # Use git-config to setup a remote tracking branches. Could use
@@ -151,7 +147,7 @@ class Chef
                         "at remote #{@new_resource.remote}"
         command << "git config remote.#{@new_resource.remote}.url #{@new_resource.repository}"
         command << "git config remote.#{@new_resource.remote}.fetch +refs/heads/*:refs/remotes/#{@new_resource.remote}/*"
-        run_command(run_options(:command => command.join(" && "), :cwd => @new_resource.destination))
+        shell_out!(command.join(" && "), run_options(:cwd => @new_resource.destination))
       end
 
       def current_revision_matches_target_revision?
@@ -175,17 +171,7 @@ class Chef
 
       def remote_resolve_reference
         command = git('ls-remote', @new_resource.repository, @new_resource.revision)
-        Chef::Log.debug("Executing #{command}")
-        begin
-          status, result, error_message = output_of_command(command, run_options)
-          handle_command_failures(status, "STDOUT: #{result}\nSTDERR: #{error_message}")
-        rescue Chef::Exceptions::Exec => e
-          msg =  "Could not access the remote Git repository. If this is a private repository, "
-          msg << "verify that the deploy key for your application has been added to your remote Git account.\n"
-          msg << e.message
-          raise Chef::Exceptions::Exec, msg
-        end
-        result
+        shell_out!(command, run_options).stdout
       end
 
       private
