@@ -84,6 +84,7 @@ class Chef
           if resource.retries > 0
             resource.retries -= 1
             Chef::Log.info("Retrying execution of #{resource}, #{resource.retries} attempt(s) left")
+            sleep resource.retry_delay
             retry
           end
           raise e unless resource.ignore_failure
