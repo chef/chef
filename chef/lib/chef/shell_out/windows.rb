@@ -17,7 +17,11 @@
 #
 
 require 'timeout'
-require 'win32/open3'
+if RUBY_VERSION =~ /^1\.8/
+  require 'win32/open3'
+else
+  require 'open3'
+end
 
 class Chef
   class ShellOut
