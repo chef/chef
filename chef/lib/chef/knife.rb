@@ -413,7 +413,10 @@ class Chef
     end
 
     def rest
-      @rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
+      @rest ||= begin
+        require 'chef/rest'
+        Chef::REST.new(Chef::Config[:chef_server_url])
+      end
     end
 
   end
