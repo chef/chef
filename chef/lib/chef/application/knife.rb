@@ -32,17 +32,13 @@ class Chef::Application::Knife < Chef::Application
     :description => "The configuration file to use",
     :proc => lambda { |path| File.expand_path(path, Dir.pwd) }
 
-  option :log_level,
-    :short        => "-l LEVEL",
-    :long         => "--log_level LEVEL",
-    :description  => "Set the log level (debug, info, warn, error, fatal)",
-    :proc         => lambda { |l| l.to_sym }
-
-  option :log_location,
-    :short        => "-L LOGLOCATION",
-    :long         => "--logfile LOGLOCATION",
-    :description  => "Set the log file location, defaults to STDOUT",
-    :proc         => nil
+  verbosity_level = 0
+  option :verbosity,
+    :short => '-V',
+    :long  => '--verbose',
+    :description => "More verbose output. Use twice for max verbosity",
+    :proc  => Proc.new { verbosity_level += 1},
+    :default => 0
 
   option :environment,
     :short        => "-E ENVIRONMENT",

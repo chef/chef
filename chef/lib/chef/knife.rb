@@ -282,8 +282,15 @@ class Chef
         self.msg("No knife configuration file found")
       end
 
-      Chef::Config[:log_level]         = config[:log_level]       if config[:log_level]
-      Chef::Config[:log_location]      = config[:log_location]    if config[:log_location]
+      case config[:verbosity]
+      when 0
+        Chef::Config[:log_level] = :error
+      when 1
+        Chef::Config[:log_level] = :info
+      else
+        Chef::Config[:log_level] = :debug
+      end
+
       Chef::Config[:node_name]         = config[:node_name]       if config[:node_name]
       Chef::Config[:client_key]        = config[:client_key]      if config[:client_key]
       Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
