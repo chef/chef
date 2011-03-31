@@ -52,6 +52,8 @@ task :update do
     end
     if pull
       sh %{git pull} 
+      sh %{git submodule init}
+      sh %{git submodule update}
     else
       puts "* Skipping git pull, no origin specified"
     end
