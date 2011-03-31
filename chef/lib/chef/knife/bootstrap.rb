@@ -26,6 +26,9 @@ class Chef
         require 'chef/json_compat'
         require 'tempfile'
         require 'erubis'
+        require 'highline'
+        require 'net/ssh'
+        require 'net/ssh/multi'
       end
 
       banner "knife bootstrap FQDN [RUN LIST...] (options)"
@@ -125,8 +128,6 @@ class Chef
       end
 
       def run
-        require 'highline'
-        require 'net/ssh'
 
         validate_name_args!
         @node_name = Array(@name_args).first
