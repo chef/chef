@@ -25,6 +25,7 @@ class Chef
 
       deps do
         require 'chef/knife/cookbook_delete'
+        require 'chef/cookbook_version'
       end
 
       option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
@@ -44,12 +45,12 @@ class Chef
         cookbooks_to_delete = cookbooks_names.inject({}) { |hash, name| hash[name] = all_cookbooks[name];hash }
         output(format_list_for_display(cookbooks_to_delete))
 
-        confirm("Do you really want to delete these cookbooks? All versions will be deleted. (Y/N) ", false)
+        ui.confirm("Do you really want to delete these cookbooks? All versions will be deleted. (Y/N) ", false)
 
-        confirm("Files that are common to multiple cookbooks are shared, so purging the files may disable other cookbooks. Are you sure you want to purge files instead of just deleting the cookbooks") if config[:purge]
+        ui.confirm("Files that are common to multiple cookbooks are shared, so purging the files may disable other cookbooks. Are you sure you want to purge files instead of just deleting the cookbooks") if config[:purge]
 
         cookbooks_names.each do |cookbook_name|
-          versions = rest.get_rest("cookbooks/#{cookbook_name}").values.flatten
+          versions = rest.get_rest("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map {|v| v["version"]}.flatten
           versions.each do |version|
             object = rest.delete_rest("cookbooks/#{cookbook_name}/#{version}#{config[:purge] ? "?purge=true" : ""}")
             ui.info("Deleted cookbook  #{cookbook_name.ljust(25)} [#{version}]")
