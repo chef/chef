@@ -41,6 +41,13 @@ class Chef
         :long => "--ssh-password PASSWORD",
         :description => "The ssh password"
 
+      option :ssh_port,
+        :short => "-p PORT",
+        :long => "--ssh-port PORT",
+        :description => "The ssh port",
+        :default => "22",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key }
+
       option :identity_file,
         :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
@@ -156,6 +163,7 @@ class Chef
         ssh.name_args = [ server_name, ssh_command ]
         ssh.config[:ssh_user] = config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
+        ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
         ssh.config[:no_host_key_verify] = config[:no_host_key_verify]
