@@ -185,8 +185,8 @@ class Chef
         fork do
           configure_subprocess_file_descriptors
 
-          set_user
           set_group
+          set_user
           set_environment
           set_umask
           set_cwd
