@@ -23,6 +23,7 @@ class Chef
     class CookbookSiteVendor < Knife
 
       deps do
+        require 'chef/mixin/shell_out'
         require 'chef/cookbook/metadata'
       end
 
@@ -48,6 +49,8 @@ class Chef
         :default => "master"
 
       def run
+        extend Chef::Mixin::ShellOut
+
         if config[:cookbook_path]
           Chef::Config[:cookbook_path] = config[:cookbook_path]
         else
@@ -71,40 +74,40 @@ class Chef
         download.run
 
         ui.info("Checking out the #{config[:branch_default]} branch.")
-        Chef::Mixin::Command.run_command(:command => "git checkout #{config[:branch_default]}", :cwd => vendor_path)
+        shell_out!("git checkout #{config[:branch_default]}", :cwd => vendor_path)
         ui.info("Checking the status of the vendor branch.")
         status, branch_output, branch_error = Chef::Mixin::Command.output_of_command("git branch --no-color | grep #{branch_name}", :cwd => vendor_path)
         if branch_output =~ /#{Regexp.escape(branch_name)}$/m
           ui.info("Vendor branch found.")
-          Chef::Mixin::Command.run_command(:command => "git checkout #{branch_name}", :cwd => vendor_path)
+          shell_out!("git checkout #{branch_name}", :cwd => vendor_path)
         else
           ui.info("Creating vendor branch.")
-          Chef::Mixin::Command.run_command(:command => "git checkout -b #{branch_name}", :cwd => vendor_path)
+          shell_out!("git checkout -b #{branch_name}", :cwd => vendor_path)
         end
         ui.info("Removing pre-existing version.")
-        Chef::Mixin::Command.run_command(:command => "rm -r #{cookbook_path}", :cwd => vendor_path) if File.directory?(cookbook_path)
+        shell_out!("rm -r #{cookbook_path}", :cwd => vendor_path) if File.directory?(cookbook_path)
         ui.info("Uncompressing #{name_args[0]} version #{download.version}.")
-        Chef::Mixin::Command.run_command(:command => "tar zxvf #{upstream_file}", :cwd => vendor_path)
-        Chef::Mixin::Command.run_command(:command => "rm #{upstream_file}", :cwd => vendor_path)
+        shell_out!("tar zxvf #{upstream_file}", :cwd => vendor_path)
+        shell_out!("rm #{upstream_file}", :cwd => vendor_path)
         ui.info("Adding changes.")
-        Chef::Mixin::Command.run_command(:command => "git add #{name_args[0]}", :cwd => vendor_path)
+        shell_out!("git add #{name_args[0]}", :cwd => vendor_path)
 
         ui.info("Committing changes.")
         changes = true
         begin
-          Chef::Mixin::Command.run_command(:command => "git commit -a -m 'Import #{name_args[0]} version #{download.version}'", :cwd => vendor_path)
+          shell_out!("git commit -a -m 'Import #{name_args[0]} version #{download.version}'", :cwd => vendor_path)
         rescue Chef::Exceptions::Exec => e
           ui.warn("Checking out the #{config[:branch_default]} branch.")
           ui.warn("No changes from current vendor #{name_args[0]}")
-          Chef::Mixin::Command.run_command(:command => "git checkout #{config[:branch_default]}", :cwd => vendor_path)
+          shell_out!("git checkout #{config[:branch_default]}", :cwd => vendor_path)
           changes = false
         end
 
         if changes
           ui.info("Creating tag chef-vendor-#{name_args[0]}-#{download.version}.")
-          Chef::Mixin::Command.run_command(:command => "git tag -f chef-vendor-#{name_args[0]}-#{download.version}", :cwd => vendor_path)
+          shell_out!("git tag -f chef-vendor-#{name_args[0]}-#{download.version}", :cwd => vendor_path)
           ui.info("Checking out the #{config[:branch_default]} branch.")
-          Chef::Mixin::Command.run_command(:command => "git checkout #{config[:branch_default]}", :cwd => vendor_path)
+          shell_out!("git checkout #{config[:branch_default]}", :cwd => vendor_path)
           ui.info("Merging changes from #{name_args[0]} version #{download.version}.")
 
           Dir.chdir(vendor_path) do
