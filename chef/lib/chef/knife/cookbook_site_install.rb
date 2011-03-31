@@ -146,7 +146,7 @@ class Chef
 
     end
 
-    class CookbookSiteVendor < Knife
+    class CookbookSiteInstall < Knife
 
       deps do
         require 'chef/mixin/shell_out'
