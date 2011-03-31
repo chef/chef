@@ -41,7 +41,7 @@ class Chef
 
         @version = cookbook_data['version']
 
-        ui.info("Downloading #{@name_args[0]} from the cookbooks site at version #{cookbook_data['version']}")
+        ui.info("Downloading #{@name_args[0]} from the cookbooks site at version #{cookbook_data['version']} to #{config[:file]}")
         rest.sign_on_redirect = false
         tf = rest.get_rest(cookbook_data["file"], true)
         unless config[:file]
