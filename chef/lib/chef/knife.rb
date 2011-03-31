@@ -151,7 +151,7 @@ class Chef
       load_commands
       subcommand_class = subcommand_class_from(args)
       subcommand_class.options = options.merge!(subcommand_class.options)
-      subcommand_class.load_deps
+      subcommand_class.load_deps unless want_help?(args)
       instance = subcommand_class.new(args)
       instance.configure_chef
       instance.run
