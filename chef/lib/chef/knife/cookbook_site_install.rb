@@ -48,7 +48,7 @@ class Chef
           exit 1
         end
         unless branch_exists?(default_branch)
-          ui.error "You default branch '#{default_branch}' does not exist"
+          ui.error "The default branch '#{default_branch}' does not exist"
           ui.info "If this is a new git repo, make sure you have at least one commit before installing cookbooks"
           exit 1
         end
