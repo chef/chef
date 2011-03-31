@@ -147,10 +147,14 @@ class Chef
         if config[:with_uri]
           item
         else
-          item.inject({}){|result, (k,v)|
-            result[k] = v["versions"].inject([]){|res, ver| res.push(ver["version"]); res}
-            result
-          }
+          versions_by_cookbook = item.inject({}) do |collected, ( cookbook, versions )|
+            collected[cookbook] = versions["versions"].map {|v| v['version']}
+            collected
+          end
+          key_length = versions_by_cookbook.keys.map {|name| name.size }.max + 2
+          versions_by_cookbook.sort.map do |cookbook, versions|
+            "#{cookbook.ljust(key_length)} #{versions.join(',')}"
+          end
         end
       end
 
