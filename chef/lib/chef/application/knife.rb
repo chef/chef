@@ -94,7 +94,6 @@ class Chef::Application::Knife < Chef::Application
     :description => "Accept default values for all questions"
 
   option :print_after,
-    :short => "-p",
     :long => "--print-after",
     :description => "Show the data after a destructive operation"
 
