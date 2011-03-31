@@ -34,7 +34,7 @@ class Chef
         opts = {}
 
         if sentinel_file = @new_resource.creates
-          if File.exists?(sentinel_file)
+          if ::File.exists?(sentinel_file)
             Chef::Log.info("Skipping #{self} - sentinel file #{sentinel_file} exists.")
             return false
           end
