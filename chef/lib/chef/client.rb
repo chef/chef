@@ -143,6 +143,7 @@ class Chef
     def run
       run_context = nil
 
+      Chef::Log.info("*** Chef #{Chef::VERSION} ***")
       enforce_path_sanity
       run_ohai
       register unless Chef::Config[:solo]
@@ -151,7 +152,7 @@ class Chef
       begin
 
         run_status.start_clock
-        Chef::Log.info("Starting Chef Run (Version #{Chef::VERSION})")
+        Chef::Log.info("Starting Run for #{node.name}")
         run_started
 
         run_context = setup_run_context

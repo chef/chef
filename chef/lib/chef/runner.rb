@@ -74,15 +74,8 @@ class Chef
 
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|
-        begin
-          Chef::Log.debug("Processing #{resource} on #{run_context.node.name}")
-
-          # Execute each of this resource's actions.
-          Array(resource.action).each {|action| run_action(resource, action)}
-        rescue => e
-          Chef::Log.error("#{resource} (#{resource.source_line}) had an error: #{e.message}")
-          raise e unless resource.ignore_failure
-        end
+        # Execute each of this resource's actions.
+        Array(resource.action).each {|action| run_action(resource, action) }
       end
 
       # Run all our :delayed actions
