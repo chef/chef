@@ -23,13 +23,17 @@
 require 'uri'
 require 'net/http'
 require 'chef/rest/cookie_jar'
+require 'ohai' #used in user agent string.
 require 'chef/version'
 
 class Chef
   class REST
     class RESTRequest
 
-      DEFAULT_UA = "chef-client #{::Chef::VERSION}"
+      engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
+
+      UA_COMMON = "/#{::Chef::VERSION} (#{engine}-#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}; ohai-#{Ohai::VERSION}; #{RUBY_PLATFORM}; +http://opscode.com)"
+      DEFAULT_UA = "Chef Client" << UA_COMMON
 
       def self.user_agent=(ua)
         @user_agent = ua

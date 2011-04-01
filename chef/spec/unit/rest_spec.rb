@@ -339,7 +339,7 @@ describe Chef::REST do
 
       it "sets the user agent to chef-client" do
         @rest.api_request(:GET, @url, {})
-        @request_mock['User-Agent'].should == "chef-client #{Chef::VERSION}"
+        @request_mock['User-Agent'].should match /^Chef Client\/#{Chef::VERSION}/
       end
 
       it "should set the cookie for this request if one exists for the given host:port" do
