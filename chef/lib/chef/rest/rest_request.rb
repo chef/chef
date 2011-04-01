@@ -28,6 +28,17 @@ require 'chef/version'
 class Chef
   class REST
     class RESTRequest
+
+      DEFAULT_UA = "chef-client #{::Chef::VERSION}"
+
+      def self.user_agent=(ua)
+        @user_agent = ua
+      end
+
+      def self.user_agent
+        @user_agent ||= DEFAULT_UA
+      end
+
       attr_reader :method, :url, :headers, :http_client, :http_request
 
       def initialize(method, url, req_body, base_headers={})
@@ -181,6 +192,7 @@ class Chef
         @http_request.body = request_body if (request_body && @http_request.request_body_permitted?)
         # Optionally handle HTTP Basic Authentication
         @http_request.basic_auth(url.user, url.password) if url.user
+        @http_request['User-Agent'] = self.class.user_agent
       end
 
     end

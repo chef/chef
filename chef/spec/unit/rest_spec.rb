@@ -250,6 +250,11 @@ describe Chef::REST do
           @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
           Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
           Tempfile.stub!(:open).and_return(@tempfile)
+
+          @request_mock = {}
+          Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+
+          @http_response_mock = mock("Net::HTTP Response mock")
         end
 
         after do
@@ -299,6 +304,11 @@ describe Chef::REST do
     end
 
     describe "as JSON API requests" do
+      before do
+        @request_mock = {}
+        Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+      end
+
       it "should always include the X-Chef-Version header" do
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar",
           { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
@@ -325,6 +335,11 @@ describe Chef::REST do
           Net::HTTP::Get.should_receive(:new).with(url_string, header_hash)
           @rest.api_request(:GET, @url, {})
         end
+      end
+
+      it "sets the user agent to chef-client" do
+        @rest.api_request(:GET, @url, {})
+        @request_mock['User-Agent'].should == "chef-client #{Chef::VERSION}"
       end
 
       it "should set the cookie for this request if one exists for the given host:port" do
@@ -427,6 +442,9 @@ describe Chef::REST do
       before do
         @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
         Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
+        @request_mock = {}
+        Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+
         @http_response = Net::HTTPSuccess.new("1.1",200, "it-works")
         @http_response.stub!(:read_body)
         @http_client.stub!(:request).and_yield(@http_response).and_return(@http_response)
