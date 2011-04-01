@@ -80,7 +80,7 @@ class Chef
           # Execute each of this resource's actions.
           Array(resource.action).each {|action| run_action(resource, action)}
         rescue => e
-          Chef::Log.error("#{resource} (#{resource.source_line}) had an error:\n#{e}\n#{e.backtrace.join("\n")}")
+          Chef::Log.error("#{resource} (#{resource.source_line}) had an error: #{e.message}")
           raise e unless resource.ignore_failure
         end
       end

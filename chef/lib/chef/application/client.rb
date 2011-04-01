@@ -224,15 +224,18 @@ class Chef::Application::Client < Chef::Application
           Chef::Application.exit! "Exiting", 0
         end
       rescue SystemExit => e
-        raise
+        Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
+        Chef::Application.fatal!("Aborting chef (#{e.class}: #{e.message})", 5)
       rescue Exception => e
         if Chef::Config[:interval]
-          Chef::Log.error("#{e.class}:#{e}\n#{e.backtrace.join("\n")}")
+          Chef::Log.error("#{e.class}: #{e}")
+          Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
           Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
           sleep Chef::Config[:interval]
           retry
         else
-          raise
+          Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
+          Chef::Application.fatal!("#{e.class}: #{e.message}", 4)
         end
       ensure
         GC.start
