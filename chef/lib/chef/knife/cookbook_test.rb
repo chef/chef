@@ -45,15 +45,20 @@ class Chef
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
+        checked_a_cookbook = false
         if config[:all]
           cl = Chef::CookbookLoader.new(config[:cookbook_path])
           cl.each do |key, cookbook|
+            checked_a_cookbook = true
             test_cookbook(key)
           end
+          ui.warn("No cookbooks to test - either this is on purpose, or your cookbook path is misconfigured") unless checked_a_cookbook
         else
           @name_args.each do |cb|
+            checked_a_cookbook = true
             test_cookbook(cb)
           end
+          ui.warn("No cookbooks to test - either this is on purpose, or your cookbook path is misconfigured") unless checked_a_cookbook
         end
       end
 
