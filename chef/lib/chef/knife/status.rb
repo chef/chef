@@ -74,6 +74,7 @@ class Chef
             end
             line_parts << platform
           end
+          line_parts << fqdn if fqdn
           line_parts << ipaddress if ipaddress
           line_parts << run_list if run_list
 
