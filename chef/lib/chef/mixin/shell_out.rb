@@ -16,6 +16,7 @@
 # limitations under the License.
 
 require 'chef/shell_out'
+require 'chef/config'
 
 class Chef
   module Mixin
