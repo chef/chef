@@ -19,6 +19,7 @@ require 'chef/config'
 require 'chef/exceptions'
 require 'chef/log'
 require 'mixlib/cli'
+require 'tmpdir'
 
 class Chef::Application
   include Mixlib::CLI
@@ -121,6 +122,18 @@ class Chef::Application
 
 
   class << self
+    def debug_stacktrace(e)
+      message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+      filename = File.join(Dir.tmpdir, "chef-stacktrace.out") 
+      Chef::Log.fatal("Stacktrace dumped to #{filename}")
+      Chef::Log.debug(message)
+      chef_stacktrace_out = File.open(filename, "w")
+      chef_stacktrace_out.puts "Generated at #{Time.now.to_s}"
+      chef_stacktrace_out.puts message
+      chef_stacktrace_out.close
+      true
+    end
+
     # Log a fatal error message to both STDERR and the Logger, exit the application
     def fatal!(msg, err = -1)
       STDERR.puts("FATAL: #{msg}")
