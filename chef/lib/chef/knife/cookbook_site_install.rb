@@ -153,7 +153,7 @@ class Chef
         require 'chef/cookbook/metadata'
       end
 
-      banner "knife cookbook site vendor COOKBOOK [VERSION] (options)"
+      banner "knife cookbook site install COOKBOOK [VERSION] (options)"
       category "cookbook site"
 
       option :deps,
