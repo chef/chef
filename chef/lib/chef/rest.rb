@@ -298,11 +298,13 @@ class Chef
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{rest_request.path}, giving up"
-      rescue Net::HTTPServerException
-        if res.kind_of?(Net::HTTPForbidden)
+      rescue Net::HTTPFatalError => e
+        case e.response
+        when Net::HTTPServiceUnavailable
           if http_retry_count - http_attempts + 1 > 0
-            Chef::Log.error("Received 403 Forbidden against #{url.host}:#{url.port} for #{rest_request.path}, retry #{http_attempts}/#{http_retry_count}")
-            sleep(http_retry_delay)
+            sleep_time = 1 + (2 ** http_attempts) + rand(2 ** http_attempts)
+            Chef::Log.error("Service Unavailable for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
+            sleep(sleep_time)
             retry
           end
         end
