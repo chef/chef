@@ -24,7 +24,6 @@ require 'net/https'
 require 'uri'
 require 'chef/json_compat'
 require 'tempfile'
-require 'chef/api_client'
 require 'chef/rest/auth_credentials'
 require 'chef/rest/rest_request'
 require 'chef/monkey_patches/string'
@@ -64,6 +63,10 @@ class Chef
     end
 
     # Register the client
+    #--
+    # Requires you to load chef/api_client beforehand. explicit require is removed since
+    # most users of this class have no need for chef/api_client. This functionality
+    # should be moved anyway...
     def register(name=Chef::Config[:node_name], destination=Chef::Config[:client_key])
       if (File.exists?(destination) &&  !File.writable?(destination))
         raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?"

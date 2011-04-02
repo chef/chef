@@ -1,4 +1,4 @@
-#
+#--
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Thom May (<thom@clearairturbulence.org>)
 # Author:: Nuo Yan (<nuo@opscode.com>)
@@ -23,7 +23,16 @@
 require 'uri'
 require 'net/http'
 require 'chef/rest/cookie_jar'
-require 'ohai' #used in user agent string.
+
+# To load faster, we only want ohai's version string.
+# However, in ohai before 0.6.0, the version is defined
+# in ohai, not ohai/version
+begin
+  require 'ohai/version' #used in user agent string.
+rescue LoadError
+  require 'ohai'
+end
+
 require 'chef/version'
 
 class Chef

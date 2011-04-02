@@ -105,7 +105,7 @@ class Chef
     end
 
     def self.load_commands
-      subcommand_loader.load_commands
+      @commands_loaded ||= subcommand_loader.load_commands
     end
 
     def self.subcommands
