@@ -24,13 +24,18 @@ class Chef
 
       deps do
         require 'chef/role'
+        require 'chef/knife/core/object_loader'
         require 'chef/json_compat'
       end
 
       banner "knife role from file FILE (options)"
 
+      def loader
+        @loader ||= Knife::Core::ObjectLoader.new(Chef::Role, ui)
+      end
+
       def run
-        updated = load_from_file(Chef::Role, @name_args[0])
+        updated = loader.load_from("roles", @name_args[0])
 
         updated.save
 

@@ -361,10 +361,6 @@ class Chef
       end
     end
 
-    def file_exists_and_is_readable?(file)
-      File.exists?(file) && File.readable?(file)
-    end
-
     def create_object(object, pretty_name=nil, &block)
       output = edit_data(object)
 

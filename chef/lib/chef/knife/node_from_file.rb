@@ -25,12 +25,17 @@ class Chef
       deps do
         require 'chef/node'
         require 'chef/json_compat'
+        require 'chef/knife/core/object_loader'
       end
 
       banner "knife node from file FILE (options)"
 
+      def loader
+        @loader ||= Knife::Core::ObjectLoader.new(Chef::Node, ui)
+      end
+
       def run
-        updated = load_from_file(Chef::Node, @name_args[0])
+        updated = loader.load_from('nodes', @name_args[0])
 
         updated.save
 

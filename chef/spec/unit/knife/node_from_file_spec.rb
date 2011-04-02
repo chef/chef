@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,6 +17,8 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+
+Chef::Knife::NodeFromFile.load_deps
 
 describe Chef::Knife::NodeFromFile do
   before(:each) do
@@ -28,14 +30,14 @@ describe Chef::Knife::NodeFromFile do
     @knife.name_args = [ "adam.rb" ]
     @knife.stub!(:output).and_return(true)
     @knife.stub!(:confirm).and_return(true)
-    @node = Chef::Node.new() 
+    @node = Chef::Node.new()
     @node.stub!(:save)
-    @knife.stub!(:load_from_file).and_return(@node)
+    @knife.loader.stub!(:load_from).and_return(@node)
   end
 
   describe "run" do
     it "should load from a file" do
-      @knife.should_receive(:load_from_file).with(Chef::Node, 'adam.rb').and_return(@node)
+      @knife.loader.should_receive(:load_from).with('nodes', 'adam.rb').and_return(@node)
       @knife.run
     end
 
