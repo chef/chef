@@ -18,7 +18,7 @@
 require 'chef/knife'
 require 'chef/application'
 require 'mixlib/log'
-require 'ohai'
+require 'ohai/config'
 
 class Chef::Application::Knife < Chef::Application
 
