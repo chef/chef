@@ -310,6 +310,8 @@ describe Chef::REST do
       end
 
       it "sets the user agent to chef-client" do
+        # must reset to default b/c knife changes the UA
+        Chef::REST::RESTRequest.user_agent = Chef::REST::RESTRequest::DEFAULT_UA
         @rest.api_request(:GET, @url, {})
         @request_mock['User-Agent'].should match /^Chef Client\/#{Chef::VERSION}/
       end
