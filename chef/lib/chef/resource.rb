@@ -372,34 +372,57 @@ F
       @not_if
     end
 
+    def defined_at
+      if cookbook_name && recipe_name && source_line
+        "#{cookbook_name}::#{recipe_name} line #{source_line.split(':')[1]}"
+      elsif source_line
+        file, line_no = source_line.split(':')
+        "#{file} line #{line_no}"
+      else
+        "dynamically defined"
+      end
+    end
+
     def run_action(action)
+      Chef::Log.info("Processing #{self} action #{action} (#{defined_at})")
+
       # ensure that we don't leave @updated_by_last_action set to true
       # on accident
       updated_by_last_action(false)
 
-      # Check if this resource has an only_if block -- if it does,
-      # evaluate the only_if block and skip the resource if
-      # appropriate.
-      if only_if
-        unless Chef::Mixin::Command.only_if(only_if, only_if_args)
-          Chef::Log.debug("Skipping #{self} due to only_if")
-          return
+      begin
+        # Check if this resource has an only_if block -- if it does,
+        # evaluate the only_if block and skip the resource if
+        # appropriate.
+        if only_if
+          unless Chef::Mixin::Command.only_if(only_if, only_if_args)
+            Chef::Log.debug("Skipping #{self} due to only_if")
+            return
+          end
+        end
+
+        # Check if this resource has a not_if block -- if it does,
+        # evaluate the not_if block and skip the resource if
+        # appropriate.
+        if not_if
+          unless Chef::Mixin::Command.not_if(not_if, not_if_args)
+            Chef::Log.debug("Skipping #{self} due to not_if")
+            return
+          end
+        end
+
+        provider = Chef::Platform.provider_for_resource(self)
+        provider.load_current_resource
+        provider.send("action_#{action}")
+      rescue => e
+        if ignore_failure
+          Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}")
+        else
+          Chef::Log.error("#{self} (#{defined_at}) has had an error")
+          msg = e.message
+          raise e.exception("#{self} (#{defined_at}) had an error: #{e.message}") 
         end
       end
-
-      # Check if this resource has a not_if block -- if it does,
-      # evaluate the not_if block and skip the resource if
-      # appropriate.
-      if not_if
-        unless Chef::Mixin::Command.not_if(not_if, not_if_args)
-          Chef::Log.debug("Skipping #{self} due to not_if")
-          return
-        end
-      end
-
-      provider = Chef::Platform.provider_for_resource(self)
-      provider.load_current_resource
-      provider.send("action_#{action}")
     end
 
     def updated_by_last_action(true_or_false)

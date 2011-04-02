@@ -197,11 +197,6 @@ describe Chef::Application do
       Chef::Application.fatal! "blah"
     end
 
-    it "should log an error message on STDERR" do
-      STDERR.should_receive(:puts).with("FATAL: blah").and_return(true)
-      Chef::Application.fatal! "blah"
-    end
-
     describe "when an exit code is supplied" do
       it "should exit with the given exit code" do
         Process.should_receive(:exit).with(-100).and_return(true)
