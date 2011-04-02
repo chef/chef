@@ -322,45 +322,6 @@ class Chef
       stdout.puts("USAGE: " + self.opt_parser.to_s)
     end
 
-    # find_file(:data_bag, BAG, ITEM)
-
-    def load_from_file(klass, from_file, bag=nil)
-      relative_path = ""
-      if klass == Chef::Role
-        relative_path = "roles"
-      elsif klass == Chef::Node
-        relative_path = "nodes"
-      elsif klass == Chef::DataBagItem
-        relative_path = "data_bags/#{bag}"
-      elsif klass == Chef::Environment
-        relative_path = "environments"
-      end
-
-      relative_file = File.expand_path(File.join(Dir.pwd, relative_path, from_file))
-      filename = nil
-
-      if file_exists_and_is_readable?(from_file)
-        filename = from_file
-      elsif file_exists_and_is_readable?(relative_file)
-        filename = relative_file
-      else
-        ui.fatal("Cannot find file #{from_file}")
-        exit 30
-      end
-
-      case from_file
-      when /\.(js|json)$/
-        Chef::JSONCompat.from_json(IO.read(filename))
-      when /\.rb$/
-        r = klass.new
-        r.from_file(filename)
-        r
-      else
-        ui.fatal("File must end in .js, .json, or .rb")
-        exit 30
-      end
-    end
-
     def create_object(object, pretty_name=nil, &block)
       output = edit_data(object)
 
