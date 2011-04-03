@@ -40,6 +40,18 @@ class Chef::Application::Knife < Chef::Application
     :proc  => Proc.new { verbosity_level += 1},
     :default => 0
 
+  option :color,
+    :long         => '--color',
+    :boolean      => true,
+    :default      => true,
+    :description  => "Use colored output"
+
+  option :no_color,
+    :long         => '--no-color',
+    :boolean      => true,
+    :default      => false,
+    :description  => "Don't use colors in the output"
+
   option :environment,
     :short        => "-E ENVIRONMENT",
     :long         => "--environment ENVIRONMENT",
@@ -107,15 +119,27 @@ class Chef::Application::Knife < Chef::Application
     :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
     :exit         => 0
 
+
   # Run knife
   def run
     Mixlib::Log::Formatter.show_time = false
     validate_and_parse_options
+    quiet_traps
     Chef::Knife.run(ARGV, options)
     exit 0
   end
 
   private
+
+  def quiet_traps
+    trap("TERM") do
+      exit 1
+    end
+
+    trap("INT") do
+      exit 2
+    end
+  end
 
   def validate_and_parse_options
     # Checking ARGV validity *before* parse_options because parse_options

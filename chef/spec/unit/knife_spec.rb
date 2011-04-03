@@ -188,7 +188,7 @@ describe Chef::Knife do
       @knife.stub!(:run).and_raise(Net::HTTPServerException.new("401 Unauthorized", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(/ERROR: Failed to authenticate to/)
-      @stdout.string.should match(/Message:  y u no syncronize your clock\?/)
+      @stdout.string.should match(/Response:  y u no syncronize your clock\?/)
     end
 
     it "formats 403s nicely" do
@@ -199,7 +199,7 @@ describe Chef::Knife do
       @knife.stub!(:username).and_return("sadpanda")
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: You authenticated successfully to http://localhost:4000 as sadpanda but you are not authorized for this action])
-      @stdout.string.should match(%r[Message:  y u no administrator])
+      @stdout.string.should match(%r[Response:  y u no administrator])
     end
 
     it "formats 400s nicely" do
@@ -209,7 +209,7 @@ describe Chef::Knife do
       @knife.stub!(:run).and_raise(Net::HTTPServerException.new("400 Bad Request", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: The data in your request was invalid])
-      @stdout.string.should match(%r[Message: y u search wrong])
+      @stdout.string.should match(%r[Response: y u search wrong])
     end
 
     it "formats 404s nicely" do
@@ -219,7 +219,7 @@ describe Chef::Knife do
       @knife.stub!(:run).and_raise(Net::HTTPServerException.new("404 Not Found", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: The object you are looking for could not be found])
-      @stdout.string.should match(%r[Message: nothing to see here])
+      @stdout.string.should match(%r[Response: nothing to see here])
     end
 
     it "formats 500s nicely" do
@@ -229,7 +229,7 @@ describe Chef::Knife do
       @knife.stub!(:run).and_raise(Net::HTTPFatalError.new("500 Internal Server Error", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: internal server error])
-      @stdout.string.should match(%r[Message: sad trombone])
+      @stdout.string.should match(%r[Response: sad trombone])
     end
 
     it "formats 502s nicely" do
@@ -239,7 +239,7 @@ describe Chef::Knife do
       @knife.stub!(:run).and_raise(Net::HTTPFatalError.new("502 Bad Gateway", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: bad gateway])
-      @stdout.string.should match(%r[Message: sadder trombone])
+      @stdout.string.should match(%r[Response: sadder trombone])
     end
 
     it "formats 503s nicely" do
@@ -249,7 +249,7 @@ describe Chef::Knife do
       @knife.stub!(:run).and_raise(Net::HTTPFatalError.new("503 Service Unavailable", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: Service temporarily unavailable])
-      @stdout.string.should match(%r[Message: saddest trombone])
+      @stdout.string.should match(%r[Response: saddest trombone])
     end
 
     it "formats other HTTP errors nicely" do
@@ -259,7 +259,7 @@ describe Chef::Knife do
       @knife.stub!(:run).and_raise(Net::HTTPServerException.new("402 Payment Required", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: Payment Required])
-      @stdout.string.should match(%r[Message: nobugfixtillyoubuy])
+      @stdout.string.should match(%r[Response: nobugfixtillyoubuy])
     end
 
     it "formats NameError and NoMethodError nicely" do
