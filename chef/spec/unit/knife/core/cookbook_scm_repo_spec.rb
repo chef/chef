@@ -16,14 +16,15 @@
 # limitations under the License.
 #
 
-require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../../../../spec_helper', __FILE__)
+require 'chef/knife/core/cookbook_scm_repo'
 
-describe Chef::Knife::CookbookRepo do
+describe Chef::Knife::CookbookSCMRepo do
   before do
     @repo_path = File.join(CHEF_SPEC_DATA, 'cookbooks')
     @stdout, @stderr, @stdin = StringIO.new, StringIO.new, StringIO.new
     @ui = Chef::Knife::UI.new(@stdout, @stderr, @stdin, {})
-    @cookbook_repo = Chef::Knife::CookbookRepo.new(@repo_path, @ui, :default_branch => 'master')
+    @cookbook_repo = Chef::Knife::CookbookSCMRepo.new(@repo_path, @ui, :default_branch => 'master')
 
     @branch_list = Chef::ShellOut.new
     @branch_list.stdout.replace(<<-BRANCHES)
