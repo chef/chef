@@ -46,19 +46,27 @@ class Chef
       alias :info :msg
 
       def warn(message)
-        msg("WARNING: #{message}")
+        msg("#{color('WARNING:', :yellow, :bold)} #{message}")
       end
 
       def error(message)
-        msg("ERROR: #{message}")
+        msg("#{color('ERROR:', :red, :bold)} #{message}")
       end
 
       def fatal(message)
-        msg("FATAL: #{message}")
+        msg("#{color('FATAL:', :red, :bold)} #{message}")
       end
 
-      def color(*args)
-        highline.color(*args)
+      def color(string, *colors)
+        if color?
+          highline.color(string, *colors)
+        else
+          string
+        end
+      end
+
+      def color?
+        config[:color] && stdout.tty?
       end
 
       def ask(*args, &block)

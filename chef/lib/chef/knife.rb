@@ -291,6 +291,8 @@ class Chef
         self.msg("No knife configuration file found")
       end
 
+      config[:color] = config[:color] && !config[:no_color]
+
       case config[:verbosity]
       when 0
         Chef::Config[:log_level] = :error
@@ -339,7 +341,6 @@ class Chef
       filtered_trace.each {|line| ui.msg("  " + ui.color(line, :red))}
       if !filtered_trace.empty?
         line_nr = filtered_trace.first[/#{Regexp.escape(file)}:([\d]+)/, 1]
-        ui.msg ""
         highlight_config_error(file, line_nr.to_i)
       end
 
@@ -357,6 +358,7 @@ class Chef
         lines[1] = ui.color(lines[1], :red)
       end
       ui.msg ""
+      ui.msg ui.color("     # #{file}", :white)
       lines.each {|l| ui.msg(l)}
       ui.msg ""
     end
@@ -402,28 +404,28 @@ class Chef
       case response
       when Net::HTTPUnauthorized
         ui.error "Failed to authenticate to #{server_url} as #{username} with key #{api_key}"
-        ui.info "Message:  #{format_rest_error(response)}"
+        ui.info "Response:  #{format_rest_error(response)}"
       when Net::HTTPForbidden
         ui.error "You authenticated successfully to #{server_url} as #{username} but you are not authorized for this action"
-        ui.info "Message:  #{format_rest_error(response)}"
+        ui.info "Response:  #{format_rest_error(response)}"
       when Net::HTTPBadRequest
         ui.error "The data in your request was invalid"
-        ui.info "Message: #{format_rest_error(response)}"
+        ui.info "Response: #{format_rest_error(response)}"
       when Net::HTTPNotFound
         ui.error "The object you are looking for could not be found"
-        ui.info "Message: #{format_rest_error(response)}"
+        ui.info "Response: #{format_rest_error(response)}"
       when Net::HTTPInternalServerError
         ui.error "internal server error"
-        ui.info "Message: #{format_rest_error(response)}"
+        ui.info "Response: #{format_rest_error(response)}"
       when Net::HTTPBadGateway
         ui.error "bad gateway"
-        ui.info "Message: #{format_rest_error(response)}"
+        ui.info "Response: #{format_rest_error(response)}"
       when Net::HTTPServiceUnavailable
         ui.error "Service temporarily unavailable"
-        ui.info "Message: #{format_rest_error(response)}"
+        ui.info "Response: #{format_rest_error(response)}"
       else
         ui.error response.message
-        ui.info "Message: #{format_rest_error(response)}"
+        ui.info "Response: #{format_rest_error(response)}"
       end
     end
 
