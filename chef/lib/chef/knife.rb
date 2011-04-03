@@ -53,7 +53,7 @@ class Chef
     def_delegator :@ui, :confirm
 
     attr_accessor :name_args
-    attr_reader :ui
+    attr_accessor :ui
 
     def self.ui
       @ui ||= Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
@@ -93,6 +93,10 @@ class Chef
 
     def self.snake_case_name
       convert_to_snake_case(name.split('::').last) unless unnamed?
+    end
+
+    def self.common_name
+      snake_case_name.split('_').join(' ')
     end
 
     # Does this class have a name? (Classes created via Class.new don't)
@@ -159,7 +163,7 @@ class Chef
       subcommand_class.load_deps unless want_help?(args)
       instance = subcommand_class.new(args)
       instance.configure_chef
-      instance.run
+      instance.run_with_pretty_exceptions
     end
 
     def self.guess_category(args)
@@ -281,7 +285,7 @@ class Chef
 
       # Don't try to load a knife.rb if it doesn't exist.
       if config[:config_file]
-        Chef::Config.from_file(config[:config_file])
+        read_config_file(config[:config_file])
       else
         # ...but do log a message if no config was found.
         self.msg("No knife configuration file found")
@@ -318,9 +322,127 @@ class Chef
       end
     end
 
+    def read_config_file(file)
+      Chef::Config.from_file(file)
+    rescue SyntaxError => e
+      ui.error "You have invalid ruby syntax in your config file #{file}"
+      ui.info(ui.color(e.message, :red))
+      if file_line = e.message[/#{Regexp.escape(file)}:[\d]+/]
+        line = file_line[/:([\d]+)$/, 1].to_i
+        highlight_config_error(file, line)
+      end
+      exit 1
+    rescue Exception => e
+      ui.error "You have an error in your config file #{file}"
+      ui.info "#{e.class.name}: #{e.message}"
+      filtered_trace = e.backtrace.grep(/#{Regexp.escape(file)}/)
+      filtered_trace.each {|line| ui.msg("  " + ui.color(line, :red))}
+      if !filtered_trace.empty?
+        line_nr = filtered_trace.first[/#{Regexp.escape(file)}:([\d]+)/, 1]
+        ui.msg ""
+        highlight_config_error(file, line_nr.to_i)
+      end
+
+      exit 1
+    end
+
+    def highlight_config_error(file, line)
+      config_file_lines = []
+      IO.readlines(file).each_with_index {|l, i| config_file_lines << "#{(i + 1).to_s.rjust(3)}: #{l.chomp}"}
+      if line == 1
+        lines = config_file_lines[0..3]
+        lines[0] = ui.color(lines[0], :red)
+      else
+        lines = config_file_lines[Range.new(line - 2, line)]
+        lines[1] = ui.color(lines[1], :red)
+      end
+      ui.msg ""
+      lines.each {|l| ui.msg(l)}
+      ui.msg ""
+    end
 
     def show_usage
       stdout.puts("USAGE: " + self.opt_parser.to_s)
+    end
+
+    def run_with_pretty_exceptions
+      unless self.respond_to?(:run)
+        ui.error "You need to add a #run method to your knife command before you can use it"
+      end
+      run
+    rescue Exception => e
+      raise if config[:verbosity] == 2
+      humanize_exception(e)
+      exit 100
+    end
+
+    def humanize_exception(e)
+      case e
+      when SystemExit
+        raise # make sure exit passes through.
+      when Net::HTTPServerException, Net::HTTPFatalError
+        humanize_http_exception(e)
+      when Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError
+        ui.error "Network Error: #{e.message}"
+        ui.info "Check your knife configuration and network settings"
+      when NameError, NoMethodError
+        ui.error "knife encountered an unexpected error"
+        ui.info  "This may be a bug in the '#{self.class.common_name}' knife command or plugin"
+        ui.info  "Exception: #{e.class.name}: #{e.message}"
+      when Chef::Exceptions::PrivateKeyMissing
+        ui.error "Your private key could not be loaded from #{api_key}"
+        ui.info  "Check your configuration file and ensure that your private key is readable"
+      else
+        ui.error "#{e.class.name}: #{e.message}"
+      end
+    end
+
+    def humanize_http_exception(e)
+      response = e.response
+      case response
+      when Net::HTTPUnauthorized
+        ui.error "Failed to authenticate to #{server_url} as #{username} with key #{api_key}"
+        ui.info "Message:  #{format_rest_error(response)}"
+      when Net::HTTPForbidden
+        ui.error "You authenticated successfully to #{server_url} as #{username} but you are not authorized for this action"
+        ui.info "Message:  #{format_rest_error(response)}"
+      when Net::HTTPBadRequest
+        ui.error "The data in your request was invalid"
+        ui.info "Message: #{format_rest_error(response)}"
+      when Net::HTTPNotFound
+        ui.error "The object you are looking for could not be found"
+        ui.info "Message: #{format_rest_error(response)}"
+      when Net::HTTPInternalServerError
+        ui.error "internal server error"
+        ui.info "Message: #{format_rest_error(response)}"
+      when Net::HTTPBadGateway
+        ui.error "bad gateway"
+        ui.info "Message: #{format_rest_error(response)}"
+      when Net::HTTPServiceUnavailable
+        ui.error "Service temporarily unavailable"
+        ui.info "Message: #{format_rest_error(response)}"
+      else
+        ui.error response.message
+        ui.info "Message: #{format_rest_error(response)}"
+      end
+    end
+
+    def username
+      Chef::Config[:node_name]
+    end
+
+    def api_key
+      Chef::Config[:client_key]
+    end
+
+    # Parses JSON from the error response sent by Chef Server and returns the
+    # error message
+    #--
+    # TODO: this code belongs in Chef::REST
+    def format_rest_error(response)
+      Array(Chef::JSONCompat.from_json(response.body)["error"]).join('; ')
+    rescue Exception
+      response.body
     end
 
     def create_object(object, pretty_name=nil, &block)
@@ -388,6 +510,10 @@ class Chef
         require 'chef/rest'
         Chef::REST.new(Chef::Config[:chef_server_url])
       end
+    end
+
+    def server_url
+      Chef::Config[:chef_server_url]
     end
 
   end

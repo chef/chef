@@ -232,7 +232,7 @@ class Chef
             exception = Chef::JSONCompat.from_json(response.body)
             msg = "HTTP Request Returned #{response.code} #{response.message}: "
             msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
-            Chef::Log.warn(msg)
+            Chef::Log.info(msg)
           end
           response.error!
         end
@@ -287,6 +287,9 @@ class Chef
 
         res = yield rest_request
 
+      rescue SocketError, Errno::ETIMEDOUT => e
+        e.message.replace "Error connecting to #{url} - #{e.message}"
+        raise e
       rescue Errno::ECONNREFUSED
         if http_retry_count - http_attempts + 1 > 0
           Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{rest_request.path}, retry #{http_attempts}/#{http_retry_count}")

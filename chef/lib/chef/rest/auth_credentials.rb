@@ -58,7 +58,7 @@ class Chef
         @raw_key = IO.read(key_file).strip
         @key = OpenSSL::PKey::RSA.new(@raw_key)
       rescue SystemCallError, IOError => e
-        Chef::Log.fatal "Failed to read the private key #{key_file}: #{e.inspect}, #{e.backtrace}"
+        Chef::Log.warn "Failed to read the private key #{key_file}: #{e.inspect}"
         raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key_file}, which you told me to use to sign requests!"
       rescue OpenSSL::PKey::RSAError
         msg = "The file #{key_file} does not contain a correctly formatted private key.\n"
