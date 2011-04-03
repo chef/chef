@@ -72,7 +72,7 @@ class Chef
 
       def find_subcommands_via_dirglob
         # The "require paths" of the core knife subcommands bundled with chef
-        files = Dir[File.expand_path('../../knife/*.rb', __FILE__)]
+        files = Dir[File.expand_path('../../../knife/*.rb', __FILE__)]
         files.map! { |knife_file| knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1] }
         files
       end

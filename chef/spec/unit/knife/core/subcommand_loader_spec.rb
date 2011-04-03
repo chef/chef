@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require File.expand_path('../../../spec_helper.rb', __FILE__)
+require File.expand_path('../../../../spec_helper.rb', __FILE__)
 
 describe Chef::Knife::SubcommandLoader do
   before do
