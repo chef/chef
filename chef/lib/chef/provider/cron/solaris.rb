@@ -148,7 +148,7 @@ class Chef
           end
 
           status = write_crontab(crontab)
-          Chef::Log.info("Updated cron '#{@new_resource.name}'")
+          Chef::Log.info("#{@new_resource} updated crontab entry")
         else
           unless @cron_empty
             status = popen4("crontab -l #{@new_resource.user}") do |pid, stdin, stdout, stderr|
@@ -158,7 +158,7 @@ class Chef
 
           crontab << newcron
           status = write_crontab(crontab)
-          Chef::Log.info("Added cron '#{@new_resource.name}'")
+          Chef::Log.info("#{@new_resource} added crontab entry")
         end
       end
 
@@ -185,7 +185,7 @@ class Chef
           end
 
           status = write_crontab(crontab)
-          Chef::Log.info("Deleted cron '#{@new_resource.name}'")
+          Chef::Log.info("#{@new_resource} deleted crontab entry")
         end
       end
 
