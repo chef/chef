@@ -28,6 +28,8 @@ class Chef
           @ui = ui
           @data = if data.respond_to?(:display_hash)
             data.display_hash
+          elsif data.kind_of?(Array)
+            data
           elsif data.respond_to?(:to_hash)
             data.to_hash
           else
