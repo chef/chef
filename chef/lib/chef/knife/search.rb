@@ -24,7 +24,10 @@ class Chef
 
       deps do
         require 'chef/search/query'
+        require 'chef/knife/core/node_presenter'
       end
+
+      include Knife::Core::NodeFormattingOptions
 
       banner "knife search INDEX QUERY (options)"
 
@@ -70,48 +73,60 @@ class Chef
 
       def run
         if config[:query] && @name_args[1]
-          puts "please specify query as an argument or an option via -q, not both"
-          puts opt_parser
+          ui.error "please specify query as an argument or an option via -q, not both"
+          ui.msg opt_parser
           exit 1
         end
         raw_query = config[:query] || @name_args[1]
         if !raw_query || raw_query.empty?
-          puts "no query specified"
-          puts opt_parser
+          ui.error "no query specified"
+          ui.msg opt_parser
           exit 1
         end
 
+        if name_args[0].nil?
+          ui.error "you must specify an item type to search for"
+          exit 1
+        end
+
+        if name_args[0] == 'node'
+          ui.use_presenter Knife::Core::NodePresenter
+        end
+
+
         q = Chef::Search::Query.new
-        display = { :total => 0, :start => config[:start] ? config[:start] : 0, :rows => [ ] }
         query = URI.escape(raw_query,
                            Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-        rows = config[:rows] ? config[:rows] : 20
-        start = config[:start] ? config[:start] : 0
+
+        result_items = []
+        result_count = 0
+
+        rows = config[:rows]
+        start = config[:start]
         begin
           q.search(@name_args[0], query, config[:sort], start, rows) do |item|
             formatted_item = format_for_display(item)
             if formatted_item.respond_to?(:has_key?) && !formatted_item.has_key?('id')
               formatted_item['id'] = item.has_key?('id') ? item['id'] : item.name
             end
-            display[:rows] << formatted_item
-            display[:total] += 1
+            result_items << formatted_item
+            result_count += 1
           end
         rescue Net::HTTPServerException => e
           msg = Chef::JSONCompat.from_json(e.response.body)["error"].first
-          ui.msg("knife search failed: #{msg}")
+          ui.error("knife search failed: #{msg}")
           exit 1
         end
 
-        if config[:id_only]
-          if config[:attribute]
-            display[:rows].each do |row|
-              puts row[config[:attribute]] if row.has_key?(config[:attribute]) && !row[config[:attribute]].nil?
-            end
-          else
-            puts display[:rows].join("\n")
-          end
+        if ui.interchange?
+          output({:results => result_count, :rows => result_items})
         else
-          output(display)
+          ui.msg "#{result_count} items found"
+          ui.msg("\n")
+          result_items.each do |item|
+            output(item)
+            ui.msg("\n")
+          end
         end
       end
     end

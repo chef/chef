@@ -2,4 +2,4 @@
 # Nodes should have a unique name
 ##
 name "compile"
-recipes "test", "test::one", "test::two"
+run_list "test", "test::one", "test::two"

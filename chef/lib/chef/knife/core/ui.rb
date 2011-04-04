@@ -18,18 +18,37 @@
 # limitations under the License.
 #
 
+require 'forwardable'
+require 'chef/knife/core/generic_presenter'
 
 class Chef
   class Knife
+
+    #==Chef::Knife::UI
+    # The User Interaction class used by knife.
     class UI
+
+      extend Forwardable
 
       attr_reader :stdout
       attr_reader :stderr
       attr_reader :stdin
       attr_reader :config
 
+      def_delegator :@presenter, :format_list_for_display
+      def_delegator :@presenter, :format_for_display
+      def_delegator :@presenter, :format_cookbook_list_for_display
+
       def initialize(stdout, stderr, stdin, config)
         @stdout, @stderr, @stdin, @config = stdout, stderr, stdin, config
+        @presenter = Chef::Knife::Core::GenericPresenter.new(self, config)
+      end
+
+      # Creates a new +presenter_class+ object and uses it to format structured
+      # data for display. By default, a Chef::Knife::Core::GenericPresenter
+      # object is used.
+      def use_presenter(presenter_class)
+        @presenter = presenter_class.new(self, config)
       end
 
       def highline
@@ -39,20 +58,25 @@ class Chef
         end
       end
 
+      # Prints a message to stdout. Aliased as +info+ for compatibility with
+      # the logger API.
       def msg(message)
         stdout.puts message
       end
 
       alias :info :msg
 
+      # Print a warning message
       def warn(message)
         msg("#{color('WARNING:', :yellow, :bold)} #{message}")
       end
 
+      # Print an error message
       def error(message)
         msg("#{color('ERROR:', :red, :bold)} #{message}")
       end
 
+      # Print a message describing a fatal error.
       def fatal(message)
         msg("#{color('FATAL:', :red, :bold)} #{message}")
       end
@@ -65,6 +89,9 @@ class Chef
         end
       end
 
+      # Should colored output be used? For output to a terminal, this is
+      # determined by the value of `config[:color]`. When output is not to a
+      # terminal, colored output is never used
       def color?
         config[:color] && stdout.tty?
       end
@@ -75,6 +102,19 @@ class Chef
 
       def list(*args)
         highline.list(*args)
+      end
+
+      # Formats +data+ using the configured presenter and outputs the result
+      # via +msg+. Formatting can be customized by configuring a different
+      # presenter. See +use_presenter+
+      def output(data)
+        msg @presenter.format(data)
+      end
+
+      # Determines if the output format is a data interchange format, i.e.,
+      # JSON or YAML
+      def interchange?
+        @presenter.interchange?
       end
 
       def ask_question(question, opts={})
@@ -96,74 +136,6 @@ class Chef
 
       def pretty_print(data)
         stdout.puts data
-      end
-
-      def output(data)
-        case config[:format]
-        when "json", nil
-          stdout.puts Chef::JSONCompat.to_json_pretty(data)
-        when "yaml"
-          require 'yaml'
-          stdout.puts YAML::dump(data)
-        when "text"
-          # If you were looking for some attribute and there is only one match
-          # just dump the attribute value
-          if data.length == 1 and config[:attribute]
-            stdout.puts data.values[0]
-          else
-            PP.pp(data, stdout)
-          end
-        else
-          raise ArgumentError, "Unknown output format #{config[:format]}"
-        end
-      end
-
-      def format_list_for_display(list)
-        config[:with_uri] ? list : list.keys.sort { |a,b| a <=> b }
-      end
-
-      def format_for_display(data)
-        if config[:attribute]
-          config[:attribute].split(".").each do |attr|
-            if data.respond_to?(:[])
-              data = data[attr]
-            elsif data.nil?
-              nil # don't get no method error on nil
-            else data.respond_to?(attr.to_sym)
-              data = data.send(attr.to_sym)
-            end
-          end
-          { config[:attribute] => data.respond_to?(:to_hash) ? data.to_hash : data }
-        elsif config[:run_list]
-          data = data.run_list.run_list
-          { "run_list" => data }
-        elsif config[:environment]
-          if data.respond_to?(:chef_environment)
-            {"chef_environment" => data.chef_environment}
-          else
-            # this is a place holder for now. Feel free to modify (i.e. add other cases). [nuo]
-            data
-          end
-        elsif config[:id_only]
-          data.respond_to?(:name) ? data.name : data["id"]
-        else
-          data
-        end
-      end
-
-      def format_cookbook_list_for_display(item)
-        if config[:with_uri]
-          item
-        else
-          versions_by_cookbook = item.inject({}) do |collected, ( cookbook, versions )|
-            collected[cookbook] = versions["versions"].map {|v| v['version']}
-            collected
-          end
-          key_length = versions_by_cookbook.keys.map {|name| name.size }.max + 2
-          versions_by_cookbook.sort.map do |cookbook, versions|
-            "#{cookbook.ljust(key_length)} #{versions.join(',')}"
-          end
-        end
       end
 
       def edit_data(data, parse_output=true)

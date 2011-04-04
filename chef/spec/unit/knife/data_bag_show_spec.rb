@@ -28,6 +28,7 @@ describe Chef::Knife::DataBagShow do
   before do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::DataBagShow.new
+    @knife.config[:format] = 'json'
     @rest = mock("Chef::REST")
     @knife.stub!(:rest).and_return(@rest)
     @stdout = StringIO.new
