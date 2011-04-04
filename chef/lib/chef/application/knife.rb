@@ -109,7 +109,7 @@ class Chef::Application::Knife < Chef::Application
     :short => "-F FORMAT",
     :long => "--format FORMAT",
     :description => "Which format to use for output",
-    :default => "json"
+    :default => "summary"
 
   option :version,
     :short        => "-v",

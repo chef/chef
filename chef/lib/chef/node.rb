@@ -19,6 +19,7 @@
 # limitations under the License.
 #
 
+require 'forwardable'
 require 'chef/config'
 require 'chef/cookbook/cookbook_collection'
 require 'chef/nil_argument'
@@ -38,6 +39,10 @@ require 'chef/json_compat'
 
 class Chef
   class Node
+
+    extend Forwardable
+
+    def_delegators :construct_attributes, :keys, :each_key, :each_value, :key?, :has_key?
 
     attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list
     attr_accessor :override_attrs, :default_attrs, :normal_attrs, :automatic_attrs
@@ -466,6 +471,18 @@ class Chef
       index_hash["role"] = run_list.role_names if run_list.role_names.length > 0
       index_hash["run_list"] = run_list.run_list if run_list.run_list.length > 0
       index_hash
+    end
+
+    def display_hash
+      display = {}
+      display["name"]             = name
+      display["chef_environment"] = chef_environment
+      display["automatic"]        = automatic_attrs
+      display["normal"]           = normal_attrs
+      display["default"]          = default_attrs
+      display["override"]         = override_attrs
+      display["run_list"]         = run_list.run_list
+      display
     end
 
     # Serialize this object as a hash
