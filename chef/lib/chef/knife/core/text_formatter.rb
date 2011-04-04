@@ -62,7 +62,7 @@ class Chef
               end
             end
           else
-            buffer << indent_line(data.kind_of?(String) ? data : data.inspect, indent)
+            buffer << indent_line(stringify_value(data), indent)
           end
           buffer
         end
@@ -83,8 +83,12 @@ class Chef
             total_indent = (2 * indent) + justify_width + 1
             indent_line("#{key} #{lines.shift}", indent) << lines.map {|l| (" " * total_indent) + l << "\n" }.join("")
           else
-            indent_line("#{key} #{value}", indent)
+            indent_line("#{key} #{stringify_value(value)}", indent)
           end
+        end
+
+        def stringify_value(data)
+          data.kind_of?(String) ? data : data.inspect
         end
 
       end

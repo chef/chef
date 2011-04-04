@@ -17,10 +17,13 @@
 #
 
 require 'chef/knife'
+require 'chef/knife/core/node_presenter'
 
 class Chef
   class Knife
     class NodeShow < Knife
+
+      include Knife::Core::NodeFormattingOptions
 
       deps do
         require 'chef/node'
@@ -29,9 +32,11 @@ class Chef
 
       banner "knife node show NODE (options)"
 
+      attrs_to_show = []
       option :attribute,
         :short => "-a [ATTR]",
         :long => "--attribute [ATTR]",
+        :proc => lambda {|val| attrs_to_show << val},
         :description => "Show only one attribute"
 
       option :run_list,
@@ -45,6 +50,7 @@ class Chef
         :description  => "Show only the Chef environment"
 
       def run
+        ui.use_presenter Knife::Core::NodePresenter
         @node_name = @name_args[0]
 
         if @node_name.nil?

@@ -368,11 +368,6 @@ class Chef
       args.length > 0 ? @run_list.reset!(args) : @run_list
     end
 
-    def recipes(*args)
-      Chef::Log.warn "Chef::Node#recipes method is deprecated.  Please use Chef::Node#run_list"
-      run_list(*args)
-    end
-
     # Returns true if this Node expects a given role, false if not.
     def run_list?(item)
       run_list.detect { |r| r == item } ? true : false

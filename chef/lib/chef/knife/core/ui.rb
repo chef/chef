@@ -41,6 +41,10 @@ class Chef
         @presenter = Chef::Knife::Core::GenericPresenter.new(self, config)
       end
 
+      def use_presenter(presenter_class)
+        @presenter = presenter_class.new(self, config)
+      end
+
       def highline
         @highline ||= begin
           require 'highline'

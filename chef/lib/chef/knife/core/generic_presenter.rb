@@ -32,16 +32,16 @@ class Chef
 
         def format(data)
           case config[:format]
-          when "summary", nil
+          when "summary", /^s/, nil
             summarize(data)
-          when "text"
+          when "text", /^t/
             text_format(data)
-          when "json"
+          when "json", /^j/
             Chef::JSONCompat.to_json_pretty(data)
-          when "yaml"
+          when "yaml", /^y/
             require 'yaml'
             YAML::dump(data)
-          when "pp"
+          when "pp", /^p/
             # If you were looking for some attribute and there is only one match
             # just dump the attribute value
             if data.length == 1 and config[:attribute]
@@ -72,16 +72,12 @@ class Chef
 
         def format_for_display(data)
           if config[:attribute]
-            config[:attribute].split(".").each do |attr|
-              if data.respond_to?(:[])
-                data = data[attr]
-              elsif data.nil?
-                nil # don't get no method error on nil
-              else data.respond_to?(attr.to_sym)
-                data = data.send(attr.to_sym)
-              end
+            result = {}
+            Array(config[:attribute]).each do |nested_value_spec|
+              nested_value = extract_nested_value(data, nested_value_spec)
+              result[nested_value_spec] = nested_value
             end
-            { config[:attribute] => data.respond_to?(:to_hash) ? data.to_hash : data }
+            result
           elsif config[:run_list]
             data = data.run_list.run_list
             { "run_list" => data }
@@ -97,6 +93,25 @@ class Chef
           else
             data
           end
+        end
+
+        def extract_nested_value(data, nested_value_spec)
+          nested_value_spec.split(".").each do |attr|
+            if data.nil?
+              nil # don't get no method error on nil
+            elsif data.respond_to?(attr.to_sym)
+              data = data.send(attr.to_sym)
+            elsif data.respond_to?(:[])
+              data = data[attr]
+            else
+              data = begin
+                data.send(attr.to_sym)
+              rescue NoMethodError
+                nil
+              end
+            end
+          end
+          ( !data.kind_of?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
         end
 
         def format_cookbook_list_for_display(item)
