@@ -911,7 +911,8 @@ class Chef
           elsif segment == :templates || segment == :files
             matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+?)/(.+))")
             unless matcher
-              Chef::Log.debug("Skipping file #{segment_file}, as it doesn't have a proper segment.")
+              Chef::Log.debug("Skipping file #{segment_file}, as it isn't in any of the proper directories (platform-version, platform or default)")
+              Chef::Log.debug("You probably need to move #{segment_file} into the 'default' sub-directory")
               next
             end
             path = matcher[1]
