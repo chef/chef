@@ -35,7 +35,7 @@ class Chef
 
         if sentinel_file = @new_resource.creates
           if ::File.exists?(sentinel_file)
-            Chef::Log.info("Skipping #{self} - sentinel file #{sentinel_file} exists.")
+            Chef::Log.debug("#{@new_resource} sentinel file #{sentinel_file} exists - nothing to do")
             return false
           end
         end
@@ -52,7 +52,7 @@ class Chef
 
         result = shell_out!(@new_resource.command, opts)
         @new_resource.updated_by_last_action(true)
-        Chef::Log.info("Ran #{@new_resource} successfully")
+        Chef::Log.info("#{@new_resource} successful")
       end
 
     end
