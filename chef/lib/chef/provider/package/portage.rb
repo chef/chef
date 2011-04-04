@@ -46,7 +46,7 @@ class Chef
             raise Chef::Exceptions::Package, "Multiple packages found for #{@new_resource.package_name}: #{atoms.join(" ")}. Specify a category."
           elsif versions.size == 1
             @current_resource.version(versions.first.last)
-            Chef::Log.debug("Got current version #{$1}")
+            Chef::Log.debug("#{@new_resource} current version #{$1}")
           end
 
           @current_resource

@@ -29,21 +29,21 @@ class Chef
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
         
-          Chef::Log.debug("Checking apt-cache policy for #{@new_resource.package_name}")
+          Chef::Log.debug("#{@new_resource} checking apt-cache policy")
           status = popen4("apt-cache policy #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
               when /^\s{2}Installed: (.+)$/
                 installed_version = $1
                 if installed_version == '(none)'
-                  Chef::Log.debug("Current version is nil")
+                  Chef::Log.debug("#{@new_resource} current version is nil")
                   @current_resource.version(nil)
                 else
-                  Chef::Log.debug("Current version is #{installed_version}")
+                  Chef::Log.debug("#{@new_resource} current version is #{installed_version}")
                   @current_resource.version(installed_version)
                 end
               when /^\s{2}Candidate: (.+)$/
-                Chef::Log.debug("Candidate version is #{$1}")                
+                Chef::Log.debug("#{@new_resource} candidate version is #{$1}")                
                 @candidate_version = $1
               end
             end
@@ -94,7 +94,7 @@ class Chef
         def preseed_package(name, version)
           preseed_file = get_preseed_file(name, version)
           if preseed_file
-            Chef::Log.info("Pre-seeding #{@new_resource} with package installation instructions.")
+            Chef::Log.info("#{@new_resource} pre-seeding package installation instructions")
             run_command_with_systems_locale(
               :command => "debconf-set-selections #{preseed_file}",
               :environment => {

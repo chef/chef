@@ -100,11 +100,11 @@ class Chef
           def candidate_version_from_file(gem_dependency, source)
             spec = Gem::Format.from_file_by_path(source).spec
             if spec.satisfies_requirement?(gem_dependency)
-              logger.debug {"found candidate gem version #{spec.version} from local gem package #{source}"}
+              logger.debug {"#{@new_resource} found candidate gem version #{spec.version} from local gem package #{source}"}
               spec.version
             else
               # This is probably going to end badly...
-              logger.warn { "The gem package #{source} does not satisfy the requirements #{gem_dependency.to_s}" }
+              logger.warn { "#{@new_resource} gem package #{source} does not satisfy the requirements #{gem_dependency.to_s}" }
               nil
             end
           end
@@ -133,11 +133,11 @@ class Chef
             spec = spec_with_source && spec_with_source[0]
             version = spec && spec_with_source[0].version
             if version
-              logger.debug { "Found gem #{spec.name} version #{version} for platform #{spec.platform} from #{spec_with_source[1]}" }
+              logger.debug { "#{@new_resource} found gem #{spec.name} version #{version} for platform #{spec.platform} from #{spec_with_source[1]}" }
               version
             else
               source_list = sources.compact.empty? ? "[#{Gem.sources.join(', ')}]" : "[#{sources.join(', ')}]"
-              logger.warn { "Failed to find gem #{gem_dependency} from #{source_list}" }
+              logger.warn { "#{@new_resource} failed to find gem #{gem_dependency} from #{source_list}" }
               nil
             end
           end
@@ -328,16 +328,16 @@ class Chef
           # is the current version
           if !matching_installed_versions.empty?
             gemspec = matching_installed_versions.last
-            logger.debug { "Found installed gem #{gemspec.name} version #{gemspec.version} matching #{gem_dependency}"}
+            logger.debug { "#{@new_resource} found installed gem #{gemspec.name} version #{gemspec.version} matching #{gem_dependency}"}
             gemspec
           # If no version matching the requirements exists, the latest installed
           # version is the current version.
           elsif !all_installed_versions.empty?
             gemspec = all_installed_versions.last
-            logger.debug { "Newest installed version of gem #{gemspec.name} is #{gemspec.version}" }
+            logger.debug { "#{@new_resource} newest installed version of gem #{gemspec.name} is #{gemspec.version}" }
             gemspec
           else
-            logger.debug { "No installed version found for #{gem_dependency.to_s}"}
+            logger.debug { "#{@new_resource} no installed version found for #{gem_dependency.to_s}"}
             nil
           end
         end

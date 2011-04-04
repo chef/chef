@@ -126,7 +126,7 @@ class Chef
 
                 # Expect [ { :version => "ver", :release => "rel" }, { :version => "ver", :release => "rel" }, { :version => "ver", :release => "rel" } ] ???
                 matching_versions.each do |ver|
-                  Chef::Log.debug("#{package_name}: trying to match #{desired_version} to version #{ver[:version]} and release #{ver[:release]}")
+                  Chef::Log.debug("#{@new_resource} trying to match #{desired_version} to version #{ver[:version]} and release #{ver[:release]}")
                   if (desired_version == "#{ver[:version]}-#{ver[:release]}")
                     return true
                   end
@@ -176,7 +176,7 @@ class Chef
               raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
             end
 
-            Chef::Log.debug("Checking rpm status for  #{@new_resource.package_name}")
+            Chef::Log.debug("#{@new_resource} checking rpm status")
             status = popen4("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}") do |pid, stdin, stdout, stderr|
               stdout.each do |line|
                 case line
@@ -188,7 +188,7 @@ class Chef
             end
           end
 
-          Chef::Log.debug("Checking yum info for #{@new_resource.package_name}#{yum_arch}")
+          Chef::Log.debug("#{@new_resource} checking yum info for #{@new_resource.package_name}#{yum_arch}")
 
           @yum.refresh
 
@@ -201,7 +201,7 @@ class Chef
           else
             @candidate_version = installed_version
           end
-          Chef::Log.debug("#{@current_resource.name}: Installed version: #{installed_version} Candidate version: #{candidate_version}")
+          Chef::Log.debug("#{@new_resource} installed version: #{installed_version} candidate version: #{candidate_version}")
 
           @current_resource
         end

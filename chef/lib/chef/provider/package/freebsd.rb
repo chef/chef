@@ -69,10 +69,10 @@ class Chef
           @current_resource.package_name(@new_resource.package_name)
 
           @current_resource.version(current_installed_version)
-          Chef::Log.debug("Current version is #{@current_resource.version}") if @current_resource.version
+          Chef::Log.debug("#{@new_resource} current version is #{@current_resource.version}") if @current_resource.version
 
           @candidate_version = ports_candidate_version
-          Chef::Log.debug("Ports candidate version is #{@candidate_version}") if @candidate_version
+          Chef::Log.debug("#{@new_resource} ports candidate version is #{@candidate_version}") if @candidate_version
 
           @current_resource
         end
@@ -97,13 +97,12 @@ class Chef
               shell_out!("make -DBATCH install", :cwd => port_path, :env => nil).status
             when /^http/, /^ftp/
               shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
-              Chef::Log.info("Installed package #{package_name} from: #{@new_resource.source}")
+              Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
             when /^\//
               shell_out!("pkg_add #{@new_resource.name}", :env => { "PKG_PATH" => @new_resource.source , 'LC_ALL'=>nil}).status
-              Chef::Log.info("Installed package #{@new_resource.name} from: #{@new_resource.source}")
+              Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
             else
               shell_out!("pkg_add -r #{latest_link_name}", :env => nil).status
-              Chef::Log.info("Installed package #{package_name}")
             end
           end
         end
