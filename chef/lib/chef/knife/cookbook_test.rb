@@ -45,15 +45,22 @@ class Chef
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
+        checked_a_cookbook = false
         if config[:all]
-          cl = Chef::CookbookLoader.new(config[:cookbook_path])
-          cl.each do |key, cookbook|
+          cookbook_loader.each do |key, cookbook|
+            checked_a_cookbook = true
             test_cookbook(key)
           end
         else
           @name_args.each do |cb|
+            puts "checking #{cb}"
+            next unless cookbook_loader.cookbook_exists?(cb)
+            checked_a_cookbook = true
             test_cookbook(cb)
           end
+        end
+        unless checked_a_cookbook
+          ui.warn("No cookbooks to test in #{Array(config[:cookbook_path]).join(',')} - is your cookbook path misconfigured?")
         end
       end
 
@@ -75,6 +82,10 @@ class Chef
       def test_templates(syntax_checker)
         ui.info("Validating templates")
         exit(1) unless syntax_checker.validate_templates
+      end
+
+      def cookbook_loader
+        @cookbook_loader ||= Chef::CookbookLoader.new(config[:cookbook_path])
       end
 
     end
