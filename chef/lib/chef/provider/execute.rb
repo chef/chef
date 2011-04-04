@@ -52,7 +52,7 @@ class Chef
 
         result = shell_out!(@new_resource.command, opts)
         @new_resource.updated_by_last_action(true)
-        Chef::Log.info("#{@new_resource} successful")
+        Chef::Log.info("#{@new_resource} ran successfully")
       end
 
     end
