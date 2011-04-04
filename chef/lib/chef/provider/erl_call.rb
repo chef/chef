@@ -58,15 +58,15 @@ class Chef
         begin
           pid, stdin, stdout, stderr = popen4(command, :waitlast => true)
 
-          Chef::Log.debug("Running erl_call[#{@new_resource.name}]")
-          Chef::Log.debug("erl_call[#{@new_resource.name}] command: #{command}")
-          Chef::Log.debug("erl_call[#{@new_resource.name}] code: #{@new_resource.code}")
+          Chef::Log.debug("#{@new_resource} running")
+          Chef::Log.debug("#{@new_resource} command: #{command}")
+          Chef::Log.debug("#{@new_resource} code: #{@new_resource.code}")
 
           @new_resource.code.each_line { |line| stdin.puts(line.chomp) }
 
           stdin.close
 
-          Chef::Log.debug("erl_call[#{@new_resource.name}] output: ")
+          Chef::Log.debug("#{@new_resource} output: ")
 
           stdout_output = ""
           stdout.each_line { |line| stdout_output << line }
@@ -86,9 +86,10 @@ class Chef
             raise Chef::Exceptions::ErlCall, stdout_output
           end
 
-          Chef::Log.debug("#{stdout_output}")
-          Chef::Log.info("Ran erl_call[#{@new_resource.name}] successfully")
+          @new_resource.updated_by_last_action(true)
 
+          Chef::Log.debug("#{@new_resource} #{stdout_output}")
+          Chef::Log.info("#{@new_resouce} ran successfully")
         ensure
           Process.wait(pid) if pid
         end
