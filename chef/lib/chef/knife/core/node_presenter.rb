@@ -23,6 +23,8 @@ class Chef
   class Knife
     module Core
 
+      # This module may be included into a knife subcommand class to automatically
+      # add configuration options used by the NodePresenter
       module NodeFormattingOptions
         # :nodoc:
         # Would prefer to do this in a rational way, but can't be done b/c of
@@ -46,20 +48,27 @@ class Chef
         end
       end
 
+      #==Chef::Knife::Core::NodePresenter
+      # A customized presenter for Chef::Node objects. Supports variable-length
+      # output formats for displaying node data
       class NodePresenter < GenericPresenter
 
+        # Converts a Chef::Node object to a string suitable for output to a
+        # terminal. If config[:medium_output] or config[:long_output] are set
+        # the volume of output is adjusted accordingly. Uses colors if enabled
+        # in the the ui object.
         def summarize(data)
           if data.kind_of?(Chef::Node)
             node = data
             summarized=<<-SUMMARY
-#{key('Node:')}        #{node.name}
+#{ui.color('Node Name:', :bold)}   #{ui.color(node.name, :bold)}
 #{key('Environment:')} #{node.chef_environment}
-#{key('FQDN:')}        #{node.fqdn}
-#{key('IP:')}          #{node.ipaddress}
+#{key('FQDN:')}        #{node[:fqdn]}
+#{key('IP:')}          #{node[:ipaddress]}
 #{key('Run List:')}    #{node.run_list}
-#{key('Roles:')}       #{node[:roles].join(', ')}
-#{key('Recipes')}      #{node[:recipes].join(', ')}
-#{key('Platform:')}    #{node.platform} #{node.platform_version}
+#{key('Roles:')}       #{Array(node[:roles]).join(', ')}
+#{key('Recipes')}      #{Array(node[:recipes]).join(', ')}
+#{key('Platform:')}    #{node[:platform]} #{node[:platform_version]}
 SUMMARY
             if config[:medium_output] || config[:long_output]
               summarized +=<<-MORE

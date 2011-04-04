@@ -43,7 +43,7 @@ class Chef
           buffer = ''
 
           if data.respond_to?(:keys)
-            justify_width = data.keys.map {|k| k.to_s.size }.max + 2
+            justify_width = data.keys.map {|k| k.to_s.size }.max.to_i + 2
             data.sort.each do |key, value|
               justified_key = ui.color("#{key}:".ljust(justify_width), :cyan)
               if should_enumerate?(value)

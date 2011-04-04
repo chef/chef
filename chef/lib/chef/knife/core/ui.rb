@@ -23,6 +23,9 @@ require 'chef/knife/core/generic_presenter'
 
 class Chef
   class Knife
+
+    #==Chef::Knife::UI
+    # The User Interaction class used by knife.
     class UI
 
       extend Forwardable
@@ -41,6 +44,9 @@ class Chef
         @presenter = Chef::Knife::Core::GenericPresenter.new(self, config)
       end
 
+      # Creates a new +presenter_class+ object and uses it to format structured
+      # data for display. By default, a Chef::Knife::Core::GenericPresenter
+      # object is used.
       def use_presenter(presenter_class)
         @presenter = presenter_class.new(self, config)
       end
@@ -52,20 +58,25 @@ class Chef
         end
       end
 
+      # Prints a message to stdout. Aliased as +info+ for compatibility with
+      # the logger API.
       def msg(message)
         stdout.puts message
       end
 
       alias :info :msg
 
+      # Print a warning message
       def warn(message)
         msg("#{color('WARNING:', :yellow, :bold)} #{message}")
       end
 
+      # Print an error message
       def error(message)
         msg("#{color('ERROR:', :red, :bold)} #{message}")
       end
 
+      # Print a message describing a fatal error.
       def fatal(message)
         msg("#{color('FATAL:', :red, :bold)} #{message}")
       end
@@ -78,6 +89,9 @@ class Chef
         end
       end
 
+      # Should colored output be used? For output to a terminal, this is
+      # determined by the value of `config[:color]`. When output is not to a
+      # terminal, colored output is never used
       def color?
         config[:color] && stdout.tty?
       end
@@ -90,8 +104,17 @@ class Chef
         highline.list(*args)
       end
 
+      # Formats +data+ using the configured presenter and outputs the result
+      # via +msg+. Formatting can be customized by configuring a different
+      # presenter. See +use_presenter+
       def output(data)
         msg @presenter.format(data)
+      end
+
+      # Determines if the output format is a data interchange format, i.e.,
+      # JSON or YAML
+      def interchange?
+        @presenter.interchange?
       end
 
       def ask_question(question, opts={})

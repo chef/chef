@@ -1,4 +1,4 @@
-#
+#--
 # Author:: Daniel DeLeo (<dan@opscode.com>)
 # Copyright:: Copyright (c) 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -21,27 +21,52 @@ require 'chef/knife/core/text_formatter'
 class Chef
   class Knife
     module Core
+
+      #==Chef::Knife::Core::GenericPresenter
+      # The base presenter class for displaying structured data in knife commands.
+      # This is not an abstract base class, and it is suitable for displaying
+      # most kinds of objects that knife needs to display.
       class GenericPresenter
 
         attr_reader :ui
         attr_reader :config
 
+        # Instaniates a new GenericPresenter. This is generally handled by the
+        # Chef::Knife::UI object, though you need to match the signature of this
+        # method if you intend to use your own presenter instead.
         def initialize(ui, config)
           @ui, @config = ui, config
         end
 
+        # Is the selected output format a data interchange format?
+        # Returns true if the selected output format is json or yaml, false
+        # otherwise. Knife search uses this to adjust its data output so as not
+        # to produce invalid JSON output.
+        def interchange?
+          case parse_format_option
+          when :json, :yaml
+            true
+          else
+            false
+          end
+        end
+
+        # Returns a String representation of +data+ that is suitable for output
+        # to a terminal or perhaps for data interchange with another program.
+        # The representation of the +data+ depends on the value of the 
+        # `config[:format]` setting.
         def format(data)
-          case config[:format]
-          when "summary", /^s/, nil
+          case parse_format_option
+          when :summary
             summarize(data)
-          when "text", /^t/
+          when :text
             text_format(data)
-          when "json", /^j/
+          when :json
             Chef::JSONCompat.to_json_pretty(data)
-          when "yaml", /^y/
+          when :yaml
             require 'yaml'
             YAML::dump(data)
-          when "pp", /^p/
+          when :pp
             # If you were looking for some attribute and there is only one match
             # just dump the attribute value
             if data.length == 1 and config[:attribute]
@@ -51,6 +76,28 @@ class Chef
               PP.pp(data, out)
               out.string
             end
+          end
+        end
+
+        # Converts the user-supplied value of `config[:format]` to a Symbol
+        # representing the desired output format.
+        # ===Returns
+        # returns one of :summary, :text, :json, :yaml, or :pp
+        # ===Raises
+        # Raises an ArgumentError if the desired output format could not be
+        # determined from the value of `config[:format]`
+        def parse_format_option
+          case config[:format]
+          when "summary", /^s/, nil
+            :summary
+          when "text", /^t/
+            :text
+          when "json", /^j/
+            :json
+          when "yaml", /^y/
+            :yaml
+          when "pp", /^p/
+            :pp
           else
             raise ArgumentError, "Unknown output format #{config[:format]}"
           end
@@ -62,6 +109,8 @@ class Chef
           text_format(data)
         end
 
+        # Converts the +data+ to a String in the text format. Uses
+        # Chef::Knife::Core::TextFormatter
         def text_format(data)
           TextFormatter.new(data, ui).formatted_data
         end
