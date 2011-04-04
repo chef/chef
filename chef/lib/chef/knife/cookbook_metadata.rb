@@ -24,6 +24,7 @@ class Chef
     class CookbookMetadata < Knife
 
       deps do
+        require 'chef/cookbook_loader'
         require 'chef/cookbook/metadata'
       end
 
@@ -49,12 +50,16 @@ class Chef
             generate_metadata(cname.to_s)
           end
         else
-          generate_metadata(@name_args[0])
+          cookbook_name = @name_args[0]
+          if cookbook_name.nil? || cookbook_name.empty?
+            ui.error "You must specify the cookbook to generate metadata for, or use the --all option."
+            exit 1
+          end
+          generate_metadata(cookbook_name)
         end
       end
 
       def generate_metadata(cookbook)
-        ui.info("Generating Metadata")
         Array(config[:cookbook_path]).reverse.each do |path|
           file = File.expand_path(File.join(path, cookbook, 'metadata.rb'))
           if File.exists?(file)
@@ -66,7 +71,7 @@ class Chef
       end
 
       def generate_metadata_from_file(cookbook, file)
-        Chef::Log.debug("Generating metadata for #{cookbook} from #{file}")
+        ui.info("Generating metadata for #{cookbook} from #{file}")
         md = Chef::Cookbook::Metadata.new
         md.name(cookbook)
         md.from_file(file)
