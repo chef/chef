@@ -61,9 +61,9 @@ class Chef
       def action_deploy
         if all_releases.include?(release_path)
           if all_releases[-1] == release_path
-            Chef::Log.debug("Already deployed app at #{release_path}, and it is the latest revision.  Use action :force_deploy to re-deploy this revision.")
+            Chef::Log.debug("#{@new_resource} is the latest version")
           else
-            Chef::Log.info("Already deployed app at #{release_path}.  Rolling back to it - use action :force_deploy to re-checkout this revision.")
+            # Chef::Log.info("Already deployed app at #{release_path}.  Rolling back to it - use action :force_deploy to re-checkout this revision.")
             action_rollback
           end
         else
@@ -106,7 +106,6 @@ class Chef
       end
 
       def deploy
-        Chef::Log.info "deploying branch: #{@new_resource.branch}"
         enforce_ownership
         update_cached_repo
         copy_cached_repo
@@ -120,6 +119,7 @@ class Chef
         restart
         callback(:after_restart, @new_resource.after_restart)
         cleanup!
+        Chef::Log.info "#{@new_resource} deployed to #{@new_resource.deploy_to}"
       end
 
       def callback(what, callback_code=nil)
@@ -199,7 +199,6 @@ class Chef
       end
 
       def run_scm_sync
-        Chef::Log.info "updating the cached checkout"
         @scm_provider.action_sync
       end
 
@@ -216,8 +215,8 @@ class Chef
       end
 
       def enforce_ownership
-        Chef::Log.info "ensuring proper ownership"
         FileUtils.chown_R(@new_resource.user, @new_resource.group, @new_resource.deploy_to)
+        Chef::Log.info("#{@new_resource} set ownership of #{@new_resource.deploy_to} to #{@new_resource.user}, group to #{@new_resource.group}")
       end
 
       def link_current_release_to_production
