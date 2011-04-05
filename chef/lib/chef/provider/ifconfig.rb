@@ -80,8 +80,8 @@ class Chef
           run_command(
             :command => command
           )
+					Chef::Log.info("#{@new_resource} added") 
           @new_resource.updated_by_last_action(true)
-
         end
 
         # Write out the config files
@@ -96,9 +96,10 @@ class Chef
           run_command(
             :command => command
           )
+					Chef::Log.info("#{@new_resource} deleted")
           @new_resource.updated_by_last_action(true)
         else
-          Chef::Log.debug("Ifconfig #{@current_resource} does not exist")
+          Chef::Log.debug("#{@new_resource} does not exist - nothing to do")
         end
       end
 
@@ -121,6 +122,7 @@ class Chef
           network_file = ::File.new("/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}", "w")
           network_file.puts(template.result(b))
           network_file.close
+					Chef::Log.info("#{@new_resource} created configuration file")
         when "debian","ubuntu"
           # template
         when "slackware"
