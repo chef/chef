@@ -67,8 +67,8 @@ class Chef
           { :gid => "-g" }.sort { |a,b| a[0] <=> b[0] }.each do |field, option|
             if @current_resource.send(field) != @new_resource.send(field)
               if @new_resource.send(field)
-                Chef::Log.debug("#{@new_resource}: setting #{field.to_s} to #{@new_resource.send(field)}")
                 opts << " #{option} '#{@new_resource.send(field)}'"
+                Chef::Log.debug("#{@new_resource} set #{field.to_s} to #{@new_resource.send(field)}")
               end
             end
           end

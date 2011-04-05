@@ -41,7 +41,7 @@ class Chef
           group_info = Etc.getgrnam(@new_resource.group_name)
         rescue ArgumentError => e
           @group_exists = false
-          Chef::Log.debug("#{@new_resource}: group does not exist")
+          Chef::Log.debug("#{@new_resource} group does not exist")
         end
         
         if group_info
@@ -77,12 +77,12 @@ class Chef
         case @group_exists
         when false
           create_group
-          Chef::Log.info("Created #{@new_resource}")
+          Chef::Log.info("#{@new_resource} created")
           @new_resource.updated_by_last_action(true)
         else 
           if compare_group
             manage_group
-            Chef::Log.info("Altered #{@new_resource}")
+            Chef::Log.info("#{@new_resource} altered")
             @new_resource.updated_by_last_action(true)
           end
         end
@@ -92,7 +92,7 @@ class Chef
         if @group_exists
           remove_group
           @new_resource.updated_by_last_action(true)
-          Chef::Log.info("Removed #{@new_resource}")
+          Chef::Log.info("#{@new_resource} removed")
         end
       end
       
@@ -100,7 +100,7 @@ class Chef
         if @group_exists && compare_group
           manage_group 
           @new_resource.updated_by_last_action(true)
-          Chef::Log.info("Managed #{@new_resource}")
+          Chef::Log.info("#{@new_resource} managed")
         end
       end
       
@@ -109,7 +109,7 @@ class Chef
           if compare_group
             manage_group
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("Modified #{@new_resource}")
+            Chef::Log.info("#{@new_resource} modified")
           end
         else
           raise Chef::Exceptions::Group, "Cannot modify #{@new_resource} - group does not exist!"
