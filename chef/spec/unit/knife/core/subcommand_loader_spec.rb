@@ -43,12 +43,12 @@ describe Chef::Knife::SubcommandLoader do
   end
 
   it "finds user-specific subcommands in the user's ~/.chef directory" do
-    expected_command = File.join(@home, '.chef', 'plugins', 'knife', 'example_home_subcommand')
+    expected_command = File.join(@home, '.chef', 'plugins', 'knife', 'example_home_subcommand.rb')
     @loader.site_subcommands.should include(expected_command)
   end
 
   it "finds repo specific subcommands by searching for a .chef directory" do
-    expected_command = File.join(CHEF_SPEC_DATA, 'knife-site-subcommands', 'plugins', 'knife', 'example_subcommand')
+    expected_command = File.join(CHEF_SPEC_DATA, 'knife-site-subcommands', 'plugins', 'knife', 'example_subcommand.rb')
     @loader.site_subcommands.should include(expected_command)
   end
 end

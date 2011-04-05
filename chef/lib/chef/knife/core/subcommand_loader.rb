@@ -50,7 +50,6 @@ class Chef
         # finally search ~/.chef/plugins/knife/*.rb
         user_specific_files.concat Dir.glob(File.join(env['HOME'], '.chef', 'plugins', 'knife', '*.rb'))
 
-        user_specific_files.map! { |path| path[/(.+).rb/, 1] }
         user_specific_files
       end
 
