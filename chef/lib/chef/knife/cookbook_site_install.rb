@@ -95,7 +95,7 @@ class Chef
 
         if config[:deps]
           md = Chef::Cookbook::Metadata.new
-          md.from_file(File.join(cookbook_path, "metadata.rb"))
+          md.from_file(File.join(@install_path, @cookbook_name, "metadata.rb"))
           md.dependencies.each do |cookbook, version_list|
             # Doesn't do versions.. yet
             nv = Chef::Knife::CookbookSiteVendor.new
