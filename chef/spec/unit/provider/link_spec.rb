@@ -201,7 +201,7 @@ describe Chef::Resource::Link do
         end
 
         it "should log an appropriate message" do
-          Chef::Log.should_receive(:info).with("Creating a symbolic link from /tmp/lolololol -> /tmp/fofile-link for link[/tmp/fofile-link]")
+          Chef::Log.should_receive(:info).with("link[/tmp/fofile-link] created")
           @provider.action_create
         end
 
@@ -324,7 +324,7 @@ describe Chef::Resource::Link do
           end
 
           it "should log an appropriate error message" do
-            Chef::Log.should_receive(:info).with("Deleting link[/tmp/fofile-link] at /tmp/fofile-link")
+            Chef::Log.should_receive(:info).with("link[/tmp/fofile-link] deleted")
             @provider.action_delete
           end
 
@@ -377,7 +377,7 @@ describe Chef::Resource::Link do
             end
 
             it "deletes the link and marks the resource updated" do
-              Chef::Log.should_receive(:info).with("Deleting link[/tmp/fofile-link] at /tmp/fofile-link")
+              Chef::Log.should_receive(:info).with("link[/tmp/fofile-link] deleted")
               File.should_receive(:delete).with("/tmp/fofile-link").and_return(true)
               @provider.action_delete
               @new_resource.should be_updated
