@@ -34,12 +34,12 @@ describe Chef::Knife::SubcommandLoader do
 
   it "finds files installed via rubygems" do
     @loader.find_subcommands_via_rubygems.should include('chef/knife/node_create')
-    @loader.find_subcommands_via_rubygems.each {|path| path.should match(%r[chef/knife/.+])}
+    @loader.find_subcommands_via_rubygems.each {|rel_path, abs_path| abs_path.should match(%r[chef/knife/.+])}
   end
 
   it "finds files using a dirglob when rubygems is not available" do
     @loader.find_subcommands_via_dirglob.should include('chef/knife/node_create')
-    @loader.find_subcommands_via_dirglob.each {|path| path.should match(%r[chef/knife/.+])}
+    @loader.find_subcommands_via_dirglob.each {|rel_path, abs_path| abs_path.should match(%r[chef/knife/.+])}
   end
 
   it "finds user-specific subcommands in the user's ~/.chef directory" do
