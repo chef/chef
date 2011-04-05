@@ -47,20 +47,20 @@ CRON
 
     it "should report if it can't find the cron entry" do
       @provider.stub!(:popen4).and_return(@status)
-      Chef::Log.should_receive(:debug).with("Cron '#{@new_resource.name}' not found")
+      Chef::Log.should_receive(:debug).with("#{@new_resource} cron '#{@new_resource.name}' not found")
       @provider.load_current_resource
     end
 
     it "should report an empty crontab" do
       @status = mock("Status", :exitstatus => 1)
       @provider.stub!(:popen4).and_return(@status)
-      Chef::Log.should_receive(:debug).with("Cron empty for '#{@new_resource.user}'")
+      Chef::Log.should_receive(:debug).with("#{@new_resource} cron empty for '#{@new_resource.user}'")
       @provider.load_current_resource
     end
 
     it "should report finding a match if the entry exists" do
       @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
+      Chef::Log.should_receive(:debug).with("#{@new_resource} found cron '#{@new_resource.name}'")
       @provider.load_current_resource
     end
 
@@ -114,7 +114,7 @@ CRON
     describe Chef::Provider::Cron::Solaris, "action_create" do
       it "should add the cron entry if cron exists" do
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-        Chef::Log.should_receive(:info).with("Added cron '#{@new_resource.name}'")
+        Chef::Log.should_receive(:info).with("cron[cronhole some stuff] added crontab entry")
         @provider.action_create
       end
 
@@ -127,7 +127,7 @@ CRON
 CRON
         @provider.cron_empty=true
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-        Chef::Log.should_receive(:info).with("Added cron '#{@new_resource.name}'")
+        Chef::Log.should_receive(:info).with("cron[cronhole some stuff] added crontab entry")
         @provider.action_create
       end
 
@@ -141,7 +141,7 @@ CRON
 CRON
         @provider.cron_exists=true
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-        Chef::Log.should_receive(:info).with("Updated cron '#{@new_resource.name}'")
+        Chef::Log.should_receive(:info).with("cron[cronhole some stuff] updated crontab entry")
         @provider.should_receive(:compare_cron).once.and_return(true)
         @provider.action_create
       end
@@ -154,8 +154,8 @@ CRON
 30 * * * * /bin/true
 CRON
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-        Chef::Log.should_not_receive(:info).with("Updated cron '#{@new_resource.name}'")
-        Chef::Log.should_receive(:debug).with("Skipping existing cron entry '#{@new_resource.name}'")
+        Chef::Log.should_not_receive(:info).with("#{@new_resource} updated crontab entry")
+        Chef::Log.should_receive(:debug).with("#{@new_resource} skipping existing cron entry '#{@new_resource.name}'")
         @provider.should_receive(:compare_cron).once.and_return(false)
         @provider.cron_exists = true
         @provider.action_create
@@ -171,7 +171,7 @@ MAILTO=warn@example.com
 30 * * * * /bin/true
 CRON
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-        Chef::Log.should_receive(:info).with("Updated cron '#{@new_resource.name}'")
+        Chef::Log.should_receive(:info).with("cron[cronhole some stuff] updated crontab entry")
         @provider.cron_exists = true
         @provider.should_receive(:compare_cron).once.and_return(true)
         @provider.action_create
@@ -201,7 +201,7 @@ CRON
 30 * * * * /bin/true
 CRON
         provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-        Chef::Log.should_receive(:info).with("Updated cron 'lobster rage'")
+        Chef::Log.should_receive(:info).with("cron[lobster rage] updated crontab entry")
         provider.cron_exists = true
         provider.should_receive(:compare_cron).once.and_return(true)
         provider.action_create
@@ -218,7 +218,7 @@ CRON
 C
         @provider.cron_exists=true
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-        Chef::Log.should_receive(:info).with("Deleted cron '#{@new_resource.name}'")
+        Chef::Log.should_receive(:info).with("cron[cronhole some stuff] deleted crontab entry")
         @provider.action_delete
 
       end
@@ -229,7 +229,7 @@ C
 * 10 * * * /bin/false
 C
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-        Chef::Log.should_not_receive(:info).with("Deleted cron '#{@new_resource.name}'")
+        Chef::Log.should_not_receive(:info).with("cron[bar] deleted crontab entry")
         @provider.action_delete
       end
     end
