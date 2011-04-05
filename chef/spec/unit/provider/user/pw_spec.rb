@@ -176,7 +176,7 @@ describe Chef::Provider::User::Pw do
       end
 
       it "logs an appropriate message" do
-        Chef::Log.should_receive(:debug).with("user[adam]: no change needed to password")
+        Chef::Log.should_receive(:debug).with("user[adam] no change needed to password")
         @provider.modify_password
       end
     end
@@ -188,7 +188,7 @@ describe Chef::Provider::User::Pw do
       end
 
       it "should log an appropriate message" do
-        Chef::Log.should_receive(:debug).with("user[adam]: updating password")
+        Chef::Log.should_receive(:debug).with("user[adam] updating password")
         @provider.modify_password
       end
 
