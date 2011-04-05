@@ -84,9 +84,9 @@ class Chef
       # Set the ownership on the symlink, assuming it is not set correctly already.
       def set_owner
         unless compare_owner
-          Chef::Log.info("Setting owner to #{@set_user_id} for #{@new_resource}")
           @set_user_id = negative_complement(@set_user_id)
           ::File.lchown(@set_user_id, nil, @new_resource.target_file)
+					Chef::Log.info("#{@new_resource} owner changed to #{@set_user_id}")
           @new_resource.updated_by_last_action(true)
         end
       end
@@ -107,25 +107,28 @@ class Chef
       
       def set_group
         unless compare_group
-          Chef::Log.info("Setting group to #{@set_group_id} for #{@new_resource}")
           @set_group_id = negative_complement(@set_group_id)
           ::File.lchown(nil, @set_group_id, @new_resource.target_file)
+					Chef::Log.info("#{@new_resource} group changed to #{@set_group_id}")
           @new_resource.updated_by_last_action(true)
         end
       end
       
       def action_create
         if @current_resource.to != ::File.expand_path(@new_resource.to, @new_resource.target_file)
-          Chef::Log.info("Creating a #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file} for #{@new_resource}")
           if @new_resource.link_type == :symbolic
-            unless (::File.symlink?(@new_resource.target_file) && ::File.readlink(@new_resource.target_file) == @new_resource.to)
-              if ::File.symlink?(@new_resource.target_file) || ::File.exist?(@new_resource.target_file)
-                ::File.unlink(@new_resource.target_file)
-              end
-              ::File.symlink(@new_resource.to,@new_resource.target_file)
-          end
+						unless (::File.symlink?(@new_resource.target_file) && ::File.readlink(@new_resource.target_file) == @new_resource.to)
+							if ::File.symlink?(@new_resource.target_file) || ::File.exist?(@new_resource.target_file)
+								::File.unlink(@new_resource.target_file)
+							end
+							::File.symlink(@new_resource.to,@new_resource.target_file)
+							Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
+							Chef::Log.info("#{@new_resource} created")
+						end
           elsif @new_resource.link_type == :hard
             ::File.link(@new_resource.to, @new_resource.target_file)
+						Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
+						Chef::Log.info("#{@new_resource} created")
           end
           @new_resource.updated_by_last_action(true)
         end
@@ -138,8 +141,8 @@ class Chef
       def action_delete
         if @new_resource.link_type == :symbolic 
           if ::File.symlink?(@new_resource.target_file)
-            Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.target_file}")
             ::File.delete(@new_resource.target_file)
+            Chef::Log.info("#{@new_resource} deleted")
             @new_resource.updated_by_last_action(true)
           elsif ::File.exists?(@new_resource.target_file)
             raise Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a symbolic link."
@@ -147,8 +150,8 @@ class Chef
         elsif @new_resource.link_type == :hard 
           if ::File.exists?(@new_resource.target_file)
              if ::File.exists?(@new_resource.to) && ::File.stat(@current_resource.target_file).ino == ::File.stat(@new_resource.to).ino
-               Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.target_file}")
                ::File.delete(@new_resource.target_file)
+               Chef::Log.info("#{@new_resource} deleted")
                @new_resource.updated_by_last_action(true)
              else
                raise Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a hard link."
