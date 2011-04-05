@@ -317,8 +317,10 @@ class Chef
         existing_paths = env["PATH"].split(':')
         SANE_PATHS.each do |sane_path|
           unless existing_paths.include?(sane_path)
-            env["PATH"] << ':' unless env["PATH"].empty?
-            env["PATH"] << sane_path
+            env_path = env["PATH"].dup
+            env_path << ':' unless env["PATH"].empty?
+            env_path << sane_path
+            env["PATH"] = env_path
           end
         end
       end
