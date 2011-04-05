@@ -34,7 +34,9 @@ describe Chef::Knife::CookbookSiteShare do
     @cookbook_loader.stub!(:[]).and_return(@cookbook)
     Chef::CookbookLoader.stub!(:new).and_return(@cookbook_loader)
 
-    Chef::CookbookUploader.stub!(:validate_cookbook).and_return(true)
+    @cookbook_uploader = Chef::CookbookUploader.new('herpderp', File.join(CHEF_SPEC_DATA, 'cookbooks'), :rest => "norest")
+    Chef::CookbookUploader.stub!(:new).and_return(@cookbook_uploader)
+    @cookbook_uploader.stub!(:validate_cookbook).and_return(true)
     Chef::CookbookSiteStreamingUploader.stub!(:create_build_dir).and_return(Dir.mktmpdir)
 
     Chef::Mixin::Command.stub(:run_command).and_return(true)
