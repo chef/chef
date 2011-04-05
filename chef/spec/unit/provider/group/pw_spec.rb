@@ -79,7 +79,7 @@ describe Chef::Provider::Group::Pw do
       end
     
       it "should log an appropriate message" do
-        Chef::Log.should_receive(:debug).with("group[wheel]: not changing group members, the group has no members")
+        Chef::Log.should_receive(:debug).with("group[wheel] not changing group members, the group has no members")
         @provider.set_members_option
       end
     
@@ -95,7 +95,7 @@ describe Chef::Provider::Group::Pw do
       end
     
       it "should log an appropriate message" do
-        Chef::Log.should_receive(:debug).with("group[wheel]: removing group members all, your, base")
+        Chef::Log.should_receive(:debug).with("group[wheel] removing group members all, your, base")
         @provider.set_members_option
       end
     
@@ -111,7 +111,7 @@ describe Chef::Provider::Group::Pw do
       end
     
       it "should log an appropriate debug message" do
-        Chef::Log.should_receive(:debug).with("group[wheel]: setting group members to all, your, base")
+        Chef::Log.should_receive(:debug).with("group[wheel] setting group members to all, your, base")
         @provider.set_members_option
       end
     

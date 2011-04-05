@@ -77,7 +77,7 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
       end
 
       it "logs a message and does not modify group membership" do
-        Chef::Log.should_receive(:debug).with("group[wheel]: not changing group members, the group has no members")
+        Chef::Log.should_receive(:debug).with("group[wheel] not changing group members, the group has no members")
         @provider.should_not_receive(:shell_out!)
         @provider.modify_group_members
       end
@@ -85,7 +85,7 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
 
     describe "when the resource specifies group members" do
       it "should log an appropriate debug message" do
-        Chef::Log.should_receive(:debug).with("group[wheel]: setting group members to lobster, rage, fist")
+        Chef::Log.should_receive(:debug).with("group[wheel] setting group members to lobster, rage, fist")
         @provider.stub!(:shell_out!)
         @provider.modify_group_members
       end
