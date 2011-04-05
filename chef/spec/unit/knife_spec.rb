@@ -198,7 +198,7 @@ describe Chef::Knife do
       @knife.stub!(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
       @knife.stub!(:username).and_return("sadpanda")
       @knife.run_with_pretty_exceptions
-      @stdout.string.should match(%r[ERROR: You authenticated successfully to http://localhost:4000 as sadpanda but you are not authorized for this action])
+      @stdout.string.should match(%r[ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action])
       @stdout.string.should match(%r[Response:  y u no administrator])
     end
 
