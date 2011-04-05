@@ -42,10 +42,10 @@ class Chef
             Chef::Log.debug("#{@new_resource} content has not changed.")
             set_all_access_controls(@new_resource.path)
           else
-            Chef::Log.info("Writing updated content for #{@new_resource} to #{@new_resource.path}")
             backup
             set_all_access_controls(rendered_template.path)
             FileUtils.mv(rendered_template.path, @new_resource.path)
+            Chef::Log.info("#{@new_resource} updated content")
             @new_resource.updated_by_last_action(true)
           end
         end
@@ -53,14 +53,13 @@ class Chef
 
       def action_create_if_missing
         if ::File.exists?(@new_resource.path)
-          Chef::Log.debug("Template #{@new_resource} exists, taking no action.")
+          Chef::Log.debug("#{@new_resource} exists - taking no action")
         else
           action_create
         end
       end
 
       def template_location
-        Chef::Log.debug("looking for template #{@new_resource.source} in cookbook #{cookbook_name.inspect}")
         @template_file_cache_location ||= begin
           if @new_resource.local
             @new_resource.source
