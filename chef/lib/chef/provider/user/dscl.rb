@@ -117,7 +117,7 @@ class Chef
           if @new_resource.password
             shadow_hash = nil
             
-            Chef::Log.debug("#{new_resource}: updating password")
+            Chef::Log.debug("#{new_resource} updating password")
             if osx_shadow_hash?(@new_resource.password)
               shadow_hash = @new_resource.password.upcase
             else
@@ -257,7 +257,7 @@ class Chef
         end
 
         def move_home
-          Chef::Log.debug("moving #{self} home from #{@current_resource.home} to #{@new_resource.home}")
+          Chef::Log.debug("#{@new_resource} moving #{self} home from #{@current_resource.home} to #{@new_resource.home}")
           
           src = @current_resource.home
           FileUtils.mkdir_p(@new_resource.home)
