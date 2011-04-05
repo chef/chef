@@ -84,8 +84,8 @@ class Chef
   
     def set_owner
       if (uid = target_uid) && (uid != stat.uid)
-        Chef::Log.info("#{log_string} owner changed to #{uid}")
         File.chown(uid, nil, file)
+        Chef::Log.info("#{log_string} owner changed to #{uid}")
         modified
       end
     end
