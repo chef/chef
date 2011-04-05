@@ -135,7 +135,7 @@ class Sandboxes < Application
           end
         rescue
           # undo the successful moves we did before
-          Chef::Log.error("sandbox finalization: got exception moving files, undoing previous changes: #{$!} -- #{$!.backtrace.join("\n")}")
+          Chef::Log.error("Sandbox finalization: got exception moving files, undoing previous changes: #{$!} -- #{$!.backtrace.join("\n")}")
           undo_steps.each do |undo_step|
             undo_step.call
           end
