@@ -66,7 +66,8 @@ class Chef
     def initialize(couchdb=nil)
       @name = ''
       @description = ''
-      @attributes = Mash.new
+      @default_attributes = Mash.new
+      @override_attributes = Mash.new
       @cookbook_versions = Hash.new
       @couchdb_rev = nil
       @couchdb_id = nil
@@ -102,9 +103,17 @@ class Chef
       )
     end
 
-    def attributes(arg=nil)
+    def default_attributes(arg=nil)
       set_or_return(
-        :attributes,
+        :default_attributes,
+        arg,
+        :kind_of => Hash
+      )
+    end
+
+    def override_attributes(arg=nil)
+      set_or_return(
+        :override_attributes,
         arg,
         :kind_of => Hash
       )
@@ -141,7 +150,8 @@ class Chef
         "cookbook_versions" =>  @cookbook_versions,
         "json_class" => self.class.name,
         "chef_type" => "environment",
-        "attributes" => @attributes
+        "default_attributes" => @default_attributes,
+        "override_attributes" => @override_attributes
       }
       result["_rev"] = couchdb_rev if couchdb_rev
       result
@@ -154,8 +164,19 @@ class Chef
     def update_from!(o)
       description(o.description)
       cookbook_versions(o.cookbook_versions)
-      attributes(o.attributes)
+      default_attributes(o.default_attributes)
+      override_attributes(o.override_attributes)
       self
+    end
+
+
+    def update_attributes_from_params(params)
+      unless params[:default_attributes].nil? || params[:default_attributes].size == 0
+        default_attributes(Chef::JSONCompat.from_json(params[:default_attributes]))
+      end
+      unless params[:override_attributes].nil? || params[:override_attributes].size == 0
+        override_attributes(Chef::JSONCompat.from_json(params[:override_attributes]))
+      end
     end
 
     def update_from_params(params)
@@ -181,9 +202,7 @@ class Chef
         end
       end
 
-      unless params[:attributes].nil? || params[:attributes].size == 0
-        attributes(Chef::JSONCompat.from_json(params[:attributes]))
-      end
+      update_attributes_from_params(params)
 
       valid = validate_required_attrs_present && valid
       cookbook_versions(bkup_cb_versions) unless valid # restore the old cookbook_versions if valid is false
@@ -229,7 +248,8 @@ class Chef
       environment.name(o["name"])
       environment.description(o["description"])
       environment.cookbook_versions(o["cookbook_versions"])
-      environment.attributes(o["attributes"])
+      environment.default_attributes(o["default_attributes"])
+      environment.override_attributes(o["override_attributes"])
       environment.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       environment.couchdb_id = o["_id"] if o.has_key?("_id")
       environment

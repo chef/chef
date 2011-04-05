@@ -69,18 +69,33 @@ describe Chef::Environment do
     end
   end
 
-  describe "attributes" do
+  describe "default attributes" do
     it "should let you set the attributes hash explicitly" do
-      @environment.attributes({ :one => 'two' }).should == { :one => 'two' }
+      @environment.default_attributes({ :one => 'two' }).should == { :one => 'two' }
     end
 
     it "should let you return the attributes hash" do
-      @environment.attributes({ :one => 'two' })
-      @environment.attributes.should == { :one => 'two' }
+      @environment.default_attributes({ :one => 'two' })
+      @environment.default_attributes.should == { :one => 'two' }
     end
 
     it "should throw an ArgumentError if we aren't a kind of hash" do
-      lambda { @environment.attributes(Array.new) }.should raise_error(ArgumentError)
+      lambda { @environment.default_attributes(Array.new) }.should raise_error(ArgumentError)
+    end
+  end
+
+  describe "override attributes" do
+    it "should let you set the attributes hash explicitly" do
+      @environment.override_attributes({ :one => 'two' }).should == { :one => 'two' }
+    end
+
+    it "should let you return the attributes hash" do
+      @environment.override_attributes({ :one => 'two' })
+      @environment.override_attributes.should == { :one => 'two' }
+    end
+
+    it "should throw an ArgumentError if we aren't a kind of hash" do
+      lambda { @environment.override_attributes(Array.new) }.should raise_error(ArgumentError)
     end
   end
 
@@ -407,9 +422,14 @@ describe Chef::Environment do
       @environment.invalid_fields[:name].should == "name cannot be empty"
     end
 
-    it "updates attributes from a JSON string in params[:attributes]" do
-      @environment.update_from_params(:name => "fuuu", :attributes => %q|{"fuuu":"RAGE"}|)
-      @environment.attributes.should == {"fuuu" => "RAGE"}
+    it "updates default attributes from a JSON string in params[:attributes]" do
+      @environment.update_from_params(:name => "fuuu", :default_attributes => %q|{"fuuu":"RAGE"}|)
+      @environment.default_attributes.should == {"fuuu" => "RAGE"}
+    end
+
+    it "updates override attributes from a JSON string in params[:attributes]" do
+      @environment.update_from_params(:name => "fuuu", :override_attributes => %q|{"foo":"override"}|)
+      @environment.override_attributes.should == {"foo" => "override"}
     end
 
   end

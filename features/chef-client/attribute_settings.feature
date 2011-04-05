@@ -15,10 +15,22 @@ Feature: Set default, normal, and override attributes
      When the node is retrieved from the API
      Then the inflated responses key 'attribute_priority_was' should match 'came from recipe\[attribute_settings\] attributes'
 
+  Scenario: Set the default attribute in a environment
+    Given I am an administrator
+      And an 'environment' named 'default_attr_test' exists
+      And a validated node in the 'default_attr_test' environment
+      And it includes the recipe 'attribute_settings'
+     When I run the chef-client with '-l debug'
+     Then the run should exit '0'
+      And a file named 'attribute_setting.txt' should contain 'came from environment default_attr_test default attributes'
+     When the node is retrieved from the API
+     Then the inflated responses key 'attribute_priority_was' should match 'came from environment default_attr_test default attributes'
+
   Scenario: Set the default attribute in a role
     Given I am an administrator
+      And an 'environment' named 'default_attr_test' exists
       And a 'role' named 'attribute_settings_default' exists
-      And a validated node
+      And a validated node in the 'default_attr_test' environment
       And it includes the role 'attribute_settings_default'
      When I run the chef-client
      Then the run should exit '0'
@@ -28,8 +40,9 @@ Feature: Set default, normal, and override attributes
 
   Scenario: Set the default attribute in a recipe
     Given I am an administrator
+      And an 'environment' named 'default_attr_test' exists
       And a 'role' named 'attribute_settings_default' exists
-      And a validated node
+      And a validated node in the 'default_attr_test' environment
       And it includes the role 'attribute_settings_default'
       And it includes the recipe 'attribute_settings::default_in_recipe'
      When I run the chef-client
@@ -40,7 +53,8 @@ Feature: Set default, normal, and override attributes
 
   Scenario: Set a normal attribute in a cookbook attribute file
     Given I am an administrator
-      And a validated node
+      And an 'environment' named 'default_attr_test' exists
+      And a validated node in the 'default_attr_test' environment
       And a 'role' named 'attribute_settings_default' exists
       And it includes the role 'attribute_settings_default'
       And it includes the recipe 'attribute_settings::default_in_recipe'
@@ -53,7 +67,8 @@ Feature: Set default, normal, and override attributes
 
   Scenario: Set a normal attribute in a cookbook recipe
     Given I am an administrator
-      And a validated node
+      And an 'environment' named 'default_attr_test' exists
+      And a validated node in the 'default_attr_test' environment
       And a 'role' named 'attribute_settings_default' exists
       And it includes the role 'attribute_settings_default'
       And it includes the recipe 'attribute_settings::default_in_recipe'
@@ -66,7 +81,8 @@ Feature: Set default, normal, and override attributes
 
   Scenario: Set an override attribute in a cookbook attribute file
     Given I am an administrator
-      And a validated node
+      And an 'environment' named 'default_attr_test' exists
+      And a validated node in the 'default_attr_test' environment
       And a 'role' named 'attribute_settings_default' exists
       And it includes the role 'attribute_settings_default'
       And it includes the recipe 'attribute_settings::default_in_recipe'
@@ -82,7 +98,8 @@ Feature: Set default, normal, and override attributes
     Given I am an administrator
       And a 'role' named 'attribute_settings_default' exists
       And a 'role' named 'attribute_settings_override' exists
-      And a validated node
+      And an 'environment' named 'default_attr_test' exists
+      And a validated node in the 'default_attr_test' environment
       And it includes the role 'attribute_settings_default'
       And it includes the recipe 'attribute_settings::default_in_recipe'
       And it includes the recipe 'attribute_settings_normal::normal_in_recipe'
@@ -94,7 +111,7 @@ Feature: Set default, normal, and override attributes
      When the node is retrieved from the API
      Then the inflated responses key 'attribute_priority_was' should match 'came from role\[attribute_settings_override\] override attributes'
 
- Scenario: Set the attribute in a environment
+ Scenario: Set the override attribute in a environment
    Given I am an administrator
      And an 'environment' named 'cucumber' exists
      And a 'role' named 'attribute_settings_default' exists
@@ -107,15 +124,16 @@ Feature: Set default, normal, and override attributes
      And it includes the role 'attribute_settings_override'
     When I run the chef-client with '-l debug'
     Then the run should exit '0'
-     And a file named 'attribute_setting.txt' should contain 'came from environment cucumber'
+     And a file named 'attribute_setting.txt' should contain 'came from environment cucumber override attributes'
     When the node is retrieved from the API
-    Then the inflated responses key 'attribute_priority_was' should match 'came from environment cucumber'
+    Then the inflated responses key 'attribute_priority_was' should match 'came from environment cucumber override attributes'
 
   Scenario: Set the override attribute in a recipe
     Given I am an administrator
+      And an 'environment' named 'cucumber' exists
       And a 'role' named 'attribute_settings_default' exists
       And a 'role' named 'attribute_settings_override' exists
-      And a validated node
+      And a validated node in the 'cucumber' environment
       And it includes the role 'attribute_settings_default'
       And it includes the recipe 'attribute_settings::default_in_recipe'
       And it includes the recipe 'attribute_settings_normal::normal_in_recipe'
@@ -130,14 +148,15 @@ Feature: Set default, normal, and override attributes
 
   Scenario: Data is removed from override attribute in a recipe
     Given I am an administrator
+      And an 'environment' named 'cucumber' exists
       And a 'role' named 'attribute_settings_override' exists
-      And a validated node
+      And a validated node in the 'cucumber' environment
       And it includes the role 'attribute_settings_override'
      When I run the chef-client
      Then the run should exit '0'
-      And a file named 'attribute_setting.txt' should contain 'came from role\[attribute_settings_override\] override attributes'
+     And a file named 'attribute_setting.txt' should contain 'came from environment cucumber override attributes'
      When the node is retrieved from the API
-     Then the inflated responses key 'attribute_priority_was' should match 'came from role\[attribute_settings_override\] override attributes'
+     Then the inflated responses key 'attribute_priority_was' should match 'came from environment cucumber override attributes'
     Given it includes no recipes
       And it includes the recipe 'integration_setup'
       And it includes the recipe 'no_attributes'
