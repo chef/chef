@@ -17,6 +17,7 @@
 #
 
 require 'chef/knife'
+require 'chef/knife/core/node_presenter'
 
 class Chef
   class Knife
@@ -24,7 +25,6 @@ class Chef
 
       deps do
         require 'chef/search/query'
-        require 'chef/knife/core/node_presenter'
       end
 
       include Knife::Core::NodeFormattingOptions
