@@ -53,7 +53,7 @@ class Chef
           Chef::CookbookUploader.new(cookbook,config[:cookbook_path]).validate_cookbook
           tmp_cookbook_dir = Chef::CookbookSiteStreamingUploader.create_build_dir(cookbook)
           begin
-            Chef::Log.debug("temp cookbook directory is #{tmp_cookbook_dir.inspect}")
+            Chef::Log.debug("Temp cookbook directory is #{tmp_cookbook_dir.inspect}")
             ui.info("Making tarball #{cookbook_name}.tgz")
             Chef::Mixin::Command.run_command(:command => "tar -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
           rescue => e

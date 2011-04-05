@@ -240,7 +240,7 @@ F
         notifications.each do |resources_notifications|
           resources_notifications.each do |resource, notification|
             action, timing = notification[0], notification[1]
-            Chef::Log.debug "adding notification from resource #{self} to `#{resource.inspect}' => `#{notification.inspect}'"
+            Chef::Log.debug "Adding notification from resource #{self} to `#{resource.inspect}' => `#{notification.inspect}'"
             add_notification(action, resource, timing)
           end
         end

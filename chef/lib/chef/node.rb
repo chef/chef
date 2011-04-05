@@ -650,7 +650,7 @@ class Chef
     def load_attributes
       cookbook_collection.values.each do |cookbook|
         cookbook.segment_filenames(:attributes).each do |segment_filename|
-          Chef::Log.debug("node #{name} loading cookbook #{cookbook.name}'s attribute file #{segment_filename}")
+          Chef::Log.debug("Node #{name} loading cookbook #{cookbook.name}'s attribute file #{segment_filename}")
           self.from_file(segment_filename)
         end
       end
