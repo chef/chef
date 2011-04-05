@@ -419,8 +419,9 @@ F
           Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}")
         else
           Chef::Log.error("#{self} (#{defined_at}) has had an error")
-          msg = e.message
-          raise e.exception("#{self} (#{defined_at}) had an error: #{e.message}") 
+					new_exception = e.exception("#{self} (#{defined_at}) had an error: #{e.message}") 
+					new_exception.set_backtrace(e.backtrace)
+					raise new_exception
         end
       end
     end

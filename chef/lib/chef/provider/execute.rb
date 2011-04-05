@@ -49,6 +49,11 @@ class Chef
         opts[:group] = @new_resource.group if @new_resource.group
         opts[:cwd] = @new_resource.cwd if @new_resource.cwd
         opts[:umask] = @new_resource.umask if @new_resource.umask
+				opts[:command_log_level] = :info
+				opts[:command_log_prepend] = @new_resource.to_s 
+        if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
+          opts[:live_stream] = STDOUT
+        end
 
         result = shell_out!(@new_resource.command, opts)
         @new_resource.updated_by_last_action(true)

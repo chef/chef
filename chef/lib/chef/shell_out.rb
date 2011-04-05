@@ -56,6 +56,8 @@ class Chef
     attr_accessor :cwd
     attr_accessor :valid_exit_codes
     attr_accessor :live_stream
+    attr_accessor :command_log_level
+    attr_accessor :command_log_prepend
 
     attr_reader :command, :umask, :environment
     attr_writer :timeout
@@ -111,6 +113,8 @@ class Chef
     def initialize(*command_args)
       @stdout, @stderr = '', ''
       @live_stream = nil
+      @command_log_level = :debug
+      @command_log_prepend = nil 
       @environment = DEFAULT_ENVIRONMENT
       @cwd = nil
       @valid_exit_codes = [0]
@@ -169,7 +173,11 @@ class Chef
     # * Chef::Exceptions::CommandTimeout  when the command does not complete
     #   within +timeout+ seconds (default: 60s)
     def run_command
-      Chef::Log.info("sh(#{@command})")
+      if command_log_prepend
+        Chef::Log.send(command_log_level, "#{command_log_prepend} sh(#{@command})")
+      else
+        Chef::Log.send(command_log_level, "sh(#{@command})")
+      end
       super
     end
 
@@ -224,6 +232,10 @@ class Chef
           self.valid_exit_codes = Array(setting)
         when 'live_stream'
           self.live_stream = setting
+        when 'command_log_level'
+          self.command_log_level = setting
+        when 'command_log_prepend'
+          self.command_log_prepend = setting
         when 'environment', 'env'
           # passing :environment => nil means don't set any new ENV vars
           @environment = setting.nil? ? {} : @environment.dup.merge!(setting)
