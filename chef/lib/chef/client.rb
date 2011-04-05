@@ -152,7 +152,7 @@ class Chef
       begin
 
         run_status.start_clock
-        Chef::Log.info("Starting Run for #{node.name}")
+        Chef::Log.info("Starting Chef Run for #{node.name}")
         run_started
 
         run_context = setup_run_context
@@ -261,7 +261,7 @@ class Chef
       @expanded_run_list_with_versions = @run_list_expansion.recipes.with_version_constraints_strings
 
       Chef::Log.info("Run List is [#{@node.run_list}]")
-      Chef::Log.info("Run List expands (with versions) to [#{@expanded_run_list_with_versions.join(', ')}]")
+      Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
 
       @run_status = Chef::RunStatus.new(@node)
 

@@ -78,7 +78,7 @@ class Chef
     end
 
     def self.cleanup_checksum_cache
-      Chef::Log.info("cleaning the checksum cache")
+      Chef::Log.debug("Cleaning the checksum cache")
       if (Chef::Config[:cache_type].to_s == "BasicFile")
         all_cached_checksums.each do |cache_key, cksum_cache_file|
           unless valid_cached_checksums.include?(cache_key)
@@ -93,7 +93,7 @@ class Chef
     end
 
     def self.remove_unused_checksum(checksum_file)
-      Chef::Log.debug("removing unused checksum cache file #{checksum_file}")
+      Chef::Log.debug("Removing unused checksum cache file #{checksum_file}")
       FileUtils.rm(checksum_file)
     end
 
