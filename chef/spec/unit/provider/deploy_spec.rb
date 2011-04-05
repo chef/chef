@@ -234,6 +234,8 @@ describe Chef::Provider::Deploy do
     @provider.should_receive(:enforce_ownership)
     @provider.should_receive(:run_command).with(:command => "migration_foo", :cwd => @expected_release_dir,
                                                 :user => "deployNinja", :group => "deployNinjas",
+																								:command_log_level => :info, :live_stream => STDOUT,
+																								:command_log_prepend => "deploy[/my/deploy/dir]",
                                                 :environment => {"RAILS_ENV"=>"production"})
     @provider.migrate
   end
@@ -298,7 +300,7 @@ describe Chef::Provider::Deploy do
 
   it "runs the restart command in the current application dir when the resource has a restart_command" do
     @resource.restart_command "restartcmd"
-    @provider.should_receive(:run_command).with(:command => "restartcmd", :cwd => "/my/deploy/dir/current")
+    @provider.should_receive(:run_command).with(:command => "restartcmd", :cwd => "/my/deploy/dir/current", :command_log_prepend => "deploy[/my/deploy/dir]", :command_log_level => :debug)
     @provider.restart
   end
 
