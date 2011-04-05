@@ -32,57 +32,52 @@ class Chef
 
       def action_enable
         if @current_resource.enabled
-          Chef::Log.debug("#{@new_resource}: not enabling, already enabled")
+          Chef::Log.debug("#{@new_resource} already enabled - nothing to do")
         else
-          Chef::Log.debug("#{@new_resource}: attempting to enable")
           if enable_service
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("#{@new_resource}: enabled successfully")
+            Chef::Log.info("#{@new_resource} enabled")
           end
         end
       end
 
       def action_disable
         if @current_resource.enabled
-          Chef::Log.debug("#{@new_resource}: attempting to disable")
           if disable_service
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("#{@new_resource}: disabled successfully")
+            Chef::Log.info("#{@new_resource} disabled")
           end
         else
-          Chef::Log.debug("#{@new_resource}: not disabling, already disabled")
+          Chef::Log.debug("#{@new_resource} already disabled - nothing to do")
         end
       end
 
       def action_start
         unless @current_resource.running
-          Chef::Log.debug("#{@new_resource}: attempting to start")
           if start_service
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("Started service #{@new_resource} successfully")
+            Chef::Log.info("#{@new_resource} started")
           end
         else
-          Chef::Log.debug("#{@new_resource}: not starting, already running")
+          Chef::Log.debug("#{@new_resource} already running - nothing to do")
         end 
       end
 
       def action_stop
         if @current_resource.running
-          Chef::Log.debug("#{@new_resource}: attempting to stop")
           if stop_service
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("#{@new_resource}: stopped successfully")
+            Chef::Log.info("#{@new_resource} stopped")
           end
         else
-          Chef::Log.debug("#{@new_resource}: not stopping, already stopped")
+          Chef::Log.debug("#{@new_resource} already stopped - nothing to do")
         end 
       end
       
       def action_restart
-        Chef::Log.debug("#{@new_resource}: attempting to restart")
         if restart_service
           @new_resource.updated_by_last_action(true)
-          Chef::Log.info("#{@new_resource}: restarted successfully")
+          Chef::Log.info("#{@new_resource} restarted")
         end
       end
 
@@ -91,10 +86,9 @@ class Chef
           raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
         end
         if @current_resource.running
-          Chef::Log.debug("#{@new_resource}: attempting to reload")
           if reload_service
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("#{@new_resource}: reloaded successfully")
+            Chef::Log.info("#{@new_resource} reloaded")
           end
         end
       end
