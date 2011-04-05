@@ -32,7 +32,6 @@ class Chef
 
       def action_create
         super
-        Chef::Log.debug("Doing a remote recursive directory transfer for #{@new_resource}")
           
         files_to_purge = Set.new(
           Dir.glob(::File.join(@new_resource.path, '**', '*'), ::File::FNM_DOTMATCH).select do |name|
@@ -45,6 +44,8 @@ class Chef
           files_to_purge.delete(::File.join(@new_resource.path, cookbook_file_relative_path))
         end
         purge_unmanaged_files(files_to_purge)
+				Chef::Log.info("#{@new_resource} created")
+				@new_resource.updated_by_last_action(true)
       end
 
       def action_create_if_missing
@@ -59,11 +60,11 @@ class Chef
         if @new_resource.purge
           unmanaged_files.sort.reverse.each do |f|
             if ::File.directory?(f)
-              Chef::Log.debug("Removing directory #{f}")
               Dir::rmdir(f)
+              Chef::Log.debug("#{@new_resource} removed directory #{f}")
             else
-              Chef::Log.debug("Deleting file #{f}")
               ::File.delete(f)
+              Chef::Log.debug("#{@new_resource} deleted file #{f}")
             end
           end
         end
