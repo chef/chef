@@ -53,9 +53,7 @@ $(document).ready(function(){
   });
 
   $('form#edit_environment, form#create_environment').submit(function(event) {
-    var form = $(this);
-    form.append('<input type="hidden" id="attributes" name="attributes"/>');
-    $('input#attributes').attr('value', BCJTEP.save('json'))
+    buildHiddenFormFromJSONEditor($(this));
   });
 
   $('form#edit_node, form#create_node').submit(function(event) {
