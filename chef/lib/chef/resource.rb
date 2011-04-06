@@ -240,7 +240,7 @@ F
         notifications.each do |resources_notifications|
           resources_notifications.each do |resource, notification|
             action, timing = notification[0], notification[1]
-            Chef::Log.debug "adding notification from resource #{self} to `#{resource.inspect}' => `#{notification.inspect}'"
+            Chef::Log.debug "Adding notification from resource #{self} to `#{resource.inspect}' => `#{notification.inspect}'"
             add_notification(action, resource, timing)
           end
         end
@@ -419,8 +419,9 @@ F
           Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}")
         else
           Chef::Log.error("#{self} (#{defined_at}) has had an error")
-          msg = e.message
-          raise e.exception("#{self} (#{defined_at}) had an error: #{e.message}") 
+          new_exception = e.exception("#{self} (#{defined_at}) had an error: #{e.message}")
+          new_exception.set_backtrace(e.backtrace)
+          raise new_exception
         end
       end
     end

@@ -121,10 +121,10 @@ class OpenidConsumer < Application
 
   private
   def is_authorized_openid_provider?(openid, authorized_providers)
-    Chef::Log.debug("checking for valid openid provider: openid: #{openid}, authorized providers: #{authorized_providers}")
+    Chef::Log.debug("Checking for valid openid provider: openid: #{openid}, authorized providers: #{authorized_providers}")
     if authorized_providers and openid
       if authorized_providers.length > 0
-        authorized_providers.detect { |p| Chef::Log.debug("openid: #{openid} (#{openid.class}), p: #{p} (#{p.class})"); openid.match(p) }
+        authorized_providers.detect { |p| Chef::Log.debug("Openid: #{openid} (#{openid.class}), p: #{p} (#{p.class})"); openid.match(p) }
       else
         true
       end
@@ -134,10 +134,10 @@ class OpenidConsumer < Application
   end
    
   def is_authorized_openid_identifier?(openid, authorized_identifiers)
-    Chef::Log.debug("checking for valid openid identifier: openid: #{openid}, authorized openids: #{authorized_identifiers}")
+    Chef::Log.debug("Checking for valid openid identifier: openid: #{openid}, authorized openids: #{authorized_identifiers}")
     if authorized_identifiers and openid
       if authorized_identifiers.length > 0 
-        authorized_identifiers.detect { |p| Chef::Log.debug("openid: #{openid} (#{openid.class}), p: #{p} (#{p.class})"); openid == p } 
+        authorized_identifiers.detect { |p| Chef::Log.debug("Openid: #{openid} (#{openid.class}), p: #{p} (#{p.class})"); openid == p } 
       else
         true
       end

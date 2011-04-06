@@ -101,7 +101,7 @@ class Chef
         # http://redmine.ruby-lang.org/issues/show/2708
         # http://redmine.ruby-lang.org/issues/show/2758
         if e.to_s =~ /#{Regexp.escape(%q|undefined method `closed?' for nil:NilClass|)}/
-          Chef::Log.debug("rescued error in http connect, re-raising as Errno::ECONNREFUSED to hide bug in net/http")
+          Chef::Log.debug("Rescued error in http connect, re-raising as Errno::ECONNREFUSED to hide bug in net/http")
           Chef::Log.debug("#{e.class.name}: #{e.to_s}")
           Chef::Log.debug(e.backtrace.join("\n"))
           raise Errno::ECONNREFUSED, "Connection refused attempting to contact #{url.scheme}://#{host}:#{port}"
@@ -141,7 +141,7 @@ class Chef
         if http_proxy.nil?
           @http_client = Net::HTTP.new(host, port)
         else
-          Chef::Log.debug("using #{http_proxy.host}:#{http_proxy.port} for proxy")
+          Chef::Log.debug("Using #{http_proxy.host}:#{http_proxy.port} for proxy")
           user = Chef::Config["#{url.scheme}_proxy_user"]
           pass = Chef::Config["#{url.scheme}_proxy_pass"]
           @http_client = Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass).new(host, port)

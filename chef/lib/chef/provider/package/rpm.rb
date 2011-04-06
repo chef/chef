@@ -34,7 +34,7 @@ class Chef
               raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
             end
             
-            Chef::Log.debug("Checking rpm status for #{@new_resource.package_name}")
+            Chef::Log.debug("#{@new_resource} checking rpm status")
             status = popen4("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}") do |pid, stdin, stdout, stderr|
               stdout.each do |line|
                 case line
@@ -50,12 +50,12 @@ class Chef
             end
           end
           
-          Chef::Log.debug("Checking install state for #{@current_resource.package_name}")
+          Chef::Log.debug("#{@new_resource} checking install state")
           status = popen4("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
               when /([\w\d_.-]+)\s([\w\d_.-]+)/
-                Chef::Log.debug("Current version is #{$2}")
+                Chef::Log.debug("#{@new_resource} current version is #{$2}")
                 @current_resource.version($2)
               end
             end

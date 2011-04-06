@@ -152,7 +152,7 @@ class Chef
       begin
 
         run_status.start_clock
-        Chef::Log.info("Starting Run for #{node.name}")
+        Chef::Log.info("Starting Chef Run for #{node.name}")
         run_started
 
         run_context = setup_run_context
@@ -261,7 +261,7 @@ class Chef
       @expanded_run_list_with_versions = @run_list_expansion.recipes.with_version_constraints_strings
 
       Chef::Log.info("Run List is [#{@node.run_list}]")
-      Chef::Log.info("Run List expands (with versions) to [#{@expanded_run_list_with_versions.join(', ')}]")
+      Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
 
       @run_status = Chef::RunStatus.new(@node)
 
@@ -341,7 +341,7 @@ class Chef
         # Check for cookbooks in the path given
         # Chef::Config[:cookbook_path] can be a string or an array
         # if it's an array, go through it and check each one, raise error at the last one if no files are found
-        Chef::Log.debug "loading from cookbook_path: #{Array(Chef::Config[:cookbook_path]).map { |path| File.expand_path(path) }.join(', ')}"
+        Chef::Log.debug "Loading from cookbook_path: #{Array(Chef::Config[:cookbook_path]).map { |path| File.expand_path(path) }.join(', ')}"
         Array(Chef::Config[:cookbook_path]).each_with_index do |cookbook_path, index|
           if directory_not_empty?(cookbook_path)
             break

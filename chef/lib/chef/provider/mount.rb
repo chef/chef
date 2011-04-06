@@ -28,27 +28,25 @@ class Chef
 
       def action_mount
         unless @current_resource.mounted
-          Chef::Log.debug("#{@new_resource}: attempting to mount")
           status = mount_fs()
           if status
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("#{@new_resource}: mounted successfully")
+            Chef::Log.info("#{@new_resource} mounted")
           end
         else
-          Chef::Log.debug("#{@new_resource}: not mounting, already mounted")
+          Chef::Log.debug("#{@new_resource} is already mounted")
         end
       end
 
       def action_umount
         if @current_resource.mounted
-          Chef::Log.debug("#{@new_resource}: attempting to unmount")
           status = umount_fs()
           if status
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("#{@new_resource}: unmounted successfully")
+            Chef::Log.info("#{@new_resource} unmounted")
           end
         else
-          Chef::Log.debug("#{@new_resource}: not unmounting, already unmounted")
+          Chef::Log.debug("#{@new_resource} is already unmounted")
         end
       end
 
@@ -57,14 +55,13 @@ class Chef
           raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remount"
         else
           if @current_resource.mounted
-            Chef::Log.debug("#{@new_resource}: attempting to remount")
             status = remount_fs()
             if status
               @new_resource.updated_by_last_action(true)
-              Chef::Log.info("#{@new_resource}: remounted successfully")
+              Chef::Log.info("#{@new_resource} remounted")
             end
           else
-            Chef::Log.debug("#{@new_resource}: not mounted, not remounting")
+            Chef::Log.debug("#{@new_resource} not mounted, nothing to remount")
           end
         end
       end
@@ -74,9 +71,9 @@ class Chef
           status = enable_fs
           if status
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("#{@new_resource}: enabled successfully")
+            Chef::Log.info("#{@new_resource} enabled")
           else
-            Chef::Log.debug("#{@new_resource}: not enabling, already enabled")
+            Chef::Log.debug("#{@new_resource} already enabled")
           end
         end
       end
@@ -86,9 +83,9 @@ class Chef
           status = disable_fs
           if status
             @new_resource.updated_by_last_action(true)            
-            Chef::Log.info("#{@new_resource}: disabled successfully")
+            Chef::Log.info("#{@new_resource} disabled")
           else
-            Chef::Log.debug("#{@new_resource}: not disabling, already disabled")
+            Chef::Log.debug("#{@new_resource} already disabled")
           end
         end
       end

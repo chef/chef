@@ -43,6 +43,7 @@ class Chef
         elsif @current_resource.version == nil
           install_version = candidate_version
         else
+          Chef::Log.debug("#{@new_resource} is already installed - nothing to do")
           return
         end
 
@@ -50,7 +51,6 @@ class Chef
           raise(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{@new_resource.package_name}")
         end
 
-        Chef::Log.info("Installing #{@new_resource} version #{install_version}")
 
         # We need to make sure we handle the preseed file
         if @new_resource.response_file
@@ -61,25 +61,29 @@ class Chef
         if status
           @new_resource.updated_by_last_action(true)
         end
+        Chef::Log.info("#{@new_resource} installed version #{install_version}")
       end
 
       def action_upgrade
         if @current_resource.version != candidate_version
           orig_version = @current_resource.version || "uninstalled"
-          Chef::Log.info("Upgrading #{@new_resource} version from #{orig_version} to #{candidate_version}")
           status = upgrade_package(@new_resource.package_name, candidate_version)
           if status
             @new_resource.updated_by_last_action(true)
           end
+          Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
+        else
+          Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
         end
       end
 
       def action_remove
         if removing_package?
-          Chef::Log.info("Removing #{@new_resource}")
           remove_package(@current_resource.package_name, @new_resource.version)
           @new_resource.updated_by_last_action(true)
+          Chef::Log.info("#{@new_resource} removed")
         else
+          Chef::Log.debug("#{@new_resource} package does not exist - nothing to do")
         end
       end
 
@@ -97,9 +101,9 @@ class Chef
 
       def action_purge
         if removing_package?
-          Chef::Log.info("Purging #{@new_resource}")
           purge_package(@current_resource.package_name, @new_resource.version)
           @new_resource.updated_by_last_action(true)
+          Chef::Log.info("#{@new_resource} purged")
         end
       end
 
@@ -125,8 +129,8 @@ class Chef
 
       def get_preseed_file(name, version)
         resource = preseed_resource(name, version)
-        Chef::Log.debug("Fetching preseed file to #{resource.path}")
         resource.run_action('create')
+        Chef::Log.debug("#{@new_resource} fetched preseed file to #{resource.path}")
 
         if resource.updated_by_last_action?
           resource.path
@@ -141,7 +145,7 @@ class Chef
         # The full path where the preseed file will be stored
         cache_seed_to = "#{file_cache_dir}/#{name}-#{version}.seed"
 
-        Chef::Log.debug("Fetching preseed file to #{cache_seed_to}")
+        Chef::Log.debug("#{@new_resource} fetching preseed file to #{cache_seed_to}")
 
         remote_file = Chef::Resource::CookbookFile.new(cache_seed_to, run_context)
         remote_file.cookbook_name = @new_resource.cookbook_name

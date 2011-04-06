@@ -44,7 +44,7 @@ class Chef
           enable_submodules
           @new_resource.updated_by_last_action(true)
         else
-          Chef::Log.info "Taking no action, checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
+          Chef::Log.debug "#{@new_resource} checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
         end
       end
 
@@ -63,7 +63,7 @@ class Chef
           unless current_revision_matches_target_revision?
             fetch_updates
             enable_submodules
-            Chef::Log.info "#{@new_resource} updated to revision: #{target_revision}"
+            Chef::Log.info "#{@new_resource} updated to revision #{target_revision}"
             @new_resource.updated_by_last_action(true)
           end
 
@@ -90,6 +90,7 @@ class Chef
       end
 
       def find_current_revision
+        Chef::Log.debug("#{@new_resource} finding current git revision")
         if ::File.exist?(::File.join(cwd, ".git"))
           # 128 is returned when we're not in a git repo. this is fine
           result = shell_out!('git rev-parse HEAD', :cwd => cwd, :returns => [0,128]).stdout.strip
@@ -104,24 +105,24 @@ class Chef
         args << "-o #{remote}" unless remote == 'origin'
         args << "--depth #{@new_resource.depth}" if @new_resource.depth
 
-        Chef::Log.info "Cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
+        Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
 
         clone_cmd = "git clone #{args.join(' ')} #{@new_resource.repository} #{@new_resource.destination}"
-        shell_out!(clone_cmd, run_options)
+        shell_out!(clone_cmd, run_options(:command_log_level => :info))
       end
 
       def checkout
         sha_ref = target_revision
-        Chef::Log.info "Checking out branch: #{@new_resource.revision} reference: #{sha_ref}"
         # checkout into a local branch rather than a detached HEAD
         shell_out!("git checkout -b deploy #{sha_ref}", run_options(:cwd => @new_resource.destination))
+        Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} reference: #{sha_ref}"
       end
 
       def enable_submodules
         if @new_resource.enable_submodules
-          Chef::Log.info "Enabling git submodules"
+          Chef::Log.info "#{@new_resource} enabling git submodules"
           command = "git submodule init && git submodule update"
-          shell_out!(command, run_options(:cwd => @new_resource.destination))
+          shell_out!(command, run_options(:cwd => @new_resource.destination, :command_log_level => :info))
         end
       end
 
@@ -143,7 +144,7 @@ class Chef
       def setup_remote_tracking_branches
         command = []
 
-        Chef::Log.info  "Configuring remote tracking branches for repository #{@new_resource.repository} "+
+        Chef::Log.debug "#{@new_resource} configuring remote tracking branches for repository #{@new_resource.repository} "+
                         "at remote #{@new_resource.remote}"
         command << "git config remote.#{@new_resource.remote}.url #{@new_resource.repository}"
         command << "git config remote.#{@new_resource.remote}.fetch +refs/heads/*:refs/remotes/#{@new_resource.remote}/*"
@@ -170,6 +171,7 @@ class Chef
       alias :revision_slug :target_revision
 
       def remote_resolve_reference
+        Chef::Log.debug("#{@new_resource} resolving remote reference")
         command = git('ls-remote', @new_resource.repository, @new_resource.revision)
         shell_out!(command, run_options).stdout
       end
@@ -180,6 +182,13 @@ class Chef
         run_opts[:user] = @new_resource.user if @new_resource.user
         run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts[:environment] = {"GIT_SSH" => @new_resource.ssh_wrapper} if @new_resource.ssh_wrapper
+        run_opts[:command_log_prepend] = @new_resource.to_s
+        run_opts[:command_log_level] ||= :debug
+        if run_opts[:command_log_level] == :info
+          if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
+            run_opts[:live_stream] = STDOUT
+          end
+        end
         run_opts
       end
 

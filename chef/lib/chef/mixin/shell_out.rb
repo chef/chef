@@ -24,8 +24,8 @@ class Chef
 
       def shell_out(*command_args)
         cmd = Chef::ShellOut.new(*command_args)
-        if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
-          cmd.live_stream ||= STDOUT
+        if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.debug?
+          cmd.live_stream = STDOUT
         end
         cmd.run_command
         cmd

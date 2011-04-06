@@ -33,8 +33,9 @@ class Chef
         else
           ohai.all_plugins
         end
-
         node.automatic_attrs.merge! ohai.data
+        Chef::Log.info("#{@new_resource} reloaded")
+        @new_resource.updated_by_last_action(true)
       end
     end
   end

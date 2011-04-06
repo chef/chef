@@ -98,17 +98,17 @@ class Chef
           UNIVERSAL_OPTIONS.each do |field, option|
             if @current_resource.send(field) != @new_resource.send(field)
               if @new_resource.send(field)
-                Chef::Log.debug("Setting #{@new_resource} #{field} to #{@new_resource.send(field)}")
+                Chef::Log.debug("#{@new_resource} setting #{field} to #{@new_resource.send(field)}")
                 opts << " #{option} '#{@new_resource.send(field)}'"
               end
             end
           end
           if updating_home?
             if managing_home_dir?
-              Chef::Log.debug("Managing the home directory for #{@new_resource}")
+              Chef::Log.debug("#{@new_resource} managing the users home directory")
               opts << " -d '#{@new_resource.home}'"
             else
-              Chef::Log.debug("Setting #{@new_resource} home to #{@new_resource.home}")
+              Chef::Log.debug("#{@new_resource} setting home to #{@new_resource.home}")
               opts << " -d '#{@new_resource.home}'"
             end
           end

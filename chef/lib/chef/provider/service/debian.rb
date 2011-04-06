@@ -72,7 +72,7 @@ class Chef
           enabled = false
 
           priority.each { |runlevel, arguments|
-            Chef::Log.debug("service[#{@current_resource.name}]: runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
+            Chef::Log.debug("#{@new_resource} runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
             
             # if we are in a update-rc.d default startup runlevel && we start in this runlevel
             if (2..5).include?(runlevel.to_i) && arguments[0] == :start

@@ -39,14 +39,14 @@ class Chef
           @current_resource.value(env_value(@new_resource.key_name))
         else
           @key_exists = false
-          Chef::Log.debug("#{@new_resource}: key does not exist")
+          Chef::Log.debug("#{@new_resource} key does not exist")
         end
 
         @current_resource
       end
 
       def env_value(key_name)
-        raise Chef::Exceptions::Env, "#{@new_resource} - #{self.to_s} provider does not implement env_value!"
+        raise Chef::Exceptions::Env, "#{self.to_s} provider does not implement env_value!"
       end
 
       def env_key_exists(key_name)
@@ -73,12 +73,12 @@ class Chef
         if @key_exists
           if compare_value
             modify_env
-            Chef::Log.info("Altered #{@new_resource}")
+            Chef::Log.info("#{@new_resource} altered")
             @new_resource.updated_by_last_action(true)
           end
         else
           create_env
-          Chef::Log.debug("Created #{@new_resource}")
+          Chef::Log.info("#{@new_resource} created")
           @new_resource.updated_by_last_action(true)
         end
       end
@@ -92,7 +92,7 @@ class Chef
       def delete_element
         return false unless @new_resource.delim #no delim: delete the key
         if compare_value
-          Chef::Log.debug("#{@new_resource}: element '#{@new_resource.value}' does not exist")
+          Chef::Log.debug("#{@new_resource} element '#{@new_resource.value}' does not exist")
           return true #do not delete the key
         else
           new_value =
@@ -105,7 +105,7 @@ class Chef
           else
             old_value = @new_resource.value(new_value)
             create_env
-            Chef::Log.debug("Deleted #{old_value} element")
+            Chef::Log.debug("#{@new_resource} deleted #{old_value} element")
             @new_resource.updated_by_last_action(true)
             return true #we removed the element and updated; do not delete the key
           end
@@ -115,7 +115,7 @@ class Chef
       def action_delete
         if @key_exists && !delete_element
           delete_env
-          Chef::Log.debug("Deleted #{@new_resource}")
+          Chef::Log.info("#{@new_resource} deleted")
           @new_resource.updated_by_last_action(true)
         end
       end
@@ -124,8 +124,8 @@ class Chef
         if @key_exists
           if compare_value
             modify_env
+            Chef::Log.info("#{@new_resource} modified")
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("Modified #{@new_resource}")
           end
         else
           raise Chef::Exceptions::Env, "Cannot modify #{@new_resource} - key does not exist!"
