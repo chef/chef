@@ -255,7 +255,7 @@ task :test_cookbook, :cookbook do |t, args|
 end
 
 namespace :databag do
-  path = "databags"
+  path = "data_bags"
 
   desc "Upload a single databag"
   task :upload, :databag do |t, args|
