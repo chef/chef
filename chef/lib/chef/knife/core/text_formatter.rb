@@ -90,7 +90,6 @@ class Chef
         end
 
         def stringify_value(data)
-          #data.kind_of?(String) ? data : data.inspect
           data.kind_of?(String) ? data : data.to_s
         end
 
