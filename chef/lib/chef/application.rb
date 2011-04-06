@@ -49,17 +49,6 @@ class Chef::Application
       end
     end
 
-    unless RUBY_PLATFORM =~ /mswin|mingw32|windows/
-      trap("USR1") do
-        Chef::Log.info("SIGUSR1 received, starting run")
-        raise Chef::Application::Wakeup
-      end
-    end
-
-    at_exit do
-      # tear down the logger
-    end
-
     # Always switch to a readable directory. Keeps subsequent Dir.chdir() {}
     # from failing due to permissions when launched as a less privileged user.
   end
