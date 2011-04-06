@@ -316,6 +316,27 @@ describe Chef::REST do
         @request_mock['User-Agent'].should match /^Chef Client\/#{Chef::VERSION}/
       end
 
+      context "when configured with custom http headers" do
+        before(:each) do
+          @custom_headers = {
+            'X-Custom-ChefSecret' => 'sharpknives',
+            'X-Custom-RequestPriority' => 'extremely low'
+          }
+          Chef::Config[:custom_http_headers] = @custom_headers
+        end
+
+        after(:each) do
+          Chef::Config[:custom_http_headers] = nil
+        end
+
+        it "should set them on the http request" do
+          url_string = an_instance_of(String)
+          header_hash = hash_including(@custom_headers)
+          Net::HTTP::Get.should_receive(:new).with(url_string, header_hash)
+          @rest.api_request(:GET, @url, {})
+        end
+      end
+
       it "should set the cookie for this request if one exists for the given host:port" do
         Chef::REST::CookieJar.instance["#{@url.host}:#{@url.port}"] = "cookie monster"
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar",
