@@ -22,7 +22,6 @@ describe Chef::Application do
     Chef::Log.logger = Logger.new(StringIO.new)
     @app = Chef::Application.new
     Dir.stub!(:chdir).and_return(0)
-    Chef::Application.stub!(:fatal!)
     @app.stub!(:reconfigure)
   end
   
@@ -44,10 +43,6 @@ describe Chef::Application do
     it "traps SIGHUP and reconfigures upon receipt" do
       @app.should_receive(:reconfigure)
       Process.kill("HUP", Process.pid)
-    end
-
-    it "traps SIGUSR1 and raises a Wakeup exception" do
-      lambda { Process.kill("USR1", Process.pid) }.should raise_error(Chef::Application::Wakeup)
     end
   end
 
