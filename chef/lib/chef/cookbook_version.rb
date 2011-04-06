@@ -439,6 +439,11 @@ class Chef
       @checksums
     end
 
+    def manifest_records_by_path
+      @manifest_records_by_path || generate_manifest
+      @manifest_records_by_path
+    end
+
     def full_name
       "#{name}-#{version}"
     end
