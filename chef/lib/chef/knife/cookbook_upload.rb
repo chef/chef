@@ -55,7 +55,8 @@ class Chef
       option :environment,
         :short => '-E',
         :long  => '--environment ENVIRONMENT',
-        :description => "Set ENVIRONMENT's version dependency match the version you're uploading."
+        :description => "Set ENVIRONMENT's version dependency match the version you're uploading.",
+        :default => nil
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
@@ -107,7 +108,7 @@ class Chef
 
 
       def environment
-        @environment ||= Environment.load(config[:environment])
+        @environment ||= config[:environment] ? Environment.load(config[:environment]) : nil
       end
 
       private
