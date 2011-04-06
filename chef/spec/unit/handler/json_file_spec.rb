@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,7 +33,7 @@ describe Chef::Handler::JsonFile do
     @handler.build_report_dir
   end
 
-  describe "when reporting a succ" do
+  describe "when reporting success" do
     before(:each) do
       @node = Chef::Node.new
       @run_status = Chef::RunStatus.new(@node)
@@ -54,8 +54,8 @@ describe Chef::Handler::JsonFile do
       @handler.run_report_unsafe(@run_status)
       reported_data = Chef::JSONCompat.from_json(@file_mock.string)
       reported_data['exception'].should == "Exception: Boy howdy!"
-      reported_data['start_time'].should == @expected_time.iso8601
-      reported_data['end_time'].should == (@expected_time + 5).iso8601
+      reported_data['start_time'].should == @expected_time.to_s
+      reported_data['end_time'].should == (@expected_time + 5).to_s
       reported_data['elapsed_time'].should == 5
     end
 
