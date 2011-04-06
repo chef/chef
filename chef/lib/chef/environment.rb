@@ -1,6 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: Nuo Yan (<nuo@opscode.com>)
 # Copyright:: Copyright 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -117,6 +118,8 @@ class Chef
         :kind_of => Hash
       )
     end
+    # For backward compatibility at this point. Should be removed in the future. 4/5/2011.
+    alias :attributes :override_attributes
 
     def cookbook_versions(arg=nil)
       set_or_return(
@@ -248,7 +251,13 @@ class Chef
       environment.description(o["description"])
       environment.cookbook_versions(o["cookbook_versions"])
       environment.default_attributes(o["default_attributes"])
-      environment.override_attributes(o["override_attributes"])
+      # For backward compatibility at this point. Should remove this check in the future. 4/5/2011.
+      if (!o["attributes"].nil? && !o["attributes"].empty? &&
+        (o["override_attributes"].nil? || o["override_attributes"].empty?))
+        environment.override_attributes(o["attributes"])
+      else
+        environment.override_attributes(o["override_attributes"])
+      end
       environment.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       environment.couchdb_id = o["_id"] if o.has_key?("_id")
       environment
