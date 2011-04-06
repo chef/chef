@@ -36,21 +36,21 @@ class Chef
       end
 
       def ignored?(file_name)
-        @ignores.any? {|regex| regex =~ file_name}
+        @ignores.any? {|glob| File.fnmatch?(glob, file_name)}
       end
 
       private
 
       def parse_ignore_file
-        ignore_regexes = []
+        ignore_globs = []
         if File.exist?(@ignore_file) && File.readable?(@ignore_file)
           File.foreach(@ignore_file) do |line|
-            ignore_regexes << Regexp.new(line.strip) unless line =~ COMMENTS_AND_WHITESPACE
+            ignore_globs << line.strip unless line =~ COMMENTS_AND_WHITESPACE
           end
         else
           Chef::Log.debug("No chefignore file found at #@ignore_file no files will be ignored")
         end
-        ignore_regexes
+        ignore_globs
       end
 
       def find_ignore_file(path)

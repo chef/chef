@@ -17,11 +17,14 @@
 #
 
 require 'chef/knife'
-require 'chef/data_bag'
 
 class Chef
   class Knife
     class DataBagDelete < Knife
+
+      deps do
+        require 'chef/data_bag'
+      end
 
       banner "knife data bag delete BAG [ITEM] (options)"
       category "data bag"
@@ -37,7 +40,7 @@ class Chef
           end
         else
           show_usage
-          Chef::Log.fatal("You must specify at least a data bag name")
+          ui.fatal("You must specify at least a data bag name")
           exit 1
         end
       end

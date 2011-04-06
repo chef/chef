@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,17 +26,17 @@ describe Chef::Provider::RemoteDirectory do
     @resource.source "remotedir"
     @resource.cookbook('openldap')
 
-    Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")))
-    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
+    @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
+    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
 
     @node = Chef::Node.new
-    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
     @run_context = Chef::RunContext.new(@node, @cookbook_collection)
 
     @provider = Chef::Provider::RemoteDirectory.new(@resource, @run_context)
     @provider.current_resource = @resource.clone
   end
-  
+
   describe "when access control is configured on the resource" do
     before do
       @resource.mode  "0750"
@@ -62,7 +62,7 @@ describe Chef::Provider::RemoteDirectory do
 
     it "configures access control on files in the directory" do
       @resource.cookbook "berlin_style_tasty_cupcakes"
-      cookbook_file = @provider.send(:cookbook_file_resource, 
+      cookbook_file = @provider.send(:cookbook_file_resource,
                                     "/target/destination/path.txt",
                                     "relative/source/path.txt")
       cookbook_file.cookbook_name.should  == "berlin_style_tasty_cupcakes"
@@ -78,7 +78,7 @@ describe Chef::Provider::RemoteDirectory do
     before do
       @node[:platform] = :just_testing
       @node[:platform_version] = :just_testing
-      
+
       @destination_dir = Dir.tmpdir + '/remote_directory_test'
       @resource.path(@destination_dir)
     end
@@ -94,7 +94,7 @@ describe Chef::Provider::RemoteDirectory do
       File.exist?(@destination_dir + '/remotesubdir/.a_dotfile').should be_true
       File.exist?(@destination_dir + '/.a_dotdir/.a_dotfile_in_a_dotdir').should be_true
     end
-    
+
     describe "with purging enabled" do
       before {@resource.purge(true)}
 

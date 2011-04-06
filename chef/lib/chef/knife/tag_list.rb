@@ -1,9 +1,12 @@
 require 'chef/knife'
-require 'chef/node'
 
 class Chef
   class Knife
     class TagList < Knife
+
+      deps do
+        require 'chef/node'
+      end
 
       banner "knife tag list NODE"
 
@@ -14,7 +17,7 @@ class Chef
         unless name or tags.empty?
           show_usage
           # TODO: blah blah
-          Chef::Log.fatal("You must specify a name name")
+          ui.fatal("You must specify a node name")
           exit 1
         end
 

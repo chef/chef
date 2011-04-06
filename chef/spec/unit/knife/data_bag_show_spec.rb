@@ -28,10 +28,11 @@ describe Chef::Knife::DataBagShow do
   before do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::DataBagShow.new
+    @knife.config[:format] = 'json'
     @rest = mock("Chef::REST")
     @knife.stub!(:rest).and_return(@rest)
     @stdout = StringIO.new
-    @knife.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
 
@@ -50,12 +51,12 @@ describe Chef::Knife::DataBagShow do
 
   it "prints the contents of the data bag item when given a bag and item name" do
     @knife.instance_variable_set(:@name_args, ['bag_o_data', 'an_item'])
-    data_item_content = {"id" => "an_item", "zsh" => "victory_through_tabbing"}
+    data_item = Chef::DataBagItem.new.tap {|item| item.raw_data = {"id" => "an_item", "zsh" => "victory_through_tabbing"}}
 
-    Chef::DataBagItem.should_receive(:load).with('bag_o_data', 'an_item').and_return(data_item_content)
+    Chef::DataBagItem.should_receive(:load).with('bag_o_data', 'an_item').and_return(data_item)
 
     @knife.run
-    Chef::JSONCompat.from_json(@stdout.string).should == data_item_content
+    Chef::JSONCompat.from_json(@stdout.string).should == data_item.raw_data
   end
 
   describe "encrypted data bag items" do

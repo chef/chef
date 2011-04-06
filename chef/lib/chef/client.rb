@@ -28,6 +28,7 @@ require 'chef/role'
 require 'chef/file_cache'
 require 'chef/run_context'
 require 'chef/runner'
+require 'chef/run_status'
 require 'chef/cookbook/cookbook_collection'
 require 'chef/cookbook/file_vendor'
 require 'chef/cookbook/file_system_file_vendor'
@@ -40,6 +41,8 @@ class Chef
   # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
+
+    SANE_PATHS = %w[/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin]
 
     # Clears all notifications for client run status events.
     # Primarily for testing purposes.
@@ -140,6 +143,8 @@ class Chef
     def run
       run_context = nil
 
+      Chef::Log.info("*** Chef #{Chef::VERSION} ***")
+      enforce_path_sanity
       run_ohai
       register unless Chef::Config[:solo]
       build_node
@@ -147,7 +152,7 @@ class Chef
       begin
 
         run_status.start_clock
-        Chef::Log.info("Starting Chef Run (Version #{Chef::VERSION})")
+        Chef::Log.info("Starting Run for #{node.name}")
         run_started
 
         run_context = setup_run_context
@@ -178,8 +183,8 @@ class Chef
     # Chef::RunContext:: the run context for this run.
     def setup_run_context
       if Chef::Config[:solo]
-        Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
-        run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
+        Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, Chef::Config[:cookbook_path]) }
+        run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path])))
       else
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest) }
         cookbook_hash = sync_cookbooks
@@ -266,15 +271,15 @@ class Chef
     #
     # === Returns
     # rest<Chef::REST>:: returns Chef::REST connection object
-    def register
-      if File.exists?(Chef::Config[:client_key])
-        Chef::Log.debug("Client key #{Chef::Config[:client_key]} is present - skipping registration")
+    def register(client_name=node_name, config=Chef::Config)
+      if File.exists?(config[:client_key])
+        Chef::Log.debug("Client key #{config[:client_key]} is present - skipping registration")
       else
-        Chef::Log.info("Client key #{Chef::Config[:client_key]} is not present - registering")
-        Chef::REST.new(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).register(node_name, Chef::Config[:client_key])
+        Chef::Log.info("Client key #{config[:client_key]} is not present - registering")
+        Chef::REST.new(config[:client_url], config[:validation_client_name], config[:validation_key]).register(client_name, config[:client_key])
       end
       # We now have the client key, and should use it from now on.
-      self.rest = Chef::REST.new(Chef::Config[:chef_server_url], node_name, Chef::Config[:client_key])
+      self.rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
     end
 
     # Sync_cookbooks eagerly loads all files except files and
@@ -353,4 +358,8 @@ class Chef
     end
   end
 end
+
+# HACK cannot load this first, but it must be loaded.
+require 'chef/cookbook_loader'
+require 'chef/cookbook_version'
 

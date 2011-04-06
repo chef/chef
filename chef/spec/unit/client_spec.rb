@@ -50,6 +50,24 @@ describe Chef::Client do
     @client.node = @node
   end
 
+  describe "when enforcing path sanity" do
+    before do
+      Chef::Config[:enforce_path_sanity] = true
+    end
+
+    it "adds all useful PATHs that are not yet in PATH to PATH" do
+      env = {"PATH" => ""}
+      @client.enforce_path_sanity(env)
+      env["PATH"].should == "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    end
+
+    it "does not re-add paths that already exist in PATH" do
+      env = {"PATH" => "/usr/bin:/sbin:/bin"}
+      @client.enforce_path_sanity(env)
+      env["PATH"].should == "/usr/bin:/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin"
+    end
+  end
+
   describe "run" do
     it "should identify the node and run ohai, then register the client" do
       mock_chef_rest_for_node = mock("Chef::REST (node)")

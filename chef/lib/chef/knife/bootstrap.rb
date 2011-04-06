@@ -17,15 +17,21 @@
 #
 
 require 'chef/knife'
-require 'chef/json_compat'
-require 'tempfile'
-require 'erubis'
 
 class Chef
   class Knife
     class Bootstrap < Knife
 
-      banner "knife bootstrap FQDN [RUN LIST...] (options)"
+      deps do
+        require 'chef/json_compat'
+        require 'tempfile'
+        require 'erubis'
+        require 'highline'
+        require 'net/ssh'
+        require 'net/ssh/multi'
+      end
+
+      banner "knife bootstrap FQDN (options)"
 
       option :ssh_user,
         :short => "-x USERNAME",
@@ -37,6 +43,13 @@ class Chef
         :short => "-P PASSWORD",
         :long => "--ssh-password PASSWORD",
         :description => "The ssh password"
+
+      option :ssh_port,
+        :short => "-p PORT",
+        :long => "--ssh-port PORT",
+        :description => "The ssh port",
+        :default => "22",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key }
 
       option :identity_file,
         :short => "-i IDENTITY_FILE",
@@ -75,9 +88,11 @@ class Chef
         :proc => lambda { |o| o.split(/[\s,]+/) },
         :default => []
 
-      def h
-        @highline ||= HighLine.new
-      end
+      option :no_host_key_verify,
+        :long => "--no-host-key-verify",
+        :description => "Disable host key verification",
+        :boolean => true,
+        :default => false
 
       def load_template(template=nil)
         # Are we bootstrapping using an already shipped template?
@@ -96,7 +111,7 @@ class Chef
         end
 
         unless template
-          Chef::Log.info("Can not find bootstrap definition for #{config[:distro]}")
+          ui.info("Can not find bootstrap definition for #{config[:distro]}")
           raise Errno::ENOENT
         end
 
@@ -113,15 +128,15 @@ class Chef
       end
 
       def run
-        require 'highline'
 
         validate_name_args!
+        @node_name = Array(@name_args).first
+        # back compat--templates may use this setting:
+        config[:server_name] = @node_name
 
         $stdout.sync = true
 
-        Chef::Log.info("Bootstrapping Chef on #{h.color(config[:server_name], :bold)}")
-
-        knife_ssh.load_late_dependencies
+        ui.info("Bootstrapping Chef on #{ui.color(@node_name, :bold)}")
 
         begin
           knife_ssh.run
@@ -135,7 +150,7 @@ class Chef
 
       def validate_name_args!
         if Array(@name_args).first.nil?
-          Chef::Log.error("Must pass an FQDN or ip to bootstrap")
+          ui.error("Must pass an FQDN or ip to bootstrap")
           exit 1
         end
       end
@@ -149,8 +164,10 @@ class Chef
         ssh.name_args = [ server_name, ssh_command ]
         ssh.config[:ssh_user] = config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
+        ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
+        ssh.config[:no_host_key_verify] = config[:no_host_key_verify]
         ssh
       end
 

@@ -18,7 +18,6 @@
 
 require 'chef/provider/file'
 require 'chef/rest'
-require 'chef/mixin/find_preferred_file'
 require 'uri'
 require 'tempfile'
 require 'net/https'
@@ -26,8 +25,6 @@ require 'net/https'
 class Chef
   class Provider
     class RemoteFile < Chef::Provider::File
-
-      include Chef::Mixin::FindPreferredFile
 
       def load_current_resource
         super

@@ -18,14 +18,18 @@
 #
 
 require 'chef/knife'
-require 'chef/data_bag'
-require 'chef/data_bag_item'
-require 'chef/json_compat'
-require 'chef/encrypted_data_bag_item'
 
 class Chef
   class Knife
     class DataBagFromFile < Knife
+
+      deps do
+        require 'chef/data_bag'
+        require 'chef/data_bag_item'
+        require 'chef/knife/core/object_loader'
+        require 'chef/json_compat'
+        require 'chef/encrypted_data_bag_item'
+      end
 
       banner "knife data bag from file BAG FILE (options)"
       category "data bag"
@@ -55,12 +59,17 @@ class Chef
         config[:secret] || config[:secret_file]
       end
 
+      def loader
+        @loader ||= Knife::Core::ObjectLoader.new(DataBagItem, ui)
+      end
+
       def run
         if @name_args.size != 2
           stdout.puts opt_parser
           exit(1)
         end
-        item = load_from_file(Chef::DataBagItem, @name_args[1], @name_args[0])
+        @data_bag, @item_path = @name_args[0], @name_args[1]
+        item = loader.load_from("data_bags", @data_bag, @item_path)
         item = if use_encryption
                  secret = read_secret
                  Chef::EncryptedDataBagItem.encrypt_data_bag_item(item, secret)
@@ -71,7 +80,7 @@ class Chef
         dbag.data_bag(@name_args[0])
         dbag.raw_data = item
         dbag.save
-        Chef::Log.info("Updated data_bag_item[#{@name_args[1]}]")
+        ui.info("Updated data_bag_item[#{dbag.data_bag}::#{dbag.id}]")
       end
     end
   end

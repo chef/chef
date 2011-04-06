@@ -27,12 +27,11 @@ class Chef::Knife::Exec < Chef::Knife
     :long => "--exec CODE",
     :description => "a string of Chef code to execute"
 
-  def late_load_deps
+  deps do
     require 'chef/shef/ext'
   end
 
   def run
-    late_load_deps
     scripts = Array(name_args)
     context = Object.new
     Shef::Extensions.extend_context_object(context)

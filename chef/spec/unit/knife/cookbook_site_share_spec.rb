@@ -18,6 +18,9 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
+require 'chef/cookbook_uploader'
+require 'chef/cookbook_site_streaming_uploader'
+
 describe Chef::Knife::CookbookSiteShare do
 
   before(:each) do
@@ -31,7 +34,9 @@ describe Chef::Knife::CookbookSiteShare do
     @cookbook_loader.stub!(:[]).and_return(@cookbook)
     Chef::CookbookLoader.stub!(:new).and_return(@cookbook_loader)
 
-    Chef::CookbookUploader.stub!(:validate_cookbook).and_return(true)
+    @cookbook_uploader = Chef::CookbookUploader.new('herpderp', File.join(CHEF_SPEC_DATA, 'cookbooks'), :rest => "norest")
+    Chef::CookbookUploader.stub!(:new).and_return(@cookbook_uploader)
+    @cookbook_uploader.stub!(:validate_cookbook).and_return(true)
     Chef::CookbookSiteStreamingUploader.stub!(:create_build_dir).and_return(Dir.mktmpdir)
 
     Chef::Mixin::Command.stub(:run_command).and_return(true)
@@ -46,14 +51,14 @@ describe Chef::Knife::CookbookSiteShare do
     it 'should should print usage and exit when given no arguments' do
       @knife.name_args = []
       @knife.should_receive(:show_usage)
-      Chef::Log.should_receive(:fatal)
+      @knife.ui.should_receive(:fatal)
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
     it 'should print usage and exit when given only 1 argument' do
       @knife.name_args = ['cookbook_name']
       @knife.should_receive(:show_usage)
-      Chef::Log.should_receive(:fatal)
+      @knife.ui.should_receive(:fatal)
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
@@ -64,7 +69,7 @@ describe Chef::Knife::CookbookSiteShare do
 
     it "should exit and log to error if the cookbook doesn't exist" do
       @cookbook_loader.stub(:cookbook_exists?).and_return(false)
-      Chef::Log.should_receive(:error)
+      @knife.ui.should_receive(:error)
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
@@ -77,7 +82,7 @@ describe Chef::Knife::CookbookSiteShare do
 
     it 'should exit and log to error when the tarball creation fails' do
       Chef::Mixin::Command.stub!(:run_command).and_raise(Chef::Exceptions::Exec)
-      Chef::Log.should_receive(:error)
+      @knife.ui.should_receive(:error)
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
@@ -94,8 +99,8 @@ describe Chef::Knife::CookbookSiteShare do
       @upload_response = mock('Net::HTTPResponse')
       Chef::CookbookSiteStreamingUploader.stub!(:post).and_return(@upload_response)
 
-      @log = StringIO.new
-      Chef::Log.init(@log)
+      @stdout = StringIO.new
+      @knife.ui.stub!(:stdout).and_return(@stdout)
 
       File.stub(:open).and_return(true)
     end
@@ -113,7 +118,7 @@ describe Chef::Knife::CookbookSiteShare do
       @upload_response.stub!(:body).and_return(response_text)
       @upload_response.stub!(:code).and_return(409)
       lambda { @knife.run }.should raise_error(SystemExit)
-      @log.string.should match(/ERROR(.+)cookbook already exists/)
+      @stdout.string.should match(/ERROR(.+)cookbook already exists/)
     end
 
     it 'should pass any errors on to the user' do
@@ -121,15 +126,15 @@ describe Chef::Knife::CookbookSiteShare do
       @upload_response.stub!(:body).and_return(response_text)
       @upload_response.stub!(:code).and_return(403)
       lambda { @knife.run }.should raise_error(SystemExit)
-      @log.string.should match("ERROR(.*)You're holding it wrong")
+      @stdout.string.should match("ERROR(.*)You're holding it wrong")
     end
 
     it 'should print the body if no errors are exposed on failure' do
       response_text = {:system_error => "Your call was dropped", :reason => "There's a map for that"}.to_json
       @upload_response.stub!(:body).and_return(response_text)
       @upload_response.stub!(:code).and_return(500)
-      Chef::Log.should_receive(:error).with(/#{Regexp.escape(response_text)}/)#.ordered
-      Chef::Log.should_receive(:error).with(/Unknown error/)#.ordered
+      @knife.ui.should_receive(:error).with(/#{Regexp.escape(response_text)}/)#.ordered
+      @knife.ui.should_receive(:error).with(/Unknown error/)#.ordered
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 

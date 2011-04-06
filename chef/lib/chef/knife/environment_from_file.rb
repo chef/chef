@@ -20,19 +20,30 @@ class Chef
   class Knife
     class EnvironmentFromFile < Knife
 
+      deps do
+        require 'chef/environment'
+        require 'chef/knife/core/object_loader'
+      end
+
       banner "knife environment from file FILE (options)"
+
+      def loader
+        @loader ||= Knife::Core::ObjectLoader.new(Chef::Environment, ui)
+      end
+
 
       def run
         if @name_args[0].nil?
           show_usage
-          Chef::Log.fatal("You must specify a file to load")
+          ui.fatal("You must specify a file to load")
           exit 1
         end
 
-        updated = load_from_file(Chef::Environment, @name_args[0])
+
+        updated = loader.load_from("environments", @name_args[0])
         updated.save
         output(format_for_display(updated)) if config[:print_after]
-        Chef::Log.warn("Updated Environment #{updated.name}!")
+        ui.info("Updated Environment #{updated.name}")
       end
     end
   end

@@ -23,6 +23,10 @@ class Chef
   class Knife
     class CookbookDownload < Knife
 
+      deps do
+        require 'chef/cookbook_version'
+      end
+
       banner "knife cookbook download COOKBOOK [VERSION] (options)"
 
       option :latest,
@@ -50,13 +54,13 @@ class Chef
 
         if @cookbook_name.nil?
           show_usage
-          Chef::Log.fatal("You must specify a cookbook name")
+          ui.fatal("You must specify a cookbook name")
           exit 1
         elsif @version.nil?
           determine_version
         end
           
-        Chef::Log.info("Downloading #{@cookbook_name} cookbook version #{@version}")
+        ui.info("Downloading #{@cookbook_name} cookbook version #{@version}")
         
         cookbook = rest.get_rest("cookbooks/#{@cookbook_name}/#{@version}")
         manifest = cookbook.manifest
@@ -67,14 +71,14 @@ class Chef
             Chef::Log.debug("Deleting #{basedir}")
             FileUtils.rm_rf(basedir)
           else
-            Chef::Log.fatal("Directory #{basedir} exists, use --force to overwrite")
+            ui.fatal("Directory #{basedir} exists, use --force to overwrite")
             exit
           end
         end
         
         Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
           next unless manifest.has_key?(segment)
-          Chef::Log.info("Downloading #{segment}")
+          ui.info("Downloading #{segment}")
           manifest[segment].each do |segment_file|
             dest = File.join(basedir, segment_file['path'].gsub('/', File::SEPARATOR))
             Chef::Log.debug("Downloading #{segment_file['path']} to #{dest}")
@@ -84,14 +88,14 @@ class Chef
             FileUtils.mv(tempfile.path, dest)
           end
         end
-        Chef::Log.info("Cookbook downloaded to #{basedir}")
+        ui.info("Cookbook downloaded to #{basedir}")
       end
 
       def determine_version
         if available_versions.size == 1
           @version = available_versions.first
         elsif config[:latest]
-          @version = available_versions.map { |v| Chef::Cookbook::Metadata::Version.new(v) }.sort.last
+          @version = available_versions.map { |v| Chef::Version.new(v) }.sort.last
         else
           ask_which_version
         end
@@ -100,7 +104,7 @@ class Chef
       def available_versions
         @available_versions ||= begin
           versions = Chef::CookbookVersion.available_versions(@cookbook_name).map do |version|
-            Chef::Cookbook::Metadata::Version.new(version)
+            Chef::Version.new(version)
           end
           versions.sort!
           versions
@@ -120,7 +124,7 @@ class Chef
         response = ask_question(question).strip
 
         unless @version = valid_responses[response]
-          Chef::Log.error("'#{response}' is not a valid value.")
+          ui.error("'#{response}' is not a valid value.")
           exit(1)
         end
       end

@@ -21,7 +21,7 @@
 ###
 Given /^a validated node$/ do
   # client should have cached ohai assigned to it
-  client.register
+  client.register(ohai[:fqdn], :client_key => client_key )
   client.build_node
   client.node.run_list << "integration_setup"
 end

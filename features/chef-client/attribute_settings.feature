@@ -6,7 +6,8 @@ Feature: Set default, normal, and override attributes
   I want to use different kinds of attributes
 
   Scenario: Set a default attribute in a cookbook attribute file
-    Given a validated node
+    Given I am an administrator
+      And a validated node
       And it includes the recipe 'attribute_settings'
      When I run the chef-client
      Then the run should exit '0'
@@ -94,7 +95,8 @@ Feature: Set default, normal, and override attributes
      Then the inflated responses key 'attribute_priority_was' should match 'came from recipe\[attribute_settings_override\] override attributes'
 
   Scenario: Set the override attribute in a role
-    Given a 'role' named 'attribute_settings_default' exists
+    Given I am an administrator
+      And a 'role' named 'attribute_settings_default' exists
       And a 'role' named 'attribute_settings_override' exists
       And an 'environment' named 'default_attr_test' exists
       And a validated node in the 'default_attr_test' environment
@@ -166,7 +168,8 @@ Feature: Set default, normal, and override attributes
   # Test that attributes from JSON are applied before attribute files are applied.
   @chef1286
   Scenario: Attributes from JSON files are normal attributes applied before attribute files
-    Given a validated node
+    Given I am an administrator
+      And a validated node
       And it includes the recipe 'attribute_settings_normal'
      When I run the chef-client with json attributes
      Then the run should exit '0'

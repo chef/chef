@@ -41,13 +41,22 @@ class Cookbooks < Application
   include Chef::Mixin::Checksum
   include Merb::TarballHelper
 
+  def index
+    if request.env['HTTP_X_CHEF_VERSION'] =~ /0\.9/
+      index_09
+    else
+      index_010
+    end
+  end
+
+  # GET /cookbooks
   # returns data in the format of:
   # {"apache2" => {
   #     :url => "http://url",
   #     :versions => [{:url => "http://url/1.0.0", :version => "1.0.0"}, {:url => "http://url/0.0.1", :version=>"0.0.1"}]
   #   }
   # }
-  def index
+  def index_010
     cookbook_list = Chef::CookbookVersion.cdb_list
     # cookbook_list is in the format of {"apache2" => [0.0.1, 0.0.0]} where the version numbers are DepSelector::Version objects
     num_versions = num_versions!
@@ -56,6 +65,22 @@ class Cookbooks < Application
       res[cookbook_name] = expand_cookbook_urls(cookbook_name, versions, num_versions)
       res
     })
+  end
+
+  # GET /cookbooks
+  #
+  # returns data in the format of:
+  # {
+  #   "apache2" => "http://url/apache2",
+  #   "python" => "http://url/python"
+  # }
+  def index_09
+    cookbook_list = Chef::CookbookVersion.cdb_list_latest(false).keys.sort
+    response = Hash.new
+    cookbook_list.map! do |cookbook_name|
+      response[cookbook_name] = absolute_url(:cookbook, :cookbook_name => cookbook_name)
+    end
+    display response
   end
 
   def index_recipes
@@ -67,6 +92,14 @@ class Cookbooks < Application
     display recipes_with_versions
   end
 
+  def show_versions
+    if request.env['HTTP_X_CHEF_VERSION'] =~ /0\.9/
+      show_versions_09
+    else
+      show_versions_010
+    end
+  end
+
   # GET /cookbooks/:cookbook_name
   #
   # returns data in the format of:
@@ -75,12 +108,23 @@ class Cookbooks < Application
   #     :versions => [{:url => "http://url/1.0.0", :version => "1.0.0"}, {:url => "http://url/0.0.1", :version=>"0.0.1"}]
   #   }
   # }
-  def show_versions
+  def show_versions_010
     versions = Chef::CookbookVersion.cdb_by_name(cookbook_name)
     raise NotFound, "Cannot find a cookbook named #{cookbook_name}" unless versions && versions.size > 0
     num_versions = num_versions!("all")
     cb_versions = versions[cookbook_name].map{ |x| DepSelector::Version.new(x) }.sort.reverse.map{ |x| x.to_s }
     display({ cookbook_name => expand_cookbook_urls(cookbook_name, cb_versions, num_versions) })
+  end
+
+  # GET /cookbooks/:cookbook_name
+  #
+  # returns data in the format of:
+  # {"apache2" => ["1.0.0", "0.0.1"]}
+  def show_versions_09
+    versions = Chef::CookbookVersion.cdb_by_name(cookbook_name)
+    raise NotFound, "Cannot find a cookbook named #{requested_cookbook_name}" unless versions && versions.size > 0
+
+    display versions
   end
 
   def show
@@ -118,6 +162,12 @@ class Cookbooks < Application
       Chef::Log.debug("Cookbook #{cookbook_name} version #{cookbook_version} does not exist")
       cookbook = params['inflated_object']
     end
+
+    if cookbook.frozen_version? && params[:force].nil?
+      raise Conflict, "The cookbook #{cookbook.name} at version #{cookbook.version} is frozen. Use the 'force' option to override."
+    end
+
+    cookbook.freeze_version if params["inflated_object"].frozen_version?
 
     # ensure that all checksums referred to by the manifest have been uploaded.
     Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|

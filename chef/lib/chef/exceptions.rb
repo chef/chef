@@ -50,6 +50,9 @@ class Chef
     class RedirectLimitExceeded < RuntimeError; end
     class AmbiguousRunlistSpecification < ArgumentError; end
     class CookbookNotFound < RuntimeError; end
+    # Cookbook loader used to raise an argument error when cookbook not found.
+    # for back compat, need to raise an error that inherits from ArgumentError
+    class CookbookNotFoundInRepo < ArgumentError; end
     class AttributeNotFound < RuntimeError; end
     class InvalidCommandOption < RuntimeError; end
     class CommandTimeout < RuntimeError; end
@@ -71,6 +74,8 @@ class Chef
     class InvalidDataBagItemID < ArgumentError; end
     class InvalidDataBagName < ArgumentError; end
     class EnclosingDirectoryDoesNotExist < ArgumentError; end
+
+    class ObsoleteDependencySyntax < ArgumentError; end
 
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.

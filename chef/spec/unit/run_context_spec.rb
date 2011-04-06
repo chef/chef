@@ -25,8 +25,8 @@ Chef::Log.level = :debug
 describe Chef::RunContext do
   before(:each) do
     Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "nodes")))
-    Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")))
-    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+    @chef_repo_path = File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks"))
+    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@chef_repo_path))
     @node = Chef::Node.new
     @node.find_file("run_context")
     @run_context = Chef::RunContext.new(@node, @cookbook_collection)

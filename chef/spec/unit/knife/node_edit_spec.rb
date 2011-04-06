@@ -17,6 +17,7 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+Chef::Knife::NodeEdit.load_deps
 
 describe Chef::Knife::NodeEdit do
   before(:each) do
@@ -33,7 +34,7 @@ describe Chef::Knife::NodeEdit do
 
   it "should load the node" do
     Chef::Node.should_receive(:load).with("adam").and_return(@node)
-    @knife.load_node("adam")
+    @knife.node
   end
 
   describe "after loading the node" do
@@ -48,7 +49,7 @@ describe Chef::Knife::NodeEdit do
     end
 
     it "creates a view of the node without attributes from roles or ohai" do
-      actual = Chef::JSONCompat.from_json(@knife.view)
+      actual = Chef::JSONCompat.from_json(@knife.node_editor.view)
       actual.should_not have_key("automatic")
       actual.should_not have_key("override")
       actual.should_not have_key("default")
@@ -60,7 +61,7 @@ describe Chef::Knife::NodeEdit do
     it "shows the extra attributes when given the --all option" do
       @knife.config[:all_attributes] = true
 
-      actual = Chef::JSONCompat.from_json(@knife.view)
+      actual = Chef::JSONCompat.from_json(@knife.node_editor.view)
       actual["automatic"].should == {"go" => "away"}
       actual["override"].should == {"dont" => "show"}
       actual["default"].should == {"hide" => "me"}
@@ -70,16 +71,16 @@ describe Chef::Knife::NodeEdit do
     end
 
     it "does not consider unedited data updated" do
-      view = Chef::JSONCompat.from_json( @knife.view )
-      @knife.apply_updates(view)
-      @knife.should_not be_updated
+      view = Chef::JSONCompat.from_json( @knife.node_editor.view )
+      @knife.node_editor.apply_updates(view)
+      @knife.node_editor.should_not be_updated
     end
 
     it "considers edited data updated" do
-      view = Chef::JSONCompat.from_json( @knife.view )
+      view = Chef::JSONCompat.from_json( @knife.node_editor.view )
       view["run_list"] << "role[fuuu]"
-      @knife.apply_updates(view)
-      @knife.should be_updated
+      @knife.node_editor.apply_updates(view)
+      @knife.node_editor.should be_updated
     end
 
   end

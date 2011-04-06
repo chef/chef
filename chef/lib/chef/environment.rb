@@ -20,6 +20,7 @@
 
 require 'chef/config'
 require 'chef/mixin/params_validate'
+require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/index_queue'
 require 'chef/version_constraint'
