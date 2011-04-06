@@ -291,7 +291,7 @@ class Chef
         self.msg("No knife configuration file found")
       end
 
-      config[:color] = config[:color] && !config[:no_color]
+      Chef::Config[:color] = config[:color] && !config[:no_color]
 
       case config[:verbosity]
       when 0
