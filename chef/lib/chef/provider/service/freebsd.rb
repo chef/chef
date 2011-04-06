@@ -30,19 +30,19 @@ class Chef
 
           # Determine if we're talking about /etc/rc.d or /usr/local/etc/rc.d
           if ::File.exists?("/etc/rc.d/#{current_resource.service_name}")
-            @init_command = "/etc/rc.d/#{current_resource.service_name}" 
+            @init_command = "/etc/rc.d/#{current_resource.service_name}"
           elsif ::File.exists?("/usr/local/etc/rc.d/#{current_resource.service_name}")
-            @init_command = "/usr/local/etc/rc.d/#{current_resource.service_name}" 
+            @init_command = "/usr/local/etc/rc.d/#{current_resource.service_name}"
           else
             raise Chef::Exceptions::Service, "#{@new_resource}: unable to locate the rc.d script"
           end
           Chef::Log.debug("#{@current_resource} found at #{@init_command}")
-            
+
           if @new_resource.supports[:status]
             begin
               if run_command(:command => "#{@init_command} status") == 0
                 @current_resource.running true
-								Chef::Log.debug("#{@new_resource} is running")
+                Chef::Log.debug("#{@new_resource} is running")
               end
             rescue Chef::Exceptions::Exec
               @current_resource.running false
@@ -53,7 +53,7 @@ class Chef
             begin
               if run_command(:command => @new_resource.status_command) == 0
                 @current_resource.running true
-								Chef::Log.debug("#{@new_resource} is running")
+                Chef::Log.debug("#{@new_resource} is running")
               end
             rescue Chef::Exceptions::Exec
               @current_resource.running false
@@ -100,21 +100,21 @@ class Chef
           unless @current_resource.enabled
             Chef::Log.debug("#{@new_resource.name} enable/disable state unknown")
           end
-                  
+
           @current_resource
         end
 
         def read_rc_conf
           ::File.open("/etc/rc.conf", 'r') { |file| file.readlines }
         end
-        
+
         def write_rc_conf(lines)
           ::File.open("/etc/rc.conf", 'w') do |file|
             lines.each { |line| file.puts(line) }
           end
         end
-        
-        
+
+
         # The variable name used in /etc/rc.conf for enabling this service
         def service_enable_variable_name
           # Look for name="foo" in the shell script @init_command. Use this for determining the variable name in /etc/rc.conf
@@ -130,7 +130,7 @@ class Chef
           end
           raise Chef::Exceptions::Service, "Could not find name=\"service\" line in #{@init_command}"
         end
-        
+
         def set_service_enable(value)
           lines = read_rc_conf
           # Remove line that set the old value
@@ -139,7 +139,7 @@ class Chef
           lines << "#{service_enable_variable_name}=\"#{value}\""
           write_rc_conf(lines)
         end
-        
+
         def enable_service()
           set_service_enable("YES") unless @current_resource.enabled
         end
@@ -147,7 +147,7 @@ class Chef
         def disable_service()
           set_service_enable("NO") if @current_resource.enabled
         end
-     
+
       end
     end
   end
