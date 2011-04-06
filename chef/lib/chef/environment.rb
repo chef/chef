@@ -118,8 +118,6 @@ class Chef
         :kind_of => Hash
       )
     end
-    # For backward compatibility at this point. Should be removed in the future. 4/5/2011.
-    alias :attributes :override_attributes
 
     def cookbook_versions(arg=nil)
       set_or_return(
