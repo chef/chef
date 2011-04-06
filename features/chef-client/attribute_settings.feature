@@ -126,23 +126,6 @@ Feature: Set default, normal, and override attributes
     When the node is retrieved from the API
     Then the inflated responses key 'attribute_priority_was' should match 'came from environment cucumber override attributes'
 
-  Scenario: Set the override attribute using attributes method in a environment
-    Given I am an administrator
-      And an 'environment' named 'environment_override_attributes_backward_compat_test' exists
-      And a 'role' named 'attribute_settings_default' exists
-      And a 'role' named 'attribute_settings_override' exists
-      And a validated node in the 'environment_override_attributes_backward_compat_test' environment
-      And it includes the role 'attribute_settings_default'
-      And it includes the recipe 'attribute_settings::default_in_recipe'
-      And it includes the recipe 'attribute_settings_normal::normal_in_recipe'
-      And it includes the recipe 'attribute_settings_override'
-      And it includes the role 'attribute_settings_override'
-     When I run the chef-client with '-l debug'
-     Then the run should exit '0'
-      And a file named 'attribute_setting.txt' should contain 'came from environment environment_override_attributes_backward_compat_test override attributes'
-     When the node is retrieved from the API
-     Then the inflated responses key 'attribute_priority_was' should match 'came from environment environment_override_attributes_backward_compat_test override attributes'
-
   Scenario: Set the override attribute in a recipe
     Given I am an administrator
       And an 'environment' named 'cucumber' exists

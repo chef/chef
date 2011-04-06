@@ -277,13 +277,6 @@ Before do
         e.default_attributes({"attribute_priority_was" => "came from environment default_attr_test default attributes"})
         e
       end,
-      'environment_override_attributes_backward_compat_test' => Proc.new do
-        e = Chef::Environment.new
-        e.name 'environment_override_attributes_backward_compat_test'
-        e.description 'Test override attrs for environments using attributes method'
-        e.attributes({"attribute_priority_was" => "came from environment environment_override_attributes_backward_compat_test override attributes"})
-        e
-      end,
       'cucumber' => Proc.new do
         e = Chef::Environment.new
         e.name 'cucumber'
