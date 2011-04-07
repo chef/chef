@@ -1,0 +1,8 @@
+knife-recipe(8) -- Chef Server REST API utility
+========================================
+
+## SYNOPSIS
+
+__knife__ __recipe list [PATTERN]__
+
+List the recipes available on the server. The results shown can be limited with the optional PATTERN, which is a regular expression. PATTERN should be given in quotes, without slashes.

@@ -1,0 +1,45 @@
+knife-role(8) -- Chef Server REST API utility
+========================================
+
+## SYNOPSIS
+
+__knife__ __role__ _sub-command_ _(options)_
+
+## ROLE SUB-COMMANDS
+
+__role bulk delete REGEX__ _(options)_
+
+Delete roles on the Chef Server based on a regular expression. The regular expression (_REGEX_) should be in quotes, not in //'s.
+
+__role create ROLE__ _(options)_
+
+  * `-d`, `--description`:
+    The role description
+
+Create a new role.
+
+__role delete ROLE__ _(options)_
+
+Delete a role.
+
+__role edit ROLE__ _(options)_
+
+Edit a role.
+
+__role from file FILE__ _(options)_
+
+Create or update a role from a role Ruby DSL (`.rb`) or JSON file.
+
+__role list__ _(options)_
+
+  * `-w`, `--with-uri`:
+    Show corresponding URIs
+
+List roles.
+
+__role show ROLE__ _(options)_
+
+  * `-a`, `--attribute ATTR`:
+    Show only one attribute
+
+Show a specific role.

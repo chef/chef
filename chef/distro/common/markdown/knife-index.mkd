@@ -1,0 +1,11 @@
+knife(8) -- Chef Server REST API utility
+========================================
+
+## SYNOPSIS
+
+__knife__ __index rebuild__ _(options)_
+
+  * `-y`, `--yes`:
+    don't bother to ask if I'm sure
+
+Rebuilds all the search indexes on the server.

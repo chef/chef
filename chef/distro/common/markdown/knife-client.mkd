@@ -1,0 +1,56 @@
+knife-client(8) -- Chef Server REST API utility
+========================================
+
+## SYNOPSIS
+
+__knife__ __client__ _sub-command_ _(options)_
+
+## CLIENT SUB-COMMANDS
+
+Clients are entities that communicate with the Chef Server API.
+
+__client bulk delete REGEX__ _(options)_
+
+Delete clients on the Chef Server based on a regular expression. The regular expression (_REGEX_) should be in quotes, not in //'s.
+
+__client create CLIENT__ _(options)_
+
+  * `-a`, `--admin    `:
+    Create the client as an admin
+  * `-f`, `--file FILE`:
+    Write the key to a file
+
+Create a new client. This generates an RSA keypair. The private key will be displayed on _STDOUT_ or written to the named file. The public half will be stored on the Server. For _chef-client_ systems, the private key should be copied to the system as `/etc/chef/client.pem`.
+
+Admin clients should be created for users that will use _knife_ to access the API as an administrator. The private key will generally be copied to `~/.chef/CLIENT.pem` and referenced in the `knife.rb` configuration file.
+
+__client delete CLIENT__ _(options)_
+
+Deletes a registered client.
+
+__client edit CLIENT__ _(options)_
+
+Edit a registered client.
+
+__client list__ _(options)_
+
+  * `-w`, `--with-uri`:
+      Show corresponding URIs
+
+List all registered clients.
+
+__client reregister CLIENT__ _(options)_
+
+  * `-f`, `--file FILE`:
+    Write the key to a file
+
+Regenerate the RSA keypair for a client. The public half will be stored on the server and the private key displayed on _STDOUT_ or written to the named file.
+
+__client show CLIENT__ _(options)_
+
+  * `-a`, `--attribute ATTR`:
+    Show only one attribute
+
+Show a client.
+
+

@@ -1,0 +1,22 @@
+knife-configure(8) -- Chef Server REST API utility
+========================================
+
+## SYNOPSIS
+
+__knife__ __configure__ [client] _(options)_
+
+## CONFIGURE SUBCOMMANDS ##
+
+__configure__ _(options)_
+
+  * `-i`, `--initial`:
+    Create an initial API Client
+  * `-r`, `--repository REPO`:
+    The path to your chef-repo
+
+Create a configuration file for knife. This will prompt for values to enter into the file. Default values are listed in square brackets if no other entry is typed. See __CONFIGURATION__ below for available options.
+
+__configure client DIRECTORY__
+
+Read the `knife.rb` config file and generate a config file suitable for use in `/etc/chef/client.rb` and copy the validation certificate into the specified _DIRECTORY_.
+

@@ -1,0 +1,9 @@
+knife-exec(8) -- Chef Server REST API utility
+========================================
+
+## SYNOPSIS
+
+__knife__ __exec__ _(options)_
+
+## EXEC SUBCOMMAND
+

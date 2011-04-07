@@ -1,0 +1,58 @@
+knife-node(8) -- Chef Server REST API utility
+========================================
+
+## SYNOPSIS
+
+__knife__ __node__ _sub-command_ _(options)_
+
+## NODE SUB-COMMANDS
+
+Nodes are the entities which are configured with Chef. Typically these are servers or workstations. Nodes are registered as a client, by default by the fully qualified domain name (fqdn). A single client may configure more than one node.
+
+__node bulk delete REGEX__ _(options)_
+
+Delete nodes on the Chef Server based on a regular expression. The regular expression (_REGEX_) should be in quotes, not in //'s.
+
+__node create NODE__ _(options)_
+
+Create a new node.
+
+__node delete NODE__ _(options)_
+
+Delete a single node.
+
+__node edit NODE__ _(options)_
+
+Edit a node.
+
+__node from file FILE__ _(options)_
+
+Create a node from a JSON file.
+
+__node list__ _(options)_
+
+  * `-w`, `--with-uri`:
+    Show corresponding URIs
+
+List all nodes.
+
+`node run_list add [NODE] [ENTRY]` _(options)_
+
+  * `-a`, `--after ITEM`:
+    Place the ENTRY in the run list after ITEM
+
+Add a recipe or role to the node's `run_list`.
+
+`node run_list remove [NODE] [ENTRY]` _(options)_
+
+Remove a recipe or role from the node's `run_list`.
+
+__node show NODE__ _(options)_
+
+  * `-a`, `--attribute [ATTR]`:
+    Show only one attribute
+  * `-r`, `--run-list        `:
+    Show only the run list
+
+Show a node.
+

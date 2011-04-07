@@ -1,0 +1,8 @@
+knife-environment(8) -- Chef Server REST API utility
+========================================
+
+## SYNOPSIS
+
+__knife__ __environment__ _sub-command_ _(options)_
+
+## ENVIRONMENT SUBCOMMANDS

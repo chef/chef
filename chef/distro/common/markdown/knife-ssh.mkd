@@ -1,0 +1,19 @@
+knife-ssh(8) -- Chef Server REST API utility
+========================================
+
+## SYNOPSIS
+
+__knife__ __ssh QUERY COMMAND__ _(options)_
+
+  * `-a`, `--attribute ATTR       `:
+    The attribute to use for opening the connection - default is fqdn
+  * `-C`, `--concurrency NUM      `:
+    The number of concurrent connections
+  * `-m`, `--manual-list          `:
+    QUERY is a space separated list of servers
+  * `-P`, `--ssh-password PASSWORD`:
+    The ssh password
+  * `-x`, `--ssh-user USERNAME    `:
+    The ssh username
+
+The _ssh_ sub-command opens an ssh session to each of the nodes in the search results of the _QUERY_. This sub-command requires that the net-ssh-multi and highline Ruby libraries are installed. On Debian systems, these are the libnet-ssh-multi-ruby and libhighline-ruby packages. They can also be installed as RubyGems (net-ssh-multi and highline, respectively).

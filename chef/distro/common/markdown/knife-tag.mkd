@@ -1,0 +1,8 @@
+knife(8) -- Chef Server REST API utility
+========================================
+
+## SYNOPSIS
+
+__knife__ __tag__ _subcommand_ _(options)_
+
+## TAG SUBCOMMANDS

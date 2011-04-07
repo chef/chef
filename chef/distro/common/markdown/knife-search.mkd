@@ -1,0 +1,22 @@
+knife-search(8) -- Chef Server REST API utility
+========================================
+
+## SYNOPSIS
+
+__knife__ __search INDEX QUERY__ _(options)_
+
+  * `-a`, `--attribute ATTR`:
+    Show only one attribute
+  * `-i`, `--id-only`:
+    Show only the ID of matching objects
+  * `-R`, `--rows INT`:
+    The number of rows to return
+  * `-r`, `--run-list`:
+    Show only the run list
+  * `-o`, `--sort SORT`:
+    The order to sort the results in
+  * `-b`, `--start ROW`:
+    The row to start returning results at
+
+Search indexes are a feature of the Chef Server and the search sub-command allows querying any of the available indexes using SOLR query syntax. The following data types are indexed for search: _node_, _role_, _client_, _data bag_.
+

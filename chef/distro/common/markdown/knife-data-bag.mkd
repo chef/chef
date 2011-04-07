@@ -1,0 +1,39 @@
+knife-data-bag(8) -- Chef Server REST API utility
+========================================
+
+## SYNOPSIS
+
+__knife__ __data bag__ _sub-command_ _(options)_
+
+## DATA BAG SUB-COMMANDS
+
+Data bags are stores of JSON blobs. These blobs are called items. They are free form JSON and indexed by the Chef Server.
+
+__data bag create BAG [ITEM]__ _(options)_
+
+Create a new data bag, or an item in a data bag.
+
+__data bag delete BAG [ITEM]__ _(options)_
+
+Delete a data bag, or an item from a data bag.
+
+__data bag edit BAG ITEM__ _(options)_
+
+Edit an item in a data bag.
+
+__data bag from file BAG FILE__ _(options)_
+
+Load a data bag item from a JSON file. Looks in the directory `data_bags/BAG/ITEM.json` unless a relative path is specified.
+
+__data bag list__ _(options)_
+
+  * `-w`, `--with-uri`:
+    Show corresponding URIs
+
+List the available data bags.
+
+__data bag show BAG [ITEM]__ _(options)_
+
+Show a specific data bag or an item in a data bag.
+
+
