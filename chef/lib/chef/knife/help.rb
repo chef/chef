@@ -76,15 +76,16 @@ MOAR_HELP
         elsif possibilities.size == 1
           possibilities.first
         else
-          # TODO: pick one, yo.
+          ui.info "Multiple help topics match your query. Pick one:"
+          ui.highline.choose(*possibilities)
         end
       end
 
       def available_manpages_by_basename
         @available_manpages_by_basename ||= begin
-          available_manpages = Dir[File.expand_path("../distro/common/man/man8/*8", CHEF_ROOT)]
+          available_manpages = Dir[File.expand_path("../distro/common/man/man1/*1", CHEF_ROOT)]
           available_manpages.inject({}) do |map, manpath|
-            map[::File.basename(manpath, '.8')] = manpath
+            map[::File.basename(manpath, '.1')] = manpath
             map
           end
         end
