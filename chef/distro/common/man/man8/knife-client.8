@@ -1,0 +1,78 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "KNIFE\-CLIENT" "8" "April 2011" "Chef 0.10.0.beta.7" "Chef Manual"
+.
+.SH "NAME"
+\fBknife\-client\fR \- Chef Server REST API utility
+.
+.SH "SYNOPSIS"
+\fBknife\fR \fBclient\fR \fIsub\-command\fR \fI(options)\fR
+.
+.SH "CLIENT SUB\-COMMANDS"
+Clients are entities that communicate with the Chef Server API\.
+.
+.P
+\fBclient bulk delete REGEX\fR \fI(options)\fR
+.
+.P
+Delete clients on the Chef Server based on a regular expression\. The regular expression (\fIREGEX\fR) should be in quotes, not in //\'s\.
+.
+.P
+\fBclient create CLIENT\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-admin\fR
+Create the client as an admin
+.
+.TP
+\fB\-f\fR, \fB\-\-file FILE\fR
+Write the key to a file
+.
+.P
+Create a new client\. This generates an RSA keypair\. The private key will be displayed on \fISTDOUT\fR or written to the named file\. The public half will be stored on the Server\. For \fIchef\-client\fR systems, the private key should be copied to the system as \fB/etc/chef/client\.pem\fR\.
+.
+.P
+Admin clients should be created for users that will use \fIknife\fR to access the API as an administrator\. The private key will generally be copied to \fB~/\.chef/CLIENT\.pem\fR and referenced in the \fBknife\.rb\fR configuration file\.
+.
+.P
+\fBclient delete CLIENT\fR \fI(options)\fR
+.
+.P
+Deletes a registered client\.
+.
+.P
+\fBclient edit CLIENT\fR \fI(options)\fR
+.
+.P
+Edit a registered client\.
+.
+.P
+\fBclient list\fR \fI(options)\fR
+.
+.TP
+\fB\-w\fR, \fB\-\-with\-uri\fR
+Show corresponding URIs
+.
+.P
+List all registered clients\.
+.
+.P
+\fBclient reregister CLIENT\fR \fI(options)\fR
+.
+.TP
+\fB\-f\fR, \fB\-\-file FILE\fR
+Write the key to a file
+.
+.P
+Regenerate the RSA keypair for a client\. The public half will be stored on the server and the private key displayed on \fISTDOUT\fR or written to the named file\.
+.
+.P
+\fBclient show CLIENT\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-attribute ATTR\fR
+Show only one attribute
+.
+.P
+Show a client\.

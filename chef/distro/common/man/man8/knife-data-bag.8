@@ -1,0 +1,53 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "KNIFE\-DATA\-BAG" "8" "April 2011" "Chef 0.10.0.beta.7" "Chef Manual"
+.
+.SH "NAME"
+\fBknife\-data\-bag\fR \- Chef Server REST API utility
+.
+.SH "SYNOPSIS"
+\fBknife\fR \fBdata bag\fR \fIsub\-command\fR \fI(options)\fR
+.
+.SH "DATA BAG SUB\-COMMANDS"
+Data bags are stores of JSON blobs\. These blobs are called items\. They are free form JSON and indexed by the Chef Server\.
+.
+.P
+\fBdata bag create BAG [ITEM]\fR \fI(options)\fR
+.
+.P
+Create a new data bag, or an item in a data bag\.
+.
+.P
+\fBdata bag delete BAG [ITEM]\fR \fI(options)\fR
+.
+.P
+Delete a data bag, or an item from a data bag\.
+.
+.P
+\fBdata bag edit BAG ITEM\fR \fI(options)\fR
+.
+.P
+Edit an item in a data bag\.
+.
+.P
+\fBdata bag from file BAG FILE\fR \fI(options)\fR
+.
+.P
+Load a data bag item from a JSON file\. Looks in the directory \fBdata_bags/BAG/ITEM\.json\fR unless a relative path is specified\.
+.
+.P
+\fBdata bag list\fR \fI(options)\fR
+.
+.TP
+\fB\-w\fR, \fB\-\-with\-uri\fR
+Show corresponding URIs
+.
+.P
+List the available data bags\.
+.
+.P
+\fBdata bag show BAG [ITEM]\fR \fI(options)\fR
+.
+.P
+Show a specific data bag or an item in a data bag\.

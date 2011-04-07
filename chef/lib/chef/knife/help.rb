@@ -21,35 +21,73 @@ class Chef
     class Help < Chef::Knife
 
       def run
-        if name_args.size == 1
-          @command_name = name_args.first
-        elsif name_args.empty?
+        if name_args.empty?
           ui.info "Usage: knife SUBCOMMAND (options)"
           show_usage
           ui.msg ""
           ui.info "For further help:"
           ui.info(<<-MOAR_HELP)
-  knife help categories       list help categories
+  knife help list             list help categories
+  knife help knife            show general knife help
+  knife help CATEGORY         show help for a category of commands
   knife COMMAND --help        show the options for a command
 MOAR_HELP
           exit 1
         else
-          ui.error "Please provide just one command category to display help for"
+          @query = name_args.join('-')
+        end
+
+
+
+        case @query
+        when 'categories', 'list'
+          print_help_categories
           exit 1
-        end
-
-        case @command_name
-        when 'categories'
-          ui.info "Available help categories are: "
-          self.class.subcommands_by_category.keys.sort.each do |category|
-            ui.msg "* #{category}"
-          end
+        when 'intro', 'knife'
+          @category = 'knife'
         else
-          manpage_path =  File.expand_path('../distro/common/man/man8/knife.8', CHEF_ROOT)
-          exec "man #{manpage_path}"
+          @category = find_manpages_for_query(@query)
         end
 
+        manpage_path = available_manpages_by_basename[@category]
+        exec "man #{manpage_path}"
+      end
 
+      def help_categories
+        available_manpages_by_basename.keys.map {|c| c.sub(/^knife\-/, '')}.sort
+      end
+
+      def print_help_categories
+        ui.info "Available help topics are: "
+        help_categories.each do |category|
+          ui.msg "  #{category}"
+        end
+      end
+
+      def find_manpages_for_query(query)
+        possibilities = available_manpages_by_basename.keys.select do |manpage|
+          ::File.fnmatch("knife-#{query}*", manpage) || ::File.fnmatch("#{query}*", manpage)
+        end
+        if possibilities.empty?
+          ui.error "No help found for '#{query}'"
+          ui.msg ""
+          print_help_categories
+          exit 1
+        elsif possibilities.size == 1
+          possibilities.first
+        else
+          # TODO: pick one, yo.
+        end
+      end
+
+      def available_manpages_by_basename
+        @available_manpages_by_basename ||= begin
+          available_manpages = Dir[File.expand_path("../distro/common/man/man8/*8", CHEF_ROOT)]
+          available_manpages.inject({}) do |map, manpath|
+            map[::File.basename(manpath, '.8')] = manpath
+            map
+          end
+        end
       end
 
     end
