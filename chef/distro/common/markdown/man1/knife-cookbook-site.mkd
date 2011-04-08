@@ -1,4 +1,4 @@
-knife-cookbook-site(8) -- Chef Server REST API utility
+knife-cookbook-site(1) -- Install and update open source cookbooks
 ========================================
 
 ## SYNOPSIS
@@ -53,4 +53,17 @@ __cookbook site vendor COOKBOOK [VERSION]__ _(options)_
 
 Uses `git` version control in conjunction with the cookbook site to download upstream cookbooks. A new vendor branch is created in git, the cookbook downloaded from the site and untarred, then the master branch is merged. This allows the user to track upstream changes to cookbooks while merging in customizations. If _-d_ is specified, all the cookbooks it depends on (via metadata _dependencies_) are downloaded and untarred as well, each using their own vendor branch.
 
+
+## SEE ALSO
+   __knife-environment__(1)
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
 

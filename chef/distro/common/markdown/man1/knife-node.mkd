@@ -1,4 +1,4 @@
-knife-node(8) -- Chef Server REST API utility
+knife-node(1) -- Manage the hosts in your infrastructure
 ========================================
 
 ## SYNOPSIS
@@ -116,6 +116,9 @@ display
   * pp
     displays the node using Ruby's pretty printer.
 
+For brevity, only the first character of the format is required, for
+example, -Fj will produce JSON format output.
+
 ## RUN LIST ITEM FORMAT
 Run list items may be either roles or recipes. When adding a role to a
 run list, the correct syntax is "role[ROLE\_NAME]"
@@ -123,18 +126,22 @@ run list, the correct syntax is "role[ROLE\_NAME]"
 When adding a recipe to a run list, there are several valid formats:
 
   * Fully Qualified Format:
-    "recipe[COOKBOOK::RECIPE_NAME]", for example, "recipe[chef::client]"
+    "recipe[COOKBOOK::RECIPE\_NAME]", for example, "recipe[chef::client]"
   * Cookbook Recipe Format:
-    For brevity, the recipe part of the fully qualified format may be omitted, and recipes specified as "COOKBOOK::RECIPE_NAME", e.g., "chef::client"
+    For brevity, the recipe part of the fully qualified format may be omitted, and recipes specified as "COOKBOOK::RECIPE\_NAME", e.g., "chef::client"
   * Default Recipe Format:
     When adding the default recipe of a cookbook to a run list, the recipe name may be omitted as well, e.g., "chef::default" may be written as just "chef"
 
 ## SEE ALSO
+  __knife-client__(1) __knife-search__(1) __knife-role__(1)
 
 ## AUTHOR
-     Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
 
 ## DOCUMENTATION
-     This manual page was written by Joshua Timberman <joshua@opscode.com>.
-     Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
 

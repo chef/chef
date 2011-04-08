@@ -78,7 +78,7 @@ namespace :docs do
       task :man => manfile
 
       file(htmlfile => mkd) do
-        sh "ronn -5 #{RONN_OPTS} #{mkd} --pipe > #{htmlfile}"
+        sh "ronn -5 #{RONN_OPTS} --style=toc #{mkd} --pipe > #{htmlfile}"
       end
 
       task :html => htmlfile
@@ -86,7 +86,11 @@ namespace :docs do
   else
     puts "get with the program and install ronn"
   end
+
+  task :all => [:man, :html]
 end
+
+task :docs => "docs:all"
 
 
 

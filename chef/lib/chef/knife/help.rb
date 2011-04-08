@@ -20,6 +20,8 @@ class Chef
   class Knife
     class Help < Chef::Knife
 
+      banner "knife help [list|TOPIC]"
+
       def run
         if name_args.empty?
           ui.info "Usage: knife SUBCOMMAND (options)"
@@ -27,9 +29,9 @@ class Chef
           ui.msg ""
           ui.info "For further help:"
           ui.info(<<-MOAR_HELP)
-  knife help list             list help categories
+  knife help list             list help topics
   knife help knife            show general knife help
-  knife help CATEGORY         show help for a category of commands
+  knife help TOPIC            display the manual for TOPIC
   knife COMMAND --help        show the options for a command
 MOAR_HELP
           exit 1
@@ -40,27 +42,27 @@ MOAR_HELP
 
 
         case @query
-        when 'categories', 'list'
-          print_help_categories
+        when 'topics', 'list'
+          print_help_topics
           exit 1
         when 'intro', 'knife'
-          @category = 'knife'
+          @topic = 'knife'
         else
-          @category = find_manpages_for_query(@query)
+          @topic = find_manpages_for_query(@query)
         end
 
-        manpage_path = available_manpages_by_basename[@category]
+        manpage_path = available_manpages_by_basename[@topic]
         exec "man #{manpage_path}"
       end
 
-      def help_categories
+      def help_topics
         available_manpages_by_basename.keys.map {|c| c.sub(/^knife\-/, '')}.sort
       end
 
-      def print_help_categories
+      def print_help_topics
         ui.info "Available help topics are: "
-        help_categories.each do |category|
-          ui.msg "  #{category}"
+        help_topics.each do |topic|
+          ui.msg "  #{topic}"
         end
       end
 
@@ -71,7 +73,7 @@ MOAR_HELP
         if possibilities.empty?
           ui.error "No help found for '#{query}'"
           ui.msg ""
-          print_help_categories
+          print_help_topics
           exit 1
         elsif possibilities.size == 1
           possibilities.first

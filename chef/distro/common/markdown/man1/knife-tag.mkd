@@ -1,4 +1,4 @@
-knife(8) -- Chef Server REST API utility
+knife-tag(1) -- Apply tags to nodes on a Chef Server
 ========================================
 
 ## SYNOPSIS

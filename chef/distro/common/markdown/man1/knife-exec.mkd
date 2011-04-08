@@ -1,4 +1,4 @@
-knife-exec(8) -- Chef Server REST API utility
+knife-exec(1) -- Run user scripts using the Chef API DSL
 ========================================
 
 ## SYNOPSIS

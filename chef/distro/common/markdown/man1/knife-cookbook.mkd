@@ -1,4 +1,4 @@
-knife-cookbook(8) -- Chef Server REST API utility
+knife-cookbook(1) -- Upload and manage Chef cookbooks
 ========================================
 
 ## SYNOPSIS

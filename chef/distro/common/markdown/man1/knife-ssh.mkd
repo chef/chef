@@ -1,4 +1,4 @@
-knife-ssh(8) -- Chef Server REST API utility
+knife-ssh(1) -- Run a command or interactive session on multiple remote hosts
 ========================================
 
 ## SYNOPSIS
@@ -16,4 +16,49 @@ __knife__ __ssh QUERY COMMAND__ _(options)_
   * `-x`, `--ssh-user USERNAME    `:
     The ssh username
 
-The _ssh_ sub-command opens an ssh session to each of the nodes in the search results of the _QUERY_. This sub-command requires that the net-ssh-multi and highline Ruby libraries are installed. On Debian systems, these are the libnet-ssh-multi-ruby and libhighline-ruby packages. They can also be installed as RubyGems (net-ssh-multi and highline, respectively).
+## DESCRIPTION
+
+The _ssh_ sub-command opens an ssh session to each of the nodes in the
+search results of the _QUERY_. This sub-command requires that the
+net-ssh-multi and highline Ruby libraries are installed. On Debian
+systems, these are the libnet-ssh-multi-ruby and libhighline-ruby
+packages. They can also be installed as RubyGems (net-ssh-multi and
+highline, respectively).
+
+## TERMINAL MULTIPLEXING AND TERMINAL TAB SUPPORT
+`knife ssh` integrates with several terminal multiplexer programs to
+provide a more convenient means of managing multiple ssh sessions. When
+the _COMMAND_ option matches one of these, `knife ssh` will create
+multiple interactive ssh sessions running locally in the terminal
+multiplexer instead of invoking the command on the remote host.
+
+The available multiplexers are:
+  * `interactive`:
+    A built-in multiplexer. `interactive` supports running commands on a
+    subset of the connected hosts in parallel
+  * __screen__(1):
+    Runs ssh interactively inside `screen`. ~/.screenrc will be sourced
+    if it exists.
+  * __tmux__(1):
+    Runs ssh interactively inside tmux.
+  * `macterm` (Mac OS X only):
+    Opens a Terminal.app window and creates a tab for each ssh session.
+    You must install the rb-appscript gem before you can use this
+    option.
+
+## SEE ALSO
+   __knife-search__(1)
+
+   <http://wiki.opscode.com/display/chef/Attributes>
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+
+

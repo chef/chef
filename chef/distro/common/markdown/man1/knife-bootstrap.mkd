@@ -1,4 +1,4 @@
-knife-bootrap(8) -- Chef Server REST API utility
+knife-bootrap(1) -- Install Chef Client on a remote host
 ========================================
 
 ## SYNOPSIS
@@ -28,9 +28,20 @@ __knife__ __bootstrap__ _(options)_
   * `-d`, `--distro DISTRO`:
     Bootstrap a distro using a template
 
-Performs a Chef Bootstrap on the target node. The goal of the bootstrap is to get Chef installed on the target system so it can run Chef Client with a Chef Server. The main assumption is a baseline OS installation exists. This sub-command is used internally by some cloud computing server create commands and the others will be migrated in a future version of Chef.
+Performs a Chef Bootstrap on the target node. The goal of the bootstrap
+is to get Chef installed on the target system so it can run Chef Client
+with a Chef Server. The main assumption is a baseline OS installation
+exists. This sub-command is used internally by some cloud computing
+server create commands and the others will be migrated in a future
+version of Chef.
 
-As of Chef 0.9.8, the bootstrap sub-command supports supplying a template to perform the bootstrap steps. If the distro is not specified (via `-d` or `--distro` option), an Ubuntu 10.04 with RubyGems is assumed. The __DISTRO__ value corresponds to the base filename of the template, in other words `DISTRO`.erb. A template file can be specified with the `--template-file` option in which case the __DISTRO__ is not used. The sub-command looks in the following locations for the template to use:
+The bootstrap sub-command supports supplying a template to perform the
+bootstrap steps. If the distro is not specified (via `-d` or `--distro`
+option), an Ubuntu 10.04 host bootstrapped with RubyGems is assumed. The
+__DISTRO__ value corresponds to the base filename of the template, in
+other words `DISTRO`.erb. A template file can be specified with the
+`--template-file` option in which case the __DISTRO__ is not used. The
+sub-command looks in the following locations for the template to use:
 
 * `bootstrap` directory in the installed Chef Knife library.
 * `bootstrap` directory in the `$PWD/.chef`.
@@ -62,3 +73,16 @@ When this is complete, the bootstrapped node will have:
 Additional custom bootstrap templates can be created and stored in `.chef/bootstrap/DISTRO.erb`, replacing __DISTRO__ with the value passed with the `-d` or `--distro` option. See __EXAMPLES__ for more information.
 
 
+## SEE ALSO
+   __knife-ssh__(1)
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
