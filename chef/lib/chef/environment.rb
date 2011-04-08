@@ -19,6 +19,7 @@
 #
 
 require 'chef/config'
+require 'chef/mash'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
@@ -342,6 +343,47 @@ class Chef
 
       # inject all cookbooks into the hash while filtering out restricted versions, then sort the individual arrays
       cookbook_list = Chef::CookbookVersion.cdb_list(true, couchdb)
+
+      filtered_list = cookbook_list.inject({}) do |res, cookbook|
+        # FIXME: should cookbook.version return a Chef::Version?
+        version               = Chef::Version.new(cookbook.version)
+        requirement_satisfied = version_constraints.has_key?(cookbook.name) ? version_constraints[cookbook.name].include?(version) : true
+        # we want a key for every cookbook, even if no versions are available
+        res[cookbook.name] ||= []
+        res[cookbook.name] << cookbook if requirement_satisfied
+        res
+      end
+
+      sorted_list = filtered_list.inject({}) do |res, (cookbook_name, versions)|
+        res[cookbook_name] = versions.sort.reverse
+        res
+      end
+
+      sorted_list
+    end
+
+    # Like +cdb_load_filtered_cookbook_versions+, loads the set of
+    # cookbooks available in a given environment. The difference is that
+    # this method will load Chef::MinimalCookbookVersion objects that
+    # contain only the information necessary for solving a cookbook
+    # collection for a given run list. The user of this method must call
+    # Chef::MinimalCookbookVersion.load_full_versions_of() after solving
+    # the cookbook collection to get the full objects.
+    # === Returns
+    # Hash
+    # i.e.
+    # {
+    #   "cookbook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted highest to lowest
+    # }
+    #
+    # There will be a key for every cookbook.  If no CookbookVersions
+    # are available for the specified environment the value will be an
+    # empty list.
+    def self.cdb_minimal_filtered_versions(name, couchdb=nil)
+      version_constraints = cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Chef::VersionConstraint.new(v); res}
+
+      # inject all cookbooks into the hash while filtering out restricted versions, then sort the individual arrays
+      cookbook_list = Chef::MinimalCookbookVersion.load_all(couchdb)
 
       filtered_list = cookbook_list.inject({}) do |res, cookbook|
         # FIXME: should cookbook.version return a Chef::Version?

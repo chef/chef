@@ -1,0 +1,117 @@
+knife-data-bag(1) -- Store arbitrary data on a Chef Server
+========================================
+
+## SYNOPSIS
+
+__knife__ __data bag__ _sub-command_ _(options)_
+
+## DESCRIPTION
+Data bags are stores of arbitrary JSON data. Each data bag is a
+collection that may contain many items. Data Bag Items are indexed by
+the Chef Server and can be searched via __knife-search__(1).
+
+Data bags are available to all nodes configured by __chef-client__(8),
+and are therefore a convenient mechanism to store global information,
+such as lists of administrative accounts that should be configured on
+all hosts.
+
+## DATA BAG SUB-COMMANDS
+
+## CREATE
+__knife data bag create__ _bag name_ [item id] _(options)_
+
+  * `-s`, `--secret SECRET`:
+   A secret key used to encrypt the data bag item. See __encryption support__ below.
+  * `--secret-file SECRET_FILE`:
+   The path to a file containing the secret key to be used to encrypt
+   the data bag item.
+
+If _item id_ is given, creates a new, empty data bag item and opens it for
+editing in your editor. The data bag will be created if it does not
+exist.
+
+If _item id_ is not given, the data bag will be created.
+
+## DELETE
+__knife data bag delete__ _bag name_ [item id] _(options)_
+
+Delete a data bag, or an item from a data bag.
+
+## EDIT
+__knife data bag edit__ _bag name_ _item id_ _(options)_
+
+  * `-s`, `--secret SECRET`:
+   A secret key used to encrypt the data bag item. See __encryption support__ below.
+  * `--secret-file SECRET_FILE`:
+   The path to a file containing the secret key to be used to encrypt
+   the data bag item.
+
+Edit an item in a data bag.
+
+## FROM FILE
+__knife data bag from file__ _bag name_ _file_ _(options)_
+
+  * `-s`, `--secret SECRET`:
+   A secret key used to encrypt the data bag item. See __encryption support__ below.
+  * `--secret-file SECRET_FILE`:
+   The path to a file containing the secret key to be used to encrypt
+   the data bag item.
+
+Load a data bag item from a JSON file. If _file_ is a relative or
+absolute path to the file, that file will be used. Otherwise, the _file_
+parameter is treated as the base name of a data bag file in a Chef
+repository, and `knife` will search for the file in
+`./data_bags/bag_name/file`. For example `knife data bag from file users
+dan.json` would attempt to load the file `./data_bags/users/dan.json`.
+
+## LIST
+__knife data bag list__ _(options)_
+
+  * `-w`, `--with-uri`:
+    Show corresponding URIs
+
+Lists the data bags that exist on the Chef Server.
+
+## SHOW
+__knife data bag show BAG [ITEM]__ _(options)_
+
+  * `-s`, `--secret SECRET`:
+   A secret key used to encrypt the data bag item. See __encryption support__ below.
+  * `--secret-file SECRET_FILE`:
+   The path to a file containing the secret key to be used to encrypt
+   the data bag item.
+
+Show a specific data bag or an item in a data bag. The output will be
+formatted according to the --format option.
+
+## ENCRYPTION SUPPORT
+Data Bag Items may be encrypted to keep their contents secret. This may
+be desireable when storing sensitive information such as database
+passwords, API keys, etc.
+
+Data Bag Item encryption uses the AES-256 CBC symmetric key algorithm.
+
+__CAVEATS:__ Keys are not encrypted; only values are encrypted. The "id"
+of a Data Bag Item is not encrypted, since it is used by Chef Server to
+store the item in its database. For example, given the following data bag item:
+    {"id": "important_passwords", "secret_password": "opensesame"}
+The key "secret\_password" will be visible to an evesdropper, but the
+value "opensesame" will be protected. Both the key "id" and its value
+"important\_passwords" will be visible to an evesdropper.
+
+Chef Server does not provide a secure mechanism for distributing
+encryption keys.
+
+## SEE ALSO
+   __knife-search__(1)
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. http://wiki.opscode.com/display/chef/Home
+

@@ -51,7 +51,7 @@ class Chef
           crontab_lines.each do |line|
             case line.chomp
             when "# Chef Name: #{@new_resource.name}"
-              Chef::Log.debug("Found cron '#{@new_resource.name}'")
+              Chef::Log.debug("#{@new_resource} found cron '#{@new_resource.name}'")
               cron_found = true
               @cron_exists = true
               next
@@ -82,9 +82,9 @@ class Chef
               next
             end
           end
-          Chef::Log.debug("Cron '#{@new_resource.name}' not found") unless @cron_exists
+          Chef::Log.debug("#{@new_resource} cron '#{@new_resource.name}' not found") unless @cron_exists
         elsif status.exitstatus == 1
-          Chef::Log.debug("Cron empty for '#{@new_resource.user}'")
+          Chef::Log.debug("#{@new_resource} cron empty for '#{@new_resource.user}'")
           @cron_empty = true
         end
 
@@ -125,7 +125,7 @@ class Chef
 
         if @cron_exists
           unless compare_cron
-            Chef::Log.debug("Skipping existing cron entry '#{@new_resource.name}'")
+            Chef::Log.debug("#{@new_resource} skipping existing cron entry '#{@new_resource.name}'")
             return
           end
           status = popen4("crontab -l #{@new_resource.user}") do |pid, stdin, stdout, stderr|
@@ -148,7 +148,7 @@ class Chef
           end
 
           status = write_crontab(crontab)
-          Chef::Log.info("Updated cron '#{@new_resource.name}'")
+          Chef::Log.info("#{@new_resource} updated crontab entry")
         else
           unless @cron_empty
             status = popen4("crontab -l #{@new_resource.user}") do |pid, stdin, stdout, stderr|
@@ -158,7 +158,7 @@ class Chef
 
           crontab << newcron
           status = write_crontab(crontab)
-          Chef::Log.info("Added cron '#{@new_resource.name}'")
+          Chef::Log.info("#{@new_resource} added crontab entry")
         end
       end
 
@@ -185,7 +185,7 @@ class Chef
           end
 
           status = write_crontab(crontab)
-          Chef::Log.info("Deleted cron '#{@new_resource.name}'")
+          Chef::Log.info("#{@new_resource} deleted crontab entry")
         end
       end
 

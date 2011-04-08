@@ -3,7 +3,8 @@
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2008-2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Copyright:: Copyright 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +30,80 @@ require 'chef/cookbook/metadata'
 require 'chef/version_class'
 
 class Chef
+
+  #== Chef::MinimalCookbookVersion
+  # MinimalCookbookVersion is a duck type of CookbookVersion, used
+  # internally by Chef Server as an optimization when determining the
+  # optimal cookbook set for a chef-client.
+  #
+  # MinimalCookbookVersion objects contain only enough information to
+  # solve the cookbook collection for a given run list. They *do not*
+  # contain enough information to generate the response.
+  #
+  # See also: Chef::CookbookVersionSelector
+  class MinimalCookbookVersion
+
+    include Comparable
+
+    ID   = "id".freeze
+    NAME = 'name'.freeze
+    KEY  = 'key'.freeze
+    VERSION = 'version'.freeze
+    VALUE   = 'value'.freeze
+    DEPS    = 'deps'.freeze
+
+    DEPENDENCIES      = 'dependencies'.freeze
+
+    # Loads the full list of cookbooks, using a couchdb view to fetch
+    # only the id, name, version, and dependency constraints. This is
+    # enough information to solve for the cookbook collection for a
+    # given run list. After solving for the cookbook collection, you
+    # need to call +load_full_versions_of+ to convert
+    # MinimalCookbookVersion objects to their non-minimal counterparts
+    def self.load_all(couchdb)
+      # Example:
+      # {"id"=>"1a806f1c-b409-4d8e-abab-fa414ff5b96d", "key"=>"activemq", "value"=>{"version"=>"0.3.3", "deps"=>{"java"=>">= 0.0.0", "runit"=>">= 0.0.0"}}}
+      couchdb ||= Chef::CouchDB.new
+      couchdb.get_view("cookbooks", "all_with_version_and_deps")["rows"].map {|params| self.new(params) }
+    end
+
+    # Loads the non-minimal CookbookVersion objects corresponding to
+    # +minimal_cookbook_versions+ from couchdb using a bulk GET.
+    def self.load_full_versions_of(minimal_cookbook_versions, couchdb)
+      database_ids = Array(minimal_cookbook_versions).map {|mcv| mcv.couchdb_id }
+      couchdb ||= Chef::CouchDB.new
+      couchdb.bulk_get(*database_ids)
+    end
+
+    attr_reader :couchdb_id
+    attr_reader :name
+    attr_reader :version
+    attr_reader :deps
+
+    def initialize(params)
+      @couchdb_id = params[ID]
+      @name = params[KEY]
+      @version = params[VALUE][VERSION]
+      @deps    = params[VALUE][DEPS]
+    end
+
+    # Returns the Cookbook::MinimalMetadata object for this cookbook
+    # version.
+    def metadata
+      @metadata ||= Cookbook::MinimalMetadata.new(@name, DEPENDENCIES => @deps)
+    end
+
+    def legit_version
+      @legit_version ||= Chef::Version.new(@version)
+    end
+
+    def <=>(o)
+      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != o.name
+      raise "Unexpected comparison to #{o}" unless o.respond_to?(:legit_version)
+      legit_version <=> o.legit_version
+    end
+  end
+
   # == Chef::CookbookVersion
   # CookbookVersion is a model object encapsulating the data about a Chef
   # cookbook. Chef supports maintaining multiple versions of a cookbook on a
@@ -44,7 +119,7 @@ class Chef
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
 
     DESIGN_DOCUMENT = {
-      "version" => 7,
+      "version" => 8,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -73,6 +148,15 @@ class Chef
             }
           }
           EOJS
+        },
+        "all_with_version_and_deps" => {
+          "map" => <<-JS
+          function(doc) {
+            if (doc.chef_type == "cookbook_version") {
+              emit(doc.cookbook_name, {version: doc.version, deps: doc.metadata.dependencies});
+            }
+          }
+          JS
         },
         "all_latest_version" => {
           "map" => %q@
@@ -437,6 +521,11 @@ class Chef
         generate_manifest
       end
       @checksums
+    end
+
+    def manifest_records_by_path
+      @manifest_records_by_path || generate_manifest
+      @manifest_records_by_path
     end
 
     def full_name

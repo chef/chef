@@ -72,7 +72,7 @@ class Chef
         # Ruby 1.8 Strings include enumberable, which is not what we want. So
         # we have this heuristic to detect hashes and arrays instead.
         def should_enumerate?(value)
-          ((value.respond_to?(:keys) && !value.empty? ) || ( value.kind_of?(Array) && value.size > 1 ))
+          ((value.respond_to?(:keys) && !value.empty? ) || ( value.kind_of?(Array) && (value.size > 1 || should_enumerate?(value.first) )))
         end
 
         def indent_line(string, indent)
@@ -90,7 +90,7 @@ class Chef
         end
 
         def stringify_value(data)
-          data.kind_of?(String) ? data : data.inspect
+          data.kind_of?(String) ? data : data.to_s
         end
 
       end

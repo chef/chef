@@ -367,6 +367,7 @@ class Chef
       headers["Content-Type"] = 'application/json' if json_body
       headers['Content-Length'] = json_body.bytesize.to_s if json_body
       headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
+      headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
       headers
     end
 

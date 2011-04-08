@@ -31,18 +31,18 @@ class Chef
         @current_resource
       end
 
-
       def action_create
         assert_enclosing_directory_exists!
         if file_cache_location && content_stale?
-          Chef::Log.debug("content of file #{@new_resource.path} requires update")
+          Chef::Log.debug("#{@new_resource} has new contents")
           backup_new_resource
           Tempfile.open(::File.basename(@new_resource.name)) do |staging_file|
-            Chef::Log.debug("staging #{file_cache_location} to #{staging_file.path}")
+            Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{staging_file.path}")
             staging_file.close
             stage_file_to_tmpdir(staging_file.path)
             FileUtils.mv(staging_file.path, @new_resource.path)
           end
+          Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
           @new_resource.updated_by_last_action(true)
         else
           set_all_access_controls(@new_resource.path)
@@ -52,7 +52,7 @@ class Chef
 
       def action_create_if_missing
         if ::File.exists?(@new_resource.path)
-          Chef::Log.debug("File #{@new_resource.path} exists, taking no action.")
+          Chef::Log.debug("#{@new_resource} exists at #{@new_resource.path} taking no action.")
         else
           action_create
         end
@@ -87,7 +87,6 @@ class Chef
 
       def backup_new_resource
         if ::File.exists?(@new_resource.path)
-          Chef::Log.info "Backing up current file at #{@new_resource.path}"
           backup @new_resource.path
         end
       end

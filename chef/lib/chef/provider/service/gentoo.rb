@@ -30,16 +30,15 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
     
     raise Chef::Exceptions::Service unless ::File.exists?("/sbin/rc-update")
     
-    Chef::Log.debug "#{@new_resource}: checking service enable state"
     @current_resource.enabled(
       Dir.glob("/etc/runlevels/**/#{@current_resource.service_name}").any? do |file|
         exists = ::File.exists? file
         readable = ::File.readable? file
-        Chef::Log.debug "#{@new_resource}: exists: #{exists}, readable: #{readable}"
+        Chef::Log.debug "#{@new_resource} exists: #{exists}, readable: #{readable}"
         exists and readable
       end
     )
-    Chef::Log.debug "#{@new_resource}: enabled: #{@current_resource.enabled}"
+    Chef::Log.debug "#{@new_resource} enabled: #{@current_resource.enabled}"
 
     @current_resource
   end

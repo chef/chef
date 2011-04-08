@@ -63,8 +63,6 @@ class Chef::Provider::Route < Chef::Provider
     def load_current_resource
       is_running = nil
 
-      Chef::Log.debug("Configuring Route #{@new_resource.name}")
-
       # cidr or quad dot mask
       if @new_resource.netmask
         new_ip = IPAddr.new("#{@new_resource.target}/#{@new_resource.netmask}")
@@ -86,7 +84,7 @@ class Chef::Provider::Route < Chef::Provider
           destination = IPAddr.new(destination.scan(/../).reverse.to_s.hex, Socket::AF_INET).to_s
           gateway = IPAddr.new(gateway.scan(/../).reverse.to_s.hex, Socket::AF_INET).to_s
           mask = IPAddr.new(mask.scan(/../).reverse.to_s.hex, Socket::AF_INET).to_s
-          Chef::Log.debug( "System has route:  dest=#{destination} mask=#{mask} gw=#{gateway}")
+          Chef::Log.debug("#{@new_resource} system has route: dest=#{destination} mask=#{mask} gw=#{gateway}")
 
           # check if what were trying to configure is already there
           # use an ipaddr object with ip/mask this way we can have
@@ -94,7 +92,7 @@ class Chef::Provider::Route < Chef::Provider
           # expanding bitmask by hand.
           #
           running_ip = IPAddr.new("#{destination}/#{mask}")
-          Chef::Log.debug( "new ip: #{new_ip.inspect} running ip: #{running_ip.inspect} ")
+          Chef::Log.debug("#{@new_resource} new ip: #{new_ip.inspect} running ip: #{running_ip.inspect}")
           is_running = true if running_ip == new_ip
         end
       route_file.close
@@ -103,13 +101,13 @@ class Chef::Provider::Route < Chef::Provider
 
     def action_add
       # check to see if load_current_resource found the route
-      if  is_running
-        Chef::Log.debug("Route #{@new_resource.name} already active ")
+      if is_running
+        Chef::Log.debug("#{@new_resource} route already active - nothing to do")
       else
         command = generate_command(:add)
 
-        Chef::Log.info("Adding route: #{command} ")
         run_command( :command => command )
+        Chef::Log.info("#{@new_resource} added")
         @new_resource.updated_by_last_action(true)
       end
 
@@ -121,11 +119,11 @@ class Chef::Provider::Route < Chef::Provider
       if is_running
         command = generate_command(:delete)
 
-        Chef::Log.info("Removing route: #{command}")
         run_command( :command => command )
+        Chef::Log.info("#{@new_resource} removed")
         @new_resource.updated_by_last_action(true)
       else
-        Chef::Log.debug("Route #{@new_resource.name} does not exist")
+        Chef::Log.debug("#{@new_resource} route does not exist - nothing to do")
       end
     end
 
@@ -156,7 +154,7 @@ class Chef::Provider::Route < Chef::Provider
         conf.each do |k, v|
           network_file = ::File.new("/etc/sysconfig/network-scripts/route-#{k}", "w")
           network_file.puts(conf[k])
-          Chef::Log.debug("writing route.#{k}\n#{conf[k]}")
+          Chef::Log.debug("#{@new_resource} writing route.#{k}\n#{conf[k]}")
           network_file.close
         end
       end

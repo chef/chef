@@ -26,6 +26,9 @@ require 'chef/rest'
 
 class Chef::Application::Client < Chef::Application
 
+  # Mimic self_pipe sleep from Unicorn to capture signals safely
+  SELF_PIPE = []
+
   option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
@@ -197,6 +200,15 @@ class Chef::Application::Client < Chef::Application
 
   # Run the chef client, optionally daemonizing or looping at intervals.
   def run_application
+    unless RUBY_PLATFORM =~ /mswin|mingw32|windows/
+      SELF_PIPE.replace IO.pipe
+
+      trap("USR1") do
+        Chef::Log.info("SIGUSR1 received, waking up")
+        SELF_PIPE[1].putc('.') # wakeup master process from select
+      end
+    end
+
     if Chef::Config[:version]
       puts "Chef version: #{::Chef::VERSION}"
     end
@@ -219,10 +231,18 @@ class Chef::Application::Client < Chef::Application
         @chef_client = nil
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
-          sleep Chef::Config[:interval]
+          unless SELF_PIPE.empty?
+            client_sleep Chef::Config[:interval]
+          else
+            # Windows
+            sleep Chef::Config[:interval]
+          end
         else
           Chef::Application.exit! "Exiting", 0
         end
+      rescue Chef::Application::Wakeup => e
+        Chef::Log.debug("Received Wakeup signal.  Starting run.")
+        next
       rescue SystemExit => e
         raise
       rescue Exception => e
@@ -230,7 +250,12 @@ class Chef::Application::Client < Chef::Application
           Chef::Log.error("#{e.class}: #{e}")
           Chef::Application.debug_stacktrace(e)
           Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
-          sleep Chef::Config[:interval]
+          unless SELF_PIPE.empty?
+            client_sleep Chef::Config[:interval]
+          else
+            # Windows
+            sleep Chef::Config[:interval]
+          end
           retry
         else
           Chef::Application.debug_stacktrace(e)
@@ -240,5 +265,12 @@ class Chef::Application::Client < Chef::Application
         GC.start
       end
     end
+  end
+
+  private 
+
+  def client_sleep(sec)
+    IO.select([ SELF_PIPE[0] ], nil, nil, sec) or return
+    SELF_PIPE[0].getc
   end
 end

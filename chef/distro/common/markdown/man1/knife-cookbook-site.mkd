@@ -1,0 +1,69 @@
+knife-cookbook-site(1) -- Install and update open source cookbooks
+========================================
+
+## SYNOPSIS
+
+__knife__ __cookbook site__ _sub-command_ _(options)_
+
+## COOKBOOK SITE SUB-COMMANDS
+
+The following sub-commands are still in the context of cookbooks, but they make use of Opscode's Cookbook Community site, _http://cookbooks.opscode.com/_. That site has an API, and these sub-commands utilize that API, rather than the Chef Server API.
+
+__cookbook site download COOKBOOK [VERSION]__ _(options)_
+
+  * `-f`, `--file FILE`:
+    The filename to write to
+
+Downloads a specific cookbook from the Community site, optionally specifying a certain version.
+
+__cookbook site list__ _(options)_
+
+  * `-w`, `--with-uri`:
+    Show corresponding URIs
+
+Lists available cookbooks from the Community site.
+
+__cookbook site search QUERY__ _(options)_
+
+Searches the Community site with the specified query.
+
+__cookbook site share COOKBOOK CATEGORY__ _(options)_
+
+  * `-k`, `--key KEY`:
+    API Client Key
+  * `-u`, `--user USER`:
+    API Client Username
+  * `-o`, `--cookbook-path PATH:PATH`:
+    A colon-separated path to look for cookbooks in
+
+Uploads the specified cookbook using the given category to the Opscode cookbooks site. Requires a login user and certificate for the Opscode Cookbooks site. See __EXAMPLES__ for usage if the Opscode user and certificate pair are not used for authenticating with the Chef Server. In other words, if the Chef Server is not the Opscode Platform.
+
+__cookbook site unshare COOKBOOK__
+
+Stops sharing the specified cookbook on the Opscode cookbooks site.
+
+__cookbook site show COOKBOOK [VERSION]__ _(options)_
+
+Shows information from the site about a particular cookbook.
+
+__cookbook site vendor COOKBOOK [VERSION]__ _(options)_
+
+  * `-d`, `--dependencies`:
+    Grab dependencies automatically
+
+Uses `git` version control in conjunction with the cookbook site to download upstream cookbooks. A new vendor branch is created in git, the cookbook downloaded from the site and untarred, then the master branch is merged. This allows the user to track upstream changes to cookbooks while merging in customizations. If _-d_ is specified, all the cookbooks it depends on (via metadata _dependencies_) are downloaded and untarred as well, each using their own vendor branch.
+
+
+## SEE ALSO
+   __knife-environment__(1)
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+

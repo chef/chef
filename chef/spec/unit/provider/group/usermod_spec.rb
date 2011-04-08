@@ -36,7 +36,7 @@ describe Chef::Provider::Group::Usermod do
       end
     
       it "should log an appropriate message" do
-        Chef::Log.should_receive(:debug).with("group[wheel]: not changing group members, the group has no members")
+        Chef::Log.should_receive(:debug).with("group[wheel] not changing group members, the group has no members")
         @provider.modify_group_members
       end
     end

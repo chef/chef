@@ -106,7 +106,7 @@ class Chef
     # given by +file_location+ and saves the Checksum to the database
     def commit_sandbox_file(sandbox_file)
       @original_committed_file_location = sandbox_file
-      Chef::Log.info("commiting sandbox file: move #{sandbox_file} to #{file_location}")
+      Chef::Log.info("Commiting sandbox file: move #{sandbox_file} to #{file_location}")
       FileUtils.mkdir_p(checksum_repo_directory)
       File.rename(sandbox_file, file_location)
       cdb_save
@@ -122,7 +122,7 @@ class Chef
         raise Chef::Exceptions::IllegalChecksumRevert, "Checksum #{self.inspect} cannot be reverted because the original sandbox file location is not known"
       end
 
-      Chef::Log.warn("reverting sandbox file commit: moving #{file_location} back to #{original_committed_file_location}")
+      Chef::Log.warn("Reverting sandbox file commit: moving #{file_location} back to #{original_committed_file_location}")
       File.rename(file_location, original_committed_file_location)
       cdb_destroy
     end

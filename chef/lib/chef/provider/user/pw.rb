@@ -80,13 +80,13 @@ class Chef
             field_symbol = field.to_sym
             if @current_resource.send(field_symbol) != @new_resource.send(field_symbol)
               if @new_resource.send(field_symbol)
-                Chef::Log.debug("Setting #{@new_resource} #{field} to #{@new_resource.send(field_symbol)}")
+                Chef::Log.debug("#{@new_resource} setting #{field} to #{@new_resource.send(field_symbol)}")
                 opts << " #{option} '#{@new_resource.send(field_symbol)}'"
               end
             end
           end
           if @new_resource.supports[:manage_home]
-            Chef::Log.debug("Managing the home directory for #{@new_resource}")
+            Chef::Log.debug("#{@new_resource} is managing the users home directory")
             opts << " -m"
           end
           opts
@@ -94,7 +94,7 @@ class Chef
       
         def modify_password
           if @current_resource.password != @new_resource.password
-            Chef::Log.debug("#{new_resource}: updating password")
+            Chef::Log.debug("#{new_resource} updating password")
             command = "pw usermod #{@new_resource.username} -H 0"
             status = popen4(command, :waitlast => true) do |pid, stdin, stdout, stderr|
               stdin.puts "#{@new_resource.password}"
@@ -104,7 +104,7 @@ class Chef
               raise Chef::Exceptions::User, "pw failed - #{status.inspect}!"
             end
           else
-            Chef::Log.debug("#{new_resource}: no change needed to password")
+            Chef::Log.debug("#{new_resource} no change needed to password")
           end
         end
       end

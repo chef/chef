@@ -212,7 +212,6 @@ describe Chef::Provider::Subversion do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::Dir.stub!(:entries).with("/my/deploy/dir").and_return(['.','..','foo','bar'])
     @provider.should_not_receive(:checkout_command)
-    Chef::Log.should_receive(:info).with("Taking no action, checkout destination /my/deploy/dir already exists or is a non-empty directory")
     @provider.action_checkout
     @resource.should_not be_updated
   end

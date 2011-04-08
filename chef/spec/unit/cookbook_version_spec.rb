@@ -17,6 +17,51 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
+describe Chef::MinimalCookbookVersion do
+  describe "when first created" do
+    before do
+      @params = { "id"=>"1a806f1c-b409-4d8e-abab-fa414ff5b96d",
+                  "key"=>"activemq",
+                  "value"=>{"version"=>"0.3.3", "deps"=>{"java"=>">= 0.0.0", "runit"=>">= 0.0.0"}}}
+      @minimal_cookbook_version = Chef::MinimalCookbookVersion.new(@params)
+    end
+
+    it "has a name" do
+      @minimal_cookbook_version.name.should == 'activemq'
+    end
+
+    it "has a version" do
+      @minimal_cookbook_version.version.should == '0.3.3'
+    end
+
+    it "has a list of dependencies" do
+      @minimal_cookbook_version.deps.should == {"java" => ">= 0.0.0", "runit" => ">= 0.0.0"}
+    end
+
+    it "has cookbook metadata" do
+      metadata = @minimal_cookbook_version.metadata
+
+      metadata.name.should == 'activemq'
+      metadata.dependencies['java'].should == '>= 0.0.0'
+      metadata.dependencies['runit'].should == '>= 0.0.0'
+    end
+  end
+
+  describe "when created from cookbooks with old style version contraints" do
+    before do
+      @params = { "id"=>"1a806f1c-b409-4d8e-abab-fa414ff5b96d",
+                  "key"=>"activemq",
+                  "value"=>{"version"=>"0.3.3", "deps"=>{"apt" => ">> 1.0.0"}}}
+      @minimal_cookbook_version = Chef::MinimalCookbookVersion.new(@params)
+    end
+
+    it "translates the version constraints" do
+      metadata = @minimal_cookbook_version.metadata
+      metadata.dependencies['apt'].should == '> 1.0.0'
+    end
+  end
+end
+
 describe Chef::CookbookVersion do
   describe "when first created" do
     before do

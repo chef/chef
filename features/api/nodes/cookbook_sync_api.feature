@@ -59,7 +59,7 @@ Feature: Synchronize cookbooks to the edge
      When I 'GET' the path '/nodes/sync/cookbooks'
      Then I should get a '403 "Forbidden"' exception
 
-  @cookbook_dependencies
+  @cookbook_dependencies @positive
   Scenario: Retrieve the list of cookbooks when dependencies are resolvable
     Given I am an administrator
       And I upload the set of 'dep_test_*' cookbooks

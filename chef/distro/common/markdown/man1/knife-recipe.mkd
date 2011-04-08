@@ -1,0 +1,24 @@
+knife-recipe(1) -- List the recipes available on a Chef Server
+========================================
+
+## SYNOPSIS
+
+__knife__ __recipe list [PATTERN]__
+
+List the recipes available on the server. The results shown can be
+limited with the optional PATTERN, which is a regular expression.
+PATTERN should be given in quotes, without slashes.
+
+## SEE ALSO
+  __knife-cookbook__(1)
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+

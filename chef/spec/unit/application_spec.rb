@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,19 +20,10 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::Application do
   before do
     Chef::Log.logger = Logger.new(StringIO.new)
+    @app = Chef::Application.new
+    Dir.stub!(:chdir).and_return(0)
+    @app.stub!(:reconfigure)
   end
-
-  describe "initialize" do
-    before do
-      @app = Chef::Application.new
-      Dir.stub!(:chdir).and_return(0)
-    end
-
-    it "should create an instance of Chef::Application" do
-      @app.should be_kind_of(Chef::Application)
-    end
-  end
-
 
   describe "reconfigure" do
     before do
@@ -48,7 +39,7 @@ describe Chef::Application do
 
     it "should configure logging" do
       @app.should_receive(:configure_logging).and_return(true)
-      @app.reconfigure  
+      @app.reconfigure
     end
 
   end
@@ -232,5 +223,4 @@ describe Chef::Application do
       lambda { @app.run_application }.should raise_error(Chef::Exceptions::Application)
     end
   end
-
 end

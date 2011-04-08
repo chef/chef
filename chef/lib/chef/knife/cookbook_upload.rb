@@ -23,6 +23,9 @@ class Chef
   class Knife
     class CookbookUpload < Knife
 
+      CHECKSUM = "checksum"
+      MATCH_CHECKSUM = /[0-9a-f]{32,}/
+
       deps do
         require 'chef/exceptions'
         require 'chef/cookbook_loader'
@@ -55,7 +58,8 @@ class Chef
       option :environment,
         :short => '-E',
         :long  => '--environment ENVIRONMENT',
-        :description => "Set ENVIRONMENT's version dependency match the version you're uploading."
+        :description => "Set ENVIRONMENT's version dependency match the version you're uploading.",
+        :default => nil
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
@@ -72,7 +76,7 @@ class Chef
         else
           if @name_args.empty?
             show_usage
-            Chef::Log.fatal("You must specify the --all flag or at least one cookbook name")
+            ui.error("You must specify the --all flag or at least one cookbook name")
             exit 1
           end
           @name_args.each do |cookbook_name|
@@ -82,12 +86,13 @@ class Chef
               upload(cookbook)
               version_constraints_to_update[cookbook_name] = cookbook.version
             rescue Exceptions::CookbookNotFoundInRepo => e
-              Log.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
+              ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
               Log.debug(e)
             end
           end
         end
 
+        ui.info "upload complete"
         update_version_constraints(version_constraints_to_update) if config[:environment]
       end
 
@@ -107,7 +112,7 @@ class Chef
 
 
       def environment
-        @environment ||= Environment.load(config[:environment])
+        @environment ||= config[:environment] ? Environment.load(config[:environment]) : nil
       end
 
       private
@@ -116,7 +121,7 @@ class Chef
         environment
       rescue Net::HTTPServerException => e
         if e.response.code.to_s == "404"
-          Log.error "The environment #{config[:environment]} does not exist on the server"
+          ui.error "The environment #{config[:environment]} does not exist on the server, aborting."
           Log.debug(e)
           exit 1
         else
@@ -125,19 +130,38 @@ class Chef
       end
 
       def upload(cookbook)
-        Chef::Log.info("** #{cookbook.name} **")
+        if config[:all]
+          ui.info("** #{cookbook.name} **")
+        else
+          ui.info "Uploading #{cookbook.name}..."
+        end
+        check_for_broken_links(cookbook)
         Chef::CookbookUploader.new(cookbook, config[:cookbook_path], :force => config[:force]).upload_cookbook
       rescue Net::HTTPServerException => e
         case e.response.code
-        when "401"
-          Log.error "Request failed due to authentication (#{e}), check your client configuration (username, key)"
-          Log.debug(e)
-          exit 18
         when "409"
-          Log.error "Version #{cookbook.version} of cookbook #{cookbook.name} is frozen. Use --force to override."
+          ui.error "Version #{cookbook.version} of cookbook #{cookbook.name} is frozen. Use --force to override."
           Log.debug(e)
         else
           raise
+        end
+      end
+
+      # if only you people wouldn't put broken symlinks in your cookbooks in
+      # the first place. ;)
+      def check_for_broken_links(cookbook)
+        # MUST!! dup the cookbook version object--it memoizes its
+        # manifest object, but the manifest becomes invalid when you
+        # regenerate the metadata
+        broken_files = cookbook.dup.manifest_records_by_path.select do |path, info|
+          info[CHECKSUM].nil? || info[CHECKSUM] !~ MATCH_CHECKSUM
+        end
+        unless broken_files.empty?
+          broken_filenames = Array(broken_files).map {|path, info| path}
+          ui.error "The cookbook #{cookbook.name} has one or more broken files"
+          ui.info "This is probably caused by broken symlinks in the cookbook directory"
+          ui.info "The broken file(s) are: #{broken_filenames.join(' ')}"
+          exit 1
         end
       end
 

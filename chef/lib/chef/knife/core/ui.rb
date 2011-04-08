@@ -93,7 +93,7 @@ class Chef
       # determined by the value of `config[:color]`. When output is not to a
       # terminal, colored output is never used
       def color?
-        config[:color] && stdout.tty?
+        Chef::Config[:color] && stdout.tty?
       end
 
       def ask(*args, &block)

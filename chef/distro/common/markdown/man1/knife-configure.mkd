@@ -1,0 +1,70 @@
+knife-configure(1) -- Generate configuration files for knife or Chef Client
+========================================
+
+## SYNOPSIS
+
+__knife__ __configure__ [client] _(options)_
+
+## DESCRIPTION
+Generates a knife.rb configuration file interactively. When given the
+--initial option, also creates a new administrative user.
+
+## CONFIGURE SUBCOMMANDS ##
+
+__knife configure__ _(options)_
+
+  * `-i`, `--initial`:
+    Create an initial API Client
+  * `-r`, `--repository REPO`:
+    The path to your chef-repo
+
+Create a configuration file for knife. This will prompt for values to
+enter into the file. Default values are listed in square brackets if no
+other entry is typed. See __knife__(1) for a description of
+configuration options.
+
+__knife configure client__ _directory_
+
+Read the _knife.rb_ config file and generate a config file suitable for
+use in _/etc/chef/client.rb_ and copy the validation certificate into
+the specified _directory_.
+
+## EXAMPLES
+  * On a freshly installed Chef Server, use _knife configure -i_ to
+    create an administrator and knife configuration file. Leave the
+    field blank to accept the default value. On most systems, the
+    default values are acceptable.
+
+    user@host$ knife configure -i  
+    Please enter the chef server URL: [http://localhost:4000]  
+    Please enter a clientname for the new client: [username]  
+    Please enter the existing admin clientname: [chef-webui]  
+    Please enter the location of the existing admin client's private key: [/etc/chef/webui.pem]  
+    Please enter the validation clientname: [chef-validator]  
+    Please enter the location of the validation key: [/etc/chef/validation.pem]  
+    Please enter the path to a chef repository (or leave blank):  
+    Creating initial API user...  
+    Created (or updated) client[username]  
+    Configuration file written to /home/username/.chef/knife.rb  
+
+    This creates a new administrator client named _username_, writes
+    a configuration file to _/home/username/.chef/knife.rb_, and the
+    private key to _/home/username/.chef/username.pem_. The
+    configuration file and private key may be copied to another system
+    to facilitate administration of the Chef Server from a remote
+    system. Depending on the value given for the Chef Server URL, you
+    may need to modify that setting after copying to a remote host.
+
+## SEE ALSO
+   __knife__(1) __knife-client__(1)
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+

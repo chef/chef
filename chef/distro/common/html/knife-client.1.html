@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' value='text/html;charset=utf8'>
+  <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
+  <title>knife-client(1) - Manage Chef API Clients</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+  <style type='text/css' media='all'>
+  /* style: toc */
+  .man-navigation {display:block !important;position:fixed;top:0;left:113ex;height:100%;width:100%;padding:48px 0 0 0;border-left:1px solid #dbdbdb;background:#eee}
+  .man-navigation a,.man-navigation a:hover,.man-navigation a:link,.man-navigation a:visited {display:block;margin:0;padding:5px 2px 5px 30px;color:#999;text-decoration:none}
+  .man-navigation a:hover {color:#111;text-decoration:underline}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#CLIENT-SUB-COMMANDS">CLIENT SUB-COMMANDS</a>
+    <a href="#BULK-DELETE">BULK DELETE</a>
+    <a href="#CREATE">CREATE</a>
+    <a href="#DELETE">DELETE</a>
+    <a href="#EDIT">EDIT</a>
+    <a href="#LIST">LIST</a>
+    <a href="#REREGISTER">REREGISTER</a>
+    <a href="#SHOW">SHOW</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+    <a href="#AUTHOR">AUTHOR</a>
+    <a href="#DOCUMENTATION">DOCUMENTATION</a>
+    <a href="#CHEF">CHEF</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>knife-client(1)</li>
+    <li class='tc'>Chef Manual</li>
+    <li class='tr'>knife-client(1)</li>
+  </ol>
+
+  <h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>knife-client</code> - <span class="man-whatis">Manage Chef API Clients</span>
+</p>
+
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
+<p><strong>knife</strong> <strong>client</strong> <em>sub-command</em> <em>(options)</em></p>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p>Clients are identities used for communication with the Chef Server API,
+roughly equivalent to user accounts on the Chef Server, except that
+clients only communicate with the Chef Server API and are authenticated
+via request signatures.</p>
+
+<p>In the typical case, there will be one client object on the server for
+each node, and the corresponding client and node will have identical
+names.</p>
+
+<p>In the Chef authorization model, there is one special client, the
+"validator", which is authorized to create new non-administrative
+clients but has minimal privileges otherwise. This identity is used as a
+sort of "guest account" to create a client identity when initially
+setting up a host for management with Chef.</p>
+
+<h2 id="CLIENT-SUB-COMMANDS">CLIENT SUB-COMMANDS</h2>
+
+<h2 id="BULK-DELETE">BULK DELETE</h2>
+
+<p><strong>knife client bulk delete</strong> <em>regex</em> <em>(options)</em></p>
+
+<p>Delete clients where the client name matches the regular expression
+<em>regex</em> on the Chef Server. The regular expression should be given as a
+quoted string, and not surrounded by forward slashes.</p>
+
+<h2 id="CREATE">CREATE</h2>
+
+<p><strong>knife client create</strong> <em>client name</em> <em>(options)</em></p>
+
+<dl>
+<dt><code>-a</code>, <code>--admin   </code></dt><dd>Create the client as an admin</dd>
+<dt><code>-f</code>, <code>--file FILE</code></dt><dd>Write the key to a file</dd>
+</dl>
+
+
+<p>Create a new client. This generates an RSA keypair. The private key will
+be displayed on <em>STDOUT</em> or written to the named file. The public half
+will be stored on the Server. For <em>chef-client</em> systems, the private key
+should be copied to the system as <code>/etc/chef/client.pem</code>.</p>
+
+<p>Admin clients should be created for users that will use <em>knife</em> to
+access the API as an administrator. The private key will generally be
+copied to <code>~/.chef/client\_name.pem</code> and referenced in the <code>knife.rb</code>
+configuration file.</p>
+
+<h2 id="DELETE">DELETE</h2>
+
+<p><strong>knife client delete</strong> <em>client name</em>  <em>(options)</em></p>
+
+<p>Deletes a registered client.</p>
+
+<h2 id="EDIT">EDIT</h2>
+
+<p><strong>client edit</strong> <em>client name</em> <em>(options)</em></p>
+
+<p>Edit a registered client.</p>
+
+<h2 id="LIST">LIST</h2>
+
+<p><strong>client list</strong> <em>(options)</em></p>
+
+<dl>
+<dt><code>-w</code>, <code>--with-uri</code></dt><dd>  Show corresponding URIs</dd>
+</dl>
+
+
+<p>List all registered clients.</p>
+
+<h2 id="REREGISTER">REREGISTER</h2>
+
+<p><strong>client reregister</strong> <em>client name</em>  <em>(options)</em></p>
+
+<dl>
+<dt><code>-f</code>, <code>--file FILE</code></dt><dd>Write the key to a file</dd>
+</dl>
+
+
+<p>Regenerate the RSA keypair for a client. The public half will be stored
+on the server and the private key displayed on <em>STDOUT</em> or written to
+the named file. This operation will invalidate the previous keypair used
+by the client, preventing it from authenticating with the Chef Server.
+Use care when reregistering the validator client.</p>
+
+<h2 id="SHOW">SHOW</h2>
+
+<p><strong>client show</strong> <em>client name</em> <em>(options)</em></p>
+
+<dl>
+<dt><code>-a</code>, <code>--attribute ATTR</code></dt><dd>Show only one attribute</dd>
+</dl>
+
+
+<p>Show a client. Output format is determined by the --format option.</p>
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<p>   <strong>knife-node</strong>(1)</p>
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+<p>   Chef was written by Adam Jacob <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#x61;&#x64;&#x61;&#x6d;&#x40;&#111;&#x70;&#x73;&#99;&#x6f;&#x64;&#101;&#x2e;&#99;&#x6f;&#x6d;" data-bare-link="true">&#97;&#100;&#x61;&#109;&#x40;&#111;&#112;&#x73;&#x63;&#x6f;&#100;&#101;&#46;&#x63;&#111;&#x6d;</a> with many contributions from the community.</p>
+
+<h2 id="DOCUMENTATION">DOCUMENTATION</h2>
+
+<p>   This manual page was written by Joshua Timberman <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#111;&#58;&#106;&#111;&#115;&#104;&#x75;&#97;&#x40;&#x6f;&#112;&#x73;&#99;&#x6f;&#x64;&#101;&#x2e;&#99;&#111;&#109;" data-bare-link="true">&#106;&#111;&#115;&#x68;&#117;&#97;&#x40;&#x6f;&#x70;&#115;&#x63;&#x6f;&#100;&#x65;&#x2e;&#99;&#x6f;&#x6d;</a>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
+
+<h2 id="CHEF">CHEF</h2>
+
+<p>   Knife is distributed with Chef. <a href="http://wiki.opscode.com/display/chef/Home" data-bare-link="true">http://wiki.opscode.com/display/chef/Home</a></p>
+
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'>Chef 0.10.0.beta.8</li>
+    <li class='tc'>April 2011</li>
+    <li class='tr'>knife-client(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>

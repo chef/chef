@@ -95,10 +95,10 @@ class Chef
           end
 
           if package_version == @new_resource.version
-            Chef::Log.debug("#{@new_resource.package_name} at version #{@new_resource.version}")
+            Chef::Log.debug("#{@new_resource} at version #{@new_resource.version}")
             @current_resource.version(@new_resource.version)
           else
-            Chef::Log.debug("#{@new_resource.package_name} at version #{package_version}")
+            Chef::Log.debug("#{@new_resource} at version #{package_version}")
             @current_resource.version(package_version)
           end
 

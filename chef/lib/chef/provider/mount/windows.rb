@@ -60,17 +60,18 @@ class Chef
         def mount_fs
           unless @current_resource.mounted
             @mount.add(@new_resource.device)
+            Chef::Log.debug("#{@new_resource} is mounted at #{@new_resource.mount_point}")
           else
-            Chef::Log.debug("#{@new_resource.mount_point} is already mounted.")
+            Chef::Log.debug("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
           end
         end
 
         def umount_fs
           if @current_resource.mounted
             @mount.delete
-            Chef::Log.info("Unmounted #{@new_resource.mount_point}")
+            Chef::Log.debug("#{@new_resource} is no longer mounted at #{@new_resource.mount_point}")
           else
-            Chef::Log.debug("#{@new_resource.mount_point} is not mounted.")
+            Chef::Log.debug("#{@new_resource} is not mounted at #{@new_resource.mount_point}")
           end
         end
 

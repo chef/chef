@@ -35,24 +35,24 @@ class Chef
           is_out_of_date=false
           version=''
           oud_version=''
-          Chef::Log.debug("Checking zypper for #{@new_resource.package_name}")
+          Chef::Log.debug("#{@new_resource} checking zypper")
           status = popen4("zypper info #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
               when /^Version: (.+)$/
                 version = $1
-                Chef::Log.debug("zypper version=#{$1}")
+                Chef::Log.debug("#{@new_resource} version #{$1}")
               when /^Installed: Yes$/
                 is_installed=true
-                Chef::Log.debug("zypper installed true")
+                Chef::Log.debug("#{@new_resource} is installed")
                 
               when /^Installed: No$/
                 is_installed=false
-                Chef::Log.debug("zypper installed false")
+                Chef::Log.debug("#{@new_resource} is not installed")
               when /^Status: out-of-date \(version (.+) installed\)$/
                 is_out_of_date=true
                 oud_version=$1
-                Chef::Log.debug("zypper out of date version=#{$1}")
+                Chef::Log.debug("#{@new_resource} out of date version #{$1}")
               end
             end
           end
@@ -60,28 +60,22 @@ class Chef
           if is_installed==false
             @candidate_version=version
             @current_resource.version(nil)
-            Chef::Log.debug("dentro installed false");
           end
  
           if is_installed==true
             if is_out_of_date==true
               @current_resource.version(oud_version)
               @candidate_version=version
-              Chef::Log.debug("dentro installed outofdate");
             else 
               @current_resource.version(version)
               @candidate_version=version
-              Chef::Log.debug("dentro installed");
             end
           end
-
 
           unless status.exitstatus == 0
             raise Chef::Exceptions::Package, "zypper failed - #{status.inspect}!"
           end
-
           
-          Chef::Log.debug("zypper current resource      #{@current_resource}")
           @current_resource
         end
 

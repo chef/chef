@@ -66,7 +66,7 @@ class Chef
       end
 
       def add_to_index(metadata={})
-       Chef::Log.debug("pushing item to index queue for addition: #{self.with_indexer_metadata(metadata)}")
+       Chef::Log.debug("Pushing item to index queue for addition: #{self.with_indexer_metadata(metadata)}")
        object_with_metadata = with_indexer_metadata(metadata)
        obj_id = object_with_metadata["id"]
        obj = {:action => :add, :payload => self.with_indexer_metadata(metadata)}
@@ -75,7 +75,7 @@ class Chef
       end
 
       def delete_from_index(metadata={})
-        Chef::Log.debug("pushing item to index queue for deletion: #{self.with_indexer_metadata(metadata)}")
+        Chef::Log.debug("Pushing item to index queue for deletion: #{self.with_indexer_metadata(metadata)}")
         object_with_metadata = with_indexer_metadata(metadata)
         obj_id = object_with_metadata["id"]
         obj = {:action => :delete, :payload => self.with_indexer_metadata(metadata)}

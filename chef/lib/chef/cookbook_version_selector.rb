@@ -156,8 +156,13 @@ class Chef
       # expand any roles in this run_list.
       expanded_run_list = run_list.expand(environment, 'couchdb', :couchdb => couchdb).recipes.with_version_constraints
 
-      cookbooks_for_environment = Chef::Environment.cdb_load_filtered_cookbook_versions(environment, couchdb)
-      constrain(cookbooks_for_environment, expanded_run_list)
+      cookbooks_for_environment = Chef::Environment.cdb_minimal_filtered_versions(environment, couchdb)
+      cookbook_collection = constrain(cookbooks_for_environment, expanded_run_list)
+      full_cookbooks = Chef::MinimalCookbookVersion.load_full_versions_of(cookbook_collection.values, couchdb)
+      full_cookbooks.inject({}) do |cb_map, cookbook_version|
+        cb_map[cookbook_version.name] = cookbook_version
+        cb_map
+      end
     end
   end
 end

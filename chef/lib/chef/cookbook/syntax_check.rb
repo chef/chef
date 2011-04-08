@@ -57,7 +57,7 @@ class Chef
       def untested_ruby_files
         ruby_files.reject do |file|
           if validated?(file)
-            Chef::Log.debug("ruby file #{file} is unchanged, skipping syntax check")
+            Chef::Log.debug("Ruby file #{file} is unchanged, skipping syntax check")
             true
           else
             false
@@ -72,7 +72,7 @@ class Chef
       def untested_template_files
         template_files.reject do |file| 
           if validated?(file)
-            Chef::Log.debug("template #{file} is unchanged, skipping syntax check")
+            Chef::Log.debug("Template #{file} is unchanged, skipping syntax check")
             true
           else
             false

@@ -24,6 +24,10 @@ class Chef
       attr_reader :chef_server, :new_client_name, :admin_client_name, :admin_client_key
       attr_reader :chef_repo, :new_client_key, :validation_client_name, :validation_key
 
+      deps do
+        Chef::Knife::ClientCreate.load_deps
+      end
+
       banner "knife configure (options)"
 
       option :repository,

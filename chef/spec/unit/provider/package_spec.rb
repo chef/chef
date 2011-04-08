@@ -159,7 +159,7 @@ describe Chef::Provider::Package do
 
     it "should print the word 'uninstalled' if there was no original version" do
       @current_resource.stub!(:version).and_return(nil)
-      Chef::Log.should_receive(:info).with("Upgrading #{@new_resource} version from uninstalled to 1.0")
+      Chef::Log.should_receive(:info).with("package[emacs] upgraded from uninstalled to 1.0")
       @provider.action_upgrade
     end
   end
