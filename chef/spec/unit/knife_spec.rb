@@ -184,7 +184,7 @@ describe Chef::Knife do
     it "formats 401s nicely" do
       response = Net::HTTPUnauthorized.new("1.1", "401", "Unauthorized")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      response.body = Chef::JSONCompat.to_json(:error => "y u no syncronize your clock?")
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no syncronize your clock?"))
       @knife.stub!(:run).and_raise(Net::HTTPServerException.new("401 Unauthorized", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(/ERROR: Failed to authenticate to/)
@@ -194,7 +194,7 @@ describe Chef::Knife do
     it "formats 403s nicely" do
       response = Net::HTTPForbidden.new("1.1", "403", "Forbidden")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      response.body = Chef::JSONCompat.to_json(:error => "y u no administrator")
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no administrator"))
       @knife.stub!(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
       @knife.stub!(:username).and_return("sadpanda")
       @knife.run_with_pretty_exceptions
@@ -205,7 +205,7 @@ describe Chef::Knife do
     it "formats 400s nicely" do
       response = Net::HTTPBadRequest.new("1.1", "400", "Bad Request")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      response.body = Chef::JSONCompat.to_json(:error => "y u search wrong")
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "y u search wrong"))
       @knife.stub!(:run).and_raise(Net::HTTPServerException.new("400 Bad Request", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: The data in your request was invalid])
@@ -215,7 +215,7 @@ describe Chef::Knife do
     it "formats 404s nicely" do
       response = Net::HTTPNotFound.new("1.1", "404", "Not Found")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      response.body = Chef::JSONCompat.to_json(:error => "nothing to see here")
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "nothing to see here"))
       @knife.stub!(:run).and_raise(Net::HTTPServerException.new("404 Not Found", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: The object you are looking for could not be found])
@@ -225,7 +225,7 @@ describe Chef::Knife do
     it "formats 500s nicely" do
       response = Net::HTTPInternalServerError.new("1.1", "500", "Internal Server Error")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      response.body = Chef::JSONCompat.to_json(:error => "sad trombone")
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone"))
       @knife.stub!(:run).and_raise(Net::HTTPFatalError.new("500 Internal Server Error", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: internal server error])
@@ -235,7 +235,7 @@ describe Chef::Knife do
     it "formats 502s nicely" do
       response = Net::HTTPBadGateway.new("1.1", "502", "Bad Gateway")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      response.body = Chef::JSONCompat.to_json(:error => "sadder trombone")
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "sadder trombone"))
       @knife.stub!(:run).and_raise(Net::HTTPFatalError.new("502 Bad Gateway", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: bad gateway])
@@ -245,7 +245,7 @@ describe Chef::Knife do
     it "formats 503s nicely" do
       response = Net::HTTPServiceUnavailable.new("1.1", "503", "Service Unavailable")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      response.body = Chef::JSONCompat.to_json(:error => "saddest trombone")
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "saddest trombone"))
       @knife.stub!(:run).and_raise(Net::HTTPFatalError.new("503 Service Unavailable", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: Service temporarily unavailable])
@@ -255,7 +255,7 @@ describe Chef::Knife do
     it "formats other HTTP errors nicely" do
       response = Net::HTTPPaymentRequired.new("1.1", "402", "Payment Required")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      response.body = Chef::JSONCompat.to_json(:error => "nobugfixtillyoubuy")
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "nobugfixtillyoubuy"))
       @knife.stub!(:run).and_raise(Net::HTTPServerException.new("402 Payment Required", response))
       @knife.run_with_pretty_exceptions
       @stdout.string.should match(%r[ERROR: Payment Required])
