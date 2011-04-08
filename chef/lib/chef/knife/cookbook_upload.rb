@@ -150,7 +150,10 @@ class Chef
       # if only you people wouldn't put broken symlinks in your cookbooks in
       # the first place. ;)
       def check_for_broken_links(cookbook)
-        broken_files = cookbook.manifest_records_by_path.select do |path, info|
+        # MUST!! dup the cookbook version object--it memoizes its
+        # manifest object, but the manifest becomes invalid when you
+        # regenerate the metadata
+        broken_files = cookbook.dup.manifest_records_by_path.select do |path, info|
           info[CHECKSUM].nil? || info[CHECKSUM] !~ MATCH_CHECKSUM
         end
         unless broken_files.empty?
