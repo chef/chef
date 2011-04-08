@@ -1,0 +1,8 @@
+knife-tag(1) -- Apply tags to nodes on a Chef Server
+========================================
+
+## SYNOPSIS
+
+__knife__ __tag__ _subcommand_ _(options)_
+
+## TAG SUBCOMMANDS

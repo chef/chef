@@ -1,0 +1,64 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "KNIFE\-ROLE" "1" "April 2011" "Chef 0.10.0.beta.7" "Chef Manual"
+.
+.SH "NAME"
+\fBknife\-role\fR \- Group common configuration settings
+.
+.SH "SYNOPSIS"
+\fBknife\fR \fBrole\fR \fIsub\-command\fR \fI(options)\fR
+.
+.SH "ROLE SUB\-COMMANDS"
+\fBrole bulk delete REGEX\fR \fI(options)\fR
+.
+.P
+Delete roles on the Chef Server based on a regular expression\. The regular expression (\fIREGEX\fR) should be in quotes, not in //\'s\.
+.
+.P
+\fBrole create ROLE\fR \fI(options)\fR
+.
+.TP
+\fB\-d\fR, \fB\-\-description\fR
+The role description
+.
+.P
+Create a new role\.
+.
+.P
+\fBrole delete ROLE\fR \fI(options)\fR
+.
+.P
+Delete a role\.
+.
+.P
+\fBrole edit ROLE\fR \fI(options)\fR
+.
+.P
+Edit a role\.
+.
+.P
+\fBrole from file FILE\fR \fI(options)\fR
+.
+.P
+Create or update a role from a role Ruby DSL (\fB\.rb\fR) or JSON file\.
+.
+.P
+\fBrole list\fR \fI(options)\fR
+.
+.TP
+\fB\-w\fR, \fB\-\-with\-uri\fR
+Show corresponding URIs
+.
+.P
+List roles\.
+.
+.P
+\fBrole show ROLE\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-attribute ATTR\fR
+Show only one attribute
+.
+.P
+Show a specific role\.

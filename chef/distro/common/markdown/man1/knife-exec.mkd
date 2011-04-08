@@ -1,0 +1,9 @@
+knife-exec(1) -- Run user scripts using the Chef API DSL
+========================================
+
+## SYNOPSIS
+
+__knife__ __exec__ _(options)_
+
+## EXEC SUBCOMMAND
+

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' value='text/html;charset=utf8'>
+  <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
+  <title>knife-cookbook-site(1) - Install and update open source cookbooks</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+  <style type='text/css' media='all'>
+  /* style: toc */
+  .man-navigation {display:block !important;position:fixed;top:0;left:113ex;height:100%;width:100%;padding:48px 0 0 0;border-left:1px solid #dbdbdb;background:#eee}
+  .man-navigation a,.man-navigation a:hover,.man-navigation a:link,.man-navigation a:visited {display:block;margin:0;padding:5px 2px 5px 30px;color:#999;text-decoration:none}
+  .man-navigation a:hover {color:#111;text-decoration:underline}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#COOKBOOK-SITE-SUB-COMMANDS">COOKBOOK SITE SUB-COMMANDS</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+    <a href="#AUTHOR">AUTHOR</a>
+    <a href="#DOCUMENTATION">DOCUMENTATION</a>
+    <a href="#CHEF">CHEF</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>knife-cookbook-site(1)</li>
+    <li class='tc'>Chef Manual</li>
+    <li class='tr'>knife-cookbook-site(1)</li>
+  </ol>
+
+  <h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>knife-cookbook-site</code> - <span class="man-whatis">Install and update open source cookbooks</span>
+</p>
+
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
+<p><strong>knife</strong> <strong>cookbook site</strong> <em>sub-command</em> <em>(options)</em></p>
+
+<h2 id="COOKBOOK-SITE-SUB-COMMANDS">COOKBOOK SITE SUB-COMMANDS</h2>
+
+<p>The following sub-commands are still in the context of cookbooks, but they make use of Opscode's Cookbook Community site, <em>http://cookbooks.opscode.com/</em>. That site has an API, and these sub-commands utilize that API, rather than the Chef Server API.</p>
+
+<p><strong>cookbook site download COOKBOOK [VERSION]</strong> <em>(options)</em></p>
+
+<dl>
+<dt><code>-f</code>, <code>--file FILE</code></dt><dd>The filename to write to</dd>
+</dl>
+
+
+<p>Downloads a specific cookbook from the Community site, optionally specifying a certain version.</p>
+
+<p><strong>cookbook site list</strong> <em>(options)</em></p>
+
+<dl>
+<dt><code>-w</code>, <code>--with-uri</code></dt><dd>Show corresponding URIs</dd>
+</dl>
+
+
+<p>Lists available cookbooks from the Community site.</p>
+
+<p><strong>cookbook site search QUERY</strong> <em>(options)</em></p>
+
+<p>Searches the Community site with the specified query.</p>
+
+<p><strong>cookbook site share COOKBOOK CATEGORY</strong> <em>(options)</em></p>
+
+<dl>
+<dt><code>-k</code>, <code>--key KEY</code></dt><dd>API Client Key</dd>
+<dt><code>-u</code>, <code>--user USER</code></dt><dd>API Client Username</dd>
+<dt><code>-o</code>, <code>--cookbook-path PATH:PATH</code></dt><dd>A colon-separated path to look for cookbooks in</dd>
+</dl>
+
+
+<p>Uploads the specified cookbook using the given category to the Opscode cookbooks site. Requires a login user and certificate for the Opscode Cookbooks site. See <strong>EXAMPLES</strong> for usage if the Opscode user and certificate pair are not used for authenticating with the Chef Server. In other words, if the Chef Server is not the Opscode Platform.</p>
+
+<p><strong>cookbook site unshare COOKBOOK</strong></p>
+
+<p>Stops sharing the specified cookbook on the Opscode cookbooks site.</p>
+
+<p><strong>cookbook site show COOKBOOK [VERSION]</strong> <em>(options)</em></p>
+
+<p>Shows information from the site about a particular cookbook.</p>
+
+<p><strong>cookbook site vendor COOKBOOK [VERSION]</strong> <em>(options)</em></p>
+
+<dl>
+<dt><code>-d</code>, <code>--dependencies</code></dt><dd>Grab dependencies automatically</dd>
+</dl>
+
+
+<p>Uses <code>git</code> version control in conjunction with the cookbook site to download upstream cookbooks. A new vendor branch is created in git, the cookbook downloaded from the site and untarred, then the master branch is merged. This allows the user to track upstream changes to cookbooks while merging in customizations. If <em>-d</em> is specified, all the cookbooks it depends on (via metadata <em>dependencies</em>) are downloaded and untarred as well, each using their own vendor branch.</p>
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<p>   <strong>knife-environment</strong>(1)</p>
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+<p>   Chef was written by Adam Jacob <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#111;&#x3a;&#97;&#100;&#x61;&#109;&#64;&#111;&#x70;&#115;&#99;&#111;&#100;&#x65;&#x2e;&#99;&#x6f;&#109;" data-bare-link="true">&#x61;&#x64;&#x61;&#x6d;&#x40;&#111;&#x70;&#x73;&#x63;&#111;&#x64;&#101;&#x2e;&#x63;&#111;&#x6d;</a> with many contributions from the community.</p>
+
+<h2 id="DOCUMENTATION">DOCUMENTATION</h2>
+
+<p>   This manual page was written by Joshua Timberman <a href="&#109;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#x6a;&#111;&#115;&#x68;&#x75;&#97;&#64;&#x6f;&#x70;&#x73;&#x63;&#111;&#100;&#x65;&#46;&#99;&#111;&#109;" data-bare-link="true">&#x6a;&#x6f;&#115;&#104;&#x75;&#x61;&#64;&#111;&#x70;&#115;&#99;&#x6f;&#x64;&#x65;&#x2e;&#x63;&#111;&#109;</a>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
+
+<h2 id="CHEF">CHEF</h2>
+
+<p>   Knife is distributed with Chef. <a href="http://wiki.opscode.com/display/chef/Home" data-bare-link="true">http://wiki.opscode.com/display/chef/Home</a></p>
+
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'>Chef 0.10.0.beta.7</li>
+    <li class='tc'>April 2011</li>
+    <li class='tr'>knife-cookbook-site(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>

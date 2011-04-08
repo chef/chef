@@ -1,0 +1,8 @@
+knife-environment(1) -- Define cookbook policies for the environments in your infrastructure
+========================================
+
+## SYNOPSIS
+
+__knife__ __environment__ _sub-command_ _(options)_
+
+## ENVIRONMENT SUBCOMMANDS
