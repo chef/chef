@@ -36,6 +36,7 @@ require 'chef/node/attribute'
 require 'chef/index_queue'
 require 'chef/mash'
 require 'chef/json_compat'
+require 'chef/search/query'
 
 class Chef
   class Node
