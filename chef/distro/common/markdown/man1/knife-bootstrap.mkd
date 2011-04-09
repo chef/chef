@@ -28,6 +28,8 @@ __knife__ __bootstrap__ _(options)_
   * `-d`, `--distro DISTRO`:
     Bootstrap a distro using a template
 
+## DESCRIPTION
+
 Performs a Chef Bootstrap on the target node. The goal of the bootstrap
 is to get Chef installed on the target system so it can run Chef Client
 with a Chef Server. The main assumption is a baseline OS installation

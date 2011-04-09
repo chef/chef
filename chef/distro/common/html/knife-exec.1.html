@@ -61,7 +61,12 @@
   <div class='man-navigation' style='display:none'>
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
-    <a href="#EXEC-SUBCOMMAND">EXEC SUBCOMMAND</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#EXAMPLES">EXAMPLES</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+    <a href="#AUTHOR">AUTHOR</a>
+    <a href="#DOCUMENTATION">DOCUMENTATION</a>
+    <a href="#CHEF">CHEF</a>
   </div>
 
   <ol class='man-decor man-head man head'>
@@ -79,7 +84,43 @@
 
 <p><strong>knife</strong> <strong>exec</strong> <em>(options)</em></p>
 
-<h2 id="EXEC-SUBCOMMAND">EXEC SUBCOMMAND</h2>
+<dl>
+<dt><code>-E</code>, <code>--exec CODE</code></dt><dd>Provide a snippet of code to evaluate on the command line</dd>
+</dl>
+
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p><code>knife exec</code> runs arbitrary ruby scripts in a context similar to that of
+the <span class="man-ref">shef<span class="s">(1)</span></span> DSL. See the shef documentation for a description of the
+commands available.</p>
+
+<h2 id="EXAMPLES">EXAMPLES</h2>
+
+<dl>
+<dt>Make an API call against an arbitrary endpoint</dt><dd>knife exec -E 'api.get("nodes/fluke.localdomain/cookbooks")'<br />
+=> list of cookbooks for the node <em>fluke.localdomain</em></dd>
+<dt>Remove the role <em>obsolete</em> from all nodes</dt><dd>knife exec -E 'nodes.transform(:all){|n| n.run_list.delete("role[obsolete]")}'</dd>
+<dt>Generate the expanded run list for hosts in the <code>webserver</code> role</dt><dd>knife exec -E 'nodes.find(:roles => "webserver") {|n| n.expand!; n[:recipes]}'</dd>
+</dl>
+
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<p>   <strong><span class="man-ref">shef<span class="s">(1)</span></span></strong></p>
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+<p>   Chef was written by Adam Jacob <a href="&#x6d;&#97;&#105;&#x6c;&#x74;&#111;&#x3a;&#x61;&#100;&#x61;&#109;&#64;&#111;&#112;&#x73;&#99;&#111;&#x64;&#x65;&#x2e;&#99;&#111;&#x6d;" data-bare-link="true">&#97;&#x64;&#97;&#x6d;&#x40;&#x6f;&#112;&#x73;&#99;&#x6f;&#x64;&#x65;&#46;&#x63;&#111;&#x6d;</a> with many contributions from the community.</p>
+
+<h2 id="DOCUMENTATION">DOCUMENTATION</h2>
+
+<p>   This manual page was written by Joshua Timberman <a href="&#109;&#x61;&#105;&#108;&#116;&#111;&#x3a;&#106;&#111;&#115;&#104;&#x75;&#97;&#64;&#111;&#112;&#115;&#99;&#x6f;&#x64;&#x65;&#46;&#99;&#x6f;&#x6d;" data-bare-link="true">&#x6a;&#111;&#x73;&#x68;&#x75;&#x61;&#x40;&#111;&#x70;&#x73;&#99;&#x6f;&#x64;&#x65;&#x2e;&#x63;&#x6f;&#109;</a>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
+
+<h2 id="CHEF">CHEF</h2>
+
+<p>   Knife is distributed with Chef. <a href="http://wiki.opscode.com/display/chef/Home" data-bare-link="true">http://wiki.opscode.com/display/chef/Home</a></p>
 
 
   <ol class='man-decor man-foot man foot'>

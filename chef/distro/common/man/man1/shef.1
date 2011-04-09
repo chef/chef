@@ -218,7 +218,7 @@ chef:recipe > pp ls \'/tmp\'
 Search for \fInodes\fR by role, and print their IP addresses
 .
 .IP
-chef > nodes\.find(:roles => \'opscode\-chef\') {|n| n[:ipaddress] }
+chef > nodes\.find(:roles => \'monitoring\-server\') {|n| n[:ipaddress] }
 .
 .br
 => ["10\.254\.199\.5"]

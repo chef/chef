@@ -149,7 +149,7 @@ convergence run via `run_chef`
 
 * Search for _nodes_ by role, and print their IP addresses
 
-  chef > nodes.find(:roles => 'opscode-chef') {|n| n[:ipaddress] }  
+  chef > nodes.find(:roles => 'monitoring-server') {|n| n[:ipaddress] }  
   => ["10.254.199.5"]  
 
 * Remove the role _obsolete_ from every node in the system
