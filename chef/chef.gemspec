@@ -27,6 +27,8 @@ Gem::Specification.new do |s|
   s.add_dependency "net-ssh-multi", "~> 1.0.1"
   %w{erubis moneta highline uuidtools}.each { |gem| s.add_dependency gem }
 
+  %w(dep_selector rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem }
+
   s.bindir       = "bin"
   s.executables  = %w( chef-client chef-solo knife shef )
   s.require_path = 'lib'
