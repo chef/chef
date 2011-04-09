@@ -61,7 +61,20 @@
   <div class='man-navigation' style='display:none'>
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
-    <a href="#ENVIRONMENT-SUBCOMMANDS">ENVIRONMENT SUBCOMMANDS</a>
+    <a href="#SUBCOMMANDS">SUBCOMMANDS</a>
+    <a href="#CREATE">CREATE</a>
+    <a href="#DELETE">DELETE</a>
+    <a href="#EDIT">EDIT</a>
+    <a href="#FROM-FILE">FROM FILE</a>
+    <a href="#LIST">LIST</a>
+    <a href="#SHOW">SHOW</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#SYNTAX">SYNTAX</a>
+    <a href="#FORMAT">FORMAT</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+    <a href="#AUTHOR">AUTHOR</a>
+    <a href="#DOCUMENTATION">DOCUMENTATION</a>
+    <a href="#CHEF">CHEF</a>
   </div>
 
   <ol class='man-decor man-head man head'>
@@ -79,7 +92,165 @@
 
 <p><strong>knife</strong> <strong>environment</strong> <em>sub-command</em> <em>(options)</em></p>
 
-<h2 id="ENVIRONMENT-SUBCOMMANDS">ENVIRONMENT SUBCOMMANDS</h2>
+<h2 id="SUBCOMMANDS">SUBCOMMANDS</h2>
+
+<h2 id="CREATE">CREATE</h2>
+
+<p><strong>knife environment create</strong> <em>environment</em> <em>(options)</em></p>
+
+<dl>
+<dt><code>-d</code>, <code>--description DESCRIPTION</code></dt><dd>The value of the description field.</dd>
+</dl>
+
+
+<p>Create a new environment object on the Chef Server. The envrionment will
+be opened in the text editor for editing prior to creation if the -n
+option is not present.</p>
+
+<h2 id="DELETE">DELETE</h2>
+
+<p><strong>knife environment delete</strong> <em>environment</em> <em>(options)</em></p>
+
+<p>Destroy an environment on the Chef Server. A prompt for confirmation
+will be displayed if the -y options is not given.</p>
+
+<h2 id="EDIT">EDIT</h2>
+
+<p><strong>knife environment edit</strong> <em>environment</em> <em>(options)</em></p>
+
+<p>Fetch <em>environment</em> and display it in the text editor for editing. The
+environment will be saved to the Chef Server when the editing session
+exits.</p>
+
+<h2 id="FROM-FILE">FROM FILE</h2>
+
+<p><strong>knife environment from file</strong> <em>file</em> <em>(options)</em></p>
+
+<p>Create or update an environment from the JSON or Ruby format <em>file</em>. See
+<strong>format</strong> for the proper format of this file.</p>
+
+<h2 id="LIST">LIST</h2>
+
+<p><strong>knife environment list</strong> <em>(options)</em>
+  * <code>-w</code>, <code>--with-uri</code>:</p>
+
+<pre><code>Show the resource URI for each environment
+</code></pre>
+
+<h2 id="SHOW">SHOW</h2>
+
+<p><strong>knife environment show</strong> <em>environment</em> <em>(options)</em></p>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p>Environments provide a means to apply policies to hosts in your
+infrastructure based on business function. For example, you may have a
+separate copy of your infrastructure called "dev" that runs the latest
+version of your application and should use the newest versions of your
+cookbooks when configuring systems, and a production instance of your
+infrastructure where you wish to update code and cookbooks in a more
+controlled fashion. In Chef, this function is implemented with
+<em>environments</em>.</p>
+
+<p>Environments contain two major components: a set of cookbook version
+constraints and environment attributes.</p>
+
+<h2 id="SYNTAX">SYNTAX</h2>
+
+<p>A cookbook version constraint is comprised of a <em>cookbook name</em> and a
+<em>version constraint</em>. The <em>cookbook name</em> is the name of a cookbook in
+your system, and the <em>version constraint</em> is a String describing the
+version(s) of that cookbook allowed in the environment.  Only one
+<em>version constraint</em> is supported for a given <em>cookbook name</em>.</p>
+
+<p>The exact syntax used to define a cookbook version constraint varies
+depending on whether you use the JSON format or the Ruby format. In the
+JSON format, the cookbook version constraints for an environment are
+represented as a single JSON object, like this:</p>
+
+<pre><code>{"apache2": "&gt;= 1.5.0"}
+</code></pre>
+
+<p>In the Ruby format, the cookbook version contraints for an environment
+are represented as a Ruby Hash, like this:</p>
+
+<pre><code>{"apache2" =&gt; "&gt;= 1.5.0"}
+</code></pre>
+
+<p>A <em>version number</em> is a String comprised of two or three digits
+separated by a dot (.) character, or in other words, strings of the form
+"major.minor" or "major.minor.patch". "1.2" and "1.2.3" are examples of
+valid version numbers. Version numbers containing more than three digits
+or alphabetic characters are not supported.</p>
+
+<p>A <em>version constraint</em> String is composed of an <em>operator</em> and a
+<em>version number</em>. The following operators are available:</p>
+
+<dl>
+<dt><code>= VERSION</code></dt><dd>Equality. Only the exact version specified may be used.</dd>
+<dt><code>&gt; VERSION</code></dt><dd>Greater than. Only versions greater than <code>VERSION</code> may be used.</dd>
+<dt><code>&gt;= VERSION</code></dt><dd>Greater than or equal to. Only versions equal to VERSION or greater
+may be used.</dd>
+<dt><code>&lt; VERSION</code></dt><dd>Less than. Only versions less than VERSION may be used.</dd>
+<dt><code>&lt;= VERSION</code></dt><dd>Less than or equal to. Only versions lesser or equal to VERSION may
+be used.</dd>
+<dt><code>~&gt; VERSION</code></dt><dd>Pessimistic greater than. Depending on the number of components in
+the given VERSION, the constraint will be optimistic about future
+minor or patch revisions only. For example, <code>~&gt; 1.1</code> will match any
+version less than <code>2.0</code> and greater than or equal to <code>1.1.0</code>,
+whereas <code>~&gt; 2.0.5</code> will match any version less than <code>2.1.0</code> and
+greater than or equal to <code>2.0.5</code>.</dd>
+</dl>
+
+
+<h2 id="FORMAT">FORMAT</h2>
+
+<p>The JSON format of an envioronment is as follows:</p>
+
+<pre><code>{
+  "name": "dev",
+  "description": "The development environment",
+  "cookbook_versions": {
+    "couchdb": "= 11.0.0"
+  },
+  "json_class": "Chef::Environment",
+  "chef_type": "environment",
+  "default_attributes": {
+    "apache2": { "listen_ports": [ "80", "443" ] }
+  },
+  "override_attributes": {
+    "aws_s3_bucket": "production"
+  }
+}
+</code></pre>
+
+<p>The Ruby format of an environment is as follows:</p>
+
+<pre><code>name "dev"
+description "The development environment"
+cookbook_versions  "couchdb" =&gt; "= 11.0.0"
+default_attributes "apache2" =&gt; { "listen_ports" =&gt; [ "80", "443" ] }
+override_attributes "aws_s3_bucket" =&gt; "production"
+</code></pre>
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<p>   <strong><span class="man-ref">knife-node<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-cookbook<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-role<span class="s">(1)</span></span></strong>
+  <a href="http://wiki.opscode.com/display/chef/Environments" data-bare-link="true">http://wiki.opscode.com/display/chef/Environments</a>
+  <a href="http://wiki.opscode.com/display/chef/Version+Constraints" data-bare-link="true">http://wiki.opscode.com/display/chef/Version+Constraints</a></p>
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+<p>   Chef was written by Adam Jacob <a href="&#x6d;&#97;&#105;&#x6c;&#116;&#111;&#x3a;&#97;&#100;&#97;&#x6d;&#x40;&#111;&#x70;&#115;&#x63;&#111;&#100;&#x65;&#x2e;&#99;&#111;&#109;" data-bare-link="true">&#x61;&#100;&#97;&#109;&#64;&#111;&#112;&#115;&#x63;&#x6f;&#x64;&#101;&#x2e;&#x63;&#x6f;&#x6d;</a> with many contributions from the community.</p>
+
+<h2 id="DOCUMENTATION">DOCUMENTATION</h2>
+
+<p>   This manual page was written by Daniel DeLeo <a href="&#x6d;&#97;&#105;&#108;&#116;&#x6f;&#x3a;&#100;&#x61;&#x6e;&#x40;&#x6f;&#x70;&#115;&#x63;&#111;&#100;&#x65;&#x2e;&#99;&#111;&#x6d;" data-bare-link="true">&#x64;&#x61;&#110;&#64;&#111;&#112;&#x73;&#x63;&#x6f;&#x64;&#x65;&#46;&#x63;&#111;&#x6d;</a>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
+
+<h2 id="CHEF">CHEF</h2>
+
+<p>   Knife is distributed with Chef. <a href="http://wiki.opscode.com/display/chef/Home" data-bare-link="true">http://wiki.opscode.com/display/chef/Home</a></p>
 
 
   <ol class='man-decor man-foot man foot'>
