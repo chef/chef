@@ -173,7 +173,7 @@ class Chef
             end
             key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map {|name| name.size }.max + 2
             versions_by_cookbook.sort.map do |cookbook, versions|
-              "#{cookbook.ljust(key_length)} #{versions.join(',')}"
+              "#{cookbook.ljust(key_length)} #{versions.join('  ')}"
             end
           end
         end
