@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv='content-type' value='text/html;charset=utf8'>
   <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
-  <title>knife-cookbook(1) - Upload and manage Chef cookbooks</title>
+  <title>knife-cookbook(1) - upload and manage chef cookbooks</title>
   <style type='text/css' media='all'>
   /* style: man */
   body#manpage {margin:0}
@@ -61,7 +61,23 @@
   <div class='man-navigation' style='display:none'>
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
-    <a href="#COOKBOOK-SUB-COMMANDS">COOKBOOK SUB-COMMANDS</a>
+    <a href="#SUB-COMMANDS">SUB-COMMANDS</a>
+    <a href="#LIST">LIST</a>
+    <a href="#SHOW">SHOW</a>
+    <a href="#UPLOAD">UPLOAD</a>
+    <a href="#DOWNLOAD">DOWNLOAD</a>
+    <a href="#DELETE">DELETE</a>
+    <a href="#BULK-DELETE">BULK DELETE</a>
+    <a href="#COOKBOOK-CREATE">COOKBOOK CREATE</a>
+    <a href="#METADATA">METADATA</a>
+    <a href="#METADATA-FROM-FILE">METADATA FROM FILE</a>
+    <a href="#TEST">TEST</a>
+    <a href="#RECIPE-LIST">RECIPE LIST</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+    <a href="#AUTHOR">AUTHOR</a>
+    <a href="#DOCUMENTATION">DOCUMENTATION</a>
+    <a href="#CHEF">CHEF</a>
   </div>
 
   <ol class='man-decor man-head man head'>
@@ -72,122 +88,41 @@
 
   <h2 id="NAME">NAME</h2>
 <p class="man-name">
-  <code>knife-cookbook</code> - <span class="man-whatis">Upload and manage Chef cookbooks</span>
+  <code>knife-cookbook</code> - <span class="man-whatis">upload and manage chef cookbooks</span>
 </p>
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
 <p><strong>knife</strong> <strong>cookbook</strong> <em>sub-command</em> <em>(options)</em></p>
 
-<h2 id="COOKBOOK-SUB-COMMANDS">COOKBOOK SUB-COMMANDS</h2>
+<h2 id="SUB-COMMANDS">SUB-COMMANDS</h2>
 
-<p>Cookbooks are the fundamental unit of distribution in Chef. They encapsulate all recipes of resources and assets used to configure a particular aspect of the infrastructure. The following sub-commands can be used to manipulate the cookbooks stored on the Chef Server.</p>
+<p><code>knife cookbook</code> supports the following sub commands:</p>
 
-<p><strong>cookbook bulk delete REGEX</strong> <em>(options)</em></p>
+<h2 id="LIST">LIST</h2>
+
+<p><strong>knife cookbook list</strong> <em>(options)</em></p>
 
 <dl>
-<dt><code>-p</code>, <code>--purge</code></dt><dd>Purge files from backing store. This will disable any cookbook that contains any of the same files as the cookbook being purged.</dd>
+<dt><code>-a</code>, <code>--all</code></dt><dd>show all versions of a cookbook instead of just the most recent</dd>
+<dt><code>-w</code>, <code>--with-uri</code></dt><dd>show corresponding uris</dd>
 </dl>
 
 
-<p>Delete cookbooks on the Chef Server based on a regular expression. The regular expression (<em>REGEX</em>) should be in quotes, not in //'s.</p>
+<p>Lists the cookbooks available on the Chef server.</p>
 
-<p><strong>cookbook create COOKBOOK</strong> <em>(options)</em></p>
+<h2 id="SHOW">SHOW</h2>
+
+<p><strong>knife cookbook show cookbook [version] [part] [filename]</strong> <em>(options)</em></p>
 
 <dl>
-<dt><code>-o</code>, <code>--cookbook-path PATH</code></dt><dd>The directory where the cookbook will be created</dd>
-<dt><code>-r</code>, <code>--readme-format FORMAT</code></dt><dd>Format of the README file</dd>
-<dt><code>-C</code>, <code>--copyright COPYRIGHT</code></dt><dd>Name of Copyright holder</dd>
-<dt><code>-I</code>, <code>--license LICENSE</code></dt><dd>License for cookbook, apachev2 or none</dd>
-<dt><code>-E</code>, <code>--email EMAIL</code></dt><dd>Email address of cookbook maintainer</dd>
+<dt><code>-f</code>, <code>--fqdn fqdn              </code></dt><dd>the fqdn of the host to see the file for</dd>
+<dt><code>-p</code>, <code>--platform platform      </code></dt><dd>the platform to see the file for</dd>
+<dt><code>-v</code>, <code>--platform-version version</code></dt><dd>the platform version to see the file for</dd>
 </dl>
 
 
-<p>This is a helper command that creates a new cookbook directory in the <code>cookbook_path</code>. The following directories and files are created for the named cookbook.</p>
-
-<ul>
-<li>COOKBOOK/attributes</li>
-<li>COOKBOOK/definitions</li>
-<li>COOKBOOK/files/default</li>
-<li>COOKBOOK/libraries</li>
-<li>COOKBOOK/metadata.rb</li>
-<li>COOKBOOK/providers</li>
-<li>COOKBOOK/README.rdoc</li>
-<li>COOKBOOK/recipes/default.rb</li>
-<li>COOKBOOK/resources</li>
-<li>COOKBOOK/templates/default</li>
-</ul>
-
-
-<p>Supported README formats are 'rdoc' (default), 'md', 'mkd', 'txt'. The README file will be written with the specified extension and a set of helpful starting headers.</p>
-
-<p>Specify <code>-C</code> or <code>--copyright</code> with the name of the copyright holder as your name or your company/organization name in a quoted string. If this value is not specified an all-caps string <code>YOUR_COMPANY_NAME</code> is used which can be easily changed with find/replace.</p>
-
-<p>Specify <code>-I</code> or <code>--license</code> with the license that the cookbook is distributed under for sharing with other people or posting to the Opscode Cookbooks site. Be aware of the licenses of files you put inside the cookbook and follow any restrictions they describe. When using <code>none</code> (default) or <code>apachev2</code>, comment header text and metadata file are pre-filled. The <code>none</code> license will be treated as non-redistributable.</p>
-
-<p>Specify <code>-E</code> or <code>--email</code> with the email address of the cookbook's maintainer. If this value is not specified, an all-caps string <code>YOUR_EMAIL</code> is used which can easily be changed with find/replace.</p>
-
-<p>The cookbook copyright, license and email settings can be filled in the <code>knife.rb</code>, for example with default values:</p>
-
-<pre><code>cookbook_copyright "YOUR_COMPANY_NAME"
-cookbook_license "none"
-cookbook_email "YOUR_EMAIL"
-</code></pre>
-
-<p><strong>cookbook delete COOKBOOK [VERSION]</strong> <em>(options)</em></p>
-
-<dl>
-<dt><code>-a</code>, <code>--all</code></dt><dd>Delete all versions</dd>
-<dt><code>-p</code>, <code>--purge</code></dt><dd>Purge files from backing store. This will disable any cookbook that contains any of the same files as the cookbook being purged.</dd>
-</dl>
-
-
-<p>Delete the specified <em>VERSION</em> of the named <em>COOKBOOK</em>. If no version is specified, and only one version exists on the server, that version will be deleted. If multiple versions are available on the server, you will be prompted for a version to delete.</p>
-
-<p><strong>cookbook download COOKBOOK [VERSION]</strong> <em>(options)</em></p>
-
-<dl>
-<dt><code>-d</code>, <code>--dir DOWNLOAD_DIRECTORY</code></dt><dd>The directory to download the cookbook into</dd>
-<dt><code>-f</code>, <code>--force</code></dt><dd>Overwrite an existing directory with the download</dd>
-<dt><code>-N</code>, <code>--latest</code></dt><dd>Download the latest version of the cookbook</dd>
-</dl>
-
-
-<p>Download a cookbook from the Chef Server. If no version is specified and only one version exists on the server, that version will be downloaded. If no version is specified and multiple versions are available on the server, you will be prompted for a version to download.</p>
-
-<p><strong>cookbook list</strong> <em>(options)</em></p>
-
-<dl>
-<dt><code>-w</code>, <code>--with-uri</code></dt><dd>Show corresponding URIs</dd>
-</dl>
-
-
-<p>List all the cookbooks.</p>
-
-<p><strong>cookbook metadata COOKBOOK</strong> <em>(options)</em></p>
-
-<dl>
-<dt><code>-a</code>, <code>--all</code></dt><dd>Generate metadata for all cookbooks, rather than just a single cookbook</dd>
-<dt><code>-o</code>, <code>--cookbook-path PATH:PATH</code></dt><dd>A colon-separated path to look for cookbooks in</dd>
-</dl>
-
-
-<p>Generate cookbook metadata for the named <em>COOKBOOK</em>. The <em>PATH</em> used here specifies where the cookbooks directory is located and corresponds to the <code>cookbook_path</code> configuration option.</p>
-
-<p><strong>cookbook metadata from FILE</strong> <em>(options)</em></p>
-
-<p>Load the cookbook metadata from a specified file.</p>
-
-<p><strong>cookbook show COOKBOOK [VERSION] [PART] [FILENAME]</strong> <em>(options)</em></p>
-
-<dl>
-<dt><code>-f</code>, <code>--fqdn FQDN              </code></dt><dd>The FQDN of the host to see the file for</dd>
-<dt><code>-p</code>, <code>--platform PLATFORM      </code></dt><dd>The platform to see the file for</dd>
-<dt><code>-V</code>, <code>--platform-version VERSION</code></dt><dd>The platform version to see the file for</dd>
-</dl>
-
-
-<p>Show a particular part of a <em>COOKBOOK</em> for the specified <em>VERSION</em>. <em>PART</em> can be one of:</p>
+<p>show a particular part of a <em>cookbook</em> for the specified <em>version</em>. <em>part</em> can be one of:</p>
 
 <ul>
 <li><em>attributes</em></li>
@@ -201,25 +136,230 @@ cookbook_email "YOUR_EMAIL"
 </ul>
 
 
-<p><strong>cookbook test [COOKBOOKS...]</strong> <em>(options)</em></p>
+<h2 id="UPLOAD">UPLOAD</h2>
+
+<p><strong>knife cookbook upload [cookbooks...]</strong> <em>(options)</em></p>
 
 <dl>
-<dt><code>-a</code>, <code>--all</code></dt><dd>Test all cookbooks, rather than just a single cookbook</dd>
-<dt><code>-o</code>, <code>--cookbook-path PATH:PATH</code></dt><dd>A colon-separated path to look for cookbooks in</dd>
+<dt><code>-a</code>, <code>--all</code></dt><dd>upload all cookbooks, rather than just a single cookbook</dd>
+<dt><code>-o</code>, <code>--cookbook-path path:path</code></dt><dd>a colon-separated path to look for cookbooks in</dd>
+<dt><code>-E</code>, <code>--environment ENVIRONMENT</code></dt><dd>An <em>ENVIRONMENT</em> to apply the uploaded cookbooks to. Specifying this
+option will cause knife to edit the <em>ENVIRONMENT</em> to place a strict
+version constraint on the cookbook version(s) uploaded.</dd>
+<dt><code>--freeze</code></dt><dd>Sets the frozen flag on the uploaded cookbook(s) Any future attempt
+to modify the cookbook without changing the version number will
+return an error unless --force is specified.</dd>
+<dt class="flush"><code>--force</code></dt><dd>Overrides the frozen flag on a cookbook, allowing you to overwrite a
+cookbook version that has previously been uploaded with the --freeze
+option.</dd>
 </dl>
 
 
-<p>Test the specified cookbooks for syntax errors. This uses the built-in Ruby syntax checking option for files in the cookbook ending in <code>.rb</code>, and the ERB syntax check for files ending in <code>.erb</code> (templates).</p>
+<p>Uploads one or more cookbooks from your local cookbook repository(ies)
+to the Chef Server. Only files that don't yet exist on the server will
+be uploaded.</p>
 
-<p><strong>cookbook upload [COOKBOOKS...]</strong> <em>(options)</em></p>
+<h2 id="DOWNLOAD">DOWNLOAD</h2>
+
+<p><strong>knife cookbook download cookbook [version]</strong> <em>(options)</em></p>
 
 <dl>
-<dt><code>-a</code>, <code>--all</code></dt><dd>Upload all cookbooks, rather than just a single cookbook</dd>
-<dt><code>-o</code>, <code>--cookbook-path PATH:PATH</code></dt><dd>A colon-separated path to look for cookbooks in</dd>
+<dt><code>-d</code>, <code>--dir download_directory</code></dt><dd>the directory to download the cookbook into</dd>
+<dt><code>-f</code>, <code>--force</code></dt><dd>overwrite an existing directory with the download</dd>
+<dt><code>-n</code>, <code>--latest</code></dt><dd>download the latest version of the cookbook</dd>
 </dl>
 
 
-<p>Uploads the specified cookbooks to the Chef Server. The actual upload executes a number of commands, most of which occur on the local machine. The cookbook is staged in a temporary location. Then the <code>cookbook_path</code> (or <code>-o PATH</code>) is processed to search for the named cookbook, and each occurance is copied in the order specified. A syntax check is performed a la <code>cookbook test</code>, above. The metadata is generated, a la <code>cookbook metadata</code>. A <span class="man-ref">gzip<span class="s">(1)</span></span>'ed, <span class="man-ref">tar<span class="s">(1)</span></span> file is created, and is uploaded to the server.</p>
+<p>download a cookbook from the chef server. if no version is specified and
+only one version exists on the server, that version will be downloaded.
+if no version is specified and multiple versions are available on the
+server, you will be prompted for a version to download.</p>
+
+<h2 id="DELETE">DELETE</h2>
+
+<p><strong>knife cookbook delete cookbook [version]</strong> <em>(options)</em></p>
+
+<dl>
+<dt><code>-a</code>, <code>--all</code></dt><dd>delete all versions</dd>
+<dt><code>-p</code>, <code>--purge</code></dt><dd>purge files from backing store. this will disable any cookbook that contains any of the same files as the cookbook being purged.</dd>
+</dl>
+
+
+<p>delete the specified <em>version</em> of the named <em>cookbook</em>. if no version is
+specified, and only one version exists on the server, that version will
+be deleted. if multiple versions are available on the server, you will
+be prompted for a version to delete.</p>
+
+<h2 id="BULK-DELETE">BULK DELETE</h2>
+
+<p><strong>knife cookbook bulk delete regex</strong> <em>(options)</em></p>
+
+<dl>
+<dt><code>-p</code>, <code>--purge</code></dt><dd>purge files from backing store. this will disable any cookbook that
+contains any of the same files as the cookbook being purged.</dd>
+</dl>
+
+
+<p>delete cookbooks on the chef server based on a regular expression. the
+regular expression (<em>regex</em>) should be in quotes, not in //'s.</p>
+
+<h2 id="COOKBOOK-CREATE">COOKBOOK CREATE</h2>
+
+<p><strong>knife cookbook create cookbook</strong> <em>(options)</em></p>
+
+<dl>
+<dt><code>-o</code>, <code>--cookbook-path path</code></dt><dd>the directory where the cookbook will be created</dd>
+<dt><code>-r</code>, <code>--readme-format format</code></dt><dd>format of the readme file</dd>
+<dt><code>-c</code>, <code>--copyright copyright</code></dt><dd>name of copyright holder</dd>
+<dt><code>-i</code>, <code>--license license</code></dt><dd>license for cookbook, apachev2 or none</dd>
+<dt><code>-e</code>, <code>--email email</code></dt><dd>email address of cookbook maintainer</dd>
+</dl>
+
+
+<p>this is a helper command that creates a new cookbook directory in the
+<code>cookbook_path</code>. the following directories and files are created for the
+named cookbook.</p>
+
+<ul>
+<li>cookbook/attributes</li>
+<li>cookbook/definitions</li>
+<li>cookbook/files/default</li>
+<li>cookbook/libraries</li>
+<li>cookbook/metadata.rb</li>
+<li>cookbook/providers</li>
+<li>cookbook/readme.rdoc</li>
+<li>cookbook/recipes/default.rb</li>
+<li>cookbook/resources</li>
+<li>cookbook/templates/default</li>
+</ul>
+
+
+<p>supported readme formats are 'rdoc' (default), 'md', 'mkd', 'txt'. the
+readme file will be written with the specified extension and a set of
+helpful starting headers.</p>
+
+<p>specify <code>-c</code> or <code>--copyright</code> with the name of the copyright holder as
+your name or your company/organization name in a quoted string. if this
+value is not specified an all-caps string <code>your_company_name</code> is used
+which can be easily changed with find/replace.</p>
+
+<p>specify <code>-i</code> or <code>--license</code> with the license that the cookbook is
+distributed under for sharing with other people or posting to the
+opscode cookbooks site. be aware of the licenses of files you put inside
+the cookbook and follow any restrictions they describe. when using
+<code>none</code> (default) or <code>apachev2</code>, comment header text and metadata file
+are pre-filled. the <code>none</code> license will be treated as
+non-redistributable.</p>
+
+<p>specify <code>-e</code> or <code>--email</code> with the email address of the cookbook's
+maintainer. if this value is not specified, an all-caps string
+<code>your_email</code> is used which can easily be changed with find/replace.</p>
+
+<p>the cookbook copyright, license and email settings can be filled in the
+<code>knife.rb</code>, for example with default values:</p>
+
+<pre><code>cookbook_copyright "your_company_name"
+cookbook_license "none"
+cookbook_email "your_email"
+</code></pre>
+
+<h2 id="METADATA">METADATA</h2>
+
+<p><strong>knife cookbook metadata cookbook</strong> <em>(options)</em></p>
+
+<dl>
+<dt><code>-a</code>, <code>--all</code></dt><dd>generate metadata for all cookbooks, rather than just a single cookbook</dd>
+<dt><code>-o</code>, <code>--cookbook-path path:path</code></dt><dd>a colon-separated path to look for cookbooks in</dd>
+</dl>
+
+
+<p>generate cookbook metadata for the named <em>cookbook</em>. the <em>path</em> used here specifies where the cookbooks directory is located and corresponds to the <code>cookbook_path</code> configuration option.</p>
+
+<h2 id="METADATA-FROM-FILE">METADATA FROM FILE</h2>
+
+<p><strong>knife cookbook metadata from file</strong> <em>(options)</em></p>
+
+<p>load the cookbook metadata from a specified file.</p>
+
+<h2 id="TEST">TEST</h2>
+
+<p><strong>knife cookbook test [cookbooks...]</strong> <em>(options)</em></p>
+
+<dl>
+<dt><code>-a</code>, <code>--all</code></dt><dd>test all cookbooks, rather than just a single cookbook</dd>
+<dt><code>-o</code>, <code>--cookbook-path path:path</code></dt><dd>a colon-separated path to look for cookbooks in</dd>
+</dl>
+
+
+<p>test the specified cookbooks for syntax errors. this uses the built-in
+ruby syntax checking option for files in the cookbook ending in <code>.rb</code>,
+and the erb syntax check for files ending in <code>.erb</code> (templates).</p>
+
+<h2 id="RECIPE-LIST">RECIPE LIST</h2>
+
+<p><strong>knife recipe list [PATTERN]</strong></p>
+
+<p>List available recipes from the server. Specify <em>PATTERN</em> as a regular
+expression to limit the results.</p>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p>Cookbooks are the fundamental unit of distribution in Chef. They
+encapsulate all recipes of resources and assets used to configure a
+particular aspect of the infrastructure. The following sub-commands can
+be used to manipulate the cookbooks stored on the Chef Server.</p>
+
+<p>On disk, cookbooks are directories with a defined structure. The
+following directories may appear within a cookbook:</p>
+
+<dl>
+<dt>COOKBOOK/attributes/</dt><dd>Ruby files that define default parameters to be used in recipes</dd>
+<dt>COOKBOOK/definitions/</dt><dd>Ruby files that contain <em>resource definitions</em></dd>
+<dt>COOKBOOK/files/SPECIFICITY</dt><dd>Files of arbitrary type. These files may be downloaded by
+<span class="man-ref">chef-client<span class="s">(8)</span></span> when configuring a host.</dd>
+<dt>COOKBOOK/libraries/</dt><dd>Ruby files that contain library code needed for recipes</dd>
+<dt>COOKBOOK/providers/</dt><dd>Ruby files that contain Lightweight Provider definitions</dd>
+<dt>COOKBOOK/recipes/</dt><dd>Ruby files that use Chef's recipe DSL to describe the desired
+configuration of a system</dd>
+<dt>COOKBOOK/resources/</dt><dd>Ruby files that contain Lightweight Resource definitions</dd>
+<dt>COOKBOOK/templates/SPECIFICITY</dt><dd>ERuby (ERb) template files. These are referenced by <em>recipes</em> and
+evaluated to dynamically generate configuration files.</dd>
+</dl>
+
+
+<p><strong>SPECIFICITY</strong> is a feature of <em>files</em> and <em>templates</em> that allow you
+to specify alternate files to be used on a specific OS platform or host.
+The default specificity setting is <em>default</em>, that is files in
+<code>COOKBOOK/files/default</code> will be used when a more specific copy is not
+available. Further documentation for this feature is available on the
+Chef wiki: <a href="http://wiki.opscode.com/display/chef/File+Distribution#FileDistribution-FileSpecificity" data-bare-link="true">http://wiki.opscode.com/display/chef/File+Distribution#FileDistribution-FileSpecificity</a></p>
+
+<p>Cookbooks also contain a metadata file that defines various properties
+of the cookbook. The most important of these are the <em>version</em> and the
+<em>dependencies</em>. The <em>version</em> is used in combination with environments
+to select which copy of a given cookbook is distributed to a node. The
+<em>dependencies</em> are used by the server to determine which additional
+cookbooks must be distributed to a given host when it requires a
+cookbook.</p>
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<p>   <strong><span class="man-ref">knife-environment<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-cookbook-site<span class="s">(1)</span></span></strong>
+   <a href="http://wiki.opscode.com/display/chef/Cookbooks" data-bare-link="true">http://wiki.opscode.com/display/chef/Cookbooks</a>
+   <a href="http://wiki.opscode.com/display/chef/Metadata" data-bare-link="true">http://wiki.opscode.com/display/chef/Metadata</a></p>
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+<p>   Chef was written by Adam Jacob <a href="&#109;&#97;&#105;&#x6c;&#116;&#111;&#x3a;&#97;&#100;&#x61;&#x6d;&#x40;&#111;&#112;&#115;&#99;&#111;&#x64;&#101;&#46;&#x63;&#111;&#x6d;" data-bare-link="true">&#x61;&#100;&#97;&#109;&#64;&#111;&#112;&#x73;&#99;&#111;&#x64;&#x65;&#46;&#x63;&#x6f;&#109;</a> with many contributions from the community.</p>
+
+<h2 id="DOCUMENTATION">DOCUMENTATION</h2>
+
+<p>   This manual page was written by Joshua Timberman <a href="&#109;&#97;&#x69;&#x6c;&#116;&#x6f;&#58;&#106;&#111;&#x73;&#104;&#117;&#97;&#x40;&#x6f;&#x70;&#x73;&#x63;&#111;&#x64;&#101;&#46;&#99;&#111;&#109;" data-bare-link="true">&#x6a;&#111;&#115;&#x68;&#x75;&#x61;&#x40;&#x6f;&#112;&#115;&#x63;&#111;&#100;&#x65;&#46;&#x63;&#x6f;&#109;</a>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
+
+<h2 id="CHEF">CHEF</h2>
+
+<p>   Knife is distributed with Chef. <a href="http://wiki.opscode.com/display/chef/Home" data-bare-link="true">http://wiki.opscode.com/display/chef/Home</a></p>
 
 
   <ol class='man-decor man-foot man foot'>

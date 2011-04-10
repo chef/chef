@@ -5,23 +5,9 @@ knife-client(1) -- Manage Chef API Clients
 
 __knife__ __client__ _sub-command_ _(options)_
 
-## DESCRIPTION
-Clients are identities used for communication with the Chef Server API,
-roughly equivalent to user accounts on the Chef Server, except that
-clients only communicate with the Chef Server API and are authenticated
-via request signatures.
-
-In the typical case, there will be one client object on the server for
-each node, and the corresponding client and node will have identical
-names.
-
-In the Chef authorization model, there is one special client, the
-"validator", which is authorized to create new non-administrative
-clients but has minimal privileges otherwise. This identity is used as a
-sort of "guest account" to create a client identity when initially
-setting up a host for management with Chef.
-
-## CLIENT SUB-COMMANDS
+## SUB-COMMANDS
+Client subcommands follow a basic create, read, update, delete (CRUD)
+pattern. The Following subcommands are available:
 
 ## BULK DELETE
 __knife client bulk delete__ _regex_ _(options)_
@@ -85,6 +71,22 @@ __client show__ _client name_ _(options)_
     Show only one attribute
 
 Show a client. Output format is determined by the --format option.
+
+## DESCRIPTION
+Clients are identities used for communication with the Chef Server API,
+roughly equivalent to user accounts on the Chef Server, except that
+clients only communicate with the Chef Server API and are authenticated
+via request signatures.
+
+In the typical case, there will be one client object on the server for
+each node, and the corresponding client and node will have identical
+names.
+
+In the Chef authorization model, there is one special client, the
+"validator", which is authorized to create new non-administrative
+clients but has minimal privileges otherwise. This identity is used as a
+sort of "guest account" to create a client identity when initially
+setting up a host for management with Chef.
 
 ## SEE ALSO
    __knife-node__(1)

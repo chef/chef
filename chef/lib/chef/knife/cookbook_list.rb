@@ -32,7 +32,7 @@ class Chef
 
       option :all_versions,
         :short => "-a",
-        :long => "--show-all-versions",
+        :long => "--all",
         :description => "Show all available versions."
 
       def run

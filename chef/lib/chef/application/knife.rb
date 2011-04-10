@@ -24,7 +24,7 @@ class Chef::Application::Knife < Chef::Application
 
   NO_COMMAND_GIVEN = "You need to pass a sub-command (e.g., knife SUB-COMMAND)\n"
 
-  banner "Usage: #{$0} sub-command (options)"
+  banner "Usage: knife sub-command (options)"
 
   option :config_file,
     :short => "-c CONFIG",

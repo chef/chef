@@ -23,8 +23,6 @@ may not be publicly reachable.
 ## SEE ALSO
    __knife-search__(1)
 
-   <http://wiki.opscode.com/display/chef/Attributes>
-
 ## AUTHOR
    Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
 

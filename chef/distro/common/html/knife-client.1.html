@@ -61,8 +61,7 @@
   <div class='man-navigation' style='display:none'>
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
-    <a href="#DESCRIPTION">DESCRIPTION</a>
-    <a href="#CLIENT-SUB-COMMANDS">CLIENT SUB-COMMANDS</a>
+    <a href="#SUB-COMMANDS">SUB-COMMANDS</a>
     <a href="#BULK-DELETE">BULK DELETE</a>
     <a href="#CREATE">CREATE</a>
     <a href="#DELETE">DELETE</a>
@@ -70,6 +69,7 @@
     <a href="#LIST">LIST</a>
     <a href="#REREGISTER">REREGISTER</a>
     <a href="#SHOW">SHOW</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
     <a href="#SEE-ALSO">SEE ALSO</a>
     <a href="#AUTHOR">AUTHOR</a>
     <a href="#DOCUMENTATION">DOCUMENTATION</a>
@@ -91,24 +91,10 @@
 
 <p><strong>knife</strong> <strong>client</strong> <em>sub-command</em> <em>(options)</em></p>
 
-<h2 id="DESCRIPTION">DESCRIPTION</h2>
+<h2 id="SUB-COMMANDS">SUB-COMMANDS</h2>
 
-<p>Clients are identities used for communication with the Chef Server API,
-roughly equivalent to user accounts on the Chef Server, except that
-clients only communicate with the Chef Server API and are authenticated
-via request signatures.</p>
-
-<p>In the typical case, there will be one client object on the server for
-each node, and the corresponding client and node will have identical
-names.</p>
-
-<p>In the Chef authorization model, there is one special client, the
-"validator", which is authorized to create new non-administrative
-clients but has minimal privileges otherwise. This identity is used as a
-sort of "guest account" to create a client identity when initially
-setting up a host for management with Chef.</p>
-
-<h2 id="CLIENT-SUB-COMMANDS">CLIENT SUB-COMMANDS</h2>
+<p>Client subcommands follow a basic create, read, update, delete (CRUD)
+pattern. The Following subcommands are available:</p>
 
 <h2 id="BULK-DELETE">BULK DELETE</h2>
 
@@ -187,17 +173,34 @@ Use care when reregistering the validator client.</p>
 
 <p>Show a client. Output format is determined by the --format option.</p>
 
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p>Clients are identities used for communication with the Chef Server API,
+roughly equivalent to user accounts on the Chef Server, except that
+clients only communicate with the Chef Server API and are authenticated
+via request signatures.</p>
+
+<p>In the typical case, there will be one client object on the server for
+each node, and the corresponding client and node will have identical
+names.</p>
+
+<p>In the Chef authorization model, there is one special client, the
+"validator", which is authorized to create new non-administrative
+clients but has minimal privileges otherwise. This identity is used as a
+sort of "guest account" to create a client identity when initially
+setting up a host for management with Chef.</p>
+
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
 <p>   <strong>knife-node</strong>(1)</p>
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>   Chef was written by Adam Jacob <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#x61;&#x64;&#x61;&#x6d;&#x40;&#111;&#x70;&#x73;&#99;&#x6f;&#x64;&#101;&#x2e;&#99;&#x6f;&#x6d;" data-bare-link="true">&#97;&#100;&#x61;&#109;&#x40;&#111;&#112;&#x73;&#x63;&#x6f;&#100;&#101;&#46;&#x63;&#111;&#x6d;</a> with many contributions from the community.</p>
+<p>   Chef was written by Adam Jacob <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#111;&#58;&#x61;&#x64;&#97;&#109;&#64;&#111;&#x70;&#115;&#99;&#x6f;&#x64;&#101;&#x2e;&#x63;&#x6f;&#109;" data-bare-link="true">&#97;&#x64;&#97;&#x6d;&#64;&#111;&#112;&#x73;&#x63;&#x6f;&#x64;&#101;&#46;&#99;&#111;&#x6d;</a> with many contributions from the community.</p>
 
 <h2 id="DOCUMENTATION">DOCUMENTATION</h2>
 
-<p>   This manual page was written by Joshua Timberman <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#111;&#58;&#106;&#111;&#115;&#104;&#x75;&#97;&#x40;&#x6f;&#112;&#x73;&#99;&#x6f;&#x64;&#101;&#x2e;&#99;&#111;&#109;" data-bare-link="true">&#106;&#111;&#115;&#x68;&#117;&#97;&#x40;&#x6f;&#x70;&#115;&#x63;&#x6f;&#100;&#x65;&#x2e;&#99;&#x6f;&#x6d;</a>.
+<p>   This manual page was written by Joshua Timberman <a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#106;&#111;&#115;&#104;&#117;&#97;&#64;&#111;&#112;&#x73;&#99;&#x6f;&#x64;&#101;&#x2e;&#x63;&#x6f;&#109;" data-bare-link="true">&#106;&#x6f;&#115;&#104;&#117;&#x61;&#64;&#111;&#x70;&#x73;&#x63;&#111;&#x64;&#x65;&#46;&#x63;&#111;&#109;</a>.
    Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
 
 <h2 id="CHEF">CHEF</h2>

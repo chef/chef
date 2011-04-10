@@ -25,14 +25,18 @@ class Chef
       def run
         if name_args.empty?
           ui.info "Usage: knife SUBCOMMAND (options)"
-          show_usage
+          ui.msg ""
+          # This command is atypical, the user is likely not interested in usage of
+          # this command, but knife in general. So hack the banner.
+          opt_parser.banner = "General Knife Options:"
+          ui.msg opt_parser.to_s
           ui.msg ""
           ui.info "For further help:"
           ui.info(<<-MOAR_HELP)
   knife help list             list help topics
   knife help knife            show general knife help
   knife help TOPIC            display the manual for TOPIC
-  knife COMMAND --help        show the options for a command
+  knife SUBCOMMAND --help     show the options for a command
 MOAR_HELP
           exit 1
         else

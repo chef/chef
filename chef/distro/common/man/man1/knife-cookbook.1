@@ -4,188 +4,45 @@
 .TH "KNIFE\-COOKBOOK" "1" "April 2011" "Chef 0.10.0.beta.8" "Chef Manual"
 .
 .SH "NAME"
-\fBknife\-cookbook\fR \- Upload and manage Chef cookbooks
+\fBknife\-cookbook\fR \- upload and manage chef cookbooks
 .
 .SH "SYNOPSIS"
 \fBknife\fR \fBcookbook\fR \fIsub\-command\fR \fI(options)\fR
 .
-.SH "COOKBOOK SUB\-COMMANDS"
-Cookbooks are the fundamental unit of distribution in Chef\. They encapsulate all recipes of resources and assets used to configure a particular aspect of the infrastructure\. The following sub\-commands can be used to manipulate the cookbooks stored on the Chef Server\.
+.SH "SUB\-COMMANDS"
+\fBknife cookbook\fR supports the following sub commands:
 .
-.P
-\fBcookbook bulk delete REGEX\fR \fI(options)\fR
-.
-.TP
-\fB\-p\fR, \fB\-\-purge\fR
-Purge files from backing store\. This will disable any cookbook that contains any of the same files as the cookbook being purged\.
-.
-.P
-Delete cookbooks on the Chef Server based on a regular expression\. The regular expression (\fIREGEX\fR) should be in quotes, not in //\'s\.
-.
-.P
-\fBcookbook create COOKBOOK\fR \fI(options)\fR
-.
-.TP
-\fB\-o\fR, \fB\-\-cookbook\-path PATH\fR
-The directory where the cookbook will be created
-.
-.TP
-\fB\-r\fR, \fB\-\-readme\-format FORMAT\fR
-Format of the README file
-.
-.TP
-\fB\-C\fR, \fB\-\-copyright COPYRIGHT\fR
-Name of Copyright holder
-.
-.TP
-\fB\-I\fR, \fB\-\-license LICENSE\fR
-License for cookbook, apachev2 or none
-.
-.TP
-\fB\-E\fR, \fB\-\-email EMAIL\fR
-Email address of cookbook maintainer
-.
-.P
-This is a helper command that creates a new cookbook directory in the \fBcookbook_path\fR\. The following directories and files are created for the named cookbook\.
-.
-.IP "\(bu" 4
-COOKBOOK/attributes
-.
-.IP "\(bu" 4
-COOKBOOK/definitions
-.
-.IP "\(bu" 4
-COOKBOOK/files/default
-.
-.IP "\(bu" 4
-COOKBOOK/libraries
-.
-.IP "\(bu" 4
-COOKBOOK/metadata\.rb
-.
-.IP "\(bu" 4
-COOKBOOK/providers
-.
-.IP "\(bu" 4
-COOKBOOK/README\.rdoc
-.
-.IP "\(bu" 4
-COOKBOOK/recipes/default\.rb
-.
-.IP "\(bu" 4
-COOKBOOK/resources
-.
-.IP "\(bu" 4
-COOKBOOK/templates/default
-.
-.IP "" 0
-.
-.P
-Supported README formats are \'rdoc\' (default), \'md\', \'mkd\', \'txt\'\. The README file will be written with the specified extension and a set of helpful starting headers\.
-.
-.P
-Specify \fB\-C\fR or \fB\-\-copyright\fR with the name of the copyright holder as your name or your company/organization name in a quoted string\. If this value is not specified an all\-caps string \fBYOUR_COMPANY_NAME\fR is used which can be easily changed with find/replace\.
-.
-.P
-Specify \fB\-I\fR or \fB\-\-license\fR with the license that the cookbook is distributed under for sharing with other people or posting to the Opscode Cookbooks site\. Be aware of the licenses of files you put inside the cookbook and follow any restrictions they describe\. When using \fBnone\fR (default) or \fBapachev2\fR, comment header text and metadata file are pre\-filled\. The \fBnone\fR license will be treated as non\-redistributable\.
-.
-.P
-Specify \fB\-E\fR or \fB\-\-email\fR with the email address of the cookbook\'s maintainer\. If this value is not specified, an all\-caps string \fBYOUR_EMAIL\fR is used which can easily be changed with find/replace\.
-.
-.P
-The cookbook copyright, license and email settings can be filled in the \fBknife\.rb\fR, for example with default values:
-.
-.IP "" 4
-.
-.nf
-
-cookbook_copyright "YOUR_COMPANY_NAME"
-cookbook_license "none"
-cookbook_email "YOUR_EMAIL"
-.
-.fi
-.
-.IP "" 0
-.
-.P
-\fBcookbook delete COOKBOOK [VERSION]\fR \fI(options)\fR
+.SH "LIST"
+\fBknife cookbook list\fR \fI(options)\fR
 .
 .TP
 \fB\-a\fR, \fB\-\-all\fR
-Delete all versions
-.
-.TP
-\fB\-p\fR, \fB\-\-purge\fR
-Purge files from backing store\. This will disable any cookbook that contains any of the same files as the cookbook being purged\.
-.
-.P
-Delete the specified \fIVERSION\fR of the named \fICOOKBOOK\fR\. If no version is specified, and only one version exists on the server, that version will be deleted\. If multiple versions are available on the server, you will be prompted for a version to delete\.
-.
-.P
-\fBcookbook download COOKBOOK [VERSION]\fR \fI(options)\fR
-.
-.TP
-\fB\-d\fR, \fB\-\-dir DOWNLOAD_DIRECTORY\fR
-The directory to download the cookbook into
-.
-.TP
-\fB\-f\fR, \fB\-\-force\fR
-Overwrite an existing directory with the download
-.
-.TP
-\fB\-N\fR, \fB\-\-latest\fR
-Download the latest version of the cookbook
-.
-.P
-Download a cookbook from the Chef Server\. If no version is specified and only one version exists on the server, that version will be downloaded\. If no version is specified and multiple versions are available on the server, you will be prompted for a version to download\.
-.
-.P
-\fBcookbook list\fR \fI(options)\fR
+show all versions of a cookbook instead of just the most recent
 .
 .TP
 \fB\-w\fR, \fB\-\-with\-uri\fR
-Show corresponding URIs
+show corresponding uris
 .
 .P
-List all the cookbooks\.
+Lists the cookbooks available on the Chef server\.
 .
-.P
-\fBcookbook metadata COOKBOOK\fR \fI(options)\fR
+.SH "SHOW"
+\fBknife cookbook show cookbook [version] [part] [filename]\fR \fI(options)\fR
 .
 .TP
-\fB\-a\fR, \fB\-\-all\fR
-Generate metadata for all cookbooks, rather than just a single cookbook
+\fB\-f\fR, \fB\-\-fqdn fqdn\fR
+the fqdn of the host to see the file for
 .
 .TP
-\fB\-o\fR, \fB\-\-cookbook\-path PATH:PATH\fR
-A colon\-separated path to look for cookbooks in
-.
-.P
-Generate cookbook metadata for the named \fICOOKBOOK\fR\. The \fIPATH\fR used here specifies where the cookbooks directory is located and corresponds to the \fBcookbook_path\fR configuration option\.
-.
-.P
-\fBcookbook metadata from FILE\fR \fI(options)\fR
-.
-.P
-Load the cookbook metadata from a specified file\.
-.
-.P
-\fBcookbook show COOKBOOK [VERSION] [PART] [FILENAME]\fR \fI(options)\fR
+\fB\-p\fR, \fB\-\-platform platform\fR
+the platform to see the file for
 .
 .TP
-\fB\-f\fR, \fB\-\-fqdn FQDN\fR
-The FQDN of the host to see the file for
-.
-.TP
-\fB\-p\fR, \fB\-\-platform PLATFORM\fR
-The platform to see the file for
-.
-.TP
-\fB\-V\fR, \fB\-\-platform\-version VERSION\fR
-The platform version to see the file for
+\fB\-v\fR, \fB\-\-platform\-version version\fR
+the platform version to see the file for
 .
 .P
-Show a particular part of a \fICOOKBOOK\fR for the specified \fIVERSION\fR\. \fIPART\fR can be one of:
+show a particular part of a \fIcookbook\fR for the specified \fIversion\fR\. \fIpart\fR can be one of:
 .
 .IP "\(bu" 4
 \fIattributes\fR
@@ -213,30 +70,251 @@ Show a particular part of a \fICOOKBOOK\fR for the specified \fIVERSION\fR\. \fI
 .
 .IP "" 0
 .
-.P
-\fBcookbook test [COOKBOOKS\.\.\.]\fR \fI(options)\fR
+.SH "UPLOAD"
+\fBknife cookbook upload [cookbooks\.\.\.]\fR \fI(options)\fR
 .
 .TP
 \fB\-a\fR, \fB\-\-all\fR
-Test all cookbooks, rather than just a single cookbook
+upload all cookbooks, rather than just a single cookbook
 .
 .TP
-\fB\-o\fR, \fB\-\-cookbook\-path PATH:PATH\fR
-A colon\-separated path to look for cookbooks in
+\fB\-o\fR, \fB\-\-cookbook\-path path:path\fR
+a colon\-separated path to look for cookbooks in
+.
+.TP
+\fB\-E\fR, \fB\-\-environment ENVIRONMENT\fR
+An \fIENVIRONMENT\fR to apply the uploaded cookbooks to\. Specifying this option will cause knife to edit the \fIENVIRONMENT\fR to place a strict version constraint on the cookbook version(s) uploaded\.
+.
+.TP
+\fB\-\-freeze\fR
+Sets the frozen flag on the uploaded cookbook(s) Any future attempt to modify the cookbook without changing the version number will return an error unless \-\-force is specified\.
+.
+.TP
+\fB\-\-force\fR
+Overrides the frozen flag on a cookbook, allowing you to overwrite a cookbook version that has previously been uploaded with the \-\-freeze option\.
 .
 .P
-Test the specified cookbooks for syntax errors\. This uses the built\-in Ruby syntax checking option for files in the cookbook ending in \fB\.rb\fR, and the ERB syntax check for files ending in \fB\.erb\fR (templates)\.
+Uploads one or more cookbooks from your local cookbook repository(ies) to the Chef Server\. Only files that don\'t yet exist on the server will be uploaded\.
+.
+.SH "DOWNLOAD"
+\fBknife cookbook download cookbook [version]\fR \fI(options)\fR
+.
+.TP
+\fB\-d\fR, \fB\-\-dir download_directory\fR
+the directory to download the cookbook into
+.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+overwrite an existing directory with the download
+.
+.TP
+\fB\-n\fR, \fB\-\-latest\fR
+download the latest version of the cookbook
 .
 .P
-\fBcookbook upload [COOKBOOKS\.\.\.]\fR \fI(options)\fR
+download a cookbook from the chef server\. if no version is specified and only one version exists on the server, that version will be downloaded\. if no version is specified and multiple versions are available on the server, you will be prompted for a version to download\.
+.
+.SH "DELETE"
+\fBknife cookbook delete cookbook [version]\fR \fI(options)\fR
 .
 .TP
 \fB\-a\fR, \fB\-\-all\fR
-Upload all cookbooks, rather than just a single cookbook
+delete all versions
 .
 .TP
-\fB\-o\fR, \fB\-\-cookbook\-path PATH:PATH\fR
-A colon\-separated path to look for cookbooks in
+\fB\-p\fR, \fB\-\-purge\fR
+purge files from backing store\. this will disable any cookbook that contains any of the same files as the cookbook being purged\.
 .
 .P
-Uploads the specified cookbooks to the Chef Server\. The actual upload executes a number of commands, most of which occur on the local machine\. The cookbook is staged in a temporary location\. Then the \fBcookbook_path\fR (or \fB\-o PATH\fR) is processed to search for the named cookbook, and each occurance is copied in the order specified\. A syntax check is performed a la \fBcookbook test\fR, above\. The metadata is generated, a la \fBcookbook metadata\fR\. A gzip(1)\'ed, tar(1) file is created, and is uploaded to the server\.
+delete the specified \fIversion\fR of the named \fIcookbook\fR\. if no version is specified, and only one version exists on the server, that version will be deleted\. if multiple versions are available on the server, you will be prompted for a version to delete\.
+.
+.SH "BULK DELETE"
+\fBknife cookbook bulk delete regex\fR \fI(options)\fR
+.
+.TP
+\fB\-p\fR, \fB\-\-purge\fR
+purge files from backing store\. this will disable any cookbook that contains any of the same files as the cookbook being purged\.
+.
+.P
+delete cookbooks on the chef server based on a regular expression\. the regular expression (\fIregex\fR) should be in quotes, not in //\'s\.
+.
+.SH "COOKBOOK CREATE"
+\fBknife cookbook create cookbook\fR \fI(options)\fR
+.
+.TP
+\fB\-o\fR, \fB\-\-cookbook\-path path\fR
+the directory where the cookbook will be created
+.
+.TP
+\fB\-r\fR, \fB\-\-readme\-format format\fR
+format of the readme file
+.
+.TP
+\fB\-c\fR, \fB\-\-copyright copyright\fR
+name of copyright holder
+.
+.TP
+\fB\-i\fR, \fB\-\-license license\fR
+license for cookbook, apachev2 or none
+.
+.TP
+\fB\-e\fR, \fB\-\-email email\fR
+email address of cookbook maintainer
+.
+.P
+this is a helper command that creates a new cookbook directory in the \fBcookbook_path\fR\. the following directories and files are created for the named cookbook\.
+.
+.IP "\(bu" 4
+cookbook/attributes
+.
+.IP "\(bu" 4
+cookbook/definitions
+.
+.IP "\(bu" 4
+cookbook/files/default
+.
+.IP "\(bu" 4
+cookbook/libraries
+.
+.IP "\(bu" 4
+cookbook/metadata\.rb
+.
+.IP "\(bu" 4
+cookbook/providers
+.
+.IP "\(bu" 4
+cookbook/readme\.rdoc
+.
+.IP "\(bu" 4
+cookbook/recipes/default\.rb
+.
+.IP "\(bu" 4
+cookbook/resources
+.
+.IP "\(bu" 4
+cookbook/templates/default
+.
+.IP "" 0
+.
+.P
+supported readme formats are \'rdoc\' (default), \'md\', \'mkd\', \'txt\'\. the readme file will be written with the specified extension and a set of helpful starting headers\.
+.
+.P
+specify \fB\-c\fR or \fB\-\-copyright\fR with the name of the copyright holder as your name or your company/organization name in a quoted string\. if this value is not specified an all\-caps string \fByour_company_name\fR is used which can be easily changed with find/replace\.
+.
+.P
+specify \fB\-i\fR or \fB\-\-license\fR with the license that the cookbook is distributed under for sharing with other people or posting to the opscode cookbooks site\. be aware of the licenses of files you put inside the cookbook and follow any restrictions they describe\. when using \fBnone\fR (default) or \fBapachev2\fR, comment header text and metadata file are pre\-filled\. the \fBnone\fR license will be treated as non\-redistributable\.
+.
+.P
+specify \fB\-e\fR or \fB\-\-email\fR with the email address of the cookbook\'s maintainer\. if this value is not specified, an all\-caps string \fByour_email\fR is used which can easily be changed with find/replace\.
+.
+.P
+the cookbook copyright, license and email settings can be filled in the \fBknife\.rb\fR, for example with default values:
+.
+.IP "" 4
+.
+.nf
+
+cookbook_copyright "your_company_name"
+cookbook_license "none"
+cookbook_email "your_email"
+.
+.fi
+.
+.IP "" 0
+.
+.SH "METADATA"
+\fBknife cookbook metadata cookbook\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-all\fR
+generate metadata for all cookbooks, rather than just a single cookbook
+.
+.TP
+\fB\-o\fR, \fB\-\-cookbook\-path path:path\fR
+a colon\-separated path to look for cookbooks in
+.
+.P
+generate cookbook metadata for the named \fIcookbook\fR\. the \fIpath\fR used here specifies where the cookbooks directory is located and corresponds to the \fBcookbook_path\fR configuration option\.
+.
+.SH "METADATA FROM FILE"
+\fBknife cookbook metadata from file\fR \fI(options)\fR
+.
+.P
+load the cookbook metadata from a specified file\.
+.
+.SH "TEST"
+\fBknife cookbook test [cookbooks\.\.\.]\fR \fI(options)\fR
+.
+.TP
+\fB\-a\fR, \fB\-\-all\fR
+test all cookbooks, rather than just a single cookbook
+.
+.TP
+\fB\-o\fR, \fB\-\-cookbook\-path path:path\fR
+a colon\-separated path to look for cookbooks in
+.
+.P
+test the specified cookbooks for syntax errors\. this uses the built\-in ruby syntax checking option for files in the cookbook ending in \fB\.rb\fR, and the erb syntax check for files ending in \fB\.erb\fR (templates)\.
+.
+.SH "RECIPE LIST"
+\fBknife recipe list [PATTERN]\fR
+.
+.P
+List available recipes from the server\. Specify \fIPATTERN\fR as a regular expression to limit the results\.
+.
+.SH "DESCRIPTION"
+Cookbooks are the fundamental unit of distribution in Chef\. They encapsulate all recipes of resources and assets used to configure a particular aspect of the infrastructure\. The following sub\-commands can be used to manipulate the cookbooks stored on the Chef Server\.
+.
+.P
+On disk, cookbooks are directories with a defined structure\. The following directories may appear within a cookbook:
+.
+.TP
+COOKBOOK/attributes/
+Ruby files that define default parameters to be used in recipes
+.
+.TP
+COOKBOOK/definitions/
+Ruby files that contain \fIresource definitions\fR
+.
+.TP
+COOKBOOK/files/SPECIFICITY
+Files of arbitrary type\. These files may be downloaded by chef\-client(8) when configuring a host\.
+.
+.TP
+COOKBOOK/libraries/
+Ruby files that contain library code needed for recipes
+.
+.TP
+COOKBOOK/providers/
+Ruby files that contain Lightweight Provider definitions
+.
+.TP
+COOKBOOK/recipes/
+Ruby files that use Chef\'s recipe DSL to describe the desired configuration of a system
+.
+.TP
+COOKBOOK/resources/
+Ruby files that contain Lightweight Resource definitions
+.
+.TP
+COOKBOOK/templates/SPECIFICITY
+ERuby (ERb) template files\. These are referenced by \fIrecipes\fR and evaluated to dynamically generate configuration files\.
+.
+.P
+\fBSPECIFICITY\fR is a feature of \fIfiles\fR and \fItemplates\fR that allow you to specify alternate files to be used on a specific OS platform or host\. The default specificity setting is \fIdefault\fR, that is files in \fBCOOKBOOK/files/default\fR will be used when a more specific copy is not available\. Further documentation for this feature is available on the Chef wiki: \fIhttp://wiki\.opscode\.com/display/chef/File+Distribution#FileDistribution\-FileSpecificity\fR
+.
+.P
+Cookbooks also contain a metadata file that defines various properties of the cookbook\. The most important of these are the \fIversion\fR and the \fIdependencies\fR\. The \fIversion\fR is used in combination with environments to select which copy of a given cookbook is distributed to a node\. The \fIdependencies\fR are used by the server to determine which additional cookbooks must be distributed to a given host when it requires a cookbook\.
+.
+.SH "SEE ALSO"
+\fBknife\-environment(1)\fR \fBknife\-cookbook\-site(1)\fR \fIhttp://wiki\.opscode\.com/display/chef/Cookbooks\fR \fIhttp://wiki\.opscode\.com/display/chef/Metadata\fR
+.
+.SH "AUTHOR"
+Chef was written by Adam Jacob \fIadam@opscode\.com\fR with many contributions from the community\.
+.
+.SH "DOCUMENTATION"
+This manual page was written by Joshua Timberman \fIjoshua@opscode\.com\fR\. Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2\.0 License\.
+.
+.SH "CHEF"
+Knife is distributed with Chef\. \fIhttp://wiki\.opscode\.com/display/chef/Home\fR

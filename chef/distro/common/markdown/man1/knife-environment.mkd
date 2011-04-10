@@ -6,6 +6,8 @@ knife-environment(1) -- Define cookbook policies for the environments in your in
 __knife__ __environment__ _sub-command_ _(options)_
 
 ## SUBCOMMANDS
+Environment subcommands follow a basic create, read, update, delete
+(CRUD) pattern. The following subcommands are available:
 
 ## CREATE
 __knife environment create__ _environment_ _(options)_

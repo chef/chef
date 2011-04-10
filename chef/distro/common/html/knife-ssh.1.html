@@ -61,6 +61,12 @@
   <div class='man-navigation' style='display:none'>
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#TERMINAL-MULTIPLEXING-AND-TERMINAL-TAB-SUPPORT">TERMINAL MULTIPLEXING AND TERMINAL TAB SUPPORT</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+    <a href="#AUTHOR">AUTHOR</a>
+    <a href="#DOCUMENTATION">DOCUMENTATION</a>
+    <a href="#CHEF">CHEF</a>
   </div>
 
   <ol class='man-decor man-head man head'>
@@ -87,7 +93,56 @@
 </dl>
 
 
-<p>The <em>ssh</em> sub-command opens an ssh session to each of the nodes in the search results of the <em>QUERY</em>. This sub-command requires that the net-ssh-multi and highline Ruby libraries are installed. On Debian systems, these are the libnet-ssh-multi-ruby and libhighline-ruby packages. They can also be installed as RubyGems (net-ssh-multi and highline, respectively).</p>
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p>The <em>ssh</em> sub-command opens an ssh session to each of the nodes in the
+search results of the <em>QUERY</em>. This sub-command requires that the
+net-ssh-multi and highline Ruby libraries are installed. On Debian
+systems, these are the libnet-ssh-multi-ruby and libhighline-ruby
+packages. They can also be installed as RubyGems (net-ssh-multi and
+highline, respectively).</p>
+
+<h2 id="TERMINAL-MULTIPLEXING-AND-TERMINAL-TAB-SUPPORT">TERMINAL MULTIPLEXING AND TERMINAL TAB SUPPORT</h2>
+
+<p><code>knife ssh</code> integrates with several terminal multiplexer programs to
+provide a more convenient means of managing multiple ssh sessions. When
+the <em>COMMAND</em> option matches one of these, <code>knife ssh</code> will create
+multiple interactive ssh sessions running locally in the terminal
+multiplexer instead of invoking the command on the remote host.</p>
+
+<p>The available multiplexers are:
+  * <code>interactive</code>:</p>
+
+<pre><code>A built-in multiplexer. `interactive` supports running commands on a
+subset of the connected hosts in parallel
+</code></pre>
+
+<dl>
+<dt><strong>screen</strong>(1)</dt><dd>Runs ssh interactively inside <code>screen</code>. ~/.screenrc will be sourced
+if it exists.</dd>
+<dt class="flush"><strong>tmux</strong>(1)</dt><dd>Runs ssh interactively inside tmux.</dd>
+<dt><code>macterm</code> (Mac OS X only)</dt><dd>Opens a Terminal.app window and creates a tab for each ssh session.
+You must install the rb-appscript gem before you can use this
+option.</dd>
+</dl>
+
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<p>   <strong>knife-search</strong>(1)</p>
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+<p>   Chef was written by Adam Jacob <a href="&#x6d;&#x61;&#105;&#108;&#116;&#x6f;&#x3a;&#x61;&#100;&#x61;&#109;&#x40;&#x6f;&#112;&#x73;&#99;&#111;&#100;&#101;&#x2e;&#x63;&#x6f;&#x6d;" data-bare-link="true">&#x61;&#x64;&#x61;&#109;&#64;&#111;&#x70;&#x73;&#x63;&#x6f;&#x64;&#x65;&#x2e;&#99;&#111;&#109;</a> with many contributions from the community.</p>
+
+<h2 id="DOCUMENTATION">DOCUMENTATION</h2>
+
+<p>   This manual page was written by Joshua Timberman <a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;&#58;&#x6a;&#x6f;&#x73;&#104;&#117;&#97;&#x40;&#x6f;&#x70;&#x73;&#99;&#111;&#x64;&#101;&#x2e;&#99;&#x6f;&#109;" data-bare-link="true">&#x6a;&#x6f;&#115;&#x68;&#x75;&#97;&#x40;&#x6f;&#x70;&#115;&#x63;&#x6f;&#100;&#101;&#46;&#x63;&#111;&#109;</a>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
+
+<h2 id="CHEF">CHEF</h2>
+
+<p>   Knife is distributed with Chef. <a href="http://wiki.opscode.com/display/chef/Home" data-bare-link="true">http://wiki.opscode.com/display/chef/Home</a></p>
 
 
   <ol class='man-decor man-foot man foot'>

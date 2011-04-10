@@ -61,6 +61,13 @@
   <div class='man-navigation' style='display:none'>
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#SYNTAX">SYNTAX</a>
+    <a href="#EXAMPLES">EXAMPLES</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+    <a href="#AUTHOR">AUTHOR</a>
+    <a href="#DOCUMENTATION">DOCUMENTATION</a>
+    <a href="#CHEF">CHEF</a>
   </div>
 
   <ol class='man-decor man-head man head'>
@@ -85,10 +92,44 @@
 <dt><code>-r</code>, <code>--run-list</code></dt><dd>Show only the run list</dd>
 <dt><code>-o</code>, <code>--sort SORT</code></dt><dd>The order to sort the results in</dd>
 <dt><code>-b</code>, <code>--start ROW</code></dt><dd>The row to start returning results at</dd>
+<dt><code>-m</code>, <code>--medium</code></dt><dd>Display medium sized output when searching nodes using the default
+summary format</dd>
+<dt><code>-l</code>, <code>--long</code></dt><dd>Display long output when searching nodes using the default summary
+format</dd>
 </dl>
 
 
-<p>Search indexes are a feature of the Chef Server and the search sub-command allows querying any of the available indexes using SOLR query syntax. The following data types are indexed for search: <em>node</em>, <em>role</em>, <em>client</em>, <em>data bag</em>.</p>
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p>Search indexes are a feature of the Chef Server and the search
+sub-command allows querying any of the available indexes using SOLR
+query syntax. The following data types are indexed for search:
+* <em>node</em>
+* <em>role</em>
+* <em>environment</em>
+* <em>data bag</em></p>
+
+<h2 id="SYNTAX">SYNTAX</h2>
+
+<h2 id="EXAMPLES">EXAMPLES</h2>
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<p>   <strong>knife-ssh</strong>(1)
+   <a href="http://wiki.opscode.com/display/chef/Attributes" data-bare-link="true">http://wiki.opscode.com/display/chef/Attributes</a></p>
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+<p>   Chef was written by Adam Jacob <a href="&#x6d;&#x61;&#105;&#108;&#116;&#x6f;&#x3a;&#x61;&#100;&#x61;&#109;&#x40;&#x6f;&#112;&#x73;&#99;&#111;&#100;&#101;&#x2e;&#x63;&#x6f;&#x6d;" data-bare-link="true">&#x61;&#x64;&#x61;&#109;&#64;&#111;&#x70;&#x73;&#x63;&#x6f;&#x64;&#x65;&#x2e;&#99;&#111;&#109;</a> with many contributions from the community.</p>
+
+<h2 id="DOCUMENTATION">DOCUMENTATION</h2>
+
+<p>   This manual page was written by Joshua Timberman <a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;&#58;&#x6a;&#x6f;&#x73;&#104;&#117;&#97;&#x40;&#x6f;&#x70;&#x73;&#99;&#111;&#x64;&#101;&#x2e;&#99;&#x6f;&#109;" data-bare-link="true">&#x6a;&#x6f;&#115;&#x68;&#x75;&#97;&#x40;&#x6f;&#x70;&#115;&#x63;&#x6f;&#100;&#101;&#46;&#x63;&#111;&#109;</a>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
+
+<h2 id="CHEF">CHEF</h2>
+
+<p>   Knife is distributed with Chef. <a href="http://wiki.opscode.com/display/chef/Home" data-bare-link="true">http://wiki.opscode.com/display/chef/Home</a></p>
 
 
   <ol class='man-decor man-foot man foot'>
