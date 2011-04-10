@@ -101,11 +101,6 @@ describe Chef::CouchDB do
       @couchdb.create_design_document("bob", @mock_data)
     end
 
-    it "should create the database if it does not exist" do
-      @couchdb.should_receive(:create_db).and_return(true)
-      do_create_design_document
-    end
-
     it "should fetch the existing design document" do
       @rest.should_receive(:get_rest).with("chef/_design/bob")
       do_create_design_document

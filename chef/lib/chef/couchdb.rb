@@ -78,7 +78,6 @@ class Chef
     end
     
     def create_design_document(name, data)
-      create_db
       to_update = true
       begin
         old_doc = @rest.get_rest("#{couchdb_database}/_design/#{name}")
