@@ -23,7 +23,6 @@ class Chef::Knife::RecipeList < Chef::Knife
 
   def run
     recipes = rest.get_rest('cookbooks/_recipes')
-    recipes = recipes.keys.map { |cb| recipes[cb].map {|ver, rec| rec.map{ |rn| "#{cb}::#{rn} (#{ver})" }}}.flatten.uniq
     if pattern = @name_args.first
       recipes = recipes.grep(Regexp.new(pattern))
     end

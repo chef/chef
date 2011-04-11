@@ -1,4 +1,5 @@
 
+require 'set'
 require 'rest_client'
 require 'chef/exceptions'
 require 'chef/knife/cookbook_metadata'
@@ -67,17 +68,22 @@ class Chef
 
       self.class.setup_worker_threads
 
+      checksums_to_upload = Set.new
+
       # upload the new checksums and commit the sandbox
       new_sandbox['checksums'].each do |checksum, info|
         if info['needs_upload'] == true
+          checksums_to_upload << checksum
           Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
-          self.class.work_queue << uploader_function_for(checksum_files[checksum], checksum, info['url'])
+          self.class.work_queue << uploader_function_for(checksum_files[checksum], checksum, info['url'], checksums_to_upload)
         else
           Chef::Log.debug("#{checksum_files[checksum]} has not changed")
         end
       end
 
-      sleep 0.1 until self.class.work_queue.empty?
+      until checksums_to_upload.empty?
+        sleep 0.1
+      end
 
       sandbox_url = new_sandbox['uri']
       Chef::Log.debug("Committing sandbox")
@@ -102,7 +108,7 @@ class Chef
     def worker_thread(work_queue)
     end
 
-    def uploader_function_for(file, checksum, url)
+    def uploader_function_for(file, checksum, url, checksums_to_upload)
       lambda do
         # Checksum is the hexadecimal representation of the md5,
         # but we need the base64 encoding for the content-md5
@@ -123,8 +129,9 @@ class Chef
 
         begin
           RestClient::Resource.new(url, :headers=>headers, :timeout=>1800, :open_timeout=>1800).put(file_contents)
+          checksums_to_upload.delete(checksum)
         rescue RestClient::Exception => e
-          Chef::Log.error("Upload failed: #{e.message}\n#{e.response.body}")
+          ui.error("Failed to upload #@cookbook : #{e.message}\n#{e.response.body}")
           raise
         end
       end
