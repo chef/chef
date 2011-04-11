@@ -29,7 +29,7 @@ log_location     STDOUT
 chef_server_url  "<%= Chef::Config[:chef_server_url] %>"
 validation_client_name "<%= Chef::Config[:validation_client_name] %>"
 <% if @config[:chef_node_name] == nil %>
-# Using default node name"
+# Using default node name (fqdn)
 <% else %>
 node_name "<%= @config[:chef_node_name] %>"
 <% end %> 
