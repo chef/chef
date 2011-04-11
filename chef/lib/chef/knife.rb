@@ -288,7 +288,8 @@ class Chef
         read_config_file(config[:config_file])
       else
         # ...but do log a message if no config was found.
-        self.msg("No knife configuration file found")
+        Chef::Config[:color] = config[:color] && !config[:no_color]
+        ui.warn("No knife configuration file found")
       end
 
       Chef::Config[:color] = config[:color] && !config[:no_color]
@@ -320,7 +321,7 @@ class Chef
       Chef::Log.debug("Using configuration from #{config[:config_file]}")
 
       if Chef::Config[:node_name].nil?
-        raise ArgumentError, "No user specified, pass via -u or specifiy 'node_name' in #{config[:config_file] ? config[:config_file] : "~/.chef/knife.rb"}"
+        #raise ArgumentError, "No user specified, pass via -u or specifiy 'node_name' in #{config[:config_file] ? config[:config_file] : "~/.chef/knife.rb"}"
       end
     end
 
@@ -511,6 +512,13 @@ class Chef
       @rest ||= begin
         require 'chef/rest'
         Chef::REST.new(Chef::Config[:chef_server_url])
+      end
+    end
+
+    def noauth_rest
+      @rest ||= begin
+        require 'chef/rest'
+        Chef::REST.new(Chef::Config[:chef_server_url], false, false)
       end
     end
 
