@@ -143,7 +143,7 @@ class Chef
       end
 
       def data_bag(bag)
-        DataBag.validate_name!(bag)
+        DataBag.validate_name!(bag.to_s)
         rbag = DataBag.load(bag)
         rbag.keys
       rescue Exception
@@ -152,7 +152,7 @@ class Chef
       end
 
       def data_bag_item(bag, item)
-        DataBag.validate_name!(bag)
+        DataBag.validate_name!(bag.to_s)
         DataBagItem.validate_id!(item)
         DataBagItem.load(bag, item)
       rescue Exception
