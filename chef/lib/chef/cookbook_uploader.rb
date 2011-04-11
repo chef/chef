@@ -1,3 +1,4 @@
+
 require 'rest_client'
 require 'chef/exceptions'
 require 'chef/knife/cookbook_metadata'
@@ -9,6 +10,23 @@ require 'chef/cookbook/file_system_file_vendor'
 
 class Chef
   class CookbookUploader
+
+    def self.work_queue
+      @work_queue ||= Queue.new
+    end
+
+    def self.setup_worker_threads
+      @worker_threads ||= begin
+        work_queue
+        (1...10).map do
+          Thread.new do
+            loop do
+              work_queue.pop.call
+            end
+          end
+        end
+      end
+    end
 
     attr_reader :cookbook
     attr_reader :path
@@ -35,51 +53,32 @@ class Chef
     end
 
     def upload_cookbook
+      Thread.abort_on_exception = true
       Chef::Log.info("Saving #{cookbook.name}")
 
       # Syntax Check
       validate_cookbook
-      # Generate metadata.json from metadata.rb
-      build_metadata
-
       # generate checksums of cookbook files and create a sandbox
       checksum_files = cookbook.checksums
       checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
       new_sandbox = rest.post_rest("sandboxes", { :checksums => checksums })
 
       Chef::Log.info("Uploading files")
+
+      self.class.setup_worker_threads
+
       # upload the new checksums and commit the sandbox
       new_sandbox['checksums'].each do |checksum, info|
         if info['needs_upload'] == true
           Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
-
-          # Checksum is the hexadecimal representation of the md5,
-          # but we need the base64 encoding for the content-md5
-          # header
-          checksum64 = Base64.encode64([checksum].pack("H*")).strip
-          timestamp = Time.now.utc.iso8601
-          file_contents = File.read(checksum_files[checksum])
-          # TODO - 5/28/2010, cw: make signing and sending the request streaming
-          sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
-                                                                             :http_method => :put,
-                                                                             :path        => URI.parse(info['url']).path,
-                                                                             :body        => file_contents,
-                                                                             :timestamp   => timestamp,
-                                                                             :user_id     => rest.client_name
-                                                                             )
-          headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, :accept => 'application/json' }
-          headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
-
-          begin
-            RestClient::Resource.new(info['url'], :headers=>headers, :timeout=>1800, :open_timeout=>1800).put(file_contents)
-          rescue RestClient::Exception => e
-            Chef::Log.error("Upload failed: #{e.message}\n#{e.response.body}")
-            raise
-          end
+          self.class.work_queue << uploader_function_for(checksum_files[checksum], checksum, info['url'])
         else
           Chef::Log.debug("#{checksum_files[checksum]} has not changed")
         end
       end
+
+      sleep 0.1 until self.class.work_queue.empty?
+
       sandbox_url = new_sandbox['uri']
       Chef::Log.debug("Committing sandbox")
       # Retry if S3 is claims a checksum doesn't exist (the eventual
@@ -100,15 +99,35 @@ class Chef
       Chef::Log.info("Upload complete!")
     end
 
-    def build_metadata
-      Chef::Log.debug("Generating metadata")
-      # FIXME: This knife command should be factored out into a
-      # library for use here
-      kcm = Chef::Knife::CookbookMetadata.new
-      kcm.config[:cookbook_path] = path
-      kcm.name_args = [ cookbook.name.to_s ]
-      kcm.run
-      cookbook.reload_metadata!
+    def worker_thread(work_queue)
+    end
+
+    def uploader_function_for(file, checksum, url)
+      lambda do
+        # Checksum is the hexadecimal representation of the md5,
+        # but we need the base64 encoding for the content-md5
+        # header
+        checksum64 = Base64.encode64([checksum].pack("H*")).strip
+        timestamp = Time.now.utc.iso8601
+        file_contents = File.read(file)
+        # TODO - 5/28/2010, cw: make signing and sending the request streaming
+        sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
+                                                                           :http_method => :put,
+                                                                           :path        => URI.parse(url).path,
+                                                                           :body        => file_contents,
+                                                                           :timestamp   => timestamp,
+                                                                           :user_id     => rest.client_name
+                                                                           )
+        headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, :accept => 'application/json' }
+        headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
+
+        begin
+          RestClient::Resource.new(url, :headers=>headers, :timeout=>1800, :open_timeout=>1800).put(file_contents)
+        rescue RestClient::Exception => e
+          Chef::Log.error("Upload failed: #{e.message}\n#{e.response.body}")
+          raise
+        end
+      end
     end
 
     def validate_cookbook

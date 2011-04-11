@@ -25,6 +25,7 @@ class Chef
       deps do
         require 'chef/json_compat'
         require 'uri'
+        require 'chef/cookbook_version'
       end
 
       banner "knife cookbook show COOKBOOK [VERSION] [PART] [FILENAME] (options)"
