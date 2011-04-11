@@ -1,6 +1,6 @@
 bash -c '
 if [ ! -f /usr/bin/chef-client ]; then
-  echo "chef	chef/chef_server_url	string	<%= Chef::Config[:chef_server_url] %>" | debconf-set-selections 
+  echo "chef	chef/chef_server_url	string	<%= Chef::Config[:chef_server_url] %>" | debconf-set-selections
   [ -f /etc/apt/sources.list.d/opscode.list ] || echo "deb http://apt.opscode.com lucid main" > /etc/apt/sources.list.d/opscode.list
   wget -O- http://apt.opscode.com/packages@opscode.com.gpg.key | apt-key add -
 fi
@@ -21,7 +21,7 @@ rm /tmp/validation.pem
 
 <% if @config[:chef_node_name] %>
 [ `grep -qx "node_name \"<%= @config[:chef_node_name] %>\"" /etc/chef/client.rb` ] || echo "node_name \"<%= @config[:chef_node_name] %>\"" >> /etc/chef/client.rb
-<% end -%> 
+<% end -%>
 
 (
 cat <<'EOP'
