@@ -477,7 +477,7 @@ class Chef
       output(format_for_display(object)) if config[:print_after]
 
       obj_name = delete_name ? "#{delete_name}[#{name}]" : object
-      self.msg("Deleted #{obj_name}!")
+      self.msg("Deleted #{obj_name}")
     end
 
     def bulk_delete(klass, fancy_name, delete_name=nil, list=nil, regex=nil, &block)
