@@ -55,8 +55,9 @@ describe Chef::Knife::CookbookBulkDelete do
     end
 
     it "should print the cookbooks you are about to delete" do
-      @knife.should_receive(:output).with(@knife.format_list_for_display(@cookbooks))
+      expected = @knife.ui.list(@cookbooks.keys.sort, :columns_down)
       @knife.run
+      @stdout.string.should match(/#{expected}/)
     end
 
     it "should confirm you really want to delete them" do
