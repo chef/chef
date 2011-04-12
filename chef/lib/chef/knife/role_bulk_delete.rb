@@ -31,10 +31,33 @@ class Chef
 
       def run
         if @name_args.length < 1
-          ui.fatal("You must supply a regular expression to match the results against")
-          exit 42
-        else
-          bulk_delete(Chef::Role, "role", nil, nil, @name_args[0])
+          ui.error("You must supply a regular expression to match the results against")
+          exit 1
+        end
+
+        all_roles = Chef::Role.list(true)
+
+        matcher = /#{@name_args[0]}/
+        roles_to_delete = {}
+        all_roles.each do |name, role|
+          next unless name =~ matcher
+          roles_to_delete[role.name] = role
+        end
+
+        if roles_to_delete.empty?
+          ui.info "No roles match the expression /#{@name_args[0]}/"
+          exit 0
+        end
+
+        ui.msg("The following roles will be deleted:")
+        ui.msg("")
+        ui.msg(ui.list(roles_to_delete.keys.sort, :columns_down))
+        ui.msg("")
+        ui.confirm("Are you sure you want to delete these roles")
+
+        roles_to_delete.sort.each do |name, role|
+          role.destroy
+          ui.msg("Deleted role #{name}")
         end
       end
     end

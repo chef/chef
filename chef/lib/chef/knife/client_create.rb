@@ -57,7 +57,7 @@ class Chef
 
         key = output.save
 
-        ui.info("Created (or updated) #{output}")
+        ui.info("Created #{output}")
 
         if config[:file]
           File.open(config[:file], "w") do |f|
