@@ -62,6 +62,15 @@
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
     <a href="#COOKBOOK-SITE-SUB-COMMANDS">COOKBOOK SITE SUB-COMMANDS</a>
+    <a href="#INSTALL">INSTALL</a>
+    <a href="#DOWNLOAD">DOWNLOAD</a>
+    <a href="#LIST">LIST</a>
+    <a href="#SEARCH">SEARCH</a>
+    <a href="#SHARE">SHARE</a>
+    <a href="#UNSHARE">UNSHARE</a>
+    <a href="#SHOW">SHOW</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#EXAMPLES">EXAMPLES</a>
     <a href="#SEE-ALSO">SEE ALSO</a>
     <a href="#AUTHOR">AUTHOR</a>
     <a href="#DOCUMENTATION">DOCUMENTATION</a>
@@ -85,18 +94,55 @@
 
 <h2 id="COOKBOOK-SITE-SUB-COMMANDS">COOKBOOK SITE SUB-COMMANDS</h2>
 
-<p>The following sub-commands are still in the context of cookbooks, but they make use of Opscode's Cookbook Community site, <em>http://cookbooks.opscode.com/</em>. That site has an API, and these sub-commands utilize that API, rather than the Chef Server API.</p>
+<p><code>knife cookbook site</code> provides the following subcommands:</p>
 
-<p><strong>cookbook site download COOKBOOK [VERSION]</strong> <em>(options)</em></p>
+<h2 id="INSTALL">INSTALL</h2>
+
+<p><strong>cookbook site install COOKBOOK [VERSION]</strong> <em>(options)</em></p>
+
+<dl>
+<dt><code>-d</code>, <code>--dependencies</code></dt><dd>Grab dependencies automatically</dd>
+</dl>
+
+
+<p>Uses <span class="man-ref">git<span class="s">(1)</span></span> version control in conjunction with the cookbook site to
+install community contributed cookbooks to your local cookbook
+repository. Running <code>knife cookbook site install</code> does the following:</p>
+
+<ol>
+<li>A new "pristine copy" branch is created in git for tracking the
+upstream;</li>
+<li>All existing cookbooks are removed from the branch;</li>
+<li>The cookbook is downloaded from the cookbook site in tarball form;</li>
+<li>The downloaded cookbook is untarred, and its contents commited via git;</li>
+<li>The pristine copy branch is merged into the master branch.</li>
+</ol>
+
+
+<p>By installing cookbook with this process, you can locally modify the
+upstream cookbook in your master branch ant let git maintain your
+changes as a separate patch.  When an updated upstream version becomes
+available, you will be able to merge the upstream changes while
+maintaining your local modifications.</p>
+
+<p>If <em>-d</em> is specified, the process is applied recursively to all the
+cookbooks <em>COOKBOOK</em> depends on (via metadata <em>dependencies</em>).</p>
+
+<h2 id="DOWNLOAD">DOWNLOAD</h2>
+
+<p><strong>knife cookbook site download COOKBOOK [VERSION]</strong> <em>(options)</em></p>
 
 <dl>
 <dt><code>-f</code>, <code>--file FILE</code></dt><dd>The filename to write to</dd>
 </dl>
 
 
-<p>Downloads a specific cookbook from the Community site, optionally specifying a certain version.</p>
+<p>Downloads a specific cookbook from the Community site, optionally
+specifying a certain version.</p>
 
-<p><strong>cookbook site list</strong> <em>(options)</em></p>
+<h2 id="LIST">LIST</h2>
+
+<p><strong>knife cookbook site list</strong> <em>(options)</em></p>
 
 <dl>
 <dt><code>-w</code>, <code>--with-uri</code></dt><dd>Show corresponding URIs</dd>
@@ -105,11 +151,15 @@
 
 <p>Lists available cookbooks from the Community site.</p>
 
-<p><strong>cookbook site search QUERY</strong> <em>(options)</em></p>
+<h2 id="SEARCH">SEARCH</h2>
 
-<p>Searches the Community site with the specified query.</p>
+<p><strong>knife cookbook site search QUERY</strong> <em>(options)</em></p>
 
-<p><strong>cookbook site share COOKBOOK CATEGORY</strong> <em>(options)</em></p>
+<p>Searches for available cookbooks matching the specified query.</p>
+
+<h2 id="SHARE">SHARE</h2>
+
+<p><strong>knife cookbook site share COOKBOOK CATEGORY</strong> <em>(options)</em></p>
 
 <dl>
 <dt><code>-k</code>, <code>--key KEY</code></dt><dd>API Client Key</dd>
@@ -118,36 +168,58 @@
 </dl>
 
 
-<p>Uploads the specified cookbook using the given category to the Opscode cookbooks site. Requires a login user and certificate for the Opscode Cookbooks site. See <strong>EXAMPLES</strong> for usage if the Opscode user and certificate pair are not used for authenticating with the Chef Server. In other words, if the Chef Server is not the Opscode Platform.</p>
+<p>Uploads the specified cookbook using the given category to the Opscode
+cookbooks site. Requires a login user and certificate for the Opscode
+Cookbooks site. By default, knife will use the username and API key
+you've configured in your configuration file; otherwise you must
+explicitly set these values on the command line or use an alternate
+configuration file.</p>
 
-<p><strong>cookbook site unshare COOKBOOK</strong></p>
+<h2 id="UNSHARE">UNSHARE</h2>
+
+<p><strong>knife cookbook site unshare COOKBOOK</strong></p>
 
 <p>Stops sharing the specified cookbook on the Opscode cookbooks site.</p>
 
-<p><strong>cookbook site show COOKBOOK [VERSION]</strong> <em>(options)</em></p>
+<h2 id="SHOW">SHOW</h2>
+
+<p><strong>knife cookbook site show COOKBOOK [VERSION]</strong> <em>(options)</em></p>
 
 <p>Shows information from the site about a particular cookbook.</p>
 
-<p><strong>cookbook site vendor COOKBOOK [VERSION]</strong> <em>(options)</em></p>
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
 
-<dl>
-<dt><code>-d</code>, <code>--dependencies</code></dt><dd>Grab dependencies automatically</dd>
-</dl>
+<p>The cookbook site, <a href="http://community.opscode.com/" data-bare-link="true">http://community.opscode.com/</a>, is a cookbook
+distribution service operated by Opscode. This service provides users
+with a central location to publish cookbooks for sharing with other
+community members.</p>
 
+<p><code>knife cookbook site</code> commands provide an interface to the cookbook
+site's HTTP API. For commands that read data from the API, no account is
+required. In order to upload cookbooks using the <code>knife cookbook site
+share</code> command, you must create an account on the cookbook site and
+configure your credentials via command line option or in your knife
+configuration file.</p>
 
-<p>Uses <code>git</code> version control in conjunction with the cookbook site to download upstream cookbooks. A new vendor branch is created in git, the cookbook downloaded from the site and untarred, then the master branch is merged. This allows the user to track upstream changes to cookbooks while merging in customizations. If <em>-d</em> is specified, all the cookbooks it depends on (via metadata <em>dependencies</em>) are downloaded and untarred as well, each using their own vendor branch.</p>
+<h2 id="EXAMPLES">EXAMPLES</h2>
+
+<p>Uploading cookbooks to the Opscode cookbooks site:</p>
+
+<pre><code>knife cookbook site share example Other -k ~/.chef/USERNAME.pem -u USERNAME
+</code></pre>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
-<p>   <strong>knife-environment</strong>(1)</p>
+<p>   <strong><span class="man-ref">knife-cookbook<span class="s">(1)</span></span></strong>
+   <a href="http://community.opscode.com/cookbooks" data-bare-link="true">http://community.opscode.com/cookbooks</a></p>
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>   Chef was written by Adam Jacob <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#111;&#x3a;&#97;&#100;&#x61;&#109;&#64;&#111;&#x70;&#115;&#99;&#111;&#100;&#x65;&#x2e;&#99;&#x6f;&#109;" data-bare-link="true">&#x61;&#x64;&#x61;&#x6d;&#x40;&#111;&#x70;&#x73;&#x63;&#111;&#x64;&#101;&#x2e;&#x63;&#111;&#x6d;</a> with many contributions from the community.</p>
+<p>   Chef was written by Adam Jacob <a href="&#x6d;&#x61;&#105;&#108;&#116;&#x6f;&#58;&#97;&#100;&#97;&#109;&#x40;&#x6f;&#x70;&#x73;&#99;&#111;&#100;&#101;&#x2e;&#x63;&#111;&#x6d;" data-bare-link="true">&#97;&#100;&#x61;&#109;&#64;&#x6f;&#x70;&#x73;&#99;&#111;&#x64;&#101;&#x2e;&#x63;&#x6f;&#x6d;</a> with many contributions from the community.</p>
 
 <h2 id="DOCUMENTATION">DOCUMENTATION</h2>
 
-<p>   This manual page was written by Joshua Timberman <a href="&#109;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#x6a;&#111;&#115;&#x68;&#x75;&#97;&#64;&#x6f;&#x70;&#x73;&#x63;&#111;&#100;&#x65;&#46;&#99;&#111;&#109;" data-bare-link="true">&#x6a;&#x6f;&#115;&#104;&#x75;&#x61;&#64;&#111;&#x70;&#115;&#99;&#x6f;&#x64;&#x65;&#x2e;&#x63;&#111;&#109;</a>.
+<p>   This manual page was written by Joshua Timberman <a href="&#x6d;&#x61;&#105;&#108;&#116;&#x6f;&#x3a;&#x6a;&#111;&#115;&#x68;&#x75;&#x61;&#x40;&#111;&#x70;&#x73;&#x63;&#x6f;&#100;&#101;&#46;&#x63;&#111;&#x6d;" data-bare-link="true">&#x6a;&#111;&#115;&#104;&#x75;&#x61;&#x40;&#x6f;&#x70;&#x73;&#x63;&#x6f;&#100;&#101;&#x2e;&#99;&#x6f;&#109;</a>.
    Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
 
 <h2 id="CHEF">CHEF</h2>
@@ -156,7 +228,7 @@
 
 
   <ol class='man-decor man-foot man foot'>
-    <li class='tl'>Chef 0.10.0.beta.8</li>
+    <li class='tl'>Chef 0.10.0.beta.9</li>
     <li class='tc'>April 2011</li>
     <li class='tr'>knife-cookbook-site(1)</li>
   </ol>

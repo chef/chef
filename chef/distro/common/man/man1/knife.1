@@ -1,24 +1,71 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE" "1" "April 2011" "Chef 0.10.0.beta.8" "Chef Manual"
+.TH "KNIFE" "1" "April 2011" "Chef 0.10.0.beta.9" "Chef Manual"
 .
 .SH "NAME"
-\fBknife\fR \- Chef Server REST API utility
+\fBknife\fR \- Chef Server API client utility
 .
 .SH "SYNOPSIS"
-\fBknife\fR \fIsub\-command\fR \fI(options)\fR
+\fBknife\fR \fIsub\-command\fR [\fIargument\fR\.\.\.] \fI(options)\fR
 .
 .SH "DESCRIPTION"
-This manual page documents knife, a command\-line utility used to interact with a Chef server directly through the RESTful API\. Knife uses sub\-commands to take various actions on different types of Chef objects\. Some sub\-commands take additional options\. General options follow sub\-commands and their options\. A configuration file can be created for common defaults\.
+Knife is a command\-line utility used to manage data on a Chef server through the HTTP(S) API\. Knife is organized into groups of subcommands centered around the various object types in Chef\. Each category of subcommand is documented in its own manual page\. Available topics are:
+.
+.IP "\(bu" 4
+bootstrap
+.
+.IP "\(bu" 4
+client
+.
+.IP "\(bu" 4
+configure
+.
+.IP "\(bu" 4
+cookbook\-site
+.
+.IP "\(bu" 4
+cookbook
+.
+.IP "\(bu" 4
+data\-bag
+.
+.IP "\(bu" 4
+environment
+.
+.IP "\(bu" 4
+exec
+.
+.IP "\(bu" 4
+index
+.
+.IP "\(bu" 4
+node
+.
+.IP "\(bu" 4
+recipe
+.
+.IP "\(bu" 4
+role
+.
+.IP "\(bu" 4
+search
+.
+.IP "\(bu" 4
+ssh
+.
+.IP "\(bu" 4
+status
+.
+.IP "\(bu" 4
+tag
+.
+.IP "" 0
 .
 .P
-Unless otherwise specified, output is in JSON format, and input files are also JSON format\.
+If the knife manuals are in your \fBMANPATH\fR, you can access help for the above topics using \fBman knife\-TOPIC\fR; otherwise, you can view the documentation using \fBknife help TOPIC\fR\.
 .
-.P
-The Chef class \fBChef::Config\fR that configures the behavior of how knife runs has options that correspond to command\-line options\. These are noted as \fBChef::Config\fR values\.
-.
-.SH "GENERAL OPTIONS"
+.SH "OPTIONS"
 .
 .TP
 \fB\-s\fR, \fB\-\-server\-url\fR URL
@@ -70,13 +117,10 @@ Say yes to all prompts for confirmation
 .
 .TP
 \fB\-h\fR, \fB\-\-help\fR
-Show this message
-.
-.P
-Usage information for sub\-commands can be displayed with \fBknife SUB\-COMMAND \-\-help\fR\.
+Show the available options for a command\.
 .
 .SH "SUB\-COMMANDS"
-Knife sub\-commands are structured as \fINOUN verb NOUN (options)\fR\. The sub\-commands are meant to be intuitively named\. Because the Chef Server API is RESTful, sub\-commands generally utilize CRUD operations\.
+Sub\-commands that operate on the basic Chef data types are structured as \fINOUN verb NOUN (options)\fR\. For all data types, the following commands are available:
 .
 .IP "\(bu" 4
 create (create)
@@ -93,13 +137,7 @@ delete (destroy)
 .IP "" 0
 .
 .P
-Objects stored on the server support these, as described below\.
-.
-.SH "GENERAL SUB\-COMMANDS"
-\fBrecipe list [PATTERN]\fR
-.
-.P
-List available recipes from the server\. Specify \fIPATTERN\fR as a regular expression to limit the results\.
+Knife also includes commands that take actions other than displaying or modifying data on the Chef Server, such as \fBknife\-ssh(1)\fR\.
 .
 .SH "CONFIGURATION"
 The knife configuration file is a Ruby DSL to set configuration parameters for Knife\'s \fBGENERAL OPTIONS\fR\. The default location for the config file is \fB~/\.chef/knife\.rb\fR\. If managing multiple Chef repositories, per\-repository config files can be created\. The file must be \fB\.chef/knife\.rb\fR in the current directory of the repository\.
@@ -107,103 +145,31 @@ The knife configuration file is a Ruby DSL to set configuration parameters for K
 .P
 If the config file exists, knife uses these settings for \fBGENERAL OPTIONS\fR defaults\.
 .
-.P
-\fBlog_level\fR
-.
-.P
-A Ruby symbol specifying the log level\. Corresponds to \fB\-l\fR or \fB\-\-log_level\fR option\. Default is \fI:info\fR\. Valid values are:
+.IP "\(bu" 4
+\fBnode_name\fR: User or client identity (i\.e\., \fIname\fR) to use for authenticating requests to the Chef Server\.
 .
 .IP "\(bu" 4
-:info
+\fBclient_key\fR: Private key file to authenticate to the Chef server\. Corresponds to the \fB\-k\fR or \fB\-\-key\fR option\.
 .
 .IP "\(bu" 4
-:debug
+\fBchef_server_url\fR: URL of the Chef server\. Corresponds to the \fB\-s\fR or \fB\-\-server\-url\fR option\. This is requested from the user when running this sub\-command\.
 .
 .IP "\(bu" 4
-:warn
+\fBcache_type\fR: The type of cache to use\. Default is BasicFile\. This can be any type of Cache that moneta supports: BasicFile, Berkeley, Couch, DataMapper, File, LMC, Memcache, Memory, MongoDB, Redis, Rufus, S3, SDBM, Tyrant, Xattr, YAML\.
 .
 .IP "\(bu" 4
-:fatal
+\fBcache_options\fR: Specifies various options to use for caching\. These options are dependent on the \fBcache_type\fR\.
+.
+.IP "\(bu" 4
+\fBvalidation_client_name\fR: Specifies the name of the client used to validate new clients\.
+.
+.IP "\(bu" 4
+\fBvalidation_key\fR: Specifies the private key file to use when bootstrapping new hosts\. See knife\-client(1) for more information about the validation client\.
+.
+.IP "\(bu" 4
+\fBcookbook_copyright\fR, \fBcookbook_email\fR, \fBcookbook_license\fR Used by \fBknife cookbook create\fR sub\-command to specify the copyright holder, maintainer email and license (respectively) for new cookbooks\. The copyright holder is listed as the maintainer in the cookbook\'s metadata and as the Copyright in the comments of the default recipe\. The maintainer email is used in the cookbook metadata\. The license determines what preamble to put in the comment of the default recipe, and is listed as the license in the cookbook metadata\. Currently supported licenses are "apachev2" and "none"\. Any other values will result in an empty license in the metadata (needs to be filled in by the author), and no comment preamble in the default recipe\.
 .
 .IP "" 0
-.
-.P
-\fBlog_location\fR
-.
-.P
-Corresponds to the \fB\-L\fR or \fB\-\-log\-file\fR option\. Defaults is \fBSTDOUT\fR\. Valid values are \fBSTDOUT\fR or a filename\.
-.
-.P
-\fBnode_name\fR
-.
-.P
-User to authenticate to the Chef server\. Corresponds to the \fB\-u\fR or \fB\-\-user\fR option\. This is requested from the user when running this sub\-command\.
-.
-.P
-\fBclient_key\fR
-.
-.P
-Private key file to authenticate to the Chef server\. Corresponds to the \fB\-k\fR or \fB\-\-key\fR option\. This is requested from the user when running this sub\-command\.
-.
-.P
-\fBchef_server_url\fR
-.
-.P
-URL of the Chef server\. Corresponds to the \fB\-s\fR or \fB\-\-server\-url\fR option\. This is requested from the user when running this sub\-command\.
-.
-.P
-\fBcache_type\fR
-.
-.P
-The type of cache to use\. Default is BasicFile\. This can be any type of Cache that moneta supports: BasicFile, Berkeley, Couch, DataMapper, File, LMC, Memcache, Memory, MongoDB, Redis, Rufus, S3, SDBM, Tyrant, Xattr, YAML\.
-.
-.P
-\fBcache_options\fR
-.
-.P
-Specifies various options to use for caching\. Default reads the Chef client configuration (/etc/chef/checksums)\.
-.
-.P
-\fBvalidation_client_name\fR
-.
-.P
-Specifies the name of the client used to validate new clients\. This is requested from the user when running the configuration sub\-command\.
-.
-.P
-\fBvalidation_key\fR
-.
-.P
-Specifies the private key file to use for generating ec2 instance data for validating new clients\. This is implied from the \fBvalidation_client_name\fR\.
-.
-.P
-\fBcookbook_copyright\fR \fBcookbook_email\fR \fBcookbook_license\fR
-.
-.P
-Used by \fBknife cookbook create\fR sub\-command to specify the copyright holder, maintainer email and license (respectively) for new cookbooks\. The copyright holder is listed as the maintainer in the cookbook\'s metadata and as the Copyright in the comments of the default recipe\. The maintainer email is used in the cookbook metadata\. The license determines what preamble to put in the comment of the default recipe, and is listed as the license in the cookbook metadata\. Currently supported licenses are "apachev2" and "none"\. Any other values will result in an empty license in the metadata (needs to be filled in by the author), and no comment preamble in the default recipe\.
-.
-.P
-\fBknife[:aws_access_key_id]\fR \fBknife[:aws_secret_access_key]\fR
-.
-.P
-Specifies the Amazon AWS EC2 credentials to use when running the ec2 sub\-commands\.
-.
-.P
-\fBknife[:rackspace_api_username]\fR \fBknife[:rackspace_api_key]\fR
-.
-.P
-Specifies the Rackspace Cloud credentials to use when running the rackspace sub\-commands\.
-.
-.P
-\fBknife[:terremark_username]\fR \fBknife[:terremark_password]\fR \fBknife[:terremark_service]\fR
-.
-.P
-Specifies the Terremark vCloud credentials to use when running the terremark sub\-commands\.
-.
-.P
-\fBknife[:slicehost_password]\fR
-.
-.P
-Specifies the Slicehost password to use when running the slicdehost sub\-commands\.
 .
 .SH "FILES"
 \fI~/\.chef/knife\.rb\fR
@@ -244,79 +210,6 @@ Watch Chef configure systems!
 A note about git: Opscode and many folks in the Chef community use git, but it is not required, except in the case of the \fBcookbook site vendor\fR sub\-command, as it uses git directly\. Version control is strongly recommended though, and git fits with a lot of the workflow paradigms\.
 .
 .SH "EXAMPLES"
-Example client config (\fB/etc/chef/client\.rb\fR) from \fBknife configure client\fR\. The same configuration is used when using the \fBknife bootstrap\fR command with the default \fBgem\fR templates that come with Chef\.
-.
-.IP "" 4
-.
-.nf
-
-log_level        :info
-log_location     STDOUT
-chef_server_url  \'https://api\.opscode\.com/organizations/ORGNAME\'
-validation_client_name \'ORGNAME\-validator\'
-.
-.fi
-.
-.IP "" 0
-.
-.P
-Setting up a custom bootstrap is fairly straightforward\. Create \fB\.chef/bootstrap\fR in your Chef Repository directory or in \fB$HOME/\.chef/bootstrap\fR\. Then create the ERB template file\.
-.
-.IP "" 4
-.
-.nf
-
-mkdir ~/\.chef/bootstrap
-vi ~/\.chef/bootstrap/debian5\.0\-apt\.erb
-.
-.fi
-.
-.IP "" 0
-.
-.P
-For example, to create a new bootstrap template that should be used when setting up a new Debian node\. Edit the template to run the commands, set up the validation certificate and the client configuration file, and finally to run chef\-client on completion\. The bootstrap template can be called with:
-.
-.IP "" 4
-.
-.nf
-
-knife bootstrap mynode\.example\.com \-\-template\-file ~/\.chef/bootstrap/debian5\.0\-apt\.erb
-.
-.fi
-.
-.IP "" 0
-.
-.P
-Or,
-.
-.IP "" 4
-.
-.nf
-
-knife bootstrap mynode\.example\.com \-\-distro debian5\.0\-apt
-.
-.fi
-.
-.IP "" 0
-.
-.P
-The \fB\-\-distro\fR parameter will automatically look in the \fB~/\.chef/bootstrap\fR directory for a file named \fBdebian5\.0\-apt\.erb\fR\.
-.
-.P
-Templates provided by the Chef installation are located in \fBBASEDIR/lib/chef/knife/bootstrap/*\.erb\fR, where \fIBASEDIR\fR is the location where the package or Gem installed the Chef client libraries\.
-.
-.P
-Uploading cookbooks to the Opscode cookbooks site using the user/certificate specifically:
-.
-.IP "" 4
-.
-.nf
-
-knife cookbook site share example Other \-k ~/\.chef/USERNAME\.pem \-u USERNAME
-.
-.fi
-.
-.IP "" 0
 .
 .SH "ENVIRONMENT"
 .
@@ -325,22 +218,34 @@ knife cookbook site share example Other \-k ~/\.chef/USERNAME\.pem \-u USERNAME
 The text editor to use for editing data\. The \-\-editor option takes precedence over this value, and the \-\-no\-editor option supresses data editing entirely\.
 .
 .SH "SEE ALSO"
-Full documentation for Chef is located on the Chef wiki, http://wiki\.opscode\.com/display/chef/Home/\.
+\fBchef\-client(8)\fR \fBchef\-server(8)\fR \fBshef(1)\fR
 .
 .P
-JSON is JavaScript Object Notation and more information can be found at http://json\.org/\.
+\fBknife\-bootstrap(1)\fR \fBknife\-client(1)\fR \fBknife\-configure(1)\fR \fBknife\-cookbook\-site(1)\fR \fBknife\-cookbook(1)\fR \fBknife\-data\-bag(1)\fR \fBknife\-environment(1)\fR \fBknife\-exec(1)\fR \fBknife\-index(1)\fR \fBknife\-node(1)\fR \fBknife\-recipe(1)\fR \fBknife\-role(1)\fR \fBknife\-search(1)\fR \fBknife\-ssh(1)\fR \fBknife\-tag(1)\fR
 .
 .P
-SOLR is an open source search engine\. The Chef Server includes a SOLR installation\. More information about SOLR, including the search query syntax, can be found at http://lucene\.apache\.org/solr/\.
+Complete Chef documentation is available online: \fIhttp://wiki\.opscode\.com/display/chef/Home/\fR
 .
 .P
-Git is a version control system and documented at http://git\-scm\.com/\.
+JSON is JavaScript Object Notation \fIhttp://json\.org/\fR
 .
 .P
-This manual page was generated in nroff from Markdown with ronn\. Ryan Tomayko wrote ronn and more information can be found at http://rtomayko\.github\.com/ronn/ronn\.5\.html\.
+SOLR is an open source search engine\. \fIhttp://lucene\.apache\.org/solr/\fR
+.
+.P
+\fBgit(1)\fR is a version control system \fIhttp://git\-scm\.com/\fR
+.
+.P
+This manual page was generated from Markdown with \fBronn(1)\fR \fIhttp://rtomayko\.github\.com/ronn/ronn\.1\.html\fR
 .
 .SH "AUTHOR"
-Chef was written by Adam Jacob \fIadam@opscode\.com\fR of Opscode (\fIhttp://www\.opscode\.com\fR), with contributions from the community\. This manual page was written by Joshua Timberman \fIjoshua@opscode\.com\fR\. Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2\.0 License\.
+Chef was written by Adam Jacob \fIadam@opscode\.com\fR of Opscode (\fIhttp://www\.opscode\.com\fR), with contributions from the community\.
 .
-.P
-On Debian systems, the complete text of the Apache 2\.0 License can be found in \fB/usr/share/common\-licenses/Apache\-2\.0\fR\.
+.SH "DOCUMENTATION"
+This manual page was written by Joshua Timberman \fIjoshua@opscode\.com\fR\.
+.
+.SH "LICENSE"
+Both Chef and this documentation are released under the terms of the Apache 2\.0 License\. You may view the license online: \fIhttp://www\.apache\.org/licenses/LICENSE\-2\.0\.html\fR On some systems, the complete text of the Apache 2\.0 License may be found in \fB/usr/share/common\-licenses/Apache\-2\.0\fR\.
+.
+.SH "CHEF"
+Knife is distributed with Chef\. \fIhttp://wiki\.opscode\.com/display/chef/Home\fR

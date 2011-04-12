@@ -861,7 +861,9 @@ class Chef
     # [String]::  Array of cookbook versions, which are strings like 'x.y.z'
     # nil::       if the cookbook doesn't exist. an error will also be logged.
     def self.available_versions(cookbook_name)
-      chef_server_rest.get_rest("cookbooks/#{cookbook_name}").values.flatten
+      chef_server_rest.get_rest("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map do |cb|
+        cb["version"]
+      end
     rescue Net::HTTPServerException => e
       if e.to_s =~ /^404/
         Chef::Log.error("Cannot find a cookbook named #{cookbook_name}")

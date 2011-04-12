@@ -68,9 +68,10 @@ class Chef
         version_constraints_to_update = {}
 
         if config[:all]
+          justify_width = cookbook_repo.cookbook_names.map {|name| name.size}.max.to_i + 2
           cookbook_repo.each do |cookbook_name, cookbook|
             cookbook.freeze_version if config[:freeze]
-            upload(cookbook)
+            upload(cookbook, justify_width)
             version_constraints_to_update[cookbook_name] = cookbook.version
           end
         else
@@ -79,11 +80,12 @@ class Chef
             ui.error("You must specify the --all flag or at least one cookbook name")
             exit 1
           end
+          justify_width = @name_args.map {|name| name.size }.max.to_i + 2
           @name_args.each do |cookbook_name|
             begin
               cookbook = cookbook_repo[cookbook_name]
               cookbook.freeze_version if config[:freeze]
-              upload(cookbook)
+              upload(cookbook, justify_width)
               version_constraints_to_update[cookbook_name] = cookbook.version
             rescue Exceptions::CookbookNotFoundInRepo => e
               ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
@@ -129,12 +131,9 @@ class Chef
         end
       end
 
-      def upload(cookbook)
-        if config[:all]
-          ui.info("** #{cookbook.name} **")
-        else
-          ui.info "Uploading #{cookbook.name}..."
-        end
+      def upload(cookbook, justify_width)
+        ui.info("Uploading #{cookbook.name.to_s.ljust(justify_width + 10)} [#{cookbook.version}]")
+
         check_for_broken_links(cookbook)
         Chef::CookbookUploader.new(cookbook, config[:cookbook_path], :force => config[:force]).upload_cookbook
       rescue Net::HTTPServerException => e

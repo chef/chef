@@ -18,6 +18,7 @@
 # limitations under the License.
 #
 
+require 'chef/mash'
 require 'chef/mixin/from_file'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'

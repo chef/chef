@@ -157,7 +157,7 @@ def start_dev_environment(type="normal")
   sleep 2
   configure_rabbitmq(type)
   start_chef_solr(type)
-  start_chef_solr_indexer(type)
+  start_chef_expander(type)
   start_chef_server(type)
   start_chef_webui(type)
   puts "Running CouchDB at #{@couchdb_server_pid}"

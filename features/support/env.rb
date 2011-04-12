@@ -17,7 +17,7 @@
 Thread.abort_on_exception = true
 
 require 'rubygems'
-require 'spec/expectations'
+require 'rspec/expectations'
 
 CHEF_PROJECT_ROOT = File.expand_path(File.dirname(__FILE__) + '/../../')
 KNIFE_CONFIG = CHEF_PROJECT_ROOT + '/features/data/config/knife.rb'

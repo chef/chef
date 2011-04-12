@@ -28,7 +28,7 @@ host for the node name, though this may be overridden by configuration
 settings.
 
 ## NODE SUB-COMMANDS
-
+The following `node` subcommands are available:
 
 ## BULK DELETE
 __knife node bulk delete__ _regex_ _(options)_

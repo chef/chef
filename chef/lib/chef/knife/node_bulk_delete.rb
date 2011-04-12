@@ -30,13 +30,47 @@ class Chef
       banner "knife node bulk delete REGEX (options)"
 
       def run
-        if @name_args.length < 1
+        if name_args.length < 1
           ui.fatal("You must supply a regular expression to match the results against")
           exit 42
-        else
-          bulk_delete(Chef::Node, "node", nil, nil, @name_args[0])
+        end
+
+
+        nodes_to_delete = {}
+        matcher = /#{name_args[0]}/
+
+        all_nodes.each do |name, node|
+          next unless name =~ matcher
+          nodes_to_delete[name] = node
+        end
+
+        if nodes_to_delete.empty?
+          ui.msg "No nodes match the expression /#{name_args[0]}/"
+          exit 0
+        end
+
+        ui.msg("The following nodes will be deleted:")
+        ui.msg("")
+        ui.msg(ui.list(nodes_to_delete.keys.sort, :columns_down))
+        ui.msg("")
+        ui.confirm("Are you sure you want to delete these nodes")
+
+
+        nodes_to_delete.sort.each do |name, node|
+          node.destroy
+          ui.msg("Deleted node #{name}")
         end
       end
+
+      def all_nodes
+        node_uris_by_name = Chef::Node.list
+
+        node_uris_by_name.keys.inject({}) do |nodes_by_name, name|
+          nodes_by_name[name] = Chef::Node.new.tap {|n| n.name(name)}
+          nodes_by_name
+        end
+      end
+
     end
   end
 end

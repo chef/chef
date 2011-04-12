@@ -61,6 +61,9 @@
   <div class='man-navigation' style='display:none'>
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#EXAMPLES">EXAMPLES</a>
+    <a href="#BUGS">BUGS</a>
     <a href="#SEE-ALSO">SEE ALSO</a>
     <a href="#AUTHOR">AUTHOR</a>
     <a href="#DOCUMENTATION">DOCUMENTATION</a>
@@ -97,12 +100,13 @@
 </dl>
 
 
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
 <p>Performs a Chef Bootstrap on the target node. The goal of the bootstrap
 is to get Chef installed on the target system so it can run Chef Client
 with a Chef Server. The main assumption is a baseline OS installation
 exists. This sub-command is used internally by some cloud computing
-server create commands and the others will be migrated in a future
-version of Chef.</p>
+plugins.</p>
 
 <p>The bootstrap sub-command supports supplying a template to perform the
 bootstrap steps. If the distro is not specified (via <code>-d</code> or <code>--distro</code>
@@ -119,7 +123,8 @@ sub-command looks in the following locations for the template to use:</p>
 </ul>
 
 
-<p>The default bootstrap templates are scripts that get copied to the target node (FQDN). As of Chef 0.9.8, the following distros are supported:</p>
+<p>The default bootstrap templates are scripts that get copied to the
+target node (FQDN). The following distros are supported:</p>
 
 <ul>
 <li>centos5-gems</li>
@@ -129,9 +134,15 @@ sub-command looks in the following locations for the template to use:</p>
 </ul>
 
 
-<p>The gems installations will use RubyGems 1.3.6 and Chef installed as a gem. The apt installation will use the Opscode APT repository. The RubyGems installation requires installing gems with native extensions, so development related packages (ruby-dev, build-essential) are installed. These are not installed with the apt installation, as native extensions are already compiled in the required packages.</p>
+<p>The gems installations will use RubyGems 1.3.6 and Chef installed as a
+gem. The apt installation will use the Opscode APT repository. The
+RubyGems installation requires installing gems with native extensions,
+so development related packages (ruby-dev, build-essential) are
+installed. These are not installed with the apt installation, as native
+extensions are already compiled in the required packages.</p>
 
-<p>In addition to handling the software installation, these bootstrap templates do the following:</p>
+<p>In addition to handling the software installation, these bootstrap
+templates do the following:</p>
 
 <ul>
 <li>Write the validation.pem per the local knife configuration.</li>
@@ -140,7 +151,12 @@ sub-command looks in the following locations for the template to use:</p>
 </ul>
 
 
-<p>In the case of the RubyGems, the <code>client.rb</code> will be written from scratch with a minimal set of values; see <strong>EXAMPLES</strong>. In the case of APT Package installation, <code>client.rb</code> will have the <code>validation_client_name</code> appended if it is not set to <code>chef-validator</code> (default config value), and the <code>node_name</code> will be added if <code>chef_node_name</code> option is specified.</p>
+<p>In the case of the RubyGems, the <code>client.rb</code> will be written from
+scratch with a minimal set of values; see <strong>EXAMPLES</strong>. In the case of
+APT Package installation, <code>client.rb</code> will have the
+<code>validation_client_name</code> appended if it is not set to <code>chef-validator</code>
+(default config value), and the <code>node_name</code> will be added if
+<code>chef_node_name</code> option is specified.</p>
 
 <p>When this is complete, the bootstrapped node will have:</p>
 
@@ -151,7 +167,50 @@ sub-command looks in the following locations for the template to use:</p>
 </ul>
 
 
-<p>Additional custom bootstrap templates can be created and stored in <code>.chef/bootstrap/DISTRO.erb</code>, replacing <strong>DISTRO</strong> with the value passed with the <code>-d</code> or <code>--distro</code> option. See <strong>EXAMPLES</strong> for more information.</p>
+<p>Additional custom bootstrap templates can be created and stored in
+<code>.chef/bootstrap/DISTRO.erb</code>, replacing <strong>DISTRO</strong> with the value passed
+with the <code>-d</code> or <code>--distro</code> option. See <strong>EXAMPLES</strong> for more
+information.</p>
+
+<h2 id="EXAMPLES">EXAMPLES</h2>
+
+<p>Setting up a custom bootstrap is fairly straightforward. Create a
+<code>.chef/bootstrap</code> directory in your Chef Repository or in
+<code>$HOME/.chef/bootstrap</code>. Then create the ERB template file.</p>
+
+<pre><code>mkdir ~/.chef/bootstrap
+vi ~/.chef/bootstrap/debian5.0-apt.erb
+</code></pre>
+
+<p>For example, to create a new bootstrap template that should be used when
+setting up a new Debian node. Edit the template to run the commands, set
+up the validation certificate and the client configuration file, and
+finally to run chef-client on completion. The bootstrap template can be
+called with:</p>
+
+<pre><code>knife bootstrap mynode.example.com --template-file ~/.chef/bootstrap/debian5.0-apt.erb
+</code></pre>
+
+<p>Or,</p>
+
+<pre><code>knife bootstrap mynode.example.com --distro debian5.0-apt
+</code></pre>
+
+<p>The <code>--distro</code> parameter will automatically look in the
+<code>~/.chef/bootstrap</code> directory for a file named <code>debian5.0-apt.erb</code>.</p>
+
+<p>Templates provided by the Chef installation are located in
+<code>BASEDIR/lib/chef/knife/bootstrap/*.erb</code>, where <em>BASEDIR</em> is the
+location where the package or Gem installed the Chef client libraries.</p>
+
+<h2 id="BUGS">BUGS</h2>
+
+<p><code>knife bootstrap</code> is not capable of bootstrapping multiple hosts in
+parallel.</p>
+
+<p>The bootstrap script is passed as an argument to <span class="man-ref">sh<span class="s">(1)</span></span> on the remote
+system, so sensitive information contained in the script will be visible
+to other users via the process list using tools such as <span class="man-ref">ps<span class="s">(1)</span></span>.</p>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
@@ -159,11 +218,11 @@ sub-command looks in the following locations for the template to use:</p>
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>   Chef was written by Adam Jacob <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#x61;&#x64;&#x61;&#x6d;&#x40;&#111;&#x70;&#x73;&#99;&#x6f;&#x64;&#101;&#x2e;&#99;&#x6f;&#x6d;" data-bare-link="true">&#97;&#100;&#x61;&#109;&#x40;&#111;&#112;&#x73;&#x63;&#x6f;&#100;&#101;&#46;&#x63;&#111;&#x6d;</a> with many contributions from the community.</p>
+<p>   Chef was written by Adam Jacob <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#111;&#58;&#x61;&#x64;&#97;&#109;&#64;&#111;&#x70;&#115;&#99;&#x6f;&#x64;&#101;&#x2e;&#x63;&#x6f;&#109;" data-bare-link="true">&#97;&#x64;&#97;&#x6d;&#64;&#111;&#112;&#x73;&#x63;&#x6f;&#x64;&#101;&#46;&#99;&#111;&#x6d;</a> with many contributions from the community.</p>
 
 <h2 id="DOCUMENTATION">DOCUMENTATION</h2>
 
-<p>   This manual page was written by Joshua Timberman <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#111;&#58;&#106;&#111;&#115;&#104;&#x75;&#97;&#x40;&#x6f;&#112;&#x73;&#99;&#x6f;&#x64;&#101;&#x2e;&#99;&#111;&#109;" data-bare-link="true">&#106;&#111;&#115;&#x68;&#117;&#97;&#x40;&#x6f;&#x70;&#115;&#x63;&#x6f;&#100;&#x65;&#x2e;&#99;&#x6f;&#x6d;</a>.
+<p>   This manual page was written by Joshua Timberman <a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#106;&#111;&#115;&#104;&#117;&#97;&#64;&#111;&#112;&#x73;&#99;&#x6f;&#x64;&#101;&#x2e;&#x63;&#x6f;&#109;" data-bare-link="true">&#106;&#x6f;&#115;&#104;&#117;&#x61;&#64;&#111;&#x70;&#x73;&#x63;&#111;&#x64;&#x65;&#46;&#x63;&#111;&#109;</a>.
    Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
 
 <h2 id="CHEF">CHEF</h2>
@@ -172,7 +231,7 @@ sub-command looks in the following locations for the template to use:</p>
 
 
   <ol class='man-decor man-foot man foot'>
-    <li class='tl'>Chef 0.10.0.beta.8</li>
+    <li class='tl'>Chef 0.10.0.beta.9</li>
     <li class='tc'>April 2011</li>
     <li class='tr'>knife-bootrap(1)</li>
   </ol>

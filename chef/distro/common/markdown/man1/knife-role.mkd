@@ -5,6 +5,53 @@ knife-role(1) -- Group common configuration settings
 
 __knife__ __role__ _sub-command_ _(options)_
 
+## ROLE SUB-COMMANDS
+The following `role` subcommands are available:
+
+## LIST
+__knife role list__ _(options)_
+
+  * `-w`, `--with-uri`:
+    Show corresponding URIs
+
+List roles.
+
+## SHOW
+__knife role show ROLE__ _(options)_
+
+  * `-a`, `--attribute ATTR`:
+    Show only one attribute
+
+Show a specific role.
+
+## CREATE
+__knife role create ROLE__ _(options)_
+
+  * `-d`, `--description`:
+    The role description
+
+Create a new role.
+
+## EDIT
+__knife role edit ROLE__ _(options)_
+
+Edit a role.
+
+## FROM FILE
+__knife role from file FILE__ _(options)_
+
+Create or update a role from a role Ruby DSL (`.rb`) or JSON file.
+
+## DELETE
+__knife role delete ROLE__ _(options)_
+
+Delete a role.
+
+## BULK DELETE
+__knife role bulk delete REGEX__ _(options)_
+
+Delete roles on the Chef Server based on a regular expression. The regular expression (_REGEX_) should be in quotes, not in //'s.
+
 ## DESCRIPTION
 Roles provide a mechanism to group repeated configuration settings.
 Roles are data structures that contain __default\_attributes__, and
@@ -21,50 +68,9 @@ __run_list__ included in that host's node data. The expansion process
 will recursively replace any roles in the run\_list with that role's
 run\_list.
 
-
-## ROLE SUB-COMMANDS
-
-__knife role bulk delete REGEX__ _(options)_
-
-Delete roles on the Chef Server based on a regular expression. The regular expression (_REGEX_) should be in quotes, not in //'s.
-
-__knife role create ROLE__ _(options)_
-
-  * `-d`, `--description`:
-    The role description
-
-Create a new role.
-
-__knife role delete ROLE__ _(options)_
-
-Delete a role.
-
-__knife role edit ROLE__ _(options)_
-
-Edit a role.
-
-__knife role from file FILE__ _(options)_
-
-Create or update a role from a role Ruby DSL (`.rb`) or JSON file.
-
-__knife role list__ _(options)_
-
-  * `-w`, `--with-uri`:
-    Show corresponding URIs
-
-List roles.
-
-__knife role show ROLE__ _(options)_
-
-  * `-a`, `--attribute ATTR`:
-    Show only one attribute
-
-Show a specific role.
-
-
 ## SEE ALSO
-   __knife-node__(1)
-
+   __knife-node(1)__ __knife-environment(1)__
+   <http://wiki.opscode.com/display/chef/Roles>
    <http://wiki.opscode.com/display/chef/Attributes>
 
 ## AUTHOR

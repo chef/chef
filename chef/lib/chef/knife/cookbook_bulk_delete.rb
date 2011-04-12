@@ -43,11 +43,21 @@ class Chef
         all_cookbooks = Chef::CookbookVersion.list
         cookbooks_names = all_cookbooks.keys.grep(regex)
         cookbooks_to_delete = cookbooks_names.inject({}) { |hash, name| hash[name] = all_cookbooks[name];hash }
-        output(format_list_for_display(cookbooks_to_delete))
+        ui.msg "All versions of the following cookbooks will be deleted:"
+        ui.msg ""
+        ui.msg ui.list(cookbooks_to_delete.keys.sort, :columns_down)
+        ui.msg ""
 
-        ui.confirm("Do you really want to delete these cookbooks? All versions will be deleted. (Y/N) ", false)
+        unless config[:yes]
+          ui.confirm("Do you really want to delete these cookbooks? (Y/N) ", false)
 
-        ui.confirm("Files that are common to multiple cookbooks are shared, so purging the files may disable other cookbooks. Are you sure you want to purge files instead of just deleting the cookbooks") if config[:purge]
+          if config[:purge]
+            ui.msg("Files that are common to multiple cookbooks are shared, so purging the files may break other cookbooks.")
+            ui.confirm("Are you sure you want to purge files instead of just deleting the cookbooks")
+          end
+          ui.msg ""
+        end
+
 
         cookbooks_names.each do |cookbook_name|
           versions = rest.get_rest("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map {|v| v["version"]}.flatten

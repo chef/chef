@@ -40,7 +40,6 @@ query syntax. The following data types are indexed for search:
 
 ## SEE ALSO
    __knife-ssh__(1)
-
    <http://wiki.opscode.com/display/chef/Attributes>
 
 ## AUTHOR

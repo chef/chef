@@ -53,7 +53,7 @@ class Chef
 
         # Returns a String representation of +data+ that is suitable for output
         # to a terminal or perhaps for data interchange with another program.
-        # The representation of the +data+ depends on the value of the 
+        # The representation of the +data+ depends on the value of the
         # `config[:format]` setting.
         def format(data)
           case parse_format_option
@@ -171,9 +171,9 @@ class Chef
               collected[cookbook] = versions["versions"].map {|v| v['version']}
               collected
             end
-            key_length = versions_by_cookbook.keys.map {|name| name.size }.max + 2
+            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map {|name| name.size }.max + 2
             versions_by_cookbook.sort.map do |cookbook, versions|
-              "#{cookbook.ljust(key_length)} #{versions.join(',')}"
+              "#{cookbook.ljust(key_length)} #{versions.join('  ')}"
             end
           end
         end

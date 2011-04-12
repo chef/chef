@@ -56,7 +56,9 @@ class Chef
 
         remove_ignored_files
 
-        if File.exists?(File.join(@cookbook_path, "metadata.json"))
+        if File.exists?(File.join(@cookbook_path, "metadata.rb"))
+          @metadata_filenames << File.join(@cookbook_path, "metadata.rb")
+        elsif File.exists?(File.join(@cookbook_path, "metadata.json"))
           @metadata_filenames << File.join(@cookbook_path, "metadata.json")
         end
 
@@ -88,12 +90,14 @@ class Chef
       # Generates the Cookbook::Metadata object
       def metadata(cookbook_version)
         @metadata = Chef::Cookbook::Metadata.new(cookbook_version)
-        @metadata_filenames.each do |meta_json|
-          begin
-            @metadata.from_json(IO.read(meta_json))
-          rescue JSON::ParserError
-            Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in " + meta_json)
-            raise
+        @metadata_filenames.each do |metadata_file|
+          case metadata_file
+          when /\.rb$/
+            apply_ruby_metadata(metadata_file)
+          when /\.json$/
+            apply_json_metadata(metadata_file)
+          else
+            raise RuntimeError, "Invalid metadata file: #{metadata_file} for cookbook: #{cookbook_version}"
           end
         end
         @metadata
@@ -143,6 +147,24 @@ class Chef
           file_list.reject! do |relative_path, full_path|
             chefignore.ignored?(relative_path)
           end
+        end
+      end
+
+      def apply_ruby_metadata(file)
+        begin
+          @metadata.from_file(file)
+        rescue JSON::ParserError
+          Chef::Log.error("Error evaluating metadata.rb for #@cookbook_name in " + file)
+          raise
+        end
+      end
+
+      def apply_json_metadata(file)
+        begin
+          @metadata.from_json(IO.read(file))
+        rescue JSON::ParserError
+          Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in " + file)
+          raise
         end
       end
 

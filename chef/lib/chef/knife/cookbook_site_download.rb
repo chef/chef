@@ -33,17 +33,17 @@ class Chef
 
       def run
         if @name_args.length == 1
-          current = rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{name_args[0]}")
-          cookbook_data = rest.get_rest(current["latest_version"])
+          current = noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{name_args[0]}")
+          cookbook_data = noauth_rest.get_rest(current["latest_version"])
         else
-          cookbook_data = rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{name_args[0]}/versions/#{name_args[1].gsub('.', '_')}")
+          cookbook_data = noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{name_args[0]}/versions/#{name_args[1].gsub('.', '_')}")
         end
 
         @version = cookbook_data['version']
 
         ui.info("Downloading #{@name_args[0]} from the cookbooks site at version #{cookbook_data['version']} to #{config[:file]}")
-        rest.sign_on_redirect = false
-        tf = rest.get_rest(cookbook_data["file"], true)
+        noauth_rest.sign_on_redirect = false
+        tf = noauth_rest.get_rest(cookbook_data["file"], true)
         unless config[:file]
           config[:file] = File.join(Dir.pwd, "#{@name_args[0]}-#{cookbook_data['version']}.tar.gz")
         end
