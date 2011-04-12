@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,41 +24,54 @@ describe Chef::Knife::NodeBulkDelete do
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::NodeBulkDelete.new
-    @knife.config = {
-      :print_after => nil
-    }
-    @knife.name_args = ["."] 
-    @knife.stub!(:output).and_return(true)
-    @knife.stub!(:confirm).and_return(true)
+    @knife.name_args = ["."]
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub!(:confirm).and_return(true)
     @nodes = Hash.new
     %w{adam brent jacob}.each do |node_name|
-      node = Chef::Node.new() 
-      node.name(node_name)
-      node.stub!(:destroy).and_return(true)
-      @nodes[node_name] = node
+      @nodes[node_name] = "http://localhost:4000/nodes/#{node_name}"
     end
-    Chef::Node.stub!(:list).and_return(@nodes)
+  end
+
+  describe "when creating the list of nodes" do
+    it "fetches the node list" do
+      expected = @nodes.inject({}) do |inflatedish, (name, uri)|
+        inflatedish[name] = Chef::Node.new.tap {|n| n.name(name)}
+        inflatedish
+      end
+      Chef::Node.should_receive(:list).and_return(@nodes)
+      # I hate not having == defined for anything :(
+      actual = @knife.all_nodes
+      actual.keys.should =~ expected.keys
+      actual.values.map {|n| n.name }.should =~ %w[adam brent jacob]
+    end
   end
 
   describe "run" do
-
-    it "should get the list of inflated nodes" do
-      Chef::Node.should_receive(:list).and_return(@nodes)
-      @knife.run
+    before do
+      @inflatedish_list = @nodes.keys.inject({}) do |nodes_by_name, name|
+        node = Chef::Node.new()
+        node.name(name)
+        node.stub!(:destroy).and_return(true)
+        nodes_by_name[name] = node
+        nodes_by_name
+      end
+      @knife.stub!(:all_nodes).and_return(@inflatedish_list)
     end
 
     it "should print the nodes you are about to delete" do
-      @knife.should_receive(:output).with(@knife.format_list_for_display(@nodes))
       @knife.run
+      @stdout.string.should match(/#{@knife.ui.list(@nodes.keys.sort, :columns_down)}/)
     end
 
     it "should confirm you really want to delete them" do
-      @knife.should_receive(:confirm)
+      @knife.ui.should_receive(:confirm)
       @knife.run
     end
 
     it "should delete each node" do
-      @nodes.each_value do |n|
+      @inflatedish_list.each_value do |n|
         n.should_receive(:destroy)
       end
       @knife.run
@@ -66,9 +79,9 @@ describe Chef::Knife::NodeBulkDelete do
 
     it "should only delete nodes that match the regex" do
       @knife.name_args = ['adam']
-      @nodes['adam'].should_receive(:destroy)
-      @nodes['brent'].should_not_receive(:destroy)
-      @nodes['jacob'].should_not_receive(:destroy)
+      @inflatedish_list['adam'].should_receive(:destroy)
+      @inflatedish_list['brent'].should_not_receive(:destroy)
+      @inflatedish_list['jacob'].should_not_receive(:destroy)
       @knife.run
     end
 
@@ -77,15 +90,6 @@ describe Chef::Knife::NodeBulkDelete do
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
-    describe "with -p or --print-after" do
-      it "should pretty print the node, formatted for display" do
-        @knife.config[:print_after] = true
-        @nodes.each_value do |n|
-          @knife.should_receive(:output).with(@knife.format_for_display(n))
-        end
-        @knife.run
-      end
-    end
   end
 end
 
