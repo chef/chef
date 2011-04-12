@@ -231,6 +231,7 @@ describe Chef::REST do
         http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
         http_response.stub!(:read_body)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+        @rest.stub!(:sleep)
         lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
         @log_stringio.string.should match(Regexp.escape('WARN -- : HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
       end
@@ -239,6 +240,7 @@ describe Chef::REST do
         @http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
         http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
         http_response.stub!(:read_body)
+        @rest.stub!(:sleep)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
       end
@@ -404,6 +406,7 @@ describe Chef::REST do
         http_response.add_field("content-type", "application/json")
         http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
         http_response.stub!(:read_body)
+        @rest.stub!(:sleep)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         
         lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
@@ -414,6 +417,7 @@ describe Chef::REST do
         http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
         http_response.stub!(:body)
         http_response.stub!(:read_body)
+        @rest.stub!(:sleep)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
       end
