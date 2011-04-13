@@ -2,6 +2,7 @@ chef-solr(8) -- Runs as Chef's search server
 ========================================
 
 ## SYNOPSIS
+
 __chef-solr__ _(options)_
 
   * `-c`, `--config CONFIG`:
@@ -34,7 +35,7 @@ __chef-solr__ _(options)_
 ## DESCRIPTION
 
 Chef-solr provides search service for Chef. You need to have both
-chef-solr and chef-expander (the indexer) in order for search to work.
+chef-solr and chef-expander-cluster running in order for search to work.
 
 __Installation__
 
@@ -67,7 +68,7 @@ when prompted for confirmation. The process should look like this:
 
 ## SEE ALSO
 
-__chef-expander__(8)
+__chef-expander-cluster__(8)
 
 Full documentation for Chef and chef-server is located on the Chef
 wiki, http://wiki.opscode.com/display/chef/Home.
