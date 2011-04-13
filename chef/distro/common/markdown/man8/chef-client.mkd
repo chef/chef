@@ -31,8 +31,6 @@ __chef-client__ _(options)_
     The splay time for running at intervals, in seconds
   * `-u`, `--user USER`:
     User to set privilege to
-  * `-t`, `--token TOKEN`:
-    Set the openid validation token
   * `-v`, `--version`:
     Show chef version
   * `-h`, `--help`:
