@@ -57,7 +57,7 @@ wiki, http://wiki.opscode.com/display/chef/Home.
 
 ## AUTHOR
 
-Chef  was  written  by  Adam  Jacob   <adam@ospcode.com>   of   Opscode
+Chef was written by Adam Jacob <adam@ospcode.com> of Opscode
 (http://www.opscode.com),  with contributions from the community.  This
 manual page was written by Joshua Timberman  <joshua@opscode.com>  with
 help2man.  Permission  is  granted  to copy, distribute and / or modify
