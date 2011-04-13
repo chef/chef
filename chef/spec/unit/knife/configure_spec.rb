@@ -18,12 +18,17 @@ describe Chef::Knife::Configure do
 
     @err = StringIO.new
     @knife.ui.stub!(:stderr).and_return(@err)
+
+    @ohai = Ohai::System.new
+    @ohai.stub(:require_plugin)
+    @ohai[:fqdn] = "foo.example.org"
+    Ohai::System.stub!(:new).and_return(@ohai)
   end
 
   it "asks the user for the URL of the chef server" do
     @knife.ask_user_for_config
-    @out.string.should match(Regexp.escape('Please enter the chef server URL: [http://localhost:4000]'))
-    @knife.chef_server.should == 'http://localhost:4000'
+    @out.string.should match(Regexp.escape('Please enter the chef server URL: [http://foo.example.org:4000]'))
+    @knife.chef_server.should == 'http://foo.example.org:4000'
   end
 
   it "asks the user for the clientname they want for the new client if -i is specified" do
@@ -93,7 +98,7 @@ describe Chef::Knife::Configure do
     config_file.string.should match(%r{^client_key[\s]+'/home/you/.chef/#{Etc.getlogin}.pem'$})
     config_file.string.should match(/^validation_client_name\s+'chef-validator'$/)
     config_file.string.should match(%r{^validation_key\s+'/etc/chef/validation.pem'$})
-    config_file.string.should match(%r{^chef_server_url\s+'http://localhost:4000'$})
+    config_file.string.should match(%r{^chef_server_url\s+'http://foo.example.org:4000'$})
     config_file.string.should match(%r{cookbook_path\s+\[ '/home/you/chef-repo/cookbooks', '/home/you/chef-repo/site-cookbooks' \]})
   end
 
