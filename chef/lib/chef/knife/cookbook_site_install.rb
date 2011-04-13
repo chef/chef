@@ -32,9 +32,9 @@ class Chef
       banner "knife cookbook site install COOKBOOK [VERSION] (options)"
       category "cookbook site"
 
-      option :deps,
-       :short => "-d",
-       :long => "--dependencies",
+      option :no_deps,
+       :short => "-D",
+       :long => "--no-dependencies",
        :boolean => true,
        :description => "Grab dependencies automatically"
 
@@ -93,12 +93,12 @@ class Chef
         end
 
 
-        if config[:deps]
+        unless config[:no_deps]
           md = Chef::Cookbook::Metadata.new
           md.from_file(File.join(@install_path, @cookbook_name, "metadata.rb"))
           md.dependencies.each do |cookbook, version_list|
             # Doesn't do versions.. yet
-            nv = Chef::Knife::CookbookSiteVendor.new
+            nv = self.class.new
             nv.config = config
             nv.name_args = [ cookbook ]
             nv.run
