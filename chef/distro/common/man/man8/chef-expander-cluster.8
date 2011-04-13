@@ -1,0 +1,97 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "CHEF\-EXPANDER\-CLUSTER" "8" "April 2011" "Chef 0.10.0.beta.9" "Chef Manual"
+.
+.SH "NAME"
+\fBchef\-expander\-cluster\fR \- fetches messages from RabbitMQ, processes, and loads into chef\-solr
+.
+.SH "SYNOPSIS"
+\fBchef\-expander\-cluster\fR \fI(options)\fR
+.
+.TP
+\fB\-c\fR, \fB\-\-config CONFIG_FILE\fR
+a configuration file to use
+.
+.TP
+\fB\-i\fR, \fB\-\-index INDEX\fR
+the slot this node will occupy in the ring
+.
+.TP
+\fB\-n\fR, \fB\-\-node\-count NUMBER\fR
+the number of nodes in the ring
+.
+.TP
+\fB\-l\fR, \fB\-\-log\-level LOG_LEVEL\fR
+set the log level
+.
+.TP
+\fB\-L\fR, \fB\-\-logfile LOG_LOCATION\fR
+Logfile to use
+.
+.TP
+\fB\-d\fR, \fB\-\-daemonize\fR
+fork into the background
+.
+.TP
+\fB\-P\fR, \fB\-\-pid PIDFILE\fR
+PID file
+.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+show help message
+.
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+show the version and exit
+.
+.SH "DESCRIPTION"
+Chef Expander fetches messages from RabbitMQ, processes them into the correct format to be loaded into Solr and loads them into Solr\.
+.
+.P
+\fBRunning Chef Expander\fR
+.
+.P
+Chef Expander is designed for clustered operation, though small installations will only need one worker process\. To run Chef Expander with one worker process, run chef\-expander\-cluster \-n 1\. You will then have a master and worker process, which looks like this in ps:
+.
+.IP "" 4
+.
+.nf
+
+your\-shell> ps aux|grep expander
+you   52110   0\.1  0\.7  2515476  62748 s003  S+    3:49PM   0:00\.80 chef\-expander worker #1 (vnodes 0\-1023)
+you   52108   0\.1  0\.5  2492880  41696 s003  S+    3:49PM   0:00\.91 ruby bin/chef\-expander\-cluster \-n 1
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Workers are single threaded and therefore cannot use more than 100% of a single CPU\. If you find that your queues are getting backlogged, increase the number of workers
+.
+.P
+\fBDesign\fR
+.
+.P
+Chef Expander uses 1024 queues (called vnodes in some places) to allow you to scale the number of Chef Expander workers to meet the needs of your infrastructure\. When objects are saved in the API server, they are added to queues based on their database IDs\. These queues can be assigned to different Chef Expander workers to distribute the load of processing the index updates\.
+.
+.P
+\fBChef Expander Operation and Troubleshooting\fR
+.
+.P
+Chef Expander includes chef\-expanderctl, a management program that allows you to get status information or change the logging verbosity (without restarting)\.
+.
+.P
+See \fBchef\-expanderctl\fR(8) for details\.
+.
+.SH "SEE ALSO"
+\fBchef\-expanderctl\fR(8) \fBchef\-solr\fR(8)
+.
+.P
+Full documentation for Chef and chef\-server is located on the Chef wiki, http://wiki\.opscode\.com/display/chef/Home\.
+.
+.SH "AUTHOR"
+Chef was written by Adam Jacob \fIadam@ospcode\.com\fR of Opscode (http://www\.opscode\.com), with contributions from the community\. This manual page was created by Nuo Yan \fInuo@opscode\.com\fR\. Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2\.0 License\.
+.
+.P
+On Debian systems, the complete text of the Apache 2\.0 License can be found in /usr/share/common\-licenses/Apache\-2\.0\.
