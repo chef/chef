@@ -204,6 +204,8 @@ class Chef
 
     private
 
+    OFFICIAL_PLUGINS = %w[ec2 rackspace windows openstack terremark bluebox]
+
     # :nodoc:
     # Error out and print usage. probably becuase the arguments given by the
     # user could not be resolved to a subcommand.
@@ -211,7 +213,16 @@ class Chef
       unless want_help?(args)
         ui.fatal("Cannot find sub command for: '#{args.join(' ')}'")
       end
-      list_commands(guess_category(args))
+
+      if category_commands = guess_category(args)
+        list_commands(category_commands)
+      elsif missing_plugin = ( OFFICIAL_PLUGINS.find {|plugin| plugin == args[0]} )
+        ui.info("The #{missing_plugin} commands were moved to plugins in Chef 0.10")
+        ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}")
+      else
+        list_commands
+      end
+
       exit 10
     end
 
