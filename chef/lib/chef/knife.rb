@@ -167,7 +167,8 @@ class Chef
     end
 
     def self.guess_category(args)
-      category_words = args.select {|arg| arg =~ /^([[:alnum:]]|_)+$/ }
+      category_words = args.select {|arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
+      category_words.map! {|w| w.split('-')}.flatten!
       matching_category = nil
       while (!matching_category) && (!category_words.empty?)
         candidate_category = category_words.join(' ')
@@ -178,7 +179,8 @@ class Chef
     end
 
     def self.subcommand_class_from(args)
-      command_words = args.select {|arg| arg =~ /^([[:alnum:]]|_)+$/ }
+      command_words = args.select {|arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
+
       subcommand_class = nil
 
       while ( !subcommand_class ) && ( !command_words.empty? )
@@ -187,6 +189,8 @@ class Chef
           command_words.pop
         end
       end
+      # see if we got the command as e.g., knife node-list
+      subcommand_class ||= subcommands[args.first.gsub('-', '_')]
       subcommand_class || subcommand_not_found!(args)
     end
 
@@ -249,6 +253,7 @@ class Chef
 
       # Mixlib::CLI ignores the embedded name_args
       @name_args = parse_options(argv)
+      @name_args.delete(command_name_words.join('-'))
       @name_args.reject! { |name_arg| command_name_words.delete(name_arg) }
 
       # knife node run_list add requires that we have extra logic to handle
@@ -459,7 +464,7 @@ class Chef
 
       pretty_name ||= output
 
-      self.msg("Created (or updated) #{pretty_name}")
+      self.msg("Created #{pretty_name}")
 
       output(output) if config[:print_after]
     end
