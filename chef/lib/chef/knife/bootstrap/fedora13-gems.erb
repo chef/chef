@@ -3,7 +3,8 @@ yum install -q -y ruby ruby-devel gcc gcc-c++ automake autoconf rubygems make
 
 gem update --system
 gem update
-gem install ohai chef --no-rdoc --no-ri --verbose <%= '--prerelease' if @config[:prerelease] %>
+gem install ohai --no-rdoc --no-ri --verbose
+gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string(:gems) %>
 
 mkdir -p /etc/chef
 
