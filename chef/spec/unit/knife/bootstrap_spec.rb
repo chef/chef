@@ -150,4 +150,70 @@ describe Chef::Knife::Bootstrap do
 
   end
 
+  describe "render_template" do
+    
+  end
+
+end
+
+describe Chef::Knife::Bootstrap::TemplateHelper do
+  before(:each) do
+    @context = Erubis::Context.new({
+      :config => Hash.new
+    })
+  end
+
+  describe "bootstrap_version_string" do
+    after(:each) do
+      Chef::Config.delete :bootstrap_version
+    end
+
+    formats = {
+      :gems => /^--version \d+\.\d+\.\d+/,
+      :nil =>  '\d+\.\d+\.\d+'
+    }
+
+    context "by default" do
+      formats.each do |sym, format|
+        it "should return the current version of Chef for :#{sym.to_s}" do
+          @context.bootstrap_version_string(sym).should include Chef::VERSION
+        end
+
+        it "should match the correct output format for :#{sym.to_s}" do
+          @context.bootstrap_version_string(sym).should match format
+        end
+      end
+    end
+
+    context "with Chef::Config[:bootstrap_version] set" do
+      before(:each) do
+        @config_version = "0.9.12"
+        Chef::Config[:bootstrap_version] = @config_version
+      end
+
+      formats.each do |sym, format|
+        it "should return the specified bootstrap version for :#{sym.to_s}" do
+          @context.bootstrap_version_string(sym).should include @config_version
+        end
+
+        it "should match the correct output format for :#{sym.to_s}" do
+          @context.bootstrap_version_string(sym).should match format
+        end
+      end
+    end
+
+    context "with config[:prerelease] set" do
+      before(:each) do
+        @context[:config][:prerelease] = true
+      end
+
+      it "should return --prerelease only for :gems" do
+        formats.each do |sym, format|
+          version_string = @context.bootstrap_version_string(sym)
+          version_string.should == "--prerelease" if sym == :gems
+          version_string.should_not == "--prerelease" if sym != :gems
+        end
+      end
+    end
+  end
 end
