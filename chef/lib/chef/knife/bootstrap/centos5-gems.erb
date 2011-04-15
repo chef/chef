@@ -3,7 +3,7 @@ if [ ! -f /usr/bin/chef-client ]; then
   rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm
   rpm -Uvh http://download.elff.bravenet.com/5/i386/elff-release-5-3.noarch.rpm
 
-  yum install -q -y ruby ruby-devel gcc gcc-c++ automake autoconf make
+  yum install -y ruby ruby-devel gcc gcc-c++ automake autoconf make
 
   cd /tmp
   wget http://production.cf.rubygems.org/rubygems/rubygems-1.3.7.tgz
