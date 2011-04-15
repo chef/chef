@@ -12,7 +12,10 @@ if [ ! -f /usr/bin/chef-client ]; then
   ruby setup.rb --no-format-executable
 fi
 
-gem install ohai chef --no-rdoc --no-ri --verbose <%= '--prerelease' if @config[:prerelease] %>
+gem update --system
+gem update
+gem install ohai --no-rdoc --no-ri --verbose
+gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string(:gems) %>
 
 mkdir -p /etc/chef
 
