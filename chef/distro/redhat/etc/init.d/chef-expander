@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# chef-solr-indexer Startup script for the Chef search indexer
+# chef-expander Startup script for the Chef search indexer
 #
 # chkconfig: - 95 05
 # description: Search indexer component of the Chef Server.
 
 ### BEGIN INIT INFO
-# Provides: chef-solr-indexer
+# Provides: chef-expander
 # Required-Start: $local_fs $network $remote_fs chef-solr rabbitmq-server
 # Required-Stop: $local_fs $network $remote_fs chef-solr rabbitmq-server
 # Should-Start: $named $time
@@ -18,15 +18,15 @@
 # Source function library
 . /etc/init.d/functions
 
-exec="/usr/bin/chef-solr-indexer"
-prog="chef-solr-indexer"
+exec="/usr/bin/chef-expander"
+prog="chef-expander"
 
 [ -f /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
 
-config=${CONFIG-/etc/chef/solr-indexer.rb}
-pidfile=${PIDFILE-/var/run/chef/solr-indexer.pid}
+config=${CONFIG-/etc/chef/expander.rb}
+pidfile=${PIDFILE-/var/run/chef/expander.pid}
 lockfile=${LOCKFILE-/var/lock/subsys/$prog}
-logfile=${LOGFILE-/var/log/chef/solr-indexer.log}
+logfile=${LOGFILE-/var/log/chef/expander.log}
 options=${OPTIONS-}
 
 start() {
@@ -42,7 +42,7 @@ start() {
 
 stop() {
     echo -n $"Stopping $prog: "
-    killproc -p $pidfile $prog 
+    killproc -p $pidfile $prog
     retval=$?
     echo
     [ $retval -eq 0 ] && rm -f $lockfile

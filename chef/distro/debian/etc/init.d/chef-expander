@@ -1,24 +1,24 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:           chef-solr-indexer
+# Provides:           chef-expander
 # Required-Start:     $remote_fs $network rabbitmq-server chef-solr
 # Required-Stop:      $remote_fs $network rabbitmq-server chef-solr
 # Default-Start:      2 3 4 5
 # Default-Stop:       0 1 6
-# Short-Description:  Start a chef-solr-indexer.
+# Short-Description:  Start a chef-expander.
 ### END INIT INFO
 #
 # Copyright (c) 2009-2010 Opscode, Inc <legal@opscode.com>
 #
-# chef-solr-indexer         Startup script for chef-solr-indexer.
+# chef-expander         Startup script for chef-expander.
 # chkconfig: - 85 02
-# description: starts up chef-solr-indexer in daemon mode.
+# description: starts up chef-expander in daemon mode.
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/bin/chef-solr-indexer
-NAME=chef-solr-indexer
-DESC=chef-solr-indexer
-PIDFILE=/var/run/chef/solr-indexer.pid
+DAEMON=/usr/bin/chef-expander
+NAME=chef-expander
+DESC=chef-expander
+PIDFILE=/var/run/chef/expander.pid
 
 test -x $DAEMON || exit 0
 
@@ -31,57 +31,57 @@ if [ ! -d /var/run/chef ]; then
   chown $USER:$GROUP /var/run/chef
 fi
 
-DAEMON_OPTS="-d -P $PIDFILE -c $CONFIG -L $LOGFILE -u $USER -g $GROUP"
+DAEMON_OPTS=$CHEF_EXPANDER_ARGS
 
-running_pid() {                                                                 
+running_pid() {
   pid=$1
-  name=$2                                                                     
-  [ -z "$pid" ] && return 1                                                   
-  [ ! -d /proc/$pid ] &&  return 1                                            
+  name=$2
+  [ -z "$pid" ] && return 1
+  [ ! -d /proc/$pid ] &&  return 1
   cmd=`cat /proc/$pid/cmdline | tr '\000' '\n' | awk 'NR==2'`
-  [ "$cmd" != "$name" ] &&  return 1                                          
-  return 0 
-}   
+  [ "$cmd" != "$name" ] &&  return 1
+  return 0
+}
 
-running() {                                                                     
+running() {
   [ ! -f "$PIDFILE" ] && return 1
   pid=`cat $PIDFILE`
-  running_pid $pid $DAEMON || return 1                                        
+  running_pid $pid $DAEMON || return 1
   return 0
-}   
+}
 
-start_server() {                                                                
-  if [ -z "$DAEMONUSER" ] ; then                                          
-    start_daemon -p $PIDFILE $DAEMON $DAEMON_OPTS                       
+start_server() {
+  if [ -z "$DAEMONUSER" ] ; then
+    start_daemon -p $PIDFILE $DAEMON $DAEMON_OPTS
   errcode=$?
   else
-    start-stop-daemon --start --quiet --pidfile $PIDFILE \              
-      --chuid $DAEMONUSER \ 
-      --exec $DAEMON -- $DAEMON_OPTS                          
-    errcode=$?  
-  fi  
-  return $errcode                                                         
-}       
+    start-stop-daemon --start --quiet --pidfile $PIDFILE \
+      --chuid $DAEMONUSER \
+      --exec $DAEMON -- $DAEMON_OPTS
+    errcode=$?
+  fi
+  return $errcode
+}
 
-stop_server() {                                                                 
-   if [ -z "$DAEMONUSER" ] ; then                                          
-     killproc -p $PIDFILE $DAEMON                                        
+stop_server() {
+   if [ -z "$DAEMONUSER" ] ; then
+     killproc -p $PIDFILE $DAEMON
      errcode=$?
    else
-     start-stop-daemon --stop --quiet --pidfile $PIDFILE \               
-       --user $DAEMONUSER \ 
+     start-stop-daemon --stop --quiet --pidfile $PIDFILE \
+       --user $DAEMONUSER \
        --exec $DAEMON
-     errcode=$?  
-   fi  
-   return $errcode                                                         
-}       
+     errcode=$?
+   fi
+   return $errcode
+}
 
-reload_server() {                                                               
-  [ ! -f "$PIDFILE" ] && return 1                                             
-  pid=pidofproc $PIDFILE # This is the daemon's pid                           
+reload_server() {
+  [ ! -f "$PIDFILE" ] && return 1
+  pid=pidofproc $PIDFILE # This is the daemon's pid
   /bin/kill -1 $pid
   return $?
-}   
+}
 
 force_stop() {
   [ ! -e "$PIDFILE" ] && return
@@ -109,7 +109,7 @@ case "$1" in
         exit 3
     fi
     if start_server ; then
-        [ -n "$STARTTIME" ] && sleep $STARTTIME # Wait some time 
+        [ -n "$STARTTIME" ] && sleep $STARTTIME # Wait some time
         if  running ;  then
             log_end_msg 0
         else
