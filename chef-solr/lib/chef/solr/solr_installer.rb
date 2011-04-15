@@ -326,6 +326,7 @@ FAIL
         chdir(config.solr_jetty_path) do
           sh("tar zxvf #{File.join(PACKAGED_SOLR_DIR, 'solr-jetty.tar.gz')}")
         end
+        chown(config.solr_jetty_path)
       end
     end
 
@@ -352,11 +353,11 @@ FAIL
 
     def chown(file)
       if config.user
-        msg = "chown #{config.user}"
+        msg = "chown -R #{config.user}"
         msg << ":#{config.group}" if config.group
         msg << " #{file}"
         say msg
-        FileUtils.chown(config.user, config.group) unless config.noop?
+        FileUtils.chown_R(config.user, config.group, file) unless config.noop?
       end
     end
 
