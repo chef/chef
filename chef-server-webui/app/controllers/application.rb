@@ -252,7 +252,7 @@ class Application < Merb::Controller
   #for showing search result
   def determine_name(type, object)
     case type
-    when :node, :role, :client
+    when :node, :role, :client, :environment
       object.name
     else
       params[:id]
@@ -260,7 +260,7 @@ class Application < Merb::Controller
   end
 
   def list_available_recipes_for(environment)
-    Chef::Environment.load_filtered_recipe_list(environment)
+    Chef::Environment.load_filtered_recipe_list(environment).sort!
   end
 
   def convert_newline_to_br(string)
