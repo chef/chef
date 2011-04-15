@@ -252,7 +252,7 @@ class Application < Merb::Controller
   #for showing search result
   def determine_name(type, object)
     case type
-    when :node, :role, :client
+    when :node, :role, :client, :environment
       object.name
     else
       params[:id]
