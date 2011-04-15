@@ -127,7 +127,7 @@ class Chef::Application
   class << self
     def debug_stacktrace(e)
       message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-      filename = File.join(Dir.tmpdir, "chef-stacktrace.out") 
+      filename = File.join(Chef::Config[:file_cache_path], "chef-stacktrace.out") 
       Chef::Log.fatal("Stacktrace dumped to #{filename}")
       Chef::Log.debug(message)
       chef_stacktrace_out = File.open(filename, "w")

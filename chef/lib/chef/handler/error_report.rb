@@ -32,7 +32,7 @@ class Chef
       end
 
       def report_path
-        File.join(Dir.tmpdir, "failed-run-data.json")
+        File.join(Chef::Config[:file_cache_path], "failed-run-data.json")
       end
 
     end
