@@ -59,6 +59,11 @@ class Chef
         :long => "--prerelease",
         :description => "Install the pre-release chef gems"
 
+      option :bootstrap_version,
+        :long => "--bootstrap-version",
+        :description => "The version of Chef to install",
+        :proc => lambda { |v| Chef::Config[:bootstrap_version] = v }
+
       option :distro,
         :short => "-d DISTRO",
         :long => "--distro DISTRO",
@@ -179,7 +184,36 @@ class Chef
         command
       end
 
+      module TemplateHelper
+
+        #
+        # == Chef::Knife::Bootstrap::TemplateHelper
+        #
+        # The methods in the TemplateHelper module expect to have access to
+        # the instance varialbles set above as part of the context in the
+        # Chef::Knife::Bootstrap#render_context method. Those instance
+        # variables are:
+        #
+        # * @config   - a hash of knife's config values
+        # * @run_list - the run list for the node to boostrap
+        #
+
+        ::Erubis::Context.send(:include, Chef::Knife::Bootstrap::TemplateHelper)
+
+        def bootstrap_version_string(type=nil)
+          version = Chef::Config[:bootstrap_version] || Chef::VERSION
+          case type
+          when :gems
+            if @config[:prerelease]
+              "--prerelease"
+            else
+              "--version #{version}"
+            end
+          else
+            version
+          end
+        end
+      end
     end
   end
 end
-
