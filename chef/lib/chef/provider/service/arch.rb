@@ -39,7 +39,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   end
 
   # Get list of all daemons from the file '/etc/rc.conf'.
-  # Mutiple lines are support. Example
+  # Mutiple lines and background form are supported. Example:
   #   DAEMONS=(\
   #     foobar \
   #     @example \
