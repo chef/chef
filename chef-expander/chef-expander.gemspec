@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.add_dependency "bunny", ">= 0.6.0"
 
   s.bindir       = "bin"
-  s.executables  = %w( chef-expander chef-expander-cluster chef-expanderctl )
+  s.executables  = %w( chef-expander chef-expander-vnode chef-expanderctl )
   s.require_path = 'lib'
   s.files = %w(LICENSE README.rdoc) + Dir.glob("{scripts,conf,lib}/**/*")
 end
