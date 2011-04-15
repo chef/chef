@@ -31,7 +31,7 @@ if [ ! -d /var/run/chef ]; then
   chown $USER:$GROUP /var/run/chef
 fi
 
-DAEMON_OPTS=$CHEF_EXPANDER_ARGS
+DAEMON_OPTS="-d -c $CONFIG -P $PIDFILE -L $LOGFILE $CHEF_EXPANDER_ARGS"
 
 running_pid() {
   pid=$1
