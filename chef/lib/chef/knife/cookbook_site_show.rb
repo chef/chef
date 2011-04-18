@@ -27,16 +27,16 @@ class Chef
       def run
         case @name_args.length
         when 1 
-          cookbook_data = rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}")
+          cookbook_data = noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}")
         when 2
-          cookbook_data = rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}/versions/#{name_args[1].gsub('.', '_')}")
+          cookbook_data = noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}/versions/#{name_args[1].gsub('.', '_')}")
         end
         output(format_for_display(cookbook_data))
       end
 
       def get_cookbook_list(items=10, start=0, cookbook_collection={})
         cookbooks_url = "http://cookbooks.opscode.com/api/v1/cookbooks?items=#{items}&start=#{start}"
-        cr = rest.get_rest(cookbooks_url)
+        cr = noauth_rest.get_rest(cookbooks_url)
         cr["items"].each do |cookbook|
           cookbook_collection[cookbook["cookbook_name"]] = cookbook
         end

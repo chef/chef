@@ -23,6 +23,8 @@ require 'chef/encrypted_data_bag_item'
 require 'tempfile'
 require 'json'
 
+Chef::Knife::DataBagFromFile.load_deps
+
 describe Chef::Knife::DataBagFromFile do
   before do
     Chef::Config[:node_name]  = "webmonkey.example.com"
@@ -43,14 +45,14 @@ describe Chef::Knife::DataBagFromFile do
   end
 
   it "loads from a file and saves" do
-    @knife.stub!(:load_from_file).with(Chef::DataBagItem, @db_file.path,
-                                       'bag_name').and_return(@plain_data)
-    dbag = mock('DataBagItem')
+    @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', @db_file.path).and_return(@plain_data)
+    dbag = Chef::DataBagItem.new
     Chef::DataBagItem.stub!(:new).and_return(dbag)
-    dbag.should_receive(:data_bag).with('bag_name')
-    dbag.should_receive(:raw_data=).with(@plain_data)
     dbag.should_receive(:save)
     @knife.run
+
+    dbag.data_bag.should == 'bag_name'
+    dbag.raw_data.should == @plain_data
   end
 
   describe "encrypted data bag items" do
@@ -63,14 +65,13 @@ describe Chef::Knife::DataBagFromFile do
     it "encrypts values when given --secret" do
       @knife.stub!(:config).and_return({:secret => @secret})
 
-      @knife.stub!(:load_from_file).with(Chef::DataBagItem, @db_file.path,
-                                         'bag_name').and_return(@plain_data)
-      dbag = mock('DataBagItem')
+      @knife.loader.should_receive(:load_from).with("data_bags", "bag_name", @db_file.path).and_return(@plain_data)
+      dbag = Chef::DataBagItem.new
       Chef::DataBagItem.stub!(:new).and_return(dbag)
-      dbag.should_receive(:data_bag).with('bag_name')
-      dbag.should_receive(:raw_data=).with(@enc_data)
       dbag.should_receive(:save)
       @knife.run
+      dbag.data_bag.should == 'bag_name'
+      dbag.raw_data.should == @enc_data
     end
 
     it "encrypts values when given --secret_file" do
@@ -81,12 +82,12 @@ describe Chef::Knife::DataBagFromFile do
 
       @knife.stub!(:load_from_file).with(Chef::DataBagItem, @db_file.path,
                                          'bag_name').and_return(@plain_data)
-      dbag = mock('DataBagItem')
+      dbag = Chef::DataBagItem.new
       Chef::DataBagItem.stub!(:new).and_return(dbag)
-      dbag.should_receive(:data_bag).with('bag_name')
-      dbag.should_receive(:raw_data=).with(@enc_data)
       dbag.should_receive(:save)
       @knife.run
+      dbag.data_bag.should == 'bag_name'
+      dbag.raw_data.should == @enc_data
     end
 
   end

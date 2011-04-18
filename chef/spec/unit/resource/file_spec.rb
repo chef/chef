@@ -69,6 +69,7 @@ describe Chef::Resource::File do
   it "should accept a group name or id for group" do
     lambda { @resource.group "root" }.should_not raise_error(ArgumentError)
     lambda { @resource.group 123 }.should_not raise_error(ArgumentError)
+    lambda { @resource.group 'test\ group' }.should_not raise_error(ArgumentError)
     lambda { @resource.group "root*goo" }.should raise_error(ArgumentError)
   end
 

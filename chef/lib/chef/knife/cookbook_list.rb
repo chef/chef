@@ -18,7 +18,6 @@
 #
 
 require 'chef/knife'
-require 'chef/json_compat'
 
 class Chef
   class Knife
@@ -33,15 +32,18 @@ class Chef
 
       option :all_versions,
         :short => "-a",
-        :long => "--show-all-versions",
+        :long => "--all",
         :description => "Show all available versions."
 
       def run
         env          = config[:environment]
         num_versions = config[:all_versions] ? "num_versions=all" : "num_versions=1"
         api_endpoint = env ? "/environments/#{env}/cookbooks?#{num_versions}" : "/cookbooks?#{num_versions}"
-        Chef::Log.info("Showing latest versions. Use --show-all to list all available versions.") unless config[:all_versions]
-        output(format_cookbook_list_for_display(rest.get_rest(api_endpoint)))
+        ui.info("Showing latest versions. Use --show-all to list all available versions.") unless config[:all_versions]
+        cookbook_versions = rest.get_rest(api_endpoint)
+        format_cookbook_list_for_display(cookbook_versions).each do |line|
+          ui.msg(line)
+        end
       end
     end
   end

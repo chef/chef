@@ -40,14 +40,13 @@ describe Chef::Knife::DataBagCreate do
     @knife = Chef::Knife::DataBagCreate.new
     @rest = ChefSpecs::ChefRest.new
     @knife.stub!(:rest).and_return(@rest)
-    @log = Chef::Log
   end
 
 
   it "creates a data bag when given one argument" do
     @knife.name_args = ['sudoing_admins']
     @rest.should_receive(:post_rest).with("data", {"name" => "sudoing_admins"})
-    @log.should_receive(:info).with("Created data_bag[sudoing_admins]")
+    @knife.ui.should_receive(:info).with("Created data_bag[sudoing_admins]")
 
     @knife.run
   end

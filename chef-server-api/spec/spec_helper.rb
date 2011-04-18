@@ -23,6 +23,8 @@ require "rspec"
 Merb.push_path(:spec_helpers, "spec" / "spec_helpers", "**/*.rb")
 Merb.push_path(:spec_fixtures, "spec" / "fixtures", "**/*.rb")
 
+$:.unshift(File.expand_path('../../app/', __FILE__))
+
 Merb.start_environment(:testing => true, :adapter => 'runner', :environment => ENV['MERB_ENV'] || 'test')
 
 RSpec.configure do |config|

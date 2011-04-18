@@ -1,4 +1,4 @@
-#
+#--
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Thom May (<thom@clearairturbulence.org>)
 # Author:: Nuo Yan (<nuo@opscode.com>)
@@ -23,11 +23,35 @@
 require 'uri'
 require 'net/http'
 require 'chef/rest/cookie_jar'
+
+# To load faster, we only want ohai's version string.
+# However, in ohai before 0.6.0, the version is defined
+# in ohai, not ohai/version
+begin
+  require 'ohai/version' #used in user agent string.
+rescue LoadError
+  require 'ohai'
+end
+
 require 'chef/version'
 
 class Chef
   class REST
     class RESTRequest
+
+      engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
+
+      UA_COMMON = "/#{::Chef::VERSION} (#{engine}-#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}; ohai-#{Ohai::VERSION}; #{RUBY_PLATFORM}; +http://opscode.com)"
+      DEFAULT_UA = "Chef Client" << UA_COMMON
+
+      def self.user_agent=(ua)
+        @user_agent = ua
+      end
+
+      def self.user_agent
+        @user_agent ||= DEFAULT_UA
+      end
+
       attr_reader :method, :url, :headers, :http_client, :http_request
 
       def initialize(method, url, req_body, base_headers={})
@@ -77,7 +101,7 @@ class Chef
         # http://redmine.ruby-lang.org/issues/show/2708
         # http://redmine.ruby-lang.org/issues/show/2758
         if e.to_s =~ /#{Regexp.escape(%q|undefined method `closed?' for nil:NilClass|)}/
-          Chef::Log.debug("rescued error in http connect, re-raising as Errno::ECONNREFUSED to hide bug in net/http")
+          Chef::Log.debug("Rescued error in http connect, re-raising as Errno::ECONNREFUSED to hide bug in net/http")
           Chef::Log.debug("#{e.class.name}: #{e.to_s}")
           Chef::Log.debug(e.backtrace.join("\n"))
           raise Errno::ECONNREFUSED, "Connection refused attempting to contact #{url.scheme}://#{host}:#{port}"
@@ -117,7 +141,7 @@ class Chef
         if http_proxy.nil?
           @http_client = Net::HTTP.new(host, port)
         else
-          Chef::Log.debug("using #{http_proxy.host}:#{http_proxy.port} for proxy")
+          Chef::Log.debug("Using #{http_proxy.host}:#{http_proxy.port} for proxy")
           user = Chef::Config["#{url.scheme}_proxy_user"]
           pass = Chef::Config["#{url.scheme}_proxy_pass"]
           @http_client = Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass).new(host, port)
@@ -181,6 +205,7 @@ class Chef
         @http_request.body = request_body if (request_body && @http_request.request_body_permitted?)
         # Optionally handle HTTP Basic Authentication
         @http_request.basic_auth(url.user, url.password) if url.user
+        @http_request['User-Agent'] = self.class.user_agent
       end
 
     end

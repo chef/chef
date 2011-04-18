@@ -3,7 +3,8 @@
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2008-2010 Opscode, Inc.
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Copyright:: Copyright 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,10 +26,84 @@ require 'chef/resource_definition_list'
 require 'chef/recipe'
 require 'chef/cookbook/file_vendor'
 require 'chef/checksum'
-
+require 'chef/cookbook/metadata'
 require 'chef/version_class'
 
 class Chef
+
+  #== Chef::MinimalCookbookVersion
+  # MinimalCookbookVersion is a duck type of CookbookVersion, used
+  # internally by Chef Server as an optimization when determining the
+  # optimal cookbook set for a chef-client.
+  #
+  # MinimalCookbookVersion objects contain only enough information to
+  # solve the cookbook collection for a given run list. They *do not*
+  # contain enough information to generate the response.
+  #
+  # See also: Chef::CookbookVersionSelector
+  class MinimalCookbookVersion
+
+    include Comparable
+
+    ID   = "id".freeze
+    NAME = 'name'.freeze
+    KEY  = 'key'.freeze
+    VERSION = 'version'.freeze
+    VALUE   = 'value'.freeze
+    DEPS    = 'deps'.freeze
+
+    DEPENDENCIES      = 'dependencies'.freeze
+
+    # Loads the full list of cookbooks, using a couchdb view to fetch
+    # only the id, name, version, and dependency constraints. This is
+    # enough information to solve for the cookbook collection for a
+    # given run list. After solving for the cookbook collection, you
+    # need to call +load_full_versions_of+ to convert
+    # MinimalCookbookVersion objects to their non-minimal counterparts
+    def self.load_all(couchdb)
+      # Example:
+      # {"id"=>"1a806f1c-b409-4d8e-abab-fa414ff5b96d", "key"=>"activemq", "value"=>{"version"=>"0.3.3", "deps"=>{"java"=>">= 0.0.0", "runit"=>">= 0.0.0"}}}
+      couchdb ||= Chef::CouchDB.new
+      couchdb.get_view("cookbooks", "all_with_version_and_deps")["rows"].map {|params| self.new(params) }
+    end
+
+    # Loads the non-minimal CookbookVersion objects corresponding to
+    # +minimal_cookbook_versions+ from couchdb using a bulk GET.
+    def self.load_full_versions_of(minimal_cookbook_versions, couchdb)
+      database_ids = Array(minimal_cookbook_versions).map {|mcv| mcv.couchdb_id }
+      couchdb ||= Chef::CouchDB.new
+      couchdb.bulk_get(*database_ids)
+    end
+
+    attr_reader :couchdb_id
+    attr_reader :name
+    attr_reader :version
+    attr_reader :deps
+
+    def initialize(params)
+      @couchdb_id = params[ID]
+      @name = params[KEY]
+      @version = params[VALUE][VERSION]
+      @deps    = params[VALUE][DEPS]
+    end
+
+    # Returns the Cookbook::MinimalMetadata object for this cookbook
+    # version.
+    def metadata
+      @metadata ||= Cookbook::MinimalMetadata.new(@name, DEPENDENCIES => @deps)
+    end
+
+    def legit_version
+      @legit_version ||= Chef::Version.new(@version)
+    end
+
+    def <=>(o)
+      raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != o.name
+      raise "Unexpected comparison to #{o}" unless o.respond_to?(:legit_version)
+      legit_version <=> o.legit_version
+    end
+  end
+
   # == Chef::CookbookVersion
   # CookbookVersion is a model object encapsulating the data about a Chef
   # cookbook. Chef supports maintaining multiple versions of a cookbook on a
@@ -44,7 +119,7 @@ class Chef
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
 
     DESIGN_DOCUMENT = {
-      "version" => 7,
+      "version" => 8,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -73,6 +148,15 @@ class Chef
             }
           }
           EOJS
+        },
+        "all_with_version_and_deps" => {
+          "map" => <<-JS
+          function(doc) {
+            if (doc.chef_type == "cookbook_version") {
+              emit(doc.cookbook_name, {version: doc.version, deps: doc.metadata.dependencies});
+            }
+          }
+          JS
         },
         "all_latest_version" => {
           "map" => %q@
@@ -339,6 +423,7 @@ class Chef
     # object<Chef::CookbookVersion>:: Duh. :)
     def initialize(name, couchdb=nil)
       @name = name
+      @frozen = false
       @attribute_filenames = Array.new
       @definition_filenames = Array.new
       @template_filenames = Array.new
@@ -362,6 +447,17 @@ class Chef
 
     def version
       metadata.version
+    end
+
+    # Indicates if this version is frozen or not. Freezing a coobkook version
+    # indicates that a new cookbook with the same name and version number
+    # shoule
+    def frozen_version?
+      @frozen
+    end
+
+    def freeze_version
+      @frozen = true
     end
 
     def version=(new_version)
@@ -425,6 +521,11 @@ class Chef
         generate_manifest
       end
       @checksums
+    end
+
+    def manifest_records_by_path
+      @manifest_records_by_path || generate_manifest
+      @manifest_records_by_path
     end
 
     def full_name
@@ -650,6 +751,7 @@ class Chef
 
     def to_hash
       result = manifest.dup
+      result['frozen?'] = frozen_version?
       result['chef_type'] = 'cookbook_version'
       result["_rev"] = couchdb_rev if couchdb_rev
       result.to_hash
@@ -672,9 +774,14 @@ class Chef
         cookbook_version.index_id = cookbook_version.couchdb_id
         o.delete("_id")
       end
-      cookbook_version.manifest = o
       # We want the Chef::Cookbook::Metadata object to always be inflated
       cookbook_version.metadata = Chef::Cookbook::Metadata.from_hash(o["metadata"])
+      cookbook_version.manifest = o
+
+      # We don't need the following step when we decide to stop supporting deprecated operators in the metadata (e.g. <<, >>)
+      cookbook_version.manifest["metadata"] = JSON.parse(cookbook_version.metadata.to_json)
+
+      cookbook_version.freeze_version if o["frozen?"]
       cookbook_version
     end
 
@@ -716,11 +823,22 @@ class Chef
       self.class.chef_server_rest
     end
 
+    # Save this object to the server via the REST api. If there is an existing
+    # document on the server and it is marked frozen, a
+    # Net::HTTPServerException will be raised for 409 Conflict.
     def save
       chef_server_rest.put_rest("cookbooks/#{name}/#{version}", self)
       self
     end
     alias :create :save
+
+    # Adds the `force=true` parameter to the upload. This allows the user to
+    # overwrite a frozen cookbook (normal #save raises a
+    # Net::HTTPServerException for 409 Conflict in this case).
+    def force_save
+      chef_server_rest.put_rest("cookbooks/#{name}/#{version}?force=true", self)
+      self
+    end
 
     def destroy
       chef_server_rest.delete_rest("cookbooks/#{name}/#{version}")
@@ -743,7 +861,9 @@ class Chef
     # [String]::  Array of cookbook versions, which are strings like 'x.y.z'
     # nil::       if the cookbook doesn't exist. an error will also be logged.
     def self.available_versions(cookbook_name)
-      chef_server_rest.get_rest("cookbooks/#{cookbook_name}").values.flatten
+      chef_server_rest.get_rest("cookbooks/#{cookbook_name}")[cookbook_name]["versions"].map do |cb|
+        cb["version"]
+      end
     rescue Net::HTTPServerException => e
       if e.to_s =~ /^404/
         Chef::Log.error("Cannot find a cookbook named #{cookbook_name}")
@@ -882,7 +1002,8 @@ class Chef
           elsif segment == :templates || segment == :files
             matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+?)/(.+))")
             unless matcher
-              Chef::Log.debug("Skipping file #{segment_file}, as it doesn't have a proper segment.")
+              Chef::Log.debug("Skipping file #{segment_file}, as it isn't in any of the proper directories (platform-version, platform or default)")
+              Chef::Log.debug("You probably need to move #{segment_file} into the 'default' sub-directory")
               next
             end
             path = matcher[1]

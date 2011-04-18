@@ -19,6 +19,7 @@
 # limitations under the License.
 #
 
+require 'forwardable'
 require 'chef/config'
 require 'chef/cookbook/cookbook_collection'
 require 'chef/nil_argument'
@@ -35,9 +36,14 @@ require 'chef/node/attribute'
 require 'chef/index_queue'
 require 'chef/mash'
 require 'chef/json_compat'
+require 'chef/search/query'
 
 class Chef
   class Node
+
+    extend Forwardable
+
+    def_delegators :construct_attributes, :keys, :each_key, :each_value, :key?, :has_key?
 
     attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list
     attr_accessor :override_attrs, :default_attrs, :normal_attrs, :automatic_attrs
@@ -55,7 +61,7 @@ class Chef
     include Chef::IndexQueue::Indexable
 
     DESIGN_DOCUMENT = {
-      "version" => 9,
+      "version" => 11,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -138,7 +144,8 @@ class Chef
           "map" => <<-EOJS
             function(doc) {
               if (doc.chef_type == "node") {
-                emit(doc['chef_environment'], doc.name);
+                var env = (doc['chef_environment'] == null ? "_default" : doc['chef_environment']);
+                emit(env, doc.name);
               }
             }
           EOJS
@@ -362,11 +369,6 @@ class Chef
       args.length > 0 ? @run_list.reset!(args) : @run_list
     end
 
-    def recipes(*args)
-      Chef::Log.warn "Chef::Node#recipes method is deprecated.  Please use Chef::Node#run_list"
-      run_list(*args)
-    end
-
     # Returns true if this Node expects a given role, false if not.
     def run_list?(item)
       run_list.detect { |r| r == item } ? true : false
@@ -390,7 +392,13 @@ class Chef
       normal_attrs_to_merge = consume_run_list(attrs)
       Chef::Log.debug("Applying attributes from json file")
       @normal_attrs = Chef::Mixin::DeepMerge.merge(@normal_attrs,normal_attrs_to_merge)
-      self[:tags] = Array.new unless attribute?(:tags)
+      self.tags # make sure they're defined
+    end
+
+    # Lazy initializer for tags attribute
+    def tags
+      self[:tags] = [] unless attribute?(:tags)
+      self[:tags]
     end
 
     # Extracts the run list from +attrs+ and applies it. Returns the remaining attributes
@@ -429,7 +437,8 @@ class Chef
       expansion = run_list.expand(chef_environment, data_source)
       raise Chef::Exceptions::MissingRole if expansion.errors?
 
-      self[:tags] = Array.new unless attribute?(:tags)
+      self.tags # make sure they're defined
+
       @automatic_attrs[:recipes] = expansion.recipes
       @automatic_attrs[:roles] = expansion.roles
 
@@ -439,10 +448,13 @@ class Chef
     # Apply the default and overrides attributes from the expansion
     # passed in, which came from roles.
     def apply_expansion_attributes(expansion)
-      @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
-      environment_attrs = chef_environment == "_default" ? {} : Chef::Environment.load(chef_environment).attributes
+      load_chef_environment_object = (chef_environment == "_default" ? nil : Chef::Environment.load(chef_environment))
+      environment_default_attrs = load_chef_environment_object.nil? ? {} : load_chef_environment_object.default_attributes
+      default_before_roles = Chef::Mixin::DeepMerge.merge(default_attrs, environment_default_attrs)
+      @default_attrs = Chef::Mixin::DeepMerge.merge(default_before_roles, expansion.default_attrs)
+      environment_override_attrs = load_chef_environment_object.nil? ? {} : load_chef_environment_object.override_attributes
       overrides_before_environments = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
-      @override_attrs = Chef::Mixin::DeepMerge.merge(overrides_before_environments, environment_attrs)
+      @override_attrs = Chef::Mixin::DeepMerge.merge(overrides_before_environments, environment_override_attrs)
     end
 
     # Transform the node to a Hash
@@ -458,6 +470,18 @@ class Chef
       index_hash["role"] = run_list.role_names if run_list.role_names.length > 0
       index_hash["run_list"] = run_list.run_list if run_list.run_list.length > 0
       index_hash
+    end
+
+    def display_hash
+      display = {}
+      display["name"]             = name
+      display["chef_environment"] = chef_environment
+      display["automatic"]        = automatic_attrs
+      display["normal"]           = normal_attrs
+      display["default"]          = default_attrs
+      display["override"]         = override_attrs
+      display["run_list"]         = run_list.run_list
+      display
     end
 
     # Serialize this object as a hash
@@ -627,7 +651,7 @@ class Chef
     def load_attributes
       cookbook_collection.values.each do |cookbook|
         cookbook.segment_filenames(:attributes).each do |segment_filename|
-          Chef::Log.debug("node #{name} loading cookbook #{cookbook.name}'s attribute file #{segment_filename}")
+          Chef::Log.debug("Node #{name} loading cookbook #{cookbook.name}'s attribute file #{segment_filename}")
           self.from_file(segment_filename)
         end
       end

@@ -61,10 +61,7 @@ class Chef
           resource = Chef::Resource.const_get(rname).new(*args)
           resource.load_prior_resource
           resource.cookbook_name = cookbook_name
-          # TODO: 5/21/2010 cw/dan: do we need recipe_name for
-          # anything? it's not even possible that this ivar is set on
-          # Chef::Provider.
-#          resource.recipe_name = @recipe_name
+          resource.recipe_name = @recipe_name
           resource.params = @params
           resource.source_line = caller[0]
           # Determine whether this resource is being created in the context of an enclosing Provider

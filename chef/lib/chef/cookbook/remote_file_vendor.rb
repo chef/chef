@@ -62,7 +62,7 @@ class Chef
         if current_checksum != found_manifest_record['checksum']
           raw_file = @rest.get_rest(found_manifest_record[:url], true)
 
-          Chef::Log.info("Storing updated #{cache_filename} in the cache.")
+          Chef::Log.debug("Storing updated #{cache_filename} in the cache.")
           Chef::FileCache.move_to(raw_file.path, cache_filename)
         else
           Chef::Log.debug("Not storing #{cache_filename}, as the cache is up to date.")

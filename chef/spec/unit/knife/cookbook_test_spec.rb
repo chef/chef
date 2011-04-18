@@ -20,10 +20,14 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
+Chef::Knife::CookbookTest.load_deps
+
 describe Chef::Knife::CookbookTest do
   before(:each) do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::CookbookTest.new
+    @knife.config[:cookbook_path] = File.join(CHEF_SPEC_DATA,'cookbooks')
+    @knife.cookbook_loader.stub!(:cookbook_exists?).and_return(true)
     @cookbooks = []
     %w{tats central_market jimmy_johns pho}.each do |cookbook_name|
       @cookbooks << Chef::CookbookVersion.new(cookbook_name)
@@ -49,10 +53,9 @@ describe Chef::Knife::CookbookTest do
     end
 
     it "should test both ruby and templates" do
-      @knife.stub!(:test_ruby).and_return(true)
-      @knife.stub!(:test_template).and_return(true)
       @knife.name_args = ["example"]
-      Array(Chef::Config[:cookbook_path]).reverse.each do |path|        
+      @knife.config[:cookbook_path].should_not be_empty
+      Array(@knife.config[:cookbook_path]).reverse.each do |path|
         @knife.should_receive(:test_ruby).with(an_instance_of(Chef::Cookbook::SyntaxCheck))
         @knife.should_receive(:test_templates).with(an_instance_of(Chef::Cookbook::SyntaxCheck))
       end
@@ -67,7 +70,7 @@ describe Chef::Knife::CookbookTest do
         @cookbooks.each do |cookbook|
           @loader[cookbook.name] = cookbook
         end
-        Chef::CookbookLoader.stub!(:new).and_return(@loader)
+        @knife.stub!(:cookbook_loader).and_return(@loader)
         @loader.each do |key, cookbook|
           @knife.should_receive(:test_cookbook).with(cookbook.name)
         end

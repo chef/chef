@@ -59,7 +59,7 @@ Feature: Synchronize cookbooks to the edge
      When I 'GET' the path '/nodes/sync/cookbooks'
      Then I should get a '403 "Forbidden"' exception
 
-  @cookbook_dependencies
+  @cookbook_dependencies @positive
   Scenario: Retrieve the list of cookbooks when dependencies are resolvable
     Given I am an administrator
       And I upload the set of 'dep_test_*' cookbooks
@@ -79,8 +79,8 @@ Feature: Synchronize cookbooks to the edge
       And changing the 'node' field 'run_list' to 'recipe[dep_test_b@2.0.0]'
      When I 'PUT' the 'node' to the path 'nodes/empty'
       And I 'GET' the path 'nodes/empty/cookbooks'
-     Then the response code should be '412'
-      And the Chef::Log should match 'Unable to satisfy constraints on cookbook dep_test_b due to run list item (dep_test_b = 2.0.0)'
+     Then I should get a '412 "Precondition Failed"' exception
+      And the response exception body should match 'Unable to satisfy constraints on cookbook dep_test_a due to run list item \(dep_test_b = 2.0.0\)'
 
   @cookbook_dependencies
   Scenario: Retrieve the list of cookbooks when a cookbook is unavailable
@@ -90,5 +90,5 @@ Feature: Synchronize cookbooks to the edge
       And changing the 'node' field 'run_list' to 'recipe[dep_test_a@3.0.0]'
      When I 'PUT' the 'node' to the path 'nodes/empty'
       And I 'GET' the path 'nodes/empty/cookbooks'
-     Then the response code should be '412'
-      And the Chef::Log should match 'Unable to satisfy constraints on cookbook dep_test_c due to run list item (dep_test_a = 3.0.0)'
+     Then I should get a '412 "Precondition Failed"' exception
+      And the response exception body should match 'Unable to satisfy constraints on cookbook dep_test_c due to run list item \(dep_test_a = 3.0.0\)'

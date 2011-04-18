@@ -36,7 +36,7 @@ describe Chef::Knife::CookbookShow do
       it 'should should print usage and exit when given no arguments' do
         @knife.name_args = []
         @knife.should_receive(:show_usage)
-        Chef::Log.should_receive(:fatal)
+        @knife.ui.should_receive(:fatal)
         lambda { @knife.run }.should raise_error(SystemExit)
       end
     end

@@ -18,7 +18,9 @@
 #
 
 require 'chef/config'
+require 'chef/mash'
 require 'chef/mixin/params_validate'
+require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/index_queue'
 require 'chef/version_constraint'
@@ -65,7 +67,8 @@ class Chef
     def initialize(couchdb=nil)
       @name = ''
       @description = ''
-      @attributes = Mash.new
+      @default_attributes = Mash.new
+      @override_attributes = Mash.new
       @cookbook_versions = Hash.new
       @couchdb_rev = nil
       @couchdb_id = nil
@@ -101,9 +104,17 @@ class Chef
       )
     end
 
-    def attributes(arg=nil)
+    def default_attributes(arg=nil)
       set_or_return(
-        :attributes,
+        :default_attributes,
+        arg,
+        :kind_of => Hash
+      )
+    end
+
+    def override_attributes(arg=nil)
+      set_or_return(
+        :override_attributes,
         arg,
         :kind_of => Hash
       )
@@ -140,7 +151,8 @@ class Chef
         "cookbook_versions" =>  @cookbook_versions,
         "json_class" => self.class.name,
         "chef_type" => "environment",
-        "attributes" => @attributes
+        "default_attributes" => @default_attributes,
+        "override_attributes" => @override_attributes
       }
       result["_rev"] = couchdb_rev if couchdb_rev
       result
@@ -153,8 +165,19 @@ class Chef
     def update_from!(o)
       description(o.description)
       cookbook_versions(o.cookbook_versions)
-      attributes(o.attributes)
+      default_attributes(o.default_attributes)
+      override_attributes(o.override_attributes)
       self
+    end
+
+
+    def update_attributes_from_params(params)
+      unless params[:default_attributes].nil? || params[:default_attributes].size == 0
+        default_attributes(Chef::JSONCompat.from_json(params[:default_attributes]))
+      end
+      unless params[:override_attributes].nil? || params[:override_attributes].size == 0
+        override_attributes(Chef::JSONCompat.from_json(params[:override_attributes]))
+      end
     end
 
     def update_from_params(params)
@@ -180,9 +203,7 @@ class Chef
         end
       end
 
-      unless params[:attributes].nil? || params[:attributes].size == 0
-        attributes(Chef::JSONCompat.from_json(params[:attributes]))
-      end
+      update_attributes_from_params(params)
 
       valid = validate_required_attrs_present && valid
       cookbook_versions(bkup_cb_versions) unless valid # restore the old cookbook_versions if valid is false
@@ -228,7 +249,8 @@ class Chef
       environment.name(o["name"])
       environment.description(o["description"])
       environment.cookbook_versions(o["cookbook_versions"])
-      environment.attributes(o["attributes"])
+      environment.default_attributes(o["default_attributes"])
+      environment.override_attributes(o["override_attributes"])
       environment.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       environment.couchdb_id = o["_id"] if o.has_key?("_id")
       environment
@@ -314,6 +336,47 @@ class Chef
 
       # inject all cookbooks into the hash while filtering out restricted versions, then sort the individual arrays
       cookbook_list = Chef::CookbookVersion.cdb_list(true, couchdb)
+
+      filtered_list = cookbook_list.inject({}) do |res, cookbook|
+        # FIXME: should cookbook.version return a Chef::Version?
+        version               = Chef::Version.new(cookbook.version)
+        requirement_satisfied = version_constraints.has_key?(cookbook.name) ? version_constraints[cookbook.name].include?(version) : true
+        # we want a key for every cookbook, even if no versions are available
+        res[cookbook.name] ||= []
+        res[cookbook.name] << cookbook if requirement_satisfied
+        res
+      end
+
+      sorted_list = filtered_list.inject({}) do |res, (cookbook_name, versions)|
+        res[cookbook_name] = versions.sort.reverse
+        res
+      end
+
+      sorted_list
+    end
+
+    # Like +cdb_load_filtered_cookbook_versions+, loads the set of
+    # cookbooks available in a given environment. The difference is that
+    # this method will load Chef::MinimalCookbookVersion objects that
+    # contain only the information necessary for solving a cookbook
+    # collection for a given run list. The user of this method must call
+    # Chef::MinimalCookbookVersion.load_full_versions_of() after solving
+    # the cookbook collection to get the full objects.
+    # === Returns
+    # Hash
+    # i.e.
+    # {
+    #   "cookbook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted highest to lowest
+    # }
+    #
+    # There will be a key for every cookbook.  If no CookbookVersions
+    # are available for the specified environment the value will be an
+    # empty list.
+    def self.cdb_minimal_filtered_versions(name, couchdb=nil)
+      version_constraints = cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Chef::VersionConstraint.new(v); res}
+
+      # inject all cookbooks into the hash while filtering out restricted versions, then sort the individual arrays
+      cookbook_list = Chef::MinimalCookbookVersion.load_all(couchdb)
 
       filtered_list = cookbook_list.inject({}) do |res, cookbook|
         # FIXME: should cookbook.version return a Chef::Version?

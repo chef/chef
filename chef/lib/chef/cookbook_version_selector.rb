@@ -50,10 +50,13 @@ class Chef
           # return the object and handle proper serialization and
           # de-serialization. For now, I'm just going to create a
           # Version object from the String representation.
-          pv = dep_graph.package(cb_name).add_version(DepSelector::Version.new(cb_version.version))
+          pv = dep_graph.package(cb_name).add_version(Chef::Version.new(cb_version.version))
           cb_version_deps.each_pair do |dep_name, constraint_str|
-            constraint = DepSelector::VersionConstraint.new(constraint_str)
-            pv.dependencies << DepSelector::Dependency.new(dep_graph.package(dep_name), constraint)
+            # if the dependency is specified as cookbook::recipe,
+            # extract the cookbook component
+            dep_cb_name = dep_name.split("::").first
+            constraint = Chef::VersionConstraint.new(constraint_str)
+            pv.dependencies << DepSelector::Dependency.new(dep_graph.package(dep_cb_name), constraint)
           end
         end
       end
@@ -149,12 +152,17 @@ class Chef
     #
     # Returns:
     #   Hash of: name to CookbookVersion
-    def self.expand_to_cookbook_versions(run_list, environment)
+    def self.expand_to_cookbook_versions(run_list, environment, couchdb=nil)
       # expand any roles in this run_list.
-      expanded_run_list = run_list.expand(environment, 'couchdb').recipes.with_version_constraints
+      expanded_run_list = run_list.expand(environment, 'couchdb', :couchdb => couchdb).recipes.with_version_constraints
 
-      cookbooks_for_environment = Chef::Environment.cdb_load_filtered_cookbook_versions(environment)
-      constrain(cookbooks_for_environment, expanded_run_list)
+      cookbooks_for_environment = Chef::Environment.cdb_minimal_filtered_versions(environment, couchdb)
+      cookbook_collection = constrain(cookbooks_for_environment, expanded_run_list)
+      full_cookbooks = Chef::MinimalCookbookVersion.load_full_versions_of(cookbook_collection.values, couchdb)
+      full_cookbooks.inject({}) do |cb_map, cookbook_version|
+        cb_map[cookbook_version.name] = cookbook_version
+        cb_map
+      end
     end
   end
 end

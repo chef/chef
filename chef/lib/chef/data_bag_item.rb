@@ -201,7 +201,7 @@ class Chef
 
     # Remove this Data Bag Item from CouchDB
     def cdb_destroy
-      Chef::Log.debug "destroying data bag item: #{self.inspect}"
+      Chef::Log.debug "Destroying data bag item: #{self.inspect}"
       @couchdb.delete("data_bag_item", object_name, @couchdb_rev)
     end
 

@@ -101,6 +101,9 @@ class Chef
       providers
     end
 
+    # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
+    enforce_path_sanity(true)
+
     # Used when OpenID authentication is enabled in the Web UI
     authorized_openid_identifiers nil
     authorized_openid_providers nil
@@ -236,6 +239,6 @@ class Chef
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
     user_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
-    group_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
+    group_valid_regex [ /^([-a-zA-Z0-9_.\\ ]+)$/, /^\d+$/ ]
   end
 end

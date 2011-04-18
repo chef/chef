@@ -17,18 +17,21 @@
 #
 
 require 'chef/knife'
-require 'chef/api_client'
-require 'chef/json_compat'
 
 class Chef
   class Knife
     class ClientBulkDelete < Knife
 
+      deps do
+        require 'chef/api_client'
+        require 'chef/json_compat'
+      end
+
       banner "knife client bulk delete REGEX (options)"
 
       def run 
         if @name_args.length < 1
-          Chef::Log.fatal("You must supply a regular expression to match the results against")
+          ui.fatal("You must supply a regular expression to match the results against")
           exit 42
         else
           bulk_delete(Chef::ApiClient, "client", nil, nil, @name_args[0])

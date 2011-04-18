@@ -22,6 +22,10 @@ class Chef
   class Knife
     class CookbookDelete < Knife
 
+      deps do
+        require 'chef/cookbook_version'
+      end
+
       option :all, :short => '-a', :long => '--all', :boolean => true, :description => 'delete all versions'
 
       option :purge, :short => '-p', :long => '--purge', :boolean => true, :description => 'Permanently remove files from backing data store'
@@ -39,7 +43,7 @@ class Chef
           delete_without_explicit_version
         elsif @cookbook_name.nil?
           show_usage
-          Chef::Log.fatal("You must provide the name of the cookbook to delete")
+          ui.fatal("You must provide the name of the cookbook to delete")
           exit(1)
         end
       end
@@ -84,7 +88,7 @@ class Chef
         end.flatten
       rescue Net::HTTPServerException => e
         if e.to_s =~ /^404/
-          Chef::Log.error("Cannot find a cookbook named #{@cookbook_name} to delete")
+          ui.error("Cannot find a cookbook named #{@cookbook_name} to delete")
           nil
         else
           raise
@@ -103,14 +107,14 @@ class Chef
         responses = ask_question(question).split(',').map { |response| response.strip }
 
         if responses.empty?
-          Chef::Log.error("No versions specified, exiting")
+          ui.error("No versions specified, exiting")
           exit(1)
         end
         versions = responses.map do |response|
           if version = valid_responses[response]
             version
           else
-            Chef::Log.error("#{response} is not a valid choice, skipping it")
+            ui.error("#{response} is not a valid choice, skipping it")
           end
         end
         versions.compact
@@ -119,7 +123,7 @@ class Chef
       def delete_version_without_confirmation(version)
         object = delete_request("cookbooks/#{@cookbook_name}/#{version}")
         output(format_for_display(object)) if config[:print_after]
-        Chef::Log.info("Deleted cookbook[#{@cookbook_name}][#{version}]")
+        ui.info("Deleted cookbook[#{@cookbook_name}][#{version}]")
       end
 
       def delete_versions_without_confirmation(versions)

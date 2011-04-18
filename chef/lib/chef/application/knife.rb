@@ -17,23 +17,14 @@
 
 require 'chef/knife'
 require 'chef/application'
-require 'chef/client'
-require 'chef/config'
-require 'chef/log'
-require 'chef/node'
-require 'chef/role'
-require 'chef/data_bag'
-require 'chef/data_bag_item'
-require 'chef/rest'
-require 'chef/search/query'
-require 'tmpdir'
-require 'uri'
+require 'mixlib/log'
+require 'ohai/config'
 
 class Chef::Application::Knife < Chef::Application
 
   NO_COMMAND_GIVEN = "You need to pass a sub-command (e.g., knife SUB-COMMAND)\n"
 
-  banner "Usage: #{$0} sub-command (options)"
+  banner "Usage: knife sub-command (options)"
 
   option :config_file,
     :short => "-c CONFIG",
@@ -41,17 +32,25 @@ class Chef::Application::Knife < Chef::Application
     :description => "The configuration file to use",
     :proc => lambda { |path| File.expand_path(path, Dir.pwd) }
 
-  option :log_level,
-    :short        => "-l LEVEL",
-    :long         => "--log_level LEVEL",
-    :description  => "Set the log level (debug, info, warn, error, fatal)",
-    :proc         => lambda { |l| l.to_sym }
+  verbosity_level = 0
+  option :verbosity,
+    :short => '-V',
+    :long  => '--verbose',
+    :description => "More verbose output. Use twice for max verbosity",
+    :proc  => Proc.new { verbosity_level += 1},
+    :default => 0
 
-  option :log_location,
-    :short        => "-L LOGLOCATION",
-    :long         => "--logfile LOGLOCATION",
-    :description  => "Set the log file location, defaults to STDOUT",
-    :proc         => nil
+  option :color,
+    :long         => '--color',
+    :boolean      => true,
+    :default      => true,
+    :description  => "Use colored output"
+
+  option :no_color,
+    :long         => '--no-color',
+    :boolean      => true,
+    :default      => false,
+    :description  => "Don't use colors in the output"
 
   option :environment,
     :short        => "-E ENVIRONMENT",
@@ -103,7 +102,6 @@ class Chef::Application::Knife < Chef::Application
     :description => "Accept default values for all questions"
 
   option :print_after,
-    :short => "-p",
     :long => "--print-after",
     :description => "Show the data after a destructive operation"
 
@@ -111,7 +109,7 @@ class Chef::Application::Knife < Chef::Application
     :short => "-F FORMAT",
     :long => "--format FORMAT",
     :description => "Which format to use for output",
-    :default => "json"
+    :default => "summary"
 
   option :version,
     :short        => "-v",
@@ -121,15 +119,27 @@ class Chef::Application::Knife < Chef::Application
     :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
     :exit         => 0
 
+
   # Run knife
   def run
     Mixlib::Log::Formatter.show_time = false
     validate_and_parse_options
+    quiet_traps
     Chef::Knife.run(ARGV, options)
     exit 0
   end
 
   private
+
+  def quiet_traps
+    trap("TERM") do
+      exit 1
+    end
+
+    trap("INT") do
+      exit 2
+    end
+  end
 
   def validate_and_parse_options
     # Checking ARGV validity *before* parse_options because parse_options

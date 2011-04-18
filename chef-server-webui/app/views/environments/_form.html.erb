@@ -53,7 +53,7 @@
               </td>
               <td>
                 <input id="cookbook_version_0000"
-                       class="text" name="cookbook_version_selector" 
+                       class="text" name="cookbook_version_selector"
                        onfocus="clearVersionBox(this, '0000')"
                        onblur="validateVersionBoxValue(this, '0000')"
                        value="0.0.0">
@@ -68,8 +68,8 @@
     </div>
 
     <div class="group form attrEditor">
-      <label class="label">Environment Attributes</label>
-      <%= partial 'layout/jsonedit', :json =>  @environment.attributes.to_json%>
+      <label class="label">Environment Default and Override Attributes</label>
+      <%= partial 'layout/jsonedit', :json => { :defaults => @environment.default_attributes, :overrides => @environment.override_attributes }.to_json%>
       <span class="description">
         A JSON hash for attributes of this environment. These attributes will be applied according to the attribute precedence rules.
       </span>

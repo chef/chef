@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' value='text/html;charset=utf8'>
+  <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
+  <title>knife(1) - Chef Server API client utility</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+  <style type='text/css' media='all'>
+  /* style: toc */
+  .man-navigation {display:block !important;position:fixed;top:0;left:113ex;height:100%;width:100%;padding:48px 0 0 0;border-left:1px solid #dbdbdb;background:#eee}
+  .man-navigation a,.man-navigation a:hover,.man-navigation a:link,.man-navigation a:visited {display:block;margin:0;padding:5px 2px 5px 30px;color:#999;text-decoration:none}
+  .man-navigation a:hover {color:#111;text-decoration:underline}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#OPTIONS">OPTIONS</a>
+    <a href="#SUB-COMMANDS">SUB-COMMANDS</a>
+    <a href="#CONFIGURATION">CONFIGURATION</a>
+    <a href="#FILES">FILES</a>
+    <a href="#CHEF-WORKFLOW">CHEF WORKFLOW</a>
+    <a href="#EXAMPLES">EXAMPLES</a>
+    <a href="#ENVIRONMENT">ENVIRONMENT</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+    <a href="#AUTHOR">AUTHOR</a>
+    <a href="#DOCUMENTATION">DOCUMENTATION</a>
+    <a href="#LICENSE">LICENSE</a>
+    <a href="#CHEF">CHEF</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>knife(1)</li>
+    <li class='tc'>Chef Manual</li>
+    <li class='tr'>knife(1)</li>
+  </ol>
+
+  <h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>knife</code> - <span class="man-whatis">Chef Server API client utility</span>
+</p>
+
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
+<p><strong>knife</strong> <em>sub-command</em> [<em>argument</em>...] <em>(options)</em></p>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p>Knife is a command-line utility used to manage data on a Chef server
+through the HTTP(S) API. Knife is organized into groups of subcommands
+centered around the various object types in Chef. Each category of
+subcommand is documented in its own manual page. Available topics are:</p>
+
+<ul>
+<li>bootstrap</li>
+<li>client</li>
+<li>configure</li>
+<li>cookbook-site</li>
+<li>cookbook</li>
+<li>data-bag</li>
+<li>environment</li>
+<li>exec</li>
+<li>index</li>
+<li>node</li>
+<li>recipe</li>
+<li>role</li>
+<li>search</li>
+<li>ssh</li>
+<li>status</li>
+<li>tag</li>
+</ul>
+
+
+<p>If the knife manuals are in your <code>MANPATH</code>, you can access help for the
+above topics using <code>man knife-TOPIC</code>; otherwise, you can view the
+documentation using <code>knife help TOPIC</code>.</p>
+
+<h2 id="OPTIONS">OPTIONS</h2>
+
+<dl>
+<dt><code>-s</code>, <code>--server-url</code> URL</dt><dd>Chef Server URL, corresponds to <code>Chef::Config</code> <code>chef_server_url</code>.</dd>
+<dt><code>-k</code>, <code>--key</code> KEY</dt><dd>API Client Key, corresponds to <code>Chef::Config</code> <code>client_key</code>.</dd>
+<dt><code>-c</code>, <code>--config</code> CONFIG</dt><dd>The configuration file to use</dd>
+<dt><code>-e</code>, <code>--editor</code> EDITOR</dt><dd>Set the editor to use for interactive commands</dd>
+<dt><code>-F</code>, <code>--format</code> FORMAT</dt><dd>Which format to use for output</dd>
+<dt><code>-l</code>, <code>--log_level</code> LEVEL</dt><dd>Set the log level (debug, info, warn, error, fatal), corresponds to <code>Chef::Config</code> <code>log_level</code>.</dd>
+<dt><code>-L</code>, <code>--logfile</code> LOGLOCATION</dt><dd>Set the log file location, defaults to STDOUT, corresponds to <code>Chef::Config</code> <code>log_location</code>.</dd>
+<dt><code>-n</code>, <code>--no-editor</code></dt><dd>Do not open EDITOR, just accept the data as is</dd>
+<dt><code>-u</code>, <code>--user</code> USER</dt><dd>API Client Username, corresponds to <code>Chef::Config</code> <code>node_name</code>.</dd>
+<dt><code>-p</code>, <code>--print-after</code></dt><dd>Show the data after a destructive operation</dd>
+<dt><code>-v</code>, <code>--version</code></dt><dd>Show chef version</dd>
+<dt><code>-y</code>, <code>--yes</code></dt><dd>Say yes to all prompts for confirmation</dd>
+<dt><code>-h</code>, <code>--help</code></dt><dd>Show the available options for a command.</dd>
+</dl>
+
+
+<h2 id="SUB-COMMANDS">SUB-COMMANDS</h2>
+
+<p>Sub-commands that operate on the basic Chef data types are structured as
+<em>NOUN verb NOUN (options)</em>. For all data types, the following commands
+are available:</p>
+
+<ul>
+<li>create (create)</li>
+<li>list and show (read)</li>
+<li>edit (update)</li>
+<li>delete (destroy)</li>
+</ul>
+
+
+<p>Knife also includes commands that take actions other than displaying or
+modifying data on the Chef Server, such as <strong><span class="man-ref">knife-ssh<span class="s">(1)</span></span></strong>.</p>
+
+<h2 id="CONFIGURATION">CONFIGURATION</h2>
+
+<p>The knife configuration file is a Ruby DSL to set configuration
+parameters for Knife's <strong>GENERAL OPTIONS</strong>. The default location for the
+config file is <code>~/.chef/knife.rb</code>. If managing multiple Chef
+repositories, per-repository config files can be created. The file must
+be <code>.chef/knife.rb</code> in the current directory of the repository.</p>
+
+<p>If the config file exists, knife uses these settings for <strong>GENERAL OPTIONS</strong> defaults.</p>
+
+<ul>
+<li><code>node_name</code>:
+User or client identity (i.e., <em>name</em>) to use for authenticating
+requests to the Chef Server.</li>
+<li><code>client_key</code>:
+Private key file to authenticate to the Chef server. Corresponds to the
+<code>-k</code> or <code>--key</code> option.</li>
+<li><code>chef_server_url</code>:
+URL of the Chef server. Corresponds to the <code>-s</code> or <code>--server-url</code>
+option. This is requested from the user when running this sub-command.</li>
+<li><code>cache_type</code>:
+The type of cache to use. Default is BasicFile. This can be any type of
+Cache that moneta supports: BasicFile, Berkeley, Couch, DataMapper,
+File, LMC, Memcache, Memory, MongoDB, Redis, Rufus, S3, SDBM, Tyrant,
+Xattr, YAML.</li>
+<li><code>cache_options</code>:
+Specifies various options to use for caching. These options are
+dependent on the <code>cache_type</code>.</li>
+<li><code>validation_client_name</code>:
+Specifies the name of the client used to validate new clients.</li>
+<li><code>validation_key</code>:
+Specifies the private key file to use when bootstrapping new hosts.
+See <span class="man-ref">knife-client<span class="s">(1)</span></span> for more information about the validation
+client.</li>
+<li><code>cookbook_copyright</code>, <code>cookbook_email</code>, <code>cookbook_license</code>
+Used by <code>knife cookbook create</code> sub-command to specify the copyright
+holder, maintainer email and license (respectively) for new cookbooks.
+The copyright holder is listed as the maintainer in the cookbook's
+metadata and as the Copyright in the comments of the default recipe. The
+maintainer email is used in the cookbook metadata. The license
+determines what preamble to put in the comment of the default recipe,
+and is listed as the license in the cookbook metadata. Currently
+supported licenses are "apachev2" and "none". Any other values will
+result in an empty license in the metadata (needs to be filled in by the
+author), and no comment preamble in the default recipe.</li>
+</ul>
+
+
+<h2 id="FILES">FILES</h2>
+
+<p><em>~/.chef/knife.rb</em></p>
+
+<p>Ruby DSL configuration file for knife. See <strong>CONFIGURATION</strong>.</p>
+
+<h2 id="CHEF-WORKFLOW">CHEF WORKFLOW</h2>
+
+<p>When working with Chef and Knife in the local repository, the recommended workflow outline looks like:</p>
+
+<ul>
+<li>Create repository. A skeleton sample is provided at <em>http://github.com/opscode/chef-repo/</em>.</li>
+<li>Configure knife, see <strong>CONFIGURATION</strong>.</li>
+<li>Download cookbooks from the Opscode cookbooks site, see <strong>COOKBOOK SITE SUB-COMMANDS</strong>.</li>
+<li>Or, create new cookbooks, see <code>cookbook create</code> sub-command.</li>
+<li>Commit changes to the version control system. See your tool's documentation.</li>
+<li>Upload cookbooks to the Chef Server, see <strong>COOKBOOK SUB-COMMANDS</strong>.</li>
+<li>Launch instances in the Cloud, OR provision new hosts; see <strong>CLOUD COMPUTING SUB-COMMANDS</strong> and <strong>BOOTSTRAP SUB-COMMANDS</strong>.</li>
+<li>Watch Chef configure systems!</li>
+</ul>
+
+
+<p>A note about git: Opscode and many folks in the Chef community use git,
+but it is not required, except in the case of the <code>cookbook site vendor</code>
+sub-command, as it uses git directly. Version control is strongly
+recommended though, and git fits with a lot of the workflow paradigms.</p>
+
+<h2 id="EXAMPLES">EXAMPLES</h2>
+
+<h2 id="ENVIRONMENT">ENVIRONMENT</h2>
+
+<dl>
+<dt class="flush"><code>EDITOR</code></dt><dd>The text editor to use for editing data. The --editor option takes
+precedence over this value, and the --no-editor option supresses
+data editing entirely.</dd>
+</dl>
+
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<p>  <strong><span class="man-ref">chef-client<span class="s">(8)</span></span></strong> <strong><span class="man-ref">chef-server<span class="s">(8)</span></span></strong> <strong><span class="man-ref">shef<span class="s">(1)</span></span></strong></p>
+
+<p>  <strong><span class="man-ref">knife-bootstrap<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-client<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-configure<span class="s">(1)</span></span></strong>
+  <strong><span class="man-ref">knife-cookbook-site<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-cookbook<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-data-bag<span class="s">(1)</span></span></strong>
+  <strong><span class="man-ref">knife-environment<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-exec<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-index<span class="s">(1)</span></span></strong>
+  <strong><span class="man-ref">knife-node<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-recipe<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-role<span class="s">(1)</span></span></strong>
+  <strong><span class="man-ref">knife-search<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-ssh<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-tag<span class="s">(1)</span></span></strong></p>
+
+<p>  Complete Chef documentation is available online: <a href="http://wiki.opscode.com/display/chef/Home/" data-bare-link="true">http://wiki.opscode.com/display/chef/Home/</a></p>
+
+<p>  JSON is JavaScript Object Notation <a href="http://json.org/" data-bare-link="true">http://json.org/</a></p>
+
+<p>  SOLR is an open source search engine. <a href="http://lucene.apache.org/solr/" data-bare-link="true">http://lucene.apache.org/solr/</a></p>
+
+<p>  <strong><span class="man-ref">git<span class="s">(1)</span></span></strong> is a version control system <a href="http://git-scm.com/" data-bare-link="true">http://git-scm.com/</a></p>
+
+<p>  This manual page was generated from Markdown with <strong><span class="man-ref">ronn<span class="s">(1)</span></span></strong> <a href="http://rtomayko.github.com/ronn/ronn.1.html" data-bare-link="true">http://rtomayko.github.com/ronn/ronn.1.html</a></p>
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+<p>   Chef was written by Adam Jacob <a href="&#109;&#x61;&#105;&#x6c;&#x74;&#x6f;&#58;&#x61;&#100;&#x61;&#x6d;&#x40;&#111;&#x70;&#115;&#99;&#111;&#x64;&#x65;&#x2e;&#x63;&#x6f;&#109;" data-bare-link="true">&#x61;&#100;&#97;&#109;&#64;&#111;&#x70;&#115;&#99;&#111;&#x64;&#x65;&#x2e;&#99;&#x6f;&#x6d;</a> of Opscode
+   (<a href="http://www.opscode.com" data-bare-link="true">http://www.opscode.com</a>), with contributions from the community.</p>
+
+<h2 id="DOCUMENTATION">DOCUMENTATION</h2>
+
+<p>   This manual page was written by Joshua Timberman <a href="&#109;&#97;&#105;&#108;&#116;&#x6f;&#58;&#x6a;&#x6f;&#115;&#104;&#117;&#x61;&#x40;&#111;&#x70;&#115;&#99;&#x6f;&#100;&#101;&#x2e;&#x63;&#x6f;&#x6d;" data-bare-link="true">&#106;&#111;&#x73;&#104;&#117;&#97;&#x40;&#111;&#112;&#x73;&#x63;&#x6f;&#x64;&#101;&#46;&#x63;&#111;&#109;</a>.</p>
+
+<h2 id="LICENSE">LICENSE</h2>
+
+<p>   Both Chef and this documentation are released under the terms of the
+   Apache 2.0 License. You may view the license online: <a href="http://www.apache.org/licenses/LICENSE-2.0.html" data-bare-link="true">http://www.apache.org/licenses/LICENSE-2.0.html</a>
+   On some systems, the complete text of the Apache 2.0 License may be found in <code>/usr/share/common-licenses/Apache-2.0</code>.</p>
+
+<h2 id="CHEF">CHEF</h2>
+
+<p>   Knife is distributed with Chef. <a href="http://wiki.opscode.com/display/chef/Home" data-bare-link="true">http://wiki.opscode.com/display/chef/Home</a></p>
+
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'>Chef 0.10.0.rc.0</li>
+    <li class='tc'>April 2011</li>
+    <li class='tr'>knife(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>

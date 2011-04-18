@@ -51,11 +51,7 @@ case "$1" in
 
   stop)
     stat_busy "Stopping $daemon_name daemon"
-<<<<<<< HEAD
     PID=$(get_pid)
-=======
-    PID=$(gid_pid)
->>>>>>> 26fafb3... CHEF-1938, add boot scripts for archlinux
     [ ! -z "$PID" ] && kill $PID &> /dev/null
     if [ $? -gt 0 ]; then
       stat_fail

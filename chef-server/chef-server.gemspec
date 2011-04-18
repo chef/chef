@@ -14,8 +14,10 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef-server-api",   "= #{ChefServer::VERSION}"
   s.add_dependency "chef-server-webui", "= #{ChefServer::VERSION}"
+  s.add_dependency "chef-expander",     "= #{ChefServer::VERSION}"
   s.add_dependency "chef-solr",         "= #{ChefServer::VERSION}"
 
   s.files = %w(LICENSE README.rdoc Rakefile lib/chef-server.rb lib/chef-server/version.rb)
   s
 end
+

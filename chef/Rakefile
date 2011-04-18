@@ -28,6 +28,9 @@ GEM_NAME = "chef"
 
 spec = eval(File.read("chef.gemspec"))
 
+# This has to be here or else the docs get generated *after* the gem is created
+task :gem => 'docs:man'
+
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
@@ -55,10 +58,48 @@ task :uninstall do
   sh %{gem uninstall #{GEM_NAME} -x -v #{Chef::VERSION} }
 end
 
-desc "create a gemspec file"
-task :make_spec do
-  File.open("#{GEM_NAME}.gemspec", "w") do |file|
-    file.puts spec.to_ruby
+RONN_OPTS = "--manual='Chef Manual' --organization='Chef #{Chef::VERSION}' --date='#{Time.new.strftime('%Y-%m-%d')}'"
+
+namespace :docs do
+  desc "Regenerate manpages from markdown"
+  task :man
+
+  desc "Regenerate HTML manual from markdown"
+  task :html
+
+  if system('which ronn > /dev/null')
+    ['distro/common/markdown/man1/*.mkd', 'distro/common/markdown/man8/*.mkd'].each do |dir|
+      Dir[dir].each do |mkd|
+        basename = File.basename(mkd, '.mkd')
+        if dir =~ /man1/
+          manfile = "distro/common/man/man1/#{basename}.1"
+          htmlfile = "distro/common/html/#{basename}.1.html"
+        elsif dir =~ /man8/
+          manfile = "distro/common/man/man8/#{basename}.8"
+          htmlfile = "distro/common/html/#{basename}.8.html"
+        end
+
+        file(manfile => mkd) do
+           sh "ronn -r #{RONN_OPTS} #{mkd} --pipe > #{manfile}"
+         end
+         task :man => manfile
+
+         file(htmlfile => mkd) do
+           sh "ronn -5 #{RONN_OPTS} --style=toc #{mkd} --pipe > #{htmlfile}"
+         end
+
+         task :html => htmlfile
+
+      end
+    end
+  else
+    puts "get with the program and install ronn"
   end
+
+  task :all => [:man, :html]
 end
+
+task :docs => "docs:all"
+
+
 

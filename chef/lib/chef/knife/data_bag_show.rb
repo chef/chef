@@ -18,11 +18,15 @@
 #
 
 require 'chef/knife'
-require 'chef/data_bag'
 
 class Chef
   class Knife
     class DataBagShow < Knife
+
+      deps do
+        require 'chef/data_bag'
+        require 'chef/encrypted_data_bag_item'
+      end
 
       banner "knife data bag show BAG [ITEM] (options)"
       category "data bag"
@@ -54,21 +58,21 @@ class Chef
 
       def run
         display = case @name_args.length
-                  when 2
-                    if use_encryption
-                      raw = Chef::EncryptedDataBagItem.load(@name_args[0],
-                                                            @name_args[1],
-                                                            read_secret)
-                      format_for_display(raw.to_hash)
-                    else
-                      format_for_display(Chef::DataBagItem.load(@name_args[0], @name_args[1]))
-                    end
-                  when 1
-                    format_list_for_display(Chef::DataBag.load(@name_args[0]))
-                  else
-                    stdout.puts opt_parser
-                    exit(1)
-                  end
+        when 2
+          if use_encryption
+            raw = Chef::EncryptedDataBagItem.load(@name_args[0],
+                                                  @name_args[1],
+                                                  read_secret)
+            format_for_display(raw.to_hash)
+          else
+            format_for_display(Chef::DataBagItem.load(@name_args[0], @name_args[1]).raw_data)
+          end
+        when 1
+          format_list_for_display(Chef::DataBag.load(@name_args[0]))
+        else
+          stdout.puts opt_parser
+          exit(1)
+        end
         output(display)
       end
     end

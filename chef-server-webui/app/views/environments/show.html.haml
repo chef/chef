@@ -26,6 +26,11 @@
                   %tr
                     %td= name
                     %td= versions
-          .left
-            %h3 Attributes
-            = build_tree('attrs', @environment.attributes)
+                    
+          .left 
+            %h3 Default Attributes
+            = build_tree('defattrs', @environment.default_attributes)
+
+          .left 
+            %h3 Override Attributes
+            = build_tree('overattrs', @environment.override_attributes)

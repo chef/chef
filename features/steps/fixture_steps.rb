@@ -270,11 +270,19 @@ Before do
       'name only' => { :name => 'test_cookbook' }
     },
     'environment' => {
+      'default_attr_test' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'default_attr_test'
+        e.description 'Test default attrs for environments'
+        e.default_attributes({"attribute_priority_was" => "came from environment default_attr_test default attributes"})
+        e
+      end,
       'cucumber' => Proc.new do
         e = Chef::Environment.new
         e.name 'cucumber'
         e.description 'I like to run tests'
-        e.attributes({"attribute_priority_was" => "came from environment cucumber"})
+        e.default_attributes({"attribute_priority_was" => "came from environment cucumber default attributes"})
+        e.override_attributes({"attribute_priority_was" => "came from environment cucumber override attributes"})
         e
       end,
       'production' => Proc.new do

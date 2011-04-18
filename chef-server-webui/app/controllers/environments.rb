@@ -203,7 +203,7 @@ class Environments < Application
   end
 
   def process_params(name=params[:name])
-    {:name => name, :description => params[:description], :attributes => params[:attributes], :cookbook_version => search_params_for_cookbook_version_constraints}
+    {:name => name, :description => params[:description], :default_attributes => params[:default_attributes], :override_attributes => params[:override_attributes], :cookbook_version => search_params_for_cookbook_version_constraints}
   end
 
   def search_params_for_cookbook_version_constraints

@@ -44,6 +44,13 @@ Then /^the response code should be '(.+)'$/ do |response_code|
   end
 end
 
+Then /^the response exception body should match '(.+)'/ do |regex|
+  raise "last response wasn't exception" unless self.exception
+  raise "last response exception had no body" unless self.exception.response && self.exception.response.body
+
+  self.exception.response.body.should =~ /#{regex}/m
+end
+
 Then /^the inflated responses key '(.+)' should be the integer '(\d+)'$/ do |key, int|
   inflated_response[key].should == int.to_i
 end
@@ -223,8 +230,4 @@ Then /^the data_bag named '(.+)' should not have an item named '(.+)'$/ do |data
     exists = false
   end
   exists.should == false
-end
-
-Then /^the Chef::Log should match '(.+)'$/ do |regex|
-  self.log_io.string.should match(/#{Regexp.escape(regex)}/)
 end

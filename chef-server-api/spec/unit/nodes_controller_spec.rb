@@ -34,7 +34,7 @@ describe "Nodes controller" do
       res = get_json("/nodes")
 
       expected_response = returned_node_list.inject({}) do |res,node_name|
-        res[node_name] = "#{root_url}/#{node_name}"
+        res[node_name] = "#{root_url}/nodes/#{node_name}"
         res
       end
       res.should == expected_response

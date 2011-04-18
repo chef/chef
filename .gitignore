@@ -34,5 +34,6 @@ chef-expander/conf/chef-expander.rb
 chef-expander/spec/fixtures/expander.log
 features/data/cookbooks/transfer_remote_files/metadata.json
 features/data/cookbooks/synchronize_deps/metadata.json
+features/data/cookbooks_not_uploaded_at_feature_start/*/metadata.json
 */tags
 *~

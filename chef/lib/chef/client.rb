@@ -9,9 +9,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,12 +22,14 @@ require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/log'
 require 'chef/rest'
+require 'chef/api_client'
 require 'chef/platform'
 require 'chef/node'
 require 'chef/role'
 require 'chef/file_cache'
 require 'chef/run_context'
 require 'chef/runner'
+require 'chef/run_status'
 require 'chef/cookbook/cookbook_collection'
 require 'chef/cookbook/file_vendor'
 require 'chef/cookbook/file_system_file_vendor'
@@ -40,6 +42,8 @@ class Chef
   # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
+
+    SANE_PATHS = %w[/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin]
 
     # Clears all notifications for client run status events.
     # Primarily for testing purposes.
@@ -126,7 +130,7 @@ class Chef
       @runner = nil
       @ohai = Ohai::System.new
     end
-    
+
     # Do a full run for this Chef::Client.  Calls:
     #
     #  * run_ohai - Collect information about the system
@@ -140,16 +144,18 @@ class Chef
     def run
       run_context = nil
 
+      Chef::Log.info("*** Chef #{Chef::VERSION} ***")
+      enforce_path_sanity
       run_ohai
       register unless Chef::Config[:solo]
       build_node
-      
+
       begin
 
         run_status.start_clock
-        Chef::Log.info("Starting Chef Run (Version #{Chef::VERSION})")
+        Chef::Log.info("Starting Chef Run for #{node.name}")
         run_started
-        
+
         run_context = setup_run_context
         converge(run_context)
         save_updated_node
@@ -178,8 +184,8 @@ class Chef
     # Chef::RunContext:: the run context for this run.
     def setup_run_context
       if Chef::Config[:solo]
-        Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
-        run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new))
+        Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, Chef::Config[:cookbook_path]) }
+        run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path])))
       else
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest) }
         cookbook_hash = sync_cookbooks
@@ -213,7 +219,7 @@ class Chef
 
       name
     end
-    
+
     # Builds a new node object for this client.  Starts with querying for the FQDN of the current
     # host (unless it is supplied), then merges in the facts from Ohai.
     #
@@ -248,35 +254,35 @@ class Chef
       # @run_list_expansion is a RunListExpansion.
       #
       # Convert @expanded_run_list, which is an
-      # Array of Hashes of the form 
+      # Array of Hashes of the form
       #   {:name => NAME, :version_constraint => Chef::VersionConstraint },
-      # into @expanded_run_list_with_versions, an 
+      # into @expanded_run_list_with_versions, an
       # Array of Strings of the form
       #   "#{NAME}@#{VERSION}"
       @expanded_run_list_with_versions = @run_list_expansion.recipes.with_version_constraints_strings
 
       Chef::Log.info("Run List is [#{@node.run_list}]")
-      Chef::Log.info("Run List expands (with versions) to [#{@expanded_run_list_with_versions.join(', ')}]")
- 
+      Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
+
       @run_status = Chef::RunStatus.new(@node)
 
       @node
     end
 
-    # 
+    #
     # === Returns
     # rest<Chef::REST>:: returns Chef::REST connection object
-    def register
-      if File.exists?(Chef::Config[:client_key])
-        Chef::Log.debug("Client key #{Chef::Config[:client_key]} is present - skipping registration")
+    def register(client_name=node_name, config=Chef::Config)
+      if File.exists?(config[:client_key])
+        Chef::Log.debug("Client key #{config[:client_key]} is present - skipping registration")
       else
-        Chef::Log.info("Client key #{Chef::Config[:client_key]} is not present - registering")
-        Chef::REST.new(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).register(node_name, Chef::Config[:client_key])
+        Chef::Log.info("Client key #{config[:client_key]} is not present - registering")
+        Chef::REST.new(config[:client_url], config[:validation_client_name], config[:validation_key]).register(client_name, config[:client_key])
       end
       # We now have the client key, and should use it from now on.
-      self.rest = Chef::REST.new(Chef::Config[:chef_server_url], node_name, Chef::Config[:client_key])
+      self.rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
     end
-    
+
     # Sync_cookbooks eagerly loads all files except files and
     # templates.  It returns the cookbook_hash -- the return result
     # from /environments/#{node.chef_environment}/cookbook_versions,
@@ -292,10 +298,10 @@ class Chef
 
       # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
       Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
-      
+
       cookbook_hash
     end
-    
+
     # Converges the node.
     #
     # === Returns
@@ -306,23 +312,37 @@ class Chef
       runner.converge
       true
     end
-    
+
+    def enforce_path_sanity(env=ENV)
+      if Chef::Config[:enforce_path_sanity] && RUBY_PLATFORM !~ /mswin|mingw32|windows/
+        existing_paths = env["PATH"].split(':')
+        SANE_PATHS.each do |sane_path|
+          unless existing_paths.include?(sane_path)
+            env_path = env["PATH"].dup
+            env_path << ':' unless env["PATH"].empty?
+            env_path << sane_path
+            env["PATH"] = env_path
+          end
+        end
+      end
+    end
+
     private
-    
+
     def directory_not_empty?(path)
       File.exists?(path) && (Dir.entries(path).size > 2)
     end
-    
+
     def is_last_element?(index, object)
-      object.kind_of?(Array) ? index == object.size - 1 : true 
-    end  
-    
+      object.kind_of?(Array) ? index == object.size - 1 : true
+    end
+
     def assert_cookbook_path_not_empty(run_context)
       if Chef::Config[:solo]
         # Check for cookbooks in the path given
         # Chef::Config[:cookbook_path] can be a string or an array
         # if it's an array, go through it and check each one, raise error at the last one if no files are found
-        Chef::Log.debug "loading from cookbook_path: #{Array(Chef::Config[:cookbook_path]).map { |path| File.expand_path(path) }.join(', ')}" 
+        Chef::Log.debug "Loading from cookbook_path: #{Array(Chef::Config[:cookbook_path]).map { |path| File.expand_path(path) }.join(', ')}"
         Array(Chef::Config[:cookbook_path]).each_with_index do |cookbook_path, index|
           if directory_not_empty?(cookbook_path)
             break
@@ -339,4 +359,8 @@ class Chef
     end
   end
 end
+
+# HACK cannot load this first, but it must be loaded.
+require 'chef/cookbook_loader'
+require 'chef/cookbook_version'
 

@@ -31,6 +31,7 @@ class Chef
       alias :branch :revision
       alias :reference :revision
 
+      alias :repo :repository
     end
   end
 end

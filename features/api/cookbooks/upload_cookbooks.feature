@@ -141,3 +141,17 @@ Feature: CRUD cookbooks
      Then I should not get an exception
      When I create a cookbook named 'testcookbook_invalid_empty_except_metadata' with only the metadata file
      Then I should get a '400 "Bad Request"' exception
+
+  @freeze_cookbook_version
+  Scenario: Create a frozen Cookbook Version
+    Given I am an administrator
+      And I have uploaded a frozen cookbook named 'testcookbook_valid' at version '0.1.0'
+     When I 'GET' the path '/cookbooks/testcookbook_valid/0.1.0'
+     Then the cookbook version document should be frozen
+
+  @freeze_cookbook_version @overwrite_frozen_version
+  Scenario: Cannot overwrite a frozen Cookbook Version
+    Given I am an administrator
+      And I have uploaded a frozen cookbook named 'testcookbook_valid' at version '0.1.0'
+     When I upload a cookbook named 'testcookbook_valid' at version '0.1.0'
+     Then I should get a '409 "Conflict"' exception

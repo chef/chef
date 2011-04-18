@@ -18,12 +18,15 @@
 #
 
 require 'chef/knife'
-require 'chef/data_bag_item'
-require 'chef/encrypted_data_bag_item'
 
 class Chef
   class Knife
     class DataBagEdit < Knife
+
+      deps do
+        require 'chef/data_bag_item'
+        require 'chef/encrypted_data_bag_item'
+      end
 
       banner "knife data bag edit BAG ITEM (options)"
       category "data bag"
@@ -81,7 +84,7 @@ class Chef
         output = edit_item(item)
         rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", output)
         stdout.puts("Saved data_bag_item[#{@name_args[1]}]")
-        output(format_for_display(object)) if config[:print_after]
+        output(format_for_display(object.raw_data)) if config[:print_after]
       end
     end
   end

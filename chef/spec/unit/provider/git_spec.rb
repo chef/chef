@@ -49,23 +49,16 @@ describe Chef::Provider::Git do
 
     it "determines the current revision when there is one" do
       ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
-      ::File.should_receive(:directory?).with("/my/deploy/dir").and_return(true)
-      ::Dir.should_receive(:chdir).with("/my/deploy/dir").and_yield
-      @stderr.stub!(:string).and_return('')
-      @stdout.stub!(:string).and_return("9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13\n")
-      @exitstatus.stub!(:exitstatus).and_return(0)
-      @provider.should_receive(:popen4).and_yield("fake-pid","no-stdin", @stdout, @stderr).and_return(@exitstatus)
+      @stdout = "9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13\n"
+      @provider.should_receive(:shell_out!).with('git rev-parse HEAD', {:cwd => '/my/deploy/dir', :returns => [0,128]}).and_return(mock("ShellOut result", :stdout => @stdout))
       @provider.find_current_revision.should eql("9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13")
     end
 
     it "gives the current revision as nil when there is no current revision" do
       ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(true)
-      ::File.should_receive(:directory?).with("/my/deploy/dir").and_return(true)
-      ::Dir.should_receive(:chdir).with("/my/deploy/dir").and_yield
-      @stderr.stub!(:string).and_return"fatal: Not a git repository (or any of the parent directories): .git"
-      @stdout.stub!(:string).and_return("")
-      @exitstatus.stub!(:exitstatus).and_return(128)
-      @provider.should_receive(:popen4).and_yield("fake-pid","no-stdin", @stdout, @stderr).and_return(@exitstatus)
+      @stderr = "fatal: Not a git repository (or any of the parent directories): .git"
+      @stdout = ""
+      @provider.should_receive(:shell_out!).with('git rev-parse HEAD', :cwd => '/my/deploy/dir', :returns => [0,128]).and_return(mock("ShellOut result", :stdout => "", :stderr => @stderr))
       @provider.find_current_revision.should be_nil
     end
   end
@@ -85,11 +78,6 @@ describe Chef::Provider::Git do
   context "resolving revisions to a SHA" do
 
     before do
-      @stderr = mock("standard error")
-      @stderr.stub!(:string).and_return("")
-      @stdout = mock("std out")
-      @exitstatus = mock("exitstatus")
-      @exitstatus.stub!(:exitstatus).and_return(0)
       @git_ls_remote = "git ls-remote git://github.com/opscode/chef.git "
     end
 
@@ -99,10 +87,8 @@ describe Chef::Provider::Git do
 
     it "converts resource.revision from a tag to a SHA" do
       @resource.revision "v1.0"
-      @stdout.stub!(:string).and_return("503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n")
-      @provider.should_receive(:popen4).with(@git_ls_remote + "v1.0", {:cwd => instance_of(String)}).
-                                        and_yield("pid","stdin",@stdout,@stderr).
-                                        and_return(@exitstatus)
+      @stdout = "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n"
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0", {:command_log_prepend=>"git[web2.0 app]", :command_log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
       @provider.target_revision.should eql("503c22a5e41f5ae3193460cca044ed1435029f53")
     end
 
@@ -113,29 +99,29 @@ describe Chef::Provider::Git do
 
     it "raises a runtime error if the revision can't be resolved to any revision" do
       @resource.revision "FAIL, that's the revision I want"
-      @stdout.stub!(:string).and_return("\n")
-      @provider.should_receive(:popen4).and_yield("pid","stdin",@stdout,@stderr).and_return(@exitstatus)
+      @provider.should_receive(:shell_out!).and_return(mock("ShellOut result", :stdout => "\n"))
       lambda {@provider.target_revision}.should raise_error(RuntimeError)
     end
 
     it "gives the latest HEAD revision SHA if nothing is specified" do
-      lots_of_shas =  "28af684d8460ba4793eda3e7ac238c864a5d029a\tHEAD\n"+
-                      "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n"+
-                      "28af684d8460ba4793eda3e7ac238c864a5d029a\trefs/heads/master\n"+
-                      "c44fe79bb5e36941ce799cee6b9de3a2ef89afee\trefs/tags/0.5.2\n"+
-                      "14534f0e0bf133dc9ff6dbe74f8a0c863ff3ac6d\trefs/tags/0.5.4\n"+
-                      "d36fddb4291341a1ff2ecc3c560494e398881354\trefs/tags/0.5.6\n"+
-                      "9e5ce9031cbee81015de680d010b603bce2dd15f\trefs/tags/0.6.0\n"+
-                      "9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13\trefs/tags/0.6.2\n"+
-                      "014a69af1cdce619de82afaf6cdb4e6ac658fede\trefs/tags/0.7.0\n"+
-                      "fa8097ff666af3ce64761d8e1f1c2aa292a11378\trefs/tags/0.7.2\n"+
-                      "44f9be0b33ba5c10027ddb030a5b2f0faa3eeb8d\trefs/tags/0.7.4\n"+
-                      "d7b9957f67236fa54e660cc3ab45ffecd6e0ba38\trefs/tags/0.7.8\n"+
-                      "b7d19519a1c15f1c1a324e2683bd728b6198ce5a\trefs/tags/0.7.8^{}\n"+
-                      "ebc1b392fe7e8f0fbabc305c299b4d365d2b4d9b\trefs/tags/chef-server-package"
+      @stdout =<<-SHAS
+28af684d8460ba4793eda3e7ac238c864a5d029a\tHEAD
+503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha
+28af684d8460ba4793eda3e7ac238c864a5d029a\trefs/heads/master
+c44fe79bb5e36941ce799cee6b9de3a2ef89afee\trefs/tags/0.5.2
+14534f0e0bf133dc9ff6dbe74f8a0c863ff3ac6d\trefs/tags/0.5.4
+d36fddb4291341a1ff2ecc3c560494e398881354\trefs/tags/0.5.6
+9e5ce9031cbee81015de680d010b603bce2dd15f\trefs/tags/0.6.0
+9b4d8dc38dd471246e7cfb1c3c1ad14b0f2bee13\trefs/tags/0.6.2
+014a69af1cdce619de82afaf6cdb4e6ac658fede\trefs/tags/0.7.0
+fa8097ff666af3ce64761d8e1f1c2aa292a11378\trefs/tags/0.7.2
+44f9be0b33ba5c10027ddb030a5b2f0faa3eeb8d\trefs/tags/0.7.4
+d7b9957f67236fa54e660cc3ab45ffecd6e0ba38\trefs/tags/0.7.8
+b7d19519a1c15f1c1a324e2683bd728b6198ce5a\trefs/tags/0.7.8^{}
+ebc1b392fe7e8f0fbabc305c299b4d365d2b4d9b\trefs/tags/chef-server-package
+SHAS
       @resource.revision ''
-      @stdout.stub!(:string).and_return(lots_of_shas)
-      @provider.should_receive(:popen4).and_yield("pid","stdin",@stdout,@stderr).and_return(@exitstatus)
+      @provider.should_receive(:shell_out!).with(@git_ls_remote, {:command_log_prepend=>"git[web2.0 app]", :command_log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
       @provider.target_revision.should eql("28af684d8460ba4793eda3e7ac238c864a5d029a")
     end
   end
@@ -148,46 +134,46 @@ describe Chef::Provider::Git do
     @resource.user "deployNinja"
     @resource.ssh_wrapper "do_it_this_way.sh"
     expected_cmd = 'git clone  git://github.com/opscode/chef.git /my/deploy/dir'
-    @provider.should_receive(:run_command).with(:command => expected_cmd, :user => "deployNinja",
-                                                :environment =>{"GIT_SSH"=>"do_it_this_way.sh"})
+    @provider.should_receive(:shell_out!).with(expected_cmd, :user => "deployNinja",
+                                                :environment =>{"GIT_SSH"=>"do_it_this_way.sh"}, :command_log_level => :info, :command_log_prepend => "git[web2.0 app]", :live_stream => STDOUT)
     @provider.clone
   end
 
   it "compiles a clone command using --depth for shallow cloning" do
     @resource.depth 5
     expected_cmd = 'git clone --depth 5 git://github.com/opscode/chef.git /my/deploy/dir'
-    @provider.should_receive(:run_command).with(:command => expected_cmd)
+    @provider.should_receive(:shell_out!).with(expected_cmd, {:command_log_level => :info, :command_log_prepend => "git[web2.0 app]", :live_stream => STDOUT})
     @provider.clone
   end
 
   it "compiles a clone command with a remote other than ``origin''" do
     @resource.remote "opscode"
     expected_cmd = 'git clone -o opscode git://github.com/opscode/chef.git /my/deploy/dir'
-    @provider.should_receive(:run_command).with(:command => expected_cmd)
+    @provider.should_receive(:shell_out!).with(expected_cmd, {:command_log_level => :info, :command_log_prepend => "git[web2.0 app]", :live_stream => STDOUT})
     @provider.clone
   end
 
   it "runs a checkout command with default options" do
     expected_cmd = 'git checkout -b deploy d35af14d41ae22b19da05d7d03a0bafc321b244c'
-    @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir")
+    @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir", :command_log_level => :debug, :command_log_prepend => "git[web2.0 app]")
     @provider.checkout
   end
 
   it "runs an enable_submodule command" do
     @resource.enable_submodules true
     expected_cmd = "git submodule init && git submodule update"
-    @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir")
+    @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir", :command_log_level => :info, :command_log_prepend => "git[web2.0 app]", :live_stream => STDOUT)
     @provider.enable_submodules
   end
 
   it "does nothing for enable_submodules if resource.enable_submodules #=> false" do
-    @provider.should_not_receive(:run_command)
+    @provider.should_not_receive(:shell_out!)
     @provider.enable_submodules
   end
 
   it "runs a sync command with default options" do
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    @provider.should_receive(:run_command).with(:command=>expected_cmd, :cwd=> "/my/deploy/dir")
+    @provider.should_receive(:shell_out!).with(expected_cmd, :cwd=> "/my/deploy/dir", :command_log_level => :debug, :command_log_prepend => "git[web2.0 app]")
     @provider.fetch_updates
   end
 
@@ -195,8 +181,8 @@ describe Chef::Provider::Git do
     @resource.user("whois")
     @resource.group("thisis")
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    @provider.should_receive(:run_command).with(:command => expected_cmd, :cwd => "/my/deploy/dir",
-                                                :user => "whois", :group => "thisis")
+    @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir",
+                                                :user => "whois", :group => "thisis", :command_log_level => :debug, :command_log_prepend => "git[web2.0 app]")
     @provider.fetch_updates
   end
 
@@ -204,13 +190,14 @@ describe Chef::Provider::Git do
     @resource.remote "opscode"
     conf_tracking_branches =  "git config remote.opscode.url git://github.com/opscode/chef.git && " +
                               "git config remote.opscode.fetch +refs/heads/*:refs/remotes/opscode/*"
-    @provider.should_receive(:run_command).with(:command => conf_tracking_branches, :cwd => "/my/deploy/dir")
+    @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir", :command_log_prepend => "git[web2.0 app]", :command_log_level => :debug)
     fetch_command = "git fetch opscode && git fetch opscode --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    @provider.should_receive(:run_command).with(:command => fetch_command, :cwd => "/my/deploy/dir")
+    @provider.should_receive(:shell_out!).with(fetch_command, :cwd => "/my/deploy/dir", :command_log_level => :debug, :command_log_prepend => "git[web2.0 app]")
     @provider.fetch_updates
   end
 
   it "raises an error if the git clone command would fail because the enclosing directory doesn't exist" do
+    @provider.stub!(:shell_out!)
     lambda {@provider.action_sync}.should raise_error(Chef::Exceptions::MissingParentDirectory)
   end
 
@@ -245,7 +232,6 @@ describe Chef::Provider::Git do
     @provider.should_not_receive(:clone)
     @provider.should_not_receive(:checkout)
     @provider.should_not_receive(:enable_submodules)
-    Chef::Log.should_receive(:info).with("Taking no action, checkout destination /my/deploy/dir already exists or is a non-empty directory")
     @provider.action_checkout
     @resource.should_not be_updated
   end
@@ -284,7 +270,7 @@ describe Chef::Provider::Git do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(false)
     @provider.should_receive(:action_checkout)
-    @provider.should_not_receive(:run_command)
+    @provider.should_not_receive(:shell_out!)
     @provider.action_sync
     @resource.should be_updated
   end
@@ -295,7 +281,7 @@ describe Chef::Provider::Git do
     ::File.stub!(:directory?).with("/my/deploy/dir").and_return(true)
     @provider.stub!(:sync_command).and_return("huzzah!")
     @provider.should_receive(:action_checkout)
-    @provider.should_not_receive(:run_command).with(:command => "huzzah!", :cwd => "/my/deploy/dir")
+    @provider.should_not_receive(:shell_out!).with("huzzah!", :cwd => "/my/deploy/dir")
     @provider.action_sync
     @resource.should be_updated
   end

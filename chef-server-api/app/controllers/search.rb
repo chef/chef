@@ -41,6 +41,14 @@ class Search < Application
     end
     params[:type] = params.delete(:id)
     display(Chef::SolrQuery.from_params(params).search)
+  rescue Chef::Exceptions::QueryParseError => e
+    # we set status rather than raising BadRequest to avoid a
+    # stacktrace in the server log
+    self.status = 400
+    e_msg = e.message.gsub(/\n/, " ")
+    msg = "invalid search query: '#{params[:q]}' #{e_msg}"
+    Chef::Log.warn("400 #{msg}")
+    display({ "error" => [msg] })
   end
 
   def reindex

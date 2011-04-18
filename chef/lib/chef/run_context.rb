@@ -107,7 +107,7 @@ class Chef
         resourcelist = Chef::ResourceDefinitionList.new
         resourcelist.from_file(filename)
         definitions.merge!(resourcelist.defines) do |key, oldval, newval|
-          Chef::Log.info("Overriding duplicate definition #{key}, new found in #{filename}")
+          Chef::Log.info("Overriding duplicate definition #{key}, new definition found in #{filename}")
           newval
         end
       end

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,18 +21,18 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe Chef::CookbookVersion do
 #  COOKBOOK_PATH = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks", "openldap"))
   before(:each) do
-    Chef::Config.cookbook_path = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
-    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+    @cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
+    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
     @cookbook = @cookbook_collection[:openldap]
     @node = Chef::Node.new
     @node.name "JuliaChild"
     @run_context = Chef::RunContext.new(@node, @cookbook_collection)
   end
-  
+
   it "should have a name" do
     @cookbook.name.should == :openldap
   end
-  
+
   it "should allow you to set the list of attribute files and create the mapping from short names to paths" do
     @cookbook.attribute_filenames = [ "attributes/one.rb", "attributes/two.rb" ]
     @cookbook.attribute_filenames.should == [ "attributes/one.rb", "attributes/two.rb" ]
@@ -40,7 +40,7 @@ describe Chef::CookbookVersion do
     @cookbook.attribute_filenames_by_short_filename["one"].should == "attributes/one.rb"
     @cookbook.attribute_filenames_by_short_filename["two"].should == "attributes/two.rb"
   end
-  
+
   it "should allow you to set the list of recipe files and create the mapping of recipe short name to filename" do
     @cookbook.recipe_filenames = [ "recipes/one.rb", "recipes/two.rb" ]
     @cookbook.recipe_filenames.should == [ "recipes/one.rb", "recipes/two.rb" ]
@@ -55,30 +55,30 @@ describe Chef::CookbookVersion do
     @cookbook.fully_qualified_recipe_names.include?("openldap::two").should == true
     @cookbook.fully_qualified_recipe_names.include?("openldap::three").should == true
   end
-  
+
   it "should find a preferred file" do
     pending
   end
-  
+
   it "should not return an unchanged preferred file" do
     pending
     @cookbook.preferred_filename(@node, :files, 'a-filename', 'the-checksum').should be_nil
   end
-  
+
 # TODO: timh, cw: 5/20/2010: removed CookbookVersion.recipe? as it's not used; see cookbook.rb
 #   it "should allow you to test for a recipe with recipe?" do
 #     @cookbook.recipe_filenames = [ "one", "two" ]
 #     @cookbook.recipe?("one").should eql(true)
 #     @cookbook.recipe?("shanghai").should eql(false)
 #   end
-  
+
 # TODO: timh, cw: 5/20/2010: removed CookbookVersion.recipe? as it's not used; see cookbook.rb
 #  it "should allow you to test for a recipe? with a fq recipe name" do
 #    @cookbook.recipe_filenames = [ "one", "two" ]
 #    @cookbook.recipe?("openldap::one").should eql(true)
 #    @cookbook.recipe?("shanghai::city").should eql(false)
 #  end
-  
+
   it "should allow you to include a fully-qualified recipe using the DSL" do
     # DSL method include_recipe allows multiple arguments, so extract the first
     recipe = @run_context.include_recipe("openldap::gigantor").first
@@ -87,7 +87,7 @@ describe Chef::CookbookVersion do
     recipe.cookbook_name.should == :openldap
     @run_context.resource_collection[0].name.should == "blanket"
   end
-  
+
   it "should raise an ArgumentException if you try to load a bad recipe name" do
     lambda { @cookbook.load_recipe("doesnt_exist", @node) }.should raise_error(ArgumentError)
   end
@@ -96,5 +96,5 @@ describe Chef::CookbookVersion do
     @node.include_attribute("openldap::smokey")
     @node.smokey.should == "robinson"
   end
-  
+
 end

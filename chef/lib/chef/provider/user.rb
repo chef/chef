@@ -51,7 +51,7 @@ class Chef
           user_info = Etc.getpwnam(@new_resource.username)
         rescue ArgumentError => e
           @user_exists = false
-          Chef::Log.debug("User #{@new_resource.username} does not exist")
+          Chef::Log.debug("#{@new_resource} user does not exist")
           user_info = nil
         end
         
@@ -67,7 +67,6 @@ class Chef
             begin
               require 'shadow'
             rescue LoadError
-              Chef::Log.error("You must have ruby-shadow installed for password support!")
               raise Chef::Exceptions::MissingLibrary, "You must have ruby-shadow installed for password support!"
             else
               shadow_info = Shadow::Passwd.getspnam(@new_resource.username)
@@ -97,11 +96,11 @@ class Chef
       def action_create
         if !@user_exists
           create_user
-          Chef::Log.info("Created #{@new_resource}")
+          Chef::Log.info("#{@new_resource} created")
           @new_resource.updated_by_last_action(true)
         elsif compare_user
           manage_user
-          Chef::Log.info("Altered #{@new_resource}")
+          Chef::Log.info("#{@new_resource} altered")
           @new_resource.updated_by_last_action(true)
         end
       end
@@ -110,7 +109,7 @@ class Chef
         if @user_exists
           remove_user
           @new_resource.updated_by_last_action(true)
-          Chef::Log.info("Removed #{@new_resource}")
+          Chef::Log.info("#{@new_resource} removed")
         end
       end
 
@@ -122,7 +121,7 @@ class Chef
         if @user_exists && compare_user
           manage_user
           @new_resource.updated_by_last_action(true)
-          Chef::Log.info("Managed #{@new_resource}")
+          Chef::Log.info("#{@new_resource} managed")
         end
       end
 
@@ -135,10 +134,10 @@ class Chef
           if compare_user
             manage_user
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("Modified #{@new_resource}")
+            Chef::Log.info("#{@new_resource} modified")
           end
         else
-          raise Chef::Exceptions::User, "Cannot modify #{@new_resource} - user does not exist!"
+          raise Chef::Exceptions::User, "Cannot modify user - does not exist!"
         end
       end
 
@@ -147,12 +146,12 @@ class Chef
           if check_lock() == false
             lock_user
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("Locked #{@new_resource}")
+            Chef::Log.info("#{@new_resource} locked")
           else
-            Chef::Log.debug("No need to lock #{@new_resource}")
+            Chef::Log.debug("#{@new_resource} already locked - nothing to do")
           end
         else
-          raise Chef::Exceptions::User, "Cannot lock #{@new_resource} - user does not exist!"
+          raise Chef::Exceptions::User, "Cannot lock user - does not exist!"
         end
       end
 
@@ -169,12 +168,12 @@ class Chef
           if check_lock() == true
             unlock_user
             @new_resource.updated_by_last_action(true)
-            Chef::Log.info("Unlocked #{@new_resource}")
+            Chef::Log.info("#{@new_resource} unlocked")
           else
-            Chef::Log.debug("No need to unlock #{@new_resource}")
+            Chef::Log.debug("#{@new_resource} already unlocked - nothing to do")
           end
         else
-          raise Chef::Exceptions::User, "Cannot unlock #{@new_resource} - user does not exist!"
+          raise Chef::Exceptions::User, "Cannot unlock user - does not exist!"
         end
       end
       

@@ -22,13 +22,13 @@ describe Chef::Cookbook::Chefignore do
     @chefignore = Chef::Cookbook::Chefignore.new(File.join(CHEF_SPEC_DATA, 'cookbooks'))
   end
 
-  it "loads the regular expressions in the chefignore file" do
-    @chefignore.ignores.should =~ [%r{recipes/ignoreme\.rb}]
+  it "loads the globs in the chefignore file" do
+    @chefignore.ignores.should =~ %w[recipes/ignoreme.rb]
   end
 
   it "removes items from an array that match the ignores" do
-    file_list = %w[ /recipes/ignoreme.rb /recipes/dontignoreme.rb ]
-    @chefignore.remove_ignores_from(file_list).should == %w[/recipes/dontignoreme.rb]
+    file_list = %w[ recipes/ignoreme.rb recipes/dontignoreme.rb ]
+    @chefignore.remove_ignores_from(file_list).should == %w[recipes/dontignoreme.rb]
   end
 
   it "determines if a file is ignored" do

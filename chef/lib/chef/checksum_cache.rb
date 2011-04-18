@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,28 +27,28 @@ require 'chef/mixin/convert_to_class_name'
 require 'singleton'
 require 'moneta'
 
-class Chef 
+class Chef
   class ChecksumCache
     include Chef::Mixin::ConvertToClassName
     include ::Singleton
-    
+
     attr_reader :moneta
-    
+
     def initialize(*args)
       self.reset!(*args)
     end
-    
+
     def reset!(backend=nil, options=nil)
       backend ||= Chef::Config[:cache_type]
       options ||= Chef::Config[:cache_options]
-      
+
       begin
         require "moneta/#{convert_to_snake_case(backend, 'Moneta')}"
       rescue LoadError => e
         Chef::Log.fatal("Could not load Moneta back end #{backend.inspect}")
         raise e
       end
-     
+
       @moneta = Moneta.const_get(backend).new(options)
     end
 
@@ -78,7 +78,7 @@ class Chef
     end
 
     def self.cleanup_checksum_cache
-      Chef::Log.info("cleaning the checksum cache")
+      Chef::Log.debug("Cleaning the checksum cache")
       if (Chef::Config[:cache_type].to_s == "BasicFile")
         all_cached_checksums.each do |cache_key, cksum_cache_file|
           unless valid_cached_checksums.include?(cache_key)
@@ -93,7 +93,7 @@ class Chef
     end
 
     def self.remove_unused_checksum(checksum_file)
-      Chef::Log.debug("removing unused checksum cache file #{checksum_file}")
+      Chef::Log.debug("Removing unused checksum cache file #{checksum_file}")
       FileUtils.rm(checksum_file)
     end
 
@@ -112,7 +112,7 @@ class Chef
     end
 
     def lookup_checksum(key, fstat)
-      cached = @moneta.fetch(key)
+      cached = fetch(key)
       if cached && file_unchanged?(cached, fstat)
         validate_checksum(key)
         cached["checksum"]
@@ -145,6 +145,22 @@ class Chef
     end
 
     private
+
+    def fetch(key)
+      @moneta.fetch(key)
+    rescue ArgumentError => e
+      Log.warn "Error loading cached checksum for key #{key.inspect}"
+      Log.warn(e)
+      repair_checksum_cache
+      nil
+    end
+
+    def repair_checksum_cache
+      Chef::Log.info("Removing invalid checksum cache files")
+      Dir["#{Chef::Config[:cache_options][:path]}/*"].each do |file_path|
+        File.unlink(file_path) unless File.size?(file_path)
+      end
+    end
 
     def file_unchanged?(cached, fstat)
       cached["mtime"].to_f == fstat.mtime.to_f

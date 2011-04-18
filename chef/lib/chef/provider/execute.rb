@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,43 +16,50 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/log'
 require 'chef/provider'
 
 class Chef
   class Provider
     class Execute < Chef::Provider
-      
-      include Chef::Mixin::Command
-      
+
+      include Chef::Mixin::ShellOut
+
       def load_current_resource
         true
       end
-      
+
       def action_run
-        command_args = {
-          :command => @new_resource.command,
-          :command_string => @new_resource.to_s,
-        }
-        command_args[:creates] = @new_resource.creates if @new_resource.creates
-        command_args[:only_if] = @new_resource.only_if if @new_resource.only_if
-        command_args[:not_if] = @new_resource.not_if if @new_resource.not_if
-        command_args[:timeout] = @new_resource.timeout if @new_resource.timeout
-        command_args[:returns] = @new_resource.returns if @new_resource.returns
-        command_args[:environment] = @new_resource.environment if @new_resource.environment
-        command_args[:user] = @new_resource.user if @new_resource.user
-        command_args[:group] = @new_resource.group if @new_resource.group
-        command_args[:cwd] = @new_resource.cwd if @new_resource.cwd
-        command_args[:umask] = @new_resource.umask if @new_resource.umask
-        
-        status = run_command(command_args)
-        if status
-          @new_resource.updated_by_last_action(true)
-          Chef::Log.info("Ran #{@new_resource} successfully")
+        opts = {}
+
+        if sentinel_file = @new_resource.creates
+          if ::File.exists?(sentinel_file)
+            Chef::Log.debug("#{@new_resource} sentinel file #{sentinel_file} exists - nothing to do")
+            return false
+          end
         end
+
+        # original implementation did not specify a timeout, but ShellOut
+        # *always* times out. So, set a very long default timeout
+        opts[:timeout] = @new_resource.timeout || 3600
+        opts[:returns] = @new_resource.returns if @new_resource.returns
+        opts[:environment] = @new_resource.environment if @new_resource.environment
+        opts[:user] = @new_resource.user if @new_resource.user
+        opts[:group] = @new_resource.group if @new_resource.group
+        opts[:cwd] = @new_resource.cwd if @new_resource.cwd
+        opts[:umask] = @new_resource.umask if @new_resource.umask
+        opts[:command_log_level] = :info
+        opts[:command_log_prepend] = @new_resource.to_s
+        if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
+          opts[:live_stream] = STDOUT
+        end
+
+        result = shell_out!(@new_resource.command, opts)
+        @new_resource.updated_by_last_action(true)
+        Chef::Log.info("#{@new_resource} ran successfully")
       end
-      
+
     end
   end
 end

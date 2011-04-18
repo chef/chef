@@ -17,13 +17,14 @@
 Thread.abort_on_exception = true
 
 require 'rubygems'
-require 'spec/expectations'
+require 'rspec/expectations'
 
 CHEF_PROJECT_ROOT = File.expand_path(File.dirname(__FILE__) + '/../../')
 KNIFE_CONFIG = CHEF_PROJECT_ROOT + '/features/data/config/knife.rb'
 KNIFE_CMD = File.expand_path(File.join(CHEF_PROJECT_ROOT, "chef", "bin", "knife"))
 FEATURES_DATA = File.join(CHEF_PROJECT_ROOT, "features", "data")
 INTEGRATION_COOKBOOKS = File.join(FEATURES_DATA, "cookbooks")
+EXTRA_COOKBOOKS = File.join(FEATURES_DATA, "cookbooks_not_uploaded_at_feature_start")
 
 $:.unshift(CHEF_PROJECT_ROOT)
 $:.unshift(CHEF_PROJECT_ROOT + '/chef/lib')
@@ -42,6 +43,8 @@ require 'chef/checksum'
 require 'chef/sandbox'
 require 'chef/solr_query'
 require 'chef/certificate'
+require 'chef/cookbook_version'
+require 'chef/cookbook_loader'
 require 'chef/mixin/shell_out'
 require 'tmpdir'
 require 'chef/streaming_cookbook_uploader'
@@ -170,7 +173,7 @@ module ChefWorld
 
   attr_accessor :recipe, :cookbook, :api_response, :inflated_response, :log_level,
                 :chef_args, :config_file, :stdout, :stderr, :status, :exception,
-                :gemserver_thread, :sandbox_url, :log_io
+                :gemserver_thread, :sandbox_url
 
   def self.ohai
     # ohai takes a while, so only ever run it once.
@@ -191,6 +194,10 @@ module ChefWorld
       c.ohai = ohai
       c
     end
+  end
+
+  def client_key
+    File.join(tmpdir, "client.pem")
   end
 
   def rest

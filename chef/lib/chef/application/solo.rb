@@ -201,13 +201,14 @@ class Chef::Application::Solo < Chef::Application
         raise
       rescue Exception => e
         if Chef::Config[:interval]
-          Chef::Log.error("#{e.class}")
-          Chef::Log.fatal("#{e}\n#{e.backtrace.join("\n")}")
+          Chef::Log.error("#{e.class}: #{e}")
+          Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
           Chef::Log.fatal("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
           sleep Chef::Config[:interval]
           retry
         else
-          raise
+          Chef::Application.debug_stacktrace(e)
+          Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
         end
       ensure
         GC.start

@@ -19,14 +19,14 @@
 
 require 'chef/log'
 require 'chef/provider'
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'fileutils'
 
 class Chef
   class Provider
     class Git < Chef::Provider
 
-      include Chef::Mixin::Command
+      include Chef::Mixin::ShellOut
 
       def load_current_resource
         @current_resource = Chef::Resource::Git.new(@new_resource.name)
@@ -44,7 +44,7 @@ class Chef
           enable_submodules
           @new_resource.updated_by_last_action(true)
         else
-          Chef::Log.info "Taking no action, checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
+          Chef::Log.debug "#{@new_resource} checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
         end
       end
 
@@ -63,7 +63,7 @@ class Chef
           unless current_revision_matches_target_revision?
             fetch_updates
             enable_submodules
-            Chef::Log.info "#{@new_resource} updated to revision: #{target_revision}"
+            Chef::Log.info "#{@new_resource} updated to revision #{target_revision}"
             @new_resource.updated_by_last_action(true)
           end
 
@@ -90,13 +90,10 @@ class Chef
       end
 
       def find_current_revision
+        Chef::Log.debug("#{@new_resource} finding current git revision")
         if ::File.exist?(::File.join(cwd, ".git"))
-          status, result, error_message = output_of_command("git rev-parse HEAD", run_options(:cwd=>cwd))
-
           # 128 is returned when we're not in a git repo. this is fine
-          unless [0,128].include?(status.exitstatus)
-            handle_command_failures(status, "STDOUT: #{result}\nSTDERR: #{error_message}")
-          end
+          result = shell_out!('git rev-parse HEAD', :cwd => cwd, :returns => [0,128]).stdout.strip
         end
         sha_hash?(result) ? result : nil
       end
@@ -108,24 +105,24 @@ class Chef
         args << "-o #{remote}" unless remote == 'origin'
         args << "--depth #{@new_resource.depth}" if @new_resource.depth
 
-        Chef::Log.info "Cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
+        Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
 
         clone_cmd = "git clone #{args.join(' ')} #{@new_resource.repository} #{@new_resource.destination}"
-        run_command(run_options(:command => clone_cmd))
+        shell_out!(clone_cmd, run_options(:command_log_level => :info))
       end
 
       def checkout
         sha_ref = target_revision
-        Chef::Log.info "Checking out branch: #{@new_resource.revision} reference: #{sha_ref}"
         # checkout into a local branch rather than a detached HEAD
-        run_command(run_options(:command => "git checkout -b deploy #{sha_ref}", :cwd => @new_resource.destination))
+        shell_out!("git checkout -b deploy #{sha_ref}", run_options(:cwd => @new_resource.destination))
+        Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} reference: #{sha_ref}"
       end
 
       def enable_submodules
         if @new_resource.enable_submodules
-          Chef::Log.info "Enabling git submodules"
+          Chef::Log.info "#{@new_resource} enabling git submodules"
           command = "git submodule init && git submodule update"
-          run_command(run_options(:command => command, :cwd => @new_resource.destination))
+          shell_out!(command, run_options(:cwd => @new_resource.destination, :command_log_level => :info))
         end
       end
 
@@ -135,7 +132,7 @@ class Chef
         # since we're in a local branch already, just reset to specified revision rather than merge
         fetch_command = "git fetch #{@new_resource.remote} && git fetch #{@new_resource.remote} --tags && git reset --hard #{target_revision}"
         Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revison #{target_revision}"
-        run_command(run_options(:command => fetch_command, :cwd => @new_resource.destination))
+        shell_out!(fetch_command, run_options(:cwd => @new_resource.destination))
       end
 
       # Use git-config to setup a remote tracking branches. Could use
@@ -147,11 +144,11 @@ class Chef
       def setup_remote_tracking_branches
         command = []
 
-        Chef::Log.info  "Configuring remote tracking branches for repository #{@new_resource.repository} "+
+        Chef::Log.debug "#{@new_resource} configuring remote tracking branches for repository #{@new_resource.repository} "+
                         "at remote #{@new_resource.remote}"
         command << "git config remote.#{@new_resource.remote}.url #{@new_resource.repository}"
         command << "git config remote.#{@new_resource.remote}.fetch +refs/heads/*:refs/remotes/#{@new_resource.remote}/*"
-        run_command(run_options(:command => command.join(" && "), :cwd => @new_resource.destination))
+        shell_out!(command.join(" && "), run_options(:cwd => @new_resource.destination))
       end
 
       def current_revision_matches_target_revision?
@@ -174,18 +171,9 @@ class Chef
       alias :revision_slug :target_revision
 
       def remote_resolve_reference
+        Chef::Log.debug("#{@new_resource} resolving remote reference")
         command = git('ls-remote', @new_resource.repository, @new_resource.revision)
-        Chef::Log.debug("Executing #{command}")
-        begin
-          status, result, error_message = output_of_command(command, run_options)
-          handle_command_failures(status, "STDOUT: #{result}\nSTDERR: #{error_message}")
-        rescue Chef::Exceptions::Exec => e
-          msg =  "Could not access the remote Git repository. If this is a private repository, "
-          msg << "verify that the deploy key for your application has been added to your remote Git account.\n"
-          msg << e.message
-          raise Chef::Exceptions::Exec, msg
-        end
-        result
+        shell_out!(command, run_options).stdout
       end
 
       private
@@ -194,6 +182,13 @@ class Chef
         run_opts[:user] = @new_resource.user if @new_resource.user
         run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts[:environment] = {"GIT_SSH" => @new_resource.ssh_wrapper} if @new_resource.ssh_wrapper
+        run_opts[:command_log_prepend] = @new_resource.to_s
+        run_opts[:command_log_level] ||= :debug
+        if run_opts[:command_log_level] == :info
+          if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
+            run_opts[:live_stream] = STDOUT
+          end
+        end
         run_opts
       end
 

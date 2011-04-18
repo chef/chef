@@ -17,12 +17,16 @@
 #
 
 require 'chef/knife'
-require 'chef/json_compat'
-require 'uri'
 
 class Chef
   class Knife
     class CookbookShow < Knife
+
+      deps do
+        require 'chef/json_compat'
+        require 'uri'
+        require 'chef/cookbook_version'
+      end
 
       banner "knife cookbook show COOKBOOK [VERSION] [PART] [FILENAME] (options)"
 
@@ -85,7 +89,7 @@ class Chef
           output(format_cookbook_list_for_display(rest.get_rest(api_endpoint)))
         when 0
           show_usage
-          Chef::Log.fatal("You must specify a cookbook name")
+          ui.fatal("You must specify a cookbook name")
           exit 1
         end
       end

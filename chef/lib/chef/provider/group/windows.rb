@@ -40,7 +40,7 @@ class Chef
             members = @net_group.local_get_members
           rescue => e
             @group_exists = false
-            Chef::Log.debug("#{@new_resource}: group does not exist")
+            Chef::Log.debug("#{@new_resource} group does not exist")
           end
 
           if members

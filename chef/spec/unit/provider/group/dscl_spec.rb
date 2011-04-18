@@ -190,7 +190,7 @@ describe Chef::Provider::Group::Dscl do
       end
 
       it "should log an appropriate message" do
-        Chef::Log.should_receive(:debug).with("group[aj]: removing group members all your base")
+        Chef::Log.should_receive(:debug).with("group[aj] removing group members all your base")
         @provider.set_members
       end
 
@@ -208,7 +208,7 @@ describe Chef::Provider::Group::Dscl do
       end
 
       it "should log an appropriate debug message" do
-        Chef::Log.should_receive(:debug).with("group[aj]: setting group members all, your, base")
+        Chef::Log.should_receive(:debug).with("group[aj] setting group members all, your, base")
         @provider.set_members
       end
 

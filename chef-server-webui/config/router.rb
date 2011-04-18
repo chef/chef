@@ -49,13 +49,6 @@ Merb::Router.prepare do
   match("/cookbooks/_library_files").to(:controller => "cookbooks", :action => "library_files")
   match("/cookbooks/_environments/:environment_id").to(:controller => "cookbooks", :action => "index").name(:cookbooks_by_environment)
 
-  match("/cookbooks/:cookbook_id/templates", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_templates", :action => "index")
-  match("/cookbooks/:cookbook_id/libraries", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_libraries", :action => "index")
-  match("/cookbooks/:cookbook_id/definitions", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_definitions", :action => "index")
-  match("/cookbooks/:cookbook_id/recipes", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_recipes", :action => "index")
-  match("/cookbooks/:cookbook_id/attributes", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_attributes", :action => "index")
-  match("/cookbooks/:cookbook_id/files", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_files", :action => "index")
-
   match("/cookbooks/:cookbook_id", :cookbook_id => /[\w\.]+/, :method => 'get').to(:controller => "cookbooks", :action => "cb_versions")
   match("/cookbooks/:cookbook_id/:cb_version", :cb_version => /[\w\.]+/, :method => 'get').to(:controller => "cookbooks", :action => "show").name(:show_specific_version_cookbook)
   resources :cookbooks

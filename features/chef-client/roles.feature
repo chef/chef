@@ -5,7 +5,8 @@ Feature: Configure nodes based on their role
   I want to define and utilize roles
 
   Scenario: Apply a role to a node
-    Given a validated node
+    Given I am an administrator
+      And a validated node
       And it includes the role 'role_test'
       And a 'role' named 'role_test' exists
      When I run the chef-client with '-l debug'
@@ -16,7 +17,8 @@ Feature: Configure nodes based on their role
       And a file named 'role_test_ruby_version.txt' should contain '1.\d+.\d+'
 
   Scenario: Apply a role with multiple environment specific run_lists to a node
-    Given an 'environment' named 'cucumber' exists
+    Given I am an administrator
+      And an 'environment' named 'cucumber' exists
       And a validated node in the 'cucumber' environment
       And it includes the role 'role_env_test'
       And a 'role' named 'role_env_test' exists

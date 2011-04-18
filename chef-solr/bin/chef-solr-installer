@@ -19,6 +19,7 @@
 
 require 'rubygems'
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
+$:.unshift(File.expand_path('../../../chef/lib', __FILE__))
 require 'chef/solr/solr_installer'
 
 Chef::SolrInstaller.new(ARGV).run

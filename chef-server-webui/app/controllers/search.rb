@@ -40,7 +40,7 @@ class Search < Application
       @s = Chef::Search::Query.new
       query = (params[:q].nil? || params[:q].empty?) ? "*:*" : URI.escape(params[:q], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
       @results = @s.search(params[:id], query)
-      @type = if params[:id].to_s == "node" || params[:id].to_s == "role" || params[:id].to_s == "client"
+      @type = if params[:id].to_s == "node" || params[:id].to_s == "role" || params[:id].to_s == "client" || params[:id].to_s == "environment"
                 params[:id]
               else
                 "databag"

@@ -65,14 +65,14 @@ class Chef
           opt = ""
           unless @new_resource.members.empty?
             opt << " -M #{@new_resource.members.join(',')}"
-            Chef::Log.debug("#{@new_resource}: setting group members to #{@new_resource.members.join(', ')}")
+            Chef::Log.debug("#{@new_resource} setting group members to #{@new_resource.members.join(', ')}")
           else
             # New member list is empty so we should delete any old group members
             unless @current_resource.members.empty?
               opt << " -d #{@current_resource.members.join(',')}"
-              Chef::Log.debug("#{@new_resource}: removing group members #{@current_resource.members.join(', ')}")
+              Chef::Log.debug("#{@new_resource} removing group members #{@current_resource.members.join(', ')}")
             else
-              Chef::Log.debug("#{@new_resource}: not changing group members, the group has no members")
+              Chef::Log.debug("#{@new_resource} not changing group members, the group has no members")
             end
           end
           opt

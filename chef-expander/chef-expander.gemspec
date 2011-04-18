@@ -20,7 +20,6 @@ Gem::Specification.new do |s|
   s.add_dependency "eventmachine", '~> 0.12.10'
   s.add_dependency "em-http-request", "~> 0.2.11"
   s.add_dependency 'yajl-ruby', "~> 0.7.7"
-  s.add_dependency 'mixlib-log', "~> 1.1.0"
   s.add_dependency 'uuidtools', "~> 2.1.1"
   s.add_dependency 'bunny', '~> 0.6.0'
   s.add_dependency 'fast_xs', "~> 0.7.3"
@@ -29,7 +28,7 @@ Gem::Specification.new do |s|
   s.add_dependency "bunny", ">= 0.6.0"
 
   s.bindir       = "bin"
-  s.executables  = %w( chef-expander chef-expander-cluster chef-expanderctl )
+  s.executables  = %w( chef-expander chef-expander-vnode chef-expanderctl )
   s.require_path = 'lib'
   s.files = %w(LICENSE README.rdoc) + Dir.glob("{scripts,conf,lib}/**/*")
 end

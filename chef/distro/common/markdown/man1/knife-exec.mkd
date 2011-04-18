@@ -1,0 +1,37 @@
+knife-exec(1) -- Run user scripts using the Chef API DSL
+========================================
+
+## SYNOPSIS
+
+__knife__ __exec__ _(options)_
+
+  * `-E`, `--exec CODE`:
+    Provide a snippet of code to evaluate on the command line
+
+## DESCRIPTION
+`knife exec` runs arbitrary ruby scripts in a context similar to that of
+the shef(1) DSL. See the shef documentation for a description of the
+commands available.
+
+## EXAMPLES
+  * Make an API call against an arbitrary endpoint:
+    knife exec -E 'api.get("nodes/fluke.localdomain/cookbooks")'  
+    => list of cookbooks for the node _fluke.localdomain_
+  * Remove the role _obsolete_ from all nodes:
+    knife exec -E 'nodes.transform(:all){|n| n.run\_list.delete("role[obsolete]")}'
+  * Generate the expanded run list for hosts in the `webserver` role:
+    knife exec -E 'nodes.find(:roles => "webserver") {|n| n.expand!; n[:recipes]}'
+
+## SEE ALSO
+   __shef(1)__
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+

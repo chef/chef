@@ -97,7 +97,7 @@ class Chef
         # http://redmine.ruby-lang.org/issues/show/2758
         if e.to_s =~ /#{Regexp.escape(%q|undefined method 'closed?' for nil:NilClass|)}/
           Chef::Log.fatal("#{description} failed.  Chef::Exceptions::SolrConnectionError exception: Errno::ECONNREFUSED (net/http undefined method closed?) attempting to contact #{solr_url}")
-          Chef::Log.debug("rescued error in http connect, treating it as Errno::ECONNREFUSED to hide bug in net/http")
+          Chef::Log.debug("Rescued error in http connect, treating it as Errno::ECONNREFUSED to hide bug in net/http")
           Chef::Log.debug(e.backtrace.join("\n"))
           raise Chef::Exceptions::SolrConnectionError, "Errno::ECONNREFUSED: Connection refused attempting to contact #{solr_url}"
         else

@@ -19,6 +19,8 @@
 #
 
 require 'chef/cookbook/file_system_file_vendor'
+require 'chef/cookbook_uploader'
+require 'chef/cookbook_loader'
 
 def compare_manifests(manifest1, manifest2)
   Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
@@ -36,12 +38,10 @@ def compare_manifests(manifest1, manifest2)
 end
 
 Before do
-  save_cookbook_path = Chef::Config[:cookbook_path]
   FileUtils.mkdir "#{datadir}/cookbooks_not_uploaded_at_feature_start/testcookbook_invalid_empty" unless File.exist?("#{datadir}/cookbooks_not_uploaded_at_feature_start/testcookbook_invalid_empty")
-  Chef::Config[:cookbook_path] = File.join(datadir, "cookbooks_not_uploaded_at_feature_start")
-  Chef::Cookbook::FileVendor.on_create {|manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
-  @cookbook_loader_not_uploaded_at_feature_start = Chef::CookbookLoader.new
-  Chef::Config[:cookbook_path] = save_cookbook_path
+  extra_cookbook_repo = File.join(datadir, "cookbooks_not_uploaded_at_feature_start")
+  Chef::Cookbook::FileVendor.on_create {|manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, extra_cookbook_repo) }
+  @cookbook_loader_not_uploaded_at_feature_start = Chef::CookbookLoader.new(extra_cookbook_repo)
 end
 
 Given /^a local cookbook repository$/ do
@@ -67,6 +67,10 @@ end
 Given "I upload the cookbook" do
   cookbook_name, recipe_name = recipe.split('::')
   shell_out!("#{KNIFE_CMD} cookbook upload -c #{KNIFE_CONFIG} -a -o #{INTEGRATION_COOKBOOKS}")
+end
+
+Given "I have uploaded a frozen cookbook named '$cookbook_name' at version '$cookbook_version'" do |name, version|
+  shell_out!("#{KNIFE_CMD} cookbook upload #{name} -c #{KNIFE_CONFIG} -o #{EXTRA_COOKBOOKS} --freeze --force")
 end
 
 Given /^I delete the cookbook's on disk checksum files$/ do
@@ -104,6 +108,20 @@ end
 #####
 # Cookbook upload/download-specific steps
 #####
+
+When "I upload a cookbook named '$name' at version '$version'" do |name, version|
+
+
+  call_as_admin do
+    cookbook = @cookbook_loader_not_uploaded_at_feature_start[name]
+    uploader = Chef::CookbookUploader.new(cookbook, [EXTRA_COOKBOOKS], :rest => rest)
+    begin
+      uploader.upload_cookbook
+    rescue Exception => e
+      @exception = e
+    end
+  end
+end
 
 When /^I create a versioned cookbook(?: named '(.*?)')?(?: versioned '(.*?)')? with '(.*?)'$/ do |request_name, request_version, cookbook_name|
   cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
@@ -329,6 +347,10 @@ end
 
 Then /^the metadata should include a dependency on '(.+)'$/ do |key|
   inflated_response.metadata.dependencies.should have_key(key)
+end
+
+Then "the cookbook version document should be frozen" do
+  inflated_response.should be_frozen_version
 end
 
 RSpec::Matchers.define :have_been_deleted do

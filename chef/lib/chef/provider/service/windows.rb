@@ -55,7 +55,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service::Simple
         end
       end
 
-      Chef::Log.debug "#{@new_resource}: running: #{@current_resource.running}"
+      Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
     rescue Exception => e
       raise Chef::Exceptions::Service, "Exception determining state of service #{@new_resource.service_name}: #{e.message}"
     end
@@ -83,7 +83,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service::Simple
   def stop_service
     begin
       if @new_resource.stop_command
-        Chef::Log.debug "stopping service using the given stop_command"
+        Chef::Log.debug "#{@new_resource} stopping service using the given stop_command"
         popen4(@new_resource.stop_command) do |pid, stdin, stdout, stderr|
           Chef::Log.debug stdout.readlines
         end
@@ -103,7 +103,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service::Simple
   def restart_service
     begin
       if @new_resource.restart_command
-        Chef::Log.debug "restarting service using the given restart_command"
+        Chef::Log.debug "#{@new_resource} restarting service using the given restart_command"
         popen4(@new_resource.restart_command) do |pid, stdin, stdout, stderr|
           Chef::Log.debug stdout.readlines
         end

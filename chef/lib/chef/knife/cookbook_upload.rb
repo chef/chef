@@ -18,13 +18,19 @@
 #
 
 require 'chef/knife'
-require 'chef/cookbook_loader'
-require 'chef/cookbook_uploader'
 
 class Chef
   class Knife
     class CookbookUpload < Knife
-      include Chef::Mixin::ShellOut
+
+      CHECKSUM = "checksum"
+      MATCH_CHECKSUM = /[0-9a-f]{32,}/
+
+      deps do
+        require 'chef/exceptions'
+        require 'chef/cookbook_loader'
+        require 'chef/cookbook_uploader'
+      end
 
       banner "knife cookbook upload [COOKBOOKS...] (options)"
 
@@ -34,61 +40,129 @@ class Chef
         :description => "A colon-separated path to look for cookbooks in",
         :proc => lambda { |o| o.split(":") }
 
+      option :freeze,
+        :long => '--freeze',
+        :description => 'Freeze this version of the cookbook so that it cannot be overwritten',
+        :boolean => true
+
       option :all,
         :short => "-a",
         :long => "--all",
         :description => "Upload all cookbooks, rather than just a single cookbook"
 
-      def run 
-        if config[:cookbook_path]
-          Chef::Config[:cookbook_path] = config[:cookbook_path]
+      option :force,
+        :long => '--force',
+        :boolean => true,
+        :description => "Update cookbook versions even if they have been frozen"
+
+      option :environment,
+        :short => '-E',
+        :long  => '--environment ENVIRONMENT',
+        :description => "Set ENVIRONMENT's version dependency match the version you're uploading.",
+        :default => nil
+
+      def run
+        config[:cookbook_path] ||= Chef::Config[:cookbook_path]
+
+        assert_environment_valid!
+        version_constraints_to_update = {}
+
+        if config[:all]
+          justify_width = cookbook_repo.cookbook_names.map {|name| name.size}.max.to_i + 2
+          cookbook_repo.each do |cookbook_name, cookbook|
+            cookbook.freeze_version if config[:freeze]
+            upload(cookbook, justify_width)
+            version_constraints_to_update[cookbook_name] = cookbook.version
+          end
         else
-          config[:cookbook_path] = Chef::Config[:cookbook_path]
-        end
-
-        Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
-
-        cl = Chef::CookbookLoader.new
-
-        humanize_auth_exceptions do
-          if config[:all]
-            cl.each do |cookbook_name, cookbook|
-              Chef::Log.info("** #{cookbook.name.to_s} **")
-              Chef::CookbookUploader.upload_cookbook(cookbook)
-            end
-          else
-            if @name_args.length < 1
-              show_usage
-              Chef::Log.fatal("You must specify the --all flag or at least one cookbook name")
-              exit 1
-            end
-            @name_args.each do |cookbook_name|
-              if cl.cookbook_exists?(cookbook_name)
-                Chef::CookbookUploader.upload_cookbook(cl[cookbook_name])
-              else
-                Chef::Log.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
-              end
+          if @name_args.empty?
+            show_usage
+            ui.error("You must specify the --all flag or at least one cookbook name")
+            exit 1
+          end
+          justify_width = @name_args.map {|name| name.size }.max.to_i + 2
+          @name_args.each do |cookbook_name|
+            begin
+              cookbook = cookbook_repo[cookbook_name]
+              cookbook.freeze_version if config[:freeze]
+              upload(cookbook, justify_width)
+              version_constraints_to_update[cookbook_name] = cookbook.version
+            rescue Exceptions::CookbookNotFoundInRepo => e
+              ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
+              Log.debug(e)
             end
           end
         end
+
+        ui.info "upload complete"
+        update_version_constraints(version_constraints_to_update) if config[:environment]
+      end
+
+      def cookbook_repo
+        @cookbook_loader ||= begin
+          Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, config[:cookbook_path]) }
+          Chef::CookbookLoader.new(config[:cookbook_path])
+        end
+      end
+
+      def update_version_constraints(new_version_constraints)
+        new_version_constraints.each do |cookbook_name, version|
+          environment.cookbook_versions[cookbook_name] = "= #{version}"
+        end
+        environment.save
+      end
+
+
+      def environment
+        @environment ||= config[:environment] ? Environment.load(config[:environment]) : nil
       end
 
       private
 
-      def humanize_auth_exceptions
-        begin
-          yield
-        rescue Net::HTTPServerException => e
-          case e.response.code
-          when "401"
-            Chef::Log.fatal "Request failed due to authentication (#{e}), check your client configuration (username, key)"
-            exit 18
-          else
-            raise
-          end
+      def assert_environment_valid!
+        environment
+      rescue Net::HTTPServerException => e
+        if e.response.code.to_s == "404"
+          ui.error "The environment #{config[:environment]} does not exist on the server, aborting."
+          Log.debug(e)
+          exit 1
+        else
+          raise
         end
       end
 
+      def upload(cookbook, justify_width)
+        ui.info("Uploading #{cookbook.name.to_s.ljust(justify_width + 10)} [#{cookbook.version}]")
+
+        check_for_broken_links(cookbook)
+        Chef::CookbookUploader.new(cookbook, config[:cookbook_path], :force => config[:force]).upload_cookbook
+      rescue Net::HTTPServerException => e
+        case e.response.code
+        when "409"
+          ui.error "Version #{cookbook.version} of cookbook #{cookbook.name} is frozen. Use --force to override."
+          Log.debug(e)
+        else
+          raise
+        end
+      end
+
+      # if only you people wouldn't put broken symlinks in your cookbooks in
+      # the first place. ;)
+      def check_for_broken_links(cookbook)
+        # MUST!! dup the cookbook version object--it memoizes its
+        # manifest object, but the manifest becomes invalid when you
+        # regenerate the metadata
+        broken_files = cookbook.dup.manifest_records_by_path.select do |path, info|
+          info[CHECKSUM].nil? || info[CHECKSUM] !~ MATCH_CHECKSUM
+        end
+        unless broken_files.empty?
+          broken_filenames = Array(broken_files).map {|path, info| path}
+          ui.error "The cookbook #{cookbook.name} has one or more broken files"
+          ui.info "This is probably caused by broken symlinks in the cookbook directory"
+          ui.info "The broken file(s) are: #{broken_filenames.join(' ')}"
+          exit 1
+        end
+      end
 
     end
   end

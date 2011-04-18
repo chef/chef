@@ -18,6 +18,7 @@
 # limitations under the License.
 #
 
+require 'chef/mash'
 require 'chef/mixin/from_file'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
@@ -27,15 +28,41 @@ require 'chef/version_constraint'
 
 class Chef
   class Cookbook
+
     # == Chef::Cookbook::Metadata
     # Chef::Cookbook::Metadata provides a convenient DSL for declaring metadata
     # about Chef Cookbooks.
     class Metadata
 
+      NAME              = 'name'.freeze
+      DESCRIPTION       = 'description'.freeze
+      LONG_DESCRIPTION  = 'long_description'.freeze
+      MAINTAINER        = 'maintainer'.freeze
+      MAINTAINER_EMAIL  = 'maintainer_email'.freeze
+      LICENSE           = 'license'.freeze
+      PLATFORMS         = 'platforms'.freeze
+      DEPENDENCIES      = 'dependencies'.freeze
+      RECOMMENDATIONS   = 'recommendations'.freeze
+      SUGGESTIONS       = 'suggestions'.freeze
+      CONFLICTING       = 'conflicting'.freeze
+      PROVIDING         = 'providing'.freeze
+      REPLACING         = 'replacing'.freeze
+      ATTRIBUTES        = 'attributes'.freeze
+      GROUPINGS         = 'groupings'.freeze
+      RECIPES           = 'recipes'.freeze
+      VERSION           = 'version'.freeze
+
       COMPARISON_FIELDS = [ :name, :description, :long_description, :maintainer,
                             :maintainer_email, :license, :platforms, :dependencies,
                             :recommendations, :suggestions, :conflicting, :providing,
                             :replacing, :attributes, :groupings, :recipes, :version]
+
+      VERSION_CONSTRAINTS = {:depends     => DEPENDENCIES,
+                             :recommends  => RECOMMENDATIONS,
+                             :suggests    => SUGGESTIONS,
+                             :conflicts   => CONFLICTING,
+                             :provides    => PROVIDING,
+                             :replaces    => REPLACING }
 
       include Chef::Mixin::CheckHelper
       include Chef::Mixin::ParamsValidate
@@ -215,8 +242,9 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def supports(platform, version=">= 0.0.0")
-        Chef::VersionConstraint.new(version) # verify the version parses
+      def supports(platform, *version_args)
+        version = new_args_format(:supports, platform, version_args)
+        validate_version_constraint(:supports, platform, version)
         @platforms[platform] = version
         @platforms[platform]
       end
@@ -231,8 +259,9 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def depends(cookbook, version=">= 0.0.0")
-        Chef::VersionConstraint.new(version)
+      def depends(cookbook, *version_args)
+        version = new_args_format(:depends, cookbook, version_args)
+        validate_version_constraint(:depends, cookbook, version)
         @dependencies[cookbook] = version
         @dependencies[cookbook]
       end
@@ -247,8 +276,9 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def recommends(cookbook, version=">= 0.0.0")
-        Chef::VersionConstraint.new(version)
+      def recommends(cookbook, *version_args)
+        version = new_args_format(:recommends, cookbook,  version_args)
+        validate_version_constraint(:recommends, cookbook, version)
         @recommendations[cookbook] = version
         @recommendations[cookbook]
       end
@@ -263,8 +293,9 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def suggests(cookbook, version=">= 0.0.0")
-        Chef::VersionConstraint.new(version)
+      def suggests(cookbook, *version_args)
+        version = new_args_format(:suggests, cookbook, version_args)
+        validate_version_constraint(:suggests, cookbook, version)
         @suggestions[cookbook] = version
         @suggestions[cookbook]
       end
@@ -279,8 +310,9 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def conflicts(cookbook, version=">= 0.0.0")
-        Chef::VersionConstraint.new(version)
+      def conflicts(cookbook, *version_args)
+        version = new_args_format(:conflicts, cookbook, version_args)
+        validate_version_constraint(:conflicts, cookbook, version)
         @conflicting[cookbook] = version
         @conflicting[cookbook]
       end
@@ -299,8 +331,9 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def provides(cookbook, version=">= 0.0.0")
-        Chef::VersionConstraint.new(version)
+      def provides(cookbook, *version_args)
+        version = new_args_format(:provides, cookbook, version_args)
+        validate_version_constraint(:provides, cookbook, version)
         @providing[cookbook] = version
         @providing[cookbook]
       end
@@ -314,8 +347,9 @@ class Chef
       #
       # === Returns
       # versions<Array>:: Returns the list of versions for the platform
-      def replaces(cookbook, version=">= 0.0.0")
-        Chef::VersionConstraint.new(version)
+      def replaces(cookbook, *version_args)
+        version = new_args_format(:replaces, cookbook, version_args)
+        validate_version_constraint(:replaces, cookbook, version)
         @replacing[cookbook] = version
         @replacing[cookbook]
       end
@@ -332,7 +366,7 @@ class Chef
         @recipes[name] = description
       end
 
-      # Adds an attribute that a user needs to configure for this cookbook. Takes
+      # Adds an attribute )hat a user needs to configure for this cookbook. Takes
       # a name (with the / notation for a nested attribute), followed by any of
       # these options
       #
@@ -386,27 +420,30 @@ class Chef
         @groupings[name]
       end
 
-      def to_json(*a)
-        result = {
-          :name             => self.name,
-          :description      => self.description,
-          :long_description => self.long_description,
-          :maintainer       => self.maintainer,
-          :maintainer_email => self.maintainer_email,
-          :license          => self.license,
-          :platforms        => self.platforms,
-          :dependencies     => self.dependencies,
-          :recommendations  => self.recommendations,
-          :suggestions      => self.suggestions,
-          :conflicting      => self.conflicting,
-          :providing        => self.providing,
-          :replacing        => self.replacing,
-          :attributes       => self.attributes,
-          :groupings        => self.groupings,
-          :recipes          => self.recipes,
-          :version          => self.version
+      def to_hash
+        {
+          NAME             => self.name,
+          DESCRIPTION      => self.description,
+          LONG_DESCRIPTION => self.long_description,
+          MAINTAINER       => self.maintainer,
+          MAINTAINER_EMAIL => self.maintainer_email,
+          LICENSE          => self.license,
+          PLATFORMS        => self.platforms,
+          DEPENDENCIES     => self.dependencies,
+          RECOMMENDATIONS  => self.recommendations,
+          SUGGESTIONS      => self.suggestions,
+          CONFLICTING      => self.conflicting,
+          PROVIDING        => self.providing,
+          REPLACING        => self.replacing,
+          ATTRIBUTES       => self.attributes,
+          GROUPINGS        => self.groupings,
+          RECIPES          => self.recipes,
+          VERSION          => self.version
         }
-        result.to_json(*a)
+      end
+
+      def to_json(*a)
+        self.to_hash.to_json(*a)
       end
 
       def self.from_hash(o)
@@ -416,29 +453,42 @@ class Chef
       end
 
       def from_hash(o)
-        @name                         = o['name'] if o.has_key?('name')
-        @description                  = o['description'] if o.has_key?('description')
-        @long_description             = o['long_description'] if o.has_key?('long_description')
-        @maintainer                   = o['maintainer'] if o.has_key?('maintainer')
-        @maintainer_email             = o['maintainer_email'] if o.has_key?('maintainer_email')
-        @license                      = o['license'] if o.has_key?('license')
-        @platforms                    = o['platforms'] if o.has_key?('platforms')
-        @dependencies                 = o['dependencies'] if o.has_key?('dependencies')
-        @recommendations              = o['recommendations'] if o.has_key?('recommendations')
-        @suggestions                  = o['suggestions'] if o.has_key?('suggestions')
-        @conflicting                  = o['conflicting'] if o.has_key?('conflicting')
-        @providing                    = o['providing'] if o.has_key?('providing')
-        @replacing                    = o['replacing'] if o.has_key?('replacing')
-        @attributes                   = o['attributes'] if o.has_key?('attributes')
-        @groupings                    = o['groupings'] if o.has_key?('groupings')
-        @recipes                      = o['recipes'] if o.has_key?('recipes')
-        @version                      = o['version'] if o.has_key?('version')
+        @name                         = o[NAME] if o.has_key?(NAME)
+        @description                  = o[DESCRIPTION] if o.has_key?(DESCRIPTION)
+        @long_description             = o[LONG_DESCRIPTION] if o.has_key?(LONG_DESCRIPTION)
+        @maintainer                   = o[MAINTAINER] if o.has_key?(MAINTAINER)
+        @maintainer_email             = o[MAINTAINER_EMAIL] if o.has_key?(MAINTAINER_EMAIL)
+        @license                      = o[LICENSE] if o.has_key?(LICENSE)
+        @platforms                    = o[PLATFORMS] if o.has_key?(PLATFORMS)
+        @dependencies                 = handle_deprecated_constraints(o[DEPENDENCIES]) if o.has_key?(DEPENDENCIES)
+        @recommendations              = handle_deprecated_constraints(o[RECOMMENDATIONS]) if o.has_key?(RECOMMENDATIONS)
+        @suggestions                  = handle_deprecated_constraints(o[SUGGESTIONS]) if o.has_key?(SUGGESTIONS)
+        @conflicting                  = handle_deprecated_constraints(o[CONFLICTING]) if o.has_key?(CONFLICTING)
+        @providing                    = o[PROVIDING] if o.has_key?(PROVIDING)
+        @replacing                    = handle_deprecated_constraints(o[REPLACING]) if o.has_key?(REPLACING)
+        @attributes                   = o[ATTRIBUTES] if o.has_key?(ATTRIBUTES)
+        @groupings                    = o[GROUPINGS] if o.has_key?(GROUPINGS)
+        @recipes                      = o[RECIPES] if o.has_key?(RECIPES)
+        @version                      = o[VERSION] if o.has_key?(VERSION)
         self
       end
 
       def self.from_json(string)
         o = Chef::JSONCompat.from_json(string)
         self.from_hash(o)
+      end
+
+      def self.validate_json(json_str)
+        o = Chef::JSONCompat.from_json(json_str)
+        metadata = new()
+        VERSION_CONSTRAINTS.each do |method_name, hash_key|
+          if constraints = o[hash_key]
+           constraints.each do |cb_name, constraints|
+             metadata.send(method_name, cb_name, *Array(constraints))
+           end
+          end
+        end
+        true
       end
 
       def from_json(string)
@@ -448,6 +498,42 @@ class Chef
 
     private
 
+      def new_args_format(caller_name, dep_name, version_constraints)
+        if version_constraints.empty?
+          ">= 0.0.0"
+        elsif version_constraints.size == 1
+          version_constraints.first
+        else
+          msg=<<-OBSOLETED
+The dependency specification syntax you are using is no longer valid. You may not
+specify more than one version constraint for a particular cookbook.
+Consult http://wiki.opscode.com/display/chef/Metadata for the updated syntax.
+
+Called by: #{caller_name} '#{dep_name}', #{version_constraints.map {|vc| vc.inspect}.join(", ")}
+Called from:
+#{caller[0...5].map {|line| "  " + line}.join("\n")}
+OBSOLETED
+          raise Exceptions::ObsoleteDependencySyntax, msg
+        end
+      end
+
+      def validate_version_constraint(caller_name, dep_name, constraint_str)
+        Chef::VersionConstraint.new(constraint_str)
+      rescue Chef::Exceptions::InvalidVersionConstraint => e
+        Log.debug(e)
+
+        msg=<<-INVALID
+The version constraint syntax you are using is not valid. If you recently
+upgraded to Chef 0.10.0, be aware that you no may longer use "<<" and ">>" for
+'less than' and 'greater than'; use '<' and '>' instead.
+Consult http://wiki.opscode.com/display/chef/Metadata for more information.
+
+Called by: #{caller_name} '#{dep_name}', '#{constraint_str}'
+Called from:
+#{caller[0...5].map {|line| "  " + line}.join("\n")}
+INVALID
+        raise Exceptions::InvalidVersionConstraint, msg
+      end
       # Verify that the given array is an array of strings
       #
       # Raise an exception if the members of the array are not Strings
@@ -502,6 +588,42 @@ class Chef
         end
       end
 
+      # This method translates version constraint strings from
+      # cookbooks with the old format.
+      #
+      # Before we began respecting version constraints, we allowed
+      # multiple constraints to be placed on cookbooks, as well as the
+      # << and >> operators, which are now just < and >. For
+      # specifications with more than one constraint, we return an
+      # empty array (otherwise, we're silently abiding only part of
+      # the contract they have specified to us). If there is only one
+      # constraint, we are replacing the old << and >> with the new <
+      # and >.
+      def handle_deprecated_constraints(specification)
+        specification.inject(Mash.new) do |acc, (cb, constraints)|
+          constraints = Array(constraints)
+          acc[cb] = (constraints.empty? || constraints.size > 1) ? [] : constraints.first.gsub(/>>/, '>').gsub(/<</, '<')
+          acc
+        end
+      end
+
     end
+
+    #== Chef::Cookbook::MinimalMetadata
+    # MinimalMetadata is a duck type of Cookbook::Metadata, used
+    # internally by Chef Server when determining the optimal set of
+    # cookbooks for a node.
+    #
+    # MinimalMetadata objects typically contain only enough information
+    # to solve the cookbook collection for a run list, but not enough to
+    # generate the proper response
+    class MinimalMetadata < Metadata
+      def initialize(name, params)
+        @name = name
+        from_hash(params)
+      end
+    end
+
+
   end
 end
