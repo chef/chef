@@ -20,11 +20,14 @@
 require 'chef/version'
 require 'mixlib/cli'
 require 'chef/mixin/convert_to_class_name'
-
+require 'chef/rest'
 require 'pp'
 
 class Chef
   class Knife
+
+    Chef::REST::RESTRequest.user_agent = "Chef Knife#{Chef::REST::RESTRequest::UA_COMMON}"
+
     include Mixlib::CLI
     extend Chef::Mixin::ConvertToClassName
 
@@ -94,6 +97,7 @@ class Chef
     # is given, only subcommands in that category are shown
     def self.list_commands(preferred_category=nil)
       load_commands
+
       category_desc = preferred_category ? preferred_category + " " : ''
       msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
 
@@ -375,7 +379,7 @@ class Chef
       stdout.puts("USAGE: " + self.opt_parser.to_s)
     end
 
-    def load_from_file(klass, from_file, bag=nil) 
+    def load_from_file(klass, from_file, bag=nil)
       relative_path = ""
       if klass == Chef::Role
         relative_path = "roles"

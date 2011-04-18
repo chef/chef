@@ -231,6 +231,7 @@ describe Chef::REST do
         http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
         http_response.stub!(:read_body)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+        @rest.stub!(:sleep)
         lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
         @log_stringio.string.should match(Regexp.escape('WARN -- : HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
       end
@@ -239,6 +240,7 @@ describe Chef::REST do
         @http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
         http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
         http_response.stub!(:read_body)
+        @rest.stub!(:sleep)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
       end
@@ -248,6 +250,11 @@ describe Chef::REST do
           @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
           Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
           Tempfile.stub!(:open).and_return(@tempfile)
+
+          @request_mock = {}
+          Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+
+          @http_response_mock = mock("Net::HTTP Response mock")
         end
 
         after do
@@ -297,11 +304,42 @@ describe Chef::REST do
     end
 
     describe "as JSON API requests" do
+      before do
+        @request_mock = {}
+        Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+      end
+
       it "should always include the X-Chef-Version header" do
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar",
           { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
         ).and_return(@request_mock)
         @rest.api_request(:GET, @url, {})
+      end
+
+      context "when configured with custom http headers" do
+        before(:each) do
+          @custom_headers = {
+            'X-Custom-ChefSecret' => 'sharpknives',
+            'X-Custom-RequestPriority' => 'extremely low'
+          }
+          Chef::Config[:custom_http_headers] = @custom_headers
+        end
+
+        after(:each) do
+          Chef::Config[:custom_http_headers] = nil
+        end
+
+        it "should set them on the http request" do
+          url_string = an_instance_of(String)
+          header_hash = hash_including(@custom_headers)
+          Net::HTTP::Get.should_receive(:new).with(url_string, header_hash)
+          @rest.api_request(:GET, @url, {})
+        end
+      end
+
+      it "sets the user agent to chef-client" do
+        @rest.api_request(:GET, @url, {})
+        @request_mock['User-Agent'].should match /^Chef Client\/#{Chef::VERSION}/
       end
 
       it "should set the cookie for this request if one exists for the given host:port" do
@@ -383,6 +421,7 @@ describe Chef::REST do
         http_response.add_field("content-type", "application/json")
         http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
         http_response.stub!(:read_body)
+        @rest.stub!(:sleep)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         
         lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
@@ -393,6 +432,7 @@ describe Chef::REST do
         http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
         http_response.stub!(:body)
         http_response.stub!(:read_body)
+        @rest.stub!(:sleep)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
       end
@@ -402,6 +442,9 @@ describe Chef::REST do
       before do
         @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
         Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
+        @request_mock = {}
+        Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+
         @http_response = Net::HTTPSuccess.new("1.1",200, "it-works")
         @http_response.stub!(:read_body)
         @http_client.stub!(:request).and_yield(@http_response).and_return(@http_response)

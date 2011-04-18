@@ -62,6 +62,13 @@ class Chef
         :long => "--ssh-password PASSWORD",
         :description => "The ssh password"
 
+      option :ssh_port,
+        :short => "-p PORT",
+        :long => "--ssh-port PORT",
+        :description => "The ssh port",
+        :default => "22",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key }
+
       option :identity_file,
         :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
@@ -113,6 +120,7 @@ class Chef
           session_opts = {}
           session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
           session_opts[:password] = config[:ssh_password] if config[:ssh_password]
+          session_opts[:port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
 
           session.use(hostspec, session_opts)

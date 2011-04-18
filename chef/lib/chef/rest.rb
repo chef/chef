@@ -298,13 +298,12 @@ class Chef
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{rest_request.path}, giving up"
-      rescue Net::HTTPServerException
-        if res.kind_of?(Net::HTTPForbidden)
-          if http_retry_count - http_attempts + 1 > 0
-            Chef::Log.error("Received 403 Forbidden against #{url.host}:#{url.port} for #{rest_request.path}, retry #{http_attempts}/#{http_retry_count}")
-            sleep(http_retry_delay)
-            retry
-          end
+      rescue Net::HTTPFatalError => e
+        if http_retry_count - http_attempts + 1 > 0
+          sleep_time = 1 + (2 ** http_attempts) + rand(2 ** http_attempts)
+          Chef::Log.error("Server returned error for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
+          sleep(sleep_time)
+          retry
         end
         raise
       end
@@ -359,6 +358,7 @@ class Chef
       headers["Content-Type"] = 'application/json' if json_body
       headers['Content-Length'] = json_body.bytesize.to_s if json_body
       headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
+      headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
       headers
     end
 

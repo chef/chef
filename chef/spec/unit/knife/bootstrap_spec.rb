@@ -68,6 +68,7 @@ describe Chef::Knife::Bootstrap do
       @knife.name_args = ["foo.example.com"]
       @knife.config[:ssh_user]      = "rooty"
       @knife.config[:ssh_password]  = "open_sesame"
+      Chef::Config[:knife][:ssh_port] = "4001"
       @knife.config[:identity_file] = "~/.ssh/me.rsa"
       @knife_ssh = @knife.knife_ssh
     end
@@ -82,6 +83,10 @@ describe Chef::Knife::Bootstrap do
 
     it "configures the ssh password" do
       @knife_ssh.config[:ssh_password].should == 'open_sesame'
+    end
+
+    it "configures the ssh port" do
+      @knife_ssh.config[:ssh_port].should == '4001'
     end
 
     it "configures the ssh identity file" do
@@ -143,4 +148,70 @@ describe Chef::Knife::Bootstrap do
 
   end
 
+  describe "render_template" do
+    
+  end
+
+end
+
+describe Chef::Knife::Bootstrap::TemplateHelper do
+  before(:each) do
+    @context = Erubis::Context.new({
+      :config => Hash.new
+    })
+  end
+
+  describe "bootstrap_version_string" do
+    after(:each) do
+      Chef::Config.delete :bootstrap_version
+    end
+
+    formats = {
+      :gems => /^--version \d+\.\d+\.\d+/,
+      :nil =>  '\d+\.\d+\.\d+'
+    }
+
+    context "by default" do
+      formats.each do |sym, format|
+        it "should return the current version of Chef for :#{sym.to_s}" do
+          @context.bootstrap_version_string(sym).should include Chef::VERSION
+        end
+
+        it "should match the correct output format for :#{sym.to_s}" do
+          @context.bootstrap_version_string(sym).should match format
+        end
+      end
+    end
+
+    context "with Chef::Config[:bootstrap_version] set" do
+      before(:each) do
+        @config_version = "0.9.12"
+        Chef::Config[:bootstrap_version] = @config_version
+      end
+
+      formats.each do |sym, format|
+        it "should return the specified bootstrap version for :#{sym.to_s}" do
+          @context.bootstrap_version_string(sym).should include @config_version
+        end
+
+        it "should match the correct output format for :#{sym.to_s}" do
+          @context.bootstrap_version_string(sym).should match format
+        end
+      end
+    end
+
+    context "with config[:prerelease] set" do
+      before(:each) do
+        @context[:config][:prerelease] = true
+      end
+
+      it "should return --prerelease only for :gems" do
+        formats.each do |sym, format|
+          version_string = @context.bootstrap_version_string(sym)
+          version_string.should == "--prerelease" if sym == :gems
+          version_string.should_not == "--prerelease" if sym != :gems
+        end
+      end
+    end
+  end
 end

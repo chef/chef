@@ -55,22 +55,15 @@ class Chef
       private
 
       def load_signing_key
-        begin
-          @raw_key = IO.read(key_file).strip
-        rescue SystemCallError, IOError => e
-          Chef::Log.fatal "Failed to read the private key #{key_file}: #{e.inspect}, #{e.backtrace}"
-          raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key_file}, which you told me to use to sign requests!"
-        end
-        assert_valid_key_format!(@raw_key)
+        @raw_key = IO.read(key_file).strip
         @key = OpenSSL::PKey::RSA.new(@raw_key)
-      end
-
-      def assert_valid_key_format!(raw_key)
-        unless (raw_key =~ /\A-----BEGIN RSA PRIVATE KEY-----$/) && (raw_key =~ /^-----END RSA PRIVATE KEY-----\Z/)
-          msg = "The file #{key_file} does not contain a correctly formatted private key.\n"
-          msg << "The key file should begin with '-----BEGIN RSA PRIVATE KEY-----' and end with '-----END RSA PRIVATE KEY-----'"
-          raise Chef::Exceptions::InvalidPrivateKey, msg
-        end
+      rescue SystemCallError, IOError => e
+        Chef::Log.fatal "Failed to read the private key #{key_file}: #{e.inspect}, #{e.backtrace}"
+        raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key_file}, which you told me to use to sign requests!"
+      rescue OpenSSL::PKey::RSAError
+        msg = "The file #{key_file} does not contain a correctly formatted private key.\n"
+        msg << "The key file should begin with '-----BEGIN RSA PRIVATE KEY-----' and end with '-----END RSA PRIVATE KEY-----'"
+        raise Chef::Exceptions::InvalidPrivateKey, msg
       end
 
     end

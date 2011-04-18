@@ -3,7 +3,8 @@ if [ ! -f /usr/bin/chef-client ]; then
   pacman -Syy
   pacman -S --noconfirm ruby ntp base-devel
   ntpdate -u pool.ntp.org
-  gem install ohai chef --no-rdoc --no-ri --verbose <%= '--prerelease' if @config[:prerelease] %>
+  gem install ohai --no-rdoc --no-ri --verbose
+  gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string(:gems) %>
 fi
 
 mkdir -p /etc/chef

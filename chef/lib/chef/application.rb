@@ -35,14 +35,14 @@ class Chef::Application
     end
 
     unless RUBY_PLATFORM =~ /mswin|mingw32|windows/
+      trap("QUIT") do
+        Chef::Log.info("SIGQUIT received, call stack:\n  " + caller.join("\n  "))
+      end
+
       trap("HUP") do
         Chef::Log.info("SIGHUP received, reconfiguring")
         reconfigure
       end
-    end
-
-    at_exit do
-      # tear down the logger
     end
 
     # Always switch to a readable directory. Keeps subsequent Dir.chdir() {}

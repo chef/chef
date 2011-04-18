@@ -38,6 +38,13 @@ class Chef
         :long => "--ssh-password PASSWORD",
         :description => "The ssh password"
 
+      option :ssh_port,
+        :short => "-p PORT",
+        :long => "--ssh-port PORT",
+        :description => "The ssh port",
+        :default => "22",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key }
+
       option :identity_file,
         :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
@@ -51,6 +58,11 @@ class Chef
       option :prerelease,
         :long => "--prerelease",
         :description => "Install the pre-release chef gems"
+
+      option :bootstrap_version,
+        :long => "--bootstrap-version",
+        :description => "The version of Chef to install",
+        :proc => lambda { |v| Chef::Config[:bootstrap_version] = v }
 
       option :distro,
         :short => "-d DISTRO",
@@ -149,6 +161,7 @@ class Chef
         ssh.name_args = [ server_name, ssh_command ]
         ssh.config[:ssh_user] = config[:ssh_user] 
         ssh.config[:ssh_password] = config[:ssh_password]
+        ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
         ssh
@@ -171,7 +184,36 @@ class Chef
         command
       end
 
+      module TemplateHelper
+
+        #
+        # == Chef::Knife::Bootstrap::TemplateHelper
+        #
+        # The methods in the TemplateHelper module expect to have access to
+        # the instance varialbles set above as part of the context in the
+        # Chef::Knife::Bootstrap#render_context method. Those instance
+        # variables are:
+        #
+        # * @config   - a hash of knife's config values
+        # * @run_list - the run list for the node to boostrap
+        #
+
+        ::Erubis::Context.send(:include, Chef::Knife::Bootstrap::TemplateHelper)
+
+        def bootstrap_version_string(type=nil)
+          version = Chef::Config[:bootstrap_version] || Chef::VERSION
+          case type
+          when :gems
+            if @config[:prerelease]
+              "--prerelease"
+            else
+              "--version #{version}"
+            end
+          else
+            version
+          end
+        end
+      end
     end
   end
 end
-
