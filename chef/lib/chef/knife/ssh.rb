@@ -27,6 +27,7 @@ class Chef
         require 'net/ssh/multi'
         require 'readline'
         require 'chef/search/query'
+        require 'chef/mixin/command'
       end
 
       attr_writer :password
@@ -300,6 +301,7 @@ class Chef
       end
 
       def run
+        extend Chef::Mixin::Command
 
         @longest = 0
 
