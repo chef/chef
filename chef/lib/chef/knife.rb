@@ -407,6 +407,7 @@ class Chef
       when NameError, NoMethodError
         ui.error "knife encountered an unexpected error"
         ui.info  "This may be a bug in the '#{self.class.common_name}' knife command or plugin"
+        ui.info  "Please collect the output of this command with the `-VV` option before filing a bug report."
         ui.info  "Exception: #{e.class.name}: #{e.message}"
       when Chef::Exceptions::PrivateKeyMissing
         ui.error "Your private key could not be loaded from #{api_key}"
