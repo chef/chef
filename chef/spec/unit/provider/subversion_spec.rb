@@ -87,7 +87,14 @@ describe Chef::Provider::Subversion do
                                         and_return(@exitstatus)
       @provider.find_current_revision.should be_nil
     end
-    
+
+    it "finds the current revision when loading the current resource state" do
+      # note: the test is kinda janky, but it provides regression coverage for CHEF-2092
+      @resource.instance_variable_set(:@action, :sync)
+      @provider.should_receive(:find_current_revision).and_return("12345")
+      @provider.load_current_resource
+      @provider.current_resource.revision.should == "12345"
+    end
   end
   
   it "creates the current_resource object and sets its revision to the current deployment's revision as long as we're not exporting" do
