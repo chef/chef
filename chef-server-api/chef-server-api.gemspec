@@ -27,8 +27,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency "thin"
 
-  s.add_dependency "dep_selector"
-
   s.bindir       = "bin"
   s.executables  = %w( chef-server )
 
