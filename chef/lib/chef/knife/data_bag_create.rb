@@ -25,6 +25,7 @@ class Chef
 
       deps do
         require 'chef/data_bag'
+        require 'chef/encrypted_data_bag_item'
       end
 
       banner "knife data bag create BAG [ITEM] (options)"
