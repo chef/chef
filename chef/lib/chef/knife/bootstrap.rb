@@ -66,9 +66,9 @@ class Chef
         :description => "Install the pre-release chef gems"
 
       option :bootstrap_version,
-        :long => "--bootstrap-version",
+        :long => "--bootstrap-version VERSION",
         :description => "The version of Chef to install",
-        :proc => lambda { |v| Chef::Config[:bootstrap_version] = v }
+        :proc => lambda { |v| Chef::Config[:knife][:bootstrap_version] = v }
 
       option :distro,
         :short => "-d DISTRO",
@@ -210,7 +210,7 @@ class Chef
         ::Erubis::Context.send(:include, Chef::Knife::Bootstrap::TemplateHelper)
 
         def bootstrap_version_string(type=nil)
-          version = Chef::Config[:bootstrap_version] || Chef::VERSION
+          version = Chef::Config[:knife][:bootstrap_version] || Chef::VERSION
           case type
           when :gems
             if @config[:prerelease]
