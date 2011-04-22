@@ -165,7 +165,7 @@ describe Chef::Knife::Bootstrap::TemplateHelper do
 
   describe "bootstrap_version_string" do
     after(:each) do
-      Chef::Config.delete :bootstrap_version
+      Chef::Config[:knife].delete(:bootstrap_version)
     end
 
     formats = {
@@ -185,10 +185,10 @@ describe Chef::Knife::Bootstrap::TemplateHelper do
       end
     end
 
-    context "with Chef::Config[:bootstrap_version] set" do
+    context "with Chef::Config[:knife][:bootstrap_version] set" do
       before(:each) do
         @config_version = "0.9.12"
-        Chef::Config[:bootstrap_version] = @config_version
+        Chef::Config[:knife][:bootstrap_version] = @config_version
       end
 
       formats.each do |sym, format|
