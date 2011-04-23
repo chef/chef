@@ -75,8 +75,8 @@ describe Chef::ShellOut do
     @shell_cmd.gid.should == a_group.gid
   end
 
-  it "has a timeout defaulting to 60 seconds" do
-    Chef::ShellOut.new('foo').timeout.should == 60
+  it "has a timeout defaulting to 600 seconds" do
+    Chef::ShellOut.new('foo').timeout.should == 600
   end
 
   it "sets the read timeout" do
