@@ -225,9 +225,28 @@ class Chef
       @rest.get_rest(view_string)
     end
 
+    def bulk_view(design, view, keys, options={})
+      view_string = view_uri(design, view)
+      view_string << "?" if options.length != 0
+      view_string << options.map { |k,v| "#{k}=#{URI.escape(v.to_json)}"}.join('&')
+      @rest.post_rest(view_string, { "keys" => keys })
+    end
+
     def bulk_get(*to_fetch)
       response = @rest.post_rest("#{couchdb_database}/_all_docs?include_docs=true", { "keys" => to_fetch.flatten })
       response["rows"].collect { |r| r["doc"] }
+    end
+
+    # bulk create a series of objects.
+    # this method is RAW. it does not validate.
+    # it does not index. it does not hold your hand.
+    def bulk_create(objects)
+      objects = Array.new(objects)
+      objects.each do |obj|
+        uuid = UUIDTools::UUID.random_create.to_s
+        obj.couchdb_id = uuid
+      end
+      @rest.post_rest("#{couchdb_database}/_bulk_docs", { "docs" => objects })
     end
 
     def view_uri(design, view)
