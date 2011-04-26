@@ -39,7 +39,7 @@ class Chef
         :short => "-r FORMAT",
         :long => "--readme-format FORMAT",
         :description => "Format of the README file, supported formats are 'md' (markdown) and 'rdoc' (rdoc)",
-        :default => "rdoc"
+        :default => "md"
 
       option :cookbook_license,
         :short => "-I LICENSE",
@@ -73,8 +73,9 @@ class Chef
         copyright = config[:cookbook_copyright] || "YOUR_COMPANY_NAME"
         email = config[:cookbook_email] || "YOUR_EMAIL"
         license = ((config[:cookbook_license] != "false") && config[:cookbook_license]) || "none"
+        readme_format = ((config[:readme_format] != "false") && config[:readme_format]) || "md"
         create_cookbook(cookbook_path,cookbook_name, copyright, license)
-        create_readme(cookbook_path,cookbook_name)
+        create_readme(cookbook_path,cookbook_name,readme_format)
         create_metadata(cookbook_path,cookbook_name, copyright, email, license)
       end
 
@@ -179,11 +180,11 @@ EOH
         end
       end
 
-      def create_readme(dir, cookbook_name)
+      def create_readme(dir, cookbook_name,readme_format)
         msg("** Creating README for cookbook: #{cookbook_name}")
         unless File.exists?(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"))
           open(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"), "w") do |file|
-            case config[:readme_format]
+            case readme_format
             when "rdoc"
               file.puts <<-EOH
 = DESCRIPTION:

@@ -134,15 +134,19 @@ def create_readme(dir)
   raise "Must provide a COOKBOOK=" unless ENV["COOKBOOK"]
   puts "** Creating README for cookbook: #{ENV["COOKBOOK"]}"
   unless File.exists?(File.join(dir, ENV["COOKBOOK"], "README.rdoc"))
-    open(File.join(dir, ENV["COOKBOOK"], "README.rdoc"), "w") do |file|
+    open(File.join(dir, ENV["COOKBOOK"], "README.md"), "w") do |file|
       file.puts <<-EOH
-= DESCRIPTION:
+Description
+===========
 
-= REQUIREMENTS:
+Requirements
+============
 
-= ATTRIBUTES: 
+Attributes
+==========
 
-= USAGE:
+Usage
+=====
 
 EOH
     end
