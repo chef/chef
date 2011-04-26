@@ -114,9 +114,9 @@ If the config file exists, knife uses these settings for __GENERAL OPTIONS__ def
     Specifies the private key file to use when bootstrapping new hosts.
     See knife-client(1) for more information about the validation
     client.
-  * `cookbook_copyright`, `cookbook_email`, `cookbook_license`
+  * `cookbook_copyright`, `cookbook_email`, `cookbook_license`, `readme_format`
     Used by `knife cookbook create` sub-command to specify the copyright
-    holder, maintainer email and license (respectively) for new cookbooks.
+    holder, maintainer email, license and readme format (respectively) for new cookbooks.
     The copyright holder is listed as the maintainer in the cookbook's
     metadata and as the Copyright in the comments of the default recipe. The
     maintainer email is used in the cookbook metadata. The license
@@ -124,7 +124,9 @@ If the config file exists, knife uses these settings for __GENERAL OPTIONS__ def
     and is listed as the license in the cookbook metadata. Currently
     supported licenses are "apachev2" and "none". Any other values will
     result in an empty license in the metadata (needs to be filled in by the
-    author), and no comment preamble in the default recipe.
+    author), and no comment preamble in the default recipe. Currently supported 
+    readme formats are "md", "mkd", "txt", and "rdoc".  Any other value will
+    result in an unformatted README.
 
 ## FILES
 
