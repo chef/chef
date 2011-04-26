@@ -167,7 +167,8 @@ class Chef
     end
 
     def self.guess_category(args)
-      category_words = args.select {|arg| arg =~ /^([[:alnum:]]|_)+$/ }
+      category_words = args.select {|arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
+      category_words.map! {|w| w.split('-')}.flatten!
       matching_category = nil
       while (!matching_category) && (!category_words.empty?)
         candidate_category = category_words.join(' ')
@@ -178,7 +179,8 @@ class Chef
     end
 
     def self.subcommand_class_from(args)
-      command_words = args.select {|arg| arg =~ /^([[:alnum:]]|_)+$/ }
+      command_words = args.select {|arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
+
       subcommand_class = nil
 
       while ( !subcommand_class ) && ( !command_words.empty? )
@@ -187,6 +189,8 @@ class Chef
           command_words.pop
         end
       end
+      # see if we got the command as e.g., knife node-list
+      subcommand_class ||= subcommands[args.first.gsub('-', '_')]
       subcommand_class || subcommand_not_found!(args)
     end
 
@@ -200,6 +204,8 @@ class Chef
 
     private
 
+    OFFICIAL_PLUGINS = %w[ec2 rackspace windows openstack terremark bluebox]
+
     # :nodoc:
     # Error out and print usage. probably becuase the arguments given by the
     # user could not be resolved to a subcommand.
@@ -207,7 +213,16 @@ class Chef
       unless want_help?(args)
         ui.fatal("Cannot find sub command for: '#{args.join(' ')}'")
       end
-      list_commands(guess_category(args))
+
+      if category_commands = guess_category(args)
+        list_commands(category_commands)
+      elsif missing_plugin = ( OFFICIAL_PLUGINS.find {|plugin| plugin == args[0]} )
+        ui.info("The #{missing_plugin} commands were moved to plugins in Chef 0.10")
+        ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}")
+      else
+        list_commands
+      end
+
       exit 10
     end
 
@@ -249,6 +264,7 @@ class Chef
 
       # Mixlib::CLI ignores the embedded name_args
       @name_args = parse_options(argv)
+      @name_args.delete(command_name_words.join('-'))
       @name_args.reject! { |name_arg| command_name_words.delete(name_arg) }
 
       # knife node run_list add requires that we have extra logic to handle
@@ -391,6 +407,7 @@ class Chef
       when NameError, NoMethodError
         ui.error "knife encountered an unexpected error"
         ui.info  "This may be a bug in the '#{self.class.common_name}' knife command or plugin"
+        ui.info  "Please collect the output of this command with the `-VV` option before filing a bug report."
         ui.info  "Exception: #{e.class.name}: #{e.message}"
       when Chef::Exceptions::PrivateKeyMissing
         ui.error "Your private key could not be loaded from #{api_key}"
@@ -459,7 +476,7 @@ class Chef
 
       pretty_name ||= output
 
-      self.msg("Created (or updated) #{pretty_name}")
+      self.msg("Created #{pretty_name}")
 
       output(output) if config[:print_after]
     end

@@ -22,6 +22,7 @@ require 'chef/config'
 require 'chef/daemon'
 require 'chef/log'
 require 'chef/rest'
+require 'chef/handler/error_report'
 
 
 class Chef::Application::Client < Chef::Application
@@ -127,6 +128,11 @@ class Chef::Application::Client < Chef::Application
     :description  => "Set the client key file location",
     :proc         => nil
 
+  option :environment,
+    :short        => '-E ENVIRONMENT',
+    :long         => '--environment ENVIRONMENT',
+    :description  => 'Set the Chef Environment on the node'
+
   option :version,
     :short        => "-v",
     :long         => "--version",
@@ -150,6 +156,9 @@ class Chef::Application::Client < Chef::Application
     super
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
+    unless Chef::Config[:exception_handlers].any? {|h| Chef::Handler::ErrorReport === h}
+      Chef::Config[:exception_handlers] << Chef::Handler::ErrorReport.new
+    end
 
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800

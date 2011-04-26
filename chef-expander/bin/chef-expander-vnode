@@ -19,11 +19,12 @@
 # limitations under the License.
 #
 
+
 require "rubygems"
 
 $:.unshift(File.dirname(__FILE__) + '/../lib/')
 
 require 'chef/expander'
-require 'chef/expander/cluster_supervisor'
+require 'chef/expander/vnode_supervisor'
 
-Chef::Expander::ClusterSupervisor.new.start
+Chef::Expander::VNodeSupervisor.start

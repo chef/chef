@@ -24,11 +24,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'bunny', '~> 0.6.0'
   s.add_dependency 'fast_xs', "~> 0.7.3"
   s.add_dependency 'highline', '~> 1.6.1'
-  s.add_dependency 'rake', '~> 0.8.7'
-  s.add_dependency "bunny", ">= 0.6.0"
 
   s.bindir       = "bin"
-  s.executables  = %w( chef-expander chef-expander-cluster chef-expanderctl )
+  s.executables  = %w( chef-expander chef-expander-vnode chef-expanderctl )
   s.require_path = 'lib'
   s.files = %w(LICENSE README.rdoc) + Dir.glob("{scripts,conf,lib}/**/*")
 end

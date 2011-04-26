@@ -25,6 +25,7 @@ class Chef
       attr_reader :chef_repo, :new_client_key, :validation_client_name, :validation_key
 
       deps do
+        require 'ohai'
         Chef::Knife::ClientCreate.load_deps
       end
 
@@ -113,7 +114,8 @@ EOH
       end
 
       def ask_user_for_config
-        @chef_server            = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => 'http://localhost:4000')
+        server_name = guess_servername
+        @chef_server            = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => "http://#{server_name}:4000")
         if config[:initial]
           @new_client_name        = config[:node_name] || ask_question("Please enter a clientname for the new client: ", :default => Etc.getlogin)
           @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin clientname: ", :default => 'chef-webui')
@@ -126,6 +128,13 @@ EOH
         @chef_repo              = config[:repository] || ask_question("Please enter the path to a chef repository (or leave blank): ")
 
         @new_client_key = config[:client_key] || File.join(chef_config_path, "#{@new_client_name}.pem")
+      end
+
+      def guess_servername
+        o = Ohai::System.new
+        o.require_plugin 'os'
+        o.require_plugin 'hostname'
+        o[:fqdn] || 'localhost'
       end
 
       def config_file

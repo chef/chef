@@ -39,6 +39,8 @@ __knife cookbook site download COOKBOOK [VERSION]__ _(options)_
 
   * `-f`, `--file FILE`:
     The filename to write to
+  * `--force`:
+    Force download deprecated cookbook
 
 Downloads a specific cookbook from the Community site, optionally
 specifying a certain version.

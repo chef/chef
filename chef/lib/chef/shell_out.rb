@@ -40,7 +40,7 @@ class Chef
   class ShellOut
     READ_WAIT_TIME = 0.01
     READ_SIZE = 4096
-    DEFAULT_READ_TIMEOUT = 60
+    DEFAULT_READ_TIMEOUT = 600
     DEFAULT_ENVIRONMENT = {'LC_ALL' => 'C'}
 
     if RUBY_PLATFORM =~ /mswin|mingw32|windows/

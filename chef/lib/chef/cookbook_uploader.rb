@@ -100,8 +100,11 @@ class Chef
           raise
         end
       end
+
       # files are uploaded, so save the manifest
-      opts[:force] ? cookbook.force_save : cookbook.save
+      save_url = opts[:force] ? cookbook.force_save_url : cookbook.save_url
+      rest.put_rest(save_url, cookbook)
+
       Chef::Log.info("Upload complete!")
     end
 
@@ -115,7 +118,7 @@ class Chef
         # header
         checksum64 = Base64.encode64([checksum].pack("H*")).strip
         timestamp = Time.now.utc.iso8601
-        file_contents = File.read(file)
+        file_contents = File.open(file, "rb") {|f| f.read}
         # TODO - 5/28/2010, cw: make signing and sending the request streaming
         sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
                                                                            :http_method => :put,

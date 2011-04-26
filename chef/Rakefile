@@ -68,20 +68,29 @@ namespace :docs do
   task :html
 
   if system('which ronn > /dev/null')
-    Dir['distro/common/markdown/man1/*.mkd'].each do |mkd|
-      basename = File.basename(mkd, '.mkd')
-      manfile  = "distro/common/man/man1/#{basename}.1"
-      htmlfile = "distro/common/html/#{basename}.1.html"
-      file(manfile => mkd) do
-        sh "ronn -r #{RONN_OPTS} #{mkd} --pipe > #{manfile}"
-      end
-      task :man => manfile
+    ['distro/common/markdown/man1/*.mkd', 'distro/common/markdown/man8/*.mkd'].each do |dir|
+      Dir[dir].each do |mkd|
+        basename = File.basename(mkd, '.mkd')
+        if dir =~ /man1/
+          manfile = "distro/common/man/man1/#{basename}.1"
+          htmlfile = "distro/common/html/#{basename}.1.html"
+        elsif dir =~ /man8/
+          manfile = "distro/common/man/man8/#{basename}.8"
+          htmlfile = "distro/common/html/#{basename}.8.html"
+        end
 
-      file(htmlfile => mkd) do
-        sh "ronn -5 #{RONN_OPTS} --style=toc #{mkd} --pipe > #{htmlfile}"
-      end
+        file(manfile => mkd) do
+           sh "ronn -r #{RONN_OPTS} #{mkd} --pipe > #{manfile}"
+         end
+         task :man => manfile
 
-      task :html => htmlfile
+         file(htmlfile => mkd) do
+           sh "ronn -5 #{RONN_OPTS} --style=toc #{mkd} --pipe > #{htmlfile}"
+         end
+
+         task :html => htmlfile
+
+      end
     end
   else
     puts "get with the program and install ronn"

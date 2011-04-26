@@ -1,0 +1,58 @@
+chef-expanderctl(8) -- management program for chef-expander
+========================================
+
+## SYNOPSIS
+
+__chef-expanderctl__ _COMMAND_
+
+__Commands:__
+
+  * `help`:
+    Show help message
+  * `queue-depth`:
+    display the aggregate queue backlog
+  * `queue-status`:
+    show the backlog and consumer count for each vnode queue
+  * `node-status`:
+    show the status of the nodes in the cluster
+  * `log-level`:
+    sets the log level of all nodes in the cluster
+
+## DESCRIPTION
+
+Chef-expanderctl is a management program that allows
+you to get status information or change the logging
+verbosity (without restarting). chef-expanderctl has
+the following commands:
+
+* __chef-expanderctl help__
+prints usage.
+* __chef-expanderctl queue-depth__
+Shows the total number of messages in the queues.
+* __chef-expanderctl queue-status__
+Show the number of messages in each queue. This is mainly of use when
+debugging a Chef Expander cluster.
+* __chef-expanderctl log-level LEVEL__
+Sets the log level on a running Chef Expander or cluster.
+If you suspect that a worker process is stuck, as long as you are using
+clustered operation, you can simply kill the worker process and it will
+be restarted by the master process.
+
+## SEE ALSO
+
+__chef-expander-cluster__(8)
+__chef-solr__(8)
+
+Full documentation for Chef and chef-server is located on the Chef
+wiki, http://wiki.opscode.com/display/chef/Home.
+
+## AUTHOR
+
+Chef was written by Adam Jacob <adam@ospcode.com> of Opscode
+(http://www.opscode.com),  with contributions from the community. This
+manual page was created by Nuo Yan <nuo@opscode.com>. Permission is
+granted to copy, distribute and / or modify this document under the
+terms of the Apache 2.0 License.
+
+On Debian systems, the complete text of the Apache 2.0 License  can  be
+found in /usr/share/common-licenses/Apache-2.0.

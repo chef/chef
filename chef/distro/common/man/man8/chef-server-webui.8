@@ -1,106 +1,155 @@
-.TH CHEF-SERVER-WEBUI "1" "March 2010" "chef-server-webui" "User Commands"
-.SH NAME
-chef-server-webui \- Start the Chef Server merb application slice providing Web User Interface.
-.SH SYNOPSIS
-.B chef-server-webui
-[\fIuGdcIpPhmailLerkKX\fR] [\fIargument\fR]
-.SH DESCRIPTION
-The Chef Server WebUI is a Merb application slice. The default listen port is 4040.
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "CHEF\-SERVER\-WEBUI" "8" "April 2011" "Chef 0.10.0.rc.0" "Chef Manual"
+.
+.SH "NAME"
+\fBchef\-server\-webui\fR \- Start the Chef Server merb application slice providing Web User Interface (Management Console)\.
+.
+.SH "SYNOPSIS"
+\fBchef\-server\-webui\fR \fI(options)\fR
+.
 .TP
-\fB\-u\fR, \fB\-\-user\fR USER
-This flag is for having chef-server-webui run as a user other than the one currently logged in. Note: if you set this you must also provide a \fB\-\-group\fR option for it to take effect.
+\fB\-u\fR, \fB\-\-user USER\fR
+This flag is for having chef\-server\-webui run as a user other than the one currently logged in\. Note: if you set this you must also provide a \-\-group option for it to take effect\.
+.
 .TP
-\fB\-G\fR, \fB\-\-group\fR GROUP
-This flag is for having chef-server-webui run as a group other than the one currently logged in. Note: if you set this you must also provide a \fB\-\-user\fR option for it to take effect.
+\fB\-G\fR, \fB\-\-group GROUP\fR
+This flag is for having chef\-server\-webui run as a group other than the one currently logged in\. Note: if you set this you must also provide a \-\-user option for it to take effect\.
+.
 .TP
 \fB\-d\fR, \fB\-\-daemonize\fR
-This will run a single chef-server-webui in the background.
+This will run a single chef\-server\-webui in the background\.
+.
 .TP
 \fB\-N\fR, \fB\-\-no\-daemonize\fR
-This will allow you to run a cluster in console mode
+This will allow you to run a cluster in console mode\.
+.
 .TP
-\fB\-c\fR, \fB\-\-cluster\-nodes\fR NUM_MERBS
-Number of merb daemons to run for chef-server-webui.
+\fB\-c\fR, \fB\-\-cluster\-nodes NUM_MERBS\fR
+Number of merb daemons to run for chef\-server\-webui\.
+.
 .TP
-\fB\-I\fR, \fB\-\-init\-file\fR FILE
-File to use for initialization on load, defaults to config/init.rb
+\fB\-I\fR, \fB\-\-init\-file FILE\fR
+File to use for initialization on load, defaults to config/init\.rb\.
+.
 .TP
-\fB\-p\fR, \fB\-\-port\fR PORTNUM
-Port to run chef-server-webui on, defaults to 4040. Additional nodes (\-c) listen on incrementing port numbers.
+\fB\-p\fR, \fB\-\-port PORTNUM\fR
+Port to run chef\-server\-webui on, defaults to 4040\. Additional nodes (\-c) listen on incrementing port numbers\.
+.
 .TP
-\fB\-o\fR, \fB\-\-socket\-file\fR FILE
-Socket file to run chef-server-webui on, defaults to [Merb.root]/log/merb.sock. This is for web servers, like thin, that use sockets.Specify this *only* if you *must*.
+\fB\-o\fR, \fB\-\-socket\-file FILE\fR
+Socket file to run chef\-server\-webui on, defaults to [Merb\.root]/log/merb\.sock\. This is for web servers, like thin, that use sockets\. Specify this \fIonly\fR if you \fImust\fR\.
+.
 .TP
-\fB\-s\fR, \fB\-\-socket\fR SOCKNUM
-Socket number to run chef-server-webui on, defaults to 0.
+\fB\-s\fR, \fB\-\-socket SOCKNUM\fR
+Socket number to run chef\-server\-webui on, defaults to 0\.
+.
 .TP
-\fB\-n\fR, \fB\-\-name\fR NAME
-Set the name of the application. This is used in the process title and log file names.
+\fB\-n\fR, \fB\-\-name NAME\fR
+Set the name of the application\. This is used in the process title and log file names\.
+.
 .TP
-\fB\-P\fR, \fB\-\-pid\fR PIDFILE
-PID file, defaults to [Merb.root]/log/merb.main.pid for the master process and[Merb.root]/log/merb.[port number].pid for worker processes. For clusters, use %s to specify where in the file chef-server-webui should place the port number. For instance: \fB\-P\fR myapp.%s.pid
+\fB\-P\fR, \fB\-\-pid PIDFILE\fR
+PID file, defaults to [Merb\.root]/log/merb\.main\.pid for the master process and[Merb\.root]/log/merb\.[port number]\.pid for worker processes\. For clusters, use %s to specify where in the file chef\-server\-webui should place the port number\. For instance: \-P myapp\.%s\.pid\.
+.
 .TP
-\fB\-h\fR, \fB\-\-host\fR HOSTNAME
-Host to bind to (default is 0.0.0.0).
-.HP
-\fB\-m\fR, \fB\-\-merb\-root\fR /path/to/approot The path to the Merb.root for the app you want to run (default is current working directory).
+\fB\-h\fR, \fB\-\-host HOSTNAME\fR
+Host to bind to (default is 0\.0\.0\.0)\.
+.
 .TP
-\fB\-a\fR, \fB\-\-adapter\fR ADAPTER
-The rack adapter to use to run chef-server-webui (default is mongrel)[mongrel, emongrel, thin, ebb, fastcgi, webrick]
+\fB\-m\fR, \fB\-\-merb\-root PATH_TO_APP_ROOT\fR
+The path to the Merb\.root for the app you want to run (default is current working directory)\.
+.
 .TP
-\fB\-R\fR, \fB\-\-rackup\fR FILE
-Load an alternate Rack config file (default is config/rack.rb)
+\fB\-a\fR, \fB\-\-adapter ADAPTER\fR
+The rack adapter to use to run chef\-server\-webui (default is mongrel) [mongrel, emongrel, thin, ebb, fastcgi, webrick]\.
+.
+.TP
+\fB\-R\fR, \fB\-\-rackup FILE\fR
+Load an alternate Rack config file (default is config/rack\.rb)\.
+.
 .TP
 \fB\-i\fR, \fB\-\-irb\-console\fR
-This flag will start chef-server-webui in irb console mode. All your models and other classes will be available for you in an irb session.
+This flag will start chef\-server\-webui in irb console mode\. All your models and other classes will be available for you in an irb session\.
+.
 .TP
 \fB\-S\fR, \fB\-\-sandbox\fR
-This flag will enable a sandboxed irb console. If your ORM supports transactions, all edits will be rolled back on exit.
+This flag will enable a sandboxed irb console\. If your ORM supports transactions, all edits will be rolled back on exit\.
+.
 .TP
-\fB\-l\fR, \fB\-\-log\-level\fR LEVEL
-Log levels can be set to any of these options: debug < info < warn < error < fatal (default is info)
+\fB\-l\fR, \fB\-\-log\-level LEVEL\fR
+Log levels can be set to any of these options: debug < info < warn < error < fatal (default is info)\.
+.
 .TP
-\fB\-L\fR, \fB\-\-log\fR LOGFILE
-A string representing the logfile to use. Defaults to [Merb.root]/log/merb.[main].log for the master process and [Merb.root]/log/merb[port number].logfor worker processes
+\fB\-L\fR, \fB\-\-log LOGFILE\fR
+A string representing the logfile to use\. Defaults to [Merb\.root]/log/merb\.[main]\.log for the master process and [Merb\.root]/log/merb[port number]\.logfor worker processes\.
+.
 .TP
-\fB\-e\fR, \fB\-\-environment\fR STRING
-Environment to run Merb under [development, production, testing] (default is development)
-.HP
-\fB\-r\fR ['RUBY CODE'| FULL_SCRIPT_PATH]
+\fB\-e\fR, \fB\-\-environment STRING\fR
+Environment to run Merb under [development, production, testing] (default is development)\.
+.
 .TP
-\fB\-\-script\-runner\fR
-Command\-line option to run scripts and/or code in the chef-server-webui app.
+\fB\-r\fR, \fB\-\-script\-runner [\'RUBY CODE\'| FULL_SCRIPT_PATH]\fR
+Command\-line option to run scripts and/or code in the chef\-server\-webui app\.
+.
 .TP
-\fB\-K\fR, \fB\-\-graceful\fR PORT or all
-Gracefully kill chef-server-webui proceses by port number.  Use chef-server \fB\-K\fR all to gracefully kill all merbs.
+\fB\-K\fR, \fB\-graceful PORT or all\fR
+Gracefully kill chef\-server\-webui proceses by port number\. Use chef\-server \-K all to gracefully kill all merbs\.
+.
 .TP
-\fB\-k\fR, \fB\-\-kill\fR PORT
-Force kill one merb worker by port number. This will cause the worker tobe respawned.
+\fB\-k\fR, \fB\-\-kill PORT\fR
+Force kill one merb worker by port number\. This will cause the worker to be respawned\.
+.
 .TP
 \fB\-\-fast\-deploy\fR
-Reload the code, but not yourinit.rb or gems
+Reload the code, but not yourinit\.rb or gems\.
+.
 .TP
-\fB\-X\fR, \fB\-\-mutex\fR on/off
-This flag is for turning the mutex lock on and off.
+\fB\-X\fR, \fB\-\-mutex on/off\fR
+This flag is for turning the mutex lock on and off\.
+.
 .TP
 \fB\-D\fR, \fB\-\-debugger\fR
-Run chef-server-webui using rDebug.
+Run chef\-server\-webui using rDebug\.
+.
 .TP
 \fB\-V\fR, \fB\-\-verbose\fR
-Print extra information
+Print extra information\.
+.
 .TP
 \fB\-C\fR, \fB\-\-console\-trap\fR
-Enter an irb console on ^C
+Enter an irb console on ^C\.
+.
 .TP
-\-?, \fB\-H\fR, \fB\-\-help\fR
-Show this help message
+\fB\-?\fR, \fB\-H\fR, \fB\-\-help\fR
+Show this help message\.
+.
+.SH "DESCRIPTION"
+The Chef Server WebUI (Management Console) is a Merb application slice\. The default listen port is 4040\.
+.
+.P
+The Management Console is Chef Server\'s web interface\. Nodes, roles, cookbooks, data bags, and API clients can be managed through the Management Console\. Search can also be done on the console\.
+.
+.P
+In order to start using the Management Console, you need to first create a user or change the default password on the "admin" user\.
+.
+.P
+The default credentials are:
+.
+.IP "\(bu" 4
+\fBUsername\fR: admin
+.
+.IP "\(bu" 4
+\fBPassword\fR: p@ssw0rd1
+.
+.IP "" 0
+.
 .SH "SEE ALSO"
-Full documentation for Chef and chef-server-webui is located on the Chef wiki, http://wiki.opscode.com/display/chef/Home.
-.SH AUTHOR
-Chef was written by Adam Jacob <adam@ospcode.com> of Opscode (http://www.opscode.com), with contributions from the community.
-This manual page was written by Joshua Timberman <joshua@opscode.com> with help2man
-for the Debian project (but may be used by others).. Permission is granted
-  to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
-
-  On Debian systems, the complete text of the Apache 2.0 License can be found in
-  /usr/share/common-licenses/Apache-2.0.
+Full documentation for Chef and chef\-server\-webui (Management Console) is located on the Chef wiki, http://wiki\.opscode\.com/display/chef/Home\.
+.
+.SH "AUTHOR"
+Chef was written by Adam Jacob \fIadam@ospcode\.com\fR of Opscode (http://www\.opscode\.com), with contributions from the community\. This manual page was written by Joshua Timberman \fIjoshua@opscode\.com\fR with help2man for the Debian project (but may be used by others)\. Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2\.0 License\.
+.
+.P
+On Debian systems, the complete text of the Apache 2\.0 License can be found in /usr/share/common\-licenses/Apache\-2\.0\.

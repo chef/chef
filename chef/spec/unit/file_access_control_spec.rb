@@ -68,13 +68,21 @@ describe Chef::FileAccessControl do
 
   it "wraps uids to their negative complements to correctly handle negative uids" do
     # More: Mac OS X (at least) has negative UIDs for 'nobody' and some other
-    # users. Ruby doesn't believe in negative UIDs so you get the dimished radix
+    # users. Ruby doesn't believe in negative UIDs so you get the diminished radix
     # complement (i.e., it wraps around the maximum size of C unsigned int) of these
     # uids. So we have to get ruby and negative uids to smoke the peace pipe
     # with each other.
     @resource.owner('nobody')
     Etc.should_receive(:getpwnam).with('nobody').and_return(OpenStruct.new(:uid => (4294967294)))
     @fac.target_uid.should == -2
+  end
+
+  it "does not wrap uids to their negative complements beyond -9" do
+    # More: when OSX userIDs are created by ActiveDirectory sync, it tends to use huge numbers
+    #  which had been incorrectly wrapped.  It does not look like the OSX IDs go below -2
+    @resource.owner('bigdude')
+    Etc.should_receive(:getpwnam).with('bigdude').and_return(OpenStruct.new(:uid => (4294967286)))
+    @fac.target_uid.should == 4294967286
   end
 
   it "sets the file's owner as specified in the resource when the current owner is incorrect" do
