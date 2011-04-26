@@ -100,8 +100,11 @@ class Chef
           raise
         end
       end
+
       # files are uploaded, so save the manifest
-      opts[:force] ? cookbook.force_save : cookbook.save
+      save_url = opts[:force] ? cookbook.force_save_url : cookbook.save_url
+      rest.put_rest(save_url, cookbook)
+
       Chef::Log.info("Upload complete!")
     end
 
