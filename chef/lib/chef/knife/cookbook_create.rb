@@ -75,7 +75,7 @@ class Chef
         readme_format = ((config[:readme_format] != "false") && config[:readme_format]) || "md"
         create_cookbook(cookbook_path,cookbook_name, copyright, license)
         create_readme(cookbook_path,cookbook_name,readme_format)
-        create_metadata(cookbook_path,cookbook_name, copyright, email, license)
+        create_metadata(cookbook_path,cookbook_name, copyright, email, license,readme_format)
       end
 
       def create_cookbook(dir, cookbook_name, copyright, license)
@@ -181,8 +181,8 @@ EOH
 
       def create_readme(dir, cookbook_name,readme_format)
         msg("** Creating README for cookbook: #{cookbook_name}")
-        unless File.exists?(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"))
-          open(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"), "w") do |file|
+        unless File.exists?(File.join(dir, cookbook_name, "README.#{readme_format}"))
+          open(File.join(dir, cookbook_name, "README.#{readme_format}"), "w") do |file|
             case readme_format
             when "rdoc"
               file.puts <<-EOH
@@ -226,7 +226,7 @@ EOH
         end
       end
 
-      def create_metadata(dir, cookbook_name, copyright, email, license)
+      def create_metadata(dir, cookbook_name, copyright, email, license,readme_format)
         msg("** Creating metadata for cookbook: #{cookbook_name}")
 
         license_name = case license
@@ -244,8 +244,8 @@ EOH
 
         unless File.exists?(File.join(dir, cookbook_name, "metadata.rb"))
           open(File.join(dir, cookbook_name, "metadata.rb"), "w") do |file|
-            if File.exists?(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"))
-              long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.#{config[:readme_format]}'))"
+            if File.exists?(File.join(dir, cookbook_name, "README.#{readme_format}"))
+              long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.#{readme_format}'))"
             end
             file.puts <<-EOH
 maintainer       "#{copyright}"

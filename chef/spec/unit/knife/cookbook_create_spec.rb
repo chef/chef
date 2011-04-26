@@ -36,7 +36,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.config = {:cookbook_path => @dir}
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "YOUR_COMPANY_NAME", "none")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "YOUR_COMPANY_NAME", "YOUR_EMAIL", "none")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "YOUR_COMPANY_NAME", "YOUR_EMAIL", "none", "md")
       @knife.run
     end
 
@@ -49,7 +49,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.name_args=["foobar"]
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "YOUR_EMAIL", "none")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "YOUR_EMAIL", "none", "md")
       @knife.run
     end
 
@@ -63,7 +63,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.name_args=["foobar"]
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "none")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "none", "md")
       @knife.run
     end
 
@@ -78,7 +78,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.name_args=["foobar"]
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "apachev2")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "apachev2")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "apachev2", "md")
       @knife.run
     end
 
@@ -93,7 +93,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.name_args=["foobar"]
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "none")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "none", "md")
       @knife.run
     end
 
@@ -108,7 +108,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.name_args=["foobar"]
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "none")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "none")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "none", "md")
       @knife.run
     end
 
@@ -123,7 +123,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.name_args=["foobar"]
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv2")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "gplv2")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "gplv2", "md")
       @knife.run
     end
 
@@ -138,7 +138,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.name_args=["foobar"]
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "gplv3")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "gplv3")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "gplv3", "md")
       @knife.run
     end
 
@@ -153,7 +153,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.name_args=["foobar"]
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "md")
       @knife.run
     end
 
@@ -169,7 +169,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.name_args=["foobar"]
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "rdoc")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "rdoc")
       @knife.run
     end
 
@@ -185,7 +185,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.name_args=["foobar"]
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "mkd")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "mkd")
       @knife.run
     end
 
@@ -201,7 +201,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.name_args=["foobar"]
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "txt")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "txt")
       @knife.run
     end
 
@@ -217,7 +217,7 @@ describe Chef::Knife::CookbookCreate do
       @knife.name_args=["foobar"]
       @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "mit")
       @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "foo")
-      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit")
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "mit", "foo")
       @knife.run
     end
 
