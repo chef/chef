@@ -128,6 +128,11 @@ class Chef::Application::Client < Chef::Application
     :description  => "Set the client key file location",
     :proc         => nil
 
+  option :environment,
+    :short        => '-E ENVIRONMENT',
+    :long         => '--environment ENVIRONMENT',
+    :description  => 'Set the Chef Environment on the node'
+
   option :version,
     :short        => "-v",
     :long         => "--version",
