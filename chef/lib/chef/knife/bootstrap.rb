@@ -29,6 +29,7 @@ class Chef
         require 'highline'
         require 'net/ssh'
         require 'net/ssh/multi'
+        Chef::Knife::Ssh.load_deps
       end
 
       banner "knife bootstrap FQDN (options)"
