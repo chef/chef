@@ -128,7 +128,7 @@ class Chef::Application::Client < Chef::Application
     :description  => "Set the client key file location",
     :proc         => nil
 
-  option :chef_environment,
+  option :environment,
     :short        => '-E ENVIRONMENT',
     :long         => '--environment ENVIRONMENT',
     :description  => 'Set the Chef Environment on the node'
