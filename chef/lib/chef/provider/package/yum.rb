@@ -48,19 +48,23 @@ class Chef
           end
             
           def refresh
-            if @data.empty?
-              reload
-            elsif stale?
-               reload
+            if stale?
+              load_data(false)
             end
           end
 
-          def load_data
+          def load_data(cache=false)
             @data = Hash.new
             error = String.new
 
+            if cache
+              opts="-C"
+            else
+              opts=""
+            end
+
             helper = ::File.join(::File.dirname(__FILE__), 'yum-dump.py')
-            status = popen4("python #{helper}", :waitlast => true) do |pid, stdin, stdout, stderr|
+            status = popen4("python #{helper} #{opts}", :waitlast => true) do |pid, stdin, stdout, stderr|
               stdout.each do |line|
                 line.chomp!
                 name, type, epoch, version, release, arch = line.split(',')
@@ -84,7 +88,13 @@ class Chef
 
             @updated_at = Time.now
           end
-          alias :reload :load_data
+
+          # reload is called after yum has been run. At this point the 
+          # available/installed lists have already been updated so we can rely
+          # on cache.
+          def reload
+            load_data(true)
+          end
 
           def version(package_name, type, arch)
             if (x = @data[package_name])
@@ -221,7 +231,7 @@ class Chef
               raise ArgumentError, "#{@new_resource.name}: Version #{version} of #{name} not found. Did you specify both version and release? (version-release, e.g. 1.84-10.fc6)"
             end
           end
-          @yum.flush
+          @yum.reload
         end
 
         def upgrade_package(name, version)
@@ -230,8 +240,8 @@ class Chef
           unless version
             run_command_with_systems_locale(
               :command => "yum -d0 -e0 -y #{@new_resource.options} update #{name}#{yum_arch}"
-            )   
-            @yum.flush
+            )
+            @yum.reload
           else
             install_package(name, version)
           end
@@ -247,8 +257,7 @@ class Chef
              :command => "yum -d0 -e0 -y #{@new_resource.options} remove #{name}#{yum_arch}"
             )
           end
-            
-          @yum.flush
+          @yum.reload
         end
 
         def purge_package(name, version)

@@ -33,6 +33,7 @@ import time
 import yum
 
 from yum import Errors
+from optparse import OptionParser
 
 PIDFILE='/var/run/yum.pid'
 
@@ -40,6 +41,13 @@ PIDFILE='/var/run/yum.pid'
 lock_timeout = 10
 
 failure = False 
+
+parser = OptionParser()
+parser.add_option("-C", "--cache",
+                  action="store_true", dest="cache", default=False,
+                  help="run entirely from cache, don't update cache")
+
+(options, args) = parser.parse_args()
 
 # Can't do try: except: finally: in python 2.4 it seems, hence this fun.
 try:
@@ -63,6 +71,8 @@ try:
 
     # Override any setting in yum.conf - we only care about the newest
     y.conf.showdupesfromrepos = False
+
+    y.conf.cache = options.cache 
 
     # Spin up to lock_timeout.
     countdown = lock_timeout
