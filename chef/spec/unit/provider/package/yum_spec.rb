@@ -27,6 +27,7 @@ describe Chef::Provider::Package::Yum do
     @yum_cache = mock(
       'Chef::Provider::Yum::YumCache',
       :refresh => true,
+      :reload => true,
       :flush => true,
       :installed_version => "1.2.4-11.18.el5",
       :candidate_version => "1.2.4-11.18.el5_2.3",
@@ -108,6 +109,7 @@ describe Chef::Provider::Package::Yum do
       @yum_cache = mock(
         'Chef::Provider::Yum::YumCache',
         :refresh => true,
+        :reload => true,
         :flush => true,
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5_2.3",
