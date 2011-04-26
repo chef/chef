@@ -24,15 +24,8 @@ class Chef
     class ErrorReport < ::Chef::Handler
 
       def report
-        Chef::Log.fatal("Saving node information to #{report_path}")
-
-        File.open(report_path, "w") do |file|
-          file.puts Chef::JSONCompat.to_json_pretty(data)
-        end
-      end
-
-      def report_path
-        File.join(Chef::Config[:file_cache_path], "failed-run-data.json")
+        Chef::FileCache.store("failed-run-data.json", Chef::JSONCompat.to_json_pretty(data))
+        Chef::Log.fatal("Saving node information to #{Chef::FileCache.load("failed-run-data.json", false)}")
       end
 
     end
