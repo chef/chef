@@ -123,13 +123,13 @@ finally:
     sys.exit(1)
   
 for pkg in db.installed:
-     print '%s,installed,%s,%s,%s,%s' % ( pkg.name, 
+     print '%s installed %s %s %s %s' % ( pkg.name, 
                                           pkg.epoch,
                                           pkg.version,
                                           pkg.release,
                                           pkg.arch )
 for pkg in db.available:
-     print '%s,available,%s,%s,%s,%s' % ( pkg.name, 
+     print '%s available %s %s %s %s' % ( pkg.name, 
                                           pkg.epoch,
                                           pkg.version,
                                           pkg.release,

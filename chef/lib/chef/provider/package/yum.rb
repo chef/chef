@@ -70,7 +70,7 @@ class Chef
                 one_line = true
 
                 line.chomp!
-                parts = line.split(',')
+                parts = line.split
                 unless parts.size == 6
                   Chef::Log.warn("Problem parsing line '#{line}' from yum-dump.py! " +
                                  "Please check your yum configuration.")
