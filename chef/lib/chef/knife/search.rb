@@ -24,6 +24,9 @@ class Chef
     class Search < Knife
 
       deps do
+        require 'chef/node'
+        require 'chef/environment'
+        require 'chef/api_client'
         require 'chef/search/query'
       end
 
