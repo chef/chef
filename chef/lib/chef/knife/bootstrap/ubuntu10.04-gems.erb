@@ -10,13 +10,13 @@ if [ ! -f /usr/bin/chef-client ]; then
 fi
 
 gem install ohai --no-rdoc --no-ri --verbose
-gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string(:gems) %>
+gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
 
 mkdir -p /etc/chef
 
 (
 cat <<'EOP'
-<%= IO.read(Chef::Config[:validation_key]) %>
+<%= validation_key %>
 EOP
 ) > /tmp/validation.pem
 awk NF /tmp/validation.pem > /etc/chef/validation.pem
@@ -24,18 +24,7 @@ rm /tmp/validation.pem
 
 (
 cat <<'EOP'
-log_level        :info
-log_location     STDOUT
-chef_server_url  "<%= Chef::Config[:chef_server_url] %>"
-validation_client_name "<%= Chef::Config[:validation_client_name] %>"
-<% if @config[:chef_node_name] == nil %>
-# Using default node name (fqdn)
-<% else %>
-node_name "<%= @config[:chef_node_name] %>"
-<% end %>
-<% if Chef::Config[:environment] != nil %>
-environment "<%= Chef::Config[:environment]%>"
-<% end %>
+<%= config_content %>
 EOP
 ) > /etc/chef/client.rb
 
@@ -45,4 +34,4 @@ cat <<'EOP'
 EOP
 ) > /etc/chef/first-boot.json
 
-/usr/bin/chef-client -j /etc/chef/first-boot.json'
+<%= start_chef %>'
