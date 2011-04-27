@@ -65,14 +65,14 @@ try:
         y.log = __log
         y.errorlog = __log
     
-    # Yum assumes it can update the cache directory. Disable this for non root 
-    # users.
-    y.conf.cache = os.geteuid() != 0
-
     # Override any setting in yum.conf - we only care about the newest
     y.conf.showdupesfromrepos = False
 
-    y.conf.cache = options.cache 
+    # Optionally run only on cached repositories, but non root must use the cache
+    if os.geteuid() != 0:
+      y.conf.cache = True
+    else:
+      y.conf.cache = options.cache
 
     # Spin up to lock_timeout.
     countdown = lock_timeout
