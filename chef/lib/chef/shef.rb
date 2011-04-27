@@ -20,6 +20,7 @@ require "pp"
 require "etc"
 require "mixlib/cli"
 
+require 'chef'
 require 'chef/version'
 require "chef/client"
 require "chef/config"
