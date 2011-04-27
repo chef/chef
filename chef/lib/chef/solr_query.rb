@@ -152,7 +152,7 @@ class Chef
       delete_database(db)
 
       results = {}
-      [Chef::ApiClient, Chef::Node, Chef::Role].each do |klass|
+      [Chef::ApiClient, Chef::Node, Chef::Role, Chef::Environment].each do |klass|
         results[klass.name] = reindex_all(klass) ? "success" : "failed"
       end
       databags = Chef::DataBag.cdb_list(true)
