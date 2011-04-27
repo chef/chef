@@ -56,6 +56,7 @@ class Chef
           def load_data(cache=false)
             @data = Hash.new
             error = String.new
+            one_line = false
 
             if cache
               opts="-C"
@@ -66,8 +67,17 @@ class Chef
             helper = ::File.join(::File.dirname(__FILE__), 'yum-dump.py')
             status = popen4("python #{helper} #{opts}", :waitlast => true) do |pid, stdin, stdout, stderr|
               stdout.each do |line|
+                one_line = true
+
                 line.chomp!
-                name, type, epoch, version, release, arch = line.split(',')
+                parts = line.split(',')
+                unless parts.size == 6
+                  Chef::Log.warn("Problem parsing line '#{line}' from yum-dump.py! " +
+                                 "Please check your yum configuration.")
+                  next
+                end
+                name, type, epoch, version, release, arch = parts
+
                 type_sym = type.to_sym
                 if !@data.has_key?(name)
                   @data[name] = Hash.new
@@ -82,8 +92,14 @@ class Chef
               error = stderr.readlines
             end
 
-            unless status.exitstatus == 0
+
+            if status.exitstatus != 0
               raise Chef::Exceptions::Package, "yum failed - #{status.inspect} - returns: #{error}"
+            else
+              unless one_line
+                Chef::Log.warn("Odd, no output from yum-dump.py. Please check " +
+                               "your yum configuration.")
+              end
             end
 
             @updated_at = Time.now
