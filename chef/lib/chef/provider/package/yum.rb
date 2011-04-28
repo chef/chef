@@ -32,24 +32,13 @@ class Chef
 
           def initialize
             load_data
-          end
 
-          def stale?
-            interval = Chef::Config[:interval].to_f
-
-            # run once mode
-            if interval == 0
-              return false
-            elsif (Time.now - @updated_at) > interval
-              return true
+            # these are for subsequent runs if we are on an interval
+            Chef::Client.when_run_starts do |run_status|
+              YumCache.instance.load_data
             end
-
-            false
-          end
-            
-          def refresh
-            if stale?
-              load_data(false)
+            Chef::Client.when_run_completes_successfully do |run_status|
+              YumCache.instance.flush
             end
           end
 
@@ -106,8 +95,6 @@ class Chef
                                "your yum configuration.")
               end
             end
-
-            @updated_at = Time.now
           end
 
           # reload is called after yum has been run. At this point the 
@@ -220,8 +207,6 @@ class Chef
           end
 
           Chef::Log.debug("#{@new_resource} checking yum info for #{@new_resource.package_name}#{yum_arch}")
-
-          @yum.refresh
 
           installed_version = @yum.installed_version(@new_resource.package_name, arch)
           @candidate_version = @yum.candidate_version(@new_resource.package_name, arch)
