@@ -80,9 +80,9 @@ class Chef
 
                 case t
                 when "a"
-                  type = ":available"
+                  type = :available
                 when "i"
-                  type = ":installed"
+                  type = :installed
                 end
                 if !@data.has_key?(name)
                   @data[name] = Hash.new
