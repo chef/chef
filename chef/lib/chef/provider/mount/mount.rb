@@ -165,7 +165,7 @@ class Chef
         end
 
         def device_should_exist?
-          @new_resource.device !~ /:/ && @new_resource.device !~ /\/\// && @new_resource.device != "tmpfs"
+          @new_resource.device !~ /:/ && @new_resource.device !~ /\/\// && @new_resource.device != "tmpfs" && @new_resource.device !~ /\#/
         end
 
         private
