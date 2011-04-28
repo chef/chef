@@ -76,17 +76,22 @@ class Chef
                                  "Please check your yum configuration.")
                   next
                 end
-                name, type, epoch, version, release, arch = parts
+                name, epoch, version, release, arch, t = parts
 
-                type_sym = type.to_sym
+                case t
+                when "a"
+                  type = ":available"
+                when "i"
+                  type = ":installed"
+                end
                 if !@data.has_key?(name)
                   @data[name] = Hash.new
                 end
-                if !@data[name].has_key?(type_sym)
-                  @data[name][type_sym] = Hash.new
+                if !@data[name].has_key?(type)
+                  @data[name][type] = Hash.new
                 end
-                @data[name][type_sym][arch] = { :epoch => epoch, :version => version,
-                                                :release => release }
+                @data[name][type][arch] = { :epoch => epoch, :version => version,
+                                            :release => release }
               end
               
               error = stderr.readlines
