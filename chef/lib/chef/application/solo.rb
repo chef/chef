@@ -26,11 +26,18 @@ require 'open-uri'
 require 'fileutils'
 
 class Chef::Application::Solo < Chef::Application
+  DefaultConfigFile = "/etc/chef/solo.rb"
+  EnvKeyConfig = 'CHEF_DEFAULT_SOLO_CONFIG'
+  EnvKeyJSON = 'CHEF_DEFAULT_SOLO_JSON'
 
   option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => "/etc/chef/solo.rb",
+    :default => File.exist?(DefaultConfigFile) \
+        ? DefaultConfigFile \
+        : ENV.has_key?(EnvKeyConfig) \
+        ? ENV[EnvKeyConfig] \
+        : DefaultConfigFile,
     :description => "The configuration file to use"
 
   option :log_level,
@@ -82,6 +89,7 @@ class Chef::Application::Solo < Chef::Application
     :short => "-j JSON_ATTRIBS",
     :long => "--json-attributes JSON_ATTRIBS",
     :description => "Load attributes from a JSON file or URL",
+    :default => ENV.has_key?(EnvKeyJSON) ? ENV[EnvKeyJSON] : nil,
     :proc => nil
 
   option :node_name,
