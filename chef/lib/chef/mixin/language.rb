@@ -19,6 +19,7 @@
 require 'chef/search/query'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
+require 'chef/encrypted_data_bag_item'
 
 class Chef
   module Mixin
