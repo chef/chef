@@ -33,14 +33,14 @@ class Chef
     attr_reader :original_committed_file_location
 
     DESIGN_DOCUMENT = {
-      "version" => 1,
+      "version" => 2,
       "language" => "javascript",
       "views" => {
         "all" => {
           "map" => <<-EOJS
           function(doc) { 
             if (doc.chef_type == "checksum") {
-              emit(doc.checksum, doc);
+              emit(doc.checksum, null);
             }
           }
           EOJS
@@ -150,6 +150,11 @@ class Chef
     
     def self.cdb_all_checksums(couchdb = nil)
       rs = (couchdb || Chef::CouchDB.new).list("checksums", true)
+      rs["rows"].inject({}) { |hash_result, r| hash_result[r['key']] = 1; hash_result }
+    end
+
+    def self.cdb_bulk_checksums(keys, couchdb = nil)
+      rs = (couchdb || Chef::CouchDB.new).bulk_view("checksums", "all", keys)
       rs["rows"].inject({}) { |hash_result, r| hash_result[r['key']] = 1; hash_result }
     end
 
