@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -64,7 +64,7 @@ class Chef
           stdout.puts("You must specify a data bag name")
           exit 1
         end
-        
+
         # create the data bag
         begin
           rest.post_rest("data", { "name" => @data_bag_name })
@@ -73,16 +73,17 @@ class Chef
           raise unless e.to_s =~ /^409/
           ui.info("Data bag #{@data_bag_name} already exists")
         end
-        
+
         # if an item is specified, create it, as well
         if @data_bag_item_name
           create_object({ "id" => @data_bag_item_name }, "data_bag_item[#{@data_bag_item_name}]") do |output|
-            item = if use_encryption
-                     Chef::EncryptedDataBagItem.encrypt_data_bag_item(output,
-                                                                      read_secret)
-                   else
-                     output
-                   end
+            item = Chef::DataBagItem.from_hash(
+                     if use_encryption
+                       Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
+                     else
+                       output
+                     end)
+            item.data_bag(@data_bag_name)
             rest.post_rest("data/#{@data_bag_name}", item)
           end
         end

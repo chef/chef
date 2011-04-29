@@ -60,6 +60,12 @@ class Chef
       }
     }
 
+    INDEX_OBJECT_TYPE = 'client'.freeze
+
+    def self.index_object_type
+      INDEX_OBJECT_TYPE
+    end
+
     attr_accessor :couchdb_rev, :couchdb_id, :couchdb
 
     # Create a new Chef::ApiClient object.

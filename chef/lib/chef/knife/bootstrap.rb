@@ -24,6 +24,7 @@ class Chef
     class Bootstrap < Knife
 
       deps do
+        require 'chef/knife/core/bootstrap_context'
         require 'chef/json_compat'
         require 'tempfile'
         require 'highline'
@@ -127,9 +128,7 @@ class Chef
       end
 
       def render_template(template=nil)
-        context = {}
-        context[:run_list] = config[:run_list]
-        context[:config] = config
+        context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config)
         Erubis::Eruby.new(template).evaluate(context)
       end
 
@@ -194,36 +193,6 @@ class Chef
         command
       end
 
-      module TemplateHelper
-
-        #
-        # == Chef::Knife::Bootstrap::TemplateHelper
-        #
-        # The methods in the TemplateHelper module expect to have access to
-        # the instance varialbles set above as part of the context in the
-        # Chef::Knife::Bootstrap#render_context method. Those instance
-        # variables are:
-        #
-        # * @config   - a hash of knife's config values
-        # * @run_list - the run list for the node to boostrap
-        #
-
-        ::Erubis::Context.send(:include, Chef::Knife::Bootstrap::TemplateHelper)
-
-        def bootstrap_version_string(type=nil)
-          version = Chef::Config[:knife][:bootstrap_version] || Chef::VERSION
-          case type
-          when :gems
-            if @config[:prerelease]
-              "--prerelease"
-            else
-              "--version #{version}"
-            end
-          else
-            version
-          end
-        end
-      end
     end
   end
 end

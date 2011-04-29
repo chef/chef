@@ -155,6 +155,7 @@ describe Chef::SolrQuery do
     it "reindexes Chef::ApiClient, Chef::Node, and Chef::Role objects, reporting the results as a hash" do
       @solr.should_receive(:delete_database).with("chunky_bacon")
       @solr.should_receive(:reindex_all).with(Chef::ApiClient).and_return(true)
+      @solr.should_receive(:reindex_all).with(Chef::Environment).and_return(true)
       @solr.should_receive(:reindex_all).with(Chef::Node).and_return(true)
       @solr.should_receive(:reindex_all).with(Chef::Role).and_return(true)
       Chef::DataBag.stub!(:cdb_list).and_return([])

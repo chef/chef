@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ module ChefSpecs
     def initialize
       @args_received = []
     end
-    
+
     def post_rest(*args)
       @args_received << args
     end
@@ -53,10 +53,12 @@ describe Chef::Knife::DataBagCreate do
 
   it "creates a data bag item when given two arguments" do
     @knife.name_args = ['sudoing_admins', 'ME']
-    user_supplied_json = {"login_name" => "alphaomega", "id" => "ME"}.to_json
-    @knife.should_receive(:create_object).and_yield(user_supplied_json)
+    user_supplied_hash = {"login_name" => "alphaomega", "id" => "ME"}
+    data_bag_item = Chef::DataBagItem.from_hash(user_supplied_hash)
+    data_bag_item.data_bag("sudoing_admins")
+    @knife.should_receive(:create_object).and_yield(user_supplied_hash)
     @rest.should_receive(:post_rest).with("data", {'name' => 'sudoing_admins'}).ordered
-    @rest.should_receive(:post_rest).with("data/sudoing_admins", user_supplied_json).ordered
+    @rest.should_receive(:post_rest).with("data/sudoing_admins", data_bag_item).ordered
 
     @knife.run
   end
@@ -69,8 +71,10 @@ describe Chef::Knife::DataBagCreate do
                                                                    @secret)
       @knife.name_args = ['sudoing_admins', 'ME']
       @knife.should_receive(:create_object).and_yield(@plain_data)
+      data_bag_item = Chef::DataBagItem.from_hash(@enc_data)
+      data_bag_item.data_bag("sudoing_admins")
       @rest.should_receive(:post_rest).with("data", {'name' => 'sudoing_admins'}).ordered
-      @rest.should_receive(:post_rest).with("data/sudoing_admins", @enc_data).ordered
+      @rest.should_receive(:post_rest).with("data/sudoing_admins", data_bag_item).ordered
     end
 
     it "creates an encrypted data bag item via --secret" do
