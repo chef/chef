@@ -1,5 +1,6 @@
 bash -c '
 if [ ! -f /usr/bin/chef-client ]; then
+  rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm
   wget -O /etc/yum.repos.d/aegis.repo http://rpm.aegisco.com/aegisco/el5/aegisco.repo
 
   yum install -y ruby-1.8.7.334-2.el5 ruby-devel-1.8.7.334-2.el5 gcc gcc-c++ automake autoconf make
