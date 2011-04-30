@@ -35,6 +35,7 @@ describe Chef::Mixin::Language do
         "1.2.3" => "#{x}-1.2.3"
       }
     end
+    @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"} 
     @platform_hash["default"] = "default"
   end
 
@@ -63,6 +64,20 @@ describe Chef::Mixin::Language do
     @node[:platform] = "openbsd"
     @node[:platform_version] = "0.0.0"
     @language.value_for_platform(@platform_hash).should == "openbsd"
+  end
+
+  describe "when platform versions is an array" do
+    it "returns a version-specific value based on the current platform" do
+      @node[:platform] = "debian"
+      @node[:platform_version] = "6"
+      @language.value_for_platform(@platform_hash).should == "debian-5/6"
+    end
+
+    it "returns a value based on the current platform if version not found" do
+      @node[:platform] = "debian"
+      @node[:platform_version] = "0.0.0"
+      @language.value_for_platform(@platform_hash).should == "debian"
+    end
   end
 
   # NOTE: this is a regression test for bug CHEF-1514
