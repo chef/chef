@@ -26,3 +26,20 @@ class String
     alias :bytesize :size
   end
 end
+
+# <= 1.8.6 needs some ord! 
+class String
+  unless method_defined?(:ord)
+    def ord
+      self.unpack('c').first
+    end
+  end
+end
+
+# String elements referenced with [] <= 1.8.6 return a Fixnum. Cheat to allow
+# for the simpler "test"[2].ord construct
+class Fixnum
+  def ord
+    return self
+  end
+end
