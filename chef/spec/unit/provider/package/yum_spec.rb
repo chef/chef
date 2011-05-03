@@ -359,7 +359,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
 end
 
 describe Chef::Provider::Package::Yum::RPMPackage do
-  describe "new" do
+  describe "new - with parsing" do
     before do
       @rpm = Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5", "x86_64")
     end
@@ -377,6 +377,38 @@ describe Chef::Provider::Package::Yum::RPMPackage do
     it "should output a version-release string" do
       @rpm.to_s.should == "1.6.5-9.36.el5"
     end
+  end
+
+  describe "new - no parsing" do
+    before do
+      @rpm = Chef::Provider::Package::Yum::RPMPackage.new("testing", "1", "1.6.5", "9.36.el5", "x86_64")
+    end
+
+    it "should expose nevra (name-epoch-version-release-arch) available" do
+      @rpm.name.should == "testing"
+      @rpm.epoch.should == 1
+      @rpm.version.should == "1.6.5"
+      @rpm.release.should == "9.36.el5"
+      @rpm.arch.should == "x86_64"
+
+      @rpm.nevra.should == "testing-1:1.6.5-9.36.el5.x86_64"
+    end
+
+    it "should output a version-release string" do
+      @rpm.to_s.should == "1.6.5-9.36.el5"
+    end
+  end
+
+  it "should raise an error unless passed 3 or 5 args" do
+    lambda {
+      Chef::Provider::Package::Yum::RPMPackage.new()
+    }.should raise_error(ArgumentError)
+    lambda {
+      Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5", "x86_64", "extra")
+    }.should raise_error(ArgumentError)
+    lambda {
+      Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5", "x86_64", "extra", "extra", "extra")
+    }.should raise_error(ArgumentError)
   end
 
   # thanks version_class_spec.rb!
