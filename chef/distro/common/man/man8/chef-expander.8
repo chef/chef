@@ -1,13 +1,13 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "CHEF\-EXPANDER\-CLUSTER" "8" "April 2011" "Chef 0.10.0.rc.1" "Chef Manual"
+.TH "CHEF\-EXPANDER" "8" "April 2011" "Chef 0.10.0" "Chef Manual"
 .
 .SH "NAME"
-\fBchef\-expander\-cluster\fR \- fetches messages from RabbitMQ, processes, and loads into chef\-solr
+\fBchef\-expander\fR \- fetches messages from RabbitMQ, processes, and loads into chef\-solr
 .
 .SH "SYNOPSIS"
-\fBchef\-expander\-cluster\fR \fI(options)\fR
+\fBchef\-expander\fR \fI(options)\fR
 .
 .TP
 \fB\-c\fR, \fB\-\-config CONFIG_FILE\fR
@@ -52,7 +52,7 @@ Chef Expander fetches messages from RabbitMQ, processes them into the correct fo
 \fBRunning Chef Expander\fR
 .
 .P
-Chef Expander is designed for clustered operation, though small installations will only need one worker process\. To run Chef Expander with one worker process, run chef\-expander\-cluster \-n 1\. You will then have a master and worker process, which looks like this in ps:
+Chef Expander is designed for clustered operation, though small installations will only need one worker process\. To run Chef Expander with one worker process, run chef\-expander \-n 1\. You will then have a master and worker process, which looks like this in ps:
 .
 .IP "" 4
 .
@@ -60,7 +60,7 @@ Chef Expander is designed for clustered operation, though small installations wi
 
 your\-shell> ps aux|grep expander
 you   52110   0\.1  0\.7  2515476  62748 s003  S+    3:49PM   0:00\.80 chef\-expander worker #1 (vnodes 0\-1023)
-you   52108   0\.1  0\.5  2492880  41696 s003  S+    3:49PM   0:00\.91 ruby bin/chef\-expander\-cluster \-n 1
+you   52108   0\.1  0\.5  2492880  41696 s003  S+    3:49PM   0:00\.91 ruby bin/chef\-expander \-n 1
 .
 .fi
 .

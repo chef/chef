@@ -40,7 +40,7 @@ class Chef
       :description => "The secret key to use to encrypt data bag item values"
 
       option :secret_file,
-      :long => "--secret_file SECRET_FILE",
+      :long => "--secret-file SECRET_FILE",
       :description => "A file containing the secret key to use to encrypt data bag item values"
 
       def read_secret
@@ -53,7 +53,7 @@ class Chef
 
       def use_encryption
         if config[:secret] && config[:secret_file]
-          stdout.puts "please specify only one of --secret, --secret_file"
+          stdout.puts "please specify only one of --secret, --secret-file"
           exit(1)
         end
         config[:secret] || config[:secret_file]
