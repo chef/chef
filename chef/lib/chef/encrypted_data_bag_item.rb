@@ -20,6 +20,7 @@ require 'base64'
 require 'openssl'
 require 'chef/data_bag_item'
 require 'yaml'
+require 'open-uri'
 
 # An EncryptedDataBagItem represents a read-only data bag item where
 # all values, except for the value associated with the id key, have
@@ -103,10 +104,22 @@ class Chef::EncryptedDataBagItem
 
   def self.load_secret(path=nil)
     path = path || Chef::Config[:encrypted_data_bag_secret] || DEFAULT_SECRET_FILE
-    if !File.exists?(path)
-      raise Errno::ENOENT, "file not found '#{path}'"
-    end
-    secret = IO.read(path).strip
+    secret = case path
+             when /^\w+:\/\//
+               # We have a remote key
+               begin
+                 Kernel.open(path).read.strip
+               rescue Errno::ECONNREFUSED
+                 raise ArgumentError, "Remote key not available from '#{path}'"
+               rescue OpenURI::HTTPError
+                 raise ArgumentError, "Remote key not found at '#{path}'"
+               end
+             else
+               if !File.exists?(path)
+                 raise Errno::ENOENT, "file not found '#{path}'"
+               end
+               IO.read(path).strip
+             end
     if secret.size < 1
       raise ArgumentError, "invalid zero length secret in '#{path}'"
     end
