@@ -104,23 +104,22 @@ class Chef::EncryptedDataBagItem
 
   def self.load_secret(path=nil)
     path = path || Chef::Config[:encrypted_data_bag_secret] || DEFAULT_SECRET_FILE
-    case path
-    when /^\w+:\/\//
-      # We have a remote key
-      begin
-        secret = open(path).read
-        secret[-1] == "\n" ? secret.chop : secret
-      rescue Errno::ECONNREFUSED
-        raise ArgumentError, "Remote key not available from '#{path}'"
-      rescue OpenURI::HTTPError
-        raise ArgumentError, "Remote key not found at '#{path}'"
-      end
-    else
-      if !File.exists?(path)
-        raise Errno::ENOENT, "file not found '#{path}'"
-      end
-      secret = IO.read(path).strip
-    end
+    secret = case path
+             when /^\w+:\/\//
+               # We have a remote key
+               begin
+                 Kernel.open(path).read.strip
+               rescue Errno::ECONNREFUSED
+                 raise ArgumentError, "Remote key not available from '#{path}'"
+               rescue OpenURI::HTTPError
+                 raise ArgumentError, "Remote key not found at '#{path}'"
+               end
+             else
+               if !File.exists?(path)
+                 raise Errno::ENOENT, "file not found '#{path}'"
+               end
+               IO.read(path).strip
+             end
     if secret.size < 1
       raise ArgumentError, "invalid zero length secret in '#{path}'"
     end
