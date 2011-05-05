@@ -35,6 +35,7 @@ import sys
 import time
 import yum
 import re
+import errno
 
 from yum import Errors
 from optparse import OptionParser
@@ -189,5 +190,14 @@ def main():
     print >> sys.stderr, "yum-dump General Error: %s" % e 
     return 1
 
-status = main()
+try:
+  status = main()
+# Suppress a nasty broken pipe error when output is piped to utilities like
+# 'head'
+except IOError, e:
+  if e.errno == errno.EPIPE:
+    sys.exit(1)
+  else:
+    raise
+
 sys.exit(status)
