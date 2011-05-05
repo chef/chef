@@ -15,6 +15,8 @@ __knife__ __ssh QUERY COMMAND__ _(options)_
     The ssh password
   * `-x`, `--ssh-user USERNAME    `:
     The ssh username
+  * `-i`, `--identity-file IDENTITY_FILE`:
+    The SSH identity file used for authentication
 
 ## DESCRIPTION
 
