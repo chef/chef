@@ -383,17 +383,19 @@ class Chef
       def with_rollback_on_error
         yield
       rescue ::Exception => e
-        Chef::Log.warn "Error on deploying #{release_path}: #{e.message}" 
-        failed_release = release_path
+        if @new_resource.rollback_on_error
+          Chef::Log.warn "Error on deploying #{release_path}: #{e.message}" 
+          failed_release = release_path
         
-        if previous_release_path
-          @release_path = previous_release_path
-          rollback
-        end
+          if previous_release_path
+            @release_path = previous_release_path
+            rollback
+          end
 
-        Chef::Log.info "Removing failed deploy #{failed_release}"
-        FileUtils.rm_rf failed_release
-        release_deleted(failed_release)
+          Chef::Log.info "Removing failed deploy #{failed_release}"
+          FileUtils.rm_rf failed_release
+          release_deleted(failed_release)
+        end
         
         raise
       end

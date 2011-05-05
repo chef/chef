@@ -117,7 +117,18 @@ describe Chef::Provider::Deploy do
     @provider.action_force_deploy
   end
 
+  it "dont care by default if error happens on deploy" do
+    @provider.stub!(:all_releases).and_return(['previous_release'])
+    @provider.stub!(:deploy).and_return{ raise "Unexpected error" }
+    @provider.stub!(:previous_release_path).and_return('previous_release')
+    @provider.should_not_receive(:rollback)
+    lambda { 
+      @provider.action_deploy
+    }.should raise_exception(RuntimeError, "Unexpected error")
+  end
+  
   it "rollbacks to previous release if error happens on deploy" do
+    @resource.rollback_on_error true
     @provider.stub!(:all_releases).and_return(['previous_release'])
     @provider.stub!(:deploy).and_return{ raise "Unexpected error" }
     @provider.stub!(:previous_release_path).and_return('previous_release')

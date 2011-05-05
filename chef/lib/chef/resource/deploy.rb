@@ -66,6 +66,7 @@ class Chef
         @revision = 'HEAD'
         @action = :deploy
         @migrate = false
+        @rollback_on_error = false
         @remote = "origin"
         @enable_submodules = false
         @shallow_clone = false
@@ -152,6 +153,14 @@ class Chef
           :migration_command,
           arg,
           :kind_of => [ String ]
+        )
+      end
+
+      def rollback_on_error(arg=nil)
+        set_or_return(
+          :rollback_on_error,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
