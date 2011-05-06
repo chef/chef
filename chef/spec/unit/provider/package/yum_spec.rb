@@ -983,6 +983,35 @@ EOF
     end
   end
 
+  describe "version_available" do
+    it "should take two or three arguments" do
+      lambda { @yc.version_available?("zisofs-tools") }.should raise_error(ArgumentError)
+      lambda { @yc.version_available?("zisofs-tools", "1.0.6-3.2.2") }.should_not raise_error(ArgumentError)
+      lambda { @yc.version_available?("zisofs-tools", "1.0.6-3.2.2", "x86_64") }.should_not raise_error(ArgumentError)
+    end
+
+    it "should return true if our package-version-arch is available" do
+      @yc.version_available?("zisofs-tools", "1.0.6-3.2.2", "x86_64").should be == true 
+    end
+
+    it "should return true if our package-version, no arch, is available" do
+      @yc.version_available?("zisofs-tools", "1.0.6-3.2.2", nil).should be == true 
+      @yc.version_available?("zisofs-tools", "1.0.6-3.2.2").should be == true 
+    end
+
+    it "should return false if our package-version-arch isn't available" do
+      @yc.version_available?("zisofs-tools", "1.0.6-3.2.2", "pretend").should be == false 
+      @yc.version_available?("zisofs-tools", "pretend", "x86_64").should be == false 
+      @yc.version_available?("pretend", "1.0.6-3.2.2", "x86_64").should be == false 
+    end
+
+    it "should return false if our package-version, no arch, isn't available" do
+      @yc.version_available?("zisofs-tools", "pretend", nil).should be == false 
+      @yc.version_available?("zisofs-tools", "pretend").should be == false 
+      @yc.version_available?("pretend", "1.0.6-3.2.2").should be == false 
+    end
+  end
+
   describe "flush" do
     it "should empty the installed and available packages RPMDb" do
       @yc.installed.size.should be == 3

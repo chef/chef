@@ -495,18 +495,16 @@ class Chef
             return nil
           end
 
-          def version_available?(package_name, desired_version, arch)
+          def version_available?(package_name, desired_version, arch=nil)
             packages = self.available[package_name]
             if packages
               packages.each do |pkg|
                 next if arch and pkg.arch != arch
-                return true if "#{pkg.v}-#{pkg.r}" == desired_version
+                return true if pkg.to_s == desired_version
               end
             end
 
             return false
-
-            nil
           end
 
           def installed_version(package_name, arch=nil)
