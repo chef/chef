@@ -740,12 +740,12 @@ EOF
 
   describe "load_data" do
     it "should run yum-dump.py using the system python" do
-      @yc.should_receive(:popen4).with(%r{^/usr/bin/python /.*/yum-dump.py$}, :waitlast=>true)
+      @yc.should_receive(:popen4).with(%r{^/usr/bin/python .*/yum-dump.py$}, :waitlast=>true)
       @yc.load_data
     end
 
     it "should run yum-dump.py with the cache flag using the system python" do
-      @yc.should_receive(:popen4).with(%r{^/usr/bin/python -C /.*/yum-dump.py$}, :waitlast=>true)
+      @yc.should_receive(:popen4).with(%r{^/usr/bin/python .*/yum-dump.py -C$}, :waitlast=>true)
       @yc.load_data(true)
     end
 

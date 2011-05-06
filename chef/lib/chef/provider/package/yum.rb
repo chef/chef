@@ -410,7 +410,7 @@ class Chef
             @new_instance = false
 
             if use_cache
-              opts="-C "
+              opts=" -C"
             else
               opts=""
             end
@@ -420,7 +420,7 @@ class Chef
 
             helper = ::File.join(::File.dirname(__FILE__), 'yum-dump.py')
 
-            status = popen4("/usr/bin/python #{opts}#{helper}", :waitlast => true) do |pid, stdin, stdout, stderr|
+            status = popen4("/usr/bin/python #{helper}#{opts}", :waitlast => true) do |pid, stdin, stdout, stderr|
               stdout.each do |line|
                 one_line = true
 
