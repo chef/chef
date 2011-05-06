@@ -21,9 +21,21 @@
 # give the actual number of characters. In Chef::REST, we need the bytesize
 # so we can correctly set the Content-Length headers, but ruby 1.8.6 and lower
 # don't define String#bytesize. Monkey patching time!
+
+begin
+  require 'enumerator'
+rescue LoadError
+end
+
 class String
   unless method_defined?(:bytesize)
     alias :bytesize :size
+  end
+
+  unless method_defined?(:lines)
+    def lines
+      enum_for(:each)
+    end
   end
 end
 
