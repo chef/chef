@@ -34,6 +34,7 @@ describe Chef::Knife::CookbookSCMRepo do
   chef-vendor-ganglia
   chef-vendor-graphite
   chef-vendor-python
+  chef-vendor-absent-new
 BRANCHES
   end
 
@@ -114,6 +115,12 @@ DIRTY
     @cookbook_repo.branch_exists?("chef-vendor-apache2").should be_true
     @cookbook_repo.should_receive(:shell_out!).with('git branch --no-color', :cwd => @repo_path).and_return(@branch_list)
     @cookbook_repo.branch_exists?("chef-vendor-nginx").should be_false
+  end
+
+  it "determines if a the branch not exists correctly without substring search" do
+    @cookbook_repo.should_receive(:shell_out!).twice.with('git branch --no-color', :cwd => @repo_path).and_return(@branch_list)
+    @cookbook_repo.branch_exists?("chef-vendor-absent").should be_false
+    @cookbook_repo.branch_exists?("chef-vendor-absent-new").should be_true
   end
 
   describe "when the pristine copy branch does not exist" do
