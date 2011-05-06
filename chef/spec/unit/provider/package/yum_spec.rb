@@ -69,6 +69,125 @@ describe Chef::Provider::Package::Yum do
     it "should return the current resouce" do
       @provider.load_current_resource.should eql(@provider.current_resource)
     end
+
+    describe "when arch in package_name" do
+      it "should set the arch if no existing package_name is found and new_package_name+new_arch is available" do
+        @new_resource = Chef::Resource::YumPackage.new('testing.noarch')
+        @yum_cache = mock(
+          'Chef::Provider::Yum::YumCache'
+        )
+        @yum_cache.stub!(:installed_version) do |package_name, arch|
+          # nothing installed for package_name/new_package_name
+          nil 
+        end
+        @yum_cache.stub!(:candidate_version) do |package_name, arch|
+          if package_name == "testing.noarch" || package_name == "testing.more.noarch"
+            nil
+          # candidate for new_package_name
+          elsif package_name == "testing" || package_name == "testing.more"
+            "1.1"
+          end
+        end
+        Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        @provider.new_resource.package_name.should == "testing"
+        @provider.new_resource.arch.should == "noarch"
+        @provider.arch.should == "noarch"
+
+        @new_resource = Chef::Resource::YumPackage.new('testing.more.noarch')
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        @provider.new_resource.package_name.should == "testing.more"
+        @provider.new_resource.arch.should == "noarch"
+        @provider.arch.should == "noarch"
+      end
+
+      it "should not set the arch when an existing package_name is found" do
+        @new_resource = Chef::Resource::YumPackage.new('testing.beta3')
+        @yum_cache = mock(
+          'Chef::Provider::Yum::YumCache'
+        )
+        @yum_cache.stub!(:installed_version) do |package_name, arch|
+          # installed for package_name
+          if package_name == "testing.beta3" || package_name == "testing.beta3.more"
+            "1.1"
+          elsif package_name == "testing" || package_name = "testing.beta3"
+            nil
+          end
+        end
+        @yum_cache.stub!(:candidate_version) do |package_name, arch|
+          # no candidate for package_name/new_package_name
+          nil
+        end
+        Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        @provider.new_resource.package_name.should == "testing.beta3"
+        @provider.new_resource.arch.should == nil 
+        @provider.arch.should == nil 
+
+        @new_resource = Chef::Resource::YumPackage.new('testing.beta3.more')
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        @provider.new_resource.package_name.should == "testing.beta3.more"
+        @provider.new_resource.arch.should == nil 
+        @provider.arch.should == nil 
+      end
+
+      it "should not set the arch when no existing package_name or new_package_name+new_arch is found" do
+        @new_resource = Chef::Resource::YumPackage.new('testing.beta3')
+        @yum_cache = mock(
+          'Chef::Provider::Yum::YumCache'
+        )
+        @yum_cache.stub!(:installed_version) do |package_name, arch|
+          # nothing installed for package_name/new_package_name
+          nil
+        end
+        @yum_cache.stub!(:candidate_version) do |package_name, arch|
+          # no candidate for package_name/new_package_name
+          nil
+        end
+        Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        @provider.new_resource.package_name.should == "testing.beta3"
+        @provider.new_resource.arch.should == nil 
+        @provider.arch.should == nil 
+
+        @new_resource = Chef::Resource::YumPackage.new('testing.beta3.more')
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        @provider.new_resource.package_name.should == "testing.beta3.more"
+        @provider.new_resource.arch.should == nil 
+        @provider.arch.should == nil 
+      end
+
+      it "should ensure it doesn't clobber an existing arch if passed" do
+        @new_resource = Chef::Resource::YumPackage.new('testing.i386')
+        @new_resource.arch("x86_64")
+        @yum_cache = mock(
+          'Chef::Provider::Yum::YumCache'
+        )
+         @yum_cache.stub!(:installed_version) do |package_name, arch|
+           # nothing installed for package_name/new_package_name
+         nil 
+        end
+        @yum_cache.stub!(:candidate_version) do |package_name, arch|
+          if package_name == "testing.noarch"
+            nil
+          # candidate for new_package_name
+          elsif package_name == "testing"
+            "1.1"
+          end
+        end
+        Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider.load_current_resource
+        @provider.new_resource.package_name.should == "testing.i386"
+        @provider.new_resource.arch.should == "x86_64" 
+      end
+    end
   end
 
   describe "when installing a package" do

@@ -543,6 +543,25 @@ class Chef
         end
 
         def load_current_resource
+          # Allow for foo.x86_64 style package_name like yum uses in it's output
+          #
+          # Don't overwrite an existing arch 
+          if @new_resource.respond_to?("arch") and @new_resource.arch.nil?
+            if @new_resource.package_name =~ %r{^(.*)\.(.*)$}
+              new_package_name = $1
+              new_arch = $2
+              # foo.i386 and foo.beta1 are both valid package names or expressions of an arch.
+              # Ensure we don't have an existing package matching package_name, then ensure we at
+              # least have a match for the new_package+new_arch before we overwrite. If neither
+              # then fall through to standard package handling.
+              if (@yum.installed_version(@new_resource.package_name).nil? and @yum.candidate_version(@new_resource.package_name).nil?) and 
+                   (@yum.installed_version(new_package_name, new_arch) or @yum.candidate_version(new_package_name, new_arch))
+                 @new_resource.package_name(new_package_name)
+                 @new_resource.arch(new_arch)
+              end
+            end
+          end
+
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
 
@@ -563,7 +582,13 @@ class Chef
             end
           end
 
-          Chef::Log.debug("#{@new_resource} checking yum info for #{@new_resource.package_name}#{yum_arch}")
+          if @new_resource.version
+            new_resource = "#{@new_resource.package_name}-#{@new_resource.version}#{yum_arch}"
+          else
+            new_resource = "#{@new_resource.package_name}#{yum_arch}"
+          end
+
+          Chef::Log.debug("#{@new_resource} checking yum info for #{new_resource}") 
 
           installed_version = @yum.installed_version(@new_resource.package_name, arch)
           @candidate_version = @yum.candidate_version(@new_resource.package_name, arch)
@@ -574,7 +599,7 @@ class Chef
           else
             @candidate_version = installed_version
           end
-          Chef::Log.debug("#{@new_resource} installed version: #{installed_version} candidate version: #{candidate_version}")
+          Chef::Log.debug("#{@new_resource} installed version: #{installed_version || "(none)"} candidate version: #{candidate_version || "(none)"}")
 
           @current_resource
         end
