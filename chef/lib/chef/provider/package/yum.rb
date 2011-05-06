@@ -509,11 +509,11 @@ class Chef
             nil
           end
 
-          def installed_version(package_name, arch)
+          def installed_version(package_name, arch=nil)
             version(package_name, self.installed, arch)
           end
 
-          def available_version(package_name, arch)
+          def available_version(package_name, arch=nil)
             version(package_name, self.available, arch)
           end
           alias :candidate_version :available_version

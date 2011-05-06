@@ -835,6 +835,12 @@ EOF
   end
 
   describe "installed_version" do
+    it "should take one or two arguments" do
+      lambda { @yc.installed_version("zip") }.should_not raise_error(ArgumentError)
+      lambda { @yc.installed_version("zip", "i386") }.should_not raise_error(ArgumentError)
+      lambda { @yc.installed_version("zip", "i386", "extra") }.should raise_error(ArgumentError)
+    end
+
     it "should call version with the installed packages RPMDb" do
       @yc.installed_version("zip", "x86_64").should be == "2.31-2.el5"
       @yc.installed_version("zip", nil).should be == "2.31-2.el5"
@@ -844,6 +850,12 @@ EOF
   end
 
   describe "available_version" do
+    it "should take one or two arguments" do
+      lambda { @yc.available_version("zisofs-tools") }.should_not raise_error(ArgumentError)
+      lambda { @yc.available_version("zisofs-tools", "i386") }.should_not raise_error(ArgumentError)
+      lambda { @yc.available_version("zisofs-tools", "i386", "extra") }.should raise_error(ArgumentError)
+    end
+
     it "should call version with the available packages RPMDb" do
       @yc.available_version("zisofs-tools", "x86_64").should be == "1.0.6-3.2.2"
       @yc.available_version("zisofs-tools", nil).should be == "1.0.6-3.2.2"
