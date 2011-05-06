@@ -27,7 +27,7 @@ describe Chef::Provider::Package::Yum do
     @yum_cache = mock(
       'Chef::Provider::Yum::YumCache',
       :reload_from_cache => true,
-      :flush => true,
+      :reset => true,
       :installed_version => "1.2.4-11.18.el5",
       :candidate_version => "1.2.4-11.18.el5_2.3",
       :version_available? => true
@@ -227,7 +227,7 @@ describe Chef::Provider::Package::Yum do
       @yum_cache = mock(
         'Chef::Provider::Yum::YumCache',
         :reload_from_cache => true,
-        :flush => true,
+        :reset => true,
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5_2.3",
         :version_available? => nil
@@ -814,7 +814,7 @@ EOF
       @yc.should be_kind_of(Chef::Provider::Package::Yum::YumCache)
     end
 
-    it "should register load_data and flush for start and end of Chef::Client runs" do
+    it "should register reload for start of Chef::Client runs" do
       Chef::Provider::Package::Yum::YumCache.reset_instance
       Chef::Client.should_receive(:when_run_starts) do |&b|
         b.should_not be_nil
@@ -831,7 +831,7 @@ EOF
     it "should implicitly call load_data only once after being instantiated" do
       @yc.should_receive(:load_data).once
       @yc.installed
-      @yc.flush
+      @yc.reset
       @yc.installed
     end
 
@@ -848,7 +848,7 @@ EOF
     it "should implicitly call load_data only once after being instantiated" do
       @yc.should_receive(:load_data).once
       @yc.available
-      @yc.flush
+      @yc.reset
       @yc.available
     end
 
@@ -869,7 +869,6 @@ EOF
     end
 
     it "should create RPMPackage objects from the parsed data" do
-      @yc.flush
       @yc.load_data
       @yc.installed["zip"].first.should be_kind_of(Chef::Provider::Package::Yum::RPMPackage)
     end
@@ -877,7 +876,6 @@ EOF
     it "should warn about invalid data with too many separators" do
       @yc.stub!(:popen4).and_yield(@pid, @stdin, @stdout_bad_separators, @stderr).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(3).times.with(%r{Problem parsing})
-      @yc.flush
       @yc.load_data
       @yc.installed.size.should be == 1
       @yc.available.size.should be == 1
@@ -886,7 +884,6 @@ EOF
     it "should warn about invalid data with an incorrect type" do
       @yc.stub!(:popen4).and_yield(@pid, @stdin, @stdout_bad_type, @stderr).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(2).times.with(%r{Skipping line})
-      @yc.flush
       @yc.load_data
       @yc.installed.size.should be == 1
       @yc.available.size.should be == 2
@@ -895,13 +892,11 @@ EOF
     it "should warn about no output from yum-dump.py" do
       @yc.stub!(:popen4).and_yield(@pid, @stdin, [], @stderr).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(1).times.with(%r{no output from yum-dump.py})
-      @yc.flush
       @yc.load_data
     end
 
     it "should raise exception yum-dump.py exits with a non zero status" do
       @yc.stub!(:popen4).and_yield(@pid, @stdin, [], @stderr).and_return(@status_bad)
-      @yc.flush
       lambda { @yc.load_data }.should raise_error(Chef::Exceptions::Package, %r{CentOS-Base.repo, line: 12})
     end
 
@@ -910,7 +905,7 @@ EOF
         @yc.load_data
       end
 
-      it "should always set new_instance to false so load_data won't be triggered again" do
+      it "should always set load_data_method to :none so load_data won't be get called until reload" do
         @yc.should_not_receive(:load_data)
         @yc.available
         @yc.installed
@@ -919,18 +914,18 @@ EOF
   end
 
   describe "reload" do
-    it "should flush and load data, not using cache" do
-      @yc.should_receive(:flush)
+    it "should call load_data with no cache next time .installed is called" do
       @yc.should_receive(:load_data).with(false)
       @yc.reload
+      @yc.installed
     end
   end
 
   describe "reload_from_cache" do
-    it "should flush and load data, using cache" do
-      @yc.should_receive(:flush)
+    it "should call load_data with cache next time .installed is called" do
       @yc.should_receive(:load_data).with(true)
       @yc.reload_from_cache
+      @yc.installed
     end
   end
 
@@ -1012,11 +1007,11 @@ EOF
     end
   end
 
-  describe "flush" do
+  describe "reset" do
     it "should empty the installed and available packages RPMDb" do
       @yc.installed.size.should be == 3
       @yc.available.size.should be == 6
-      @yc.flush
+      @yc.reset
       @yc.installed.size.should be == 0 
       @yc.available.size.should be == 0
     end

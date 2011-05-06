@@ -381,8 +381,11 @@ class Chef
             @installed = RPMDb.new
             @available = RPMDb.new
 
-            # Used to load_data here but rspec doesn't like this, do it on demand
-            @new_instance = true
+            # Next time installed/available is accessed:
+            #  :full  - Trigger a run of "yum-dump.py" which updates yum's cache
+            #  :cache - Trigger a run of "yum-dump.py -C" which uses yum's cached data
+            #  :none  - Do nothing
+            @load_data_method = :full
 
             # these are for subsequent runs if we are on an interval
             Chef::Client.when_run_starts do
@@ -390,24 +393,26 @@ class Chef
             end
           end
 
-          def installed
-            if @new_instance
-              @new_instance = false
-              load_data
+          def delayed_loading
+            if @load_data_method == :full
+              load_data(false)
+            elsif @load_data_method == :cache
+              load_data(true)
             end
+          end
+
+          def installed
+            delayed_loading
             @installed
           end
 
           def available
-            if @new_instance
-              @new_instance = false 
-              load_data
-            end
+            delayed_loading
             @available
           end
 
           def load_data(use_cache=false)
-            @new_instance = false
+            self.reset
 
             if use_cache
               opts=" -C"
@@ -458,17 +463,22 @@ class Chef
           end
 
           def reload
-            flush
-            load_data(false)
+            @load_data_method = :full
           end
 
           # reload is called after yum has been run. At this point the
           # available/installed lists have already been updated by yum itself 
           # so we can rely on cache.
           def reload_from_cache
-            flush
-            load_data(true)
+            @load_data_method = :cache
           end
+
+          def reset
+            @load_data_method = :none
+            @installed.clear
+            @available.clear
+          end
+          alias :flush :reset
 
           def version(package_name, rpmdb, arch)
             return nil if rpmdb.nil?
@@ -515,11 +525,6 @@ class Chef
             version(package_name, self.available, arch)
           end
           alias :candidate_version :available_version
-
-          def flush
-            @installed.clear
-            @available.clear
-          end
         end # YumCache
 
         def initialize(new_resource, run_context)
