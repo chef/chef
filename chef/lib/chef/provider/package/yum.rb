@@ -83,6 +83,14 @@ class Chef
               # easy! :)
               return 0 if x == y
 
+              if x.nil?
+                x = ""
+              end
+              
+              if y.nil?
+                y = ""
+              end
+
               # not so easy :(
               #
               # takes 2 strings like
@@ -238,9 +246,22 @@ class Chef
           alias :release :r
           alias :arch :a
 
-          # RPM::Version rpm_version_cmp equivalent - except much slower :)
+          # rough RPM::Version rpm_version_cmp equivalent - except much slower :)
           def <=>(y)
             x = self
+
+            # compare name
+            if x.n.nil? == false and y.n.nil?
+              return 1
+            elsif x.n.nil? and y.n.nil? == false
+              return -1
+            elsif x.n.nil? == false and y.n.nil? == false
+              if x.n < y.n
+                return -1
+              elsif x.n > y.n
+                return 1
+              end
+            end
 
             # compare epoch
             if (x.e.nil? == false and x.e > 0) and y.e.nil?
@@ -272,9 +293,23 @@ class Chef
               return -1
             elsif x.r.nil? == false and y.r.nil? == false
               cmp = RPMUtils.rpmvercmp(x.r, y.r)
+              return cmp if cmp != 0
             end
 
-            return cmp
+            # compare arch
+            if x.a.nil? == false and y.a.nil?
+              return 1
+            elsif x.a.nil? and y.a.nil? == false
+              return -1
+            elsif x.a.nil? == false and y.a.nil? == false
+              if x.a < y.a
+                return -1
+              elsif x.a > y.a
+                return 1
+              end
+            end
+
+            return 0
           end
 
           # RPM::Version rpm_version_to_s equivalent
@@ -292,35 +327,100 @@ class Chef
 
         end
 
+        # Simple storage for RPMPackage objects - keeps them unique and sorted 
+        class RPMDb
+          def initialize
+            @rpms = Hash.new
+          end
+          
+          def [](package_name)
+            self.lookup(package_name) 
+          end
+
+          def lookup(package_name)
+            @rpms[package_name]
+          end
+          
+          # using the package name as a key keep a unique, descending list of packages
+          def push(*args)
+            args.flatten.each do |a|
+              unless a.kind_of?(RPMPackage)
+                raise ArgumentError, "Expecting an RPMPackage object"
+              end
+
+              @rpms[a.n] ||= Array.new
+              
+              unless @rpms[a.n].include?(a)
+                @rpms[a.n] << a
+                @rpms[a.n].sort!
+                @rpms[a.n].reverse!
+              end
+            end
+          end
+
+          def <<(*args)
+            self.push(args)
+          end
+
+          def clear
+            @rpms.clear
+          end
+
+          def size
+            @rpms.size
+          end
+          alias :length :size
+        end
+
+        # Cache for our installed and available packages, pulled in from yum-dump.py
         class YumCache
           include Chef::Mixin::Command
           include Singleton
 
           def initialize
-            load_data
+            @installed = RPMDb.new
+            @available = RPMDb.new
+
+            # Used to load_data here but rspec doesn't like this, do it on demand
+            @new_instance = true
 
             # these are for subsequent runs if we are on an interval
-            Chef::Client.when_run_starts do |run_status|
-              YumCache.instance.load_data
-            end
-            Chef::Client.when_run_completes_successfully do |run_status|
-              YumCache.instance.flush
+            Chef::Client.when_run_starts do
+              YumCache.instance.reload
             end
           end
 
-          def load_data(cache=false)
-            @data = Hash.new
-            error = String.new
-            one_line = false
+          def installed
+            if @new_instance
+              @new_instance = false
+              load_data
+            end
+            @installed
+          end
 
-            if cache
-              opts="-C"
+          def available
+            if @new_instance
+              @new_instance = false 
+              load_data
+            end
+            @available
+          end
+
+          def load_data(use_cache=false)
+            @new_instance = false
+
+            if use_cache
+              opts="-C "
             else
               opts=""
             end
 
+            one_line = false
+            error = nil
+
             helper = ::File.join(::File.dirname(__FILE__), 'yum-dump.py')
-            status = popen4("/usr/bin/python #{helper}", :waitlast => true) do |pid, stdin, stdout, stderr|
+
+            status = popen4("/usr/bin/python #{opts}#{helper}", :waitlast => true) do |pid, stdin, stdout, stderr|
               stdout.each do |line|
                 one_line = true
 
@@ -331,27 +431,21 @@ class Chef
                                  "Please check your yum configuration.")
                   next
                 end
-                name, epoch, version, release, arch, t = parts
+                name, epoch, version, release, arch, type = parts
 
-                case t
-                when "a"
-                  type = :available
-                when "i"
-                  type = :installed
+                # Can have the same package under multiple arches, so we shove them into an array
+
+                if type == "i"
+                  @installed << RPMPackage.new(name, epoch, version, release, arch)
+                elsif type == "a"
+                  @available << RPMPackage.new(name, epoch, version, release, arch)
+                else
+                  Chef::Log.warn("Can't parse type from output of yum-dump.py! Skipping line")
                 end
-                if !@data.has_key?(name)
-                  @data[name] = Hash.new
-                end
-                if !@data[name].has_key?(type)
-                  @data[name][type] = Hash.new
-                end
-                @data[name][type][arch] = { :epoch => epoch, :version => version,
-                                            :release => release }
               end
-              
+
               error = stderr.readlines
             end
-
 
             if status.exitstatus != 0
               raise Chef::Exceptions::Package, "yum failed - #{status.inspect} - returns: #{error}"
@@ -363,79 +457,76 @@ class Chef
             end
           end
 
-          # reload is called after yum has been run. At this point the 
-          # available/installed lists have already been updated so we can rely
-          # on cache.
           def reload
+            flush
+            load_data(false)
+          end
+
+          # reload is called after yum has been run. At this point the
+          # available/installed lists have already been updated by yum itself 
+          # so we can rely on cache.
+          def reload_from_cache
+            flush
             load_data(true)
           end
 
-          def version(package_name, type, arch)
-            if (x = @data[package_name])
-              if (y = x[type])
-                if arch
-                  if (z = y[arch])
-                    return "#{z[:version]}-#{z[:release]}"
+          def version(package_name, rpmdb, arch)
+            return nil if rpmdb.nil?
+
+            packages = rpmdb[package_name]
+            if packages
+              f = nil
+              if arch
+                packages.each do |pkg|
+                  if arch and pkg.arch == arch
+                    f = pkg
                   end
-                else
-                  # no arch specified - take the first match
-                  z = y.to_a[0][1]
-                  return "#{z[:version]}-#{z[:release]}"
+                  # uh oh - wanted arch but no match
+                  return nil if f.nil?
                 end
+              else
+                # no arch specified - take the first match
+                f = packages.first 
               end
+
+              return f.to_s 
             end
 
-            nil
+            return nil
           end
 
           def version_available?(package_name, desired_version, arch)
-            if (package_data = @data[package_name])
-              if (available_versions = package_data[:available])
-                if arch
-                  # arch gets passed like ".x86_64"
-                  matching_versions = [ available_versions[arch.sub(/^./, '')]]
-                else
-                  matching_versions = available_versions.values
-                end
-
-                if matching_versions.nil?
-                  if arch.empty?
-                    arch_msg = ""
-                  else
-                    arch_msg = "with arch #{arch.sub(/^./, '')} "
-                  end
-
-                  raise ArgumentError, "#{package_name}: Found no available versions #{arch_msg}to match"
-                end
-
-                # Expect [ { :version => "ver", :release => "rel" }, { :version => "ver", :release => "rel" }, { :version => "ver", :release => "rel" } ] ???
-                matching_versions.each do |ver|
-                  Chef::Log.debug("#{@new_resource} trying to match #{desired_version} to version #{ver[:version]} and release #{ver[:release]}")
-                  if (desired_version == "#{ver[:version]}-#{ver[:release]}")
-                    return true
-                  end
-                end
+            packages = self.available[package_name]
+            if packages
+              packages.each do |pkg|
+                next if arch and pkg.arch != arch
+                return true if "#{pkg.v}-#{pkg.r}" == desired_version
               end
             end
+
+            return false
 
             nil
           end
 
           def installed_version(package_name, arch)
-            version(package_name, :installed, arch)
+            version(package_name, self.installed, arch)
           end
 
-          def candidate_version(package_name, arch)
-            version(package_name, :available, arch)
+          def available_version(package_name, arch)
+            version(package_name, self.available, arch)
           end
+          alias :candidate_version :available_version
 
           def flush
-            @data.clear
+            @installed.clear
+            @available.clear
           end
-        end
+        end # YumCache
 
         def initialize(new_resource, run_context)
           super
+
           @yum = YumCache.instance
         end
 
@@ -491,19 +582,19 @@ class Chef
         def install_package(name, version)
           if @new_resource.source 
             run_command_with_systems_locale(
-              :command => "yum -d0 -e0 -y #{@new_resource.options} localinstall #{@new_resource.source}"
+              :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} localinstall #{@new_resource.source}"
             )
           else
             # Work around yum not exiting with an error if a package doesn't exist for CHEF-2062
-            if @yum.version_available?(name, version, yum_arch)
+            if @yum.version_available?(name, version, arch)
               run_command_with_systems_locale(
-                :command => "yum -d0 -e0 -y #{@new_resource.options} install #{name}-#{version}#{yum_arch}"
+                :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} install #{name}-#{version}#{yum_arch}"
               )
             else
               raise ArgumentError, "#{@new_resource.name}: Version #{version} of #{name} not found. Did you specify both version and release? (version-release, e.g. 1.84-10.fc6)"
             end
           end
-          @yum.reload
+          @yum.reload_from_cache
         end
 
         def upgrade_package(name, version)
@@ -511,9 +602,9 @@ class Chef
           # option. If we are, then running install_package is right.
           unless version
             run_command_with_systems_locale(
-              :command => "yum -d0 -e0 -y #{@new_resource.options} update #{name}#{yum_arch}"
+              :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} update #{name}#{yum_arch}"
             )
-            @yum.reload
+            @yum.reload_from_cache
           else
             install_package(name, version)
           end
@@ -522,14 +613,14 @@ class Chef
         def remove_package(name, version)
           if version
             run_command_with_systems_locale(
-             :command => "yum -d0 -e0 -y #{@new_resource.options} remove #{name}-#{version}#{yum_arch}"
+             :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}-#{version}#{yum_arch}"
             )
           else
             run_command_with_systems_locale(
-             :command => "yum -d0 -e0 -y #{@new_resource.options} remove #{name}#{yum_arch}"
+             :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}#{yum_arch}"
             )
           end
-          @yum.reload
+          @yum.reload_from_cache
         end
 
         def purge_package(name, version)
