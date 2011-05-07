@@ -101,13 +101,13 @@ def setup(yb, options):
 
   return 0
 
-def dump_packages(yb):
+def dump_packages(yb, list):
   if YUM_VER == 2: 
     yb.doTsSetup()
     yb.doRepoSetup()
     yb.doSackSetup()
 
-  db = yb.doPackageLists('all')
+  db = yb.doPackageLists(list)
 
   for pkg in db.installed:
     pkg.type = 'i'
@@ -159,7 +159,7 @@ def yum_dump(options):
       else:
         break
 
-    return dump_packages(yb)
+    return dump_packages(yb, options.package_list)
 
   # Ensure we clear the lock and cleanup any resources
   finally:
@@ -172,10 +172,18 @@ def yum_dump(options):
       return 200
 
 def main():
-  parser = OptionParser()
+  usage = "Usage: %prog [options]\n" + \
+          "Output a list of installed and available packages via yum"
+  parser = OptionParser(usage=usage)
   parser.add_option("-C", "--cache",
                     action="store_true", dest="cache", default=False,
                     help="run entirely from cache, don't update cache")
+  parser.add_option("-i", "--installed",
+                    action="store_const", const="installed", dest="package_list", default="all",
+                    help="output only installed packages")
+  parser.add_option("-a", "--available",
+                    action="store_const", const="available", dest="package_list", default="all",
+                    help="output only available packages")
   
   (options, args) = parser.parse_args()
 
