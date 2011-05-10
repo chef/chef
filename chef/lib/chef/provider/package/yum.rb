@@ -616,11 +616,23 @@ class Chef
           end
         end
 
+        def flush_cache
+          if @new_resource.respond_to?("flush_cache")
+            @new_resource.flush_cache
+          else
+            { :before => false, :after => false }
+          end
+        end
+
         def yum_arch
           arch ? ".#{arch}" : nil
         end
 
         def load_current_resource
+          if flush_cache[:before]
+            @yum.reload
+          end
+
           # Allow for foo.x86_64 style package_name like yum uses in it's output
           #
           # Don't overwrite an existing arch 
@@ -711,7 +723,11 @@ class Chef
               raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version and release? (version-release, e.g. 1.84-10.fc6)"
             end
           end
-          @yum.reload_installed
+          if flush_cache[:after]
+            @yum.reload
+          else
+            @yum.reload_installed
+          end
         end
 
         # Keep upgrades from trying to install an older candidate version
@@ -745,7 +761,11 @@ class Chef
              :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}#{yum_arch}"
             )
           end
-          @yum.reload_installed
+          if flush_cache[:after]
+            @yum.reload
+          else
+            @yum.reload_installed
+          end
         end
 
         def purge_package(name, version)

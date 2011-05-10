@@ -203,6 +203,18 @@ describe Chef::Provider::Package::Yum do
         @provider.new_resource.arch.should == "x86_64" 
       end
     end
+
+    it "should flush the cache if :before is true" do
+      @new_resource.stub!(:flush_cache).and_return({:after => false, :before => true}) 
+      @yum_cache.should_receive(:reload).once
+      @provider.load_current_resource
+    end
+
+    it "should flush the cache if :before is false" do
+      @new_resource.stub!(:flush_cache).and_return({:after => false, :before => false}) 
+      @yum_cache.should_not_receive(:reload)
+      @provider.load_current_resource
+    end
   end
 
   describe "when installing a package" do
@@ -291,6 +303,28 @@ describe Chef::Provider::Package::Yum do
         :command => "yum -d0 -e0 -y install cups-1.2.4-11.15.el5"
       })
       @provider.install_package("cups", "1.2.4-11.15.el5")
+    end
+
+    it "should run yum install then flush the cache if :after is true" do
+      @new_resource.stub!(:flush_cache).and_return({:after => true, :before => false})
+      @provider.load_current_resource
+      Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "yum -d0 -e0 -y install emacs-1.0"
+      })
+      @yum_cache.should_receive(:reload).once
+      @provider.install_package("emacs", "1.0")
+    end
+
+    it "should run yum install then not flush the cache if :after is false" do
+      @new_resource.stub!(:flush_cache).and_return({:after => false, :before => false})
+      @provider.load_current_resource
+      Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "yum -d0 -e0 -y install emacs-1.0"
+      })
+      @yum_cache.should_not_receive(:reload)
+      @provider.install_package("emacs", "1.0")
     end
   end
 

@@ -27,6 +27,7 @@ class Chef
         super
         @resource_name = :yum_package
         @provider = Chef::Provider::Package::Yum
+        @flush_cache = { :before => false, :after => false }
       end
 
       # Install a specific arch
@@ -36,6 +37,16 @@ class Chef
           arg,
           :kind_of => [ String ]
         )
+      end
+
+      def flush_cache(args={})
+        if args.is_a? Array
+          args.each { |arg| @flush_cache[arg] = true }
+        elsif args.any?
+          @flush_cache = args
+        else
+          @flush_cache
+        end
       end
 
     end
