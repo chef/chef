@@ -19,8 +19,8 @@
 # yum-dump.py
 # Inspired by yumhelper.py by David Lutterkort
 #
-# Produce a list of installed and available packages using yum and dump the 
-# results to stdout.
+# Produce a list of installed, available and re-installable packages using yum
+# and dump the results to stdout.
 #
 # yum-dump invokes yum similarly to the command line interface which makes it
 # subject to most of the configuration paramaters in yum.conf. yum-dump will
@@ -67,7 +67,7 @@ def setup(yb, options):
     except yum.Errors.ConfigError, e:
       # supresses an ignored exception at exit
       yb.preconf = None 
-      print >> sys.stderr, "yum-dump Config Error: %s" % e 
+      print >> sys.stderr, "yum-dump Config Error: %s" % e
       return 1
     except ValueError, e:
       yb.preconf = None 
@@ -81,11 +81,11 @@ def setup(yb, options):
     yb.log = __log
     yb.errorlog = __log
 
-  # Override any setting in yum.conf - we only care about the newest
+  # Give Chef every possible package version, it can decide what to do with them
   if YUM_VER == 3:
-    yb.conf.showdupesfromrepos = False
+    yb.conf.showdupesfromrepos = True
   elif YUM_VER == 2:
-    yb.conf.setConfigOption('showdupesfromrepos', False)
+    yb.conf.setConfigOption('showdupesfromrepos', True)
 
   # Optionally run only on cached repositories, but non root must use the cache
   if os.geteuid() != 0:
@@ -95,35 +95,46 @@ def setup(yb, options):
       yb.conf.setConfigOption('cache', True)
   else:
     if YUM_VER == 3:
-      yb.conf.cache = options.cache 
+      yb.conf.cache = options.cache
     elif YUM_VER == 2:
       yb.conf.setConfigOption('cache', options.cache)
 
   return 0
 
 def dump_packages(yb, list):
-  if YUM_VER == 2: 
+  packages = {}
+
+  if YUM_VER == 2:
     yb.doTsSetup()
     yb.doRepoSetup()
     yb.doSackSetup()
 
   db = yb.doPackageLists(list)
-
+  
   for pkg in db.installed:
     pkg.type = 'i'
+    # __str__ contains epoch, name etc
+    packages[str(pkg)] = pkg
 
   for pkg in db.available:
     pkg.type = 'a'
+    packages[str(pkg)] = pkg
 
-  all = db.available + db.installed
-  all.sort(lambda x, y: cmp(x.name, y.name))
+  # These are both installed and available
+  for pkg in db.reinstall_available:
+    pkg.type = 'r'
+    packages[str(pkg)] = pkg
+   
+  unique_packages = packages.values()
 
-  for pkg in all: 
-    print '%s %s %s %s %s %s' % ( pkg.name, 
+  unique_packages.sort(lambda x, y: cmp(x.name, y.name))
+
+  for pkg in unique_packages:
+    print '%s %s %s %s %s %s' % ( pkg.name,
                                   pkg.epoch,
                                   pkg.version,
                                   pkg.release,
-                                  pkg.arch, 
+                                  pkg.arch,
                                   pkg.type )
   return 0
 
@@ -136,9 +147,12 @@ def yum_dump(options):
   if status != 0:
     return status
 
+  if options.output_options:
+    print "[option installonlypkgs] %s" % " ".join(yb.conf.installonlypkgs)
+
   # Non root can't handle locking on rhel/centos 4
   if os.geteuid() != 0:
-    return dump_packages(yb)
+    return dump_packages(yb, options.package_list)
 
   # Wrap the collection and output of packages in yum's global lock to prevent
   # any inconsistencies.
@@ -168,13 +182,16 @@ def yum_dump(options):
       if lock_obtained == True:
         yb.doUnlock(YUM_PID_FILE)
     except Errors.LockError, e:
-      print >> sys.stderr, "yum-dump Unlock Error: %s" % e 
+      print >> sys.stderr, "yum-dump Unlock Error: %s" % e
       return 200
 
 def main():
   usage = "Usage: %prog [options]\n" + \
-          "Output a list of installed and available packages via yum"
+          "Output a list of installed, available and re-installable packages via yum"
   parser = OptionParser(usage=usage)
+  parser.add_option("-o", "--options",
+                    action="store_true", dest="output_options", default=False,
+                    help="output select yum options useful to Chef")
   parser.add_option("-C", "--cache",
                     action="store_true", dest="cache", default=False,
                     help="run entirely from cache, don't update cache")
@@ -183,19 +200,19 @@ def main():
                     help="output only installed packages")
   parser.add_option("-a", "--available",
                     action="store_const", const="available", dest="package_list", default="all",
-                    help="output only available packages")
+                    help="output only available and re-installable packages")
   
   (options, args) = parser.parse_args()
 
-  try: 
+  try:
     return yum_dump(options)
 
   except yum.Errors.RepoError, e:
-    print >> sys.stderr, "yum-dump Repository Error: %s" % e 
+    print >> sys.stderr, "yum-dump Repository Error: %s" % e
     return 1
  
   except yum.Errors.YumBaseError, e:
-    print >> sys.stderr, "yum-dump General Error: %s" % e 
+    print >> sys.stderr, "yum-dump General Error: %s" % e
     return 1
 
 try:

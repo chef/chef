@@ -26,11 +26,12 @@ describe Chef::Provider::Package::Yum do
     @status = mock("Status", :exitstatus => 0)
     @yum_cache = mock(
       'Chef::Provider::Yum::YumCache',
-      :reload_from_cache => true,
+      :reload_installed => true,
       :reset => true,
       :installed_version => "1.2.4-11.18.el5",
       :candidate_version => "1.2.4-11.18.el5_2.3",
-      :version_available? => true
+      :version_available? => true,
+      :allow_multi_install => [ "kernel" ]
     )
     Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -39,7 +40,6 @@ describe Chef::Provider::Package::Yum do
   end
 
   describe "when loading the current system state" do
-
     it "should create a current resource with the name of the new_resource" do
       @provider.load_current_resource
       @provider.current_resource.name.should == "cups"
@@ -68,6 +68,20 @@ describe Chef::Provider::Package::Yum do
 
     it "should return the current resouce" do
       @provider.load_current_resource.should eql(@provider.current_resource)
+    end
+
+    it "should raise an error if a candidate version can't be found" do
+      @yum_cache = mock(
+        'Chef::Provider::Yum::YumCache',
+        :reload_installed => true,
+        :reset => true,
+        :installed_version => "1.2.4-11.18.el5",
+        :candidate_version => nil,
+        :version_available? => true
+      )
+      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
     end
 
     describe "when arch in package_name" do
@@ -122,14 +136,15 @@ describe Chef::Provider::Package::Yum do
         end
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-        @provider.load_current_resource
+        # annoying side effect of the fun stub'ing above
+        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
         @provider.new_resource.package_name.should == "testing.beta3"
         @provider.new_resource.arch.should == nil 
         @provider.arch.should == nil 
 
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3.more')
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-        @provider.load_current_resource
+        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
         @provider.new_resource.package_name.should == "testing.beta3.more"
         @provider.new_resource.arch.should == nil 
         @provider.arch.should == nil 
@@ -150,14 +165,14 @@ describe Chef::Provider::Package::Yum do
         end
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-        @provider.load_current_resource
+        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
         @provider.new_resource.package_name.should == "testing.beta3"
         @provider.new_resource.arch.should == nil 
         @provider.arch.should == nil 
 
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3.more')
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-        @provider.load_current_resource
+        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
         @provider.new_resource.package_name.should == "testing.beta3.more"
         @provider.new_resource.arch.should == nil 
         @provider.arch.should == nil 
@@ -180,7 +195,7 @@ describe Chef::Provider::Package::Yum do
           elsif package_name == "testing"
             "1.1"
           end
-        end
+        end.and_return("something")
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         @provider.load_current_resource
@@ -192,6 +207,8 @@ describe Chef::Provider::Package::Yum do
 
   describe "when installing a package" do
     it "should run yum install with the package name and version" do
+      @provider.load_current_resource
+      Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "yum -d0 -e0 -y install emacs-1.0"
       })
@@ -207,7 +224,9 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should run yum install with the package name, version and arch" do
+      @provider.load_current_resource
       @new_resource.stub!(:arch).and_return("i386")
+      Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "yum -d0 -e0 -y install emacs-21.4-20.el5.i386"
       })
@@ -215,15 +234,17 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "installs the package with the options given in the resource" do
+      @provider.load_current_resource
       @provider.candidate_version = '11'
       @new_resource.stub!(:options).and_return("--disablerepo epmd")
+      Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "yum -d0 -e0 -y --disablerepo epmd install cups-11"
       })
       @provider.install_package(@new_resource.name, @provider.candidate_version)
     end
 
-    it "should fail if the package is not available" do
+    it "should raise an exception if the package is not available" do
       @yum_cache = mock(
         'Chef::Provider::Yum::YumCache',
         :reload_from_cache => true,
@@ -234,28 +255,50 @@ describe Chef::Provider::Package::Yum do
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-      lambda { @provider.install_package("lolcats", "0.99") }.should raise_error(ArgumentError)
+      lambda { @provider.install_package("lolcats", "0.99") }.should raise_error(Chef::Exceptions::Package, %r{Version .* not found})
+    end
+
+    it "should raise an exception if candidate version is older than the installed version" do
+      @yum_cache = mock(
+        'Chef::Provider::Yum::YumCache',
+        :reload_installed => true,
+        :reset => true,
+        :installed_version => "1.2.4-11.18.el5",
+        :candidate_version => "1.2.4-11.15.el5",
+        :version_available? => true,
+        :allow_multi_install => [ "kernel" ]
+      )
+      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider.load_current_resource
+      lambda { @provider.install_package("cups", "1.2.4-11.15.el5") }.should raise_error(Chef::Exceptions::Package, %r{is newer than candidate package})
+    end
+
+    it "should not raise an exception if candidate version is older than the installed version and the package is list in yum's installonlypkg option" do
+      @yum_cache = mock(
+        'Chef::Provider::Yum::YumCache',
+        :reload_installed => true,
+        :reset => true,
+        :installed_version => "1.2.4-11.18.el5",
+        :candidate_version => "1.2.4-11.15.el5",
+        :version_available? => true,
+        :allow_multi_install => [ "cups" ]
+      )
+      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider.load_current_resource
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "yum -d0 -e0 -y install cups-1.2.4-11.15.el5"
+      })
+      @provider.install_package("cups", "1.2.4-11.15.el5")
     end
   end
 
   describe "when upgrading a package" do
-    it "should run yum update if the package is installed and no version is given" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y update cups"
-      })
-      @provider.upgrade_package(@new_resource.name, nil)
-    end
-
-    it "should run yum update with arch if the package is installed and no version is given" do
-      @new_resource.stub!(:arch).and_return("i386")
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y update cups.i386"
-      })
-      @provider.upgrade_package(@new_resource.name, nil)
-    end
-
     it "should run yum install if the package is installed and a version is given" do
+      @provider.load_current_resource
       @provider.candidate_version = '11'
+      Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "yum -d0 -e0 -y install cups-11"
       })
@@ -263,12 +306,30 @@ describe Chef::Provider::Package::Yum do
     end
 
     it "should run yum install if the package is not installed" do
+      @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
       @provider.candidate_version = '11'
+      Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "yum -d0 -e0 -y install cups-11"
       })
       @provider.upgrade_package(@new_resource.name, @provider.candidate_version)
+    end
+
+    it "should raise an exception if candidate version is older than the installed version" do
+      @yum_cache = mock(
+        'Chef::Provider::Yum::YumCache',
+        :reload_installed => true,
+        :reset => true,
+        :installed_version => "1.2.4-11.18.el5",
+        :candidate_version => "1.2.4-11.15.el5",
+        :version_available? => true,
+        :allow_multi_install => [ "kernel" ]
+      )
+      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider.load_current_resource
+      lambda { @provider.upgrade_package("cups", "1.2.4-11.15.el5") }.should raise_error(Chef::Exceptions::Package, %r{is newer than candidate package})
     end
   end
 
@@ -661,15 +722,49 @@ describe Chef::Provider::Package::Yum::RPMPackage do
 
 end
 
+describe Chef::Provider::Package::Yum::RPMDbPackage do
+  before(:each) do
+    # name, version, arch, installed, available
+    @rpm_x = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "noarch", false, true)
+    @rpm_y = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "noarch", true, true)
+    @rpm_z = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "noarch", true, false)
+  end
+
+  describe "initialize" do
+    it "should return a Chef::Provider::Package::Yum::RPMDbPackage object" do
+      @rpm_x.should be_kind_of(Chef::Provider::Package::Yum::RPMDbPackage)
+    end
+  end
+
+  describe "available" do
+    it "should return true" do
+      @rpm_x.available.should be == true
+      @rpm_y.available.should be == true
+      @rpm_z.available.should be == false 
+    end
+  end
+ 
+  describe "installed" do
+    it "should return true" do
+      @rpm_x.installed.should be == false 
+      @rpm_y.installed.should be == true
+      @rpm_z.installed.should be == true 
+    end
+  end
+
+end
+
 # thanks resource_collection_spec.rb!
 describe Chef::Provider::Package::Yum::RPMDb do
   before(:each) do
     @rpmdb = Chef::Provider::Package::Yum::RPMDb.new
-    @rpm_w = Chef::Provider::Package::Yum::RPMPackage.new("test-package-a", "0:1.6.5-9.36.el5", "i386")
-    @rpm_x = Chef::Provider::Package::Yum::RPMPackage.new("test-package-a", "0:1.6.5-9.36.el5", "x86_64")
-    @rpm_y = Chef::Provider::Package::Yum::RPMPackage.new("test-package-a", "1:1.6.5-9.36.el5", "x86_64")
-    @rpm_z = Chef::Provider::Package::Yum::RPMPackage.new("test-package-b", "0:1.6.5-9.36.el5", "noarch")
-    @rpm_z_mirror = Chef::Provider::Package::Yum::RPMPackage.new("test-package-b", "0:1.6.5-9.36.el5", "noarch")
+    # name, version, arch, installed, available
+    @rpm_v = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-a", "0:1.6.5-9.36.el5", "i386", true, false)
+    @rpm_w = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "i386", true, true)
+    @rpm_x = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "x86_64", false, true)
+    @rpm_y = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "1:1.6.5-9.36.el5", "x86_64", true, true)
+    @rpm_z = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-c", "0:1.6.5-9.36.el5", "noarch", true, true)
+    @rpm_z_mirror = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-c", "0:1.6.5-9.36.el5", "noarch", true, true)
   end
 
   describe "initialize" do
@@ -679,17 +774,44 @@ describe Chef::Provider::Package::Yum::RPMDb do
   end
 
   describe "push" do
-    it "should accept an RPMPackage object through pushing" do
+    it "should accept an RPMDbPackage object through pushing" do
       lambda { @rpmdb.push(@rpm_w) }.should_not raise_error
     end
 
-    it "should accept multiple RPMPackage object through pushing" do
+    it "should accept multiple RPMDbPackage object through pushing" do
       lambda { @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z) }.should_not raise_error
     end
 
-    it "should only accept an RPMPackage object" do
-      lambda { @rpmdb.push(@rpm_w) }.should_not raise_error
+    it "should only accept an RPMDbPackage object" do
       lambda { @rpmdb.push("string") }.should raise_error
+    end
+    
+    it "should add the package to the package db" do
+      @rpmdb.push(@rpm_w)
+      @rpmdb["test-package-b"].should_not be == nil
+    end
+
+    it "should add conditionally add the package to the available list" do
+      @rpmdb.available_size.should be == 0 
+      @rpmdb.push(@rpm_v, @rpm_w)
+      @rpmdb.available_size.should be == 1
+    end
+
+    it "should add conditionally add the package to the installed list" do
+      @rpmdb.installed_size.should be == 0 
+      @rpmdb.push(@rpm_w, @rpm_x)
+      @rpmdb.installed_size.should be == 1
+    end
+
+    it "should have a total of 2 packages in the RPMDb" do
+      @rpmdb.size.should be == 0
+      @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z)
+      @rpmdb.size.should be == 2
+    end
+
+    it "should keep the Array unique when a duplicate is pushed" do
+      @rpmdb.push(@rpm_z, @rpm_z_mirror)
+      @rpmdb["test-package-c"].size.should be == 1
     end
   end
 
@@ -702,44 +824,74 @@ describe Chef::Provider::Package::Yum::RPMDb do
   describe "lookup" do
     it "should return an Array of RPMPackage objects by index" do
       @rpmdb << @rpm_w 
-      @rpmdb.lookup("test-package-a").should be_kind_of(Array)
+      @rpmdb.lookup("test-package-b").should be_kind_of(Array)
     end
   end
 
   describe "[]" do
     it "should return an Array of RPMPackage objects though the [index] operator" do
       @rpmdb << @rpm_w 
-      @rpmdb["test-package-a"].should be_kind_of(Array)
+      @rpmdb["test-package-b"].should be_kind_of(Array)
+    end
+
+    it "should return an Array of 3 RPMPackage objects" do
+      @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z)
+      @rpmdb["test-package-b"].size.should be == 3
+    end
+
+    it "should return an Array of RPMPackage objects sorted from newest to oldest" do
+      @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z)
+      @rpmdb["test-package-b"][0].should be == @rpm_y
+      @rpmdb["test-package-b"][1].should be == @rpm_x
+      @rpmdb["test-package-b"][2].should be == @rpm_w
     end
   end
 
-  it "should return an Array of 3 RPMPackage objects" do
-    @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z)
-    @rpmdb["test-package-a"].size.should be == 3
+  describe "clear" do
+    it "should clear the RPMDb" do
+      @rpmdb.should_receive(:clear_available).once
+      @rpmdb.should_receive(:clear_installed).once
+      @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z)
+      @rpmdb.size.should_not be == 0
+      @rpmdb.clear
+      @rpmdb.size.should be == 0
+    end
   end
 
-  it "should have a total of 2 packages in the RPMDb" do
-    @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z)
-    @rpmdb.size.should be == 2
-    @rpmdb.length.should be == 2
+  describe "clear_available" do
+    it "should clear the available list" do
+      @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z)
+      @rpmdb.available_size.should_not be == 0
+      @rpmdb.clear_available
+      @rpmdb.available_size.should be == 0
+    end
   end
 
-  it "should clear the RPMDb" do
-    @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z)
-    @rpmdb.clear
-    @rpmdb.size.should be == 0
+  describe "available?" do
+    it "should return true if a package is available" do
+      @rpmdb.available?(@rpm_w).should be == false 
+      @rpmdb.push(@rpm_v, @rpm_w)
+      @rpmdb.available?(@rpm_v).should be == false
+      @rpmdb.available?(@rpm_w).should be == true
+    end
   end
 
-  it "should keep the Array unique when a duplicate is pushed" do
-    @rpmdb.push(@rpm_z, @rpm_z_mirror)
-    @rpmdb["test-package-b"].size.should be == 1
+  describe "clear_installed" do
+    it "should clear the installed list" do
+      @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z)
+      @rpmdb.installed_size.should_not be == 0
+      @rpmdb.clear_installed
+      @rpmdb.installed_size.should be == 0
+    end
   end
 
-  it "should return an Array of RPMPackage objects sorted from newest to oldest" do
-    @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z)
-    @rpmdb["test-package-a"][0].should be == @rpm_y
-    @rpmdb["test-package-a"][1].should be == @rpm_x
-    @rpmdb["test-package-a"][2].should be == @rpm_w
+  describe "installed?" do
+    it "should return true if a package is installed" do
+      @rpmdb.installed?(@rpm_w).should be == false 
+      @rpmdb.push(@rpm_w, @rpm_x)
+      @rpmdb.installed?(@rpm_w).should be == true
+      @rpmdb.installed?(@rpm_x).should be == false
+    end
   end
 
 end
@@ -756,12 +908,14 @@ describe Chef::Provider::Package::Yum::YumCache do
 
   before(:each) do
     yum_dump_good_output = <<EOF
-zip 0 2.31 2.el5 x86_64 i
+[option installonlypkgs] kernel kernel-bigmem kernel-enterprise
+erlang-mochiweb 0 1.4.1 1.el5 x86_64 i
+zip 0 2.31 2.el5 x86_64 r
 zisofs-tools 0 1.0.6 3.2.2 x86_64 a
-zlib 0 1.2.3 3 x86_64 i
-zlib 0 1.2.3 3 i386 i
+zlib 0 1.2.3 3 x86_64 r
+zlib 0 1.2.3 3 i386 r
 zlib-devel 0 1.2.3 3 i386 a
-zlib-devel 0 1.2.3 3 x86_64 i
+zlib-devel 0 1.2.3 3 x86_64 r
 znc 0 0.098 1.el5 x86_64 a
 znc-devel 0 0.098 1.el5 i386 a
 znc-devel 0 0.098 1.el5 x86_64 a
@@ -770,7 +924,7 @@ znc-modtcl 0 0.098 1.el5 x86_64 a
 EOF
 
     yum_dump_bad_output_separators = <<EOF
-zip 0 2.31 2.el5 x86_64 i
+zip 0 2.31 2.el5 x86_64 r
 zlib 0 1.2.3 3 x86_64 i bad
 zlib-devel 0 1.2.3 3 i386 a
 bad zlib-devel 0 1.2.3 3 x86_64 i
@@ -778,7 +932,7 @@ znc-modtcl 0 0.098 1.el5 x86_64 a bad
 EOF
 
     yum_dump_bad_output_type = <<EOF
-zip 0 2.31 2.el5 x86_64 i
+zip 0 2.31 2.el5 x86_64 r
 zlib 0 1.2.3 3 x86_64 c
 zlib-devel 0 1.2.3 3 i386 a
 zlib-devel 0 1.2.3 3 x86_64 bad
@@ -823,128 +977,66 @@ EOF
     end
   end
 
-  describe "installed" do
-    it "should return a Chef::Provider::Package::Yum::RPMDb object" do
-      @yc.installed.should be_kind_of(Chef::Provider::Package::Yum::RPMDb)
-    end
-
-    it "should implicitly call load_data only once after being instantiated" do
-      @yc.should_receive(:load_data).once
-      @yc.installed
+  describe "refresh" do
+    it "should implicitly call yum-dump.py only once by default after being instantiated" do
+      @yc.should_receive(:popen4).once
+      @yc.installed_version("zlib")
       @yc.reset
-      @yc.installed
+      @yc.installed_version("zlib")
     end
 
-    it "should have a number of packages already loaded" do
-      @yc.installed.size.should be == 3
-    end
-  end
-
-  describe "available" do
-    it "should return a Chef::Provider::Package::Yum::RPMDb object" do
-      @yc.available.should be_kind_of(Chef::Provider::Package::Yum::RPMDb)
+    it "should run yum-dump.py using the system python when next_refresh is for :all" do
+      @yc.reload
+      @yc.should_receive(:popen4).with(%r{^/usr/bin/python .*/yum-dump.py --options$}, :waitlast=>true)
+      @yc.refresh
     end
 
-    it "should implicitly call load_data only once after being instantiated" do
-      @yc.should_receive(:load_data).once
-      @yc.available
-      @yc.reset
-      @yc.available
-    end
-
-    it "should have a number of packages already loaded" do
-      @yc.available.size.should be == 6 
-    end
-  end
-
-  describe "load_data" do
-    it "should run yum-dump.py using the system python" do
-      @yc.should_receive(:popen4).with(%r{^/usr/bin/python .*/yum-dump.py$}, :waitlast=>true)
-      @yc.load_data
-    end
-
-    it "should run yum-dump.py with the cache flag using the system python" do
-      @yc.should_receive(:popen4).with(%r{^/usr/bin/python .*/yum-dump.py -C$}, :waitlast=>true)
-      @yc.load_data(true)
-    end
-
-    it "should create RPMPackage objects from the parsed data" do
-      @yc.load_data
-      @yc.installed["zip"].first.should be_kind_of(Chef::Provider::Package::Yum::RPMPackage)
+    it "should run yum-dump.py with the installed flag when next_refresh is for :installed" do
+      @yc.reload_installed
+      @yc.should_receive(:popen4).with(%r{^/usr/bin/python .*/yum-dump.py --installed$}, :waitlast=>true)
+      @yc.refresh
     end
 
     it "should warn about invalid data with too many separators" do
       @yc.stub!(:popen4).and_yield(@pid, @stdin, @stdout_bad_separators, @stderr).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(3).times.with(%r{Problem parsing})
-      @yc.load_data
-      @yc.installed.size.should be == 1
-      @yc.available.size.should be == 1
+      @yc.refresh
     end
 
     it "should warn about invalid data with an incorrect type" do
       @yc.stub!(:popen4).and_yield(@pid, @stdin, @stdout_bad_type, @stderr).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(2).times.with(%r{Skipping line})
-      @yc.load_data
-      @yc.installed.size.should be == 1
-      @yc.available.size.should be == 2
+      @yc.refresh
     end
 
     it "should warn about no output from yum-dump.py" do
       @yc.stub!(:popen4).and_yield(@pid, @stdin, [], @stderr).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(1).times.with(%r{no output from yum-dump.py})
-      @yc.load_data
+      @yc.refresh
     end
 
     it "should raise exception yum-dump.py exits with a non zero status" do
       @yc.stub!(:popen4).and_yield(@pid, @stdin, [], @stderr).and_return(@status_bad)
-      lambda { @yc.load_data }.should raise_error(Chef::Exceptions::Package, %r{CentOS-Base.repo, line: 12})
+      lambda { @yc.refresh}.should raise_error(Chef::Exceptions::Package, %r{CentOS-Base.repo, line: 12})
     end
 
-    describe "new_instance" do
-      before(:each) do
-        @yc.load_data
-      end
-
-      it "should always set load_data_method to :none so load_data won't be get called until reload" do
-        @yc.should_not_receive(:load_data)
-        @yc.available
-        @yc.installed
-      end
-    end
-  end
-
-  describe "reload" do
-    it "should call load_data with no cache next time .installed is called" do
-      @yc.should_receive(:load_data).with(false)
-      @yc.reload
-      @yc.installed
-    end
-  end
-
-  describe "reload_from_cache" do
-    it "should call load_data with cache next time .installed is called" do
-      @yc.should_receive(:load_data).with(true)
-      @yc.reload_from_cache
-      @yc.installed
-    end
-  end
-
-  describe "version" do
-    it "should return version-release for matching package regardless of arch" do
-      @yc.version("zip", @yc.installed, "x86_64").should be == "2.31-2.el5"
-      @yc.version("zip", @yc.installed, nil).should be == "2.31-2.el5"
+    it "should parse type 'i' into an installed state for a package" do
+      @yc.available_version("erlang-mochiweb").should be == nil
+      @yc.installed_version("erlang-mochiweb").should_not be == nil
     end
 
-    it "should return version-release for matching package and arch" do
-      @yc.version("zisofs-tools", @yc.available, "x86_64").should be == "1.0.6-3.2.2"
-      @yc.version("zisofs-tools", @yc.available, "i386").should be == nil
+    it "should parse type 'a' into an available state for a package" do
+      @yc.available_version("znc").should_not be == nil
+      @yc.installed_version("znc").should be == nil
     end
 
-    it "should return nil for an unmatched package" do
-      @yc.version(nil, nil, nil).should be == nil 
-      @yc.version("test1", nil, nil).should be == nil 
-      @yc.version("test1", @yc.available, nil).should be == nil 
-      @yc.version("test2", @yc.available, "x86_64").should be == nil 
+    it "should parse type 'r' into an installed and available states for a package" do
+      @yc.available_version("zip").should_not be == nil
+      @yc.installed_version("zip").should_not be == nil
+    end
+
+    it "should parse installonlypkgs from yum-dump.py options output" do
+      @yc.allow_multi_install.should be == %w{kernel kernel-bigmem kernel-enterprise}
     end
   end
 
@@ -955,11 +1047,20 @@ EOF
       lambda { @yc.installed_version("zip", "i386", "extra") }.should raise_error(ArgumentError)
     end
 
-    it "should call version with the installed packages RPMDb" do
+    it "should return version-release for matching package regardless of arch" do
       @yc.installed_version("zip", "x86_64").should be == "2.31-2.el5"
       @yc.installed_version("zip", nil).should be == "2.31-2.el5"
-      @yc.installed_version("zip", "i386").should be == nil
-      @yc.installed_version("fake", nil).should be == nil
+    end
+
+    it "should return version-release for matching package and arch" do
+      @yc.installed_version("zip", "x86_64").should be == "2.31-2.el5"
+      @yc.installed_version("zisofs-tools", "i386").should be == nil
+    end
+
+    it "should return nil for an unmatched package" do
+      @yc.installed_version(nil, nil).should be == nil 
+      @yc.installed_version("test1", nil).should be == nil 
+      @yc.installed_version("test2", "x86_64").should be == nil 
     end
   end
 
@@ -970,11 +1071,20 @@ EOF
       lambda { @yc.available_version("zisofs-tools", "i386", "extra") }.should raise_error(ArgumentError)
     end
 
-    it "should call version with the available packages RPMDb" do
-      @yc.available_version("zisofs-tools", "x86_64").should be == "1.0.6-3.2.2"
-      @yc.available_version("zisofs-tools", nil).should be == "1.0.6-3.2.2"
+    it "should return version-release for matching package regardless of arch" do
+      @yc.available_version("zip", "x86_64").should be == "2.31-2.el5"
+      @yc.available_version("zip", nil).should be == "2.31-2.el5"
+    end
+
+    it "should return version-release for matching package and arch" do
+      @yc.available_version("zip", "x86_64").should be == "2.31-2.el5"
       @yc.available_version("zisofs-tools", "i386").should be == nil
-      @yc.available_version("fake", nil).should be == nil
+    end
+
+    it "should return nil for an unmatched package" do
+      @yc.available_version(nil, nil).should be == nil 
+      @yc.available_version("test1", nil).should be == nil 
+      @yc.available_version("test2", "x86_64").should be == nil 
     end
   end
 
@@ -1009,11 +1119,11 @@ EOF
 
   describe "reset" do
     it "should empty the installed and available packages RPMDb" do
-      @yc.installed.size.should be == 3
-      @yc.available.size.should be == 6
+      @yc.available_version("zip", "x86_64").should be == "2.31-2.el5"
+      @yc.installed_version("zip", "x86_64").should be == "2.31-2.el5"
       @yc.reset
-      @yc.installed.size.should be == 0 
-      @yc.available.size.should be == 0
+      @yc.available_version("zip", "x86_64").should be == nil
+      @yc.installed_version("zip", "x86_64").should be == nil
     end
   end
 
