@@ -120,10 +120,17 @@ def dump_packages(yb, list):
     pkg.type = 'a'
     packages[str(pkg)] = pkg
 
-  # These are both installed and available
-  for pkg in db.reinstall_available:
-    pkg.type = 'r'
-    packages[str(pkg)] = pkg
+  if YUM_VER == 2:
+    # ugh - can't get the availability state of our installed rpms, lets assume
+    # they are available to install
+    for pkg in db.installed:
+      pkg.type = 'r'
+      packages[str(pkg)] = pkg
+  else:
+    # These are both installed and available
+    for pkg in db.reinstall_available:
+      pkg.type = 'r'
+      packages[str(pkg)] = pkg
    
   unique_packages = packages.values()
 
