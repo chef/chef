@@ -608,6 +608,9 @@ class Chef
           @yum = YumCache.instance
         end
 
+        # Extra attributes
+        #
+
         def arch
           if @new_resource.respond_to?("arch")
             @new_resource.arch 
@@ -624,9 +627,14 @@ class Chef
           end
         end
 
+        # Helpers
+        #
+
         def yum_arch
           arch ? ".#{arch}" : nil
         end
+
+        # Standard Provider methods for Parent
 
         def load_current_resource
           if flush_cache[:before]
@@ -636,7 +644,7 @@ class Chef
           # Allow for foo.x86_64 style package_name like yum uses in it's output
           #
           # Don't overwrite an existing arch 
-          if @new_resource.respond_to?("arch") and @new_resource.arch.nil?
+          unless arch
             if @new_resource.package_name =~ %r{^(.*)\.(.*)$}
               new_package_name = $1
               new_arch = $2
@@ -730,18 +738,18 @@ class Chef
           end
         end
 
-        # Keep upgrades from trying to install an older candidate version
+        # Keep upgrades from trying to install an older candidate version. Can happen when a new
+        # version is installed then removed from a repository, now the older available version 
+        # shows up as a viable install candidate.
+        #
         # Can be done in upgrade_package but an upgraded from->to log message slips out
         #
         # Hacky - better overall solution? Custom compare in Package provider?
         def action_upgrade
-          # Don't restrict the attempts of someone passing a version
-          if @new_resource.version.nil? == false 
+          # Ensure the candidate is newer
+          if RPMUtils.rpmvercmp(candidate_version, @current_resource.version) == 1 # >
             super
-          # If there's no custom version ensure the candidate is newer
-          elsif RPMUtils.rpmvercmp(candidate_version, @current_resource.version) == 1 # >
-            super
-          # No specific version passed and candidate is older
+          # Candidate is older
           else
             Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
           end
