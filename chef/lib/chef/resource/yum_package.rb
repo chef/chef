@@ -28,6 +28,7 @@ class Chef
         @resource_name = :yum_package
         @provider = Chef::Provider::Package::Yum
         @flush_cache = { :before => false, :after => false }
+        @allow_downgrade = false
       end
 
       # Install a specific arch
@@ -47,6 +48,14 @@ class Chef
         else
           @flush_cache
         end
+      end
+
+      def allow_downgrade(arg=nil)
+        set_or_return(
+          :allow_downgrade,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
       end
 
     end

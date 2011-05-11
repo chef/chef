@@ -71,3 +71,15 @@ describe Chef::Resource::YumPackage, "flush_cache" do
     @resource.flush_cache.should == flush_hash
   end
 end
+
+describe Chef::Resource::YumPackage, "allow_downgrade" do
+  before(:each) do
+    @resource = Chef::Resource::YumPackage.new("foo")
+  end
+
+  it "should allow you to specify whether allow_downgrade is true or false" do
+    lambda { @resource.allow_downgrade true }.should_not raise_error(ArgumentError)
+    lambda { @resource.allow_downgrade false }.should_not raise_error(ArgumentError)
+    lambda { @resource.allow_downgrade "monkey" }.should raise_error(ArgumentError)
+  end
+end

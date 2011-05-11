@@ -627,6 +627,14 @@ class Chef
           end
         end
 
+        def allow_downgrade 
+          if @new_resource.respond_to?("allow_downgrade")
+            @new_resource.allow_downgrade
+          else
+            false 
+          end
+        end
+
         # Helpers
         #
 
@@ -635,6 +643,7 @@ class Chef
         end
 
         # Standard Provider methods for Parent
+        #
 
         def load_current_resource
           if flush_cache[:before]
@@ -710,6 +719,7 @@ class Chef
           else
             # Work around yum not exiting with an error if a package doesn't exist for CHEF-2062
             if @yum.version_available?(name, version, arch)
+              method = "install"
 
               # More Yum fun:
               #
@@ -718,14 +728,19 @@ class Chef
               #
               # Some packages can be installed multiple times like the kernel
               unless @yum.allow_multi_install.include?(name)
-                # If not we bail like yum when the package is older
                 if RPMUtils.rpmvercmp(@current_resource.version, version) == 1 # >
-                  raise Chef::Exceptions::Package, "Installed package #{name}-#{@current_resource.version} is newer than candidate package #{name}-#{version}"
+                  # Unless they want this...
+                  if allow_downgrade
+                    method = "downgrade"
+                  else
+                    # we bail like yum when the package is older
+                    raise Chef::Exceptions::Package, "Installed package #{name}-#{@current_resource.version} is newer than candidate package #{name}-#{version}"
+                  end
                 end
               end
            
               run_command_with_systems_locale(
-                :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} install #{name}-#{version}#{yum_arch}"
+                :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{name}-#{version}#{yum_arch}"
               )
             else
               raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version and release? (version-release, e.g. 1.84-10.fc6)"

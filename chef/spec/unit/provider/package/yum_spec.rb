@@ -270,7 +270,8 @@ describe Chef::Provider::Package::Yum do
       lambda { @provider.install_package("lolcats", "0.99") }.should raise_error(Chef::Exceptions::Package, %r{Version .* not found})
     end
 
-    it "should raise an exception if candidate version is older than the installed version" do
+    it "should raise an exception if candidate version is older than the installed version and allow_downgrade is false" do
+      @new_resource.stub!(:allow_downgrade).and_return(false)
       @yum_cache = mock(
         'Chef::Provider::Yum::YumCache',
         :reload_installed => true,
@@ -301,6 +302,26 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "yum -d0 -e0 -y install cups-1.2.4-11.15.el5"
+      })
+      @provider.install_package("cups", "1.2.4-11.15.el5")
+    end
+
+    it "should run yum downgrade if candidate version is older than the installed version and allow_downgrade is true" do
+      @new_resource.stub!(:allow_downgrade).and_return(true)
+      @yum_cache = mock(
+        'Chef::Provider::Yum::YumCache',
+        :reload_installed => true,
+        :reset => true,
+        :installed_version => "1.2.4-11.18.el5",
+        :candidate_version => "1.2.4-11.15.el5",
+        :version_available? => true,
+        :allow_multi_install => []
+      )
+      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider.load_current_resource
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "yum -d0 -e0 -y downgrade cups-1.2.4-11.15.el5"
       })
       @provider.install_package("cups", "1.2.4-11.15.el5")
     end
