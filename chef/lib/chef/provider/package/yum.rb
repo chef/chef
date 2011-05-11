@@ -220,48 +220,33 @@ class Chef
           end # self
         end # RPMUtils
 
-        class RPMPackage
+        class RPMVersion
           include Comparable
 
           def initialize(*args)
-            if args.size == 3
-              @n = args[0]
-              @e, @v, @r = RPMUtils.version_parse(args[1])
-              @a = args[2]
-            elsif args.size == 5
-              @n = args[0]
-              @e = args[1].to_i
-              @v = args[2]
-              @r = args[3]
-              @a = args[4]
+            if args.size == 1
+              @e, @v, @r = RPMUtils.version_parse(args[0])
+            elsif args.size == 3
+              @e = args[0].to_i
+              @v = args[1]
+              @r = args[2]
             else
-              raise ArgumentError, "Expecting either 'name, epoch-version-" +
-                "release, arch' or 'name, epoch, version, release, arch'"
+              raise ArgumentError, "Expecting either 'epoch-version-release' or 'epoch, " + 
+                                   "version, release'"
             end
           end
-          attr_reader :n, :e, :v, :r, :a
-          alias :name :n
+          attr_reader :e, :v, :r
           alias :epoch :e
           alias :version :v
           alias :release :r
-          alias :arch :a
+
+          def self.parse(*args)
+            self.new(*args)
+          end
 
           # rough RPM::Version rpm_version_cmp equivalent - except much slower :)
           def <=>(y)
             x = self
-
-            # compare name
-            if x.n.nil? == false and y.n.nil?
-              return 1
-            elsif x.n.nil? and y.n.nil? == false
-              return -1
-            elsif x.n.nil? == false and y.n.nil? == false
-              if x.n < y.n
-                return -1
-              elsif x.n > y.n
-                return 1
-              end
-            end
 
             # compare epoch
             if (x.e.nil? == false and x.e > 0) and y.e.nil?
@@ -293,7 +278,72 @@ class Chef
               return -1
             elsif x.r.nil? == false and y.r.nil? == false
               cmp = RPMUtils.rpmvercmp(x.r, y.r)
-              return cmp if cmp != 0
+              return cmp
+            end
+
+            return 0
+          end
+
+          # RPM::Version rpm_version_to_s equivalent
+          def to_s 
+            if @r.nil?
+              @v
+            else
+              "#{@v}-#{@r}"
+            end
+          end
+
+          def evr
+            "#{@e}:#{@v}-#{@r}"
+          end
+        end
+
+        class RPMPackage
+          include Comparable
+
+          def initialize(*args)
+            if args.size == 3 
+              @n = args[0]
+              @version = RPMVersion.new(args[1])
+              @a = args[2]
+            elsif args.size == 5
+              @n = args[0]
+              e = args[1].to_i
+              v = args[2]
+              r = args[3]
+              @version = RPMVersion.new(e,v,r)
+              @a = args[4]
+            else
+              raise ArgumentError, "Expecting either 'name, epoch-version-release, arch' or " +
+                                   "'name, epoch, version, release, arch'"
+            end
+          end
+          attr_reader :n, :a, :version, :provides
+          alias :name :n
+          alias :arch :a
+
+          # rough RPM::Version rpm_version_cmp equivalent - except much slower :)
+          def <=>(y)
+            x = self
+
+            # compare name
+            if x.n.nil? == false and y.n.nil?
+              return 1
+            elsif x.n.nil? and y.n.nil? == false
+              return -1
+            elsif x.n.nil? == false and y.n.nil? == false
+              if x.n < y.n
+                return -1
+              elsif x.n > y.n
+                return 1
+              end
+            end
+
+            # compare version
+            if x.version > y.version
+              return 1
+            elsif x.version < y.version 
+              return -1
             end
 
             # compare arch
@@ -312,17 +362,12 @@ class Chef
             return 0
           end
 
-          # RPM::Version rpm_version_to_s equivalent
           def to_s 
-            if @r.nil?
-              @v
-            else
-              "#{@v}-#{@r}"
-            end
+            nevra
           end
 
           def nevra
-            "#{@n}-#{@e}:#{@v}-#{@r}.#{@a}"
+            "#{@n}-#{@version.evr}.#{@a}"
           end
 
         end
@@ -586,10 +631,10 @@ class Chef
                 end
 
                 if block_given?
-                  yield pkg.to_s
+                  yield pkg.version.to_s
                 else
                   # first match is latest version
-                  return pkg.to_s
+                  return pkg.version.to_s
                 end
               end
             end
@@ -728,7 +773,7 @@ class Chef
               #
               # Some packages can be installed multiple times like the kernel
               unless @yum.allow_multi_install.include?(name)
-                if RPMUtils.rpmvercmp(@current_resource.version, version) == 1 # >
+                if RPMVersion.parse(@current_resource.version) > RPMVersion.parse(version)
                   # Unless they want this...
                   if allow_downgrade
                     method = "downgrade"
@@ -762,7 +807,7 @@ class Chef
         # Hacky - better overall solution? Custom compare in Package provider?
         def action_upgrade
           # Ensure the candidate is newer
-          if RPMUtils.rpmvercmp(candidate_version, @current_resource.version) == 1 # >
+          if RPMVersion.parse(candidate_version) > RPMVersion.parse(@current_resource.version)
             super
           # Candidate is older
           else
