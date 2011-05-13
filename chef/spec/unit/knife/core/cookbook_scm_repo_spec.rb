@@ -166,4 +166,15 @@ DIRTY
       @cookbook_repo.finalize_updates_to("apache2", "1.2.3").should be_true
     end
   end
+
+  describe "when a custom default branch is specified" do
+    before do
+      @cookbook_repo = Chef::Knife::CookbookSCMRepo.new(@repo_path, @ui, :default_branch => 'develop')
+    end
+
+    it "resets to default state by checking out the default branch" do
+      @cookbook_repo.should_receive(:shell_out!).with('git checkout develop', :cwd => @repo_path)
+      @cookbook_repo.reset_to_default_state
+    end
+  end
 end

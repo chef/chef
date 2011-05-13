@@ -44,7 +44,7 @@ class Chef
         :description => "A colon-separated path to look for cookbooks in",
         :proc => lambda { |o| o.split(":") }
 
-      option :branch_default,
+      option :default_branch,
         :short => "-B BRANCH",
         :long => "--branch BRANCH",
         :description => "Default branch to work with",

@@ -34,6 +34,7 @@ class Chef
         @repo_path = repo_path
         @ui = ui
         @default_branch = 'master'
+        apply_opts(opts)
       end
 
       def sanity_check
@@ -133,8 +134,6 @@ class Chef
           case option.to_s
           when 'default_branch'
             @default_branch = value
-          else
-            raise ArgumentError, "invalid option `#{option}' passed to CookbookRepo.new()"
           end
         end
       end
