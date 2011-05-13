@@ -4,7 +4,8 @@ bash -c '
 if [ ! -f /usr/bin/chef-client ]; then
   wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm
   rpm -Uvh epel-release-5-4.noarch.rpm
-  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>-O /etc/yum.repos.d/aegis.repo http://rpm.aegisco.com/aegisco/el5/aegisco.repo
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://rpm.aegisco.com/aegisco/rhel/aegisco-rhel.rpm
+  rpm -Uvh aegisco-rhel.rpm
 
   yum install -y ruby ruby-devel gcc gcc-c++ automake autoconf make
 
