@@ -41,6 +41,8 @@ The available multiplexers are:
     if it exists.
   * __tmux__(1):
     Runs ssh interactively inside tmux.
+  * __cssh__(1):
+    Launches a cssh session.
   * `macterm` (Mac OS X only):
     Opens a Terminal.app window and creates a tab for each ssh session.
     You must install the rb-appscript gem before you can use this
