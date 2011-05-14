@@ -248,6 +248,11 @@ class Chef
         exec("screen -c #{tf.path}")
       end
 
+
+      def cssh
+        exec "cssh "+session.servers_for.map {|server| server.user ? "#{server.user}@#{server.host}" : server.host}.join(" ")
+      end
+
       def tmux
         ssh_dest = lambda do |server|
           prefix = server.user ? "#{server.user}@" : ""
@@ -316,6 +321,8 @@ class Chef
           tmux
         when "macterm"
           macterm
+        when "cssh"
+          cssh
         else
           ssh_command(@name_args[1..-1].join(" "))
         end
