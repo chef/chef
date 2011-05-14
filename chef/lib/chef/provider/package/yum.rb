@@ -59,6 +59,9 @@ class Chef
               end
 
               version = evr[lead,tail]
+              if version.empty?
+                version = nil
+              end
 
               [ epoch, version, release ]
             end
@@ -244,8 +247,41 @@ class Chef
             self.new(*args)
           end
 
-          # rough RPM::Version rpm_version_cmp equivalent - except much slower :)
           def <=>(y)
+            compare_versions(y)
+          end
+          
+          def compare(y)
+            compare_versions(y, false)
+          end
+          
+          def partial_compare(y)
+            compare_versions(y, true)
+          end
+
+          # RPM::Version rpm_version_to_s equivalent
+          def to_s 
+            if @r.nil?
+              @v
+            else
+              "#{@v}-#{@r}"
+            end
+          end
+
+          def evr
+            "#{@e}:#{@v}-#{@r}"
+          end
+          
+          private
+
+          # Rough RPM::Version rpm_version_cmp equivalent - except much slower :)
+          #
+          # partial lets epoch and version segment equality be good enough to return equal, eg:
+          #
+          # 2:1.2-1 == 2:1.2
+          # 2:1.2-1 == 2:
+          #
+          def compare_versions(y, partial=false)
             x = self
 
             # compare epoch
@@ -262,7 +298,9 @@ class Chef
             end
 
             # compare version
-            if x.v.nil? == false and y.v.nil?
+            if partial and (x.v.nil? or y.v.nil?)
+              return 0
+            elsif x.v.nil? == false and y.v.nil?
               return 1
             elsif x.v.nil? and y.v.nil? == false
               return -1
@@ -272,7 +310,9 @@ class Chef
             end
 
             # compare release 
-            if x.r.nil? == false and y.r.nil?
+            if partial and (x.r.nil? or y.r.nil?)
+              return 0
+            elsif x.r.nil? == false and y.r.nil?
               return 1
             elsif x.r.nil? and y.r.nil? == false
               return -1
@@ -283,47 +323,44 @@ class Chef
 
             return 0
           end
-
-          # RPM::Version rpm_version_to_s equivalent
-          def to_s 
-            if @r.nil?
-              @v
-            else
-              "#{@v}-#{@r}"
-            end
-          end
-
-          def evr
-            "#{@e}:#{@v}-#{@r}"
-          end
         end
 
         class RPMPackage
           include Comparable
 
           def initialize(*args)
-            if args.size == 3 
+            if args.size == 4
               @n = args[0]
               @version = RPMVersion.new(args[1])
               @a = args[2]
-            elsif args.size == 5
+              @provides = args[3]
+            elsif args.size == 6
               @n = args[0]
               e = args[1].to_i
               v = args[2]
               r = args[3]
               @version = RPMVersion.new(e,v,r)
               @a = args[4]
+              @provides = args[5]
             else
-              raise ArgumentError, "Expecting either 'name, epoch-version-release, arch' or " +
-                                   "'name, epoch, version, release, arch'"
+              raise ArgumentError, "Expecting either 'name, epoch-version-release, arch, provides' " +
+                                   "or 'name, epoch, version, release, arch, provides'"
+            end
+
+            # We always have one, ourselves!
+            if @provides.empty?
+              @provides = [ RPMProvide.new(@n, @version.evr, :==) ]
             end
           end
           attr_reader :n, :a, :version, :provides
           alias :name :n
           alias :arch :a
 
-          # rough RPM::Version rpm_version_cmp equivalent - except much slower :)
           def <=>(y)
+            compare(y)
+          end
+
+          def compare(y)
             x = self
 
             # compare name
@@ -369,8 +406,88 @@ class Chef
           def nevra
             "#{@n}-#{@version.evr}.#{@a}"
           end
-
         end
+         
+        # Simple implementation from rpm and ruby-rpm reference code
+        class RPMDependency
+          def initialize(*args)
+            if args.size == 3
+              @name = args[0]
+              @version = RPMVersion.new(args[1])
+              # Our requirement to other dependencies
+              @flag = args[2] || :==
+            elsif args.size == 5
+              @name = args[0]
+              e = args[1].to_i
+              v = args[2]
+              r = args[3]
+              @version = RPMVersion.new(e,v,r)
+              @flag = args[4] || :==
+            else
+              raise ArgumentError, "Expecting either 'name, epoch-version-release, flag' or " +
+                                   "'name, epoch, version, release, flag'"
+            end
+          end
+          attr_reader :name, :version, :flag
+
+          # Parses 2 forms:
+          #
+          # "mtr >= 2:0.71-3.0"
+          # "mta"
+          def self.parse(string)
+            if string =~ %r{^(\S+)\s+(>|>=|=|==|<=|<)\s+(\S+)$}
+              name = $1
+              if $2 == "="
+                flag = :==
+              else
+                flag = :"#{$2}"
+              end
+              version = $3
+
+              return self.new(name, version, flag)
+            else
+              name = string
+              return self.new(name, nil, nil)
+            end
+          end
+
+          # Test if another RPMDependency satisfies our requirements
+          def satisfy?(y)
+            unless y.kind_of?(RPMDependency)
+              raise ArgumentError, "Expecting an RPMDependency object"
+            end
+
+            x = self
+
+            # Easy!
+            if x.name != y.name
+              return false
+            end
+
+            # Partial compare
+            # 
+            # eg: x.version 2.3 == y.version 2.3-1
+            sense = x.version.partial_compare(y.version)
+
+            # Thanks to rpmdsCompare() rpmds.c
+            if sense < 0 and (x.flag == :> || x.flag == :>=) || (y.flag == :<= || y.flag == :<)
+              return true
+            elsif sense > 0 and (x.flag == :< || x.flag == :<=) || (y.flag == :>= || y.flag == :>)
+              return true
+            elsif sense == 0 and (
+              ((x.flag == :== or x.flag == :<= or x.flag == :>=) and (y.flag == :== or y.flag == :<= or y.flag == :>=)) or
+              (x.flag == :< and y.flag == :<) or
+              (x.flag == :> and y.flag == :>)
+            )
+              return true
+            end
+
+            return false
+          end
+        end
+
+        class RPMProvide < RPMDependency; end
+        class RPMRequire < RPMDependency; end
         
         class RPMDbPackage < RPMPackage
           # <rpm parts>, installed, available
@@ -386,8 +503,13 @@ class Chef
         # Simple storage for RPMPackage objects - keeps them unique and sorted 
         class RPMDb
           def initialize
+            # package name => [ RPMPackage, RPMPackage ] of different versions
             @rpms = Hash.new
+            # provide name (aka feature) => [RPMPackage, RPMPackage] each providing this feature
+            @provides = Hash.new
+            # RPMPackages listed as available
             @available = Set.new
+            # RPMPackages listed as installed
             @installed = Set.new
           end
           
@@ -399,6 +521,10 @@ class Chef
             @rpms[package_name]
           end
           
+          def lookup_provides(provide_name)
+            @provides[provide_name]
+          end
+
           # Using the package name as a key keep a unique, descending list of packages.
           # The available/installed state can be overwritten for existing packages.
           def push(*args)
@@ -419,6 +545,11 @@ class Chef
                 @rpms[new_rpm.n].sort!
                 @rpms[new_rpm.n].reverse!
 
+                new_rpm.provides.each do |provide|
+                  @provides[provide.name] ||= Array.new
+                  @provides[provide.name] << new_rpm 
+                end
+
                 curr_rpm = new_rpm
               end
 
@@ -438,6 +569,7 @@ class Chef
 
           def clear
             @rpms.clear
+            @provides.clear
             clear_available
             clear_installed
           end
@@ -470,6 +602,27 @@ class Chef
           def installed?(package)
             @installed.include?(package)
           end
+
+          def whatprovides(rpmdep)
+            unless rpmdep.kind_of?(RPMDependency)
+              raise ArgumentError, "Expecting an RPMDependency object"
+            end
+ 
+            what = []
+
+            packages = lookup_provides(rpmdep.name)
+            if packages
+              packages.each do |pkg|
+                pkg.provides.each do |provide|
+                  if provide.satisfy?(rpmdep)
+                    what << pkg
+                  end
+                end
+              end
+            end
+
+            return what
+          end
         end
 
         # Cache for our installed and available packages, pulled in from yum-dump.py
@@ -480,11 +633,16 @@ class Chef
           def initialize
             @rpmdb = RPMDb.new
 
-            # Next time installed/available is accessed:
-            #  :all       - Trigger a run of "yum-dump.py --options", updates yum's cache and 
-            #               parses options from /etc/yum.conf
-            #  :installed - Trigger a run of "yum-dump.py --installed", only reads the local rpm db
-            #  :none      - Do nothing, a call to reload or reload_installed is required
+            # Next time @rpmdb is accessed:
+            #  :all       - Trigger a run of "yum-dump.py --options --installed-provides", updates
+            #               yum's cache and parses options from /etc/yum.conf. Pulls in Provides
+            #               dependency data for installed packages only - this data is slow to 
+            #               gather.
+            #  :provides  - Same as :all but pulls in Provides data for available packages as well.
+            #               Used as a last resort when we can't find a Provides match.
+            #  :installed - Trigger a run of "yum-dump.py --installed", only reads the local rpm
+            #               db. Used between client runs for a quick refresh.
+            #  :none      - Do nothing, a call to one of the reload methods is required.
             @next_refresh = :all
 
             @allow_multi_install = []
@@ -497,16 +655,25 @@ class Chef
 
           # Cache management
           #
-  
-          def refresh
-            return if @next_refresh == :none 
 
-            if @next_refresh == :installed
+          def refresh
+            case @next_refresh
+            when :none
+              return nil
+            when :installed
               reset_installed
+              # fast
               opts=" --installed"
-            elsif @next_refresh == :all
+            when :all
               reset
-              opts=" --options"
+              # medium
+              opts=" --options --installed-provides"
+            when :provides
+              reset
+              # slow!
+              opts=" --options --all-provides"
+            else
+              raise ArgumentError, "Unexpected value in next_refresh: #{@next_refresh}"
             end
 
             one_line = false
@@ -529,30 +696,35 @@ class Chef
                   next
                 end
 
-                parts = line.split
-                unless parts.size == 6
+                if line =~ %r{^(\S+) ([0-9]+) (\S+) (\S+) (\S+) \[(.*)\] ([i,a,r])$}
+                  name     = $1
+                  epoch    = $2
+                  version  = $3
+                  release  = $4
+                  arch     = $5
+                  provides = parse_provides($6)
+                  type     = $7
+                else
                   Chef::Log.warn("Problem parsing line '#{line}' from yum-dump.py! " +
                                  "Please check your yum configuration.")
                   next
                 end
 
-                type = parts.pop
-                if type == "i"
+                case type
+                when "i"
                   # if yum-dump was called with --installed this may not be true, but it's okay
                   # since we don't touch the @available Set in reload_installed
                   available = false
                   installed = true
-                elsif type == "a"
+                when "a"
                   available = true
                   installed = false
-                elsif type == "r"
+                when "r"
                   available = true
                   installed = true
-                else
-                  Chef::Log.warn("Can't parse type from output of yum-dump.py! Skipping line")
                 end
 
-                pkg = RPMDbPackage.new(*(parts + [installed, available]))
+                pkg = RPMDbPackage.new(name, epoch, version, release, arch, provides, installed, available)
                 @rpmdb << pkg
               end
 
@@ -580,6 +752,10 @@ class Chef
             @next_refresh = :installed
           end
 
+          def reload_provides
+            @next_refresh = :provides
+          end
+
           def reset
             @rpmdb.clear
           end
@@ -591,6 +767,21 @@ class Chef
           # Querying the cache
           # 
 
+          def package_available?(package_name)
+            refresh
+            if @rpmdb.lookup(package_name)
+              true
+            else
+              false
+            end
+          end
+
+          # Returns a array of packages satisfying an RPMDependency
+          def packages_from_require(rpmdep)
+            refresh
+            @rpmdb.whatprovides(rpmdep)
+          end
+ 
           def version_available?(package_name, desired_version, arch=nil)
              version(package_name, arch, true, false) do |v|
                return true if desired_version == v
@@ -645,6 +836,21 @@ class Chef
               return nil
             end
           end
+
+          # Parse provides from yum-dump.py output
+          def parse_provides(string)
+            ret = []
+            # ['atk = 1.12.2-1.fc6', 'libatk-1.0.so.0']
+            string.split(", ").each do |seg|
+              # 'atk = 1.12.2-1.fc6'
+              if seg =~ %r{^'(.*)'$}
+                ret << RPMProvide.parse($1)
+              end
+            end
+
+            return ret
+          end
+
         end # YumCache
 
         def initialize(new_resource, run_context)
@@ -695,23 +901,13 @@ class Chef
             @yum.reload
           end
 
-          # Allow for foo.x86_64 style package_name like yum uses in it's output
-          #
+          unless @yum.package_available?(@new_resource.package_name)
+            parse_dependency
+          end
+
           # Don't overwrite an existing arch 
           unless arch
-            if @new_resource.package_name =~ %r{^(.*)\.(.*)$}
-              new_package_name = $1
-              new_arch = $2
-              # foo.i386 and foo.beta1 are both valid package names or expressions of an arch.
-              # Ensure we don't have an existing package matching package_name, then ensure we at
-              # least have a match for the new_package+new_arch before we overwrite. If neither
-              # then fall through to standard package handling.
-              if (@yum.installed_version(@new_resource.package_name).nil? and @yum.candidate_version(@new_resource.package_name).nil?) and 
-                   (@yum.installed_version(new_package_name, new_arch) or @yum.candidate_version(new_package_name, new_arch))
-                 @new_resource.package_name(new_package_name)
-                 @new_resource.arch(new_arch)
-              end
-            end
+            parse_arch
           end
 
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -838,6 +1034,72 @@ class Chef
 
         def purge_package(name, version)
           remove_package(name, version)
+        end
+
+        private
+        
+        def parse_arch 
+          # Allow for foo.x86_64 style package_name like yum uses in it's output
+          #
+          if @new_resource.package_name =~ %r{^(.*)\.(.*)$}
+            new_package_name = $1
+            new_arch = $2
+            # foo.i386 and foo.beta1 are both valid package names or expressions of an arch.
+            # Ensure we don't have an existing package matching package_name, then ensure we at
+            # least have a match for the new_package+new_arch before we overwrite. If neither
+            # then fall through to standard package handling.
+            if (@yum.installed_version(@new_resource.package_name).nil? and @yum.candidate_version(@new_resource.package_name).nil?) and
+                 (@yum.installed_version(new_package_name, new_arch) or @yum.candidate_version(new_package_name, new_arch))
+               @new_resource.package_name(new_package_name)
+               @new_resource.arch(new_arch)
+            end
+          end
+        end
+
+        # If we don't have the package we could have been passed a 'whatprovides' feature
+        #
+        # eg: yum install "perl(Config)"
+        #     yum install "mtr = 2:0.71-3.1"
+        #     yum install "mtr > 2:0.71"
+        # 
+        # We support resolving these out of the Provides data imported from yum-dump.py and
+        # matching them up with an actual package so the standard resource handling can apply.
+        #
+        # There is currently no support for filename matching.
+        def parse_dependency 
+          # Transform the package_name into a requirement
+          yum_require = RPMRequire.parse(@new_resource.package_name)
+          # and gather all the packages that have a Provides feature satisfying the requirement.
+          # It could be multiple be we can only manage one
+          packages = @yum.packages_from_require(yum_require)
+
+          if packages.empty?
+            Chef::Log.debug("#{@new_resource} couldn't match #{@new_resource.package_name} in " +
+                            "installed Provides, loading available Provides - this may take a moment")
+            @yum.reload_provides
+            packages = @yum.packages_from_require(yum_require) 
+          end
+
+          unless packages.empty?
+            new_package_name = packages.first.name
+            Chef::Log.debug("#{@new_resource} no package found for #{@new_resource.package_name} " +
+                            "but matched Provides for #{new_package_name}")
+
+            # Ensure it's not the same package under a different architecture
+            unique_names = []
+            packages.each do |pkg|
+              unique_names << "#{pkg.name}-#{pkg.version.evr}"
+            end
+            unique_names.uniq!
+
+            if unique_names.size > 1
+              Chef::Log.warn("#{@new_resource} matched multiple Provides for #{@new_resource.package_name} " +
+                             "but we can only use the first match: #{new_package_name}. Please use a more " +
+                             "specific version.")
+            end
+
+            @new_resource.package_name(new_package_name)
+          end
         end
 
       end
