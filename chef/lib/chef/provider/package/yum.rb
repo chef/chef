@@ -104,7 +104,7 @@ class Chef
               # breaks into purely alpha and numeric segments and compares them using
               # some rules
               # 
-              # * 10 > 1 
+              # * 10 > 1
               # * 1 > a
               # * z > a
               # * Z > A
@@ -182,7 +182,7 @@ class Chef
                   return x_seg_is_num ? 1 : -1
                 end
 
-                # move the ball forward before we mess with the segments 
+                # move the ball forward before we mess with the segments
                 x_pos += x_comp.length # +1 over pos_max if end of string
                 y_pos += y_comp.length
 
@@ -234,7 +234,7 @@ class Chef
               @v = args[1]
               @r = args[2]
             else
-              raise ArgumentError, "Expecting either 'epoch-version-release' or 'epoch, " + 
+              raise ArgumentError, "Expecting either 'epoch-version-release' or 'epoch, " +
                                    "version, release'"
             end
           end
@@ -379,7 +379,7 @@ class Chef
             # compare version
             if x.version > y.version
               return 1
-            elsif x.version < y.version 
+            elsif x.version < y.version
               return -1
             end
 
@@ -399,7 +399,7 @@ class Chef
             return 0
           end
 
-          def to_s 
+          def to_s
             nevra
           end
 
@@ -407,7 +407,7 @@ class Chef
             "#{@n}-#{@version.evr}.#{@a}"
           end
         end
-         
+
         # Simple implementation from rpm and ruby-rpm reference code
         class RPMDependency
           def initialize(*args)
@@ -500,7 +500,7 @@ class Chef
           attr_reader :available, :installed
         end
 
-        # Simple storage for RPMPackage objects - keeps them unique and sorted 
+        # Simple storage for RPMPackage objects - keeps them unique and sorted
         class RPMDb
           def initialize
             # package name => [ RPMPackage, RPMPackage ] of different versions
@@ -512,15 +512,15 @@ class Chef
             # RPMPackages listed as installed
             @installed = Set.new
           end
-          
+
           def [](package_name)
-            self.lookup(package_name) 
+            self.lookup(package_name)
           end
 
           def lookup(package_name)
             @rpms[package_name]
           end
-          
+
           def lookup_provides(provide_name)
             @provides[provide_name]
           end
@@ -547,7 +547,7 @@ class Chef
 
                 new_rpm.provides.each do |provide|
                   @provides[provide.name] ||= Array.new
-                  @provides[provide.name] << new_rpm 
+                  @provides[provide.name] << new_rpm
                 end
 
                 curr_rpm = new_rpm
@@ -587,14 +587,14 @@ class Chef
           end
           alias :length :size
 
-          def available_size 
+          def available_size
             @available.size
           end
 
           def installed_size
             @installed.size
           end
-  
+
           def available?(package)
             @available.include?(package)
           end
@@ -607,7 +607,7 @@ class Chef
             unless rpmdep.kind_of?(RPMDependency)
               raise ArgumentError, "Expecting an RPMDependency object"
             end
- 
+
             what = []
 
             packages = lookup_provides(rpmdep.name)
@@ -864,7 +864,7 @@ class Chef
 
         def arch
           if @new_resource.respond_to?("arch")
-            @new_resource.arch 
+            @new_resource.arch
           else
             nil
           end
@@ -905,7 +905,7 @@ class Chef
             parse_dependency
           end
 
-          # Don't overwrite an existing arch 
+          # Don't overwrite an existing arch
           unless arch
             parse_arch
           end
@@ -936,7 +936,7 @@ class Chef
             new_resource = "#{@new_resource.package_name}#{yum_arch}"
           end
 
-          Chef::Log.debug("#{@new_resource} checking yum info for #{new_resource}") 
+          Chef::Log.debug("#{@new_resource} checking yum info for #{new_resource}")
 
           installed_version = @yum.installed_version(@new_resource.package_name, arch)
           @current_resource.version(installed_version)
@@ -944,10 +944,12 @@ class Chef
           @candidate_version = @yum.candidate_version(@new_resource.package_name, arch)
 
           if @candidate_version.nil?
-            raise Chef::Exceptions::Package, "Yum installed and available lists don't have a version of package #{@new_resource.package_name}"
+            raise Chef::Exceptions::Package, "Yum installed and available lists don't have a version of package "+
+                                             "#{@new_resource.package_name}"
           end
 
-          Chef::Log.debug("#{@new_resource} installed version: #{installed_version || "(none)"} candidate version: #{@candidate_version}")
+          Chef::Log.debug("#{@new_resource} installed version: #{installed_version || "(none)"} candidate version: " +
+                          "#{@candidate_version}")
 
           @current_resource
         end
@@ -975,16 +977,18 @@ class Chef
                     method = "downgrade"
                   else
                     # we bail like yum when the package is older
-                    raise Chef::Exceptions::Package, "Installed package #{name}-#{@current_resource.version} is newer than candidate package #{name}-#{version}"
+                    raise Chef::Exceptions::Package, "Installed package #{name}-#{@current_resource.version} is newer " +
+                                                     "than candidate package #{name}-#{version}"
                   end
                 end
               end
-           
+
               run_command_with_systems_locale(
                 :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{name}-#{version}#{yum_arch}"
               )
             else
-              raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version and release? (version-release, e.g. 1.84-10.fc6)"
+              raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version " +
+                                               "and release? (version-release, e.g. 1.84-10.fc6)"
             end
           end
           if flush_cache[:after]
@@ -995,7 +999,7 @@ class Chef
         end
 
         # Keep upgrades from trying to install an older candidate version. Can happen when a new
-        # version is installed then removed from a repository, now the older available version 
+        # version is installed then removed from a repository, now the older available version
         # shows up as a viable install candidate.
         #
         # Can be done in upgrade_package but an upgraded from->to log message slips out
@@ -1012,7 +1016,7 @@ class Chef
         end
 
         def upgrade_package(name, version)
-          install_package(name, version) 
+          install_package(name, version)
         end
 
         def remove_package(name, version)

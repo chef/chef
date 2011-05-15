@@ -110,7 +110,7 @@ def dump_packages(yb, list, output_provides):
     yb.doSackSetup()
 
   db = yb.doPackageLists(list)
-  
+
   for pkg in db.installed:
     pkg.type = 'i'
     # __str__ contains epoch, name etc
@@ -143,7 +143,7 @@ def dump_packages(yb, list, output_provides):
     else:
       provides = "[]"
 
-    print '%s %s %s %s %s %s %s' % ( 
+    print '%s %s %s %s %s %s %s' % (
       pkg.name,
       pkg.epoch,
       pkg.version,
@@ -223,7 +223,7 @@ def main():
   parser.add_option("-a", "--available",
                     action="store_const", const="available", dest="package_list", default="all",
                     help="output only available and re-installable packages")
-  
+
   (options, args) = parser.parse_args()
 
   try:
