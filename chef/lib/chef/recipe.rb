@@ -88,6 +88,7 @@ class Chef
     def tag(*tags)
       if tags.length > 0
         tags.each do |tag|
+          tag = tag.to_s
           run_context.node[:tags] << tag unless run_context.node[:tags].include?(tag)
         end
         run_context.node[:tags]

@@ -84,4 +84,35 @@ describe Chef::EncryptedDataBagItem do
       edbi["greeting"].should == @plain_data["greeting"]
     end
   end
+
+  describe "load_secret" do
+    it "should read from the default path" do
+      default_path = "/etc/chef/encrypted_data_bag_secret"
+      ::File.stub(:exists?).with(default_path).and_return(true)
+      IO.stub(:read).with(default_path).and_return("opensesame")
+      Chef::EncryptedDataBagItem.load_secret().should == "opensesame"
+    end
+
+    it "should read from Chef::Config[:encrypted_data_bag_secret]" do
+      path = "/var/mysecret"
+      Chef::Config[:encrypted_data_bag_secret] = path
+      ::File.stub(:exists?).with(path).and_return(true)
+      IO.stub(:read).with(path).and_return("opensesame")
+      Chef::EncryptedDataBagItem.load_secret().should == "opensesame"
+    end
+
+    it "should read from a specified path" do
+      path = "/var/mysecret"
+      ::File.stub(:exists?).with(path).and_return(true)
+      IO.stub(:read).with(path).and_return("opensesame")
+      Chef::EncryptedDataBagItem.load_secret(path).should == "opensesame"
+    end
+
+    it "should read from a URL" do
+      path = "http://www.opscode.com/"
+      fake_file = StringIO.new("opensesame")
+      Kernel.stub(:open).with(path).and_return(fake_file)
+      Chef::EncryptedDataBagItem.load_secret(path).should == "opensesame"
+    end
+  end
 end
