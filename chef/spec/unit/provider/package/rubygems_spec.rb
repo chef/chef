@@ -44,18 +44,16 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   end
 
   it "determines the installed versions of gems from Gem.source_index" do
-    gems = [gemspec('rspec', Gem::Version.new('1.2.9')), gemspec('rspec', Gem::Version.new('1.3.0'))]
-    Gem.source_index.should_receive(:search).with(Gem::Dependency.new('rspec', nil)).and_return(gems)
-    @gem_env.installed_versions(Gem::Dependency.new('rspec', nil)).should == gems
+    gems = [gemspec('rspec-core', Gem::Version.new('1.2.9')), gemspec('rspec-core', Gem::Version.new('1.3.0'))]
+    Gem.source_index.should_receive(:search).with(Gem::Dependency.new('rspec-core', nil)).and_return(gems)
+    @gem_env.installed_versions(Gem::Dependency.new('rspec-core', nil)).should == gems
   end
 
-
-  # RSpec 2.5.0 reports its version as 2.5.1, which screws us. Thx.
-  #it "determines the installed versions of gems from the source index (part2: the unmockening)" do
-    #expected = ['rspec', Gem::Version.new()]
-    #actual = @gem_env.installed_versions(Gem::Dependency.new('rspec', nil)).map { |spec| [spec.name, spec.version] }
-    #actual.should include(expected)
-  #end
+  it "determines the installed versions of gems from the source index (part2: the unmockening)" do
+    expected = ['rspec-core', Gem::Version.new(RSpec::Core::Version::STRING)]
+    actual = @gem_env.installed_versions(Gem::Dependency.new('rspec-core', nil)).map { |spec| [spec.name, spec.version] }
+    actual.should include(expected)
+  end
 
   it "yields to a block with an alternate source list set" do
     sources_in_block = nil
@@ -198,15 +196,14 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
     @gem_env.installed_versions(Gem::Dependency.new('rspec', nil)).should == gems
   end
 
-  # RSpec 2.5.0 reports its version as 2.5.1 :/
-  #it "determines the installed versions of gems from the source index (part2: the unmockening)" do
-    #path_to_gem = `which gem`.strip
-    #pending("cant find your gem executable") if path_to_gem.empty?
-    #gem_env = Chef::Provider::Package::Rubygems::AlternateGemEnvironment.new(path_to_gem)
-    #expected = ['rspec', Gem::Version.new(Rspec::Core::Version::STRING)]
-    #actual = gem_env.installed_versions(Gem::Dependency.new('rspec', nil)).map { |s| [s.name, s.version] }
-    #actual.should include(expected)
-  #end
+  it "determines the installed versions of gems from the source index (part2: the unmockening)" do
+    path_to_gem = `which gem`.strip
+    pending("cant find your gem executable") if path_to_gem.empty?
+    gem_env = Chef::Provider::Package::Rubygems::AlternateGemEnvironment.new(path_to_gem)
+    expected = ['rspec-core', Gem::Version.new(Rspec::Core::Version::STRING)]
+    actual = gem_env.installed_versions(Gem::Dependency.new('rspec-core', nil)).map { |s| [s.name, s.version] }
+    actual.should include(expected)
+  end
 
   it "detects when the target gem environment is the jruby platform" do
     gem_env_out=<<-JRUBY_GEM_ENV
@@ -302,9 +299,8 @@ end
 describe Chef::Provider::Package::Rubygems do
   before(:each) do
     @node = Chef::Node.new
-    @new_resource = Chef::Resource::GemPackage.new("rspec")
-    #@spec_version = @new_resource.version RSpec::Core::Version::STRING
-    @spec_version = Gem.source_index.search(Gem::Dependency.new("rspec")).last.version.to_s
+    @new_resource = Chef::Resource::GemPackage.new("rspec-core")
+    @spec_version = @new_resource.version RSpec::Core::Version::STRING
     @run_context = Chef::RunContext.new(@node, {})
 
     @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
@@ -332,9 +328,9 @@ describe Chef::Provider::Package::Rubygems do
   end
 
   it "converts the new resource into a gem dependency" do
-    @provider.gem_dependency.should == Gem::Dependency.new('rspec', nil)
+    @provider.gem_dependency.should == Gem::Dependency.new('rspec-core', @spec_version)
     @new_resource.version('~> 1.2.0')
-    @provider.gem_dependency.should == Gem::Dependency.new('rspec', '~> 1.2.0')
+    @provider.gem_dependency.should == Gem::Dependency.new('rspec-core', '~> 1.2.0')
   end
 
   describe "when determining the currently installed version" do
@@ -361,17 +357,15 @@ describe Chef::Provider::Package::Rubygems do
   describe "when determining the candidate version to install" do
 
     it "does not query for available versions when the current version is the target version" do
-      @new_resource.version("2.5.0")
       @provider.current_resource = @new_resource.dup
       @provider.candidate_version.should be_nil
     end
 
     it "determines the candidate version by querying the remote gem servers" do
-      @new_resource.version("2.5.0")
       @new_resource.source('http://mygems.example.com')
       version = Gem::Version.new(@spec_version)
       @provider.gem_env.should_receive(:candidate_version_from_remote).
-                        with(Gem::Dependency.new('rspec', @spec_version), "http://mygems.example.com").
+                        with(Gem::Dependency.new('rspec-core', @spec_version), "http://mygems.example.com").
                         and_return(version)
       @provider.candidate_version.should == @spec_version
     end
@@ -387,9 +381,9 @@ describe Chef::Provider::Package::Rubygems do
 
   describe "when installing a gem" do
     before do
-      @current_resource = Chef::Resource::GemPackage.new('rspec')
+      @current_resource = Chef::Resource::GemPackage.new('rspec-core')
       @provider.current_resource = @current_resource
-      @gem_dep = Gem::Dependency.new('rspec')
+      @gem_dep = Gem::Dependency.new('rspec-core', @spec_version)
     end
 
     describe "in the current gem environment" do
@@ -413,7 +407,7 @@ describe Chef::Provider::Package::Rubygems do
 
       it "installs the gem by shelling out when options are provided as a String" do
         @new_resource.options('-i /alt/install/location')
-        expected ="gem install rspec -q --no-rdoc --no-ri -v \"#{@spec_version}\" -i /alt/install/location"
+        expected ="gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\" -i /alt/install/location"
         @provider.should_receive(:shell_out!).with(expected, :env => nil)
         @provider.action_install.should be_true
       end
@@ -425,11 +419,10 @@ describe Chef::Provider::Package::Rubygems do
       end
       describe "at a specific version" do
         before do
-          @current_resource = Chef::Resource::GemPackage.new("rspec")
+          @current_resource = Chef::Resource::GemPackage.new("rspec-core")
           @current_resource.version("2.4.0")
 
-          @new_resource.version("2.5.0")
-          @gem_dep = Gem::Dependency.new('rspec', @spec_version)
+          @gem_dep = Gem::Dependency.new('rspec-core', @spec_version)
         end
 
         it "installs the gem via the gems api" do
@@ -442,7 +435,7 @@ describe Chef::Provider::Package::Rubygems do
     describe "in an alternate gem environment" do
       it "installs the gem by shelling out to gem install" do
         @new_resource.gem_binary('/usr/weird/bin/gem')
-        @provider.should_receive(:shell_out!).with("/usr/weird/bin/gem install rspec -q --no-rdoc --no-ri -v \"#{@spec_version}\"", :env=>nil)
+        @provider.should_receive(:shell_out!).with("/usr/weird/bin/gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\"", :env=>nil)
         @provider.action_install.should be_true
       end
     end
