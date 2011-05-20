@@ -46,6 +46,9 @@ __knife cookbook upload [cookbooks...]__ _(options)_
     upload all cookbooks, rather than just a single cookbook
   * `-o`, `--cookbook-path path:path`:
     a colon-separated path to look for cookbooks in
+  * `-d`, `--upload-dependencies`:
+    Uploads additional cookbooks that this cookbook lists in as
+    dependencies in its metadata.
   * `-E`, `--environment ENVIRONMENT`:
     An _ENVIRONMENT_ to apply the uploaded cookbooks to. Specifying this
     option will cause knife to edit the _ENVIRONMENT_ to place a strict

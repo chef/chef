@@ -64,7 +64,7 @@ class Chef
       option :depends,
         :short => "-d",
         :long => "--include-dependencies",
-        :description => "Upload dependencies also"
+        :description => "Also upload cookbook dependencies"
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
