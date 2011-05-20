@@ -87,6 +87,8 @@ F
     attr_accessor :recipe_name
     attr_accessor :enclosing_provider
     attr_accessor :source_line
+    attr_accessor :retries
+    attr_accessor :retry_delay
 
     attr_reader :updated
 
@@ -112,6 +114,8 @@ F
       @updated_by_last_action = false
       @supports = {}
       @ignore_failure = false
+      @retries = 0
+      @retry_delay = 2
       @not_if = nil
       @not_if_args = {}
       @only_if = nil
@@ -221,6 +225,22 @@ F
         :ignore_failure,
         arg,
         :kind_of => [ TrueClass, FalseClass ]
+      )
+    end
+
+    def retries(arg=nil)
+      set_or_return(
+        :retries,
+        arg,
+        :kind_of => Integer
+      )
+    end
+
+    def retry_delay(arg=nil)
+      set_or_return(
+        :retry_delay,
+        arg,
+        :kind_of => Integer
       )
     end
 
