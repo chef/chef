@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-COOKBOOK" "1" "April 2011" "Chef 0.10.0" "Chef Manual"
+.TH "KNIFE\-COOKBOOK" "1" "May 2011" "Chef 0.10.0" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-cookbook\fR \- upload and manage chef cookbooks
@@ -80,6 +80,10 @@ upload all cookbooks, rather than just a single cookbook
 .TP
 \fB\-o\fR, \fB\-\-cookbook\-path path:path\fR
 a colon\-separated path to look for cookbooks in
+.
+.TP
+\fB\-d\fR, \fB\-\-upload\-dependencies\fR
+Uploads additional cookbooks that this cookbook lists in as dependencies in its metadata\.
 .
 .TP
 \fB\-E\fR, \fB\-\-environment ENVIRONMENT\fR

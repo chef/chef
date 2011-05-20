@@ -60,6 +60,11 @@ class Chef
         :long  => '--environment ENVIRONMENT',
         :description => "Set ENVIRONMENT's version dependency match the version you're uploading.",
         :default => nil
+      
+      option :depends,
+        :short => "-d",
+        :long => "--include-dependencies",
+        :description => "Also upload cookbook dependencies"
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
@@ -85,6 +90,11 @@ class Chef
           @name_args.each do |cookbook_name|
             begin
               cookbook = cookbook_repo[cookbook_name]
+              if config[:depends]
+                cookbook.metadata.dependencies.each do |dep, versions|
+                  @name_args.push dep
+                end
+              end
               cookbook.freeze_version if config[:freeze]
               upload(cookbook, justify_width)
               version_constraints_to_update[cookbook_name] = cookbook.version
