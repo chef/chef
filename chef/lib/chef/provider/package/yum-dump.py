@@ -101,7 +101,7 @@ def setup(yb, options):
 
   return 0
 
-def dump_packages(yb, list):
+def dump_packages(yb, list, output_provides):
   packages = {}
 
   if YUM_VER == 2:
@@ -110,7 +110,7 @@ def dump_packages(yb, list):
     yb.doSackSetup()
 
   db = yb.doPackageLists(list)
-  
+
   for pkg in db.installed:
     pkg.type = 'i'
     # __str__ contains epoch, name etc
@@ -137,12 +137,21 @@ def dump_packages(yb, list):
   unique_packages.sort(lambda x, y: cmp(x.name, y.name))
 
   for pkg in unique_packages:
-    print '%s %s %s %s %s %s' % ( pkg.name,
-                                  pkg.epoch,
-                                  pkg.version,
-                                  pkg.release,
-                                  pkg.arch,
-                                  pkg.type )
+    if output_provides == "all" or \
+        (output_provides == "installed" and (pkg.type == "i" or pkg.type == "r")):
+      provides = pkg.provides_print
+    else:
+      provides = "[]"
+
+    print '%s %s %s %s %s %s %s' % (
+      pkg.name,
+      pkg.epoch,
+      pkg.version,
+      pkg.release,
+      pkg.arch,
+      provides,
+      pkg.type )
+
   return 0
 
 def yum_dump(options):
@@ -159,7 +168,7 @@ def yum_dump(options):
 
   # Non root can't handle locking on rhel/centos 4
   if os.geteuid() != 0:
-    return dump_packages(yb, options.package_list)
+    return dump_packages(yb, options.package_list, options.output_provides)
 
   # Wrap the collection and output of packages in yum's global lock to prevent
   # any inconsistencies.
@@ -180,7 +189,7 @@ def yum_dump(options):
       else:
         break
 
-    return dump_packages(yb, options.package_list)
+    return dump_packages(yb, options.package_list, options.output_provides)
 
   # Ensure we clear the lock and cleanup any resources
   finally:
@@ -196,19 +205,25 @@ def main():
   usage = "Usage: %prog [options]\n" + \
           "Output a list of installed, available and re-installable packages via yum"
   parser = OptionParser(usage=usage)
-  parser.add_option("-o", "--options",
-                    action="store_true", dest="output_options", default=False,
-                    help="output select yum options useful to Chef")
   parser.add_option("-C", "--cache",
                     action="store_true", dest="cache", default=False,
                     help="run entirely from cache, don't update cache")
+  parser.add_option("-o", "--options",
+                    action="store_true", dest="output_options", default=False,
+                    help="output select yum options useful to Chef")
+  parser.add_option("-p", "--installed-provides",
+                    action="store_const", const="installed", dest="output_provides", default="none",
+                    help="output Provides for installed packages, big/wide output")
+  parser.add_option("-P", "--all-provides",
+                    action="store_const", const="all", dest="output_provides", default="none",
+                    help="output Provides for all package, slow, big/wide output")
   parser.add_option("-i", "--installed",
                     action="store_const", const="installed", dest="package_list", default="all",
                     help="output only installed packages")
   parser.add_option("-a", "--available",
                     action="store_const", const="available", dest="package_list", default="all",
                     help="output only available and re-installable packages")
-  
+
   (options, args) = parser.parse_args()
 
   try:
@@ -224,8 +239,7 @@ def main():
 
 try:
   status = main()
-# Suppress a nasty broken pipe error when output is piped to utilities like
-# 'head'
+# Suppress a nasty broken pipe error when output is piped to utilities like 'head'
 except IOError, e:
   if e.errno == errno.EPIPE:
     sys.exit(1)
