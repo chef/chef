@@ -26,3 +26,12 @@ class String
     alias :bytesize :size
   end
 end
+
+# <= 1.8.6 needs some ord! 
+class String
+  unless method_defined?(:ord)
+    def ord
+      self.unpack('c').first
+    end
+  end
+end
