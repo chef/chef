@@ -468,8 +468,8 @@ F
           set_or_return(attr_name.to_sym, arg, validation_opts)
         end
       end
-
-      def build_from_file(cookbook_name, filename)
+      
+      def build_from_file(cookbook_name, filename, run_context)
         rname = filename_to_qualified_string(cookbook_name, filename)
 
         # Add log entry if we override an existing light-weight resource.
@@ -490,6 +490,12 @@ F
 
           class << cls
             include Chef::Mixin::FromFile
+            
+            attr_accessor :run_context
+
+            def node
+              self.run_context.node
+            end
 
             def actions_to_create
               @actions_to_create
@@ -500,6 +506,9 @@ F
             end
           end
 
+          # set the run context in the class instance variable
+          cls.run_context = run_context
+          
           # load resource definition from file
           cls.class_from_file(filename)
 

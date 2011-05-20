@@ -86,14 +86,14 @@ class Chef
     def load_lwrp_providers
       foreach_cookbook_load_segment(:providers) do |cookbook_name, filename|
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s providers from #{filename}")
-        Chef::Provider.build_from_file(cookbook_name, filename)
+        Chef::Provider.build_from_file(cookbook_name, filename, self)
       end
     end
 
     def load_lwrp_resources
       foreach_cookbook_load_segment(:resources) do |cookbook_name, filename|
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s resources from #{filename}")
-        Chef::Resource.build_from_file(cookbook_name, filename)
+        Chef::Resource.build_from_file(cookbook_name, filename, self)
       end
     end
 
