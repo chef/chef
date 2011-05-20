@@ -31,9 +31,10 @@ describe Chef::Provider::Package::Zypper do
     @provider = Chef::Provider::Package::Zypper.new(@new_resource, @run_context)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     @provider.stub!(:popen4).and_return(@status)
-    @stderr = mock("STDERR", :null_object => true)
-    @stdout = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
+    @stderr = StringIO.new
+    @stdout = StringIO.new
+    @pid = mock("PID")
+    @provider.stub!(:`).and_return("2.0")
   end
   
   describe "when loading the current package state" do
@@ -89,14 +90,12 @@ describe Chef::Provider::Package::Zypper do
   end
 
   describe "install_package" do
-  
     it "should run zypper install with the package name and version" do
       @provider.should_receive(:run_command).with({
           :command => "zypper -n --no-gpg-checks install -l  emacs=1.0",
         })
       @provider.install_package("emacs", "1.0")
     end
-
   end
 
   describe "upgrade_package" do
@@ -121,6 +120,39 @@ describe Chef::Provider::Package::Zypper do
     it "should run remove_package with the name and version" do
       @provider.should_receive(:remove_package).with("emacs", "1.0")
       @provider.purge_package("emacs", "1.0")
+    end
+  end
+
+  describe "on an older zypper" do
+    before(:each) do
+      @provider.stub!(:`).and_return("0.11.6")
+    end
+
+    describe "install_package" do
+      it "should run zypper install with the package name and version" do
+        @provider.should_receive(:run_command).with({
+            :command => "zypper install -y emacs"
+          })
+        @provider.install_package("emacs", "1.0")
+      end
+    end
+  
+    describe "upgrade_package" do
+      it "should run zypper update with the package name and version" do
+        @provider.should_receive(:run_command).with({
+            :command => "zypper install -y emacs"
+          })
+        @provider.upgrade_package("emacs", "1.0")
+      end
+    end
+  
+    describe "remove_package" do
+      it "should run zypper remove with the package name" do
+        @provider.should_receive(:run_command).with({
+            :command => "zypper remove -y emacs"
+          })
+        @provider.remove_package("emacs", "1.0")
+      end
     end
   end
 end
