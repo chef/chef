@@ -87,7 +87,7 @@ class Chef
         def install_package(name, version)
           if zypper_version < 1.0
             run_command(
-              :command => "zypper install -y  #{name}"
+              :command => "zypper install -y #{name}"
             )
           elsif version
             run_command(
@@ -103,7 +103,7 @@ class Chef
         def upgrade_package(name, version)
           if zypper_version < 1.0
             run_command(
-              :command => "zypper install -y  #{name}"
+              :command => "zypper install -y #{name}"
             )
           elsif version
             run_command(
@@ -119,7 +119,7 @@ class Chef
         def remove_package(name, version)
           if zypper_version < 1.0
             run_command(
-              :command => "zypper remove -y  #{name}"
+              :command => "zypper remove -y #{name}"
             )
           elsif version
             run_command(
