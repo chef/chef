@@ -510,9 +510,11 @@ class Chef
         to_delete = object_list
       end
 
-      output(format_list_for_display(to_delete))
-
-      confirm("Do you really want to delete the above items")
+      ui.msg("The following clients will be deleted:")
+      ui.msg("")
+      ui.msg(ui.list(to_delete.keys.sort, :columns_down))
+      ui.msg("")
+      ui.confirm("Are you sure you want to delete these clients")
 
       to_delete.each do |name, object|
         if Kernel.block_given?
