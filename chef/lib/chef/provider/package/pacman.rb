@@ -55,7 +55,7 @@ class Chef
           status = popen4("pacman -Ss #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
-                when /^(extra|core|community)\/#{Regexp.escape(@new_resource.package_name)} (.+)$/
+                when /^([^\/]+)\/#{Regexp.escape(@new_resource.package_name)} (.+)$/
                   # $2 contains a string like "4.4.0-1 (kde kdenetwork)" or "3.10-4 (base)"
                   # simply split by space and use first token
                   @candidate_version = $2.split(" ").first
