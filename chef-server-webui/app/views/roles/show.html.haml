@@ -33,14 +33,14 @@
             %h3.head= link_to("Recipes", "#")
             %div
               %span.description.form.help
-                This is the list of recipes, fully expanded, as they will be applied to the node in question.  
+                This is the list of recipes, fully expanded, as they will be applied by the role in question.  
               %table#recipes.table
                 %tr
                   %th.first Position
                   %th.last Name
                 - if @run_list.empty?
                   %tr
-                    %td{:colspan => 2} This node has no recipes applied.
+                    %td{:colspan => 2} This role applies no recipes.
                 - else
                   - @recipes.each_with_index do |recipe, i|
                     %tr
