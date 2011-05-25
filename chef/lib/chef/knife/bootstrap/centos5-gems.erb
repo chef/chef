@@ -1,12 +1,15 @@
 bash -c '
+<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
 if [ ! -f /usr/bin/chef-client ]; then
-  rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm
-  wget -O /etc/yum.repos.d/aegis.repo http://rpm.aegisco.com/aegisco/el5/aegisco.repo
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+  rpm -Uvh epel-release-5-4.noarch.rpm
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>-O /etc/yum.repos.d/aegis.repo http://rpm.aegisco.com/aegisco/el5/aegisco.repo
 
   yum install -y ruby-1.8.7.334-2.el5 ruby-devel-1.8.7.334-2.el5 gcc gcc-c++ automake autoconf make
 
   cd /tmp
-  wget http://production.cf.rubygems.org/rubygems/rubygems-1.6.2.tgz
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://production.cf.rubygems.org/rubygems/rubygems-1.6.2.tgz
   tar zxf rubygems-1.6.2.tgz
   cd rubygems-1.6.2
   ruby setup.rb --no-format-executable

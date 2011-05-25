@@ -1,4 +1,6 @@
 bash -c '
+<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
 if [ ! -f /usr/bin/chef-client ]; then
   pacman -Syy
   pacman -S --noconfirm ruby ntp base-devel
@@ -10,7 +12,7 @@ fi
 mkdir -p /etc/chef
 (
 cat <<'EOP'
-<%= IO.read(Chef::Config[:validation_key]) %>
+<%= validation_key %>
 EOP
 ) > /tmp/validation.pem
 awk NF /tmp/validation.pem > /etc/chef/validation.pem
@@ -20,21 +22,22 @@ rm /tmp/validation.pem
 cat <<'EOP'
 log_level        :info
 log_location     STDOUT
-chef_server_url  "<%= Chef::Config[:chef_server_url] %>"
-validation_client_name "<%= Chef::Config[:validation_client_name] %>"
-<% if @config[:chef_node_name] == nil %>
-# Using default node name (fqdn)
-<% else %>
+chef_server_url  "<%= @chef_config[:chef_server_url] %>"
+validation_client_name "<%= @chef_config[:validation_client_name] %>"
+<% if @config[:chef_node_name] -%>
 node_name "<%= @config[:chef_node_name] %>"
-<% end %> 
-<% if Chef::Config[:environment] != nil %>
-environment "<%= Chef::Config[:environment]%>"
-<% end %>
+<% else -%>
+# Using default node name (fqdn)
+<% end -%> 
 # ArchLinux follows the Filesystem Hierarchy Standard
 file_cache_path    "/var/cache/chef"
 file_backup_path   "/var/lib/chef/backup"
 pid_file           "/var/run/chef/client.pid"
 cache_options({ :path => "/var/cache/chef/checksums", :skip_expires => true})
+<% if knife_config[:bootstrap_proxy] %>
+http_proxy         "<%= knife_config[:bootstrap_proxy] %>"
+https_proxy        "<%= knife_config[:bootstrap_proxy] %>"
+<% end -%>
 EOP
 ) > /etc/chef/client.rb
 
@@ -44,5 +47,4 @@ cat <<'EOP'
 EOP
 ) > /etc/chef/first-boot.json
 
-/usr/bin/chef-client -j /etc/chef/first-boot.json
-'
+<%= start_chef %>'
