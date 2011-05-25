@@ -6,3 +6,4 @@ license 'Apache v2.0'
 long_description "SCM integration/acceptance test recipes"
 
 recipe "scm::git", "git awesome"
+recipe "scm::git-remotes", "git awesome repos"
