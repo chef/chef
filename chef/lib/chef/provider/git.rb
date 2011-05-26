@@ -38,10 +38,11 @@ class Chef
       def action_checkout
         assert_target_directory_valid!
 
-        if target_dir_non_existant_or_empty?
+        if target_dir_non_existent_or_empty?
           clone
           checkout
           enable_submodules
+          add_remotes
           @new_resource.updated_by_last_action(true)
         else
           Chef::Log.debug "#{@new_resource} checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
@@ -66,7 +67,7 @@ class Chef
             Chef::Log.info "#{@new_resource} updated to revision #{target_revision}"
             @new_resource.updated_by_last_action(true)
           end
-
+          add_remotes
         else
           action_checkout
           @new_resource.updated_by_last_action(true)
@@ -85,7 +86,7 @@ class Chef
         ::File.exist?(::File.join(@new_resource.destination, ".git"))
       end
 
-      def target_dir_non_existant_or_empty?
+      def target_dir_non_existent_or_empty?
         !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == ['.','..']
       end
 
@@ -96,6 +97,18 @@ class Chef
           result = shell_out!('git rev-parse HEAD', :cwd => cwd, :returns => [0,128]).stdout.strip
         end
         sha_hash?(result) ? result : nil
+      end
+
+      def add_remotes
+        if (@new_resource.additional_remotes.length > 0)
+          @new_resource.additional_remotes.each_pair do |remote_name, remote_url|
+            Chef::Log.info "#{@new_resource} adding git remote #{remote_name} = #{remote_url}"
+            command = "git remote add #{remote_name} #{remote_url}"
+            if shell_out(command, run_options(:cwd => @new_resource.destination, :command_log_level => :info)).exitstatus != 0
+              @new_resource.updated_by_last_action(true)
+            end
+          end
+        end
       end
 
       def clone
