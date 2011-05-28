@@ -167,6 +167,7 @@ class Chef
 
       def knife_ssh
         ssh = Chef::Knife::Ssh.new
+        ssh.ui = ui
         ssh.name_args = [ server_name, ssh_command ]
         ssh.config[:ssh_user] = config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
