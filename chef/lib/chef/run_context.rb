@@ -79,7 +79,7 @@ class Chef
     def load_libraries
       foreach_cookbook_load_segment(:libraries) do |cookbook_name, filename|
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
-        require filename
+        Kernel.load(filename)
       end
     end
 
