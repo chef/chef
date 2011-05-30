@@ -84,6 +84,16 @@ Given /^I delete the cookbook's on disk checksum files$/ do
   end
 end
 
+Given /^I have restored the original 'sync_library' cookbook$/ do
+  # Copy the original cookbook
+  source = File.join(datadir, 'cookbooks', 'sync_library_original')
+  dest   = File.join(datadir, 'cookbooks', 'sync_library')
+  FileUtils.mkdir_p(dest)
+
+  system("cp -r #{source}/. #{dest}/.")
+  shell_out!("#{KNIFE_CMD} cookbook upload -c #{KNIFE_CONFIG} -o #{INTEGRATION_COOKBOOKS} sync_library")
+end
+
 When /^I run the task to generate cookbook metadata for '(.+)'$/ do |cb|
   self.cookbook = cb
   When('I run the task to generate cookbook metadata')
