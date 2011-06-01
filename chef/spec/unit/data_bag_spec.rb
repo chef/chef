@@ -68,5 +68,46 @@ describe Chef::DataBag do
     end
 
   end
-end
 
+  describe "load" do
+    before(:each) do
+      Chef::Config[:chef_server_url] = 'https://myserver.example.com'
+      @rest_mock = mock('rest')
+    end
+
+    it "should get the data bag from the server" do
+      Chef::REST.should_receive(:new).with('https://myserver.example.com').and_return(@rest_mock)
+      @rest_mock.should_receive(:get_rest).with('data/foo')
+      Chef::DataBag.load('foo')
+    end
+
+    it "should return the data bag" do
+      Chef::REST.stub!(:new).and_return(@rest_mock)
+      @rest_mock.stub!(:get_rest).and_return({'bar' => 'https://myserver.example.com/data/foo/bar'})
+      data_bag = Chef::DataBag.load('foo')
+      data_bag.should == {'bar' => 'https://myserver.example.com/data/foo/bar'}
+    end
+
+    describe "when run in solo mode" do
+      before(:each) do
+        Chef::Config[:solo] = true
+        Chef::Config[:data_bag_path] = '/var/chef/data_bags'
+      end
+
+      it "should get the data bag from the data_bag_path" do
+        Dir.should_receive(:glob).with('/var/chef/data_bags/foo/*.json').and_return([])
+        Chef::DataBag.load('foo')
+      end
+
+      it "should return the data bag" do
+        Dir.stub!(:glob).and_return(["/var/chef/data_bags/foo/bar.json", "/var/chef/data_bags/foo/baz.json"])
+        IO.should_receive(:read).with('/var/chef/data_bags/foo/bar.json').and_return('{"id": "bar", "name": "Bob Bar" }')
+        IO.should_receive(:read).with('/var/chef/data_bags/foo/baz.json').and_return('{"id": "baz", "name": "John Baz" }')
+        data_bag = Chef::DataBag.load('foo')
+        data_bag.should == { 'bar' => { 'id' => 'bar', 'name' => 'Bob Bar' }, 'baz' => { 'id' => 'baz', 'name' => 'John Baz' }}
+      end
+
+    end
+  end
+
+end

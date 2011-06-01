@@ -152,9 +152,17 @@ class Chef
       (couchdb || Chef::CouchDB.new).load("data_bag", name)
     end
 
-    # Load a Data Bag by name via the RESTful API
+    # Load a Data Bag by name via either the RESTful API or local data_bag_path if run in solo mode
     def self.load(name)
-      Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{name}")
+      if Chef::Config[:solo]
+        Dir.glob(File.join(Chef::Config[:data_bag_path], name, "*.json")).inject({}) do |bag, f|
+          item = JSON.parse(IO.read(f))
+          bag[item['id']] = item
+          bag
+        end
+      else
+        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{name}")
+      end
     end
 
     # Remove this Data Bag from CouchDB
