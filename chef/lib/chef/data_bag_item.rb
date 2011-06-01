@@ -187,9 +187,15 @@ class Chef
       (couchdb || Chef::CouchDB.new).load("data_bag_item", object_name(data_bag, name))
     end
 
-    # Load a Data Bag Item by name via RESTful API
+    # Load a Data Bag Item by name via either the RESTful API or local data_bag_path if run in solo mode
     def self.load(data_bag, name)
-      item = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{data_bag}/#{name}")
+      if Chef::Config[:solo]
+        bag = Chef::DataBag.load(data_bag)
+        item = bag[name]
+      else
+        item = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{data_bag}/#{name}")
+      end
+
       if item.kind_of?(DataBagItem)
         item
       else

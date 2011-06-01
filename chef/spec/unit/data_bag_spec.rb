@@ -69,29 +69,35 @@ describe Chef::DataBag do
 
   end
 
-  describe "load" do
-    before(:each) do
-      Chef::Config[:chef_server_url] = 'https://myserver.example.com'
-      @rest_mock = mock('rest')
+  describe "when loading" do
+    describe "from an API call" do
+      before do
+        Chef::Config[:chef_server_url] = 'https://myserver.example.com'
+        @http_client = mock('Chef::REST')
+      end
+
+      it "should get the data bag from the server" do
+        Chef::REST.should_receive(:new).with('https://myserver.example.com').and_return(@http_client)
+        @http_client.should_receive(:get_rest).with('data/foo')
+        Chef::DataBag.load('foo')
+      end
+
+      it "should return the data bag" do
+        Chef::REST.stub!(:new).and_return(@http_client)
+        @http_client.should_receive(:get_rest).with('data/foo').and_return({'bar' => 'https://myserver.example.com/data/foo/bar'})
+        data_bag = Chef::DataBag.load('foo')
+        data_bag.should == {'bar' => 'https://myserver.example.com/data/foo/bar'}
+      end
     end
 
-    it "should get the data bag from the server" do
-      Chef::REST.should_receive(:new).with('https://myserver.example.com').and_return(@rest_mock)
-      @rest_mock.should_receive(:get_rest).with('data/foo')
-      Chef::DataBag.load('foo')
-    end
-
-    it "should return the data bag" do
-      Chef::REST.stub!(:new).and_return(@rest_mock)
-      @rest_mock.stub!(:get_rest).and_return({'bar' => 'https://myserver.example.com/data/foo/bar'})
-      data_bag = Chef::DataBag.load('foo')
-      data_bag.should == {'bar' => 'https://myserver.example.com/data/foo/bar'}
-    end
-
-    describe "when run in solo mode" do
-      before(:each) do
+    describe "in solo mode" do
+      before do
         Chef::Config[:solo] = true
         Chef::Config[:data_bag_path] = '/var/chef/data_bags'
+      end
+
+      after do
+        Chef::Config[:solo] = false
       end
 
       it "should get the data bag from the data_bag_path" do
