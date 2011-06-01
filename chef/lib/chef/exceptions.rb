@@ -76,6 +76,7 @@ class Chef
     class EnclosingDirectoryDoesNotExist < ArgumentError; end
 
     class ObsoleteDependencySyntax < ArgumentError; end
+    class InvalidDataBagPath < ArgumentError; end
 
     # A different version of a cookbook was added to a
     # VersionedRecipeList than the one already there.

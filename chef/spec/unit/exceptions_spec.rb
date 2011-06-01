@@ -62,7 +62,8 @@ describe Chef::Exceptions do
     Chef::Exceptions::InvalidResourceReference => RuntimeError,
     Chef::Exceptions::ResourceNotFound => RuntimeError,
     Chef::Exceptions::InvalidResourceSpecification => ArgumentError,
-    Chef::Exceptions::SolrConnectionError => RuntimeError
+    Chef::Exceptions::SolrConnectionError => RuntimeError,
+    Chef::Exceptions::InvalidDataBagPath => ArgumentError
   }
 
   exception_to_super_class.each do |exception, expected_super_class|
