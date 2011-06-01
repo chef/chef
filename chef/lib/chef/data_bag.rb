@@ -155,6 +155,10 @@ class Chef
     # Load a Data Bag by name via either the RESTful API or local data_bag_path if run in solo mode
     def self.load(name)
       if Chef::Config[:solo]
+        unless File.directory?(Chef::Config[:data_bag_path])
+          raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{Chef::Config[:data_bag_path]}' is invalid"
+        end
+
         Dir.glob(File.join(Chef::Config[:data_bag_path], name, "*.json")).inject({}) do |bag, f|
           item = JSON.parse(IO.read(f))
           bag[item['id']] = item
