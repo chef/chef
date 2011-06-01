@@ -140,16 +140,14 @@ class Chef
         def restart_service
           if @new_resource.restart_command
             super
-          elsif @new_resource.supports[:restart]
+          # Upstart always provides restart functionality so we don't need to mimic it with stop/sleep/start.
+          # Older versions of upstart would fail on restart if the service was currently stopped, check for that. LP:430883
+          else @new_resource.supports[:restart]
             if @current_resource.running
               run_command_with_systems_locale(:command => "/sbin/restart #{@new_resource.service_name}")
             else
               start_service
             end
-          else
-            stop_service
-            sleep(1)
-            start_service
           end
         end
 
