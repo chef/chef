@@ -1,6 +1,6 @@
 #
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Copyright:: Copyright 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,6 +74,10 @@ describe Chef::EncryptedDataBagItem do
 
     it "decrypts everyting via to_hash" do
       @eh.to_hash.should == @plain_data
+    end
+
+    it "handles missing keys gracefully" do
+      @eh["no-such-key"].should be_nil
     end
   end
 

@@ -1,6 +1,6 @@
 #
 # Author:: Seth Falcon (<seth@opscode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Copyright:: Copyright 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,7 +57,7 @@ class Chef::EncryptedDataBagItem
 
   def [](key)
     value = @enc_hash[key]
-    if key == "id"
+    if key == "id" || value.nil?
       value
     else
       self.class.decrypt_value(value, @secret)
