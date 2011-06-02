@@ -89,9 +89,9 @@ MOAR_HELP
 
       def available_manpages_by_basename
         @available_manpages_by_basename ||= begin
-          available_manpages = Dir[File.expand_path("../distro/common/man/man1/*1", CHEF_ROOT)]
+          available_manpages = Dir[File.expand_path("../distro/common/man/man1/knife-*1", CHEF_ROOT), "/usr/share/man/man1/knife-*{.1,.1.gz}"]
           available_manpages.inject({}) do |map, manpath|
-            map[::File.basename(manpath, '.1')] = manpath
+            map[::File.basename(manpath).gsub(/.1.*/, '')] = manpath
             map
           end
         end
