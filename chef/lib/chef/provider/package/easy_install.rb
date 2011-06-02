@@ -115,7 +115,7 @@ class Chef
         end
 
         def install_package(name, version)
-          run_command(:command => "#{easy_install_binary_path} \"#{name}==#{version}\"")
+          run_command(:command => "#{easy_install_binary_path}#{expand_options(@new_resource.options)} \"#{name}==#{version}\"")
         end
 
         def upgrade_package(name, version)
@@ -123,7 +123,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          run_command(:command => "#{easy_install_binary_path} -m #{name}")
+          run_command(:command => "#{easy_install_binary_path }#{expand_options(@new_resource.options)} -m #{name}")
         end
 
         def purge_package(name, version)
