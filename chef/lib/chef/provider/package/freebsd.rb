@@ -94,7 +94,7 @@ class Chef
           unless @current_resource.version
             case @new_resource.source
             when /^ports$/
-              shell_out!("make -DBATCH -f #{port_path}/Makefile install", :env => nil).status
+              shell_out!("make -DBATCH -f #{port_path}/Makefile install", :timeout => 1200, :env => nil).status
             when /^http/, /^ftp/
               shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
               Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
