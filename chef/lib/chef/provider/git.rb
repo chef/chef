@@ -35,15 +35,12 @@ class Chef
         end
       end
 
+      #
+      # Actions
+      #
       def action_checkout
-        assert_target_directory_valid!
-
         if target_dir_non_existent_or_empty?
-          clone
-          checkout
-          enable_submodules
-          add_remotes
-          @new_resource.updated_by_last_action(true)
+          action_sync
         else
           Chef::Log.debug "#{@new_resource} checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
         end
@@ -58,114 +55,10 @@ class Chef
       def action_sync
         assert_target_directory_valid!
 
-        if existing_git_clone?
-          current_rev = find_current_revision
-          Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{target_revision}"
-          unless current_revision_matches_target_revision?
-            fetch_updates
-            enable_submodules
-            Chef::Log.info "#{@new_resource} updated to revision #{target_revision}"
-            @new_resource.updated_by_last_action(true)
-          end
-          add_remotes
-        else
-          action_checkout
-          @new_resource.updated_by_last_action(true)
-        end
-      end
-
-      def assert_target_directory_valid!
-        target_parent_directory = ::File.dirname(@new_resource.destination)
-        unless ::File.directory?(target_parent_directory)
-          msg = "Cannot clone #{@new_resource} to #{@new_resource.destination}, the enclosing directory #{target_parent_directory} does not exist"
-          raise Chef::Exceptions::MissingParentDirectory, msg
-        end
-      end
-
-      def existing_git_clone?
-        ::File.exist?(::File.join(@new_resource.destination, ".git"))
-      end
-
-      def target_dir_non_existent_or_empty?
-        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == ['.','..']
-      end
-
-      def find_current_revision
-        Chef::Log.debug("#{@new_resource} finding current git revision")
-        if ::File.exist?(::File.join(cwd, ".git"))
-          # 128 is returned when we're not in a git repo. this is fine
-          result = shell_out!('git rev-parse HEAD', :cwd => cwd, :returns => [0,128]).stdout.strip
-        end
-        sha_hash?(result) ? result : nil
-      end
-
-      def add_remotes
-        if (@new_resource.additional_remotes.length > 0)
-          @new_resource.additional_remotes.each_pair do |remote_name, remote_url|
-            Chef::Log.info "#{@new_resource} adding git remote #{remote_name} = #{remote_url}"
-            command = "git remote add #{remote_name} #{remote_url}"
-            if shell_out(command, run_options(:cwd => @new_resource.destination, :command_log_level => :info)).exitstatus != 0
-              @new_resource.updated_by_last_action(true)
-            end
-          end
-        end
-      end
-
-      def clone
-        remote = @new_resource.remote
-
-        args = []
-        args << "-o #{remote}" unless remote == 'origin'
-        args << "--depth #{@new_resource.depth}" if @new_resource.depth
-
-        Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
-
-        clone_cmd = "git clone #{args.join(' ')} #{@new_resource.repository} #{@new_resource.destination}"
-        shell_out!(clone_cmd, run_options(:command_log_level => :info))
-      end
-
-      def checkout
-        sha_ref = target_revision
-        # checkout into a local branch rather than a detached HEAD
-        shell_out!("git checkout -b deploy #{sha_ref}", run_options(:cwd => @new_resource.destination))
-        Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} reference: #{sha_ref}"
-      end
-
-      def enable_submodules
-        if @new_resource.enable_submodules
-          Chef::Log.info "#{@new_resource} enabling git submodules"
-          command = "git submodule init && git submodule update"
-          shell_out!(command, run_options(:cwd => @new_resource.destination, :command_log_level => :info))
-        end
-      end
-
-      def fetch_updates
-        setup_remote_tracking_branches if @new_resource.remote != 'origin'
-
-        # since we're in a local branch already, just reset to specified revision rather than merge
-        fetch_command = "git fetch #{@new_resource.remote} && git fetch #{@new_resource.remote} --tags && git reset --hard #{target_revision}"
-        Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revison #{target_revision}"
-        shell_out!(fetch_command, run_options(:cwd => @new_resource.destination))
-      end
-
-      # Use git-config to setup a remote tracking branches. Could use
-      # git-remote but it complains when a remote of the same name already
-      # exists, git-config will just silenty overwrite the setting every
-      # time. This could cause wierd-ness in the remote cache if the url
-      # changes between calls, but as long as the repositories are all
-      # based from each other it should still work fine.
-      def setup_remote_tracking_branches
-        command = []
-
-        Chef::Log.debug "#{@new_resource} configuring remote tracking branches for repository #{@new_resource.repository} "+
-                        "at remote #{@new_resource.remote}"
-        command << "git config remote.#{@new_resource.remote}.url #{@new_resource.repository}"
-        command << "git config remote.#{@new_resource.remote}.fetch +refs/heads/*:refs/remotes/#{@new_resource.remote}/*"
-        shell_out!(command.join(" && "), run_options(:cwd => @new_resource.destination))
-      end
-
-      def current_revision_matches_target_revision?
-        (!@current_resource.revision.nil?) && (target_revision.strip.to_i(16) == @current_resource.revision.strip.to_i(16))
+        clone
+        setup_remote_tracking_branches
+        checkout
+        enable_submodules
       end
 
       def target_revision
@@ -183,13 +76,109 @@ class Chef
 
       alias :revision_slug :target_revision
 
-      def remote_resolve_reference
-        Chef::Log.debug("#{@new_resource} resolving remote reference")
-        command = git('ls-remote', @new_resource.repository, @new_resource.revision)
-        shell_out!(command, run_options).stdout
+      private
+
+      def clone
+        if ! existing_git_clone?
+          remote = @new_resource.remote
+
+          args = []
+          args << "-o #{remote}" unless remote == 'origin'
+          args << "--depth #{@new_resource.depth}" if @new_resource.depth
+
+          Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
+
+          clone_cmd = "git clone #{args.join(' ')} #{@new_resource.repository} #{@new_resource.destination}"
+          shell_out!(clone_cmd, run_options(:command_log_level => :info))
+        end
       end
 
-      private
+      def checkout
+        current_rev = find_current_revision
+        Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{target_revision}"
+
+        if current_branch != "deploy"
+          # checkout into a local branch rather than a detached HEAD
+          sha_ref = target_revision
+          exec_git!("checkout -B deploy #{sha_ref}")
+          @new_resource.updated_by_last_action(true)
+          Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} reference: #{sha_ref}"
+        elsif !current_revision_matches_target_revision?
+          # since we're in a local branch already, just reset to specified revision rather than merge
+          Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revison #{target_revision}"
+          exec_git!("fetch #{@new_resource_remote}")
+          exec_git!("fetch #{@new_resource_remote} --tags")
+          exec_git!("reset --hard #{target_revision}")
+          @new_resource.updated_by_last_action(true)
+          Chef::Log.info "#{@new_resource} updated to revision #{@new_resource.revision}"
+        end
+      end
+
+      def enable_submodules
+        if @new_resource.enable_submodules
+          Chef::Log.info "#{@new_resource} enabling git submodules"
+          exec_git!("submodule init")
+          exec_git!("submodule update")
+        end
+      end
+
+      # Use git-config to setup a remote tracking branches. Could use
+      # git-remote but it complains when a remote of the same name already
+      # exists, git-config will just silenty overwrite the setting every
+      # time. This could cause wierd-ness in the remote cache if the url
+      # changes between calls, but as long as the repositories are all
+      # based from each other it should still work fine.
+      def setup_remote_tracking_branches
+        # TODO: why not just do this?  What if the repository location changes?
+        if @new_resource.remote != "origin"
+          setup_remote_tracking_branch(@new_resource.repository, @new_resource.remote)
+        end
+        
+        @new_resource.additional_remotes.each_pair do |remote_name, remote_url|
+          setup_remote_tracking_branch(remote_url, remote_name)
+        end
+      end
+      
+      def setup_remote_tracking_branch(repository, remote) 
+        Chef::Log.debug "#{@new_resource} configuring remote tracking branch for repository #{repository} "+
+                        "at remote #{remote}"
+        exec_git!("config remote.#{remote}.url #{repository}")
+        exec_git!("config remote.#{remote}.fetch +refs/heads/*:refs/remotes/#{remote}/*")
+      end
+
+      def assert_target_directory_valid!
+        target_parent_directory = ::File.dirname(@new_resource.destination)
+        unless ::File.directory?(target_parent_directory)
+          msg = "Cannot clone #{@new_resource} to #{@new_resource.destination}, the enclosing directory #{target_parent_directory} does not exist"
+          raise Chef::Exceptions::MissingParentDirectory, msg
+        end
+      end
+
+      def exec_git!(args)
+        print "git #{args}\n"
+        return shell_out!("git #{args}", run_options(:cwd => @new_resource.destination, :command_log_level => :info))
+      end
+      
+      def existing_git_clone?
+        ::File.exist?(::File.join(@new_resource.destination, ".git"))
+      end
+
+      def target_dir_non_existent_or_empty?
+        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == ['.','..']
+      end
+
+      def find_current_revision
+        Chef::Log.debug("#{@new_resource} finding current git revision")
+        if ::File.exist?(::File.join(cwd, ".git"))
+          # 128 is returned when we're not in a git repo. this is fine
+          result = shell_out!('git rev-parse HEAD', :cwd => cwd, :returns => [0,128]).stdout.strip
+        end
+        sha_hash?(result) ? result : nil
+      end
+
+      def current_revision_matches_target_revision?
+        (!@current_resource.revision.nil?) && (target_revision.strip.to_i(16) == @current_resource.revision.strip.to_i(16))
+      end
 
       def run_options(run_opts={})
         run_opts[:user] = @new_resource.user if @new_resource.user
@@ -205,6 +194,13 @@ class Chef
         run_opts
       end
 
+      def current_branch
+        branches = exec_git!("branch").stdout
+        # Grab the line that looks like "* branchname", that is the current branch
+        current = branches.lines.grep(/^\* /) { |line| line[2..-1].strip }
+        current[0]
+      end
+      
       def cwd
         @new_resource.destination
       end
@@ -236,6 +232,12 @@ class Chef
           raise Chef::Exceptions::UnresolvableGitReference, msg
         end
         $1
+      end
+
+      def remote_resolve_reference
+        Chef::Log.debug("#{@new_resource} resolving remote reference")
+        command = git('ls-remote', @new_resource.repository, @new_resource.revision)
+        shell_out!(command, run_options).stdout
       end
 
     end

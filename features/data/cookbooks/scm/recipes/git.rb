@@ -17,9 +17,7 @@
 # limitations under the License.
 #
 # If the features are not being run from a git clone, you're out of luck.
-git "the chef repo" do
+git "#{node[:tmpdir]}/gitchef" do
   repository "#{node[:tmpdir]}/test_git_repo"
-  reference "HEAD"
-  destination "#{node[:tmpdir]}/gitchef"
   action :sync
 end
