@@ -130,7 +130,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
     it "should run make install when installing from ports" do
       @new_resource.stub!(:source).and_return("ports")
       @provider.should_receive(:port_path).and_return("/usr/ports/shells/zsh")
-      @provider.should_receive(:shell_out!).with("make -DBATCH -f /usr/ports/shells/zsh/Makefile install", :env=>nil).and_return(@cmd_result)
+      @provider.should_receive(:shell_out!).with("make -DBATCH -f /usr/ports/shells/zsh/Makefile install", :timeout => 1200, :env=>nil).and_return(@cmd_result)
       @provider.install_package("zsh", "4.3.6_7")
     end
   end
@@ -176,7 +176,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
       @provider.stub!(:port_path).and_return("/usr/ports/converters/ruby-iconv")
       @provider.stub!(:package_name).and_return("ruby18-iconv")
       @provider.stub!(:latest_link_name).and_return("ruby18-iconv")
-      
+
       @install_result = OpenStruct.new(:status => true)
     end
 
@@ -187,7 +187,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
 
     it "should run make install when installing from ports" do
       @new_resource.stub!(:source).and_return("ports")
-      @provider.should_receive(:shell_out!).with("make -DBATCH -f /usr/ports/converters/ruby-iconv/Makefile install", :env=>nil).and_return(@install_result)
+      @provider.should_receive(:shell_out!).with("make -DBATCH -f /usr/ports/converters/ruby-iconv/Makefile install", :timeout => 1200, :env=>nil).and_return(@install_result)
       @provider.install_package("ruby-iconv", "1.0")
     end
   end
@@ -239,7 +239,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
     end
 
     it "should install the mysql50-server binary package with the correct name" do
-      
+
       @new_resource     = Chef::Resource::Package.new("mysql50-server")
       @current_resource = Chef::Resource::Package.new("mysql50-server")
       @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context)
