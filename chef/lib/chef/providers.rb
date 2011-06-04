@@ -84,6 +84,7 @@ require 'chef/provider/group/dscl'
 require 'chef/provider/group/gpasswd'
 require 'chef/provider/group/groupadd'
 require 'chef/provider/group/pw'
+require 'chef/provider/group/suse'
 require 'chef/provider/group/usermod'
 require 'chef/provider/group/windows'
 
