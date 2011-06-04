@@ -38,7 +38,7 @@ describe Chef::Provider::Package::EasyInstall do
     @pid = 2342
     @provider.stub!(:popen4).and_return(@status)
   end
-  
+
   describe "easy_install_binary_path" do
 
     it "should return a Chef::Provider::EasyInstall object" do
@@ -70,6 +70,14 @@ describe Chef::Provider::Package::EasyInstall do
       @provider.install_package("boto", "1.8d")
     end
 
+    it "should run easy_install with the package name and version and specified options" do
+      @provider.should_receive(:run_command).with({
+        :command => "easy_install --always-unzip \"boto==1.8d\""
+      })
+      @new_resource.stub!(:options).and_return("--always-unzip")
+      @provider.install_package("boto", "1.8d")
+    end
+
     it "should run easy_install with the package name and version" do
       @provider.should_receive(:run_command).with({
         :command => "easy_install \"boto==1.8d\""
@@ -81,6 +89,14 @@ describe Chef::Provider::Package::EasyInstall do
       @provider.should_receive(:run_command).with({
         :command => "easy_install -m boto"
       })
+      @provider.remove_package("boto", "1.8d")
+    end
+
+    it "should run easy_install -m with the package name and version and specified options" do
+      @provider.should_receive(:run_command).with({
+        :command => "easy_install -x -m boto"
+      })
+      @new_resource.stub!(:options).and_return("-x")
       @provider.remove_package("boto", "1.8d")
     end
 
