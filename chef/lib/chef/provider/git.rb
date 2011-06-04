@@ -58,6 +58,7 @@ class Chef
         clone
         setup_remote_tracking_branches
         checkout
+        fetch_updates
         enable_submodules
       end
 
@@ -94,20 +95,23 @@ class Chef
       end
 
       def checkout
+        if current_branch != "deploy"
+          # checkout into a local branch rather than a detached HEAD
+          exec_git!("checkout -B deploy")
+          @new_resource.updated_by_last_action(true)
+          Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision}"
+        end
+      end
+
+      def fetch_updates
         current_rev = find_current_revision
         Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{target_revision}"
 
-        if current_branch != "deploy"
-          # checkout into a local branch rather than a detached HEAD
-          sha_ref = target_revision
-          exec_git!("checkout -B deploy #{sha_ref}")
-          @new_resource.updated_by_last_action(true)
-          Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} reference: #{sha_ref}"
-        elsif !current_revision_matches_target_revision?
+        if !current_revision_matches_target_revision?
           # since we're in a local branch already, just reset to specified revision rather than merge
           Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revison #{target_revision}"
-          exec_git!("fetch #{@new_resource_remote}")
-          exec_git!("fetch #{@new_resource_remote} --tags")
+          exec_git!("fetch #{@new_resource.remote}")
+          exec_git!("fetch #{@new_resource.remote} --tags")
           exec_git!("reset --hard #{target_revision}")
           @new_resource.updated_by_last_action(true)
           Chef::Log.info "#{@new_resource} updated to revision #{@new_resource.revision}"

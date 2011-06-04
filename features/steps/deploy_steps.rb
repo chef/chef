@@ -29,10 +29,21 @@ Given /^a test git repo in the temp directory$/ do
   cmd.run_command.exitstatus.should == 0
 end
 
-Given /^I change the test git repo file named '(.+)' to '(.+)'$/ do |filename, contents|
+Given /^I change the test git repo file named '(.+)' to '([^\']+)'$/ do |filename, contents|
   changing_file_repo = File.join(tmpdir, "changing_file")
   shell_out!("rm -rf #{changing_file_repo}")
   shell_out!("git clone #{tmpdir}/test_git_repo #{changing_file_repo}")
+  File.open(File.join(changing_file_repo, filename), 'w') {|f| f.write(contents)}
+  shell_out!("git commit #{filename} -m hi", Hash[:cwd => changing_file_repo])
+  shell_out!("git push", Hash[:cwd => changing_file_repo])
+  true
+end
+
+Given /^I change the test git repo file named '(.+)' to '(.+)' in branch '(.+)'$/ do |filename, contents, branch|
+  changing_file_repo = File.join(tmpdir, "changing_file")
+  shell_out!("rm -rf #{changing_file_repo}")
+  shell_out!("git clone #{tmpdir}/test_git_repo #{changing_file_repo}")
+  shell_out!("git checkout #{branch}", Hash[:cwd => changing_file_repo])
   File.open(File.join(changing_file_repo, filename), 'w') {|f| f.write(contents)}
   shell_out!("git commit #{filename} -m hi", Hash[:cwd => changing_file_repo])
   shell_out!("git push", Hash[:cwd => changing_file_repo])
