@@ -19,5 +19,6 @@
 # If the features are not being run from a git clone, you're out of luck.
 git "#{node[:tmpdir]}/gitchef" do
   repository "#{node[:tmpdir]}/test_git_repo"
+  branch "foobranch"
   action :sync
 end

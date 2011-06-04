@@ -36,7 +36,7 @@ class Chef
           :kind_of => Hash
         )
       end
-
+      
       alias :branch :revision
       alias :reference :revision
 

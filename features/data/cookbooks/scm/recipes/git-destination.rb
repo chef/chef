@@ -17,7 +17,8 @@
 # limitations under the License.
 #
 # If the features are not being run from a git clone, you're out of luck.
-git "#{node[:tmpdir]}/gitchef" do
+git "awesome git resource" do
+  destination "#{node[:tmpdir]}/gitchef"
   repository "#{node[:tmpdir]}/test_git_repo"
   action :sync
 end
