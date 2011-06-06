@@ -29,6 +29,12 @@ Given /^a test git repo in the temp directory$/ do
   cmd.run_command.exitstatus.should == 0
 end
 
+Given /^a clone of the test git repo in '(.+)'$/ do |repository_dir|
+  clone_dir = File.join(tmpdir, repository_dir)
+  shell_out!("rm -rf #{clone_dir}")
+  shell_out!("git clone #{tmpdir}/test_git_repo #{clone_dir}")
+end
+
 Given /^I change the test git repo file named '(.+)' to '([^\']+)'$/ do |filename, contents|
   changing_file_repo = File.join(tmpdir, "changing_file")
   shell_out!("rm -rf #{changing_file_repo}")
@@ -54,8 +60,28 @@ Given /^I check out '(.+)' in '(.+)'$/ do |branch, repository_dir|
   shell_out!("git checkout #{branch}", Hash[:cwd => File.join(tmpdir, repository_dir)])
 end
 
+Given /^I add a remote named '(.+)' to '(.+)' pointing at '(.+)'$/ do |remote_name, repository_dir, remote_repository|
+  remote_url = File.join(tmpdir, remote_repository)
+  shell_out!("git remote add #{remote_name} #{remote_url}", Hash[:cwd => File.join(tmpdir, repository_dir)])
+  shell_out!("git remote update", Hash[:cwd => File.join(tmpdir, repository_dir)])
+end
+
+Given /^I change the remote named '(.+)' in '(.+)' to point at '(.+)'$/ do |remote_name, repository_dir, remote_repository|
+  remote_url = File.join(tmpdir, remote_repository)
+  shell_out!("git remote set-url #{remote_name} #{remote_url}", Hash[:cwd => File.join(tmpdir, repository_dir)])
+  shell_out!("git remote update", Hash[:cwd => File.join(tmpdir, repository_dir)])
+end
+
+Given /^I set the branch '(.+)' in '(.+)' to track '(.+)'$/ do |branch, repository_dir, new_branch|
+  shell_out!("git branch #{branch} --set-upstream #{new_branch}", Hash[:cwd => File.join(tmpdir, repository_dir)])
+end
+  
 Given /^I remove the remote repository named '(.+)' from '(.+)'$/ do |remote_name, repository_dir|
   shell_out!("git remote rm #{remote_name}", Hash[:cwd => File.join(tmpdir, repository_dir)])
+end
+
+Given /^I pull in '(.+)'$/ do |repository_dir|
+  shell_out!("git pull", Hash[:cwd => File.join(tmpdir, repository_dir)])
 end
 
 Then /^I should hear about it$/ do
