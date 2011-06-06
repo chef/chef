@@ -37,6 +37,23 @@ class Chef
         )
       end
       
+      def development_mode(arg=nil)
+        set_or_return(
+          :development_mode,
+          arg,
+          :kind_of =>  [TrueClass, FalseClass]
+        )
+      end
+      
+      def local_changes(arg=nil)
+        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
+        set_or_return(
+          :local_changes,
+          real_arg,
+          :equal_to => [ :merge, :hard, :clean ]
+        )
+      end
+      
       alias :branch :revision
       alias :reference :revision
 

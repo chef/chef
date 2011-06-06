@@ -38,6 +38,10 @@ Given /^we have the atime\/mtime of '(.+)'$/ do |filename|
   @atime = File.atime(File.join(tmpdir, filename))
 end
 
+Given /^I create a file named '(.+)' containing '(.+)'$/ do |filename, contents|
+  File.open(File.join(tmpdir, filename), 'w') {|f| f.write(contents)}
+end
+
 Given /^I change the file named '(.+)' to '(.+)'$/ do |filename, contents|
   File.open(File.join(tmpdir, filename), 'w') {|f| f.write(contents)}
 end
