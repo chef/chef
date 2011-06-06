@@ -95,11 +95,21 @@ class Chef
       end
 
       def checkout
-        if current_branch != "deploy"
+        target_branch = (@new_resource.development_mode == true) ? @new_resource.revision : "deploy"
+        
+        if current_branch != target_branch
           # checkout into a local branch rather than a detached HEAD
-          exec_git!("checkout -B deploy")
+          exec_git!("checkout -B #{target_branch}")
           @new_resource.updated_by_last_action(true)
           Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision}"
+        end
+
+        # Ensure we're tracking the remote branch, if we're in development_mode
+        if @new_resource.development_mode == true
+          upstream = "remotes/#{@new_resource.remote}/#{target_branch}"
+          exec_git!("branch #{target_branch} --set-upstream #{upstream}")
+        else
+          # TODO: figure out how to untrack the deploy branch if it got tracked
         end
       end
 
@@ -112,7 +122,16 @@ class Chef
           Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revison #{target_revision}"
           exec_git!("fetch #{@new_resource.remote}")
           exec_git!("fetch #{@new_resource.remote} --tags")
-          exec_git!("reset --hard #{target_revision}")
+          if local_changes == :merge
+            exec_git!("reset --merge #{target_revision}")
+          elsif local_changes == :hard
+            exec_git!("reset --hard #{target_revision}")
+          elsif local_changes == :clean
+            exec_git!("reset --hard #{target_revision}")
+            exec_git!("clean -d -f")
+          else
+            raise "Bad value '#{local_changes}' for local_changes: must be :merge, :hard or :clean"
+          end
           @new_resource.updated_by_last_action(true)
           Chef::Log.info "#{@new_resource} updated to revision #{@new_resource.revision}"
         end
@@ -133,14 +152,14 @@ class Chef
       # changes between calls, but as long as the repositories are all
       # based from each other it should still work fine.
       def setup_remote_tracking_branches
-        # TODO: why not just do this?  What if the repository location changes?
-        if @new_resource.remote != "origin"
-          setup_remote_tracking_branch(@new_resource.repository, @new_resource.remote)
-        end
+        setup_remote_tracking_branch(@new_resource.repository, @new_resource.remote)
         
         @new_resource.additional_remotes.each_pair do |remote_name, remote_url|
           setup_remote_tracking_branch(remote_url, remote_name)
         end
+
+        # Ensure we have up-to-date branch lists from any remotes
+        exec_git!("remote update")
       end
       
       def setup_remote_tracking_branch(repository, remote) 
@@ -160,7 +179,10 @@ class Chef
 
       def exec_git!(args)
         print "git #{args}\n"
-        return shell_out!("git #{args}", run_options(:cwd => @new_resource.destination, :command_log_level => :info))
+        x = shell_out!("git #{args}", run_options(:cwd => @new_resource.destination, :command_log_level => :info))
+        print x.stdout
+        print x.stderr
+        x
       end
       
       def existing_git_clone?
@@ -203,6 +225,13 @@ class Chef
         # Grab the line that looks like "* branchname", that is the current branch
         current = branches.lines.grep(/^\* /) { |line| line[2..-1].strip }
         current[0]
+      end
+
+      def local_changes
+        if @new_resource.local_changes.nil?
+          return (@new_resource.development_mode == true) ? :merge : :hard
+        end
+        @new_resource.local_changes
       end
       
       def cwd
