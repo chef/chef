@@ -17,13 +17,13 @@
 #
 
 require 'chef/provider/service'
-require 'chef/provider/service/init'
+require 'chef/provider/service/invokercd'
 require 'chef/mixin/command'
 
 class Chef
   class Provider
     class Service
-      class Debian < Chef::Provider::Service::Init
+      class Debian < Chef::Provider::Service::Invokercd
         UPDATE_RC_D_ENABLED_MATCHES = /\/rc[\dS].d\/S|not installed/i
         UPDATE_RC_D_PRIORITIES = /\/rc([\dS]).d\/([SK])(\d\d)/i
 
