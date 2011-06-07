@@ -20,4 +20,7 @@
 git "#{node[:tmpdir]}/gitchef" do
   repository "#{node[:tmpdir]}/test_git_repo"
   action :sync
+  remote "waugh"
+  additional_remotes["hi"] = "#{node[:tmpdir]}/test_git_repo"
+  additional_remotes["lo"] = "#{node[:tmpdir]}/test_git_repo"
 end
