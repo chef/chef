@@ -98,19 +98,19 @@ class Chef
         target_branch = (@new_resource.development_mode == true) ? @new_resource.revision : "deploy"
         
         if current_branch != target_branch
-          # checkout into a local branch rather than a detached HEAD
-          exec_git!("checkout -B #{target_branch}")
+          if @new_resource.development_mode == true
+            # Ensure we have any remote tracking branches
+            exec_git!("fetch #{@new_resource.remote}")
+            # Check out.  (We have to check out against the target branch, or else -B will carry over the commits from
+            # the current branch)
+            exec_git!("checkout -B #{target_branch} #{@new_resource.remote}/#{target_branch}")
+          else
+            exec_git!("checkout -B #{target_branch}")
+          end
           @new_resource.updated_by_last_action(true)
           Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision}"
         end
 
-        # Ensure we're tracking the remote branch, if we're in development_mode
-        if @new_resource.development_mode == true
-          upstream = "remotes/#{@new_resource.remote}/#{target_branch}"
-          exec_git!("branch #{target_branch} --set-upstream #{upstream}")
-        else
-          # TODO: figure out how to untrack the deploy branch if it got tracked
-        end
       end
 
       def fetch_updates
@@ -122,15 +122,16 @@ class Chef
           Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revison #{target_revision}"
           exec_git!("fetch #{@new_resource.remote}")
           exec_git!("fetch #{@new_resource.remote} --tags")
-          if local_changes == :merge
+          case local_changes
+          when :reset_merge
             exec_git!("reset --merge #{target_revision}")
-          elsif local_changes == :hard
+          when :reset_hard
             exec_git!("reset --hard #{target_revision}")
-          elsif local_changes == :clean
+          when :reset_clean
             exec_git!("reset --hard #{target_revision}")
             exec_git!("clean -d -f")
-          else
-            raise "Bad value '#{local_changes}' for local_changes: must be :merge, :hard or :clean"
+          when :rebase
+            exec_git!("rebase #{@new_resource.remote}/#{@new_resource.branch}")
           end
           @new_resource.updated_by_last_action(true)
           Chef::Log.info "#{@new_resource} updated to revision #{@new_resource.revision}"
@@ -158,8 +159,6 @@ class Chef
           setup_remote_tracking_branch(remote_url, remote_name)
         end
 
-        # Ensure we have up-to-date branch lists from any remotes
-        exec_git!("remote update")
       end
       
       def setup_remote_tracking_branch(repository, remote) 
@@ -180,8 +179,7 @@ class Chef
       def exec_git!(args)
         print "git #{args}\n"
         x = shell_out!("git #{args}", run_options(:cwd => @new_resource.destination, :command_log_level => :info))
-        print x.stdout
-        print x.stderr
+        print "STDOUT:\n#{x.stdout}\nSTDERR:\n#{x.stderr}\n"
         x
       end
       
@@ -229,7 +227,7 @@ class Chef
 
       def local_changes
         if @new_resource.local_changes.nil?
-          return (@new_resource.development_mode == true) ? :merge : :hard
+          return (@new_resource.development_mode == true) ? :rebase : :reset_hard
         end
         @new_resource.local_changes
       end

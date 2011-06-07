@@ -84,6 +84,14 @@ Given /^I pull in '(.+)'$/ do |repository_dir|
   shell_out!("git pull", Hash[:cwd => File.join(tmpdir, repository_dir)])
 end
 
+Given /^I git add the file named '(.+)' in '(.+)'$/ do |filename, repository_dir|
+  shell_out("git add #{filename}", Hash[:cwd => File.join(tmpdir, repository_dir)])
+end
+
+Given /^I commit everything in '(.+)' with the message '(.+)'$/ do |repository_dir, commit_message|
+  shell_out("git commit -a -m \"#{commit_message}\"", Hash[:cwd => File.join(tmpdir, repository_dir)])
+end
+
 Then /^I should hear about it$/ do
   puts "==deploy:"
   puts `ls #{tmpdir}/deploy/`
@@ -152,4 +160,14 @@ Then /^the current branch in '(.*)' should be '(.*)'$/ do |repository_dir, branc
   x = shell_out!('git branch', Hash[:cwd => File.join(tmpdir, repository_dir)]).stdout
   branches = x.lines.grep(/^\* /) { |line| line[2..-1].strip }
   branches.should =~ [ branch ]
+end
+
+Then /^there should be a commit with the message '(.+)' in the commit logs for '(.+)'$/ do |commit_message, repository_dir|
+  x = shell_out!("git log --oneline", Hash[:cwd => File.join(tmpdir, repository_dir)]).stdout
+  x.lines.map { |line| line.strip.split(' ', 2)[1] }.should include(commit_message)
+end
+
+Then /^there should not be a commit with the message '(.+)' in the commit logs for '(.+)'$/ do |commit_message, repository_dir|
+  x = shell_out!("git log --oneline", Hash[:cwd => File.join(tmpdir, repository_dir)]).stdout
+  x.lines.map { |line| line.strip.split(' ', 2)[1] }.should_not include(commit_message)
 end

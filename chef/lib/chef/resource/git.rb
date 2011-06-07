@@ -50,7 +50,7 @@ class Chef
         set_or_return(
           :local_changes,
           real_arg,
-          :equal_to => [ :merge, :hard, :clean ]
+          :equal_to => [ :reset_merge, :reset_hard, :reset_clean, :rebase ]
         )
       end
       
