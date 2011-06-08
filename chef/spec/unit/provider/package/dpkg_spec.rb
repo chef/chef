@@ -122,6 +122,30 @@ DPKG_S
       @provider.install_package("wget", "1.11.4-1ubuntu1")
     end
 
+    it "should run dpkg -i if the package is a path and the source is nil" do
+      @new_resource = Chef::Resource::Package.new("/tmp/wget_1.11.4-1ubuntu1_amd64.deb")
+      @provider = Chef::Provider::Package::Dpkg.new(@new_resource, @run_context)
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
+        :environment => {
+          "DEBIAN_FRONTEND" => "noninteractive"
+        }
+      })
+      @provider.install_package("/tmp/wget_1.11.4-1ubuntu1_amd64.deb", "1.11.4-1ubuntu1")
+    end
+
+    it "should run dpkg -i if the package is a path and the source is nil for an upgrade" do
+      @new_resource = Chef::Resource::Package.new("/tmp/wget_1.11.4-1ubuntu1_amd64.deb")
+      @provider = Chef::Provider::Package::Dpkg.new(@new_resource, @run_context)
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
+        :environment => {
+          "DEBIAN_FRONTEND" => "noninteractive"
+        }
+      })
+      @provider.upgrade_package("/tmp/wget_1.11.4-1ubuntu1_amd64.deb", "1.11.4-1ubuntu1")
+    end
+
     it "should run dpkg -i with the package source and options if specified" do
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "dpkg -i --force-yes /tmp/wget_1.11.4-1ubuntu1_amd64.deb",

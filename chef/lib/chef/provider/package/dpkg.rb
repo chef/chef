@@ -19,6 +19,7 @@
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
+require 'chef/provider/package/get_source_from_package'
 
 class Chef
   class Provider
@@ -27,7 +28,9 @@ class Chef
         DPKG_INFO = /([a-z\d\-\+]+)\t([\w\d.~-]+)/
         DPKG_INSTALLED = /^Status: install ok installed/
         DPKG_VERSION = /^Version: (.+)$/
-      
+
+        include Chef::Provider::Package::GetSourceFromPackage
+
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
