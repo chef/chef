@@ -28,8 +28,6 @@ class Chef
     class Package
       class Yum < Chef::Provider::Package
 
-        include Chef::Mixin::GetSourceFromPackage
-
         class RPMUtils
           class << self
 
@@ -856,6 +854,8 @@ class Chef
           end
 
         end # YumCache
+
+        include Chef::Mixin::GetSourceFromPackage
 
         def initialize(new_resource, run_context)
           super
