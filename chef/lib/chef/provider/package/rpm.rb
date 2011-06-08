@@ -18,14 +18,14 @@
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
-require 'chef/provider/package/get_source_from_package'
+require 'chef/mixin/get_source_from_package'
 
 class Chef
   class Provider
     class Package
       class Rpm < Chef::Provider::Package
 
-        include Chef::Provider::Package::GetSourceFromPackage
+        include Chef::Mixin::GetSourceFromPackage
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)

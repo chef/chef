@@ -20,7 +20,7 @@
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
-require 'chef/provider/package/get_source_from_package'
+require 'chef/mixin/get_source_from_package'
 
 # Class methods on Gem are defined in rubygems
 require 'rubygems'
@@ -300,7 +300,7 @@ class Chef
           Chef::Log.logger
         end
 
-        include Chef::Provider::Package::GetSourceFromPackage
+        include Chef::Mixin::GetSourceFromPackage
 
         def initialize(new_resource, run_context=nil)
           super

@@ -20,7 +20,7 @@ require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
 require 'singleton'
-require 'chef/provider/package/get_source_from_package'
+require 'chef/mixin/get_source_from_package'
 
 
 class Chef
@@ -28,7 +28,7 @@ class Chef
     class Package
       class Yum < Chef::Provider::Package
 
-        include Chef::Provider::Package::GetSourceFromPackage
+        include Chef::Mixin::GetSourceFromPackage
 
         class RPMUtils
           class << self
