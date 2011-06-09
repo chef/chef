@@ -405,6 +405,23 @@ describe Chef::Provider::Package::Rubygems do
         @provider.action_install.should be_true
       end
 
+      it "installs the gem from file via the gems api when the package is a path and the source is nil" do
+        @new_resource = Chef::Resource::GemPackage.new(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
+        @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+        @provider.current_resource = @current_resource
+        @new_resource.source.should == CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem'
+        @provider.gem_env.should_receive(:install).with(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
+        @provider.action_install.should be_true
+      end
+
+      # this catches 'gem_package "foo"' when "./foo" is a file in the cwd, and instead of installing './foo' it fetches the remote gem
+      it "installs the gem via the gems api, when the package has no file separator characters in it, but a matching file exists in cwd" do
+        ::File.stub!(:exists?).and_return(true)
+        @new_resource.package_name('rspec-core')
+        @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => nil)
+        @provider.action_install.should be_true
+      end
+
       it "installs the gem by shelling out when options are provided as a String" do
         @new_resource.options('-i /alt/install/location')
         expected ="gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\" -i /alt/install/location"

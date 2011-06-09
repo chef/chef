@@ -18,11 +18,14 @@
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
+require 'chef/mixin/get_source_from_package'
 
 class Chef
   class Provider
     class Package
       class Solaris < Chef::Provider::Package
+
+        include Chef::Mixin::GetSourceFromPackage
 
         # def initialize(*args)
         #   super
