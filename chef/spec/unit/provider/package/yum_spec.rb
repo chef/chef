@@ -321,6 +321,18 @@ describe Chef::Provider::Package::Yum do
       @provider.install_package("emacs", "21.4-20.el5")
     end
 
+    it "should run yum localinstall if given a path to an rpm as the package" do
+      @new_resource = Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm")
+      ::File.stub!(:exists?).and_return(true)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider.load_current_resource
+      @new_resource.source.should == "/tmp/emacs-21.4-20.el5.i386.rpm"
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "yum -d0 -e0 -y localinstall /tmp/emacs-21.4-20.el5.i386.rpm"
+      })
+      @provider.install_package("/tmp/emacs-21.4-20.el5.i386.rpm", "21.4-20.el5")
+    end
+
     it "should run yum install with the package name, version and arch" do
       @provider.load_current_resource
       @new_resource.stub!(:arch).and_return("i386")

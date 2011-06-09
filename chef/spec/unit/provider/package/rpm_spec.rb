@@ -103,6 +103,31 @@ describe Chef::Provider::Package::Rpm do
         @provider.upgrade_package("emacs", "21.4-20.el5")
       end
 
+      it "should install from a path when the package is a path and the source is nil" do
+        @new_resource = Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm")
+        @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context)
+        @new_resource.source.should == "/tmp/emacs-21.4-20.el5.i386.rpm"
+        @current_resource = Chef::Resource::Package.new("emacs")
+        @provider.current_resource = @current_resource
+        @provider.should_receive(:run_command_with_systems_locale).with({
+          :command => "rpm  -i /tmp/emacs-21.4-20.el5.i386.rpm"
+        })
+        @provider.install_package("/tmp/emacs-21.4-20.el5.i386.rpm", "21.4-20.el5")
+      end
+
+      it "should uprgrade from a path when the package is a path and the source is nil" do
+        @new_resource = Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm")
+        @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context)
+        @new_resource.source.should == "/tmp/emacs-21.4-20.el5.i386.rpm"
+        @current_resource = Chef::Resource::Package.new("emacs")
+        @current_resource.version("21.4-19.el5")
+        @provider.current_resource = @current_resource
+        @provider.should_receive(:run_command_with_systems_locale).with({
+          :command => "rpm  -U /tmp/emacs-21.4-20.el5.i386.rpm"
+        })
+        @provider.upgrade_package("/tmp/emacs-21.4-20.el5.i386.rpm", "21.4-20.el5")
+      end
+
       it "installs with custom options specified in the resource" do
         @provider.candidate_version = '11'
         @new_resource.options("--dbpath /var/lib/rpm")
