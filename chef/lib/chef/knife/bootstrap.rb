@@ -56,7 +56,8 @@ class Chef
       option :ssh_gateway,
         :short => "-G GATEWAY",
         :long => "--ssh-gateway GATEWAY",
-        :description => "The ssh gateway"
+        :description => "The ssh gateway",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
 
       option :identity_file,
         :short => "-i IDENTITY_FILE",
@@ -182,7 +183,7 @@ class Chef
         ssh.config[:ssh_user] = config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
-        ssh.config[:ssh_gateway] = config[:ssh_gateway]
+        ssh.config[:ssh_gateway] = Chef::Config[:knife][:ssh_gateway] || config[:ssh_gateway]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
         ssh.config[:no_host_key_verify] = config[:no_host_key_verify]
