@@ -74,7 +74,8 @@ class Chef
       option :ssh_gateway,
         :short => "-G GATEWAY",
         :long => "--ssh-gateway GATEWAY",
-        :description => "The ssh gateway"
+        :description => "The ssh gateway",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gatewa] = key }
 
       option :identity_file,
         :short => "-i IDENTITY_FILE",
@@ -129,6 +130,7 @@ class Chef
       end
 
       def session_from_list(list)
+        config[:ssh_gateway] ||= Chef::Config[:knife][:ssh_gateway]
         if config[:ssh_gateway]
           gw_host, gw_user = config[:ssh_gateway].split('@').reverse
           gw_host, gw_port = gw_host.split(':')
