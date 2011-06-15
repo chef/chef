@@ -45,10 +45,10 @@ class Chef
         )
       end
       
-      def local_changes(arg=nil)
+      def update_method(arg=nil)
         real_arg = arg.kind_of?(String) ? arg.to_sym : arg
         set_or_return(
-          :local_changes,
+          :update_method,
           real_arg,
           :equal_to => [ :reset_merge, :reset_hard, :reset_clean, :rebase ]
         )

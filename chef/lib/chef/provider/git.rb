@@ -53,7 +53,9 @@ class Chef
       end
 
       def action_sync
-        raise "local_changes == :rebase does not work with revision or reference.  Set local_changes to something else, or do not specify revision or reference."  if local_changes == :rebase && ! @new_resource.revision.nil?
+        if update_method == :rebase && @new_resource.revision != @new_resource.branch && @new_resource.revision != "HEAD"
+          raise "update_method == :rebase does not work with revision or reference.  Set update_method to something else, or do not specify revision or reference."
+        end
         assert_target_directory_valid!
 
         clone
@@ -127,7 +129,7 @@ class Chef
           Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revison #{target_revision}"
           exec_git!("fetch #{@new_resource.remote}")
           exec_git!("fetch #{@new_resource.remote} --tags")
-          case local_changes
+          case update_method
           when :reset_merge
             exec_git!("reset --merge #{target_revision}")
           when :reset_hard
@@ -246,11 +248,11 @@ class Chef
         @new_resource.development_mode == true
       end
 
-      def local_changes
-        if @new_resource.local_changes.nil?
+      def update_method
+        if @new_resource.update_method.nil?
           return development_mode? ? :rebase : :reset_hard
         end
-        @new_resource.local_changes
+        @new_resource.update_method
       end
       
       def destination
