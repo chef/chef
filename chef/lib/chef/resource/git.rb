@@ -53,8 +53,22 @@ class Chef
           :equal_to => [ :reset_merge, :reset_hard, :reset_clean, :rebase ]
         )
       end
+
+      def revision(arg=nil)
+        result = super(arg)
+        if arg.nil?
+          result || branch || "HEAD"
+        end
+      end
+
+      def branch(arg=nil)
+        set_or_return(
+          :branch,
+          arg,
+          :kind_of => String
+        )
+      end
       
-      alias :branch :revision
       alias :reference :revision
 
       alias :repo :repository

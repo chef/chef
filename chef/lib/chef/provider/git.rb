@@ -42,21 +42,23 @@ class Chef
         if target_dir_non_existent_or_empty?
           action_sync
         else
-          Chef::Log.debug "#{@new_resource} checkout destination #{@new_resource.destination} already exists or is a non-empty directory"
+          Chef::Log.debug "#{@new_resource} checkout destination #{destination} already exists or is a non-empty directory"
         end
       end
 
       def action_export
         action_checkout
-        FileUtils.rm_rf(::File.join(@new_resource.destination,".git"))
+        FileUtils.rm_rf(::File.join(destination,".git"))
         @new_resource.updated_by_last_action(true)
       end
 
       def action_sync
+        raise "local_changes == :rebase does not work with revision or reference.  Set local_changes to something else, or do not specify revision or reference."  if local_changes == :rebase && ! @new_resource.revision.nil?
         assert_target_directory_valid!
 
         clone
         setup_remote_tracking_branches
+        branch
         checkout
         fetch_updates
         enable_submodules
@@ -87,30 +89,33 @@ class Chef
           args << "-o #{remote}" unless remote == 'origin'
           args << "--depth #{@new_resource.depth}" if @new_resource.depth
 
-          Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
+          Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{destination}"
 
-          clone_cmd = "git clone #{args.join(' ')} #{@new_resource.repository} #{@new_resource.destination}"
+          clone_cmd = "git clone #{args.join(' ')} #{@new_resource.repository} #{destination}"
           shell_out!(clone_cmd, run_options(:command_log_level => :info))
         end
       end
 
-      def checkout
-        target_branch = (@new_resource.development_mode == true) ? @new_resource.revision : "deploy"
-        
-        if current_branch != target_branch
-          if @new_resource.development_mode == true
-            # Ensure we have any remote tracking branches
-            exec_git!("fetch #{@new_resource.remote}")
-            # Check out.  (We have to check out against the target branch, or else -B will carry over the commits from
-            # the current branch)
-            exec_git!("checkout -B #{target_branch} #{@new_resource.remote}/#{target_branch}")
-          else
-            exec_git!("checkout -B #{target_branch}")
-          end
+      def branch
+        if !branch_exists?(target_branch)
+          exec_git!("branch #{target_branch} #{target_revision}")
           @new_resource.updated_by_last_action(true)
-          Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision}"
+          Chef::Log.info "#{@new_resource} created branch #{target_branch} at revision #{target_revision}"
         end
 
+        # If we are in development mode, set the upstream
+        if development_mode?
+          exec_git!("branch --set-upstream #{target_branch} #{@new_resource.remote}/#{remote_branch}")
+          Chef::Log.info "#{@new_resource} set upstream of #{target_branch} to #{@new_resource.remote}/#{remote_branch}"
+        end
+      end
+
+      def checkout
+        if current_branch != target_branch
+          exec_git!("checkout #{target_branch}")
+          @new_resource.updated_by_last_action(true)
+          Chef::Log.info "#{@new_resource} checked out branch: #{target_branch}"
+        end
       end
 
       def fetch_updates
@@ -131,10 +136,10 @@ class Chef
             exec_git!("reset --hard #{target_revision}")
             exec_git!("clean -d -f")
           when :rebase
-            exec_git!("rebase #{@new_resource.remote}/#{@new_resource.branch}")
+            exec_git!("rebase #{@new_resource.remote}/#{remote_branch}")
           end
           @new_resource.updated_by_last_action(true)
-          Chef::Log.info "#{@new_resource} updated to revision #{@new_resource.revision}"
+          Chef::Log.info "#{@new_resource} updated to revision #{target_revision}"
         end
       end
 
@@ -158,7 +163,6 @@ class Chef
         @new_resource.additional_remotes.each_pair do |remote_name, remote_url|
           setup_remote_tracking_branch(remote_url, remote_name)
         end
-
       end
       
       def setup_remote_tracking_branch(repository, remote) 
@@ -169,33 +173,26 @@ class Chef
       end
 
       def assert_target_directory_valid!
-        target_parent_directory = ::File.dirname(@new_resource.destination)
+        target_parent_directory = ::File.dirname(destination)
         unless ::File.directory?(target_parent_directory)
-          msg = "Cannot clone #{@new_resource} to #{@new_resource.destination}, the enclosing directory #{target_parent_directory} does not exist"
+          msg = "Cannot clone #{@new_resource} to #{destination}, the enclosing directory #{target_parent_directory} does not exist"
           raise Chef::Exceptions::MissingParentDirectory, msg
         end
       end
 
-      def exec_git!(args)
-        print "git #{args}\n"
-        x = shell_out!("git #{args}", run_options(:cwd => @new_resource.destination, :command_log_level => :info))
-        print "STDOUT:\n#{x.stdout}\nSTDERR:\n#{x.stderr}\n"
-        x
-      end
-      
       def existing_git_clone?
-        ::File.exist?(::File.join(@new_resource.destination, ".git"))
+        ::File.exist?(::File.join(destination, ".git"))
       end
 
       def target_dir_non_existent_or_empty?
-        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == ['.','..']
+        !::File.exist?(destination) || Dir.entries(destination).sort == ['.','..']
       end
 
       def find_current_revision
         Chef::Log.debug("#{@new_resource} finding current git revision")
-        if ::File.exist?(::File.join(cwd, ".git"))
+        if ::File.exist?(::File.join(destination, ".git"))
           # 128 is returned when we're not in a git repo. this is fine
-          result = shell_out!('git rev-parse HEAD', :cwd => cwd, :returns => [0,128]).stdout.strip
+          result = shell_out!('git rev-parse HEAD', :cwd => destination, :returns => [0,128]).stdout.strip
         end
         sha_hash?(result) ? result : nil
       end
@@ -218,28 +215,55 @@ class Chef
         run_opts
       end
 
+      def git_branches_output
+        # Only run "git branch" once
+        @git_branches_output ||= exec_git!("branch").stdout
+      end
+      
+      def branch_exists?(branch)
+        git_branches_output.lines.map { |line| line[2..-1].strip }.include?(branch)
+      end
+
       def current_branch
-        branches = exec_git!("branch").stdout
         # Grab the line that looks like "* branchname", that is the current branch
-        current = branches.lines.grep(/^\* /) { |line| line[2..-1].strip }
-        current[0]
+        git_branches_output.lines.grep(/^\* /) { |line| line[2..-1].strip }
+      end
+
+      # The local branch name we want to check out to
+      def target_branch
+        if development_mode?
+          return @new_resource.branch || "master"
+        end
+        "deploy"
+      end
+
+      # The remote branch name we want to check out
+      def remote_branch
+        @new_resource.branch || "master"
+      end
+
+      def development_mode?
+        @new_resource.development_mode == true
       end
 
       def local_changes
         if @new_resource.local_changes.nil?
-          return (@new_resource.development_mode == true) ? :rebase : :reset_hard
+          return development_mode? ? :rebase : :reset_hard
         end
         @new_resource.local_changes
       end
       
-      def cwd
+      def destination
         @new_resource.destination
       end
 
-      def git(*args)
-        ["git", *args].compact.join(" ")
+      def exec_git!(args)
+        print "git #{args}\n"
+        x = shell_out!("git #{args}", run_options(:cwd => destination, :command_log_level => :info))
+        print "STDOUT:\n#{x.stdout}STDERR:\n#{x.stderr}"
+        x
       end
-
+      
       def sha_hash?(string)
         string =~ /^[0-9a-f]{40}$/
       end
@@ -257,7 +281,7 @@ class Chef
 
       def extract_revision(resolved_reference)
         unless resolved_reference =~ /^([0-9a-f]{40})\s+(\S+)/
-          msg = "Unable to parse SHA reference for '#{@new_resource.revision}' in repository '#{@new_resource.repository}'. "
+          msg = "Unable to parse SHA reference for '#{@new_resourece.revision}' in repository '#{@new_resource.repository}'. "
           msg << "Verify your (case-sensitive) repository URL and revision.\n"
           msg << "`git ls-remote` output: #{resolved_reference}"
           raise Chef::Exceptions::UnresolvableGitReference, msg
@@ -267,8 +291,7 @@ class Chef
 
       def remote_resolve_reference
         Chef::Log.debug("#{@new_resource} resolving remote reference")
-        command = git('ls-remote', @new_resource.repository, @new_resource.revision)
-        shell_out!(command, run_options).stdout
+        exec_git!("ls-remote #{@new_resource.repository} #{@new_resource.revision}").stdout
       end
 
     end
