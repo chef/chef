@@ -51,7 +51,7 @@ class Chef
               else
                 @current_resource.version(nil)
               end
-            when /Depends: ([^\s]*) /
+            when /Depends: ([^\s]*)/
               depends = $1
             when /Provided by: ([\w\d\-\.]*)/
               next if installed
