@@ -69,6 +69,30 @@ Feature: Git
       And the current branch in 'gitchef' should be 'deploy'
       And a branch named 'master' should exist in 'gitchef'
 
+  Scenario: Clone a git repo, change file AND change the branch AND delete the local copy of the branch, and get both changed back
+    Given a test git repo in the temp directory
+      And a validated node
+      And it includes the recipe 'scm::git'
+
+     When I run the chef-client
+     Then the run should exit '0'
+      And the file named 'gitchef/what_revision_am_i' should contain '2'
+      And the current branch in 'gitchef' should be 'deploy'
+      And a branch named 'master' should exist in 'gitchef'
+ 
+     When I check out 'foobranch' in 'gitchef'
+      And I change the test git repo file named 'what_revision_am_i' to '3'
+      And I delete the branch 'deploy' in 'gitchef'
+     Then the file named 'gitchef/what_revision_am_i' should contain 'foo'
+      And the current branch in 'gitchef' should be 'foobranch'
+      And a branch named 'deploy' should not exist in 'gitchef'
+
+     When I run the chef-client again
+     Then the run should exit '0'
+      And the file named 'gitchef/what_revision_am_i' should contain '3'
+      And the current branch in 'gitchef' should be 'deploy'
+      And a branch named 'master' should exist in 'gitchef'
+
   Scenario: Clone a git repo and do not overwrite a local change until the repository changes
     Given a test git repo in the temp directory
       And a validated node

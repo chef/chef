@@ -72,12 +72,16 @@ Given /^I change the remote named '(.+)' in '(.+)' to point at '(.+)'$/ do |remo
   shell_out!("git remote update", Hash[:cwd => File.join(tmpdir, repository_dir)])
 end
 
+Given /^I remove the remote repository named '(.+)' from '(.+)'$/ do |remote_name, repository_dir|
+  shell_out!("git remote rm #{remote_name}", Hash[:cwd => File.join(tmpdir, repository_dir)])
+end
+
 Given /^I set the branch '(.+)' in '(.+)' to track '(.+)'$/ do |branch, repository_dir, new_branch|
   shell_out!("git branch #{branch} --set-upstream #{new_branch}", Hash[:cwd => File.join(tmpdir, repository_dir)])
 end
-  
-Given /^I remove the remote repository named '(.+)' from '(.+)'$/ do |remote_name, repository_dir|
-  shell_out!("git remote rm #{remote_name}", Hash[:cwd => File.join(tmpdir, repository_dir)])
+
+Given /^I delete the branch '(.+)' in '(.+)'$/ do |branch, repository_dir|
+  shell_out!("git branch -D #{branch}", Hash[:cwd => File.join(tmpdir, repository_dir)])
 end
 
 Given /^I pull in '(.+)'$/ do |repository_dir|
@@ -154,6 +158,11 @@ end
 Then /^a branch named '(.*)' should exist in '(.*)'$/ do |branch, repository_dir|
   branches = shell_out!('git branch', Hash[:cwd => File.join(tmpdir, repository_dir)]).stdout.lines { |line| line[2..-1].strip }
   branches.should include branch
+end
+
+Then /^a branch named '(.*)' should not exist in '(.*)'$/ do |branch, repository_dir|
+  branches = shell_out!('git branch', Hash[:cwd => File.join(tmpdir, repository_dir)]).stdout.lines { |line| line[2..-1].strip }
+  branches.should_not include branch
 end
 
 Then /^the current branch in '(.*)' should be '(.*)'$/ do |repository_dir, branch|

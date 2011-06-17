@@ -1,5 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Author:: John Keiser (<jkeiser@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -66,6 +67,14 @@ class Chef
           :branch,
           arg,
           :kind_of => String
+        )
+      end
+
+      def git_timeout(arg=nil)
+        set_or_return(
+          :git_timeout,
+          arg,
+          :kind_of => Numeric
         )
       end
       

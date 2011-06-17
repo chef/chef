@@ -62,7 +62,7 @@ class Chef
         setup_remote_tracking_branches
         branch
         checkout
-        fetch_updates
+        update_working_copy
         enable_submodules
       end
 
@@ -100,6 +100,7 @@ class Chef
 
       def branch
         if !branch_exists?(target_branch)
+          fetch_updates
           exec_git!("branch #{target_branch} #{target_revision}")
           @new_resource.updated_by_last_action(true)
           Chef::Log.info "#{@new_resource} created branch #{target_branch} at revision #{target_revision}"
@@ -121,14 +122,21 @@ class Chef
       end
 
       def fetch_updates
+        if ! @updates_fetched
+          exec_git!("fetch #{@new_resource.remote}")
+          exec_git!("fetch #{@new_resource.remote} --tags")
+          @updates_fetched = true
+        end
+      end
+
+      def update_working_copy
         current_rev = find_current_revision
         Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{target_revision}"
 
         if !current_revision_matches_target_revision?
           # since we're in a local branch already, just reset to specified revision rather than merge
           Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revison #{target_revision}"
-          exec_git!("fetch #{@new_resource.remote}")
-          exec_git!("fetch #{@new_resource.remote} --tags")
+          fetch_updates
           case update_method
           when :reset_merge
             exec_git!("reset --merge #{target_revision}")
@@ -209,6 +217,7 @@ class Chef
         run_opts[:environment] = {"GIT_SSH" => @new_resource.ssh_wrapper} if @new_resource.ssh_wrapper
         run_opts[:command_log_prepend] = @new_resource.to_s
         run_opts[:command_log_level] ||= :debug
+        run_opts[:timeout] = @new_resource.git_timeout if @new_resource.git_timeout
         if run_opts[:command_log_level] == :info
           if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
             run_opts[:live_stream] = STDOUT
