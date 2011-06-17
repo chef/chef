@@ -943,13 +943,8 @@ class Chef
 
           @candidate_version = @yum.candidate_version(@new_resource.package_name, arch)
 
-          if @candidate_version.nil?
-            raise Chef::Exceptions::Package, "Yum installed and available lists don't have a version of package "+
-                                             "#{@new_resource.package_name}"
-          end
-
           Chef::Log.debug("#{@new_resource} installed version: #{installed_version || "(none)"} candidate version: " +
-                          "#{@candidate_version}")
+                          "#{@candidate_version || "(none)"}")
 
           @current_resource
         end
