@@ -1073,10 +1073,14 @@ class Chef
           packages = @yum.packages_from_require(yum_require)
 
           if packages.empty?
-            Chef::Log.debug("#{@new_resource} couldn't match #{@new_resource.package_name} in " +
+            # Don't bother if we are just ensuring a package is removed - we don't need Provides data
+            actions = Array(@new_resource.action)
+            unless actions.size == 1 and (actions[0] == :remove || actions[0] == :purge)
+              Chef::Log.debug("#{@new_resource} couldn't match #{@new_resource.package_name} in " +
                             "installed Provides, loading available Provides - this may take a moment")
-            @yum.reload_provides
-            packages = @yum.packages_from_require(yum_require) 
+              @yum.reload_provides
+              packages = @yum.packages_from_require(yum_require) 
+            end
           end
 
           unless packages.empty?
