@@ -53,6 +53,36 @@ class Chef
       # output formats for displaying node data
       class NodePresenter < GenericPresenter
 
+        def format(data)
+          if parse_format_option == :json
+            summarize_json(data)
+          else
+            super
+          end
+        end
+
+        def summarize_json(data)
+          if data.kind_of?(Chef::Node)
+            node = data
+            result = {}
+
+            result["name"] = node.name
+            result["chef_environment"] = node.chef_environment
+            result["run_list"] = node.run_list
+            result["normal"] = node.normal_attrs
+
+            if config[:long_output]
+              result["default"]   = node.default_attrs
+              result["override"]  = node.override_attrs
+              result["automatic"] = node.automatic_attrs
+            end
+
+            Chef::JSONCompat.to_json_pretty(result)
+          else
+            Chef::JSONCompat.to_json_pretty(data)
+          end
+        end
+
         # Converts a Chef::Node object to a string suitable for output to a
         # terminal. If config[:medium_output] or config[:long_output] are set
         # the volume of output is adjusted accordingly. Uses colors if enabled
