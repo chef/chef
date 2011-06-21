@@ -28,7 +28,6 @@ class Chef
         @destination = name
         @resource_name = :scm
         @enable_submodules = false
-        @revision = "HEAD"
         @remote = "origin"
         @ssh_wrapper = nil
         @depth = nil

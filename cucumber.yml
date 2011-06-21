@@ -61,6 +61,7 @@ cookbooks: --tags @cookbooks --format pretty -r features/steps -r features/suppo
 cookbook_metadata: --tags @cookbook_metadata --format pretty -r features/steps -r features/support features 
 provider_remote_directory: --tags @remote_directory --format pretty -r features/steps -r features/support features 
 provider_git: --tags @provider --tags @git --format pretty -r features/steps -r features/support features 
+provider_gitonly: --tags @gitonly --format pretty -r features/steps -r features/support features 
 provider_template: --tags @template --format pretty -r features/steps -r features/support features
 provider_package_macports: --tags @macports --format pretty -r features/steps -r features/support features 
 provider_package_rubygems: --tags @rubygems --format pretty -r features/steps -r features/support features 

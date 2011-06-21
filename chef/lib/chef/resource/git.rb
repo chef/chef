@@ -1,5 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Author:: John Keiser (<jkeiser@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -36,8 +37,47 @@ class Chef
           :kind_of => Hash
         )
       end
+      
+      def development_mode(arg=nil)
+        set_or_return(
+          :development_mode,
+          arg,
+          :kind_of =>  [TrueClass, FalseClass]
+        )
+      end
+      
+      def update_method(arg=nil)
+        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
+        set_or_return(
+          :update_method,
+          real_arg,
+          :equal_to => [ :reset_merge, :reset_hard, :reset_clean, :rebase ]
+        )
+      end
 
-      alias :branch :revision
+      def revision(arg=nil)
+        result = super(arg)
+        if arg.nil?
+          result || branch || "HEAD"
+        end
+      end
+
+      def branch(arg=nil)
+        set_or_return(
+          :branch,
+          arg,
+          :kind_of => String
+        )
+      end
+
+      def git_timeout(arg=nil)
+        set_or_return(
+          :git_timeout,
+          arg,
+          :kind_of => Numeric
+        )
+      end
+      
       alias :reference :revision
 
       alias :repo :repository

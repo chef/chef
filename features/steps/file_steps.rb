@@ -38,15 +38,23 @@ Given /^we have the atime\/mtime of '(.+)'$/ do |filename|
   @atime = File.atime(File.join(tmpdir, filename))
 end
 
+Given /^I create a file named '(.+)' containing '(.+)'$/ do |filename, contents|
+  File.open(File.join(tmpdir, filename), 'w') {|f| f.write(contents)}
+end
+
+Given /^I change the file named '(.+)' to '(.+)'$/ do |filename, contents|
+  File.open(File.join(tmpdir, filename), 'w') {|f| f.write(contents)}
+end
+
 ####
 # Then
 ####
 
-Then /^a file named '(.+)' should exist$/ do |filename|
+Then /^(?:a|the) file named '(.+)' should exist$/ do |filename|
   File.exists?(File.join(tmpdir, filename)).should be(true)
 end
 
-Then /^a file named '(.+)' should not exist$/ do |filename|
+Then /^(?:a|the) file named '(.+)' should not exist$/ do |filename|
   File.exists?(File.join(tmpdir, filename)).should be(false)
 end
 
@@ -69,12 +77,12 @@ Then /^the (.)time of '(.+)' should be different$/ do |time_type, filename|
   end
 end
 
-Then /^a file named '(.+)' should contain '(.+)'$/ do |filename, contents|
+Then /^(?:a|the) file named '(.+)' should contain '(.+)'$/ do |filename, contents|
   file = IO.read(File.join(tmpdir, filename))
   file.should =~ /#{contents}/m
 end
 
-Then /^a file named '(.+)' should be from the '(.+)' specific directory$/ do |filename, specificity|
+Then /^(?:a|the) file named '(.+)' should be from the '(.+)' specific directory$/ do |filename, specificity|
   file = IO.read(File.join(tmpdir, filename))
   file.should == "#{specificity}\n"
 end
