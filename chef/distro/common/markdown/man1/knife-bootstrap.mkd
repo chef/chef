@@ -1,4 +1,4 @@
-knife-bootrap(1) -- Install Chef Client on a remote host
+knife-bootstrap(1) -- Install Chef Client on a remote host
 ========================================
 
 ## SYNOPSIS
