@@ -87,6 +87,8 @@ F
     attr_accessor :recipe_name
     attr_accessor :enclosing_provider
     attr_accessor :source_line
+    attr_accessor :retries
+    attr_accessor :retry_delay
 
     attr_reader :updated
 
@@ -112,6 +114,8 @@ F
       @updated_by_last_action = false
       @supports = {}
       @ignore_failure = false
+      @retries = 0
+      @retry_delay = 2
       @not_if = nil
       @not_if_args = {}
       @only_if = nil
@@ -221,6 +225,22 @@ F
         :ignore_failure,
         arg,
         :kind_of => [ TrueClass, FalseClass ]
+      )
+    end
+
+    def retries(arg=nil)
+      set_or_return(
+        :retries,
+        arg,
+        :kind_of => Integer
+      )
+    end
+
+    def retry_delay(arg=nil)
+      set_or_return(
+        :retry_delay,
+        arg,
+        :kind_of => Integer
       )
     end
 
@@ -468,8 +488,8 @@ F
           set_or_return(attr_name.to_sym, arg, validation_opts)
         end
       end
-
-      def build_from_file(cookbook_name, filename)
+      
+      def build_from_file(cookbook_name, filename, run_context)
         rname = filename_to_qualified_string(cookbook_name, filename)
 
         # Add log entry if we override an existing light-weight resource.
@@ -490,6 +510,12 @@ F
 
           class << cls
             include Chef::Mixin::FromFile
+            
+            attr_accessor :run_context
+
+            def node
+              self.run_context.node
+            end
 
             def actions_to_create
               @actions_to_create
@@ -500,6 +526,9 @@ F
             end
           end
 
+          # set the run context in the class instance variable
+          cls.run_context = run_context
+          
           # load resource definition from file
           cls.class_from_file(filename)
 

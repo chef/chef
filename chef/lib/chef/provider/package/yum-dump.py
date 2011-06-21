@@ -1,6 +1,6 @@
 #
 # Author:: Matthew Kent (<mkent@magoazul.com>)
-# Copyright:: Copyright (c) 2009 Matthew Kent
+# Copyright:: Copyright (c) 2009, 2011 Matthew Kent
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,110 +19,231 @@
 # yum-dump.py
 # Inspired by yumhelper.py by David Lutterkort
 #
-# Produce a list of installed and available packages using yum and dump the 
-# result to stdout.
+# Produce a list of installed, available and re-installable packages using yum
+# and dump the results to stdout.
 #
-# This invokes yum just as the command line would which makes it subject to 
-# all the caching related configuration paramaters in yum.conf.
+# yum-dump invokes yum similarly to the command line interface which makes it
+# subject to most of the configuration paramaters in yum.conf. yum-dump will
+# also load yum plugins in the same manor as yum - these can affect the output.
 #
 # Can be run as non root, but that won't update the cache.
+#
+# Intended to support yum 2.x and 3.x
 
 import os
 import sys
 import time
 import yum
+import re
+import errno
 
 from yum import Errors
+from optparse import OptionParser
 
-PIDFILE='/var/run/yum.pid'
+YUM_PID_FILE='/var/run/yum.pid'
 
 # Seconds to wait for exclusive access to yum
-lock_timeout = 10
+LOCK_TIMEOUT = 10
 
-failure = False 
+if re.search(r"^3\.", yum.__version__):
+  YUM_VER = 3
+elif re.search(r"^2\.", yum.__version__):
+  YUM_VER = 2
+else:
+  print >> sys.stderr, "yum-dump Error: Can't match supported yum version" \
+    " (%s)" % yum.__version__
+  sys.exit(1)
 
-# Can't do try: except: finally: in python 2.4 it seems, hence this fun.
-try:
-  try:
-    y = yum.YumBase()
+def setup(yb, options):
+  # Only want our output
+  #
+  if YUM_VER == 3:
     try:
-        # Only want our output
-        y.doConfigSetup(errorlevel=0,debuglevel=0)
-    except:
-        # but of course, yum on even moderately old
-        # redhat/centosen doesn't know how to do logging properly
-        # so we duck punch our way to victory
-        def __log(a,b): pass
-        y.doConfigSetup()
-        y.log = __log
-        y.errorlog = __log
-    
-    # Yum assumes it can update the cache directory. Disable this for non root 
-    # users.
-    y.conf.cache = os.geteuid() != 0
+      yb.preconf.errorlevel=0
+      yb.preconf.debuglevel=0
 
-    # Override any setting in yum.conf - we only care about the newest
-    y.conf.showdupesfromrepos = False
+      # initialize the config
+      yb.conf
+    except yum.Errors.ConfigError, e:
+      # supresses an ignored exception at exit
+      yb.preconf = None 
+      print >> sys.stderr, "yum-dump Config Error: %s" % e
+      return 1
+    except ValueError, e:
+      yb.preconf = None 
+      print >> sys.stderr, "yum-dump Options Error: %s" % e
+      return 1
+  elif YUM_VER == 2:
+    yb.doConfigSetup()
 
-    # Spin up to lock_timeout.
-    countdown = lock_timeout
+    def __log(a,b): pass
+
+    yb.log = __log
+    yb.errorlog = __log
+
+  # Give Chef every possible package version, it can decide what to do with them
+  if YUM_VER == 3:
+    yb.conf.showdupesfromrepos = True
+  elif YUM_VER == 2:
+    yb.conf.setConfigOption('showdupesfromrepos', True)
+
+  # Optionally run only on cached repositories, but non root must use the cache
+  if os.geteuid() != 0:
+    if YUM_VER == 3:
+      yb.conf.cache = True
+    elif YUM_VER == 2:
+      yb.conf.setConfigOption('cache', True)
+  else:
+    if YUM_VER == 3:
+      yb.conf.cache = options.cache
+    elif YUM_VER == 2:
+      yb.conf.setConfigOption('cache', options.cache)
+
+  return 0
+
+def dump_packages(yb, list, output_provides):
+  packages = {}
+
+  if YUM_VER == 2:
+    yb.doTsSetup()
+    yb.doRepoSetup()
+    yb.doSackSetup()
+
+  db = yb.doPackageLists(list)
+
+  for pkg in db.installed:
+    pkg.type = 'i'
+    # __str__ contains epoch, name etc
+    packages[str(pkg)] = pkg
+
+  for pkg in db.available:
+    pkg.type = 'a'
+    packages[str(pkg)] = pkg
+
+  if YUM_VER == 2:
+    # ugh - can't get the availability state of our installed rpms, lets assume
+    # they are available to install
+    for pkg in db.installed:
+      pkg.type = 'r'
+      packages[str(pkg)] = pkg
+  else:
+    # These are both installed and available
+    for pkg in db.reinstall_available:
+      pkg.type = 'r'
+      packages[str(pkg)] = pkg
+   
+  unique_packages = packages.values()
+
+  unique_packages.sort(lambda x, y: cmp(x.name, y.name))
+
+  for pkg in unique_packages:
+    if output_provides == "all" or \
+        (output_provides == "installed" and (pkg.type == "i" or pkg.type == "r")):
+      provides = pkg.provides_print
+    else:
+      provides = "[]"
+
+    print '%s %s %s %s %s %s %s' % (
+      pkg.name,
+      pkg.epoch,
+      pkg.version,
+      pkg.release,
+      pkg.arch,
+      provides,
+      pkg.type )
+
+  return 0
+
+def yum_dump(options):
+  lock_obtained = False
+
+  yb = yum.YumBase()
+
+  status = setup(yb, options)
+  if status != 0:
+    return status
+
+  if options.output_options:
+    print "[option installonlypkgs] %s" % " ".join(yb.conf.installonlypkgs)
+
+  # Non root can't handle locking on rhel/centos 4
+  if os.geteuid() != 0:
+    return dump_packages(yb, options.package_list, options.output_provides)
+
+  # Wrap the collection and output of packages in yum's global lock to prevent
+  # any inconsistencies.
+  try:
+    # Spin up to LOCK_TIMEOUT
+    countdown = LOCK_TIMEOUT
     while True:
       try:
-        y.doLock(PIDFILE)
+        yb.doLock(YUM_PID_FILE)
+        lock_obtained = True
       except Errors.LockError, e:
         time.sleep(1)
         countdown -= 1 
         if countdown == 0:
-           print >> sys.stderr, "Error! Couldn't obtain an exclusive yum lock in %d seconds. Giving up." % lock_timeout
-           failure = True
-           sys.exit(1)
+           print >> sys.stderr, "yum-dump Locking Error! Couldn't obtain an " \
+             "exclusive yum lock in %d seconds. Giving up." % LOCK_TIMEOUT
+           return 200
       else:
         break
-    
-    y.doTsSetup()
-    y.doRpmDBSetup()
-    
+
+    return dump_packages(yb, options.package_list, options.output_provides)
+
+  # Ensure we clear the lock and cleanup any resources
+  finally:
     try:
-        db = y.doPackageLists('all')
-    except AttributeError:
-        # some people claim that testing for yum.__version__ should be
-        # enough to see if this is required, but I say they're liars.
-        # the yum on 4.8 at least understands yum.__version__ but still
-        # needs to get its repos and sacks set up manually.
-        # Thus, we just try it, fail, and then try again. WCPGW?
-        y.doRepoSetup()
-        y.doSackSetup()
-        db = y.doPackageLists('all')
-    
-    y.closeRpmDB()
-  
-  except Errors.YumBaseError, e:
-    print >> sys.stderr, "Error! %s" % e 
-    failure = True
-    sys.exit(1)
+      yb.closeRpmDB()
+      if lock_obtained == True:
+        yb.doUnlock(YUM_PID_FILE)
+    except Errors.LockError, e:
+      print >> sys.stderr, "yum-dump Unlock Error: %s" % e
+      return 200
 
-# Ensure we clear the lock.
-finally:
+def main():
+  usage = "Usage: %prog [options]\n" + \
+          "Output a list of installed, available and re-installable packages via yum"
+  parser = OptionParser(usage=usage)
+  parser.add_option("-C", "--cache",
+                    action="store_true", dest="cache", default=False,
+                    help="run entirely from cache, don't update cache")
+  parser.add_option("-o", "--options",
+                    action="store_true", dest="output_options", default=False,
+                    help="output select yum options useful to Chef")
+  parser.add_option("-p", "--installed-provides",
+                    action="store_const", const="installed", dest="output_provides", default="none",
+                    help="output Provides for installed packages, big/wide output")
+  parser.add_option("-P", "--all-provides",
+                    action="store_const", const="all", dest="output_provides", default="none",
+                    help="output Provides for all package, slow, big/wide output")
+  parser.add_option("-i", "--installed",
+                    action="store_const", const="installed", dest="package_list", default="all",
+                    help="output only installed packages")
+  parser.add_option("-a", "--available",
+                    action="store_const", const="available", dest="package_list", default="all",
+                    help="output only available and re-installable packages")
+
+  (options, args) = parser.parse_args()
+
   try:
-    y.doUnlock(PIDFILE)
-  # Keep Unlock from raising a second exception as it does with a yum.conf 
-  # config error.
-  except Errors.YumBaseError:
-    if failure == False: 
-      print >> sys.stderr, "Error! %s" % e 
-    sys.exit(1)
-  
-for pkg in db.installed:
-     print '%s,installed,%s,%s,%s,%s' % ( pkg.name, 
-                                          pkg.epoch,
-                                          pkg.version,
-                                          pkg.release,
-                                          pkg.arch )
-for pkg in db.available:
-     print '%s,available,%s,%s,%s,%s' % ( pkg.name, 
-                                          pkg.epoch,
-                                          pkg.version,
-                                          pkg.release,
-                                          pkg.arch )
+    return yum_dump(options)
 
-sys.exit(0)
+  except yum.Errors.RepoError, e:
+    print >> sys.stderr, "yum-dump Repository Error: %s" % e
+    return 1
+ 
+  except yum.Errors.YumBaseError, e:
+    print >> sys.stderr, "yum-dump General Error: %s" % e
+    return 1
+
+try:
+  status = main()
+# Suppress a nasty broken pipe error when output is piped to utilities like 'head'
+except IOError, e:
+  if e.errno == errno.EPIPE:
+    sys.exit(1)
+  else:
+    raise
+
+sys.exit(status)

@@ -74,8 +74,21 @@ class Chef
 
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|
-        # Execute each of this resource's actions.
-        Array(resource.action).each {|action| run_action(resource, action) }
+        begin
+          Chef::Log.debug("Processing #{resource} on #{run_context.node.name}")
+
+          # Execute each of this resource's actions.
+          Array(resource.action).each {|action| run_action(resource, action)}
+        rescue => e
+          Chef::Log.error("#{resource} (#{resource.source_line}) had an error:\n#{e}\n#{e.backtrace.join("\n")}")
+          if resource.retries > 0
+            resource.retries -= 1
+            Chef::Log.info("Retrying execution of #{resource}, #{resource.retries} attempt(s) left")
+            sleep resource.retry_delay
+            retry
+          end
+          raise e unless resource.ignore_failure
+        end
       end
 
       # Run all our :delayed actions

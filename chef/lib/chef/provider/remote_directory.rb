@@ -45,7 +45,6 @@ class Chef
         end
         purge_unmanaged_files(files_to_purge)
         Chef::Log.info("#{@new_resource} created")
-        @new_resource.updated_by_last_action(true)
       end
 
       def action_create_if_missing

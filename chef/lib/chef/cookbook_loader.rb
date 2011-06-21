@@ -30,6 +30,8 @@ class Chef
 
     attr_accessor :metadata
     attr_reader :cookbooks_by_name
+    attr_reader :merged_cookbooks
+    attr_reader :cookbook_paths
 
     include Enumerable
 
@@ -39,7 +41,21 @@ class Chef
       @cookbooks_by_name = Mash.new
       @loaded_cookbooks = {}
       @metadata = Mash.new
+      @cookbooks_paths = Hash.new {|h,k| h[k] = []} # for deprecation warnings
+
+      # Used to track which cookbooks appear in multiple places in the cookbook repos
+      # and are merged in to a single cookbook by file shadowing. This behavior is
+      # deprecated, so users of this class may issue warnings to the user by checking
+      # this variable
+      @merged_cookbooks = []
+
       load_cookbooks
+    end
+
+    def merged_cookbook_paths # for deprecation warnings
+      merged_cookbook_paths = {}
+      @merged_cookbooks.each {|c| merged_cookbook_paths[c] = @cookbooks_paths[c]}
+      merged_cookbook_paths
     end
 
     def load_cookbooks
@@ -52,7 +68,9 @@ class Chef
           loader = Cookbook::CookbookVersionLoader.new(cookbook_path, chefignore)
           loader.load_cookbooks
           next if loader.empty?
+          @cookbooks_paths[loader.cookbook_name] << cookbook_path # for deprecation warnings
           if @loaded_cookbooks.key?(loader.cookbook_name)
+            @merged_cookbooks << loader.cookbook_name # for deprecation warnings
             @loaded_cookbooks[loader.cookbook_name].merge!(loader)
           else
             @loaded_cookbooks[loader.cookbook_name] = loader

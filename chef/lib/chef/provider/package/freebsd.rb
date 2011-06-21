@@ -57,7 +57,7 @@ class Chef
         end
 
         def ports_makefile_variable_value(variable)
-          make_v = shell_out!("make -V #{variable}", :cwd => port_path, :env => nil, :returns => [0,1])
+          make_v = shell_out!("make -V #{variable} -f #{port_path}/Makefile", :env => nil, :returns => [0,1])
           make_v.stdout.strip.split($\).first # $\ is the line separator, i.e., newline
         end
 
@@ -94,7 +94,7 @@ class Chef
           unless @current_resource.version
             case @new_resource.source
             when /^ports$/
-              shell_out!("make -DBATCH install", :cwd => port_path, :env => nil).status
+              shell_out!("make -DBATCH -f #{port_path}/Makefile install", :timeout => 1200, :env => nil).status
             when /^http/, /^ftp/
               shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
               Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")

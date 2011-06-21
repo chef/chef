@@ -38,8 +38,7 @@ class Chef
           if @config[:prerelease]
             "--prerelease"
           else
-            version = knife_config[:bootstrap_version] || Chef::VERSION
-            "--version #{version}"
+            "--version #{chef_version}"
           end
         end
 
@@ -63,15 +62,26 @@ CONFIG
           else
             client_rb << "# Using default node name (fqdn)\n"
           end
+
+          if knife_config[:bootstrap_proxy]
+            client_rb << %Q{http_proxy        "#{knife_config[:bootstrap_proxy]}"\n}
+            client_rb << %Q{https_proxy       "#{knife_config[:bootstrap_proxy]}"\n}
+          end
           client_rb
         end
 
         def start_chef
-          "/usr/bin/chef-client -j /etc/chef/first-boot.json -E #{bootstrap_environment}"
+          s = "/usr/bin/chef-client -j /etc/chef/first-boot.json"
+          s << " -E #{bootstrap_environment}" if chef_version.to_f != 0.9 # only use the -E option on Chef 0.10+
+          s
         end
 
         def knife_config
           @chef_config.key?(:knife) ? @chef_config[:knife] : {}
+        end
+
+        def chef_version
+          knife_config[:bootstrap_version] || Chef::VERSION
         end
 
       end

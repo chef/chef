@@ -26,6 +26,15 @@ class Chef
         super
         @resource_name = :git
         @provider = Chef::Provider::Git
+        @additional_remotes = Hash[]
+      end
+
+      def additional_remotes(arg=nil)
+        set_or_return(
+          :additional_remotes,
+          arg,
+          :kind_of => Hash
+        )
       end
 
       alias :branch :revision

@@ -1,4 +1,6 @@
 bash -c '
+<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
 yum install -y ruby ruby-devel gcc gcc-c++ automake autoconf rubygems make
 
 gem update --system

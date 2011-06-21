@@ -69,23 +69,20 @@ class Chef
             @values["default"] = value
           else
             assert_valid_platform_values!(platforms, value)
-            Array(platforms).each { |platform| @values[platform.to_s] = format_values(value)}
+            Array(platforms).each { |platform| @values[platform.to_s] = normalize_keys(value)}
             value
           end
         end
 
-        def format_values(hash)
-          formatted_array = flatten_one_level(hash.map { |key, value| [key.to_s, value]})
-          Hash[*formatted_array]
-        end
-
-        def flatten_one_level(array)
-          array.inject([]) do |flatter_array, values|
-            Array(values).each {|value| flatter_array << value }
-            flatter_array
+        def normalize_keys(hash)
+          hash.inject({}) do |h, key_value|
+            keys, value = *key_value
+            Array(keys).each do |key|
+              h[key.to_s] = value
+            end
+            h
           end
         end
-
 
         def assert_valid_platform_values!(platforms, value)
           unless value.kind_of?(Hash)

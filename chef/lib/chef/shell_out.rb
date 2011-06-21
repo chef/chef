@@ -190,7 +190,7 @@ class Chef
     # Chef::Exceptions::ShellCommandFailed::: via +invalid!+
     def error!
       unless Array(valid_exit_codes).include?(exitstatus)
-        invalid!("Expected process to exit 0, but it exited with #{exitstatus}")
+        invalid!("Expected process to exit with #{valid_exit_codes.inspect}, but received '#{exitstatus}'")
       end
     end
 
