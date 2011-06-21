@@ -237,7 +237,7 @@ class Chef
 
       def current_branch
         # Grab the line that looks like "* branchname", that is the current branch
-        git_branches_output.lines.grep(/^\* /) { |line| line[2..-1].strip }
+        git_branches_output.lines.grep(/^\* /) { |line| line[2..-1].strip }.first
       end
 
       # The local branch name we want to check out to
