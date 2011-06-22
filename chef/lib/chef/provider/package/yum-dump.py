@@ -54,6 +54,11 @@ else:
     " (%s)" % yum.__version__
   sys.exit(1)
 
+# Required for Provides output
+if YUM_VER == 2:
+  import rpm
+  import rpmUtils.miscutils
+
 def setup(yb, options):
   # Only want our output
   #
@@ -131,7 +136,7 @@ def dump_packages(yb, list, output_provides):
     for pkg in db.reinstall_available:
       pkg.type = 'r'
       packages[str(pkg)] = pkg
-   
+
   unique_packages = packages.values()
 
   unique_packages.sort(lambda x, y: cmp(x.name, y.name))
@@ -139,7 +144,32 @@ def dump_packages(yb, list, output_provides):
   for pkg in unique_packages:
     if output_provides == "all" or \
         (output_provides == "installed" and (pkg.type == "i" or pkg.type == "r")):
-      provides = pkg.provides_print
+
+      # yum 2 doesn't have provides_print, implement it ourselves using methods
+      # based on requires gathering in packages.py
+      if YUM_VER == 2:
+        provlist = []
+
+        # Installed and available are gathered in different ways
+        if pkg.type == 'r':
+          names = pkg.hdr[rpm.RPMTAG_PROVIDENAME]
+          flags = pkg.hdr[rpm.RPMTAG_PROVIDEFLAGS]
+          ver = pkg.hdr[rpm.RPMTAG_PROVIDEVERSION]
+          if names is not None:
+            tmplst = zip(names, flags, ver)
+
+          for (n, f, v) in tmplst:
+            prov = rpmUtils.miscutils.formatRequire(n, v, f)
+            provlist.append(prov)
+        # This is slow :(
+        elif pkg.type == 'a':
+          for prcoTuple in pkg.returnPrco('provides'):
+              prcostr = pkg.prcoPrintable(prcoTuple)
+              provlist.append(prcostr)
+
+        provides = provlist
+      else:
+        provides = pkg.provides_print
     else:
       provides = "[]"
 
