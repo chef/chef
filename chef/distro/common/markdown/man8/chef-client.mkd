@@ -22,9 +22,6 @@ __chef-client__ _(options)_
   * `-L`, `--logfile LOGLOCATION`:
     Set the log file location, defaults to STDOUT - recommended for
     daemonizing
-  * `-V`, `--verbose`:
-    Ensures logging goes to STDOUT as well as  to  other  configured
-    log location(s).
   * `-N`, `--node-name NODE_NAME`:
     The node name for this client
   * `-s`, `--splay SECONDS`:
