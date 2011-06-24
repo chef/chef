@@ -50,7 +50,7 @@ class Chef
         @database = Chef::Config[:couchdb_database]
         @couchdb = Chef::CouchDB.new(nil, Chef::Config[:couchdb_database])
       else
-        unless couchdb.kind_of?(Chef::CouchDB)
+        unless couchdb.respond_to?(:couchdb_database)
           Chef::Log.warn("Passing the database name to Chef::Solr::Query initialization is deprecated. Please pass in the Chef::CouchDB object instead.")
           @database = couchdb
           @couchdb = Chef::CouchDB.new(nil, couchdb)
