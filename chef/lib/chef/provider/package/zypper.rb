@@ -84,9 +84,18 @@ class Chef
           Chef::Log.debug("zypper current resource      #{@current_resource}")
           @current_resource
         end
+        
+        #Gets the zypper Version from command output (Returns Floating Point number)
+        def zypper_version()
+          `zypper -V 2>&1`.scan(/\d+/).join(".").to_f
+        end
 
         def install_package(name, version)
-          if version
+          if zypper_version < 1.0
+            run_command(
+              :command => "zypper install -y #{name}"
+            )
+          elsif version
             run_command(
               :command => "zypper -n --no-gpg-checks install -l  #{name}=#{version}"
             )
@@ -98,7 +107,11 @@ class Chef
         end
 
         def upgrade_package(name, version)
-          if version
+          if zypper_version < 1.0
+            run_command(
+              :command => "zypper install -y #{name}"
+            )
+          elsif version
             run_command(
               :command => "zypper -n --no-gpg-checks install -l #{name}=#{version}"
             )
@@ -110,7 +123,11 @@ class Chef
         end
 
         def remove_package(name, version)
-          if version
+          if zypper_version < 1.0
+            run_command(
+              :command => "zypper remove -y #{name}"
+            )
+          elsif version
             run_command(
               :command => "zypper -n --no-gpg-checks remove  #{name}=#{version}"
             )

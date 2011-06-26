@@ -49,12 +49,26 @@ describe Chef::Provider::Package::Dpkg do
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
 
-    it "gets the source package version from dpkg-deb if provided" do
-      @stdout = StringIO.new("wget\t1.11.4-1ubuntu1")
-      @provider.stub!(:popen4).with("dpkg-deb -W #{@new_resource.source}").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.load_current_resource
-      @provider.current_resource.package_name.should == "wget"
-      @new_resource.version.should == '1.11.4-1ubuntu1'
+    describe 'gets the source package version from dpkg-deb' do
+      def check_version(version)
+        @stdout = StringIO.new("wget\t#{version}")
+        @provider.stub!(:popen4).with("dpkg-deb -W #{@new_resource.source}").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.load_current_resource
+        @provider.current_resource.package_name.should == "wget"
+        @new_resource.version.should == version
+      end
+      
+      it 'if short version provided' do
+        check_version('1.11.4')
+      end
+      
+      it 'if extended version provided' do
+        check_version('1.11.4-1ubuntu1')
+      end
+      
+      it 'if distro-specific version provided' do
+        check_version('1.11.4-1ubuntu1~lucid')
+      end
     end
   
     it "gets the source package name from dpkg-deb correctly when the package name has `-' or `+' characters" do
