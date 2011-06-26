@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'lib/chef/expander/version'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 
@@ -41,7 +42,7 @@ rescue LoadError
 end
 
 task :install => :package do
-  sh %{gem install pkg/chef-expander-#{spec.version} --no-rdoc --no-ri}
+  sh %{gem install pkg/chef-expander-#{Chef::Expander::VERSION} --no-rdoc --no-ri}
 end
 
 begin

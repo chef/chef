@@ -27,6 +27,7 @@ class Chef
         require 'net/ssh/multi'
         require 'readline'
         require 'chef/search/query'
+        require 'chef/mixin/command'
       end
 
       attr_writer :password
@@ -148,9 +149,8 @@ class Chef
           data.split(/\n/).each { |d| print_data(host, d) }
         else
           padding = @longest - host.length
-          print ui.color(host, :cyan)
-          padding.downto(0) { print " " }
-          puts data
+          str = ui.color(host, :cyan) + (" " * (padding + 1)) + data
+          ui.msg(str)
         end
       end
 
@@ -240,6 +240,7 @@ class Chef
         window = 0
         session.servers_for.each do |server|
           tf.print("screen -t \"#{server.host}\" #{window} ssh ")
+          tf.print("-i #{config[:identity_file]} ") if config[:identity_file]
           server.user ? tf.puts("#{server.user}@#{server.host}") : tf.puts(server.host)
           window += 1
         end
@@ -249,8 +250,9 @@ class Chef
 
       def tmux
         ssh_dest = lambda do |server|
+          identity = "-i #{config[:identity_file]} " if config[:identity_file]
           prefix = server.user ? "#{server.user}@" : ""
-          "'ssh #{prefix}#{server.host}'"
+          "'ssh #{identity}#{prefix}#{server.host}'"
         end
 
         new_window_cmds = lambda do
@@ -300,6 +302,7 @@ class Chef
       end
 
       def run
+        extend Chef::Mixin::Command
 
         @longest = 0
 

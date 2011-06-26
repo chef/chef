@@ -1,7 +1,8 @@
 #
 # Author:: Stephen Delano (<stephen@ospcode.com>)
 # Author:: Seth Falcon (<seth@ospcode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@ospcode.com>)
+# Copyright:: Copyright 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -247,21 +248,25 @@ describe Chef::Environment do
       @all_cookbooks << begin
         cv = Chef::CookbookVersion.new("apt")
         cv.version = "1.0.0"
+        cv.recipe_filenames = ["default.rb", "only-in-1-0.rb"]
         cv
       end
       @all_cookbooks << begin
         cv = Chef::CookbookVersion.new("apt")
         cv.version = "1.1.0"
+        cv.recipe_filenames = ["default.rb", "only-in-1-1.rb"]
         cv
       end
       @all_cookbooks << begin
         cv = Chef::CookbookVersion.new("apache2")
         cv.version = "2.0.0"
+        cv.recipe_filenames = ["default.rb", "mod_ssl.rb"]
         cv
       end
       @all_cookbooks << begin
         cv = Chef::CookbookVersion.new("god")
         cv.version = "4.2.0"
+        cv.recipe_filenames = ["default.rb"]
         cv
       end
       Chef::CookbookVersion.stub!(:cdb_list).and_return @all_cookbooks
@@ -272,9 +277,33 @@ describe Chef::Environment do
       Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
     end
 
+    it "should handle cookbooks with no available version" do
+      @environment.cookbook_versions({
+                                       "apt" => "> 999.0.0",
+                                       "apache2" => "= 2.0.0"
+                                     })
+      Chef::Environment.should_receive(:cdb_load).with("prod", nil)
+      recipes = Chef::Environment.cdb_load_filtered_recipe_list("prod")
+      # order doesn't matter
+      recipes.should =~ ["god", "apache2", "apache2::mod_ssl"]
+    end
+
+    
     it "should load all the cookbook versions" do
       Chef::CookbookVersion.should_receive(:cdb_list)
       Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
+      recipes = Chef::Environment.cdb_load_filtered_recipe_list("prod")
+      recipes.should =~ ["apache2", "apache2::mod_ssl", "apt",
+                         "apt::only-in-1-0", "god"]
+    end
+
+    it "should load all the cookbook versions with no policy" do
+      @environment.cookbook_versions({})
+      Chef::CookbookVersion.should_receive(:cdb_list)
+      Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
+      recipes = Chef::Environment.cdb_load_filtered_recipe_list("prod")
+      recipes.should =~ ["apache2", "apache2::mod_ssl", "apt",
+                         "apt::only-in-1-1", "god"]
     end
 
     it "should restrict the cookbook versions, as specified in the environment" do

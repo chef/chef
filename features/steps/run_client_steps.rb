@@ -18,6 +18,7 @@
 
 require 'chef/shell_out'
 require 'chef/mixin/shell_out'
+require 'chef/index_queue/amqp_client'
 
 include Chef::Mixin::ShellOut
 
@@ -40,6 +41,38 @@ When /^I run the chef\-client$/ do
     @stderr = e.gets(nil)
   end
   @status = status
+end
+
+When /^I run the chef\-client in the background with '(.+)'$/ do |args|
+  @stdout_filename = "/tmp/chef.run_interval.stdout.#{$$}.txt"
+  @stderr_filename = "/tmp/chef.run_interval.stderr.#{$$}.txt"
+
+  @chef_args  = "#{args}"
+  @client_pid = Process.fork do
+    STDOUT.reopen(File.open(@stdout_filename, "w"))
+    STDERR.reopen(File.open(@stderr_filename, "w"))
+    exec chef_client_command_string()
+    exit 2
+  end
+end
+
+When /^I stop the background chef\-client after '(\d+)' seconds$/ do |timeout|
+  begin
+    sleep timeout.to_i
+    Process.kill("KILL", @client_pid)
+  rescue Errno::ESRCH
+    # Kill didn't work; the process exited while we were waiting, like
+    # it's supposed to.
+  end
+
+  # Read these in so they can be used in later steps.
+  @stdout = IO.read(@stdout_filename)
+  @stderr = IO.read(@stderr_filename)
+end
+
+Then /^the background chef\-client should not be running$/ do
+  system("ps -af | grep #{@client_pid} | grep -vq grep")
+  $?.exitstatus.should == 0
 end
 
 When "I run the chef-client for no more than '$timeout' seconds" do |timeout|
@@ -164,6 +197,30 @@ CONFIG
   @status = Chef::Mixin::Command.popen4("#{File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "chef-client")} -c #{@config_file} #{@chef_args}") do |p, i, o, e|
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
+  end
+end
+
+When /^I update cookbook 'sync_library' from 'sync_library_updated' after the first run$/ do
+  amqp  = Chef::IndexQueue::AmqpClient.instance
+  queue = amqp.amqp_client.queue("sync_library_test")
+  queue.subscribe(:timeout => 10) do |message|
+    if "first run complete" == message[:payload]
+
+      # Copy the updated library file over
+      source = File.join(datadir, 'cookbooks', 'sync_library_updated')
+      dest   = File.join(datadir, 'cookbooks', 'sync_library')
+      cmd    = "cp -r #{source}/. #{dest}/."
+      system(cmd)
+
+      # Upload the updated cookbook
+      knife_cmd = "#{KNIFE_CMD} cookbook upload -c #{KNIFE_CONFIG} -o #{INTEGRATION_COOKBOOKS} sync_library"
+      shell_out!(knife_cmd)
+
+      # Ack to release the client
+      queue.delivery_tag = message[:delivery_details][:delivery_tag]
+      queue.ack
+      break
+    end
   end
 end
 

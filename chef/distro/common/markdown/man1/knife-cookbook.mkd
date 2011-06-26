@@ -46,6 +46,9 @@ __knife cookbook upload [cookbooks...]__ _(options)_
     upload all cookbooks, rather than just a single cookbook
   * `-o`, `--cookbook-path path:path`:
     a colon-separated path to look for cookbooks in
+  * `-d`, `--upload-dependencies`:
+    Uploads additional cookbooks that this cookbook lists in as
+    dependencies in its metadata.
   * `-E`, `--environment ENVIRONMENT`:
     An _ENVIRONMENT_ to apply the uploaded cookbooks to. Specifying this
     option will cause knife to edit the _ENVIRONMENT_ to place a strict
@@ -62,6 +65,10 @@ __knife cookbook upload [cookbooks...]__ _(options)_
 Uploads one or more cookbooks from your local cookbook repository(ies)
 to the Chef Server. Only files that don't yet exist on the server will
 be uploaded.
+
+As the command parses the name args as 1..n cookbook names:
+    `knife cookbook upload COOKBOOK COOKBOOK ...`
+works for one to many cookbooks.
 
 ## DOWNLOAD
 __knife cookbook download cookbook [version]__ _(options)_

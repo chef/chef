@@ -70,6 +70,7 @@ F
 
     end
 
+    FORBIDDEN_IVARS = [:@run_context, :@node]
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node]
 
     include Chef::Mixin::CheckHelper
@@ -86,6 +87,8 @@ F
     attr_accessor :recipe_name
     attr_accessor :enclosing_provider
     attr_accessor :source_line
+    attr_accessor :retries
+    attr_accessor :retry_delay
 
     attr_reader :updated
 
@@ -111,6 +114,8 @@ F
       @updated_by_last_action = false
       @supports = {}
       @ignore_failure = false
+      @retries = 0
+      @retry_delay = 2
       @not_if = nil
       @not_if_args = {}
       @only_if = nil
@@ -223,6 +228,22 @@ F
       )
     end
 
+    def retries(arg=nil)
+      set_or_return(
+        :retries,
+        arg,
+        :kind_of => Integer
+      )
+    end
+
+    def retry_delay(arg=nil)
+      set_or_return(
+        :retry_delay,
+        arg,
+        :kind_of => Integer
+      )
+    end
+
     def epic_fail(arg=nil)
       ignore_failure(arg)
     end
@@ -320,7 +341,7 @@ F
     end
 
     def inspect
-      ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
+      ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
       ivars.inject("<#{to_s}") do |str, ivar|
         str << " #{ivar}: #{instance_variable_get(ivar).inspect}"
       end << ">"
@@ -328,11 +349,10 @@ F
 
     # Serialize this object as a hash
     def to_json(*a)
+      safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
       instance_vars = Hash.new
-      self.instance_variables.each do |iv|
-        unless iv == "@run_context"
-          instance_vars[iv] = self.instance_variable_get(iv)
-        end
+      safe_ivars.each do |iv|
+        instance_vars[iv.to_s.sub(/^@/, '')] = instance_variable_get(iv)
       end
       results = {
         'json_class' => self.class.name,
@@ -342,10 +362,11 @@ F
     end
 
     def to_hash
+      safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
       instance_vars = Hash.new
-      self.instance_variables.each do |iv|
+      safe_ivars.each do |iv|
         key = iv.to_s.sub(/^@/,'').to_sym
-        instance_vars[key] = self.instance_variable_get(iv) unless (key == :run_context) || (key == :node)
+        instance_vars[key] = instance_variable_get(iv)
       end
       instance_vars
     end
@@ -444,7 +465,7 @@ F
       def json_create(o)
         resource = self.new(o["instance_vars"]["@name"])
         o["instance_vars"].each do |k,v|
-          resource.instance_variable_set(k.to_sym, v)
+          resource.instance_variable_set("@#{k}".to_sym, v)
         end
         resource
       end
@@ -467,8 +488,8 @@ F
           set_or_return(attr_name.to_sym, arg, validation_opts)
         end
       end
-
-      def build_from_file(cookbook_name, filename)
+      
+      def build_from_file(cookbook_name, filename, run_context)
         rname = filename_to_qualified_string(cookbook_name, filename)
 
         # Add log entry if we override an existing light-weight resource.
@@ -489,6 +510,12 @@ F
 
           class << cls
             include Chef::Mixin::FromFile
+            
+            attr_accessor :run_context
+
+            def node
+              self.run_context.node
+            end
 
             def actions_to_create
               @actions_to_create
@@ -499,6 +526,9 @@ F
             end
           end
 
+          # set the run context in the class instance variable
+          cls.run_context = run_context
+          
           # load resource definition from file
           cls.class_from_file(filename)
 

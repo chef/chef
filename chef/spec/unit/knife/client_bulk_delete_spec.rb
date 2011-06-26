@@ -24,12 +24,10 @@ describe Chef::Knife::ClientBulkDelete do
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::ClientBulkDelete.new
-    @knife.config = {
-      :print_after => nil
-    }
     @knife.name_args = ["."]
-    @knife.stub!(:output).and_return(:true)
-    @knife.stub!(:confirm).and_return(true)
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub!(:confirm).and_return(true)
     @clients = Hash.new
     %w{tim dan stephen}.each do |client_name|
       client = Chef::ApiClient.new()
@@ -48,12 +46,12 @@ describe Chef::Knife::ClientBulkDelete do
     end
     
     it "should print the clients you are about to delete" do
-      @knife.should_receive(:output).with(@knife.format_list_for_display(@clients))
       @knife.run
+      @stdout.string.should match(/#{@knife.ui.list(@clients.keys.sort, :columns_down)}/)
     end
     
     it "should confirm you really want to delete them" do
-      @knife.should_receive(:confirm)
+      @knife.ui.should_receive(:confirm)
       @knife.run
     end
     
@@ -75,16 +73,6 @@ describe Chef::Knife::ClientBulkDelete do
     it "should exit if the regex is not provided" do
       @knife.name_args = []
       lambda { @knife.run }.should raise_error(SystemExit)
-    end
-
-    describe "with -p or --print_after" do
-      it "should pretty_print the client, formatted for display" do
-        @knife.config[:print_after] = true
-        @clients.each_value do |n|
-          @knife.should_receive(:output).with(@knife.format_for_display(n))
-        end
-        @knife.run
-      end
     end
   end
 end

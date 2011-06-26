@@ -24,11 +24,13 @@ class Chef
     class Bootstrap < Knife
 
       deps do
+        require 'chef/knife/core/bootstrap_context'
         require 'chef/json_compat'
         require 'tempfile'
         require 'highline'
         require 'net/ssh'
         require 'net/ssh/multi'
+        Chef::Knife::Ssh.load_deps
       end
 
       banner "knife bootstrap FQDN (options)"
@@ -66,9 +68,14 @@ class Chef
         :description => "Install the pre-release chef gems"
 
       option :bootstrap_version,
-        :long => "--bootstrap-version",
+        :long => "--bootstrap-version VERSION",
         :description => "The version of Chef to install",
-        :proc => lambda { |v| Chef::Config[:bootstrap_version] = v }
+        :proc => lambda { |v| Chef::Config[:knife][:bootstrap_version] = v }
+
+      option :bootstrap_proxy,
+        :long => "--bootstrap-proxy PROXY_URL",
+        :description => "The proxy server for the node being bootstrapped",
+        :proc => Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
 
       option :distro,
         :short => "-d DISTRO",
@@ -108,6 +115,7 @@ class Chef
           bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
           bootstrap_files << File.join(Dir.pwd, ".chef", "bootstrap", "#{config[:distro]}.erb")
           bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb")
+          bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{config[:distro]}.erb"))
         end
 
         template = Array(bootstrap_files).find do |bootstrap_template|
@@ -126,9 +134,7 @@ class Chef
       end
 
       def render_template(template=nil)
-        context = {}
-        context[:run_list] = config[:run_list]
-        context[:config] = config
+        context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config)
         Erubis::Eruby.new(template).evaluate(context)
       end
 
@@ -166,6 +172,7 @@ class Chef
 
       def knife_ssh
         ssh = Chef::Knife::Ssh.new
+        ssh.ui = ui
         ssh.name_args = [ server_name, ssh_command ]
         ssh.config[:ssh_user] = config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
@@ -193,36 +200,6 @@ class Chef
         command
       end
 
-      module TemplateHelper
-
-        #
-        # == Chef::Knife::Bootstrap::TemplateHelper
-        #
-        # The methods in the TemplateHelper module expect to have access to
-        # the instance varialbles set above as part of the context in the
-        # Chef::Knife::Bootstrap#render_context method. Those instance
-        # variables are:
-        #
-        # * @config   - a hash of knife's config values
-        # * @run_list - the run list for the node to boostrap
-        #
-
-        ::Erubis::Context.send(:include, Chef::Knife::Bootstrap::TemplateHelper)
-
-        def bootstrap_version_string(type=nil)
-          version = Chef::Config[:bootstrap_version] || Chef::VERSION
-          case type
-          when :gems
-            if @config[:prerelease]
-              "--prerelease"
-            else
-              "--version #{version}"
-            end
-          else
-            version
-          end
-        end
-      end
     end
   end
 end

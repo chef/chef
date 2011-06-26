@@ -81,7 +81,7 @@ class Chef
     class << self
       include Chef::Mixin::ConvertToClassName
       
-      def build_from_file(cookbook_name, filename)
+      def build_from_file(cookbook_name, filename, run_context)
         pname = filename_to_qualified_string(cookbook_name, filename)
         
         # Add log entry if we override an existing light-weight provider.

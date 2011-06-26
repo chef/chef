@@ -56,11 +56,20 @@ describe Chef::Provider::Mount::Mount do
       @stdout_findfs = mock("STDOUT", :first => "/dev/sdz1")
       @provider.should_receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,@stdout_findfs,@stderr).and_return(@status)
       @provider.load_current_resource()
+      @provider.mountable?
     end
 
     it "should raise an error if the mount device does not exist" do
       ::File.stub!(:exists?).with("/dev/sdz1").and_return false
-      lambda { @provider.load_current_resource() }.should raise_error(Chef::Exceptions::Mount)
+      lambda { @provider.load_current_resource();@provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
+    end
+
+    it "should not call mountable? with load_current_resource - CHEF-1565" do
+      ::File.stub!(:exists?).with("/dev/sdz1").and_return false
+      @provider.should_receive(:mounted?).and_return(true)
+      @provider.should_receive(:enabled?).and_return(true)
+      @provider.should_not_receive(:mountable?)
+      @provider.load_current_resource
     end
     
     it "should raise an error if the mount device (uuid) does not exist" do
@@ -70,12 +79,12 @@ describe Chef::Provider::Mount::Mount do
       stdout_findfs = mock("STDOUT", :first => nil)
       @provider.should_receive(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(@pid,@stdin,stdout_findfs,@stderr).and_return(status_findfs)
       ::File.should_receive(:exists?).with("").and_return(false)
-      lambda { @provider.load_current_resource() }.should raise_error(Chef::Exceptions::Mount)
+      lambda { @provider.load_current_resource();@provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
     end
     
     it "should raise an error if the mount point does not exist" do
       ::File.stub!(:exists?).with("/tmp/foo").and_return false
-      lambda { @provider.load_current_resource() }.should raise_error(Chef::Exceptions::Mount)
+      lambda { @provider.load_current_resource();@provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
     end
 
     it "does not expect the device to exist when it is tmpfs" do
@@ -125,10 +134,20 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should set enabled to true if the mount point is last in fstab" do
-      fstab = "/dev/sdy1  /tmp/foo  ext3  defaults  1 2\n"
-      fstab << "/dev/sdz1 /tmp/foo  ext3 defaults  1 2\n"
+      fstab1 = "/dev/sdy1  /tmp/foo  ext3  defaults  1 2\n"
+      fstab2 = "#{@new_resource.device} #{@new_resource.mount_point}  ext3  defaults  1 2\n"
 
-      ::File.stub!(:foreach).with("/etc/fstab").and_yield fstab
+      ::File.stub!(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
+
+      @provider.load_current_resource
+      @provider.current_resource.enabled.should be_true
+    end
+
+    it "should set enabled to true if the mount point is not last in fstab and mount_point is a substring of another mount" do
+      fstab1 = "#{@new_resource.device} #{@new_resource.mount_point}  ext3  defaults  1 2\n"
+      fstab2 = "/dev/sdy1  /tmp/foo/bar  ext3  defaults  1 2\n"
+
+      ::File.stub!(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
 
       @provider.load_current_resource
       @provider.current_resource.enabled.should be_true

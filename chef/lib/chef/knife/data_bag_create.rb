@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ class Chef
 
       deps do
         require 'chef/data_bag'
+        require 'chef/encrypted_data_bag_item'
       end
 
       banner "knife data bag create BAG [ITEM] (options)"
@@ -36,7 +37,7 @@ class Chef
       :description => "The secret key to use to encrypt data bag item values"
 
       option :secret_file,
-      :long => "--secret_file SECRET_FILE",
+      :long => "--secret-file SECRET_FILE",
       :description => "A file containing the secret key to use to encrypt data bag item values"
 
       def read_secret
@@ -49,7 +50,7 @@ class Chef
 
       def use_encryption
         if config[:secret] && config[:secret_file]
-          stdout.puts "please specify only one of --secret, --secret_file"
+          stdout.puts "please specify only one of --secret, --secret-file"
           exit(1)
         end
         config[:secret] || config[:secret_file]
@@ -63,7 +64,7 @@ class Chef
           stdout.puts("You must specify a data bag name")
           exit 1
         end
-        
+
         # create the data bag
         begin
           rest.post_rest("data", { "name" => @data_bag_name })
@@ -72,16 +73,17 @@ class Chef
           raise unless e.to_s =~ /^409/
           ui.info("Data bag #{@data_bag_name} already exists")
         end
-        
+
         # if an item is specified, create it, as well
         if @data_bag_item_name
           create_object({ "id" => @data_bag_item_name }, "data_bag_item[#{@data_bag_item_name}]") do |output|
-            item = if use_encryption
-                     Chef::EncryptedDataBagItem.encrypt_data_bag_item(output,
-                                                                      read_secret)
-                   else
-                     output
-                   end
+            item = Chef::DataBagItem.from_hash(
+                     if use_encryption
+                       Chef::EncryptedDataBagItem.encrypt_data_bag_item(output, read_secret)
+                     else
+                       output
+                     end)
+            item.data_bag(@data_bag_name)
             rest.post_rest("data/#{@data_bag_name}", item)
           end
         end

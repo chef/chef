@@ -40,7 +40,7 @@ class Chef
   class ShellOut
     READ_WAIT_TIME = 0.01
     READ_SIZE = 4096
-    DEFAULT_READ_TIMEOUT = 60
+    DEFAULT_READ_TIMEOUT = 600
     DEFAULT_ENVIRONMENT = {'LC_ALL' => 'C'}
 
     if RUBY_PLATFORM =~ /mswin|mingw32|windows/
@@ -190,7 +190,7 @@ class Chef
     # Chef::Exceptions::ShellCommandFailed::: via +invalid!+
     def error!
       unless Array(valid_exit_codes).include?(exitstatus)
-        invalid!("Expected process to exit 0, but it exited with #{exitstatus}")
+        invalid!("Expected process to exit with #{valid_exit_codes.inspect}, but received '#{exitstatus}'")
       end
     end
 

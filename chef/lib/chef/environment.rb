@@ -1,6 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: John Keiser (<jkeiser@ospcode.com>)
 # Copyright:: Copyright 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -398,12 +399,17 @@ class Chef
 
     def self.cdb_load_filtered_recipe_list(name, couchdb=nil)
       cdb_load_filtered_cookbook_versions(name, couchdb).map do |cb_name, cb|
-        cb.first.recipe_filenames_by_name.keys.map do |recipe|
-          case recipe
-          when DEFAULT
-            cb_name
-          else
-            "#{cb_name}::#{recipe}"
+        if cb.empty?            # no available versions
+          []                    # empty list elided with flatten
+        else
+          latest_version = cb.first
+          latest_version.recipe_filenames_by_name.keys.map do |recipe|
+            case recipe
+            when DEFAULT
+              cb_name
+            else
+              "#{cb_name}::#{recipe}"
+            end
           end
         end
       end.flatten

@@ -218,17 +218,17 @@ class Chef
     def save(item_id=@raw_data['id'])
       r = chef_server_rest
       begin
-        r.put_rest("data/#{data_bag}/#{item_id}", @raw_data)
+        r.put_rest("data/#{data_bag}/#{item_id}", self)
       rescue Net::HTTPServerException => e
         raise e unless e.response.code == "404"
-        r.post_rest("data/#{data_bag}", @raw_data)
+        r.post_rest("data/#{data_bag}", self)
       end
       self
     end
 
     # Create this Data Bag Item via RESTful API
     def create
-      chef_server_rest.post_rest("data/#{data_bag}", @raw_data)
+      chef_server_rest.post_rest("data/#{data_bag}", self)
       self
     end
 

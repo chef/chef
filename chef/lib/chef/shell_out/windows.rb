@@ -58,10 +58,10 @@ class Chef
 
             out_reader.join
             err_reader.join
-
-            @status = $?
           end
         end
+
+        @status = $?
 
         self
 

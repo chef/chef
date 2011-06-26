@@ -307,7 +307,7 @@ class Chef
         gems = YAML.load(IO.read("#{release_path}/gems.yml"))
 
         gems.map do |g|
-          r = Chef::Resource::GemPackage.new(g[:name])
+          r = Chef::Resource::GemPackage.new(g[:name], run_context)
           r.version g[:version]
           r.action :install
           r.source "http://gems.github.com"

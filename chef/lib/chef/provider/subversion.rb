@@ -31,7 +31,7 @@ class Chef
       def load_current_resource
         @current_resource = Chef::Resource::Subversion.new(@new_resource.name)
 
-        unless [:export, :force_export].include?(@new_resource.action.first)
+        unless [:export, :force_export].include?(Array(@new_resource.action).first)
           if current_revision = find_current_revision
             @current_resource.revision current_revision
           end

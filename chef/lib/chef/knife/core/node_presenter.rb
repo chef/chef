@@ -60,14 +60,17 @@ class Chef
         def summarize(data)
           if data.kind_of?(Chef::Node)
             node = data
+            # special case ec2 with their split horizon whatsis.
+            ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
+
             summarized=<<-SUMMARY
 #{ui.color('Node Name:', :bold)}   #{ui.color(node.name, :bold)}
 #{key('Environment:')} #{node.chef_environment}
 #{key('FQDN:')}        #{node[:fqdn]}
-#{key('IP:')}          #{node[:ipaddress]}
+#{key('IP:')}          #{ip}
 #{key('Run List:')}    #{node.run_list}
 #{key('Roles:')}       #{Array(node[:roles]).join(', ')}
-#{key('Recipes')}      #{Array(node[:recipes]).join(', ')}
+#{key('Recipes:')}     #{Array(node[:recipes]).join(', ')}
 #{key('Platform:')}    #{node[:platform]} #{node[:platform_version]}
 SUMMARY
             if config[:medium_output] || config[:long_output]

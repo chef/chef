@@ -126,7 +126,8 @@ class Chef
             :default => {
               :service => Chef::Provider::Service::Redhat,
               :cron => Chef::Provider::Cron,
-              :package => Chef::Provider::Package::Zypper
+              :package => Chef::Provider::Package::Zypper,
+              :group => Chef::Provider::Group::Suse
             }
           },
           :redhat   => {

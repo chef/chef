@@ -407,6 +407,7 @@ class Chef
       when NameError, NoMethodError
         ui.error "knife encountered an unexpected error"
         ui.info  "This may be a bug in the '#{self.class.common_name}' knife command or plugin"
+        ui.info  "Please collect the output of this command with the `-VV` option before filing a bug report."
         ui.info  "Exception: #{e.class.name}: #{e.message}"
       when Chef::Exceptions::PrivateKeyMissing
         ui.error "Your private key could not be loaded from #{api_key}"
@@ -494,34 +495,6 @@ class Chef
 
       obj_name = delete_name ? "#{delete_name}[#{name}]" : object
       self.msg("Deleted #{obj_name}")
-    end
-
-    def bulk_delete(klass, fancy_name, delete_name=nil, list=nil, regex=nil, &block)
-      object_list = list ? list : klass.list(true)
-
-      if regex
-        to_delete = Hash.new
-        object_list.each_key do |object|
-          next if regex && object !~ /#{regex}/
-          to_delete[object] = object_list[object]
-        end
-      else
-        to_delete = object_list
-      end
-
-      output(format_list_for_display(to_delete))
-
-      confirm("Do you really want to delete the above items")
-
-      to_delete.each do |name, object|
-        if Kernel.block_given?
-          block.call(name, object)
-        else
-          object.destroy
-        end
-        output(format_for_display(object)) if config[:print_after]
-        self.msg("Deleted #{fancy_name} #{name}")
-      end
     end
 
     def rest

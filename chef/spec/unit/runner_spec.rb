@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -109,6 +109,15 @@ describe Chef::Runner do
     lambda { @runner.converge }.should_not raise_error(ArgumentError)
   end
 
+  it "should retry with the specified delay if retries are specified" do
+    @first_resource.retries 3
+    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
+    Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
+    provider.stub!(:action_sell).and_raise(ArgumentError)
+    @runner.should_receive(:sleep).with(2).exactly(3).times
+    lambda { @runner.converge }.should raise_error(ArgumentError)
+  end
+
   it "should execute immediate actions on changed resources" do
     notifying_resource = Chef::Resource::Cat.new("peanut", @run_context)
     notifying_resource.action = :purr # only action that will set updated on the resource
@@ -144,7 +153,7 @@ describe Chef::Runner do
   end
 
   it "should execute delayed actions on changed resources" do
-    @first_resource.action = :nothing 
+    @first_resource.action = :nothing
     second_resource = Chef::Resource::Cat.new("peanut", @run_context)
     second_resource.action = :purr
 

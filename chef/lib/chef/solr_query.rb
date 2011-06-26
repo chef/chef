@@ -50,7 +50,7 @@ class Chef
         @database = Chef::Config[:couchdb_database]
         @couchdb = Chef::CouchDB.new(nil, Chef::Config[:couchdb_database])
       else
-        unless couchdb.kind_of?(Chef::CouchDB)
+        unless couchdb.respond_to?(:couchdb_database)
           Chef::Log.warn("Passing the database name to Chef::Solr::Query initialization is deprecated. Please pass in the Chef::CouchDB object instead.")
           @database = couchdb
           @couchdb = Chef::CouchDB.new(nil, couchdb)
@@ -152,7 +152,7 @@ class Chef
       delete_database(db)
 
       results = {}
-      [Chef::ApiClient, Chef::Node, Chef::Role].each do |klass|
+      [Chef::ApiClient, Chef::Node, Chef::Role, Chef::Environment].each do |klass|
         results[klass.name] = reindex_all(klass) ? "success" : "failed"
       end
       databags = Chef::DataBag.cdb_list(true)

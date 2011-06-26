@@ -102,13 +102,14 @@ __knife node show__ _node name_ _(options)_
 
 Displays the node identified by _node name_ on stdout. The amount of
 content displayed and the output format are modified by the --format
-option. Valid formats are:
+option. If no alternate format is selected, the default is summary. 
+Valid formats are:
 
   * summary:
-    displays the node in a custom, summarized format
+    displays the node in a custom, summarized format (default)
   * text
     displays the node data in its entirety using the colorized tree
-display
+display 
   * json:
     displays the node in JSON format
   * yaml:

@@ -1,9 +1,9 @@
-chef-expander-cluster(8) -- fetches messages from RabbitMQ, processes, and loads into chef-solr
+chef-expander(8) -- fetches messages from RabbitMQ, processes, and loads into chef-solr
 ========================================
 
 ## SYNOPSIS
 
-__chef-expander-cluster__ _(options)_
+__chef-expander__ _(options)_
 
   * `-c`, `--config CONFIG_FILE`:
     a configuration file to use
@@ -33,13 +33,13 @@ __Running Chef Expander__
 
 Chef Expander is designed for clustered operation, though small
 installations will only need one worker process. To run Chef
-Expander with one worker process, run chef-expander-cluster -n 1.
+Expander with one worker process, run chef-expander -n 1.
 You will then have a master and worker process, which looks like
 this in ps:
 
     your-shell> ps aux|grep expander
     you   52110   0.1  0.7  2515476  62748 s003  S+    3:49PM   0:00.80 chef-expander worker #1 (vnodes 0-1023)
-    you   52108   0.1  0.5  2492880  41696 s003  S+    3:49PM   0:00.91 ruby bin/chef-expander-cluster -n 1
+    you   52108   0.1  0.5  2492880  41696 s003  S+    3:49PM   0:00.91 ruby bin/chef-expander -n 1
 
 Workers are single threaded and therefore cannot use more than 100%
 of a single CPU. If you find that your queues are getting backlogged,

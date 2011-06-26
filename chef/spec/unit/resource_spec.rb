@@ -193,7 +193,7 @@ describe Chef::Resource do
                         :updated, :updated_by_last_action, :before, :not_if, :supports,
                         :delayed_notifications, :immediate_notifications, :noop,
                         :ignore_failure, :name, :source_line, :action,
-                        :not_if_args, :only_if_args
+                        :not_if_args, :only_if_args, :retries, :retry_delay
                       ]
       (hash.keys - expected_keys).should == []
       (expected_keys - hash.keys).should == []
@@ -235,6 +235,26 @@ describe Chef::Resource do
     it "should allow you to epic_fail" do
       @resource.epic_fail(true)
       @resource.epic_fail.should == true
+    end
+  end
+
+  describe "retries" do
+    it "should default to not retrying if a provider fails for a resource" do
+      @resource.retries.should == 0
+    end
+
+    it "should allow you to set how many retries a provider should attempt after a failure" do
+      @resource.retries(2)
+      @resource.retries.should == 2
+    end
+
+    it "should default to a retry delay of 2 seconds" do
+      @resource.retry_delay.should == 2
+    end
+
+    it "should allow you to set the retry delay" do
+      @resource.retry_delay(10)
+      @resource.retry_delay.should == 10
     end
   end
 

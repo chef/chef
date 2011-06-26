@@ -823,21 +823,18 @@ class Chef
       self.class.chef_server_rest
     end
 
-    # Save this object to the server via the REST api. If there is an existing
-    # document on the server and it is marked frozen, a
-    # Net::HTTPServerException will be raised for 409 Conflict.
-    def save
-      chef_server_rest.put_rest("cookbooks/#{name}/#{version}", self)
-      self
+    # Return the URL to save (PUT) this object to the server via the
+    # REST api. If there is an existing document on the server and it
+    # is marked frozen, a PUT will result in a 409 Conflict.
+    def save_url
+      "cookbooks/#{name}/#{version}"
     end
-    alias :create :save
 
-    # Adds the `force=true` parameter to the upload. This allows the user to
-    # overwrite a frozen cookbook (normal #save raises a
-    # Net::HTTPServerException for 409 Conflict in this case).
-    def force_save
-      chef_server_rest.put_rest("cookbooks/#{name}/#{version}?force=true", self)
-      self
+    # Adds the `force=true` parameter to the upload URL. This allows
+    # the user to overwrite a frozen cookbook (a PUT against the
+    # normal #save_url raises a 409 Conflict in this case).
+    def force_save_url
+      "cookbooks/#{name}/#{version}?force=true"
     end
 
     def destroy

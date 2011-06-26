@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'socket'
 require 'chef/config'
 require 'chef/exceptions'
 require 'chef/log'
@@ -127,13 +128,12 @@ class Chef::Application
   class << self
     def debug_stacktrace(e)
       message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-      filename = File.join(Chef::Config[:file_cache_path], "chef-stacktrace.out") 
-      Chef::Log.fatal("Stacktrace dumped to #{filename}")
+      chef_stacktrace_out = "Generated at #{Time.now.to_s}\n"
+      chef_stacktrace_out += message
+
+      Chef::FileCache.store("chef-stacktrace.out", chef_stacktrace_out)
+      Chef::Log.fatal("Stacktrace dumped to #{Chef::FileCache.load("chef-stacktrace.out", false)}")
       Chef::Log.debug(message)
-      chef_stacktrace_out = File.open(filename, "w")
-      chef_stacktrace_out.puts "Generated at #{Time.now.to_s}"
-      chef_stacktrace_out.puts message
-      chef_stacktrace_out.close
       true
     end
 

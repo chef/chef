@@ -113,7 +113,7 @@ class Chef
       end
 
       def branch_exists?(branch_name)
-        git("branch --no-color").stdout.lines.any? {|l| l.include?(branch_name) }
+        git("branch --no-color").stdout.lines.any? {|l| l =~ /\s#{Regexp.escape(branch_name)}(?:\s|$)/ }
       end
 
       private
