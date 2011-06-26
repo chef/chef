@@ -31,7 +31,6 @@ end
 
 class Chef
   class CouchDB
-    include Chef::Mixin::ParamsValidate
 
     def initialize(url=nil, db=Chef::Config[:couchdb_database])
       url ||= Chef::Config[:couchdb_url]
@@ -98,16 +97,6 @@ class Chef
 
     # Save the object to Couch. Add to index if the object supports it.
     def store(obj_type, name, object)
-      validate(
-        {
-          :obj_type => obj_type,
-          :name => name,
-          :object => object,
-        },
-        {
-          :object => { :respond_to => :to_json },
-        }
-      )
       rows = get_view("id_map", "name_to_id", :key => [ obj_type, name ])["rows"]
       uuid = rows.empty? ? UUIDTools::UUID.random_create.to_s : rows.first.fetch("id")
 
@@ -122,32 +111,12 @@ class Chef
     end
 
     def load(obj_type, name)
-      validate(
-        {
-          :obj_type => obj_type,
-          :name => name,
-        },
-        {
-          :obj_type => { :kind_of => String },
-          :name => { :kind_of => String },
-        }
-               )
       doc = find_by_name(obj_type, name)
       doc.couchdb = self if doc.respond_to?(:couchdb)
       doc
     end
 
     def delete(obj_type, name, rev=nil)
-      validate(
-        {
-          :obj_type => obj_type,
-          :name => name,
-        },
-        {
-          :obj_type => { :kind_of => String },
-          :name => { :kind_of => String },
-        }
-      )
       del_id = nil
       object, uuid = find_by_name(obj_type, name, true)
       unless rev
@@ -169,14 +138,6 @@ class Chef
     end
 
     def list(view, inflate=false)
-      validate(
-        {
-          :view => view,
-        },
-        {
-          :view => { :kind_of => String }
-        }
-      )
       if inflate
         r = @rest.get_rest(view_uri(view, "all"))
         r["rows"].each { |i| i["value"].couchdb = self if i["value"].respond_to?(:couchdb=) }
@@ -188,16 +149,6 @@ class Chef
     end
 
     def has_key?(obj_type, name)
-      validate(
-        {
-          :obj_type => obj_type,
-          :name => name,
-        },
-        {
-          :obj_type => { :kind_of => String },
-          :name => { :kind_of => String },
-        }
-      )
       begin
         find_by_name(obj_type, name)
         true
