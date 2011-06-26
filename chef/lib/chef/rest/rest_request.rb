@@ -24,15 +24,6 @@ require 'uri'
 require 'net/http'
 require 'chef/rest/cookie_jar'
 
-# To load faster, we only want ohai's version string.
-# However, in ohai before 0.6.0, the version is defined
-# in ohai, not ohai/version
-begin
-  require 'ohai/version' #used in user agent string.
-rescue LoadError
-  require 'ohai'
-end
-
 require 'chef/version'
 
 class Chef
@@ -41,7 +32,7 @@ class Chef
 
       engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
 
-      UA_COMMON = "/#{::Chef::VERSION} (#{engine}-#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}; ohai-#{Ohai::VERSION}; #{RUBY_PLATFORM}; +http://opscode.com)"
+      UA_COMMON = "/#{::Chef::VERSION} (#{engine}-#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}; #{RUBY_PLATFORM}; +http://opscode.com)"
       DEFAULT_UA = "Chef Client" << UA_COMMON
 
       def self.user_agent=(ua)
