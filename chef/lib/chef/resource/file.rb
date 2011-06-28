@@ -94,6 +94,14 @@ class Chef
         )
       end
 
+      def selinux_label(arg=nil)
+        set_or_return(
+          :selinux_label,
+          arg,
+          :kind_of => String
+        )
+      end
+
     end
   end
 end

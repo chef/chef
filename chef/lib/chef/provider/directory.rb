@@ -21,6 +21,7 @@ require 'chef/log'
 require 'chef/resource/directory'
 require 'chef/provider'
 require 'chef/provider/file'
+require 'chef/util/selinux'
 require 'fileutils'
 
 class Chef
@@ -34,6 +35,7 @@ class Chef
           @current_resource.owner(cstats.uid)
           @current_resource.group(cstats.gid)
           @current_resource.mode("%o" % (cstats.mode & 007777))
+          @current_resource.selinux_label(selinux_get_context(@current_resource.path)) if selinux_support?
         end
         @current_resource
       end
@@ -51,6 +53,7 @@ class Chef
         set_owner if @new_resource.owner != nil
         set_group if @new_resource.group != nil
         set_mode if @new_resource.mode != nil
+        set_selinux_label if selinux_support?
       end
 
       def action_delete
