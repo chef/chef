@@ -52,3 +52,10 @@ Feature: CRUD cookbooks
      When I 'DELETE' to the path '/cookbooks/testcookbook_nonexistent'
      Then I should get a '404 "Not Found"' exception
 
+  @delete_cookbook_negative @cookbook_non_admin
+  Scenario: I should not be able to delete cookbook if I am not an admin
+    Given I am an administrator
+     When I fully upload a sandboxed cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+    Given I am a non-admin
+     When I 'DELETE' to the path '/cookbooks/testcookbook_valid/0.1.0'
+     Then I should get a '403 "Forbidden"' exception

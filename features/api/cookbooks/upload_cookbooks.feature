@@ -140,3 +140,22 @@ Feature: CRUD cookbooks
      Then I should not get an exception
      When I create a cookbook named 'testcookbook_invalid_empty_except_metadata' with only the metadata file
      Then I should get a '400 "Bad Request"' exception
+
+  @create_cookbook_negative @cookbook_non_admin
+  Scenario: Should not be able to create a cookbook if I am not an admin
+    Given I am an administrator
+     When I create a sandbox named 'sandbox1' for cookbook 'testcookbook_valid'
+     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
+     Then I upload a file named 'metadata.json' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'metadata.rb' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'attributes/attributes.rb' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'recipes/default.rb' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     When I commit the sandbox
+     Then I should not get an exception
+    Given I am a non-admin
+     When I create a versioned cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+     Then I should get a '403 "Forbidden"' exception
