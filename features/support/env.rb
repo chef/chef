@@ -135,8 +135,11 @@ def create_databases
   Chef::Environment.create_default_environment
   system("cp #{File.join(Dir.tmpdir, "chef_integration", "validation.pem")} #{Dir.tmpdir}")
   system("cp #{File.join(Dir.tmpdir, "chef_integration", "webui.pem")} #{Dir.tmpdir}")
+  c = Chef::ApiClient.cdb_load(Chef::Config[:web_ui_client_name])
+  c.admin(true)
+  c.cdb_save
 
-  cmd = [KNIFE_CMD, "cookbook", "upload", "-a", "-o", INTEGRATION_COOKBOOKS, "-u", "validator", "-k", File.join(Dir.tmpdir, "validation.pem"), "-c", KNIFE_CONFIG]
+  cmd = [KNIFE_CMD, "cookbook", "upload", "-a", "-o", INTEGRATION_COOKBOOKS, "-u", Chef::Config[:web_ui_client_name], "-k", File.join(Dir.tmpdir, "webui.pem"), "-c", KNIFE_CONFIG]
   Chef::Log.info("Uploading fixture cookbooks with #{cmd.join(' ')}")
   cmd << {:timeout => 120}
   shell_out!(*cmd)
