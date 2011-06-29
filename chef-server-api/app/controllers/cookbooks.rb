@@ -30,6 +30,7 @@ class Cookbooks < Application
 
   before :authenticate_every
   before :params_helper
+  before :is_admin, :only => [ :update, :destroy ]
 
   attr_accessor :cookbook_name, :cookbook_version
 
