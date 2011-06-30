@@ -135,12 +135,13 @@ def dump_packages(yb, list, output_provides):
   else:
     # Old style method - no reinstall list
     for pkg in yb.pkgSack.returnPackages():
-      pkg.type = 'a'
 
       if str(pkg) in packages:
         if packages[str(pkg)].type == "i":
-          pkg.type = 'r'
+          packages[str(pkg)].type = 'r'
+          continue
 
+      pkg.type = 'a'
       packages[str(pkg)] = pkg
 
   unique_packages = packages.values()
@@ -157,7 +158,7 @@ def dump_packages(yb, list, output_provides):
         provlist = []
 
         # Installed and available are gathered in different ways
-        if pkg.type == 'r':
+        if pkg.type == 'i' or pkg.type == 'r':
           names = pkg.hdr[rpm.RPMTAG_PROVIDENAME]
           flags = pkg.hdr[rpm.RPMTAG_PROVIDEFLAGS]
           ver = pkg.hdr[rpm.RPMTAG_PROVIDEVERSION]
