@@ -363,6 +363,9 @@ class Chef
           def compare(y)
             x = self
 
+            # easy! :)
+            return 0 if x.nevra == y.nevra
+
             # compare name
             if x.n.nil? == false and y.n.nil?
               return 1
@@ -505,6 +508,8 @@ class Chef
           def initialize
             # package name => [ RPMPackage, RPMPackage ] of different versions
             @rpms = Hash.new
+            # package nevra => RPMPackage for lookups
+            @index = Hash.new
             # provide name (aka feature) => [RPMPackage, RPMPackage] each providing this feature
             @provides = Hash.new
             # RPMPackages listed as available
@@ -517,15 +522,21 @@ class Chef
             self.lookup(package_name)
           end
 
+          # Lookup package_name and return a descending array of package objects
           def lookup(package_name)
-            @rpms[package_name]
+            pkgs = @rpms[package_name]
+            if pkgs
+              return pkgs.sort.reverse
+            else
+              return nil
+            end
           end
 
           def lookup_provides(provide_name)
             @provides[provide_name]
           end
 
-          # Using the package name as a key keep a unique, descending list of packages.
+          # Using the package name as a key, and nevra for an index, keep a unique list of packages.
           # The available/installed state can be overwritten for existing packages.
           def push(*args)
             args.flatten.each do |new_rpm|
@@ -534,16 +545,14 @@ class Chef
               end
 
               @rpms[new_rpm.n] ||= Array.new
-
-              # new_rpm may be a different object but it will be compared using RPMPackages <=>
-              idx = @rpms[new_rpm.n].index(new_rpm)
-              if idx
+         
+              # we may already have this one, like when the installed list is refreshed
+              idx = @index[new_rpm.nevra]
+              if idx 
                 # grab the existing package if it's not
-                curr_rpm = @rpms[new_rpm.n][idx]
+                curr_rpm = idx 
               else
                 @rpms[new_rpm.n] << new_rpm
-                @rpms[new_rpm.n].sort!
-                @rpms[new_rpm.n].reverse!
 
                 new_rpm.provides.each do |provide|
                   @provides[provide.name] ||= Array.new
@@ -552,6 +561,10 @@ class Chef
 
                 curr_rpm = new_rpm
               end
+           
+              # Track the nevra -> RPMPackage association to avoid having to compare versions
+              # with @rpms[new_rpm.n] on the next round
+              @index[new_rpm.nevra] = curr_rpm
 
               # these are overwritten for existing packages
               if new_rpm.available
@@ -569,6 +582,7 @@ class Chef
 
           def clear
             @rpms.clear
+            @index.clear
             @provides.clear
             clear_available
             clear_installed
@@ -805,7 +819,6 @@ class Chef
           end
 
           private
-
           def version(package_name, arch=nil, is_available=false, is_installed=false)
             refresh
             packages = @rpmdb[package_name]
