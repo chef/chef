@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,7 +66,7 @@ class Chef
               [ epoch, version, release ]
             end
 
-            # verify 
+            # verify
             def isalnum(x)
               isalpha(x) or isdigit(x)
             end
@@ -89,7 +89,7 @@ class Chef
               if x.nil?
                 x = ""
               end
-              
+
               if y.nil?
                 y = ""
               end
@@ -97,13 +97,13 @@ class Chef
               # not so easy :(
               #
               # takes 2 strings like
-              # 
+              #
               # x = "1.20.b18.el5"
               # y = "1.20.b17.el5"
               #
               # breaks into purely alpha and numeric segments and compares them using
               # some rules
-              # 
+              #
               # * 10 > 1
               # * 1 > a
               # * z > a
@@ -212,7 +212,7 @@ class Chef
                 return 0
               end
 
-              # the most unprocessed characters left wins 
+              # the most unprocessed characters left wins
               if (x_pos_max - x_pos) > (y_pos_max - y_pos)
                 return 1
               else
@@ -250,17 +250,17 @@ class Chef
           def <=>(y)
             compare_versions(y)
           end
-          
+
           def compare(y)
             compare_versions(y, false)
           end
-          
+
           def partial_compare(y)
             compare_versions(y, true)
           end
 
           # RPM::Version rpm_version_to_s equivalent
-          def to_s 
+          def to_s
             if @r.nil?
               @v
             else
@@ -271,7 +271,7 @@ class Chef
           def evr
             "#{@e}:#{@v}-#{@r}"
           end
-          
+
           private
 
           # Rough RPM::Version rpm_version_cmp equivalent - except much slower :)
@@ -309,7 +309,7 @@ class Chef
               return cmp if cmp != 0
             end
 
-            # compare release 
+            # compare release
             if partial and (x.r.nil? or y.r.nil?)
               return 0
             elsif x.r.nil? == false and y.r.nil?
@@ -468,7 +468,7 @@ class Chef
             end
 
             # Partial compare
-            # 
+            #
             # eg: x.version 2.3 == y.version 2.3-1
             sense = x.version.partial_compare(y.version)
 
@@ -491,7 +491,7 @@ class Chef
 
         class RPMProvide < RPMDependency; end
         class RPMRequire < RPMDependency; end
-        
+
         class RPMDbPackage < RPMPackage
           # <rpm parts>, installed, available
           def initialize(*args)
@@ -545,12 +545,12 @@ class Chef
               end
 
               @rpms[new_rpm.n] ||= Array.new
-         
+
               # we may already have this one, like when the installed list is refreshed
               idx = @index[new_rpm.nevra]
-              if idx 
+              if idx
                 # grab the existing package if it's not
-                curr_rpm = idx 
+                curr_rpm = idx
               else
                 @rpms[new_rpm.n] << new_rpm
 
@@ -561,7 +561,7 @@ class Chef
 
                 curr_rpm = new_rpm
               end
-           
+
               # Track the nevra -> RPMPackage association to avoid having to compare versions
               # with @rpms[new_rpm.n] on the next round
               @index[new_rpm.nevra] = curr_rpm
@@ -650,7 +650,7 @@ class Chef
             # Next time @rpmdb is accessed:
             #  :all       - Trigger a run of "yum-dump.py --options --installed-provides", updates
             #               yum's cache and parses options from /etc/yum.conf. Pulls in Provides
-            #               dependency data for installed packages only - this data is slow to 
+            #               dependency data for installed packages only - this data is slow to
             #               gather.
             #  :provides  - Same as :all but pulls in Provides data for available packages as well.
             #               Used as a last resort when we can't find a Provides match.
@@ -779,7 +779,7 @@ class Chef
           end
 
           # Querying the cache
-          # 
+          #
 
           def package_available?(package_name)
             refresh
@@ -795,7 +795,7 @@ class Chef
             refresh
             @rpmdb.whatprovides(rpmdep)
           end
- 
+
           def version_available?(package_name, desired_version, arch=nil)
              version(package_name, arch, true, false) do |v|
                return true if desired_version == v
@@ -891,11 +891,11 @@ class Chef
           end
         end
 
-        def allow_downgrade 
+        def allow_downgrade
           if @new_resource.respond_to?("allow_downgrade")
             @new_resource.allow_downgrade
           else
-            false 
+            false
           end
         end
 
@@ -963,7 +963,7 @@ class Chef
         end
 
         def install_package(name, version)
-          if @new_resource.source 
+          if @new_resource.source
             run_command_with_systems_locale(
               :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} localinstall #{@new_resource.source}"
             )
@@ -1049,8 +1049,8 @@ class Chef
         end
 
         private
-        
-        def parse_arch 
+
+        def parse_arch
           # Allow for foo.x86_64 style package_name like yum uses in it's output
           #
           if @new_resource.package_name =~ %r{^(.*)\.(.*)$}
@@ -1073,12 +1073,12 @@ class Chef
         # eg: yum install "perl(Config)"
         #     yum install "mtr = 2:0.71-3.1"
         #     yum install "mtr > 2:0.71"
-        # 
+        #
         # We support resolving these out of the Provides data imported from yum-dump.py and
         # matching them up with an actual package so the standard resource handling can apply.
         #
         # There is currently no support for filename matching.
-        def parse_dependency 
+        def parse_dependency
           # Transform the package_name into a requirement
           yum_require = RPMRequire.parse(@new_resource.package_name)
           # and gather all the packages that have a Provides feature satisfying the requirement.
@@ -1092,7 +1092,7 @@ class Chef
               Chef::Log.debug("#{@new_resource} couldn't match #{@new_resource.package_name} in " +
                             "installed Provides, loading available Provides - this may take a moment")
               @yum.reload_provides
-              packages = @yum.packages_from_require(yum_require) 
+              packages = @yum.packages_from_require(yum_require)
             end
           end
 
