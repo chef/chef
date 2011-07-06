@@ -30,7 +30,7 @@ if [ ! -d /var/run/chef ]; then
   mkdir /var/run/chef
 fi
 
-DAEMON_OPTS="-L $LOGFILE -d -c $CONFIG -i $INTERVAL -s $SPLAY"
+DAEMON_OPTS="-d -P $PIDFILE -L $LOGFILE -c $CONFIG -i $INTERVAL -s $SPLAY"
 
 running_pid() {                                                                 
   pid=$1

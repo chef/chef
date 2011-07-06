@@ -18,28 +18,23 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-describe Chef::Provider::ErlCall, "action_run" do
+describe Chef::Provider::ErlCall do
   before(:each) do
     @node = Chef::Node.new
     @run_context = Chef::RunContext.new(@node, {})
-    @new_resource = mock("Chef::Resource::ErlCall",
-      :null_object => true,
-      :code => "io:format(\"burritos\", []).",
-      :cookie => "nomnomnom",
-      :distributed => true,
-      :name_type => "sname",
-      :node_name => "chef@localhost",
-      :name => "test"
-    )
+
+    @new_resource = Chef::Resource::ErlCall.new("test", @node)
+    @new_resource.code("io:format(\"burritos\", []).")
+    @new_resource.node_name("chef@localhost")
+    @new_resource.name("test")
 
     @provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
 
-    @status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
-    @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
+    @stdin = StringIO.new
+    @stdout = StringIO.new('{ok, woohoo}')
+    @stderr = StringIO.new
+    @pid = 2342999
   end
 
   it "should return a Chef::Provider::ErlCall object" do
@@ -51,49 +46,39 @@ describe Chef::Provider::ErlCall, "action_run" do
     @provider.load_current_resource.should eql(true)
   end
 
-  it "should write to stdin of the erl_call command" do
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @provider.action_run
+  describe "when running a distributed erl call resource" do
+    before do
+      @new_resource.cookie("nomnomnom")
+      @new_resource.distributed(true)
+      @new_resource.name_type("sname")
+    end
+
+    it "should write to stdin of the erl_call command" do
+      expected_cmd = "erl_call -e -s -sname chef@localhost -c nomnomnom"
+      @provider.should_receive(:popen4).with(expected_cmd, :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
+      Process.should_receive(:wait).with(@pid)
+
+      @provider.action_run
+
+      @stdin.string.should == "#{@new_resource.code}\n"
+    end
   end
 
-end
+  describe "when running a local erl call resource" do
+    before do
+      @new_resource.cookie(nil)
+      @new_resource.distributed(false)
+      @new_resource.name_type("name")
+    end
 
-describe Chef::Provider::ErlCall, "action_run" do
-  before(:each) do
-    @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
-    @new_resource = mock("Chef::Resource::ErlCall",
-      :null_object => true,
-      :code => "io:format(\"burritos\", []).",
-      :cookie => nil,
-      :distributed => false,
-      :name_type => "name",
-      :node_name => "chef@localhost",
-      :name => "test"
-    )
+    it "should write to stdin of the erl_call command" do
+      @provider.should_receive(:popen4).with("erl_call -e  -name chef@localhost ", :waitlast => true).and_return([@pid, @stdin, @stdout, @stderr])
+      Process.should_receive(:wait).with(@pid)
 
-    @provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
+      @provider.action_run
 
-    @status = mock("Status", :exitstatus => 0)
-    @provider.stub!(:popen4).and_return(@status)
-    @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
-  end
-
-  it "should return a Chef::Provider::ErlCall object" do
-    provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
-    provider.should be_a_kind_of(Chef::Provider::ErlCall)
-  end
-
-  it "should return true" do
-    @provider.load_current_resource.should eql(true)
-  end
-
-  it "should write to stdin of the erl_call command" do
-    @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    @provider.action_run
+      @stdin.string.should == "#{@new_resource.code}\n"
+    end
   end
 
 end

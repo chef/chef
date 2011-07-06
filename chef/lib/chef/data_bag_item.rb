@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,29 +18,35 @@
 # limitations under the License.
 #
 
+require 'forwardable'
+
 require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/index_queue'
 require 'chef/data_bag'
-require 'extlib'
-require 'chef/json'
+require 'chef/mash'
+require 'chef/json_compat'
 
 class Chef
   class DataBagItem
-    
+
+    extend Forwardable
+
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
     include Chef::IndexQueue::Indexable
-    
+
+    VALID_ID = /^[\-[:alnum:]_]+$/
+
     DESIGN_DOCUMENT = {
       "version" => 1,
       "language" => "javascript",
       "views" => {
         "all" => {
           "map" => <<-EOJS
-          function(doc) { 
+          function(doc) {
             if (doc.chef_type == "data_bag_item") {
               emit(doc.name, doc);
             }
@@ -49,7 +55,7 @@ class Chef
         },
         "all_id" => {
           "map" => <<-EOJS
-          function(doc) { 
+          function(doc) {
             if (doc.chef_type == "data_bag_item") {
               emit(doc.name, doc.name);
             }
@@ -59,9 +65,18 @@ class Chef
       }
     }
 
+    def self.validate_id!(id_str)
+      if id_str.nil? || ( id_str !~ VALID_ID )
+        raise Exceptions::InvalidDataBagItemID, "Data Bag items must have an id matching #{VALID_ID.inspect}, you gave: #{id_str.inspect}"
+      end
+    end
+
+    # Define all Hash's instance methods as delegating to @raw_data
+    def_delegators(:@raw_data, *(Hash.instance_methods - Object.instance_methods))
+
     attr_accessor :couchdb_rev, :couchdb_id, :couchdb
     attr_reader :raw_data
-    
+
     # Create a new Chef::DataBagItem
     def initialize(couchdb=nil)
       @couchdb_rev = nil
@@ -72,25 +87,30 @@ class Chef
     end
 
     def chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])      
+      Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     def self.chef_server_rest
-      Chef::REST.new(Chef::Config[:chef_server_url])      
+      Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
     def raw_data
       @raw_data
     end
 
+    def validate_id!(id_str)
+      self.class.validate_id!(id_str)
+    end
+
     def raw_data=(new_data)
-      raise Exceptions::ValidationFailed, "Data Bag Items must contain a Hash or Mash!" unless new_data.kind_of?(Hash) || new_data.kind_of?(Mash)
-      raise Exceptions::ValidationFailed, "Data Bag Items must have an id key in the hash! #{new_data.inspect}" unless new_data.has_key?("id")
-      raise Exceptions::ValidationFailed, "Data Bag Item id does not match alphanumeric/-/_!" unless new_data["id"] =~ /^[\-[:alnum:]_]+$/
+      unless new_data.respond_to?(:[]) && new_data.respond_to?(:keys)
+        raise Exceptions::ValidationFailed, "Data Bag Items must contain a Hash or Mash!"
+      end
+      validate_id!(new_data["id"])
       @raw_data = new_data
     end
 
-    def data_bag(arg=nil) 
+    def data_bag(arg=nil)
       set_or_return(
         :data_bag,
         arg,
@@ -105,7 +125,7 @@ class Chef
     def object_name
       raise Exceptions::ValidationFailed, "You must have an 'id' or :id key in the raw data" unless raw_data.has_key?('id')
       raise Exceptions::ValidationFailed, "You must have declared what bag this item belongs to!" unless data_bag
-      
+
       id = raw_data['id']
       "data_bag_item_#{data_bag}_#{id}"
     end
@@ -122,7 +142,7 @@ class Chef
       result
     end
 
-    # Serialize this object as a hash 
+    # Serialize this object as a hash
     def to_json(*a)
       result = {
         "name" => self.object_name,
@@ -134,7 +154,13 @@ class Chef
       result["_rev"] = @couchdb_rev if @couchdb_rev
       result.to_json(*a)
     end
-    
+
+    def self.from_hash(h)
+      item = new
+      item.raw_data = h
+      item
+    end
+
     # Create a Chef::DataBagItem from JSON
     def self.json_create(o)
       bag_item = new
@@ -144,7 +170,7 @@ class Chef
       o.delete("json_class")
       o.delete("name")
       if o.has_key?("_rev")
-        bag_item.couchdb_rev = o["_rev"] 
+        bag_item.couchdb_rev = o["_rev"]
         o.delete("_rev")
       end
       if o.has_key?("_id")
@@ -156,62 +182,75 @@ class Chef
       bag_item
     end
 
-    # The Data Bag Item behaves like a hash - we pass all that stuff along to @raw_data.
-    def method_missing(method_symbol, *args, &block) 
-      self.raw_data.send(method_symbol, *args, &block)
-    end
-    
     # Load a Data Bag Item by name from CouchDB
     def self.cdb_load(data_bag, name, couchdb=nil)
       (couchdb || Chef::CouchDB.new).load("data_bag_item", object_name(data_bag, name))
     end
-    
+
     # Load a Data Bag Item by name via RESTful API
     def self.load(data_bag, name)
-      Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{data_bag}/#{name}")
+      item = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{data_bag}/#{name}")
+      if item.kind_of?(DataBagItem)
+        item
+      else
+        item = from_hash(item)
+        item.data_bag(data_bag)
+        item
+      end
     end
-    
+
     # Remove this Data Bag Item from CouchDB
     def cdb_destroy
-      Chef::Log.debug "destroying data bag item: #{self.inspect}"
+      Chef::Log.debug "Destroying data bag item: #{self.inspect}"
       @couchdb.delete("data_bag_item", object_name, @couchdb_rev)
     end
-    
+
     def destroy(data_bag=data_bag, databag_item=name)
       chef_server_rest.delete_rest("data/#{data_bag}/#{databag_item}")
     end
-     
+
     # Save this Data Bag Item to CouchDB
     def cdb_save
       @couchdb_rev = @couchdb.store("data_bag_item", object_name, self)["rev"]
     end
-    
+
     # Save this Data Bag Item via RESTful API
     def save(item_id=@raw_data['id'])
       r = chef_server_rest
       begin
-        r.put_rest("data/#{data_bag}/#{item_id}", @raw_data)
+        r.put_rest("data/#{data_bag}/#{item_id}", self)
       rescue Net::HTTPServerException => e
         raise e unless e.response.code == "404"
-        r.post_rest("data/#{data_bag}", @raw_data) 
+        r.post_rest("data/#{data_bag}", self)
       end
       self
     end
-    
+
     # Create this Data Bag Item via RESTful API
     def create
-      chef_server_rest.post_rest("data/#{data_bag}", @raw_data) 
+      chef_server_rest.post_rest("data/#{data_bag}", self)
       self
-    end 
-    
+    end
+
     # Set up our CouchDB design document
     def self.create_design_document(couchdb=nil)
       (couchdb || Chef::CouchDB.new).create_design_document("data_bag_items", DESIGN_DOCUMENT)
     end
-    
+
+    def ==(other)
+      other.respond_to?(:to_hash) &&
+      other.respond_to?(:data_bag) &&
+      (other.to_hash == to_hash) &&
+      (other.data_bag.to_s == data_bag.to_s)
+    end
+
     # As a string
     def to_s
       "data_bag_item[#{id}]"
+    end
+
+    def inspect
+      "data_bag_item[#{data_bag.inspect}, #{raw_data['id'].inspect}, #{raw_data.inspect}]"
     end
 
     def pretty_print(pretty_printer)

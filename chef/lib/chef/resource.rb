@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,6 +70,7 @@ F
 
     end
 
+    FORBIDDEN_IVARS = [:@run_context, :@node]
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node]
 
     include Chef::Mixin::CheckHelper
@@ -77,7 +78,7 @@ F
     include Chef::Mixin::Language
     include Chef::Mixin::ConvertToClassName
     include Chef::Mixin::Deprecation
-    
+
     attr_accessor :params
     attr_accessor :provider
     attr_accessor :allowed_actions
@@ -86,6 +87,8 @@ F
     attr_accessor :recipe_name
     attr_accessor :enclosing_provider
     attr_accessor :source_line
+    attr_accessor :retries
+    attr_accessor :retry_delay
 
     attr_reader :updated
 
@@ -97,7 +100,7 @@ F
     # Struct with a #resource and #action member
     attr_reader :immediate_notifications
     attr_reader :delayed_notifications
-    
+
     def initialize(name, run_context=nil)
       @name = name
       @run_context = run_context
@@ -111,6 +114,8 @@ F
       @updated_by_last_action = false
       @supports = {}
       @ignore_failure = false
+      @retries = 0
+      @retry_delay = 2
       @not_if = nil
       @not_if_args = {}
       @only_if = nil
@@ -144,7 +149,7 @@ F
         raise NoMethodError, "undefined method `#{method_symbol.to_s}' for #{self.class.to_s}"
       end
     end
-    
+
     def load_prior_resource
       begin
         prior_resource = run_context.resource_collection.lookup(self.to_s)
@@ -159,7 +164,7 @@ F
         true
       end
     end
-    
+
     def supports(args={})
       if args.any?
         @supports = args
@@ -167,7 +172,7 @@ F
         @supports
       end
     end
-    
+
     def provider(arg=nil)
       klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
                 lookup_provider_constant(arg)
@@ -180,7 +185,7 @@ F
         :kind_of => [ Class ]
       )
     end
-    
+
     def action(arg=nil)
       if arg
         action_list = arg.kind_of?(Array) ? arg : [ arg ]
@@ -200,21 +205,21 @@ F
         @action
       end
     end
-    
+
     def name(name=nil)
       set_if_args(@name, name) do
         raise ArgumentError, "name must be a string!" unless name.kind_of?(String)
         @name = name
       end
     end
-    
+
     def noop(tf=nil)
-      set_if_args(@noop, tf) do 
+      set_if_args(@noop, tf) do
         raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
         @noop = tf
       end
     end
-    
+
     def ignore_failure(arg=nil)
       set_or_return(
         :ignore_failure,
@@ -222,7 +227,23 @@ F
         :kind_of => [ TrueClass, FalseClass ]
       )
     end
-    
+
+    def retries(arg=nil)
+      set_or_return(
+        :retries,
+        arg,
+        :kind_of => Integer
+      )
+    end
+
+    def retry_delay(arg=nil)
+      set_or_return(
+        :retry_delay,
+        arg,
+        :kind_of => Integer
+      )
+    end
+
     def epic_fail(arg=nil)
       ignore_failure(arg)
     end
@@ -240,10 +261,10 @@ F
         notifications.each do |resources_notifications|
           resources_notifications.each do |resource, notification|
             action, timing = notification[0], notification[1]
-            Chef::Log.debug "adding notification from resource #{self} to `#{resource.inspect}' => `#{notification.inspect}'"
+            Chef::Log.debug "Adding notification from resource #{self} to `#{resource.inspect}' => `#{notification.inspect}'"
             add_notification(action, resource, timing)
           end
-        end 
+        end
       end
     rescue NoMethodError
       Chef::Log.fatal("Error processing notifies(#{args.inspect}) on #{self}")
@@ -286,7 +307,7 @@ F
     def resources(*args)
       run_context.resource_collection.find(*args)
     end
-    
+
     def subscribes(action, resources, timing=:delayed)
       resources = [resources].flatten
       resources.each do |resource|
@@ -302,7 +323,7 @@ F
         return *args
       end
     end
-    
+
     def to_s
       "#{@resource_name}[#{@name}]"
     end
@@ -318,14 +339,20 @@ F
       end
       text << "end\n"
     end
-    
-    # Serialize this object as a hash 
+
+    def inspect
+      ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
+      ivars.inject("<#{to_s}") do |str, ivar|
+        str << " #{ivar}: #{instance_variable_get(ivar).inspect}"
+      end << ">"
+    end
+
+    # Serialize this object as a hash
     def to_json(*a)
+      safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
       instance_vars = Hash.new
-      self.instance_variables.each do |iv|
-        unless iv == "@run_context"
-          instance_vars[iv] = self.instance_variable_get(iv) 
-        end
+      safe_ivars.each do |iv|
+        instance_vars[iv.to_s.sub(/^@/, '')] = instance_variable_get(iv)
       end
       results = {
         'json_class' => self.class.name,
@@ -333,16 +360,17 @@ F
       }
       results.to_json(*a)
     end
-    
+
     def to_hash
+      safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
       instance_vars = Hash.new
-      self.instance_variables.each do |iv|
+      safe_ivars.each do |iv|
         key = iv.to_s.sub(/^@/,'').to_sym
-        instance_vars[key] = self.instance_variable_get(iv) unless (key == :run_context) || (key == :node)
+        instance_vars[key] = instance_variable_get(iv)
       end
       instance_vars
     end
-    
+
     def only_if(arg=nil, args = {}, &blk)
       if Kernel.block_given?
         @only_if = blk
@@ -353,7 +381,7 @@ F
       end
       @only_if
     end
-    
+
     def not_if(arg=nil, args = {}, &blk)
       if Kernel.block_given?
         @not_if = blk
@@ -364,35 +392,59 @@ F
       end
       @not_if
     end
-    
+
+    def defined_at
+      if cookbook_name && recipe_name && source_line
+        "#{cookbook_name}::#{recipe_name} line #{source_line.split(':')[1]}"
+      elsif source_line
+        file, line_no = source_line.split(':')
+        "#{file} line #{line_no}"
+      else
+        "dynamically defined"
+      end
+    end
+
     def run_action(action)
+      Chef::Log.info("Processing #{self} action #{action} (#{defined_at})")
+
       # ensure that we don't leave @updated_by_last_action set to true
       # on accident
       updated_by_last_action(false)
 
-      # Check if this resource has an only_if block -- if it does,
-      # evaluate the only_if block and skip the resource if
-      # appropriate.
-      if only_if
-        unless Chef::Mixin::Command.only_if(only_if, only_if_args)
-          Chef::Log.debug("Skipping #{self} due to only_if")
-          return
+      begin
+        # Check if this resource has an only_if block -- if it does,
+        # evaluate the only_if block and skip the resource if
+        # appropriate.
+        if only_if
+          unless Chef::Mixin::Command.only_if(only_if, only_if_args)
+            Chef::Log.debug("Skipping #{self} due to only_if")
+            return
+          end
+        end
+
+        # Check if this resource has a not_if block -- if it does,
+        # evaluate the not_if block and skip the resource if
+        # appropriate.
+        if not_if
+          unless Chef::Mixin::Command.not_if(not_if, not_if_args)
+            Chef::Log.debug("Skipping #{self} due to not_if")
+            return
+          end
+        end
+
+        provider = Chef::Platform.provider_for_resource(self)
+        provider.load_current_resource
+        provider.send("action_#{action}")
+      rescue => e
+        if ignore_failure
+          Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}")
+        else
+          Chef::Log.error("#{self} (#{defined_at}) has had an error")
+          new_exception = e.exception("#{self} (#{defined_at}) had an error: #{e.message}")
+          new_exception.set_backtrace(e.backtrace)
+          raise new_exception
         end
       end
-
-      # Check if this resource has a not_if block -- if it does,
-      # evaluate the not_if block and skip the resource if
-      # appropriate.
-      if not_if
-        unless Chef::Mixin::Command.not_if(not_if, not_if_args)
-          Chef::Log.debug("Skipping #{self} due to not_if")
-          return
-        end
-      end
-
-      provider = Chef::Platform.provider_for_resource(self)
-      provider.load_current_resource
-      provider.send("action_#{action}")
     end
 
     def updated_by_last_action(true_or_false)
@@ -403,23 +455,23 @@ F
     def updated_by_last_action?
       @updated_by_last_action
     end
-    
+
     def updated?
       updated
     end
 
     class << self
-      
+
       def json_create(o)
         resource = self.new(o["instance_vars"]["@name"])
         o["instance_vars"].each do |k,v|
-          resource.instance_variable_set(k.to_sym, v)
+          resource.instance_variable_set("@#{k}".to_sym, v)
         end
         resource
       end
-      
+
       include Chef::Mixin::ConvertToClassName
-      
+
       def attribute(attr_name, validation_opts={})
         # This atrocity is the only way to support 1.8 and 1.9 at the same time
         # When you're ready to drop 1.8 support, do this:
@@ -431,46 +483,55 @@ F
         end
         SHIM
         class_eval(shim_method)
-        
+
         define_method("_set_or_return_#{attr_name.to_s}".to_sym) do |arg|
           set_or_return(attr_name.to_sym, arg, validation_opts)
         end
       end
       
-      def build_from_file(cookbook_name, filename)
+      def build_from_file(cookbook_name, filename, run_context)
         rname = filename_to_qualified_string(cookbook_name, filename)
 
         # Add log entry if we override an existing light-weight resource.
         class_name = convert_to_class_name(rname)
         overriding = Chef::Resource.const_defined?(class_name)
         Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!") if overriding
-          
+
         new_resource_class = Class.new self do |cls|
-          
+
           # default initialize method that ensures that when initialize is finally
           # wrapped (see below), super is called in the event that the resource
           # definer does not implement initialize
           def initialize(name, run_context)
             super(name, run_context)
           end
-          
+
           @actions_to_create = []
-          
+
           class << cls
             include Chef::Mixin::FromFile
             
+            attr_accessor :run_context
+
+            def node
+              self.run_context.node
+            end
+
             def actions_to_create
               @actions_to_create
             end
-            
+
             define_method(:actions) do |*action_names|
               actions_to_create.push(*action_names)
             end
           end
+
+          # set the run context in the class instance variable
+          cls.run_context = run_context
           
           # load resource definition from file
           cls.class_from_file(filename)
-          
+
           # create a new constructor that wraps the old one and adds the actions
           # specified in the DSL
           old_init = instance_method(:initialize)
@@ -482,16 +543,16 @@ F
             allowed_actions.push(self.class.actions_to_create).flatten!
           end
         end
-        
+
         # register new class as a Chef::Resource
         class_name = convert_to_class_name(rname)
         Chef::Resource.const_set(class_name, new_resource_class)
         Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
-        
+
         new_resource_class
       end
-      
-      # Resources that want providers namespaced somewhere other than 
+
+      # Resources that want providers namespaced somewhere other than
       # Chef::Provider can set the namespace with +provider_base+
       # Ex:
       #   class MyResource < Chef::Resource
@@ -502,7 +563,7 @@ F
         @provider_base ||= arg
         @provider_base ||= Chef::Provider
       end
-      
+
     end
 
     private

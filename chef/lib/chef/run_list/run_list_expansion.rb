@@ -1,6 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Copyright:: Copyright (c) 2010, 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'extlib'
+require 'chef/mash'
 
 require 'chef/mixin/deep_merge'
 
@@ -31,6 +32,8 @@ class Chef
 
       attr_reader :run_list_items
 
+      # A VersionedRecipeList of recipes. Populated only after #expand
+      # is called.
       attr_reader :recipes
 
       attr_reader :default_attrs
@@ -39,12 +42,15 @@ class Chef
 
       attr_reader :errors
 
+      attr_reader :environment
+
       # The data source passed to the constructor. Not used in this class.
       # In subclasses, this is a couchdb or Chef::REST object pre-configured
       # to fetch roles from their correct location.
       attr_reader :source
 
-      def initialize(run_list_items, source=nil)
+      def initialize(environment, run_list_items, source=nil)
+        @environment = environment
         @errors = Array.new
 
         @run_list_items = run_list_items.dup
@@ -65,20 +71,11 @@ class Chef
 
       alias :invalid? :errors?
 
-      # Iterates over the run list items, expanding roles. After this,
+      # Recurses over the run list items, expanding roles. After this,
       # +recipes+ will contain the fully expanded recipe list
-      def expand(environment='_default')
-        @run_list_items.each_with_index do |entry, index|
-          case entry.type
-          when :recipe
-            recipes.add_recipe entry.name, entry.version
-          when :role
-            if role = inflate_role(entry.name)
-              apply_role_attributes(role)
-              @run_list_items.insert(index + 1, *role.run_list_for_environment(environment).run_list_items)
-            end
-          end
-        end
+      def expand
+        # Sure do miss function arity when being recursive
+        expand_run_list_items(@run_list_items)
       end
 
       # Fetches and inflates a role
@@ -101,10 +98,10 @@ class Chef
         @applied_roles.has_key?(role_name)
       end
 
-      def applied_role(role_name)
-        @applied_roles[role_name] = true
-      end
-
+      # Returns an array of role names that were expanded; this
+      # includes any roles that were in the original, pre-expansion
+      # run_list as well as roles processed during
+      # expansion. Populated only after #expand is called.
       def roles
         @applied_roles.keys
       end
@@ -123,6 +120,30 @@ class Chef
         @errors << name
         nil
       end
+
+      private
+
+      # these methods modifies internal state based on arguments, so hide it.
+
+      def applied_role(role_name)
+        @applied_roles[role_name] = true
+      end
+
+      def expand_run_list_items(items)
+        if entry = items.shift
+          case entry.type
+          when :recipe
+            recipes.add_recipe(entry.name, entry.version)
+          when :role
+            if role = inflate_role(entry.name)
+              expand_run_list_items(role.run_list_for(@environment).run_list_items)
+              apply_role_attributes(role)
+            end
+          end
+          expand_run_list_items(items)
+        end
+      end
+
     end
 
     # Expand a run list from disk. Suitable for chef-solo

@@ -92,7 +92,7 @@ describe Chef::Checksum do
   describe "when converted to json" do
     before do
       @checksum_as_json = @checksum.to_json
-      @checksum_as_hash_from_json = Chef::JSON.from_json(@checksum_as_json, :create_additions => false)
+      @checksum_as_hash_from_json = Chef::JSONCompat.from_json(@checksum_as_json, :create_additions => false)
     end
 
     it "contains the file's MD5 checksum" do

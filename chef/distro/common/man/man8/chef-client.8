@@ -1,63 +1,84 @@
-.TH CHEF-CLIENT: "8" "August 2009" "chef-client" "System Administration Utilities"
-.SH NAME
-chef-client: \- Runs a client node connecting to a chef-server.
-.SH SYNOPSIS
-.B chef-client
-\fI(options)\fR
-.SH DESCRIPTION
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "CHEF\-CLIENT" "8" "April 2011" "Chef 0.10.0" "Chef Manual"
+.
+.SH "NAME"
+\fBchef\-client\fR \- Runs a client node connecting to a chef\-server\.
+.
+.SH "SYNOPSIS"
+\fBchef\-client\fR \fI(options)\fR
+.
 .TP
-\fB\-S\fR, \fB\-\-server\fR CHEFSERVERURL
+\fB\-S\fR, \fB\-\-server CHEFSERVERURL\fR
 The chef server URL
+.
 .TP
-\fB\-c\fR, \fB\-\-config\fR CONFIG
+\fB\-c\fR, \fB\-\-config CONFIG\fR
 The configuration file to use
+.
 .TP
 \fB\-d\fR, \fB\-\-daemonize\fR
 Daemonize the process
+.
 .TP
-\fB\-g\fR, \fB\-\-group\fR GROUP
+\fB\-g\fR, \fB\-\-group GROUP\fR
 Group to set privilege to
+.
 .TP
-\fB\-i\fR, \fB\-\-interval\fR SECONDS
+\fB\-i\fR, \fB\-\-interval SECONDS\fR
 Run chef\-client periodically, in seconds
+.
 .TP
-\fB\-j\fR JSON_ATTRIBS
+\fB\-j\fR, \fB\-\-json\-attributes JSON_ATTRIBS\fR
 Load attributes from a JSON file or URL
-.HP
-\fB\-\-json\-attributes\fR
+.
 .TP
-\fB\-l\fR, \fB\-\-log_level\fR LEVEL
+\fB\-l\fR, \fB\-\-log_level LEVEL\fR
 Set the log level (debug, info, warn, error, fatal)
+.
 .TP
-\fB\-L\fR, \fB\-\-logfile\fR LOGLOCATION
+\fB\-L\fR, \fB\-\-logfile LOGLOCATION\fR
 Set the log file location, defaults to STDOUT \- recommended for daemonizing
+.
 .TP
 \fB\-V\fR, \fB\-\-verbose\fR
-Ensures logging goes to STDOUT as well as to other configured log location(s).
+Ensures logging goes to STDOUT as well as to other configured log location(s)\.
+.
 .TP
-\fB\-N\fR, \fB\-\-node\-name\fR NODE_NAME
+\fB\-N\fR, \fB\-\-node\-name NODE_NAME\fR
 The node name for this client
+.
 .TP
-\fB\-s\fR, \fB\-\-splay\fR SECONDS
+\fB\-s\fR, \fB\-\-splay SECONDS\fR
 The splay time for running at intervals, in seconds
+.
 .TP
-\fB\-u\fR, \fB\-\-user\fR USER
+\fB\-u\fR, \fB\-\-user USER\fR
 User to set privilege to
-.TP
-\fB\-t\fR, \fB\-\-token\fR TOKEN
-Set the openid validation token
+.
 .TP
 \fB\-v\fR, \fB\-\-version\fR
 Show chef version
+.
 .TP
 \fB\-h\fR, \fB\-\-help\fR
 Show this message
+.
+.SH "DESCRIPTION"
+The Chef Client is where almost all of the work in Chef is done\. It communicates with the Chef Server via REST, authenticates via Signed Header Authentication, and compiles and executes Cookbooks\.
+.
+.P
+A Chef Client does work on behalf of a Node\. A single Chef Client can run recipes for multiple Nodes\.
+.
+.P
+Clients are where all the action happens \- the Chef Server and Chef Expander are largely services that exist only to provide the Client with information\.
+.
 .SH "SEE ALSO"
-Full documentation for Chef and chef-client is located on the Chef wiki, http://wiki.opscode.com/display/chef/Home.
-.SH AUTHOR
-Chef was written by Adam Jacob <adam@ospcode.com> of Opscode (http://www.opscode.com), with contributions from the community.
-This manual page was written by Joshua Timberman <joshua@opscode.com> with help2man. Permission is granted
-to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
-
-On Debian systems, the complete text of the Apache 2.0 License can be found in
-/usr/share/common-licenses/Apache-2.0.
+Full documentation for Chef and chef\-client is located on the Chef wiki, http://wiki\.opscode\.com/display/chef/Home\.
+.
+.SH "AUTHOR"
+Chef was written by Adam Jacob \fIadam@ospcode\.com\fR of Opscode (http://www\.opscode\.com), with contributions from the community\. This manual page was written by Joshua Timberman \fIjoshua@opscode\.com\fR with help2man\. Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2\.0 License\.
+.
+.P
+On Debian systems, the complete text of the Apache 2\.0 License can be found in /usr/share/common\-licenses/Apache\-2\.0\.

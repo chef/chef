@@ -1,5 +1,6 @@
 require 'chef/shell_out'
-
+require 'chef/mixin/shell_out'
+include Chef::Mixin::ShellOut
 
 # Given /^I have a clone of typo in the data\/tmp dir$/ do
 #   cmd = "git clone #{datadir}/typo.bundle #{tmpdir}/gitrepo/typo"
@@ -26,6 +27,10 @@ Given /^a test git repo in the temp directory$/ do
   test_git_repo_tarball_filename = "#{datadir}/test_git_repo.tar.gz"
   cmd = Chef::ShellOut.new("tar xzvf #{test_git_repo_tarball_filename} -C #{tmpdir}")
   cmd.run_command.exitstatus.should == 0
+end
+
+When /^I remove the remote repository named '(.+)' from '(.+)'$/ do |remote_name, repository_dir|
+  shell_out!("git remote rm #{remote_name}", Hash[:cwd => File.join(tmpdir, repository_dir)])
 end
 
 Then /^I should hear about it$/ do
@@ -72,7 +77,7 @@ Then /^the callback named <callback> should have run$/ do |callback_files|
     hook_name = file.first.gsub(/\.rb$/, "")
     evidence_file = "deploy/current/app/" + hook_name 
     expected_contents = {"hook_name" => hook_name, "env" => "production"}
-    actual_contents = Chef::JSON.from_json(IO.read(File.join(tmpdir, evidence_file)))
+    actual_contents = Chef::JSONCompat.from_json(IO.read(File.join(tmpdir, evidence_file)))
     expected_contents.should == actual_contents
   end
 end
@@ -81,4 +86,8 @@ Then /^the second chef run should have skipped deployment$/ do
   expected_deploy = "#{tmpdir}/deploy/releases/62c9979f6694612d9659259f8a68d71048ae9a5b"
   Then "'stdout' should not have 'INFO: Already deployed app at #{expected_deploy}.  Rolling back to it - use action :force_deploy to re-checkout this revision.'"
 end
-  
+
+Then /^a remote repository named '(.*)' should exist in '(.*)'$/ do |remote_name, repository_dir|
+  remotes = shell_out!('git remote', Hash[:cwd => File.join(tmpdir, repository_dir)]).stdout.split(/\s/)
+  remotes.should include remote_name
+end

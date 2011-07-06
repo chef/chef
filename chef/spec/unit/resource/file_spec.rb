@@ -24,11 +24,6 @@ describe Chef::Resource::File do
     @resource = Chef::Resource::File.new("fakey_fakerton")
   end
 
-  it "should create a new Chef::Resource::File" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::File)
-  end
-
   it "should have a name" do
     @resource.name.should eql("fakey_fakerton")
   end
@@ -74,14 +69,51 @@ describe Chef::Resource::File do
   it "should accept a group name or id for group" do
     lambda { @resource.group "root" }.should_not raise_error(ArgumentError)
     lambda { @resource.group 123 }.should_not raise_error(ArgumentError)
+    lambda { @resource.group 'test\ group' }.should_not raise_error(ArgumentError)
     lambda { @resource.group "root*goo" }.should raise_error(ArgumentError)
   end
 
-  it "should accept a valid unix file mode" do
+  it "should accept a unix file mode in string form as an octal number" do
+    lambda { @resource.mode "0" }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode "0000" }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode "0111" }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode "0444" }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode "07777" }.should_not raise_error(ArgumentError)
+
+    lambda { @resource.mode "0" }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode "111" }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode "444" }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode "7777" }.should_not raise_error(ArgumentError)
+
+    lambda { @resource.mode "-01" }.should raise_error(ArgumentError)
+    lambda { @resource.mode "010000" }.should raise_error(ArgumentError)
+    lambda { @resource.mode "-1" }.should raise_error(ArgumentError)
+    lambda { @resource.mode "10000" }.should raise_error(ArgumentError)
+
+    lambda { @resource.mode "07778" }.should raise_error(ArgumentError)
+    lambda { @resource.mode "7778" }.should raise_error(ArgumentError)
+    lambda { @resource.mode "4095" }.should raise_error(ArgumentError)
+
+    lambda { @resource.mode "0foo1234" }.should raise_error(ArgumentError)
+    lambda { @resource.mode "foo1234" }.should raise_error(ArgumentError)
+  end
+
+  it "should accept a unix file mode in numeric form as a ruby-interpreted integer" do
+    lambda { @resource.mode 0 }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode 0000 }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode 0111 }.should_not raise_error(ArgumentError)
     lambda { @resource.mode 0444 }.should_not raise_error(ArgumentError)
-    @resource.mode.should eql(0444)
-    lambda { @resource.mode 444 }.should_not raise_error(ArgumentError)
-    lambda { @resource.mode 4 }.should raise_error(ArgumentError)
+    lambda { @resource.mode 07777 }.should_not raise_error(ArgumentError)
+
+    lambda { @resource.mode 0 }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode 73 }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode 292 }.should_not raise_error(ArgumentError)
+    lambda { @resource.mode 4095 }.should_not raise_error(ArgumentError)
+
+    lambda { @resource.mode -01 }.should raise_error(ArgumentError)
+    lambda { @resource.mode 010000 }.should raise_error(ArgumentError)
+    lambda { @resource.mode -1 }.should raise_error(ArgumentError)
+    lambda { @resource.mode 4096 }.should raise_error(ArgumentError)
   end
 
   it "should accept a user name or id for owner" do

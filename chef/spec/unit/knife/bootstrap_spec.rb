@@ -70,6 +70,7 @@ describe Chef::Knife::Bootstrap do
       @knife.name_args = ["foo.example.com"]
       @knife.config[:ssh_user]      = "rooty"
       @knife.config[:ssh_password]  = "open_sesame"
+      Chef::Config[:knife][:ssh_port] = "4001"
       @knife.config[:identity_file] = "~/.ssh/me.rsa"
       @knife_ssh = @knife.knife_ssh
     end
@@ -84,6 +85,10 @@ describe Chef::Knife::Bootstrap do
 
     it "configures the ssh password" do
       @knife_ssh.config[:ssh_password].should == 'open_sesame'
+    end
+
+    it "configures the ssh port" do
+      @knife_ssh.config[:ssh_port].should == '4001'
     end
 
     it "configures the ssh identity file" do
@@ -146,3 +151,4 @@ describe Chef::Knife::Bootstrap do
   end
 
 end
+

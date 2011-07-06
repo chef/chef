@@ -3,13 +3,25 @@
     %h2.title
       Cookbooks
     .inner
-      %table.table
+      %table.table#cookbook_version_table
         %thead
           %tr
-            %th.first Cookbook Name
-            %th.last Version
-        %tbody
-          - @cl.each do |cookbook, version|
+            %th Cookbook
+            %th Latest Version
+            %th Other Versions
+        %tbody.cookbook_versions
+          - @cl.keys.sort.each do |cookbook|
+            - versions = @cl[cookbook]
             %tr
-              %td= link_to cookbook, url(:show_specific_version_cookbook, :cookbook_id => cookbook, :cb_version => version)
-              %td= version
+              %td= cookbook
+              %td
+                %ul.cookbook_versions{ :id => "#{cookbook}_versions" }
+                  - versions[0..4].each_with_index do |v, i|
+                    - klass = i > 0 ? "other_version" : "latest_version"
+                    %li{ :class => klass }
+                      = link_to(v["version"], v["url"])
+                - if versions.length > 5
+                  = all_versions_link(cookbook)
+              %td.show_more
+                = versions.length > 1 ? more_versions_link(cookbook) : ""
+= js_include_tag "cookbook_versions"

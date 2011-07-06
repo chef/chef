@@ -31,9 +31,28 @@ class Chef
     end
 
     def to_hash
-      {:ohai_world => "I am IndexableTestHarness", :object_id => object_id}
+      {"ohai_world" => "I am IndexableTestHarness", "object_id" => object_id}
     end
 
+  end
+end
+
+class IndexQueueSpecError < RuntimeError ; end
+
+class FauxQueue
+
+  attr_reader :published_message, :publish_options
+
+  # Note: If publish is not called, this published_message will cause
+  # JSON parsing to die with "can't convert Symbol into String"
+  def initialize
+    @published_message = :epic_fail!
+    @publish_options = :epic_fail!
+  end
+
+  def publish(message, options=nil)
+    @published_message = message
+    @publish_options = options
   end
 end
 
@@ -62,7 +81,10 @@ describe Chef::IndexQueue::Indexable do
     Chef::IndexableTestHarness.reset_index_metadata!
     @publisher      = Chef::IndexQueue::AmqpClient.instance
     @indexable_obj  = Chef::IndexableTestHarness.new
-    @item_as_hash   = {:ohai_world => "I am IndexableTestHarness", :object_id => @indexable_obj.object_id}
+    @item_as_hash   = {"ohai_world" => "I am IndexableTestHarness", "object_id" => @indexable_obj.object_id}
+
+    @now = Time.now
+    Time.stub!(:now).and_return(@now)
   end
   
   it "downcases the class name for the index_object_type when it's not explicitly set" do
@@ -76,12 +98,13 @@ describe Chef::IndexQueue::Indexable do
   
   it "adds 'database', 'type', and 'id' (UUID) keys to the published object" do
     with_metadata = @indexable_obj.with_indexer_metadata(:database => "foo", :id=>UUIDTools::UUID.random_create.to_s)
-    with_metadata.should have(4).keys
-    with_metadata.keys.should include("type", "id", "item", "database")
+    with_metadata.should have(5).keys
+    with_metadata.keys.should include("type", "id", "item", "database", "enqueued_at")
     with_metadata["type"].should      == "indexable_test_harness"
     with_metadata["database"].should  == "foo"
     with_metadata["item"].should      == @item_as_hash
     with_metadata["id"].should match(a_uuid)
+    with_metadata["enqueued_at"].should == @now.utc.to_i
   end
   
   it "uses the couchdb_id if available" do
@@ -90,23 +113,135 @@ describe Chef::IndexQueue::Indexable do
     metadata_id = @indexable_obj.with_indexer_metadata["id"]
     metadata_id.should == expected_uuid
   end
+
+  describe "adds and removes items to and from the index and respects Chef::Config[:persistent_queue]" do
+    before do
+      @exchange = mock("Bunny::Exchange")
+      @amqp_client = mock("Bunny::Client", :start => true, :exchange => @exchange)
+      @publisher.stub!(:amqp_client).and_return(@amqp_client)
+      @queue = FauxQueue.new
+      @publisher.should_receive(:queue_for_object).with("0000000-1111-2222-3333-444444444444").and_yield(@queue)
+    end
+
+    it "adds items to the index" do
+      @amqp_client.should_not_receive(:tx_select)
+      @amqp_client.should_not_receive(:tx_commit)
+      @amqp_client.should_not_receive(:tx_rollback)
+
+      @indexable_obj.add_to_index(:database => "couchdb@localhost,etc.", :id=>"0000000-1111-2222-3333-444444444444")
+
+      published_message = Chef::JSONCompat.from_json(@queue.published_message)
+      published_message.should == {"action" => "add", "payload" => {"item" => @item_as_hash,
+                                                                    "type" => "indexable_test_harness",
+                                                                    "database" => "couchdb@localhost,etc.",
+                                                                    "id" => "0000000-1111-2222-3333-444444444444",
+                                                                    "enqueued_at" => @now.utc.to_i}}
+      @queue.publish_options[:persistent].should == false
+    end
+
+    it "adds items to the index transactionactionally when Chef::Config[:persistent_queue] == true" do
+      @amqp_client.should_receive(:tx_select)
+      @amqp_client.should_receive(:tx_commit)
+      @amqp_client.should_not_receive(:tx_rollback)
+
+      # set and restore Chef::Config[:persistent_queue] to true
+      orig_value = Chef::Config[:persistent_queue]
+      Chef::Config[:persistent_queue] = true
+      begin
+        @indexable_obj.add_to_index(:database => "couchdb@localhost,etc.", :id=>"0000000-1111-2222-3333-444444444444")
+      ensure
+        Chef::Config[:persistent_queue] = orig_value
+      end
+
+      published_message = Chef::JSONCompat.from_json(@queue.published_message)
+      published_message.should == {"action" => "add", "payload" => {"item" => @item_as_hash,
+                                                                    "type" => "indexable_test_harness",
+                                                                    "database" => "couchdb@localhost,etc.",
+                                                                    "id" => "0000000-1111-2222-3333-444444444444",
+                                                                    "enqueued_at" => @now.utc.to_i}}
+      @queue.publish_options[:persistent].should == true
+    end
+
+    it "adds items to the index transactionally when Chef::Config[:persistent_queue] == true and rolls it back when there is a failure" do
+      @amqp_client.should_receive(:tx_select)
+      @amqp_client.should_receive(:tx_rollback)
+      @amqp_client.should_not_receive(:tx_commit)
+
+      # cause the publish to fail, and make sure the failure is our own
+      # by using a specific class
+      @queue.should_receive(:publish).and_raise(IndexQueueSpecError)
+
+      # set and restore Chef::Config[:persistent_queue] to true
+      orig_value = Chef::Config[:persistent_queue]
+      Chef::Config[:persistent_queue] = true
+      begin
+        lambda{
+          @indexable_obj.add_to_index(:database => "couchdb@localhost,etc.", :id=>"0000000-1111-2222-3333-444444444444")
+        }.should raise_error(IndexQueueSpecError)
+      ensure
+        Chef::Config[:persistent_queue] = orig_value
+      end
+    end
+
+    it "removes items from the index" do
+      @amqp_client.should_not_receive(:tx_select)
+      @amqp_client.should_not_receive(:tx_commit)
+      @amqp_client.should_not_receive(:tx_rollback)
+
+      @indexable_obj.delete_from_index(:database => "couchdb2@localhost", :id=>"0000000-1111-2222-3333-444444444444")
+      published_message = Chef::JSONCompat.from_json(@queue.published_message)
+      published_message.should == {"action" => "delete", "payload" => { "item" => @item_as_hash,
+                                                                        "type" => "indexable_test_harness",
+                                                                        "database" => "couchdb2@localhost",
+                                                                        "id" => "0000000-1111-2222-3333-444444444444",
+                                                                        "enqueued_at" => @now.utc.to_i}}
+      @queue.publish_options[:persistent].should == false
+    end
   
-  it "sends ``add'' actions" do
-    @publisher.should_receive(:send_action).with(:add, {"item" => @item_as_hash,
-                                                        "type" => "indexable_test_harness",
-                                                        "database" => "couchdb@localhost,etc.", 
-                                                        "id" => an_instance_of(String)})
-    @indexable_obj.add_to_index(:database => "couchdb@localhost,etc.", :id=>UUIDTools::UUID.random_create.to_s)
+    it "removes items from the index transactionactionally when Chef::Config[:persistent_queue] == true" do
+      @amqp_client.should_receive(:tx_select)
+      @amqp_client.should_receive(:tx_commit)
+      @amqp_client.should_not_receive(:tx_rollback)
+
+      # set and restore Chef::Config[:persistent_queue] to true
+      orig_value = Chef::Config[:persistent_queue]
+      Chef::Config[:persistent_queue] = true
+      begin
+        @indexable_obj.delete_from_index(:database => "couchdb2@localhost", :id=>"0000000-1111-2222-3333-444444444444")
+      ensure
+        Chef::Config[:persistent_queue] = orig_value
+      end
+
+      published_message = Chef::JSONCompat.from_json(@queue.published_message)
+      published_message.should == {"action" => "delete", "payload" => { "item" => @item_as_hash,
+                                                                        "type" => "indexable_test_harness",
+                                                                        "database" => "couchdb2@localhost",
+                                                                        "id" => "0000000-1111-2222-3333-444444444444",
+                                                                        "enqueued_at" => @now.utc.to_i}}
+      @queue.publish_options[:persistent].should == true
+    end
+
+    it "remove items from the index transactionally when Chef::Config[:persistent_queue] == true and rolls it back when there is a failure" do
+      @amqp_client.should_receive(:tx_select)
+      @amqp_client.should_receive(:tx_rollback)
+      @amqp_client.should_not_receive(:tx_commit)
+
+      # cause the publish to fail, and make sure the failure is our own
+      # by using a specific class
+      @queue.should_receive(:publish).and_raise(IndexQueueSpecError)
+
+      # set and restore Chef::Config[:persistent_queue] to true
+      orig_value = Chef::Config[:persistent_queue]
+      Chef::Config[:persistent_queue] = true
+      begin
+        lambda{
+          @indexable_obj.delete_from_index(:database => "couchdb2@localhost", :id=>"0000000-1111-2222-3333-444444444444")      }.should raise_error(IndexQueueSpecError)
+      ensure
+        Chef::Config[:persistent_queue] = orig_value
+      end
+    end
   end
-  
-  it "sends ``delete'' actions" do
-    @publisher.should_receive(:send_action).with(:delete, { "item" => @item_as_hash,
-                                                            "type" => "indexable_test_harness",
-                                                            "database" => "couchdb2@localhost",
-                                                            "id" => an_instance_of(String)})
-    @indexable_obj.delete_from_index(:database => "couchdb2@localhost", :id=>UUIDTools::UUID.random_create.to_s)
-  end
-  
+
 end
 
 describe Chef::IndexQueue::Consumer do
@@ -200,66 +335,55 @@ describe Chef::IndexQueue::AmqpClient do
   end
   
   describe "publishing" do
+
     before do
+      @queue_1 = FauxQueue.new
+      @queue_2 = FauxQueue.new
+
       @amqp_client.stub!(:qos)
+      #@amqp_client.stub!(:queue).and_return(@queue)
       @data = {"some_data" => "in_a_hash"}
     end
   
-    it "publishes an action to the exchange" do
-      @exchange.should_receive(:publish).with({"action" => "hot_chef_on_queue", "payload" => @data}.to_json)
-      @publisher.send_action(:hot_chef_on_queue, @data)
-    end
-  
     it "resets the client upon a Bunny::ServerDownError when publishing" do
-      @exchange.should_receive(:publish).twice.and_raise(Bunny::ServerDownError)
+      Bunny.stub!(:new).and_return(@amqp_client)
+      @amqp_client.should_receive(:queue).with("vnode-68", {:passive=>false, :durable=>true, :exclusive=>false, :auto_delete=>false}).twice.and_return(@queue_1, @queue_2)
+
+      @queue_1.should_receive(:publish).with(@data).and_raise(Bunny::ServerDownError)
+      @queue_2.should_receive(:publish).with(@data).and_raise(Bunny::ServerDownError)
+
       @publisher.should_receive(:disconnected!).at_least(3).times
-      lambda {@publisher.send_action(:hot_chef_on_queue, @data)}.should raise_error(Bunny::ServerDownError)
+      lambda {@publisher.queue_for_object("00000000-1111-2222-3333-444444444444") {|q| q.publish(@data)}}.should raise_error(Bunny::ServerDownError)
     end
     
     it "resets the client upon a Bunny::ConnectionError when publishing" do
-      @exchange.should_receive(:publish).twice.and_raise(Bunny::ConnectionError)
+      Bunny.stub!(:new).and_return(@amqp_client)
+      @amqp_client.should_receive(:queue).with("vnode-68", {:passive=>false, :durable=>true, :exclusive=>false, :auto_delete=>false}).twice.and_return(@queue_1, @queue_2)
+
+      @queue_1.should_receive(:publish).with(@data).and_raise(Bunny::ConnectionError)
+      @queue_2.should_receive(:publish).with(@data).and_raise(Bunny::ConnectionError)
+
       @publisher.should_receive(:disconnected!).at_least(3).times
-      lambda {@publisher.send_action(:hot_chef_on_queue, @data)}.should raise_error(Bunny::ConnectionError)
+      lambda {@publisher.queue_for_object("00000000-1111-2222-3333-444444444444") {|q| q.publish(@data)}}.should raise_error(Bunny::ConnectionError)
     end
     
     it "resets the client upon a Errno::ECONNRESET when publishing" do
-      @exchange.should_receive(:publish).twice.and_raise(Errno::ECONNRESET)
+      Bunny.stub!(:new).and_return(@amqp_client)
+      @amqp_client.should_receive(:queue).with("vnode-68", {:passive=>false, :durable=>true, :exclusive=>false, :auto_delete=>false}).twice.and_return(@queue_1, @queue_2)
+
+      @queue_1.should_receive(:publish).with(@data).and_raise(Errno::ECONNRESET)
+      @queue_2.should_receive(:publish).with(@data).and_raise(Errno::ECONNRESET)
+
       @publisher.should_receive(:disconnected!).at_least(3).times
-      lambda {@publisher.send_action(:hot_chef_on_queue, @data)}.should raise_error(Errno::ECONNRESET)
+      lambda {@publisher.queue_for_object("00000000-1111-2222-3333-444444444444") {|q| q.publish(@data)}}.should raise_error(Errno::ECONNRESET)
     end
     
-  end
-  
-  it "creates a queue bound to its exchange with a temporary UUID" do
-    @amqp_client.stub!(:qos)
-    
-    a_queue_name = /chef\-index-consumer\-[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/
-    
-    @queue = mock("Bunny::Queue")
-    @amqp_client.should_receive(:queue).with(a_queue_name, :durable => false).and_return(@queue)
-    @queue.should_receive(:bind).with(@exchange)
-    @publisher.queue.should == @queue
-  end
-  
-  it "creates a durable queue bound to the exchange when a UUID is configured" do
-    expected_queue_id   = "aaaaaaaa-bbbb-cccc-dddd-eeee-ffffffffffffffff"
-    expected_queue_name = "chef-index-consumer-#{expected_queue_id}"
-    Chef::Config[:amqp_consumer_id] = expected_queue_id
-    @amqp_client.stub!(:qos)
-    
-    @queue = mock("Bunny::Queue")
-    @amqp_client.should_receive(:queue).with(expected_queue_name, :durable => true).and_return(@queue)
-    @queue.should_receive(:bind).with(@exchange)
-    @publisher.queue.should == @queue
   end
   
   it "stops bunny and clears subscriptions" do
     bunny_client  = mock("Bunny::Client")
-    queue         = mock("Bunny::Queue", :subscription => true)
     @publisher.instance_variable_set(:@amqp_client, bunny_client)
-    @publisher.instance_variable_set(:@queue, queue)
     bunny_client.should_receive(:stop)
-    queue.should_receive(:unsubscribe)
     @publisher.stop
   end
   

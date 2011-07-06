@@ -1,16 +1,16 @@
-!!! XML
-!!!
+!!! 5
 %html
   %head
     %meta{ "http-equiv" => "content-type", :content => "text/html; charset=utf-8" }
     %title Chef Server
-    = css_include_tag "base", "themes/djime-cerulean/style", "chef", "/facebox/facebox.css", "jquery-ui-1.7.1.custom", "jquery.treeTable", "jsonedit_main.css"
-    = js_include_tag "jquery-1.3.2.min", "jquery.jeditable.mini", "jquery.livequery", "jquery.localscroll", "jquery.scrollTo", "jquery.tools.min"
+    = css_include_tag "base", "themes/djime-cerulean/style", "chef", "/facebox/facebox.css", "jquery-ui-1.7.1.custom", "jquery.treeTable", "jsonedit_main.css", "jquery.suggest.css"
+    = js_include_tag "jquery-1.4.4.min", "jquery.jeditable.mini", "jquery.livequery", "jquery.localscroll", "jquery.scrollTo", "jquery.tools.min"
     = js_include_tag "/facebox/facebox.js"
     = js_include_tag "jquery-ui-1.7.1.custom.min"
     = js_include_tag "jquery.treeTable.min"
     = js_include_tag "chef"
     = js_include_tag "drop_down_menu"
+    = js_include_tag "jquery.suggest"
 
     = catch_content :header_content
         
@@ -23,7 +23,7 @@
           %select{:name => 'environment-select', :onchange => 'jump(this)', :size => 1, :class => 'title-select'}
             - current_env = session[:environment]
             %option{:value => url(:environment_select, :environment_id => '_none'), :selected => current_env == nil} None
-            - @org_environments.each do |env|
+            - @environments.each do |env|
               %option{:value => url(:environment_select, :environment_id => env), :selected => current_env == env}= env
         #user-navigation
           %ul
@@ -35,15 +35,15 @@
           .clear
         #main-navigation
           %ul
-            %li= link_to "Environments", url(:environments)
-            %li= link_to "Search", url(:searches)
-            %li= link_to "Status", url(:status)
-            %li= link_to "Roles", url(:roles)
-            %li= link_to "Nodes", url(:nodes)
-            %li= link_to "Cookbooks", url(:cookbooks)
-            %li= link_to "Databags", url(:databags)
-            %li= link_to "Clients", url(:clients)
-            %li= link_to "Users", url(:users)
+            = nav_link_item("Environments", :environments)
+            = nav_link_item("Search", :searches)
+            = nav_link_item("Status", :status)
+            = nav_link_item("Roles", :roles)
+            = nav_link_item("Nodes", :nodes)
+            = nav_link_item("Cookbooks", :cookbooks)
+            = nav_link_item("Databags", :databags)
+            = nav_link_item("Clients", :clients)
+            = nav_link_item("Users", :users)
           .clear
       #wrapper
         #main

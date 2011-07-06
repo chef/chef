@@ -1,0 +1,121 @@
+chef-server-webui(8) -- Start the Chef Server merb application slice providing Web User Interface (Management Console).
+========================================
+
+## SYNOPSIS
+
+__chef-server-webui__ _(options)_
+
+  * `-u`, `--user USER`:
+    This  flag  is  for having chef-server-webui run as a user other than the
+    one currently logged in. Note: if you set this you must also provide a
+    --group option for it to take effect.
+  * `-G`, `--group GROUP`:
+    This flag is for having chef-server-webui run as a group other than the
+    one currently logged in. Note: if you set this you  must also provide a
+    --user option for it to take effect.
+  * `-d`, `--daemonize`:
+    This will run a single chef-server-webui in the background.
+  * `-N`, `--no-daemonize`:
+    This will allow you to run a cluster in console mode.
+  * `-c`, `--cluster-nodes NUM_MERBS`:
+    Number of merb daemons to run for chef-server-webui.
+  * `-I`, `--init-file FILE`:
+    File to use for initialization on load, defaults to config/init.rb.
+  * `-p`, `--port PORTNUM`:
+    Port to run chef-server-webui on, defaults to 4040. Additional nodes (-c)
+    listen on incrementing port numbers.
+  * `-o`, `--socket-file FILE`:
+    Socket  file  to  run  chef-server-webui on, defaults to
+    [Merb.root]/log/merb.sock. This is for web servers, like thin, that use
+    sockets. Specify this *only* if you *must*.
+  * `-s`, `--socket SOCKNUM`:
+    Socket number to run chef-server-webui on, defaults to 0.
+  * `-n`, `--name NAME`:
+    Set the name of the application. This is used in the process title and
+    log file names.
+  * `-P`, `--pid PIDFILE`:
+    PID file, defaults to [Merb.root]/log/merb.main.pid for the master
+    process and[Merb.root]/log/merb.[port number].pid for  worker processes.
+    For clusters, use %s to specify where in the file chef-server-webui
+    should place the port number. For instance: -P myapp.%s.pid.
+  * `-h`, `--host HOSTNAME`:
+    Host to bind to (default is 0.0.0.0).
+  * `-m`, `--merb-root PATH_TO_APP_ROOT`:
+    The path to the Merb.root for the app you want to run
+    (default is current working directory).
+  * `-a`, `--adapter ADAPTER`:
+    The rack adapter to use to run chef-server-webui (default is mongrel)
+    [mongrel, emongrel, thin, ebb, fastcgi, webrick].
+  * `-R`, `--rackup FILE`:
+    Load an alternate Rack config file (default is config/rack.rb).
+  * `-i`, `--irb-console`:
+    This flag will start chef-server-webui in irb console mode. All your models
+    and other classes will be available for you in an irb session.
+  * `-S`, `--sandbox`:
+    This flag will enable a sandboxed irb console. If your ORM supports
+    transactions, all edits will be rolled back on exit.
+  * `-l`, `--log-level LEVEL`:
+    Log levels can be set to any of these options:
+    debug < info < warn < error < fatal (default is info).
+  * `-L`, `--log LOGFILE`:
+    A string representing the logfile to use. Defaults to
+    [Merb.root]/log/merb.[main].log for the master process and
+    [Merb.root]/log/merb[port number].logfor worker processes.
+  * `-e`, `--environment STRING`:
+    Environment to run Merb under [development, production, testing]
+    (default is development).
+  * `-r`, `--script-runner ['RUBY CODE'| FULL_SCRIPT_PATH]`:
+    Command-line option to run scripts and/or code in the chef-server-webui
+    app.
+  * `-K`, `-graceful PORT or all`:
+    Gracefully kill chef-server-webui proceses by port number.
+    Use chef-server -K all to gracefully kill all merbs.
+  * `-k`, `--kill PORT`:
+    Force kill one merb worker by port number. This will cause the worker
+    to be respawned.
+  * `--fast-deploy`:
+    Reload the code, but not yourinit.rb or gems.
+  * `-X`, `--mutex on/off`:
+    This flag is for turning the mutex lock on and off.
+  * `-D`, `--debugger`:
+    Run chef-server-webui using rDebug.
+  * `-V`, `--verbose`:
+    Print extra information.
+  * `-C`, `--console-trap`:
+    Enter an irb console on ^C.
+  * `-?`, `-H`, `--help`:
+    Show this help message.
+
+## DESCRIPTION
+
+The Chef Server WebUI (Management Console) is a Merb application slice.
+The default listen port is 4040.
+
+The Management Console is Chef Server's web interface. Nodes, roles,
+cookbooks, data bags, and API clients can be managed through the Management
+Console. Search can also be done on the console.
+
+In order to start using the Management Console, you need to first create
+a user or change the default password on the "admin" user.
+
+The default credentials are:
+
+- `Username`: admin
+- `Password`: p@ssw0rd1
+
+## SEE ALSO
+
+Full documentation for Chef and chef-server-webui (Management Console)
+is located on the Chef wiki, http://wiki.opscode.com/display/chef/Home.
+
+## AUTHOR
+
+Chef was written by Adam Jacob <adam@ospcode.com> of Opscode
+(http://www.opscode.com), with contributions from the  community. This
+manual page was written by Joshua Timberman <joshua@opscode.com> with
+help2man for the Debian project (but may be used by others). Permission
+is granted to copy, distribute and / or modify this document under the
+terms of the Apache 2.0 License.
+
+On Debian systems, the complete text of the Apache 2.0 License can be
+found in /usr/share/common-licenses/Apache-2.0.

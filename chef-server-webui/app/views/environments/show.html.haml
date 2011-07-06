@@ -12,16 +12,25 @@
             %h3 Description
             = @environment.description
           .left
-            %h3 Cookbook Versions
+            %h3 Cookbook Version Constraints
             %table.table
               %tr
                 %th.first Name
-                %th.last Version(s)
+                %th.last Version Constraints
               - if @environment.cookbook_versions.empty?
                 %tr
-                  %td{:colspan => 2} This environment does not include any cookbook version restrictions
+                  %td{:colspan => 2} This environment does not include any cookbook version constraints.
               - else
-                - @environment.cookbook_versions.each do |name, versions|
+                - @environment.cookbook_versions.keys.sort.each do |name|
+                  - versions = @environment.cookbook_versions[name]
                   %tr
                     %td= name
                     %td= versions
+                    
+          .left 
+            %h3 Default Attributes
+            = build_tree('defattrs', @environment.default_attributes)
+
+          .left 
+            %h3 Override Attributes
+            = build_tree('overattrs', @environment.override_attributes)

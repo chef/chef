@@ -1,6 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: Christopher Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +19,10 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
+
+require 'chef/version_class'
+require 'chef/version_constraint'
+require 'chef/cookbook_version_selector'
 
 describe Chef::RunList do
   before(:each) do
@@ -39,7 +45,6 @@ describe Chef::RunList do
     it "should accept recipes that are unqualified" do
       @run_list << "needy"
       @run_list.should include('recipe[needy]')
-      #@run_list.include?('recipe[needy]').should == true
       @run_list.recipes.include?('needy').should == true
     end
 
@@ -148,7 +153,7 @@ describe Chef::RunList do
     end
   end
 
-  describe "expand" do
+  describe "when expanding the run list" do
     before(:each) do
       @role = Chef::Role.new
       @role.name "stubby"
@@ -167,49 +172,90 @@ describe Chef::RunList do
     describe "from disk" do
       it "should load the role from disk" do
         Chef::Role.should_receive(:from_disk).with("stubby")
-        @run_list.expand("disk")
+        @run_list.expand("_default", "disk")
       end
 
       it "should log a helpful error if the role is not available" do
         Chef::Role.stub!(:from_disk).and_raise(Chef::Exceptions::RoleNotFound)
         Chef::Log.should_receive(:error).with("Role stubby is in the runlist but does not exist. Skipping expand.")
-        @run_list.expand("disk")
+        @run_list.expand("_default", "disk")
       end
     end
 
     describe "from the chef server" do
       it "should load the role from the chef server" do
         #@rest.should_receive(:get_rest).with("roles/stubby")
-        expansion = @run_list.expand("server")
+        expansion = @run_list.expand("_default", "server")
         expansion.recipes.should == ['one', 'two', 'kitty']
       end
 
       it "should default to expanding from the server" do
         @rest.should_receive(:get_rest).with("roles/stubby")
-        @run_list.expand
+        @run_list.expand("_default")
       end
+
+      describe "with an environment set" do
+        before do
+          @role.env_run_list["production"] = Chef::RunList.new( "one", "two", "five")
+        end
+
+        it "expands the run list using the environment specific run list" do
+          expansion = @run_list.expand("production", "server")
+          expansion.recipes.should == %w{one two five kitty}
+        end
+
+        describe "and multiply nested roles" do
+          before do
+            @multiple_rest_requests = mock("Chef::REST")
+
+            @role.env_run_list["production"] << "role[prod-base]"
+
+            @role_prod_base = Chef::Role.new
+            @role_prod_base.name("prod-base")
+            @role_prod_base.env_run_list["production"] = Chef::RunList.new("role[nested-deeper]")
+
+
+            @role_nested_deeper = Chef::Role.new
+            @role_nested_deeper.name("nested-deeper")
+            @role_nested_deeper.env_run_list["production"] = Chef::RunList.new("recipe[prod-secret-sauce]")
+          end
+
+          it "expands the run list using the specified environment for all nested roles" do
+            Chef::REST.stub!(:new).and_return(@multiple_rest_requests)
+            @multiple_rest_requests.should_receive(:get_rest).with("roles/stubby").and_return(@role)
+            @multiple_rest_requests.should_receive(:get_rest).with("roles/prod-base").and_return(@role_prod_base)
+            @multiple_rest_requests.should_receive(:get_rest).with("roles/nested-deeper").and_return(@role_nested_deeper)
+
+            expansion = @run_list.expand("production", "server")
+            expansion.recipes.should == %w{one two five prod-secret-sauce kitty}
+          end
+
+        end
+
+      end
+
     end
 
     describe "from couchdb" do
       it "should load the role from couchdb" do
         Chef::Role.should_receive(:cdb_load).and_return(@role)
-        @run_list.expand("couchdb")
+        @run_list.expand("_default", "couchdb")
       end
     end
 
     it "should return the list of expanded recipes" do
-      expansion = @run_list.expand
+      expansion = @run_list.expand("_default")
       expansion.recipes[0].should == "one"
       expansion.recipes[1].should == "two"
     end
 
     it "should return the list of default attributes" do
-      expansion = @run_list.expand
+      expansion = @run_list.expand("_default")
       expansion.default_attrs[:one].should == :two
     end
 
     it "should return the list of override attributes" do
-      expansion = @run_list.expand
+      expansion = @run_list.expand("_default")
       expansion.override_attrs[:three].should == :four
     end
 
@@ -222,7 +268,7 @@ describe Chef::RunList do
       Chef::Role.stub!(:from_disk).with("stubby").and_return(@role)
       Chef::Role.stub!(:from_disk).with("dog").and_return(dog)
 
-      expansion = @run_list.expand('disk')
+      expansion = @run_list.expand("_default", 'disk')
       expansion.recipes[2].should == "three"
       expansion.default_attrs[:seven].should == :nine
     end
@@ -236,11 +282,212 @@ describe Chef::RunList do
       Chef::Role.stub!(:from_disk).with("stubby").and_return(@role)
       Chef::Role.should_receive(:from_disk).with("dog").once.and_return(dog)
 
-      expansion = @run_list.expand('disk')
+      expansion = @run_list.expand("_default", 'disk')
       expansion.recipes[2].should == "three"
       expansion.recipes[3].should == "kitty"
       expansion.default_attrs[:seven].should == :nine
     end
+  end
 
+  describe "when converting to an alternate representation" do
+    before do
+      @run_list << "recipe[nagios::client]" << "role[production]" << "recipe[apache2]"
+    end
+
+    it "converts to an array of the string forms of its items" do
+      @run_list.to_a.should == ["recipe[nagios::client]", "role[production]", "recipe[apache2]"]
+    end
+
+    it "converts to json by converting its array form" do
+      @run_list.to_json.should == ["recipe[nagios::client]", "role[production]", "recipe[apache2]"].to_json
+    end
+
+  end
+
+  describe "constrain" do
+    @fake_db = Object.new
+
+    def cookbook_maker(name, version, deps)
+      book = Chef::CookbookVersion.new(name, @fake_db)
+      book.version = version
+      deps.each { |dep_name, vc| book.metadata.depends(dep_name, vc) }
+      book
+    end
+ 
+    def vc_maker(cookbook_name, version_constraint)
+      vc = Chef::VersionConstraint.new(version_constraint)
+      { :name => cookbook_name, :version_constraint => vc }
+    end
+
+    def assert_failure_unsatisfiable_item(run_list, all_cookbooks, constraints, expected_message)
+      begin
+        Chef::CookbookVersionSelector.constrain(all_cookbooks, constraints)
+        fail "Should have raised a Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem exception"
+      rescue Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem => urli
+        urli.message.should include(expected_message)
+      end
+    end
+
+    def assert_failure_invalid_items(run_list, all_cookbooks, constraints, expected_message)
+      begin
+        Chef::CookbookVersionSelector.constrain(all_cookbooks, constraints)
+        fail "Should have raised a Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems exception"
+      rescue Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems => irli
+        irli.message.should include(expected_message)
+      end
+    end
+
+    before(:each) do
+      a1 = cookbook_maker("a", "1.0", [["c", "< 4.0"]])
+      b1 = cookbook_maker("b", "1.0", [["c", "< 3.0"]])
+      
+      c2 = cookbook_maker("c", "2.0", [["d", "> 1.0"], ["f", nil]])
+      c3 = cookbook_maker("c", "3.0", [["d", "> 2.0"], ["e", nil]])
+
+      d1_1 = cookbook_maker("d", "1.1", [])
+      d2_1 = cookbook_maker("d", "2.1", [])
+      e1 = cookbook_maker("e", "1.0", [])
+      f1 = cookbook_maker("f", "1.0", [])
+      g1 = cookbook_maker("g", "1.0", [["d", "> 5.0"]])
+
+      n1_1 = cookbook_maker("n", "1.1", [])
+      n1_2 = cookbook_maker("n", "1.2", [])
+      n1_10 = cookbook_maker("n", "1.10", [])
+
+      depends_on_nosuch = cookbook_maker("depends_on_nosuch", "1.0", [["nosuch", nil]])
+
+      @all_cookbooks = {
+        "a" => [a1],
+        "b" => [b1],
+        "c" => [c2, c3],
+        "d" => [d1_1, d2_1],
+        "e" => [e1],
+        "f" => [f1],
+        "g" => [g1],
+        "n" => [n1_1, n1_2, n1_10],
+        "depends_on_nosuch" => [depends_on_nosuch]
+      }
+    end
+
+    it "pulls in transitive dependencies" do
+      constraints = [vc_maker("a", "~> 1.0")]
+      cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
+      %w(a c d e).each { |k| cookbooks.should have_key k }
+      cookbooks.size.should == 4
+      cookbooks["c"].version.should == "3.0.0"
+      cookbooks["d"].version.should == "2.1.0"
+    end
+
+    it "should satisfy recipe-specific dependencies" do
+      depends_on_recipe = cookbook_maker("depends_on_recipe", "1.0", [["f::recipe", "1.0"]])
+      @all_cookbooks["depends_on_recipe"] = [depends_on_recipe]
+      constraints = [vc_maker("depends_on_recipe", "= 1.0")]
+      cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
+      cookbooks["f"].version.should == "1.0.0"
+    end
+
+    it "properly sorts version triples, treating each term numerically" do
+      constraints = [vc_maker("n", "> 1.2")]
+      cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
+      cookbooks.size.should == 1
+      cookbooks["n"].version.should == "1.10.0"
+    end
+
+    it "should fail to find a solution when a run list item is constrained to a range that includes no cookbooks" do
+      constraints = [vc_maker("d", "> 5.0")]
+      assert_failure_invalid_items(@run_list, @all_cookbooks, constraints, "Run list contains invalid items: no versions match the constraints on cookbook d.")
+    end
+
+    it "should fail to find a solution when a run list item's dependency is constrained to a range that includes no cookbooks" do
+      constraints = [vc_maker("g", nil)]
+      assert_failure_unsatisfiable_item(@run_list, @all_cookbooks, constraints, "Unable to satisfy constraints on cookbook d due to run list item (g >= 0.0.0)")
+    end
+
+    it "selects 'd 2.1.0' given constraint 'd > 1.2.3'" do
+      constraints = [vc_maker("d", "> 1.2.3")]
+      cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
+      cookbooks.size.should == 1
+      cookbooks["d"].version.should == "2.1.0"
+    end
+
+    it "selects largest version when constraint allows multiple" do
+      constraints = [vc_maker("d", "> 1.0")]
+      cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
+      cookbooks.size.should == 1
+      cookbooks["d"].version.should == "2.1.0"
+    end
+
+    it "selects 'd 1.1.0' given constraint 'd ~> 1.0'" do
+      constraints = [vc_maker("d", "~> 1.0")]
+      cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
+      cookbooks.size.should == 1
+      cookbooks["d"].version.should == "1.1.0"
+    end
+
+    it "raises InvalidRunListItems for an unknown cookbook in the run list" do
+      constraints = [vc_maker("nosuch", "1.0.0")]
+      assert_failure_invalid_items(@run_list, @all_cookbooks, constraints, "Run list contains invalid items: no such cookbook nosuch.")
+    end
+
+    it "raises CookbookVersionConflict for an unknown cookbook in a cookbook's dependencies" do
+      constraints = [vc_maker("depends_on_nosuch", "1.0.0")]
+      assert_failure_unsatisfiable_item(@run_list, @all_cookbooks, constraints, "Unable to satisfy constraints on cookbook nosuch, which does not exist, due to run list item (depends_on_nosuch = 1.0.0). Run list items that may result in a constraint on nosuch: [(depends_on_nosuch = 1.0.0) -> (nosuch >= 0.0.0)]")
+    end
+
+    it "raises UnsatisfiableRunListItem for direct conflict" do
+      constraints = [vc_maker("d", "= 1.1.0"), vc_maker("d", ">= 2.0")]
+      assert_failure_unsatisfiable_item(@run_list, @all_cookbooks, constraints, "Unable to satisfy constraints on cookbook d due to run list item (d >= 2.0.0)")
+    end
+
+    describe "should solve regardless of constraint order" do
+
+      it "raises CookbookVersionConflict a then b" do
+        # Cookbooks a and b both have a dependency on c, but with
+        # differing constraints.
+        constraints = [vc_maker("a", "1.0"), vc_maker("b", "1.0")]
+        cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
+        cookbooks.size.should == 5
+        %w(a b c d f).each { |k| cookbooks.should have_key k }
+        cookbooks["a"].version.should == "1.0.0"
+        cookbooks["b"].version.should == "1.0.0"
+        cookbooks["c"].version.should == "2.0.0"
+        cookbooks["d"].version.should == "2.1.0"
+      end
+
+      it "resolves b then a" do
+        # See above comment for a then b.  When b is pulled in first,
+        # we should get a version of c that satifies the constraints
+        # on the c dependency for both b and a.
+        constraints = [vc_maker("b", "1.0"), vc_maker("a", "1.0")]
+        cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
+        cookbooks.size.should == 5
+        %w(a b c d f).each { |k| cookbooks.should have_key k }
+        cookbooks["a"].version.should == "1.0.0"
+        cookbooks["b"].version.should == "1.0.0"
+        cookbooks["c"].version.should == "2.0.0"
+        cookbooks["d"].version.should == "2.1.0"
+      end
+
+      it "resolves a then d" do
+        constraints = [vc_maker("a", "1.0"), vc_maker("d", "1.1")]
+        cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
+        cookbooks.size.should == 4
+        %w(a c d f).each { |k| cookbooks.should have_key k }
+        cookbooks["a"].version.should == "1.0.0"
+        cookbooks["c"].version.should == "2.0.0"
+        cookbooks["d"].version.should == "1.1.0"
+      end
+
+      it "resolves d then a" do
+        constraints = [vc_maker("d", "1.1"), vc_maker("a", "1.0")]
+        cookbooks = Chef::CookbookVersionSelector.constrain(@all_cookbooks, constraints)
+        cookbooks.size.should == 4
+        %w(a c d f).each { |k| cookbooks.should have_key k }
+        cookbooks["a"].version.should == "1.0.0"
+        cookbooks["c"].version.should == "2.0.0"
+        cookbooks["d"].version.should == "1.1.0"
+      end
+
+    end
   end
 end

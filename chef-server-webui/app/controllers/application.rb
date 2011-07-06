@@ -114,7 +114,7 @@ class Application < Merb::Controller
   end
 
   def load_environments
-    @org_environments = Chef::Environment.list.keys.sort
+    @environments = Chef::Environment.list.keys.sort
   end
 
   # Load a cookbook and return a hash with a list of all the files of a
@@ -175,9 +175,9 @@ class Application < Merb::Controller
   def append_tree(name, html, node, count, parent)
     to_do = node
     #to_do = node.kind_of?(Chef::Node) ? node.attribute : node
-    Chef::Log.error("I have #{to_do.inspect}")
+    Chef::Log.debug("I have #{to_do.inspect}")
     to_do.sort{ |a,b| a[0] <=> b[0] }.each do |key, value|
-      Chef::Log.error("I am #{key.inspect} #{value.inspect}")
+      Chef::Log.debug("I am #{key.inspect} #{value.inspect}")
       to_send = Array.new
       count += 1
       is_parent = false
@@ -252,26 +252,42 @@ class Application < Merb::Controller
   #for showing search result
   def determine_name(type, object)
     case type
-    when :node, :role, :client
+    when :node, :role, :client, :environment
       object.name
     else
       params[:id]
     end
   end
 
-  def get_available_recipes
-    r = Chef::REST.new(Chef::Config[:chef_server_url])
-    all_recipes = Array.new
-    r.get_rest('cookbooks/_recipes').keys.each do |cb|
-      all_recipes << all[cb].sort{|x,y| y <=> x }.map do |ver, recipes|
-        recipes.map{ |rn| rn == "default" ? "#{cb} #{ver}" : "#{cb}::#{rn} #{ver}" }
-      end
-    end
-    all_recipes.flatten.uniq
+  def list_available_recipes_for(environment)
+    Chef::Environment.load_filtered_recipe_list(environment).sort!
   end
 
   def convert_newline_to_br(string)
     string.to_s.gsub(/\n/, '<br />') unless string.nil?
+  end
+
+  def format_exception(exception)
+    require 'pp'
+    pretty_params = StringIO.new
+    PP.pp({:request_params => params}, pretty_params)
+    "#{exception.class.name}: #{exception.message}\n#{pretty_params.string}\n#{exception.backtrace.join("\n")}"
+  end
+
+  def conflict?(exception)
+    exception.kind_of?(Net::HTTPServerException) && exception.message =~ /409/
+  end
+
+  def forbidden?(exception)
+    exception.kind_of?(Net::HTTPServerException) && exception.message =~ /403/
+  end
+
+  def not_found?(exception)
+    exception.kind_of?(Net::HTTPServerException) && exception.message =~ /404/
+  end
+
+  def bad_request?(exception)
+    exception.kind_of?(Net::HTTPServerException) && exception.message =~ /400/
   end
 
 end

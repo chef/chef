@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,23 +24,25 @@ require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/data_bag_item'
 require 'chef/index_queue'
-require 'extlib'
-require 'chef/json'
+require 'chef/mash'
+require 'chef/json_compat'
 
 class Chef
-  class DataBag 
-    
+  class DataBag
+
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
     include Chef::IndexQueue::Indexable
-    
+
+    VALID_NAME = /^[\-[:alnum:]_]+$/
+
     DESIGN_DOCUMENT = {
       "version" => 2,
       "language" => "javascript",
       "views" => {
         "all" => {
           "map" => <<-EOJS
-          function(doc) { 
+          function(doc) {
             if (doc.chef_type == "data_bag") {
               emit(doc.name, doc);
             }
@@ -49,7 +51,7 @@ class Chef
         },
         "all_id" => {
           "map" => <<-EOJS
-          function(doc) { 
+          function(doc) {
             if (doc.chef_type == "data_bag") {
               emit(doc.name, doc.name);
             }
@@ -68,21 +70,27 @@ class Chef
       }
     }
 
+    def self.validate_name!(name)
+      unless name =~ VALID_NAME
+        raise Exceptions::InvalidDataBagName, "DataBags must have a name matching #{VALID_NAME.inspect}, you gave #{name.inspect}"
+      end
+    end
+
     attr_accessor :couchdb_rev, :couchdb_id, :couchdb
-    
+
     # Create a new Chef::DataBag
     def initialize(couchdb=nil)
-      @name = '' 
+      @name = ''
       @couchdb_rev = nil
       @couchdb_id = nil
       @couchdb = (couchdb || Chef::CouchDB.new)
     end
 
-    def name(arg=nil) 
+    def name(arg=nil)
       set_or_return(
         :name,
         arg,
-        :regex => /^[\-[:alnum:]_]+$/
+        :regex => VALID_NAME
       )
     end
 
@@ -96,7 +104,7 @@ class Chef
       result
     end
 
-    # Serialize this object as a hash 
+    # Serialize this object as a hash
     def to_json(*a)
       to_hash.to_json(*a)
     end
@@ -108,7 +116,7 @@ class Chef
     def self.chef_server_rest
       Chef::REST.new(Chef::Config[:chef_server_url])
     end
-    
+
     # Create a Chef::Role from JSON
     def self.json_create(o)
       bag = new
@@ -118,7 +126,7 @@ class Chef
       bag.index_id = bag.couchdb_id
       bag
     end
-    
+
     # List all the Chef::DataBag objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all Roles, fully inflated.
     def self.cdb_list(inflate=false, couchdb=nil)
@@ -126,7 +134,7 @@ class Chef
       lookup = (inflate ? "value" : "key")
       rs["rows"].collect { |r| r[lookup] }
     end
-    
+
     def self.list(inflate=false)
       if inflate
         # Can't search for all data bags like other objects, fall back to N+1 :(
@@ -138,17 +146,17 @@ class Chef
         Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
       end
     end
-    
+
     # Load a Data Bag by name from CouchDB
     def self.cdb_load(name, couchdb=nil)
       (couchdb || Chef::CouchDB.new).load("data_bag", name)
     end
-    
+
     # Load a Data Bag by name via the RESTful API
     def self.load(name)
       Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data/#{name}")
     end
-    
+
     # Remove this Data Bag from CouchDB
     def cdb_destroy
       removed = @couchdb.delete("data_bag", @name, @couchdb_rev)
@@ -159,17 +167,17 @@ class Chef
       end
       removed
     end
-    
+
     def destroy
       chef_server_rest.delete_rest("data/#{@name}")
     end
-    
+
     # Save this Data Bag to the CouchDB
     def cdb_save
       results = @couchdb.store("data_bag", @name, self)
       @couchdb_rev = results["rev"]
     end
-    
+
     # Save the Data Bag via RESTful API
     def save
       begin
@@ -180,7 +188,7 @@ class Chef
       end
       self
     end
-    
+
     #create a data bag via RESTful API
     def create
       chef_server_rest.post_rest("data", self)
@@ -190,7 +198,7 @@ class Chef
     # List all the items in this Bag from CouchDB
     # The self.load method does this through the REST API
     def list(inflate=false)
-      rs = nil 
+      rs = nil
       if inflate
         rs = @couchdb.get_view("data_bags", "entries", :include_docs => true, :startkey => @name, :endkey => @name)
         rs["rows"].collect { |r| r["doc"] }
@@ -199,12 +207,12 @@ class Chef
         rs["rows"].collect { |r| r["value"] }
       end
     end
-    
+
     # Set up our CouchDB design document
     def self.create_design_document(couchdb=nil)
       (couchdb || Chef::CouchDB.new).create_design_document("data_bags", DESIGN_DOCUMENT)
     end
-    
+
     # As a string
     def to_s
       "data_bag[#{@name}]"

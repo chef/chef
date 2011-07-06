@@ -1,6 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Copyright:: Copyright (c) 2010, 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +18,11 @@
 #
 
 require 'chef/environment'
+require 'chef/cookbook_version_selector'
 
 class Environments < Application
+
+  include Merb::CookbookVersionHelper
 
   provides :json
 
@@ -87,20 +91,49 @@ class Environments < Application
   end
 
   # GET /environments/:environment_id/cookbooks
+  # returns data in the format of:
+  # {"apache2" => {
+  #     :url => "http://url",
+  #     :versions => [{:url => "http://url/1.0.0", :version => "1.0.0"}, {:url => "http://url/0.0.1", :version=>"0.0.1"}]
+  #   }
+  # }
   def list_cookbooks
     begin
       filtered_cookbooks = Chef::Environment.cdb_load_filtered_cookbook_versions(params[:environment_id])
     rescue Chef::Exceptions::CouchDBNotFound
       raise NotFound, "Cannot load environment #{params[:environment_id]}"
     end
+    num_versions = num_versions!
     display(filtered_cookbooks.inject({}) {|res, (cookbook_name,versions)|
-      # TODO:
-      # For now, we are only displaying the last cookbook in the sorted list (the newest version).
-      # We should display every cookbook version that is available in a given environment
-      # [stephen 9/2/10]
-      res[cookbook_name] = absolute_url(:cookbook_version, :cookbook_name=>cookbook_name, :cookbook_version=>versions.last.version)
+      versions.map!{|v| v.version.to_s}
+      res[cookbook_name] = expand_cookbook_urls(cookbook_name, versions, num_versions)
       res
     })
+  end
+
+  # GET /environments/:environment_id/cookbooks/:cookbook_id
+  # returns data in the format of:
+  # {"apache2" => {
+  #     :url => "http://url",
+  #     :versions => [{:url => "http://url/1.0.0", :version => "1.0.0"}, {:url => "http://url/0.0.1", :version=>"0.0.1"}]
+  #   }
+  # }
+  def cookbook
+    cookbook_name = params[:cookbook_id]
+    begin
+      filtered_cookbooks = Chef::Environment.cdb_load_filtered_cookbook_versions(params[:environment_id])
+    rescue Chef::Exceptions::CouchDBNotFound
+      raise NotFound, "Cannot load environment #{params[:environment_id]}"
+    end
+    raise NotFound, "Cannot load cookbook #{cookbook_name}" unless filtered_cookbooks.has_key?(cookbook_name)
+    versions = filtered_cookbooks[cookbook_name].map{|v| v.version.to_s}
+    num_versions = num_versions!("all")
+    display({ cookbook_name => expand_cookbook_urls(cookbook_name, versions, num_versions) })
+  end
+
+  # GET /environments/:environment/recipes
+  def list_recipes
+    display(Chef::Environment.cdb_load_filtered_recipe_list(params[:environment_id]))
   end
 
   # GET /environments/:environment_id/nodes
@@ -108,7 +141,7 @@ class Environments < Application
     node_list = Chef::Node.cdb_list_by_environment(params[:environment_id])
     display(node_list.inject({}) {|r,n| r[n] = absolute_url(:node, n); r})
   end
-  
+
   # GET /environments/:environment_id/roles/:role_id
   def role
     begin
@@ -119,6 +152,56 @@ class Environments < Application
     display("run_list" => role.env_run_lists[params[:environment_id]])
   end
 
-  private
+  # POST /environments/:environment_id/cookbook_versions
+  #
+  # Take the given run_list and return the versions of cookbooks that would
+  # be used after applying the constraints of the given environment.
+  #
+  # INPUT: 
+  #  :run_list = an Array of String's, e.g.,
+  #  ["recipe[apache2]", "recipe[runit]"]
+  #
+  # OUT:
+  #  Hash of cookbook names cookbook manifest
+  #
+  # NOTE: This method is a POST, not because it's a mutator (it's idempotent),
+  # but the run_list can likely exceed Merb's query string limit for GET
+  # of 1024 characters.
+  def cookbook_versions_for_run_list
+    begin
+      # not possible to be nil due to the route to get us to this API
+      # endpoint
+      environment_input = params[:environment_id]
 
+      run_list_input = params[:run_list]
+      raise BadRequest, "Missing param: run_list" unless run_list_input
+      raise BadRequest, "Param run_list is not an Array: #{run_list_input.class}" unless run_list_input.is_a?(Array)
+
+      # Convert the input array of strings to a RunList containing
+      # RunListItem's.
+      run_list = Chef::RunList.new
+      run_list_input.each do |run_list_item_string|
+        run_list << run_list_item_string
+      end
+
+      # Expand the run list in the scope of the specified environment.
+      names_to_cookbook_version = Chef::CookbookVersionSelector.expand_to_cookbook_versions(run_list, environment_input)
+    rescue Chef::Exceptions::CouchDBNotFound
+      raise NotFound, "Cannot load environment #{params[:environment_id]}"
+    rescue Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems => e
+      raise PreconditionFailed, e.to_json
+    rescue Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem => e
+      raise PreconditionFailed, e.to_json
+    end
+
+    # Convert from
+    #  name => CookbookVersion
+    # to
+    #  name => cookbook manifest
+    # and display.
+    display(names_to_cookbook_version.inject({}) do |res, (cookbook_name, cookbook_version)|
+              res[cookbook_name] = cookbook_version.generate_manifest_with_urls {|opts| absolute_url(:cookbook_file, opts) }
+              res
+            end)
+  end
 end

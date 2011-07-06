@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2009,2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,15 +21,9 @@ require 'chef/search/query'
 
 describe Chef::Search::Query do 
   before(:each) do
-    @rest = mock("Chef::REST", :null_object => true)
+    @rest = mock("Chef::REST")
     Chef::REST.stub!(:new).and_return(@rest)
     @query = Chef::Search::Query.new
-  end
-
-  describe "initialize" do
-    it "should return a Chef::Search::Query" do
-      @query.should be_a_kind_of(Chef::Search::Query)  
-    end
   end
 
   describe "search" do

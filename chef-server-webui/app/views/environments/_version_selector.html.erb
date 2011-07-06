@@ -1,0 +1,8 @@
+<div class="cookbook_version_constraint_control_container">
+  <span class="label">
+    <label for="cookbook_version[<%= cookbook_version_index -%>]">cookbook version constraint:</label>
+  </span>
+  <span>
+    <%= text_field(:name => "cookbook_version[#{cookbook_version_index}]", :value => "#{cookbook_name} #{constraint}")%>
+  </span>
+</div>

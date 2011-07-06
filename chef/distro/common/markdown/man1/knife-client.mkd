@@ -1,0 +1,103 @@
+knife-client(1) -- Manage Chef API Clients
+========================================
+
+## SYNOPSIS
+
+__knife__ __client__ _sub-command_ _(options)_
+
+## SUB-COMMANDS
+Client subcommands follow a basic create, read, update, delete (CRUD)
+pattern. The Following subcommands are available:
+
+## BULK DELETE
+__knife client bulk delete__ _regex_ _(options)_
+
+Delete clients where the client name matches the regular expression
+_regex_ on the Chef Server. The regular expression should be given as a
+quoted string, and not surrounded by forward slashes.
+
+## CREATE
+__knife client create__ _client name_ _(options)_
+
+  * `-a`, `--admin    `:
+    Create the client as an admin
+  * `-f`, `--file FILE`:
+    Write the key to a file
+
+Create a new client. This generates an RSA keypair. The private key will
+be displayed on _STDOUT_ or written to the named file. The public half
+will be stored on the Server. For _chef-client_ systems, the private key
+should be copied to the system as `/etc/chef/client.pem`.
+
+Admin clients should be created for users that will use _knife_ to
+access the API as an administrator. The private key will generally be
+copied to `~/.chef/client\_name.pem` and referenced in the `knife.rb`
+configuration file.
+
+## DELETE
+__knife client delete__ _client name_  _(options)_
+
+Deletes a registered client.
+
+## EDIT
+__client edit__ _client name_ _(options)_
+
+Edit a registered client.
+
+## LIST
+__client list__ _(options)_
+
+  * `-w`, `--with-uri`:
+      Show corresponding URIs
+
+List all registered clients.
+
+## REREGISTER
+__client reregister__ _client name_  _(options)_
+
+  * `-f`, `--file FILE`:
+    Write the key to a file
+
+Regenerate the RSA keypair for a client. The public half will be stored
+on the server and the private key displayed on _STDOUT_ or written to
+the named file. This operation will invalidate the previous keypair used
+by the client, preventing it from authenticating with the Chef Server.
+Use care when reregistering the validator client.
+
+## SHOW
+__client show__ _client name_ _(options)_
+
+  * `-a`, `--attribute ATTR`:
+    Show only one attribute
+
+Show a client. Output format is determined by the --format option.
+
+## DESCRIPTION
+Clients are identities used for communication with the Chef Server API,
+roughly equivalent to user accounts on the Chef Server, except that
+clients only communicate with the Chef Server API and are authenticated
+via request signatures.
+
+In the typical case, there will be one client object on the server for
+each node, and the corresponding client and node will have identical
+names.
+
+In the Chef authorization model, there is one special client, the
+"validator", which is authorized to create new non-administrative
+clients but has minimal privileges otherwise. This identity is used as a
+sort of "guest account" to create a client identity when initially
+setting up a host for management with Chef.
+
+## SEE ALSO
+   __knife-node__(1)
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+

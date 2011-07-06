@@ -10,18 +10,20 @@
             = @role.description
 
           .left
-            %h3 Run List
+            %h3
+              = "Run List for Environment \"#{@current_env}\""
+              = @env_run_list_exists ? "" : "(_default)"
             %table.table
               %tr
                 %th.first Position
                 %th Name
                 %th Version
                 %th.last Type
-                - if @role.run_list.empty?
+                - if @run_list.empty?
                   %tr
                     %td{:colspan => 2} This role does not include any roles or recipes.
                 - else
-                  -@role.run_list.each_with_index do |run_list_item, i|
+                  -@run_list.each_with_index do |run_list_item, i|
                     %tr
                       %td.position= i
                       %td= run_list_item.name 
@@ -29,7 +31,6 @@
                       %td= run_list_item.type 
           .left.accordion
             %h3.head= link_to("Recipes", "#")
-            - recipes = @role.run_list.expand('server').recipes
             %div
               %span.description.form.help
                 This is the list of recipes, fully expanded, as they will be applied to the node in question.  
@@ -37,14 +38,14 @@
                 %tr
                   %th.first Position
                   %th.last Name
-                - if @role.run_list.empty?
+                - if @run_list.empty?
                   %tr
                     %td{:colspan => 2} This node has no recipes applied.
                 - else
-                  - recipes.each_with_index do |recipe, i|
+                  - @recipes.each_with_index do |recipe, i|
                     %tr
                       %td.position= i
-                      %td= recipes
+                      %td= recipe
           .left 
             %h3 Default Attributes
             = build_tree('defattrs', @role.default_attributes)

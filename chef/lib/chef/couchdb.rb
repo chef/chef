@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ require 'chef/config'
 require 'chef/rest'
 require 'chef/log'
 require 'digest/sha2'
-require 'chef/json'
+require 'chef/json_compat'
 
 # We want to fail on create if uuidtools isn't installed
 begin
@@ -45,7 +45,7 @@ class Chef
 
     def create_id_map
       create_design_document(
-        "id_map", 
+        "id_map",
         {
           "version" => 1,
           "language" => "javascript",
@@ -59,7 +59,7 @@ class Chef
             },
             "id_to_name" => {
               "map" => <<-EOJS
-                function(doc) { 
+                function(doc) {
                   emit(doc._id, [ doc.chef_type, doc.name ]);
                 }
               EOJS
@@ -69,16 +69,15 @@ class Chef
       )
     end
 
-    def create_db
+    def create_db(check_for_existing=true)
       @database_list = @rest.get_rest("_all_dbs")
-      unless @database_list.detect { |db| db == couchdb_database }
+      if !check_for_existing || !@database_list.any? { |db| db == couchdb_database }
         response = @rest.put_rest(couchdb_database, Hash.new)
       end
       couchdb_database
     end
-    
+
     def create_design_document(name, data)
-      create_db
       to_update = true
       begin
         old_doc = @rest.get_rest("#{couchdb_database}/_design/#{name}")
@@ -88,7 +87,7 @@ class Chef
         else
           to_update = false
         end
-      rescue 
+      rescue
         Chef::Log.debug("Creating #{name} views for the first time because: #{$!}")
       end
       if to_update
@@ -111,14 +110,14 @@ class Chef
       )
       rows = get_view("id_map", "name_to_id", :key => [ obj_type, name ])["rows"]
       uuid = rows.empty? ? UUIDTools::UUID.random_create.to_s : rows.first.fetch("id")
-     
+
       db_put_response = @rest.put_rest("#{couchdb_database}/#{uuid}", object)
 
       if object.respond_to?(:add_to_index)
         Chef::Log.info("Sending #{obj_type}(#{uuid}) to the index queue for addition.")
         object.add_to_index(:database => couchdb_database, :id => uuid, :type => obj_type)
       end
-      
+
       db_put_response
     end
 
@@ -135,9 +134,9 @@ class Chef
                )
       doc = find_by_name(obj_type, name)
       doc.couchdb = self if doc.respond_to?(:couchdb)
-      doc 
+      doc
     end
-  
+
     def delete(obj_type, name, rev=nil)
       validate(
         {
@@ -149,7 +148,7 @@ class Chef
           :name => { :kind_of => String },
         }
       )
-      del_id = nil 
+      del_id = nil
       object, uuid = find_by_name(obj_type, name, true)
       unless rev
         if object.respond_to?(:couchdb_rev)
@@ -160,7 +159,7 @@ class Chef
       end
       response = @rest.delete_rest("#{couchdb_database}/#{uuid}?rev=#{rev}")
       response.couchdb = self if response.respond_to?(:couchdb=)
-      
+
       if object.respond_to?(:delete_from_index)
         Chef::Log.info("Sending #{obj_type}(#{uuid}) to the index queue for deletion..")
         object.delete_from_index(:database => couchdb_database, :id => uuid, :type => obj_type)
@@ -168,10 +167,10 @@ class Chef
 
       response
     end
-  
+
     def list(view, inflate=false)
       validate(
-        { 
+        {
           :view => view,
         },
         {
@@ -187,7 +186,7 @@ class Chef
       end
       r
     end
-  
+
     def has_key?(obj_type, name)
       validate(
         {
@@ -215,7 +214,7 @@ class Chef
       if with_id
         [ r["rows"][0]["doc"], r["rows"][0]["id"] ]
       else
-        r["rows"][0]["doc"] 
+        r["rows"][0]["doc"]
       end
     end
 
@@ -230,10 +229,18 @@ class Chef
       response = @rest.post_rest("#{couchdb_database}/_all_docs?include_docs=true", { "keys" => to_fetch.flatten })
       response["rows"].collect { |r| r["doc"] }
     end
-    
+
     def view_uri(design, view)
       "#{couchdb_database}/_design/#{design}/_view/#{view}"
     end
-    
+
+    def server_stats
+      @rest.get_rest('/')
+    end
+
+    def db_stats
+      @rest.get_rest("/#{@db}")
+    end
+
   end
 end

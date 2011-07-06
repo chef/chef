@@ -56,7 +56,7 @@ class Chef
       alias :start :run
       
       def call_action_for_message(message)
-        amqp_payload  = Chef::JSON.from_json(message[:payload], :create_additions => false, :max_nesting => false)
+        amqp_payload  = Chef::JSONCompat.from_json(message[:payload], :create_additions => false, :max_nesting => false)
         action        = amqp_payload["action"].to_sym
         app_payload   = amqp_payload["payload"]
         assert_method_whitelisted(action)

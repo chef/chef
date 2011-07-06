@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Tim Hinderliter (<tim@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,22 +29,20 @@ describe Chef::Knife do
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife.new
-    @knife.stub!(:puts)
-    @knife.stub!(:print)
-    Chef::Knife.stub!(:puts)
-  end
-
-  it "builds a list of the core subcommand file require paths" do
-    Chef::Knife::DEFAULT_SUBCOMMAND_FILES.should_not be_empty
-    Chef::Knife::DEFAULT_SUBCOMMAND_FILES.each do |require_path|
-      require_path.should match(%w{chef knife .*}.join(Regexp.escape(File::SEPARATOR)))
+    @knife.ui.stub!(:puts)
+    @knife.ui.stub!(:print)
+    Chef::Log.stub!(:init)
+    Chef::Log.stub!(:level)
+    [:debug, :info, :warn, :error, :crit].each do |level_sym|
+      Chef::Log.stub!(level_sym)
     end
+    Chef::Knife.stub!(:puts)
   end
 
   describe "after loading a subcommand" do
     before do
       Chef::Knife.reset_subcommands!
- 
+
       if KnifeSpecs.const_defined?(:TestNameMapping)
         KnifeSpecs.send(:remove_const, :TestNameMapping)
       end
@@ -89,14 +88,9 @@ describe Chef::Knife do
       end
 
       Chef::Knife.load_commands
-      
+
       Chef::Knife.subcommands.should have_key("super_awesome_command")
       Chef::Knife.subcommands["super_awesome_command"].should == SuperAwesomeCommand
-    end
-
-    it "lists all of the commands" do
-      pending "post UI refactor"
-      Chef::Knife.list_commands
     end
 
     it "guesses a category from a given ARGV" do
@@ -180,109 +174,116 @@ describe Chef::Knife do
 
   end
 
-  describe "format_list_for_display" do
-    it "should print the full hash if --with-uri is true" do
-      @knife.config[:with_uri] = true
-      @knife.format_list_for_display({ :marcy => :playground }).should == { :marcy => :playground }
+  describe "when formatting exceptions" do
+    before do
+      @stdout, @stderr, @stdin = StringIO.new, StringIO.new, StringIO.new
+      @knife.ui = Chef::Knife::UI.new(@stdout, @stderr, @stdin, {})
+      @knife.should_receive(:exit).with(100)
     end
 
-    it "should print only the keys if --with-uri is false" do
-      @knife.config[:with_uri] = false
-      @knife.format_list_for_display({ :marcy => :playground }).should == [ :marcy ]
-    end
-  end
-
-  describe "format_for_display" do
-    it "should return the raw data" do
-      input = { :gi => :go }
-      @knife.format_for_display(input).should == input
+    it "formats 401s nicely" do
+      response = Net::HTTPUnauthorized.new("1.1", "401", "Unauthorized")
+      response.instance_variable_set(:@read, true) # I hate you, net/http.
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no syncronize your clock?"))
+      @knife.stub!(:run).and_raise(Net::HTTPServerException.new("401 Unauthorized", response))
+      @knife.run_with_pretty_exceptions
+      @stdout.string.should match(/ERROR: Failed to authenticate to/)
+      @stdout.string.should match(/Response:  y u no syncronize your clock\?/)
     end
 
-    describe "with a data bag item" do
-      it "should use the raw data" do
-        dbi = mock(Chef::DataBagItem, :kind_of? => true)
-        dbi.should_receive(:raw_data).and_return({ "monkey" => "soup" })
-        @knife.format_for_display(dbi).should == { "monkey" => "soup" }
-      end
+    it "formats 403s nicely" do
+      response = Net::HTTPForbidden.new("1.1", "403", "Forbidden")
+      response.instance_variable_set(:@read, true) # I hate you, net/http.
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no administrator"))
+      @knife.stub!(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
+      @knife.stub!(:username).and_return("sadpanda")
+      @knife.run_with_pretty_exceptions
+      @stdout.string.should match(%r[ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action])
+      @stdout.string.should match(%r[Response:  y u no administrator])
     end
 
-    describe "with --attribute passed" do
-      it "should return the deeply nested attribute" do
-        input = { "gi" => { "go" => "ge" } }
-        @knife.config[:attribute] = "gi.go"
-        @knife.format_for_display(input).should == { "gi.go" => "ge" }
-      end
+    it "formats 400s nicely" do
+      response = Net::HTTPBadRequest.new("1.1", "400", "Bad Request")
+      response.instance_variable_set(:@read, true) # I hate you, net/http.
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "y u search wrong"))
+      @knife.stub!(:run).and_raise(Net::HTTPServerException.new("400 Bad Request", response))
+      @knife.run_with_pretty_exceptions
+      @stdout.string.should match(%r[ERROR: The data in your request was invalid])
+      @stdout.string.should match(%r[Response: y u search wrong])
     end
 
-    describe "with --run-list passed" do
-      it "should return the run list" do
-        input = Chef::Node.new
-        input.run_list("role[monkey]", "role[churchmouse]")
-        @knife.config[:run_list] = true
-        response = @knife.format_for_display(input)
-        response["run_list"][0].should == "role[monkey]"
-        response["run_list"][1].should == "role[churchmouse]"
-      end
-    end
-  end
-
-  describe "confirm" do
-    before(:each) do
-      @question = "monkeys rule"
-      @stdout = StringIO.new
-      @knife.stub(:stdout).and_return(@stdout)
-      STDIN.stub!(:readline).and_return("y")
+    it "formats 404s nicely" do
+      response = Net::HTTPNotFound.new("1.1", "404", "Not Found")
+      response.instance_variable_set(:@read, true) # I hate you, net/http.
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "nothing to see here"))
+      @knife.stub!(:run).and_raise(Net::HTTPServerException.new("404 Not Found", response))
+      @knife.run_with_pretty_exceptions
+      @stdout.string.should match(%r[ERROR: The object you are looking for could not be found])
+      @stdout.string.should match(%r[Response: nothing to see here])
     end
 
-    it "should return true if you answer Y" do
-      STDIN.stub!(:readline).and_return("Y")
-      @knife.confirm(@question).should == true
+    it "formats 500s nicely" do
+      response = Net::HTTPInternalServerError.new("1.1", "500", "Internal Server Error")
+      response.instance_variable_set(:@read, true) # I hate you, net/http.
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone"))
+      @knife.stub!(:run).and_raise(Net::HTTPFatalError.new("500 Internal Server Error", response))
+      @knife.run_with_pretty_exceptions
+      @stdout.string.should match(%r[ERROR: internal server error])
+      @stdout.string.should match(%r[Response: sad trombone])
     end
 
-    it "should return true if you answer y" do
-      STDIN.stub!(:readline).and_return("y")
-      @knife.confirm(@question).should == true
+    it "formats 502s nicely" do
+      response = Net::HTTPBadGateway.new("1.1", "502", "Bad Gateway")
+      response.instance_variable_set(:@read, true) # I hate you, net/http.
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "sadder trombone"))
+      @knife.stub!(:run).and_raise(Net::HTTPFatalError.new("502 Bad Gateway", response))
+      @knife.run_with_pretty_exceptions
+      @stdout.string.should match(%r[ERROR: bad gateway])
+      @stdout.string.should match(%r[Response: sadder trombone])
     end
 
-    it "should exit 3 if you answer N" do
-      STDIN.stub!(:readline).and_return("N")
-      lambda {
-        @knife.confirm(@question)
-      }.should raise_error(SystemExit) { |e| e.status.should == 3 }
+    it "formats 503s nicely" do
+      response = Net::HTTPServiceUnavailable.new("1.1", "503", "Service Unavailable")
+      response.instance_variable_set(:@read, true) # I hate you, net/http.
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "saddest trombone"))
+      @knife.stub!(:run).and_raise(Net::HTTPFatalError.new("503 Service Unavailable", response))
+      @knife.run_with_pretty_exceptions
+      @stdout.string.should match(%r[ERROR: Service temporarily unavailable])
+      @stdout.string.should match(%r[Response: saddest trombone])
     end
 
-    it "should exit 3 if you answer n" do
-      STDIN.stub!(:readline).and_return("n")
-      lambda {
-        @knife.confirm(@question)
-      }.should raise_error(SystemExit) { |e| e.status.should == 3 }
+    it "formats other HTTP errors nicely" do
+      response = Net::HTTPPaymentRequired.new("1.1", "402", "Payment Required")
+      response.instance_variable_set(:@read, true) # I hate you, net/http.
+      response.stub!(:body).and_return(Chef::JSONCompat.to_json(:error => "nobugfixtillyoubuy"))
+      @knife.stub!(:run).and_raise(Net::HTTPServerException.new("402 Payment Required", response))
+      @knife.run_with_pretty_exceptions
+      @stdout.string.should match(%r[ERROR: Payment Required])
+      @stdout.string.should match(%r[Response: nobugfixtillyoubuy])
     end
 
-    describe "with --y or --yes passed" do
-      it "should return true" do
-        @knife.config[:yes] = true
-        @knife.confirm(@question).should == true
-      end
+    it "formats NameError and NoMethodError nicely" do
+      @knife.stub!(:run).and_raise(NameError.new("Undefined constant FUUU"))
+      @knife.run_with_pretty_exceptions
+      @stdout.string.should match(%r[ERROR: knife encountered an unexpected error])
+      @stdout.string.should match(%r[This may be a bug in the 'knife' knife command or plugin])
+      @stdout.string.should match(%r[Exception: NameError: Undefined constant FUUU])
     end
 
-    describe "when asking for free-form user input" do
-      it "asks a question and returns the answer provided by the user" do
-        out = StringIO.new
-        @knife.stub!(:stdout).and_return(out)
-        @knife.stub!(:stdin).and_return(StringIO.new("http://mychefserver.example.com\n"))
-        @knife.ask_question("your chef server URL?").should == "http://mychefserver.example.com"
-        out.string.should == "your chef server URL?"
-      end
-
-      it "suggests a default setting and returns the default when the user's response only contains whitespace" do
-        out = StringIO.new
-        @knife.stub!(:stdout).and_return(out)
-        @knife.stub!(:stdin).and_return(StringIO.new(" \n"))
-        @knife.ask_question("your chef server URL? ", :default => 'http://localhost:4000').should == "http://localhost:4000"
-        out.string.should == "your chef server URL? [http://localhost:4000] "
-      end
+    it "formats missing private key errors nicely" do
+      @knife.stub!(:run).and_raise(Chef::Exceptions::PrivateKeyMissing.new('key not there'))
+      @knife.stub!(:api_key).and_return("/home/root/.chef/no-key-here.pem")
+      @knife.run_with_pretty_exceptions
+      @stdout.string.should match(%r[ERROR: Your private key could not be loaded from /home/root/.chef/no-key-here.pem])
+      @stdout.string.should match(%r[Check your configuration file and ensure that your private key is readable])
     end
 
+    it "formats connection refused errors nicely" do
+      @knife.stub!(:run).and_raise(Errno::ECONNREFUSED.new('y u no shut up'))
+      @knife.run_with_pretty_exceptions
+      @stdout.string.should match(%r[ERROR: Network Error: Connection refused - y u no shut up])
+      @stdout.string.should match(%r[Check your knife configuration and network settings])
+    end
   end
 
 end

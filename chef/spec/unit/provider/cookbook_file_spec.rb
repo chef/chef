@@ -21,11 +21,11 @@ require 'ostruct'
 
 describe Chef::Provider::CookbookFile do
   before do
-    Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")))
-    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
+    @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
+    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
 
     @node = Chef::Node.new
-    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
     @run_context = Chef::RunContext.new(@node, @cookbook_collection)
 
     @new_resource = Chef::Resource::CookbookFile.new('apache2_module_conf_generate.pl')
@@ -49,13 +49,13 @@ EXPECTED
   end
 
   describe "when loading the current file state" do
-    
+
     it "converts windows-y filenames to unix-y ones" do
       @new_resource.path('\windows\stuff')
       @provider.load_current_resource
       @new_resource.path.should == '/windows/stuff'
     end
-    
+
     it "sets the current resources path to the same as the new resource" do
       @new_resource.path('/tmp/file')
       @provider.load_current_resource
@@ -63,6 +63,15 @@ EXPECTED
     end
   end
 
+  describe "when the enclosing directory of the target file location doesn't exist" do
+    before do
+      @new_resource.path("/tmp/no/such/intermediate/path/file.txt")
+    end
+
+    it "raises a specific error alerting the user to the problem" do
+      lambda {@provider.action_create}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+    end
+  end
   describe "when the file doesn't yet exist" do
     before do
       @install_to = Dir.tmpdir + '/apache2_modconf.pl'
@@ -107,7 +116,7 @@ EXPECTED
       end
       actual.should == @file_content
     end
-    
+
     it "installs the file from the cookbook cache" do
       @new_resource.path(@install_to)
       @provider.should_receive(:backup_new_resource)
@@ -116,7 +125,7 @@ EXPECTED
       actual = IO.read(@install_to)
       actual.should == @file_content
     end
-    
+
     it "installs the file for create_if_missing" do
       @new_resource.path(@install_to)
       @provider.should_receive(:set_all_access_controls)
@@ -146,7 +155,7 @@ EXPECTED
       @current_resource = @new_resource.dup
       @provider.current_resource = @current_resource
     end
-    
+
     it "overwrites it when the create action is called" do
       @provider.should_receive(:set_all_access_controls)
       @provider.should_receive(:backup_new_resource)
@@ -178,7 +187,7 @@ EXPECTED
 
     after { @tempfile && @tempfile.close! }
   end
-  
+
   describe "when the file has the correct content" do
     before do
       @tempfile = Tempfile.open('cookbook_file_spec')

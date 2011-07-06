@@ -3,4 +3,4 @@
     %h2.title= "Role"
     .inner
       = partial('navigation', :active => 'create')
-  = partial('form', :header => "Create new Role", :form_id => 'create_role', :submit_name => "Create Role", :submit_id => "create_role_button", :form_for => 'create', :form_url => url(:roles))
+  = partial('form', :header => "Create new Role", :form_id => 'create_role', :submit_name => "Create Role", :submit_id => "create_role_button", :method => :post, :form_for => 'create', :form_url => url(:roles))

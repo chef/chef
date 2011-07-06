@@ -18,6 +18,8 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
+Chef::Knife::ClientCreate.load_deps
+
 describe Chef::Knife::ClientCreate do
   before(:each) do
     Chef::Config[:node_name]  = "webmonkey.example.com"

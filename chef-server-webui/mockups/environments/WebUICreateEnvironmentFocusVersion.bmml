@@ -1,0 +1,128 @@
+<mockup version="1.0" skin="sketch" measuredW="1153" measuredH="862" mockupW="718" mockupH="646">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="435" y="216" w="718" h="646" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Chef%20Server%0Ahttp%3A//localhost%3A4040</text>
+      </controlProperties>
+    </control>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::TabBar" x="444" y="345" w="700" h="38" measuredW="617" measuredH="100" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>none</borderStyle>
+        <selectedIndex>0</selectedIndex>
+        <tabHPosition>left</tabHPosition>
+        <tabVPosition>top</tabVPosition>
+        <text>Environments%2C%20Search%2C%20Status%2C%20Roles%2C%20Nodes%2C%20Cookbooks%2C%20Databags%2C%20Clients%2C%20Users</text>
+        <verticalScrollbar>false</verticalScrollbar>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="459" y="308" w="-1" h="-1" measuredW="137" measuredH="37" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>24</size>
+        <text>Chef%20Server</text>
+      </controlProperties>
+    </control>
+    <control controlID="28" controlTypeID="com.balsamiq.mockups::Label" x="1009" y="345" w="-1" h="-1" measuredW="120" measuredH="23" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%5BEdit%20accout%5D%20%20%5BLogout%5D</text>
+      </controlProperties>
+    </control>
+    <control controlID="30" controlTypeID="com.balsamiq.mockups::Title" x="469" y="377" w="-1" h="-1" measuredW="114" measuredH="32" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>20</size>
+        <text>Environment</text>
+      </controlProperties>
+    </control>
+    <control controlID="32" controlTypeID="com.balsamiq.mockups::ButtonBar" x="471" y="411" w="-1" h="-1" measuredW="121" measuredH="29" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <selectedIndex>1</selectedIndex>
+        <text>List%2C%20Create</text>
+      </controlProperties>
+    </control>
+    <control controlID="33" controlTypeID="com.balsamiq.mockups::Label" x="471" y="444" w="-1" h="-1" measuredW="38" measuredH="23" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Name</text>
+      </controlProperties>
+    </control>
+    <control controlID="34" controlTypeID="com.balsamiq.mockups::Label" x="471" y="494" w="-1" h="-1" measuredW="71" measuredH="23" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Description</text>
+      </controlProperties>
+    </control>
+    <control controlID="35" controlTypeID="com.balsamiq.mockups::Label" x="471" y="577" w="-1" h="-1" measuredW="179" measuredH="23" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Cookbook%20Version%20Constraints</text>
+      </controlProperties>
+    </control>
+    <control controlID="36" controlTypeID="com.balsamiq.mockups::Label" x="471" y="715" w="-1" h="-1" measuredW="67" measuredH="23" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Attributes</text>
+      </controlProperties>
+    </control>
+    <control controlID="37" controlTypeID="com.balsamiq.mockups::Button" x="471" y="796" w="-1" h="-1" measuredW="142" measuredH="28" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>16777215</color>
+        <href>WebUIListEnvironmentWithCreationConfirmation%26bm%3BWebUIListEnvironmentWithCreationConfirmation.bmml%26bm%3BWebUIListEnvironmentWithCreationConfirmation.bmml%26bm%3BWebUIListEnvironmentWithCreationConfirmation.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2236%2C580%2C178%2C608%22%20href%3D%22WebUIListEnvironmentWithCreationConfirmation.bmml%22%20alt%3D%22WebUIListEnvironmentWithCreationConfirmation%22%20id%3D%2237%22/%3E</map>
+        <text>Create%20Environment</text>
+      </controlProperties>
+    </control>
+    <control controlID="38" controlTypeID="com.balsamiq.mockups::TextInput" x="471" y="463" w="515" h="-1" measuredW="79" measuredH="27" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="40" controlTypeID="com.balsamiq.mockups::TextArea" x="472" y="513" w="514" h="60" measuredW="200" measuredH="140" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="41" controlTypeID="com.balsamiq.mockups::ButtonBar" x="475" y="597" w="511" h="29" measuredW="278" measuredH="29" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <selectedIndex>-1</selectedIndex>
+        <text>Cookbook%20Name%2C%20Operator%2C%20Version</text>
+      </controlProperties>
+    </control>
+    <control controlID="43" controlTypeID="com.balsamiq.mockups::Link" x="483" y="663" w="-1" h="-1" measuredW="206" measuredH="23" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Add%20a%20cookbook%20version%20constraint</text>
+      </controlProperties>
+    </control>
+    <control controlID="44" controlTypeID="com.balsamiq.mockups::TextArea" x="475" y="738" w="511" h="51" measuredW="200" measuredH="140" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>This%20box%20represents%20the%20current%20Chef%20attributes%20editor</text>
+      </controlProperties>
+    </control>
+    <control controlID="45" controlTypeID="com.balsamiq.mockups::ComboBox" x="482" y="632" w="218" h="-1" measuredW="82" measuredH="23" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Apache2</text>
+      </controlProperties>
+    </control>
+    <control controlID="46" controlTypeID="com.balsamiq.mockups::ComboBox" x="752" y="633" w="64" h="-1" measuredW="44" measuredH="23" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%3C%3D</text>
+      </controlProperties>
+    </control>
+    <control controlID="48" controlTypeID="com.balsamiq.mockups::Button" x="1000" y="630" w="-1" h="-1" measuredW="68" measuredH="28" zOrder="18" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>WebUICreateEnvironment%26bm%3BWebUICreateEnvironment.bmml%26bm%3BWebUICreateEnvironment.bmml%26bm%3BWebUICreateEnvironment.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22565%2C414%2C633%2C442%22%20href%3D%22WebUICreateEnvironment.bmml%22%20alt%3D%22WebUICreateEnvironment%22%20id%3D%2248%22/%3E</map>
+        <text>Remove</text>
+      </controlProperties>
+    </control>
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::TextInput" x="881" y="631" w="70" h="-1" measuredW="16" measuredH="27" zOrder="19" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%7C</text>
+      </controlProperties>
+    </control>
+    <control controlID="50" controlTypeID="com.balsamiq.mockups::List" x="881" y="657" w="70" h="126" measuredW="100" measuredH="126" zOrder="20" locked="false" isInGroup="-1">
+      <controlProperties>
+        <hrefs>WebUICreateEnvironmentAddCBVerConstraintFillComboBox%26bm%3BWebUICreateEnvironmentAddCBVerConstraintFillComboBox.bmml%26bm%3BWebUICreateEnvironmentAddCBVerConstraintFillComboBox.bmml%26bm%3BWebUICreateEnvironmentAddCBVerConstraintFillComboBox.bmml%2C%2C</hrefs>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22446%2C441%2C516%2C462%22%20href%3D%22WebUICreateEnvironmentAddCBVerConstraintFillComboBox.bmml%22%20alt%3D%22WebUICreateEnvironmentAddCBVerConstraintFillComboBox%22%20id%3D%2250_0%22/%3E%0A</map>
+        <selectedIndex>0</selectedIndex>
+        <text>0.3%0A0.2%0A0.1</text>
+        <value>33</value>
+        <verticalScrollbar>true</verticalScrollbar>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

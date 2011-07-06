@@ -26,13 +26,11 @@ describe Chef::Provider::Group::Dscl do
     @current_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
-    @status = mock("Process::Status", :null_object => true, :exitstatus => 0) 
-    @pid = mock("PID", :null_object => true)
-    @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
-    @stderr = mock("STDERR", :null_object => true)
-    @stdout.stub!(:each).and_yield("\n")
-    @stderr.stub!(:each).and_yield("")
+    @status = mock("Process::Status", :exitstatus => 0) 
+    @pid = 2342
+    @stdin = StringIO.new
+    @stdout = StringIO.new("\n")
+    @stderr = StringIO.new("")
     @provider.stub!(:popen4).and_yield(@pid,@stdin,@stdout,@stderr).and_return(@status)
   end
   
@@ -50,9 +48,7 @@ describe Chef::Provider::Group::Dscl do
   describe "safe_dscl" do
     before do
       @node = Chef::Node.new
-      @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
       @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
-      @status = mock("Process::Status", :null_object => true, :exitstatus => 0)
       @provider.stub!(:dscl).and_return(["cmd", @status, "stdout", "stderr"])
     end
  
@@ -63,7 +59,7 @@ describe Chef::Provider::Group::Dscl do
 
     describe "with the dscl command returning a non zero exit status for a delete" do
       before do
-        @status = mock("Process::Status", :null_object => true, :exitstatus => 1)
+        @status = mock("Process::Status", :exitstatus => 1)
         @provider.stub!(:dscl).and_return(["cmd", @status, "stdout", "stderr"])
       end
 
@@ -80,7 +76,6 @@ describe Chef::Provider::Group::Dscl do
 
     describe "with the dscl command returning no such key" do
       before do
-        # @status = mock("Process::Status", :null_object => true, :exitstatus => 0)
         @provider.stub!(:dscl).and_return(["cmd", @status, "No such key: ", "stderr"])
       end
 
@@ -101,7 +96,6 @@ describe Chef::Provider::Group::Dscl do
   describe "get_free_gid" do
     before do
       @node = Chef::Node.new
-      @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
       @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
       @provider.stub!(:safe_dscl).and_return("\naj      200\njt      201\n")
     end
@@ -124,7 +118,6 @@ describe Chef::Provider::Group::Dscl do
   describe "gid_used?" do
     before do
       @node = Chef::Node.new
-      @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
       @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
       @provider.stub!(:safe_dscl).and_return("\naj      500\n")
     end
@@ -197,7 +190,7 @@ describe Chef::Provider::Group::Dscl do
       end
 
       it "should log an appropriate message" do
-        Chef::Log.should_receive(:debug).with("group[aj]: removing group members all your base")
+        Chef::Log.should_receive(:debug).with("group[aj] removing group members all your base")
         @provider.set_members
       end
 
@@ -215,7 +208,7 @@ describe Chef::Provider::Group::Dscl do
       end
 
       it "should log an appropriate debug message" do
-        Chef::Log.should_receive(:debug).with("group[aj]: setting group members all, your, base")
+        Chef::Log.should_receive(:debug).with("group[aj] setting group members all, your, base")
         @provider.set_members
       end
 

@@ -1,32 +1,30 @@
 {
-  "name": "synchronize_deps",
-  "description": "A fabulous new cookbook",
-  "long_description": "",
-  "maintainer": "Your Name",
-  "maintainer_email": "youremail@example.com",
-  "license": "Apache v2.0",
-  "platforms": {
-  },
-  "dependencies": {
-    "synchronize": [
-
-    ]
-  },
-  "recommendations": {
-  },
-  "suggestions": {
-  },
-  "conflicting": {
-  },
-  "providing": {
-  },
-  "replacing": {
-  },
-  "attributes": {
-  },
-  "groupings": {
-  },
-  "recipes": {
-  },
-  "version": "0.0.0"
-}
+    "name": "synchronize_deps",
+    "description": "A fabulous new cookbook",
+    "long_description": "",
+    "maintainer": "Your Name",
+    "maintainer_email": "youremail@example.com",
+    "license": "Apache v2.0",
+    "platforms": {
+    },
+    "dependencies": {
+      "synchronize": ">= 0.0.0"
+    },
+    "recommendations": {
+    },
+    "suggestions": {
+    },
+    "conflicting": {
+    },
+    "providing": {
+    },
+    "replacing": {
+    },
+    "attributes": {
+    },
+    "groupings": {
+    },
+    "recipes": {
+    },
+    "version": "0.0.0"
+  }

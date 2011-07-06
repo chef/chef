@@ -17,7 +17,7 @@ end
 Chef::Config.from_file("/etc/chef/client.rb")
 json_attrs = Hash.new
 if ARGV[3]
-  json_attrs = Chef::JSON.from_json(IO.read(ARGV[3]))
+  json_attrs = Chef::JSONCompat.from_json(IO.read(ARGV[3]))
 end
 Chef::Log.level = :info
 processes = Array.new

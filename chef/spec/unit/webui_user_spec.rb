@@ -217,8 +217,8 @@ describe Chef::WebUIUser do
     end
     
     it "sets its couchdb id when loading from the database" do
-      # reqs via REST eventually get to Chef::JSON.from_json
-      webui_user = Chef::JSON.from_json('{"salt":null,"name":"test_user","json_class":"Chef::WebUIUser","admin":false,"openid":null,"password":null,"chef_type":"webui_user","_id":"IdontNeedNoID"}')
+      # reqs via REST eventually get to Chef::JSONCompat.from_json
+      webui_user = Chef::JSONCompat.from_json('{"salt":null,"name":"test_user","json_class":"Chef::WebUIUser","admin":false,"openid":null,"password":null,"chef_type":"webui_user","_id":"IdontNeedNoID"}')
       webui_user.couchdb_id.should == "IdontNeedNoID"
     end
     
@@ -230,7 +230,7 @@ describe Chef::WebUIUser do
     end
     
     it "sets the couchdb_rev when loading from the database" do
-      webui_user = Chef::JSON.from_json('{"salt":null,"name":"test_user","json_class":"Chef::WebUIUser","admin":false,"openid":null,"password":null,"chef_type":"webui_user","_id":"IdontNeedNoID","_rev":"moto"}')
+      webui_user = Chef::JSONCompat.from_json('{"salt":null,"name":"test_user","json_class":"Chef::WebUIUser","admin":false,"openid":null,"password":null,"chef_type":"webui_user","_id":"IdontNeedNoID","_rev":"moto"}')
       webui_user.couchdb_rev.should == "moto"
     end
   end

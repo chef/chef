@@ -24,7 +24,7 @@ class Chef
   class Provider
     class Package
       class Dpkg < Chef::Provider::Package::Apt
-        DPKG_INFO = /([a-z\d\-\+]+)\t([\w\d.-]+)/
+        DPKG_INFO = /([a-z\d\-\+]+)\t([\w\d.~-]+)/
         DPKG_INSTALLED = /^Status: install ok installed/
         DPKG_VERSION = /^Version: (.+)$/
       
@@ -45,7 +45,7 @@ class Chef
             end
 
             # Get information from the package if supplied
-            Chef::Log.debug("Checking dpkg status for #{@new_resource.package_name}")
+            Chef::Log.debug("#{@new_resource} checking dpkg status")
             status = popen4("dpkg-deb -W #{@new_resource.source}") do |pid, stdin, stdout, stderr|
               stdout.each_line do |line|
                 if pkginfo = DPKG_INFO.match(line)
@@ -58,7 +58,7 @@ class Chef
           
           # Check to see if it is installed
           package_installed = nil
-          Chef::Log.debug("Checking install state for #{@current_resource.package_name}")
+          Chef::Log.debug("#{@new_resource} checking install state")
           status = popen4("dpkg -s #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
               case line
@@ -66,7 +66,7 @@ class Chef
                 package_installed = true
               when DPKG_VERSION
                 if package_installed
-                  Chef::Log.debug("Current version is #{$1}")                
+                  Chef::Log.debug("#{@new_resource} current version is #{$1}")
                   @current_resource.version($1)
                 end
               end

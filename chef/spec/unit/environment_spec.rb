@@ -1,7 +1,8 @@
 #
 # Author:: Stephen Delano (<stephen@ospcode.com>)
 # Author:: Seth Falcon (<seth@ospcode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Author:: John Keiser (<jkeiser@ospcode.com>)
+# Copyright:: Copyright 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -69,21 +70,36 @@ describe Chef::Environment do
     end
   end
 
-  describe "attributes" do
+  describe "default attributes" do
     it "should let you set the attributes hash explicitly" do
-      @environment.attributes({ :one => 'two' }).should == { :one => 'two' }
+      @environment.default_attributes({ :one => 'two' }).should == { :one => 'two' }
     end
 
     it "should let you return the attributes hash" do
-      @environment.attributes({ :one => 'two' })
-      @environment.attributes.should == { :one => 'two' }
+      @environment.default_attributes({ :one => 'two' })
+      @environment.default_attributes.should == { :one => 'two' }
     end
 
     it "should throw an ArgumentError if we aren't a kind of hash" do
-      lambda { @environment.attributes(Array.new) }.should raise_error(ArgumentError)
+      lambda { @environment.default_attributes(Array.new) }.should raise_error(ArgumentError)
     end
   end
-  
+
+  describe "override attributes" do
+    it "should let you set the attributes hash explicitly" do
+      @environment.override_attributes({ :one => 'two' }).should == { :one => 'two' }
+    end
+
+    it "should let you return the attributes hash" do
+      @environment.override_attributes({ :one => 'two' })
+      @environment.override_attributes.should == { :one => 'two' }
+    end
+
+    it "should throw an ArgumentError if we aren't a kind of hash" do
+      lambda { @environment.override_attributes(Array.new) }.should raise_error(ArgumentError)
+    end
+  end
+
   describe "cookbook_versions" do
     before(:each) do
       @cookbook_versions = {
@@ -205,7 +221,7 @@ describe Chef::Environment do
         "json_class" => "Chef::Environment",
         "chef_type" => "environment"
       }
-      @environment = Chef::JSON.from_json(@data.to_json)
+      @environment = Chef::JSONCompat.from_json(@data.to_json)
     end
 
     it "should return a Chef::Environment" do
@@ -219,7 +235,7 @@ describe Chef::Environment do
     end
   end
 
-  describe "self.cdb_load_filtered_cookbook_versions" do
+  describe "when listing the available cookbooks filtered by policy" do
     before(:each) do
       @environment.name "prod"
       @environment.cookbook_versions({
@@ -232,21 +248,25 @@ describe Chef::Environment do
       @all_cookbooks << begin
         cv = Chef::CookbookVersion.new("apt")
         cv.version = "1.0.0"
+        cv.recipe_filenames = ["default.rb", "only-in-1-0.rb"]
         cv
       end
       @all_cookbooks << begin
         cv = Chef::CookbookVersion.new("apt")
         cv.version = "1.1.0"
+        cv.recipe_filenames = ["default.rb", "only-in-1-1.rb"]
         cv
       end
       @all_cookbooks << begin
         cv = Chef::CookbookVersion.new("apache2")
         cv.version = "2.0.0"
+        cv.recipe_filenames = ["default.rb", "mod_ssl.rb"]
         cv
       end
       @all_cookbooks << begin
         cv = Chef::CookbookVersion.new("god")
         cv.version = "4.2.0"
+        cv.recipe_filenames = ["default.rb"]
         cv
       end
       Chef::CookbookVersion.stub!(:cdb_list).and_return @all_cookbooks
@@ -257,9 +277,33 @@ describe Chef::Environment do
       Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
     end
 
+    it "should handle cookbooks with no available version" do
+      @environment.cookbook_versions({
+                                       "apt" => "> 999.0.0",
+                                       "apache2" => "= 2.0.0"
+                                     })
+      Chef::Environment.should_receive(:cdb_load).with("prod", nil)
+      recipes = Chef::Environment.cdb_load_filtered_recipe_list("prod")
+      # order doesn't matter
+      recipes.should =~ ["god", "apache2", "apache2::mod_ssl"]
+    end
+
+    
     it "should load all the cookbook versions" do
       Chef::CookbookVersion.should_receive(:cdb_list)
       Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
+      recipes = Chef::Environment.cdb_load_filtered_recipe_list("prod")
+      recipes.should =~ ["apache2", "apache2::mod_ssl", "apt",
+                         "apt::only-in-1-0", "god"]
+    end
+
+    it "should load all the cookbook versions with no policy" do
+      @environment.cookbook_versions({})
+      Chef::CookbookVersion.should_receive(:cdb_list)
+      Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
+      recipes = Chef::Environment.cdb_load_filtered_recipe_list("prod")
+      recipes.should =~ ["apache2", "apache2::mod_ssl", "apt",
+                         "apt::only-in-1-1", "god"]
     end
 
     it "should restrict the cookbook versions, as specified in the environment" do
@@ -342,7 +386,7 @@ describe Chef::Environment do
 
     it "should not re-create the environment if it exists" do
       @couchdb = Chef::CouchDB.new
-      Chef::CouchDB.stub!(:new).and_return @couchdb      
+      Chef::CouchDB.stub!(:new).and_return @couchdb
       Chef::Environment.should_receive(:cdb_load).with('_default', Chef::CouchDB.new).and_return true
       Chef::Environment.should_not_receive(:new)
       Chef::Environment.create_default_environment
@@ -360,4 +404,63 @@ describe Chef::Environment do
       Chef::Environment.create_default_environment
     end
   end
+
+  describe "when updating from a parameter hash" do
+    before do
+      @environment = Chef::Environment.new
+    end
+
+    it "updates the name from parameters[:name]" do
+      @environment.update_from_params(:name => "kurrupt")
+      @environment.name.should == "kurrupt"
+    end
+
+    it "validates the name given in the params" do
+      @environment.update_from_params(:name => "@$%^&*()").should be_false
+      @environment.invalid_fields[:name].should == %q|Option name's value @$%^&*() does not match regular expression /^[\-[:alnum:]_]+$/|
+    end
+
+    it "updates the description from parameters[:description]" do
+      @environment.update_from_params(:description => "wow, writing your own object mapper is kinda painful")
+      @environment.description.should == "wow, writing your own object mapper is kinda painful"
+    end
+
+    it "updates cookbook version constraints from the hash in parameters[:cookbook_version_constraints]" do
+      # NOTE: I'm only choosing this (admittedly weird) structure for the hash b/c the better more obvious
+      # one, i.e, {:cookbook_version_constraints => {COOKBOOK_NAME => CONSTRAINT}} is difficult to implement
+      # the way merb does params
+      params = {:name=>"superbowl", :cookbook_version => {"0" => "apache2 ~> 1.0.0", "1" => "nginx < 2.0.0"}}
+      @environment.update_from_params(params)
+      @environment.cookbook_versions.should == {"apache2" => "~> 1.0.0", "nginx" => "< 2.0.0"}
+    end
+
+    it "validates the cookbook constraints" do
+      params = {:cookbook_version => {"0" => "apache2 >>> 1.0.0"}}
+      @environment.update_from_params(params).should be_false
+      err_msg = @environment.invalid_fields[:cookbook_version]["0"]
+      err_msg.should == "apache2 >>> 1.0.0 is not a valid cookbook constraint"
+    end
+
+    it "is not valid if the name is not present" do
+      @environment.validate_required_attrs_present.should be_false
+      @environment.invalid_fields[:name].should == "name cannot be empty"
+    end
+
+    it "is not valid after updating from params if the name is not present" do
+      @environment.update_from_params({}).should be_false
+      @environment.invalid_fields[:name].should == "name cannot be empty"
+    end
+
+    it "updates default attributes from a JSON string in params[:attributes]" do
+      @environment.update_from_params(:name => "fuuu", :default_attributes => %q|{"fuuu":"RAGE"}|)
+      @environment.default_attributes.should == {"fuuu" => "RAGE"}
+    end
+
+    it "updates override attributes from a JSON string in params[:attributes]" do
+      @environment.update_from_params(:name => "fuuu", :override_attributes => %q|{"foo":"override"}|)
+      @environment.override_attributes.should == {"foo" => "override"}
+    end
+
+  end
+
 end

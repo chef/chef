@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,23 +19,28 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
+require 'chef/data_bag_item'
+require 'chef/encrypted_data_bag_item'
+require 'chef/json_compat'
+require 'tempfile'
+
 describe Chef::Knife::DataBagShow do
   before do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::DataBagShow.new
+    @knife.config[:format] = 'json'
     @rest = mock("Chef::REST")
     @knife.stub!(:rest).and_return(@rest)
     @stdout = StringIO.new
-    @knife.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
 
-  it "prints the ids of the data bag items in the databag when given only the name of the databag as an argument" do
+  it "prints the ids of the data bag items when given a bag name" do
     @knife.instance_variable_set(:@name_args, ['bag_o_data'])
-    data_bag_contents = {"baz"=>"http://localhost:4000/data/bag_o_data/baz", "qux"=>"http://localhost:4000/data/bag_o_data/qux"}
+    data_bag_contents = { "baz"=>"http://localhost:4000/data/bag_o_data/baz",
+      "qux"=>"http://localhost:4000/data/bag_o_data/qux"}
     Chef::DataBag.should_receive(:load).and_return(data_bag_contents)
-    
-
     expected = %q|[
   "baz",
   "qux"
@@ -43,14 +49,57 @@ describe Chef::Knife::DataBagShow do
     @stdout.string.strip.should == expected
   end
 
-  it "prints the contents of the databag item when given the name of the databag and the item as arguments" do
+  it "prints the contents of the data bag item when given a bag and item name" do
     @knife.instance_variable_set(:@name_args, ['bag_o_data', 'an_item'])
-    data_item_content = {"id" => "an_item", "zsh" => "victory_through_tabbing"}
+    data_item = Chef::DataBagItem.new.tap {|item| item.raw_data = {"id" => "an_item", "zsh" => "victory_through_tabbing"}}
 
-    Chef::DataBagItem.should_receive(:load).with('bag_o_data', 'an_item').and_return(data_item_content)
+    Chef::DataBagItem.should_receive(:load).with('bag_o_data', 'an_item').and_return(data_item)
 
     @knife.run
-    Chef::JSON.from_json(@stdout.string).should == data_item_content
+    Chef::JSONCompat.from_json(@stdout.string).should == data_item.raw_data
+  end
+
+  describe "encrypted data bag items" do
+    before(:each) do
+      @secret = "abc123SECRET"
+      @plain_data = {
+        "id" => "item_name",
+        "greeting" => "hello",
+        "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true }}
+      }
+      @enc_data = Chef::EncryptedDataBagItem.encrypt_data_bag_item(@plain_data,
+                                                                   @secret)
+      @knife.instance_variable_set(:@name_args, ['bag_name', 'item_name'])
+    end
+
+    it "prints the decrypted contents of an item when given --secret" do
+      @knife.stub!(:config).and_return({:secret => @secret})
+      Chef::EncryptedDataBagItem.should_receive(:load).
+        with('bag_name', 'item_name', @secret).
+        and_return(Chef::EncryptedDataBagItem.new(@enc_data, @secret))
+      @knife.run
+      Chef::JSONCompat.from_json(@stdout.string).should == @plain_data
+    end
+
+    it "prints the decrypted contents of an item when given --secret_file" do
+      secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
+      secret_file.puts(@secret)
+      secret_file.flush
+      @knife.stub!(:config).and_return({:secret_file => secret_file.path})
+      Chef::EncryptedDataBagItem.should_receive(:load).
+        with('bag_name', 'item_name', @secret).
+        and_return(Chef::EncryptedDataBagItem.new(@enc_data, @secret))
+      @knife.run
+      Chef::JSONCompat.from_json(@stdout.string).should == @plain_data
+    end
+  end
+
+  describe "command line parsing" do
+    it "prints help if given no arguments" do
+      @knife.instance_variable_set(:@name_args, [])
+      lambda { @knife.run }.should raise_error(SystemExit)
+      @stdout.string.should match(/^knife data bag show BAG \[ITEM\] \(options\)/)
+    end
   end
 
 end

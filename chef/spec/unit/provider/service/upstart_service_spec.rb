@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,9 +24,9 @@ describe Chef::Provider::Service::Upstart do
     @node[:name] = 'upstarter'
     @node[:platform] = 'ubuntu'
     @node[:platform_version] = '9.10'
-    
+
     @run_context = Chef::RunContext.new(@node, {})
-  
+
     @new_resource = Chef::Resource::Service.new("rsyslog")
     @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
   end
@@ -35,7 +35,7 @@ describe Chef::Provider::Service::Upstart do
     before do
       @platform = nil
     end
-    
+
     it "should return /etc/event.d as the upstart job directory when running on Ubuntu 9.04" do
       @node[:platform_version] = '9.04'
       #Chef::Platform.stub!(:find_platform_and_version).and_return([ "ubuntu", "9.04" ])
@@ -68,10 +68,10 @@ describe Chef::Provider::Service::Upstart do
 
       @status = mock("Status", :exitstatus => 0)
       @provider.stub!(:popen4).and_return(@status)
-      @stdin = mock("STDIN", :null_object => true)
-      @stdout = mock("STDOUT", :null_object => true)
-      @stderr = mock("STDERR", :null_object => true)
-      @pid = mock("PID", :null_object => true)
+      @stdin = StringIO.new
+      @stdout = StringIO.new
+      @stderr = StringIO.new
+      @pid = mock("PID")
 
       ::File.stub!(:exists?).and_return(true)
       ::File.stub!(:open).and_return(true)
@@ -95,7 +95,7 @@ describe Chef::Provider::Service::Upstart do
     describe "when the status command uses the new format" do
       before do
       end
-      
+
       it "should set running to true if the the status command returns 0" do
         @stdout = StringIO.new("rsyslog start/running")
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
@@ -139,14 +139,14 @@ describe Chef::Provider::Service::Upstart do
       @current_resource.should_receive(:running).with(false)
       @provider.load_current_resource
     end
-  
+
     it "should set enabled to false when it finds '#starts on'" do
       @lines = mock("start on filesystem", :gets => "#start on filesystem")
       ::File.stub!(:open).and_yield(@lines)
       @current_resource.should_receive(:running).with(false)
       @provider.load_current_resource
     end
-  
+
     it "should assume disable when no job configuration file is found" do
       ::File.stub!(:exists?).and_return(false)
       @current_resource.should_receive(:running).with(false)
@@ -170,7 +170,7 @@ describe Chef::Provider::Service::Upstart do
         @provider.load_current_resource
       end
     end
-    
+
     it "should return the current resource" do
       @provider.load_current_resource.should eql(@current_resource)
     end
@@ -179,24 +179,6 @@ describe Chef::Provider::Service::Upstart do
 
   describe "enable and disable service" do
     before(:each) do
-      # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::Service",
-      #   :null_object => true,
-      #   :name => "rsyslog",
-      #   :service_name => "rsyslog",
-      #   :running => false,
-      #   :enabled => false
-      # )
-      # 
-      # @current_resource = mock("Chef::Resource::Service",
-      #   :null_object => true,
-      #   :name => "rsyslog",
-      #   :service_name => "rsyslog",
-      #   :running => false,
-      #   :enabled => false
-      # )
-
-      # @provider = Chef::Provider::Service::Upstart.new(@node, @new_resource)
       Chef::Resource::Service.stub!(:new).and_return(@current_resource)
       @provider.current_resource = @current_resource
       Chef::Util::FileEdit.stub!(:new)
@@ -210,7 +192,7 @@ describe Chef::Provider::Service::Upstart do
       @file.should_receive(:write_file)
       @provider.enable_service()
     end
-  
+
     it "should disable the service if it is enabled" do
       @file = Object.new
       Chef::Util::FileEdit.stub!(:new).and_return(@file)
@@ -219,7 +201,7 @@ describe Chef::Provider::Service::Upstart do
       @file.should_receive(:write_file)
       @provider.disable_service()
     end
-  
+
   end
 
   describe "start and stop service" do
@@ -257,6 +239,12 @@ describe Chef::Provider::Service::Upstart do
     it "should call '/sbin/restart service_name' if no restart command is specified" do
       @current_resource.stub!(:running).and_return(true)
       @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/restart #{@new_resource.service_name}"}).and_return(0)
+      @provider.restart_service()
+    end
+
+    it "should call '/sbin/start service_name' if restart_service is called for a stopped service" do
+      @current_resource.stub!(:running).and_return(false)
+      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/start #{@new_resource.service_name}"}).and_return(0)
       @provider.restart_service()
     end
 

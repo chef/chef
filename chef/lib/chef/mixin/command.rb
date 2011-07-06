@@ -118,6 +118,7 @@ class Chef
         args[:ignore_failure] ||= false
         args[:output_on_failure] ||= false
 
+        # TODO: This is the wrong place for this responsibility.
         if args.has_key?(:creates)
           if File.exists?(args[:creates])
             Chef::Log.debug("Skipping #{args[:command]} - creates #{args[:creates]} exists.")
@@ -142,7 +143,7 @@ class Chef
         end
         
         args[:cwd] ||= Dir.tmpdir
-        unless File.directory?(args[:cwd])
+        unless ::File.directory?(args[:cwd])
           raise Chef::Exceptions::Exec, "#{args[:cwd]} does not exist or is not a directory"
         end
         

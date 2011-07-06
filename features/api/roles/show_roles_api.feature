@@ -3,7 +3,7 @@ Feature: Show a role via the REST API
   In order to know what the details are for a Role 
   As a Developer
   I want to show the details for a specific Role
-  
+
   Scenario: Show a role
     Given I am an administrator
       And a 'role' named 'webserver' exists
@@ -27,7 +27,7 @@ Feature: Show a role via the REST API
       And an 'environment' named 'cucumber' exists
       And a 'role' named 'webserver' exists
      When I 'GET' the path '/roles/webserver/environments/cucumber'
-     Then the inflated response should respond to 'run_list' with 'role[db]'
+     Then the inflated response should respond to 'run_list' with '["role[db]"]'
 
   Scenario: List environments in the role
     Given I am an administrator

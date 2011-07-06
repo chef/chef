@@ -3,7 +3,7 @@
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@
 # limitations under the License.
 #
 
+require 'forwardable'
 require 'chef/config'
 require 'chef/cookbook/cookbook_collection'
 require 'chef/nil_argument'
@@ -33,11 +34,16 @@ require 'chef/rest'
 require 'chef/run_list'
 require 'chef/node/attribute'
 require 'chef/index_queue'
-require 'extlib'
-require 'chef/json'
+require 'chef/mash'
+require 'chef/json_compat'
+require 'chef/search/query'
 
 class Chef
   class Node
+
+    extend Forwardable
+
+    def_delegators :construct_attributes, :keys, :each_key, :each_value, :key?, :has_key?
 
     attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list
     attr_accessor :override_attrs, :default_attrs, :normal_attrs, :automatic_attrs
@@ -55,7 +61,7 @@ class Chef
     include Chef::IndexQueue::Indexable
 
     DESIGN_DOCUMENT = {
-      "version" => 9,
+      "version" => 11,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -138,7 +144,8 @@ class Chef
           "map" => <<-EOJS
             function(doc) {
               if (doc.chef_type == "node") {
-                emit(doc['chef_environment'], doc.name);
+                var env = (doc['chef_environment'] == null ? "_default" : doc['chef_environment']);
+                emit(env, doc.name);
               }
             }
           EOJS
@@ -219,7 +226,6 @@ class Chef
     end
 
     def chef_environment(arg=nil)
-      @run_list.chef_environment(arg)
       set_or_return(
         :chef_environment,
         arg,
@@ -347,11 +353,10 @@ class Chef
     # run_state[:seen_recipes], which is populated by include_recipe
     # statements in the DSL (and thus would not be in the run list).
     #
-    # NOTE: We believe this is dead code, but if it's not, please
-    # email chef-dev@opscode.com. [cw,timh]
-#     def recipe?(recipe_name)
-#       run_list.include?(recipe_name) || run_state[:seen_recipes].include?(recipe_name)
-#     end
+    # NOTE: It's used by cookbook authors
+    def recipe?(recipe_name)
+      run_list.include?(recipe_name) || run_state[:seen_recipes].include?(recipe_name)
+    end
 
     # Returns true if this Node expects a given role, false if not.
     def role?(role_name)
@@ -362,11 +367,6 @@ class Chef
     # If you call it with arguments, they will become the new list of roles and recipes.
     def run_list(*args)
       args.length > 0 ? @run_list.reset!(args) : @run_list
-    end
-
-    def recipes(*args)
-      Chef::Log.warn "Chef::Node#recipes method is deprecated.  Please use Chef::Node#run_list"
-      run_list(*args)
     end
 
     # Returns true if this Node expects a given role, false if not.
@@ -392,7 +392,13 @@ class Chef
       normal_attrs_to_merge = consume_run_list(attrs)
       Chef::Log.debug("Applying attributes from json file")
       @normal_attrs = Chef::Mixin::DeepMerge.merge(@normal_attrs,normal_attrs_to_merge)
-      self[:tags] = Array.new unless attribute?(:tags)
+      self.tags # make sure they're defined
+    end
+
+    # Lazy initializer for tags attribute
+    def tags
+      self[:tags] = [] unless attribute?(:tags)
+      self[:tags]
     end
 
     # Extracts the run list from +attrs+ and applies it. Returns the remaining attributes
@@ -408,36 +414,47 @@ class Chef
       attrs
     end
 
-    # Clear defaults and overrides, so that any deleted attributes between runs are
-    # still gone.
+    # Clear defaults and overrides, so that any deleted attributes
+    # between runs are still gone.
     def reset_defaults_and_overrides
       @default_attrs = Mash.new
       @override_attrs = Mash.new
     end
 
-    # Expands the node's run list and deep merges the default and
-    # override attributes. Also applies stored attributes (from json provided
+    # Expands the node's run list and sets the default and override
+    # attributes. Also applies stored attributes (from json provided
     # on the command line)
     #
-    # Returns the fully-expanded list of recipes.
+    # Returns the fully-expanded list of recipes, a RunListExpansion.
     #
+    #--
     # TODO: timh/cw, 5-14-2010: Should this method exist? Should we
     # instead modify default_attrs and override_attrs whenever our
     # run_list is mutated? Or perhaps do something smarter like
     # on-demand generation of default_attrs and override_attrs,
     # invalidated only when run_list is mutated?
-    def expand!
-      # This call should only be called on a chef-client run.
-      expansion = run_list.expand('server')
+    def expand!(data_source = 'server')
+      expansion = run_list.expand(chef_environment, data_source)
       raise Chef::Exceptions::MissingRole if expansion.errors?
 
-      self[:tags] = Array.new unless attribute?(:tags)
-      @default_attrs = Chef::Mixin::DeepMerge.merge(default_attrs, expansion.default_attrs)
-      @override_attrs = Chef::Mixin::DeepMerge.merge(Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs), chef_environment == "_default" ? {} : Chef::Environment.load(chef_environment).attributes)
+      self.tags # make sure they're defined
+
       @automatic_attrs[:recipes] = expansion.recipes
       @automatic_attrs[:roles] = expansion.roles
 
-      expansion.recipes
+      expansion
+    end
+
+    # Apply the default and overrides attributes from the expansion
+    # passed in, which came from roles.
+    def apply_expansion_attributes(expansion)
+      load_chef_environment_object = (chef_environment == "_default" ? nil : Chef::Environment.load(chef_environment))
+      environment_default_attrs = load_chef_environment_object.nil? ? {} : load_chef_environment_object.default_attributes
+      default_before_roles = Chef::Mixin::DeepMerge.merge(default_attrs, environment_default_attrs)
+      @default_attrs = Chef::Mixin::DeepMerge.merge(default_before_roles, expansion.default_attrs)
+      environment_override_attrs = load_chef_environment_object.nil? ? {} : load_chef_environment_object.override_attributes
+      overrides_before_environments = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
+      @override_attrs = Chef::Mixin::DeepMerge.merge(overrides_before_environments, environment_override_attrs)
     end
 
     # Transform the node to a Hash
@@ -453,6 +470,18 @@ class Chef
       index_hash["role"] = run_list.role_names if run_list.role_names.length > 0
       index_hash["run_list"] = run_list.run_list if run_list.run_list.length > 0
       index_hash
+    end
+
+    def display_hash
+      display = {}
+      display["name"]             = name
+      display["chef_environment"] = chef_environment
+      display["automatic"]        = automatic_attrs
+      display["normal"]           = normal_attrs
+      display["default"]          = default_attrs
+      display["override"]         = override_attrs
+      display["run_list"]         = run_list.run_list
+      display
     end
 
     # Serialize this object as a hash
@@ -555,9 +584,7 @@ class Chef
     end
 
     def self.find_or_create(node_name)
-      node = load(node_name)
-      node.chef_environment(Chef::Config[:environment]) unless Chef::Config[:environment].nil? || Chef::Config[:environment].chop.empty?
-      node
+      load(node_name)
     rescue Net::HTTPServerException => e
       raise unless e.response.code == '404'
       node = build(node_name)
@@ -624,7 +651,7 @@ class Chef
     def load_attributes
       cookbook_collection.values.each do |cookbook|
         cookbook.segment_filenames(:attributes).each do |segment_filename|
-          Chef::Log.debug("node #{name} loading cookbook #{cookbook.name}'s attribute file #{segment_filename}")
+          Chef::Log.debug("Node #{name} loading cookbook #{cookbook.name}'s attribute file #{segment_filename}")
           self.from_file(segment_filename)
         end
       end

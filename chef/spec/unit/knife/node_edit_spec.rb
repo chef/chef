@@ -17,62 +17,72 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+Chef::Knife::NodeEdit.load_deps
 
 describe Chef::Knife::NodeEdit do
   before(:each) do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::NodeEdit.new
     @knife.config = {
+      :editor => 'cat',
       :attribute => nil,
       :print_after => nil
     }
     @knife.name_args = [ "adam" ]
-    @knife.stub!(:output).and_return(true)
-    @node = Chef::Node.new() 
-    @node.stub!(:save)
-    Chef::Node.stub!(:load).and_return(@node)
-    @knife.stub!(:edit_data).and_return(@node)
+    @node = Chef::Node.new()
   end
 
-  describe "run" do
-    it "should load the node" do
-      Chef::Node.should_receive(:load).with("adam").and_return(@node)
-      @knife.run
+  it "should load the node" do
+    Chef::Node.should_receive(:load).with("adam").and_return(@node)
+    @knife.node
+  end
+
+  describe "after loading the node" do
+    before do
+      @knife.stub!(:node).and_return(@node)
+      @node.automatic_attrs = {:go => :away}
+      @node.default_attrs = {:hide => :me}
+      @node.override_attrs = {:dont => :show}
+      @node.normal_attrs = {:do_show => :these}
+      @node.chef_environment("prod")
+      @node.run_list("recipe[foo]")
     end
 
-    it "should edit the node data" do
-      @knife.should_receive(:edit_data).with(@node)
-      @knife.run
+    it "creates a view of the node without attributes from roles or ohai" do
+      actual = Chef::JSONCompat.from_json(@knife.node_editor.view)
+      actual.should_not have_key("automatic")
+      actual.should_not have_key("override")
+      actual.should_not have_key("default")
+      actual["normal"].should == {"do_show" => "these"}
+      actual["run_list"].should == ["recipe[foo]"]
+      actual["chef_environment"].should == "prod"
     end
 
-    it "should save the edited node data" do
-      pansy = Chef::Node.new
-      @node.name("new_node_name")
-      @knife.should_receive(:edit_data).with(@node).and_return(pansy)
-      pansy.should_receive(:save)
-      @knife.run
+    it "shows the extra attributes when given the --all option" do
+      @knife.config[:all_attributes] = true
+
+      actual = Chef::JSONCompat.from_json(@knife.node_editor.view)
+      actual["automatic"].should == {"go" => "away"}
+      actual["override"].should == {"dont" => "show"}
+      actual["default"].should == {"hide" => "me"}
+      actual["normal"].should == {"do_show" => "these"}
+      actual["run_list"].should == ["recipe[foo]"]
+      actual["chef_environment"].should == "prod"
     end
 
-    it "should not save the unedited node data" do
-      pansy = Chef::Node.new
-      @knife.should_receive(:edit_data).with(@node).and_return(pansy)
-      pansy.should_not_receive(:save)
-      @knife.run
+    it "does not consider unedited data updated" do
+      view = Chef::JSONCompat.from_json( @knife.node_editor.view )
+      @knife.node_editor.apply_updates(view)
+      @knife.node_editor.should_not be_updated
     end
 
-    it "should not print the node" do
-      @knife.should_not_receive(:output).with("poop")
-      @knife.run
+    it "considers edited data updated" do
+      view = Chef::JSONCompat.from_json( @knife.node_editor.view )
+      view["run_list"] << "role[fuuu]"
+      @knife.node_editor.apply_updates(view)
+      @knife.node_editor.should be_updated
     end
 
-    describe "with -p or --print-after" do
-      it "should pretty print the node, formatted for display" do
-        @knife.config[:print_after] = true
-        @knife.should_receive(:format_for_display).with(@node).and_return("poop")
-        @knife.should_receive(:output).with("poop")
-        @knife.run
-      end
-    end
   end
 end
 

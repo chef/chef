@@ -40,7 +40,8 @@
 }
 #treecontainer div, #treecontainer a{
 	color: #000000; 
-	font: 12px Arial; 
+	font-size: 12px;
+	font-family:"Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif;
 	text-decoration: none; 
 	padding-left: 2px; 
 	padding-right: 2px;
@@ -63,7 +64,8 @@
 }
 #tabcontainer #console #log{
 	color:#FF0000;
-	font: 12px Arial;
+	font-size: 12px;
+	font-family:"Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif;
 	padding:2px;
 }
 #tabcontainer #console #bar{
@@ -71,7 +73,8 @@
 	_background-image:url(../images/jsonedit/cross.gif);
 	background-position: right;
 	background-repeat:no-repeat;
-	font: 12px Arial;
+	font-size: 12px;
+	font-family:"Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif;
 	padding:2px;
 	background-color:#F0F0F0;
 }
@@ -95,7 +98,8 @@ ul.tablayout {
 	background: url(../images/jsonedit/pixel.gif) bottom left repeat-x;
 	margin:0pt;
 	padding:0pt;
-	font: 12px Arial, Verdana
+	font-size: 12px;
+	font-family:"Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif;
 }
 ul.tablayout li {
 	margin: 0 2px 0 0;
@@ -144,7 +148,10 @@ ul.tablayout a.active {
 	border-top: 0;
 	padding: 8px 8px 0 8px;
 }
-.tab{font: 12px Arial;}
+.tab{
+	font-size: 12px;
+	font-family:"Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif;
+}
 .tabn{
 	clear: left;
 	border: 1px solid #ccc;
@@ -153,7 +160,10 @@ ul.tablayout a.active {
 	margin-bottom:8px;
 	background-color:#f0f0f0;
 }
-.tabn{font: 12px Arial;}
+.tabn{
+	font-size: 12px;
+	font-family:"Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif;
+}
 
 
 .tab h2{margin: 0 0 20px 0;}
@@ -235,9 +245,13 @@ ul.tablayout a.active {
 .tab textarea{
 	/*border: 1px solid;*/
 	width: 99%;
-	font:10px monospace;
+	font-size:13px;
+	font-family:"Consolas","Lucida Console",Courier,monospace;
 }
-.tab select{font:12px arial;}
+.tab select{
+	font-size: 12px;
+	font-family:"Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif;
+}
 .tab .icanhastable td{text-align: right;}
 .tab .icanhastable{
 	border: 0px;
@@ -251,13 +265,15 @@ ul.tablayout a.active {
 #tab2 #jsonpath{
 	text-align: left;
 	margin-left: 4px;
-	font: 10px Arial;
+	font-size: 12px;
+	font-family:"Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif;
 	letter-spacing:1px;
 }
 #tab2 #jsonmode{
 	text-align: left;
 	margin-left: 4px;
-	font: 11px Arial;
+	font-size: 11px;
+	font-family:"Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif;
 	letter-spacing:1px;
 }
 #tab1 .icanhastable td{text-align: left;}

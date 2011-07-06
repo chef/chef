@@ -21,12 +21,15 @@ class Chef
     class Group
       class Groupadd < Chef::Provider::Group
         
-        def load_current_resource
-          super
-          
+        def required_binaries
           [ "/usr/sbin/groupadd",
             "/usr/sbin/groupmod",
-            "/usr/sbin/groupdel" ].each do |required_binary|
+            "/usr/sbin/groupdel" ]
+        end
+
+        def load_current_resource
+          super
+          required_binaries.each do |required_binary|
             raise Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{@new_resource}" unless ::File.exists?(required_binary)
           end
         end
@@ -64,8 +67,8 @@ class Chef
           { :gid => "-g" }.sort { |a,b| a[0] <=> b[0] }.each do |field, option|
             if @current_resource.send(field) != @new_resource.send(field)
               if @new_resource.send(field)
-                Chef::Log.debug("#{@new_resource}: setting #{field.to_s} to #{@new_resource.send(field)}")
                 opts << " #{option} '#{@new_resource.send(field)}'"
+                Chef::Log.debug("#{@new_resource} set #{field.to_s} to #{@new_resource.send(field)}")
               end
             end
           end

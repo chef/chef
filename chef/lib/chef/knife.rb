@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,25 +17,50 @@
 # limitations under the License.
 #
 
+require 'forwardable'
 require 'chef/version'
 require 'mixlib/cli'
 require 'chef/mixin/convert_to_class_name'
-
+require 'chef/knife/core/subcommand_loader'
+require 'chef/knife/core/ui'
+require 'chef/rest'
 require 'pp'
 
 class Chef
   class Knife
+
+    Chef::REST::RESTRequest.user_agent = "Chef Knife#{Chef::REST::RESTRequest::UA_COMMON}"
+
     include Mixlib::CLI
     extend Chef::Mixin::ConvertToClassName
+    extend Forwardable
 
-    # The "require paths" of the core knife subcommands bundled with chef
-    DEFAULT_SUBCOMMAND_FILES = Dir[File.expand_path(File.join(File.dirname(__FILE__), 'knife', '*.rb'))]
-    DEFAULT_SUBCOMMAND_FILES.map! { |knife_file| knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/,1] }
+    # Backwards Compat:
+    # Ideally, we should not vomit all of these methods into this base class;
+    # instead, they should be accessed by hitting the ui object directly.
+    def_delegator :@ui, :stdout
+    def_delegator :@ui, :stderr
+    def_delegator :@ui, :stdin
+    def_delegator :@ui, :msg
+    def_delegator :@ui, :ask_question
+    def_delegator :@ui, :pretty_print
+    def_delegator :@ui, :output
+    def_delegator :@ui, :format_list_for_display
+    def_delegator :@ui, :format_for_display
+    def_delegator :@ui, :format_cookbook_list_for_display
+    def_delegator :@ui, :edit_data
+    def_delegator :@ui, :edit_object
+    def_delegator :@ui, :confirm
 
     attr_accessor :name_args
+    attr_accessor :ui
+
+    def self.ui
+      @ui ||= Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
+    end
 
     def self.msg(msg="")
-      puts msg
+      ui.msg(msg)
     end
 
     def self.reset_subcommands!
@@ -70,9 +95,21 @@ class Chef
       convert_to_snake_case(name.split('::').last) unless unnamed?
     end
 
+    def self.common_name
+      snake_case_name.split('_').join(' ')
+    end
+
     # Does this class have a name? (Classes created via Class.new don't)
     def self.unnamed?
       name.nil? || name.empty?
+    end
+
+    def self.subcommand_loader
+      @subcommand_loader ||= Knife::SubcommandLoader.new(chef_config_dir)
+    end
+
+    def self.load_commands
+      @commands_loaded ||= subcommand_loader.load_commands
     end
 
     def self.subcommands
@@ -89,16 +126,11 @@ class Chef
       @subcommands_by_category
     end
 
-    # Load all the sub-commands
-    def self.load_commands
-      DEFAULT_SUBCOMMAND_FILES.each { |subcommand| require subcommand }
-      subcommands
-    end
-
     # Print the list of subcommands knife knows about. If +preferred_category+
     # is given, only subcommands in that category are shown
     def self.list_commands(preferred_category=nil)
       load_commands
+
       category_desc = preferred_category ? preferred_category + " " : ''
       msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
 
@@ -109,6 +141,7 @@ class Chef
       end
 
       commands_to_show.sort.each do |category, commands|
+        next if category =~ /deprecated/i
         msg "** #{category.upcase} COMMANDS **"
         commands.each do |command|
           msg subcommands[command].banner if subcommands[command]
@@ -127,13 +160,15 @@ class Chef
       load_commands
       subcommand_class = subcommand_class_from(args)
       subcommand_class.options = options.merge!(subcommand_class.options)
+      subcommand_class.load_deps unless want_help?(args)
       instance = subcommand_class.new(args)
       instance.configure_chef
-      instance.run
+      instance.run_with_pretty_exceptions
     end
 
     def self.guess_category(args)
-      category_words = args.select {|arg| arg =~ /^([[:alnum:]]|_)+$/ }
+      category_words = args.select {|arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
+      category_words.map! {|w| w.split('-')}.flatten!
       matching_category = nil
       while (!matching_category) && (!category_words.empty?)
         candidate_category = category_words.join(' ')
@@ -144,7 +179,8 @@ class Chef
     end
 
     def self.subcommand_class_from(args)
-      command_words = args.select {|arg| arg =~ /^([[:alnum:]]|_)+$/ }
+      command_words = args.select {|arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
+
       subcommand_class = nil
 
       while ( !subcommand_class ) && ( !command_words.empty? )
@@ -153,31 +189,40 @@ class Chef
           command_words.pop
         end
       end
+      # see if we got the command as e.g., knife node-list
+      subcommand_class ||= subcommands[args.first.gsub('-', '_')]
       subcommand_class || subcommand_not_found!(args)
     end
 
-    protected
+    def self.deps(&block)
+      @dependency_loader = block
+    end
 
-    def load_late_dependency(dep, gem_name = nil)
-      begin
-        require dep
-      rescue LoadError
-        gem_name ||= dep.gsub('/', '-')
-        Chef::Log.fatal "#{gem_name} is not installed. run \"gem install #{gem_name}\" to install it."
-        exit 1
-      end
+    def self.load_deps
+      @dependency_loader && @dependency_loader.call
     end
 
     private
+
+    OFFICIAL_PLUGINS = %w[ec2 rackspace windows openstack terremark bluebox]
 
     # :nodoc:
     # Error out and print usage. probably becuase the arguments given by the
     # user could not be resolved to a subcommand.
     def self.subcommand_not_found!(args)
       unless want_help?(args)
-        Chef::Log.fatal("Cannot find sub command for: '#{args.join(' ')}'")
+        ui.fatal("Cannot find sub command for: '#{args.join(' ')}'")
       end
-      Chef::Knife.list_commands(guess_category(args))
+
+      if category_commands = guess_category(args)
+        list_commands(category_commands)
+      elsif missing_plugin = ( OFFICIAL_PLUGINS.find {|plugin| plugin == args[0]} )
+        ui.info("The #{missing_plugin} commands were moved to plugins in Chef 0.10")
+        ui.info("You can install the plugin with `(sudo) gem install knife-#{missing_plugin}")
+      else
+        list_commands
+      end
+
       exit 10
     end
 
@@ -188,17 +233,38 @@ class Chef
       (args.any? { |arg| arg =~ /^(:?(:?\-\-)?help|\-h)$/})
     end
 
+    @@chef_config_dir = nil
+
+    # search upward from current_dir until .chef directory is found
+    def self.chef_config_dir
+      if @@chef_config_dir.nil? # share this with subclasses
+        @@chef_config_dir = false
+        full_path = Dir.pwd.split(File::SEPARATOR)
+        (full_path.length - 1).downto(0) do |i|
+          canidate_directory = File.join(full_path[0..i] + [".chef" ])
+          if File.exist?(canidate_directory) && File.directory?(canidate_directory)
+            @@chef_config_dir = canidate_directory
+            break
+          end
+        end
+      end
+      @@chef_config_dir
+    end
+
+
     public
 
     # Create a new instance of the current class configured for the given
     # arguments and options
     def initialize(argv=[])
       super() # having to call super in initialize is the most annoying anti-pattern :(
+      @ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, config)
 
       command_name_words = self.class.snake_case_name.split('_')
 
       # Mixlib::CLI ignores the embedded name_args
       @name_args = parse_options(argv)
+      @name_args.delete(command_name_words.join('-'))
       @name_args.reject! { |name_arg| command_name_words.delete(name_arg) }
 
       # knife node run_list add requires that we have extra logic to handle
@@ -220,37 +286,11 @@ class Chef
       exit(1)
     end
 
-    def ask_question(question, opts={})
-      question = question + "[#{opts[:default]}] " if opts[:default]
-
-      if opts[:default] and config[:defaults]
-
-        opts[:default]
-
-      else
-
-        stdout.print question
-        a = stdin.readline.strip
-
-        if opts[:default]
-          a.empty? ? opts[:default] : a
-        else
-          a
-        end
-
-      end
-
-    end
-
     def configure_chef
       unless config[:config_file]
-        full_path = Dir.pwd.split(File::SEPARATOR)
-        (full_path.length - 1).downto(0) do |i|
-          config_file_to_check = File.join([ full_path[0..i], ".chef", "knife.rb" ].flatten)
-          if File.exists?(config_file_to_check)
-            config[:config_file] = config_file_to_check 
-            break
-          end
+        if self.class.chef_config_dir
+          candidate_config = File.expand_path('knife.rb',self.class.chef_config_dir)
+          config[:config_file] = candidate_config if File.exist?(candidate_config)
         end
         # If we haven't set a config yet and $HOME is set, and the home
         # knife.rb exists, use it:
@@ -261,200 +301,168 @@ class Chef
 
       # Don't try to load a knife.rb if it doesn't exist.
       if config[:config_file]
-        Chef::Config.from_file(config[:config_file])
+        read_config_file(config[:config_file])
       else
         # ...but do log a message if no config was found.
-        self.msg("No knife configuration file found")
+        Chef::Config[:color] = config[:color] && !config[:no_color]
+        ui.warn("No knife configuration file found")
       end
 
-      Chef::Config[:log_level] = config[:log_level] if config[:log_level]
-      Chef::Config[:log_location] = config[:log_location] if config[:log_location]
-      Chef::Config[:node_name] = config[:node_name] if config[:node_name]
-      Chef::Config[:client_key] = config[:client_key] if config[:client_key]
-      Chef::Config[:chef_server_url] = config[:chef_server_url] if config[:chef_server_url]
-      Chef::Config[:environment] = config[:environment] if config[:environment]
+      Chef::Config[:color] = config[:color] && !config[:no_color]
+
+      case config[:verbosity]
+      when 0
+        Chef::Config[:log_level] = :error
+      when 1
+        Chef::Config[:log_level] = :info
+      else
+        Chef::Config[:log_level] = :debug
+      end
+
+      Chef::Config[:node_name]         = config[:node_name]       if config[:node_name]
+      Chef::Config[:client_key]        = config[:client_key]      if config[:client_key]
+      Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
+      Chef::Config[:environment]       = config[:environment]     if config[:environment]
+
+      # Expand a relative path from the config directory. Config from command
+      # line should already be expanded, and absolute paths will be unchanged.
+      if Chef::Config[:client_key] && config[:config_file]
+        Chef::Config[:client_key] = File.expand_path(Chef::Config[:client_key], File.dirname(config[:config_file]))
+      end
+
       Mixlib::Log::Formatter.show_time = false
       Chef::Log.init(Chef::Config[:log_location])
-      Chef::Log.level(Chef::Config[:log_level])
+      Chef::Log.level(Chef::Config[:log_level] || :error)
 
       Chef::Log.debug("Using configuration from #{config[:config_file]}")
 
       if Chef::Config[:node_name].nil?
-        raise ArgumentError, "No user specified, pass via -u or specifiy 'node_name' in #{config[:config_file] ? config[:config_file] : "~/.chef/knife.rb"}"
+        #raise ArgumentError, "No user specified, pass via -u or specifiy 'node_name' in #{config[:config_file] ? config[:config_file] : "~/.chef/knife.rb"}"
       end
     end
 
-    def pretty_print(data)
-      puts data
+    def read_config_file(file)
+      Chef::Config.from_file(file)
+    rescue SyntaxError => e
+      ui.error "You have invalid ruby syntax in your config file #{file}"
+      ui.info(ui.color(e.message, :red))
+      if file_line = e.message[/#{Regexp.escape(file)}:[\d]+/]
+        line = file_line[/:([\d]+)$/, 1].to_i
+        highlight_config_error(file, line)
+      end
+      exit 1
+    rescue Exception => e
+      ui.error "You have an error in your config file #{file}"
+      ui.info "#{e.class.name}: #{e.message}"
+      filtered_trace = e.backtrace.grep(/#{Regexp.escape(file)}/)
+      filtered_trace.each {|line| ui.msg("  " + ui.color(line, :red))}
+      if !filtered_trace.empty?
+        line_nr = filtered_trace.first[/#{Regexp.escape(file)}:([\d]+)/, 1]
+        highlight_config_error(file, line_nr.to_i)
+      end
+
+      exit 1
     end
 
-    def output(data)
-      case config[:format]
-      when "json", nil
-        stdout.puts Chef::JSON.to_json_pretty(data)
-      when "yaml"
-        require 'yaml'
-        stdout.puts YAML::dump(data)
-      when "text"
-        # If you were looking for some attribute and there is only one match
-        # just dump the attribute value
-        if data.length == 1 and config[:attribute]
-          stdout.puts data.values[0]
-        else
-          PP.pp(data, stdout)
-        end
+    def highlight_config_error(file, line)
+      config_file_lines = []
+      IO.readlines(file).each_with_index {|l, i| config_file_lines << "#{(i + 1).to_s.rjust(3)}: #{l.chomp}"}
+      if line == 1
+        lines = config_file_lines[0..3]
+        lines[0] = ui.color(lines[0], :red)
       else
-        raise ArgumentError, "Unknown output format #{config[:format]}"
+        lines = config_file_lines[Range.new(line - 2, line)]
+        lines[1] = ui.color(lines[1], :red)
       end
-    end
-
-    def format_list_for_display(list)
-      config[:with_uri] ? list : list.keys.sort { |a,b| a <=> b } 
-    end
-
-    def format_for_display(item)
-      data = item.kind_of?(Chef::DataBagItem) ? item.raw_data : item
-
-      if config[:attribute]
-        config[:attribute].split(".").each do |attr|
-          if data.respond_to?(:[])
-            data = data[attr]
-          elsif data.nil?
-            nil # don't get no method error on nil
-          else data.respond_to?(attr.to_sym)
-            data = data.send(attr.to_sym)
-          end
-        end
-        { config[:attribute] => data.kind_of?(Chef::Node::Attribute) ? data.to_hash : data }
-      elsif config[:run_list]
-        data = data.run_list.run_list
-        { "run_list" => data }
-      elsif config[:environment]
-        if data.class == Chef::Node
-          {"chef_environment" => data.chef_environment}
-        else
-          # this is a place holder for now. Feel free to modify (i.e. add other cases). [nuo]
-          data
-        end
-      elsif config[:id_only]
-        data.respond_to?(:name) ? data.name : data["id"]
-      else
-        data
-      end
-    end
-
-    def edit_data(data, parse_output=true)
-      output = Chef::JSON.to_json_pretty(data)
-      
-      if (!config[:no_editor])
-        filename = "knife-edit-"
-        0.upto(20) { filename += rand(9).to_s }
-        filename << ".js"
-        filename = File.join(Dir.tmpdir, filename)
-        tf = File.open(filename, "w")
-        tf.sync = true
-        tf.puts output
-        tf.close
-        raise "Please set EDITOR environment variable" unless system("#{config[:editor]} #{tf.path}") 
-        tf = File.open(filename, "r")
-        output = tf.gets(nil)
-        tf.close
-        File.unlink(filename)
-      end
-
-      parse_output ? Chef::JSON.from_json(output) : output
-    end
-
-    def confirm(question, append_instructions=true)
-      return true if config[:yes]
-
-      stdout.print question
-      stdout.print "? (Y/N) " if append_instructions
-      answer = stdin.readline
-      answer.chomp!
-      case answer
-      when "Y", "y"
-        true
-      when "N", "n"
-        self.msg("You said no, so I'm done here.")
-        exit 3 
-      else
-        self.msg("I have no idea what to do with #{answer}")
-        self.msg("Just say Y or N, please.")
-        confirm(question)
-      end
+      ui.msg ""
+      ui.msg ui.color("     # #{file}", :white)
+      lines.each {|l| ui.msg(l)}
+      ui.msg ""
     end
 
     def show_usage
       stdout.puts("USAGE: " + self.opt_parser.to_s)
     end
 
-    def load_from_file(klass, from_file, bag=nil) 
-      relative_path = ""
-      if klass == Chef::Role
-        relative_path = "roles"
-      elsif klass == Chef::Node
-        relative_path = "nodes"
-      elsif klass == Chef::DataBagItem
-        relative_path = "data_bags/#{bag}"
-      elsif klass == Chef::Environment
-        relative_path = "environments"
+    def run_with_pretty_exceptions
+      unless self.respond_to?(:run)
+        ui.error "You need to add a #run method to your knife command before you can use it"
       end
+      run
+    rescue Exception => e
+      raise if config[:verbosity] == 2
+      humanize_exception(e)
+      exit 100
+    end
 
-      relative_file = File.expand_path(File.join(Dir.pwd, relative_path, from_file))
-      filename = nil
-
-      if file_exists_and_is_readable?(from_file)
-        filename = from_file
-      elsif file_exists_and_is_readable?(relative_file) 
-        filename = relative_file 
+    def humanize_exception(e)
+      case e
+      when SystemExit
+        raise # make sure exit passes through.
+      when Net::HTTPServerException, Net::HTTPFatalError
+        humanize_http_exception(e)
+      when Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError
+        ui.error "Network Error: #{e.message}"
+        ui.info "Check your knife configuration and network settings"
+      when NameError, NoMethodError
+        ui.error "knife encountered an unexpected error"
+        ui.info  "This may be a bug in the '#{self.class.common_name}' knife command or plugin"
+        ui.info  "Please collect the output of this command with the `-VV` option before filing a bug report."
+        ui.info  "Exception: #{e.class.name}: #{e.message}"
+      when Chef::Exceptions::PrivateKeyMissing
+        ui.error "Your private key could not be loaded from #{api_key}"
+        ui.info  "Check your configuration file and ensure that your private key is readable"
       else
-        Chef::Log.fatal("Cannot find file #{from_file}")
-        exit 30
-      end
-
-      case from_file
-      when /\.(js|json)$/
-        Chef::JSON.from_json(IO.read(filename))
-      when /\.rb$/
-        r = klass.new
-        r.from_file(filename)
-        r
-      else
-        Chef::Log.fatal("File must end in .js, .json, or .rb")
-        exit 30
+        ui.error "#{e.class.name}: #{e.message}"
       end
     end
 
-    def file_exists_and_is_readable?(file)
-      File.exists?(file) && File.readable?(file)
+    def humanize_http_exception(e)
+      response = e.response
+      case response
+      when Net::HTTPUnauthorized
+        ui.error "Failed to authenticate to #{server_url} as #{username} with key #{api_key}"
+        ui.info "Response:  #{format_rest_error(response)}"
+      when Net::HTTPForbidden
+        ui.error "You authenticated successfully to #{server_url} as #{username} but you are not authorized for this action"
+        ui.info "Response:  #{format_rest_error(response)}"
+      when Net::HTTPBadRequest
+        ui.error "The data in your request was invalid"
+        ui.info "Response: #{format_rest_error(response)}"
+      when Net::HTTPNotFound
+        ui.error "The object you are looking for could not be found"
+        ui.info "Response: #{format_rest_error(response)}"
+      when Net::HTTPInternalServerError
+        ui.error "internal server error"
+        ui.info "Response: #{format_rest_error(response)}"
+      when Net::HTTPBadGateway
+        ui.error "bad gateway"
+        ui.info "Response: #{format_rest_error(response)}"
+      when Net::HTTPServiceUnavailable
+        ui.error "Service temporarily unavailable"
+        ui.info "Response: #{format_rest_error(response)}"
+      else
+        ui.error response.message
+        ui.info "Response: #{format_rest_error(response)}"
+      end
     end
 
-    def edit_object(klass, name)
-      object = klass.load(name)
+    def username
+      Chef::Config[:node_name]
+    end
 
-      output = edit_data(object)
+    def api_key
+      Chef::Config[:client_key]
+    end
 
-      # Only make the save if the user changed the object.
-      #
-      # Output JSON for the original (object) and edited (output), then parse 
-      # them without reconstituting the objects into real classes
-      # (create_additions=false). Then, compare the resulting simple objects,
-      # which will be Array/Hash/String/etc. 
-      #
-      # We wouldn't have to do these shenanigans if all the editable objects 
-      # implemented to_hash, or if to_json against a hash returned a string 
-      # with stable key order.
-      object_parsed_again = Chef::JSON.from_json(Chef::JSON.to_json(object), :create_additions => false)
-      output_parsed_again = Chef::JSON.from_json(Chef::JSON.to_json(output), :create_additions => false)
-      if object_parsed_again != output_parsed_again
-        output.save
-        self.msg("Saved #{output}")
-      else
-        self.msg("Object unchanged, not saving")
-      end
-
-      output(format_for_display(object)) if config[:print_after]
+    # Parses JSON from the error response sent by Chef Server and returns the
+    # error message
+    #--
+    # TODO: this code belongs in Chef::REST
+    def format_rest_error(response)
+      Array(Chef::JSONCompat.from_json(response.body)["error"]).join('; ')
+    rescue Exception
+      response.body
     end
 
     def create_object(object, pretty_name=nil, &block)
@@ -468,8 +476,8 @@ class Chef
 
       pretty_name ||= output
 
-      self.msg("Created (or updated) #{pretty_name}")
-      
+      self.msg("Created #{pretty_name}")
+
       output(output) if config[:print_after]
     end
 
@@ -486,51 +494,25 @@ class Chef
       output(format_for_display(object)) if config[:print_after]
 
       obj_name = delete_name ? "#{delete_name}[#{name}]" : object
-      self.msg("Deleted #{obj_name}!")
-    end
-
-    def bulk_delete(klass, fancy_name, delete_name=nil, list=nil, regex=nil, &block)
-      object_list = list ? list : klass.list(true)
-
-      if regex
-        to_delete = Hash.new
-        object_list.each_key do |object|
-          next if regex && object !~ /#{regex}/
-          to_delete[object] = object_list[object]
-        end
-      else
-        to_delete = object_list
-      end
-
-      output(format_list_for_display(to_delete))
-
-      confirm("Do you really want to delete the above items")
-
-      to_delete.each do |name, object|
-        if Kernel.block_given?
-          block.call(name, object)
-        else
-          object.destroy
-        end
-        output(format_for_display(object)) if config[:print_after]
-        self.msg("Deleted #{fancy_name} #{name}")
-      end
-    end
-
-    def msg(message)
-      stdout.puts message
-    end
-
-    def stdout
-      STDOUT
-    end
-
-    def stdin
-      STDIN
+      self.msg("Deleted #{obj_name}")
     end
 
     def rest
-      @rest ||= Chef::REST.new(Chef::Config[:chef_server_url])
+      @rest ||= begin
+        require 'chef/rest'
+        Chef::REST.new(Chef::Config[:chef_server_url])
+      end
+    end
+
+    def noauth_rest
+      @rest ||= begin
+        require 'chef/rest'
+        Chef::REST.new(Chef::Config[:chef_server_url], false, false)
+      end
+    end
+
+    def server_url
+      Chef::Config[:chef_server_url]
     end
 
   end

@@ -1,0 +1,30 @@
+knife-index(1) -- Rebuild the search index on a Chef Server
+========================================
+
+## SYNOPSIS
+
+__knife__ __index rebuild__ _(options)_
+
+  * `-y`, `--yes`:
+    don't bother to ask if I'm sure
+
+## DESCRIPTION
+Rebuilds all the search indexes on the server. This is accomplished by
+deleting all objects from the search index, and then forwarding each
+item in the database to __chef-expander__(8) via __rabbitmq-server__(1).
+Depending on the number of objects in the database, it may take some
+time for all objects to be indexed and available for search.
+
+## SEE ALSO
+   __knife-search__(1)
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+

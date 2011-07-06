@@ -17,14 +17,16 @@
 #
 
 require 'chef/knife'
-require 'chef/json'
-require 'uri'
-require 'chef/mixin/shell_out'
 
 class Chef
   class Knife
     class CookbookCreate < Knife
-      include Chef::Mixin::ShellOut
+
+      deps do
+        require 'chef/json_compat'
+        require 'uri'
+        require 'fileutils'
+      end
 
       banner "knife cookbook create COOKBOOK (options)"
 
@@ -42,7 +44,7 @@ class Chef
       option :cookbook_license,
         :short => "-I LICENSE",
         :long => "--license LICENSE",
-        :description => "License for cookbook, apachev2 or none"
+        :description => "License for cookbook, apachev2, gplv2, gplv3, mit or none"
 
       option :cookbook_copyright,
         :short => "-C COPYRIGHT",
@@ -58,7 +60,7 @@ class Chef
         self.config = Chef::Config.merge!(config)
         if @name_args.length < 1
           show_usage
-          Chef::Log.fatal("You must specify a cookbook name")
+          ui.fatal("You must specify a cookbook name")
           exit 1
         end
 
@@ -74,21 +76,21 @@ class Chef
         create_cookbook(cookbook_path,cookbook_name, copyright, license)
         create_readme(cookbook_path,cookbook_name)
         create_metadata(cookbook_path,cookbook_name, copyright, email, license)
-    end
+      end
 
-    def create_cookbook(dir, cookbook_name, copyright, license)
-      msg("** Creating cookbook #{cookbook_name}")
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "attributes")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "recipes")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "definitions")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "libraries")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "resources")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "providers")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "files", "default")}"
-      shell_out "mkdir -p #{File.join(dir, cookbook_name, "templates", "default")}"
-      unless File.exists?(File.join(dir, cookbook_name, "recipes", "default.rb"))
-        open(File.join(dir, cookbook_name, "recipes", "default.rb"), "w") do |file|
-          file.puts <<-EOH
+      def create_cookbook(dir, cookbook_name, copyright, license)
+        msg("** Creating cookbook #{cookbook_name}")
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "attributes")}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "recipes")}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "definitions")}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "libraries")}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "resources")}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "providers")}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "files", "default")}"
+        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "templates", "default")}"
+        unless File.exists?(File.join(dir, cookbook_name, "recipes", "default.rb"))
+          open(File.join(dir, cookbook_name, "recipes", "default.rb"), "w") do |file|
+            file.puts <<-EOH
 #
 # Cookbook Name:: #{cookbook_name}
 # Recipe:: default
@@ -96,9 +98,9 @@ class Chef
 # Copyright #{Time.now.year}, #{copyright}
 #
 EOH
-          case license
-          when "apachev2"
-            file.puts <<-EOH
+            case license
+            when "apachev2"
+              file.puts <<-EOH
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -112,23 +114,78 @@ EOH
 # limitations under the License.
 #
 EOH
-          when "none"
-            file.puts <<-EOH
+            when "gplv2"
+              file.puts <<-EOH
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+EOH
+            when "gplv3"
+              file.puts <<-EOH
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+EOH
+            when "mit"
+              file.puts <<-EOH
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+EOH
+            when "none"
+              file.puts <<-EOH
 # All rights reserved - Do Not Redistribute
 #
 EOH
+            end
           end
         end
       end
-    end
 
-    def create_readme(dir, cookbook_name)
-      msg("** Creating README for cookbook: #{cookbook_name}")
-      unless File.exists?(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"))
-        open(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"), "w") do |file|
-          case config[:readme_format]
-          when "rdoc"
-            file.puts <<-EOH
+      def create_readme(dir, cookbook_name)
+        msg("** Creating README for cookbook: #{cookbook_name}")
+        unless File.exists?(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"))
+          open(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"), "w") do |file|
+            case config[:readme_format]
+            when "rdoc"
+              file.puts <<-EOH
 = DESCRIPTION:
 
 = REQUIREMENTS:
@@ -138,8 +195,8 @@ EOH
 = USAGE:
 
 EOH
-          when "md","mkd","txt"
-            file.puts <<-EOH
+            when "md","mkd","txt"
+              file.puts <<-EOH
 Description
 ===========
 
@@ -153,8 +210,8 @@ Usage
 =====
 
 EOH
-          else
-            file.puts <<-EOH
+            else
+              file.puts <<-EOH
 Description
 
 Requirements
@@ -164,27 +221,33 @@ Attributes
 Usage
 
 EOH
+            end
           end
         end
       end
-    end
 
-    def create_metadata(dir, cookbook_name, copyright, email, license)
-      msg("** Creating metadata for cookbook: #{cookbook_name}")
+      def create_metadata(dir, cookbook_name, copyright, email, license)
+        msg("** Creating metadata for cookbook: #{cookbook_name}")
 
-      license_name = case license
-                     when "apachev2"
-                       "Apache 2.0"
-                     when "none"
-                       "All rights reserved"
-                     end
+        license_name = case license
+                       when "apachev2"
+                         "Apache 2.0"
+                       when "gplv2"
+                         "GNU Public License 2.0"
+                       when "gplv3"
+                         "GNU Public License 3.0"
+                       when "mit"
+                         "MIT"
+                       when "none"
+                         "All rights reserved"
+                       end
 
-      unless File.exists?(File.join(dir, cookbook_name, "metadata.rb"))
-        open(File.join(dir, cookbook_name, "metadata.rb"), "w") do |file|
-          if File.exists?(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"))
-            long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.#{config[:readme_format]}'))"
-          end
-          file.puts <<-EOH
+        unless File.exists?(File.join(dir, cookbook_name, "metadata.rb"))
+          open(File.join(dir, cookbook_name, "metadata.rb"), "w") do |file|
+            if File.exists?(File.join(dir, cookbook_name, "README.#{config[:readme_format]}"))
+              long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.#{config[:readme_format]}'))"
+            end
+            file.puts <<-EOH
 maintainer       "#{copyright}"
 maintainer_email "#{email}"
 license          "#{license_name}"
@@ -192,11 +255,12 @@ description      "Installs/Configures #{cookbook_name}"
 #{long_description}
 version          "0.0.1"
 EOH
+          end
         end
       end
-    end
 
-    private
+      private
+
       def default_cookbook_path_empty?
         Chef::Config[:cookbook_path].nil? || Chef::Config[:cookbook_path].empty?
       end
@@ -204,6 +268,7 @@ EOH
       def parameter_empty?(parameter)
         parameter.nil? || parameter.empty?
       end
+
     end
   end
 end

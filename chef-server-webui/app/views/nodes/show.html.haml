@@ -7,6 +7,7 @@
       .content
         .inner
           .left
+            %h3 Environment: #{@node.chef_environment}
             %h3 Run List
             %table.table
               %thead
@@ -28,7 +29,7 @@
                       %td= run_list_item.type
           .left.accordion
             %h3.head= link_to("Recipes", "#")
-            - recipes = @node.run_list.expand('server').recipes
+            - recipes = @node.run_list.expand(@node.chef_environment, 'server').recipes
             %div
               %span.description.form.help
                 This is the list of recipes, fully expanded, as they will be applied to the node in question.  

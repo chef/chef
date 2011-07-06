@@ -17,7 +17,7 @@
 #
 
 require 'rubygems'
-require 'chef/json'
+require 'chef/json_compat'
 require 'chef'
 require 'chef/role'
 require 'chef/cookbook/metadata'
@@ -77,7 +77,7 @@ task :default => [ :test_cookbooks ]
 
 desc "Create a new cookbook (with COOKBOOK=name, optional CB_PREFIX=site-)"
 task :new_cookbook do
-  puts "***WARN: rake new_cookbook is deprecated. Please use 'knife cookbook new COOKBOOK' command.***"
+  puts "***WARN: rake new_cookbook is deprecated. Please use 'knife cookbook create COOKBOOK' command.***"
   create_cookbook(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
   create_readme(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
   create_metadata(File.join(TOPDIR, "#{ENV["CB_PREFIX"]}cookbooks"))
@@ -252,5 +252,79 @@ end
 desc "Test a single cookbook"
 task :test_cookbook, :cookbook do |t, args|
   system("knife cookbook test #{args.cookbook}")
+end
+
+namespace :databag do
+  path = "data_bags"
+
+  desc "Upload a single databag"
+  task :upload, :databag do |t, args|
+    input_databag = args[:databag] || 'none_specified'
+    databag = File.join(path, input_databag)
+
+    if File.exists?(databag) && File.directory?(databag)
+      system "knife data bag create #{input_databag}"
+      Dir.foreach(databag) do |item|
+        name, type = item.split('.')
+        if type == 'json' && name.length > 0
+          system "knife data bag from file #{input_databag} " + File.join(databag, item)
+        end
+      end
+    else
+      puts "ERROR: Could not find the databag in your databag path (" + File.join(path, input_databag) + "), skipping it"
+    end
+  end
+
+  desc "Upload all databags"
+  task :upload_all do
+    if File.exists?(path) && File.directory?(path)
+      Dir.foreach(path) do |databag|
+        if databag == databag[/^[\-[:alnum:]_]+$/]
+          Rake::Task['databag:upload'].execute( { :databag => databag } )
+        end
+      end
+    else
+      puts "ERROR: Could not find any databags, skipping it"  
+    end
+  end
+
+  desc "Create a databag"
+  task :create, :databag do |t, args|
+    input_databag = args[:databag] || 'none_specified'
+
+    FileUtils.mkdir(path) unless File.exists?(path)
+    databag = File.join(path, input_databag)
+    FileUtils.mkdir(databag) unless File.exists?(databag)
+  end
+
+  desc "Create a databag item stub"
+  task :create_item, :databag, :item do |t, args|
+    input_databag = args[:databag] || 'none_specified'
+    input_item = args[:item] || false
+
+    databag = File.join(path, input_databag)
+    if File.exists?(databag) && File.directory?(databag)
+      if input_item
+        json_filename = File.join(databag, "#{input_item}.json")
+        if !File.exists?(json_filename)
+          stub = <<EOH
+{
+  "id" : "#{input_item}"
+}
+EOH
+          json_file = File.new(json_filename, "w")
+          json_file.write(stub)
+          json_file.close
+        else
+          puts "ERROR: databag item already exists (#{json_filename}), skipping it"
+        end
+      else
+        puts "ERROR: No item id specified, skipping it"
+      end
+    else
+      puts "ERROR: Could not find your databag (#{databag}), skipping it"
+    end   
+  end
+
 end
 

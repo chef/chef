@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@
 require 'chef/search/query'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
+require 'chef/encrypted_data_bag_item'
 
 class Chef
   module Mixin
@@ -68,23 +69,20 @@ class Chef
             @values["default"] = value
           else
             assert_valid_platform_values!(platforms, value)
-            Array(platforms).each { |platform| @values[platform.to_s] = format_values(value)}
+            Array(platforms).each { |platform| @values[platform.to_s] = normalize_keys(value)}
             value
           end
         end
 
-        def format_values(hash)
-          formatted_array = flatten_one_level(hash.map { |key, value| [key.to_s, value]})
-          Hash[*formatted_array]
-        end
-
-        def flatten_one_level(array)
-          array.inject([]) do |flatter_array, values|
-            Array(values).each {|value| flatter_array << value }
-            flatter_array
+        def normalize_keys(hash)
+          hash.inject({}) do |h, key_value|
+            keys, value = *key_value
+            Array(keys).each do |key|
+              h[key.to_s] = value
+            end
+            h
           end
         end
-
 
         def assert_valid_platform_values!(platforms, value)
           unless value.kind_of?(Hash)
@@ -119,36 +117,45 @@ class Chef
       # false:: If the current platform is not in the list
       def platform?(*args)
         has_platform = false
-  
+
         args.flatten.each do |platform|
           has_platform = true if platform == node[:platform]
         end
-  
+
         has_platform
       end
 
       def search(*args, &block)
         # If you pass a block, or have at least the start argument, do raw result parsing
-        # 
+        #
         # Otherwise, do the iteration for the end user
-        if Kernel.block_given? || args.length >= 4 
+        if Kernel.block_given? || args.length >= 4
           Chef::Search::Query.new.search(*args, &block)
-        else 
+        else
           results = Array.new
           Chef::Search::Query.new.search(*args) do |o|
-            results << o 
+            results << o
           end
           results
         end
       end
 
       def data_bag(bag)
-        rbag = Chef::DataBag.load(bag)
+        DataBag.validate_name!(bag.to_s)
+        rbag = DataBag.load(bag)
         rbag.keys
+      rescue Exception
+        Log.error("Failed to list data bag items in data bag: #{bag.inspect}")
+        raise
       end
 
       def data_bag_item(bag, item)
-        Chef::DataBagItem.load(bag, item)
+        DataBag.validate_name!(bag.to_s)
+        DataBagItem.validate_id!(item)
+        DataBagItem.load(bag, item)
+      rescue Exception
+        Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")
+        raise
       end
 
     end

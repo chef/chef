@@ -31,12 +31,16 @@ class Chef
         :description => "Show corresponding URIs"
 
       def run
-        output(format_list_for_display(get_cookbook_list))
+        if config[:with_uri]
+          ui.msg(format_list_for_display(get_cookbook_list))
+        else
+          ui.msg(ui.list(get_cookbook_list.keys.sort, :columns_down))
+        end
       end
 
       def get_cookbook_list(items=10, start=0, cookbook_collection={})
         cookbooks_url = "http://cookbooks.opscode.com/api/v1/cookbooks?items=#{items}&start=#{start}"
-        cr = rest.get_rest(cookbooks_url)
+        cr = noauth_rest.get_rest(cookbooks_url)
         cr["items"].each do |cookbook|
           cookbook_collection[cookbook["cookbook_name"]] = cookbook
         end

@@ -1,8 +1,4 @@
-#
-# Cookbook Name:: attribute_settings 
-# Recipe:: default 
-#
-# Copyright 2009, Opscode
+# Copyright (c) 2009, 2011 Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +13,7 @@
 # limitations under the License.
 #
 
-node.override[:attribute_priority_was] = 9
+node.override[:attribute_priority_was] = "came from recipe[attribute_settings_override::override_in_recipe]"
 
 execute "echo #{node[:attribute_priority_was]} > #{node[:tmpdir]}/attribute_setting.txt"
 

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -76,12 +76,12 @@ class Chef
             command << " metric #{@new_resource.metric}" if @new_resource.metric
             command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
           end
-  
+
           run_command(
             :command => command
           )
+          Chef::Log.info("#{@new_resource} added")
           @new_resource.updated_by_last_action(true)
-
         end
 
         # Write out the config files
@@ -92,13 +92,14 @@ class Chef
         # check to see if load_current_resource found the interface
         if @current_resource.device
           command = "ifconfig #{@new_resource.device} down"
-  
+
           run_command(
             :command => command
           )
+          Chef::Log.info("#{@new_resource} deleted")
           @new_resource.updated_by_last_action(true)
         else
-          Chef::Log.debug("Ifconfig #{@current_resource} does not exist")
+          Chef::Log.debug("#{@new_resource} does not exist - nothing to do")
         end
       end
 
@@ -121,12 +122,13 @@ class Chef
           network_file = ::File.new("/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}", "w")
           network_file.puts(template.result(b))
           network_file.close
+          Chef::Log.info("#{@new_resource} created configuration file")
         when "debian","ubuntu"
           # template
         when "slackware"
           # template
         end
-      end 
+      end
     end
   end
 end

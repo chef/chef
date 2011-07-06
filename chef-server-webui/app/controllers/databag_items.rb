@@ -38,7 +38,7 @@ class DatabagItems < Application
     begin
       @databag_item = Chef::DataBagItem.new
       @databag_item.data_bag params[:databag_id] 
-      @databag_item.raw_data = Chef::JSON.from_json(params[:json_data])
+      @databag_item.raw_data = Chef::JSONCompat.from_json(params[:json_data])
       raise ArgumentError, "Updating id is not allowed" unless @databag_item.raw_data['id'] == params[:id] #to be consistent with other objects, changing id is not allowed.
       @databag_item.save
       redirect(url(:databag_databag_items, :databag_id => params[:databag_id], :id => @databag_item.name), :message => { :notice => "Updated Databag Item #{@databag_item.name}" })
@@ -61,7 +61,7 @@ class DatabagItems < Application
       @databag_name = params[:databag_id] 
       @databag_item = Chef::DataBagItem.new
       @databag_item.data_bag @databag_name
-      @databag_item.raw_data = Chef::JSON.from_json(params[:json_data])
+      @databag_item.raw_data = Chef::JSONCompat.from_json(params[:json_data])
       @databag_item.create
       redirect(url(:databag_databag_items, :databag_id => @databag_name), :message => { :notice => "Databag item created successfully" })
     rescue => e

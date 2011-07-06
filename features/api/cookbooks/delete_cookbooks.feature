@@ -16,8 +16,8 @@ Feature: CRUD cookbooks
      When I 'DELETE' to the path '/cookbooks/testcookbook_valid/0.2.0'
      When I 'GET' to the path '/cookbooks/testcookbook_valid'
      Then the inflated responses key 'testcookbook_valid' should exist
-     Then the inflated responses key 'testcookbook_valid' should be '1' items long
-     Then the inflated responses key 'testcookbook_valid' item '0' should be '0.1.0'
+     Then the inflated responses key 'testcookbook_valid' sub-key 'versions' should be '1' items long
+     Then the inflated responses key 'testcookbook_valid' sub-key 'versions' item '0' sub-key 'version' should equal '0.1.0'
      When I 'GET' to the path '/cookbooks/testcookbook_valid/0.2.0'
      Then I should get a '404 "Not Found"' exception
      When I download the cookbook manifest for 'testcookbook_valid' version '0.1.0'
@@ -49,6 +49,6 @@ Feature: CRUD cookbooks
   @delete_cookbook_negative
   Scenario: I should not be able to delete a cookbook that doesn't exist'
     Given I am an administrator
-     When I 'DELETE' to the path '/cookbooks/testcookbook_nonexistent'
+     When I 'DELETE' to the path '/cookbooks/testcookbook_nonexistent/1.2.3'
      Then I should get a '404 "Not Found"' exception
 

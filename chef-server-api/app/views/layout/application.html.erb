@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=utf-8' http-equiv='content-type' />
+    <title>Chef Server</title>
+    <link href="/stylesheets/base.css" type="text/css" rel="Stylesheet" charset="utf-8" media="all" />
+    <link href="/stylesheets/themes/djime-cerulean/style.css" type="text/css" rel="Stylesheet" charset="utf-8" media="all" />
+    <link href="/stylesheets/chef.css" type="text/css" rel="Stylesheet" charset="utf-8" media="all" />
+  </head>
+  <body>
+    <div id='container'>
+      <div id='header'>
+        <h1><a href="<%= absolute_url(:top) -%>">Chef REST API</a></h1>
+      </div>
+      <div id='main-navigation'>
+        <div class='clear'></div>
+      </div>
+      <div id='wrapper'>
+        <div id='main'>
+          <div class='block' id='block-text'>
+            <div class='content'>
+              <h2 class='title'>The REST API</h2>
+              <div class='inner'>
+                This is the Chef API Server. 
+                <% if @webui_url %>
+                  <a href="<%= @webui_url -%>">Are you looking for the Web UI?</a>
+                <% end %>
+              </div>
+              <div class='inner'>
+                For more information about Chef, head on over to the <a href="http://wiki.opscode.com/">wiki.</a>
+              </div>
+            </div>
+          </div>
+          <div id='footer'>
+            <div class='block'>
+              <p>Copyright &copy; 2009-2011 Opscode, Inc.</p>
+            </div>
+          </div>
+        </div>
+        <div id='sidebar'>
+          <div class='block notice' id='sidebar_block_notice'></div>
+          <div class='block' id='sidebar_block'></div>
+        </div>
+        <div class='clear'></div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'munin_plugin'
+Dir.chdir(File.join(File.expand_path(File.dirname(__FILE__)), "..")) do
+  require 'bunny'
+
+  $:.unshift(File.expand_path('../../lib', __FILE__))
+  require 'chef/expander'
+  require 'chef/expander/version'
+  require 'chef/expander/configuration'
+
+  include Chef
+
+munin_plugin do
+  graph_title "Expander Queue Size"
+  graph_vlabel "Events"
+  graph_category "Opscode"
+  graph_info "Events in the Expander Queue waiting to be consumed by Solr."
+  queuesize.label "events"
+  queuesize.draw "LINE"
+  queuesize.warning "100"
+  queuesize.critical "200"
+
+  collect do
+
+      Expander.init_config([])
+
+      message_counts = []
+
+      begin
+        amqp_client = Bunny.new(Expander.config.amqp_config)
+        amqp_client.start
+
+        0.upto(Expander::VNODES - 1) do |vnode|
+          q = amqp_client.queue("vnode-#{vnode}", :durable => true)
+          message_counts << q.status[:message_count]
+        end
+        total_messages = message_counts.inject(:+)
+
+      ensure
+        amqp_client.stop if defined?(amqp_client) && amqp_client && amqp_client.connected?
+      end
+
+      queuesize.value total_messages
+  
+    end
+
+
+  end
+end

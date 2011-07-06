@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-node.default[:attribute_priority_was] = 3
+node.default[:attribute_priority_was] = "came from recipe[attribute_settings::default_in_recipe]"
 
 execute "echo #{node[:attribute_priority_was]} > #{node[:tmpdir]}/attribute_setting.txt"
 

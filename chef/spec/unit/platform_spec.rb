@@ -21,6 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 describe "Chef::Platform supports" do
   [
     :mac_os_x,
+    :mac_os_x_server,
     :freebsd,
     :ubuntu,
     :debian,

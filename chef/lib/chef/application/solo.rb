@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,14 +26,14 @@ require 'open-uri'
 require 'fileutils'
 
 class Chef::Application::Solo < Chef::Application
-  
-  option :config_file, 
+
+  option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
     :default => "/etc/chef/solo.rb",
     :description => "The configuration file to use"
 
-  option :log_level, 
+  option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
     :description  => "Set the log level (debug, info, warn, error, fatal)",
@@ -101,7 +101,7 @@ class Chef::Application::Solo < Chef::Application
       :long => "--recipe-url RECIPE_URL",
       :description => "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache.",
       :proc => nil
-  
+
   option :version,
     :short        => "-v",
     :long         => "--version",
@@ -110,21 +110,23 @@ class Chef::Application::Solo < Chef::Application
     :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
     :exit         => 0
 
+  attr_reader :chef_solo_json
+
   def initialize
     super
     @chef_solo = nil
     @chef_solo_json = nil
   end
-  
+
   def reconfigure
     super
-    
+
     Chef::Config[:solo] = true
 
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
     end
-    
+
     if Chef::Config[:json_attribs]
       begin
         json_io = case Chef::Config[:json_attribs]
@@ -145,13 +147,13 @@ class Chef::Application::Solo < Chef::Application
       end
 
       begin
-        @chef_solo_json = Chef::JSON.from_json(json_io.read)
+        @chef_solo_json = Chef::JSONCompat.from_json(json_io.read)
         json_io.close unless json_io.closed?
       rescue JSON::ParserError => error
         Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
       end
     end
-    
+
     if Chef::Config[:recipe_url]
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
@@ -168,11 +170,11 @@ class Chef::Application::Solo < Chef::Application
       Chef::Mixin::Command.run_command(:command => "tar zxvfC #{path} #{recipes_path}")
     end
   end
-  
+
   def setup_application
     Chef::Daemon.change_privilege
   end
-  
+
   def run_application
     if Chef::Config[:daemonize]
       Chef::Daemon.daemonize("chef-client")
@@ -199,13 +201,14 @@ class Chef::Application::Solo < Chef::Application
         raise
       rescue Exception => e
         if Chef::Config[:interval]
-          Chef::Log.error("#{e.class}")
-          Chef::Log.fatal("#{e}\n#{e.backtrace.join("\n")}")
+          Chef::Log.error("#{e.class}: #{e}")
+          Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
           Chef::Log.fatal("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
           sleep Chef::Config[:interval]
           retry
         else
-          raise
+          Chef::Application.debug_stacktrace(e)
+          Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
         end
       ensure
         GC.start

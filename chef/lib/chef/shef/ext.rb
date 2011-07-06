@@ -23,7 +23,7 @@ require 'chef/version'
 require 'chef/shef/shef_session'
 require 'chef/shef/model_wrapper'
 require 'chef/shef/shef_rest'
-require 'chef/json'
+require 'chef/json_compat'
 
 module Shef
   module Extensions
@@ -328,13 +328,13 @@ E
 
         edited_data = Tempfile.open([filename, ".js"]) do |tempfile|
           tempfile.sync = true
-          tempfile.puts Chef::JSON.to_json(object)
+          tempfile.puts Chef::JSONCompat.to_json(object)
           system("#{Shef.editor.to_s} #{tempfile.path}")
           tempfile.rewind
           tempfile.read
         end
 
-        Chef::JSON.from_json(edited_data)
+        Chef::JSONCompat.from_json(edited_data)
       end
 
       desc "Find and edit API clients"

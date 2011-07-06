@@ -1,0 +1,55 @@
+knife-search(1) -- Find objects on a Chef Server by query
+========================================
+
+## SYNOPSIS
+
+__knife__ __search INDEX QUERY__ _(options)_
+
+  * `-a`, `--attribute ATTR`:
+    Show only one attribute
+  * `-i`, `--id-only`:
+    Show only the ID of matching objects
+  * `-R`, `--rows INT`:
+    The number of rows to return
+  * `-r`, `--run-list`:
+    Show only the run list
+  * `-o`, `--sort SORT`:
+    The order to sort the results in
+  * `-b`, `--start ROW`:
+    The row to start returning results at
+  * `-m`, `--medium`:
+    Display medium sized output when searching nodes using the default
+    summary format
+  * `-l`, `--long`:
+    Display long output when searching nodes using the default summary
+    format
+
+## DESCRIPTION
+
+Search indexes are a feature of the Chef Server and the search
+sub-command allows querying any of the available indexes using SOLR
+query syntax. The following data types are indexed for search: 
+* _node_
+* _role_
+* _environment_
+* _data bag_
+
+## SYNTAX
+
+## EXAMPLES
+
+## SEE ALSO
+   __knife-ssh__(1)
+   <http://wiki.opscode.com/display/chef/Attributes>
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+
+

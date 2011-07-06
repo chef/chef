@@ -274,7 +274,7 @@ class Chef
 
       def environment(arg=nil)
         if arg.is_a?(String)
-          Chef::Log.info "Setting RAILS_ENV, RACK_ENV, and MERB_ENV to `#{arg}'"
+          Chef::Log.debug "Setting RAILS_ENV, RACK_ENV, and MERB_ENV to `#{arg}'"
           Chef::Log.warn "[DEPRECATED] please modify your deploy recipe or attributes to set the environment using a hash"
           arg = {"RAILS_ENV"=>arg,"MERB_ENV"=>arg,"RACK_ENV"=>arg}
         end

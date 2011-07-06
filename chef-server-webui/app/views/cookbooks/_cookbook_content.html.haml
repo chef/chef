@@ -1,0 +1,7 @@
+- unless @manifest[cookbook_part].empty?
+  %h4.head= link_to(cookbook_part, "JavaScript:void(0);")
+  .files
+    - @manifest[cookbook_part].each do |f|
+      .head= link_to(File.basename(f["name"]), "JavaScript:void(0);")
+      .code
+        %pre.ruby= highlight_content(f["url"], type)

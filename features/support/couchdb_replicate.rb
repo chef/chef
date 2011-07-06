@@ -27,7 +27,7 @@
 require 'rubygems'
 require 'rest-client'
 require 'chef/log'
-require 'chef/json'
+require 'chef/json_compat'
 
 # Bulk GET all documents in the given db, using the given page size.
 # Calls the required block for each page size, passing in an array of
@@ -48,7 +48,7 @@ def bulk_get_paged(db, page_size)
     # Pass :create_additions=>false so JSON parser does *not* expand
     # custom classes (such as Chef::Node, etc), and instead sticks only
     # to Array, Hash, String, etc.
-    paged_results = Chef::JSON.from_json(paged_results_str, :create_additions => false)
+    paged_results = Chef::JSONCompat.from_json(paged_results_str, :create_additions => false)
     paged_rows = paged_results['rows']
 
     if paged_rows.length > 0
@@ -115,7 +115,7 @@ def replicate_dbs(replication_specs, delete_source_dbs = false)
         doc_in_row
       end
 
-      RestClient.post("#{target_db}/_bulk_docs", Chef::JSON.to_json({"docs" => paged_rows}), :content_type => "application/json")
+      RestClient.post("#{target_db}/_bulk_docs", Chef::JSONCompat.to_json({"docs" => paged_rows}), :content_type => "application/json")
     end
 
     # Delete the source if asked to..

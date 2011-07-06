@@ -56,7 +56,7 @@ describe Chef::Knife::CookbookMetadataFromFile do
     end
 
     it "should generate json from the metadata" do
-      Chef::JSON.should_receive(:to_json_pretty).with(@md)
+      Chef::JSONCompat.should_receive(:to_json_pretty).with(@md)
       @knife.run
     end
 

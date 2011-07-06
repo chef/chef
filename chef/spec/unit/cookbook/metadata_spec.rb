@@ -177,7 +177,7 @@ describe Chef::Cookbook::Metadata do
     end
   end
 
-  describe "dependency specification" do
+  describe "describing dependencies" do
     dep_types = {
       :depends     => [ :dependencies, "foo::bar", "> 0.2" ],
       :recommends  => [ :recommendations, "foo::bar", ">= 0.2" ],
@@ -195,6 +195,42 @@ describe Chef::Cookbook::Metadata do
         it "should be get-able via #{check_with}" do
           @meta.send(dep, *dep_args)
           @meta.send(check_with).should == { dep_args[0] => dep_args[1] }
+        end
+      end
+    end
+
+
+    describe "in the obsoleted format" do
+      dep_types = {
+        :depends     => [ "foo::bar", "> 0.2", "< 1.0" ],
+        :recommends  => [ "foo::bar", ">= 0.2", "< 1.0" ],
+        :suggests    => [ "foo::bar", "> 0.2", "< 1.0" ],
+        :conflicts   => [ "foo::bar", "> 0.2", "< 1.0" ],
+        :provides    => [ "foo::bar", "> 0.2", "< 1.0" ],
+        :replaces    => [ "foo::bar", "> 0.2.1", "< 1.0" ],
+      }
+
+      dep_types.each do |dep, dep_args|
+        it "for #{dep} raises an informative error instead of vomiting on your shoes" do
+          lambda {@meta.send(dep, *dep_args)}.should raise_error(Chef::Exceptions::ObsoleteDependencySyntax)
+        end
+      end
+    end
+
+
+    describe "with obsolete operators" do
+      dep_types = {
+        :depends     => [ "foo::bar", ">> 0.2"],
+        :recommends  => [ "foo::bar", ">> 0.2"],
+        :suggests    => [ "foo::bar", ">> 0.2"],
+        :conflicts   => [ "foo::bar", ">> 0.2"],
+        :provides    => [ "foo::bar", ">> 0.2"],
+        :replaces    => [ "foo::bar", ">> 0.2.1"],
+      }
+
+      dep_types.each do |dep, dep_args|
+        it "for #{dep} raises an informative error instead of vomiting on your shoes" do
+          lambda {@meta.send(dep, *dep_args)}.should raise_error(Chef::Exceptions::InvalidVersionConstraint)
         end
       end
     end
@@ -477,14 +513,14 @@ describe Chef::Cookbook::Metadata do
         :display_name => "You have nothing" 
       @meta.version "1.2.3"
     end
- 
+
     describe "serialize" do
       before(:each) do
-        @serial = Chef::JSON.from_json(@meta.to_json)
+        @serial = Chef::JSONCompat.from_json(@meta.to_json)
       end
 
       it "should serialize to a json hash" do
-        Chef::JSON.from_json(@meta.to_json).should be_a_kind_of(Hash)
+        Chef::JSONCompat.from_json(@meta.to_json).should be_a_kind_of(Hash)
       end
 
       %w{
@@ -542,7 +578,48 @@ describe Chef::Cookbook::Metadata do
           @deserial.send(t.to_sym).should == @meta.send(t.to_sym)
         end
       end
+    end
 
+    describe "from_hash" do
+      before(:each) do
+        @hash = @meta.to_hash
+      end
+
+      [:dependencies,
+       :recommendations,
+       :suggestions,
+       :conflicting,
+       :replacing].each do |to_check|
+        it "should transform deprecated greater than syntax for :#{to_check.to_s}" do
+          @hash[to_check.to_s]["foo::bar"] = ">> 0.2"
+          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+          deserial.send(to_check)["foo::bar"].should == '> 0.2'
+        end
+
+        it "should transform deprecated less than syntax for :#{to_check.to_s}" do
+          @hash[to_check.to_s]["foo::bar"] = "<< 0.2"
+          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+          deserial.send(to_check)["foo::bar"].should == '< 0.2'
+        end
+
+        it "should ignore multiple dependency constraints for :#{to_check.to_s}" do
+          @hash[to_check.to_s]["foo::bar"] = [ ">= 1.0", "<= 5.2" ]
+          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+          deserial.send(to_check)["foo::bar"].should == []
+        end
+
+        it "should accept an empty array of dependency constraints for :#{to_check.to_s}" do
+          @hash[to_check.to_s]["foo::bar"] = []
+          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+          deserial.send(to_check)["foo::bar"].should == []
+        end
+
+        it "should accept single-element arrays of dependency constraints for :#{to_check.to_s}" do
+          @hash[to_check.to_s]["foo::bar"] = [ ">= 2.0" ]
+          deserial = Chef::Cookbook::Metadata.from_hash(@hash)
+          deserial.send(to_check)["foo::bar"].should == ">= 2.0"
+        end
+      end
     end
 
   end

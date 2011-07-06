@@ -17,12 +17,15 @@
 #
 
 require 'chef/knife'
-require 'chef/environment'
-require 'chef/json'
 
 class Chef
   class Knife
     class EnvironmentCreate < Knife
+
+      deps do
+        require 'chef/environment'
+        require 'chef/json_compat'
+      end
 
       banner "knife environment create ENVIRONMENT (options)"
 
@@ -36,7 +39,7 @@ class Chef
 
         if env_name.nil?
           show_usage
-          Chef::Log.fatal("You must specify an environment name")
+          ui.fatal("You must specify an environment name")
           exit 1
         end
 

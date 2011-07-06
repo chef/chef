@@ -1,0 +1,91 @@
+<div class="content environmentFormContainer">
+  <%= form(:action => form_url, :method => (method || :post), :id => form_id, :class => 'form') do -%>
+    <% unless form_for == 'edit' %>
+      <div class="group form">
+        <label class="label" for="environment_name">Name</label>
+        <% if !@environment.invalid_fields[:name].nil? && @environment.invalid_fields[:name].size != 0 %>
+          <span class="inline_error_message">The environment name contains illegal characters. The following characters are allowed: a-z, A-Z, 0-9, _, and -.</span>
+        <% end %>
+
+        <%= text_field :id => "environment_name", :name => "name", :class => "text_field", :value => params.has_key?(:name) ? h(params[:name]) : @environment.name %>
+        <span class="description">The name of the Environment</span>
+      </div>
+    <% end %>
+
+    <div class="group form">
+      <label class="label" for="environment_description">Description</label>
+      <%= text_area(params.has_key?(:description) ? h(params[:description]) : @environment.description, :name => "description", :class => "text_area", :id => "environment_description") %>
+      <span class="description">A description of this Environment</span>
+    </div>
+
+    <div class="group form cbVerPicker" id=<%=form_for%>>
+      <label class="label" for="cookbook_version_constraints">Cookbook Version Constraints</label>
+      <% if !@environment.invalid_fields[:cookbook_version].nil? && !@environment.invalid_fields[:cookbook_version].empty? %>
+        <span class="inline_error_message" id='error'>There was a problem in one of your constraints. Please enter version constraints in acceptable formats (e.g. 0.0.0). </span>
+      <% end %>
+      <table class="table" id="cbVerPickerTable">
+        <tbody>
+          <tr>
+            <th class = "first" id="CookbookVersionConstraints">Name</th>
+            <th class="operator" id="CookbookVersionConstraints">Operator</th>
+            <th class="version" id="CookbookVersionConstraints">Version</th>
+            <th class="last" id="CookbookVersionConstraints">&nbsp;</th>
+          </tr>
+          <tr id="cbVerAddRow">
+              <td>
+                <select size="1" name="cookbook_selector"
+                        id="cookbook_name_0000"
+                        onchange="jQuerySuggest('0000')"
+                        onfocus="clearCookbookError()">
+                  <option value=""></option>
+                  <% @cookbooks.each do |book| %>
+                  <option value="<%= book %>"><%= book %></option>
+                  <% end %>
+                </select>
+              </td>
+              <td>
+                <select size="1" name="cookbook_operator_selector"
+                        id="cookbook_operator_selector">
+                  <% constraint_operators.each do |op| %>
+                  <option value="<%= op %>"><%= op %></option>
+                  <% end %>
+                </select>
+              </td>
+              <td>
+                <input id="cookbook_version_0000"
+                       class="text" name="cookbook_version_selector"
+                       onfocus="clearVersionBox(this, '0000')"
+                       onblur="validateVersionBoxValue(this, '0000')"
+                       value="0.0.0">
+              </td>
+              <td>
+                <a href="javascript:void(0)"
+                   onclick="addTableRow0000()">Add</a>
+              </td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="group form attrEditor">
+      <label class="label">Environment Default and Override Attributes</label>
+      <%= partial 'layout/jsonedit', :json => { :defaults => @environment.default_attributes, :overrides => @environment.override_attributes }.to_json%>
+      <span class="description">
+        A JSON hash for attributes of this environment. These attributes will be applied according to the attribute precedence rules.
+      </span>
+    </div>
+
+    <div class="group">
+      <div class="actions-bar">
+        <%= submit(submit_name, :id => submit_id, :class => 'button') -%>
+      </div>
+    </div>
+  <% end =%>
+</div>
+
+<script type='text/javascript'>
+  function cookbook_versions() {
+    return <%= cookbook_version_constraints.to_json %>;
+  }
+</script>
+<script type='text/javascript' charset="utf-8" src="/javascripts/cookbook_constraint_ctrl.js"></script>

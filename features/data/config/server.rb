@@ -1,5 +1,8 @@
+require 'tmpdir'
+
 supportdir = File.expand_path(File.join(File.dirname(__FILE__), ".."))
 tmpdir = File.expand_path(File.join(File.dirname(__FILE__), "..", "tmp"))
+solr_tmp_dir = '/tmp/chef_solr_for_features'
 
 log_level              :debug
 log_location           STDOUT
@@ -32,13 +35,13 @@ client_key       File.join(systmpdir, "client.pem")
 web_ui_client_name "chef-webui"
 web_ui_key File.join(systmpdir, "webui.pem")
 
-solr_jetty_path File.join(supportdir, "solr", "jetty")
-solr_data_path File.join(supportdir, "solr", "data")
-solr_home_path File.join(supportdir, "solr", "home")
+solr_jetty_path File.join(solr_tmp_dir, "solr-jetty")
+solr_data_path File.join(solr_tmp_dir, "solr", "data")
+solr_home_path File.join(solr_tmp_dir, "solr")
 solr_heap_size "250M"
 
 amqp_host '0.0.0.0'
-amqp_port '5672'
+amqp_port 5672
 amqp_user 'chef'
 amqp_pass 'testing'
 amqp_vhost '/chef'

@@ -36,6 +36,22 @@ class Chef
         )
       end
 
+      def python_binary(arg=nil)
+        set_or_return(
+          :python_install_binary,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def module_name(arg=nil)
+        set_or_return(
+          :module_name,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
     end
   end
 end

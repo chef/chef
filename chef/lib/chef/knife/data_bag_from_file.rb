@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Seth Falcon (<seth@opscode.com>)
 # Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -17,23 +18,69 @@
 #
 
 require 'chef/knife'
-require 'chef/data_bag'
-require 'chef/data_bag_item'
 
 class Chef
   class Knife
     class DataBagFromFile < Knife
 
+      deps do
+        require 'chef/data_bag'
+        require 'chef/data_bag_item'
+        require 'chef/knife/core/object_loader'
+        require 'chef/json_compat'
+        require 'chef/encrypted_data_bag_item'
+      end
+
       banner "knife data bag from file BAG FILE (options)"
       category "data bag"
 
-      def run 
-        updated = load_from_file(Chef::DataBagItem, @name_args[1], @name_args[0])
+      option :secret,
+      :short => "-s SECRET",
+      :long  => "--secret ",
+      :description => "The secret key to use to encrypt data bag item values"
+
+      option :secret_file,
+      :long => "--secret-file SECRET_FILE",
+      :description => "A file containing the secret key to use to encrypt data bag item values"
+
+      def read_secret
+        if config[:secret]
+          config[:secret]
+        else
+          Chef::EncryptedDataBagItem.load_secret(config[:secret_file])
+        end
+      end
+
+      def use_encryption
+        if config[:secret] && config[:secret_file]
+          stdout.puts "please specify only one of --secret, --secret-file"
+          exit(1)
+        end
+        config[:secret] || config[:secret_file]
+      end
+
+      def loader
+        @loader ||= Knife::Core::ObjectLoader.new(DataBagItem, ui)
+      end
+
+      def run
+        if @name_args.size != 2
+          stdout.puts opt_parser
+          exit(1)
+        end
+        @data_bag, @item_path = @name_args[0], @name_args[1]
+        item = loader.load_from("data_bags", @data_bag, @item_path)
+        item = if use_encryption
+                 secret = read_secret
+                 Chef::EncryptedDataBagItem.encrypt_data_bag_item(item, secret)
+               else
+                 item
+               end
         dbag = Chef::DataBagItem.new
         dbag.data_bag(@name_args[0])
-        dbag.raw_data = updated
+        dbag.raw_data = item
         dbag.save
-        Chef::Log.info("Updated data_bag_item[#{@name_args[1]}]")
+        ui.info("Updated data_bag_item[#{dbag.data_bag}::#{dbag.id}]")
       end
     end
   end

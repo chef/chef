@@ -1,0 +1,82 @@
+chef-expander(8) -- fetches messages from RabbitMQ, processes, and loads into chef-solr
+========================================
+
+## SYNOPSIS
+
+__chef-expander__ _(options)_
+
+  * `-c`, `--config CONFIG_FILE`:
+    a configuration file to use
+  * `-i`, `--index INDEX`:
+    the slot this node will occupy in the ring
+  * `-n`, `--node-count NUMBER`:
+    the number of nodes in the ring
+  * `-l`, `--log-level LOG_LEVEL`:
+    set the log level
+  * `-L`, `--logfile LOG_LOCATION`:
+    Logfile to use
+  * `-d`, `--daemonize`:
+    fork into the background
+  * `-P`, `--pid PIDFILE`:
+    PID file
+  * `-h`, `--help`:
+    show help message
+  * `-v`, `--version`:
+    show the version and exit
+
+## DESCRIPTION
+
+Chef Expander fetches messages from RabbitMQ, processes them into the
+correct format to be loaded into Solr and loads them into Solr.
+
+__Running Chef Expander__
+
+Chef Expander is designed for clustered operation, though small
+installations will only need one worker process. To run Chef
+Expander with one worker process, run chef-expander -n 1.
+You will then have a master and worker process, which looks like
+this in ps:
+
+    your-shell> ps aux|grep expander
+    you   52110   0.1  0.7  2515476  62748 s003  S+    3:49PM   0:00.80 chef-expander worker #1 (vnodes 0-1023)
+    you   52108   0.1  0.5  2492880  41696 s003  S+    3:49PM   0:00.91 ruby bin/chef-expander -n 1
+
+Workers are single threaded and therefore cannot use more than 100%
+of a single CPU. If you find that your queues are getting backlogged,
+increase the number of workers
+
+__Design__
+
+Chef Expander uses 1024 queues (called vnodes in some places) to allow
+you to scale the number of Chef Expander workers to meet the needs of
+your infrastructure. When objects are saved in the API server, they are
+added to queues based on their database IDs. These queues can be assigned
+to different Chef Expander workers to distribute the load of processing
+the index updates.
+
+__Chef Expander Operation and Troubleshooting__
+
+Chef Expander includes chef-expanderctl, a management program that allows
+you to get status information or change the logging verbosity (without
+restarting).
+
+See __chef-expanderctl__(8) for details.
+
+## SEE ALSO
+
+__chef-expanderctl__(8)
+__chef-solr__(8)
+
+Full documentation for Chef and chef-server is located on the Chef
+wiki, http://wiki.opscode.com/display/chef/Home.
+
+## AUTHOR
+
+Chef was written by Adam Jacob <adam@ospcode.com> of Opscode
+(http://www.opscode.com),  with contributions from the community. This
+manual page was created by Nuo Yan <nuo@opscode.com>. Permission is
+granted to copy, distribute and / or modify this document under the
+terms of the Apache 2.0 License.
+
+On Debian systems, the complete text of the Apache 2.0 License  can  be
+found in /usr/share/common-licenses/Apache-2.0.

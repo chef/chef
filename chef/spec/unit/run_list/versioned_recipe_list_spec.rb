@@ -70,7 +70,7 @@ describe Chef::RunList::VersionedRecipeList do
 
     it "should not allow multiple versions of the same recipe" do
       @list.add_recipe "rails", "1.0.0"
-      lambda {@list.add_recipe "rails", "0.1.0"}.should raise_error Chef::Exceptions::RecipeVersionConflict
+      lambda {@list.add_recipe "rails", "0.1.0"}.should raise_error Chef::Exceptions::CookbookVersionConflict
     end
   end
 
@@ -93,6 +93,30 @@ describe Chef::RunList::VersionedRecipeList do
       with_versions = @list.with_versions
       @list.each_with_index do |item, index|
         with_versions[index][:name].should == item
+      end
+    end
+  end
+
+  describe "with_version_constraints" do
+    before(:each) do
+      @recipes = [
+                  {:name => "apt", :version => "~> 1.2.0"},
+                  {:name => "god", :version => nil},
+                  {:name => "apache2", :version => "0.0.1"}
+                 ]
+      @list = Chef::RunList::VersionedRecipeList.new
+      @recipes.each {|i| @list.add_recipe i[:name], i[:version]}
+      @constraints = @recipes.map do |x|
+        { :name => x[:name],
+          :version_constraint => Chef::VersionConstraint.new(x[:version])
+        }
+      end
+    end
+
+    it "should return an array of hashes with :name and :version_constraint" do
+      @list.with_version_constraints.each do |x|
+        x.should have_key :name
+        x[:version_constraint].should_not be nil
       end
     end
   end

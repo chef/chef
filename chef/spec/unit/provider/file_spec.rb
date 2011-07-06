@@ -25,7 +25,7 @@ describe Chef::Provider::File do
     @node = Chef::Node.new
     @node.name "latte"
     @run_context = Chef::RunContext.new(@node, {})
-    
+
     @resource = Chef::Resource::File.new("seattle")
     @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt")))
     @provider = Chef::Provider::File.new(@resource, @run_context)
@@ -337,6 +337,16 @@ describe Chef::Provider::File do
     Time.stub!(:now).and_return(Time.at(1272147455).getgm)
     FileUtils.should_receive(:cp).with("/tmp/s-20080705111233", "/some_prefix/tmp/s-20080705111233.chef-20100424221735", {:preserve => true}).and_return(true)
     @provider.backup
+  end
+
+  describe "when the enclosing directory does not exist" do
+    before do
+      @resource.path("/tmp/no-such-path/file.txt")
+    end
+
+    it "raises a specific error describing the problem" do
+      lambda {@provider.action_create}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+    end
   end
 
   describe "when creating a file if it's missing" do

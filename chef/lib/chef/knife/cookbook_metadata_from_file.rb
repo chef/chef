@@ -25,6 +25,10 @@ class Chef
   class Knife
     class CookbookMetadataFromFile < Knife
 
+      deps do
+        require 'chef/cookbook/metadata'
+      end
+
       banner "knife cookbook metadata from FILE (options)"
 
       def run

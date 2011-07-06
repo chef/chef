@@ -55,10 +55,8 @@ Y6S6MeZ69Rp89ma4ttMZ+kwi1+XyHqC/dlcVRW42Zl5Dc7BALRlJjQ==
 describe Chef::REST do
   before(:each) do
     @log_stringio = StringIO.new
-    @logger = Logger.new(@log_stringio)
-    @original_chef_logger = Chef::Log.logger
-    Chef::Log.logger = @logger
-    
+    Chef::Log.init(@log_stringio)
+
     Chef::REST::CookieJar.stub!(:instance).and_return({})
     @base_url   = "http://chef.example.com:4000"
     @monkey_uri = URI.parse("http://chef.example.com:4000/monkey")
@@ -66,10 +64,7 @@ describe Chef::REST do
 
     Chef::REST::CookieJar.instance.clear
   end
-  
-  after do
-    Chef::Log.logger = @original_chef_logger
-  end
+
 
   describe "calling an HTTP verb on a path or absolute URL" do
     it "adds a relative URL to the base url it was initialized with" do
@@ -204,7 +199,7 @@ describe Chef::REST do
 
       it "should inflate the body as to an object if JSON is returned" do
         @http_response.add_field("content-type", "application/json")
-        Chef::JSON.should_receive(:from_json).with("ninja").and_return("ohai2u_success")
+        Chef::JSONCompat.should_receive(:from_json).with("ninja").and_return("ohai2u_success")
         @rest.run_request(:GET, @url, {}).should == "ohai2u_success"
       end
 
@@ -212,7 +207,7 @@ describe Chef::REST do
         http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_response.add_field("location", @url.path)
         http_response.stub!(:read_body)
-        
+
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         lambda { @rest.run_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
       end
@@ -231,14 +226,16 @@ describe Chef::REST do
         http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
         http_response.stub!(:read_body)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+        @rest.stub!(:sleep)
         lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
-        @log_stringio.string.should match(Regexp.escape('WARN -- : HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
+        @log_stringio.string.should match(Regexp.escape('WARN: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
       end
 
       it "should raise an exception on an unsuccessful request" do
         @http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
         http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
         http_response.stub!(:read_body)
+        @rest.stub!(:sleep)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
       end
@@ -248,6 +245,11 @@ describe Chef::REST do
           @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
           Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
           Tempfile.stub!(:open).and_return(@tempfile)
+
+          @request_mock = {}
+          Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+
+          @http_response_mock = mock("Net::HTTP Response mock")
         end
 
         after do
@@ -297,11 +299,44 @@ describe Chef::REST do
     end
 
     describe "as JSON API requests" do
+      before do
+        @request_mock = {}
+        Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+      end
+
       it "should always include the X-Chef-Version header" do
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar",
           { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
         ).and_return(@request_mock)
         @rest.api_request(:GET, @url, {})
+      end
+
+      it "sets the user agent to chef-client" do
+        # must reset to default b/c knife changes the UA
+        Chef::REST::RESTRequest.user_agent = Chef::REST::RESTRequest::DEFAULT_UA
+        @rest.api_request(:GET, @url, {})
+        @request_mock['User-Agent'].should match /^Chef Client\/#{Chef::VERSION}/
+      end
+
+      context "when configured with custom http headers" do
+        before(:each) do
+          @custom_headers = {
+            'X-Custom-ChefSecret' => 'sharpknives',
+            'X-Custom-RequestPriority' => 'extremely low'
+          }
+          Chef::Config[:custom_http_headers] = @custom_headers
+        end
+
+        after(:each) do
+          Chef::Config[:custom_http_headers] = nil
+        end
+
+        it "should set them on the http request" do
+          url_string = an_instance_of(String)
+          header_hash = hash_including(@custom_headers)
+          Net::HTTP::Get.should_receive(:new).with(url_string, header_hash)
+          @rest.api_request(:GET, @url, {})
+        end
       end
 
       it "should set the cookie for this request if one exists for the given host:port" do
@@ -363,9 +398,9 @@ describe Chef::REST do
         http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_response.add_field("location", @url.path)
         http_response.stub!(:read_body)
-        
+
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        
+
         lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
       end
 
@@ -374,7 +409,7 @@ describe Chef::REST do
         http_response.add_field("location", @url.path)
         http_response.stub!(:read_body)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        
+
         lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
       end
 
@@ -383,16 +418,18 @@ describe Chef::REST do
         http_response.add_field("content-type", "application/json")
         http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
         http_response.stub!(:read_body)
+        @rest.stub!(:sleep)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        
+
         lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
-        @log_stringio.string.should match(Regexp.escape('WARN -- : HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
+        @log_stringio.string.should match(Regexp.escape('WARN: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
       end
 
       it "should raise an exception on an unsuccessful request" do
         http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
         http_response.stub!(:body)
         http_response.stub!(:read_body)
+        @rest.stub!(:sleep)
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
         lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
       end
@@ -402,6 +439,9 @@ describe Chef::REST do
       before do
         @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
         Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
+        @request_mock = {}
+        Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+
         @http_response = Net::HTTPSuccess.new("1.1",200, "it-works")
         @http_response.stub!(:read_body)
         @http_client.stub!(:request).and_yield(@http_response).and_return(@http_response)
@@ -478,11 +518,11 @@ describe Chef::REST do
         tempfile = mock("die", :path => "/tmp/ragefist", :close => true)
         tempfile.should_receive(:close!).at_least(2).times
         Tempfile.stub!(:new).with("chef-rest").and_return(tempfile)
-        
+
         http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_response.add_field("location", @url.path)
         http_response.stub!(:read_body)
-        
+
         @http_client.stub!(:request).and_yield(http_response).and_yield(@http_response).and_return(http_response, @http_response)
         @rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
       end
@@ -491,7 +531,7 @@ describe Chef::REST do
         http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_response.add_field("location","/that-thing-is-here-now")
         http_response.stub!(:read_body)
-        
+
         block_called = false
         @http_client.stub!(:request).and_yield(@http_response).and_return(http_response, @http_response)
         @rest.fetch("cookbooks/a_cookbook") do |tmpfile|

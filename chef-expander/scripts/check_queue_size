@@ -1,0 +1,93 @@
+#!/usr/bin/env ruby
+#--
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: Chris Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2010-2011 Opscode, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+###############################################################################
+# check_queue_size
+# A Nagios Check for Chef Server Queue Backlogs
+###############################################################################
+
+require 'rubygems'
+
+Dir.chdir(File.join(File.expand_path(File.dirname(__FILE__)), "..")) do
+
+  require 'bunny'
+
+  $:.unshift(File.expand_path('./lib'))
+  require 'chef/expander'
+  require 'chef/expander/version'
+  require 'chef/expander/configuration'
+
+  include Chef
+
+  Expander.init_config([])
+
+  config = {:warn => 100, :crit => 200}
+
+  option_parser = OptionParser.new do |o|
+    o.banner = "Usage: check_queue_size [options]"
+
+    o.on('-w', '--warn WARN_THRESHOLD', 'number of messages to trigger a warning') do |i|
+      config[:warn] = i.to_i
+    end
+
+    o.on('-c', '--critical CRITICAL_THRESHOLD', 'the number of messages to trigger a critical') do |n|
+      config[:crit] = n.to_i
+    end
+
+    o.on_tail('-h', '--help', 'show this message') do
+      puts "chef-expander #{Expander.version}"
+      puts "queue size monitor"
+      puts ''
+      puts o
+      exit 127
+    end
+  end
+
+  option_parser.parse!(ARGV.dup)
+
+  message_counts = []
+
+  begin
+    amqp_client = Bunny.new(Expander.config.amqp_config)
+    amqp_client.start
+
+    0.upto(Expander::VNODES - 1) do |vnode|
+      q = amqp_client.queue("vnode-#{vnode}", :durable => true)
+      message_counts << q.status[:message_count]
+    end
+    total_messages = message_counts.inject(:+)
+
+    if total_messages >= config[:crit]
+      puts "Chef Expander Queue Size CRITICAL - messages: #{total_messages}"
+      exit(2)
+    elsif total_messages >= config[:warn]
+      puts "Chef Expander Queue Size WARNING - messages: #{total_messages}"
+      exit(1)
+    else
+      puts "Chef Expander Queue Size OK - messages: #{total_messages}"
+      exit(0)
+    end
+
+  ensure
+    amqp_client.stop if defined?(amqp_client) && amqp_client && amqp_client.connected?
+  end
+  
+end

@@ -99,7 +99,6 @@ describe Chef::Node do
     it "should not accept name doesn't match /^[\-[:alnum:]_:.]+$/" do
       lambda { @node.name("space in it")}.should raise_error(Chef::Exceptions::ValidationFailed)
     end
-
   end
 
   describe "chef_environment" do
@@ -124,8 +123,8 @@ describe Chef::Node do
 
   describe "attributes" do
     it "should be loaded from the node's cookbooks" do
-      Chef::Config.cookbook_path = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
-      @node.cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+      @cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
+      @node.cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
       @node.load_attributes
       @node.ldap_server.should eql("ops1prod")
       @node.ldap_basedn.should eql("dc=hjksolutions,dc=com")
@@ -279,13 +278,13 @@ describe Chef::Node do
     it "should overwrites the run list with the run list it consumes" do
       @node.consume_run_list "recipes" => [ "one", "two" ]
       @node.consume_run_list "recipes" => [ "three" ]
-      @node.recipes.should == [ "three" ]
+      @node.run_list.should == [ "three" ]
     end
 
     it "should not add duplicate recipes from the json attributes" do
-      @node.recipes << "one"
+      @node.run_list << "one"
       @node.consume_run_list "recipes" => [ "one", "two", "three" ]
-      @node.recipes.should  == [ "one", "two", "three" ]
+      @node.run_list.should  == [ "one", "two", "three" ]
     end
 
     it "doesn't change the run list if no run_list is specified in the json" do
@@ -337,15 +336,6 @@ describe Chef::Node do
       @ohai_data = {:platform => 'foobuntu', :platform_version => '23.42'}
     end
 
-    it "clears the default and override attributes" do
-      @node.default_attrs["foo"] = "bar"
-      @node.override_attrs["baz"] = "qux"
-      @node.consume_external_attrs(@ohai_data, {})
-      @node.reset_defaults_and_overrides
-      @node.default_attrs.should be_empty
-      @node.override_attrs.should be_empty
-    end
-
     it "sets its platform according to platform detection" do
       @node.consume_external_attrs(@ohai_data, {})
       @node.automatic_attrs[:platform].should == 'foobuntu'
@@ -358,7 +348,7 @@ describe Chef::Node do
     end
 
     it "saves non-runlist json attrs for later" do
-      expansion = Chef::RunList::RunListExpansion.new([])
+      expansion = Chef::RunList::RunListExpansion.new('_default', [])
       @node.run_list.stub!(:expand).and_return(expansion)
       @node.consume_external_attrs(@ohai_data, {"foo" => "bar"})
       @node.expand!
@@ -369,7 +359,7 @@ describe Chef::Node do
 
   describe "when expanding its run list and merging attributes" do
     before do
-      @expansion = Chef::RunList::RunListExpansion.new([])
+      @expansion = Chef::RunList::RunListExpansion.new("_default", [])
       @node.run_list.stub!(:expand).and_return(@expansion)
     end
 
@@ -555,7 +545,7 @@ describe Chef::Node do
   describe "json" do
     it "should serialize itself as json" do
       @node.find_file("test.example.com")
-      json = Chef::JSON.to_json(@node)
+      json = Chef::JSONCompat.to_json(@node)
       json.should =~ /json_class/
       json.should =~ /name/
       json.should =~ /chef_environment/
@@ -567,8 +557,8 @@ describe Chef::Node do
 
     it "should deserialize itself from json" do
       @node.find_file("test.example.com")
-      json = Chef::JSON.to_json(@node)
-      serialized_node = Chef::JSON.from_json(json)
+      json = Chef::JSONCompat.to_json(@node)
+      serialized_node = Chef::JSONCompat.from_json(json)
       serialized_node.should be_a_kind_of(Chef::Node)
       serialized_node.name.should eql(@node.name)
       serialized_node.chef_environment.should eql(@node.chef_environment)

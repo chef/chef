@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' value='text/html;charset=utf8'>
+  <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
+  <title>knife-environment(1) - Define cookbook policies for the environments in your infrastructure</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+  <style type='text/css' media='all'>
+  /* style: toc */
+  .man-navigation {display:block !important;position:fixed;top:0;left:113ex;height:100%;width:100%;padding:48px 0 0 0;border-left:1px solid #dbdbdb;background:#eee}
+  .man-navigation a,.man-navigation a:hover,.man-navigation a:link,.man-navigation a:visited {display:block;margin:0;padding:5px 2px 5px 30px;color:#999;text-decoration:none}
+  .man-navigation a:hover {color:#111;text-decoration:underline}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#SUBCOMMANDS">SUBCOMMANDS</a>
+    <a href="#CREATE">CREATE</a>
+    <a href="#DELETE">DELETE</a>
+    <a href="#EDIT">EDIT</a>
+    <a href="#FROM-FILE">FROM FILE</a>
+    <a href="#LIST">LIST</a>
+    <a href="#SHOW">SHOW</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#SYNTAX">SYNTAX</a>
+    <a href="#FORMAT">FORMAT</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+    <a href="#AUTHOR">AUTHOR</a>
+    <a href="#DOCUMENTATION">DOCUMENTATION</a>
+    <a href="#CHEF">CHEF</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>knife-environment(1)</li>
+    <li class='tc'>Chef Manual</li>
+    <li class='tr'>knife-environment(1)</li>
+  </ol>
+
+  <h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>knife-environment</code> - <span class="man-whatis">Define cookbook policies for the environments in your infrastructure</span>
+</p>
+
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
+<p><strong>knife</strong> <strong>environment</strong> <em>sub-command</em> <em>(options)</em></p>
+
+<h2 id="SUBCOMMANDS">SUBCOMMANDS</h2>
+
+<p>Environment subcommands follow a basic create, read, update, delete
+(CRUD) pattern. The following subcommands are available:</p>
+
+<h2 id="CREATE">CREATE</h2>
+
+<p><strong>knife environment create</strong> <em>environment</em> <em>(options)</em></p>
+
+<dl>
+<dt><code>-d</code>, <code>--description DESCRIPTION</code></dt><dd>The value of the description field.</dd>
+</dl>
+
+
+<p>Create a new environment object on the Chef Server. The envrionment will
+be opened in the text editor for editing prior to creation if the -n
+option is not present.</p>
+
+<h2 id="DELETE">DELETE</h2>
+
+<p><strong>knife environment delete</strong> <em>environment</em> <em>(options)</em></p>
+
+<p>Destroy an environment on the Chef Server. A prompt for confirmation
+will be displayed if the -y options is not given.</p>
+
+<h2 id="EDIT">EDIT</h2>
+
+<p><strong>knife environment edit</strong> <em>environment</em> <em>(options)</em></p>
+
+<p>Fetch <em>environment</em> and display it in the text editor for editing. The
+environment will be saved to the Chef Server when the editing session
+exits.</p>
+
+<h2 id="FROM-FILE">FROM FILE</h2>
+
+<p><strong>knife environment from file</strong> <em>file</em> <em>(options)</em></p>
+
+<p>Create or update an environment from the JSON or Ruby format <em>file</em>. See
+<strong>format</strong> for the proper format of this file.</p>
+
+<h2 id="LIST">LIST</h2>
+
+<p><strong>knife environment list</strong> <em>(options)</em>
+  * <code>-w</code>, <code>--with-uri</code>:</p>
+
+<pre><code>Show the resource URI for each environment
+</code></pre>
+
+<h2 id="SHOW">SHOW</h2>
+
+<p><strong>knife environment show</strong> <em>environment</em> <em>(options)</em></p>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p>Environments provide a means to apply policies to hosts in your
+infrastructure based on business function. For example, you may have a
+separate copy of your infrastructure called "dev" that runs the latest
+version of your application and should use the newest versions of your
+cookbooks when configuring systems, and a production instance of your
+infrastructure where you wish to update code and cookbooks in a more
+controlled fashion. In Chef, this function is implemented with
+<em>environments</em>.</p>
+
+<p>Environments contain two major components: a set of cookbook version
+constraints and environment attributes.</p>
+
+<h2 id="SYNTAX">SYNTAX</h2>
+
+<p>A cookbook version constraint is comprised of a <em>cookbook name</em> and a
+<em>version constraint</em>. The <em>cookbook name</em> is the name of a cookbook in
+your system, and the <em>version constraint</em> is a String describing the
+version(s) of that cookbook allowed in the environment.  Only one
+<em>version constraint</em> is supported for a given <em>cookbook name</em>.</p>
+
+<p>The exact syntax used to define a cookbook version constraint varies
+depending on whether you use the JSON format or the Ruby format. In the
+JSON format, the cookbook version constraints for an environment are
+represented as a single JSON object, like this:</p>
+
+<pre><code>{"apache2": "&gt;= 1.5.0"}
+</code></pre>
+
+<p>In the Ruby format, the cookbook version contraints for an environment
+are represented as a Ruby Hash, like this:</p>
+
+<pre><code>{"apache2" =&gt; "&gt;= 1.5.0"}
+</code></pre>
+
+<p>A <em>version number</em> is a String comprised of two or three digits
+separated by a dot (.) character, or in other words, strings of the form
+"major.minor" or "major.minor.patch". "1.2" and "1.2.3" are examples of
+valid version numbers. Version numbers containing more than three digits
+or alphabetic characters are not supported.</p>
+
+<p>A <em>version constraint</em> String is composed of an <em>operator</em> and a
+<em>version number</em>. The following operators are available:</p>
+
+<dl>
+<dt><code>= VERSION</code></dt><dd>Equality. Only the exact version specified may be used.</dd>
+<dt><code>&gt; VERSION</code></dt><dd>Greater than. Only versions greater than <code>VERSION</code> may be used.</dd>
+<dt><code>&gt;= VERSION</code></dt><dd>Greater than or equal to. Only versions equal to VERSION or greater
+may be used.</dd>
+<dt><code>&lt; VERSION</code></dt><dd>Less than. Only versions less than VERSION may be used.</dd>
+<dt><code>&lt;= VERSION</code></dt><dd>Less than or equal to. Only versions lesser or equal to VERSION may
+be used.</dd>
+<dt><code>~&gt; VERSION</code></dt><dd>Pessimistic greater than. Depending on the number of components in
+the given VERSION, the constraint will be optimistic about future
+minor or patch revisions only. For example, <code>~&gt; 1.1</code> will match any
+version less than <code>2.0</code> and greater than or equal to <code>1.1.0</code>,
+whereas <code>~&gt; 2.0.5</code> will match any version less than <code>2.1.0</code> and
+greater than or equal to <code>2.0.5</code>.</dd>
+</dl>
+
+
+<h2 id="FORMAT">FORMAT</h2>
+
+<p>The JSON format of an envioronment is as follows:</p>
+
+<pre><code>{
+  "name": "dev",
+  "description": "The development environment",
+  "cookbook_versions": {
+    "couchdb": "= 11.0.0"
+  },
+  "json_class": "Chef::Environment",
+  "chef_type": "environment",
+  "default_attributes": {
+    "apache2": { "listen_ports": [ "80", "443" ] }
+  },
+  "override_attributes": {
+    "aws_s3_bucket": "production"
+  }
+}
+</code></pre>
+
+<p>The Ruby format of an environment is as follows:</p>
+
+<pre><code>name "dev"
+description "The development environment"
+cookbook_versions  "couchdb" =&gt; "= 11.0.0"
+default_attributes "apache2" =&gt; { "listen_ports" =&gt; [ "80", "443" ] }
+override_attributes "aws_s3_bucket" =&gt; "production"
+</code></pre>
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<p>   <strong><span class="man-ref">knife-node<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-cookbook<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-role<span class="s">(1)</span></span></strong>
+  <a href="http://wiki.opscode.com/display/chef/Environments" data-bare-link="true">http://wiki.opscode.com/display/chef/Environments</a>
+  <a href="http://wiki.opscode.com/display/chef/Version+Constraints" data-bare-link="true">http://wiki.opscode.com/display/chef/Version+Constraints</a></p>
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+<p>   Chef was written by Adam Jacob <a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#58;&#x61;&#x64;&#x61;&#109;&#64;&#111;&#112;&#x73;&#99;&#111;&#x64;&#101;&#46;&#x63;&#111;&#109;" data-bare-link="true">&#x61;&#100;&#97;&#x6d;&#x40;&#x6f;&#x70;&#115;&#x63;&#x6f;&#x64;&#x65;&#46;&#99;&#x6f;&#x6d;</a> with many contributions from the community.</p>
+
+<h2 id="DOCUMENTATION">DOCUMENTATION</h2>
+
+<p>   This manual page was written by Daniel DeLeo <a href="&#x6d;&#97;&#105;&#108;&#116;&#111;&#x3a;&#100;&#97;&#110;&#x40;&#x6f;&#112;&#x73;&#x63;&#x6f;&#x64;&#x65;&#46;&#x63;&#111;&#x6d;" data-bare-link="true">&#x64;&#x61;&#110;&#64;&#111;&#x70;&#x73;&#99;&#111;&#100;&#101;&#46;&#99;&#x6f;&#x6d;</a>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
+
+<h2 id="CHEF">CHEF</h2>
+
+<p>   Knife is distributed with Chef. <a href="http://wiki.opscode.com/display/chef/Home" data-bare-link="true">http://wiki.opscode.com/display/chef/Home</a></p>
+
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'>Chef 0.10.0</li>
+    <li class='tc'>April 2011</li>
+    <li class='tr'>knife-environment(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>
