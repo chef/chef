@@ -36,7 +36,7 @@ class Chef
        :short => "-D",
        :long => "--no-dependencies",
        :boolean => true,
-       :description => "Grab dependencies automatically"
+       :description => "Do not install dependencies automatically"
 
       option :cookbook_path,
         :short => "-o PATH:PATH",
