@@ -18,12 +18,15 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
 require "#{CHEF_SPEC_DATA}/knife_subcommand/test_yourself"
-class NoopKnifeCommand < Chef::Knife
-  def run
-  end
-end
 
 describe Chef::Application::Knife do
+  before(:all) do
+    class NoopKnifeCommand < Chef::Knife
+      def run
+      end
+    end
+  end
+
   before(:each) do
     @knife = Chef::Application::Knife.new
     @knife.stub!(:puts)
