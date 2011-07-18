@@ -134,7 +134,7 @@ class Chef
           RestClient::Resource.new(url, :headers=>headers, :timeout=>1800, :open_timeout=>1800).put(file_contents)
           checksums_to_upload.delete(checksum)
         rescue RestClient::Exception => e
-          ui.error("Failed to upload #@cookbook : #{e.message}\n#{e.response.body}")
+          Chef::Log.error("Failed to upload #@cookbook : #{e.message}\n#{e.response.body}")
           raise
         end
       end
