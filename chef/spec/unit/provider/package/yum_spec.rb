@@ -71,21 +71,6 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource.should eql(@provider.current_resource)
     end
 
-    it "should raise an error if a candidate version can't be found" do
-      @yum_cache = mock(
-        'Chef::Provider::Yum::YumCache',
-        :reload_installed => true,
-        :reset => true,
-        :installed_version => "1.2.4-11.18.el5",
-        :candidate_version => nil,
-        :package_available? => true, 
-        :version_available? => true
-      )
-      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
-    end
-
     describe "when arch in package_name" do
       it "should set the arch if no existing package_name is found and new_package_name+new_arch is available" do
         @new_resource = Chef::Resource::YumPackage.new('testing.noarch')
@@ -141,14 +126,14 @@ describe Chef::Provider::Package::Yum do
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         # annoying side effect of the fun stub'ing above
-        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
+        @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3"
         @provider.new_resource.arch.should == nil 
         @provider.arch.should == nil 
 
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3.more')
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
+        @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3.more"
         @provider.new_resource.arch.should == nil 
         @provider.arch.should == nil 
@@ -170,14 +155,14 @@ describe Chef::Provider::Package::Yum do
         @yum_cache.stub!(:package_available?).and_return(true)
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
+        @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3"
         @provider.new_resource.arch.should == nil 
         @provider.arch.should == nil 
 
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3.more')
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
+        @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3.more"
         @provider.new_resource.arch.should == nil 
         @provider.arch.should == nil 
@@ -274,6 +259,28 @@ describe Chef::Provider::Package::Yum do
       @yum_cache.should_receive(:packages_from_require).twice.and_return([])
       @yum_cache.should_receive(:reload_provides)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider.load_current_resource
+    end
+
+    it "should search provides if no package is available and not load the complete set if action is :remove or :purge" do
+      @yum_cache = mock(
+        'Chef::Provider::Yum::YumCache',
+        :reload_installed => true,
+        :reset => true,
+        :installed_version => "1.2.4-11.18.el5",
+        :candidate_version => "1.2.4-11.18.el5",
+        :package_available? => false, 
+        :version_available? => true
+      )
+      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @yum_cache.should_receive(:packages_from_require).once.and_return([])
+      @yum_cache.should_not_receive(:reload_provides)
+      @new_resource.action(:remove)
+      @provider.load_current_resource
+      @yum_cache.should_receive(:packages_from_require).once.and_return([])
+      @yum_cache.should_not_receive(:reload_provides)
+      @new_resource.action(:purge)
       @provider.load_current_resource
     end
     

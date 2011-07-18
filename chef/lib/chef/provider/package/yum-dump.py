@@ -39,41 +39,49 @@ import errno
 
 from yum import Errors
 from optparse import OptionParser
+from distutils import version
 
 YUM_PID_FILE='/var/run/yum.pid'
 
 # Seconds to wait for exclusive access to yum
 LOCK_TIMEOUT = 10
 
-if re.search(r"^3\.", yum.__version__):
-  YUM_VER = 3
-elif re.search(r"^2\.", yum.__version__):
-  YUM_VER = 2
-else:
+YUM_VER = version.StrictVersion(yum.__version__)
+YUM_MAJOR = YUM_VER.version[0]
+
+if YUM_MAJOR > 3 or YUM_MAJOR < 2:
   print >> sys.stderr, "yum-dump Error: Can't match supported yum version" \
     " (%s)" % yum.__version__
   sys.exit(1)
 
+# Required for Provides output
+if YUM_MAJOR == 2:
+  import rpm
+  import rpmUtils.miscutils
+
 def setup(yb, options):
   # Only want our output
   #
-  if YUM_VER == 3:
+  if YUM_MAJOR == 3:
     try:
-      yb.preconf.errorlevel=0
-      yb.preconf.debuglevel=0
+      if YUM_VER >= version.StrictVersion("3.2.22"):
+        yb.preconf.errorlevel=0
+        yb.preconf.debuglevel=0
 
-      # initialize the config
-      yb.conf
+        # initialize the config
+        yb.conf
+      else:
+        yb.doConfigSetup(errorlevel=0, debuglevel=0)
     except yum.Errors.ConfigError, e:
       # supresses an ignored exception at exit
-      yb.preconf = None 
+      yb.preconf = None
       print >> sys.stderr, "yum-dump Config Error: %s" % e
       return 1
     except ValueError, e:
-      yb.preconf = None 
+      yb.preconf = None
       print >> sys.stderr, "yum-dump Options Error: %s" % e
       return 1
-  elif YUM_VER == 2:
+  elif YUM_MAJOR == 2:
     yb.doConfigSetup()
 
     def __log(a,b): pass
@@ -82,21 +90,21 @@ def setup(yb, options):
     yb.errorlog = __log
 
   # Give Chef every possible package version, it can decide what to do with them
-  if YUM_VER == 3:
+  if YUM_MAJOR == 3:
     yb.conf.showdupesfromrepos = True
-  elif YUM_VER == 2:
+  elif YUM_MAJOR == 2:
     yb.conf.setConfigOption('showdupesfromrepos', True)
 
   # Optionally run only on cached repositories, but non root must use the cache
   if os.geteuid() != 0:
-    if YUM_VER == 3:
+    if YUM_MAJOR == 3:
       yb.conf.cache = True
-    elif YUM_VER == 2:
+    elif YUM_MAJOR == 2:
       yb.conf.setConfigOption('cache', True)
   else:
-    if YUM_VER == 3:
+    if YUM_MAJOR == 3:
       yb.conf.cache = options.cache
-    elif YUM_VER == 2:
+    elif YUM_MAJOR == 2:
       yb.conf.setConfigOption('cache', options.cache)
 
   return 0
@@ -104,7 +112,7 @@ def setup(yb, options):
 def dump_packages(yb, list, output_provides):
   packages = {}
 
-  if YUM_VER == 2:
+  if YUM_MAJOR == 2:
     yb.doTsSetup()
     yb.doRepoSetup()
     yb.doSackSetup()
@@ -113,25 +121,29 @@ def dump_packages(yb, list, output_provides):
 
   for pkg in db.installed:
     pkg.type = 'i'
-    # __str__ contains epoch, name etc
     packages[str(pkg)] = pkg
 
-  for pkg in db.available:
-    pkg.type = 'a'
-    packages[str(pkg)] = pkg
-
-  if YUM_VER == 2:
-    # ugh - can't get the availability state of our installed rpms, lets assume
-    # they are available to install
-    for pkg in db.installed:
-      pkg.type = 'r'
+  if YUM_VER >= version.StrictVersion("3.2.21"):
+    for pkg in db.available:
+      pkg.type = 'a'
       packages[str(pkg)] = pkg
-  else:
+
     # These are both installed and available
     for pkg in db.reinstall_available:
       pkg.type = 'r'
       packages[str(pkg)] = pkg
-   
+  else:
+    # Old style method - no reinstall list
+    for pkg in yb.pkgSack.returnPackages():
+
+      if str(pkg) in packages:
+        if packages[str(pkg)].type == "i":
+          packages[str(pkg)].type = 'r'
+          continue
+
+      pkg.type = 'a'
+      packages[str(pkg)] = pkg
+
   unique_packages = packages.values()
 
   unique_packages.sort(lambda x, y: cmp(x.name, y.name))
@@ -139,7 +151,32 @@ def dump_packages(yb, list, output_provides):
   for pkg in unique_packages:
     if output_provides == "all" or \
         (output_provides == "installed" and (pkg.type == "i" or pkg.type == "r")):
-      provides = pkg.provides_print
+
+      # yum 2 doesn't have provides_print, implement it ourselves using methods
+      # based on requires gathering in packages.py
+      if YUM_MAJOR == 2:
+        provlist = []
+
+        # Installed and available are gathered in different ways
+        if pkg.type == 'i' or pkg.type == 'r':
+          names = pkg.hdr[rpm.RPMTAG_PROVIDENAME]
+          flags = pkg.hdr[rpm.RPMTAG_PROVIDEFLAGS]
+          ver = pkg.hdr[rpm.RPMTAG_PROVIDEVERSION]
+          if names is not None:
+            tmplst = zip(names, flags, ver)
+
+          for (n, f, v) in tmplst:
+            prov = rpmUtils.miscutils.formatRequire(n, v, f)
+            provlist.append(prov)
+        # This is slow :(
+        elif pkg.type == 'a':
+          for prcoTuple in pkg.returnPrco('provides'):
+              prcostr = pkg.prcoPrintable(prcoTuple)
+              provlist.append(prcostr)
+
+        provides = provlist
+      else:
+        provides = pkg.provides_print
     else:
       provides = "[]"
 
@@ -181,7 +218,7 @@ def yum_dump(options):
         lock_obtained = True
       except Errors.LockError, e:
         time.sleep(1)
-        countdown -= 1 
+        countdown -= 1
         if countdown == 0:
            print >> sys.stderr, "yum-dump Locking Error! Couldn't obtain an " \
              "exclusive yum lock in %d seconds. Giving up." % LOCK_TIMEOUT
@@ -232,7 +269,7 @@ def main():
   except yum.Errors.RepoError, e:
     print >> sys.stderr, "yum-dump Repository Error: %s" % e
     return 1
- 
+
   except yum.Errors.YumBaseError, e:
     print >> sys.stderr, "yum-dump General Error: %s" % e
     return 1
