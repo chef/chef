@@ -68,5 +68,62 @@ describe Chef::DataBag do
     end
 
   end
-end
 
+  describe "when loading" do
+    describe "from an API call" do
+      before do
+        Chef::Config[:chef_server_url] = 'https://myserver.example.com'
+        @http_client = mock('Chef::REST')
+      end
+
+      it "should get the data bag from the server" do
+        Chef::REST.should_receive(:new).with('https://myserver.example.com').and_return(@http_client)
+        @http_client.should_receive(:get_rest).with('data/foo')
+        Chef::DataBag.load('foo')
+      end
+
+      it "should return the data bag" do
+        Chef::REST.stub!(:new).and_return(@http_client)
+        @http_client.should_receive(:get_rest).with('data/foo').and_return({'bar' => 'https://myserver.example.com/data/foo/bar'})
+        data_bag = Chef::DataBag.load('foo')
+        data_bag.should == {'bar' => 'https://myserver.example.com/data/foo/bar'}
+      end
+    end
+
+    describe "in solo mode" do
+      before do
+        Chef::Config[:solo] = true
+        Chef::Config[:data_bag_path] = '/var/chef/data_bags'
+      end
+
+      after do
+        Chef::Config[:solo] = false
+      end
+
+      it "should get the data bag from the data_bag_path" do
+        File.should_receive(:directory?).with('/var/chef/data_bags').and_return(true)
+        Dir.should_receive(:glob).with('/var/chef/data_bags/foo/*.json').and_return([])
+        Chef::DataBag.load('foo')
+      end
+
+      it "should return the data bag" do
+        File.should_receive(:directory?).with('/var/chef/data_bags').and_return(true)
+        Dir.stub!(:glob).and_return(["/var/chef/data_bags/foo/bar.json", "/var/chef/data_bags/foo/baz.json"])
+        IO.should_receive(:read).with('/var/chef/data_bags/foo/bar.json').and_return('{"id": "bar", "name": "Bob Bar" }')
+        IO.should_receive(:read).with('/var/chef/data_bags/foo/baz.json').and_return('{"id": "baz", "name": "John Baz" }')
+        data_bag = Chef::DataBag.load('foo')
+        data_bag.should == { 'bar' => { 'id' => 'bar', 'name' => 'Bob Bar' }, 'baz' => { 'id' => 'baz', 'name' => 'John Baz' }}
+      end
+
+      it 'should raise an error if the configured data_bag_path is invalid' do
+        File.should_receive(:directory?).with('/var/chef/data_bags').and_return(false)
+
+        lambda {
+          Chef::DataBag.load('foo')
+        }.should raise_error Chef::Exceptions::InvalidDataBagPath, "Data bag path '/var/chef/data_bags' is invalid"
+      end
+
+    end
+  end
+
+end

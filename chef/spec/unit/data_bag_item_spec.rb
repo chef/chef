@@ -193,30 +193,50 @@ describe Chef::DataBagItem do
     end
   end
 
-  describe "when loading from an API call" do
+  describe "when loading" do
     before do
       @data_bag_item.raw_data = {"id" => "charlie", "shell" => "zsh", "ssh_keys" => %w{key1 key2}}
       @data_bag_item.data_bag("users")
-      @http_client = mock("Chef::REST")
-      Chef::REST.stub!(:new).and_return(@http_client)
     end
 
-    it "converts raw data to a data bag item" do
-      @http_client.should_receive(:get_rest).with("data/users/charlie").and_return(@data_bag_item.to_hash)
-      item = Chef::DataBagItem.load(:users, "charlie")
-      item.should be_a_kind_of(Chef::DataBagItem)
-      item.should == @data_bag_item
-      
+    describe "from an API call" do
+      before do
+        @http_client = mock("Chef::REST")
+        Chef::REST.stub!(:new).and_return(@http_client)
+      end
+
+      it "converts raw data to a data bag item" do
+        @http_client.should_receive(:get_rest).with("data/users/charlie").and_return(@data_bag_item.to_hash)
+        item = Chef::DataBagItem.load(:users, "charlie")
+        item.should be_a_kind_of(Chef::DataBagItem)
+        item.should == @data_bag_item
+      end
+
+      it "does not convert when a DataBagItem is returned from the API call" do
+        @http_client.should_receive(:get_rest).with("data/users/charlie").and_return(@data_bag_item)
+        item = Chef::DataBagItem.load(:users, "charlie")
+        item.should be_a_kind_of(Chef::DataBagItem)
+        item.should equal(@data_bag_item)
+      end
     end
 
-    it "does not convert when a DataBagItem is returned from the API call" do
-      @http_client.should_receive(:get_rest).with("data/users/charlie").and_return(@data_bag_item)
-      item = Chef::DataBagItem.load(:users, "charlie")
-      item.should be_a_kind_of(Chef::DataBagItem)
-      item.should equal(@data_bag_item)
+    describe "in solo mode" do
+      before do
+        Chef::Config[:solo] = true
+      end
+
+      after do
+        Chef::Config[:solo] = false
+      end
+
+      it "converts the raw data to a data bag item" do
+        Chef::DataBag.should_receive(:load).with('users').and_return({'charlie' => @data_bag_item.to_hash})
+        item = Chef::DataBagItem.load('users', 'charlie')
+        item.should be_a_kind_of(Chef::DataBagItem)
+        item.should == @data_bag_item
+      end
     end
 
   end
 
 end
-
