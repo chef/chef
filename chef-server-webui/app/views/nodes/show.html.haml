@@ -37,11 +37,11 @@
                 %tr
                   %th.first Position
                   %th.last Name
-                - if @node.run_list.empty?
+                - if recipes.empty?
                   %tr
                     %td{:colspan => 2} This node has no recipes applied.
                 - else
-                  - @node.run_list.each_with_index do |recipe, i|
+                  - recipes.each_with_index do |recipe, i|
                     %tr
                       %td.position= i
                       %td= recipe
