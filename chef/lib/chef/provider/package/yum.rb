@@ -20,6 +20,8 @@ require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
 require 'singleton'
+require 'chef/mixin/get_source_from_package'
+
 
 class Chef
   class Provider
@@ -865,6 +867,8 @@ class Chef
           end
 
         end # YumCache
+
+        include Chef::Mixin::GetSourceFromPackage
 
         def initialize(new_resource, run_context)
           super
