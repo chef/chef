@@ -301,11 +301,31 @@ class Chef
         end
       end
 
+      def configure_attribute
+        config[:attribute] = (config[:attribute] ||
+                              Chef::Config[:knife][:ssh_attribute] ||
+                              "fqdn").strip
+      end
+
+      def configure_user
+        config[:ssh_user] = (config[:ssh_user] ||
+                             Chef::Config[:knife][:ssh_user])
+        config[:ssh_user].strip! unless config[:ssh_user].nil?
+      end
+
+      def configure_identity_file
+        config[:identity_file] = (config[:identity_file] || Chef::Config[:knife][:ssh_identity_file])
+        config[:identity_file].strip! unless config[:identity_file].nil?
+      end
+
       def run
         extend Chef::Mixin::Command
 
         @longest = 0
 
+        configure_attribute
+        configure_user
+        configure_identity_file
         configure_session
 
         case @name_args[1]
