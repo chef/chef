@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Nuo Yan (<yan.nuo@gmail.com>)
 # Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -60,7 +61,7 @@ class Chef
         :long  => '--environment ENVIRONMENT',
         :description => "Set ENVIRONMENT's version dependency match the version you're uploading.",
         :default => nil
-      
+
       option :depends,
         :short => "-d",
         :long => "--include-dependencies",
@@ -72,6 +73,9 @@ class Chef
         assert_environment_valid!
         warn_about_cookbook_shadowing
         version_constraints_to_update = {}
+        # Get a list of cookbooks and their versions from the server
+        # for checking existence of dependending cookbooks.
+        @server_side_cookbooks = Chef::CookbookVersion.list
 
         if config[:all]
           justify_width = cookbook_repo.cookbook_names.map {|name| name.size}.max.to_i + 2
@@ -162,6 +166,7 @@ WARNING
         ui.info("Uploading #{cookbook.name.to_s.ljust(justify_width + 10)} [#{cookbook.version}]")
 
         check_for_broken_links(cookbook)
+        check_dependencies(cookbook)
         Chef::CookbookUploader.new(cookbook, config[:cookbook_path], :force => config[:force]).upload_cookbook
       rescue Net::HTTPServerException => e
         case e.response.code
@@ -189,6 +194,45 @@ WARNING
           ui.info "The broken file(s) are: #{broken_filenames.join(' ')}"
           exit 1
         end
+      end
+
+      def check_dependencies(cookbook)
+        # for each dependency, check if the version is on the server, or
+        # the version is in the cookbooks being uploaded. If not, exit and warn the user.
+        cookbook.metadata.dependencies.each do |cookbook_name, version|
+          unless check_server_side_cookbooks(cookbook_name, version) || check_uploading_cookbooks(cookbook_name, version)
+            # warn the user and exit
+            ui.error "Cookbook #{cookbook.name} depends on cookbook #{cookbook_name} version #{version},"
+            ui.error "which is not currently being uploaded and cannot be found on the server."
+            exit 1
+          end
+        end
+      end
+
+      def check_server_side_cookbooks(cookbook_name, version)
+        if @server_side_cookbooks[cookbook_name].nil?
+          false
+        else
+          @server_side_cookbooks[cookbook_name]["versions"].each do |versions_hash|
+            return true if Chef::VersionConstraint.new(version).include?(versions_hash["version"])
+          end
+          false
+        end
+      end
+
+      def check_uploading_cookbooks(cookbook_name, version)
+        if config[:all]
+          # check from all local cookbooks in the path
+          unless cookbook_repo[cookbook_name].nil?
+            return Chef::VersionConstraint.new(version).include?(cookbook_repo[cookbook_name].version)
+          end
+        else
+          # check from only those in the command argument
+          if @name_args.include?(cookbook_name)
+            return Chef::VersionConstraint.new(version).include?(cookbook_repo[cookbook_name].version)
+          end
+        end
+        false
       end
 
     end
