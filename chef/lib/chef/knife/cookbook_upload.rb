@@ -19,7 +19,6 @@
 #
 
 require 'chef/knife'
-require 'chef/cookbook_version_selector'
 
 class Chef
   class Knife
