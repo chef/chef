@@ -24,9 +24,14 @@ class Chef
   class Log
     extend Mixlib::Log
 
+    def self.init(*opts)
+      STDOUT.sync = true if opts.empty?
+      opts.first.sync = true if !opts.empty? && opts.first.respond_to?(:sync=)
+      super(*opts)
+    end
+
     # Force initialization of the primary log device (@logger)
     init
-
 
     class Formatter
       def self.show_time=(*args)
