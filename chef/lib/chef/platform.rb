@@ -182,6 +182,30 @@ class Chef
             }
           },
           :solaris  => {},
+          :openindiana => {
+            :default => {
+              :service => Chef::Provider::Service::Solaris,
+              :package => Chef::Provider::Package::Solaris,
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :opensolaris => {
+            :default => {
+              :service => Chef::Provider::Service::Solaris,
+              :package => Chef::Provider::Package::Solaris,
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :nexentacore => {
+            :default => {
+              :service => Chef::Provider::Service::Solaris,
+              :package => Chef::Provider::Package::Solaris,
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
           :solaris2 => {
             :default => {
               :service => Chef::Provider::Service::Solaris,
