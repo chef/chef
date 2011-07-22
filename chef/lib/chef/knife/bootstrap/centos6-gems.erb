@@ -1,0 +1,40 @@
+bash -c '
+<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
+if [ ! -f /usr/bin/chef-client ]; then
+  yum -y install wget
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://download.fedora.redhat.com/pub/epel/6/i386/epel-release-6-5.noarch.rpm 
+  rpm -Uvh epel-release-6-5.noarch.rpm 
+
+  yum install -y ruby ruby-devel gcc gcc-c++ automake autoconf make rubygems
+
+fi
+
+gem update --system
+gem update
+gem install ohai --no-rdoc --no-ri --verbose
+gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
+
+mkdir -p /etc/chef
+
+(
+cat <<'EOP'
+<%= validation_key %>
+EOP
+) > /tmp/validation.pem
+awk NF /tmp/validation.pem > /etc/chef/validation.pem
+rm /tmp/validation.pem
+
+(
+cat <<'EOP'
+<%= config_content %>
+EOP
+) > /etc/chef/client.rb
+
+(
+cat <<'EOP'
+<%= { "run_list" => @run_list }.to_json %>
+EOP
+) > /etc/chef/first-boot.json
+
+<%= start_chef %>'
