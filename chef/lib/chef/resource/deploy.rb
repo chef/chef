@@ -73,6 +73,7 @@ class Chef
         @svn_force_export = false
         @provider = Chef::Provider::Deploy::Timestamped
         @allowed_actions.push(:force_deploy, :deploy, :rollback)
+        @additional_remotes = Hash[]
       end
 
       # where the checked out/cloned code goes
@@ -364,6 +365,14 @@ class Chef
       def after_restart(arg=nil, &block)
         arg ||= block
         set_or_return(:after_restart, arg, :kind_of => [Proc, String])
+      end
+      
+      def additional_remotes(arg=nil)
+        set_or_return(
+          :additional_remotes,
+          arg,
+          :kind_of => Hash
+        )
       end
 
     end
