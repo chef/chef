@@ -200,7 +200,7 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
     path_to_gem = `which gem`.strip
     pending("cant find your gem executable") if path_to_gem.empty?
     gem_env = Chef::Provider::Package::Rubygems::AlternateGemEnvironment.new(path_to_gem)
-    expected = ['rspec-core', Gem::Version.new(Rspec::Core::Version::STRING)]
+    expected = ['rspec-core', Gem::Version.new(RSpec::Core::Version::STRING)]
     actual = gem_env.installed_versions(Gem::Dependency.new('rspec-core', nil)).map { |s| [s.name, s.version] }
     actual.should include(expected)
   end
