@@ -17,6 +17,7 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
+require 'ostruct'
 
 describe Chef::Provider::Package::Apt do
   before(:each) do
@@ -30,14 +31,14 @@ describe Chef::Provider::Package::Apt do
     @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     @provider.stub!(:popen4).and_return(@status)
-    @stdin = mock("STDIN", :null_object => true)
+    @stdin = StringIO.new
     @stdout =<<-PKG_STATUS
 Package: irssi
 State: not installed
 Version: 0.8.12-7
 PKG_STATUS
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
+    @stderr = StringIO.new
+    @pid = 12345
     @shell_out = OpenStruct.new(:stdout => @stdout,:stdin => @stdin,:stderr => @stderr,:status => @status,:exitstatus => 0)
   end
 
@@ -112,7 +113,6 @@ Provided by: libmysqlclient15-dev
 VPKG_STDOUT
       virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient-dev").and_return(virtual_package)
-      real_package_out=mock("STDOUT", :null_object => true)
       real_package_out =<<-REALPKG_STDOUT
 Package: libmysqlclient15-dev
 State: not installed
