@@ -57,7 +57,11 @@ restart () {
 }
 
 reload() {
-    restart
+    echo -n $"Reloading $prog: "
+    killproc -p $pidfile chef-client -HUP
+    retval=$?
+    echo
+    return $retval 
 }
 
 force_reload() {
