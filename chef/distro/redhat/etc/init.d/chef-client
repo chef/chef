@@ -1,5 +1,5 @@
 #!/bin/bash
-# 
+#
 # chef-client Startup script for the Chef client
 #
 # chkconfig: - 98 02
