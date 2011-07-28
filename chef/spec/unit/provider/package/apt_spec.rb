@@ -124,9 +124,10 @@ REALPKG_STDOUT
       @provider.candidate_version.should eql("libmysqlclient15-dev")
     end
 
-    it "should set candidate version to the first depends package name if multiple virtual package providers" do
-      @new_resource.package_name("vim")
-      virtual_package_out=<<-VPKG_STDOUT
+    describe "multiple virtual package providers" do
+      it "should set the candidate version to the first package in the depends when the dependency includes a version" do
+        @new_resource.package_name("vim")
+        virtual_package_out=<<-VPKG_STDOUT
 Package: vim
 State: not installed
 Version: 2:7.2.330-1ubuntu3
@@ -144,9 +145,9 @@ Provided by: vim-gnome, vim-gtk, vim-nox
 Description: Vi IMproved - enhanced vi editor
  Vim is an almost compatible version of the UNIX editor Vi.
 VPKG_STDOUT
-      virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show vim").and_return(virtual_package)
-      real_package_out=<<-REALPKG_STDOUT
+        virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
+        @provider.should_receive(:shell_out!).with("aptitude show vim").and_return(virtual_package)
+        real_package_out=<<-REALPKG_STDOUT
 Package: vim-common
 State: not installed
 Automatically installed: no
@@ -160,12 +161,59 @@ Recommends: vim | vim-gnome | vim-gtk | vim-lesstif | vim-nox | vim-tiny
 Description: Vi IMproved - Common files
  Vim is an almost compatible version of the UNIX editor Vi.
 REALPKG_STDOUT
-      real_package = mock(:stdout => real_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show vim-common").and_return(real_package)
-      @provider.load_current_resource
-      @provider.candidate_version.should eql("vim-common")
+        real_package = mock(:stdout => real_package_out,:exitstatus => 0)
+        @provider.should_receive(:shell_out!).with("aptitude show vim-common").and_return(real_package)
+        @provider.load_current_resource
+        @provider.candidate_version.should eql("vim-common")
+      end
+      it "should set the candidate version to the first package in the depends when the dependency does not include a version" do
+        @new_resource.package_name("dhcp-client")
+        virtual_package_out=<<-VPKG_STDOUT
+Package: dhcp-client
+State: not installed
+Version: 3.1.3-2ubuntu3.2
+Priority: extra
+Section: universe/net
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Uncompressed Size: 57.3k
+Depends: dhcp3-client
+Conflicts: dhcp-client (< 3.0)
+Provided by: dhcpcd, pump, udhcpc
+Description: DHCP client transitional package
+ This is the client from version 3 of the Internet Software Consortium's implementation of DHCP. For more information visit http://www.isc.org. 
+ 
+ This is a dummy package to aid in transitioning from the v2 dhcp-client package to the v3 dhcp3-client package. 
+ 
+ This dummy package may be safely removed after upgrading to lenny
+VPKG_STDOUT
+        virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
+        @provider.should_receive(:shell_out!).with("aptitude show dhcp-client").and_return(virtual_package)
+        real_package_out=<<-REALPKG_STDOUT
+Package: dhcp3-client
+State: not installed
+Automatically installed: no
+Version: 3.1.3-2ubuntu3.2
+Priority: important
+Section: net
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Uncompressed Size: 692k
+Depends: debianutils (>= 2.8.2), dhcp3-common (= 3.1.3-2ubuntu3.2), libc6 (>= 2.7), debconf (>= 0.5) | debconf-2.0
+Suggests: resolvconf, avahi-autoipd, apparmor
+Conflicts: dhcp-client (< 3.0), samba-common (< 3.0.0beta1-2)
+Description: DHCP client
+ This is the client from version 3 of the Internet Software Consortium's implementation of DHCP. For more information visit http://www.isc.org. 
+ 
+ Dynamic Host Configuration Protocol (DHCP) is a protocol like BOOTP (actually dhcpd includes much of the functionality of bootpd). It gives client machines "leases" for IP addresses and can automatically set their network configuration. If your machine depends on DHCP (especially likely if it's a workstation on a
+ large network, or a laptop, or attached to a cable modem), keep this or another DHCP client installed. 
+ 
+ Extra documentation can be found in the package dhcp3-common.
+REALPKG_STDOUT
+        real_package = mock(:stdout => real_package_out,:exitstatus => 0)
+        @provider.should_receive(:shell_out!).with("aptitude show dhcp3-client").and_return(real_package)
+        @provider.load_current_resource
+        @provider.candidate_version.should eql("dhcp3-client")
+      end
     end
-
   end
 
   describe "install_package" do

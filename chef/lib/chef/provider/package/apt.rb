@@ -51,8 +51,10 @@ class Chef
               else
                 @current_resource.version(nil)
               end
-            when /Depends: ([^\s]*) /
+            # Grab the first package in the dependency list to resolve case where a virtual package is provided by more than one package
+            when /Depends: ([\w\d\-\.]*)/
               depends = $1
+            # Check to see if this is a virtual package
             when /Provided by: ([\w\d\-\.]*)/
               next if installed
               virtual_provider = $1
