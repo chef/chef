@@ -40,7 +40,74 @@ class Chef
         ((mode.respond_to?(:oct) ? mode.oct : mode.to_i) & 007777)
       end
 
-      private :negative_complement, :octal_mode
+      def user_mask(target)
+        mask = 0
+        target.each_byte do |byte_chr|
+          case byte_chr.chr
+            when "u"
+              mask |= 04700
+            when "g"
+              mask |= 02070
+            when "o"
+              mask |= 01007
+            when "a"
+              mask |= 07777
+          end
+        end
+        mask
+      end
+    
+      def mode_mask(mode, path)
+        mask = 0
+        mode.each_byte do |byte_chr|
+          case byte_chr.chr
+            when "r"
+              mask |= 0444
+            when "w"
+              mask |= 0222
+            when "x"
+              mask |= 0111
+            when "X"
+              mask |= 0111 if ::FileTest::directory? path
+            when "s"
+              mask |= 06000
+            when "t"
+              mask |= 01000
+          end
+        end
+        mask
+      end
+    
+      def current_file_mode(path)
+        stat = ::File.stat(path)
+        current_mode = (stat.mode & 0777)
+        current_mode + 04000 if stat.setuid?
+        current_mode + 02000 if stat.setgid?
+        current_mode + 01000 if stat.sticky?
+      end
+    
+      def symbolic_modes_to_i(modes, path)
+        current_mode = current_file_mode(path)
+        current_mode = (::File.stat(path).mode & 07777)
+        modes.split(/,/).inject(0) do |mode, mode_sym|
+          mode_sym = "a#{mode_sym}" if mode_sym =~ %r!^[+-=]!
+          target, mode = mode_sym.split %r![+-=]!
+          user_mask = user_mask(target)
+          mode_mask = mode_mask(mode ? mode : "", path)
+    
+          case mode_sym
+            when /=/
+              current_mode &= ~(user_mask)
+              current_mode |= user_mask & mode_mask
+            when /\+/
+              current_mode |= user_mask & mode_mask
+            when /-/
+              current_mode &= ~(user_mask & mode_mask)
+          end
+        end
+      end
+
+      private :negative_complement, :octal_mode, :symbolic_modes_to_i, :current_file_mode, :mode_mask, :user_mask
 
       def load_current_resource
         @current_resource = Chef::Resource::File.new(@new_resource.name)
@@ -122,6 +189,8 @@ class Chef
         case @new_resource.mode
         when /^\d+$/, Integer
           octal_mode(@new_resource.mode) == octal_mode(@current_resource.mode)
+        when String
+          symbolic_modes_to_i(@new_resource.mode, @current_resource.path) == octal_mode(@current_resource.mode)
         else
           false
         end
@@ -129,9 +198,15 @@ class Chef
 
       def set_mode
         unless compare_mode && @new_resource.mode != nil
-          # CHEF-174, bad mojo around treating integers as octal.  If a string is passed, we try to do the "right" thing
-          ::File.chmod(octal_mode(@new_resource.mode), @new_resource.path)
-          Chef::Log.info("#{@new_resource} mode changed to #{sprintf("%o" % octal_mode(@new_resource.mode))}")
+          case @new_resource.mode
+          when /^\d+$/, Integer
+            # CHEF-174, bad mojo around treating integers as octal.  If a string is passed, we try to do the "right" thing
+            ::File.chmod(octal_mode(@new_resource.mode), @new_resource.path)
+            Chef::Log.info("#{@new_resource} mode changed to #{sprintf("%o" % octal_mode(@new_resource.mode))}")
+          when String
+            ::File.chmod(symbolic_modes_to_i(@new_resource.mode, @current_resource.path), @new_resource.path)
+            Chef::Log.info("#{@new_resource} mode changed to #{sprintf("%o" % symbolic_modes_to_i(@new_resource.mode, @current_resource.path))}")
+          end
           @new_resource.updated_by_last_action(true)
         end
       end
