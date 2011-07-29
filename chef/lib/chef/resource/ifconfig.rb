@@ -27,7 +27,7 @@ class Chef
         @resource_name = :ifconfig
         @target = name
         @action = :add
-        @allowed_actions.push(:add, :delete)
+        @allowed_actions.push(:add, :delete, :enable, :disable)
         @hwaddr = nil
         @mask = nil
         @inet_addr = nil
