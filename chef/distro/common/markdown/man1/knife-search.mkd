@@ -31,7 +31,7 @@ __knife__ __search INDEX QUERY__ _(options)_
 Search is a feature of the Chef Server that allows you to use a
 full-text search engine to query information about your infrastructure
 and applications. You can utilize this service via search calls in a
-recipe or the knife search command.  The search syntax based on
+recipe or the knife search command.  The search syntax is based on
 Lucene.
 
 
