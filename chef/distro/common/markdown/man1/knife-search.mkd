@@ -46,6 +46,11 @@ query syntax. The following data types are indexed for search:
   * _environment_
   * _data bag_
 
+Data bags are indexed by the data bag's name. For example, to search a
+data bag named "admins":
+
+    knife search admins "field:search_pattern"
+
 ## QUERY SYNTAX
 
 Queries have the form `field:search_pattern` where `field` is a key in
