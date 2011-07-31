@@ -16,6 +16,8 @@ chef/log
 chef/rdoc
 chef-server/log
 log
+chef/distro/common/html
+chef/distro/common/man
 couchdb.stderr
 couchdb.stdout
 features/data/tmp/**
