@@ -84,6 +84,10 @@ namespace :docs do
   end
 
   if system('which ronn > /dev/null')
+    directory "distro/common/man/"
+    directory "distro/common/man/man1"
+    directory "distro/common/man/man8"
+    directory "distro/common/html"
     ['distro/common/markdown/man1/*.mkd', 'distro/common/markdown/man8/*.mkd'].each do |dir|
       Dir[dir].each do |mkd|
         basename = File.basename(mkd, '.mkd')
