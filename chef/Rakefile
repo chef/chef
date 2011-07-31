@@ -99,12 +99,13 @@ namespace :docs do
           htmlfile = "distro/common/html/#{basename}.8.html"
         end
 
+        task :man do
+          sh "ronn -r #{RONN_OPTS} #{mkd} --pipe > #{manfile}"
+        end
 
-        sh "ronn -r #{RONN_OPTS} #{mkd} --pipe > #{manfile}"
-        task :man => manfile
-
-        sh "ronn -5 #{RONN_OPTS} --style=toc #{mkd} --pipe > #{htmlfile}"
-        task :html => htmlfile
+        task :html do
+          sh "ronn -5 #{RONN_OPTS} --style=toc #{mkd} --pipe > #{htmlfile}"
+        end
 
       end
     end
