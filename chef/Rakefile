@@ -29,7 +29,7 @@ GEM_NAME = "chef"
 spec = eval(File.read("chef.gemspec"))
 
 # This has to be here or else the docs get generated *after* the gem is created
-task :gem => 'docs:man'
+task :gem => 'docs:all'
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
