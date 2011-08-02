@@ -83,7 +83,21 @@ namespace :docs do
     end
   end
 
+  directory "distro/common/man"
+  task :man => "distro/common/man"
+
+  directory "distro/common/man/man1"
+  task :man => "distro/common/man/man1"
+
+  directory "distro/common/man/man8"
+  task :man => "distro/common/man/man8"
+
+  directory "distro/common/html"
+  task :html => "distro/common/html"
+
+
   if system('which ronn > /dev/null')
+
     ['distro/common/markdown/man1/*.mkd', 'distro/common/markdown/man8/*.mkd'].each do |dir|
       Dir[dir].each do |mkd|
         basename = File.basename(mkd, '.mkd')
@@ -96,14 +110,14 @@ namespace :docs do
         end
 
         file(manfile => [mkd, 'lib/chef/version.rb']) do
-           sh "ronn -r #{RONN_OPTS} #{mkd} --pipe > #{manfile}"
-         end
-         task :man => manfile
+          sh "ronn -r #{RONN_OPTS} #{mkd} --pipe > #{manfile}"
+        end
+        task :man => manfile
 
-         file(htmlfile => [mkd, 'lib/chef/version.rb']) do
-           sh "ronn -5 #{RONN_OPTS} --style=toc #{mkd} --pipe > #{htmlfile}"
-         end
-         task :html => htmlfile
+        file(htmlfile => [mkd, 'lib/chef/version.rb']) do
+          sh "ronn -5 #{RONN_OPTS} --style=toc #{mkd} --pipe > #{htmlfile}"
+        end
+        task :html => htmlfile
 
       end
     end
