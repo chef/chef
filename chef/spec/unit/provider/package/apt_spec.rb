@@ -103,10 +103,12 @@ INSTALLED
       @provider.load_current_resource.should eql(@current_resource)
     end
 
-    it "should set candidate version to new package name if virtual package" do
+    # libmysqlclient-dev is a real package in newer versions of debian + ubuntu
+    # list of virtual packages: http://www.debian.org/doc/packaging-manuals/virtual-package-names-list.txt
+    it "should not install the virtual package there is a single provider package and it is installed" do
       @new_resource.package_name("libmysqlclient-dev")
       virtual_package_out=<<-VPKG_STDOUT
-"No current or candidate version found for libmysqlclient-dev").
+No current or candidate version found for libmysqlclient-dev
 Package: libmysqlclient-dev
 State: not a real package
 Provided by: libmysqlclient15-dev
@@ -115,109 +117,30 @@ VPKG_STDOUT
       @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient-dev").and_return(virtual_package)
       real_package_out =<<-REALPKG_STDOUT
 Package: libmysqlclient15-dev
-State: not installed
+State: installed
 Version: 5.0.51a-24+lenny4
 REALPKG_STDOUT
       real_package = mock(:stdout => real_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient15-dev").and_return(real_package)
+      @provider.should_not_receive(:run_command_with_systems_locale)
       @provider.load_current_resource
-      @provider.candidate_version.should eql("libmysqlclient15-dev")
     end
 
-    describe "multiple virtual package providers" do
-      it "should set the candidate version to the first package in the depends when the dependency includes a version" do
-        @new_resource.package_name("vim")
-        virtual_package_out=<<-VPKG_STDOUT
-Package: vim
-State: not installed
-Version: 2:7.2.330-1ubuntu3
-Priority: optional
-Section: editors
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Uncompressed Size: 1,946k
-Depends: vim-common (= 2:7.2.330-1ubuntu3), vim-runtime (= 2:7.2.330-1ubuntu3), libacl1 (>= 2.2.11-1), libc6 (>= 2.11),
-         libgpm2 (>= 1.20.4), libncurses5 (>= 5.6+20071006-3), libpython2.6 (>= 2.6), libselinux1 (>= 1.32)
-Suggests: ctags, vim-doc, vim-scripts
-Conflicts: vim-common (< 1:7.1-175+1)
-Replaces: vim-common (< 1:7.1-175+1)
-Provides: editor
-Provided by: vim-gnome, vim-gtk, vim-nox
-Description: Vi IMproved - enhanced vi editor
- Vim is an almost compatible version of the UNIX editor Vi.
+    it "should raise an exception if you specify a virtual package with multiple provider packages" do
+      @new_resource.package_name("mp3-decoder")
+      virtual_package_out=<<-VPKG_STDOUT
+No current or candidate version found for mp3-decoder
+Package: mp3-decoder
+State: not a real package
+Provided by: mpg123, mpg123-oss-i486, mpg321, opencubicplayer, vlc, vlc-nox
 VPKG_STDOUT
-        virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
-        @provider.should_receive(:shell_out!).with("aptitude show vim").and_return(virtual_package)
-        real_package_out=<<-REALPKG_STDOUT
-Package: vim-common
-State: not installed
-Automatically installed: no
-Version: 2:7.2.330-1ubuntu3
-Priority: important
-Section: editors
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Uncompressed Size: 389k
-Depends: libc6 (>= 2.4)
-Recommends: vim | vim-gnome | vim-gtk | vim-lesstif | vim-nox | vim-tiny
-Description: Vi IMproved - Common files
- Vim is an almost compatible version of the UNIX editor Vi.
-REALPKG_STDOUT
-        real_package = mock(:stdout => real_package_out,:exitstatus => 0)
-        @provider.should_receive(:shell_out!).with("aptitude show vim-common").and_return(real_package)
-        @provider.load_current_resource
-        @provider.candidate_version.should eql("vim-common")
-      end
-      it "should set the candidate version to the first package in the depends when the dependency does not include a version" do
-        @new_resource.package_name("dhcp-client")
-        virtual_package_out=<<-VPKG_STDOUT
-Package: dhcp-client
-State: not installed
-Version: 3.1.3-2ubuntu3.2
-Priority: extra
-Section: universe/net
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Uncompressed Size: 57.3k
-Depends: dhcp3-client
-Conflicts: dhcp-client (< 3.0)
-Provided by: dhcpcd, pump, udhcpc
-Description: DHCP client transitional package
- This is the client from version 3 of the Internet Software Consortium's implementation of DHCP. For more information visit http://www.isc.org. 
- 
- This is a dummy package to aid in transitioning from the v2 dhcp-client package to the v3 dhcp3-client package. 
- 
- This dummy package may be safely removed after upgrading to lenny
-VPKG_STDOUT
-        virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
-        @provider.should_receive(:shell_out!).with("aptitude show dhcp-client").and_return(virtual_package)
-        real_package_out=<<-REALPKG_STDOUT
-Package: dhcp3-client
-State: not installed
-Automatically installed: no
-Version: 3.1.3-2ubuntu3.2
-Priority: important
-Section: net
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Uncompressed Size: 692k
-Depends: debianutils (>= 2.8.2), dhcp3-common (= 3.1.3-2ubuntu3.2), libc6 (>= 2.7), debconf (>= 0.5) | debconf-2.0
-Suggests: resolvconf, avahi-autoipd, apparmor
-Conflicts: dhcp-client (< 3.0), samba-common (< 3.0.0beta1-2)
-Description: DHCP client
- This is the client from version 3 of the Internet Software Consortium's implementation of DHCP. For more information visit http://www.isc.org. 
- 
- Dynamic Host Configuration Protocol (DHCP) is a protocol like BOOTP (actually dhcpd includes much of the functionality of bootpd). It gives client machines "leases" for IP addresses and can automatically set their network configuration. If your machine depends on DHCP (especially likely if it's a workstation on a
- large network, or a laptop, or attached to a cable modem), keep this or another DHCP client installed. 
- 
- Extra documentation can be found in the package dhcp3-common.
-REALPKG_STDOUT
-        real_package = mock(:stdout => real_package_out,:exitstatus => 0)
-        @provider.should_receive(:shell_out!).with("aptitude show dhcp3-client").and_return(real_package)
-        @provider.load_current_resource
-        @provider.candidate_version.should eql("dhcp3-client")
-      end
+      virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
+      @provider.should_receive(:shell_out!).with("aptitude show mp3-decoder").and_return(virtual_package)
+      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
   end
 
   describe "install_package" do
-
     it "should run apt-get install with the package name and version" do
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "apt-get -q -y install irssi=0.8.12-7",
@@ -324,6 +247,19 @@ REALPKG_STDOUT
       @provider.stub!(:get_preseed_file).and_return(false)
       @provider.should_not_receive(:run_command_with_systems_locale)
       @provider.preseed_package("irssi", "0.8.12-7")
+    end
+  end
+
+  describe "when installing a virtual package" do
+    it "should install the package without specifying a version" do
+        @provider.is_virtual_package = true
+        @provider.should_receive(:run_command_with_systems_locale).with({
+          :command => "apt-get -q -y install libmysqlclient-dev",
+          :environment => {
+            "DEBIAN_FRONTEND" => "noninteractive"
+          }
+        })
+        @provider.install_package("libmysqlclient-dev", "not_a_real_version")
     end
   end
 end

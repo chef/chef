@@ -26,7 +26,7 @@ class Chef
       class Apt < Chef::Provider::Package
 
         include Chef::Mixin::ShellOut
-        attr_accessor :virtual
+        attr_accessor :is_virtual_package
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -36,14 +36,15 @@ class Chef
         end
 
         def check_package_state(package)
-          Chef::Log.debug("Checking package status for #{package}")
+          Chef::Log.debug("#{@new_resource} checking package status for #{package}")
           installed = false
-          depends = false
 
           shell_out!("aptitude show #{package}").stdout.each_line do |line|
             case line
             when /^State: installed/
               installed = true
+            when /^State: not a real package/
+              @is_virtual_package = true
             when /^Version: (.*)/
               @candidate_version = $1
               if installed
@@ -51,18 +52,16 @@ class Chef
               else
                 @current_resource.version(nil)
               end
-            # Grab the first package in the dependency list to resolve case where a virtual package is provided by more than one package
-            when /Depends: ([\w\d\-\.]*)/
-              depends = $1
-            # Check to see if this is a virtual package
-            when /Provided by: ([\w\d\-\.]*)/
-              next if installed
+            # If we are a virtual package with one provider package, install it
+            when /^Provided by: ([\w\d\-\.]*)$/
+              next unless @is_virtual_package
               virtual_provider = $1
-              virtual_provider = depends if depends
-              Chef::Log.debug("Virtual package provided by #{virtual_provider}")
-              @virtual = true
+              Chef::Log.info("#{@new_resource} is a virtual package, actually acting on package[#{virtual_provider}]")
               installed = check_package_state(virtual_provider)
-              @candidate_version = virtual_provider
+            # If there is a comma, it is a list of packages. In this case fail to force the user to choose.
+            when /^Provided by: .*,/
+              next unless @is_virtual_package
+              raise Chef::Exceptions::Package, "#{@new_resource.package_name} is a virtual package provided by multiple packages, you must explicitly select one to install"
             end
           end
 
@@ -75,7 +74,7 @@ class Chef
 
         def install_package(name, version)
           package_name = "#{name}=#{version}"
-          package_name = "#{name} #{@candidate_version}" if @virtual
+          package_name = name if @is_virtual_package
           run_command_with_systems_locale(
             :command => "apt-get -q -y#{expand_options(@new_resource.options)} install #{package_name}",
             :environment => {
@@ -90,7 +89,6 @@ class Chef
 
         def remove_package(name, version)
           package_name = "#{name}"
-          package_name = "#{name} #{@candidate_version}" if @virtual
           run_command_with_systems_locale(
             :command => "apt-get -q -y#{expand_options(@new_resource.options)} remove #{package_name}",
             :environment => {
