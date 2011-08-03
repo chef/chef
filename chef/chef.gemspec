@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_dependency "json", ">= 1.4.4", "<= 1.5.2"
   s.add_dependency "treetop", "~> 1.4.9"
   s.add_dependency "net-ssh", "~> 2.1.3"
-  s.add_dependency "net-ssh-multi", "~> 1.1.0"
+  s.add_dependency "net-ssh-multi", "~> 1.1"
   %w{erubis moneta highline uuidtools}.each { |gem| s.add_dependency gem }
 
   s.bindir       = "bin"
