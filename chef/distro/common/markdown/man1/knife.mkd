@@ -44,10 +44,6 @@ documentation using `knife help TOPIC`.
     Set the editor to use for interactive commands
   * `-F`, `--format` FORMAT:
     Which format to use for output
-  * `-l`, `--log_level` LEVEL:
-    Set the log level (debug, info, warn, error, fatal), corresponds to `Chef::Config` `log_level`.
-  * `-L`, `--logfile` LOGLOCATION:
-    Set the log file location, defaults to STDOUT, corresponds to `Chef::Config` `log_location`.
   * `-n`, `--no-editor`:
     Do not open EDITOR, just accept the data as is
   * `-u`, `--user` USER:
@@ -56,6 +52,8 @@ documentation using `knife help TOPIC`.
     Show the data after a destructive operation
   * `-v`, `--version`:
     Show chef version
+  * `-V`, `--verbose`:
+    More verbose output. Use twice for max verbosity.
   * `-y`, `--yes`:
     Say yes to all prompts for confirmation
   * `-h`, `--help`:
