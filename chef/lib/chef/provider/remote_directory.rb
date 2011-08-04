@@ -44,7 +44,6 @@ class Chef
           files_to_purge.delete(::File.join(@new_resource.path, cookbook_file_relative_path))
         end
         purge_unmanaged_files(files_to_purge)
-        Chef::Log.info("#{@new_resource} created")
       end
 
       def action_create_if_missing
