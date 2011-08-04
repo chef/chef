@@ -107,7 +107,7 @@ class Chef
     def set_group
       if (gid = target_gid) && (gid != stat.gid)
         File.chown(nil, gid, file)
-        Chef::Log.info("#{log_string} owner changed to #{gid}")
+        Chef::Log.info("#{log_string} group changed to #{gid}")
         modified
       end
     end
