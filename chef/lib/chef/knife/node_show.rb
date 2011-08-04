@@ -32,11 +32,11 @@ class Chef
 
       banner "knife node show NODE (options)"
 
-      @@attrs_to_show = []
+      @attrs_to_show = []
       option :attribute,
         :short => "-a [ATTR]",
         :long => "--attribute [ATTR]",
-        :proc => lambda {|val| @@attrs_to_show << val},
+        :proc => lambda {|val| @attrs_to_show << val},
         :description => "Show one or more attributes"
 
       option :run_list,
@@ -61,7 +61,11 @@ class Chef
 
         node = Chef::Node.load(@node_name)
         output(format_for_display(node))
-        @@attrs_to_show = []
+        self.class.attrs_to_show = []
+      end
+
+      def self.attrs_to_show=(attrs)
+        @attrs_to_show = attrs
       end
     end
   end
