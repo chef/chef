@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-COOKBOOK" "1" "May 2011" "Chef 0.10.0" "Chef Manual"
+.TH "KNIFE\-COOKBOOK" "1" "August 2011" "Chef 0.10.4.rc.5" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-cookbook\fR \- upload and manage chef cookbooks
@@ -99,6 +99,22 @@ Overrides the frozen flag on a cookbook, allowing you to overwrite a cookbook ve
 .
 .P
 Uploads one or more cookbooks from your local cookbook repository(ies) to the Chef Server\. Only files that don\'t yet exist on the server will be uploaded\.
+.
+.P
+As the command parses the name args as 1\.\.n cookbook names:
+.
+.IP "" 4
+.
+.nf
+
+`knife cookbook upload COOKBOOK COOKBOOK \.\.\.`
+.
+.fi
+.
+.IP "" 0
+.
+.P
+works for one to many cookbooks\.
 .
 .SH "DOWNLOAD"
 \fBknife cookbook download cookbook [version]\fR \fI(options)\fR

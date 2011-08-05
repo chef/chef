@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-SEARCH" "1" "April 2011" "Chef 0.10.0" "Chef Manual"
+.TH "KNIFE\-SEARCH" "1" "August 2011" "Chef 0.10.4.rc.5" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-search\fR \- Find objects on a Chef Server by query
@@ -9,47 +9,256 @@
 .SH "SYNOPSIS"
 \fBknife\fR \fBsearch INDEX QUERY\fR \fI(options)\fR
 .
-.TP
-\fB\-a\fR, \fB\-\-attribute ATTR\fR
-Show only one attribute
+.IP "\(bu" 4
+\fB\-a\fR, \fB\-\-attribute ATTR\fR: Show only one attribute
 .
-.TP
-\fB\-i\fR, \fB\-\-id\-only\fR
-Show only the ID of matching objects
+.IP "\(bu" 4
+\fB\-i\fR, \fB\-\-id\-only\fR: Show only the ID of matching objects
 .
-.TP
-\fB\-R\fR, \fB\-\-rows INT\fR
-The number of rows to return
+.IP "\(bu" 4
+\fB\-q\fR, \fB\-\-query QUERY\fR The search query; useful to protect queries starting with \-
 .
-.TP
-\fB\-r\fR, \fB\-\-run\-list\fR
-Show only the run list
+.IP "\(bu" 4
+\fB\-R\fR, \fB\-\-rows INT\fR: The number of rows to return
 .
-.TP
-\fB\-o\fR, \fB\-\-sort SORT\fR
-The order to sort the results in
+.IP "\(bu" 4
+\fB\-r\fR, \fB\-\-run\-list\fR: Show only the run list
 .
-.TP
-\fB\-b\fR, \fB\-\-start ROW\fR
-The row to start returning results at
+.IP "\(bu" 4
+\fB\-o\fR, \fB\-\-sort SORT\fR: The order to sort the results in
 .
-.TP
-\fB\-m\fR, \fB\-\-medium\fR
-Display medium sized output when searching nodes using the default summary format
+.IP "\(bu" 4
+\fB\-b\fR, \fB\-\-start ROW\fR: The row to start returning results at
 .
-.TP
-\fB\-l\fR, \fB\-\-long\fR
-Display long output when searching nodes using the default summary format
+.IP "\(bu" 4
+\fB\-m\fR, \fB\-\-medium\fR: Display medium sized output when searching nodes using the default summary format
+.
+.IP "\(bu" 4
+\fB\-l\fR, \fB\-\-long\fR: Display long output when searching nodes using the default summary format
+.
+.IP "" 0
 .
 .SH "DESCRIPTION"
-Search indexes are a feature of the Chef Server and the search sub\-command allows querying any of the available indexes using SOLR query syntax\. The following data types are indexed for search: * \fInode\fR * \fIrole\fR * \fIenvironment\fR * \fIdata bag\fR
+Search is a feature of the Chef Server that allows you to use a full\-text search engine to query information about your infrastructure and applications\. You can utilize this service via search calls in a recipe or the knife search command\. The search syntax is based on Lucene\.
 .
-.SH "SYNTAX"
+.SH "INDEXES"
+Search indexes are a feature of the Chef Server and the search sub\-command allows querying any of the available indexes using SOLR query syntax\. The following data types are indexed for search:
+.
+.IP "\(bu" 4
+\fInode\fR
+.
+.IP "\(bu" 4
+\fIrole\fR
+.
+.IP "\(bu" 4
+\fIenvironment\fR
+.
+.IP "\(bu" 4
+\fIdata bag\fR
+.
+.IP "" 0
+.
+.P
+Data bags are indexed by the data bag\'s name\. For example, to search a data bag named "admins":
+.
+.IP "" 4
+.
+.nf
+
+knife search admins "field:search_pattern"
+.
+.fi
+.
+.IP "" 0
+.
+.SH "QUERY SYNTAX"
+Queries have the form \fBfield:search_pattern\fR where \fBfield\fR is a key in the JSON description of the relevant objects (nodes, roles, environments, or data bags)\. Both \fBfield\fR and \fBsearch_pattern\fR are case\-sensitive\. \fBsearch_pattern\fR can be an exact, wildcard, range, or fuzzy match (see below)\. The \fBfield\fR supports exact matching and limited wildcard matching\.
+.
+.P
+Searches will return the relevant objects (nodes, roles, environments, or data bags) where the \fBsearch_pattern\fR matches the object\'s value of \fBfield\fR\.
+.
+.SS "FIELD NAMES"
+Field names are the keys within the JSON description of the object being searched\. Nested Keys can be searched by placing an underscore ("_") between key names\.
+.
+.P
+The field name also has limited support for wildcard matching\. Both the "*" and "?" wildcards (see below) can be used within a field name; however, they cannot be the first character of the field name\.
+.
+.SS "EXACT MATCHES"
+Without any search modifiers, a search returns those fields for which the \fBsearch_pattern\fR exactly matches the value of \fBfield\fR in the JSON description of the object\.
+.
+.SS "WILDCARD MATCHES"
+Search support both single\- and multi\-character wildcard searches within a search pattern\.
+.
+.P
+\'?\' matches exactly one character\.
+.
+.P
+\'*\' matches zero or more characters\.
+.
+.SS "RANGE MATCHES"
+Range searches allows one to match values between two given values\. To match values between X and Y, inclusively, use square brackets:
+.
+.IP "" 4
+.
+.nf
+
+knife search INDEX \'field:[X TO Y]
+.
+.fi
+.
+.IP "" 0
+.
+.P
+To match values between X and Y, exclusively, use curly brackets:
+.
+.IP "" 4
+.
+.nf
+
+knife search INDEX \'field:{X TO Y}\'
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Values are sorted in lexicographic order\.
+.
+.SS "FUZZY MATCHES"
+Fuzzy searches allows one to match values based on the Levenshtein Distance algorithm\. To perform a fuzzy match, append a tilda (~) to the search term:
+.
+.IP "" 4
+.
+.nf
+
+knife search nodes \'field:term~\'
+.
+.fi
+.
+.IP "" 0
+.
+.P
+This search would return nodes whose \fBfield\fR was \'perm\' or \'germ\'\.
+.
+.SS "BOOLEAN OPERATORS"
+The boolean operators NOT, AND, and OR are supported\. To find values of \fBfield\fR that are not X:
+.
+.IP "" 4
+.
+.nf
+
+knife search INDEX \'field:(NOT X)\'
+.
+.fi
+.
+.IP "" 0
+.
+.P
+To find records where \fBfield1\fR is X and \fBfield2\fR is Y:
+.
+.IP "" 4
+.
+.nf
+
+knife search INDEX \'field1:X AND field2:Y\'
+.
+.fi
+.
+.IP "" 0
+.
+.P
+To find records where \fBfield\fR is X or Y:
+.
+.IP "" 4
+.
+.nf
+
+knife search INDEX \'field:X OR field:Y\'
+.
+.fi
+.
+.IP "" 0
+.
+.SS "QUOTING AND SPECIAL CHARACTERS"
+In order to avoid having special characters and escape sequences within your search term interpreted by either Ruby or the shell, enclose them in single quotes\.
+.
+.P
+Search terms that include spaces should be enclosed in double\-quotes:
+.
+.IP "" 4
+.
+.nf
+
+knife search INDEX \'field:"term with spaces"\'
+.
+.fi
+.
+.IP "" 0
+.
+.P
+The following characters must be escaped:
+.
+.IP "" 4
+.
+.nf
+
++ \- && || ! ( ) { } [ ] ^ " ~ * ? : \e
+.
+.fi
+.
+.IP "" 0
 .
 .SH "EXAMPLES"
+Find the nodes with the fully\-qualified domain name (FQDN) www\.example\.com:
+.
+.IP "" 4
+.
+.nf
+
+knife search nodes \'fqdn:www\.example\.com\'
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Find the nodes running a version of Ubuntu:
+.
+.IP "" 4
+.
+.nf
+
+knife search nodes \'platform:ubuntu*\'
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Find all nodes running CentOS in the production environment:
+.
+.IP "" 4
+.
+.nf
+
+knife search nodes \'chef_environment:production AND platform:centos\'
+.
+.fi
+.
+.IP "" 0
+.
+.SH "KNOWN BUGS"
+.
+.IP "\(bu" 4
+Searches against the client index return no results in most cases\. (CHEF\-2477)
+.
+.IP "\(bu" 4
+Searches using the fuzzy match operator (~) produce an error\. (CHEF\-2478)
+.
+.IP "" 0
 .
 .SH "SEE ALSO"
-\fBknife\-ssh\fR(1) \fIhttp://wiki\.opscode\.com/display/chef/Attributes\fR
+\fBknife\-ssh\fR(1) \fIhttp://wiki\.opscode\.com/display/chef/Attributes\fR Lucene Query Parser Syntax \fIhttp://lucene\.apache\.org/java/2_3_2/queryparsersyntax\.html\fR
 .
 .SH "AUTHOR"
 Chef was written by Adam Jacob \fIadam@opscode\.com\fR with many contributions from the community\.

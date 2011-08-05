@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-SSH" "1" "April 2011" "Chef 0.10.0" "Chef Manual"
+.TH "KNIFE\-SSH" "1" "August 2011" "Chef 0.10.4.rc.5" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-ssh\fR \- Run a command or interactive session on multiple remote hosts
@@ -28,6 +28,10 @@ The ssh password
 .TP
 \fB\-x\fR, \fB\-\-ssh\-user USERNAME\fR
 The ssh username
+.
+.TP
+\fB\-i\fR, \fB\-\-identity\-file IDENTITY_FILE\fR
+The SSH identity file used for authentication
 .
 .SH "DESCRIPTION"
 The \fIssh\fR sub\-command opens an ssh session to each of the nodes in the search results of the \fIQUERY\fR\. This sub\-command requires that the net\-ssh\-multi and highline Ruby libraries are installed\. On Debian systems, these are the libnet\-ssh\-multi\-ruby and libhighline\-ruby packages\. They can also be installed as RubyGems (net\-ssh\-multi and highline, respectively)\.
