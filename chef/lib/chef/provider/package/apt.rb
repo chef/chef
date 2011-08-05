@@ -19,6 +19,8 @@
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
+require 'chef/mixin/shell_out'
+
 
 class Chef
   class Provider
@@ -39,34 +41,42 @@ class Chef
           Chef::Log.debug("#{@new_resource} checking package status for #{package}")
           installed = false
 
-          shell_out!("aptitude show #{package}").stdout.each_line do |line|
+          shell_out!("apt-cache policy #{package}").stdout.each_line do |line|
             case line
-            when /^State: installed/
-              installed = true
-            when /^State: not a real package/
-              @is_virtual_package = true
-            when /^Version: (.*)/
-              @candidate_version = $1
-              if installed
-                @current_resource.version($1)
-              else
+            when /^\s{2}Installed: (.+)$/
+              installed_version = $1
+              if installed_version == '(none)'
+                Chef::Log.debug("#{@new_resource} current version is nil")
                 @current_resource.version(nil)
+              else
+                Chef::Log.debug("#{@new_resource} current version is #{installed_version}")
+                @current_resource.version(installed_version)
+                installed = true
               end
-            # If we are a virtual package with one provider package, install it
-            when /^Provided by: ([\w\d\-\.]*)$/
-              next unless @is_virtual_package
-              virtual_provider = $1
-              Chef::Log.info("#{@new_resource} is a virtual package, actually acting on package[#{virtual_provider}]")
-              installed = check_package_state(virtual_provider)
-            # If there is a comma, it is a list of packages. In this case fail to force the user to choose.
-            when /^Provided by: .*,/
-              next unless @is_virtual_package
-              raise Chef::Exceptions::Package, "#{@new_resource.package_name} is a virtual package provided by multiple packages, you must explicitly select one to install"
+            when /^\s{2}Candidate: (.+)$/
+              candidate_version = $1
+              if candidate_version == '(none)'
+                # This may not be an appropriate assumption, but it shouldn't break anything that already worked -- btm
+                @is_virtual_package = true
+                showpkg = shell_out!("apt-cache showpkg #{package}").stdout
+                providers = Hash.new
+                showpkg.rpartition(/Reverse Provides:? #{$/}/)[2].each_line do |line|
+                  provider, version = line.split
+                  providers[provider] = version
+                end
+                # Check if the package providing this virtual package is installed
+                num_providers = providers.length
+                raise Chef::Exceptions::Package, "#{@new_resource.package_name} has no candidate in the apt-cache" if num_providers == 0
+                # apt will only install a virtual package if there is a single providing package
+                raise Chef::Exceptions::Package, "#{@new_resource.package_name} is a virtual package provided by #{num_providers} packages, you must explicitly select one to install" if num_providers > 1
+                # Check if the package providing this virtual package is installed
+                Chef::Log.info("#{@new_resource} is a virtual package, actually acting on package[#{providers.keys.first}]")
+                installed = check_package_state(providers.keys.first)
+              else
+                Chef::Log.debug("#{@new_resource} candidate version is #{$1}")
+                @candidate_version = $1
+              end
             end
-          end
-
-          if @candidate_version.nil?
-            raise Chef::Exceptions::Package, "apt does not have a version of package #{@new_resource.package_name}"
           end
 
           return installed

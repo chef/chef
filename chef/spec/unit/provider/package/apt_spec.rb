@@ -30,12 +30,14 @@ describe Chef::Provider::Package::Apt do
     @status = mock("Status", :exitstatus => 0)
     @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
-    @provider.stub!(:popen4).and_return(@status)
     @stdin = StringIO.new
     @stdout =<<-PKG_STATUS
-Package: irssi
-State: not installed
-Version: 0.8.12-7
+irssi:
+  Installed: (none)
+  Candidate: 0.8.14-1ubuntu4
+  Version table:
+     0.8.14-1ubuntu4 0
+        500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
 PKG_STATUS
     @stderr = StringIO.new
     @pid = 12345
@@ -56,8 +58,8 @@ PKG_STATUS
       @provider.load_current_resource
     end
 
-    it "should run aptitude show with the package name" do
-      @provider.should_receive(:shell_out!).with("aptitude show #{@new_resource.package_name}").and_return(@shell_out)
+    it "should run apt-cache policy with the package name" do
+      @provider.should_receive(:shell_out!).with("apt-cache policy #{@new_resource.package_name}").and_return(@shell_out)
       @provider.load_current_resource
     end
 
@@ -69,33 +71,21 @@ PKG_STATUS
 
     it "should set the installed version if package has one" do
       @stdout.replace(<<-INSTALLED)
-Package: sudo
-State: installed
-Automatically installed: no
-Version: 1.7.2p1-1ubuntu5
-Priority: important
-Section: admin
-Maintainer: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Uncompressed Size: 602k
-Depends: libc6 (>= 2.8), libpam0g (>= 0.99.7.1), libpam-modules
-Conflicts: sudo-ldap
-Replaces: sudo-ldap
-Provided by: sudo-ldap
-Description: Provide limited super user privileges to specific users
-Sudo is a program designed to allow a sysadmin to give limited root privileges
-to users and log root activity. The basic philosophy is to give as few
-privileges as possible but still allow people to get their work done.
+sudo:
+  Installed: 1.7.2p1-1ubuntu5.3
+  Candidate: 1.7.2p1-1ubuntu5.3
+  Version table:
+ *** 1.7.2p1-1ubuntu5.3 0
+        500 http://us.archive.ubuntu.com/ubuntu/ lucid-updates/main Packages
+        500 http://security.ubuntu.com/ubuntu/ lucid-security/main Packages
+        100 /var/lib/dpkg/status
+     1.7.2p1-1ubuntu5 0
+        500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
 INSTALLED
       @provider.should_receive(:shell_out!).and_return(@shell_out)
       @provider.load_current_resource
-      @current_resource.version.should == "1.7.2p1-1ubuntu5"
-      @provider.candidate_version.should eql("1.7.2p1-1ubuntu5")
-    end
-
-    it "should raise an exception if aptitude show does not return a candidate version" do
-      @stdout.replace("E: Unable to locate package magic")
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      @current_resource.version.should == "1.7.2p1-1ubuntu5.3"
+      @provider.candidate_version.should eql("1.7.2p1-1ubuntu5.3")
     end
 
     it "should return the current resouce" do
@@ -106,22 +96,50 @@ INSTALLED
     # libmysqlclient-dev is a real package in newer versions of debian + ubuntu
     # list of virtual packages: http://www.debian.org/doc/packaging-manuals/virtual-package-names-list.txt
     it "should not install the virtual package there is a single provider package and it is installed" do
-      @new_resource.package_name("libmysqlclient-dev")
+      @new_resource.package_name("libmysqlclient15-dev")
       virtual_package_out=<<-VPKG_STDOUT
-No current or candidate version found for libmysqlclient-dev
-Package: libmysqlclient-dev
-State: not a real package
-Provided by: libmysqlclient15-dev
+libmysqlclient15-dev:
+  Installed: (none)
+  Candidate: (none)
+  Version table:
 VPKG_STDOUT
       virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient-dev").and_return(virtual_package)
-      real_package_out =<<-REALPKG_STDOUT
+      @provider.should_receive(:shell_out!).with("apt-cache policy libmysqlclient15-dev").and_return(virtual_package)
+      showpkg_out =<<-SHOWPKG_STDOUT
 Package: libmysqlclient15-dev
-State: installed
-Version: 5.0.51a-24+lenny4
-REALPKG_STDOUT
+Versions: 
+
+Reverse Depends: 
+  libmysqlclient-dev,libmysqlclient15-dev
+  libmysqlclient-dev,libmysqlclient15-dev
+  libmysqlclient-dev,libmysqlclient15-dev
+  libmysqlclient-dev,libmysqlclient15-dev
+  libmysqlclient-dev,libmysqlclient15-dev
+  libmysqlclient-dev,libmysqlclient15-dev
+Dependencies: 
+Provides: 
+Reverse Provides: 
+libmysqlclient-dev 5.1.41-3ubuntu12.7
+libmysqlclient-dev 5.1.41-3ubuntu12.10
+libmysqlclient-dev 5.1.41-3ubuntu12
+SHOWPKG_STDOUT
+      showpkg = mock(:stdout => showpkg_out,:exitstatus => 0)
+      @provider.should_receive(:shell_out!).with("apt-cache showpkg libmysqlclient15-dev").and_return(showpkg)
+      real_package_out=<<-RPKG_STDOUT
+libmysqlclient-dev:
+  Installed: 5.1.41-3ubuntu12.10
+  Candidate: 5.1.41-3ubuntu12.10
+  Version table:
+ *** 5.1.41-3ubuntu12.10 0
+        500 http://us.archive.ubuntu.com/ubuntu/ lucid-updates/main Packages
+        100 /var/lib/dpkg/status
+     5.1.41-3ubuntu12.7 0
+        500 http://security.ubuntu.com/ubuntu/ lucid-security/main Packages
+     5.1.41-3ubuntu12 0
+        500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
+RPKG_STDOUT
       real_package = mock(:stdout => real_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient15-dev").and_return(real_package)
+      @provider.should_receive(:shell_out!).with("apt-cache policy libmysqlclient-dev").and_return(real_package)
       @provider.should_not_receive(:run_command_with_systems_locale)
       @provider.load_current_resource
     end
@@ -129,13 +147,36 @@ REALPKG_STDOUT
     it "should raise an exception if you specify a virtual package with multiple provider packages" do
       @new_resource.package_name("mp3-decoder")
       virtual_package_out=<<-VPKG_STDOUT
-No current or candidate version found for mp3-decoder
-Package: mp3-decoder
-State: not a real package
-Provided by: mpg123, mpg123-oss-i486, mpg321, opencubicplayer, vlc, vlc-nox
+mp3-decoder:
+  Installed: (none)
+  Candidate: (none)
+  Version table:
 VPKG_STDOUT
       virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show mp3-decoder").and_return(virtual_package)
+      @provider.should_receive(:shell_out!).with("apt-cache policy mp3-decoder").and_return(virtual_package)
+      showpkg_out=<<-SHOWPKG_STDOUT
+Package: mp3-decoder
+Versions: 
+
+Reverse Depends: 
+  nautilus,mp3-decoder
+  vux,mp3-decoder
+  plait,mp3-decoder
+  ecasound,mp3-decoder
+  nautilus,mp3-decoder
+Dependencies: 
+Provides: 
+Reverse Provides: 
+vlc-nox 1.0.6-1ubuntu1.8
+vlc 1.0.6-1ubuntu1.8
+vlc-nox 1.0.6-1ubuntu1
+vlc 1.0.6-1ubuntu1
+opencubicplayer 1:0.1.17-2
+mpg321 0.2.10.6
+mpg123 1.12.1-0ubuntu1
+SHOWPKG_STDOUT
+      showpkg = mock(:stdout => showpkg_out,:exitstatus => 0)
+      @provider.should_receive(:shell_out!).with("apt-cache showpkg mp3-decoder").and_return(showpkg)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
   end
