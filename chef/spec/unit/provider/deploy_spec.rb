@@ -37,7 +37,19 @@ describe Chef::Provider::Deploy do
     @provider.should respond_to(:action_rollback)
   end
 
+  it "creates deploy_to dir if it does not exist yet" do
+    FileUtils.should_receive(:mkdir_p).with(@resource.deploy_to)
+    FileUtils.should_receive(:mkdir_p).with(@resource.shared_path)
+    @provider.stub(:copy_cached_repo)
+    @provider.stub(:update_cached_repo)
+    @provider.stub(:symlink)
+    @provider.stub(:migrate)
+    @provider.deploy
+  end
+
   it "updates and copies the repo, then does a migrate, symlink, restart, restart, cleanup on deploy" do
+    FileUtils.stub(:mkdir_p).with("/my/deploy/dir")
+    FileUtils.stub(:mkdir_p).with("/my/deploy/dir/shared")
     @provider.should_receive(:enforce_ownership).twice
     @provider.should_receive(:update_cached_repo)
     @provider.should_receive(:copy_cached_repo)
@@ -248,6 +260,9 @@ describe Chef::Provider::Deploy do
   end
 
   it "symlinks temporary files and logs from the shared dir into the current release" do
+    FileUtils.stub(:mkdir_p).with(@resource.shared_path + "/system")
+    FileUtils.stub(:mkdir_p).with(@resource.shared_path + "/pids")
+    FileUtils.stub(:mkdir_p).with(@resource.shared_path + "/log")
     FileUtils.should_receive(:mkdir_p).with(@expected_release_dir + "/tmp")
     FileUtils.should_receive(:mkdir_p).with(@expected_release_dir + "/public")
     FileUtils.should_receive(:mkdir_p).with(@expected_release_dir + "/config")
@@ -284,13 +299,15 @@ describe Chef::Provider::Deploy do
     it "symlinks files from the shared directory to the current release directory" do
       FileUtils.should_receive(:mkdir_p).with(@expected_release_dir + "/baz")
       FileUtils.should_receive(:mkdir_p).with(@expected_release_dir + "/qux")
+      FileUtils.stub(:mkdir_p).with(@resource.shared_path + "/foo/bar")
+      FileUtils.stub(:mkdir_p).with(@resource.shared_path + "/baz")
       FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/foo/bar", @expected_release_dir + "/foo/bar")
       FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/baz", @expected_release_dir + "/qux/baz")
       FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/radiohead/in_rainbows.yml", @expected_release_dir + "/awesome")
       @provider.should_receive(:enforce_ownership)
       @provider.link_tempfiles_to_current_release
     end
-
+    
   end
 
   it "does nothing for restart if restart_command is empty" do

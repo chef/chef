@@ -106,6 +106,7 @@ class Chef
 
       def deploy
         enforce_ownership
+        verify_directories_exist
         update_cached_repo
         copy_cached_repo
         install_gems
@@ -218,6 +219,11 @@ class Chef
         Chef::Log.info("#{@new_resource} set group to #{@new_resource.group}") if @new_resource.group
       end
 
+      def verify_directories_exist
+        create_dir(@new_resource.deploy_to)
+        create_dir(@new_resource.shared_path)
+      end
+
       def link_current_release_to_production
         FileUtils.rm_f(@new_resource.current_path)
         begin
@@ -241,23 +247,28 @@ class Chef
         Chef::Log.info "#{@new_resource} made pre-migration symlinks"
       end
 
+      def create_dir(dir)
+        begin
+          FileUtils.mkdir_p(dir)
+        rescue => e
+          raise Chef::Exceptions::FileNotFound.new("Cannot create directory #{dir}: #{e.message}")
+        end
+      end
+
       def link_tempfiles_to_current_release
         dirs_info = @new_resource.create_dirs_before_symlink.join(",")
         @new_resource.create_dirs_before_symlink.each do |dir| 
-          begin
-            FileUtils.mkdir_p(release_path + "/#{dir}")
-          rescue => e
-            raise Chef::Exceptions::FileNotFound.new("Cannot create directory #{dir}: #{e.message}")
-          end
+          create_dir(release_path + "/#{dir}")
         end
         Chef::Log.info("#{@new_resource} created directories before symlinking #{dirs_info}")
 
         links_info = @new_resource.symlinks.map { |src, dst| "#{src} => #{dst}" }.join(", ")
         @new_resource.symlinks.each do |src, dest|
+          create_dir(::File.join(@new_resource.shared_path, src))
           begin
-            FileUtils.ln_sf(@new_resource.shared_path + "/#{src}",  release_path + "/#{dest}")
+            FileUtils.ln_sf(::File.join(@new_resource.shared_path, src), ::File.join(release_path, dest))
           rescue => e
-            raise Chef::Exceptions::FileNotFound.new("Cannot symlink shared data #{@new_resource.shared_path}/#{src} to #{release_path}/#{dest}: #{e.message}")
+            raise Chef::Exceptions::FileNotFound.new("Cannot symlink shared data #{::File.join(@new_resource.shared_path, src)} to #{::File.join(release_path, dest)}: #{e.message}")
           end
         end
         Chef::Log.info("#{@new_resource} linked shared paths into current release: #{links_info}")
