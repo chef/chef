@@ -116,6 +116,8 @@ class Chef
             exit 1
           end
           name_args.first
+        else
+          name_args.first
         end
       end
 
