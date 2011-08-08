@@ -9,7 +9,7 @@ __knife__ __search INDEX QUERY__ _(options)_
     Show only one attribute
   * `-i`, `--id-only`:
     Show only the ID of matching objects
-  * `-q`, `--query QUERY`
+  * `-q`, `--query QUERY`:
     The search query; useful to protect queries starting with -
   * `-R`, `--rows INT`:
     The number of rows to return
@@ -70,7 +70,7 @@ Field names are the keys within the JSON description of the object
 being searched.  Nested Keys can be searched by placing an underscore
 ("_") between key names.
 
-#### WILDCARD MATCHING FOR FIELD NAMES
+### WILDCARD MATCHING FOR FIELD NAMES
 
 The field name also has limited support for wildcard matching. Both
 the "*" and "?" wildcards (see below) can be used within a field name;
