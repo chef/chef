@@ -66,19 +66,24 @@ class Chef
 
       alias :info :msg
 
+      # Prints a msg to stderr. Used for warn, error, and fatal.
+      def err(message)
+        stderr.puts message
+      end
+
       # Print a warning message
       def warn(message)
-        msg("#{color('WARNING:', :yellow, :bold)} #{message}")
+        err("#{color('WARNING:', :yellow, :bold)} #{message}")
       end
 
       # Print an error message
       def error(message)
-        msg("#{color('ERROR:', :red, :bold)} #{message}")
+        err("#{color('ERROR:', :red, :bold)} #{message}")
       end
 
       # Print a message describing a fatal error.
       def fatal(message)
-        msg("#{color('FATAL:', :red, :bold)} #{message}")
+        err("#{color('FATAL:', :red, :bold)} #{message}")
       end
 
       def color(string, *colors)
