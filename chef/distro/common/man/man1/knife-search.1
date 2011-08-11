@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-SEARCH" "1" "August 2011" "Chef 0.10.4.rc.5" "Chef Manual"
+.TH "KNIFE\-SEARCH" "1" "August 2011" "Chef 0.10.4" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-search\fR \- Find objects on a Chef Server by query
@@ -9,34 +9,41 @@
 .SH "SYNOPSIS"
 \fBknife\fR \fBsearch INDEX QUERY\fR \fI(options)\fR
 .
-.IP "\(bu" 4
-\fB\-a\fR, \fB\-\-attribute ATTR\fR: Show only one attribute
+.TP
+\fB\-a\fR, \fB\-\-attribute ATTR\fR
+Show only one attribute
 .
-.IP "\(bu" 4
-\fB\-i\fR, \fB\-\-id\-only\fR: Show only the ID of matching objects
+.TP
+\fB\-i\fR, \fB\-\-id\-only\fR
+Show only the ID of matching objects
 .
-.IP "\(bu" 4
-\fB\-q\fR, \fB\-\-query QUERY\fR The search query; useful to protect queries starting with \-
+.TP
+\fB\-q\fR, \fB\-\-query QUERY\fR
+The search query; useful to protect queries starting with \-
 .
-.IP "\(bu" 4
-\fB\-R\fR, \fB\-\-rows INT\fR: The number of rows to return
+.TP
+\fB\-R\fR, \fB\-\-rows INT\fR
+The number of rows to return
 .
-.IP "\(bu" 4
-\fB\-r\fR, \fB\-\-run\-list\fR: Show only the run list
+.TP
+\fB\-r\fR, \fB\-\-run\-list\fR
+Show only the run list
 .
-.IP "\(bu" 4
-\fB\-o\fR, \fB\-\-sort SORT\fR: The order to sort the results in
+.TP
+\fB\-o\fR, \fB\-\-sort SORT\fR
+The order to sort the results in
 .
-.IP "\(bu" 4
-\fB\-b\fR, \fB\-\-start ROW\fR: The row to start returning results at
+.TP
+\fB\-b\fR, \fB\-\-start ROW\fR
+The row to start returning results at
 .
-.IP "\(bu" 4
-\fB\-m\fR, \fB\-\-medium\fR: Display medium sized output when searching nodes using the default summary format
+.TP
+\fB\-m\fR, \fB\-\-medium\fR
+Display medium sized output when searching nodes using the default summary format
 .
-.IP "\(bu" 4
-\fB\-l\fR, \fB\-\-long\fR: Display long output when searching nodes using the default summary format
-.
-.IP "" 0
+.TP
+\fB\-l\fR, \fB\-\-long\fR
+Display long output when searching nodes using the default summary format
 .
 .SH "DESCRIPTION"
 Search is a feature of the Chef Server that allows you to use a full\-text search engine to query information about your infrastructure and applications\. You can utilize this service via search calls in a recipe or the knife search command\. The search syntax is based on Lucene\.
@@ -80,7 +87,7 @@ Searches will return the relevant objects (nodes, roles, environments, or data b
 .SS "FIELD NAMES"
 Field names are the keys within the JSON description of the object being searched\. Nested Keys can be searched by placing an underscore ("_") between key names\.
 .
-.P
+.SS "WILDCARD MATCHING FOR FIELD NAMES"
 The field name also has limited support for wildcard matching\. Both the "*" and "?" wildcards (see below) can be used within a field name; however, they cannot be the first character of the field name\.
 .
 .SS "EXACT MATCHES"
