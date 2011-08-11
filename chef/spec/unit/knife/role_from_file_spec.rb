@@ -33,6 +33,8 @@ describe Chef::Knife::RoleFromFile do
     @role = Chef::Role.new()
     @role.stub!(:save)
     @knife.loader.stub!(:load_from).and_return(@role)
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
   describe "run" do
@@ -55,4 +57,3 @@ describe Chef::Knife::RoleFromFile do
     end
   end
 end
-

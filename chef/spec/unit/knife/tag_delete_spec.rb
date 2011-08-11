@@ -10,6 +10,8 @@ describe Chef::Knife::TagDelete do
     @node.stub! :save
     @node.tags << "sadtag" << "happytag"
     Chef::Node.stub!(:load).and_return @node
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
   describe "run" do
@@ -17,6 +19,7 @@ describe Chef::Knife::TagDelete do
       @node.tags.should == ["sadtag", "happytag"]
       @knife.run
       @node.tags.should == ["happytag"]
+      @stdout.string.should match /deleted.+sadtag/i
     end
   end
 end

@@ -50,7 +50,7 @@ class Chef
 
       def use_encryption
         if config[:secret] && config[:secret_file]
-          stdout.puts "please specify only one of --secret, --secret-file"
+          ui.fatal("please specify only one of --secret, --secret-file")
           exit(1)
         end
         config[:secret] || config[:secret_file]
@@ -61,7 +61,7 @@ class Chef
 
         if @data_bag_name.nil?
           show_usage
-          stdout.puts("You must specify a data bag name")
+          ui.fatal("You must specify a data bag name")
           exit 1
         end
 
@@ -91,6 +91,3 @@ class Chef
     end
   end
 end
-
-
-

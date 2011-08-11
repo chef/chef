@@ -643,6 +643,7 @@ describe Chef::Node do
   describe "acting as a CouchDB-backed model" do
     before(:each) do
       @couchdb = Chef::CouchDB.new
+      @mock_couch = mock('couch mock')
     end
 
     describe "list" do
@@ -716,6 +717,3 @@ describe Chef::Node do
   end
 
 end
-
-
-

@@ -53,7 +53,7 @@ class Chef
           end
         else
           @name_args.each do |cb|
-            puts "checking #{cb}"
+            ui.info "checking #{cb}"
             next unless cookbook_loader.cookbook_exists?(cb)
             checked_a_cookbook = true
             test_cookbook(cb)
