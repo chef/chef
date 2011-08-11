@@ -219,9 +219,6 @@ describe Chef::Provider::Env do
       @new_resource.delim(";")
       @current_resource.value("C:/bar;C:/foo;C:/baz")
 
-      pp @new_resource.value
-      pp @current_resource.value
-
       @provider.compare_value.should be_false
     end
 

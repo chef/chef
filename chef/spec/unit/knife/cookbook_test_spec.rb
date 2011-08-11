@@ -32,6 +32,8 @@ describe Chef::Knife::CookbookTest do
     %w{tats central_market jimmy_johns pho}.each do |cookbook_name|
       @cookbooks << Chef::CookbookVersion.new(cookbook_name)
     end
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
   describe "run" do

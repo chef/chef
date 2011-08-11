@@ -29,6 +29,8 @@ describe Chef::Knife::CookbookSiteUnshare do
     @rest = mock('Chef::REST')
     @rest.stub!(:delete_rest).and_return(true)
     @knife.stub!(:rest).and_return(@rest)
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
   describe 'run' do
@@ -36,6 +38,7 @@ describe Chef::Knife::CookbookSiteUnshare do
     describe 'with no cookbook argument' do
       it 'should print the usage and exit' do
         @knife.name_args = []
+        @knife.ui.should_receive(:fatal)
         @knife.should_receive(:show_usage)
         lambda { @knife.run }.should raise_error(SystemExit)
       end

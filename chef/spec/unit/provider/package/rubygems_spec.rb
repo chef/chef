@@ -31,7 +31,6 @@ end
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
 require 'ostruct'
 
-
 describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   include GemspecBackcompatCreator
 
@@ -197,6 +196,7 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
   end
 
   it "determines the installed versions of gems from the source index (part2: the unmockening)" do
+    $stdout.stub!(:write)
     path_to_gem = `which gem`.strip
     pending("cant find your gem executable") if path_to_gem.empty?
     gem_env = Chef::Provider::Package::Rubygems::AlternateGemEnvironment.new(path_to_gem)

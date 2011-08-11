@@ -37,6 +37,7 @@ describe Chef::Knife do
       Chef::Log.stub!(level_sym)
     end
     Chef::Knife.stub!(:puts)
+    @stdout = StringIO.new
   end
 
   describe "after loading a subcommand" do
@@ -151,6 +152,8 @@ describe Chef::Knife do
     end
 
     it "exits if no subcommand matches the CLI args" do
+      Chef::Knife.ui.stub!(:stdout).and_return(@stdout)
+      Chef::Knife.ui.should_receive(:fatal)
       lambda {Chef::Knife.run(%w{fuuu uuuu fuuuu})}.should raise_error(SystemExit) { |e| e.status.should_not == 0 }
     end
 
@@ -287,4 +290,3 @@ describe Chef::Knife do
   end
 
 end
-

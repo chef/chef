@@ -62,7 +62,6 @@ describe Chef::RunList do
       @run_list.recipes.length.should == 2
       @run_list.recipes.include?('needy').should == true
     end
-    
 
     it "should not allow duplicate versions of a recipe" do
       @run_list << "recipe[needy@0.2.0]"
@@ -164,7 +163,7 @@ describe Chef::RunList do
       Chef::Role.stub!(:load).and_return(@role)
       @rest = mock("Chef::REST", { :get_rest => @role, :url => "/" })
       Chef::REST.stub!(:new).and_return(@rest)
-      
+
       @run_list << "role[stubby]"
       @run_list << "kitty"
     end
@@ -340,7 +339,7 @@ describe Chef::RunList do
     before(:each) do
       a1 = cookbook_maker("a", "1.0", [["c", "< 4.0"]])
       b1 = cookbook_maker("b", "1.0", [["c", "< 3.0"]])
-      
+
       c2 = cookbook_maker("c", "2.0", [["d", "> 1.0"], ["f", nil]])
       c3 = cookbook_maker("c", "3.0", [["d", "> 2.0"], ["e", nil]])
 
@@ -367,6 +366,12 @@ describe Chef::RunList do
         "n" => [n1_1, n1_2, n1_10],
         "depends_on_nosuch" => [depends_on_nosuch]
       }
+
+      $stderr.reopen '/dev/null'
+    end
+
+    after do
+      $stderr.reopen STDERR
     end
 
     it "pulls in transitive dependencies" do
