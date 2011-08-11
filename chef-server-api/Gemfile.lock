@@ -1,7 +1,7 @@
 PATH
   remote: ../chef
   specs:
-    chef (0.10.4)
+    chef (0.10.5)
       bunny (>= 0.6.0)
       erubis
       highline
@@ -21,8 +21,8 @@ PATH
 PATH
   remote: ../chef-solr
   specs:
-    chef-solr (0.10.4)
-      chef (= 0.10.4)
+    chef-solr (0.10.5)
+      chef (= 0.10.5)
 
 GEM
   remote: http://rubygems.org/
