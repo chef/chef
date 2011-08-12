@@ -73,7 +73,11 @@ class Chef
         other.run_list_items == @run_list_items
       else
         return false unless other.respond_to?(:size) && (other.size == @run_list_items.size)
-        other_run_list_items = other.dup
+        if other.kind_of?(String)
+          other_run_list_items = [ coerce_to_run_list_item(other) ]        
+        else
+          other_run_list_items = other.dup
+        end
 
         other_run_list_items.map! { |item| coerce_to_run_list_item(item) }
         other_run_list_items == @run_list_items
