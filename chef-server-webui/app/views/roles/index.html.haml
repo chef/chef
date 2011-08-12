@@ -11,7 +11,7 @@
             %th &nbsp;
             %th.last &nbsp;
           - even = false;
-          - @role_list.each do |role|
+          - @role_list.sort.each do |role|
             %tr{ :class => even ? "even" : "odd" }
               %td{:colspan => 2}= link_to(role[0], url(:role, role[0]))
               %td
