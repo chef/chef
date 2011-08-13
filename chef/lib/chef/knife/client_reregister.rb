@@ -50,10 +50,9 @@ class Chef
             f.print(key['private_key'])
           end
         else
-          puts key['private_key']
+          ui.msg key['private_key']
         end
       end
     end
   end
 end
-
