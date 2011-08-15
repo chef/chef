@@ -783,13 +783,26 @@ class Chef
           # Querying the cache
           #
 
+          # Check for package by name or name+arch
           def package_available?(package_name)
             refresh
+
             if @rpmdb.lookup(package_name)
-              true
+              return true
             else
-              false
+              if package_name =~ %r{^(.*)\.(.*)$}
+                pkg_name = $1
+                pkg_arch = $2
+
+                if matches = @rpmdb.lookup(pkg_name)
+                  matches.each do |m|
+                    return true if m.arch == pkg_arch
+                  end
+                end
+              end
             end
+
+            return false
           end
 
           # Returns a array of packages satisfying an RPMDependency
@@ -918,7 +931,15 @@ class Chef
             @yum.reload
           end
 
+          # At this point package_name could be:
+          # 
+          # 1) a package name, eg: "foo"
+          # 2) a package name.arch, eg: "foo.i386"
+          # 3) or a dependency, eg: "foo >= 1.1"
+
+          # Check if we have name or name+arch which has a priority over a dependency
           unless @yum.package_available?(@new_resource.package_name)
+            # If they aren't in the installed packages they could be a dependency
             parse_dependency
           end
 

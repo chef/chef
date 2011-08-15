@@ -1431,6 +1431,8 @@ znc-devel 0 0.098 1.el5 i386 [] a
 znc-devel 0 0.098 1.el5 x86_64 [] a
 znc-extra 0 0.098 1.el5 x86_64 [] a
 znc-modtcl 0 0.098 1.el5 x86_64 [] a
+znc-test.beta1 0 0.098 1.el5 x86_64 [] a
+znc-test.test.beta1 0 0.098 1.el5 x86_64 [] a
 EOF
 
     yum_dump_bad_output_separators = <<EOF
@@ -1644,10 +1646,21 @@ EOF
   end
 
   describe "package_available?" do
-    it "should return true a package is available" do
+    it "should return true a package name is available" do
       @yc.package_available?("zisofs-tools").should be == true 
       @yc.package_available?("moo").should be == false
       @yc.package_available?(nil).should be == false
+    end
+
+    it "should return true a package name + arch is available" do
+      @yc.package_available?("zlib-devel.i386").should be == true
+      @yc.package_available?("zisofs-tools.x86_64").should be == true 
+      @yc.package_available?("znc-test.beta1.x86_64").should be == true
+      @yc.package_available?("znc-test.beta1").should be == true
+      @yc.package_available?("znc-test.test.beta1").should be == true
+      @yc.package_available?("moo.i386").should be == false
+      @yc.package_available?("zisofs-tools.beta").should be == false
+      @yc.package_available?("znc-test.test").should be == false
     end
   end
 
