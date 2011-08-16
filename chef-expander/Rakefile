@@ -16,7 +16,8 @@
 # limitations under the License.
 #
 
-require File.dirname(__FILE__) + 'lib/chef/expander/version'
+$: << File.dirname(__FILE__)
+require 'lib/chef/expander/version'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 
