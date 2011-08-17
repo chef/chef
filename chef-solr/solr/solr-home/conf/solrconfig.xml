@@ -104,7 +104,7 @@
     <!-- Deprecated -->
     <!--<maxBufferedDocs>1000</maxBufferedDocs>-->
     <maxMergeDocs>2147483647</maxMergeDocs>
-    <maxFieldLength>10000</maxFieldLength>
+    <maxFieldLength>100000</maxFieldLength>
 
     <!-- If true, unlock any held write or commit locks on startup.
          This defeats the locking mechanism that allows multiple
