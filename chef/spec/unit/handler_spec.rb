@@ -167,8 +167,49 @@ describe Chef::Handler do
   end
 
   # and this would test the start handler
-#  describe "when running a start handler" do
+  describe "when running a start handler" do
+    before do
+      @start_time = Time.now
+      Time.stub!(:now).and_return(@start_time)
+      @run_status.start_clock
+    end
 
-#  end
+    it "should not have all resources" do
+      @handler.all_resources.should be_false
+    end
+
+    it "should not have updated resources" do
+      @handler.updated_resources.should be_false
+    end
+
+    it "has a shortcut for the start time" do
+      @handler.start_time.should == @start_time
+    end
+
+    it "does not have a shortcut for the end time" do
+      @handler.end_time.should be_false
+    end
+
+    it "does not have a shortcut for the elapsed time" do
+      @handler.elapsed_time.should be_false
+    end
+
+    it "has a shortcut for the node" do
+      @handler.node.should == @node
+    end
+
+    it "does not have a shortcut for the run context" do
+      @handler.run_context.should be_false
+    end
+
+    it "has a shortcut for the success? and failed? predicates" do
+      @handler.success?.should be_true # for some reason this is true
+      @handler.failed?.should be_false
+    end
+
+    it "has a shortcut to the hash representation of the run status" do
+      @handler.data.should == @run_status.to_hash
+    end
+  end
 
 end
