@@ -519,10 +519,10 @@ class Chef
       if o.has_key?("attributes")
         node.normal_attrs = o["attributes"]
       end
-      node.automatic_attrs = Mash.new(o["automatic"]) if o.has_key?("automatic")
-      node.normal_attrs = Mash.new(o["normal"]) if o.has_key?("normal")
-      node.default_attrs = Mash.new(o["default"]) if o.has_key?("default")
-      node.override_attrs = Mash.new(o["override"]) if o.has_key?("override")
+      node.automatic_attrs = o["automatic"] if o.has_key?("automatic")
+      node.normal_attrs = o["normal"] if o.has_key?("normal")
+      node.default_attrs = o["default"] if o.has_key?("default")
+      node.override_attrs = o["override"] if o.has_key?("override")
 
       if o.has_key?("run_list")
         node.run_list.reset!(o["run_list"])
