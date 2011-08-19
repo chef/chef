@@ -265,6 +265,13 @@ describe Chef::CookbookVersion do
       readme["specificity"].should == "default"
     end
 
+    it "raises an error when attempting to load a missing cookbook_file" do
+      node = Chef::Node.new.tap {|n| n.name("sample.node"); n[:fqdn] = "sample.example.com"; n[:platform] = "ubuntu"; n[:platform_version] = "10.04"}
+      attempt_to_load_file = lambda { @cookbook_version.preferred_manifest_record(node, :files, "no-such-thing.txt") }
+      useful_explanation = Regexp.new(Regexp.escape("Cookbook 'tatft' (0.0.0) does not contain file 'files/default/no-such-thing.txt'"))
+      attempt_to_load_file.should raise_error(Chef::Exceptions::FileNotFound, useful_explanation)
+    end
+
   end
 
   describe "when cleaning up unused cookbook components" do
