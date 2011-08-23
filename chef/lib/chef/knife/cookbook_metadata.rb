@@ -82,10 +82,10 @@ class Chef
         generated = true
         Chef::Log.debug("Generated #{json_file}")
       rescue Exceptions::ObsoleteDependencySyntax, Exceptions::InvalidVersionConstraint => e
-        STDERR.puts "ERROR: The cookbook '#{cookbook}' contains invalid or obsolete metadata syntax."
-        STDERR.puts "in #{file}:"
-        STDERR.puts
-        STDERR.puts e.message
+        ui.stderr.puts "ERROR: The cookbook '#{cookbook}' contains invalid or obsolete metadata syntax."
+        ui.stderr.puts "in #{file}:"
+        ui.stderr.puts
+        ui.stderr.puts e.message
         exit 1
       end
 
@@ -95,10 +95,10 @@ class Chef
           Chef::Cookbook::Metadata.validate_json(IO.read(json_file))
         end
       rescue Exceptions::ObsoleteDependencySyntax, Exceptions::InvalidVersionConstraint => e
-        STDERR.puts "ERROR: The cookbook '#{cookbook}' contains invalid or obsolete metadata syntax."
-        STDERR.puts "in #{json_file}:"
-        STDERR.puts
-        STDERR.puts e.message
+        ui.stderr.puts "ERROR: The cookbook '#{cookbook}' contains invalid or obsolete metadata syntax."
+        ui.stderr.puts "in #{json_file}:"
+        ui.stderr.puts
+        ui.stderr.puts e.message
         exit 1
       end
 
