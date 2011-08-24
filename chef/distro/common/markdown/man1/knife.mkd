@@ -40,14 +40,14 @@ documentation using `knife help TOPIC`.
     API Client Key, corresponds to `Chef::Config` `client_key`.
   * `-c`, `--config` CONFIG:
     The configuration file to use
+  * `-E`, `--environment ENVIRONMENT`:
+    Set the Chef environment
   * `-e`, `--editor` EDITOR:
     Set the editor to use for interactive commands
   * `-F`, `--format` FORMAT:
     Which format to use for output
-  * `-l`, `--log_level` LEVEL:
-    Set the log level (debug, info, warn, error, fatal), corresponds to `Chef::Config` `log_level`.
-  * `-L`, `--logfile` LOGLOCATION:
-    Set the log file location, defaults to STDOUT, corresponds to `Chef::Config` `log_location`.
+  * `-V`, `--verbose`:
+    More verbose output.  Use twice for max verbosity
   * `-n`, `--no-editor`:
     Do not open EDITOR, just accept the data as is
   * `-u`, `--user` USER:
@@ -58,6 +58,12 @@ documentation using `knife help TOPIC`.
     Show chef version
   * `-y`, `--yes`:
     Say yes to all prompts for confirmation
+  * `--defaults`:
+    Accept default values for all questions
+  * `--color`:
+    Use colored output
+  * `--no-color`:
+    Don't use colors in the output
   * `-h`, `--help`:
     Show the available options for a command.
 
