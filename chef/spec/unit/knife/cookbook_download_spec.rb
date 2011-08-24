@@ -1,5 +1,5 @@
 #
-# Author:: Thomas Bishop (<bishop.thomas@gmail.com.com>)
+# Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
 # Copyright:: Copyright (c) 2011 Thomas Bishop
 # License:: Apache License, Version 2.0
 #
