@@ -100,25 +100,7 @@ __knife node show__ _node name_ _(options)_
     Display more, but not all, of the node's data when using the default
     _summary_ format
 
-Displays the node identified by _node name_ on stdout. The amount of
-content displayed and the output format are modified by the --format
-option. If no alternate format is selected, the default is summary. 
-Valid formats are:
-
-  * summary:
-    displays the node in a custom, summarized format (default)
-  * text
-    displays the node data in its entirety using the colorized tree
-display 
-  * json:
-    displays the node in JSON format
-  * yaml:
-    displays the node in YAML format
-  * pp
-    displays the node using Ruby's pretty printer.
-
-For brevity, only the first character of the format is required, for
-example, -Fj will produce JSON format output.
+Displays the node identified by _node name_ on stdout. 
 
 ## RUN LIST ITEM FORMAT
 Run list items may be either roles or recipes. When adding a role to a
