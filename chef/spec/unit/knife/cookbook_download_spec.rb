@@ -43,19 +43,19 @@ describe Chef::Knife::CookbookDownload do
         @manifest_data = {
           :recipes => [
             {'path' => 'recipes/foo.rb',
-              'url' => 'http://example.org/files/foo.rb'},
-              {'path' => 'recipes/bar.rb',
-                'url' => 'http://example.org/files/bar.rb'}
+             'url' => 'http://example.org/files/foo.rb'},
+            {'path' => 'recipes/bar.rb',
+             'url' => 'http://example.org/files/bar.rb'}
           ],
           :templates => [
             {'path' => 'templates/default/foo.erb',
-              'url' => 'http://example.org/files/foo.erb'},
-              {'path' => 'templates/default/bar.erb',
-                'url' => 'http://example.org/files/bar.erb'}
+             'url' => 'http://example.org/files/foo.erb'},
+            {'path' => 'templates/default/bar.erb',
+             'url' => 'http://example.org/files/bar.erb'}
           ],
           :attributes => [
             {'path' => 'attributes/default.rb',
-              'url' => 'http://example.org/files/default.rb'}
+             'url' => 'http://example.org/files/default.rb'}
           ]
         }
 
