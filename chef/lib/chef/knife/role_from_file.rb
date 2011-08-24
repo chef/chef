@@ -28,20 +28,22 @@ class Chef
         require 'chef/json_compat'
       end
 
-      banner "knife role from file FILE (options)"
+      banner "knife role from file FILE [FILE..] (options)"
 
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(Chef::Role, ui)
       end
 
       def run
-        updated = loader.load_from("roles", @name_args[0])
+        @name_args.each do |arg|
+          updated = loader.load_from("roles", arg)
 
-        updated.save
+          updated.save
 
-        output(format_for_display(updated)) if config[:print_after]
+          output(format_for_display(updated)) if config[:print_after]
 
-        ui.info("Updated Role #{updated.name}!")
+          ui.info("Updated Role #{updated.name}!")
+        end
       end
 
     end

@@ -54,5 +54,15 @@ describe Chef::Knife::RoleFromFile do
       end
     end
   end
+
+  describe "run with multiple arguments" do
+    it "should load each file" do
+      @knife.name_args = [ "adam.rb", "caleb.rb" ]
+      @knife.loader.should_receive(:load_from).with('roles', 'adam.rb').and_return(@role)
+      @knife.loader.should_receive(:load_from).with('roles', 'caleb.rb').and_return(@role)
+      @knife.run
+    end
+  end
+
 end
 
