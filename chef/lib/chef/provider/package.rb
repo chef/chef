@@ -113,7 +113,12 @@ class Chef
           return
         end
 
-        status = preseed_package(@new_resource.package_name, @current_resource.version) if @new_resource.response_file
+        unless @new_resource.response_file then
+          Chef::Log.debug("#{@new_resource} no response_file provided - nothing to do")
+          return
+        end
+
+        status = preseed_package(@new_resource.package_name, @current_resource.version)
         unless status then
           Chef::Log.debug("#{@new_resource} preseeding has not changed - nothing to do")
           return
