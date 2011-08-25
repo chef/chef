@@ -107,6 +107,23 @@ class Chef
         end
       end
 
+      def action_reconfig
+        if @current_resource.version == nil then
+          Chef::Log.debug("#{@new_resource} is NOT installed - nothing to do")
+          return
+        end
+
+        status = preseed_package(@new_resource.package_name, @current_resource.version) if @new_resource.response_file
+        unless status then
+          Chef::Log.debug("#{@new_resource} preseeding has not changed - nothing to do")
+          return
+        end
+
+        status = reconfig_package(@new_resource.package_name, @current_resource.version)
+        @new_resource.updated_by_last_action(true) if status
+        Chef::Log.info("#{@new_resource} reconfigured")
+      end
+
       def install_package(name, version)
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :install"
       end
@@ -125,6 +142,10 @@ class Chef
 
       def preseed_package(name, version)
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support pre-seeding package install/upgrade instructions - don't ask it to!"
+      end
+
+      def reconfig_package(name, version)
+        raise( Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reconfig" )
       end
 
       def get_preseed_file(name, version)
