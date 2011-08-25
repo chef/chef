@@ -100,8 +100,9 @@ describe Chef::Knife::CookbookSiteShare do
       Chef::CookbookSiteStreamingUploader.stub!(:post).and_return(@upload_response)
 
       @stdout = StringIO.new
+      @stderr = StringIO.new
       @knife.ui.stub!(:stdout).and_return(@stdout)
-
+      @knife.ui.stub!(:stderr).and_return(@stderr)
       File.stub(:open).and_return(true)
     end
 
@@ -118,7 +119,7 @@ describe Chef::Knife::CookbookSiteShare do
       @upload_response.stub!(:body).and_return(response_text)
       @upload_response.stub!(:code).and_return(409)
       lambda { @knife.run }.should raise_error(SystemExit)
-      @stdout.string.should match(/ERROR(.+)cookbook already exists/)
+      @stderr.string.should match(/ERROR(.+)cookbook already exists/)
     end
 
     it 'should pass any errors on to the user' do
@@ -126,7 +127,7 @@ describe Chef::Knife::CookbookSiteShare do
       @upload_response.stub!(:body).and_return(response_text)
       @upload_response.stub!(:code).and_return(403)
       lambda { @knife.run }.should raise_error(SystemExit)
-      @stdout.string.should match("ERROR(.*)You're holding it wrong")
+      @stderr.string.should match("ERROR(.*)You're holding it wrong")
     end
 
     it 'should print the body if no errors are exposed on failure' do
