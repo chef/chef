@@ -31,6 +31,16 @@ describe Chef::Knife::CookbookCreate do
 
   describe "run" do
 
+    # Fixes CHEF-2579
+    it "should expand the path of the cookbook directory" do
+      File.should_receive(:expand_path).with("~/tmp/monkeypants")
+      @knife.config = {:cookbook_path => "~/tmp/monkeypants"}
+      @knife.stub!(:create_cookbook)
+      @knife.stub!(:create_readme)
+      @knife.stub!(:create_metadata)
+      @knife.run
+    end
+
     it "should create a new cookbook with default values to copyright name, email, readme format and license if those are not supplied" do
       @dir = Dir.tmpdir
       @knife.config = {:cookbook_path => @dir}

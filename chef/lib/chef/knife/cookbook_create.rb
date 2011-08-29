@@ -67,7 +67,7 @@ class Chef
           raise ArgumentError, "Default cookbook_path is not specified in the knife.rb config file, and a value to -o is not provided. Nowhere to write the new cookbook to."
         end
 
-        cookbook_path = Array(config[:cookbook_path]).first
+        cookbook_path = File.expand_path(Array(config[:cookbook_path]).first)
         cookbook_name = @name_args.first
         copyright = config[:cookbook_copyright] || "YOUR_COMPANY_NAME"
         email = config[:cookbook_email] || "YOUR_EMAIL"
