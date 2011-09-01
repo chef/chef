@@ -36,7 +36,7 @@ class Chef::Application::Knife < Chef::Application
   option :verbosity,
     :short => '-V',
     :long  => '--verbose',
-    :description => "More verbose output. Use twice for max verbosity",
+    :description => "More verbose output. Use twice for stack traces.",
     :proc  => Proc.new { verbosity_level += 1},
     :default => 0
 
