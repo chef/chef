@@ -23,7 +23,6 @@ require 'net/ssh'
 describe Chef::Knife::Bootstrap do
   before(:each) do
     Chef::Log.logger = Logger.new(StringIO.new)
-
     @knife = Chef::Knife::Bootstrap.new
     @knife.config[:template_file] = File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test.erb"))
   end
@@ -40,6 +39,13 @@ describe Chef::Knife::Bootstrap do
 
   it "should load the specified template" do
     @knife.config[:distro] = 'fedora13-gems'
+    lambda { @knife.load_template }.should_not raise_error
+  end
+
+  it "should load the specified template from a Ruby gem" do
+    @knife.config[:template_file] = false
+    @gem = mock('Gem').stub!(:find_files).and_return(["/Users/schisamo/.rvm/gems/ruby-1.9.2-p180@chef-0.10/gems/knife-windows-0.5.4/lib/chef/knife/bootstrap/windows-shell.erb"])
+    @knife.config[:distro] = 'windows-shell'
     lambda { @knife.load_template }.should_not raise_error
   end
 
