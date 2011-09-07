@@ -30,8 +30,8 @@ class Chef
       banner "knife role create ROLE (options)"
 
       option :description,
-        :short => "-d",
-        :long => "--description",
+        :short => "-d DESC",
+        :long => "--description DESC",
         :description => "The role description"
 
       def run
