@@ -107,18 +107,19 @@ class Chef
         :default => false
 
       def load_template(template=nil)
+        bootstrap_files = []
         # Are we bootstrapping using an already shipped template?
         if config[:template_file]
-          bootstrap_files = config[:template_file]
+          bootstrap_files << config[:template_file]
         else
-          bootstrap_files = []
           bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
           bootstrap_files << File.join(Dir.pwd, ".chef", "bootstrap", "#{config[:distro]}.erb")
           bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb")
-          bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{config[:distro]}.erb"))
+          gem_files = Gem.find_files(File.join("chef","knife","bootstrap","#{config[:distro]}.erb")) # May return multiple files
+          bootstrap_files += gem_files unless gem_files.nil?
         end
 
-        template = Array(bootstrap_files).find do |bootstrap_template|
+        template = bootstrap_files.find do |bootstrap_template|
           Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
           File.exists?(bootstrap_template)
         end
