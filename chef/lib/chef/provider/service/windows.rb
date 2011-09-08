@@ -1,7 +1,8 @@
 #
 # Author:: Nuo Yan <nuo@opscode.com>
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright (c) 2010 Opscode, Inc
+# Author:: Seth Chisamore <schisamo@opscode.com>
+# Copyright:: Copyright (c) 2010-2011 Opscode, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,130 +18,138 @@
 # limitations under the License.
 #
 
-# pick up popen4 from chef/mixin/command/windows
-require 'chef/mixin/command'
 require 'chef/provider/service/simple'
+if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+  require 'win32/service'
+end
 
-class Chef::Provider::Service::Windows < Chef::Provider::Service::Simple
-
-  def initialize(new_resource, run_context)
-    super
-    @init_command = "sc"
-  end
-
-  def io_popen(command)
-    io = IO.popen(command)
-    entries = io.readlines
-    io.close
-    entries
-  end
+class Chef::Provider::Service::Windows < Chef::Provider::Service
+  RUNNING = 'running'
+  STOPPED = 'stopped'
+  AUTO_START = 'auto start'
+  DISABLED = 'disabled'
 
   def load_current_resource
     @current_resource = Chef::Resource::Service.new(@new_resource.name)
-    @current_resource.service_name(@new_resource.service_name)
-    begin
-      # Check if service is running
-      status = popen4("#{@init_command} query #{@new_resource.service_name}") do |pid, stdin, stdout, stderr|
-        stdout.each_line do |line|
-          raise Chef::Exceptions::Service, "Service #{@new_resource.service_name} does not exist.\n#{stdout}\n" if line =~ /FAILED 1060/
-          @current_resource.running true if line =~/RUNNING/
-        end
-      end
-
-      # Check if service is enabled
-      status = popen4("#{@init_command} qc #{@new_resource.service_name}") do |pid, stdin, stdout, stderr|
-        stdout.each_line do |line|
-          raise Chef::Exceptions::Service, "Service #{@new_resource.service_name} does not exist.\n#{stdout}\n" if line =~ /FAILED 1060/
-          @current_resource.enabled true if line =~/AUTO_START/
-        end
-      end
-
-      Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
-    rescue Exception => e
-      raise Chef::Exceptions::Service, "Exception determining state of service #{@new_resource.service_name}: #{e.message}"
-    end
+    @current_resource.service_name(@new_resource.service_name)    
+    @current_resource.running(current_state == RUNNING)
+    Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
+    @current_resource.enabled(start_type == AUTO_START)
+    Chef::Log.debug "#{@new_resource} enabled: #{@current_resource.enabled}"
     @current_resource
   end
 
   def start_service
-    begin
-      if @new_resource.start_command
-        popen4(@new_resource.start_command) do |pid, stdin, stdout, stderr|
-          Chef::Log.debug stdout.readlines
-        end
+    if Win32::Service.exists?(@new_resource.service_name)
+      if current_state == RUNNING
+        Chef::Log.debug "#{@new_resource} already started - nothing to do"
       else
-        popen4("#{@init_command} start #{@new_resource.service_name}") do |pid, stdin, stdout, stderr|
-          output = stdout.readlines
-          Chef::Log.debug output.join
-          output.join =~ /RUNNING/ || output.join =~ /START_PENDING/ ? true : false
+        if @new_resource.start_command
+          Chef::Log.debug "#{@new_resource} starting service using the given start_command"
+          shell_out!(@new_resource.start_command)
+        else
+          spawn_command_thread do
+            Win32::Service.start(@new_resource.service_name)
+            wait_for_state(RUNNING)
+          end
         end
+        @new_resource.updated_by_last_action(true)
       end
-    rescue Exception => e
-      raise Chef::Exceptions::Service, "Failed to start service #{@new_resource.service_name}: #{e.message}"
+    else
+        Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
     end
   end
 
   def stop_service
-    begin
-      if @new_resource.stop_command
-        Chef::Log.debug "#{@new_resource} stopping service using the given stop_command"
-        popen4(@new_resource.stop_command) do |pid, stdin, stdout, stderr|
-          Chef::Log.debug stdout.readlines
+    if Win32::Service.exists?(@new_resource.service_name)
+      if current_state == RUNNING
+        if @new_resource.stop_command
+          Chef::Log.debug "#{@new_resource} stopping service using the given stop_command"
+          shell_out!(@new_resource.stop_command)
+        else
+          spawn_command_thread do
+            Win32::Service.stop(@new_resource.service_name)
+            wait_for_state(STOPPED)
+          end
         end
+        @new_resource.updated_by_last_action(true)
       else
-        popen4("#{@init_command} stop #{@new_resource.service_name}") do |pid, stdin, stdout, stderr|
-          output = stdout.readlines
-          Chef::Log.debug output.join
-          raise Chef::Exceptions::Service, "Service #{@new_resource.service_name} has dependencies and cannot be stopped.\n" if output.join =~ /FAILED 1051/
-          output.join =~ /1/
-        end
+        Chef::Log.debug "#{@new_resource} already stopped - nothing to do"
       end
-    rescue Exception => e
-      raise Chef::Exceptions::Service, "Failed to start service #{@new_resource.service_name}: #{e.message}"
+    else
+      Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
     end
   end
 
   def restart_service
-    begin
+    if Win32::Service.exists?(@new_resource.service_name)
       if @new_resource.restart_command
         Chef::Log.debug "#{@new_resource} restarting service using the given restart_command"
-        popen4(@new_resource.restart_command) do |pid, stdin, stdout, stderr|
-          Chef::Log.debug stdout.readlines
-        end
+        shell_out!(@new_resource.restart_command)
       else
         stop_service
-        sleep 1
         start_service
       end
-    rescue Exception => e
-      raise Chef::Exceptions::Service, "Failed to start service #{@new_resource.service_name}: #{e.message}"
+      @new_resource.updated_by_last_action(true)
+    else
+      Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
     end
   end
 
-  def enable_service()
-    begin
-      popen4("#{@init_command} config #{@new_resource.service_name} start= #{determine_startup_type}") do |pid, stdin, stdout, stderr|
-        stdout.readlines.join =~ /SUCCESS/
+  def enable_service
+    if Win32::Service.exists?(@new_resource.service_name)
+      if start_type == AUTO_START
+        Chef::Log.debug "#{@new_resource} already enabled - nothing to do"
+      else
+        Win32::Service.configure(
+          :service_name => @new_resource.service_name,
+          :start_type => Win32::Service::AUTO_START
+        )
+        @new_resource.updated_by_last_action(true)
       end
-    rescue Exception => e
-      raise Chef::Exceptions::Service, "Failed to start service #{@new_resource.service_name}: #{e.message}"
+    else
+      Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
     end
   end
 
-  def disable_service()
-    begin
-      popen4("#{@init_command} config #{@new_resource.service_name} start= disabled") do |pid, stdin, stdout, stderr|
-        stdout.readlines.join =~ /SUCCESS/
+  def disable_service
+    if Win32::Service.exists?(@new_resource.service_name)
+      if start_type == AUTO_START
+        Win32::Service.configure(
+          :service_name => @new_resource.service_name,
+          :start_type => Win32::Service::DISABLED
+        )
+        @new_resource.updated_by_last_action(true)
+      else
+        Chef::Log.debug "#{@new_resource} already disabled - nothing to do"
       end
-    rescue Exception => e
-      raise Chef::Exceptions::Service, "Failed to start service #{@new_resource.service_name}: #{e.message}"
+    else
+      Chef::Log.debug "#{@new_resource} does not exist - nothing to do"
     end
   end
 
   private
-
-  def determine_startup_type
-    {:automatic => 'auto', :mannual => 'demand'}[@new_resource.startup_type]
+  def current_state
+    Win32::Service.status(@new_resource.service_name).current_state
   end
 
+  def start_type
+    Win32::Service.config_info(@new_resource.service_name).start_type
+  end
+
+  # Helper method that waits for a status to change its state since state
+  # changes aren't usually instantaneous.
+  def wait_for_state(desired_state)
+    sleep 1 until current_state == desired_state
+  end
+
+  # There ain't no party like a thread party...
+  def spawn_command_thread
+    worker = Thread.new do
+      yield
+    end
+    Timeout.timeout(60) do
+      worker.join
+    end
+  end
 end

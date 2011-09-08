@@ -145,16 +145,7 @@ class Chef
           @supports
         end
       end
-      
-      # This attribute applies for Windows only.
-      def startup_type(arg=nil)
-        set_or_return(
-          :startup_type,
-          arg,
-          :equal_to => [:automatic, :mannual]
-        )
-      end
-  
+
     end
   end
 end
