@@ -95,6 +95,23 @@ describe Chef::Provider::RemoteDirectory do
       File.exist?(@destination_dir + '/.a_dotdir/.a_dotfile_in_a_dotdir').should be_true
     end
 
+    describe "only if it is missing" do
+      it "should not overwrite existing files" do
+        @resource.overwrite(true)
+        @provider.action_create
+
+        File.open(@destination_dir + '/remote_dir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
+        File.open(@destination_dir + '/remotesubdir/remote_subdir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
+        file1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + '/remote_dir_file1.txt'))
+        subdirfile1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))
+
+        @provider.action_create_if_missing
+
+        file1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + '/remote_dir_file1.txt'))).should be_true
+        subdirfile1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))).should be_true
+      end
+    end
+
     describe "with purging enabled" do
       before {@resource.purge(true)}
 
@@ -126,6 +143,7 @@ describe Chef::Provider::RemoteDirectory do
         ::File.exist?(@destination_dir + '/a/multiply/nested/baz.txt').should be_false
         ::File.exist?(@destination_dir + '/a/multiply/nested/directory/qux.txt').should be_false
       end
+
     end
 
     describe "with overwrite disabled" do
@@ -134,12 +152,8 @@ describe Chef::Provider::RemoteDirectory do
 
       it "leaves modifications alone" do
         @provider.action_create
-        file1 = File.open(@destination_dir + '/remote_dir_file1.txt', 'a')
-        file1.puts "blah blah blah"
-        file1.close
-        subdirfile1 = File.open(@destination_dir + '/remotesubdir/remote_subdir_file1.txt', 'a')
-        subdirfile1.puts "blah blah blah"
-        subdirfile1.close
+        File.open(@destination_dir + '/remote_dir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
+        File.open(@destination_dir + '/remotesubdir/remote_subdir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
         file1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + '/remote_dir_file1.txt'))
         subdirfile1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))
         @provider.action_create

@@ -49,7 +49,7 @@ class Chef
 
       def action_create_if_missing
         # if this action is called, ignore the existing overwrite flag
-        @new_resource.overwrite = false
+        @new_resource.overwrite(false)
         action_create
       end
 
