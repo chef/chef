@@ -27,6 +27,7 @@ require 'tempfile'
 require 'chef/rest/auth_credentials'
 require 'chef/rest/rest_request'
 require 'chef/monkey_patches/string'
+require 'chef/config'
 
 class Chef
   # == Chef::REST
