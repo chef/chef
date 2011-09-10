@@ -34,26 +34,28 @@ class Chef
       option :secret,
       :short => "-s SECRET",
       :long  => "--secret ",
-      :description => "The secret key to use to decrypt data bag item values"
+      :description => "The secret key to use to decrypt data bag item values",
+      :proc  => Proc.new { |key| Chef::Config[:knife][:secret] = key }
 
       option :secret_file,
       :long => "--secret-file SECRET_FILE",
-      :description => "A file containing the secret key to use to decrypt data bag item values"
+      :description => "A file containing the secret key to use to decrypt data bag item values",
+      :proc => Proc.new { |key| Chef::Config[:knife][:secret_file] = key }
 
       def read_secret
-        if config[:secret]
-          config[:secret]
+        if Chef::Config[:knife][:secret]
+          Chef::Config[:knife][:secret]
         else
-          Chef::EncryptedDataBagItem.load_secret(config[:secret_file])
+          Chef::EncryptedDataBagItem.load_secret(Chef::Config[:knife][:secret_file])
         end
       end
 
       def use_encryption
-        if config[:secret] && config[:secret_file]
+        if Chef::Config[:knife][:secret] && Chef::Config[:knife][:secret_file]
           stdout.puts "please specify only one of --secret, --secret-file"
           exit(1)
         end
-        config[:secret] || config[:secret_file]
+        Chef::Config[:knife][:secret] || Chef::Config[:knife][:secret_file]
       end
 
       def run
