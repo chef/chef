@@ -97,15 +97,15 @@ class Chef
           unless @current_resource.version
             case @new_resource.source
             when /^ports$/
-              shell_out!("make -DBATCH -f #{port_path}/Makefile install", :timeout => 1200, :env => nil).status
+              shell_out!("make -DBATCH -f #{port_path}/Makefile install", :timeout => 1200, :env => {'FTP_PASSIVE_MODE' => '1'}).status
             when /^http/, /^ftp/
-              shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
+              shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil, 'FTP_PASSIVE_MODE' => '1'}).status
               Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
             when /^\//
-              shell_out!("pkg_add #{@new_resource.name}", :env => { "PKG_PATH" => @new_resource.source , 'LC_ALL'=>nil}).status
+              shell_out!("pkg_add #{@new_resource.name}", :env => { "PKG_PATH" => @new_resource.source , 'LC_ALL'=>nil, 'FTP_PASSIVE_MODE' => '1'}).status
               Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
             else
-              shell_out!("pkg_add -r #{latest_link_name}", :env => nil).status
+              shell_out!("pkg_add -r #{latest_link_name}", :env => {'FTP_PASSIVE_MODE' => '1'}).status
             end
           end
         end
