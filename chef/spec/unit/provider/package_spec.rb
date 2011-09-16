@@ -246,6 +246,47 @@ describe Chef::Provider::Package do
 
   end
 
+  describe "when reconfiguring the package" do
+    before(:each) do
+      @provider.stub!(:reconfig_package).and_return(true)
+    end
+
+    it "should info log, reconfigure the package and update the resource" do
+      @current_resource.stub!(:version).and_return('1.0')
+      @new_resource.stub!(:response_file).and_return(true)
+      @provider.stub!(:preseed_package).and_return(true)
+      @provider.stub!(:reconfig_package).and_return(true)
+      Chef::Log.should_receive(:info).with("package[emacs] reconfigured")
+      @provider.should_receive(:reconfig_package)
+      @provider.action_reconfig
+      @new_resource.should be_updated
+    end
+
+    it "should debug log and not reconfigure the package if the package is not installed" do
+      @current_resource.stub!(:version).and_return(nil)
+      Chef::Log.should_receive(:debug).with("package[emacs] is NOT installed - nothing to do")
+      @provider.should_not_receive(:reconfig_package)
+      @provider.action_reconfig
+    end 
+
+    it "should debug log and not reconfigure the package if no response_file is given" do
+      @current_resource.stub!(:version).and_return('1.0')
+      @new_resource.stub!(:response_file).and_return(nil)
+      Chef::Log.should_receive(:debug).with("package[emacs] no response_file provided - nothing to do")
+      @provider.should_not_receive(:reconfig_package)
+      @provider.action_reconfig
+    end
+
+    it "should debug log and not reconfigure the package if the response_file has not changed" do
+      @current_resource.stub!(:version).and_return('1.0')
+      @new_resource.stub!(:response_file).and_return(true)
+      @provider.stub!(:preseed_package).and_return(false)
+      Chef::Log.should_receive(:debug).with("package[emacs] preseeding has not changed - nothing to do")
+      @provider.should_not_receive(:reconfig_package)
+      @provider.action_reconfig
+    end
+  end
+
   describe "when running commands to be implemented by subclasses" do
     it "should raises UnsupportedAction for install" do
       lambda { @provider.install_package('emacs', '1.4.2') }.should raise_error(Chef::Exceptions::UnsupportedAction)
@@ -266,6 +307,10 @@ describe Chef::Provider::Package do
     it "should raise UnsupportedAction for preseed_package" do
       # 42 is the version of java that will support lambdas
       lambda { @provider.preseed_package('sun-jdk', '42') }.should raise_error(Chef::Exceptions::UnsupportedAction)
+    end
+
+    it "should raise UnsupportedAction for reconfig" do
+      lambda { @provider.reconfig_package('emacs', '1.4.2') }.should raise_error(Chef::Exceptions::UnsupportedAction)
     end
   end
 
