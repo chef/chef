@@ -68,7 +68,7 @@ module Chef
         maintain_workers
         release_locks
       rescue Configuration::InvalidConfiguration => e
-        log.fatal {e.message}
+        log.fatal {"Configuration Error: " + e.message}
         exit(2)
       rescue Exception => e
         raise if SystemExit === e
