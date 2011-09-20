@@ -41,6 +41,7 @@ module Chef
       config.merge_config(Configuration::Base.from_chef_compat_config(config_file_to_use))
       # But for all other config options, the CLI config should win over config file
       config.merge_config(Configuration::CLI.config)
+      config.validate!
       remaining_opts_after_parse
     end
 
@@ -128,13 +129,16 @@ module Chef
         end
 
         configurable :index do
-          invalid("You must specify this node's position in the ring as an integer") unless index.kind_of?(Integer)
-          invalid("The index cannot be larger than the cluster size (node-count)") unless (index <= node_count.to_i)
+          unless index.nil? # in single-cluster mode, this setting is not required.
+            invalid("You must specify this node's position in the ring as an integer") unless index.kind_of?(Integer)
+            invalid("The index cannot be larger than the cluster size (node-count)") unless (index.to_i <= node_count.to_i)
+          end
         end
 
-        configurable :node_count do
-          invalid("You must specify the cluster size as an integer") unless node_count.kind_of?(Integer)
-          invalid("The cluster size (node-count) cannot be smaller than the index") unless node_count >= index.to_i
+        configurable :node_count, 1 do
+          invalid("You must specify the node_count as an integer") unless node_count.kind_of?(Integer)
+          invalid("The node_count must be 1 or greater") unless node_count >= 1
+          invalid("The node_count cannot be smaller than the index") unless node_count >= index.to_i
         end
 
         configurable :ps_tag, ""
