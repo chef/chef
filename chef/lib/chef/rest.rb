@@ -256,7 +256,7 @@ class Chef
               tempfile = stream_to_tempfile(url, r, &block)
               yield tempfile
             ensure
-              tempfile.close!
+              tempfile.close! if tempfile.respond_to?(:close!)
             end
           else
             tempfile = stream_to_tempfile(url, r)
