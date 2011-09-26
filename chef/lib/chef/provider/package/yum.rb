@@ -927,7 +927,7 @@ class Chef
             stdout.each_line do |l|
               # rpm-4.4.2.3 lib/psm.c line 2182
               if l =~ %r{^error: %(post|postun)\(.*\) scriptlet failed, exit status \d+$}
-                Chef::Log.warn("#{@new_resource} caught scriptlet failure: \"#{l}\". Can't trust yum exit status " +
+                Chef::Log.warn("#{@new_resource} caught non-fatal scriptlet issue: \"#{l}\". Can't trust yum exit status " +
                                "so running install again to verify.")
                 status, stdout, stderr = output_of_command(command, {})
                 break
