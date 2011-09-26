@@ -821,6 +821,7 @@ class Chef
           end
 
           private
+
           def version(package_name, arch=nil, is_available=false, is_installed=false)
             refresh
             packages = @rpmdb[package_name]
@@ -910,6 +911,37 @@ class Chef
           arch ? ".#{arch}" : nil
         end
 
+        def yum_command(command)
+          status, stdout, stderr = output_of_command(command, {})
+
+          # This is fun: rpm can encounter errors in the %post/%postun scripts which aren't
+          # considered fatal - meaning the rpm is still successfully installed. These issue
+          # cause yum to emit a non fatal warning but still exit(1). As there's currently no
+          # way to suppress this behavior and an exit(1) will break a Chef run we make an
+          # effort to trap these and re-run the same install command - it will either fail a
+          # second time or succeed.
+          #
+          # A cleaner solution would have to be done in python and better hook into
+          # yum/rpm to handle exceptions as we see fit.
+          if status.exitstatus == 1
+            stdout.each_line do |l|
+              # rpm-4.4.2.3 lib/psm.c line 2182
+              if l =~ %r{^error: %(post|postun)\(.*\) scriptlet failed, exit status \d+$}
+                Chef::Log.warn("#{@new_resource} caught scriptlet failure: \"#{l}\". Can't trust yum exit status " +
+                               "so running install again to verify.")
+                status, stdout, stderr = output_of_command(command, {})
+                break
+              end
+            end
+          end
+
+          if status.exitstatus > 0
+            command_output = "STDOUT: #{stdout}"
+            command_output << "STDERR: #{stderr}"
+            handle_command_failures(status, command_output, {})
+          end
+        end
+
         # Standard Provider methods for Parent
         #
 
@@ -968,9 +1000,7 @@ class Chef
 
         def install_package(name, version)
           if @new_resource.source
-            run_command_with_systems_locale(
-              :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} localinstall #{@new_resource.source}"
-            )
+            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} localinstall #{@new_resource.source}")
           else
             # Work around yum not exiting with an error if a package doesn't exist for CHEF-2062
             if @yum.version_available?(name, version, arch)
@@ -995,9 +1025,7 @@ class Chef
                 end
               end
 
-              run_command_with_systems_locale(
-                :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{name}-#{version}#{yum_arch}"
-              )
+              yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{name}-#{version}#{yum_arch}")
             else
               raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version " +
                                                "and release? (version-release, e.g. 1.84-10.fc6)"
@@ -1033,13 +1061,9 @@ class Chef
 
         def remove_package(name, version)
           if version
-            run_command_with_systems_locale(
-             :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}-#{version}#{yum_arch}"
-            )
+            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}-#{version}#{yum_arch}")
           else
-            run_command_with_systems_locale(
-             :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}#{yum_arch}"
-            )
+            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}#{yum_arch}")
           end
           if flush_cache[:after]
             @yum.reload
