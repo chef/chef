@@ -44,8 +44,10 @@ describe Chef::Knife::Bootstrap do
 
   it "should load the specified template from a Ruby gem" do
     @knife.config[:template_file] = false
-    @gem = mock('Gem').stub!(:find_files).and_return(["/Users/schisamo/.rvm/gems/ruby-1.9.2-p180@chef-0.10/gems/knife-windows-0.5.4/lib/chef/knife/bootstrap/windows-shell.erb"])
-    @knife.config[:distro] = 'windows-shell'
+    Gem.stub(:find_files).and_return(["/Users/schisamo/.rvm/gems/ruby-1.9.2-p180@chef-0.10/gems/knife-windows-0.5.4/lib/chef/knife/bootstrap/fake-bootstrap-template.erb"])
+    File.stub(:exists?).and_return(true)
+    IO.stub(:read).and_return('random content')
+    @knife.config[:distro] = 'fake-bootstrap-template'
     lambda { @knife.load_template }.should_not raise_error
   end
 
