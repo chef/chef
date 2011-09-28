@@ -25,9 +25,11 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
     @new_resource = Chef::Resource::Group.new("aj")
     @new_resource.gid(50)
     @new_resource.members(["root", "aj"])
+    @new_resource.system false
     @current_resource = Chef::Resource::Group.new("aj")
     @current_resource.gid(50)
     @current_resource.members(["root", "aj"])
+    @current_resource.system false
     @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
@@ -57,6 +59,27 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
     match_string << " aj"
     @provider.set_options.should eql(match_string)
   end
+
+  describe "when we want to create a system group" do
+    it "should set not groupadd when system is false" do
+      @new_resource.system(false)
+      @provider.groupadd_options.should == ""
+    end
+
+    ["centos", "redhat", "scientific", "fedora"].each do |os|
+      it "should set groupadd -r for #{os}" do
+        @new_resource.system(true)
+        @node.automatic_attrs[:platform] = os
+        @provider.groupadd_options.should == " -r"
+      end
+    end
+
+    it "should not set groupadd -r for other systems" do
+      @new_resource.system(true)
+      @node.automatic_attrs[:platform] = "fakeos"
+      @provider.groupadd_options.should_not == " -r"
+    end
+  end
 end
 
 describe Chef::Provider::Group::Groupadd, "create_group" do
@@ -66,6 +89,7 @@ describe Chef::Provider::Group::Groupadd, "create_group" do
     @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
     @provider.stub!(:run_command).and_return(true)
     @provider.stub!(:set_options).and_return(" monkey")
+    @provider.stub!(:groupadd_options).and_return("")
     @provider.stub!(:modify_group_members).and_return(true)
   end
 

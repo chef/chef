@@ -38,6 +38,7 @@ class Chef
         def create_group
           command = "groupadd"
           command << set_options
+          command << groupadd_options
           run_command(:command => command)
           modify_group_members    
         end
@@ -74,7 +75,16 @@ class Chef
           end
           opts << " #{@new_resource.group_name}"
         end
-        
+
+        def groupadd_options
+          opts = ''
+          case node[:platform]
+          when "centos", "redhat", "scientific", "fedora"
+            opts << " -r" if @new_resource.system
+          end
+          opts
+        end
+
       end
     end
   end
