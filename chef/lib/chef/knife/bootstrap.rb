@@ -181,6 +181,7 @@ class Chef
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
         ssh.config[:no_host_key_verify] = config[:no_host_key_verify]
+        ssh.config[:on_error] = :raise
         ssh
       end
 
