@@ -40,6 +40,18 @@ describe Chef::Provider::Deploy do
   it "creates deploy_to dir if it does not exist yet" do
     FileUtils.should_receive(:mkdir_p).with(@resource.deploy_to)
     FileUtils.should_receive(:mkdir_p).with(@resource.shared_path)
+    ::File.stub!(:directory?).and_return(false)
+    @provider.stub(:copy_cached_repo)
+    @provider.stub(:update_cached_repo)
+    @provider.stub(:symlink)
+    @provider.stub(:migrate)
+    @provider.deploy
+  end
+
+  it "does not create deploy_to dir if it exists" do
+    ::File.stub!(:directory?).and_return(true)
+    FileUtils.should_not_receive(:mkdir_p).with(@resource.deploy_to)
+    FileUtils.should_not_receive(:mkdir_p).with(@resource.shared_path)
     @provider.stub(:copy_cached_repo)
     @provider.stub(:update_cached_repo)
     @provider.stub(:symlink)
