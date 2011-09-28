@@ -147,14 +147,24 @@ class Chef
 
         Chef::Log.debug("#{@new_resource} fetching preseed file to #{cache_seed_to}")
 
-        remote_file = Chef::Resource::CookbookFile.new(cache_seed_to, run_context)
-        remote_file.cookbook_name = @new_resource.cookbook_name
-        remote_file.source(@new_resource.response_file)
-        remote_file.backup(false)
+        begin
+          remote_file = Chef::Resource::Template.new(cache_seed_to, run_context)
+          remote_file.cookbook_name = @new_resource.cookbook_name
+          remote_file.source(@new_resource.response_file)
+          remote_file.backup(false)
+          provider = Chef::Platform.provider_for_resource(remote_file)
+          provider.template_location
+        rescue
+          Chef::Log.debug("#{@new_resource} fetching preseed file via Template resource failed, fallback to CookbookFile resource")
+          remote_file = Chef::Resource::CookbookFile.new(cache_seed_to, run_context)
+          remote_file.cookbook_name = @new_resource.cookbook_name
+          remote_file.source(@new_resource.response_file)
+          remote_file.backup(false)
+        end      
 
         remote_file
       end
-
+      
       def expand_options(options)
         options ? " #{options}" : ""
       end
