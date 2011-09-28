@@ -349,6 +349,15 @@ class Chef
 
         begin
           FileUtils.mkdir_p(dir)
+          Chef::Log.debug "#{@new_resource} created directory #{dir}"
+          if @new_resource.user
+            FileUtils.chown(@new_resource.user, nil, dir)
+            Chef::Log.debug("#{@new_resource} set user to #{@new_resource.user} for #{dir}")
+          end
+          if @new_resource.group
+            FileUtils.chown(nil, @new_resource.group, dir)
+            Chef::Log.debug("#{@new_resource} set group to #{@new_resource.group} for #{dir}")
+          end
         rescue => e
           raise Chef::Exceptions::FileNotFound.new("Cannot create directory #{dir}: #{e.message}")
         end
