@@ -106,6 +106,7 @@ class Chef
 
       def deploy
         enforce_ownership
+        verify_directories_exist
         update_cached_repo
         copy_cached_repo
         install_gems
@@ -218,6 +219,11 @@ class Chef
         Chef::Log.info("#{@new_resource} set group to #{@new_resource.group}") if @new_resource.group
       end
 
+      def verify_directories_exist
+        create_dir_unless_exists(@new_resource.deploy_to)
+        create_dir_unless_exists(@new_resource.shared_path)
+      end
+
       def link_current_release_to_production
         FileUtils.rm_f(@new_resource.current_path)
         begin
@@ -244,20 +250,17 @@ class Chef
       def link_tempfiles_to_current_release
         dirs_info = @new_resource.create_dirs_before_symlink.join(",")
         @new_resource.create_dirs_before_symlink.each do |dir| 
-          begin
-            FileUtils.mkdir_p(release_path + "/#{dir}")
-          rescue => e
-            raise Chef::Exceptions::FileNotFound.new("Cannot create directory #{dir}: #{e.message}")
-          end
+          create_dir_unless_exists(release_path + "/#{dir}")
         end
         Chef::Log.info("#{@new_resource} created directories before symlinking #{dirs_info}")
 
         links_info = @new_resource.symlinks.map { |src, dst| "#{src} => #{dst}" }.join(", ")
         @new_resource.symlinks.each do |src, dest|
+          create_dir_unless_exists(::File.join(@new_resource.shared_path, src))
           begin
-            FileUtils.ln_sf(@new_resource.shared_path + "/#{src}",  release_path + "/#{dest}")
+            FileUtils.ln_sf(::File.join(@new_resource.shared_path, src), ::File.join(release_path, dest))
           rescue => e
-            raise Chef::Exceptions::FileNotFound.new("Cannot symlink shared data #{@new_resource.shared_path}/#{src} to #{release_path}/#{dest}: #{e.message}")
+            raise Chef::Exceptions::FileNotFound.new("Cannot symlink shared data #{::File.join(@new_resource.shared_path, src)} to #{::File.join(release_path, dest)}: #{e.message}")
           end
         end
         Chef::Log.info("#{@new_resource} linked shared paths into current release: #{links_info}")
@@ -335,6 +338,28 @@ class Chef
             Chef::Log.info "#{@new_resource} running deploy hook #{callback_file}"
             recipe_eval { from_file(callback_file) }
           end
+        end
+      end
+
+      def create_dir_unless_exists(dir)
+        if ::File.directory?(dir)
+          Chef::Log.debug "#{@new_resource} not creating #{dir} because it already exists"
+          return false
+        end
+
+        begin
+          FileUtils.mkdir_p(dir)
+          Chef::Log.debug "#{@new_resource} created directory #{dir}"
+          if @new_resource.user
+            FileUtils.chown(@new_resource.user, nil, dir)
+            Chef::Log.debug("#{@new_resource} set user to #{@new_resource.user} for #{dir}")
+          end
+          if @new_resource.group
+            FileUtils.chown(nil, @new_resource.group, dir)
+            Chef::Log.debug("#{@new_resource} set group to #{@new_resource.group} for #{dir}")
+          end
+        rescue => e
+          raise Chef::Exceptions::FileNotFound.new("Cannot create directory #{dir}: #{e.message}")
         end
       end
 
