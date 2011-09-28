@@ -44,7 +44,7 @@ class Chef
         end
 
         client = Chef::ApiClient.load(@client_name)
-        key = client.save(true)
+        key = client.save(new_key=true)
         if config[:file]
           File.open(config[:file], "w") do |f|
             f.print(key['private_key'])
