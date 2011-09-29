@@ -28,7 +28,7 @@ class Chef
       include Chef::Mixin::FromFile
       include Chef::Mixin::Command
 
-      attr_reader :scm_provider, :release_path
+      attr_reader :scm_provider, :release_path, :previous_release_path
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
@@ -59,23 +59,35 @@ class Chef
       end
 
       def action_deploy
-        if all_releases.include?(release_path)
-          if all_releases[-1] == release_path
+        save_release_state
+
+        if deployed?(release_path)
+          if current_release?(release_path) 
             Chef::Log.debug("#{@new_resource} is the latest version")
           else
             action_rollback
           end
         else
-          deploy
-          @new_resource.updated_by_last_action(true)
+
+          with_rollback_on_error do
+            deploy
+            @new_resource.updated_by_last_action(true)
+          end
         end
       end
 
       def action_force_deploy
-        if all_releases.include?(release_path)
+        if deployed?(release_path)
+          Chef::Log.info("Already deployed app at #{release_path}, forcing.")
           FileUtils.rm_rf(release_path)
           Chef::Log.info("#{@new_resource} forcing deploy of already deployed app at #{release_path}")
         end
+
+        # Alternatives:
+        # * Move release_path directory before deploy and move it back when error occurs
+        # * Rollback to previous commit
+        # * Do nothing - because deploy is force, it will be retried in short time
+        # Because last is simpliest, keep it
         deploy
         @new_resource.updated_by_last_action(true)
       end
@@ -92,10 +104,8 @@ class Chef
           releases_to_nuke = [ all_releases.last ]
         end
 
-        Chef::Log.info "#{@new_resource} rolling back to previous release #{release_path}"
-        symlink
-        Chef::Log.info "#{@new_resource} restarting with previous release"
-        restart
+        rollback
+
         releases_to_nuke.each do |i|
           Chef::Log.info "#{@new_resource} removing release: #{i}"
           FileUtils.rm_rf i
@@ -120,6 +130,13 @@ class Chef
         callback(:after_restart, @new_resource.after_restart)
         cleanup!
         Chef::Log.info "#{@new_resource} deployed to #{@new_resource.deploy_to}"
+      end
+
+      def rollback
+        Chef::Log.info "#{@new_resource} rolling back to previous release #{release_path}"
+        symlink
+        Chef::Log.info "#{@new_resource} restarting with previous release"
+        restart
       end
 
       def callback(what, callback_code=nil)
@@ -363,6 +380,40 @@ class Chef
         end
       end
 
+      def with_rollback_on_error
+        yield
+      rescue ::Exception => e
+        if @new_resource.rollback_on_error
+          Chef::Log.warn "Error on deploying #{release_path}: #{e.message}" 
+          failed_release = release_path
+        
+          if previous_release_path
+            @release_path = previous_release_path
+            rollback
+          end
+
+          Chef::Log.info "Removing failed deploy #{failed_release}"
+          FileUtils.rm_rf failed_release
+          release_deleted(failed_release)
+        end
+        
+        raise
+      end
+
+      def save_release_state
+        if ::File.exists?(@new_resource.current_path)
+          release = ::File.readlink(@new_resource.current_path)
+          @previous_release_path = release if ::File.exists?(release)
+        end
+      end
+
+      def deployed?(release)
+        all_releases.include?(release)
+      end
+
+      def current_release?(release)
+        @previous_release_path == release
+      end
     end
   end
 end
