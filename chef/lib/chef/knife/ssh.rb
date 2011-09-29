@@ -314,6 +314,14 @@ class Chef
                               "fqdn").strip
       end
 
+      def csshx
+        csshx_cmd = "csshX"
+        session.servers_for.each do |server|
+          csshx_cmd << " #{server.user ? "#{server.user}@#{server.host}" : server.host}"
+        end
+        exec(csshx_cmd)
+      end
+
       def configure_user
         config[:ssh_user] = (config[:ssh_user] ||
                              Chef::Config[:knife][:ssh_user])
@@ -344,6 +352,8 @@ class Chef
           tmux
         when "macterm"
           macterm
+        when "csshx"
+          csshx
         else
           ssh_command(@name_args[1..-1].join(" "))
         end
