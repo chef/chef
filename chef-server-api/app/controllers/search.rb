@@ -45,6 +45,14 @@ class Search < Application
     params[:sort]  ||= nil
     params[:start] ||= 0
     params[:rows]  ||= 20
+
+    (k,v) = params[:q].split(":")
+    if k.nil? or v.nil?
+      raise BadRequest, "invalid q parameter"
+    elsif v == "*" and k != "*"
+      params[:q] = "#{k}:[* TO *]"
+    end
+
     objects, start, total = query.search(params[:id], params[:q], params[:sort], params[:start], params[:rows])
     display({
       "rows" => objects,
