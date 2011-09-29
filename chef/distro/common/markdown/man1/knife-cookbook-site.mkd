@@ -13,6 +13,10 @@ __cookbook site install COOKBOOK [VERSION]__ _(options)_
 
   * `-D`, `--no-dependencies `:
     Do not install dependencies automatically
+  * `-o`, `--cookbook-path PATH`:
+    Install cookbooks to PATH
+  * `-B`, `--branch BRANCH`:
+    Default branch to work with [defaults to master]
 
 Uses git(1) version control in conjunction with the cookbook site to
 install community contributed cookbooks to your local cookbook
@@ -26,7 +30,7 @@ repository. Running `knife cookbook site install` does the following:
 5. The pristine copy branch is merged into the master branch.
 
 By installing cookbook with this process, you can locally modify the
-upstream cookbook in your master branch ant let git maintain your
+upstream cookbook in your master branch and let git maintain your
 changes as a separate patch.  When an updated upstream version becomes
 available, you will be able to merge the upstream changes while
 maintaining your local modifications.

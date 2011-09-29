@@ -27,6 +27,8 @@ __knife cookbook show cookbook [version] [part] [filename]__ _(options)_
     the platform to see the file for
   * `-v`, `--platform-version version`:
     the platform version to see the file for
+  * `-w`, `--with-uri`:
+    Show corresponding URIs
 
 show a particular part of a _cookbook_ for the specified _version_. _part_ can be one of:
 

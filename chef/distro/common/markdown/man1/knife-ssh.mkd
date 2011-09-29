@@ -17,6 +17,13 @@ __knife__ __ssh QUERY COMMAND__ _(options)_
     The ssh username
   * `-i`, `--identity-file IDENTITY_FILE`:
     The SSH identity file used for authentication
+  * `-p`, `--ssh-port PORT`:
+    The ssh port
+  * `-i`, `--identity-file IDENTITY_FILE`:
+    The SSH identity file used for authentication
+  * `--no-host-key-verify`:
+    Disable host key verification
+    
 
 ## DESCRIPTION
 
@@ -35,6 +42,7 @@ multiple interactive ssh sessions running locally in the terminal
 multiplexer instead of invoking the command on the remote host.
 
 The available multiplexers are:
+
   * `interactive`:
     A built-in multiplexer. `interactive` supports running commands on a
     subset of the connected hosts in parallel
