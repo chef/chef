@@ -151,7 +151,11 @@ class Chef
       end
 
       def action_create_if_missing
-        action_create
+        if ::File.exists?(@new_resource.path)
+          Chef::Log.debug("File #{@new_resource.path} exists, taking no action.")
+        else
+          action_create
+        end
       end
 
       def action_delete
