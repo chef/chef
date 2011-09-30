@@ -31,6 +31,8 @@ describe Chef::Knife::NodeDelete do
     @node = Chef::Node.new() 
     @node.stub!(:destroy).and_return(true)
     Chef::Node.stub!(:load).and_return(@node)
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
   describe "run" do
@@ -64,5 +66,3 @@ describe Chef::Knife::NodeDelete do
     end
   end
 end
-
-

@@ -53,7 +53,7 @@ class Chef
 
       def use_encryption
         if config[:secret] && config[:secret_file]
-          stdout.puts "please specify only one of --secret, --secret-file"
+          ui.fatal("please specify only one of --secret, --secret-file")
           exit(1)
         end
         config[:secret] || config[:secret_file]
@@ -65,7 +65,7 @@ class Chef
 
       def run
         if @name_args.size != 2
-          stdout.puts opt_parser
+          ui.msg(opt_parser)
           exit(1)
         end
         @data_bag, @item_path = @name_args[0], @name_args[1]
@@ -85,7 +85,3 @@ class Chef
     end
   end
 end
-
-
-
-

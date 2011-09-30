@@ -40,6 +40,8 @@ describe Chef::Knife::DataBagCreate do
     @knife = Chef::Knife::DataBagCreate.new
     @rest = ChefSpecs::ChefRest.new
     @knife.stub!(:rest).and_return(@rest)
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
 

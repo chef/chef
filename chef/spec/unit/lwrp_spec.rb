@@ -19,6 +19,9 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe "override logging" do
+  before :each do
+    $stderr.stub!(:write)
+  end
 
   it "should log if attempting to load resource of same name" do
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
@@ -35,13 +38,13 @@ describe "override logging" do
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*"))].each do |file|
       Chef::Provider.build_from_file("lwrp", file, nil)
     end
-    
+
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "providers", "*"))].each do |file|
       Chef::Log.should_receive(:info).with(/overriding/)
       Chef::Provider.build_from_file("lwrp", file, nil)
     end
   end
-  
+
 end
 
 describe "LWRP" do
@@ -109,10 +112,9 @@ describe "LWRP" do
       @node.platform(:ubuntu)
       @node.platform_version('8.10')
       @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}))
-      
       @runner = Chef::Runner.new(@run_context)
     end
-    
+
     before(:each) do
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
         Chef::Resource.build_from_file("lwrp", file, @run_context)
@@ -137,7 +139,7 @@ describe "LWRP" do
       resource.monkey("bob")
       resource.provider(:lwrp_monkey_name_printer)
       resource.run_context = @run_context
-  
+
       provider = Chef::Platform.provider_for_resource(resource)
       provider.action_twiddle_thumbs
     end
@@ -218,5 +220,5 @@ describe "LWRP" do
     end
 
   end
-  
+
 end

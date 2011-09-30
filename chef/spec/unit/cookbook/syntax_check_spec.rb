@@ -122,16 +122,16 @@ describe Chef::Cookbook::SyntaxCheck do
 
   end
 
-
   describe "when validating cookbooks" do
     before do
       @checksum_cache_klass = Class.new(Chef::ChecksumCache)
       @checksum_cache = @checksum_cache_klass.instance
       @checksum_cache.reset!('Memory')
       @syntax_check.stub!(:cache).and_return(@checksum_cache)
+      $stdout.stub!(:write)
     end
-    describe "and the files have not been syntax checked previously" do
 
+    describe "and the files have not been syntax checked previously" do
       it "shows that all ruby files require a syntax check" do
         @syntax_check.untested_ruby_files.sort.should == @ruby_files.sort
       end

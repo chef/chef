@@ -40,6 +40,8 @@ describe Chef::Knife::CookbookSiteShare do
     Chef::CookbookSiteStreamingUploader.stub!(:create_build_dir).and_return(Dir.mktmpdir)
 
     Chef::Mixin::Command.stub(:run_command).and_return(true)
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
   describe 'run' do
