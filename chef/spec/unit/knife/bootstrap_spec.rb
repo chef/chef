@@ -27,6 +27,8 @@ describe Chef::Knife::Bootstrap do
     @knife.config[:template_file] = File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test.erb"))
     @stdout = StringIO.new
     @knife.ui.stub!(:stdout).and_return(@stdout)
+    @stderr = StringIO.new
+    @knife.ui.stub!(:stderr).and_return(@stderr)
   end
 
   it "should load the default bootstrap template" do
@@ -141,7 +143,7 @@ describe Chef::Knife::Bootstrap do
     it "verifies that a server to bootstrap was given as a command line arg" do
       @knife.name_args = nil
       lambda { @knife.run }.should raise_error(SystemExit)
-      @stdout.string.should match /ERROR:.+FQDN or ip/
+      @stderr.string.should match /ERROR:.+FQDN or ip/
     end
 
     it "configures the underlying ssh command and then runs it" do
