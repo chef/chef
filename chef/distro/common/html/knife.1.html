@@ -192,9 +192,9 @@ Specifies the name of the client used to validate new clients.</li>
 Specifies the private key file to use when bootstrapping new hosts.
 See <span class="man-ref">knife-client<span class="s">(1)</span></span> for more information about the validation
 client.</li>
-<li><code>cookbook_copyright</code>, <code>cookbook_email</code>, <code>cookbook_license</code>
+<li><code>cookbook_copyright</code>, <code>cookbook_email</code>, <code>cookbook_license</code>, <code>readme_format</code>
 Used by <code>knife cookbook create</code> sub-command to specify the copyright
-holder, maintainer email and license (respectively) for new cookbooks.
+holder, maintainer email, license and readme format (respectively) for new cookbooks.
 The copyright holder is listed as the maintainer in the cookbook's
 metadata and as the Copyright in the comments of the default recipe. The
 maintainer email is used in the cookbook metadata. The license
@@ -202,7 +202,9 @@ determines what preamble to put in the comment of the default recipe,
 and is listed as the license in the cookbook metadata. Currently
 supported licenses are "apachev2" and "none". Any other values will
 result in an empty license in the metadata (needs to be filled in by the
-author), and no comment preamble in the default recipe.</li>
+author), and no comment preamble in the default recipe. Currently supported 
+readme formats are "md", "mkd", "txt", and "rdoc".  Any other value will
+result in an unformatted README.</li>
 </ul>
 
 
