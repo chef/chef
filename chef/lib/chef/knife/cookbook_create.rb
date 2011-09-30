@@ -39,7 +39,7 @@ class Chef
         :short => "-r FORMAT",
         :long => "--readme-format FORMAT",
         :description => "Format of the README file, supported formats are 'md' (markdown) and 'rdoc' (rdoc)",
-        :default => "rdoc"
+        :default => "md"
 
       option :cookbook_license,
         :short => "-I LICENSE",
