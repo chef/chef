@@ -405,7 +405,10 @@ F
     end
 
     def run_action(action)
-      Chef::Log.info("Processing #{self} action #{action} (#{defined_at})")
+      if Chef::Config[:verbose_logging] || Chef::Log.level == :debug
+        # This can be noisy
+        Chef::Log.info("Processing #{self} action #{action} (#{defined_at})")
+      end
 
       # ensure that we don't leave @updated_by_last_action set to true
       # on accident

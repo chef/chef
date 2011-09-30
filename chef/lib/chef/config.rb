@@ -147,7 +147,8 @@ class Chef
     json_attribs nil
     log_level :info
     log_location STDOUT
-    verbose_logging nil
+    # toggle info level log items that can create a lot of output
+    verbose_logging true 
     node_name nil
     node_path "/var/chef/node"
 
