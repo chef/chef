@@ -35,8 +35,14 @@ describe "Chef::CookbookVersion manifest" do
        {
          :name => "afile.rb",
          :path => "files/ubuntu-9.10/afile.rb",
-         :checksum => "csum-platver",
+         :checksum => "csum-platver-full",
          :specificity => "ubuntu-9.10"
+       },
+       {
+         :name => "afile.rb",
+         :path => "files/newubuntu-9/afile.rb",
+         :checksum => "csum-platver-partial",
+         :specificity => "newubuntu-9"
        },
        {
          :name => "afile.rb",
@@ -68,14 +74,27 @@ describe "Chef::CookbookVersion manifest" do
        {
          :name => "anotherfile1.rb",
          :path => "files/ubuntu-9.10/adirectory/anotherfile1.rb.platform-version",
-         :checksum => "csum-platver-1",
+         :checksum => "csum-platver-full-1",
          :specificity => "ubuntu-9.10"
        },
        {
          :name => "anotherfile2.rb",
          :path => "files/ubuntu-9.10/adirectory/anotherfile2.rb.platform-version",
-         :checksum => "csum-platver-2",
+         :checksum => "csum-platver-full-2",
          :specificity => "ubuntu-9.10"
+       },
+
+       {
+         :name => "anotherfile1.rb",
+         :path => "files/newubuntu-9/adirectory/anotherfile1.rb.platform-version",
+         :checksum => "csum-platver-partial-1",
+         :specificity => "newubuntu-9"
+       },
+       {
+         :name => "anotherfile2.rb",
+         :path => "files/newubuntu-9/adirectory/anotherfile2.rb.platform-version",
+         :checksum => "csum-platver-partial-2",
+         :specificity => "nweubuntu-9"
        },
        
        {
@@ -121,7 +140,7 @@ describe "Chef::CookbookVersion manifest" do
     manifest_record[:checksum].should == "csum-host"
   end
   
-  it "should return a manifest record based on priority preference: platform & version" do
+  it "should return a manifest record based on priority preference: platform & full version" do
     node = Chef::Node.new
     node[:platform] = "ubuntu"
     node[:platform_version] = "9.10"
@@ -129,7 +148,18 @@ describe "Chef::CookbookVersion manifest" do
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
     manifest_record.should_not be_nil
-    manifest_record[:checksum].should == "csum-platver"
+    manifest_record[:checksum].should == "csum-platver-full"
+  end
+
+  it "should return a manifest record based on priority preference: platform & partial version" do
+    node = Chef::Node.new
+    node[:platform] = "newubuntu"
+    node[:platform_version] = "9.10"
+    node[:fqdn] = "differenthost.example.org"
+
+    manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
+    manifest_record.should_not be_nil
+    manifest_record[:checksum].should == "csum-platver-partial"
   end
   
   it "should return a manifest record based on priority preference: platform only" do
@@ -170,7 +200,7 @@ describe "Chef::CookbookVersion manifest" do
       checksums.sort.should == ["csum-host-1", "csum-host-2"]
     end
 
-    it "should return a directory of manifest records based on priority preference: platform & version" do
+    it "should return a directory of manifest records based on priority preference: platform & full version" do
       node = Chef::Node.new
       node[:platform] = "ubuntu"
       node[:platform_version] = "9.10"
@@ -181,7 +211,21 @@ describe "Chef::CookbookVersion manifest" do
       manifest_records.size.should == 2
 
       checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
-      checksums.sort.should == ["csum-platver-1", "csum-platver-2"]
+      checksums.sort.should == ["csum-platver-full-1", "csum-platver-full-2"]
+    end
+
+    it "should return a directory of manifest records based on priority preference: platform & partial version" do
+      node = Chef::Node.new
+      node[:platform] = "newubuntu"
+      node[:platform_version] = "9.10"
+      node[:fqdn] = "differenthost.example.org"
+
+      manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
+      manifest_records.should_not be_nil
+      manifest_records.size.should == 2
+
+      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums.sort.should == ["csum-platver-partial-1", "csum-platver-partial-2"]
     end
 
     it "should return a directory of manifest records based on priority preference: platform only" do
