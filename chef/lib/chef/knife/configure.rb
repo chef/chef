@@ -69,7 +69,7 @@ cache_type               'BasicFile'
 cache_options( :path => '#{File.join(chef_config_path, "checksums")}' )
 EOH
           unless chef_repo.empty?
-            f.puts "cookbook_path [ '#{chef_repo}/cookbooks', '#{chef_repo}/site-cookbooks' ]"
+            f.puts "cookbook_path [ '#{chef_repo}/cookbooks' ]"
           end
         end
 
