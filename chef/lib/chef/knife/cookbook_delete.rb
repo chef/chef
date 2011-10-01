@@ -22,6 +22,8 @@ class Chef
   class Knife
     class CookbookDelete < Knife
 
+      attr_accessor :cookbook_name, :version
+
       deps do
         require 'chef/cookbook_version'
       end
