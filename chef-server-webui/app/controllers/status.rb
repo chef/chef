@@ -27,6 +27,11 @@ class Status < Application
   def index
     begin
       @status = Chef::Node.list(true)
+      if session[:environment]
+        @status = Chef::Node.list_by_environment(session[:environment],true)
+      else
+        @status = Chef::Node.list(true)
+      end
       render
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
