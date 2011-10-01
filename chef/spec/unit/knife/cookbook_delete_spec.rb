@@ -25,6 +25,8 @@ describe Chef::Knife::CookbookDelete do
     @knife.cookbook_name = 'foobar'
     @stdout = StringIO.new
     @knife.ui.stub!(:stdout).and_return(@stdout)
+    @stderr = StringIO.new
+    @knife.ui.stub!(:stderr).and_return(@stderr)
   end
 
   describe 'run' do
@@ -150,7 +152,7 @@ describe Chef::Knife::CookbookDelete do
 
       it 'should print an error' do
         @knife.available_versions
-        @stdout.string.should match /error.+cannot find a cookbook named foobar/i
+        @stderr.string.should match /error.+cannot find a cookbook named foobar/i
       end
 
       it 'should return nil' do
