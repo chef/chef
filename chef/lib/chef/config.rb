@@ -229,6 +229,9 @@ class Chef
     # Exception Handlers
     exception_handlers []
 
+    # Start handlers
+    start_handlers []
+
     # Checksum Cache
     # Uses Moneta on the back-end
     cache_type "BasicFile"
