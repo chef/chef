@@ -24,6 +24,7 @@ describe Chef::SolrQuery::SolrHTTPRequest do
   before do
     Chef::Config[:solr_url] = "http://example.com:8983"
     Chef::SolrQuery::SolrHTTPRequest.instance_variable_set(:@solr_url, nil)
+    Chef::SolrQuery::SolrHTTPRequest.instance_variable_set(:@url_prefix, nil)
 
     @request = Chef::SolrQuery::SolrHTTPRequest.new(:GET, '/solr/select')
   end
@@ -32,9 +33,26 @@ describe Chef::SolrQuery::SolrHTTPRequest do
     Chef::SolrQuery::SolrHTTPRequest.solr_url.should == "http://example.com:8983"
   end
 
+  it "supports solr_url with a path" do
+    Chef::Config[:solr_url] = "http://example.com:8983/test"
+    Chef::SolrQuery::SolrHTTPRequest.instance_variable_set(:@solr_url, nil)
+
+    Chef::SolrQuery::SolrHTTPRequest.solr_url.should == "http://example.com:8983/test"
+  end
+
   it "updates the Solr URL as you like" do
     Chef::SolrQuery::SolrHTTPRequest.solr_url = "http://chunkybacon.org:1234"
     Chef::SolrQuery::SolrHTTPRequest.solr_url.should == "http://chunkybacon.org:1234"
+  end
+
+  it "updates the URL prefix with a path" do
+    Chef::SolrQuery::SolrHTTPRequest.solr_url = "http://chunkybacon.org:1234/something"
+    Chef::SolrQuery::SolrHTTPRequest.url_prefix.should == "/something"
+  end
+
+  it "removes extra / at the end of solr_url" do
+    Chef::SolrQuery::SolrHTTPRequest.solr_url = "http://chunkybacon.org:1234/extra/"
+    Chef::SolrQuery::SolrHTTPRequest.url_prefix.should == "/extra"
   end
 
   it "creates a Net::HTTP client for the base Solr URL" do
@@ -42,6 +60,23 @@ describe Chef::SolrQuery::SolrHTTPRequest do
     http_client = Chef::SolrQuery::SolrHTTPRequest.http_client
     http_client.address.should == "chunkybacon.org"
     http_client.port.should == 1234
+  end
+
+  it "creates a Net::HTTP client for the base Solr URL ignoring the path" do
+    Chef::SolrQuery::SolrHTTPRequest.solr_url = "http://chunkybacon.org:1234/test"
+    http_client = Chef::SolrQuery::SolrHTTPRequest.http_client
+    http_client.address.should == "chunkybacon.org"
+    http_client.port.should == 1234
+  end
+
+  it "defaults url_prefix to /solr if the configured solr_url has no path" do
+    Chef::SolrQuery::SolrHTTPRequest.solr_url = "http://chunkybacon.org:1234"
+    Chef::SolrQuery::SolrHTTPRequest.url_prefix.should == "/solr"
+  end
+
+  it "defaults url_prefix to the path from the configured solr_url" do
+    Chef::SolrQuery::SolrHTTPRequest.solr_url = "http://chunkybacon.org:1234/test"
+    Chef::SolrQuery::SolrHTTPRequest.url_prefix.should == "/test"
   end
 
   describe "when configured with the Solr URL" do
@@ -76,7 +111,7 @@ describe Chef::SolrQuery::SolrHTTPRequest do
       describe "when the HTTP call is successful" do
         it "should call get to /solr/select with the escaped query" do
           txfm_query = "q=content%3Ahostname__%3D__latte"
-          Net::HTTP::Get.should_receive(:new).with(%r(#{txfm_query}))
+          Net::HTTP::Get.should_receive(:new).with(%r(/solr/select?.+#{txfm_query}))
           Chef::SolrQuery::SolrHTTPRequest.select(@params)
         end
 
@@ -148,5 +183,62 @@ describe Chef::SolrQuery::SolrHTTPRequest do
       end
     end
 
+  end
+
+  describe "when configured with the Solr URL with a path" do
+    before do
+      Chef::Config[:solr_url] = "http://example.com:8983/test"
+      Chef::SolrQuery::SolrHTTPRequest.instance_variable_set(:@solr_url, nil)
+      Chef::SolrQuery::SolrHTTPRequest.instance_variable_set(:@url_prefix, nil)
+
+      @request = Chef::SolrQuery::SolrHTTPRequest.new(:GET, '/solr/select')
+
+      @http_response = mock(
+        "Net::HTTP::Response",
+        :kind_of? => Net::HTTPSuccess,
+        :body => "{ :some => :hash }"
+      )
+      @http_request = mock(
+        "Net::HTTP::Request",
+        :body= => true
+      )
+      @http = mock("Net::HTTP", :request => @http_response)
+      Chef::SolrQuery::SolrHTTPRequest.stub!(:http_client).and_return(@http)
+    end
+
+    describe "when executing a select query" do
+      before(:each) do
+        @http_response = mock(
+          "Net::HTTP::Response",
+          :kind_of? => Net::HTTPSuccess,
+          :body => '{"some": "hash" }'
+        )
+        @solr = Chef::SolrQuery.from_params(:type => 'node',
+                                            :q => "hostname:latte")
+        @params = @solr.to_hash
+        @http = mock("Net::HTTP", :request => @http_response)
+        Chef::SolrQuery::SolrHTTPRequest.stub!(:http_client).and_return(@http)
+      end
+
+      describe "when the HTTP call is successful" do
+        it "should call get to /test/select with the escaped query" do
+          txfm_query = "q=content%3Ahostname__%3D__latte"
+          Net::HTTP::Get.should_receive(:new).with(%r(/test/select?.+#{txfm_query}))
+          Chef::SolrQuery::SolrHTTPRequest.select(@params)
+        end
+      end
+    end
+
+    describe "when updating" do
+      before do
+        Net::HTTP::Post.stub!(:new).and_return(@http_request)
+      end
+
+      it "should post to /test/update" do
+        @doc = "<xml is the old tldr>"
+        Net::HTTP::Post.should_receive(:new).with("/test/update", "Content-Type" => "text/xml").and_return(@http_request)
+        Chef::SolrQuery::SolrHTTPRequest.update(@doc)
+      end
+    end
   end
 end
