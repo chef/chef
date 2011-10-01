@@ -307,17 +307,17 @@ describe Chef::Provider::Package::Yum do
     it "should run yum install with the package name and version" do
       @provider.load_current_resource
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install emacs-1.0"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install emacs-1.0"
+      )
       @provider.install_package("emacs", "1.0")
     end
 
     it "should run yum localinstall if given a path to an rpm" do
       @new_resource.stub!(:source).and_return("/tmp/emacs-21.4-20.el5.i386.rpm")
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y localinstall /tmp/emacs-21.4-20.el5.i386.rpm"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y localinstall /tmp/emacs-21.4-20.el5.i386.rpm"
+      )
       @provider.install_package("emacs", "21.4-20.el5")
     end
 
@@ -327,9 +327,9 @@ describe Chef::Provider::Package::Yum do
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
       @new_resource.source.should == "/tmp/emacs-21.4-20.el5.i386.rpm"
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y localinstall /tmp/emacs-21.4-20.el5.i386.rpm"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y localinstall /tmp/emacs-21.4-20.el5.i386.rpm"
+      )
       @provider.install_package("/tmp/emacs-21.4-20.el5.i386.rpm", "21.4-20.el5")
     end
 
@@ -337,9 +337,9 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
       @new_resource.stub!(:arch).and_return("i386")
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install emacs-21.4-20.el5.i386"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install emacs-21.4-20.el5.i386"
+      )
       @provider.install_package("emacs", "21.4-20.el5")
     end
 
@@ -348,9 +348,9 @@ describe Chef::Provider::Package::Yum do
       @provider.candidate_version = '11'
       @new_resource.stub!(:options).and_return("--disablerepo epmd")
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y --disablerepo epmd install cups-11"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y --disablerepo epmd install cups-11"
+      )
       @provider.install_package(@new_resource.name, @provider.candidate_version)
     end
 
@@ -401,9 +401,9 @@ describe Chef::Provider::Package::Yum do
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install cups-1.2.4-11.15.el5"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install cups-1.2.4-11.15.el5"
+      )
       @provider.install_package("cups", "1.2.4-11.15.el5")
     end
 
@@ -422,9 +422,9 @@ describe Chef::Provider::Package::Yum do
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y downgrade cups-1.2.4-11.15.el5"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y downgrade cups-1.2.4-11.15.el5"
+      )
       @provider.install_package("cups", "1.2.4-11.15.el5")
     end
 
@@ -432,9 +432,9 @@ describe Chef::Provider::Package::Yum do
       @new_resource.stub!(:flush_cache).and_return({:after => true, :before => false})
       @provider.load_current_resource
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install emacs-1.0"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install emacs-1.0"
+      )
       @yum_cache.should_receive(:reload).once
       @provider.install_package("emacs", "1.0")
     end
@@ -443,9 +443,9 @@ describe Chef::Provider::Package::Yum do
       @new_resource.stub!(:flush_cache).and_return({:after => false, :before => false})
       @provider.load_current_resource
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install emacs-1.0"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install emacs-1.0"
+      )
       @yum_cache.should_not_receive(:reload)
       @provider.install_package("emacs", "1.0")
     end
@@ -456,9 +456,9 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
       @provider.candidate_version = '11'
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install cups-11"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install cups-11"
+      )
       @provider.upgrade_package(@new_resource.name, @provider.candidate_version)
     end
 
@@ -467,9 +467,9 @@ describe Chef::Provider::Package::Yum do
       @current_resource = Chef::Resource::Package.new('cups')
       @provider.candidate_version = '11'
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install cups-11"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install cups-11"
+      )
       @provider.upgrade_package(@new_resource.name, @provider.candidate_version)
     end
 
@@ -493,30 +493,73 @@ describe Chef::Provider::Package::Yum do
 
   describe "when removing a package" do
     it "should run yum remove with the package name" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y remove emacs-1.0"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y remove emacs-1.0"
+      )
       @provider.remove_package("emacs", "1.0")
     end
 
     it "should run yum remove with the package name and arch" do
       @new_resource.stub!(:arch).and_return("x86_64")
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y remove emacs-1.0.x86_64"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y remove emacs-1.0.x86_64"
+      )
       @provider.remove_package("emacs", "1.0")
     end
   end
 
   describe "when purging a package" do
     it "should run yum remove with the package name" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y remove emacs-1.0"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y remove emacs-1.0"
+      )
       @provider.purge_package("emacs", "1.0")
     end
   end
 
+  describe "when running yum" do
+    it "should run yum once if it exits with a return code of 0" do
+      @status = mock("Status", :exitstatus => 0)
+      @provider.stub!(:output_of_command).and_return([@status, "", ""])
+      @provider.should_receive(:output_of_command).once.with(
+        "yum -d0 -e0 -y install emacs-1.0",
+        {}
+      )
+      @provider.yum_command("yum -d0 -e0 -y install emacs-1.0")
+    end
+
+    it "should run yum once if it exits with a return code > 0 and no scriptlet failures" do
+      @status = mock("Status", :exitstatus => 2)
+      @provider.stub!(:output_of_command).and_return([@status, "failure failure", "problem problem"])
+      @provider.should_receive(:output_of_command).once.with(
+        "yum -d0 -e0 -y install emacs-1.0",
+        {}
+      )
+      lambda { @provider.yum_command("yum -d0 -e0 -y install emacs-1.0") }.should raise_error(Chef::Exceptions::Exec)
+    end
+
+    it "should run yum once if it exits with a return code of 1 and %pre scriptlet failures" do
+      @status = mock("Status", :exitstatus => 1)
+      @provider.stub!(:output_of_command).and_return([@status, "error: %pre(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2", ""])
+      @provider.should_receive(:output_of_command).once.with(
+        "yum -d0 -e0 -y install emacs-1.0",
+        {}
+      )
+      # will still raise an exception, can't stub out the subsequent call
+      lambda { @provider.yum_command("yum -d0 -e0 -y install emacs-1.0") }.should raise_error(Chef::Exceptions::Exec)
+    end
+
+    it "should run yum twice if it exits with a return code of 1 and %post scriptlet failures" do
+      @status = mock("Status", :exitstatus => 1)
+      @provider.stub!(:output_of_command).and_return([@status, "error: %post(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2", ""])
+      @provider.should_receive(:output_of_command).twice.with(
+        "yum -d0 -e0 -y install emacs-1.0",
+        {}
+      )
+      # will still raise an exception, can't stub out the subsequent call
+      lambda { @provider.yum_command("yum -d0 -e0 -y install emacs-1.0") }.should raise_error(Chef::Exceptions::Exec)
+    end
+  end
 end
 
 describe Chef::Provider::Package::Yum::RPMUtils do
