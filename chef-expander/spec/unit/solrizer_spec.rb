@@ -257,4 +257,21 @@ describe Expander::Solrizer do
 
   end
 
+  describe "solr_url" do
+    before do
+      @indexer_payload = {:id => "2342"}
+      @update_object = {:action => "add", :payload => @indexer_payload}
+      @update_json = Yajl::Encoder.encode(@update_object)
+      @solrizer = Expander::Solrizer.new(@update_json)
+    end
+
+    it "appends /update to the default solr_url" do
+      @solrizer.solr_url.should == "http://localhost:8983/solr/update"
+    end
+
+    it "appends /update to a configured solr_url" do
+      Expander.config.solr_url = "https://vhost/abcdef/solr/collection"
+      @solrizer.solr_url.should == "https://vhost/abcdef/solr/collection/update"
+    end
+  end
 end
