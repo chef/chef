@@ -42,7 +42,9 @@ class Chef
       def self.http_client
         @http_client ||= begin
           uri = URI.parse(solr_url)
-          Net::HTTP.new(uri.host, uri.port)
+          http_client = Net::HTTP.new(uri.host, uri.port)
+          http_client.use_ssl = true if uri.port == 443
+          http_client
         end
       end
 
