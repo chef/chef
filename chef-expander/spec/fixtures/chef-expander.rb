@@ -24,7 +24,7 @@
 
 ## The Actual Config Settings for Chef Expander ##
 # Solr
-solr_url        "http://localhost:8983"
+solr_url        "http://localhost:8983/solr"
 
 ## Parameters for connecting to RabbitMQ ##
 # Defaults:

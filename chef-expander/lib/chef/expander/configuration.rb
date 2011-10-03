@@ -143,7 +143,7 @@ module Chef
 
         configurable :ps_tag, ""
 
-        configurable :solr_url, "http://localhost:8983"
+        configurable :solr_url, "http://localhost:8983/solr"
 
         configurable :amqp_host, '0.0.0.0'
 
