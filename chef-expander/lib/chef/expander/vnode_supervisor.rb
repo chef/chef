@@ -65,7 +65,7 @@ module Chef
         @awaiting_parent_death = EM.add_periodic_timer(1) do
           unless Process.ppid == @original_ppid
             @awaiting_parent_death.cancel
-            stop_gracefully("master process death")
+            stop_immediately("master process death")
           end
         end
       end
