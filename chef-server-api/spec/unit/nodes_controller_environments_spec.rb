@@ -50,9 +50,10 @@ describe "Nodes controller - environments and run_list expansion" do
     @role_containing_nosuch_cookbook = make_role("role_containing_nosuch_cookbook")
     @role_containing_nosuch_cookbook.env_run_lists({"_default" => make_runlist("recipe[cookbook_nosuch]")})
 
+    @cb_for_default = make_cookbook("cb_for_default", "1.0.0")
+    @cb_for_env1 = make_cookbook("cb_for_env1", "1.0.0")
     @all_filtered_cookbook_list = 
-      make_filtered_cookbook_hash(make_cookbook("cb_for_default", "1.0.0"),
-                                  make_cookbook("cb_for_env1", "1.0.0"))
+      make_filtered_cookbook_hash(@cb_for_default, @cb_for_env1)
   end
 
   describe "when handling Node API calls" do
@@ -60,7 +61,8 @@ describe "Nodes controller - environments and run_list expansion" do
       # Test that node@_default resolves to use cookbook cb_for_default
       Chef::Node.should_receive(:cdb_load).with("node1").and_return(@node1)
       Chef::Role.should_receive(:cdb_load).with("role1", nil).and_return(@role1)
-      Chef::Environment.should_receive(:cdb_load_filtered_cookbook_versions).with("_default", nil).and_return(@all_filtered_cookbook_list)
+      Chef::Environment.should_receive(:cdb_minimal_filtered_versions).with("_default", nil).and_return(@all_filtered_cookbook_list)
+      Chef::MinimalCookbookVersion.should_receive(:load_full_versions_of).with([@cb_for_default], nil).and_return([@cb_for_default])
 
       response = get_json("/nodes/node1/cookbooks")
       response.should be_kind_of(Hash)
@@ -73,7 +75,8 @@ describe "Nodes controller - environments and run_list expansion" do
       @node1.chef_environment("env1")
       Chef::Node.should_receive(:cdb_load).with("node1").and_return(@node1)
       Chef::Role.should_receive(:cdb_load).with("role1", nil).and_return(@role1)
-      Chef::Environment.should_receive(:cdb_load_filtered_cookbook_versions).with("env1", nil).and_return(@all_filtered_cookbook_list)
+      Chef::Environment.should_receive(:cdb_minimal_filtered_versions).with("env1", nil).and_return(@all_filtered_cookbook_list)
+      Chef::MinimalCookbookVersion.should_receive(:load_full_versions_of).with([@cb_for_env1], nil).and_return([@cb_for_env1])
 
       response = get_json("/nodes/node1/cookbooks")
       response.should be_kind_of(Hash)
@@ -87,7 +90,8 @@ describe "Nodes controller - environments and run_list expansion" do
       @node1.chef_environment("env_fallback")
       Chef::Node.should_receive(:cdb_load).with("node1").and_return(@node1)
       Chef::Role.should_receive(:cdb_load).with("role1", nil).and_return(@role1)
-      Chef::Environment.should_receive(:cdb_load_filtered_cookbook_versions).with("env_fallback", nil).and_return(@all_filtered_cookbook_list)
+      Chef::Environment.should_receive(:cdb_minimal_filtered_versions).with("env_fallback", nil).and_return(@all_filtered_cookbook_list)
+      Chef::MinimalCookbookVersion.should_receive(:load_full_versions_of).with([@cb_for_default], nil).and_return([@cb_for_default])
 
       response = get_json("/nodes/node1/cookbooks")
       response.should be_kind_of(Hash)
@@ -103,7 +107,7 @@ describe "Nodes controller - environments and run_list expansion" do
       }.to_json
 
       Chef::Node.should_receive(:cdb_load).with("node_containing_nosuch_cookbook").and_return(@node_containing_nosuch_cookbook)
-      Chef::Environment.should_receive(:cdb_load_filtered_cookbook_versions).with("_default", nil).and_return(@all_filtered_cookbook_list)
+      Chef::Environment.should_receive(:cdb_minimal_filtered_versions).with("_default", nil).and_return(@all_filtered_cookbook_list)
 
       lambda {
         response = get_json("/nodes/node_containing_nosuch_cookbook/cookbooks")
@@ -120,7 +124,7 @@ describe "Nodes controller - environments and run_list expansion" do
 
       Chef::Node.should_receive(:cdb_load).with("node_containing_role_containing_nosuch_cookbook").and_return(@node_containing_role_containing_nosuch_cookbook)
       Chef::Role.should_receive(:cdb_load).with("role_containing_nosuch_cookbook", nil).and_return(@role_containing_nosuch_cookbook)
-      Chef::Environment.should_receive(:cdb_load_filtered_cookbook_versions).with("_default", nil).and_return(@all_filtered_cookbook_list)
+      Chef::Environment.should_receive(:cdb_minimal_filtered_versions).with("_default", nil).and_return(@all_filtered_cookbook_list)
 
       lambda {
         response = get_json("/nodes/node_containing_role_containing_nosuch_cookbook/cookbooks")
