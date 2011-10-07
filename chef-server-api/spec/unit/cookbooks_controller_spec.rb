@@ -21,7 +21,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_model_helper')
 require 'chef/node'
 require 'pp'
 
-describe "Coobkooks Controller" do
+describe "Cookbooks Controller" do
   before do
     Merb.logger.set_log(StringIO.new)
   end
