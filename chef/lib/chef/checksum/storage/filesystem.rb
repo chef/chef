@@ -27,6 +27,7 @@ class Chef
         def file_location
           File.join(checksum_repo_directory, @checksum)
         end
+        alias :to_s :file_location
 
         def checksum_repo_directory
           File.join(Chef::Config.checksum_path, @checksum[0..1])

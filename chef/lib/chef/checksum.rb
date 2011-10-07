@@ -27,6 +27,8 @@ class Chef
     attr_accessor :checksum, :create_time
     attr_accessor :couchdb_id, :couchdb_rev
 
+    attr_reader :storage
+
     # When a Checksum commits a sandboxed file to its final home in the checksum
     # repo, this attribute will have the original on-disk path where the file
     # was stored; it will be used if the commit is reverted to restore the sandbox
@@ -91,19 +93,11 @@ class Chef
       checksum
     end
 
-    def file_location
-      @storage.file_location
-    end
-
-    def checksum_repo_directory
-      @storage.checksum_repo_directory
-    end
-
     # Moves the given +sandbox_file+ into the checksum repo using the path
     # given by +file_location+ and saves the Checksum to the database
     def commit_sandbox_file(sandbox_file)
       @original_committed_file_location = sandbox_file
-      Chef::Log.info("Commiting sandbox file: move #{sandbox_file} to #{file_location}")
+      Chef::Log.info("Commiting sandbox file: move #{sandbox_file} to #{@storage}")
       @storage.commit(sandbox_file)
       cdb_save
     end
@@ -118,7 +112,7 @@ class Chef
         raise Chef::Exceptions::IllegalChecksumRevert, "Checksum #{self.inspect} cannot be reverted because the original sandbox file location is not known"
       end
 
-      Chef::Log.warn("Reverting sandbox file commit: moving #{file_location} back to #{original_committed_file_location}")
+      Chef::Log.warn("Reverting sandbox file commit: moving #{@storage} back to #{original_committed_file_location}")
       @storage.revert(original_committed_file_location)
       cdb_destroy
     end

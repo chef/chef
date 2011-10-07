@@ -45,15 +45,15 @@ describe Chef::Checksum do
   end
 
   it "has the path to the file in the checksum repo" do
-    @checksum.file_location.should == "/var/chef/checksums/3f/3fafecfb15585ede6b840158cbc2f399"
+    @checksum.storage.file_location.should == "/var/chef/checksums/3f/3fafecfb15585ede6b840158cbc2f399"
   end
 
   it "has the path the the file's subdirectory in the checksum repo" do
-    @checksum.checksum_repo_directory.should == "/var/chef/checksums/3f"
+    @checksum.storage.checksum_repo_directory.should == "/var/chef/checksums/3f"
   end
 
   it "commits a sandbox file from a given location to the checksum repo location" do
-    File.should_receive(:rename).with("/tmp/arbitrary_file_location", @checksum.file_location)
+    File.should_receive(:rename).with("/tmp/arbitrary_file_location", @checksum.storage.file_location)
     FileUtils.should_receive(:mkdir_p).with("/var/chef/checksums/3f")
     
     @checksum.should_receive(:cdb_save)
@@ -62,13 +62,13 @@ describe Chef::Checksum do
   end
 
   it "reverts committing a sandbox file" do
-    File.should_receive(:rename).with("/tmp/arbitrary_file_location", @checksum.file_location)
+    File.should_receive(:rename).with("/tmp/arbitrary_file_location", @checksum.storage.file_location)
     FileUtils.should_receive(:mkdir_p).with("/var/chef/checksums/3f")
     @checksum.should_receive(:cdb_save)
     @checksum.commit_sandbox_file("/tmp/arbitrary_file_location")
     @checksum.original_committed_file_location.should == "/tmp/arbitrary_file_location"
 
-    File.should_receive(:rename).with(@checksum.file_location, "/tmp/arbitrary_file_location")
+    File.should_receive(:rename).with(@checksum.storage.file_location, "/tmp/arbitrary_file_location")
     @checksum.should_receive(:cdb_destroy)
     @checksum.revert_sandbox_file_commit
   end
@@ -79,13 +79,13 @@ describe Chef::Checksum do
 
   it "deletes the file and its document from couchdb" do
     @checksum.should_receive(:cdb_destroy)
-    FileUtils.should_receive(:rm).with(@checksum.file_location)
+    FileUtils.should_receive(:rm).with(@checksum.storage.file_location)
     @checksum.purge
   end
 
   it "successfully purges even if its file has been deleted from the repo" do
     @checksum.should_receive(:cdb_destroy)
-    FileUtils.should_receive(:rm).with(@checksum.file_location).and_raise(Errno::ENOENT)
+    FileUtils.should_receive(:rm).with(@checksum.storage.file_location).and_raise(Errno::ENOENT)
     lambda {@checksum.purge}.should_not raise_error
   end
 
