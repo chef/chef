@@ -272,7 +272,7 @@ class Chef
           end.join(" \\; ")
         end
 
-        tmux_name = "'knife ssh #{@name_args[0].gsub(/:/,' ')}'"
+        tmux_name = "'knife ssh #{@name_args[0].gsub(/:/,'=')}'"
         begin
           server = session.servers_for.first
           cmd = ["tmux new-session -d -s #{tmux_name}",
