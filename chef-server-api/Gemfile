@@ -1,4 +1,4 @@
-source :gemcutter
+source :rubygems
 
 gem 'bunny'
 gem 'uuidtools'
