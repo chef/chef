@@ -20,6 +20,7 @@ $: << File.dirname(__FILE__)
 require 'lib/chef/expander/version'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
+require '../chef/tasks/rspec.rb'
 
 spec = eval(File.read("chef-expander.gemspec"))
 
@@ -44,22 +45,6 @@ end
 
 task :install => :package do
   sh %{gem install pkg/chef-expander-#{Chef::Expander::VERSION} --no-rdoc --no-ri}
-end
-
-begin
-  require 'spec/rake/spectask'
-
-  Spec::Rake::SpecTask.new(:spec) do |spec|
-    spec.libs << 'lib' << 'spec'
-    spec.spec_opts = ['--options', "\"#{File.dirname(__FILE__)}/spec/spec.opts\""]
-    spec.spec_files = FileList['spec/**/*_spec.rb']
-  end
-rescue LoadError
-  desc "Rspec is not installed. `(sudo) gem install rspec` to run tests"
-  task :spec do
-    puts "Rspec is not installed. `(sudo) gem install rspec` to run tests"
-    exit 1
-  end
 end
 
 desc "install gem dependencies"
