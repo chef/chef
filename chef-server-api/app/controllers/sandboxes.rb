@@ -105,7 +105,10 @@ class Sandboxes < Application
     existing_sandbox = Chef::Sandbox.cdb_load(params[:sandbox_id])
     raise NotFound, "cannot find sandbox with guid #{params[:sandbox_id]}" unless existing_sandbox
     
-    raise BadRequest, "cannot update sandbox #{params[:sandbox_id]}: already complete" if existing_sandbox.is_completed
+    if existing_sandbox.is_completed
+      Chef::Log.warn("Sandbox finalization: #{params[:sandbox_id]} is already complete, ignoring")
+      return display(existing_sandbox)
+    end
 
     if params[:is_completed]
       existing_sandbox.is_completed = (params[:is_completed] == true)
