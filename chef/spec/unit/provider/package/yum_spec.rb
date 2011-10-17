@@ -114,7 +114,7 @@ describe Chef::Provider::Package::Yum do
           # installed for package_name
           if package_name == "testing.beta3" || package_name == "testing.beta3.more"
             "1.1"
-          elsif package_name == "testing" || package_name = "testing.beta3"
+          elsif package_name == "testing" || package_name == "testing.beta3"
             nil
           end
         end
