@@ -127,7 +127,9 @@ class Chef
 
         if ready.first.include?(stdout_read)
           begin
-            @stdout << stdout_read.readpartial(READ_SIZE)
+            next_chunk = stdout_read.readpartial(READ_SIZE)
+            @stdout << next_chunk
+            @live_stream << next_chunk if @live_stream
           rescue EOFError
             stdout_read.close
             open_streams.delete(stdout_read)
