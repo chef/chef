@@ -30,6 +30,8 @@ class Chef
       include ::Windows::Process
       include ::Windows::Synchronize
 
+      TIME_SLICE = 0.05
+
       #--
       # Missing lots of features from the UNIX version, such as
       # uid, etc.
@@ -37,11 +39,10 @@ class Chef
 
         #
         # Create pipes to capture stdout and stderr,
-        # and begin collecting data from them
         #
         stdout_read, stdout_write = IO.pipe
         stderr_read, stderr_write = IO.pipe
-        stdout_thread = create_stdout_thread(stdout_read, stderr_read)
+        open_streams = [ stdout_read, stderr_read ]
 
         begin
 
@@ -49,41 +50,51 @@ class Chef
           # Set cwd, environment, appname, etc.
           #
           create_process_args = {
-            :app_name => command,
-            :creation_flags   => Process::DETACHED_PROCESS,
+            :app_name => ENV['COMSPEC'],
+            :command_line => "cmd /c #{command}",
             :startup_info => {
               :stdout => stdout_write,
               :stderr => stderr_write
             },
+            :environment => inherit_environment.map { |k,v| "#{k}=#{v}" },
             :close_handles => false
           }
           create_process_args[:cwd] = cwd if cwd
-          create_process_args[:environment] = environment.map { |k,v| "#{k}=#{v}" } if environment
 
           #
           # Start the process
           #
-          # TODO this will not work with "echo" and "set."  Consider using cmd /c to get that support.
           process = Process.create(create_process_args)
           begin
 
             #
-            # Wait for it to finish
+            # Wait for the process to finish, consuming output as we go
             #
-            wait_status = WaitForSingleObject(process.process_handle, timeout*1000)
-            case wait_status
-              when WAIT_OBJECT_0
-                # Get process exit code
-                exit_code = [0].pack('l')
-                unless GetExitCodeProcess(process.process_handle, exit_code)
-                  raise get_last_error
-                end
-                @status = exit_code.unpack('l').first
-              when WAIT_TIMEOUT
-                # Kill the process
-                raise Chef::Exceptions::CommandTimeout, "command timed out:\n#{format_for_exception}"
-              else
-                raise "Unknown response from WaitForSingleObject(#{process.process_handle}, #{timeout*1000}): #{wait_status}"
+            start_wait = Time.now
+            while true
+              wait_status = WaitForSingleObject(process.process_handle, 0)
+              case wait_status
+                when WAIT_OBJECT_0
+                  # Get process exit code
+                  exit_code = [0].pack('l')
+                  unless GetExitCodeProcess(process.process_handle, exit_code)
+                    raise get_last_error
+                  end
+                  @status = ThingThatLooksSortOfLikeAProcessStatus.new
+                  @status.exitstatus = exit_code.unpack('l').first
+
+                  return self
+                when WAIT_TIMEOUT
+                  # Kill the process
+                  if (Time.now - start_wait) > timeout
+                    raise Chef::Exceptions::CommandTimeout, "command timed out:\n#{format_for_exception}"
+                  end
+
+                  consume_output(open_streams, stdout_read, stderr_read)
+                else
+                  raise "Unknown response from WaitForSingleObject(#{process.process_handle}, #{timeout*1000}): #{wait_status}"
+              end
+
             end
 
           ensure
@@ -92,46 +103,75 @@ class Chef
           end
 
         ensure
-          # This ensures we finish writing, which will cause stdout_thread to complete
+          #
+          # Consume all remaining data from the pipes until they are closed
+          #
           stdout_write.close
           stderr_write.close
 
-          stdout_thread.join
-
-          stdout_read.close
-          stderr_read.close
-        end
-
-        self
-      end
-
-      private
-
-      def create_stdout_thread(stdout_read, stderr_read)
-        Thread.new do
-          # emulates blocking read (readpartial).
-          streams = [stdout_read, stderr_read]
-          while streams.length > 0 && ready = IO.select(streams, nil, nil, READ_WAIT_TIME)
-            if ready.first.include?(stdout_read)
-              begin
-                @stdout << stdout_read.readpartial(READ_SIZE)
-              rescue EOFError
-                streams.delete(stdout_read)
-              end
-            end
-
-            if ready.first.include?(stderr_read)
-              begin
-                @stderr << stderr_read.readpartial(READ_SIZE)
-              rescue EOFError
-                streams.delete(stderr_read)
-              end
-            end
+          while consume_output(open_streams, stdout_read, stderr_read)
           end
         end
       end
 
+      private
+
+      class ThingThatLooksSortOfLikeAProcessStatus
+        attr_accessor :exitstatus
+      end
+
+      def consume_output(open_streams, stdout_read, stderr_read)
+        return false if open_streams.length == 0
+        ready = IO.select(open_streams, nil, nil, READ_WAIT_TIME)
+        return true if ! ready
+
+        if ready.first.include?(stdout_read)
+          begin
+            @stdout << stdout_read.readpartial(READ_SIZE)
+          rescue EOFError
+            stdout_read.close
+            open_streams.delete(stdout_read)
+          end
+        end
+
+        if ready.first.include?(stderr_read)
+          begin
+            @stderr << stderr_read.readpartial(READ_SIZE)
+          rescue EOFError
+            stderr_read.close
+            open_streams.delete(stderr_read)
+          end
+        end
+
+        return true
+      end
+
+      def inherit_environment
+        result = {}
+        ENV.each_pair do |k,v|
+          result[k] = v
+        end
+
+        environment.each_pair do |k,v|
+          if v != nil
+            result.delete(k)
+          else
+            result[k] = v
+          end
+        end
+        result
+      end
     end # class
+  end
+end
+
+#
+# Override module Windows::Process.CreateProcess to fix bug when
+# using both app_name and command_line
+#
+module Windows
+  module Process
+    API.new('CreateProcess', 'SPPPLLLPPP', 'B')
   end
 end
 
