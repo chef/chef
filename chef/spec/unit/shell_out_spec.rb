@@ -166,10 +166,11 @@ describe Chef::ShellOut do
 
     it "chdir to the cwd directory if given" do
       # /bin should exists on all systems, and is not the default cwd
-      dir = Dir.tmpdir
       if IS_WINDOWS
+        dir = Dir.tmpdir
         cmd = Chef::ShellOut.new('echo %cd%', :cwd => dir)
       else
+        dir = "/bin"
         cmd = Chef::ShellOut.new('pwd', :cwd => dir)
       end
       cmd.run_command
