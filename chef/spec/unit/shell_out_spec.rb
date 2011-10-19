@@ -1,4 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'tmpdir'
+
+IS_WINDOWS = RUBY_PLATFORM =~ /mswin|mingw32|windows/
+LINE_ENDING = IS_WINDOWS ? "\r\n" : "\n"
+ECHO_LC_ALL = IS_WINDOWS ? "echo %LC_ALL%" : "echo $LC_ALL"
 
 describe Chef::ShellOut do
   before do
@@ -161,9 +166,14 @@ describe Chef::ShellOut do
 
     it "chdir to the cwd directory if given" do
       # /bin should exists on all systems, and is not the default cwd
-      cmd = Chef::ShellOut.new('pwd', :cwd => '/bin')
+      dir = Dir.tmpdir
+      if IS_WINDOWS
+        cmd = Chef::ShellOut.new('echo %cd%', :cwd => dir)
+      else
+        cmd = Chef::ShellOut.new('pwd', :cwd => dir)
+      end
       cmd.run_command
-      cmd.stdout.should == "/bin\n"
+      File.expand_path(cmd.stdout.chomp).should == File.expand_path(dir)
     end
   end
 
@@ -202,7 +212,7 @@ describe Chef::ShellOut do
 
     it "copies the subprocess' stdout to the live stream" do
       @shell_cmd.run_command
-      @stream.string.should == "hello\n"
+      @stream.string.should == "hello#{LINE_ENDING}"
     end
   end
 
@@ -211,14 +221,13 @@ describe Chef::ShellOut do
       twotime = %q{ruby -e 'STDERR.puts :hello; STDOUT.puts :world'}
       cmd = Chef::ShellOut.new(twotime)
       cmd.run_command
-      cmd.stderr.should == "hello\n"
-      cmd.stdout.should == "world\n"
+      cmd.stderr.should == "hello#{LINE_ENDING}"
+      cmd.stdout.should == "world#{LINE_ENDING}"
     end
 
     it "collects the exit status of the command" do
       cmd = Chef::ShellOut.new('ruby -e "exit 0"')
       status = cmd.run_command.status
-      status.should be_a_kind_of(Process::Status)
       status.exitstatus.should == 0
     end
 
@@ -232,12 +241,12 @@ describe Chef::ShellOut do
     end
 
     it "times out when a process takes longer than the specified timeout" do
-      cmd = Chef::ShellOut.new("sleep 2", :timeout => 0.1)
+      cmd = Chef::ShellOut.new("ruby -e \"sleep 2\"", :timeout => 0.1)
       lambda {cmd.run_command}.should raise_error(Chef::Exceptions::CommandTimeout)
     end
 
     it "reads all of the output when the subprocess produces more than $buffersize of output" do
-      chatty = %q|ruby -e "print('X' * 16 * 1024); print( '.' * 1024)"|
+      chatty = "ruby -e \"print('X' * 16 * 1024); print('.' * 1024)\""
       cmd = Chef::ShellOut.new(chatty)
       cmd.run_command
       cmd.stdout.should match(/X{16384}\.{1024}/)
@@ -254,61 +263,72 @@ describe Chef::ShellOut do
       halfandhalf = %q{ruby -e 'STDOUT.close;sleep 0.5;STDERR.puts :win'}
       cmd = Chef::ShellOut.new(halfandhalf)
       cmd.run_command
-      cmd.stderr.should == "win\n"
+      cmd.stderr.should == "win#{LINE_ENDING}"
     end
 
     it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
       chatty = %q{ruby -e "puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000"}
       cmd = Chef::ShellOut.new(chatty)
       cmd.run_command
-      cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
-      cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
+      cmd.stdout.should == ('f' * 20_000) + "#{LINE_ENDING}" + ('f' * 20_000) + "#{LINE_ENDING}"
+      cmd.stderr.should == ('u' * 20_000) + "#{LINE_ENDING}" + ('u' * 20_000) + "#{LINE_ENDING}"
     end
 
     it "does not deadlock when the subprocess writes lots of data to both stdout and stderr (part2)" do
       chatty = %q{ruby -e "STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000"}
       cmd = Chef::ShellOut.new(chatty)
       cmd.run_command
-      cmd.stdout.should == ('f' * 20_000) + "\n" + ('f' * 20_000) + "\n"
-      cmd.stderr.should == ('u' * 20_000) + "\n" + ('u' * 20_000) + "\n"
+      cmd.stdout.should == ('f' * 20_000) + "#{LINE_ENDING}" + ('f' * 20_000) + "#{LINE_ENDING}"
+      cmd.stderr.should == ('u' * 20_000) + "#{LINE_ENDING}" + ('u' * 20_000) + "#{LINE_ENDING}"
     end
 
     it "doesn't hang or lose output when a process writes, pauses, then continues writing" do
       stop_and_go = %q{ruby -e 'puts "before";sleep 0.5;puts"after"'}
       cmd = Chef::ShellOut.new(stop_and_go)
       cmd.run_command
-      cmd.stdout.should == "before\nafter\n"
+      cmd.stdout.should == "before#{LINE_ENDING}after#{LINE_ENDING}"
     end
 
     it "doesn't hang or lose output when a process pauses before writing" do
       late_arrival = %q{ruby -e 'sleep 0.5;puts "missed_the_bus"'}
       cmd = Chef::ShellOut.new(late_arrival)
       cmd.run_command
-      cmd.stdout.should == "missed_the_bus\n"
+      cmd.stdout.should == "missed_the_bus#{LINE_ENDING}"
     end
 
     it "uses the C locale by default" do
-      cmd = Chef::ShellOut.new('echo $LC_ALL')
+      cmd = Chef::ShellOut.new(ECHO_LC_ALL)
       cmd.run_command
       cmd.stdout.strip.should == 'C'
     end
 
     it "does not set any locale when the user gives LC_ALL => nil" do
       # kinda janky
-      cmd = Chef::ShellOut.new('echo $LC_ALL', :environment => {"LC_ALL" => nil})
+      cmd = Chef::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => nil})
       cmd.run_command
-      cmd.stdout.strip.should == ENV['LC_ALL'].to_s.strip
+      if !ENV['LC_ALL'] && IS_WINDOWS
+        expected = "%LC_ALL%"
+      else
+        expected = ENV['LC_ALL'].to_s.strip
+      end
+      cmd.stdout.strip.should == expected
     end
 
     it "uses the requested locale" do
-      cmd = Chef::ShellOut.new('echo $LC_ALL', :environment => {"LC_ALL" => 'es'})
+      cmd = Chef::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => 'es'})
       cmd.run_command
       cmd.stdout.strip.should == 'es'
     end
 
     it "recovers the error message when exec fails" do
       cmd = Chef::ShellOut.new("fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
-      lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
+      # TODO This is more OS-specific behavior than one might like.
+      if IS_WINDOWS
+        cmd.run_command
+        cmd.status.exitstatus.should == 1
+      else
+        lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
+      end
     end
 
     it "closes stdin on the child process so it knows not to wait for any input" do
@@ -327,7 +347,7 @@ describe Chef::ShellOut do
     cmd.format_for_exception.split("\n")[3].should == %q{---- End output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----}
   end
 
-  it "raises a InvalidCommandResult error if the exitstatus is an unexpected value" do
+  it "raises a InvalidCommandResult error if the exitstatus is nonzero" do
     cmd = Chef::ShellOut.new('ruby -e "exit 2"')
     cmd.run_command
     lambda {cmd.error!}.should raise_error(Chef::Exceptions::ShellCommandFailed)
@@ -337,6 +357,18 @@ describe Chef::ShellOut do
     cmd = Chef::ShellOut.new('ruby -e "exit 42"', :returns => 42)
     cmd.run_command
     lambda {cmd.error!}.should_not raise_error
+  end
+
+  it "raises an error if the command does not return a value in the list of valid_exit_codes" do
+    cmd = Chef::ShellOut.new('ruby -e "exit 2"', :returns => [ 0, 1, 42 ])
+    cmd.run_command
+    lambda {cmd.error!}.should raise_error(Chef::Exceptions::ShellCommandFailed)
+  end
+
+  it "raises an error if the command returns 0 and the list of valid_exit_codes does not contain 0" do
+    cmd = Chef::ShellOut.new('ruby -e "exit 0"', :returns => 42)
+    cmd.run_command
+    lambda {cmd.error!}.should raise_error(Chef::Exceptions::ShellCommandFailed)
   end
 
   it "includes output with exceptions from #error!" do
