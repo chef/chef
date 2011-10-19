@@ -155,7 +155,7 @@ class Chef
         end
 
         environment.each_pair do |k,v|
-          if v != nil
+          if v == nil
             result.delete(k)
           else
             result[k] = v
