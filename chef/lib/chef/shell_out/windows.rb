@@ -49,9 +49,10 @@ class Chef
           #
           # Set cwd, environment, appname, etc.
           #
+          app_name, command_line = command_to_run
           create_process_args = {
-            :app_name => ENV['COMSPEC'],
-            :command_line => "cmd /c #{command}",
+            :app_name => app_name,
+            :command_line => command_line,
             :startup_info => {
               :stdout => stdout_write,
               :stderr => stderr_write
@@ -148,6 +149,16 @@ class Chef
         return true
       end
 
+      SHOULD_USE_CMD = /['"<>|&%]|\b(?:assoc|break|call|cd|chcp|chdir|cls|color|copy|ctty|date|del|dir|echo|endlocal|erase|exit|for|ftype|goto|if|lfnfor|lh|lock|md|mkdir|move|path|pause|popd|prompt|pushd|rd|rem|ren|rename|rmdir|set|setlocal|shift|start|time|title|truename|type|unlock|ver|verify|vol)\b/
+
+      def command_to_run
+        if command =~ SHOULD_USE_CMD
+          [ ENV['COMSPEC'], "cmd /c #{command}" ]
+        else
+          [ which(command[0,command.index(/\s/) || command.length]), command ]
+        end
+      end
+
       def inherit_environment
         result = {}
         ENV.each_pair do |k,v|
@@ -162,6 +173,18 @@ class Chef
           end
         end
         result
+      end
+
+      def which(cmd)
+        return cmd if File.executable? cmd
+        exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') + [''] : ['']
+        ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+          exts.each { |ext|
+            exe = "#{path}/#{cmd}#{ext}"
+            return exe if File.executable? exe
+          }
+        end
+        return nil
       end
     end # class
   end
@@ -227,7 +250,7 @@ module Process
         si_hash[key] = val
       }
     end
-      
+
     # The +command_line+ key is mandatory unless the +app_name+ key
     # is specified.
     unless hash['command_line']
@@ -337,7 +360,7 @@ module Process
          
       hash['creation_flags'] |= CREATE_UNICODE_ENVIRONMENT
 
-      bool = CreateProcessWithLogonW(
+      process_ran = CreateProcessWithLogonW(
         logon,                  # User
         domain,                 # Domain
         passwd,                 # Password
@@ -351,7 +374,7 @@ module Process
         procinfo                # Process Info
       )
     else     
-      bool = CreateProcess(
+      process_ran = CreateProcess(
         hash['app_name'],       # App name
         hash['command_line'],   # Command line
         process_security,       # Process attributes
@@ -364,11 +387,11 @@ module Process
         procinfo                # Process Info
       )
     end      
-      
+
     # TODO: Close stdin, stdout and stderr handles in the si_hash unless
     # they're pointing to one of the standard handles already. [Maybe]
-    unless bool
-      raise Error, "CreateProcess() failed: " + get_last_error
+    if !process_ran
+      raise_last_error("CreateProcess()")
     end
       
     # Automatically close the process and thread handles in the
@@ -385,6 +408,147 @@ module Process
       procinfo[12,4].unpack('L').first # hThreadId
     )
   end
+
+  def self.raise_last_error(operation)
+    error_string = "#{operation} failed: #{get_last_error}"
+    last_error_code = GetLastError()
+    if ERROR_CODE_MAP.has_key?(last_error_code)
+      raise ERROR_CODE_MAP[last_error_code], error_string
+    else
+      raise Error, error_string
+    end
+  end
+
+  # List from ruby/win32/win32.c
+  ERROR_CODE_MAP = {
+    ERROR_INVALID_FUNCTION => Errno::EINVAL,
+    ERROR_FILE_NOT_FOUND => Errno::ENOENT,
+    ERROR_PATH_NOT_FOUND => Errno::ENOENT,
+    ERROR_TOO_MANY_OPEN_FILES => Errno::EMFILE,
+    ERROR_ACCESS_DENIED => Errno::EACCES,
+    ERROR_INVALID_HANDLE => Errno::EBADF,
+    ERROR_ARENA_TRASHED => Errno::ENOMEM,
+    ERROR_NOT_ENOUGH_MEMORY => Errno::ENOMEM,
+    ERROR_INVALID_BLOCK => Errno::ENOMEM,
+    ERROR_BAD_ENVIRONMENT => Errno::E2BIG,
+    ERROR_BAD_FORMAT => Errno::ENOEXEC,
+    ERROR_INVALID_ACCESS => Errno::EINVAL,
+    ERROR_INVALID_DATA => Errno::EINVAL,
+    ERROR_INVALID_DRIVE => Errno::ENOENT,
+    ERROR_CURRENT_DIRECTORY => Errno::EACCES,
+    ERROR_NOT_SAME_DEVICE => Errno::EXDEV,
+    ERROR_NO_MORE_FILES => Errno::ENOENT,
+    ERROR_WRITE_PROTECT => Errno::EROFS,
+    ERROR_BAD_UNIT => Errno::ENODEV,
+    ERROR_NOT_READY => Errno::ENXIO,
+    ERROR_BAD_COMMAND => Errno::EACCES,
+    ERROR_CRC => Errno::EACCES,
+    ERROR_BAD_LENGTH => Errno::EACCES,
+    ERROR_SEEK => Errno::EIO,
+    ERROR_NOT_DOS_DISK => Errno::EACCES,
+    ERROR_SECTOR_NOT_FOUND => Errno::EACCES,
+    ERROR_OUT_OF_PAPER => Errno::EACCES,
+    ERROR_WRITE_FAULT => Errno::EIO,
+    ERROR_READ_FAULT => Errno::EIO,
+    ERROR_GEN_FAILURE => Errno::EACCES,
+    ERROR_LOCK_VIOLATION => Errno::EACCES,
+    ERROR_SHARING_VIOLATION => Errno::EACCES,
+    ERROR_WRONG_DISK => Errno::EACCES,
+    ERROR_SHARING_BUFFER_EXCEEDED => Errno::EACCES,
+#    ERROR_BAD_NETPATH => Errno::ENOENT,
+#    ERROR_NETWORK_ACCESS_DENIED => Errno::EACCES,
+#    ERROR_BAD_NET_NAME => Errno::ENOENT,
+    ERROR_FILE_EXISTS => Errno::EEXIST,
+    ERROR_CANNOT_MAKE => Errno::EACCES,
+    ERROR_FAIL_I24 => Errno::EACCES,
+    ERROR_INVALID_PARAMETER => Errno::EINVAL,
+    ERROR_NO_PROC_SLOTS => Errno::EAGAIN,
+    ERROR_DRIVE_LOCKED => Errno::EACCES,
+    ERROR_BROKEN_PIPE => Errno::EPIPE,
+    ERROR_DISK_FULL => Errno::ENOSPC,
+    ERROR_INVALID_TARGET_HANDLE => Errno::EBADF,
+    ERROR_INVALID_HANDLE => Errno::EINVAL,
+    ERROR_WAIT_NO_CHILDREN => Errno::ECHILD,
+    ERROR_CHILD_NOT_COMPLETE => Errno::ECHILD,
+    ERROR_DIRECT_ACCESS_HANDLE => Errno::EBADF,
+    ERROR_NEGATIVE_SEEK => Errno::EINVAL,
+    ERROR_SEEK_ON_DEVICE => Errno::EACCES,
+    ERROR_DIR_NOT_EMPTY => Errno::ENOTEMPTY,
+#    ERROR_DIRECTORY => Errno::ENOTDIR,
+    ERROR_NOT_LOCKED => Errno::EACCES,
+    ERROR_BAD_PATHNAME => Errno::ENOENT,
+    ERROR_MAX_THRDS_REACHED => Errno::EAGAIN,
+#    ERROR_LOCK_FAILED => Errno::EACCES,
+    ERROR_ALREADY_EXISTS => Errno::EEXIST,
+    ERROR_INVALID_STARTING_CODESEG => Errno::ENOEXEC,
+    ERROR_INVALID_STACKSEG => Errno::ENOEXEC,
+    ERROR_INVALID_MODULETYPE => Errno::ENOEXEC,
+    ERROR_INVALID_EXE_SIGNATURE => Errno::ENOEXEC,
+    ERROR_EXE_MARKED_INVALID => Errno::ENOEXEC,
+    ERROR_BAD_EXE_FORMAT => Errno::ENOEXEC,
+    ERROR_ITERATED_DATA_EXCEEDS_64k => Errno::ENOEXEC,
+    ERROR_INVALID_MINALLOCSIZE => Errno::ENOEXEC,
+    ERROR_DYNLINK_FROM_INVALID_RING => Errno::ENOEXEC,
+    ERROR_IOPL_NOT_ENABLED => Errno::ENOEXEC,
+    ERROR_INVALID_SEGDPL => Errno::ENOEXEC,
+    ERROR_AUTODATASEG_EXCEEDS_64k => Errno::ENOEXEC,
+    ERROR_RING2SEG_MUST_BE_MOVABLE => Errno::ENOEXEC,
+    ERROR_RELOC_CHAIN_XEEDS_SEGLIM => Errno::ENOEXEC,
+    ERROR_INFLOOP_IN_RELOC_CHAIN => Errno::ENOEXEC,
+    ERROR_FILENAME_EXCED_RANGE => Errno::ENOENT,
+    ERROR_NESTING_NOT_ALLOWED => Errno::EAGAIN,
+#    ERROR_PIPE_LOCAL => Errno::EPIPE,
+    ERROR_BAD_PIPE => Errno::EPIPE,
+    ERROR_PIPE_BUSY => Errno::EAGAIN,
+    ERROR_NO_DATA => Errno::EPIPE,
+    ERROR_PIPE_NOT_CONNECTED => Errno::EPIPE,
+    ERROR_OPERATION_ABORTED => Errno::EINTR,
+#    ERROR_NOT_ENOUGH_QUOTA => Errno::ENOMEM,
+    ERROR_MOD_NOT_FOUND => Errno::ENOENT,
+    WSAEINTR => Errno::EINTR,
+    WSAEBADF => Errno::EBADF,
+#    WSAEACCES => Errno::EACCES,
+    WSAEFAULT => Errno::EFAULT,
+    WSAEINVAL => Errno::EINVAL,
+    WSAEMFILE => Errno::EMFILE,
+    WSAEWOULDBLOCK => Errno::EWOULDBLOCK,
+    WSAEINPROGRESS => Errno::EINPROGRESS,
+    WSAEALREADY => Errno::EALREADY,
+    WSAENOTSOCK => Errno::ENOTSOCK,
+    WSAEDESTADDRREQ => Errno::EDESTADDRREQ,
+    WSAEMSGSIZE => Errno::EMSGSIZE,
+    WSAEPROTOTYPE => Errno::EPROTOTYPE,
+    WSAENOPROTOOPT => Errno::ENOPROTOOPT,
+    WSAEPROTONOSUPPORT => Errno::EPROTONOSUPPORT,
+    WSAESOCKTNOSUPPORT => Errno::ESOCKTNOSUPPORT,
+    WSAEOPNOTSUPP => Errno::EOPNOTSUPP,
+    WSAEPFNOSUPPORT => Errno::EPFNOSUPPORT,
+    WSAEAFNOSUPPORT => Errno::EAFNOSUPPORT,
+    WSAEADDRINUSE => Errno::EADDRINUSE,
+    WSAEADDRNOTAVAIL => Errno::EADDRNOTAVAIL,
+    WSAENETDOWN => Errno::ENETDOWN,
+    WSAENETUNREACH => Errno::ENETUNREACH,
+    WSAENETRESET => Errno::ENETRESET,
+    WSAECONNABORTED => Errno::ECONNABORTED,
+    WSAECONNRESET => Errno::ECONNRESET,
+    WSAENOBUFS => Errno::ENOBUFS,
+    WSAEISCONN => Errno::EISCONN,
+    WSAENOTCONN => Errno::ENOTCONN,
+    WSAESHUTDOWN => Errno::ESHUTDOWN,
+    WSAETOOMANYREFS => Errno::ETOOMANYREFS,
+#    WSAETIMEDOUT => Errno::ETIMEDOUT,
+    WSAECONNREFUSED => Errno::ECONNREFUSED,
+    WSAELOOP => Errno::ELOOP,
+    WSAENAMETOOLONG => Errno::ENAMETOOLONG,
+    WSAEHOSTDOWN => Errno::EHOSTDOWN,
+    WSAEHOSTUNREACH => Errno::EHOSTUNREACH,
+#    WSAEPROCLIM => Errno::EPROCLIM,
+#    WSAENOTEMPTY => Errno::ENOTEMPTY,
+    WSAEUSERS => Errno::EUSERS,
+    WSAEDQUOT => Errno::EDQUOT,
+    WSAESTALE => Errno::ESTALE,
+    WSAEREMOTE => Errno::EREMOTE
+  }
 
   module_function :create
 end
