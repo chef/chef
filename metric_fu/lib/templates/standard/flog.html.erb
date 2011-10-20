@@ -1,0 +1,57 @@
+<html>
+<head>
+	<title>Flog Reporter</title>
+	<style>
+	<%= inline_css("default.css") %>
+	</style>
+</head>
+<body>
+	<h1>Flog Results</h1>
+  <a href="index.html">back to menu</a>
+	<p><a href='http://ruby.sadi.st/Flog.html'>Flog</a> measures code complexity.</p>
+  <h2>Total Flog score for all methods: <%= round_to_tenths @flog[:total]%></h2>
+  <h2>Average Flog score for all methods: <%= round_to_tenths @flog[:average]%></h2>
+
+  <table>
+    <tr>
+      <th>File</th>
+      <th>Total score</th>
+      <th>Methods</th>
+      <th>Average score</th>
+      <th>Highest score</th>
+    </tr>
+      <% @flog[:method_containers].each do |method_container| %>
+      <tr>
+        <td><a href="#<%= method_container[:path].gsub(/[^a-z]+/, '_') %>"><%= method_container[:path] %></a></td>
+        <td><%= round_to_tenths  method_container[:total_score] %></td>
+        <td><%= method_container[:methods].size %></td>
+        <td><%= round_to_tenths method_container[:average_score] %></td>
+        <td><%= round_to_tenths method_container[:highest_score] %></td>
+      </tr>
+    <% end %>
+  </table>
+
+  <% @flog[:method_containers].each do |method_container| %>
+    <h2 id="<%= method_container[:path].gsub(/[^a-z]+/, '_') %>"><%= link_to_filename(method_container[:path]) %></h2>
+
+      <% method_container[:methods].each do |full_method_name, method_info| %>
+        <% path, line = method_info[:path].split(":") if method_info[:path] %>
+        <p><%= link_to_filename(path, line, full_method_name) %></p>
+        <p>Total Score: <%= round_to_tenths method_info[:score]%></p>
+        <table>
+          <tr>
+            <th>Score</th>
+            <th>Operator</th>
+          </tr>
+          <% method_info[:operators].each do |operator, score| %>
+            <tr>
+              <td><%= round_to_tenths score %></td>
+              <td><%= operator %></td>
+            </tr>
+          <% end %>
+        </table>
+      <% end %>
+  <% end %>
+  <p>Generated on <%= Time.now.localtime %></p>
+</body>
+</html>

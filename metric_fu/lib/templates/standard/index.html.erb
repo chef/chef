@@ -1,0 +1,41 @@
+<html>
+<head>
+	<title>Metric Fu Results</title>
+	<style>
+	<%= inline_css("default.css") %>
+	</style>
+</head>
+
+<body>
+	<h1>Metric Fu Results</h1>
+  <% if @churn %>
+    <p><a href="churn.html">Churn report</a></p>
+  <% end %>
+  <% if @flay %>
+    <p><a href="flay.html">Flay report</a></p>
+  <% end %>
+  <% if @flog %>
+    <p><a href="flog.html">Flog report</a></p>
+  <% end %>
+  <% if @rcov %>
+    <p><a href="rcov.html">Rcov report</a></p>
+  <% end %>
+  <% if @reek %>
+    <p><a href="reek.html">Reek report</a></p>
+  <% end %>
+  <% if @roodi %>
+    <p><a href="roodi.html">Roodi report</a></p>
+  <% end %>
+  <% if @saikuro %>
+    <p><a href="saikuro.html">Saikuro report</a></p>
+  <% end %>
+  <% if @stats %>
+    <p><a href="stats.html">Stats report</a></p>
+  <% end %>
+  <% if @rails_best_practices %>
+    <p><a href="rails_best_practices.html">Rails Best Practices report</a></p>
+  <% end %>
+  <p>Generated on <%= Time.now.localtime %></p>
+</body>
+</html>
+

@@ -1,0 +1,34 @@
+<h3>Metric Fu Results</h3>
+<ul id='projects'>
+<% if @churn %>
+  <li class='even failure'><a href="churn.html">Churn</a></li>
+<% end %>
+<% if @flay %>
+  <li class='even failure'><a href="flay.html">Flay</a></li>
+<% end %>
+<% if @flog %>
+  <li class='even failure'><a href="flog.html">Flog</a></li>
+<% end %>
+<% if @rcov %>
+  <li class='even failure'><a href="rcov.html">Rcov</a></li>
+<% end %>
+<% if @reek %>
+  <li class='even failure'><a href="reek.html">Reek</a></li>
+<% end %>
+<% if @roodi %>
+  <li class='even failure'><a href="roodi.html">Roodi</a></li>
+<% end %>
+<% if @saikuro %>
+  <li class='even failure'><a href="saikuro.html">Saikuro</a></li>
+<% end %>
+<% if @stats %>
+  <li class='even failure'><a href="stats.html">Stats</a></li>
+<% end %>
+<% if @rails_best_practices %>
+  <li class='even failure'><a href="rails_best_practices.html">Rails Best Practices report</a></li>
+<% end %>
+<% if @hotspots %>
+  <li class='even failure'><a href="hotspots.html">Hotspots</a></li>
+<% end %>
+</ul>
+<p>Generated on <%= Time.now.localtime %></p>

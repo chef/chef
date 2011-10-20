@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>metric_fu: A Ruby Gem for Easy Metric Report Generation</title>
+<meta name="keywords" content="metric_fu rails metrics saikuro flog flay roodi reek cyclomatic complexity rcov coverage gem" />
+<meta name="description" content="Ruby Gem for Easy Metric Report Generation" />
+<link href="styles.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="main">
+<!-- header begins -->
+<div id="header">
+    
+    <div id="logo"><a href="#">metric_fu</a></div>
+    <div id="buttons">
+        <ul><li>A Ruby Gem for Easy Metric Report Generation</li></ul>
+    </div>
+    
+</div>
+<!-- header ends -->
+<!-- content begins -->
+<div id="content">
+<div id="right">
+    <div id="sidebar">
+        <ul>
+            <li>
+                <h2>Links</h2>
+                <ul>
+                    <li><a href="http://groups.google.com/group/metric_fu">
+                        Google Group
+                        </a>
+                    </li>
+                    <li><a href="http://github.com/jscruggs/metric_fu">
+                        SCM
+                        </a>
+                    </li>
+                    <li><a href="http://github.com/jscruggs/metric_fu/issues">
+                        Issue Tracker
+                        </a>
+                    </li>
+                    <li><a href="http://jakescruggs.blogspot.com/">
+                        Jake Scruggs' Blog (lead developer)
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <!-- end #sidebar -->
+    </div>
+<div id="left">
+            <h1>About metric_fu 2.1.1</h1>
+            <div>
+<p><br/>
+    Metric_fu is a set of rake tasks that make it easy to generate metrics reports.  It uses 
+    <a href="http://saikuro.rubyforge.org/">Saikuro</a>, 
+    <a href="http://ruby.sadi.st/Flog.html">Flog</a>, 
+    <a href="http://ruby.sadi.st/Flay.html">Flay</a>, 
+    <a href="http://eigenclass.org/hiki.rb?rcov">Rcov</a>, 
+    <a href="http://github.com/kevinrutherford/reek">Reek</a>, 
+    <a href="http://github.com/martinjandrews/roodi">Roodi</a>, 
+    <a href="http://github.com/danmayer/churn">Churn</a>, 
+    <a href="http://rubygems.org/gems/rails_best_practices">RailsBestPractices</a>, 
+    <a href="http://subversion.tigris.org/">Subversion</a>, 
+    <a href="http://git.or.cz/">Git</a>, and 
+    <a href="http://www.rubyonrails.org/">Rails</a> 
+    built-in stats task to create a series of reports.  It's designed to integrate easily with 
+    <a href="http://cruisecontrolrb.thoughtworks.com/">CruiseControl.rb</a> 
+    by placing files in the Custom Build Artifacts folder.
+</p>
+<br/>
+<p>
+  In 2.1.0 there are a lot of bug fixes, Check the <a href="http://github.com/jscruggs/metric_fu/blob/master/HISTORY">HISTORY</a> file for complete details. There's a verbose mode (config.verbose = true) that's helpful for debugging (from Dan Sinclair), the ability to opt out of TextMate (from Kakutani Shintaro) opening your files (config.darwin_txmt_protocol_no_thanks = true), and super cool annotations on the Hotspots page so you can see your code problems in-line with the file contents (also from Dan Sinclair).
+</p>
+<br/>
+<p>
+  In 2.0.0 the big new feature is Hotspots.  The Hotspots report combines Flog, Flay, Rcov, Reek, Roodi, and Churn numbers into one report so you see parts of your code that have multiple problems like so:
+</p>
+<img src="hotspot.gif" width="359">
+<p>
+That is one terrible method.<br/>
+Big thanks to Dan Mayer and Ben Brinckerhoff for the Hotspots code and for helping me integrate it with RCov.
+</p>
+<br/>
+
+<p>
+  In 1.5.0 I re-wrote the Flog parsing engine to use Flog programmatically instead of parsing the command line output.  This will hopefully stop minor changes in Flog's output from breaking metric_fu.
+</p>
+
+<h2>Installation:</h2>
+<pre>gem install metric_fu</pre>
+<br/>
+<p>Then in your Rakefile:</p>
+<br/>
+<pre>require 'metric_fu'</pre>
+<br/>
+
+<h2>Output:</h2>
+<table>
+<tr>
+  <td><a href="flog.gif"><img src="flog.gif" width="250"></a></td>
+  <td><a href="flay.gif"><img src="flay.gif" width="250"></a></td>
+<tr>
+  <td><a href="churn.gif"><img src="churn.gif" width="250"></a></td>
+  <td><a href="saikuro.gif"><img src="saikuro.gif" width="250"></a></td>
+</tr>
+<tr>
+  <td><a href="reek.gif"><img src="reek.gif" width="250"></a></td>
+  <td><a href="roodi.gif"><img src="roodi.gif" width="250"></a></td>
+</tr>
+<tr>
+  <td><a href="rcov.gif"><img src="rcov.gif" width="250"></a></td>
+  <td><a href="stats.gif"><img src="stats.gif" width="250"></a></td>
+</tr>
+</table>
+<p><br/>
+    <h2>Usage:</h2>
+    Out of the box metric_fu provides this tasks:
+    <ul>
+      <li>rake metrics:all # Generate coverage, cyclomatic complexity, flog, flay, reek, roodi, stats... </li>
+    </ul>                
+    <br/>
+    I recommend using CruiseControl.rb to set up a metrics build.  See the CruiseControl.rb online docs for more info on how to set up cc.rb and, once you've got that figured out, change the cruise_config.rb file inside your project to have these lines:
+<br/><br/>
+    <pre>project.rake_task = 'metrics:all'</pre>
+    <pre>project.scheduler.polling_interval = 24.hours</pre>
+<br/>
+    Which will check for updates every 24 hours and run all the metric_fu rake tasks (migrating your test db first).  The output will be visible from an individual build's detail page.
+</p>
+<br/>
+
+    <h2>Configuration:</h2>
+    <p>The definitive source for configuration is, of course, the source: <a href="http://github.com/jscruggs/metric_fu/blob/master/lib/base/configuration.rb#L99">lib/base/configuration.rb</a>
+    <p>Metric_fu can be customized to your liking by altering the defaults in your Rakefile:</p>
+    <pre>
+      MetricFu::Configuration.run do |config|
+        #define which metrics you want to use
+        config.metrics  = [:churn, :saikuro, :stats, :flog, :flay]
+        config.graphs   = [:flog, :flay, :stats]
+        # ...
+    end
+    </pre>
+    Note: if you don't want one of the metrics to run (like rcov), make sure you don't try to graph it (which will explode).  Set config.graphs to exactly the graphs you want.  Set config.graphs to an empty array (config.graphs = []) if you want no graphing at all.
+</p>
+
+<p><br/>
+    <h2>Graphing</h2>
+    MetricFu uses Bluff for graphing (a Javascript library) by default.  If you'd rather use Google Charts you can set 'config.graph_engine = :gchart' in the config.  You'll have to install the googlecharts gem, of course.
+</p>
+
+<p><br/>
+    <h2>Notes on Rails 3</h2>
+    If you use RSpec, you'll need to add this to one of your rake files:
+    <pre>
+      require 'metric_fu'
+      MetricFu::Configuration.run do |config|
+        config.rcov[:test_files] = ['spec/**/*_spec.rb']  
+        config.rcov[:rcov_opts] &lt;&lt; "-Ispec" # Needed to find spec_helper
+      end
+    </pre>
+    If you're using default Rails testing, then you can do this:
+    <pre>
+      require 'metric_fu'
+      MetricFu::Configuration.run do |config|
+        config.rcov[:rcov_opts] &lt;&lt; "-Itest" # Needed to find test_helper
+      end
+    </pre>
+<br/>
+
+<p><br/>
+    <h2>Notes on metrics:coverage</h2>
+    When creating a coverage report, metric_fu runs all the tests in the test folder and specs in spec folder using Rcov.  You can configure what files it should run and the RAILS_ENV (by setting 'environment') it runs under. Default config for rcov:
+    <pre>
+      config.rcov = { :environment => 'test',
+                      :test_files => ['test/**/*_test.rb', 
+                                      'spec/**/*_spec.rb'],
+                      :rcov_opts => ["--sort coverage", 
+                                     "--no-html", 
+                                     "--text-coverage",
+                                     "--no-color",
+                                     "--profile",
+                                     "--rails",
+                                     "--exclude /gems/,/Library/,/usr/,spec"],
+                      :external => nil
+                    }
+    </pre>
+    By far, Rcov is the most troublesome report in metric_fu.  This is not because of Rcov itself, but because the Rcov report has to actually execute your tests and test suites can be very tricky things.  MetricFu naively shells out to the command line, runs rcov on your tests/specs, and captures the output.  This does not always work well.  If you are having problems with metric_fu, try turning off Rcov (see the above Configuration section).
+</p>
+<p><br/>
+    <h2>Notes on metrics:saikuro</h2>
+    Saikuro measures cyclomatic complexity for Ruby.  Default config for Saikuro:
+    <pre>
+      config.saikuro  = { :output_directory => 'tmp/metirc_fu/saikuro', 
+                          :input_directory => ['app', 'lib'],
+                          :cyclo => "",
+                          :filter_cyclo => "0",
+                          :warn_cyclo => "5",
+                          :error_cyclo => "7",
+                          :formater => "text"}
+    </pre>
+<br/><br/>
+</p>
+<p><br/>
+    <h2>Notes on metrics:flay</h2>
+    Flay analyzes ruby code for structural similarities. 
+    You can configure which directories need to be flayed.
+    The defaults are 'lib' for non Rails projects and ['app', 'lib'] for Rails projects.
+    By default, metric_fu ignores scores under 100.  You can configure the minimum_score. Default config for Flay:
+    <pre>
+      config.flay ={:dirs_to_flay => ['app', 'lib'],
+                    :minimum_score => 100,
+                    :filetypes => ['rb'] }
+    </pre>
+</p>
+
+<p><br/>
+    <h2>Notes on metrics:flog</h2>
+    <br/>
+    Flog is another way of measuring complexity (or tortured code as the Flog authors like to put it).  You should check out the awesome, and a little scary, <a href="http://ruby.sadi.st/Flog.html">Flog website</a> for more info. Default config for Flog:
+    <pre>
+      config.flog = { :dirs_to_flog => ['app', 'lib'] }
+    </pre>
+</p>
+<p><br/>
+    <h2>Notes on metrics:reek</h2>
+    Reek detects common code smells in ruby code.
+    You can configure which directories need to be checked.
+    The defaults are 'lib' for non Rails projects and ['app', 'lib'] for Rails projects. Default config for Reek:
+    <pre>
+      config.reek = { :dirs_to_reek => ['app', 'lib'] }
+    </pre>
+</p>
+
+<p><br/>
+    <h2>Notes on metrics:roodi</h2>
+    Roodi parses your Ruby code and warns you about design issues you have based on the checks that is has configured.
+    You can configure which directories need to be checked.
+    The defaults are 'lib' for non Rails projects and ['app', 'lib'] for Rails projects.  Default config for Roodi:
+    <pre>
+      config.roodi = { :dirs_to_roodi => ['app', 'lib'] }
+    </pre>
+</p>
+<p><br/>
+    <h2>Notes on metrics:rails_best_practices</h2>
+    Rails Best Practices checks your rails files for violations of... Well the name says it all. The gem was inspired by ihower's presentation <a href="http://www.slideshare.net/ihower/rails-best-practices">Rails Best Practices</a>
+</p>
+<p><br/>
+    <h2>Notes on metrics:stats</h2>
+    This is just 'rake stats' put into a file.  On my projects I like to be able to look at CruiseControl and get stats about the app at different points in time.
+</p>
+<p><br/>
+    <h2>Notes on metrics:churn</h2>
+    Files that change a lot in your project may be bad a sign.  This task uses svn or git's log to identify those files and put them in a report.
+<br/>
+<br/>
+</p>
+
+
+<br/>
+<p>Metric_fu began its life as a plugin for Rails that generated code metrics reports.  As of version 0.7.0, metric_fu is a gem (owing to the excellent work done by Sean Soper) and is hosted on GitHub at <a href="http://github.com/jscruggs/metric_fu">http://github.com/jscruggs/metric_fu</a>. </p>
+<p><br/>   
+    <h2>Questions?</h2>
+    <p>Use the Google Group: <a href="http://groups.google.com/group/metric_fu">http://groups.google.com/group/metric_fu</a></p>
+    <br/>
+    <h2>Thanks</h2>
+    I'd like to thank the authors of Saikuro, Subversion, Flog, Rcov, CruiseControl.rb, and Rails for creating such excellent open source products.  Also many thanks go to 
+    <a href="http://arko.net/">Andre Arko</a>, 
+    <a href="http://deheus.net/petrik">Petrik de Heus</a>, 
+    <a href="http://seansoper.com/">Sean Soper</a>, 
+    <a href="http://www.perilled.com/">Erik St Martin</a>, 
+    <a href="http://gregorowicz.blogspot.com/">Andy Gregorowicz</a>, 
+    <a href="http://github.com/bastien/">Bastien</a>, 
+    <a href="http://schubert.cx/">Michael Schubert</a>, 
+    <a href="http://kseebaldt.blogspot.com/">Kurtis Seebaldt</a>, 
+    <a href="http://www.workingwithrails.com/person/11263-toby-tripp">Toby Tripp</a>, 
+    <a href="http://www.aliaghareza.com">Ali Aghareza</a>, 
+    <a href="http://www.pgrs.net/">Paul Gross</a>, and 
+    <a href="http://chirdeepshetty.net/">Chirdeep Shetty</a> 
+    for their contributions to metric_fu.
+</p>
+            </div>
+
+    </div>  
+    
+</div>
+</div>
+<!-- content ends -->
+<!-- footer begins -->
+<div id="metamorph2"><div id="footer">
+  <p>Copyright &copy; 2008. Designed by <a href="http://www.metamorphozis.com/" title="Free Web Templates">Free Web Templates</a></p>
+        </div></div>
+<!-- footer ends -->
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-1908573-3");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+</body>
+</html>

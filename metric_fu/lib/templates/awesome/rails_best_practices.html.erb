@@ -1,0 +1,27 @@
+<h3>Rails Best Practices Results</h3>
+
+<p><a href="http://github.com/flyerhzm/rails_best_practices">rails_best_practices</a> is a code metric tool for rails projects.</p>
+
+<% graph_name = 'rails_best_practices' %>
+<% if MetricFu.configuration.graph_engine == :gchart %>
+<img src="<%= graph_name %>.png?<%= Time.now.to_i %>" />
+<% else %>
+<canvas id="graph"></canvas>
+<script language="javascript" src="<%= graph_name %>.js?<%= Time.now.to_i %>" type="text/javascript"></script>
+<% end %>
+
+<table>
+  <tr>
+    <th>File Path</th>
+    <th>Warning</th>
+  </tr>
+  <% count = 0 %>
+  <% @rails_best_practices[:problems].each do |problem| %>
+    <tr class='<%= cycle("light", "dark", count) %>'>
+      <td><%= link_to_filename(problem[:file], problem[:line]) %></td>
+      <td><%= problem[:problem] %></td>
+    </tr>
+    <% count += 1 %>
+  <% end %>
+</table>
+<p>Generated on <%= Time.now.localtime %></p>

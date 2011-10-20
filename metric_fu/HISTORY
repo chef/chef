@@ -1,0 +1,237 @@
+=== MetricFu 2.1.1 / 2011-03-2
+
+* Making syntax highlighting optional (config.syntax_highlighting = false) so Ruby 1.9.2 users don't get "invalid byte sequence in UTF-8" errors.
+
+=== MetricFu 2.1.0 / 2011-03-1
+
+* Flog gemspec version was >= 2.2.0, which was too early and didn't work. Changed to >= 2.3.0 -  Chris Griego
+* RCov generator now uses a regex with begin and end line anchor to avoid splitting on comments with equal signs in source files - Andrew Selder
+* RCov generator now always strips the 3 leading characters from the lines when reconstruction source files so that heredocs and block comments parse successfully - Andrew Selder
+* Dan Mayer ported some specs for the Hotspots code into MetricFu from Caliper's code.
+* Stefan Huber fixed some problems with churn pretending not to support Svn.
+* Kakutani Shintaro added the ability to opt out of opening files with TextMate (config.darwin_txmt_protocol_no_thanks = true).
+* Joel Nimety and Andrew Selder fixed a problem where Saikuro was parsing a dir twice.
+* Dan Sinclair added some awesome 'annotate' functionality to the Hotspots page. Click on it so see the file with problems in-line. 
+* Dan Sinclair added a verbose mode (config.verbose = true).
+
+=== MetricFu 2.0.1 / 2010-11-13
+
+* Delete trailing whitespaces - Delwyn de Villiers
+* Stop Ubuntu choking on invalid multibyte char (US-ASCII) - Delwyn de Villiers
+* Fix invalid next in lib/base/metric_analyzer.rb - Delwyn de Villiers
+* Don't load Saikuro for Ruby 1.9.2 - Delwyn de Villiers
+* Fixed a bug reported by Andrew Davis on the mailing list where configuring the data directory causes dates to be 0/0 - Joshua Cronemeyer
+
+=== MetricFu 2.0.0 / 2010-11-10
+
+* Hotspots - Dan Mayer, Ben Brinckerhoff, Jake Scruggs
+* Rcov integration with Hotspots - Jake Scruggs, Tony Castiglione, Rob Meyer
+
+=== MetricFu 1.5.1 / 2010-7-28
+
+* Patch that allows graphers to skip dates that didn't generate metrics for that graph (GitHub Issue #20). - Chris Griego
+* Fixed bug where if you try and use the gchart grapher with the rails_best_practices metric, it blows up (GitHub Issue #23). - Chris Griego
+* Fixed 'If coverage is 0% metric_fu will explode' bug (GitHub Issue #6). - Stew Welbourne
+
+=== MetricFu 1.5.0 / 2010-7-27
+
+* Fixed bug where Flay results were not being reported.  Had to remove the ability to remove selected files from flay processing (undocumented feature that may go away soon if it keeps causing problems).
+* Rewrote Flog parsing/processing to use Flog programmatically. Note: the yaml output for Flog has changed significantly - Pages have now become MethodContainers.  This probably doesn't matter to you if you are not consuming the metric_fu yaml output.
+* Added support for using config files in Reek and Roodi (roodi support was already there but undocumented).
+* Removed verify_dependencies! as it caused too much confusion to justify the limited set of problems it solved. In the post Bundler world it just didn't seem necessary to limit metric_fu dependencies.
+* Deal with Rails 3 activesupport vs active_support problems. -  jinzhu
+
+=== MetricFu 1.4.0 / 2010-06-19
+
+* Added support for rails_best_practices gem - Richard Huang
+* Added rails stats graphing -- Josh Cronemeyer
+* Parameterize the filetypes for flay. By default flay supports haml as well as rb and has a plugin ability for other filetypes. - bfabry
+* Support for Flog 2.4.0 line numbers - Dan Mayer
+* Saikuro multi input directory patch - Spencer Dillard and Dan Mayer
+* Can now parse rcov analysis file coming from multiple sources with an rcov :external option in the config. - Tarsoly András
+* Fixed open file handles problem in the Saikuro analyzer - aselder, erebor
+* Fix some problems with the google charts - Chris Griego
+* Stop showing the googlecharts warning if you are not using google charts.
+
+=== MetricFu 1.3.0 / 2010-01-26
+
+* Flay can be configured to ignore scores below a threshold (by default it ignores scores less than 100)
+* When running Rcov you can configure the RAILS_ENV (defaults to 'test') so running metric_fu doesn't interfere with other environments
+* Changed devver-construct (a gem hosted by GitHub) development dependency to test-construct dependency (on Gemcutter) - Dan Mayer
+* Upgrade Bluff to 0.3.6 and added tooltips to graphs - Édouard Brière
+* Removed Saikuro from vendor and added it as a gem dependency - Édouard Brière
+* Churn has moved outside metric_fu and is now a gem and a dependency - Dan Mayer
+* Fix 'activesupport' deprecation (it should be 'active_support') - Bryan Helmkamp
+* Declared development dependencies
+* Cleaned and sped up specs
+
+=== MetricFu 1.2.0 / 2010-01-09
+
+* ftools isn't supported by 1.9 so moved to fileutils.
+* Overhauled the graphing to use Gruff or Google Charts so we no longer depend on ImageMagick/rmagick -- thanks to Carl Youngblood.
+* Stopped relying on Github gems as they will be going away.
+
+=== MetricFu 1.1.6 / 2009-12-14
+
+* Now compatible with Reek 1.2x thanks to Kevin Rutherford
+* Fixed problem with deleted files still showing up in Flog reports thanks to Dan Mayer
+
+=== MetricFu 1.1.5 / 2009-8-13
+
+* Previous Ruby 1.9 fix was not quite fix-y enough
+
+=== MetricFu 1.1.4 / 2009-7-13
+
+* Fixed another Ruby 1.9x bug
+
+=== MetricFu 1.1.3 / 2009-7-10
+
+* MetricFu is now Ruby 1.9x compatible
+* Removed the check for deprecated ways of configuring metric_fu as the tests were causing Ruby 1.9x problems and it's been forever since they were supported.
+* Removed total flog score from graph (which will always go up and so doesn't mean much) and replacing it with top_five_percent_average which is an average of the worst 5 percent of your methods.
+* Sort Flog by highest score in the class which I feel is more important than the total flog flog score.
+
+=== MetricFu 1.1.2 / 2009-7-09
+
+* Removed dependency on gruff and rmagick (unless the user wants graphs, of course).
+* New look for styling -- Edouard Brière
+* Extra param in rcov call was causing problems -- Stewart Welbourne
+* Preventing rake task from being run multiple times when other rake tasks switch the environment -- Matthew Van Horn
+* Typo in Rcov dependency verification and fixing parsing Saikuro nested information -- Mark Wilden
+
+=== MetricFu 1.1.1 / 2009-6-29
+
+* Fix for empty flog files
+
+=== MetricFu 1.1.0 / 2009-6-22
+
+* Flog, flay, reek, roodi, and rcov reports now graph progress over time.  Well done Nick Quaranto and Edouard Brière.
+* 'Awesome' template has been brought in so that reports look 90% less 'ghetto.'  Also done by Nick Quaranto and Edouard Brière.
+* Added links to TextMate (which keep getting removed.  Probably by me. Sorry.) -- David Chelimsky
+* Fixed a bug for scratch files which have a size of 0 -- Kevin Hall
+* Changed gem dependencies from install-time in gemspec to runtime when each of the generators is loaded.  This allows use of github gems (i.e. relevance-rcov instead of rcov) and also allows you to install only the gems for the metrics you plan on using.  -- Alex Rothenberg
+* Empty Flog file fix -- Adam Bair
+* Added a simple fix for cases where Saikuro results with nested information -- Randy Souza
+* Fixed rcov configuration so it ignores library files on Linux -- Diego Carrion
+* Changing churn so that it still works deeper than the git root directory -- Andrew Timberlake
+* Andrew Timberlake also made some nice changes to the base template which kinda of got overshadowed by the 'awesome' template.  Sorry about that Andrew.
+
+=== MetricFu 1.0.2 / 2009-5-11
+
+* Fixing problems with Reek new line character (thanks to all who pointed this out)
+* Flog now recognizes namespaces in method names thanks to Daniel Guettler
+* Saikuro now looks at multiple directories, again.
+
+=== MetricFu 1.0.1 / 2009-5-3
+
+* metrics:all task no longer requires a MetricFu::Configuration.run {} if you want to accept the defaults
+* rcov task now reports total coverage percent
+
+=== MetricFu 1.0.0 / 2009-4-30
+
+* Merged in Grant McInnes' work on creating yaml output for all metrics to aid harvesting by other tools
+* Supporting Flog 2.1.0
+* Supporting Reek 1.0.0
+* Removed dependency on Rails Env for 3.months.ago (for churn report), now using chronic gem ("3 months ago").
+* Almost all code is out of Rakefiles now and so is more easily testable
+* Metrics inherit from a refactored Generator now.  New metrics generators just have to implement "emit", "analyze", "to_h" and inherit from Generator.  They also must have a template.  See the flay generator and template for a simple implementation.
+* You now define the metrics you wish to run in the configuration and then run "metrics:all".  No other metrics task is exposed by default.
+
+=== MetricFu 0.9.0 / 2009-1-25
+
+* Adding line numbers to the views so that people viewing it on cc.rb can figure out where the problems are
+* Merging in changes from Jay Zeschin having to do with the railroad task -- I still have no idea how to use it (lemme know if you figure it out)
+* Added totals to Flog results
+* Moved rcov options to configuration
+
+=== MetricFu 0.8.9 / 2009-1-20
+
+* Thanks to Andre Arko and Petrik de Heus for adding the following features:
+* The source control type is auto-detected for Churn
+* Moved all presentation to templates
+* Wrote specs for all classes
+* Added flay, Reek and Roodi metrics
+* There's now a configuration class (see README for details)
+* Unification of metrics reports
+* Metrics can be generated using one command
+* Adding new metrics reports has been standardized
+
+=== MetricFu 0.8.0 / 2008-10-06
+
+* Source Control Churn now supports git (thanks to Erik St Martin)
+* Flog Results are sorted by Highest Flog Score
+* Fix for a bunch of 'already initialized constant' warnings that metric_fu caused
+* Fixing bug so the flog reporter can handle methods with digits in the name (thanks to Andy Gregorowicz)
+* Internal Rake task now allows metric_fu to flog/churn itself
+
+=== MetricFu 0.7.6 / 2008-09-15
+
+* CHURN_OPTIONS has become MetricFu::CHURN_OPTIONS
+* SAIKURO_OPTIONS has become MetricFu::SAIKURO_OPTIONS
+* Rcov now looks at test and specs
+* Exclude gems and Library ruby code from rcov
+* Fixed bug with churn start_date functionality (bad path)
+
+=== MetricFu 0.7.5 / 2008-09-12
+
+* Flog can now flog any set of directories you like (see README).
+* Saikuro can now look at any set of directories you like (see README).
+
+=== MetricFu 0.7.1 / 2008-09-12
+
+* Fixed filename bugs pointed out by Bastien
+
+=== MetricFu 0.7.0 / 2008-09-11
+
+* Merged in Sean Soper's changes to metric_fu.
+* Metric_fu is now a gem.
+* Flogging now uses a MD5 hash to figure out if it should re-flog a file (if it's changed)
+* Flogging also has a cool new output screen(s)
+* Thanks Sean!
+
+    === Metricks 0.4.2 / 2008-07-01
+
+    * Changed rcov output directory so that it is no longer 'coverage/unit' but just 'coverage' for better integration with CC.rb
+
+    === Metricks 0.4.1 / 2008-06-13
+
+    * Rcov tests now extend beyond one level depth directory by using RcovTask instead of the shell
+
+    === Metricks 0.4.0 / 2008-06-13
+
+    * Implementing functionality for use as a gem
+    * Added Rakefile to facilitate testing
+
+    === Metricks 0.3.0 / 2008-06-11
+
+    * Generated reports now open on darwin automatically
+    * Generated reports reside under tmp/metricks unless otherwise specified by ENV['CC_BUILD_ARTIFACTS']
+    * MD5Tracker works with Flog reports for speed optimization
+
+    === Metricks 0.2.0 / 2008-06-11
+
+    * Integrated use of base directory constant
+    * Have all reports automatically open in a browser if platform is darwin
+    * Namespaced under Metricks
+    * Dropped use of shell md5 command in favor of Ruby's Digest::MD5 libraries
+
+    === Metricks 0.1.0 / 2008-06-10
+
+    * Initial integration of metric_fu and my enhancements to flog
+    * Metrics are generated but are all over the place
+
+=== MetricFu 0.6.0 / 2008-05-11
+
+* Add source control churn report
+
+=== MetricFu 0.5.1 / 2008-04-25
+
+* Fixed bug with Saikuro report generation - thanks Toby Tripp
+
+=== MetricFu 0.5.0 / 2008-04-25
+
+* create MetricFu as a Rails Plugin
+* Add Flog Report
+* Add Coverage Report
+* Add Saikuro Report
+* Add Stats Report

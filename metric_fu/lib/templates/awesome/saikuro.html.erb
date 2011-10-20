@@ -1,0 +1,71 @@
+<h3>Saikuro Results</h3>
+<p><a href='http://saikuro.rubyforge.org/'>Saikuro</a> analyzes ruby code for cyclomatic complexity.</p>
+
+<h2>Analyzed Methods</h2>
+  <table>
+    <tr>
+      <th>Method Name</th>
+      <th>Complexity</th>
+      <th># Lines</th>
+    </tr>
+    <% @saikuro[:methods].each do |method| %>
+    <tr>
+      <td><%= method[:name] %></td>
+      <td><%= method[:complexity] %></td>
+      <td><%= method[:lines] %></td>
+    </tr>
+    <% end %>
+  </table>
+
+
+
+<h2>Analyzed Classes</h2>
+  <table>
+    <tr>
+      <th>Class Name</th>
+      <th>Complexity</th>
+      <th># Lines</th>
+    </tr>
+    <% @saikuro[:classes].each do |klass| %>
+    <tr>
+      <td><%= klass[:name] %></td>
+      <td><%= klass[:complexity] %></td>
+      <td><%= klass[:lines] %></td>
+    </tr>
+    <% end %>
+  </table>
+
+
+<h2>Analyzed Files</h2>
+<% @saikuro[:files].each do |file| %>
+  <% file[:classes].each do |klass| %>
+      <% if !klass[:methods].empty? %>
+        <h3><%= file[:filename] %></h3>
+        <h4>Class : <%= klass[:class_name] %></h4>
+        <h5>Total complexity : <%= klass[:complexity] %></h5>
+        <h5>Total lines : <%= klass[:lines] %></h5>
+        <table>
+            <tr>
+              <th>Method</th>
+              <th>Complexity</th>
+              <th># Lines</th>
+            </tr>
+          <% klass[:methods].each do |method| %>
+            <tr>
+              <td>
+                <%= method[:name] %>
+              </td>
+              <td>
+                <%= method[:complexity] %>
+              </td>
+              <td>
+                <%= method[:lines]  %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+      <% end %>
+  <% end %>
+<% end %>
+
+<p>Generated on <%= Time.now.localtime %></p>

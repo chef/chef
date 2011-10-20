@@ -1,0 +1,54 @@
+<h3>Hotspot Results</h3>
+<p>Meta analysis of your metrics to find hotspots in your code.</p>
+<br/>
+
+<% if !@hotspots || @hotspots.size == 0 %>
+No Hotspots were found.
+<% elsif @hotspots && @hotspots.size > 0 %>
+
+<% granularities = [:files, :classes, :methods] %>
+<table>
+<tr valign="top">
+<% granularities.each do |granularity| %>
+   <th width='33%'>
+<%= granularity.to_s.capitalize %></th>
+<% end %>
+</tr>
+
+<% items = [] %>
+<% granularities.each_index do |index| %>
+  <% granularity = granularities[index] %>
+  <% items << @hotspots[granularity] %>
+<% end %>
+
+<% items_length = 0 %>
+<% columns = [0, 1, 2] %>
+<% while (items_length < items[0].length || items_length < items[1].length || items_length < items[2].length) do %>
+    <tr  valign="top">
+       <% columns.each do |column| %>
+       <% item = items[column].length >= items_length ? items[column][items_length] : nil %>
+       <% if item %>
+       <td>
+       <b>
+          <%= display_location(item[:location], nil) %>
+        </b>
+        <br/><br/>
+        <!-- TODO HOTSPOTS for metric fu nice metric_link method -->
+        <% item[:details].each do |metric, info| %>
+          <%#= metric_link(@stat, metric, h(metric.to_s.capitalize)) + ": " + h(info)%><br/>
+          <%= "#{metric.to_s.capitalize}: #{info}" %><br/>
+          <% end %>
+          </td>
+      <% else %>
+      <td> &nbsp; </td>
+      <% end %>
+      <% end %>
+      <% items_length += 1 %>
+      </tr>
+    <% end %>
+
+</table>
+<% end %>
+
+
+<p>Generated on <%= Time.now.localtime %></p>

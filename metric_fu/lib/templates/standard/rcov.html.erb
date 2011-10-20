@@ -1,0 +1,43 @@
+<html>
+<head>
+	<title>Rcov Code Coverage Results</title>
+	<style>
+	<%= inline_css("default.css") %>
+	</style>
+</head>
+
+<body>
+	<h1>Rcov Code Coverage Results</h1>
+  <a href="index.html">back to menu</a>
+	<p>C0 code coverage information.</p>
+  <p>Total Coverage: <%= @rcov.delete(:global_percent_run) %>% </p>
+	<table>
+    <tr>
+      <th>File Path</th>
+      <th>Percent run</th>
+    </tr>
+    <% count = 0 %>
+    <% @rcov.sort_by{|k,v| v[:percent_run]}.each do |e| %>
+      <tr>
+        <td><a href="#<%= e[0].gsub(/[^a-z]+/, '_') %>"><%= e[0] %></a></td>
+        <td><%= e[1][:percent_run] %></td>
+      </tr>
+      <% count += 1 %>
+		<% end %>
+  </table>
+
+  <% @rcov.each_pair do |fname, file| %>
+    <h2 id="<%= fname.gsub(/[^a-z]+/, '_') %>"> <%= fname %></h2>
+    <table class="rcov_code">
+    <% file[:lines].each do |line| %>
+      <tr>
+        <% css_class = line[:was_run] ? "rcov_run" : "rcov_not_run" %>
+        <td class="<%= css_class %>"><pre><%= line[:content] %></pre></td>
+      </tr>
+    <% end %>
+    </table>
+  <% end %>
+	<p>Generated on <%= Time.now.localtime %></p>
+</body>
+</html>
+

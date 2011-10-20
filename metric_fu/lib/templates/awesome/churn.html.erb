@@ -1,0 +1,58 @@
+<h3>Source Control Churn Results</h3>
+<p>Files that change a lot in your project may be bad a sign.
+  This task uses your source control log to identify those files.
+  </p>
+<table>
+  <tr>
+    <th>File Path</th>
+    <th>Times Changed</th>
+  </tr>
+  <% count = 0 %>
+  <% @churn[:changes].each do |change| %>
+    <tr>
+      <td><%= link_to_filename(change[:file_path]) %></td>
+      <td><%= change[:times_changed] %></td>
+    </tr>
+    <% count += 1 %>
+  <% end %>
+</table>
+
+<% if @churn[:class_churn] %>
+<p>Classes that change a lot in your project may be bad a sign.</p>
+<table>
+  <tr>
+    <th>File Path</th>
+    <th>Times Changed</th>
+  </tr>
+  <% count = 0 %>
+  <% @churn[:class_churn].each do |change| %>
+    <tr>
+      <td><%= link_to_filename(change['klass']['file']) %> <%= change['klass']['klass'] %></td>
+      <td><%= change['times_changed'] %></td>
+    </tr>
+    <% count += 1 %>
+  <% end %>
+</table>
+<% end %>
+
+<% if @churn[:method_churn] %>
+<p>Methods that change a lot in your project may be bad a sign.</p>
+<table>
+  <tr>
+    <th>File Path</th>
+    <th>Times Changed</th>
+  </tr>
+  <% count = 0 %>
+  <% @churn[:method_churn].each do |change| %>
+    <tr>
+      <td><%= link_to_filename(change['method']['file']) %> <%= change['method']['method'] %></td>
+      <td><%= change['times_changed'] %></td>
+    </tr>
+    <% count += 1 %>
+  <% end %>
+</table>
+<% end %>
+
+
+
+<p>Generated on <%= Time.now.localtime %></p>

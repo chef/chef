@@ -1,0 +1,34 @@
+<html>
+<head>
+	<title>Flay Results</title>
+	<style>
+	<%= inline_css("default.css") %>
+	</style>
+</head>
+
+<body>
+	<h1>Flay Results</h1>
+  <a href="index.html">back to menu</a>
+	<h2>Total Score (lower is better): <%= @flay[:total_score] %></h2>
+  <p><a href='http://ruby.sadi.st/Flay.html'>Flay</a> analyzes ruby code for structural similarities.</p>
+	<table>
+    <tr>
+		  <th>Files</th>
+		  <th>Matches</th>
+    </tr>
+    <% count = 0 %>
+    <% @flay[:matches].each do |match| %>
+  		<tr class='<%= cycle("light", "dark", count) %>'>
+        <td>
+          <% match[:matches].each do |file| %>
+            <%= file[:name] %>:<%= file[:line] %><br />
+          <% end %>
+  		  </td>
+    		<td><%= match[:reason] %></td>
+      </tr>
+      <% count += 1 %>
+		<% end %>
+	</table>
+	<p>Generated on <%= Time.now.localtime %></p>
+</body>
+</html>

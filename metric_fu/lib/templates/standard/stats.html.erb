@@ -1,0 +1,55 @@
+<html>
+<head>
+	<title>Rake Stats Results</title>
+	<style>
+	<%= inline_css("default.css") %>
+	</style>
+</head>
+
+<body>
+	<h1>Rake Stats  Results</h1>
+  <a href="index.html">back to menu</a>
+	<p>Rails rake stats results.</p>
+	<table>
+    <tr>
+      <th>Lines of Code</th>
+      <th>Lines of Test</th>
+      <th>Code to test ratio</th>
+    </tr>
+    <tr>
+      <td><%= @stats[:codeLOC] %></td>
+      <td><%= @stats[:testLOC] %></td>
+      <td>1:<%= @stats[:code_to_test_ratio] %></td>
+    </tr>
+  </table>
+
+	<table>
+    <tr>
+      <th>Name</th>
+      <th>Lines</th>
+      <th>LOC</th>
+      <th>Classes</th>
+      <th>Methods</th>
+      <th>Methods per class</th>
+      <th>LOC per method</th>
+    </tr>
+    <% count = 0 %>
+    <% @stats[:lines].each do |line| %>
+      <tr>
+        <td><%= line[:name] %></td>
+        <td><%= line[:lines] %></td>
+        <td><%= line[:loc] %></td>
+        <td><%= line[:classes] %></td>
+        <td><%= line[:methods] %></td>
+        <td><%= line[:methods_per_class] %></td>
+        <td><%= line[:loc_per_method] %></td>
+      </tr>
+      <% count += 1 %>
+		<% end %>
+  </table>
+
+	<p>Generated on <%= Time.now.localtime %></p>
+</body>
+</html>
+
+
