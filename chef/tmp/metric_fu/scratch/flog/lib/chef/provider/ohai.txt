@@ -1,0 +1,20 @@
+    16.8: flog total
+     8.4: flog/method average
+
+    15.7: Chef::Provider::Ohai#action_reload lib/chef/provider/ohai.rb:29
+     2.9:   plugin
+     1.7:   node
+     1.5:   data
+     1.5:   automatic_attrs
+     1.4:   all_plugins
+     1.4:   require_plugin
+     1.3:   merge!
+     1.3:   branch
+     1.3:   info
+     1.3:   updated_by_last_action
+     1.3:   assignment
+     1.3:   new
+
+     1.1: main#none
+     1.1:   require
+

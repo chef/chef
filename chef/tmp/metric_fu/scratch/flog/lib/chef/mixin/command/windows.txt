@@ -1,0 +1,19 @@
+    31.5: flog total
+    15.8: flog/method average
+
+    28.9: Chef::Mixin::Command::Windows#popen4 lib/chef/mixin/command/windows.rb:31
+    17.3:   assignment
+     7.1:   branch
+     4.6:   []
+     3.4:   write
+     3.2:   gets
+     3.2:   new
+     3.2:   rewind
+     1.6:   close_write
+     1.6:   close
+     1.2:   popen4
+
+     2.6: main#none
+     2.4:   require
+     1.1:   branch
+

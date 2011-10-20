@@ -1,0 +1,56 @@
+    78.6: flog total
+    13.1: flog/method average
+
+    33.1: Chef::Knife::DataBagFromFile#run lib/chef/knife/data_bag_from_file.rb:66
+    10.6:   assignment
+     4.1:   []
+     3.2:   ui
+     2.8:   data_bag
+     2.6:   branch
+     1.7:   opt_parser
+     1.5:   exit
+     1.5:   encrypt_data_bag_item
+     1.5:   msg
+     1.5:   read_secret
+     1.5:   loader
+     1.5:   size
+     1.5:   id
+     1.3:   use_encryption
+     1.3:   load_from
+     1.3:   ==
+     1.3:   info
+     1.3:   new
+     1.3:   save
+     1.2:   lit_fixnum
+
+    17.6: Chef::Knife::DataBagFromFile#use_encryption lib/chef/knife/data_bag_from_file.rb:54
+     6.4:   config
+     5.6:   []
+     3.9:   branch
+     1.7:   ui
+     1.5:   fatal
+     1.5:   exit
+     0.4:   lit_fixnum
+
+    13.1: Chef::Knife::DataBagFromFile#none
+     7.0:   require
+     2.4:   option
+     1.2:   category
+     1.2:   banner
+     1.2:   deps
+     1.2:   branch
+
+    10.7: Chef::Knife::DataBagFromFile#read_secret lib/chef/knife/data_bag_from_file.rb:46
+     4.9:   config
+     4.3:   []
+     1.4:   load_secret
+     1.3:   branch
+
+     3.1: Chef::Knife::DataBagFromFile#loader lib/chef/knife/data_bag_from_file.rb:62
+     1.5:   ui
+     1.3:   assignment
+     1.3:   new
+
+     1.1: main#none
+     1.1:   require
+

@@ -1,0 +1,134 @@
+   160.7: flog total
+     7.7: flog/method average
+
+    27.8: Chef::ApiClient#save             lib/chef/api_client.rb:233
+     6.8:   assignment
+     6.4:   []
+     5.0:   name
+     4.0:   branch
+     3.3:   admin
+     2.8:   new
+     1.8:   response
+     1.6:   code
+     1.5:   raise
+     1.5:   put_rest
+     1.4:   ==
+     1.4:   post_rest
+
+    17.3: Chef::ApiClient::list            lib/chef/api_client.rb:181
+     7.9:   assignment
+     4.8:   new
+     4.5:   branch
+     1.8:   json_create
+     1.8:   []
+     1.7:   name
+     1.7:   instance_of?
+     1.5:   search
+     1.4:   get_rest
+
+    16.2: Chef::ApiClient::json_create     lib/chef/api_client.rb:162
+     8.8:   []
+     5.2:   assignment
+     1.5:   branch
+     1.3:   name
+     1.3:   admin
+     1.3:   public_key
+     1.3:   couchdb_id
+     1.3:   new
+
+    12.3: Chef::ApiClient#create_keys      lib/chef/api_client.rb:132
+     3.4:   []
+     3.0:   to_s
+     1.5:   name
+     1.3:   public_key
+     1.3:   gen_keypair
+     1.3:   assignment
+     1.3:   private_key
+     0.5:   lit_fixnum
+
+    10.9: Chef::ApiClient::load            lib/chef/api_client.rb:203
+     3.4:   []
+     3.0:   new
+     2.8:   assignment
+     1.5:   name
+     1.3:   kind_of?
+     1.3:   branch
+     1.3:   get_rest
+
+    10.6: Chef::ApiClient#initialize       lib/chef/api_client.rb:70
+    10.4:   assignment
+     1.4:   new
+     1.3:   branch
+
+    10.5: Chef::ApiClient::cdb_list        lib/chef/api_client.rb:175
+     6.6:   assignment
+     4.1:   branch
+     2.9:   []
+     1.6:   new
+     1.3:   collect
+     1.3:   list
+
+     9.9: Chef::ApiClient#none
+     7.2:   include
+     1.2:   attr_accessor
+     1.2:   freeze
+     0.3:   lit_fixnum
+
+     9.9: main#none
+     9.9:   require
+
+     4.5: Chef::ApiClient#destroy          lib/chef/api_client.rb:223
+     1.7:   []
+     1.5:   new
+     1.3:   delete_rest
+
+     4.5: Chef::ApiClient#create           lib/chef/api_client.rb:253
+     1.7:   []
+     1.5:   new
+     1.3:   post_rest
+
+     4.1: Chef::ApiClient#to_hash          lib/chef/api_client.rb:143
+     2.7:   assignment
+     1.5:   class
+     1.3:   name
+     1.3:   branch
+
+     4.0: Chef::ApiClient::create_design_document lib/chef/api_client.rb:258
+     2.8:   assignment
+     1.5:   new
+     1.3:   create_design_document
+
+     3.5: Chef::ApiClient::cdb_load        lib/chef/api_client.rb:198
+     1.6:   new
+     1.5:   branch
+     1.3:   load
+     1.3:   assignment
+
+     3.1: Chef::ApiClient#cdb_save         lib/chef/api_client.rb:228
+     1.5:   store
+     1.3:   assignment
+     1.3:   []
+
+     2.8: Chef::ApiClient#to_json          lib/chef/api_client.rb:158
+     1.5:   to_hash
+     1.3:   to_json
+
+     1.8: Chef::ApiClient#private_key      lib/chef/api_client.rb:120
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::ApiClient#name             lib/chef/api_client.rb:84
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::ApiClient#public_key       lib/chef/api_client.rb:108
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::ApiClient#admin            lib/chef/api_client.rb:96
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.3: Chef::ApiClient#cdb_destroy      lib/chef/api_client.rb:218
+     1.3:   delete
+

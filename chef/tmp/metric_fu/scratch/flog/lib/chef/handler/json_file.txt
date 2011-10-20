@@ -1,0 +1,38 @@
+    40.9: flog total
+     8.2: flog/method average
+
+    19.8: Chef::Handler::JsonFile#report   lib/chef/handler/json_file.rb:34
+     2.7:   assignment
+     2.6:   branch
+     1.9:   config
+     1.8:   data
+     1.7:   []
+     1.6:   to_json_pretty
+     1.5:   now
+     1.5:   join
+     1.4:   puts
+     1.4:   info
+     1.4:   error
+     1.3:   exception
+     1.3:   build_report_dir
+     1.3:   strftime
+     1.3:   open
+
+    15.2: Chef::Handler::JsonFile#build_report_dir lib/chef/handler/json_file.rb:48
+     5.5:   config
+     4.9:   []
+     1.5:   chmod
+     1.5:   mkdir_p
+     1.3:   exists?
+     1.3:   branch
+     0.4:   lit_fixnum
+
+     2.6: Chef::Handler::JsonFile#initialize lib/chef/handler/json_file.rb:28
+     2.6:   assignment
+
+     2.2: main#none
+     2.2:   require
+
+     1.2: Chef::Handler::JsonFile#none
+     1.2:   attr_reader
+

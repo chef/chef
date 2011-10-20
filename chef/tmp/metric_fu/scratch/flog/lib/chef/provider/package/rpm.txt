@@ -1,0 +1,43 @@
+    86.9: flog total
+    17.4: flog/method average
+
+    61.0: Chef::Provider::Package::Rpm#load_current_resource lib/chef/provider/package/rpm.rb:30
+    22.3:   assignment
+    19.2:   branch
+     6.5:   source
+     6.3:   package_name
+     5.1:   version
+     5.0:   name
+     4.6:   debug
+     4.5:   raise
+     3.2:   exitstatus
+     3.0:   each
+     2.8:   ==
+     2.8:   popen4
+     1.8:   action
+     1.6:   inspect
+     1.6:   Array
+     1.5:   exists?
+     1.4:   include?
+     1.3:   new
+     0.4:   lit_fixnum
+
+    10.6: Chef::Provider::Package::Rpm#install_package lib/chef/provider/package/rpm.rb:74
+     3.2:   source
+     3.2:   options
+     2.8:   run_command_with_systems_locale
+     1.3:   version
+     1.3:   branch
+
+     6.1: Chef::Provider::Package::Rpm#remove_package lib/chef/provider/package/rpm.rb:88
+     3.2:   options
+     2.8:   run_command_with_systems_locale
+     1.3:   branch
+
+     4.8: Chef::Provider::Package::Rpm#none
+     2.4:   alias_method
+     2.4:   include
+
+     4.4: main#none
+     4.4:   require
+

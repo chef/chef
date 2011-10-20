@@ -1,0 +1,10 @@
+     7.1: flog total
+     3.6: flog/method average
+
+     4.9: Chef::Resource::SolarisPackage#initialize lib/chef/resource/solaris_package.rb:26
+     4.8:   assignment
+     1.2:   super
+
+     2.2: main#none
+     2.2:   require
+

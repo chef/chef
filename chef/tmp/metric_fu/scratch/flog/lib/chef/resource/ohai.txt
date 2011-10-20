@@ -1,0 +1,11 @@
+     6.6: flog total
+     3.3: flog/method average
+
+     4.9: Chef::Resource::Ohai#initialize  lib/chef/resource/ohai.rb:23
+     4.8:   assignment
+     1.2:   push
+
+     1.7: Chef::Resource::Ohai#plugin      lib/chef/resource/ohai.rb:31
+     1.2:   assignment
+     1.2:   set_or_return
+

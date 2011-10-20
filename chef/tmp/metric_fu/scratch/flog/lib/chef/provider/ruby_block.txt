@@ -1,0 +1,9 @@
+     5.0: flog total
+     5.0: flog/method average
+
+     5.0: Chef::Provider::RubyBlock#action_create lib/chef/provider/ruby_block.rb:27
+     1.4:   block
+     1.2:   info
+     1.2:   updated_by_last_action
+     1.2:   call
+

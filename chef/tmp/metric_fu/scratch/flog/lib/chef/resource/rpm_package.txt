@@ -1,0 +1,9 @@
+     5.8: flog total
+     2.9: flog/method average
+
+     3.6: Chef::Resource::RpmPackage#initialize lib/chef/resource/rpm_package.rb:26
+     3.6:   assignment
+
+     2.2: main#none
+     2.2:   require
+

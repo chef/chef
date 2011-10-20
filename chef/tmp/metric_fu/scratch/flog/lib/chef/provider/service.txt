@@ -1,0 +1,86 @@
+    72.6: flog total
+     4.8: flog/method average
+
+    14.3: Chef::Provider::Service#action_reload lib/chef/provider/service.rb:84
+     5.3:   branch
+     1.6:   info
+     1.6:   updated_by_last_action
+     1.6:   supports
+     1.6:   to_s
+     1.4:   reload_service
+     1.4:   reload_command
+     1.4:   raise
+     1.4:   []
+     1.3:   running
+
+     7.8: Chef::Provider::Service#action_enable lib/chef/provider/service.rb:33
+     2.7:   branch
+     1.6:   info
+     1.6:   updated_by_last_action
+     1.4:   debug
+     1.4:   enable_service
+     1.3:   enabled
+
+     7.8: Chef::Provider::Service#action_disable lib/chef/provider/service.rb:44
+     2.7:   branch
+     1.6:   info
+     1.6:   updated_by_last_action
+     1.4:   disable_service
+     1.4:   debug
+     1.3:   enabled
+
+     7.8: Chef::Provider::Service#action_start lib/chef/provider/service.rb:55
+     2.7:   branch
+     1.6:   updated_by_last_action
+     1.6:   info
+     1.4:   debug
+     1.4:   start_service
+     1.3:   running
+
+     7.8: Chef::Provider::Service#action_stop lib/chef/provider/service.rb:66
+     2.7:   branch
+     1.6:   info
+     1.6:   updated_by_last_action
+     1.4:   debug
+     1.4:   stop_service
+     1.3:   running
+
+     4.5: Chef::Provider::Service#action_restart lib/chef/provider/service.rb:77
+     1.5:   updated_by_last_action
+     1.5:   info
+     1.3:   restart_service
+     1.3:   branch
+
+     2.8: Chef::Provider::Service#reload_service lib/chef/provider/service.rb:116
+     1.5:   to_s
+     1.3:   raise
+
+     2.8: Chef::Provider::Service#disable_service lib/chef/provider/service.rb:100
+     1.5:   to_s
+     1.3:   raise
+
+     2.8: Chef::Provider::Service#enable_service lib/chef/provider/service.rb:96
+     1.5:   to_s
+     1.3:   raise
+
+     2.8: Chef::Provider::Service#start_service lib/chef/provider/service.rb:104
+     1.5:   to_s
+     1.3:   raise
+
+     2.8: Chef::Provider::Service#stop_service lib/chef/provider/service.rb:108
+     1.5:   to_s
+     1.3:   raise
+
+     2.8: Chef::Provider::Service#restart_service lib/chef/provider/service.rb:112
+     1.5:   to_s
+     1.3:   raise
+
+     2.4: Chef::Provider::Service#none
+     2.4:   include
+
+     2.2: main#none
+     2.2:   require
+
+     1.3: Chef::Provider::Service#initialize lib/chef/provider/service.rb:28
+     1.3:   assignment
+

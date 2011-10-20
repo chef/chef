@@ -1,0 +1,90 @@
+   101.6: flog total
+     9.2: flog/method average
+
+    22.4: Chef::Expander::Logger#none
+     7.2:   branch
+     6.3:   assignment
+     2.6:   alias
+     1.8:   to_s
+     1.6:   close
+     1.6:   closed?
+     1.6:   respond_to?
+     1.6:   upcase
+     1.5:   map
+     1.4:   each
+     1.3:   private
+     1.3:   attr_reader
+     1.3:   at_exit
+     1.3:   []
+     1.3:   invert
+
+    18.3: Chef::Expander::Logger#add       lib/chef/expander/logger.rb:76
+     7.1:   assignment
+     4.2:   branch
+     2.0:   new
+     1.8:   []
+     1.8:   msg2str
+     1.8:   rfc2822
+     1.6:   sprintf
+     1.5:   block_given?
+     1.5:   nil?
+     1.5:   yield
+     1.4:   <<
+     1.4:   >=
+
+    16.6: Chef::Expander::Logger#assert_valid_path! lib/chef/expander/logger.rb:119
+     5.8:   branch
+     4.7:   raise
+     3.6:   euid
+     3.0:   writable?
+     1.4:   dirname
+     1.4:   directory?
+     1.4:   assignment
+     1.4:   exist?
+
+    15.5: Chef::Expander::Logger#level=    lib/chef/expander/logger.rb:62
+     4.3:   branch
+     3.6:   join
+     3.0:   key?
+     2.0:   keys
+     1.6:   raise
+     1.6:   []
+     1.5:   new
+     1.5:   kind_of?
+     1.4:   assignment
+
+    12.4: Chef::Expander::Logger#msg2str   lib/chef/expander/logger.rb:93
+     6.4:   branch
+     2.1:   backtrace
+     1.8:   class
+     1.8:   join
+     1.8:   message
+     1.6:   <<
+     1.5:   inspect
+
+     8.7: Chef::Expander::Logger#initialize_log_device lib/chef/expander/logger.rb:108
+     3.0:   assignment
+     1.8:   to_str
+     1.6:   open
+     1.6:   assert_valid_path!
+     1.6:   <<
+     1.4:   branch
+     1.4:   respond_to?
+
+     2.0: Chef::Expander::Logger#initialize lib/chef/expander/logger.rb:57
+     1.4:   init
+     1.4:   assignment
+
+     2.0: Chef::Expander::Logger#init      lib/chef/expander/logger.rb:53
+     1.4:   initialize_log_device
+     1.4:   assignment
+
+     1.4: Chef::Expander::Logger#logging_at_severity? lib/chef/expander/logger.rb:105
+     1.4:   assignment
+
+     1.4: Chef::Expander::Logger#<<        lib/chef/expander/logger.rb:72
+     1.4:   print
+
+     1.1: main#none
+     1.1:   require
+

@@ -1,0 +1,58 @@
+    47.4: flog total
+     3.6: flog/method average
+
+    19.7: Chef::Resource::Service#initialize lib/chef/resource/service.rb:25
+    19.5:   assignment
+     1.3:   push
+     1.3:   service_name
+
+     8.2: Chef::Resource::Service#supports lib/chef/resource/service.rb:139
+     5.8:   assignment
+     4.1:   branch
+     1.4:   each
+     1.4:   any?
+     1.3:   is_a?
+
+     1.8: Chef::Resource::Service#status_command lib/chef/resource/service.rb:80
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Service#enabled  lib/chef/resource/service.rb:106
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Service#pattern  lib/chef/resource/service.rb:53
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Service#service_name lib/chef/resource/service.rb:44
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Service#start_command lib/chef/resource/service.rb:62
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Service#stop_command lib/chef/resource/service.rb:71
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Service#priority lib/chef/resource/service.rb:133
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Service#running  lib/chef/resource/service.rb:115
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Service#reload_command lib/chef/resource/service.rb:97
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Service#restart_command lib/chef/resource/service.rb:89
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.1: main#none
+     1.1:   require
+

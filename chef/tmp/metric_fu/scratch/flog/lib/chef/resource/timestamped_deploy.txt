@@ -1,0 +1,8 @@
+     2.5: flog total
+     2.5: flog/method average
+
+     2.5: Chef::Resource::TimestampedDeploy#initialize lib/chef/resource/timestamped_deploy.rb:25
+     1.1:   super
+     1.1:   assignment
+     1.1:   block_pass
+

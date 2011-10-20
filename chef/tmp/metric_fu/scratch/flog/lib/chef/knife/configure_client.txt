@@ -1,0 +1,25 @@
+    40.2: flog total
+    13.4: flog/method average
+
+    37.9: Chef::Knife::ConfigureClient#run lib/chef/knife/configure_client.rb:26
+     7.4:   puts
+     6.5:   []
+     6.2:   ui
+     4.1:   assignment
+     3.9:   info
+     3.9:   branch
+     3.0:   join
+     2.6:   open
+     1.6:   read
+     1.5:   fatal
+     1.5:   show_usage
+     1.5:   exit
+     1.3:   mkdir_p
+     0.4:   lit_fixnum
+
+     1.2: Chef::Knife::ConfigureClient#none
+     1.2:   banner
+
+     1.1: main#none
+     1.1:   require
+

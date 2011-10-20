@@ -1,0 +1,100 @@
+    88.2: flog total
+     5.5: flog/method average
+
+    19.2: Mash#none
+    13.6:   alias_method
+     4.4:   method_defined?
+     2.2:   branch
+     1.1:   protected
+
+     9.1: Mash#convert_value               lib/chef/mash.rb:202
+     3.9:   branch
+     1.5:   assignment
+     1.5:   convert_value
+     1.4:   collect
+     1.4:   class
+     1.3:   from_hash
+     1.3:   is_a?
+     1.2:   ==
+
+     8.3: Mash#symbolize_keys              lib/chef/mash.rb:164
+     6.4:   assignment
+     1.4:   default
+     1.3:   to_sym
+     1.2:   branch
+     1.2:   each
+     1.2:   new
+
+     6.8: Mash#update                      lib/chef/mash.rb:99
+     3.9:   assignment
+     1.5:   convert_key
+     1.5:   convert_value
+     1.3:   regular_writer
+     1.2:   each_pair
+     1.2:   branch
+
+     6.5: Mash#default                     lib/chef/mash.rb:73
+     2.7:   assignment
+     2.4:   branch
+     1.5:   to_s
+     1.3:   []
+     1.3:   include?
+     1.3:   is_a?
+
+     5.6: Mash#initialize                  lib/chef/mash.rb:59
+     2.7:   super
+     1.4:   update
+     1.2:   assignment
+     1.2:   is_a?
+     1.2:   branch
+
+     4.4: Mash#values_at                   lib/chef/mash.rb:130
+     1.5:   convert_key
+     1.3:   assignment
+     1.3:   []
+     1.2:   collect
+     1.2:   branch
+
+     4.2: Mash#to_hash                     lib/chef/mash.rb:171
+     1.6:   default
+     1.4:   new
+     1.2:   merge
+
+     4.1: Mash#except                      lib/chef/mash.rb:154
+     1.3:   convert_key
+     1.3:   assignment
+     1.2:   super
+     1.2:   map
+     1.2:   branch
+
+     4.0: Mash#[]=                         lib/chef/mash.rb:90
+     1.4:   convert_key
+     1.4:   convert_value
+     1.2:   regular_writer
+
+     3.4: Mash::from_hash                  lib/chef/mash.rb:177
+     2.4:   assignment
+     1.2:   default
+     1.2:   new
+
+     2.8: Mash#convert_key                 lib/chef/mash.rb:191
+     1.3:   to_s
+     1.2:   kind_of?
+     1.2:   branch
+
+     2.6: Mash#merge                       lib/chef/mash.rb:137
+     1.4:   dup
+     1.2:   update
+
+     2.4: Mash#fetch                       lib/chef/mash.rb:122
+     1.2:   convert_key
+     1.2:   super
+
+     2.4: Mash#delete                      lib/chef/mash.rb:143
+     1.2:   convert_key
+     1.2:   super
+
+     2.4: Mash#key?                        lib/chef/mash.rb:109
+     1.2:   convert_key
+     1.2:   super
+

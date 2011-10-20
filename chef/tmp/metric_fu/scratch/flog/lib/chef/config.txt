@@ -1,0 +1,140 @@
+   162.4: flog total
+    20.3: flog/method average
+
+   104.7: Chef::Config#none
+     2.5:   lit_fixnum
+     2.4:   extend
+     1.4:   new
+     1.2:   amqp_vhost
+     1.2:   group_valid_regex
+     1.2:   log_location
+     1.2:   recipe_url
+     1.2:   json_attribs
+     1.2:   web_ui_admin_default_password
+     1.2:   cache_type
+     1.2:   template_url
+     1.2:   ssl_verify_mode
+     1.2:   file_cache_path
+     1.2:   validation_key
+     1.2:   signing_ca_domain
+     1.2:   run_command_stdout_timeout
+     1.2:   cookbook_path
+     1.2:   amqp_user
+     1.2:   signing_ca_group
+     1.2:   signing_ca_country
+     1.2:   enforce_path_sanity
+     1.2:   solr_home_path
+     1.2:   solr_heap_size
+     1.2:   node_path
+     1.2:   user_valid_regex
+     1.2:   role_path
+     1.2:   interval
+     1.2:   web_ui_admin_user_name
+     1.2:   start_handlers
+     1.2:   registration_url
+     1.2:   ssl_client_key
+     1.2:   couchdb_url
+     1.2:   client_key
+     1.2:   signing_ca_org
+     1.2:   run_command_stderr_timeout
+     1.2:   client_registration_retries
+     1.2:   amqp_port
+     1.2:   signing_ca_user
+     1.2:   node_name
+     1.2:   authorized_openid_providers
+     1.2:   solr_data_path
+     1.2:   knife
+     1.2:   http_retry_delay
+     1.2:   web_ui_key
+     1.2:   role_url
+     1.2:   ssl_ca_file
+     1.2:   exception_handlers
+     1.2:   amqp_consumer_id
+     1.2:   ssl_client_cert
+     1.2:   couchdb_database
+     1.2:   signing_ca_location
+     1.2:   rest_timeout
+     1.2:   openid_cstore_path
+     1.2:   amqp_host
+     1.2:   signing_ca_key
+     1.2:   verbose_logging
+     1.2:   solr_jetty_path
+     1.2:   http_retry_count
+     1.2:   web_ui_client_name
+     1.2:   search_url
+     1.2:   ssl_ca_path
+     1.2:   report_handlers
+     1.2:   checksum_path
+     1.2:   pid_file
+     1.2:   chef_server_url
+     1.2:   splay
+     1.2:   authorized_openid_identifiers
+     1.2:   signing_ca_state
+     1.2:   openid_cstore_couchdb
+     1.2:   solr_java_opts
+     1.2:   client_url
+     1.2:   group
+     1.2:   signing_ca_cert
+     1.2:   solr_url
+     1.2:   log_level
+     1.2:   cache_options
+     1.2:   file_backup_path
+     1.2:   validation_client_name
+     1.2:   remotefile_url
+     1.2:   umask
+     1.2:   signing_ca_email
+     1.2:   sandbox_path
+     1.2:   user
+     1.2:   amqp_pass
+     1.2:   solo
+
+    26.6: Chef::Config::manage_secret_key  lib/chef/config.rb:32
+     7.3:   assignment
+     5.5:   to_a
+     3.2:   +
+     2.8:   branch
+     2.4:   size
+     2.2:   -
+     2.0:   rand
+     1.8:   []
+     1.6:   <<
+     1.5:   store
+     1.5:   times
+     1.4:   load
+     1.3:   has_key?
+     1.0:   lit_fixnum
+
+     9.2: Chef::Config::config_attr_writer#log_location lib/chef/config.rb:83
+     5.6:   assignment
+     2.5:   respond_to?
+     2.5:   branch
+     1.7:   to_str
+     1.5:   new
+     1.2:   config_attr_writer
+
+     7.3: Chef::Config::config_attr_writer#chef_server_url lib/chef/config.rb:54
+     5.6:   assignment
+     2.7:   branch
+     1.4:   each
+     1.3:   configure
+     1.2:   config_attr_writer
+
+     4.9: Chef::Config::config_attr_writer#openid_providers lib/chef/config.rb:99
+     4.0:   assignment
+     1.3:   configure
+     1.3:   branch
+     1.2:   config_attr_writer
+
+     4.7: Chef::Config::config_attr_writer#daemonize lib/chef/config.rb:72
+     3.8:   assignment
+     1.2:   configure
+     1.2:   config_attr_writer
+     1.2:   branch
+
+     2.8: Chef::Config::inspect            lib/chef/config.rb:45
+     1.5:   configuration
+     1.3:   inspect
+
+     2.2: main#none
+     2.2:   require
+

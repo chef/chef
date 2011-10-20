@@ -1,0 +1,13 @@
+     7.1: flog total
+     2.4: flog/method average
+
+     3.6: Chef::Log#none
+     2.4:   extend
+     1.2:   init
+
+     2.2: main#none
+     2.2:   require
+
+     1.3: Chef::Log::Formatter::show_time= lib/chef/log.rb:32
+     1.3:   assignment
+

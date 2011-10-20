@@ -1,0 +1,62 @@
+    48.1: flog total
+     4.8: flog/method average
+
+    10.1: Chef::Provider::Deploy::Revision#sorted_releases_from_filesystem lib/chef/provider/deploy/revision.rb:60
+     2.1:   new_resource
+     1.9:   deploy_to
+     1.7:   +
+     1.5:   glob
+     1.4:   ctime
+     1.4:   assignment
+     1.3:   branch
+     1.3:   sort_by
+
+     8.3: Chef::Provider::Deploy::Revision#load_cache lib/chef/provider/deploy/revision.rb:64
+     2.0:   new_resource
+     1.8:   name
+     1.6:   load
+     1.4:   sorted_releases_from_filesystem
+     1.4:   from_json
+     1.3:   branch
+
+     6.0: Chef::Provider::Deploy::Revision#save_cache lib/chef/provider/deploy/revision.rb:72
+     1.7:   new_resource
+     1.5:   to_json
+     1.5:   name
+     1.3:   store
+
+     5.9: Chef::Provider::Deploy::Revision#sorted_releases lib/chef/provider/deploy/revision.rb:51
+     1.5:   yield
+     1.5:   save_cache
+     1.3:   branch
+     1.3:   assignment
+     1.3:   block_given?
+     1.3:   load_cache
+
+     4.7: Chef::Provider::Deploy::Revision#release_created lib/chef/provider/deploy/revision.rb:37
+     1.5:   delete
+     1.5:   <<
+     1.4:   assignment
+     1.3:   branch
+     1.3:   sorted_releases
+
+     3.3: Chef::Provider::Deploy::Revision#release_deleted lib/chef/provider/deploy/revision.rb:41
+     1.4:   assignment
+     1.4:   delete
+     1.3:   branch
+     1.3:   sorted_releases
+
+     3.3: main#none
+     3.3:   require
+
+     2.8: Chef::Provider::Deploy::Revision#release_slug lib/chef/provider/deploy/revision.rb:45
+     1.5:   scm_provider
+     1.3:   revision_slug
+
+     2.4: Chef::Provider::Deploy::Revision#none
+     1.2:   protected
+     1.2:   private
+
+     1.3: Chef::Provider::Deploy::Revision#all_releases lib/chef/provider/deploy/revision.rb:31
+     1.3:   sorted_releases
+

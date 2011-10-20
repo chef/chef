@@ -1,0 +1,116 @@
+   271.1: flog total
+    27.1: flog/method average
+
+    83.6: Chef::Provider::Link#action_create lib/chef/provider/link.rb:117
+    20.0:   target_file
+    15.5:   branch
+    13.1:   to
+     9.0:   link_type
+     7.4:   ==
+     3.6:   debug
+     3.6:   info
+     3.6:   symlink?
+     3.0:   nil?
+     1.9:   exist?
+     1.9:   unlink
+     1.9:   readlink
+     1.8:   link
+     1.8:   symlink
+     1.7:   owner
+     1.7:   group
+     1.6:   set_group
+     1.6:   set_owner
+     1.5:   updated_by_last_action
+     1.5:   expand_path
+
+    68.0: Chef::Provider::Link#load_current_resource lib/chef/provider/link.rb:40
+    14.2:   target_file
+    14.0:   to
+    10.1:   branch
+     5.9:   link_type
+     4.7:   exists?
+     4.3:   ==
+     4.0:   stat
+     3.6:   ino
+     2.9:   assignment
+     2.0:   readlink
+     1.8:   uid
+     1.8:   expand_path
+     1.8:   gid
+     1.6:   owner
+     1.6:   group
+     1.6:   lstat
+     1.5:   symlink?
+     1.5:   name
+     1.3:   new
+
+    55.1: Chef::Provider::Link#action_delete lib/chef/provider/link.rb:141
+    14.8:   target_file
+    10.3:   branch
+     4.7:   exists?
+     4.4:   ==
+     4.2:   stat
+     4.2:   to
+     3.8:   ino
+     3.4:   delete
+     3.4:   updated_by_last_action
+     3.4:   info
+     3.3:   raise
+     3.1:   link_type
+     1.4:   symlink?
+
+    15.5: Chef::Provider::Link#compare_group lib/chef/provider/link.rb:95
+     7.8:   group
+     4.0:   branch
+     1.6:   getgrnam
+     1.5:   to_i
+     1.4:   gid
+     1.3:   assignment
+     1.3:   ==
+     1.3:   nil?
+
+    15.5: Chef::Provider::Link#compare_owner lib/chef/provider/link.rb:70
+     7.8:   owner
+     4.0:   branch
+     1.6:   getpwnam
+     1.5:   to_i
+     1.4:   uid
+     1.3:   ==
+     1.3:   assignment
+     1.3:   nil?
+
+     9.2: Chef::Provider::Link#set_owner   lib/chef/provider/link.rb:85
+     1.7:   target_file
+     1.5:   assignment
+     1.5:   info
+     1.5:   negative_complement
+     1.5:   lchown
+     1.5:   updated_by_last_action
+     1.3:   branch
+     1.3:   compare_owner
+
+     9.2: Chef::Provider::Link#set_group   lib/chef/provider/link.rb:108
+     1.7:   target_file
+     1.5:   updated_by_last_action
+     1.5:   info
+     1.5:   lchown
+     1.5:   assignment
+     1.5:   negative_complement
+     1.3:   branch
+     1.3:   compare_group
+
+     5.9: Chef::Provider::Link#negative_complement lib/chef/provider/link.rb:31
+     1.6:   **
+     1.4:   assignment
+     1.4:   -
+     1.3:   >
+     1.3:   branch
+     1.3:   lit_fixnum
+
+     5.5: main#none
+     5.5:   require
+
+     3.6: Chef::Provider::Link#none
+     2.4:   include
+     1.2:   private
+

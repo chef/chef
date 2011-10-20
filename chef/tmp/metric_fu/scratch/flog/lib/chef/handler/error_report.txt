@@ -1,0 +1,13 @@
+     9.0: flog total
+     4.5: flog/method average
+
+     6.8: Chef::Handler::ErrorReport#report lib/chef/handler/error_report.rb:26
+     1.6:   data
+     1.4:   load
+     1.4:   to_json_pretty
+     1.2:   fatal
+     1.2:   store
+
+     2.2: main#none
+     2.2:   require
+

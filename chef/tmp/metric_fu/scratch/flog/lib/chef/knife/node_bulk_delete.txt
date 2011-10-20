@@ -1,0 +1,44 @@
+    76.9: flog total
+    19.2: flog/method average
+
+    56.8: Chef::Knife::NodeBulkDelete#run  lib/chef/knife/node_bulk_delete.rb:32
+    14.3:   ui
+    12.5:   assignment
+     8.2:   msg
+     6.7:   branch
+     5.1:   name_args
+     3.2:   sort
+     3.0:   []
+     3.0:   exit
+     2.6:   each
+     1.9:   keys
+     1.5:   destroy
+     1.5:   list
+     1.5:   fatal
+     1.5:   =~
+     1.5:   length
+     1.5:   all_nodes
+     1.3:   confirm
+     1.3:   <
+     1.3:   empty?
+     0.8:   lit_fixnum
+
+    13.6: Chef::Knife::NodeBulkDelete#all_nodes lib/chef/knife/node_bulk_delete.rb:65
+     8.6:   assignment
+     2.8:   branch
+     2.6:   inject
+     1.7:   new
+     1.6:   name
+     1.5:   tap
+     1.5:   keys
+     1.3:   list
+
+     5.3: Chef::Knife::NodeBulkDelete#none
+     2.8:   require
+     1.2:   deps
+     1.2:   banner
+     1.2:   branch
+
+     1.1: main#none
+     1.1:   require
+

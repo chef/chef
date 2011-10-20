@@ -1,0 +1,74 @@
+   118.2: flog total
+    14.8: flog/method average
+
+    44.1: Chef::VersionConstraint#do_op    lib/chef/version_constraint.rb:66
+    11.0:   branch
+     9.9:   ==
+     8.2:   minor
+     8.0:   major
+     4.2:   send
+     4.2:   patch
+     3.7:   >=
+     1.6:   raise
+     1.6:   to_sym
+     1.3:   include?
+
+    19.2: Chef::VersionConstraint#parse    lib/chef/version_constraint.rb:97
+    10.8:   assignment
+     5.6:   branch
+     3.1:   new
+     2.0:   split
+     1.8:   size
+     1.6:   ==
+     1.6:   index
+     1.5:   raise
+     1.4:   nil?
+     1.4:   match
+     0.5:   lit_fixnum
+
+    16.2: Chef::VersionConstraint#parse_from_array lib/chef/version_constraint.rb:85
+     3.2:   size
+     2.9:   parse
+     2.7:   branch
+     1.8:   join
+     1.7:   first
+     1.6:   <<
+     1.6:   raise
+     1.6:   assignment
+     1.4:   ==
+     1.3:   empty?
+     0.4:   lit_fixnum
+
+    11.3: Chef::VersionConstraint#eql?     lib/chef/version_constraint.rb:59
+     4.4:   ==
+     3.2:   class
+     2.7:   branch
+     1.7:   op
+     1.7:   version
+
+    10.6: Chef::VersionConstraint#include? lib/chef/version_constraint.rb:42
+     3.2:   to_s
+     2.8:   new
+     1.8:   version
+     1.3:   do_op
+     1.3:   assignment
+     1.3:   branch
+     1.3:   respond_to?
+
+     9.7: Chef::VersionConstraint#initialize lib/chef/version_constraint.rb:28
+     5.5:   branch
+     3.0:   parse
+     2.8:   assignment
+     1.5:   raise
+     1.5:   parse_from_array
+     1.5:   inspect
+
+     6.0: Chef::VersionConstraint#none
+     2.4:   alias_method
+     1.2:   private
+     1.2:   attr_reader
+     1.2:   join
+
+     1.1: main#none
+     1.1:   require
+

@@ -1,0 +1,46 @@
+   217.5: flog total
+   217.5: flog/method average
+
+   217.5: Chef::Mixin::Command::Unix#popen4 lib/chef/mixin/command/unix.rb:30
+    67.6:   assignment
+    52.0:   branch
+    44.9:   []
+    26.4:   last
+    18.9:   first
+    15.0:   close
+     7.6:   gets
+     7.6:   fcntl
+     4.8:   waitpid2
+     4.4:   pipe
+     4.2:   reopen
+     3.8:   write
+     3.8:   <<
+     3.8:   kind_of?
+     3.7:   each
+     3.4:   include?
+     3.4:   exec
+     3.2:   |
+     2.9:   raise
+     2.8:   rewind
+     2.8:   new
+     2.7:   closed?
+     2.7:   lit_fixnum
+     1.9:   oct
+     1.9:   to_i
+     1.8:   select
+     1.8:   respond_to?
+     1.6:   dump
+     1.6:   flush
+     1.6:   umask
+     1.6:   &
+     1.5:   getpwnam
+     1.5:   ===
+     1.5:   getgrnam
+     1.4:   close_write
+     1.4:   exit!
+     1.3:   load
+     1.3:   uid
+     1.3:   gid
+     1.2:   fork
+     1.1:   has_key?
+

@@ -1,0 +1,68 @@
+rcov 0.9.2.1 2009-09-18
+Usage: rcov [options] <script1.rb> [script2.rb] [-- --extra-options]
+
+Options:
+    -o, --output PATH                Destination directory.
+    -I, --include PATHS              Prepend PATHS to $: (colon separated list)
+        --[no-]comments              Mark all comments by default.
+                                     (default: --no-comments)
+        --test-unit-only             Only trace code executed inside TestCases.
+        --spec-only                  Only trace code executed inside RSpec specs.
+    -n, --no-color                   Create colorblind-safe output.
+    -i, --include-file PATTERNS      Generate info for files matching a
+                                     pattern (comma-separated regexp list)
+    -x, --exclude PATTERNS           Don't generate info for files matching a
+                                     pattern (comma-separated regexp list)
+        --exclude-only PATTERNS      Skip info only for files matching the
+                                     given patterns.
+        --rails                      Skip config/, environment/ and vendor/.
+        --[no-]callsites             Show callsites in generated XHTML report.
+                                     (somewhat slower; disabled by default)
+        --[no-]xrefs                 Generate fully cross-referenced report.
+                                     (includes --callsites)
+    -p, --profile                    Generate bogo-profiling info.
+    -r, --range RANGE                Color scale range for profiling info (dB).
+    -a, --annotate                   Generate annotated source code.
+    -T, --text-report                Dump detailed plain-text report to stdout.
+                                     (filename, LoC, total lines, coverage)
+    -t, --text-summary               Dump plain-text summary to stdout.
+        --text-counts                Dump execution counts in plaintext.
+        --text-coverage              Dump coverage info to stdout, using
+                                     ANSI color sequences unless -n.
+        --gcc                        Dump uncovered line in GCC error format.
+        --aggregate FILE             Aggregate data from previous runs
+                                     in FILE. Overwrites FILE with the
+                                     merged data. FILE is created if
+                                     necessary.
+    -D, --text-coverage-diff [FILE]  Compare code coverage with saved state
+                                     in FILE, defaults to coverage.info.
+                                     Implies --comments.
+        --save [FILE]                Save coverage data to FILE,
+                                     for later use with rcov -D.
+                                     (default: coverage.info)
+        --[no-]html                  Generate HTML output.
+                                     (default: --html)
+        --css relative/path/to/custom.css
+                                     Use a custom CSS file for HTML output.
+                                     Specified as a relative path.
+        --sort CRITERION             Sort files in the output by the specified
+                                     field (name, loc, coverage)
+        --sort-reverse               Reverse files in the output.
+        --threshold INT              Only list files with coverage < INT %.
+                                     (default: 101)
+        --failure-threshold [INT]    Fail if the coverage is below the threshold
+                                     (default: 100)
+        --charset CHARSET            Charset used in Content-Type declaration of HTML reports.
+        --only-uncovered             Same as --threshold 100
+        --replace-progname           Replace $0 when loading the .rb files.
+    -w                               Turn warnings on (like ruby).
+        --no-rcovrt                  Do not use the optimized C runtime.
+                                     (will run 30-300 times slower)
+        --diff-cmd PROGNAME          Use PROGNAME for --text-coverage-diff.
+                                     (default: diff)
+
+    -h, --help                       Show extended help message
+        --report-cov-bug SELECTOR    Report coverage analysis bug for the
+                                     method specified by SELECTOR
+                                     (format: Foo::Bar#method, A::B.method)
+        --version                    Show version

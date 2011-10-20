@@ -1,0 +1,125 @@
+   163.8: flog total
+    12.6: flog/method average
+
+    31.5: Chef::Mixin::ParamsValidate#validate lib/chef/mixin/params_validate.rb:47
+    15.7:   branch
+    10.8:   assignment
+     6.0:   raise
+     5.7:   send
+     5.4:   kind_of?
+     2.8:   each
+     1.8:   to_s
+     1.8:   respond_to?
+     1.6:   _pv_required
+
+    19.2: Chef::Mixin::ParamsValidate#_pv_required lib/chef/mixin/params_validate.rb:107
+     6.6:   branch
+     3.6:   to_sym
+     3.6:   to_s
+     3.4:   []
+     3.0:   nil?
+     3.0:   has_key?
+     1.4:   raise
+     1.2:   assignment
+
+    16.3: Chef::Mixin::ParamsValidate#_pv_regex lib/chef/mixin/params_validate.rb:184
+     7.1:   branch
+     5.8:   assignment
+     2.7:   ==
+     1.8:   to_s
+     1.7:   inspect
+     1.6:   match
+     1.6:   flatten
+     1.5:   raise
+     1.4:   each
+     1.2:   _pv_opts_lookup
+
+    14.2: Chef::Mixin::ParamsValidate#_pv_equal_to lib/chef/mixin/params_validate.rb:118
+     5.7:   assignment
+     5.5:   branch
+     1.7:   inspect
+     1.7:   join
+     1.6:   Array
+     1.5:   ==
+     1.5:   raise
+     1.4:   each
+     1.2:   nil?
+     1.2:   _pv_opts_lookup
+
+    13.2: Chef::Mixin::ParamsValidate#set_or_return lib/chef/mixin/params_validate.rb:79
+     3.8:   assignment
+     2.6:   ==
+     2.4:   branch
+     1.6:   []
+     1.5:   instance_variable_defined?
+     1.4:   instance_variable_set
+     1.4:   validate
+     1.4:   to_s
+     1.3:   instance_variable_get
+     1.2:   to_sym
+
+    13.0: Chef::Mixin::ParamsValidate#_pv_callbacks lib/chef/mixin/params_validate.rb:202
+     5.4:   assignment
+     5.1:   branch
+     2.8:   raise
+     2.6:   ==
+     1.6:   call
+     1.3:   each
+     1.2:   kind_of?
+     1.2:   _pv_opts_lookup
+
+    12.8: Chef::Mixin::ParamsValidate#_pv_kind_of lib/chef/mixin/params_validate.rb:132
+     5.7:   assignment
+     5.5:   branch
+     1.7:   inspect
+     1.6:   Array
+     1.5:   kind_of?
+     1.5:   raise
+     1.4:   each
+     1.2:   nil?
+     1.2:   _pv_opts_lookup
+
+    12.4: Chef::Mixin::ParamsValidate#_pv_cannot_be lib/chef/mixin/params_validate.rb:164
+     3.9:   send
+     2.5:   branch
+     2.4:   assignment
+     1.6:   to_s
+     1.4:   raise
+     1.4:   +
+     1.2:   respond_to?
+     1.2:   to_sym
+     1.2:   _pv_opts_lookup
+
+    11.5: Chef::Mixin::ParamsValidate#_pv_opts_lookup lib/chef/mixin/params_validate.rb:96
+     3.1:   to_sym
+     2.9:   to_s
+     2.7:   []
+     2.5:   has_key?
+     2.5:   branch
+
+     9.4: Chef::Mixin::ParamsValidate#_pv_respond_to lib/chef/mixin/params_validate.rb:146
+     3.9:   branch
+     2.6:   assignment
+     1.5:   raise
+     1.5:   Array
+     1.4:   respond_to?
+     1.3:   each
+     1.2:   nil?
+     1.2:   _pv_opts_lookup
+
+     5.5: Chef::Mixin::ParamsValidate#_pv_name_attribute lib/chef/mixin/params_validate.rb:215
+     2.6:   assignment
+     2.5:   branch
+     1.5:   []
+     1.4:   instance_variable_get
+     1.3:   ==
+
+     3.7: Chef::Mixin::ParamsValidate#_pv_default lib/chef/mixin/params_validate.rb:176
+     2.5:   assignment
+     1.2:   branch
+     1.2:   ==
+     1.2:   _pv_opts_lookup
+
+     1.1: Chef::Mixin::ParamsValidate#none
+     1.1:   private
+

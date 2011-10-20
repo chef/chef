@@ -1,0 +1,88 @@
+   264.1: flog total
+    44.0: flog/method average
+
+   110.7: Chef::Certificate#generate_signing_ca lib/chef/certificate.rb:32
+    40.1:   assignment
+    24.4:   []
+    13.6:   branch
+    10.0:   *
+     8.2:   create_extension
+     8.2:   new
+     5.6:   lit_fixnum
+     4.6:   |
+     4.6:   to_pem
+     4.2:   now
+     4.2:   write
+     4.0:   open
+     3.8:   exists?
+     2.2:   mkdir_p
+     2.2:   dirname
+     2.1:   chown
+     2.0:   info
+     2.0:   generate
+     2.0:   each
+     2.0:   add_extension
+     2.0:   sign
+     2.0:   public_key
+     2.0:   +
+
+    71.1: Chef::Certificate#gen_keypair    lib/chef/certificate.rb:88
+    28.8:   assignment
+    11.8:   []
+    11.2:   new
+     9.2:   *
+     5.7:   create_extension
+     4.6:   lit_fixnum
+     4.2:   read
+     3.8:   now
+     3.6:   public_key
+     1.9:   add_extension
+     1.8:   info
+     1.8:   generate
+     1.8:   subject
+     1.8:   branch
+     1.8:   sign
+     1.8:   +
+
+    34.9: Chef::Certificate#create_validation_key lib/chef/certificate.rb:167
+     9.0:   branch
+     8.0:   []
+     5.6:   assignment
+     2.1:   private_key
+     2.0:   fatal
+     2.0:   raise
+     2.0:   |
+     1.9:   mkdir_p
+     1.9:   cdb_save
+     1.9:   print
+     1.9:   chown
+     1.8:   dirname
+     1.8:   create_keys
+     1.8:   open
+     1.8:   info
+     1.8:   directory?
+     0.5:   lit_fixnum
+
+    34.8: Chef::Certificate#gen_validation_key lib/chef/certificate.rb:131
+    11.5:   assignment
+     7.8:   branch
+     4.3:   raise
+     4.0:   create_validation_key
+     3.7:   name
+     3.6:   []
+     2.3:   fatal
+     2.2:   cdb_destroy
+     2.1:   error
+     2.1:   class
+     2.0:   cdb_load
+     2.0:   open
+     1.8:   admin
+     1.8:   new
+
+     7.2: Chef::Certificate#none
+     5.5:   sclass
+     1.7:   private
+
+     5.5: main#none
+     5.5:   require
+

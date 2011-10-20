@@ -1,0 +1,30 @@
+    22.1: flog total
+     3.2: flog/method average
+
+    11.8: Chef::Resource::Package#initialize lib/chef/resource/package.rb:25
+    11.7:   assignment
+     1.3:   push
+
+     1.8: Chef::Resource::Package#package_name lib/chef/resource/package.rb:38
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Package#source   lib/chef/resource/package.rb:62
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Package#response_file lib/chef/resource/package.rb:54
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Package#options  lib/chef/resource/package.rb:70
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Package#version  lib/chef/resource/package.rb:46
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.1: main#none
+     1.1:   require
+

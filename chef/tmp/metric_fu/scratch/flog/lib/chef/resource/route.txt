@@ -1,0 +1,57 @@
+    42.7: flog total
+     3.3: flog/method average
+
+    18.2: Chef::Resource::Route#initialize lib/chef/resource/route.rb:25
+    18.2:   assignment
+     1.3:   push
+
+     4.9: Chef::Resource::Route#route_type lib/chef/resource/route.rb:123
+     2.6:   assignment
+     1.4:   to_sym
+     1.3:   set_or_return
+     1.3:   kind_of?
+     1.3:   branch
+
+     1.8: Chef::Resource::Route#networking lib/chef/resource/route.rb:43
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Route#target     lib/chef/resource/route.rb:83
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Route#gateway    lib/chef/resource/route.rb:99
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Route#hostname   lib/chef/resource/route.rb:59
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Route#networking_ipv6 lib/chef/resource/route.rb:51
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Route#netmask    lib/chef/resource/route.rb:91
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Route#domain     lib/chef/resource/route.rb:75
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Route#device     lib/chef/resource/route.rb:115
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Route#metric     lib/chef/resource/route.rb:107
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Route#domainname lib/chef/resource/route.rb:67
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.1: main#none
+     1.1:   require
+

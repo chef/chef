@@ -1,0 +1,309 @@
+   397.2: flog total
+     8.5: flog/method average
+
+    35.1: Chef::Provider::Package::Rubygems#current_version lib/chef/provider/package/rubygems.rb:328
+     7.4:   branch
+     5.3:   logger
+     4.7:   debug
+     3.5:   gem_dependency
+     3.4:   all_installed_versions
+     3.3:   version
+     3.3:   name
+     3.2:   matching_installed_versions
+     3.1:   assignment
+     3.1:   last
+     2.7:   empty?
+     1.7:   to_s
+
+    32.7: Chef::Provider::Package::Rubygems#install_package lib/chef/provider/package/rubygems.rb:398
+     6.9:   branch
+     5.0:   options
+     4.7:   install
+     4.2:   nil?
+     3.6:   gem_dependency
+     3.4:   assignment
+     3.4:   gem_sources
+     3.2:   gem_binary
+     3.1:   install_via_gem_command
+     1.7:   source
+     1.5:   kind_of?
+     1.4:   source_is_remote?
+
+    32.4: Chef::Provider::Package::Rubygems::GemEnvironment#find_newest_remote_version lib/chef/provider/package/rubygems.rb:129
+     9.0:   branch
+     5.8:   assignment
+     4.9:   []
+     3.6:   logger
+     3.4:   join
+     1.9:   sources
+     1.8:   compact
+     1.8:   dependency_installer
+     1.7:   name
+     1.7:   platform
+     1.6:   empty?
+     1.6:   debug
+     1.6:   warn
+     1.6:   find_gems_with_sources
+     1.5:   version
+     1.4:   last
+     0.5:   lit_fixnum
+
+    26.5: Chef::Provider::Package::Rubygems::AlternateGemEnvironment#gem_platforms lib/chef/provider/package/rubygems.rb:263
+     7.5:   class
+     6.7:   platform_cache
+     6.6:   assignment
+     3.1:   []
+     3.0:   branch
+     1.8:   shell_out!
+     1.7:   platforms
+     1.7:   new
+     1.6:   stdout
+     1.4:   key?
+
+    22.9: Chef::Provider::Package::Rubygems::AlternateGemEnvironment#gem_paths lib/chef/provider/package/rubygems.rb:233
+     6.5:   assignment
+     5.5:   class
+     4.9:   gempath_cache
+     3.0:   branch
+     1.8:   shell_out!
+     1.8:   split
+     1.7:   strip
+     1.6:   stdout
+     1.6:   map
+     1.5:   []
+     1.4:   key?
+
+    17.8: Chef::Provider::Package::Rubygems#initialize lib/chef/provider/package/rubygems.rb:305
+     5.9:   assignment
+     4.3:   branch
+     3.4:   options
+     3.0:   gem_binary
+     2.9:   new
+     1.9:   source_line
+     1.7:   <<
+     1.7:   raise
+     1.6:   kind_of?
+
+    17.4: Chef::Provider::Package::Rubygems#remove_package lib/chef/provider/package/rubygems.rb:430
+     5.1:   options
+     4.2:   branch
+     3.1:   uninstall
+     3.0:   uninstall_via_gem_command
+     2.7:   nil?
+     1.5:   kind_of?
+     1.5:   gem_binary
+
+    17.0: Chef::Provider::Package::Rubygems#candidate_version lib/chef/provider/package/rubygems.rb:371
+     3.8:   gem_dependency
+     3.0:   to_s
+     2.7:   branch
+     1.9:   gem_sources
+     1.9:   source
+     1.7:   candidate_version_from_file
+     1.7:   candidate_version_from_remote
+     1.4:   source_is_remote?
+     1.3:   assignment
+     1.3:   target_version_already_installed?
+
+    16.9: Chef::Provider::Package::Rubygems::GemEnvironment#candidate_version_from_file lib/chef/provider/package/rubygems.rb:101
+     4.6:   branch
+     3.6:   logger
+     3.3:   version
+     1.7:   to_s
+     1.6:   debug
+     1.6:   warn
+     1.6:   from_file_by_path
+     1.4:   spec
+     1.4:   assignment
+     1.4:   satisfies_requirement?
+
+    14.3: main#none
+    14.3:   require
+
+    12.5: Chef::Provider::Package::Rubygems#target_version_already_installed? lib/chef/provider/package/rubygems.rb:383
+     6.3:   version
+     3.9:   branch
+     3.0:   new
+     1.3:   satisfied_by?
+     1.3:   nil?
+
+    12.1: Chef::Provider::Package::Rubygems#load_current_resource lib/chef/provider/package/rubygems.rb:362
+     3.2:   version
+     2.8:   package_name
+     2.6:   assignment
+     1.6:   to_s
+     1.5:   name
+     1.3:   current_version
+     1.3:   branch
+     1.3:   new
+
+     9.3: Chef::Provider::Package::Rubygems#uninstall_via_gem_command lib/chef/provider/package/rubygems.rb:444
+     3.2:   gem_binary_path
+     3.2:   opts
+     2.8:   shell_out!
+     1.3:   branch
+
+     8.5: Chef::Provider::Package::Rubygems::GemEnvironment#install lib/chef/provider/package/rubygems.rb:151
+     2.9:   branch
+     1.8:   dependency_installer
+     1.6:   install
+     1.6:   delete
+     1.5:   with_correct_verbosity
+     1.4:   assignment
+     1.4:   with_gem_sources
+
+     7.9: Chef::Provider::Package::Rubygems::GemEnvironment#uninstall lib/chef/provider/package/rubygems.rb:165
+     5.8:   assignment
+     2.8:   branch
+     1.7:   uninstaller
+     1.5:   uninstall
+     1.4:   with_correct_verbosity
+
+     7.6: Chef::Provider::Package::Rubygems::GemEnvironment#with_gem_sources lib/chef/provider/package/rubygems.rb:84
+     4.5:   assignment
+     1.5:   yield
+     1.5:   sources
+     1.5:   empty?
+     1.5:   compact!
+     1.5:   branch
+
+     7.4: Chef::Provider::Package::Rubygems#source_is_remote? lib/chef/provider/package/rubygems.rb:323
+     3.2:   source
+     1.5:   parse
+     1.3:   branch
+     1.3:   absolute?
+     1.3:   nil?
+
+     7.4: Chef::Provider::Package::Rubygems::AlternateGemEnvironment#gem_source_index lib/chef/provider/package/rubygems.rb:245
+     3.1:   assignment
+     1.8:   gem_paths
+     1.7:   +
+     1.6:   map
+     1.6:   branch
+     1.4:   from_gems_in
+
+     7.3: Chef::Provider::Package::Rubygems#install_via_gem_command lib/chef/provider/package/rubygems.rb:421
+     2.8:   source
+     1.5:   gem_binary_path
+     1.5:   opts
+     1.3:   shell_out!
+     1.3:   assignment
+     1.3:   branch
+
+     7.2: Chef::Provider::Package::Rubygems#none
+     4.8:   include
+     1.2:   private
+     1.2:   attr_reader
+
+     6.8: Chef::Provider::Package::Rubygems::AlternateGemEnvironment#candidate_version_from_remote lib/chef/provider/package/rubygems.rb:285
+     2.9:   branch
+     1.7:   gem_platforms
+     1.6:   find_newest_remote_version
+     1.5:   with_gem_platforms
+     1.4:   with_gem_sources
+
+     6.5: Chef::Provider::Package::Rubygems#all_installed_versions lib/chef/provider/package/rubygems.rb:352
+     1.9:   gem_dependency
+     1.7:   name
+     1.5:   new
+     1.3:   installed_versions
+     1.3:   assignment
+
+     6.3: Chef::Provider::Package::Rubygems::AlternateGemEnvironment#with_gem_platforms lib/chef/provider/package/rubygems.rb:276
+     4.4:   assignment
+     1.5:   flatten!
+     1.5:   yield
+     1.5:   platforms
+
+     6.1: Chef::Provider::Package::Rubygems::GemEnvironment#with_correct_verbosity lib/chef/provider/package/rubygems.rb:175
+     3.0:   new
+     1.4:   debug?
+     1.4:   assignment
+     1.4:   branch
+     1.4:   yield
+
+     4.5: Chef::Provider::Package::Rubygems#gem_sources lib/chef/provider/package/rubygems.rb:358
+     2.9:   source
+     1.4:   Array
+     1.3:   branch
+
+     4.3: Chef::Provider::Package::Rubygems#gem_dependency lib/chef/provider/package/rubygems.rb:319
+     1.5:   package_name
+     1.5:   version
+     1.3:   new
+
+     3.9: Chef::Provider::Package::Rubygems::AlternateGemEnvironment#none
+     2.6:   include
+     1.3:   attr_reader
+
+     3.3: Chef::Provider::Package::Rubygems::GemEnvironment#uninstaller lib/chef/provider/package/rubygems.rb:184
+     1.6:   merge
+     1.4:   assignment
+     1.4:   new
+
+     3.2: Chef::Provider::Package::Rubygems::CurrentGemEnvironment#candidate_version_from_remote lib/chef/provider/package/rubygems.rb:206
+     1.5:   find_newest_remote_version
+     1.4:   branch
+     1.4:   with_gem_sources
+
+     3.1: Chef::Provider::Package::Rubygems#matching_installed_versions lib/chef/provider/package/rubygems.rb:348
+     1.5:   gem_dependency
+     1.3:   installed_versions
+     1.3:   assignment
+
+     3.0: Chef::Provider::Package::Rubygems::GemEnvironment#installed_versions lib/chef/provider/package/rubygems.rb:76
+     1.6:   gem_source_index
+     1.4:   search
+
+     2.8: Chef::Provider::Package::Rubygems#opts lib/chef/provider/package/rubygems.rb:458
+     1.5:   options
+     1.3:   expand_options
+
+     2.6: Chef::Provider::Package::Rubygems::GemEnvironment#none
+     1.3:   private
+     1.3:   configuration
+
+     2.0: Chef::Provider::Package::Rubygems::GemEnvironment#dependency_installer lib/chef/provider/package/rubygems.rb:180
+     1.4:   assignment
+     1.4:   new
+
+     1.9: Chef::Provider::Package::Rubygems#gem_binary_path lib/chef/provider/package/rubygems.rb:417
+     1.4:   gem_binary
+     1.3:   branch
+
+     1.4: Chef::Provider::Package::Rubygems::AlternateGemEnvironment::gempath_cache lib/chef/provider/package/rubygems.rb:217
+     1.4:   assignment
+
+     1.4: Chef::Provider::Package::Rubygems::GemEnvironment#logger lib/chef/provider/package/rubygems.rb:190
+     1.4:   logger
+
+     1.4: Chef::Provider::Package::Rubygems::CurrentGemEnvironment#gem_source_index lib/chef/provider/package/rubygems.rb:202
+     1.4:   source_index
+
+     1.4: Chef::Provider::Package::Rubygems::CurrentGemEnvironment#gem_paths lib/chef/provider/package/rubygems.rb:198
+     1.4:   path
+
+     1.4: Chef::Provider::Package::Rubygems::AlternateGemEnvironment#initialize lib/chef/provider/package/rubygems.rb:229
+     1.4:   assignment
+
+     1.4: Chef::Provider::Package::Rubygems::AlternateGemEnvironment::platform_cache lib/chef/provider/package/rubygems.rb:221
+     1.4:   assignment
+
+     1.4: Chef::Provider::Package::Rubygems::GemEnvironment#gem_paths lib/chef/provider/package/rubygems.rb:54
+     1.4:   raise
+
+     1.4: Chef::Provider::Package::Rubygems::GemEnvironment#candidate_version_from_remote lib/chef/provider/package/rubygems.rb:122
+     1.4:   raise
+
+     1.4: Chef::Provider::Package::Rubygems::GemEnvironment#gem_source_index lib/chef/provider/package/rubygems.rb:64
+     1.4:   raise
+
+     1.3: Chef::Provider::Package::Rubygems#purge_package lib/chef/provider/package/rubygems.rb:452
+     1.3:   remove_package
+
+     1.3: Chef::Provider::Package::Rubygems#upgrade_package lib/chef/provider/package/rubygems.rb:426
+     1.3:   install_package
+
+     1.3: Chef::Provider::Package::Rubygems#logger lib/chef/provider/package/rubygems.rb:299
+     1.3:   logger
+

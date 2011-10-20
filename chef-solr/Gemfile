@@ -1,0 +1,22 @@
+source :rubygems
+source 'http://gems.github.com'
+source 'http://gems.rubyforge.org'
+gemspec
+gem 'rmagick'
+gem 'gruff', '0.3.6'
+gem 'thin', '1.2.11'
+gem 'rspec'
+gem 'rack'
+gem 'rake', '0.9.2'
+gem 'jscruggs-metric_fu', '1.1.5'
+gem 'reek', '1.2.8'
+gem 'sdoc'
+gem 'roodi', '2.1.0'
+
+gem 'chef', :path => '../chef'
+gem 'chef-server', :path => '../chef-server'
+gem 'chef-server-webui', :path => '../chef-server-webui'
+gem 'chef-server-webui', :path => '../chef-server-webui'
+gem 'chef-server-api', :path => '../chef-server-api'
+gem 'chef-expander', :path => '../chef-expander'
+

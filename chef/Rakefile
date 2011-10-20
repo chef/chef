@@ -23,6 +23,7 @@ require 'rubygems'
 require 'rubygems/package_task'
 require 'rake/rdoctask'
 require './tasks/rspec.rb'
+require 'metric_fu'
 
 GEM_NAME = "chef"
 
@@ -115,6 +116,3 @@ namespace :docs do
 end
 
 task :docs => "docs:all"
-
-
-

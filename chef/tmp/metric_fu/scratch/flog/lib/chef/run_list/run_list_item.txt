@@ -1,0 +1,44 @@
+    91.5: flog total
+    13.1: flog/method average
+
+    54.1: Chef::RunList::RunListItem#initialize lib/chef/run_list/run_list_item.rb:28
+    27.7:   assignment
+    22.3:   []
+    19.5:   branch
+     4.5:   match
+     3.4:   lit_fixnum
+     3.2:   has_key?
+     3.0:   class
+     1.5:   inspect
+     1.5:   assert_hash_is_valid_run_list_item!
+     1.5:   to_sym
+     1.3:   raise
+
+    22.9: Chef::RunList::RunListItem#==    lib/chef/run_list/run_list_item.rb:76
+     8.7:   branch
+     6.6:   ==
+     4.5:   respond_to?
+     3.0:   to_s
+     2.0:   version
+     2.0:   name
+     1.9:   type
+     1.2:   kind_of?
+
+     9.8: Chef::RunList::RunListItem#assert_hash_is_valid_run_list_item! lib/chef/run_list/run_list_item.rb:84
+     5.6:   key?
+     5.0:   branch
+     1.5:   class
+     1.3:   raise
+
+     1.2: Chef::RunList::RunListItem#recipe? lib/chef/run_list/run_list_item.rb:72
+     1.2:   ==
+
+     1.2: Chef::RunList::RunListItem#role? lib/chef/run_list/run_list_item.rb:68
+     1.2:   ==
+
+     1.2: Chef::RunList::RunListItem#to_s  lib/chef/run_list/run_list_item.rb:64
+     1.2:   branch
+
+     1.1: Chef::RunList::RunListItem#none
+     1.1:   attr_reader
+

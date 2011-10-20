@@ -1,0 +1,275 @@
+   414.6: flog total
+    11.2: flog/method average
+
+    65.6: Chef::SolrInstaller::Config::CLI#none
+    40.8:   assignment
+    22.8:   branch
+    14.4:   on
+    12.8:   puts
+     3.6:   exit
+     3.2:   on_tail
+     2.8:   new
+     2.4:   ljust
+     2.2:   +
+     1.8:   each_configurable
+     1.7:   expand_path
+     1.2:   lit_fixnum
+
+    30.3: Chef::SolrInstaller#chown        lib/chef/solr/solr_installer.rb:353
+    12.6:   config
+     5.1:   group
+     4.6:   user
+     4.3:   branch
+     3.1:   <<
+     1.6:   chown_R
+     1.5:   say
+     1.5:   noop?
+     1.5:   assignment
+
+    26.8: Chef::SolrInstaller#run          lib/chef/solr/solr_installer.rb:259
+     6.9:   branch
+     6.7:   say
+     5.1:   config
+     2.9:   noop?
+     1.6:   confirm_overwrite
+     1.6:   force?
+     1.5:   scorch_the_earth
+     1.5:   assignment
+     1.3:   unpack_solr_jetty
+     1.3:   create_solr_home
+     1.3:   create_solr_data_dir
+     1.3:   overwriting?
+     1.3:   chef_solr_installed?
+
+    22.2: Chef::SolrInstaller#confirm_overwrite lib/chef/solr/solr_installer.rb:281
+     4.7:   say
+     4.1:   branch
+     3.8:   config
+     3.4:   solr_home_path
+     3.2:   exit
+     2.8:   tty?
+     1.5:   print
+     1.5:   gets
+     0.9:   lit_fixnum
+
+    20.2: Chef::SolrInstaller#unpack_solr_jetty lib/chef/solr/solr_installer.rb:322
+     5.7:   config
+     5.1:   solr_jetty_path
+     2.8:   branch
+     1.8:   join
+     1.6:   sh
+     1.5:   chown
+     1.5:   chdir
+     1.5:   mkdir_p
+     1.3:   group
+
+    17.0: Chef::SolrInstaller#sh           lib/chef/solr/solr_installer.rb:346
+     2.6:   branch
+     2.6:   assignment
+     1.7:   size
+     1.6:   <<
+     1.5:   -
+     1.5:   first
+     1.5:   config
+     1.4:   shell_out!
+     1.4:   to_s
+     1.3:   empty?
+     1.3:   say
+     1.3:   []
+     1.3:   noop?
+     0.8:   lit_fixnum
+
+    16.9: Chef::SolrInstaller::Config#none
+    11.7:   configurable
+     5.2:   alias
+
+    16.7: Chef::SolrInstaller#scorch_the_earth lib/chef/solr/solr_installer.rb:298
+     5.7:   config
+     4.5:   rm_rf
+     1.7:   solr_home_path
+     1.7:   solr_jetty_path
+     1.7:   solr_data_path
+     1.3:   group
+     1.3:   branch
+
+    15.2: Chef::SolrInstaller#create_solr_home lib/chef/solr/solr_installer.rb:306
+     3.8:   config
+     3.4:   solr_home_path
+     2.8:   branch
+     1.8:   join
+     1.6:   sh
+     1.5:   chdir
+     1.5:   mkdir_p
+     1.3:   group
+
+    15.0: Chef::SolrInstaller::Config::CompatConfig#from_file lib/chef/solr/solr_installer.rb:33
+     8.0:   instance_eval
+     1.8:   read
+     1.6:   puts
+     1.5:   assignment
+     1.5:   readable?
+     1.5:   expand_path
+     1.5:   branch
+     0.5:   lit_fixnum
+
+    13.3: Chef::SolrInstaller::Config#apply_hash lib/chef/solr/solr_installer.rb:153
+     6.1:   assignment
+     5.1:   send
+     3.0:   branch
+     1.7:   puts
+     1.6:   to_sym
+     1.6:   respond_to?
+     1.4:   each
+
+    12.8: Chef::SolrInstaller#chdir        lib/chef/solr/solr_installer.rb:337
+     5.6:   branch
+     3.1:   yield
+     2.9:   block_given?
+     1.5:   config
+     1.4:   chdir
+     1.3:   say
+     1.3:   noop?
+
+    12.7: Chef::SolrInstaller::Config#to_hash lib/chef/solr/solr_installer.rb:145
+     7.8:   assignment
+     3.0:   branch
+     2.8:   inject
+     1.8:   to_sym
+     1.8:   class
+     1.6:   instance_variable_get
+     1.6:   configurables
+
+    12.7: Chef::SolrInstaller::Config#configure_from lib/chef/solr/solr_installer.rb:134
+     3.0:   to_hash
+     2.8:   apply_hash
+     2.8:   assignment
+     1.8:   config_file
+     1.8:   new
+     1.6:   from_file
+     1.4:   parse_options
+
+    11.6: Chef::SolrInstaller#create_solr_data_dir lib/chef/solr/solr_installer.rb:315
+     3.8:   config
+     3.4:   solr_data_path
+     1.5:   mkdir_p
+     1.5:   chown
+     1.3:   branch
+     1.3:   group
+
+    11.0: Chef::SolrInstaller::Config#each_configurable lib/chef/solr/solr_installer.rb:73
+     4.5:   send
+     1.8:   class
+     1.6:   configurables
+     1.5:   assignment
+     1.5:   yield
+     1.4:   branch
+     1.4:   each
+
+    10.0: Chef::SolrInstaller::Config::CompatConfig#method_missing lib/chef/solr/solr_installer.rb:43
+     4.8:   branch
+     1.8:   []
+     1.7:   size
+     1.6:   empty?
+     1.6:   first
+     1.6:   assignment
+     1.5:   ==
+     0.4:   lit_fixnum
+
+     7.0: Chef::SolrInstaller::Config#solr_base_path= lib/chef/solr/solr_installer.rb:90
+     7.0:   assignment
+
+     6.7: Chef::SolrInstaller::Config::configurable lib/chef/solr/solr_installer.rb:67
+     2.9:   assignment
+     1.6:   configurables
+     1.5:   default_values
+     1.4:   attr_accessor
+     1.4:   <<
+     1.4:   branch
+
+     6.0: Chef::SolrInstaller#mkdir_p      lib/chef/solr/solr_installer.rb:332
+     1.5:   config
+     1.4:   mkdir_p
+     1.3:   say
+     1.3:   branch
+     1.3:   noop?
+     0.4:   lit_fixnum
+
+     5.8: Chef::SolrInstaller#initialize   lib/chef/solr/solr_installer.rb:245
+     3.9:   assignment
+     1.5:   dup
+     1.5:   new
+     1.3:   configure_from
+
+     5.7: Chef::SolrInstaller#rm_rf        lib/chef/solr/solr_installer.rb:363
+     1.5:   config
+     1.4:   rm_rf
+     1.3:   branch
+     1.3:   say
+     1.3:   noop?
+
+     5.5: main#none
+     5.5:   require
+
+     5.3: Chef::SolrInstaller#indent       lib/chef/solr/solr_installer.rb:368
+     2.6:   assignment
+     1.3:   -
+     1.3:   +
+     1.3:   yield
+     0.8:   lit_fixnum
+
+     5.0: Chef::SolrInstaller#say          lib/chef/solr/solr_installer.rb:379
+     3.2:   *
+     1.3:   puts
+     0.5:   lit_fixnum
+
+     4.8: Chef::SolrInstaller#none
+     2.4:   include
+     1.2:   expand_path
+     1.2:   attr_reader
+
+     4.8: Chef::SolrInstaller::Config#initialize lib/chef/solr/solr_installer.rb:130
+     1.8:   class
+     1.6:   default_values
+     1.4:   apply_hash
+
+     4.5: Chef::SolrInstaller#chef_solr_installed? lib/chef/solr/solr_installer.rb:255
+     1.7:   config
+     1.5:   solr_home_path
+     1.3:   exist?
+
+     4.1: Chef::SolrInstaller#group        lib/chef/solr/solr_installer.rb:374
+     1.5:   block_pass
+     1.3:   indent
+     1.3:   say
+
+     3.5: Chef::SolrInstaller::Config#solr_jetty_path lib/chef/solr/solr_installer.rb:106
+     1.7:   solr_base_path
+     1.5:   join
+     1.4:   branch
+
+     3.5: Chef::SolrInstaller::Config#solr_data_path lib/chef/solr/solr_installer.rb:113
+     1.7:   solr_base_path
+     1.5:   join
+     1.4:   branch
+
+     3.5: Chef::SolrInstaller::Config#solr_home_path lib/chef/solr/solr_installer.rb:99
+     1.7:   solr_base_path
+     1.5:   join
+     1.4:   branch
+
+     3.2: Chef::SolrInstaller::Config::CLI::parse_options lib/chef/solr/solr_installer.rb:226
+     1.7:   dup
+     1.5:   parse!
+
+     1.5: Chef::SolrInstaller::Config::CompatConfig#initialize lib/chef/solr/solr_installer.rb:29
+     1.5:   assignment
+
+     1.4: Chef::SolrInstaller::Config::configurables lib/chef/solr/solr_installer.rb:63
+     1.4:   assignment
+
+     1.4: Chef::SolrInstaller::Config::default_values lib/chef/solr/solr_installer.rb:59
+     1.4:   assignment
+
+     1.4: Chef::SolrInstaller::Config#solr_base_path lib/chef/solr/solr_installer.rb:84
+     1.4:   branch
+

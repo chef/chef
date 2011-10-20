@@ -1,0 +1,255 @@
+   436.8: flog total
+    12.1: flog/method average
+
+    67.5: Chef::Cookbook::Metadata#from_hash lib/chef/cookbook/metadata.rb:455
+    26.5:   []
+    25.5:   assignment
+    23.8:   has_key?
+    23.8:   branch
+     7.5:   handle_deprecated_constraints
+
+    46.9: Chef::Cookbook::Metadata#initialize lib/chef/cookbook/metadata.rb:94
+    35.0:   assignment
+    15.4:   new
+     6.0:   branch
+     3.3:   name
+     3.0:   inject
+     1.7:   provides
+     1.7:   fully_qualified_recipe_names
+     1.4:   maintainer
+     1.4:   license
+     1.4:   maintainer_email
+     1.4:   description
+
+    40.3: Chef::Cookbook::Metadata#validate_choice_default_rule lib/chef/cookbook/metadata.rb:575
+    17.7:   []
+    13.0:   branch
+     4.6:   ==
+     4.5:   is_a?
+     3.5:   index
+     3.3:   raise
+     3.0:   empty?
+     1.6:   assignment
+     1.5:   each
+
+    32.5: Chef::Cookbook::Metadata#none
+    22.1:   freeze
+     7.8:   include
+     1.3:   private
+     1.3:   attr_reader
+
+    25.5: Chef::Cookbook::Metadata#new_args_format lib/chef/cookbook/metadata.rb:501
+     6.7:   branch
+     5.7:   assignment
+     3.8:   map
+     3.4:   join
+     2.3:   caller
+     2.1:   []
+     2.0:   inspect
+     2.0:   +
+     1.7:   size
+     1.7:   raise
+     1.6:   first
+     1.5:   ==
+     1.4:   empty?
+     0.4:   lit_fixnum
+
+    23.8: Chef::Cookbook::Metadata#to_hash lib/chef/cookbook/metadata.rb:423
+     1.4:   replacing
+     1.4:   maintainer
+     1.4:   groupings
+     1.4:   maintainer_email
+     1.4:   recipes
+     1.4:   license
+     1.4:   recommendations
+     1.4:   suggestions
+     1.4:   version
+     1.4:   conflicting
+     1.4:   dependencies
+     1.4:   name
+     1.4:   providing
+     1.4:   attributes
+     1.4:   platforms
+     1.4:   long_description
+     1.4:   description
+
+    21.0: Chef::Cookbook::Metadata#handle_deprecated_constraints lib/chef/cookbook/metadata.rb:600
+    10.7:   assignment
+     4.6:   branch
+     3.6:   gsub
+     2.8:   inject
+     2.1:   first
+     1.9:   size
+     1.7:   empty?
+     1.7:   >
+     1.6:   Array
+     1.6:   new
+     0.5:   lit_fixnum
+
+    20.6: Chef::Cookbook::Metadata#validate_calculated_default_rule lib/chef/cookbook/metadata.rb:568
+     9.3:   []
+     7.5:   branch
+     3.4:   is_a?
+     3.2:   ==
+     1.7:   empty?
+     1.5:   raise
+     1.4:   assignment
+
+    20.4: Chef::Cookbook::Metadata::validate_json lib/chef/cookbook/metadata.rb:481
+    13.9:   assignment
+     5.1:   send
+     4.5:   branch
+     3.0:   each
+     1.9:   Array
+     1.5:   []
+     1.4:   from_json
+     1.4:   new
+
+    18.7: Chef::Cookbook::Metadata#==      lib/chef/cookbook/metadata.rb:123
+    11.4:   send
+     4.5:   assignment
+     4.5:   branch
+     2.8:   inject
+     1.7:   ==
+     1.7:   respond_to?
+
+    15.4: Chef::Cookbook::Metadata#validate_version_constraint lib/chef/cookbook/metadata.rb:519
+     5.0:   assignment
+     3.2:   branch
+     2.2:   caller
+     2.0:   []
+     1.9:   +
+     1.8:   map
+     1.6:   raise
+     1.6:   join
+     1.6:   debug
+     1.5:   new
+
+    15.1: Chef::Cookbook::Metadata#attribute lib/chef/cookbook/metadata.rb:388
+     6.3:   []
+     2.9:   assignment
+     1.5:   remap_required_attribute
+     1.4:   validate_string_array
+     1.4:   validate_choice_default_rule
+     1.4:   branch
+     1.4:   validate
+     1.4:   validate_calculated_default_rule
+     1.4:   nil?
+
+     7.7: main#none
+     7.7:   require
+
+     5.6: Chef::Cookbook::Metadata#validate_string_array lib/chef/cookbook/metadata.rb:541
+     2.9:   branch
+     1.6:   validate
+     1.6:   assignment
+     1.5:   each
+     1.4:   kind_of?
+
+     5.4: Chef::Cookbook::Metadata#remap_required_attribute lib/chef/cookbook/metadata.rb:558
+     4.4:   branch
+     3.2:   assignment
+
+     5.0: Chef::Cookbook::Metadata#conflicts lib/chef/cookbook/metadata.rb:313
+     2.8:   assignment
+     1.4:   []
+     1.4:   new_args_format
+     1.4:   validate_version_constraint
+
+     5.0: Chef::Cookbook::Metadata#recommends lib/chef/cookbook/metadata.rb:279
+     2.8:   assignment
+     1.4:   []
+     1.4:   new_args_format
+     1.4:   validate_version_constraint
+
+     5.0: Chef::Cookbook::Metadata#depends lib/chef/cookbook/metadata.rb:262
+     2.8:   assignment
+     1.4:   []
+     1.4:   new_args_format
+     1.4:   validate_version_constraint
+
+     5.0: Chef::Cookbook::Metadata#suggests lib/chef/cookbook/metadata.rb:296
+     2.8:   assignment
+     1.4:   []
+     1.4:   new_args_format
+     1.4:   validate_version_constraint
+
+     5.0: Chef::Cookbook::Metadata#provides lib/chef/cookbook/metadata.rb:334
+     2.8:   assignment
+     1.4:   []
+     1.4:   new_args_format
+     1.4:   validate_version_constraint
+
+     5.0: Chef::Cookbook::Metadata#replaces lib/chef/cookbook/metadata.rb:350
+     2.8:   assignment
+     1.4:   []
+     1.4:   new_args_format
+     1.4:   validate_version_constraint
+
+     5.0: Chef::Cookbook::Metadata#supports lib/chef/cookbook/metadata.rb:245
+     2.8:   assignment
+     1.4:   []
+     1.4:   new_args_format
+     1.4:   validate_version_constraint
+
+     4.3: Chef::Cookbook::Metadata#version lib/chef/cookbook/metadata.rb:212
+     2.9:   assignment
+     1.5:   new
+     1.4:   to_s
+     1.4:   branch
+
+     3.1: Chef::Cookbook::Metadata#grouping lib/chef/cookbook/metadata.rb:411
+     1.4:   assignment
+     1.4:   []
+     1.4:   validate
+
+     3.1: Chef::Cookbook::Metadata::from_hash lib/chef/cookbook/metadata.rb:449
+     1.4:   from_hash
+     1.4:   assignment
+     1.4:   new
+
+     3.1: Chef::Cookbook::Metadata::from_json lib/chef/cookbook/metadata.rb:476
+     1.4:   from_json
+     1.4:   from_hash
+     1.4:   assignment
+
+     3.1: Chef::Cookbook::Metadata#from_json lib/chef/cookbook/metadata.rb:494
+     1.4:   from_json
+     1.4:   from_hash
+     1.4:   assignment
+
+     3.0: Chef::Cookbook::Metadata#to_json lib/chef/cookbook/metadata.rb:445
+     1.6:   to_hash
+     1.4:   to_json
+
+     2.0: Chef::Cookbook::Metadata#name    lib/chef/cookbook/metadata.rb:227
+     1.4:   assignment
+     1.4:   set_or_return
+
+     2.0: Chef::Cookbook::Metadata#maintainer_email lib/chef/cookbook/metadata.rb:151
+     1.4:   assignment
+     1.4:   set_or_return
+
+     2.0: Chef::Cookbook::Metadata#long_description lib/chef/cookbook/metadata.rb:196
+     1.4:   assignment
+     1.4:   set_or_return
+
+     2.0: Chef::Cookbook::Metadata#license lib/chef/cookbook/metadata.rb:166
+     1.4:   assignment
+     1.4:   set_or_return
+
+     2.0: Chef::Cookbook::Metadata#description lib/chef/cookbook/metadata.rb:181
+     1.4:   assignment
+     1.4:   set_or_return
+
+     2.0: Chef::Cookbook::Metadata#maintainer lib/chef/cookbook/metadata.rb:136
+     1.4:   assignment
+     1.4:   set_or_return
+
+     1.8: Chef::Cookbook::MinimalMetadata#initialize lib/chef/cookbook/metadata.rb:619
+     1.3:   from_hash
+     1.3:   assignment
+
+     1.4: Chef::Cookbook::Metadata#recipe  lib/chef/cookbook/metadata.rb:365
+     1.4:   assignment
+

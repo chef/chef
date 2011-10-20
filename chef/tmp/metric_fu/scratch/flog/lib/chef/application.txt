@@ -1,0 +1,97 @@
+   144.6: flog total
+    11.1: flog/method average
+
+    42.6: Chef::Application#configure_chef lib/chef/application.rb:71
+     9.1:   config
+     8.2:   []
+     7.3:   branch
+     6.1:   assignment
+     6.0:   warn
+     3.7:   path
+     3.3:   apply_config
+     1.8:   new
+     1.7:   message
+     1.6:   fetch
+     1.5:   merge!
+     1.5:   open
+     1.4:   fatal!
+     1.3:   parse_options
+     0.4:   lit_fixnum
+
+    21.3: Chef::Application#initialize     lib/chef/application.rb:31
+     6.9:   branch
+     5.6:   trap
+     3.3:   info
+     2.8:   fatal!
+     2.2:   caller
+     2.0:   join
+     1.8:   +
+     1.7:   reconfigure
+     0.8:   lit_fixnum
+
+    20.4: Chef::Application#debug_stacktrace lib/chef/application.rb:129
+     5.7:   assignment
+     2.1:   now
+     2.1:   load
+     2.1:   backtrace
+     1.9:   debug
+     1.9:   join
+     1.9:   fatal
+     1.9:   class
+     1.9:   store
+     1.9:   +
+     1.9:   to_s
+
+    19.3: Chef::Application#configure_logging lib/chef/application.rb:99
+     5.9:   []
+     5.8:   assignment
+     4.0:   branch
+     1.7:   loggers
+     1.7:   logger
+     1.5:   <<
+     1.5:   tty?
+     1.5:   new
+     1.5:   formatter
+     1.4:   ==
+     1.3:   init
+
+     9.6: Chef::Application#none
+     6.0:   sclass
+     2.4:   include
+     1.2:   private
+
+     6.6: main#none
+     6.6:   require
+
+     4.2: Chef::Application#fatal!         lib/chef/application.rb:141
+     1.9:   exit
+     1.9:   fatal
+     1.9:   assignment
+
+     4.2: Chef::Application#exit!          lib/chef/application.rb:146
+     1.9:   exit
+     1.9:   debug
+     1.9:   assignment
+
+     4.1: Chef::Application#apply_config   lib/chef/application.rb:122
+     1.5:   config
+     1.3:   merge!
+     1.3:   from_file
+
+     3.9: Chef::Application#run            lib/chef/application.rb:64
+     1.3:   setup_application
+     1.3:   run_application
+     1.3:   reconfigure
+
+     2.8: Chef::Application#setup_application lib/chef/application.rb:111
+     1.5:   to_s
+     1.3:   raise
+
+     2.8: Chef::Application#run_application lib/chef/application.rb:116
+     1.5:   to_s
+     1.3:   raise
+
+     2.6: Chef::Application#reconfigure    lib/chef/application.rb:58
+     1.3:   configure_chef
+     1.3:   configure_logging
+

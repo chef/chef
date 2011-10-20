@@ -1,0 +1,3114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang='en' xml:lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type' />
+    <meta content='en' http-equiv='Content-Language' />
+    <title>metrics</title>
+    <style>
+    /*
+Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.5.2
+*/
+html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym {border:0;font-variant:normal;}sup {vertical-align:text-top;}sub {vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
+
+    /* --------------------------------------------------------------
+
+   buttons.css
+   * Gives you some great CSS-only buttons.
+
+   Created by Kevin Hale [particletree.com]
+   * particletree.com/features/rediscovering-the-button-element
+
+   See Readme.txt in this folder for instructions.
+
+-------------------------------------------------------------- */
+
+button {
+  display:block;
+  float:left;
+  margin:0 0.583em 0.667em 0;
+  padding:5px 10px 5px 7px;   /* Links */
+
+  border:1px solid #dedede;
+  border-top:1px solid #eee;
+  border-left:1px solid #eee;
+
+  background-color:#f5f5f5;
+  font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+  font-size:100%;
+  line-height:130%;
+  text-decoration:none;
+  font-weight:bold;
+  color:#565656;
+  cursor:pointer;
+}
+button {
+  width:auto;
+  overflow:visible;
+  padding:4px 10px 3px 7px;   /* IE6 */
+}
+button[type] {
+  padding:4px 10px 4px 7px;   /* Firefox */
+  line-height:17px;           /* Safari */
+}
+*:first-child+html button[type] {
+  padding:4px 10px 3px 7px;   /* IE7 */
+}
+button img {
+  margin:0 3px -3px 0 !important;
+  padding:0;
+  border:none;
+  width:16px;
+  height:16px;
+  float:none;
+}
+
+
+/* Button colors
+-------------------------------------------------------------- */
+
+/* Standard */
+button:hover {
+  background-color:#dff4ff;
+  border:1px solid #c2e1ef;
+  color:#336699;
+}
+
+/* Positive */
+body .positive {
+  color:#529214;
+}
+button.positive:hover {
+  background-color:#E6EFC2;
+  border:1px solid #C6D880;
+  color:#529214;
+}
+
+/* Negative */
+body .negative {
+  color:#d12f19;
+}
+button.negative:hover {
+  background:#fbe3e4;
+  border:1px solid #fbc2c4;
+  color:#d12f19;
+}
+
+    html {
+  background-color: #e0e0e0; }
+
+body {
+  font-size: 100%;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  color: #333333; }
+
+a {
+  color: #ed1556;
+  text-decoration: none; }
+  a:hover {
+    color: #ffffff;
+    background-color: #ed1556; }
+
+#header, #content, #footer {
+  margin: 0 auto;
+  background: #eeeeee;
+  padding: 0 2em;
+  z-index: 0;
+  position: relative;
+  font-size: 1em; }
+
+#header {
+  background: #ffffff; }
+  #header h1 {
+    font-weight: bold;
+    font-size: 1.5em; }
+  #header address.watermark {
+    position: absolute;
+    font-weight: bold;
+    right: 3em;
+    top: 0;
+    font-size: .75em;
+    color: #cccccc; }
+    #header address.watermark a {
+      color: #cccccc;
+      font-weight: bold;
+      font-size: 2em; }
+      #header address.watermark a:hover {
+        background: transparent;
+        color: #aaaaaa; }
+
+#content {
+  padding-top: 1em;
+  padding-bottom: 2em; }
+  #content strong {
+    font-weight: bold; }
+  #content em {
+    font-style: italic; }
+  #content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
+    color: #4e4e4e; }
+  #content h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: .75em;
+    padding: .25em 0;
+    line-height: 1.2;
+    border-bottom: 1px solid #c0c0c0; }
+  #content h2 {
+    font-weight: bold;
+    font-size: 1.5em;
+    margin: 1em 0 .2em; }
+  #content h3 {
+    font-weight: bold;
+    font-size: 1.25em;
+    margin: .25em 0; }
+  #content h4, #content h5, #content h6 {
+    font-weight: bold;
+    margin-top: .5em; }
+  #content code, #content pre, #content textarea, #content input {
+    font-family: Monaco, Deja Vu Sans Mono, Inconsolata, Consolas, monospace; }
+  #content form p {
+    margin-top: 1em;
+    position: relative; }
+    #content form p.checkbox label {
+      margin-top: 0 !important; }
+  #content form input.text, #content form textarea {
+    width: 30em;
+    padding: .2em .4em;
+    color: #4e4e4e; }
+  #content form input.text {
+    height: 1.4em; }
+  #content form label {
+    float: left;
+    display: block;
+    margin-top: .5em;
+    width: 8em;
+    margin-right: .75em; }
+  #content form .with_errors label {
+    background: red;
+    color: white;
+    position: relative;
+    top: -.7em; }
+  #content form .with_errors.required label {
+    position: static;
+    margin-right: .25em;
+    padding: 0 .2em; }
+  #content form .with_errors input, #content form .with_errors textarea {
+    border: 2px solid #f22;
+    background: #fee;
+    color: #222222; }
+  #content form .required label {
+    float: none;
+    display: block;
+    width: auto;
+    position: relative;
+    font-weight: bold;
+    margin-top: 1em;
+    text-indent: -.65em; }
+    #content form .required label:before {
+      content: "* ";
+      color: #ed1556; }
+  #content form .required input.text {
+    width: 25.6em;
+    font-size: 24px;
+    font-weight: bold; }
+  #content form .normal {
+    margin-top: 2em; }
+  #content form h2.notifier label {
+    float: none;
+    width: auto;
+    margin-right: 0; }
+    #content form h2.notifier label .warning {
+      font-size: .5em;
+      font-weight: normal;
+      color: #999999; }
+  #content form fieldset {
+    padding-bottom: 1em;
+    margin-left: 1.35em;
+    border-bottom: 1px solid #c0c0c0;
+    margin-bottom: 1em; }
+    #content form fieldset h3 {
+      margin-top: 1em;
+      margin-bottom: 0; }
+    #content form fieldset p.normal {
+      margin-top: 1em; }
+    #content form fieldset p label {
+      width: 6.7em; }
+  #content form p.submit {
+    margin-top: 2em; }
+    #content form p.submit:after {
+      display: block;
+      clear: both;
+      float: none;
+      content: ".";
+      text-indent: -9999em;
+      text-align: left; }
+    #content form p.submit.destroy button,     #content form p.submit.manual-build button {
+      float: none;
+      display: inline; }
+    #content form p.submit.manual-build button {
+      margin-right: 0; }
+  #content #build form, #content #last_build form {
+    font-size: .75em; }
+    #content #build form p.submit,     #content #last_build form p.submit {
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      right: .5em;
+      top: 1.25em; }
+  #content .blank_slate p,   #content .error p {
+    position: relative;
+    top: .3em; }
+  #content .blank_slate h1,   #content .error h1 {
+    border-width: 0;
+    margin: 0;
+    padding: 0; }
+    #content .blank_slate h1 button,     #content .error h1 button {
+      float: none;
+      border: 0 none;
+      background: transparent;
+      display: inline;
+      color: #ed1556;
+      padding: 0.25em 0;
+      margin: 0; }
+      #content .blank_slate h1 button:hover,       #content .error h1 button:hover {
+        background: #ed1556;
+        color: #ffffff; }
+  #content .error dt {
+    margin-top: 1.4em;
+    margin-bottom: .3em;
+    font-size: 1.75em;
+    font-family: Georgia, Times New Roman, serif; }
+  #content .error dd {
+    line-height: 1.4; }
+  #content .error .backtrace {
+    margin: 1em 0;
+    overflow: scroll;
+    height: 30em;
+    border: 1px solid #c0c0c0;
+    line-height: 1.6; }
+  #content #projects {
+    margin: 1em 0 2em;
+    border-top: 1px solid #c0c0c0; }
+    #content #projects li {
+      position: relative;
+      border-bottom: 1px solid #c0c0c0; }
+      #content #projects li.odd {
+        background: #e6e6e6; }
+      #content #projects li.building {
+        background: transparent url(/spinner.gif) no-repeat scroll right; }
+      #content #projects li a {
+        font-size: 2em;
+        padding: .25em;
+        line-height: 1.2;
+        font-weight: bold;
+        display: block; }
+        #content #projects li a.success {
+          color: #337022; }
+        #content #projects li a.failed {
+          color: #ff1100; }
+      #content #projects li .meta {
+        position: absolute;
+        right: .6em;
+        top: 1.5em;
+        font-size: 0.8em;
+        color: #999999;
+        text-align: right; }
+      #content #projects li.building .meta {
+        right: 1.6em; }
+      #content #projects li.success .meta {
+        color: #337022; }
+      #content #projects li.failed .meta {
+        color: #ff1100; }
+  #content #previous_builds li a {
+    display: block;
+    padding: .25em;
+    margin-bottom: .25em;
+    border-width: 1px;
+    border-style: solid; }
+    #content #previous_builds li a strong {
+      font-size: 1.3em; }
+    #content #previous_builds li a .attribution {
+      font-size: .9em; }
+  #content #projects li.success a,   #content #previous_builds li.success a {
+    background-color: #bbf8aa;
+    border-color: #99d688;
+    color: #337022; }
+    #content #projects li.success a .attribution,     #content #previous_builds li.success a .attribution {
+      color: #77b466; }
+    #content #projects li.success a:hover,     #content #previous_builds li.success a:hover {
+      background-color: #ddffcc; }
+  #content #projects li.failed a,   #content #previous_builds li.failed a {
+    background-color: #ffbbaa;
+    border-color: #dd9988;
+    color: #ff1100; }
+    #content #projects li.failed a .attribution,     #content #previous_builds li.failed a .attribution {
+      color: #bb7766; }
+    #content #projects li.failed a:hover,     #content #previous_builds li.failed a:hover {
+      background-color: #ffddcc; }
+  #content #build, #content #last_build {
+    position: relative; }
+    #content #build h1, #content #build blockquote,     #content #last_build h1, #content #last_build blockquote {
+      border-width: 0 1px;
+      border-style: solid; }
+    #content #build h1,     #content #last_build h1 {
+      border-top-width: 1px; }
+    #content #build blockquote,     #content #last_build blockquote {
+      bottom-bottom-width: 1px;
+      line-height: 1.4; }
+    #content #build.success h1, #content #build.success blockquote,     #content #last_build.success h1, #content #last_build.success blockquote {
+      background-color: #bbf8aa;
+      border-color: #99d688 #ccffbb #ccffbb #99d688; }
+    #content #build.success h1,     #content #last_build.success h1 {
+      color: #337022; }
+    #content #build.success .meta,     #content #last_build.success .meta {
+      color: #77b466; }
+    #content #build.failed h1, #content #build.failed blockquote,     #content #last_build.failed h1, #content #last_build.failed blockquote {
+      background-color: #ffbbaa;
+      border-color: #dd9988 #ffccbb #ffccbb #dd9988; }
+    #content #build.failed h1,     #content #last_build.failed h1 {
+      color: #ff1100; }
+    #content #build.failed .meta,     #content #last_build.failed .meta {
+      color: #bb7766; }
+    #content #build h1,     #content #last_build h1 {
+      margin-top: .5em;
+      margin-bottom: 0;
+      padding: .25em;
+      color: #337022; }
+    #content #build blockquote,     #content #last_build blockquote {
+      padding: .75em;
+      margin-bottom: 2em; }
+      #content #build blockquote .meta,       #content #last_build blockquote .meta {
+        margin-top: 1em;
+        display: block;
+        font-size: .9em; }
+    #content #build pre.output,     #content #last_build pre.output {
+      background: #111;
+      color: #fff;
+      padding: .5em;
+      overflow: auto;
+      max-height: 50em;
+      font-size: .825em; }
+      #content #build pre.output .color30,       #content #last_build pre.output .color30 {
+        color: #333; }
+      #content #build pre.output .color31,       #content #last_build pre.output .color31 {
+        color: #e33; }
+      #content #build pre.output .color32,       #content #last_build pre.output .color32 {
+        color: #3e3; }
+      #content #build pre.output .color33,       #content #last_build pre.output .color33 {
+        color: #ee3; }
+      #content #build pre.output .color34,       #content #last_build pre.output .color34 {
+        color: #33e; }
+      #content #build pre.output .color35,       #content #last_build pre.output .color35 {
+        color: #e3e; }
+      #content #build pre.output .color36,       #content #last_build pre.output .color36 {
+        color: #3ee; }
+      #content #build pre.output .color37,       #content #last_build pre.output .color37 {
+        color: #fff; }
+  #content #push_path {
+    display: block;
+    margin-top: 1em;
+    margin-left: 2em; }
+
+a.success {
+  color: #bbf8aa; }
+  a.success:hover {
+    background-color: #bbf8aa;
+    color: white; }
+a.failed {
+  color: #ffbbaa; }
+  a.failed:hover {
+    background-color: #ffbbaa;
+    color: white; }
+
+#footer {
+  padding: 1.5em 2.5em;
+  border-top: 1px solid #ccc;
+  font-size: .8em;
+  color: #666;
+  text-align: right; }
+  #footer strong {
+    font-weight: bold; }
+    
+    table {
+  margin-top: 20px;
+  border-collapse: collapse;
+  border: 1px solid #666;
+  background: #fff;
+  margin-bottom: 20px;
+}
+
+table tr.light {
+   background: #fff;
+}
+
+table tr.dark {
+  background: #f9f9f9;
+}
+
+table tr:hover {
+  background: #FFFFC0;
+}
+
+table td, table th {
+  padding: 4px;
+  font-size: 11px;
+}
+table th {
+  text-align: center;
+  color: #337022;
+  background: #DDFFCC;
+  font-weight: bold;
+  border: #99D688 1px solid;
+}
+
+table td {
+  border: #d0d0d0 1px solid;
+}
+
+table td.score {
+  text-align: right;
+}
+
+.warning {
+  background: yellow;
+}
+.rcov_code td {
+  border-bottom: 1px solid #ddd ;
+  padding: 0;
+  margin: 0;
+}
+.rcov_code tr {
+  border: 0px;
+  padding:0px;
+  margin: 0px;
+}
+.rcov_code pre {
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+}
+.rcov_run {}
+.rcov_not_run {
+  background-color: #d88;
+}
+.rcov_run a, .rcov_not_run a {
+  text-decoration: none;
+}
+.rcov_run a {
+  color: #333;
+}
+.rcov_not_run a {
+  color: #000;
+}
+.rcov_overflow {
+  overflow: auto;
+  font-size: 50%;
+}
+
+    </style>
+    <link REL="SHORTCUT ICON" HREF="/favicon.ico">
+  </head>
+  <body>
+    <div id='header'>
+      <h1><a href="/">metrics</a> | <a href="index.html">chef</a></h1>
+      <address class='watermark'>
+        built with
+        <a href='http://metric-fu.rubyforge.org/'>metric-fu</a>
+      </address>
+    </div>
+    <div id='content'>
+      <h3>Roodi Results</h3>
+
+<p><a href="http://roodi.rubyforge.org/">Roodi</a> parses your Ruby code and warns you about design issues you have based on the checks that is has configured.</p>
+
+<img src="roodi.png?Thu Oct 20 17:05:40 +0530 2011">
+
+<table>
+  <tr>
+    <th>File Path</th>
+    <th>Warning</th>
+  </tr>
+  
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:289</a></td>
+      <td>Method name "configure_chef" cyclomatic complexity is 21.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:420</a></td>
+      <td>Method name "humanize_http_exception" cyclomatic complexity is 9.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/unix.rb'>lib/chef/shell_out/unix.rb:16</a></td>
+      <td>Method name "run_command" cyclomatic complexity is 13.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:578</a></td>
+      <td>Method name "segment_filenames" cyclomatic complexity is 12.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/command/unix.rb'>lib/chef/mixin/command/unix.rb:30</a></td>
+      <td>Method name "popen4" cyclomatic complexity is 33.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/params_validate.rb'>lib/chef/mixin/params_validate.rb:47</a></td>
+      <td>Method name "validate" cyclomatic complexity is 10.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/run_list/run_list_item.rb'>lib/chef/run_list/run_list_item.rb:28</a></td>
+      <td>Method name "initialize" cyclomatic complexity is 14.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/streaming_cookbook_uploader.rb'>lib/chef/streaming_cookbook_uploader.rb:29</a></td>
+      <td>Method name "status" cyclomatic complexity is 14.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_site_streaming_uploader.rb'>lib/chef/cookbook_site_streaming_uploader.rb:74</a></td>
+      <td>Method name "status" cyclomatic complexity is 14.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_delete.rb'>lib/chef/knife/cookbook_delete.rb:37</a></td>
+      <td>Method name "run" cyclomatic complexity is 9.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/configure.rb'>lib/chef/knife/configure.rb:115</a></td>
+      <td>Method name "ask_user_for_config" cyclomatic complexity is 11.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/generic_presenter.rb'>lib/chef/knife/core/generic_presenter.rb:58</a></td>
+      <td>Method name "format" cyclomatic complexity is 9.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/status.rb'>lib/chef/knife/status.rb:41</a></td>
+      <td>Method name "run" cyclomatic complexity is 15.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_create.rb'>lib/chef/knife/cookbook_create.rb:58</a></td>
+      <td>Method name "run" cyclomatic complexity is 10.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_create.rb'>lib/chef/knife/cookbook_create.rb:220</a></td>
+      <td>Method name "create_metadata" cyclomatic complexity is 9.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_show.rb'>lib/chef/knife/cookbook_show.rb:53</a></td>
+      <td>Method name "attribute?" cyclomatic complexity is 15.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/search.rb'>lib/chef/knife/search.rb:77</a></td>
+      <td>Method name "run" cyclomatic complexity is 13.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out.rb'>lib/chef/shell_out.rb:218</a></td>
+      <td>Method name "parse_options" cyclomatic complexity is 13.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/application/solo.rb'>lib/chef/application/solo.rb:121</a></td>
+      <td>Method name "reconfigure" cyclomatic complexity is 9.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/application/client.rb'>lib/chef/application/client.rb:155</a></td>
+      <td>Method name "reconfigure" cyclomatic complexity is 11.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/application/client.rb'>lib/chef/application/client.rb:211</a></td>
+      <td>Method name "run_application" cyclomatic complexity is 10.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook/metadata.rb'>lib/chef/cookbook/metadata.rb:455</a></td>
+      <td>Method name "from_hash" cyclomatic complexity is 18.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook/metadata.rb'>lib/chef/cookbook/metadata.rb:575</a></td>
+      <td>Method name "validate_choice_default_rule" cyclomatic complexity is 9.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest/rest_request.rb'>lib/chef/rest/rest_request.rb:139</a></td>
+      <td>Method name "configure_http_client" cyclomatic complexity is 15.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest/rest_request.rb'>lib/chef/rest/rest_request.rb:186</a></td>
+      <td>Method name "configure_http_request" cyclomatic complexity is 11.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node/attribute.rb'>lib/chef/node/attribute.rb:289</a></td>
+      <td>Method name "determine_value" cyclomatic complexity is 15.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node/attribute.rb'>lib/chef/node/attribute.rb:382</a></td>
+      <td>Method name "value_or_descend" cyclomatic complexity is 9.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:168</a></td>
+      <td>Method name "run_request" cyclomatic complexity is 12.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/simple.rb'>lib/chef/provider/service/simple.rb:26</a></td>
+      <td>Method name "load_current_resource" cyclomatic complexity is 13.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/upstart.rb'>lib/chef/provider/service/upstart.rb:56</a></td>
+      <td>Method name "load_current_resource" cyclomatic complexity is 11.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/freebsd.rb'>lib/chef/provider/service/freebsd.rb:27</a></td>
+      <td>Method name "load_current_resource" cyclomatic complexity is 20.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/user/useradd.rb'>lib/chef/provider/user/useradd.rb:47</a></td>
+      <td>Method name "check_lock" cyclomatic complexity is 10.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/user/dscl.rb'>lib/chef/provider/user/dscl.rb:79</a></td>
+      <td>Method name "modify_home" cyclomatic complexity is 9.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/rpm.rb'>lib/chef/provider/package/rpm.rb:30</a></td>
+      <td>Method name "load_current_resource" cyclomatic complexity is 10.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:87</a></td>
+      <td>Method name "rpmvercmp" cyclomatic complexity is 29.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:286</a></td>
+      <td>Method name "compare_versions" cyclomatic complexity is 30.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:365</a></td>
+      <td>Method name "compare" cyclomatic complexity is 20.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:460</a></td>
+      <td>Method name "satisfy?" cyclomatic complexity is 24.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:675</a></td>
+      <td>Method name "refresh" cyclomatic complexity is 15.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:838</a></td>
+      <td>Method name "version" cyclomatic complexity is 10.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:961</a></td>
+      <td>Method name "load_current_resource" cyclomatic complexity is 11.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/dpkg.rb'>lib/chef/provider/package/dpkg.rb:34</a></td>
+      <td>Method name "load_current_resource" cyclomatic complexity is 12.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/zypper.rb'>lib/chef/provider/package/zypper.rb:30</a></td>
+      <td>Method name "load_current_resource" cyclomatic complexity is 10.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/solaris.rb'>lib/chef/provider/package/solaris.rb:35</a></td>
+      <td>Method name "load_current_resource" cyclomatic complexity is 11.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/erl_call.rb'>lib/chef/provider/erl_call.rb:36</a></td>
+      <td>Method name "action_run" cyclomatic complexity is 9.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/execute.rb'>lib/chef/provider/execute.rb:33</a></td>
+      <td>Method name "action_run" cyclomatic complexity is 13.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/route.rb'>lib/chef/provider/route.rb:130</a></td>
+      <td>Method name "generate_config" cyclomatic complexity is 9.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron/solaris.rb'>lib/chef/provider/cron/solaris.rb:40</a></td>
+      <td>Method name "load_current_resource" cyclomatic complexity is 17.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron/solaris.rb'>lib/chef/provider/cron/solaris.rb:115</a></td>
+      <td>Method name "action_create" cyclomatic complexity is 10.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/ifconfig.rb'>lib/chef/provider/ifconfig.rb:41</a></td>
+      <td>Method name "load_current_resource" cyclomatic complexity is 15.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron.rb'>lib/chef/provider/cron.rb:37</a></td>
+      <td>Method name "load_current_resource" cyclomatic complexity is 17.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron.rb'>lib/chef/provider/cron.rb:97</a></td>
+      <td>Method name "action_create" cyclomatic complexity is 10.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/link.rb'>lib/chef/provider/link.rb:117</a></td>
+      <td>Method name "action_create" cyclomatic complexity is 11.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource.rb'>lib/chef/resource.rb:405</a></td>
+      <td>Method name "run_action" cyclomatic complexity is 9.  It should be 8 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/file_access_control.rb'>lib/chef/file_access_control.rb:87</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/file_access_control.rb'>lib/chef/file_access_control.rb:109</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/file_access_control.rb'>lib/chef/file_access_control.rb:122</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shef/model_wrapper.rb'>lib/chef/shef/model_wrapper.rb:69</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shef/ext.rb'>lib/chef/shef/ext.rb:60</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:188</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:217</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:224</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:349</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/unix.rb'>lib/chef/shell_out/unix.rb:49</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/unix.rb'>lib/chef/shell_out/unix.rb:164</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/unix.rb'>lib/chef/shell_out/unix.rb:174</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/windows.rb'>lib/chef/shell_out/windows.rb:74</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/windows.rb'>lib/chef/shell_out/windows.rb:86</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/language_include_attribute.rb'>lib/chef/mixin/language_include_attribute.rb:46</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/run_list/run_list_item.rb'>lib/chef/run_list/run_list_item.rb:39</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/run_list/run_list_item.rb'>lib/chef/run_list/run_list_item.rb:58</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/run_list/run_list_item.rb'>lib/chef/run_list/run_list_item.rb:58</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/run_list/run_list_expansion.rb'>lib/chef/run_list/run_list_expansion.rb:133</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/run_list/run_list_expansion.rb'>lib/chef/run_list/run_list_expansion.rb:138</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/checksum_cache.rb'>lib/chef/checksum_cache.rb:174</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_delete.rb'>lib/chef/knife/cookbook_delete.rb:116</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/object_loader.rb'>lib/chef/knife/core/object_loader.rb:33</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/cookbook_scm_repo.rb'>lib/chef/knife/core/cookbook_scm_repo.rb:84</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/recipe_list.rb'>lib/chef/knife/recipe_list.rb:26</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_bulk_delete.rb'>lib/chef/knife/cookbook_bulk_delete.rb:36</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/node_edit.rb'>lib/chef/knife/node_edit.rb:48</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook/metadata.rb'>lib/chef/cookbook/metadata.rb:485</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:238</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:274</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/subversion.rb'>lib/chef/provider/subversion.rb:35</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/upstart.rb'>lib/chef/provider/service/upstart.rb:91</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/git.rb'>lib/chef/provider/git.rb:33</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/user/dscl.rb'>lib/chef/provider/user/dscl.rb:196</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/user/dscl.rb'>lib/chef/provider/user/dscl.rb:217</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/rubygems.rb'>lib/chef/provider/package/rubygems.rb:268</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/rubygems.rb'>lib/chef/provider/package/rubygems.rb:365</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:797</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/dpkg.rb'>lib/chef/provider/package/dpkg.rb:54</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/freebsd.rb'>lib/chef/provider/package/freebsd.rb:55</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/execute.rb'>lib/chef/provider/execute.rb:36</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/route.rb'>lib/chef/provider/route.rb:76</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/deploy.rb'>lib/chef/provider/deploy.rb:185</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node.rb'>lib/chef/node.rb:402</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource.rb'>lib/chef/resource.rb:335</a></td>
+      <td>Found = in conditional.  It should probably be an ==</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/streaming_cookbook_uploader.rb'>lib/chef/streaming_cookbook_uploader.rb:29</a></td>
+      <td>Method name "make_request" has 6 parameters.  It should have 5 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_site_streaming_uploader.rb'>lib/chef/cookbook_site_streaming_uploader.rb:74</a></td>
+      <td>Method name "make_request" has 6 parameters.  It should have 5 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_create.rb'>lib/chef/knife/cookbook_create.rb:220</a></td>
+      <td>Method name "create_metadata" has 6 parameters.  It should have 5 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/search/query.rb'>lib/chef/search/query.rb:39</a></td>
+      <td>Method name "search" has 6 parameters.  It should have 5 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:168</a></td>
+      <td>Method name "run_request" has 6 parameters.  It should have 5 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:117</a></td>
+      <td>Don't use class variables. You might want to try a different design.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:240</a></td>
+      <td>Don't use class variables. You might want to try a different design.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:252</a></td>
+      <td>Don't use class variables. You might want to try a different design.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/solr_query/query_transform.rb'>lib/chef/solr_query/query_transform.rb:32</a></td>
+      <td>Don't use class variables. You might want to try a different design.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/solr_query/query_transform.rb'>lib/chef/solr_query/query_transform.rb:36</a></td>
+      <td>Don't use class variables. You might want to try a different design.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/solr_query/query_transform.rb'>lib/chef/solr_query/query_transform.rb:37</a></td>
+      <td>Don't use class variables. You might want to try a different design.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/solr_query/query_transform.rb'>lib/chef/solr_query/query_transform.rb:38</a></td>
+      <td>Don't use class variables. You might want to try a different design.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/solr_query/query_transform.rb'>lib/chef/solr_query/query_transform.rb:46</a></td>
+      <td>Don't use class variables. You might want to try a different design.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/solr_query/query_transform.rb'>lib/chef/solr_query/query_transform.rb:47</a></td>
+      <td>Don't use class variables. You might want to try a different design.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/solr_query/query_transform.rb'>lib/chef/solr_query/query_transform.rb:48</a></td>
+      <td>Don't use class variables. You might want to try a different design.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/bootstrap.rb'>lib/chef/knife/bootstrap.rb:116</a></td>
+      <td>Don't use class variables. You might want to try a different design.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/monkey_patches/tempfile.rb'>lib/chef/monkey_patches/tempfile.rb:35</a></td>
+      <td>Don't use class variables. You might want to try a different design.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:583</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/util/file_edit.rb'>lib/chef/util/file_edit.rb:103</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/params_validate.rb'>lib/chef/mixin/params_validate.rb:61</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/run_list/run_list_expansion.rb'>lib/chef/run_list/run_list_expansion.rb:134</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/streaming_cookbook_uploader.rb'>lib/chef/streaming_cookbook_uploader.rb:89</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_site_streaming_uploader.rb'>lib/chef/cookbook_site_streaming_uploader.rb:134</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/cookbook_scm_repo.rb'>lib/chef/knife/core/cookbook_scm_repo.rb:134</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/generic_presenter.rb'>lib/chef/knife/core/generic_presenter.rb:60</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_create.rb'>lib/chef/knife/cookbook_create.rb:101</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_create.rb'>lib/chef/knife/cookbook_create.rb:224</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_site_show.rb'>lib/chef/knife/cookbook_site_show.rb:28</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_show.rb'>lib/chef/knife/cookbook_show.rb:54</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:95</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:109</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/run_list.rb'>lib/chef/run_list.rb:152</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook/metadata.rb'>lib/chef/cookbook/metadata.rb:560</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node/attribute.rb'>lib/chef/node/attribute.rb:68</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/upstart.rb'>lib/chef/provider/service/upstart.rb:93</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/freebsd.rb'>lib/chef/provider/service/freebsd.rb:91</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/freebsd.rb'>lib/chef/provider/service/freebsd.rb:127</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/solaris.rb'>lib/chef/provider/service/solaris.rb:69</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/user/useradd.rb'>lib/chef/provider/user/useradd.rb:50</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/rpm.rb'>lib/chef/provider/package/rpm.rb:44</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/rpm.rb'>lib/chef/provider/package/rpm.rb:60</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/apt.rb'>lib/chef/provider/package/apt.rb:46</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/pacman.rb'>lib/chef/provider/package/pacman.rb:38</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/pacman.rb'>lib/chef/provider/package/pacman.rb:58</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:730</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:995</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/dpkg.rb'>lib/chef/provider/package/dpkg.rb:68</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/zypper.rb'>lib/chef/provider/package/zypper.rb:42</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/solaris.rb'>lib/chef/provider/package/solaris.rb:49</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/solaris.rb'>lib/chef/provider/package/solaris.rb:62</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/solaris.rb'>lib/chef/provider/package/solaris.rb:85</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/mount/mount.rb'>lib/chef/provider/mount/mount.rb:58</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/mount/mount.rb'>lib/chef/provider/mount/mount.rb:80</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/mount/mount.rb'>lib/chef/provider/mount/mount.rb:96</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/mount/mount.rb'>lib/chef/provider/mount/mount.rb:182</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/mount/mount.rb'>lib/chef/provider/mount/mount.rb:208</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/erl_call.rb'>lib/chef/provider/erl_call.rb:37</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/route.rb'>lib/chef/provider/route.rb:132</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/route.rb'>lib/chef/provider/route.rb:169</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/route.rb'>lib/chef/provider/route.rb:184</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/group/groupadd.rb'>lib/chef/provider/group/groupadd.rb:81</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/group/usermod.rb'>lib/chef/provider/group/usermod.rb:33</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/ifconfig.rb'>lib/chef/provider/ifconfig.rb:154</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/ifconfig.rb'>lib/chef/provider/ifconfig.rb:180</a></td>
+      <td>Case statement is missing an else clause.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shef/ext.rb'>lib/chef/shef/ext.rb:28</a></td>
+      <td>Module "Shef" has 517 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shef/ext.rb'>lib/chef/shef/ext.rb:29</a></td>
+      <td>Module "Extensions" has 515 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:353</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:1000</a></td>
+      <td>Block cyclomatic complexity is 6.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/util/file_edit.rb'>lib/chef/util/file_edit.rb:99</a></td>
+      <td>Block cyclomatic complexity is 8.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/command/unix.rb'>lib/chef/mixin/command/unix.rb:64</a></td>
+      <td>Block cyclomatic complexity is 8.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/command/windows.rb'>lib/chef/mixin/command/windows.rb:38</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/params_validate.rb'>lib/chef/mixin/params_validate.rb:56</a></td>
+      <td>Block cyclomatic complexity is 8.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/deep_merge.rb'>lib/chef/mixin/deep_merge.rb:115</a></td>
+      <td>Block cyclomatic complexity is 9.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/generic_presenter.rb'>lib/chef/knife/core/generic_presenter.rb:149</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/status.rb'>lib/chef/knife/status.rb:48</a></td>
+      <td>Block cyclomatic complexity is 14.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_create.rb'>lib/chef/knife/cookbook_create.rb:92</a></td>
+      <td>Block cyclomatic complexity is 7.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:87</a></td>
+      <td>Block cyclomatic complexity is 6.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:127</a></td>
+      <td>Block cyclomatic complexity is 8.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out.rb'>lib/chef/shell_out.rb:219</a></td>
+      <td>Block cyclomatic complexity is 13.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/application/solo.rb'>lib/chef/application/solo.rb:183</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/application/client.rb'>lib/chef/application/client.rb:229</a></td>
+      <td>Block cyclomatic complexity is 7.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node/attribute.rb'>lib/chef/node/attribute.rb:269</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:77</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:174</a></td>
+      <td>Block cyclomatic complexity is 11.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:218</a></td>
+      <td>Block cyclomatic complexity is 6.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:251</a></td>
+      <td>Block cyclomatic complexity is 7.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/upstart.rb'>lib/chef/provider/service/upstart.rb:90</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/freebsd.rb'>lib/chef/provider/service/freebsd.rb:89</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/user/useradd.rb'>lib/chef/provider/user/useradd.rb:48</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/apt.rb'>lib/chef/provider/package/apt.rb:44</a></td>
+      <td>Block cyclomatic complexity is 8.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:544</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:700</a></td>
+      <td>Block cyclomatic complexity is 8.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:842</a></td>
+      <td>Block cyclomatic complexity is 8.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/dpkg.rb'>lib/chef/provider/package/dpkg.rb:65</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/zypper.rb'>lib/chef/provider/package/zypper.rb:39</a></td>
+      <td>Block cyclomatic complexity is 6.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/portage.rb'>lib/chef/provider/package/portage.rb:61</a></td>
+      <td>Block cyclomatic complexity is 6.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/mount/mount.rb'>lib/chef/provider/mount/mount.rb:56</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/route.rb'>lib/chef/provider/route.rb:135</a></td>
+      <td>Block cyclomatic complexity is 5.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron/solaris.rb'>lib/chef/provider/cron/solaris.rb:51</a></td>
+      <td>Block cyclomatic complexity is 13.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron/solaris.rb'>lib/chef/provider/cron/solaris.rb:131</a></td>
+      <td>Block cyclomatic complexity is 6.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron/solaris.rb'>lib/chef/provider/cron/solaris.rb:169</a></td>
+      <td>Block cyclomatic complexity is 6.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/ifconfig.rb'>lib/chef/provider/ifconfig.rb:46</a></td>
+      <td>Block cyclomatic complexity is 14.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron.rb'>lib/chef/provider/cron.rb:48</a></td>
+      <td>Block cyclomatic complexity is 13.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron.rb'>lib/chef/provider/cron.rb:113</a></td>
+      <td>Block cyclomatic complexity is 6.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron.rb'>lib/chef/provider/cron.rb:158</a></td>
+      <td>Block cyclomatic complexity is 6.  It should be 4 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/role.rb'>lib/chef/role.rb:31</a></td>
+      <td>Class "Chef" has 309 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/role.rb'>lib/chef/role.rb:32</a></td>
+      <td>Class "Role" has 307 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:29</a></td>
+      <td>Class "Chef" has 489 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:30</a></td>
+      <td>Class "Knife" has 487 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:32</a></td>
+      <td>Class "Chef" has 1048 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:115</a></td>
+      <td>Class "CookbookVersion" has 964 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/environment.rb'>lib/chef/environment.rb:29</a></td>
+      <td>Class "Chef" has 423 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/environment.rb'>lib/chef/environment.rb:30</a></td>
+      <td>Class "Environment" has 421 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:21</a></td>
+      <td>Class "Chef" has 344 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:22</a></td>
+      <td>Class "Knife" has 342 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:23</a></td>
+      <td>Class "Ssh" has 340 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/deploy.rb'>lib/chef/resource/deploy.rb:39</a></td>
+      <td>Class "Chef" has 349 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/deploy.rb'>lib/chef/resource/deploy.rb:40</a></td>
+      <td>Class "Resource" has 347 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/deploy.rb'>lib/chef/resource/deploy.rb:51</a></td>
+      <td>Class "Deploy" has 335 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook/metadata.rb'>lib/chef/cookbook/metadata.rb:29</a></td>
+      <td>Class "Chef" has 597 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook/metadata.rb'>lib/chef/cookbook/metadata.rb:30</a></td>
+      <td>Class "Cookbook" has 595 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook/metadata.rb'>lib/chef/cookbook/metadata.rb:35</a></td>
+      <td>Class "Metadata" has 572 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/client.rb'>lib/chef/client.rb:40</a></td>
+      <td>Class "Chef" has 320 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/client.rb'>lib/chef/client.rb:44</a></td>
+      <td>Class "Client" has 315 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node/attribute.rb'>lib/chef/node/attribute.rb:23</a></td>
+      <td>Class "Chef" has 463 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node/attribute.rb'>lib/chef/node/attribute.rb:24</a></td>
+      <td>Class "Node" has 461 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node/attribute.rb'>lib/chef/node/attribute.rb:25</a></td>
+      <td>Class "Attribute" has 459 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:31</a></td>
+      <td>Class "Chef" has 360 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:35</a></td>
+      <td>Class "REST" has 355 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/rubygems.rb'>lib/chef/provider/package/rubygems.rb:39</a></td>
+      <td>Class "Chef" has 425 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/rubygems.rb'>lib/chef/provider/package/rubygems.rb:40</a></td>
+      <td>Class "Provider" has 423 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/rubygems.rb'>lib/chef/provider/package/rubygems.rb:41</a></td>
+      <td>Class "Package" has 421 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/rubygems.rb'>lib/chef/provider/package/rubygems.rb:42</a></td>
+      <td>Class "Rubygems" has 419 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:26</a></td>
+      <td>Class "Chef" has 1146 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:27</a></td>
+      <td>Class "Provider" has 1144 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:28</a></td>
+      <td>Class "Package" has 1142 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:29</a></td>
+      <td>Class "Yum" has 1140 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/deploy.rb'>lib/chef/provider/deploy.rb:24</a></td>
+      <td>Class "Chef" has 394 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/deploy.rb'>lib/chef/provider/deploy.rb:25</a></td>
+      <td>Class "Provider" has 392 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/deploy.rb'>lib/chef/provider/deploy.rb:26</a></td>
+      <td>Class "Deploy" has 390 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node.rb'>lib/chef/node.rb:41</a></td>
+      <td>Class "Chef" has 630 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node.rb'>lib/chef/node.rb:42</a></td>
+      <td>Class "Node" has 628 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource.rb'>lib/chef/resource.rb:30</a></td>
+      <td>Class "Chef" has 553 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource.rb'>lib/chef/resource.rb:31</a></td>
+      <td>Class "Resource" has 551 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/platform.rb'>lib/chef/platform.rb:35</a></td>
+      <td>Class "Chef" has 398 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/platform.rb'>lib/chef/platform.rb:36</a></td>
+      <td>Class "Platform" has 396 lines.  It should have 300 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/unix.rb'>lib/chef/shell_out/unix.rb:171</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/unix.rb'>lib/chef/shell_out/unix.rb:180</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/windows.rb'>lib/chef/shell_out/windows.rb:82</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/windows.rb'>lib/chef/shell_out/windows.rb:94</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:954</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/command/unix.rb'>lib/chef/mixin/command/unix.rb:123</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/command/unix.rb'>lib/chef/mixin/command/unix.rb:173</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/couchdb.rb'>lib/chef/couchdb.rb:30</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shef.rb'>lib/chef/shef.rb:149</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:284</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/cron.rb'>lib/chef/resource/cron.rb:52</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/cron.rb'>lib/chef/resource/cron.rb:69</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/cron.rb'>lib/chef/resource/cron.rb:86</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/cron.rb'>lib/chef/resource/cron.rb:103</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/cron.rb'>lib/chef/resource/cron.rb:120</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/cron.rb'>lib/chef/resource/cron.rb:183</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/monkey_patches/tempfile.rb'>lib/chef/monkey_patches/tempfile.rb:40</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/monkey_patches/tempfile.rb'>lib/chef/monkey_patches/tempfile.rb:60</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/monkey_patches/string.rb'>lib/chef/monkey_patches/string.rb:28</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/easy_install.rb'>lib/chef/provider/package/easy_install.rb:49</a></td>
+      <td>Rescue block should not be empty.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_uploader.rb'>lib/chef/cookbook_uploader.rb:56</a></td>
+      <td>Method "upload_cookbook" has 52 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_uploader.rb'>lib/chef/cookbook_uploader.rb:114</a></td>
+      <td>Method "uploader_function_for" has 26 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shef/ext.rb'>lib/chef/shef/ext.rb:314</a></td>
+      <td>Method "edit" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:289</a></td>
+      <td>Method "configure_chef" has 52 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife.rb'>lib/chef/knife.rb:420</a></td>
+      <td>Method "humanize_http_exception" has 27 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_loader.rb'>lib/chef/cookbook_loader.rb:61</a></td>
+      <td>Method "load_cookbooks" has 25 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/unix.rb'>lib/chef/shell_out/unix.rb:16</a></td>
+      <td>Method "run_command" has 49 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/unix.rb'>lib/chef/shell_out/unix.rb:182</a></td>
+      <td>Method "fork_subprocess" has 22 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out/windows.rb'>lib/chef/shell_out/windows.rb:33</a></td>
+      <td>Method "run_command" has 36 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:420</a></td>
+      <td>Method "initialize" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:578</a></td>
+      <td>Method "segment_filenames" has 24 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:617</a></td>
+      <td>Method "preferred_manifest_record" has 30 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:659</a></td>
+      <td>Method "relative_filenames_in_preferred_directory" has 35 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:700</a></td>
+      <td>Method "preferred_manifest_records_for_directory" has 28 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:735</a></td>
+      <td>Method "preferences_for_path" has 26 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_version.rb'>lib/chef/cookbook_version.rb:986</a></td>
+      <td>Method "generate_manifest" has 62 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/util/file_edit.rb'>lib/chef/util/file_edit.rb:91</a></td>
+      <td>Method "search_match" has 27 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/util/windows/net_group.rb'>lib/chef/util/windows/net_group.rb:48</a></td>
+      <td>Method "local_get_members" has 29 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/language_include_attribute.rb'>lib/chef/mixin/language_include_attribute.rb:30</a></td>
+      <td>Method "include_attribute" has 24 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/command/unix.rb'>lib/chef/mixin/command/unix.rb:30</a></td>
+      <td>Method "popen4" has 179 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/command/windows.rb'>lib/chef/mixin/command/windows.rb:31</a></td>
+      <td>Method "popen4" has 39 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/params_validate.rb'>lib/chef/mixin/params_validate.rb:47</a></td>
+      <td>Method "validate" has 29 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/recipe_definition_dsl_core.rb'>lib/chef/mixin/recipe_definition_dsl_core.rb:36</a></td>
+      <td>Method "method_missing" has 37 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/create_path.rb'>lib/chef/mixin/create_path.rb:31</a></td>
+      <td>Method "create_path" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/command.rb'>lib/chef/mixin/command.rb:137</a></td>
+      <td>Method "output_of_command" has 34 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/run_list/run_list_item.rb'>lib/chef/run_list/run_list_item.rb:28</a></td>
+      <td>Method "initialize" has 33 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/couchdb.rb'>lib/chef/couchdb.rb:46</a></td>
+      <td>Method "create_id_map" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/couchdb.rb'>lib/chef/couchdb.rb:98</a></td>
+      <td>Method "store" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/couchdb.rb'>lib/chef/couchdb.rb:138</a></td>
+      <td>Method "delete" has 28 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/certificate.rb'>lib/chef/certificate.rb:32</a></td>
+      <td>Method "generate_signing_ca" has 47 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/certificate.rb'>lib/chef/certificate.rb:88</a></td>
+      <td>Method "gen_keypair" has 40 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/certificate.rb'>lib/chef/certificate.rb:131</a></td>
+      <td>Method "gen_validation_key" has 32 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/certificate.rb'>lib/chef/certificate.rb:167</a></td>
+      <td>Method "create_validation_key" has 22 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/daemon.rb'>lib/chef/daemon.rb:33</a></td>
+      <td>Method "daemonize" has 22 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/daemon.rb'>lib/chef/daemon.rb:144</a></td>
+      <td>Method "_change_privilege" has 24 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/environment.rb'>lib/chef/environment.rb:182</a></td>
+      <td>Method "update_from_params" has 27 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/streaming_cookbook_uploader.rb'>lib/chef/streaming_cookbook_uploader.rb:29</a></td>
+      <td>Method "make_request" has 91 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/streaming_cookbook_uploader.rb'>lib/chef/streaming_cookbook_uploader.rb:166</a></td>
+      <td>Method "read" has 28 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider.rb'>lib/chef/provider.rb:84</a></td>
+      <td>Method "build_from_file" has 35 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/application.rb'>lib/chef/application.rb:31</a></td>
+      <td>Method "initialize" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/file_cache.rb'>lib/chef/file_cache.rb:65</a></td>
+      <td>Method "move_to" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_site_streaming_uploader.rb'>lib/chef/cookbook_site_streaming_uploader.rb:37</a></td>
+      <td>Method "create_build_dir" has 26 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_site_streaming_uploader.rb'>lib/chef/cookbook_site_streaming_uploader.rb:74</a></td>
+      <td>Method "make_request" has 91 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_site_streaming_uploader.rb'>lib/chef/cookbook_site_streaming_uploader.rb:211</a></td>
+      <td>Method "read" has 28 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/client_bulk_delete.rb'>lib/chef/knife/client_bulk_delete.rb:32</a></td>
+      <td>Method "run" has 28 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_delete.rb'>lib/chef/knife/cookbook_delete.rb:100</a></td>
+      <td>Method "ask_which_versions_to_delete" has 22 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/configure.rb'>lib/chef/knife/configure.rb:52</a></td>
+      <td>Method "run" has 51 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/bootstrap_context.rb'>lib/chef/knife/core/bootstrap_context.rb:57</a></td>
+      <td>Method "config_content" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/cookbook_scm_repo.rb'>lib/chef/knife/core/cookbook_scm_repo.rb:40</a></td>
+      <td>Method "sanity_check" has 24 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/node_presenter.rb'>lib/chef/knife/core/node_presenter.rb:90</a></td>
+      <td>Method "summarize" has 32 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/ui.rb'>lib/chef/knife/core/ui.rb:168</a></td>
+      <td>Method "edit_object" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/generic_presenter.rb'>lib/chef/knife/core/generic_presenter.rb:58</a></td>
+      <td>Method "format" has 22 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/generic_presenter.rb'>lib/chef/knife/core/generic_presenter.rb:123</a></td>
+      <td>Method "format_for_display" has 22 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/core/text_formatter.rb'>lib/chef/knife/core/text_formatter.rb:44</a></td>
+      <td>Method "text_format" has 25 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_site_download.rb'>lib/chef/knife/cookbook_site_download.rb:38</a></td>
+      <td>Method "run" has 25 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/status.rb'>lib/chef/knife/status.rb:41</a></td>
+      <td>Method "run" has 46 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/bootstrap.rb'>lib/chef/knife/bootstrap.rb:109</a></td>
+      <td>Method "load_template" has 25 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/tag_delete.rb'>lib/chef/knife/tag_delete.rb:33</a></td>
+      <td>Method "run" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_create.rb'>lib/chef/knife/cookbook_create.rb:81</a></td>
+      <td>Method "create_cookbook" has 92 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_create.rb'>lib/chef/knife/cookbook_create.rb:176</a></td>
+      <td>Method "create_readme" has 41 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_create.rb'>lib/chef/knife/cookbook_create.rb:220</a></td>
+      <td>Method "create_metadata" has 29 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/help.rb'>lib/chef/knife/help.rb:25</a></td>
+      <td>Method "run" has 33 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/node_bulk_delete.rb'>lib/chef/knife/node_bulk_delete.rb:32</a></td>
+      <td>Method "run" has 30 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_site_share.rb'>lib/chef/knife/cookbook_site_share.rb:39</a></td>
+      <td>Method "run" has 41 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_site_share.rb'>lib/chef/knife/cookbook_site_share.rb:83</a></td>
+      <td>Method "do_upload" has 26 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/client_create.rb'>lib/chef/knife/client_create.rb:43</a></td>
+      <td>Method "run" has 31 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_upload.rb'>lib/chef/knife/cookbook_upload.rb:70</a></td>
+      <td>Method "run" has 43 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_show.rb'>lib/chef/knife/cookbook_show.rb:53</a></td>
+      <td>Method "run" has 41 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/data_bag_create.rb'>lib/chef/knife/data_bag_create.rb:59</a></td>
+      <td>Method "run" has 30 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:126</a></td>
+      <td>Method "session_from_list" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:211</a></td>
+      <td>Method "interactive" has 26 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:258</a></td>
+      <td>Method "tmux" has 26 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:287</a></td>
+      <td>Method "macterm" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/ssh.rb'>lib/chef/knife/ssh.rb:336</a></td>
+      <td>Method "run" has 25 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_download.rb'>lib/chef/knife/cookbook_download.rb:55</a></td>
+      <td>Method "run" has 39 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_bulk_delete.rb'>lib/chef/knife/cookbook_bulk_delete.rb:35</a></td>
+      <td>Method "run" has 33 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/cookbook_site_install.rb'>lib/chef/knife/cookbook_site_install.rb:56</a></td>
+      <td>Method "run" has 50 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/role_bulk_delete.rb'>lib/chef/knife/role_bulk_delete.rb:32</a></td>
+      <td>Method "run" has 29 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/knife/search.rb'>lib/chef/knife/search.rb:77</a></td>
+      <td>Method "run" has 56 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/shell_out.rb'>lib/chef/shell_out.rb:218</a></td>
+      <td>Method "parse_options" has 27 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/deploy.rb'>lib/chef/resource/deploy.rb:55</a></td>
+      <td>Method "initialize" has 22 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/application/solo.rb'>lib/chef/application/solo.rb:121</a></td>
+      <td>Method "reconfigure" has 50 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/application/solo.rb'>lib/chef/application/solo.rb:178</a></td>
+      <td>Method "run_application" has 38 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/application/client.rb'>lib/chef/application/client.rb:155</a></td>
+      <td>Method "reconfigure" has 42 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/application/client.rb'>lib/chef/application/client.rb:211</a></td>
+      <td>Method "run_application" has 65 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook/metadata.rb'>lib/chef/cookbook/metadata.rb:94</a></td>
+      <td>Method "initialize" has 26 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook/remote_file_vendor.rb'>lib/chef/cookbook/remote_file_vendor.rb:37</a></td>
+      <td>Method "get_filename" has 37 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook/cookbook_version_loader.rb'>lib/chef/cookbook/cookbook_version_loader.rb:46</a></td>
+      <td>Method "load_cookbooks" has 22 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest/rest_request.rb'>lib/chef/rest/rest_request.rb:139</a></td>
+      <td>Method "configure_http_client" has 43 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest/rest_request.rb'>lib/chef/rest/rest_request.rb:186</a></td>
+      <td>Method "configure_http_request" has 22 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/client.rb'>lib/chef/client.rb:144</a></td>
+      <td>Method "run" has 32 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/client.rb'>lib/chef/client.rb:228</a></td>
+      <td>Method "build_node" has 41 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node/attribute.rb'>lib/chef/node/attribute.rb:89</a></td>
+      <td>Method "[]" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node/attribute.rb'>lib/chef/node/attribute.rb:258</a></td>
+      <td>Method "get_value" has 24 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node/attribute.rb'>lib/chef/node/attribute.rb:289</a></td>
+      <td>Method "determine_value" has 27 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node/attribute.rb'>lib/chef/node/attribute.rb:342</a></td>
+      <td>Method "set_value" has 22 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node/attribute.rb'>lib/chef/node/attribute.rb:382</a></td>
+      <td>Method "value_or_descend" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:70</a></td>
+      <td>Method "register" has 29 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:168</a></td>
+      <td>Method "run_request" has 42 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:214</a></td>
+      <td>Method "api_request" has 25 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:249</a></td>
+      <td>Method "streaming_request" has 26 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb:278</a></td>
+      <td>Method "retriable_rest_request" has 37 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/runner.rb'>lib/chef/runner.rb:69</a></td>
+      <td>Method "converge" has 33 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/simple.rb'>lib/chef/provider/service/simple.rb:26</a></td>
+      <td>Method "load_current_resource" has 51 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/debian.rb'>lib/chef/provider/service/debian.rb:44</a></td>
+      <td>Method "get_priority" has 24 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/arch.rb'>lib/chef/provider/service/arch.rb:67</a></td>
+      <td>Method "enable_service" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/upstart.rb'>lib/chef/provider/service/upstart.rb:56</a></td>
+      <td>Method "load_current_resource" has 53 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/freebsd.rb'>lib/chef/provider/service/freebsd.rb:27</a></td>
+      <td>Method "load_current_resource" has 77 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/user.rb'>lib/chef/provider/user.rb:46</a></td>
+      <td>Method "load_current_resource" has 36 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/file.rb'>lib/chef/provider/file.rb:182</a></td>
+      <td>Method "backup" has 26 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package.rb'>lib/chef/provider/package.rb:38</a></td>
+      <td>Method "action_install" has 26 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package.rb'>lib/chef/provider/package.rb:168</a></td>
+      <td>Method "preseed_resource" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/user/useradd.rb'>lib/chef/provider/user/useradd.rb:47</a></td>
+      <td>Method "check_lock" has 31 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/user/useradd.rb'>lib/chef/provider/user/useradd.rb:95</a></td>
+      <td>Method "universal_options" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/user/windows.rb'>lib/chef/provider/user/windows.rb:95</a></td>
+      <td>Method "set_options" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/user/pw.rb'>lib/chef/provider/user/pw.rb:69</a></td>
+      <td>Method "set_options" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/user/dscl.rb'>lib/chef/provider/user/dscl.rb:116</a></td>
+      <td>Method "modify_password" has 29 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/easy_install.rb'>lib/chef/provider/package/easy_install.rb:69</a></td>
+      <td>Method "load_current_resource" has 36 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/rpm.rb'>lib/chef/provider/package/rpm.rb:30</a></td>
+      <td>Method "load_current_resource" has 41 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/apt.rb'>lib/chef/provider/package/apt.rb:40</a></td>
+      <td>Method "check_package_state" has 42 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/pacman.rb'>lib/chef/provider/package/pacman.rb:28</a></td>
+      <td>Method "load_current_resource" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/pacman.rb'>lib/chef/provider/package/pacman.rb:52</a></td>
+      <td>Method "candidate_version" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:35</a></td>
+      <td>Method "version_parse" has 33 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:87</a></td>
+      <td>Method "rpmvercmp" has 135 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:286</a></td>
+      <td>Method "compare_versions" has 40 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:333</a></td>
+      <td>Method "initialize" has 22 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:365</a></td>
+      <td>Method "compare" has 39 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:460</a></td>
+      <td>Method "satisfy?" has 30 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:543</a></td>
+      <td>Method "push" has 35 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:675</a></td>
+      <td>Method "refresh" has 85 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:838</a></td>
+      <td>Method "version" has 28 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:927</a></td>
+      <td>Method "yum_command" has 28 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:961</a></td>
+      <td>Method "load_current_resource" has 58 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:1022</a></td>
+      <td>Method "install_package" has 37 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/yum.rb'>lib/chef/provider/package/yum.rb:1130</a></td>
+      <td>Method "parse_dependency" has 37 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/dpkg.rb'>lib/chef/provider/package/dpkg.rb:34</a></td>
+      <td>Method "load_current_resource" has 49 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/zypper.rb'>lib/chef/provider/package/zypper.rb:30</a></td>
+      <td>Method "load_current_resource" has 49 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/solaris.rb'>lib/chef/provider/package/solaris.rb:35</a></td>
+      <td>Method "load_current_resource" has 42 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/portage.rb'>lib/chef/provider/package/portage.rb:29</a></td>
+      <td>Method "load_current_resource" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package/portage.rb'>lib/chef/provider/package/portage.rb:56</a></td>
+      <td>Method "parse_emerge" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/erl_call.rb'>lib/chef/provider/erl_call.rb:36</a></td>
+      <td>Method "action_run" has 60 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/execute.rb'>lib/chef/provider/execute.rb:33</a></td>
+      <td>Method "action_run" has 27 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/route.rb'>lib/chef/provider/route.rb:63</a></td>
+      <td>Method "load_current_resource" has 36 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/route.rb'>lib/chef/provider/route.rb:130</a></td>
+      <td>Method "generate_config" has 30 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron/solaris.rb'>lib/chef/provider/cron/solaris.rb:40</a></td>
+      <td>Method "load_current_resource" has 51 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron/solaris.rb'>lib/chef/provider/cron/solaris.rb:115</a></td>
+      <td>Method "action_create" has 47 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron/solaris.rb'>lib/chef/provider/cron/solaris.rb:165</a></td>
+      <td>Method "action_delete" has 24 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/ifconfig.rb'>lib/chef/provider/ifconfig.rb:41</a></td>
+      <td>Method "load_current_resource" has 38 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/ifconfig.rb'>lib/chef/provider/ifconfig.rb:152</a></td>
+      <td>Method "generate_config" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron.rb'>lib/chef/provider/cron.rb:37</a></td>
+      <td>Method "load_current_resource" has 51 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron.rb'>lib/chef/provider/cron.rb:97</a></td>
+      <td>Method "action_create" has 54 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/cron.rb'>lib/chef/provider/cron.rb:154</a></td>
+      <td>Method "action_delete" has 27 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/link.rb'>lib/chef/provider/link.rb:40</a></td>
+      <td>Method "load_current_resource" has 26 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/link.rb'>lib/chef/provider/link.rb:117</a></td>
+      <td>Method "action_create" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/remote_file.rb'>lib/chef/provider/remote_file.rb:34</a></td>
+      <td>Method "action_create" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node.rb'>lib/chef/node.rb:152</a></td>
+      <td>Method "initialize" has 21 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource.rb'>lib/chef/resource.rb:43</a></td>
+      <td>Method "resolve_resource_reference" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource.rb'>lib/chef/resource.rb:102</a></td>
+      <td>Method "initialize" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource.rb'>lib/chef/resource.rb:405</a></td>
+      <td>Method "run_action" has 43 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource.rb'>lib/chef/resource.rb:492</a></td>
+      <td>Method "build_from_file" has 60 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/platform.rb'>lib/chef/platform.rb:41</a></td>
+      <td>Method "platforms" has 220 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/platform.rb'>lib/chef/platform.rb:266</a></td>
+      <td>Method "find" has 23 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='dark'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/platform.rb'>lib/chef/platform.rb:292</a></td>
+      <td>Method "find_platform_and_version" has 22 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+    <tr class='light'>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/platform.rb'>lib/chef/platform.rb:333</a></td>
+      <td>Method "set" has 60 lines.  It should have 20 or less.</td>
+    </tr>
+    
+  
+</table>
+<p>Generated on Thu Oct 20 17:05:40 +0530 2011</p>	
+
+    </div>
+  </body>
+</html>

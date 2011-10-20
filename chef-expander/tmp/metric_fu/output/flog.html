@@ -1,0 +1,1584 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang='en' xml:lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type' />
+    <meta content='en' http-equiv='Content-Language' />
+    <title>metrics</title>
+    <style>
+    /*
+Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.5.2
+*/
+html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym {border:0;font-variant:normal;}sup {vertical-align:text-top;}sub {vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
+
+    /* --------------------------------------------------------------
+
+   buttons.css
+   * Gives you some great CSS-only buttons.
+
+   Created by Kevin Hale [particletree.com]
+   * particletree.com/features/rediscovering-the-button-element
+
+   See Readme.txt in this folder for instructions.
+
+-------------------------------------------------------------- */
+
+button {
+  display:block;
+  float:left;
+  margin:0 0.583em 0.667em 0;
+  padding:5px 10px 5px 7px;   /* Links */
+
+  border:1px solid #dedede;
+  border-top:1px solid #eee;
+  border-left:1px solid #eee;
+
+  background-color:#f5f5f5;
+  font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+  font-size:100%;
+  line-height:130%;
+  text-decoration:none;
+  font-weight:bold;
+  color:#565656;
+  cursor:pointer;
+}
+button {
+  width:auto;
+  overflow:visible;
+  padding:4px 10px 3px 7px;   /* IE6 */
+}
+button[type] {
+  padding:4px 10px 4px 7px;   /* Firefox */
+  line-height:17px;           /* Safari */
+}
+*:first-child+html button[type] {
+  padding:4px 10px 3px 7px;   /* IE7 */
+}
+button img {
+  margin:0 3px -3px 0 !important;
+  padding:0;
+  border:none;
+  width:16px;
+  height:16px;
+  float:none;
+}
+
+
+/* Button colors
+-------------------------------------------------------------- */
+
+/* Standard */
+button:hover {
+  background-color:#dff4ff;
+  border:1px solid #c2e1ef;
+  color:#336699;
+}
+
+/* Positive */
+body .positive {
+  color:#529214;
+}
+button.positive:hover {
+  background-color:#E6EFC2;
+  border:1px solid #C6D880;
+  color:#529214;
+}
+
+/* Negative */
+body .negative {
+  color:#d12f19;
+}
+button.negative:hover {
+  background:#fbe3e4;
+  border:1px solid #fbc2c4;
+  color:#d12f19;
+}
+
+    html {
+  background-color: #e0e0e0; }
+
+body {
+  font-size: 100%;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  color: #333333; }
+
+a {
+  color: #ed1556;
+  text-decoration: none; }
+  a:hover {
+    color: #ffffff;
+    background-color: #ed1556; }
+
+#header, #content, #footer {
+  margin: 0 auto;
+  background: #eeeeee;
+  padding: 0 2em;
+  z-index: 0;
+  position: relative;
+  font-size: 1em; }
+
+#header {
+  background: #ffffff; }
+  #header h1 {
+    font-weight: bold;
+    font-size: 1.5em; }
+  #header address.watermark {
+    position: absolute;
+    font-weight: bold;
+    right: 3em;
+    top: 0;
+    font-size: .75em;
+    color: #cccccc; }
+    #header address.watermark a {
+      color: #cccccc;
+      font-weight: bold;
+      font-size: 2em; }
+      #header address.watermark a:hover {
+        background: transparent;
+        color: #aaaaaa; }
+
+#content {
+  padding-top: 1em;
+  padding-bottom: 2em; }
+  #content strong {
+    font-weight: bold; }
+  #content em {
+    font-style: italic; }
+  #content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
+    color: #4e4e4e; }
+  #content h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: .75em;
+    padding: .25em 0;
+    line-height: 1.2;
+    border-bottom: 1px solid #c0c0c0; }
+  #content h2 {
+    font-weight: bold;
+    font-size: 1.5em;
+    margin: 1em 0 .2em; }
+  #content h3 {
+    font-weight: bold;
+    font-size: 1.25em;
+    margin: .25em 0; }
+  #content h4, #content h5, #content h6 {
+    font-weight: bold;
+    margin-top: .5em; }
+  #content code, #content pre, #content textarea, #content input {
+    font-family: Monaco, Deja Vu Sans Mono, Inconsolata, Consolas, monospace; }
+  #content form p {
+    margin-top: 1em;
+    position: relative; }
+    #content form p.checkbox label {
+      margin-top: 0 !important; }
+  #content form input.text, #content form textarea {
+    width: 30em;
+    padding: .2em .4em;
+    color: #4e4e4e; }
+  #content form input.text {
+    height: 1.4em; }
+  #content form label {
+    float: left;
+    display: block;
+    margin-top: .5em;
+    width: 8em;
+    margin-right: .75em; }
+  #content form .with_errors label {
+    background: red;
+    color: white;
+    position: relative;
+    top: -.7em; }
+  #content form .with_errors.required label {
+    position: static;
+    margin-right: .25em;
+    padding: 0 .2em; }
+  #content form .with_errors input, #content form .with_errors textarea {
+    border: 2px solid #f22;
+    background: #fee;
+    color: #222222; }
+  #content form .required label {
+    float: none;
+    display: block;
+    width: auto;
+    position: relative;
+    font-weight: bold;
+    margin-top: 1em;
+    text-indent: -.65em; }
+    #content form .required label:before {
+      content: "* ";
+      color: #ed1556; }
+  #content form .required input.text {
+    width: 25.6em;
+    font-size: 24px;
+    font-weight: bold; }
+  #content form .normal {
+    margin-top: 2em; }
+  #content form h2.notifier label {
+    float: none;
+    width: auto;
+    margin-right: 0; }
+    #content form h2.notifier label .warning {
+      font-size: .5em;
+      font-weight: normal;
+      color: #999999; }
+  #content form fieldset {
+    padding-bottom: 1em;
+    margin-left: 1.35em;
+    border-bottom: 1px solid #c0c0c0;
+    margin-bottom: 1em; }
+    #content form fieldset h3 {
+      margin-top: 1em;
+      margin-bottom: 0; }
+    #content form fieldset p.normal {
+      margin-top: 1em; }
+    #content form fieldset p label {
+      width: 6.7em; }
+  #content form p.submit {
+    margin-top: 2em; }
+    #content form p.submit:after {
+      display: block;
+      clear: both;
+      float: none;
+      content: ".";
+      text-indent: -9999em;
+      text-align: left; }
+    #content form p.submit.destroy button,     #content form p.submit.manual-build button {
+      float: none;
+      display: inline; }
+    #content form p.submit.manual-build button {
+      margin-right: 0; }
+  #content #build form, #content #last_build form {
+    font-size: .75em; }
+    #content #build form p.submit,     #content #last_build form p.submit {
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      right: .5em;
+      top: 1.25em; }
+  #content .blank_slate p,   #content .error p {
+    position: relative;
+    top: .3em; }
+  #content .blank_slate h1,   #content .error h1 {
+    border-width: 0;
+    margin: 0;
+    padding: 0; }
+    #content .blank_slate h1 button,     #content .error h1 button {
+      float: none;
+      border: 0 none;
+      background: transparent;
+      display: inline;
+      color: #ed1556;
+      padding: 0.25em 0;
+      margin: 0; }
+      #content .blank_slate h1 button:hover,       #content .error h1 button:hover {
+        background: #ed1556;
+        color: #ffffff; }
+  #content .error dt {
+    margin-top: 1.4em;
+    margin-bottom: .3em;
+    font-size: 1.75em;
+    font-family: Georgia, Times New Roman, serif; }
+  #content .error dd {
+    line-height: 1.4; }
+  #content .error .backtrace {
+    margin: 1em 0;
+    overflow: scroll;
+    height: 30em;
+    border: 1px solid #c0c0c0;
+    line-height: 1.6; }
+  #content #projects {
+    margin: 1em 0 2em;
+    border-top: 1px solid #c0c0c0; }
+    #content #projects li {
+      position: relative;
+      border-bottom: 1px solid #c0c0c0; }
+      #content #projects li.odd {
+        background: #e6e6e6; }
+      #content #projects li.building {
+        background: transparent url(/spinner.gif) no-repeat scroll right; }
+      #content #projects li a {
+        font-size: 2em;
+        padding: .25em;
+        line-height: 1.2;
+        font-weight: bold;
+        display: block; }
+        #content #projects li a.success {
+          color: #337022; }
+        #content #projects li a.failed {
+          color: #ff1100; }
+      #content #projects li .meta {
+        position: absolute;
+        right: .6em;
+        top: 1.5em;
+        font-size: 0.8em;
+        color: #999999;
+        text-align: right; }
+      #content #projects li.building .meta {
+        right: 1.6em; }
+      #content #projects li.success .meta {
+        color: #337022; }
+      #content #projects li.failed .meta {
+        color: #ff1100; }
+  #content #previous_builds li a {
+    display: block;
+    padding: .25em;
+    margin-bottom: .25em;
+    border-width: 1px;
+    border-style: solid; }
+    #content #previous_builds li a strong {
+      font-size: 1.3em; }
+    #content #previous_builds li a .attribution {
+      font-size: .9em; }
+  #content #projects li.success a,   #content #previous_builds li.success a {
+    background-color: #bbf8aa;
+    border-color: #99d688;
+    color: #337022; }
+    #content #projects li.success a .attribution,     #content #previous_builds li.success a .attribution {
+      color: #77b466; }
+    #content #projects li.success a:hover,     #content #previous_builds li.success a:hover {
+      background-color: #ddffcc; }
+  #content #projects li.failed a,   #content #previous_builds li.failed a {
+    background-color: #ffbbaa;
+    border-color: #dd9988;
+    color: #ff1100; }
+    #content #projects li.failed a .attribution,     #content #previous_builds li.failed a .attribution {
+      color: #bb7766; }
+    #content #projects li.failed a:hover,     #content #previous_builds li.failed a:hover {
+      background-color: #ffddcc; }
+  #content #build, #content #last_build {
+    position: relative; }
+    #content #build h1, #content #build blockquote,     #content #last_build h1, #content #last_build blockquote {
+      border-width: 0 1px;
+      border-style: solid; }
+    #content #build h1,     #content #last_build h1 {
+      border-top-width: 1px; }
+    #content #build blockquote,     #content #last_build blockquote {
+      bottom-bottom-width: 1px;
+      line-height: 1.4; }
+    #content #build.success h1, #content #build.success blockquote,     #content #last_build.success h1, #content #last_build.success blockquote {
+      background-color: #bbf8aa;
+      border-color: #99d688 #ccffbb #ccffbb #99d688; }
+    #content #build.success h1,     #content #last_build.success h1 {
+      color: #337022; }
+    #content #build.success .meta,     #content #last_build.success .meta {
+      color: #77b466; }
+    #content #build.failed h1, #content #build.failed blockquote,     #content #last_build.failed h1, #content #last_build.failed blockquote {
+      background-color: #ffbbaa;
+      border-color: #dd9988 #ffccbb #ffccbb #dd9988; }
+    #content #build.failed h1,     #content #last_build.failed h1 {
+      color: #ff1100; }
+    #content #build.failed .meta,     #content #last_build.failed .meta {
+      color: #bb7766; }
+    #content #build h1,     #content #last_build h1 {
+      margin-top: .5em;
+      margin-bottom: 0;
+      padding: .25em;
+      color: #337022; }
+    #content #build blockquote,     #content #last_build blockquote {
+      padding: .75em;
+      margin-bottom: 2em; }
+      #content #build blockquote .meta,       #content #last_build blockquote .meta {
+        margin-top: 1em;
+        display: block;
+        font-size: .9em; }
+    #content #build pre.output,     #content #last_build pre.output {
+      background: #111;
+      color: #fff;
+      padding: .5em;
+      overflow: auto;
+      max-height: 50em;
+      font-size: .825em; }
+      #content #build pre.output .color30,       #content #last_build pre.output .color30 {
+        color: #333; }
+      #content #build pre.output .color31,       #content #last_build pre.output .color31 {
+        color: #e33; }
+      #content #build pre.output .color32,       #content #last_build pre.output .color32 {
+        color: #3e3; }
+      #content #build pre.output .color33,       #content #last_build pre.output .color33 {
+        color: #ee3; }
+      #content #build pre.output .color34,       #content #last_build pre.output .color34 {
+        color: #33e; }
+      #content #build pre.output .color35,       #content #last_build pre.output .color35 {
+        color: #e3e; }
+      #content #build pre.output .color36,       #content #last_build pre.output .color36 {
+        color: #3ee; }
+      #content #build pre.output .color37,       #content #last_build pre.output .color37 {
+        color: #fff; }
+  #content #push_path {
+    display: block;
+    margin-top: 1em;
+    margin-left: 2em; }
+
+a.success {
+  color: #bbf8aa; }
+  a.success:hover {
+    background-color: #bbf8aa;
+    color: white; }
+a.failed {
+  color: #ffbbaa; }
+  a.failed:hover {
+    background-color: #ffbbaa;
+    color: white; }
+
+#footer {
+  padding: 1.5em 2.5em;
+  border-top: 1px solid #ccc;
+  font-size: .8em;
+  color: #666;
+  text-align: right; }
+  #footer strong {
+    font-weight: bold; }
+    
+    table {
+  margin-top: 20px;
+  border-collapse: collapse;
+  border: 1px solid #666;
+  background: #fff;
+  margin-bottom: 20px;
+}
+
+table tr.light {
+   background: #fff;
+}
+
+table tr.dark {
+  background: #f9f9f9;
+}
+
+table tr:hover {
+  background: #FFFFC0;
+}
+
+table td, table th {
+  padding: 4px;
+  font-size: 11px;
+}
+table th {
+  text-align: center;
+  color: #337022;
+  background: #DDFFCC;
+  font-weight: bold;
+  border: #99D688 1px solid;
+}
+
+table td {
+  border: #d0d0d0 1px solid;
+}
+
+table td.score {
+  text-align: right;
+}
+
+.warning {
+  background: yellow;
+}
+.rcov_code td {
+  border-bottom: 1px solid #ddd ;
+  padding: 0;
+  margin: 0;
+}
+.rcov_code tr {
+  border: 0px;
+  padding:0px;
+  margin: 0px;
+}
+.rcov_code pre {
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+}
+.rcov_run {}
+.rcov_not_run {
+  background-color: #d88;
+}
+.rcov_run a, .rcov_not_run a {
+  text-decoration: none;
+}
+.rcov_run a {
+  color: #333;
+}
+.rcov_not_run a {
+  color: #000;
+}
+.rcov_overflow {
+  overflow: auto;
+  font-size: 50%;
+}
+
+    </style>
+    <link REL="SHORTCUT ICON" HREF="/favicon.ico">
+  </head>
+  <body>
+    <div id='header'>
+      <h1><a href="/">metrics</a> | <a href="index.html">expander</a></h1>
+      <address class='watermark'>
+        built with
+        <a href='http://metric-fu.rubyforge.org/'>metric-fu</a>
+      </address>
+    </div>
+    <div id='content'>
+      <h3>Flog Results</h3>
+<p><a href='http://ruby.sadi.st/Flog.html'>Flog</a> measures code complexity.</p>
+
+<img src="flog.png?Thu Oct 20 18:08:56 +0530 2011">
+
+<h2>Total Flog score for all methods: 1929.9</h2>
+<h2>Average Flog score for all methods: 148.5</h2>
+
+<table>
+  <tr>
+    <th>File</th>
+    <th>Total score</th>
+    <th>Methods</th>
+    <th>Average score</th>
+    <th>Highest score</th>
+  </tr>
+    
+    <tr>
+      <td><a href="#_lib_chef_expander_control_rb">/lib/chef/expander/control.rb</a></td>
+      <td>287</td>
+      <td>1</td>
+      <td>22</td>
+      <td>67</td>
+    </tr>
+  
+    <tr>
+      <td><a href="#_lib_chef_expander_vnode_supervisor_rb">/lib/chef/expander/vnode_supervisor.rb</a></td>
+      <td>285</td>
+      <td>1</td>
+      <td>11</td>
+      <td>52</td>
+    </tr>
+  
+    <tr>
+      <td><a href="#_lib_chef_expander_configuration_rb">/lib/chef/expander/configuration.rb</a></td>
+      <td>358</td>
+      <td>1</td>
+      <td>12</td>
+      <td>50</td>
+    </tr>
+  
+    <tr>
+      <td><a href="#_lib_chef_expander_cluster_supervisor_rb">/lib/chef/expander/cluster_supervisor.rb</a></td>
+      <td>118</td>
+      <td>1</td>
+      <td>15</td>
+      <td>42</td>
+    </tr>
+  
+    <tr>
+      <td><a href="#_lib_chef_expander_daemonizable_rb">/lib/chef/expander/daemonizable.rb</a></td>
+      <td>159</td>
+      <td>1</td>
+      <td>12</td>
+      <td>37</td>
+    </tr>
+  
+    <tr>
+      <td><a href="#_lib_chef_expander_solrizer_rb">/lib/chef/expander/solrizer.rb</a></td>
+      <td>227</td>
+      <td>1</td>
+      <td>11</td>
+      <td>36</td>
+    </tr>
+  
+    <tr>
+      <td><a href="#_lib_chef_expander_vnode_rb">/lib/chef/expander/vnode.rb</a></td>
+      <td>94</td>
+      <td>1</td>
+      <td>10</td>
+      <td>34</td>
+    </tr>
+  
+    <tr>
+      <td><a href="#_lib_chef_expander_vnode_table_rb">/lib/chef/expander/vnode_table.rb</a></td>
+      <td>72</td>
+      <td>1</td>
+      <td>8</td>
+      <td>29</td>
+    </tr>
+  
+    <tr>
+      <td><a href="#_lib_chef_expander_node_rb">/lib/chef/expander/node.rb</a></td>
+      <td>177</td>
+      <td>1</td>
+      <td>8</td>
+      <td>23</td>
+    </tr>
+  
+    <tr>
+      <td><a href="#_lib_chef_expander_logger_rb">/lib/chef/expander/logger.rb</a></td>
+      <td>102</td>
+      <td>1</td>
+      <td>9</td>
+      <td>22</td>
+    </tr>
+  
+    <tr>
+      <td><a href="#_lib_chef_expander_flattener_rb">/lib/chef/expander/flattener.rb</a></td>
+      <td>47</td>
+      <td>1</td>
+      <td>8</td>
+      <td>17</td>
+    </tr>
+  
+    <tr>
+      <td><a href="#_lib_chef_expander_loggable_rb">/lib/chef/expander/loggable.rb</a></td>
+      <td>5</td>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+    </tr>
+  
+    <tr>
+      <td><a href="#_lib_chef_expander_rb">/lib/chef/expander.rb</a></td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  
+</table>
+
+
+  <h2 id="_lib_chef_expander_control_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander/control.rb'>/lib/chef/expander/control.rb</a></h2>
+    
+      <p>Chef::Expander::Control#log_level lib/chef/expander/control.rb:174</p>
+      <p>Total Score: 67.4</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>16.2</td>
+            <td>  assignment</td>
+          </tr>
+        
+          <tr>
+            <td>11.1</td>
+            <td>  []</td>
+          </tr>
+        
+          <tr>
+            <td>8.4</td>
+            <td>  <<</td>
+          </tr>
+        
+          <tr>
+            <td>7.3</td>
+            <td>  branch</td>
+          </tr>
+        
+          <tr>
+            <td>5.2</td>
+            <td>  color</td>
+          </tr>
+        
+          <tr>
+            <td>3.4</td>
+            <td>  stop</td>
+          </tr>
+        
+          <tr>
+            <td>2.8</td>
+            <td>  puts</td>
+          </tr>
+        
+          <tr>
+            <td>2.6</td>
+            <td>  new</td>
+          </tr>
+        
+          <tr>
+            <td>2.4</td>
+            <td>  to_s</td>
+          </tr>
+        
+          <tr>
+            <td>1.9</td>
+            <td>  exclusive_control_queue_name</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  parse</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  synchronize</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  exclusive_control_queue</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  join</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  encode</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  config</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  exit</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  add_timer</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  local_node</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  subscribe</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  broadcast_message</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  amqp_config</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  list</td>
+          </tr>
+        
+          <tr>
+            <td>1.3</td>
+            <td>  include?</td>
+          </tr>
+        
+          <tr>
+            <td>1.3</td>
+            <td>  start</td>
+          </tr>
+        
+          <tr>
+            <td>1.3</td>
+            <td>  shift</td>
+          </tr>
+        
+          <tr>
+            <td>1.3</td>
+            <td>  first</td>
+          </tr>
+        
+          <tr>
+            <td>1.3</td>
+            <td>  lit_fixnum</td>
+          </tr>
+        
+      </table>
+    
+
+  <h2 id="_lib_chef_expander_vnode_supervisor_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander/vnode_supervisor.rb'>/lib/chef/expander/vnode_supervisor.rb</a></h2>
+    
+      <p>Chef::Expander::VNodeSupervisor#process_control_message lib/chef/expander/vnode_supervisor.rb:199</p>
+      <p>Total Score: 51.7</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>18.6</td>
+            <td>  branch</td>
+          </tr>
+        
+          <tr>
+            <td>12.9</td>
+            <td>  []</td>
+          </tr>
+        
+          <tr>
+            <td>5.2</td>
+            <td>  log</td>
+          </tr>
+        
+          <tr>
+            <td>4.6</td>
+            <td>  error</td>
+          </tr>
+        
+          <tr>
+            <td>2.9</td>
+            <td>  assignment</td>
+          </tr>
+        
+          <tr>
+            <td>1.8</td>
+            <td>  class</td>
+          </tr>
+        
+          <tr>
+            <td>1.8</td>
+            <td>  raise</td>
+          </tr>
+        
+          <tr>
+            <td>1.8</td>
+            <td>  release_vnode</td>
+          </tr>
+        
+          <tr>
+            <td>1.8</td>
+            <td>  backtrace</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  set_log_level</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  publish_vnode_table</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  inspect</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  publish_status_to</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  update_table</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  recover_vnode</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  spawn_vnode</td>
+          </tr>
+        
+          <tr>
+            <td>1.6</td>
+            <td>  join</td>
+          </tr>
+        
+          <tr>
+            <td>1.6</td>
+            <td>  name</td>
+          </tr>
+        
+          <tr>
+            <td>1.6</td>
+            <td>  message</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  parse_symbolic</td>
+          </tr>
+        
+      </table>
+    
+
+  <h2 id="_lib_chef_expander_configuration_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander/configuration.rb'>/lib/chef/expander/configuration.rb</a></h2>
+    
+      <p>Chef::Expander::Configuration::CLI#none</p>
+      <p>Total Score: 49.5</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>28.0</td>
+            <td>  assignment</td>
+          </tr>
+        
+          <tr>
+            <td>15.8</td>
+            <td>  branch</td>
+          </tr>
+        
+          <tr>
+            <td>11.2</td>
+            <td>  on</td>
+          </tr>
+        
+          <tr>
+            <td>7.2</td>
+            <td>  puts</td>
+          </tr>
+        
+          <tr>
+            <td>4.0</td>
+            <td>  version</td>
+          </tr>
+        
+          <tr>
+            <td>3.6</td>
+            <td>  exit</td>
+          </tr>
+        
+          <tr>
+            <td>3.4</td>
+            <td>  to_i</td>
+          </tr>
+        
+          <tr>
+            <td>3.2</td>
+            <td>  on_tail</td>
+          </tr>
+        
+          <tr>
+            <td>2.8</td>
+            <td>  new</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  expand_path</td>
+          </tr>
+        
+          <tr>
+            <td>0.5</td>
+            <td>  lit_fixnum</td>
+          </tr>
+        
+      </table>
+    
+
+  <h2 id="_lib_chef_expander_cluster_supervisor_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander/cluster_supervisor.rb'>/lib/chef/expander/cluster_supervisor.rb</a></h2>
+    
+      <p>Chef::Expander::ClusterSupervisor#maintain_workers lib/chef/expander/cluster_supervisor.rb:102</p>
+      <p>Total Score: 42.1</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>22.9</td>
+            <td>  assignment</td>
+          </tr>
+        
+          <tr>
+            <td>13.7</td>
+            <td>  branch</td>
+          </tr>
+        
+          <tr>
+            <td>7.6</td>
+            <td>  []</td>
+          </tr>
+        
+          <tr>
+            <td>5.6</td>
+            <td>  each</td>
+          </tr>
+        
+          <tr>
+            <td>3.7</td>
+            <td>  log</td>
+          </tr>
+        
+          <tr>
+            <td>3.0</td>
+            <td>  waitpid2</td>
+          </tr>
+        
+          <tr>
+            <td>2.0</td>
+            <td>  exitstatus</td>
+          </tr>
+        
+          <tr>
+            <td>1.8</td>
+            <td>  error</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  start_worker</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  delete</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  info</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  kill</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  sleep</td>
+          </tr>
+        
+          <tr>
+            <td>1.0</td>
+            <td>  lit_fixnum</td>
+          </tr>
+        
+      </table>
+    
+
+  <h2 id="_lib_chef_expander_daemonizable_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander/daemonizable.rb'>/lib/chef/expander/daemonizable.rb</a></h2>
+    
+      <p>Chef::Expander::Daemonizable#set_user_and_group lib/chef/expander/daemonizable.rb:70</p>
+      <p>Total Score: 37.2</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>10.8</td>
+            <td>  config</td>
+          </tr>
+        
+          <tr>
+            <td>10.1</td>
+            <td>  branch</td>
+          </tr>
+        
+          <tr>
+            <td>6.4</td>
+            <td>  user</td>
+          </tr>
+        
+          <tr>
+            <td>5.1</td>
+            <td>  log</td>
+          </tr>
+        
+          <tr>
+            <td>3.2</td>
+            <td>  group</td>
+          </tr>
+        
+          <tr>
+            <td>3.0</td>
+            <td>  info</td>
+          </tr>
+        
+          <tr>
+            <td>2.8</td>
+            <td>  nil?</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  error</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  set_group</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  set_user</td>
+          </tr>
+        
+      </table>
+    
+
+  <h2 id="_lib_chef_expander_solrizer_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander/solrizer.rb'>/lib/chef/expander/solrizer.rb</a></h2>
+    
+      <p>Chef::Expander::Solrizer#pointyize_add lib/chef/expander/solrizer.rb:189</p>
+      <p>Total Score: 36.1</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>14.8</td>
+            <td>  <<</td>
+          </tr>
+        
+          <tr>
+            <td>9.6</td>
+            <td>  assignment</td>
+          </tr>
+        
+          <tr>
+            <td>7.8</td>
+            <td>  %</td>
+          </tr>
+        
+          <tr>
+            <td>4.0</td>
+            <td>  branch</td>
+          </tr>
+        
+          <tr>
+            <td>3.3</td>
+            <td>  fast_xs</td>
+          </tr>
+        
+          <tr>
+            <td>2.7</td>
+            <td>  each</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  now</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  flattened_object</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  to_f</td>
+          </tr>
+        
+          <tr>
+            <td>1.3</td>
+            <td>  -</td>
+          </tr>
+        
+      </table>
+    
+
+  <h2 id="_lib_chef_expander_vnode_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander/vnode.rb'>/lib/chef/expander/vnode.rb</a></h2>
+    
+      <p>Chef::Expander::VNode#start      lib/chef/expander/vnode.rb:45</p>
+      <p>Total Score: 33.8</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>9.4</td>
+            <td>  assignment</td>
+          </tr>
+        
+          <tr>
+            <td>9.1</td>
+            <td>  branch</td>
+          </tr>
+        
+          <tr>
+            <td>3.5</td>
+            <td>  log</td>
+          </tr>
+        
+          <tr>
+            <td>3.3</td>
+            <td>  queue_name</td>
+          </tr>
+        
+          <tr>
+            <td>3.2</td>
+            <td>  new</td>
+          </tr>
+        
+          <tr>
+            <td>1.8</td>
+            <td>  size</td>
+          </tr>
+        
+          <tr>
+            <td>1.8</td>
+            <td>  ack</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  run</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  abort_on_multiple_subscribe</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  supervise_consumer_count</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  debug</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  class</td>
+          </tr>
+        
+          <tr>
+            <td>1.7</td>
+            <td>  queue</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  name</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  message</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  vnode_added</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  subscribe</td>
+          </tr>
+        
+          <tr>
+            <td>1.4</td>
+            <td>  error</td>
+          </tr>
+        
+      </table>
+    
+
+  <h2 id="_lib_chef_expander_vnode_table_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander/vnode_table.rb'>/lib/chef/expander/vnode_table.rb</a></h2>
+    
+      <p>Chef::Expander::VNodeTable#leader_node lib/chef/expander/vnode_table.rb:69</p>
+      <p>Total Score: 28.8</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>8.3</td>
+            <td>  []</td>
+          </tr>
+        
+          <tr>
+            <td>7.8</td>
+            <td>  assignment</td>
+          </tr>
+        
+          <tr>
+            <td>5.1</td>
+            <td>  branch</td>
+          </tr>
+        
+          <tr>
+            <td>4.2</td>
+            <td>  min</td>
+          </tr>
+        
+          <tr>
+            <td>3.4</td>
+            <td>  empty?</td>
+          </tr>
+        
+          <tr>
+            <td>2.2</td>
+            <td>  Array</td>
+          </tr>
+        
+          <tr>
+            <td>2.0</td>
+            <td>  reject</td>
+          </tr>
+        
+          <tr>
+            <td>1.9</td>
+            <td>  <=></td>
+          </tr>
+        
+          <tr>
+            <td>1.9</td>
+            <td>  lit_fixnum</td>
+          </tr>
+        
+          <tr>
+            <td>1.8</td>
+            <td>  sort</td>
+          </tr>
+        
+          <tr>
+            <td>1.6</td>
+            <td>  first</td>
+          </tr>
+        
+      </table>
+    
+
+  <h2 id="_lib_chef_expander_node_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander/node.rb'>/lib/chef/expander/node.rb</a></h2>
+    
+      <p>Chef::Expander::Node#==          lib/chef/expander/node.rb:158</p>
+      <p>Total Score: 22.9</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>7.5</td>
+            <td>  branch</td>
+          </tr>
+        
+          <tr>
+            <td>5.3</td>
+            <td>  ==</td>
+          </tr>
+        
+          <tr>
+            <td>4.5</td>
+            <td>  respond_to?</td>
+          </tr>
+        
+          <tr>
+            <td>4.0</td>
+            <td>  pid</td>
+          </tr>
+        
+          <tr>
+            <td>4.0</td>
+            <td>  hostname_f</td>
+          </tr>
+        
+          <tr>
+            <td>3.8</td>
+            <td>  guid</td>
+          </tr>
+        
+      </table>
+    
+
+  <h2 id="_lib_chef_expander_logger_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander/logger.rb'>/lib/chef/expander/logger.rb</a></h2>
+    
+      <p>Chef::Expander::Logger#none</p>
+      <p>Total Score: 22.4</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>7.2</td>
+            <td>  branch</td>
+          </tr>
+        
+          <tr>
+            <td>6.3</td>
+            <td>  assignment</td>
+          </tr>
+        
+          <tr>
+            <td>2.6</td>
+            <td>  alias</td>
+          </tr>
+        
+          <tr>
+            <td>1.8</td>
+            <td>  to_s</td>
+          </tr>
+        
+          <tr>
+            <td>1.6</td>
+            <td>  close</td>
+          </tr>
+        
+          <tr>
+            <td>1.6</td>
+            <td>  closed?</td>
+          </tr>
+        
+          <tr>
+            <td>1.6</td>
+            <td>  respond_to?</td>
+          </tr>
+        
+          <tr>
+            <td>1.6</td>
+            <td>  upcase</td>
+          </tr>
+        
+          <tr>
+            <td>1.5</td>
+            <td>  map</td>
+          </tr>
+        
+          <tr>
+            <td>1.4</td>
+            <td>  each</td>
+          </tr>
+        
+          <tr>
+            <td>1.3</td>
+            <td>  private</td>
+          </tr>
+        
+          <tr>
+            <td>1.3</td>
+            <td>  attr_reader</td>
+          </tr>
+        
+          <tr>
+            <td>1.3</td>
+            <td>  at_exit</td>
+          </tr>
+        
+          <tr>
+            <td>1.3</td>
+            <td>  []</td>
+          </tr>
+        
+          <tr>
+            <td>1.3</td>
+            <td>  invert</td>
+          </tr>
+        
+      </table>
+    
+
+  <h2 id="_lib_chef_expander_flattener_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander/flattener.rb'>/lib/chef/expander/flattener.rb</a></h2>
+    
+      <p>Chef::Expander::Flattener#flatten_each lib/chef/expander/flattener.rb:58</p>
+      <p>Total Score: 16.5</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>7.1</td>
+            <td>  branch</td>
+          </tr>
+        
+          <tr>
+            <td>6.4</td>
+            <td>  assignment</td>
+          </tr>
+        
+          <tr>
+            <td>3.3</td>
+            <td>  flatten_each</td>
+          </tr>
+        
+          <tr>
+            <td>3.1</td>
+            <td>  add_field_value</td>
+          </tr>
+        
+          <tr>
+            <td>3.0</td>
+            <td>  each</td>
+          </tr>
+        
+          <tr>
+            <td>2.1</td>
+            <td>  to_s</td>
+          </tr>
+        
+          <tr>
+            <td>1.9</td>
+            <td>  +</td>
+          </tr>
+        
+      </table>
+    
+
+  <h2 id="_lib_chef_expander_loggable_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander/loggable.rb'>/lib/chef/expander/loggable.rb</a></h2>
+    
+      <p>Chef::Expander::Loggable#none</p>
+      <p>Total Score: 2.7</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>2.4</td>
+            <td>  assignment</td>
+          </tr>
+        
+          <tr>
+            <td>1.2</td>
+            <td>  new</td>
+          </tr>
+        
+      </table>
+    
+
+  <h2 id="_lib_chef_expander_rb"><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef-expander/lib/chef/expander.rb'>/lib/chef/expander.rb</a></h2>
+    
+      <p>Chef::Expander#none</p>
+      <p>Total Score: 0.3</p>
+      <table>
+        <tr>
+          <th>Score</th>
+          <th>Operator</th>
+        </tr>
+        
+          <tr>
+            <td>0.3</td>
+            <td>  lit_fixnum</td>
+          </tr>
+        
+      </table>
+    
+
+<p>Generated on Thu Oct 20 18:08:56 +0530 2011</p>	
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,102 @@
+   140.9: flog total
+     8.8: flog/method average
+
+    33.5: Chef::Solr::Application::Solr#run_application lib/chef/solr/application/solr.rb:203
+    14.4:   []
+     6.1:   <<
+     5.6:   branch
+     3.4:   reopen
+     1.7:   close
+     1.7:   join
+     1.5:   info
+     1.5:   exec
+     1.5:   assignment
+     1.4:   daemonize
+     1.3:   chdir
+
+    24.8: Chef::Solr::Application::Solr#none
+    16.8:   option
+     4.5:   assignment
+     4.2:   lambda
+     4.2:   branch
+     1.5:   puts
+     1.5:   to_sym
+
+    20.8: Chef::Solr::Application::Solr#assert_solr_installed! lib/chef/solr/application/solr.rb:164
+     9.0:   fatal
+     5.1:   []
+     4.0:   branch
+     1.5:   solr_jetty_home_exist?
+     1.5:   solr_data_dir_exist?
+     1.5:   exit
+     1.4:   solr_home_exist?
+     0.4:   lit_fixnum
+
+    11.4: Chef::Solr::Application::Solr#setup_application lib/chef/solr/application/solr.rb:185
+     4.4:   []
+     2.7:   assignment
+     1.4:   new
+     1.3:   change_privilege
+     1.3:   branch
+     1.3:   kind_of?
+     1.3:   assert_valid_schema!
+     1.3:   assert_solr_installed!
+
+    11.2: Chef::Solr::Application::Solr#assert_valid_schema! lib/chef/solr/application/solr.rb:176
+     4.5:   fatal
+     2.6:   branch
+     1.7:   solr_schema_version
+     1.5:   exit
+     1.4:   valid_schema_version?
+     1.4:   valid_schema_name?
+     0.4:   lit_fixnum
+
+     6.6: main#none
+     6.6:   require
+
+     5.2: Chef::Solr::Application::Solr#schema_document lib/chef/solr/application/solr.rb:124
+     2.7:   assignment
+     1.5:   schema_file_path
+     1.4:   new
+     1.3:   branch
+     1.3:   open
+
+     4.7: Chef::Solr::Application::Solr#schema_attributes lib/chef/solr/application/solr.rb:132
+     1.7:   schema_document
+     1.5:   first
+     1.3:   assignment
+     1.3:   attributes
+
+     3.1: Chef::Solr::Application::Solr#schema_file_path lib/chef/solr/application/solr.rb:119
+     1.5:   []
+     1.3:   join
+     1.3:   assignment
+
+     2.8: Chef::Solr::Application::Solr#solr_jetty_home_exist? lib/chef/solr/application/solr.rb:160
+     1.5:   []
+     1.3:   directory?
+
+     2.8: Chef::Solr::Application::Solr#solr_home_exist? lib/chef/solr/application/solr.rb:152
+     1.5:   []
+     1.3:   directory?
+
+     2.8: Chef::Solr::Application::Solr#solr_schema_name lib/chef/solr/application/solr.rb:136
+     1.5:   schema_attributes
+     1.3:   []
+
+     2.8: Chef::Solr::Application::Solr#valid_schema_version? lib/chef/solr/application/solr.rb:148
+     1.5:   solr_schema_version
+     1.3:   ==
+
+     2.8: Chef::Solr::Application::Solr#valid_schema_name? lib/chef/solr/application/solr.rb:144
+     1.5:   solr_schema_name
+     1.3:   ==
+
+     2.8: Chef::Solr::Application::Solr#solr_data_dir_exist? lib/chef/solr/application/solr.rb:156
+     1.5:   []
+     1.3:   directory?
+
+     2.8: Chef::Solr::Application::Solr#solr_schema_version lib/chef/solr/application/solr.rb:140
+     1.5:   schema_attributes
+     1.3:   []
+

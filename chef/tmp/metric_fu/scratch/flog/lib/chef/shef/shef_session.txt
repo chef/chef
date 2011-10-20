@@ -1,0 +1,201 @@
+   216.2: flog total
+     6.2: flog/method average
+
+    31.6: Shef::DoppelGangerSession#assume_identity lib/chef/shef/shef_session.rb:256
+    11.2:   puts
+     7.9:   assignment
+     3.6:   *
+     2.2:   backtrace
+     2.0:   class
+     2.0:   Array
+     1.8:   message
+     1.8:   name
+     1.8:   join
+     1.6:   session
+     1.6:   reset!
+     1.4:   branch
+     1.0:   lit_fixnum
+
+    24.0: Shef::ShefSession#reset!         lib/chef/shef/shef_session.rb:48
+     4.8:   assignment
+     3.5:   node_attributes
+     3.5:   node
+     3.0:   branch
+     1.8:   run_context
+     1.8:   client
+     1.7:   consume_attributes
+     1.6:   rebuild_node
+     1.6:   rebuild_context
+     1.6:   extend_context_node
+     1.6:   shorten_node_inspect
+     1.6:   new
+     1.6:   extend_context_recipe
+     1.4:   loading
+
+    19.7: Shef::ClientSession#rebuild_context lib/chef/shef/shef_session.rb:191
+     9.2:   new
+     7.1:   assignment
+     1.9:   []
+     1.6:   node
+     1.4:   load
+     1.4:   run_context
+     1.4:   sync_cookbooks
+     1.4:   on_create
+     1.4:   branch
+
+    18.2: Shef::SoloSession#rebuild_context lib/chef/shef/shef_session.rb:163
+     9.3:   new
+     5.7:   assignment
+     3.7:   []
+     1.4:   run_context
+     1.4:   load
+     1.4:   branch
+     1.4:   on_create
+
+    10.8: Shef::DoppelGangerClient#build_node lib/chef/shef/shef_session.rb:230
+     2.8:   assignment
+     1.6:   data
+     1.6:   node_name
+     1.6:   automatic_attrs
+     1.4:   debug
+     1.4:   consume_external_attrs
+     1.4:   find_or_create
+     1.4:   merge
+
+     7.9: Shef::ShefSession#loading        lib/chef/shef/shef_session.rb:93
+     3.1:   loading_complete
+     1.6:   raise
+     1.5:   assignment
+     1.5:   yield
+     1.4:   branch
+     1.4:   show_loading_progress
+
+     7.7: main#none
+     7.7:   require
+
+     7.5: Shef::DoppelGangerSession#rebuild_node lib/chef/shef/shef_session.rb:272
+     2.8:   assignment
+     1.4:   register
+     1.4:   build_node
+     1.4:   sync_cookbooks
+     1.4:   run_ohai
+     1.4:   new
+
+     7.4: Shef::ShefSession#show_loading_progress lib/chef/shef/shef_session.rb:105
+     3.1:   print
+     2.9:   branch
+     2.8:   assignment
+     1.7:   sleep
+     1.4:   new
+
+     6.5: Shef::ShefSession#none
+     2.6:   include
+     1.3:   private
+     1.3:   attr_reader
+     1.3:   attr_accessor
+
+     6.4: Shef::DoppelGangerClient#register lib/chef/shef/shef_session.rb:242
+     4.8:   []
+     1.4:   assignment
+     1.4:   new
+
+     6.3: Shef::ClientSession#rebuild_node lib/chef/shef/shef_session.rb:202
+     2.8:   assignment
+     1.4:   register
+     1.4:   build_node
+     1.4:   run_ohai
+     1.4:   new
+
+     5.1: Shef::ShefSession::inspect       lib/chef/shef/shef_session.rb:124
+     1.7:   object_id
+     1.5:   to_s
+     1.5:   name
+     0.4:   lit_fixnum
+
+     5.0: Shef::SoloSession#rebuild_node   lib/chef/shef/shef_session.rb:173
+     2.8:   assignment
+     1.4:   run_ohai
+     1.4:   build_node
+     1.4:   new
+
+     5.0: Shef::StandAloneSession#rebuild_node lib/chef/shef/shef_session.rb:146
+     2.8:   assignment
+     1.4:   run_ohai
+     1.4:   build_node
+     1.4:   new
+
+     4.8: Shef::ShefSession#save_node      lib/chef/shef/shef_session.rb:83
+     1.8:   class
+     1.6:   name
+     1.4:   raise
+
+     4.6: Shef::StandAloneSession#rebuild_context lib/chef/shef/shef_session.rb:139
+     3.0:   new
+     1.4:   load
+     1.4:   assignment
+
+     4.2: Shef::ShefSession#loading_complete lib/chef/shef/shef_session.rb:116
+     2.8:   assignment
+     1.4:   join
+     1.4:   print
+     1.4:   branch
+
+     3.2: Shef::ShefSession::session_type  lib/chef/shef/shef_session.rb:33
+     2.9:   assignment
+     1.4:   branch
+
+     3.1: Shef::DoppelGangerClient#initialize lib/chef/shef/shef_session.rb:217
+     2.8:   assignment
+     1.4:   new
+
+     3.0: Shef::ShefSession#resource_collection lib/chef/shef/shef_session.rb:67
+     1.6:   run_context
+     1.4:   resource_collection
+
+     2.6: Shef::ClientSession#none
+     1.3:   private
+     1.3:   session_type
+
+     2.6: Shef::SoloSession#none
+     1.3:   private
+     1.3:   session_type
+
+     2.6: Shef::StandAloneSession#none
+     1.3:   session_type
+     1.3:   private
+
+     2.0: Shef::ShefSession#run_context    lib/chef/shef/shef_session.rb:71
+     1.4:   assignment
+     1.4:   rebuild_context
+
+     2.0: Shef::ShefSession#node_attributes= lib/chef/shef/shef_session.rb:62
+     1.4:   assignment
+     1.4:   consume_attributes
+
+     1.4: Shef::ShefSession#rebuild_context lib/chef/shef/shef_session.rb:87
+     1.4:   raise
+
+     1.4: Shef::ShefSession#rebuild_node   lib/chef/shef/shef_session.rb:129
+     1.4:   raise
+
+     1.4: Shef::ShefSession#initialize     lib/chef/shef/shef_session.rb:40
+     1.4:   assignment
+
+     1.4: Shef::DoppelGangerClient#run_ohai lib/chef/shef/shef_session.rb:224
+     1.4:   require_plugin
+
+     1.4: Shef::ClientSession#save_node    lib/chef/shef/shef_session.rb:187
+     1.4:   save_node
+
+     1.4: Shef::SoloSession#definitions    lib/chef/shef/shef_session.rb:159
+     1.4:   definitions
+
+     1.4: Shef::DoppelGangerSession#save_node lib/chef/shef/shef_session.rb:252
+     1.4:   puts
+
+     1.3: Shef::DoppelGangerClient#none
+     1.3:   attr_reader
+
+     1.3: Shef::DoppelGangerSession#none
+     1.3:   session_type
+

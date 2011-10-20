@@ -1,0 +1,21 @@
+    30.3: flog total
+    15.2: flog/method average
+
+    29.2: Chef::Mixin::LanguageIncludeAttribute#include_attribute lib/chef/mixin/language_include_attribute.rb:30
+     9.9:   assignment
+     6.6:   []
+     5.2:   branch
+     3.4:   run_state
+     3.2:   to_sym
+     3.2:   load_attribute_by_short_filename
+     3.0:   debug
+     1.4:   has_key?
+     1.4:   match
+     1.4:   flatten
+     1.2:   kind_of?
+     1.2:   each
+     1.0:   lit_fixnum
+
+     1.1: main#none
+     1.1:   require
+

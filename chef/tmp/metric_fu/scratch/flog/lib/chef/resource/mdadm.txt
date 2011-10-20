@@ -1,0 +1,31 @@
+    20.9: flog total
+     3.0: flog/method average
+
+    10.6: Chef::Resource::Mdadm#initialize lib/chef/resource/mdadm.rb:25
+    10.4:   assignment
+     1.3:   push
+     0.7:   lit_fixnum
+
+     1.8: Chef::Resource::Mdadm#exists     lib/chef/resource/mdadm.rb:55
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Mdadm#level      lib/chef/resource/mdadm.rb:63
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Mdadm#chunk      lib/chef/resource/mdadm.rb:39
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Mdadm#devices    lib/chef/resource/mdadm.rb:47
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Mdadm#raid_device lib/chef/resource/mdadm.rb:71
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.1: main#none
+     1.1:   require
+

@@ -1,0 +1,88 @@
+   124.8: flog total
+    11.3: flog/method average
+
+    31.3: Chef::FileCache#find             lib/chef/file_cache.rb:156
+     7.2:   []
+     5.6:   file_cache_path
+     3.7:   branch
+     3.7:   assignment
+     2.8:   first
+     2.6:   escape
+     2.4:   +
+     2.2:   join
+     2.0:   <<
+     1.9:   file?
+     1.8:   each
+     1.8:   new
+     0.6:   lit_fixnum
+
+    20.5: Chef::FileCache#move_to          lib/chef/file_cache.rb:65
+     4.6:   join
+     3.6:   assignment
+     3.6:   branch
+     2.3:   create_cache_path
+     1.9:   raise
+     1.9:   mv
+     1.9:   exists?
+     1.9:   writable?
+     1.8:   pop
+     1.8:   split
+     1.8:   validate
+
+    16.7: Chef::FileCache#store            lib/chef/file_cache.rb:39
+     7.3:   assignment
+     4.0:   join
+     1.9:   print
+     1.8:   pop
+     1.8:   open
+     1.8:   create_cache_path
+     1.8:   split
+     1.8:   branch
+     1.8:   validate
+
+    14.0: Chef::FileCache#none
+     6.8:   include
+     5.5:   sclass
+     1.7:   private
+
+    10.5: Chef::FileCache#load             lib/chef/file_cache.rb:102
+     3.6:   branch
+     3.6:   assignment
+     1.9:   read
+     1.9:   raise
+     1.8:   exists?
+     1.8:   create_cache_path
+     1.8:   validate
+
+     8.9: Chef::FileCache#create_cache_path lib/chef/file_cache.rb:201
+     3.6:   assignment
+     2.2:   file_cache_path
+     2.0:   join
+     1.9:   create_path
+     1.8:   expand_path
+     1.8:   branch
+
+     7.7: Chef::FileCache#delete           lib/chef/file_cache.rb:128
+     1.9:   unlink
+     1.8:   exists?
+     1.8:   create_cache_path
+     1.8:   assignment
+     1.8:   branch
+     1.8:   validate
+
+     6.0: Chef::FileCache#has_key?         lib/chef/file_cache.rb:175
+     1.8:   exists?
+     1.8:   assignment
+     1.8:   create_cache_path
+     1.8:   branch
+     1.8:   validate
+
+     5.5: main#none
+     5.5:   require
+
+     1.8: Chef::FileCache#file_cache_path  lib/chef/file_cache.rb:212
+     1.8:   []
+
+     1.8: Chef::FileCache#list             lib/chef/file_cache.rb:148
+     1.8:   find
+

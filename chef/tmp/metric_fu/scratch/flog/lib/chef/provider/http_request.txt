@@ -1,0 +1,84 @@
+    82.1: flog total
+     9.1: flog/method average
+
+    16.3: Chef::Provider::HttpRequest#action_post lib/chef/provider/http_request.rb:80
+     3.2:   url
+     2.6:   assignment
+     1.5:   inspect
+     1.5:   create_url
+     1.5:   message
+     1.5:   headers
+     1.3:   check_message
+     1.3:   debug
+     1.3:   updated_by_last_action
+     1.3:   info
+     1.3:   run_request
+     0.4:   lit_fixnum
+
+    14.8: Chef::Provider::HttpRequest#action_put lib/chef/provider/http_request.rb:64
+     3.2:   url
+     2.6:   assignment
+     1.5:   create_url
+     1.5:   message
+     1.5:   headers
+     1.3:   check_message
+     1.3:   debug
+     1.3:   updated_by_last_action
+     1.3:   info
+     1.3:   run_request
+     0.4:   lit_fixnum
+
+    14.8: Chef::Provider::HttpRequest#action_get lib/chef/provider/http_request.rb:48
+     3.2:   url
+     2.6:   assignment
+     1.5:   create_url
+     1.5:   message
+     1.5:   headers
+     1.3:   check_message
+     1.3:   debug
+     1.3:   updated_by_last_action
+     1.3:   info
+     1.3:   run_request
+     0.4:   lit_fixnum
+
+    14.8: Chef::Provider::HttpRequest#action_head lib/chef/provider/http_request.rb:32
+     3.2:   url
+     2.6:   assignment
+     1.5:   create_url
+     1.5:   message
+     1.5:   headers
+     1.3:   check_message
+     1.3:   debug
+     1.3:   updated_by_last_action
+     1.3:   info
+     1.3:   run_request
+     0.4:   lit_fixnum
+
+    11.8: Chef::Provider::HttpRequest#action_delete lib/chef/provider/http_request.rb:96
+     3.2:   url
+     1.5:   headers
+     1.5:   create_url
+     1.3:   info
+     1.3:   assignment
+     1.3:   debug
+     1.3:   updated_by_last_action
+     1.3:   run_request
+     0.4:   lit_fixnum
+
+     3.1: Chef::Provider::HttpRequest#load_current_resource lib/chef/provider/http_request.rb:27
+     1.5:   url
+     1.3:   assignment
+     1.3:   new
+
+     3.0: Chef::Provider::HttpRequest#check_message lib/chef/provider/http_request.rb:112
+     1.4:   call
+     1.3:   branch
+     1.3:   kind_of?
+
+     2.4: Chef::Provider::HttpRequest#none
+     1.2:   private
+     1.2:   attr_accessor
+
+     1.1: main#none
+     1.1:   require
+

@@ -1,0 +1,24 @@
+    39.9: flog total
+    13.3: flog/method average
+
+    25.3: Dir#glob                         lib/chef/monkey_patches/dir.rb:24
+    11.1:   branch
+     7.5:   assignment
+     4.0:   is_a?
+     3.6:   inject
+     2.1:   glob_
+     2.1:   empty?
+     2.0:   flatten
+     2.0:   nil?
+     1.9:   gsub!
+     1.9:   raise
+     1.9:   +
+
+    12.3: Dir#none
+     6.8:   alias_method
+     5.5:   sclass
+
+     2.3: main#none
+     2.0:   branch
+     1.1:   <
+

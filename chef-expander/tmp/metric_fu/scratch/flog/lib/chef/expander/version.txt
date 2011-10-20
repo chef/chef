@@ -1,0 +1,14 @@
+    15.0: flog total
+     7.5: flog/method average
+
+    13.9: Chef::Expander::version          lib/chef/expander/version.rb:28
+    11.5:   assignment
+     4.5:   branch
+     1.8:   read
+     1.7:   popen3
+     1.5:   strip
+     1.4:   empty?
+
+     1.1: main#none
+     1.1:   require
+

@@ -1,0 +1,32 @@
+    46.6: flog total
+    15.5: flog/method average
+
+    40.9: Chef::Provider::Execute#action_run lib/chef/provider/execute.rb:33
+    17.6:   assignment
+    15.8:   branch
+     2.7:   group
+     2.7:   user
+     2.7:   environment
+     2.7:   returns
+     2.7:   umask
+     2.7:   cwd
+     1.6:   debug
+     1.5:   []
+     1.5:   info?
+     1.5:   command
+     1.4:   exists?
+     1.4:   timeout
+     1.4:   tty?
+     1.3:   updated_by_last_action
+     1.3:   creates
+     1.3:   shell_out!
+     1.3:   info
+     1.3:   to_s
+     0.4:   lit_fixnum
+
+     3.3: main#none
+     3.3:   require
+
+     2.4: Chef::Provider::Execute#none
+     2.4:   include
+

@@ -1,0 +1,51 @@
+    37.8: flog total
+     3.1: flog/method average
+
+    18.3: Chef::Resource::Execute#initialize lib/chef/resource/execute.rb:25
+    18.2:   assignment
+     1.3:   push
+     0.3:   lit_fixnum
+
+     1.8: Chef::Resource::Execute#group    lib/chef/resource/execute.rb:83
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Execute#command  lib/chef/resource/execute.rb:51
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Execute#umask    lib/chef/resource/execute.rb:43
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Execute#creates  lib/chef/resource/execute.rb:59
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Execute#returns  lib/chef/resource/execute.rb:99
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Execute#path     lib/chef/resource/execute.rb:91
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Execute#cwd      lib/chef/resource/execute.rb:67
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Execute#user     lib/chef/resource/execute.rb:115
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Execute#environment lib/chef/resource/execute.rb:75
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Execute#timeout  lib/chef/resource/execute.rb:107
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.1: main#none
+     1.1:   require
+

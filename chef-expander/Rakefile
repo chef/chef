@@ -21,6 +21,7 @@ require 'lib/chef/expander/version'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require '../chef/tasks/rspec.rb'
+require 'metric_fu'
 
 spec = eval(File.read("chef-expander.gemspec"))
 

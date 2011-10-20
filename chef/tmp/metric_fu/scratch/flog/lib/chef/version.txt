@@ -1,0 +1,7 @@
+     3.9: flog total
+     3.9: flog/method average
+
+     3.9: Chef#none
+     2.6:   dirname
+     1.3:   expand_path
+

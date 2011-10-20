@@ -1,0 +1,32 @@
+    47.6: flog total
+     9.5: flog/method average
+
+    15.0: Chef::Util::Windows#lpwstr_to_s  lib/chef/util/windows.rb:40
+     4.9:   *
+     3.4:   []
+     1.7:   unpack
+     1.5:   chr
+     1.3:   wcscpy
+     1.3:   wide_to_multi
+     1.3:   assignment
+     0.9:   lit_fixnum
+
+    13.5: Chef::Util::Windows#none
+    12.0:   include
+     1.2:   protected
+     0.3:   lit_fixnum
+
+     7.7: main#none
+     7.7:   require
+
+     6.9: Chef::Util::Windows#dword_to_i   lib/chef/util/windows.rb:46
+     3.2:   []
+     2.0:   *
+     1.6:   unpack
+     1.3:   branch
+
+     4.5: Chef::Util::Windows#str_to_ptr   lib/chef/util/windows.rb:51
+     1.7:   pack
+     1.5:   unpack
+     1.3:   []
+

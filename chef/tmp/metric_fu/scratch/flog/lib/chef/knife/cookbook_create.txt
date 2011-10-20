@@ -1,0 +1,79 @@
+   160.7: flog total
+    20.1: flog/method average
+
+    58.5: Chef::Knife::CookbookCreate#run  lib/chef/knife/cookbook_create.rb:58
+    15.8:   config
+    12.7:   []
+    11.9:   branch
+     9.1:   assignment
+     3.0:   ==
+     2.8:   first
+     1.7:   Array
+     1.7:   ui
+     1.5:   fatal
+     1.5:   exit
+     1.5:   show_usage
+     1.5:   length
+     1.4:   raise
+     1.4:   parameter_empty?
+     1.4:   default_cookbook_path_empty?
+     1.3:   create_cookbook
+     1.3:   create_readme
+     1.3:   create_metadata
+     1.3:   expand_path
+     1.3:   merge!
+     1.3:   <
+     0.8:   lit_fixnum
+
+    45.8: Chef::Knife::CookbookCreate#create_cookbook lib/chef/knife/cookbook_create.rb:81
+    15.1:   join
+    12.8:   branch
+    10.6:   puts
+    10.4:   mkdir_p
+     2.0:   now
+     1.8:   year
+     1.5:   assignment
+     1.4:   open
+     1.3:   exists?
+     1.3:   msg
+
+    18.0: Chef::Knife::CookbookCreate#create_metadata lib/chef/knife/cookbook_create.rb:220
+    12.6:   branch
+     4.9:   join
+     4.5:   assignment
+     2.9:   exists?
+     1.6:   puts
+     1.4:   open
+     1.3:   msg
+
+    14.3: Chef::Knife::CookbookCreate#create_readme lib/chef/knife/cookbook_create.rb:176
+     7.4:   branch
+     5.0:   puts
+     3.1:   join
+     1.5:   assignment
+     1.4:   open
+     1.3:   exists?
+     1.3:   msg
+
+    13.9: Chef::Knife::CookbookCreate#none
+     6.0:   option
+     4.2:   require
+     1.2:   private
+     1.2:   banner
+     1.2:   deps
+     1.2:   branch
+
+     6.1: Chef::Knife::CookbookCreate#default_cookbook_path_empty? lib/chef/knife/cookbook_create.rb:254
+     3.2:   []
+     1.4:   empty?
+     1.4:   nil?
+     1.3:   branch
+
+     3.1: Chef::Knife::CookbookCreate#parameter_empty? lib/chef/knife/cookbook_create.rb:258
+     1.4:   empty?
+     1.4:   nil?
+     1.3:   branch
+
+     1.1: main#none
+     1.1:   require
+

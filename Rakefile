@@ -17,8 +17,9 @@
 # limitations under the License.
 #
 
-gems = %w[chef chef-server-api chef-server-webui chef-solr chef-expander chef-server metric_fu]
+gems = %w[chef chef-server-api chef-server-webui chef-solr chef-expander chef-server]
 require 'rubygems'
+require 'metric_fu'
 
 desc "Build the chef gems"
 task :gem do

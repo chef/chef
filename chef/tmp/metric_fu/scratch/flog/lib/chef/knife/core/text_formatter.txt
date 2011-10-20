@@ -1,0 +1,81 @@
+   119.4: flog total
+    14.9: flog/method average
+
+    59.6: Chef::Knife::Core::TextFormatter#text_format lib/chef/knife/core/text_formatter.rb:44
+    13.5:   assignment
+    10.4:   branch
+     9.9:   <<
+     5.6:   +
+     5.4:   indent_line
+     3.8:   text_format
+     3.1:   should_enumerate?
+     2.8:   each
+     2.3:   to_s
+     2.2:   keys
+     2.1:   size
+     2.0:   map
+     1.9:   indent_key_value
+     1.8:   stringify_value
+     1.8:   ljust
+     1.8:   ui
+     1.8:   max
+     1.6:   color
+     1.6:   sort
+     1.6:   to_i
+     1.6:   lit_fixnum
+     1.3:   kind_of?
+     1.2:   respond_to?
+
+    29.1: Chef::Knife::Core::TextFormatter#indent_key_value lib/chef/knife/core/text_formatter.rb:82
+     5.1:   +
+     4.5:   assignment
+     4.1:   *
+     3.3:   <<
+     3.0:   branch
+     2.9:   indent_line
+     1.8:   map
+     1.8:   shift
+     1.6:   join
+     1.5:   stringify_value
+     1.4:   size
+     1.4:   to_s
+     1.3:   lit_fixnum
+     1.2:   >
+     1.2:   split
+
+    12.2: Chef::Knife::Core::TextFormatter#should_enumerate? lib/chef/knife/core/text_formatter.rb:74
+     5.2:   branch
+     1.7:   size
+     1.7:   first
+     1.5:   >
+     1.5:   should_enumerate?
+     1.4:   empty?
+     1.4:   respond_to?
+     1.4:   kind_of?
+     0.4:   lit_fixnum
+
+     8.1: Chef::Knife::Core::TextFormatter#initialize lib/chef/knife/core/text_formatter.rb:27
+     3.9:   branch
+     2.6:   respond_to?
+     2.4:   assignment
+     1.5:   to_hash
+     1.3:   display_hash
+     1.3:   kind_of?
+
+     2.9: Chef::Knife::Core::TextFormatter#formatted_data lib/chef/knife/core/text_formatter.rb:40
+     1.4:   data
+     1.2:   text_format
+     1.2:   assignment
+
+     2.8: Chef::Knife::Core::TextFormatter#stringify_value lib/chef/knife/core/text_formatter.rb:92
+     1.3:   to_s
+     1.2:   kind_of?
+     1.2:   branch
+
+     2.6: Chef::Knife::Core::TextFormatter#indent_line lib/chef/knife/core/text_formatter.rb:78
+     1.4:   *
+     1.2:   <<
+
+     2.2: Chef::Knife::Core::TextFormatter#none
+     2.2:   attr_reader
+

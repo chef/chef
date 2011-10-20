@@ -1,0 +1,36 @@
+    62.6: flog total
+    15.6: flog/method average
+
+    55.6: Chef::Provider::ErlCall#action_run lib/chef/provider/erl_call.rb:36
+    24.2:   assignment
+    15.0:   branch
+     7.0:   debug
+     4.2:   each_line
+     4.2:   close
+     3.2:   code
+     3.0:   node_name
+     3.0:   <<
+     3.0:   raise
+     2.7:   cookie
+     1.7:   chomp
+     1.6:   length
+     1.6:   []
+     1.5:   puts
+     1.4:   >
+     1.4:   include?
+     1.4:   popen4
+     1.4:   updated_by_last_action
+     1.4:   info
+     1.4:   wait
+     1.3:   name_type
+     1.3:   distributed
+
+     3.3: main#none
+     3.3:   require
+
+     2.4: Chef::Provider::ErlCall#none
+     2.4:   include
+
+     1.3: Chef::Provider::ErlCall#initialize lib/chef/provider/erl_call.rb:28
+     1.3:   super
+

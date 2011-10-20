@@ -1,0 +1,94 @@
+   151.5: flog total
+    12.6: flog/method average
+
+    53.0: Chef::Provider::User::Useradd#universal_options lib/chef/provider/user/useradd.rb:95
+    25.5:   send
+     9.5:   branch
+     6.3:   <<
+     5.5:   assignment
+     5.4:   home
+     4.9:   debug
+     1.6:   supports
+     1.4:   non_unique
+     1.4:   managing_home_dir?
+     1.4:   []
+     1.4:   ==
+     1.3:   updating_home?
+     1.3:   each
+
+    46.1: Chef::Provider::User::Useradd#check_lock lib/chef/provider/user/useradd.rb:47
+    31.8:   assignment
+    16.8:   branch
+     4.7:   ==
+     3.7:   gets
+     3.3:   []
+     3.3:   exitstatus
+     2.9:   popen4
+     2.0:   node
+     1.8:   chomp
+     1.6:   raise
+     1.6:   include?
+     1.5:   split
+     1.5:   username
+     0.9:   lit_fixnum
+
+     9.5: Chef::Provider::User::Useradd#create_user lib/chef/provider/user/useradd.rb:27
+     3.0:   <<
+     2.7:   assignment
+     1.7:   universal_options
+     1.7:   useradd_options
+     1.3:   compile_command
+     1.3:   branch
+     1.3:   run_command
+
+     8.0: Chef::Provider::User::Useradd#useradd_options lib/chef/provider/user/useradd.rb:119
+     3.9:   branch
+     2.8:   <<
+     1.4:   updating_home?
+     1.4:   managing_home_dir?
+     1.3:   system
+     1.3:   assignment
+
+     7.0: Chef::Provider::User::Useradd#remove_user lib/chef/provider/user/useradd.rb:40
+     2.7:   <<
+     1.5:   username
+     1.3:   managing_home_dir?
+     1.3:   run_command
+     1.3:   assignment
+     1.3:   branch
+
+     6.4: Chef::Provider::User::Useradd#manage_user lib/chef/provider/user/useradd.rb:35
+     2.7:   assignment
+     1.6:   universal_options
+     1.4:   <<
+     1.3:   run_command
+     1.3:   compile_command
+     1.3:   branch
+
+     6.1: Chef::Provider::User::Useradd#updating_home? lib/chef/provider/user/useradd.rb:126
+     4.6:   home
+     1.4:   ==
+     1.3:   branch
+
+     4.6: Chef::Provider::User::Useradd#managing_home_dir? lib/chef/provider/user/useradd.rb:130
+     1.6:   supports
+     1.4:   manage_home
+     1.4:   []
+     1.3:   branch
+
+     4.1: Chef::Provider::User::Useradd#compile_command lib/chef/provider/user/useradd.rb:89
+     1.5:   username
+     1.3:   yield
+     1.3:   <<
+
+     2.8: Chef::Provider::User::Useradd#lock_user lib/chef/provider/user/useradd.rb:81
+     1.5:   username
+     1.3:   run_command
+
+     2.8: Chef::Provider::User::Useradd#unlock_user lib/chef/provider/user/useradd.rb:85
+     1.5:   username
+     1.3:   run_command
+
+     1.1: main#none
+     1.1:   require
+

@@ -1,0 +1,5500 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang='en' xml:lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type' />
+    <meta content='en' http-equiv='Content-Language' />
+    <title>metrics</title>
+    <style>
+    /*
+Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.5.2
+*/
+html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym {border:0;font-variant:normal;}sup {vertical-align:text-top;}sub {vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
+
+    /* --------------------------------------------------------------
+
+   buttons.css
+   * Gives you some great CSS-only buttons.
+
+   Created by Kevin Hale [particletree.com]
+   * particletree.com/features/rediscovering-the-button-element
+
+   See Readme.txt in this folder for instructions.
+
+-------------------------------------------------------------- */
+
+button {
+  display:block;
+  float:left;
+  margin:0 0.583em 0.667em 0;
+  padding:5px 10px 5px 7px;   /* Links */
+
+  border:1px solid #dedede;
+  border-top:1px solid #eee;
+  border-left:1px solid #eee;
+
+  background-color:#f5f5f5;
+  font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+  font-size:100%;
+  line-height:130%;
+  text-decoration:none;
+  font-weight:bold;
+  color:#565656;
+  cursor:pointer;
+}
+button {
+  width:auto;
+  overflow:visible;
+  padding:4px 10px 3px 7px;   /* IE6 */
+}
+button[type] {
+  padding:4px 10px 4px 7px;   /* Firefox */
+  line-height:17px;           /* Safari */
+}
+*:first-child+html button[type] {
+  padding:4px 10px 3px 7px;   /* IE7 */
+}
+button img {
+  margin:0 3px -3px 0 !important;
+  padding:0;
+  border:none;
+  width:16px;
+  height:16px;
+  float:none;
+}
+
+
+/* Button colors
+-------------------------------------------------------------- */
+
+/* Standard */
+button:hover {
+  background-color:#dff4ff;
+  border:1px solid #c2e1ef;
+  color:#336699;
+}
+
+/* Positive */
+body .positive {
+  color:#529214;
+}
+button.positive:hover {
+  background-color:#E6EFC2;
+  border:1px solid #C6D880;
+  color:#529214;
+}
+
+/* Negative */
+body .negative {
+  color:#d12f19;
+}
+button.negative:hover {
+  background:#fbe3e4;
+  border:1px solid #fbc2c4;
+  color:#d12f19;
+}
+
+    html {
+  background-color: #e0e0e0; }
+
+body {
+  font-size: 100%;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  color: #333333; }
+
+a {
+  color: #ed1556;
+  text-decoration: none; }
+  a:hover {
+    color: #ffffff;
+    background-color: #ed1556; }
+
+#header, #content, #footer {
+  margin: 0 auto;
+  background: #eeeeee;
+  padding: 0 2em;
+  z-index: 0;
+  position: relative;
+  font-size: 1em; }
+
+#header {
+  background: #ffffff; }
+  #header h1 {
+    font-weight: bold;
+    font-size: 1.5em; }
+  #header address.watermark {
+    position: absolute;
+    font-weight: bold;
+    right: 3em;
+    top: 0;
+    font-size: .75em;
+    color: #cccccc; }
+    #header address.watermark a {
+      color: #cccccc;
+      font-weight: bold;
+      font-size: 2em; }
+      #header address.watermark a:hover {
+        background: transparent;
+        color: #aaaaaa; }
+
+#content {
+  padding-top: 1em;
+  padding-bottom: 2em; }
+  #content strong {
+    font-weight: bold; }
+  #content em {
+    font-style: italic; }
+  #content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
+    color: #4e4e4e; }
+  #content h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: .75em;
+    padding: .25em 0;
+    line-height: 1.2;
+    border-bottom: 1px solid #c0c0c0; }
+  #content h2 {
+    font-weight: bold;
+    font-size: 1.5em;
+    margin: 1em 0 .2em; }
+  #content h3 {
+    font-weight: bold;
+    font-size: 1.25em;
+    margin: .25em 0; }
+  #content h4, #content h5, #content h6 {
+    font-weight: bold;
+    margin-top: .5em; }
+  #content code, #content pre, #content textarea, #content input {
+    font-family: Monaco, Deja Vu Sans Mono, Inconsolata, Consolas, monospace; }
+  #content form p {
+    margin-top: 1em;
+    position: relative; }
+    #content form p.checkbox label {
+      margin-top: 0 !important; }
+  #content form input.text, #content form textarea {
+    width: 30em;
+    padding: .2em .4em;
+    color: #4e4e4e; }
+  #content form input.text {
+    height: 1.4em; }
+  #content form label {
+    float: left;
+    display: block;
+    margin-top: .5em;
+    width: 8em;
+    margin-right: .75em; }
+  #content form .with_errors label {
+    background: red;
+    color: white;
+    position: relative;
+    top: -.7em; }
+  #content form .with_errors.required label {
+    position: static;
+    margin-right: .25em;
+    padding: 0 .2em; }
+  #content form .with_errors input, #content form .with_errors textarea {
+    border: 2px solid #f22;
+    background: #fee;
+    color: #222222; }
+  #content form .required label {
+    float: none;
+    display: block;
+    width: auto;
+    position: relative;
+    font-weight: bold;
+    margin-top: 1em;
+    text-indent: -.65em; }
+    #content form .required label:before {
+      content: "* ";
+      color: #ed1556; }
+  #content form .required input.text {
+    width: 25.6em;
+    font-size: 24px;
+    font-weight: bold; }
+  #content form .normal {
+    margin-top: 2em; }
+  #content form h2.notifier label {
+    float: none;
+    width: auto;
+    margin-right: 0; }
+    #content form h2.notifier label .warning {
+      font-size: .5em;
+      font-weight: normal;
+      color: #999999; }
+  #content form fieldset {
+    padding-bottom: 1em;
+    margin-left: 1.35em;
+    border-bottom: 1px solid #c0c0c0;
+    margin-bottom: 1em; }
+    #content form fieldset h3 {
+      margin-top: 1em;
+      margin-bottom: 0; }
+    #content form fieldset p.normal {
+      margin-top: 1em; }
+    #content form fieldset p label {
+      width: 6.7em; }
+  #content form p.submit {
+    margin-top: 2em; }
+    #content form p.submit:after {
+      display: block;
+      clear: both;
+      float: none;
+      content: ".";
+      text-indent: -9999em;
+      text-align: left; }
+    #content form p.submit.destroy button,     #content form p.submit.manual-build button {
+      float: none;
+      display: inline; }
+    #content form p.submit.manual-build button {
+      margin-right: 0; }
+  #content #build form, #content #last_build form {
+    font-size: .75em; }
+    #content #build form p.submit,     #content #last_build form p.submit {
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      right: .5em;
+      top: 1.25em; }
+  #content .blank_slate p,   #content .error p {
+    position: relative;
+    top: .3em; }
+  #content .blank_slate h1,   #content .error h1 {
+    border-width: 0;
+    margin: 0;
+    padding: 0; }
+    #content .blank_slate h1 button,     #content .error h1 button {
+      float: none;
+      border: 0 none;
+      background: transparent;
+      display: inline;
+      color: #ed1556;
+      padding: 0.25em 0;
+      margin: 0; }
+      #content .blank_slate h1 button:hover,       #content .error h1 button:hover {
+        background: #ed1556;
+        color: #ffffff; }
+  #content .error dt {
+    margin-top: 1.4em;
+    margin-bottom: .3em;
+    font-size: 1.75em;
+    font-family: Georgia, Times New Roman, serif; }
+  #content .error dd {
+    line-height: 1.4; }
+  #content .error .backtrace {
+    margin: 1em 0;
+    overflow: scroll;
+    height: 30em;
+    border: 1px solid #c0c0c0;
+    line-height: 1.6; }
+  #content #projects {
+    margin: 1em 0 2em;
+    border-top: 1px solid #c0c0c0; }
+    #content #projects li {
+      position: relative;
+      border-bottom: 1px solid #c0c0c0; }
+      #content #projects li.odd {
+        background: #e6e6e6; }
+      #content #projects li.building {
+        background: transparent url(/spinner.gif) no-repeat scroll right; }
+      #content #projects li a {
+        font-size: 2em;
+        padding: .25em;
+        line-height: 1.2;
+        font-weight: bold;
+        display: block; }
+        #content #projects li a.success {
+          color: #337022; }
+        #content #projects li a.failed {
+          color: #ff1100; }
+      #content #projects li .meta {
+        position: absolute;
+        right: .6em;
+        top: 1.5em;
+        font-size: 0.8em;
+        color: #999999;
+        text-align: right; }
+      #content #projects li.building .meta {
+        right: 1.6em; }
+      #content #projects li.success .meta {
+        color: #337022; }
+      #content #projects li.failed .meta {
+        color: #ff1100; }
+  #content #previous_builds li a {
+    display: block;
+    padding: .25em;
+    margin-bottom: .25em;
+    border-width: 1px;
+    border-style: solid; }
+    #content #previous_builds li a strong {
+      font-size: 1.3em; }
+    #content #previous_builds li a .attribution {
+      font-size: .9em; }
+  #content #projects li.success a,   #content #previous_builds li.success a {
+    background-color: #bbf8aa;
+    border-color: #99d688;
+    color: #337022; }
+    #content #projects li.success a .attribution,     #content #previous_builds li.success a .attribution {
+      color: #77b466; }
+    #content #projects li.success a:hover,     #content #previous_builds li.success a:hover {
+      background-color: #ddffcc; }
+  #content #projects li.failed a,   #content #previous_builds li.failed a {
+    background-color: #ffbbaa;
+    border-color: #dd9988;
+    color: #ff1100; }
+    #content #projects li.failed a .attribution,     #content #previous_builds li.failed a .attribution {
+      color: #bb7766; }
+    #content #projects li.failed a:hover,     #content #previous_builds li.failed a:hover {
+      background-color: #ffddcc; }
+  #content #build, #content #last_build {
+    position: relative; }
+    #content #build h1, #content #build blockquote,     #content #last_build h1, #content #last_build blockquote {
+      border-width: 0 1px;
+      border-style: solid; }
+    #content #build h1,     #content #last_build h1 {
+      border-top-width: 1px; }
+    #content #build blockquote,     #content #last_build blockquote {
+      bottom-bottom-width: 1px;
+      line-height: 1.4; }
+    #content #build.success h1, #content #build.success blockquote,     #content #last_build.success h1, #content #last_build.success blockquote {
+      background-color: #bbf8aa;
+      border-color: #99d688 #ccffbb #ccffbb #99d688; }
+    #content #build.success h1,     #content #last_build.success h1 {
+      color: #337022; }
+    #content #build.success .meta,     #content #last_build.success .meta {
+      color: #77b466; }
+    #content #build.failed h1, #content #build.failed blockquote,     #content #last_build.failed h1, #content #last_build.failed blockquote {
+      background-color: #ffbbaa;
+      border-color: #dd9988 #ffccbb #ffccbb #dd9988; }
+    #content #build.failed h1,     #content #last_build.failed h1 {
+      color: #ff1100; }
+    #content #build.failed .meta,     #content #last_build.failed .meta {
+      color: #bb7766; }
+    #content #build h1,     #content #last_build h1 {
+      margin-top: .5em;
+      margin-bottom: 0;
+      padding: .25em;
+      color: #337022; }
+    #content #build blockquote,     #content #last_build blockquote {
+      padding: .75em;
+      margin-bottom: 2em; }
+      #content #build blockquote .meta,       #content #last_build blockquote .meta {
+        margin-top: 1em;
+        display: block;
+        font-size: .9em; }
+    #content #build pre.output,     #content #last_build pre.output {
+      background: #111;
+      color: #fff;
+      padding: .5em;
+      overflow: auto;
+      max-height: 50em;
+      font-size: .825em; }
+      #content #build pre.output .color30,       #content #last_build pre.output .color30 {
+        color: #333; }
+      #content #build pre.output .color31,       #content #last_build pre.output .color31 {
+        color: #e33; }
+      #content #build pre.output .color32,       #content #last_build pre.output .color32 {
+        color: #3e3; }
+      #content #build pre.output .color33,       #content #last_build pre.output .color33 {
+        color: #ee3; }
+      #content #build pre.output .color34,       #content #last_build pre.output .color34 {
+        color: #33e; }
+      #content #build pre.output .color35,       #content #last_build pre.output .color35 {
+        color: #e3e; }
+      #content #build pre.output .color36,       #content #last_build pre.output .color36 {
+        color: #3ee; }
+      #content #build pre.output .color37,       #content #last_build pre.output .color37 {
+        color: #fff; }
+  #content #push_path {
+    display: block;
+    margin-top: 1em;
+    margin-left: 2em; }
+
+a.success {
+  color: #bbf8aa; }
+  a.success:hover {
+    background-color: #bbf8aa;
+    color: white; }
+a.failed {
+  color: #ffbbaa; }
+  a.failed:hover {
+    background-color: #ffbbaa;
+    color: white; }
+
+#footer {
+  padding: 1.5em 2.5em;
+  border-top: 1px solid #ccc;
+  font-size: .8em;
+  color: #666;
+  text-align: right; }
+  #footer strong {
+    font-weight: bold; }
+    
+    table {
+  margin-top: 20px;
+  border-collapse: collapse;
+  border: 1px solid #666;
+  background: #fff;
+  margin-bottom: 20px;
+}
+
+table tr.light {
+   background: #fff;
+}
+
+table tr.dark {
+  background: #f9f9f9;
+}
+
+table tr:hover {
+  background: #FFFFC0;
+}
+
+table td, table th {
+  padding: 4px;
+  font-size: 11px;
+}
+table th {
+  text-align: center;
+  color: #337022;
+  background: #DDFFCC;
+  font-weight: bold;
+  border: #99D688 1px solid;
+}
+
+table td {
+  border: #d0d0d0 1px solid;
+}
+
+table td.score {
+  text-align: right;
+}
+
+.warning {
+  background: yellow;
+}
+.rcov_code td {
+  border-bottom: 1px solid #ddd ;
+  padding: 0;
+  margin: 0;
+}
+.rcov_code tr {
+  border: 0px;
+  padding:0px;
+  margin: 0px;
+}
+.rcov_code pre {
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+}
+.rcov_run {}
+.rcov_not_run {
+  background-color: #d88;
+}
+.rcov_run a, .rcov_not_run a {
+  text-decoration: none;
+}
+.rcov_run a {
+  color: #333;
+}
+.rcov_not_run a {
+  color: #000;
+}
+.rcov_overflow {
+  overflow: auto;
+  font-size: 50%;
+}
+
+    </style>
+    <link REL="SHORTCUT ICON" HREF="/favicon.ico">
+  </head>
+  <body>
+    <div id='header'>
+      <h1><a href="/">metrics</a> | <a href="index.html">chef</a></h1>
+      <address class='watermark'>
+        built with
+        <a href='http://metric-fu.rubyforge.org/'>metric-fu</a>
+      </address>
+    </div>
+    <div id='content'>
+      <h3>Source Control Churn Results</h3>
+<p>Files that change a lot in your project may be bad a sign.
+  This task uses your source control log to identify those files.
+  </p>
+<table>
+  <tr>
+    <th>File Path</th>
+    <th>Times Changed</th>
+  </tr>
+  
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/client.rb'>chef/lib/chef/client.rb</a></td>
+      <td>120</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/Rakefile'>chef/Rakefile</a></td>
+      <td>114</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/node.rb'>chef/lib/chef/node.rb</a></td>
+      <td>109</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/config.rb'>chef/lib/chef/config.rb</a></td>
+      <td>87</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/rest.rb'>chef/lib/chef/rest.rb</a></td>
+      <td>84</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/Rakefile'>Rakefile</a></td>
+      <td>82</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife.rb'>chef/lib/chef/knife.rb</a></td>
+      <td>79</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef.rb'>chef/lib/chef.rb</a></td>
+      <td>74</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/platform.rb'>chef/lib/chef/platform.rb</a></td>
+      <td>69</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/Rakefile'>chef-server/Rakefile</a></td>
+      <td>66</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/version.rb'>chef/lib/chef/version.rb</a></td>
+      <td>65</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/support/env.rb'>features/support/env.rb</a></td>
+      <td>62</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/role.rb'>chef/lib/chef/role.rb</a></td>
+      <td>61</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/lib/chef/solr/version.rb'>chef-solr/lib/chef/solr/version.rb</a></td>
+      <td>60</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/lib/chef-server-webui/version.rb'>chef-server-webui/lib/chef-server-webui/version.rb</a></td>
+      <td>59</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/lib/chef-server-api/version.rb'>chef-server-api/lib/chef-server-api/version.rb</a></td>
+      <td>59</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/package/yum.rb'>chef/lib/chef/provider/package/yum.rb</a></td>
+      <td>59</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_upload.rb'>chef/lib/chef/knife/cookbook_upload.rb</a></td>
+      <td>58</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource.rb'>chef/lib/chef/resource.rb</a></td>
+      <td>57</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/command.rb'>chef/lib/chef/mixin/command.rb</a></td>
+      <td>56</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/chef-server/version.rb'>chef-server/lib/chef-server/version.rb</a></td>
+      <td>54</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/node_spec.rb'>chef/spec/unit/node_spec.rb</a></td>
+      <td>51</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/cookbook.rb'>chef/lib/chef/cookbook.rb</a></td>
+      <td>50</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/run_list.rb'>chef/lib/chef/run_list.rb</a></td>
+      <td>50</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/client_spec.rb'>chef/spec/unit/client_spec.rb</a></td>
+      <td>49</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/exceptions.rb'>chef/lib/chef/exceptions.rb</a></td>
+      <td>48</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/fixture_steps.rb'>features/steps/fixture_steps.rb</a></td>
+      <td>48</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/ssh.rb'>chef/lib/chef/knife/ssh.rb</a></td>
+      <td>46</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/controllers/nodes.rb'>chef-server-api/app/controllers/nodes.rb</a></td>
+      <td>45</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/remote_file.rb'>chef/lib/chef/provider/remote_file.rb</a></td>
+      <td>45</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/Rakefile'>chef-server-webui/Rakefile</a></td>
+      <td>43</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/controllers/cookbooks.rb'>chef-server-api/app/controllers/cookbooks.rb</a></td>
+      <td>43</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/Rakefile'>chef-server-api/Rakefile</a></td>
+      <td>42</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/cookbook_version.rb'>chef/lib/chef/cookbook_version.rb</a></td>
+      <td>42</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/bootstrap.rb'>chef/lib/chef/knife/bootstrap.rb</a></td>
+      <td>42</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/rest_spec.rb'>chef/spec/unit/rest_spec.rb</a></td>
+      <td>42</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/deploy.rb'>chef/lib/chef/provider/deploy.rb</a></td>
+      <td>42</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/lib/chef-server-api.rb'>chef-server-api/lib/chef-server-api.rb</a></td>
+      <td>41</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/lib/chef/solr.rb'>chef-solr/lib/chef/solr.rb</a></td>
+      <td>41</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/couchdb.rb'>chef/lib/chef/couchdb.rb</a></td>
+      <td>40</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/recipe.rb'>chef/lib/chef/recipe.rb</a></td>
+      <td>40</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/application/client.rb'>chef/lib/chef/application/client.rb</a></td>
+      <td>39</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/file.rb'>chef/lib/chef/provider/file.rb</a></td>
+      <td>39</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/cookbook_loader.rb'>chef/lib/chef/cookbook_loader.rb</a></td>
+      <td>38</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/runner.rb'>chef/lib/chef/runner.rb</a></td>
+      <td>36</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/cucumber.yml'>cucumber.yml</a></td>
+      <td>36</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/deploy_spec.rb'>chef/spec/unit/provider/deploy_spec.rb</a></td>
+      <td>36</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/package.rb'>chef/lib/chef/provider/package.rb</a></td>
+      <td>36</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/bin/chef-client'>chef/bin/chef-client</a></td>
+      <td>35</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/package/yum_spec.rb'>chef/spec/unit/provider/package/yum_spec.rb</a></td>
+      <td>34</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/template.rb'>chef/lib/chef/provider/template.rb</a></td>
+      <td>34</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/node/attribute.rb'>chef/lib/chef/node/attribute.rb</a></td>
+      <td>34</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/controllers/application.rb'>chef-server-api/app/controllers/application.rb</a></td>
+      <td>34</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/tasks/chef_repo.rake'>chef/lib/chef/tasks/chef_repo.rake</a></td>
+      <td>34</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/cookbook/metadata.rb'>chef/lib/chef/cookbook/metadata.rb</a></td>
+      <td>33</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/.gitignore'>.gitignore</a></td>
+      <td>33</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/data_bag_item.rb'>chef/lib/chef/data_bag_item.rb</a></td>
+      <td>33</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/application.rb'>chef/lib/chef/application.rb</a></td>
+      <td>32</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/response_steps.rb'>features/steps/response_steps.rb</a></td>
+      <td>32</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/package/apt.rb'>chef/lib/chef/provider/package/apt.rb</a></td>
+      <td>31</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/package/apt_spec.rb'>chef/spec/unit/provider/package/apt_spec.rb</a></td>
+      <td>31</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/file_spec.rb'>chef/spec/unit/provider/file_spec.rb</a></td>
+      <td>31</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/mount/mount.rb'>chef/lib/chef/provider/mount/mount.rb</a></td>
+      <td>31</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/shell_out.rb'>chef/lib/chef/shell_out.rb</a></td>
+      <td>31</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/service/debian_service_spec.rb'>chef/spec/unit/provider/service/debian_service_spec.rb</a></td>
+      <td>30</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/package/freebsd.rb'>chef/lib/chef/provider/package/freebsd.rb</a></td>
+      <td>30</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/Rakefile'>chef-server-slice/Rakefile</a></td>
+      <td>30</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/controllers/nodes.rb'>chef-server-webui/app/controllers/nodes.rb</a></td>
+      <td>30</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/environment.rb'>chef/lib/chef/environment.rb</a></td>
+      <td>29</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/mount/mount_spec.rb'>chef/spec/unit/provider/mount/mount_spec.rb</a></td>
+      <td>29</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/controllers/cookbooks.rb'>chef-server-webui/app/controllers/cookbooks.rb</a></td>
+      <td>29</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/cookbook_steps.rb'>features/steps/cookbook_steps.rb</a></td>
+      <td>29</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/run_list_spec.rb'>chef/spec/unit/run_list_spec.rb</a></td>
+      <td>29</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/application/solo.rb'>chef/lib/chef/application/solo.rb</a></td>
+      <td>28</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/shef/shef_session.rb'>chef/lib/chef/shef/shef_session.rb</a></td>
+      <td>28</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/remote_directory.rb'>chef/lib/chef/provider/remote_directory.rb</a></td>
+      <td>28</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/cron.rb'>chef/lib/chef/provider/cron.rb</a></td>
+      <td>28</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/node/attribute_spec.rb'>chef/spec/unit/node/attribute_spec.rb</a></td>
+      <td>28</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/bin/chef-server'>chef-server/bin/chef-server</a></td>
+      <td>28</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/controllers/application.rb'>chef-server-webui/app/controllers/application.rb</a></td>
+      <td>28</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/spec_helper.rb'>chef/spec/spec_helper.rb</a></td>
+      <td>27</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/template_spec.rb'>chef/spec/unit/provider/template_spec.rb</a></td>
+      <td>27</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/compile.rb'>chef/lib/chef/compile.rb</a></td>
+      <td>27</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/package/rubygems.rb'>chef/lib/chef/provider/package/rubygems.rb</a></td>
+      <td>27</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/controllers/roles.rb'>chef-server-webui/app/controllers/roles.rb</a></td>
+      <td>27</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/Gemfile.lock'>chef-server-api/Gemfile.lock</a></td>
+      <td>27</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/examples/config/cookbooks/fakefile/recipes/default.rb'>examples/config/cookbooks/fakefile/recipes/default.rb</a></td>
+      <td>26</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/application/knife.rb'>chef/lib/chef/application/knife.rb</a></td>
+      <td>26</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/api_client.rb'>chef/lib/chef/api_client.rb</a></td>
+      <td>26</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/package/portage.rb'>chef/lib/chef/provider/package/portage.rb</a></td>
+      <td>26</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-expander/lib/chef/expander/version.rb'>chef-expander/lib/chef/expander/version.rb</a></td>
+      <td>26</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/config/router.rb'>chef-server-api/config/router.rb</a></td>
+      <td>25</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/controllers/environments.rb'>chef-server-api/app/controllers/environments.rb</a></td>
+      <td>25</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/remote_file_spec.rb'>chef/spec/unit/provider/remote_file_spec.rb</a></td>
+      <td>24</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/data_bag.rb'>chef/lib/chef/data_bag.rb</a></td>
+      <td>24</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/service/init.rb'>chef/lib/chef/provider/service/init.rb</a></td>
+      <td>24</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/run_client_steps.rb'>features/steps/run_client_steps.rb</a></td>
+      <td>23</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/couchdb_spec.rb'>chef/spec/unit/couchdb_spec.rb</a></td>
+      <td>23</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/node_steps.rb'>features/steps/node_steps.rb</a></td>
+      <td>23</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/package/freebsd_spec.rb'>chef/spec/unit/provider/package/freebsd_spec.rb</a></td>
+      <td>22</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/cookbook_loader_spec.rb'>chef/spec/unit/cookbook_loader_spec.rb</a></td>
+      <td>22</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/log.rb'>chef/lib/chef/log.rb</a></td>
+      <td>22</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife_spec.rb'>chef/spec/unit/knife_spec.rb</a></td>
+      <td>22</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/ec2_server_create.rb'>chef/lib/chef/knife/ec2_server_create.rb</a></td>
+      <td>22</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/erl_call.rb'>chef/lib/chef/provider/erl_call.rb</a></td>
+      <td>22</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/service/debian.rb'>chef/lib/chef/provider/service/debian.rb</a></td>
+      <td>22</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/service.rb'>chef/lib/chef/provider/service.rb</a></td>
+      <td>22</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/deploy.rb'>chef/lib/chef/resource/deploy.rb</a></td>
+      <td>21</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/VERSION'>chef-solr/VERSION</a></td>
+      <td>21</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/helpers/application_helper.rb'>chef-server-webui/app/helpers/application_helper.rb</a></td>
+      <td>21</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/resource_spec.rb'>chef/spec/unit/resource_spec.rb</a></td>
+      <td>21</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/bin/chef-solo'>chef/bin/chef-solo</a></td>
+      <td>21</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/application/client_spec.rb'>chef/spec/unit/application/client_spec.rb</a></td>
+      <td>21</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/lib/chef/solr/application/solr.rb'>chef-solr/lib/chef/solr/application/solr.rb</a></td>
+      <td>21</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/tasks/package.rake'>chef-server/lib/tasks/package.rake</a></td>
+      <td>21</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/public/javascripts/chef.js'>chef-server-webui/public/javascripts/chef.js</a></td>
+      <td>21</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/nodes.rb'>chef-server-slice/app/controllers/nodes.rb</a></td>
+      <td>20</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/controllers/search.rb'>chef-server-api/app/controllers/search.rb</a></td>
+      <td>20</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/package_spec.rb'>chef/spec/unit/provider/package_spec.rb</a></td>
+      <td>20</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_site_vendor.rb'>chef/lib/chef/knife/cookbook_site_vendor.rb</a></td>
+      <td>20</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/debian.rb'>lib/chef/provider/service/debian.rb</a></td>
+      <td>20</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/git.rb'>chef/lib/chef/provider/git.rb</a></td>
+      <td>20</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/lib/chef-server-webui.rb'>chef-server-webui/lib/chef-server-webui.rb</a></td>
+      <td>20</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/application_spec.rb'>chef/spec/unit/application_spec.rb</a></td>
+      <td>20</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_show.rb'>chef/lib/chef/knife/cookbook_show.rb</a></td>
+      <td>20</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/package/rubygems_spec.rb'>chef/spec/unit/provider/package/rubygems_spec.rb</a></td>
+      <td>20</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/git_spec.rb'>chef/spec/unit/provider/git_spec.rb</a></td>
+      <td>20</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef_server/init.rb'>lib/chef_server/init.rb</a></td>
+      <td>20</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/package/yum-dump.py'>chef/lib/chef/provider/package/yum-dump.py</a></td>
+      <td>19</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/README.txt'>README.txt</a></td>
+      <td>19</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/user.rb'>chef/lib/chef/provider/user.rb</a></td>
+      <td>19</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/shef/ext.rb'>chef/lib/chef/shef/ext.rb</a></td>
+      <td>19</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/shef.rb'>chef/lib/chef/shef.rb</a></td>
+      <td>19</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/environment_spec.rb'>chef/spec/unit/environment_spec.rb</a></td>
+      <td>19</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/platform.rb'>lib/chef/platform.rb</a></td>
+      <td>19</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/link_spec.rb'>chef/spec/unit/provider/link_spec.rb</a></td>
+      <td>19</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/subversion_spec.rb'>chef/spec/unit/provider/subversion_spec.rb</a></td>
+      <td>19</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/init.rb'>chef-server/lib/init.rb</a></td>
+      <td>19</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_list.rb'>chef/lib/chef/knife/cookbook_list.rb</a></td>
+      <td>18</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/chef.gemspec'>chef/chef.gemspec</a></td>
+      <td>18</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/application/solo_spec.rb'>chef/spec/unit/application/solo_spec.rb</a></td>
+      <td>18</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/recipe_definition_dsl_core.rb'>chef/lib/chef/mixin/recipe_definition_dsl_core.rb</a></td>
+      <td>18</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man8/knife.8'>chef/distro/common/man/man8/knife.8</a></td>
+      <td>18</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/language.rb'>chef/lib/chef/mixin/language.rb</a></td>
+      <td>18</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/data/config/server.rb'>features/data/config/server.rb</a></td>
+      <td>18</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/user/useradd_spec.rb'>chef/spec/unit/provider/user/useradd_spec.rb</a></td>
+      <td>18</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider.rb'>chef/lib/chef/provider.rb</a></td>
+      <td>18</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/service/init_service_spec.rb'>chef/spec/unit/provider/service/init_service_spec.rb</a></td>
+      <td>18</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/lwrp_spec.rb'>chef/spec/unit/lwrp_spec.rb</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/link.rb'>chef/lib/chef/provider/link.rb</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_metadata.rb'>chef/lib/chef/knife/cookbook_metadata.rb</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/openid_registration.rb'>chef/lib/chef/openid_registration.rb</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/controllers/users.rb'>chef-server-webui/app/controllers/users.rb</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/recipe_spec.rb'>chef/spec/unit/recipe_spec.rb</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/daemon_spec.rb'>chef/spec/unit/daemon_spec.rb</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/public/stylesheets/chef.css'>chef-server-webui/public/stylesheets/chef.css</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/markdown/knife.mkd'>chef/distro/common/markdown/knife.mkd</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_delete.rb'>chef/lib/chef/knife/cookbook_delete.rb</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/service/upstart.rb'>chef/lib/chef/provider/service/upstart.rb</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/bin/chef-indexer'>chef-server/bin/chef-indexer</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/package/dpkg.rb'>chef/lib/chef/provider/package/dpkg.rb</a></td>
+      <td>17</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/node.rb'>lib/chef/node.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_bulk_delete.rb'>chef/lib/chef/knife/cookbook_bulk_delete.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/cron_spec.rb'>chef/spec/unit/provider/cron_spec.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/subversion.rb'>chef/lib/chef/provider/subversion.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/shell_out_spec.rb'>chef/spec/unit/shell_out_spec.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/package/easy_install.rb'>chef/lib/chef/provider/package/easy_install.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/runner_spec.rb'>chef/spec/unit/runner_spec.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/cookbook_uploader.rb'>chef/lib/chef/cookbook_uploader.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/user/useradd.rb'>chef/lib/chef/provider/user/useradd.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_site_share.rb'>chef/lib/chef/knife/cookbook_site_share.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/util/FileEdit.rb'>chef/lib/chef/util/FileEdit.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/service_spec.rb'>chef/spec/unit/provider/service_spec.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/client.rb'>lib/chef/client.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/NOTICE'>NOTICE</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/cookbook/metadata_spec.rb'>chef/spec/unit/cookbook/metadata_spec.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/rest.rb'>lib/chef/rest.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/layout/chef_server_slice.html.haml'>chef-server-slice/app/views/layout/chef_server_slice.html.haml</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/bin/knife'>chef/bin/knife</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource.rb'>lib/chef/resource.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/config/init.rb'>chef-server-api/config/init.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/CHANGELOG'>CHANGELOG</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/erl_call_spec.rb'>chef/spec/unit/provider/erl_call_spec.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/config_spec.rb'>chef/spec/unit/config_spec.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/config/init.rb'>chef-server/config/init.rb</a></td>
+      <td>16</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/index_queue_spec.rb'>chef/spec/unit/index_queue_spec.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_create.rb'>chef/lib/chef/knife/cookbook_create.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/user_spec.rb'>chef/spec/unit/provider/user_spec.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/lib/chef-server-slice.rb'>chef-server-slice/lib/chef-server-slice.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/chef-client/cookbook_sync.feature'>features/chef-client/cookbook_sync.feature</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/certificate.rb'>chef/lib/chef/certificate.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/openid_consumer.rb'>chef-server-slice/app/controllers/openid_consumer.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/service/freebsd.rb'>chef/lib/chef/provider/service/freebsd.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/index_queue/indexable.rb'>chef/lib/chef/index_queue/indexable.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/nodes/show.html.haml'>chef-server-webui/app/views/nodes/show.html.haml</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/Rakefile'>chef-solr/Rakefile</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/service.rb'>chef/lib/chef/resource/service.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/file_cache.rb'>chef/lib/chef/file_cache.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/mixin/command_spec.rb'>chef/spec/unit/mixin/command_spec.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/providers.rb'>chef/lib/chef/providers.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/resource/deploy_spec.rb'>chef/spec/unit/resource/deploy_spec.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/config/dependencies.rb'>chef-server/config/dependencies.rb</a></td>
+      <td>15</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/status/index.html.haml'>chef-server-slice/app/views/status/index.html.haml</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/controllers/clients.rb'>chef-server-api/app/controllers/clients.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/run_list/run_list_expansion.rb'>chef/lib/chef/run_list/run_list_expansion.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_download.rb'>chef/lib/chef/knife/cookbook_download.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/cookbook_test_spec.rb'>chef/spec/unit/knife/cookbook_test_spec.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-cookbook.1'>chef/distro/common/man/man1/knife-cookbook.1</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/execute.rb'>chef/lib/chef/provider/execute.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/role_spec.rb'>chef/spec/unit/role_spec.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/cookbook_spec.rb'>chef/spec/unit/cookbook_spec.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/layout/application.html.haml'>chef-server-webui/app/views/layout/application.html.haml</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/execute.rb'>chef/lib/chef/resource/execute.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/nodes/create_node_api.feature'>features/api/nodes/create_node_api.feature</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/bootstrap/centos5-gems.erb'>chef/lib/chef/knife/bootstrap/centos5-gems.erb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service.rb'>lib/chef/provider/service.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/data_bag_create.rb'>chef/lib/chef/knife/data_bag_create.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/controllers/roles.rb'>chef-server-api/app/controllers/roles.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-cookbook.1.html'>chef/distro/common/html/knife-cookbook.1.html</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/route.rb'>chef/lib/chef/provider/route.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/webui_user.rb'>chef/lib/chef/webui_user.rb</a></td>
+      <td>14</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/index_queue/amqp_client.rb'>chef/lib/chef/index_queue/amqp_client.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife.1.html'>chef/distro/common/html/knife.1.html</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-bootstrap.1.html'>chef/distro/common/html/knife-bootstrap.1.html</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/rest/rest_request.rb'>chef/lib/chef/rest/rest_request.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/package/portage_spec.rb'>chef/spec/unit/provider/package/portage_spec.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/config/init.rb'>chef-server-slice/config/init.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-cookbook-site.1.html'>chef/distro/common/html/knife-cookbook-site.1.html</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/status.rb'>chef/lib/chef/knife/status.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/README.rdoc'>README.rdoc</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/config/router.rb'>chef-server-webui/config/router.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-bootstrap.1'>chef/distro/common/man/man1/knife-bootstrap.1</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/public/javascripts/chef.js'>chef-server-slice/public/javascripts/chef.js</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/service/simple.rb'>chef/lib/chef/provider/service/simple.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/application/indexer.rb'>chef/lib/chef/application/indexer.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/platform_spec.rb'>chef/spec/unit/platform_spec.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_test.rb'>chef/lib/chef/knife/cookbook_test.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/chef-server.gemspec'>chef-server/chef-server.gemspec</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/group/groupadd_spec.rb'>chef/spec/unit/provider/group/groupadd_spec.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/bluebox_server_create.rb'>chef/lib/chef/knife/bluebox_server_create.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-environment.1'>chef/distro/common/man/man1/knife-environment.1</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/cookbooks/show.html.haml'>chef-server-webui/app/views/cookbooks/show.html.haml</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/configure.rb'>chef/lib/chef/knife/configure.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/controllers/search.rb'>chef-server-webui/app/controllers/search.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/remote_directory.rb'>chef/lib/chef/resource/remote_directory.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/config.rb'>lib/chef/config.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-cookbook-site.1'>chef/distro/common/man/man1/knife-cookbook-site.1</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/search.rb'>chef/lib/chef/knife/search.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/run_context.rb'>chef/lib/chef/run_context.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/controllers/sandboxes.rb'>chef-server-api/app/controllers/sandboxes.rb</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife.1'>chef/distro/common/man/man1/knife.1</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-environment.1.html'>chef/distro/common/html/knife-environment.1.html</a></td>
+      <td>13</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-node.1'>chef/distro/common/man/man1/knife-node.1</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/application.rb'>chef-server-slice/app/controllers/application.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-role.1'>chef/distro/common/man/man1/knife-role.1</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/bootstrap_spec.rb'>chef/spec/unit/knife/bootstrap_spec.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-role.1.html'>chef/distro/common/html/knife-role.1.html</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/request_steps.rb'>features/steps/request_steps.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/bootstrap/ubuntu10.04-gems.erb'>chef/lib/chef/knife/bootstrap/ubuntu10.04-gems.erb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-tag.1'>chef/distro/common/man/man1/knife-tag.1</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-exec.1.html'>chef/distro/common/html/knife-exec.1.html</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/roles/create_role_api.feature'>features/api/roles/create_role_api.feature</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/compile_spec.rb'>chef/spec/unit/compile_spec.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/nodes/update_node_api.feature'>features/api/nodes/update_node_api.feature</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-client.1'>chef/distro/common/man/man1/knife-client.1</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/roles/list_roles_api.feature'>features/api/roles/list_roles_api.feature</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/shef_spec.rb'>chef/spec/unit/shef_spec.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-status.1.html'>chef/distro/common/html/knife-status.1.html</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-search.1'>chef/distro/common/man/man1/knife-search.1</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-ssh.1.html'>chef/distro/common/html/knife-ssh.1.html</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/packages.rb'>features/steps/packages.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/solr_query.rb'>chef/lib/chef/solr_query.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-tag.1.html'>chef/distro/common/html/knife-tag.1.html</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/cookbook_file_spec.rb'>chef/spec/unit/provider/cookbook_file_spec.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/service/redhat_spec.rb'>chef/spec/unit/provider/service/redhat_spec.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/remote_file.rb'>chef/lib/chef/resource/remote_file.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/package/dpkg_spec.rb'>chef/spec/unit/provider/package/dpkg_spec.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-client.1.html'>chef/distro/common/html/knife-client.1.html</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/cookbook_version_spec.rb'>chef/spec/unit/cookbook_version_spec.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/controllers/status.rb'>chef-server-webui/app/controllers/status.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/init.rb'>lib/chef/provider/service/init.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/file.rb'>chef/lib/chef/resource/file.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/application/knife_spec.rb'>chef/spec/unit/application/knife_spec.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/daemon.rb'>chef/lib/chef/daemon.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/controllers/databag_items.rb'>chef-server-webui/app/controllers/databag_items.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/erl_call.rb'>chef/lib/chef/resource/erl_call.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-exec.1'>chef/distro/common/man/man1/knife-exec.1</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-ssh.1'>chef/distro/common/man/man1/knife-ssh.1</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-status.1'>chef/distro/common/man/man1/knife-status.1</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/node_show.rb'>chef/lib/chef/knife/node_show.rb</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/roles/update_roles_api.feature'>features/api/roles/update_roles_api.feature</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-node.1.html'>chef/distro/common/html/knife-node.1.html</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/nodes/cookbook_sync_api.feature'>features/api/nodes/cookbook_sync_api.feature</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-search.1.html'>chef/distro/common/html/knife-search.1.html</a></td>
+      <td>12</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/lib/chef/solr/query.rb'>chef-solr/lib/chef/solr/query.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/resource_collection_spec.rb'>chef/spec/unit/resource_collection_spec.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/shef.1.html'>chef/distro/common/html/shef.1.html</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/tasks/rspec.rb'>chef/tasks/rspec.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-index.1'>chef/distro/common/man/man1/knife-index.1</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/service/upstart_service_spec.rb'>chef/spec/unit/provider/service/upstart_service_spec.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-configure.1'>chef/distro/common/man/man1/knife-configure.1</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/service.rb'>lib/chef/resource/service.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/deep_merge.rb'>chef/lib/chef/mixin/deep_merge.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/knife-data-bag.1'>chef/distro/common/man/man1/knife-data-bag.1</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/data_bag_from_file.rb'>chef/lib/chef/knife/data_bag_from_file.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/recipe.rb'>lib/chef/recipe.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man8/chef-client.8'>chef/distro/common/man/man8/chef-client.8</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/generate_url.rb'>chef/lib/chef/mixin/generate_url.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/nodes.rb'>chef-server/lib/controllers/nodes.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/search/show_search.feature'>features/api/search/show_search.feature</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/nodes/_form.html.haml'>chef-server-webui/app/views/nodes/_form.html.haml</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/run_client.rb'>features/steps/run_client.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/status/index.html.haml'>chef-server-webui/app/views/status/index.html.haml</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/streaming_cookbook_uploader.rb'>chef/lib/chef/streaming_cookbook_uploader.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/controllers/data_item.rb'>chef-server-api/app/controllers/data_item.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/runner.rb'>lib/chef/runner.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man1/shef.1'>chef/distro/common/man/man1/shef.1</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/queue.rb'>chef/lib/chef/queue.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/mount_spec.rb'>chef/spec/unit/provider/mount_spec.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/controllers/clients.rb'>chef-server-webui/app/controllers/clients.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/role_from_file.rb'>chef/lib/chef/knife/role_from_file.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource_collection.rb'>chef/lib/chef/resource_collection.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/roles/show_roles_api.feature'>features/api/roles/show_roles_api.feature</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/public/stylesheets/chef.css'>chef-server-slice/public/stylesheets/chef.css</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/lib/chef/solr/application/indexer.rb'>chef-solr/lib/chef/solr/application/indexer.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/solr_query_spec.rb'>chef/spec/unit/solr_query_spec.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/file_access_control.rb'>chef/lib/chef/file_access_control.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/cookbook_site_share_spec.rb'>chef/spec/unit/knife/cookbook_site_share_spec.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/cookbook/cookbook_collection.rb'>chef/lib/chef/cookbook/cookbook_collection.rb</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/nodes/index.html.haml'>chef-server-webui/app/views/nodes/index.html.haml</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man8/chef-solo.8'>chef/distro/common/man/man8/chef-solo.8</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/cookbooks/index.html.haml'>chef-server-webui/app/views/cookbooks/index.html.haml</a></td>
+      <td>11</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-configure.1.html'>chef/distro/common/html/knife-configure.1.html</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/run_context_spec.rb'>chef/spec/unit/run_context_spec.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/redhat/etc/init.d/chef-client'>chef/distro/redhat/etc/init.d/chef-client</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider_spec.rb'>chef/spec/unit/provider_spec.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/controllers/data.rb'>chef-server-api/app/controllers/data.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-index.1.html'>chef/distro/common/html/knife-index.1.html</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/mount.rb'>chef/lib/chef/provider/mount.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/handler.rb'>chef/lib/chef/handler.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/openid_register.rb'>chef-server/lib/controllers/openid_register.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/cookbook_file.rb'>chef/lib/chef/provider/cookbook_file.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/exceptions.rb'>lib/chef/exceptions.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/chef-client.8.html'>chef/distro/common/html/chef-client.8.html</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/service/redhat.rb'>chef/lib/chef/provider/service/redhat.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/node_bulk_delete.rb'>chef/lib/chef/knife/node_bulk_delete.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/node_edit.rb'>chef/lib/chef/knife/node_edit.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/bin/chef-server-webui'>chef-server/bin/chef-server-webui</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-data-bag.1.html'>chef/distro/common/html/knife-data-bag.1.html</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man8/chef-solr.8'>chef/distro/common/man/man8/chef-solr.8</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/redhat/etc/init.d/chef-server'>chef/distro/redhat/etc/init.d/chef-server</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/spec/chef/solr_spec.rb'>chef-solr/spec/chef/solr_spec.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/resource/file_spec.rb'>spec/unit/resource/file_spec.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/examples/config/cookbooks/tempfile/recipes/default.rb'>examples/config/cookbooks/tempfile/recipes/default.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/chef-client/attribute_settings.feature'>features/chef-client/attribute_settings.feature</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/checksum.rb'>chef/lib/chef/mixin/checksum.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/chef-solr.gemspec'>chef-solr/chef-solr.gemspec</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/remote_directory_spec.rb'>chef/spec/unit/provider/remote_directory_spec.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/role_show.rb'>chef/lib/chef/knife/role_show.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/package/rpm_spec.rb'>chef/spec/unit/provider/package/rpm_spec.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/helpers/nodes_helper.rb'>chef-server-slice/app/helpers/nodes_helper.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/package.rb'>chef/lib/chef/resource/package.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/data/Rakefile'>features/data/Rakefile</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/service/gentoo.rb'>chef/lib/chef/provider/service/gentoo.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/public/javascripts/cookbook_constraint_ctrl.js'>chef-server-webui/public/javascripts/cookbook_constraint_ctrl.js</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/group/groupadd.rb'>chef/lib/chef/provider/group/groupadd.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/group.rb'>chef/lib/chef/resource/group.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/resource_spec.rb'>spec/unit/resource_spec.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/provider/deploy/deploy.feature'>features/provider/deploy/deploy.feature</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/controllers/environments.rb'>chef-server-webui/app/controllers/environments.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/node_spec.rb'>spec/unit/node_spec.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/client_create.rb'>chef/lib/chef/knife/client_create.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/lib/chef/solr/application/rebuild.rb'>chef-solr/lib/chef/solr/application/rebuild.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/chef/search.rb'>chef-server/lib/chef/search.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/client_bulk_delete.rb'>chef/lib/chef/knife/client_bulk_delete.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/data_bag_item_spec.rb'>chef/spec/unit/data_bag_item_spec.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/controllers/databags.rb'>chef-server-webui/app/controllers/databags.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/roles.rb'>chef-server-slice/app/controllers/roles.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/data_bag_show_spec.rb'>chef/spec/unit/knife/data_bag_show_spec.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/search/query.rb'>chef/lib/chef/search/query.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/compile_spec.rb'>spec/unit/compile_spec.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/client_show.rb'>chef/lib/chef/knife/client_show.rb</a></td>
+      <td>10</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/template.rb'>chef/lib/chef/resource/template.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/script.rb'>chef/lib/chef/provider/script.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/user.rb'>chef/lib/chef/resource/user.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/nodes/show.html.haml'>chef-server-slice/app/views/nodes/show.html.haml</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/roles/_form.html.erb'>chef-server-webui/app/views/roles/_form.html.erb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/role_bulk_delete.rb'>chef/lib/chef/knife/role_bulk_delete.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/data_bag_show.rb'>chef/lib/chef/knife/data_bag_show.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/layout/login.html.haml'>chef-server-webui/app/views/layout/login.html.haml</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/deploy_steps.rb'>features/steps/deploy_steps.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/files.rb'>features/steps/files.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/find_preferred_file.rb'>chef/lib/chef/mixin/find_preferred_file.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/roles/show.html.haml'>chef-server-webui/app/views/roles/show.html.haml</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/resource/file_spec.rb'>chef/spec/unit/resource/file_spec.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/package/easy_install_spec.rb'>chef/spec/unit/provider/package/easy_install_spec.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/chef-solr.8.html'>chef/distro/common/html/chef-solr.8.html</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/node_list.rb'>chef/lib/chef/knife/node_list.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/cookbook/syntax_check.rb'>chef/lib/chef/cookbook/syntax_check.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/sandbox_steps.rb'>features/steps/sandbox_steps.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/node_from_file.rb'>chef/lib/chef/knife/node_from_file.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/service/windows.rb'>chef/lib/chef/provider/service/windows.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/directory_spec.rb'>chef/spec/unit/provider/directory_spec.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/cookbooks/upload_cookbooks.feature'>features/api/cookbooks/upload_cookbooks.feature</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/gem_package.rb'>chef/lib/chef/resource/gem_package.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/cookbook_bulk_delete_spec.rb'>chef/spec/unit/knife/cookbook_bulk_delete_spec.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/handler_spec.rb'>chef/spec/unit/handler_spec.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/package/rpm.rb'>chef/lib/chef/provider/package/rpm.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/client_reregister.rb'>chef/lib/chef/knife/client_reregister.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man8/chef-server-webui.8'>chef/distro/common/man/man8/chef-server-webui.8</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chefserverslice/lib/chefserverslice.rb'>chefserverslice/lib/chefserverslice.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook.rb'>lib/chef/cookbook.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/http_request_spec.rb'>chef/spec/unit/provider/http_request_spec.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/http_request.rb'>chef/lib/chef/provider/http_request.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/directory.rb'>chef/lib/chef/provider/directory.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/recipe_spec.rb'>spec/unit/recipe_spec.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/controllers/openid_consumer.rb'>chef-server-webui/app/controllers/openid_consumer.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/chef-server.8.html'>chef/distro/common/html/chef-server.8.html</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/roles/_form.html.haml'>chef-server-webui/app/views/roles/_form.html.haml</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/run_list/run_list_expansion_spec.rb'>chef/spec/unit/run_list/run_list_expansion_spec.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/link.rb'>chef/lib/chef/resource/link.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/example-repository/Rakefile'>example-repository/Rakefile</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/user/dscl_spec.rb'>chef/spec/unit/provider/user/dscl_spec.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man8/chef-server.8'>chef/distro/common/man/man8/chef-server.8</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/chef-client/roles.feature'>features/chef-client/roles.feature</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/params_validate.rb'>chef/lib/chef/mixin/params_validate.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/openid_consumer/index.html.haml'>chef-server-slice/app/views/openid_consumer/index.html.haml</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/group.rb'>chef/lib/chef/provider/group.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/mount.rb'>chef/lib/chef/resource/mount.rb</a></td>
+      <td>9</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/rackspace_server_create.rb'>chef/lib/chef/knife/rackspace_server_create.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/client_edit.rb'>chef/lib/chef/knife/client_edit.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/template.rb'>chef/lib/chef/mixin/template.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/cache/checksum.rb'>chef/lib/chef/cache/checksum.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/nodes/index.html.haml'>chef-server-slice/app/views/nodes/index.html.haml</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_site_install.rb'>chef/lib/chef/knife/cookbook_site_install.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/chef-server-webui.8.html'>chef/distro/common/html/chef-server-webui.8.html</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_site_unshare.rb'>chef/lib/chef/knife/cookbook_site_unshare.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/bootstrap/fedora13-gems.erb'>chef/lib/chef/knife/bootstrap/fedora13-gems.erb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/roles/delete_role_api.feature'>features/api/roles/delete_role_api.feature</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/chef-expanderctl.8.html'>chef/distro/common/html/chef-expanderctl.8.html</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/data_bag_edit.rb'>chef/lib/chef/knife/data_bag_edit.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/resource/group_spec.rb'>chef/spec/unit/resource/group_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/role_create.rb'>chef/lib/chef/knife/role_create.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/service/freebsd_service_spec.rb'>chef/spec/unit/provider/service/freebsd_service_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/deploy/revision_spec.rb'>chef/spec/unit/provider/deploy/revision_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/cache/checksum_spec.rb'>chef/spec/unit/cache/checksum_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/provider/file_spec.rb'>spec/unit/provider/file_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/data/create_data_bag_item_api.feature'>features/api/data/create_data_bag_item_api.feature</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/role_edit.rb'>chef/lib/chef/knife/role_edit.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/chef-solo.8.html'>chef/distro/common/html/chef-solo.8.html</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/roles/index.html.haml'>chef-server-webui/app/views/roles/index.html.haml</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/ec2_server_list.rb'>chef/lib/chef/knife/ec2_server_list.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/public/javascript/chef.js'>chef-server/lib/public/javascript/chef.js</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/node_run_list_add.rb'>chef/lib/chef/knife/node_run_list_add.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/resource_definition_spec.rb'>chef/spec/unit/resource_definition_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/README.rdoc'>chef/README.rdoc</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/mixin/template_spec.rb'>chef/spec/unit/mixin/template_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/configure_spec.rb'>chef/spec/unit/knife/configure_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/cookbook_show_spec.rb'>chef/spec/unit/knife/cookbook_show_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/service/gentoo_service_spec.rb'>chef/spec/unit/provider/service/gentoo_service_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/nodes/list_nodes_api.feature'>features/api/nodes/list_nodes_api.feature</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/file.rb'>lib/chef/resource/file.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/mixin/params_validate_spec.rb'>chef/spec/unit/mixin/params_validate_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/ui.rb'>chef/lib/chef/knife/ui.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/bin/chef-server'>chef-server-api/bin/chef-server</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/client_delete.rb'>chef/lib/chef/knife/client_delete.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/config/server.rb'>chef/config/server.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/ec2_server_delete.rb'>chef/lib/chef/knife/ec2_server_delete.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/knife-recipe.1.html'>chef/distro/common/html/knife-recipe.1.html</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/node_bulk_delete_spec.rb'>chef/spec/unit/knife/node_bulk_delete_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/cookbooks/list_cookbooks.feature'>features/api/cookbooks/list_cookbooks.feature</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/group/dscl_spec.rb'>chef/spec/unit/provider/group/dscl_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/node_delete.rb'>chef/lib/chef/knife/node_delete.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/lib/chef/resource/zen_master.rb'>chef/spec/lib/chef/resource/zen_master.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/deploy/revision.rb'>chef/lib/chef/provider/deploy/revision.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/xml_escape.rb'>chef/lib/chef/mixin/xml_escape.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/handler/json_file_spec.rb'>chef/spec/unit/handler/json_file_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/example-repository/cookbooks/fakefile/recipes/default.rb'>example-repository/cookbooks/fakefile/recipes/default.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/environments/_form.html.erb'>chef-server-webui/app/views/environments/_form.html.erb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/markdown/man1/knife-search.mkd'>chef/distro/common/markdown/man1/knife-search.mkd</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/lib/chef/solr/index_queue_consumer.rb'>chef-solr/lib/chef/solr/index_queue_consumer.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/route_spec.rb'>chef/spec/unit/provider/route_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/group_spec.rb'>chef/spec/unit/provider/group_spec.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man8/chef-expanderctl.8'>chef/distro/common/man/man8/chef-expanderctl.8</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/views/nodes/_node.html.haml'>chef-server/lib/views/nodes/_node.html.haml</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/nodes/delete_node_api.feature'>features/api/nodes/delete_node_api.feature</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/cookbook_version_selector.rb'>chef/lib/chef/cookbook_version_selector.rb</a></td>
+      <td>8</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/resource/remote_file_spec.rb'>chef/spec/unit/resource/remote_file_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/group/dscl.rb'>chef/lib/chef/provider/group/dscl.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/bluebox_server_delete.rb'>chef/lib/chef/knife/bluebox_server_delete.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_site_download.rb'>chef/lib/chef/knife/cookbook_site_download.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider.rb'>lib/chef/provider.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/client_list.rb'>chef/lib/chef/knife/client_list.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/directory.rb'>chef/lib/chef/resource/directory.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/package/zypper.rb'>chef/lib/chef/provider/package/zypper.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/config/init.rb'>chef-server-webui/config/init.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/compile.rb'>lib/chef/compile.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/node_create.rb'>chef/lib/chef/knife/node_create.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/chef/search_index.rb'>chef-server/lib/chef/search_index.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/resource/link_spec.rb'>chef/spec/unit/resource/link_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/cookbooks/delete_cookbooks.feature'>features/api/cookbooks/delete_cookbooks.feature</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/search.rb'>chef-server/lib/controllers/search.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/help.rb'>chef/lib/chef/knife/help.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/views/cookbooks/show.html.haml'>chef-server/lib/views/cookbooks/show.html.haml</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/data/show_data_bag_api.feature'>features/api/data/show_data_bag_api.feature</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_site_list.rb'>chef/lib/chef/knife/cookbook_site_list.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/run_solo.rb'>features/steps/run_solo.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/examples/config/chef-solo.rb'>examples/config/chef-solo.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource_definition.rb'>chef/lib/chef/resource_definition.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/bootstrap/archlinux-gems.erb'>chef/lib/chef/knife/bootstrap/archlinux-gems.erb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/Manifest.txt'>Manifest.txt</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/data/delete_data_bag_api.feature'>features/api/data/delete_data_bag_api.feature</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/run_list/run_list_item.rb'>chef/lib/chef/run_list/run_list_item.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/ruby.rb'>chef/lib/chef/resource/ruby.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/yum_package.rb'>chef/lib/chef/resource/yum_package.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/data/roles/role_test.json'>features/data/roles/role_test.json</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/examples/config/cookbooks/servicetest/recipes/default.rb'>examples/config/cookbooks/servicetest/recipes/default.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/openid_server.rb'>chef-server-slice/app/controllers/openid_server.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/role_delete.rb'>chef/lib/chef/knife/role_delete.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/http_request.rb'>chef/lib/chef/resource/http_request.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/bluebox_server_list.rb'>chef/lib/chef/knife/bluebox_server_list.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/checksum_cache.rb'>chef/lib/chef/checksum_cache.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/History.txt'>History.txt</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/portage_package.rb'>chef/lib/chef/resource/portage_package.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/helpers/tarball_helper.rb'>chef-server-api/app/helpers/tarball_helper.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/user/pw_spec.rb'>chef/spec/unit/provider/user/pw_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/index_queue/consumer.rb'>chef/lib/chef/index_queue/consumer.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/ifconfig.rb'>chef/lib/chef/provider/ifconfig.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/markdown/man1/knife-cookbook.mkd'>chef/distro/common/markdown/man1/knife-cookbook.mkd</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/core/text_formatter.rb'>chef/lib/chef/knife/core/text_formatter.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/monkey_patches/string.rb'>chef/lib/chef/monkey_patches/string.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/command.rb'>lib/chef/mixin/command.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/config/router.rb'>chef-server/config/router.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/examples/sample_recipe.rb'>examples/sample_recipe.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/data_bag_delete.rb'>chef/lib/chef/knife/data_bag_delete.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/version_constraint.rb'>chef/lib/chef/version_constraint.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/user/dscl.rb'>chef/lib/chef/provider/user/dscl.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/resource/service_spec.rb'>chef/spec/unit/resource/service_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource_collection.rb'>lib/chef/resource_collection.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/shell_out/windows.rb'>chef/lib/chef/shell_out/windows.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/search_index.rb'>chef/lib/chef/search_index.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/package/macports_spec.rb'>chef/spec/unit/provider/package/macports_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/queue_spec.rb'>chef/spec/unit/queue_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/mixin/checksum_spec.rb'>chef/spec/unit/mixin/checksum_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/helpers/application_helper.rb'>chef-server-slice/app/helpers/application_helper.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/spec/unit/environments_controller_spec.rb'>chef-server-api/spec/unit/environments_controller_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/rest_spec.rb'>spec/unit/rest_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/language_include_attribute.rb'>chef/lib/chef/mixin/language_include_attribute.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/clients/index.html.haml'>chef-server-webui/app/views/clients/index.html.haml</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/cron.rb'>chef/lib/chef/resource/cron.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/script.rb'>chef/lib/chef/resource/script.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/cookbook_files.rb'>chef-server/lib/controllers/cookbook_files.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/file_cache_spec.rb'>chef/spec/unit/file_cache_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/search.rb'>chef/lib/chef/search.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/run_list/versioned_recipe_list.rb'>chef/lib/chef/run_list/versioned_recipe_list.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/data_bag_spec.rb'>chef/spec/unit/data_bag_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/models/sandbox_file.rb'>chef-server-api/app/models/sandbox_file.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/service/windows_spec.rb'>chef/spec/unit/provider/service/windows_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/controllers/main.rb'>chef-server-api/app/controllers/main.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/data_bag_create_spec.rb'>chef/spec/unit/knife/data_bag_create_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/cookbooks/show.html.haml'>chef-server-slice/app/views/cookbooks/show.html.haml</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/cookbook_metadata_from_file_spec.rb'>chef/spec/unit/knife/cookbook_metadata_from_file_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/support/couchdb_replicate.rb'>features/support/couchdb_replicate.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/file.rb'>lib/chef/provider/file.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/app/helpers/application_helper.rb'>chef-server-api/app/helpers/application_helper.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/core/ui.rb'>chef/lib/chef/knife/core/ui.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/mixin/params_validate.rb'>lib/chef/mixin/params_validate.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef_server/controllers/cookbooks.rb'>lib/chef_server/controllers/cookbooks.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-expander/chef-expander.gemspec'>chef-expander/chef-expander.gemspec</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/search/list_search.feature'>features/api/search/list_search.feature</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/cookbook_create_spec.rb'>chef/spec/unit/knife/cookbook_create_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/cookbook_loader.rb'>lib/chef/cookbook_loader.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/data/create_data_bag_api.feature'>features/api/data/create_data_bag_api.feature</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/nodes/_node.html.haml'>chef-server-slice/app/views/nodes/_node.html.haml</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/scm.rb'>chef/lib/chef/resource/scm.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/index_rebuild_spec.rb'>chef/spec/unit/knife/index_rebuild_spec.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/clients/create_client_api.feature'>features/api/clients/create_client_api.feature</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/data/config/client.rb'>features/data/config/client.rb</a></td>
+      <td>7</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/cookbook_templates.rb'>chef-server/lib/controllers/cookbook_templates.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/roles/edit.html.haml'>chef-server-webui/app/views/roles/edit.html.haml</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/log/formatter_spec.rb'>spec/unit/log/formatter_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/python.rb'>chef/lib/chef/resource/python.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/role_from_file_spec.rb'>chef/spec/unit/knife/role_from_file_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/cookbook/metadata/version.rb'>chef/lib/chef/cookbook/metadata/version.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/util/spec/FileEdit/FileEdit_spec.rb'>chef/lib/chef/util/spec/FileEdit/FileEdit_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/environment_create.rb'>chef/lib/chef/knife/environment_create.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/spec/chef/solr/index_spec.rb'>chef-solr/spec/chef/solr/index_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/node_list_spec.rb'>chef/spec/unit/knife/node_list_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/helpers/global_helpers.rb'>chef-server-webui/app/helpers/global_helpers.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/apt.rb'>lib/chef/provider/apt.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/template.rb'>lib/chef/provider/template.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/rackspace_server_list.rb'>chef/lib/chef/knife/rackspace_server_list.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/helpers/status_helper.rb'>chef-server-slice/app/helpers/status_helper.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/role_list.rb'>chef/lib/chef/knife/role_list.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/apt_package.rb'>chef/lib/chef/resource/apt_package.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/transfer_remote_files.feature'>features/transfer_remote_files.feature</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/script_spec.rb'>chef/spec/unit/provider/script_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/spec/unit/nodes_controller_environments_spec.rb'>chef-server-api/spec/unit/nodes_controller_environments_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/data/list_data_bags.feature'>features/api/data/list_data_bags.feature</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/cookbooks/lightweight_resources_and_providers.feature'>features/cookbooks/lightweight_resources_and_providers.feature</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/resource_collection_spec.rb'>spec/unit/resource_collection_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/bootstrap/ubuntu10.04-apt.erb'>chef/lib/chef/knife/bootstrap/ubuntu10.04-apt.erb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/status.rb'>chef-server-slice/app/controllers/status.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/environment_edit.rb'>chef/lib/chef/knife/environment_edit.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/chef-client/run_interval.feature'>features/chef-client/run_interval.feature</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/layout/chef_server_webui.html.haml'>chef-server-webui/app/views/layout/chef_server_webui.html.haml</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/nodes/edit.html.haml'>chef-server-webui/app/views/nodes/edit.html.haml</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/spec_helper.rb'>spec/spec_helper.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/examples/config/nodes/junglist.gen.nz.rb'>examples/config/nodes/junglist.gen.nz.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/openid_register/index.html.haml'>chef-server-slice/app/views/openid_register/index.html.haml</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/databags/show.html.haml'>chef-server-webui/app/views/databags/show.html.haml</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/cookbooks/list_cookbooks_api.feature'>features/api/cookbooks/list_cookbooks_api.feature</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/nodes/show_node_api.feature'>features/api/nodes/show_node_api.feature</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/node_run_list_remove.rb'>chef/lib/chef/knife/node_run_list_remove.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/config/environments/production.rb'>chef-server/config/environments/production.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/solr/solr-home.tar.gz'>chef-solr/solr/solr-home.tar.gz</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/file_store.rb'>lib/chef/file_store.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/cookbook/syntax_check_spec.rb'>chef/spec/unit/cookbook/syntax_check_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-expander/lib/chef/expander/configuration.rb'>chef-expander/lib/chef/expander/configuration.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/lib/chef/provider/snakeoil.rb'>chef/spec/lib/chef/provider/snakeoil.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/terremark_server_create.rb'>chef/lib/chef/knife/terremark_server_create.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/perl.rb'>chef/lib/chef/resource/perl.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/core/generic_presenter.rb'>chef/lib/chef/knife/core/generic_presenter.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/fileedit_spec.rb'>chef/spec/unit/fileedit_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/openid_server.rb'>chef-server/lib/controllers/openid_server.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/bbg_server_create.rb'>chef/lib/chef/knife/bbg_server_create.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/configure_client.rb'>chef/lib/chef/knife/configure_client.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/clients/show_client_api.feature'>features/api/clients/show_client_api.feature</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/ruby_block.rb'>chef/lib/chef/provider/ruby_block.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/couchdb.rb'>lib/chef/couchdb.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/service/base.rb'>lib/chef/provider/service/base.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/lib/chef/resource/cat.rb'>chef/spec/lib/chef/resource/cat.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/search/index.html.haml'>chef-server-webui/app/views/search/index.html.haml</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/recipe_list.rb'>chef/lib/chef/knife/recipe_list.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/clients/list_clients_api.feature'>features/api/clients/list_clients_api.feature</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/markdown/man1/knife.mkd'>chef/distro/common/markdown/man1/knife.mkd</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/exceptions.rb'>chef-server-slice/app/controllers/exceptions.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/node_edit_spec.rb'>chef/spec/unit/knife/node_edit_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/cookbooks/show_cookbook_attributes_api.feature'>features/api/cookbooks/show_cookbook_attributes_api.feature</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/config_spec.rb'>spec/unit/config_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/example-repository/cookbooks/tempfile/metadata.json'>example-repository/cookbooks/tempfile/metadata.json</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/search/query_spec.rb'>chef/spec/unit/search/query_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/example-repository/cookbooks/fakefile/metadata.json'>example-repository/cookbooks/fakefile/metadata.json</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/README.txt'>chef-server/README.txt</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/markdown/man1/knife-cookbook-site.mkd'>chef/distro/common/markdown/man1/knife-cookbook-site.mkd</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/application.rb'>chef-server/lib/controllers/application.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/databags/index.html.haml'>chef-server-webui/app/views/databags/index.html.haml</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/slicehost_server_list.rb'>chef/lib/chef/knife/slicehost_server_list.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/redhat/etc/init.d/chef-indexer'>chef/distro/redhat/etc/init.d/chef-indexer</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/resource/template_spec.rb'>chef/spec/unit/resource/template_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resources.rb'>chef/lib/chef/resources.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/search/search_data.feature'>features/search/search_data.feature</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/cookbook/file_system_file_vendor.rb'>chef/lib/chef/cookbook/file_system_file_vendor.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/csh.rb'>chef/lib/chef/resource/csh.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/search_index_spec.rb'>spec/unit/search_index_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/ec2_instance_data.rb'>chef/lib/chef/knife/ec2_instance_data.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/bin/chef-server-webui'>chef-server-webui/bin/chef-server-webui</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/bluebox_images_list.rb'>chef/lib/chef/knife/bluebox_images_list.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/nanite.rb'>chef/lib/chef/nanite.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/shell_out.rb'>chef/lib/chef/mixin/shell_out.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/cookbooks/show_cookbook_api.feature'>features/api/cookbooks/show_cookbook_api.feature</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/git.rb'>chef/lib/chef/resource/git.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/rackspace_server_delete.rb'>chef/lib/chef/knife/rackspace_server_delete.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/cookbook_libraries.rb'>chef-server/lib/controllers/cookbook_libraries.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/easy_install_package.rb'>chef/lib/chef/resource/easy_install_package.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/markdown/man1/knife-node.mkd'>chef/distro/common/markdown/man1/knife-node.mkd</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/data/delete_data_bag_item.feature'>features/api/data/delete_data_bag_item.feature</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/checksum.rb'>chef/lib/chef/checksum.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/public/stylesheets/base.css'>chef-server-slice/public/stylesheets/base.css</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/bin/chef-solo'>bin/chef-solo</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/slicehost_server_delete.rb'>chef/lib/chef/knife/slicehost_server_delete.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/file_access_control_spec.rb'>chef/spec/unit/file_access_control_spec.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/nodes/_form.html.erb'>chef-server-webui/app/views/nodes/_form.html.erb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/public/stylesheets/themes/djime-cerulean/style.css'>chef-server-webui/public/stylesheets/themes/djime-cerulean/style.css</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource/directory.rb'>lib/chef/resource/directory.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/environment_show.rb'>chef/lib/chef/knife/environment_show.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/bash.rb'>chef/lib/chef/resource/bash.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/slicehost_server_create.rb'>chef/lib/chef/knife/slicehost_server_create.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/environment_delete.rb'>chef/lib/chef/knife/environment_delete.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/ohai.rb'>chef/lib/chef/provider/ohai.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/cookbooks.rb'>chef-server-slice/app/controllers/cookbooks.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/bin/shef'>chef/bin/shef</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/slicehost_images_list.rb'>chef/lib/chef/knife/slicehost_images_list.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-expander/Rakefile'>chef-expander/Rakefile</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/windows_bootstrap.rb'>chef/lib/chef/knife/windows_bootstrap.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/openid_consumer.rb'>chef-server/lib/controllers/openid_consumer.rb</a></td>
+      <td>6</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/tag_create.rb'>chef/lib/chef/knife/tag_create.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/chef_spec.rb'>spec/unit/chef_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/cookbook_templates/index.html.haml'>chef-server-slice/app/views/cookbook_templates/index.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/helpers/cookbooks_helper.rb'>chef-server-slice/app/helpers/cookbooks_helper.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/application/server.rb'>chef/lib/chef/application/server.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/public/stylesheets/themes/kathleene/style.css'>chef-server-slice/public/stylesheets/themes/kathleene/style.css</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/exec.rb'>chef/lib/chef/knife/exec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/cookbook_definitions.rb'>chef-server-slice/app/controllers/cookbook_definitions.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/bin/chef-client'>bin/chef-client</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/public/stylesheets/base.css'>chef-server-webui/public/stylesheets/base.css</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/ruby_block_spec.rb'>chef/spec/unit/provider/ruby_block_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/cookbook_attributes.rb'>chef-server-slice/app/controllers/cookbook_attributes.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/redhat/etc/init.d/chef-solr-indexer'>chef/distro/redhat/etc/init.d/chef-solr-indexer</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/roles/new.html.haml'>chef-server-slice/app/views/roles/new.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/arch/etc/rc.d/chef-solr-indexer'>chef/distro/arch/etc/rc.d/chef-solr-indexer</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/debian/etc/init.d/chef-client'>chef/distro/debian/etc/init.d/chef-client</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/example-repository/cookbooks/CHEF-56/recipes/default.rb'>example-repository/cookbooks/CHEF-56/recipes/default.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef_server/views/layout/application.html.haml'>lib/chef_server/views/layout/application.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/cookbook/remote_file_vendor.rb'>chef/lib/chef/cookbook/remote_file_vendor.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/client_create_spec.rb'>chef/spec/unit/knife/client_create_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/config.ru'>chef-server/config.ru</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/handler/json_file.rb'>chef/lib/chef/handler/json_file.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/api_client_spec.rb'>chef/spec/unit/api_client_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/cookbooks.rb'>chef-server/lib/controllers/cookbooks.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/data_bag_list.rb'>chef/lib/chef/knife/data_bag_list.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/markdown/man1/knife-ssh.mkd'>chef/distro/common/markdown/man1/knife-ssh.mkd</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/node_from_file_spec.rb'>chef/spec/unit/knife/node_from_file_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/cookbook_attributes.rb'>chef-server/lib/controllers/cookbook_attributes.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/config/rack.rb'>chef-server/config/rack.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/terremark_server_delete.rb'>chef/lib/chef/knife/terremark_server_delete.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/spec/spec_helper.rb'>chef-solr/spec/spec_helper.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/environments/update_environment_api.feature'>features/api/environments/update_environment_api.feature</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/public/stylesheets/themes/bec-green/style.css'>chef-server-slice/public/stylesheets/themes/bec-green/style.css</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/tiny_server.rb'>chef/spec/tiny_server.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/helpers/nodes_helper.rb'>chef-server-webui/app/helpers/nodes_helper.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/convert_to_class_name.rb'>chef/lib/chef/mixin/convert_to_class_name.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/provider/template_spec.rb'>spec/unit/provider/template_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/examples/config/cookbooks/fakefile/attributes/first.rb'>examples/config/cookbooks/fakefile/attributes/first.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/layout/login.html.haml'>chef-server-slice/app/views/layout/login.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/mixin/params_validate_spec.rb'>spec/unit/mixin/params_validate_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/shef/model_wrapper.rb'>chef/lib/chef/shef/model_wrapper.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/roles/_form.html.haml'>chef-server-slice/app/views/roles/_form.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_site_search.rb'>chef/lib/chef/knife/cookbook_site_search.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/pkg/chef-server-0.0.1.gem'>chef-server/pkg/chef-server-0.0.1.gem</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/public/javascripts/JSONeditor.js'>chef-server-slice/public/javascripts/JSONeditor.js</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/nodes/_form.html.haml'>chef-server-slice/app/views/nodes/_form.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/roles/edit.html.haml'>chef-server-slice/app/views/roles/edit.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man8/chef-expander.8'>chef/distro/common/man/man8/chef-expander.8</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/create_path.rb'>chef/lib/chef/mixin/create_path.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/views/nodes/show.html.haml'>chef-server/lib/views/nodes/show.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/role_edit_spec.rb'>chef/spec/unit/knife/role_edit_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/group/pw_spec.rb'>chef/spec/unit/provider/group/pw_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/log_spec.rb'>chef/spec/unit/log_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/environment_list.rb'>chef/lib/chef/knife/environment_list.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/redhat/etc/init.d/chef-solr'>chef/distro/redhat/etc/init.d/chef-solr</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/helpers/search_helper.rb'>chef-server-webui/app/helpers/search_helper.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/public/stylesheets/themes/blue/style.css'>chef-server-slice/public/stylesheets/themes/blue/style.css</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/provider_spec.rb'>spec/unit/provider_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/public/stylesheets/themes/default/style.css'>chef-server-slice/public/stylesheets/themes/default/style.css</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/client_bulk_delete_spec.rb'>chef/spec/unit/knife/client_bulk_delete_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/ifconfig.rb'>chef/lib/chef/resource/ifconfig.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/openid_registration_spec.rb'>chef/spec/unit/openid_registration_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/resource_definition.rb'>lib/chef/resource_definition.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/lib/chef/resource/cat.rb'>spec/lib/chef/resource/cat.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/package/macports.rb'>chef/lib/chef/provider/package/macports.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/cookbook_libraries.rb'>chef-server-slice/app/controllers/cookbook_libraries.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/cookbook_spec.rb'>spec/unit/cookbook_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/data/cookbooks/openldap/attributes/default.rb'>spec/data/cookbooks/openldap/attributes/default.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/provider/package/zypper_spec.rb'>chef/spec/unit/provider/package/zypper_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/pkg/chef-0.0.1.gem'>chef/pkg/chef-0.0.1.gem</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/helpers/global_helpers.rb'>chef-server-slice/app/helpers/global_helpers.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/LICENSE'>chef-server/LICENSE</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/steps/couchdb_steps.rb'>features/steps/couchdb_steps.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/subversion.rb'>chef/lib/chef/resource/subversion.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/users/_form.html.haml'>chef-server-webui/app/views/users/_form.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/cookbook_recipes.rb'>chef-server/lib/controllers/cookbook_recipes.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-expander/spec/unit/configuration_spec.rb'>chef-expander/spec/unit/configuration_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/cookbook_download_spec.rb'>chef/spec/unit/knife/cookbook_download_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/encrypted_data_bag_item.rb'>chef/lib/chef/encrypted_data_bag_item.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/data/cookbooks/deploy/recipes/embedded_recipe_callbacks.rb'>features/data/cookbooks/deploy/recipes/embedded_recipe_callbacks.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/redhat/etc/sysconfig/chef-server'>chef/distro/redhat/etc/sysconfig/chef-server</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/data/roles/role_env_test.json'>features/data/roles/role_env_test.json</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/bin/chef-indexer'>bin/chef-indexer</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/directory.rb'>lib/chef/provider/directory.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/bin/chef-solr-indexer'>chef-solr/bin/chef-solr-indexer</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/version_class.rb'>chef/lib/chef/version_class.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/lib/chef/solr/index.rb'>chef-solr/lib/chef/solr/index.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/openid_register.rb'>chef-server-slice/app/controllers/openid_register.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/roles/show.html.haml'>chef-server-slice/app/views/roles/show.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/chef-expander-cluster.8.html'>chef/distro/common/html/chef-expander-cluster.8.html</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/cookbook_definitions.rb'>chef-server/lib/controllers/cookbook_definitions.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/search/index.html.haml'>chef-server-slice/app/views/search/index.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/scripts/mac-dev-start'>scripts/mac-dev-start</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/knife/environment_edit_spec.rb'>chef/spec/unit/knife/environment_edit_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/application/indexer_spec.rb'>chef/spec/unit/application/indexer_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/manage_files.feature'>features/manage_files.feature</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef_server/controllers/application.rb'>lib/chef_server/controllers/application.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/views/search/show.html.haml'>chef-server/lib/views/search/show.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/man/man8/chef-expander-cluster.8'>chef/distro/common/man/man8/chef-expander-cluster.8</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/cookbook_files.rb'>chef-server-slice/app/controllers/cookbook_files.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/openid_login/index.html.haml'>chef-server-slice/app/views/openid_login/index.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/README.txt'>chef/README.txt</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-api/spec/unit/sandbox_file_spec.rb'>chef-server-api/spec/unit/sandbox_file_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/mixin/language_spec.rb'>chef/spec/unit/mixin/language_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/resource/execute_spec.rb'>chef/spec/unit/resource/execute_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/run_list/versioned_recipe_list_spec.rb'>chef/spec/unit/run_list/versioned_recipe_list_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/mdadm.rb'>chef/lib/chef/provider/mdadm.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/mixin/language_include_recipe.rb'>chef/lib/chef/mixin/language_include_recipe.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/data/show_data_bag_item_api.feature'>features/api/data/show_data_bag_item_api.feature</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/provider/file/manage_files.feature'>features/provider/file/manage_files.feature</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/environments/list_environment_cookbooks_api.feature'>features/api/environments/list_environment_cookbooks_api.feature</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef.rb'>lib/chef.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/terremark_server_list.rb'>chef/lib/chef/knife/terremark_server_list.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/resource/route.rb'>chef/lib/chef/resource/route.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/run_list/run_list_item_spec.rb'>chef/spec/unit/run_list/run_list_item_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/provider/group/pw.rb'>chef/lib/chef/provider/group/pw.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/config/chef-server.rb'>config/chef-server.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/sandboxes/sandboxes_api.feature'>features/api/sandboxes/sandboxes_api.feature</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/cookbook_recipes.rb'>chef-server-slice/app/controllers/cookbook_recipes.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/features/api/clients/update_client_api.feature'>features/api/clients/update_client_api.feature</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/controllers/search_entries.rb'>chef-server-slice/app/controllers/search_entries.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/file_store_spec.rb'>spec/unit/file_store_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/views/layout/application.html.haml'>chef-server/lib/views/layout/application.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/public/stylesheets/themes/bec/style.css'>chef-server-slice/public/stylesheets/themes/bec/style.css</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/helpers/openid_server_helpers.rb'>chef-server-webui/app/helpers/openid_server_helpers.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/lib/chef/knife/cookbook_site_show.rb'>chef/lib/chef/knife/cookbook_site_show.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/environments/show.html.haml'>chef-server-webui/app/views/environments/show.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/markdown/man1/knife-bootstrap.mkd'>chef/distro/common/markdown/man1/knife-bootstrap.mkd</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/app/views/search/show.html.haml'>chef-server-slice/app/views/search/show.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-webui/app/views/search/show.html.haml'>chef-server-webui/app/views/search/show.html.haml</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/distro/common/html/chef-expander.8.html'>chef/distro/common/html/chef-expander.8.html</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/resource/directory_spec.rb'>chef/spec/unit/resource/directory_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/cookbook_manifest_spec.rb'>chef/spec/unit/cookbook_manifest_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/public/stylesheets/themes/orange/style.css'>chef-server-slice/public/stylesheets/themes/orange/style.css</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-solr/solr/solr-jetty.tar.gz'>chef-solr/solr/solr-jetty.tar.gz</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server-slice/public/stylesheets/themes/reidb-greenish/style.css'>chef-server-slice/public/stylesheets/themes/reidb-greenish/style.css</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/spec/unit/cookbook_loader_spec.rb'>spec/unit/cookbook_loader_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/examples/sample_definition.rb'>examples/sample_definition.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/lib/chef/provider/package.rb'>lib/chef/provider/package.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef/spec/unit/mixin/find_preferred_file_spec.rb'>chef/spec/unit/mixin/find_preferred_file_spec.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+    <tr>
+      <td><a href='file:///home/pratima/Documents/chef_refactoring/chef/chef/chef-server/lib/controllers/search_entries.rb'>chef-server/lib/controllers/search_entries.rb</a></td>
+      <td>5</td>
+    </tr>
+    
+  
+</table>
+<p>Generated on Thu Oct 20 17:05:40 +0530 2011</p>	
+
+    </div>
+  </body>
+</html>

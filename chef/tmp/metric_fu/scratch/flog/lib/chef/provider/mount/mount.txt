@@ -1,0 +1,185 @@
+   310.4: flog total
+    16.3: flog/method average
+
+    38.1: Chef::Provider::Mount::Mount#mount_fs lib/chef/provider/mount/mount.rb:91
+    11.4:   branch
+     5.6:   options
+     5.0:   mount_point
+     4.6:   <<
+     3.8:   device
+     2.9:   debug
+     1.9:   device_real
+     1.8:   join
+     1.7:   device_type
+     1.6:   empty?
+     1.6:   nil?
+     1.5:   assignment
+     1.5:   mountable?
+     1.5:   fstype
+     1.5:   shell_out!
+     1.3:   mounted
+
+    32.1: Chef::Provider::Mount::Mount#enabled? lib/chef/provider/mount/mount.rb:53
+     7.4:   mount_point
+     7.2:   branch
+     6.1:   assignment
+     3.8:   to_i
+     3.4:   debug
+     3.2:   escape
+     1.9:   device_fstab
+     1.7:   pass
+     1.7:   fstype
+     1.7:   options
+     1.7:   dump
+     1.6:   device_fstab_regex
+     1.3:   foreach
+     1.3:   enabled
+
+    29.7: Chef::Provider::Mount::Mount#enable_fs lib/chef/provider/mount/mount.rb:135
+     6.9:   branch
+     3.9:   options
+     3.4:   mount_point
+     3.0:   debug
+     2.7:   enabled
+     1.8:   join
+     1.7:   pass
+     1.7:   dump
+     1.7:   nil?
+     1.7:   fstype
+     1.7:   device_fstab
+     1.5:   puts
+     1.4:   disable_fs
+     1.4:   mount_options_unchanged?
+     1.4:   assignment
+     1.3:   open
+
+    27.0: Chef::Provider::Mount::Mount#mounted? lib/chef/provider/mount/mount.rb:76
+     7.4:   mount_point
+     6.1:   assignment
+     5.7:   branch
+     3.4:   debug
+     3.2:   escape
+     1.9:   device_logstring
+     1.9:   []
+     1.7:   shell_out!
+     1.6:   device_mount_regex
+     1.5:   stdout
+     1.3:   mounted
+     1.3:   each_line
+     0.5:   lit_fixnum
+
+    23.6: Chef::Provider::Mount::Mount#disable_fs lib/chef/provider/mount/mount.rb:152
+     9.7:   assignment
+     9.1:   branch
+     3.2:   debug
+     3.1:   reverse_each
+     1.9:   mount_point
+     1.7:   puts
+     1.7:   <<
+     1.7:   escape
+     1.7:   device_fstab_regex
+     1.7:   readlines
+     1.5:   open
+     1.3:   enabled
+
+    23.2: Chef::Provider::Mount::Mount#device_real lib/chef/provider/mount/mount.rb:192
+    16.9:   assignment
+     6.1:   branch
+     2.7:   ==
+     1.9:   chomp
+     1.8:   first
+     1.8:   nil?
+     1.8:   device_fstab
+     1.6:   popen4
+     1.6:   device_type
+     1.5:   device
+
+    22.5: Chef::Provider::Mount::Mount#remount_fs lib/chef/provider/mount/mount.rb:121
+     5.1:   mount_point
+     4.0:   branch
+     3.0:   debug
+     2.8:   mounted
+     1.6:   sleep
+     1.6:   umount_fs
+     1.6:   mount_fs
+     1.6:   supports
+     1.5:   shell_out!
+     1.5:   updated_by_last_action
+     1.4:   []
+     0.5:   lit_fixnum
+
+    20.3: Chef::Provider::Mount::Mount#mount_options_unchanged? lib/chef/provider/mount/mount.rb:230
+     6.1:   ==
+     4.2:   branch
+     3.6:   dump
+     3.6:   pass
+     3.4:   options
+     3.2:   fstype
+
+    14.2: Chef::Provider::Mount::Mount#mountable? lib/chef/provider/mount/mount.rb:43
+     4.0:   branch
+     3.3:   mount_point
+     2.9:   raise
+     2.8:   exists?
+     1.6:   device
+     1.6:   device_real
+     1.4:   device_should_exist?
+
+    13.7: Chef::Provider::Mount::Mount#device_mount_regex lib/chef/provider/mount/mount.rb:218
+     6.5:   device_real
+     4.2:   escape
+     1.6:   readlink
+     1.3:   branch
+     1.3:   symlink?
+
+    11.1: Chef::Provider::Mount::Mount#load_current_resource lib/chef/provider/mount/mount.rb:35
+     2.8:   mount_point
+     2.8:   device
+     1.5:   name
+     1.3:   enabled?
+     1.3:   assignment
+     1.3:   mounted?
+     1.3:   new
+
+    10.8: Chef::Provider::Mount::Mount#umount_fs lib/chef/provider/mount/mount.rb:112
+     5.0:   mount_point
+     2.9:   debug
+     1.5:   shell_out!
+     1.3:   branch
+     1.3:   mounted
+
+    10.6: Chef::Provider::Mount::Mount#device_should_exist? lib/chef/provider/mount/mount.rb:175
+     4.7:   device
+     4.2:   branch
+     3.2:   ==
+     1.8:   fstype
+
+    10.4: Chef::Provider::Mount::Mount#device_logstring lib/chef/provider/mount/mount.rb:207
+     5.5:   branch
+     4.5:   device_real
+     3.0:   device
+     1.3:   device_type
+
+     8.0: Chef::Provider::Mount::Mount#device_fstab lib/chef/provider/mount/mount.rb:181
+     5.5:   branch
+     4.5:   device
+     1.3:   device_type
+
+     5.7: Chef::Provider::Mount::Mount#device_fstab_regex lib/chef/provider/mount/mount.rb:222
+     1.5:   device_type
+     1.4:   device_fstab
+     1.4:   device_mount_regex
+     1.3:   ==
+     1.3:   branch
+
+     4.8: Chef::Provider::Mount::Mount#none
+     2.4:   include
+     1.2:   private
+     1.2:   attr_accessor
+
+     3.3: main#none
+     3.3:   require
+
+     1.3: Chef::Provider::Mount::Mount#initialize lib/chef/provider/mount/mount.rb:29
+     1.3:   assignment
+

@@ -1,0 +1,48 @@
+    36.4: flog total
+     4.0: flog/method average
+
+    15.1: Chef::Resource::File#mode        lib/chef/resource/file.rb:66
+     6.7:   branch
+     4.8:   assignment
+     4.0:   Integer
+     1.8:   >=
+     1.8:   <=
+     1.7:   kind_of?
+     1.5:   lambda
+     1.3:   set_or_return
+     0.5:   lit_fixnum
+
+     6.7: Chef::Resource::File#initialize  lib/chef/resource/file.rb:25
+     6.5:   assignment
+     1.3:   push
+     0.3:   lit_fixnum
+
+     3.1: Chef::Resource::File#owner       lib/chef/resource/file.rb:81
+     1.5:   []
+     1.3:   assignment
+     1.3:   set_or_return
+
+     3.1: Chef::Resource::File#group       lib/chef/resource/file.rb:58
+     1.5:   []
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::File#backup      lib/chef/resource/file.rb:42
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::File#content     lib/chef/resource/file.rb:34
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::File#checksum    lib/chef/resource/file.rb:50
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::File#path        lib/chef/resource/file.rb:89
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.1: main#none
+     1.1:   require
+

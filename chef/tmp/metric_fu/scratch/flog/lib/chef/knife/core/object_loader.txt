@@ -1,0 +1,47 @@
+    41.4: flog total
+     6.9: flog/method average
+
+    13.2: Chef::Knife::Core::ObjectLoader#object_from_file lib/chef/knife/core/object_loader.rb:53
+     3.8:   branch
+     1.7:   klass
+     1.6:   read
+     1.6:   ui
+     1.5:   assignment
+     1.5:   from_file
+     1.5:   new
+     1.4:   from_json
+     1.4:   fatal
+     1.4:   exit
+     0.4:   lit_fixnum
+
+    11.8: Chef::Knife::Core::ObjectLoader#find_file lib/chef/knife/core/object_loader.rb:40
+     3.1:   last
+     2.7:   expand_path
+     2.6:   file_exists_and_is_readable?
+     2.6:   branch
+     1.6:   pwd
+     1.4:   join
+     1.4:   assignment
+
+     9.0: Chef::Knife::Core::ObjectLoader#load_from lib/chef/knife/core/object_loader.rb:32
+     1.6:   join
+     1.6:   ui
+     1.4:   exit
+     1.4:   error
+     1.2:   branch
+     1.2:   object_from_file
+     1.2:   assignment
+     1.2:   find_file
+     0.4:   lit_fixnum
+
+     2.9: Chef::Knife::Core::ObjectLoader#file_exists_and_is_readable? lib/chef/knife/core/object_loader.rb:67
+     1.3:   exists?
+     1.3:   readable?
+     1.2:   branch
+
+     2.4: Chef::Knife::Core::ObjectLoader#initialize lib/chef/knife/core/object_loader.rb:27
+     2.4:   assignment
+
+     2.2: Chef::Knife::Core::ObjectLoader#none
+     2.2:   attr_reader
+

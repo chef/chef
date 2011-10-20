@@ -1,0 +1,19 @@
+    11.8: flog total
+     3.9: flog/method average
+
+     6.2: Chef::Knife::DataBagList#none
+     1.3:   require
+     1.2:   category
+     1.2:   banner
+     1.2:   deps
+     1.2:   option
+     1.2:   branch
+
+     4.5: Chef::Knife::DataBagList#run     lib/chef/knife/data_bag_list.rb:37
+     1.7:   list
+     1.5:   format_list_for_display
+     1.3:   output
+
+     1.1: main#none
+     1.1:   require
+

@@ -1,0 +1,83 @@
+   123.5: flog total
+    11.2: flog/method average
+
+    24.0: namespace::namespace::task#setup_directories lib/chef-server-webui/merbtasks.rb:12
+     4.5:   assignment
+     4.0:   root
+     3.9:   branch
+     2.8:   puts
+     2.7:   directory?
+     2.0:   basename
+     1.8:   /
+     1.6:   relative_path_from
+     1.6:   mkdir_p
+     1.6:   app_dir_for
+     1.5:   dir_for
+     1.4:   mirrored_components
+     1.2:   each
+     1.1:   task
+
+    15.9: namespace::namespace::namespace::task#unpack lib/chef-server-webui/merbtasks.rb:92
+     6.7:   assignment
+     5.5:   puts
+     5.2:   branch
+     2.8:   empty?
+     2.6:   each
+     1.3:   unpack_slice!
+     1.2:   task
+
+    15.9: namespace::namespace::namespace::task#models lib/chef-server-webui/merbtasks.rb:80
+     6.7:   assignment
+     5.5:   puts
+     5.2:   branch
+     2.8:   empty?
+     2.6:   each
+     1.3:   mirror_files_for
+     1.2:   task
+
+    15.9: namespace::namespace::namespace::task#app lib/chef-server-webui/merbtasks.rb:62
+     6.7:   assignment
+     5.5:   puts
+     5.2:   branch
+     2.8:   empty?
+     2.6:   each
+     1.3:   mirror_app!
+     1.2:   task
+
+    15.9: namespace::namespace::namespace::task#views lib/chef-server-webui/merbtasks.rb:71
+     6.7:   assignment
+     5.5:   puts
+     5.2:   branch
+     2.8:   empty?
+     2.6:   each
+     1.3:   mirror_files_for
+     1.2:   task
+
+    14.7: namespace::namespace::task#copy_assets lib/chef-server-webui/merbtasks.rb:38
+     6.2:   assignment
+     5.1:   puts
+     4.8:   branch
+     2.6:   empty?
+     2.4:   each
+     1.2:   mirror_public!
+     1.1:   task
+
+     9.8: namespace::namespace#chefserverslice lib/chef-server-webui/merbtasks.rb:2
+     6.6:   desc
+     2.2:   task
+     1.0:   namespace
+
+     8.3: namespace::namespace::namespace#freeze lib/chef-server-webui/merbtasks.rb:53
+     6.0:   desc
+     1.2:   task
+     1.1:   namespace
+
+     1.1: namespace::namespace::task#preflight lib/chef-server-webui/merbtasks.rb:8
+     1.1:   task
+
+     1.1: namespace::namespace::task#migrate lib/chef-server-webui/merbtasks.rb:47
+     1.1:   task
+
+     1.0: namespace#slices                 lib/chef-server-webui/merbtasks.rb:1
+     1.0:   namespace
+

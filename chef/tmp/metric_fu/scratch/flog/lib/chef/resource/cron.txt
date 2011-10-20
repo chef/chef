@@ -1,0 +1,96 @@
+    86.4: flog total
+     5.8: flog/method average
+
+    18.2: Chef::Resource::Cron#initialize  lib/chef/resource/cron.rb:25
+    18.2:   assignment
+     1.3:   push
+
+    10.6: Chef::Resource::Cron#month       lib/chef/resource/cron.rb:94
+     4.1:   assignment
+     4.0:   branch
+     1.6:   integerize
+     1.5:   raise
+     1.4:   to_s
+     1.4:   >
+     1.3:   is_a?
+     1.3:   set_or_return
+     0.4:   lit_fixnum
+
+    10.6: Chef::Resource::Cron#day         lib/chef/resource/cron.rb:77
+     4.1:   assignment
+     4.0:   branch
+     1.6:   integerize
+     1.5:   raise
+     1.4:   to_s
+     1.4:   >
+     1.3:   is_a?
+     1.3:   set_or_return
+     0.4:   lit_fixnum
+
+    10.6: Chef::Resource::Cron#hour        lib/chef/resource/cron.rb:60
+     4.1:   assignment
+     4.0:   branch
+     1.6:   integerize
+     1.5:   raise
+     1.4:   to_s
+     1.4:   >
+     1.3:   is_a?
+     1.3:   set_or_return
+     0.4:   lit_fixnum
+
+    10.6: Chef::Resource::Cron#minute      lib/chef/resource/cron.rb:43
+     4.1:   assignment
+     4.0:   branch
+     1.6:   integerize
+     1.5:   raise
+     1.4:   to_s
+     1.4:   >
+     1.3:   is_a?
+     1.3:   set_or_return
+     0.4:   lit_fixnum
+
+    10.6: Chef::Resource::Cron#weekday     lib/chef/resource/cron.rb:111
+     4.1:   assignment
+     4.0:   branch
+     1.6:   integerize
+     1.5:   raise
+     1.4:   to_s
+     1.4:   >
+     1.3:   is_a?
+     1.3:   set_or_return
+     0.4:   lit_fixnum
+
+     1.9: Chef::Resource::Cron#integerize  lib/chef/resource/cron.rb:179
+     1.4:   Integer
+     1.3:   branch
+
+     1.8: Chef::Resource::Cron#path        lib/chef/resource/cron.rb:136
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Cron#mailto      lib/chef/resource/cron.rb:128
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Cron#shell       lib/chef/resource/cron.rb:152
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Cron#command     lib/chef/resource/cron.rb:160
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Cron#user        lib/chef/resource/cron.rb:168
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Cron#home        lib/chef/resource/cron.rb:144
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.2: Chef::Resource::Cron#none
+     1.2:   private
+
+     1.1: main#none
+     1.1:   require
+

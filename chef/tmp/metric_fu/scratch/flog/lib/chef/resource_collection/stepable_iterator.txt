@@ -1,0 +1,84 @@
+    62.5: flog total
+     3.7: flog/method average
+
+    13.3: Chef::ResourceCollection::StepableIterator#call_iterator_block lib/chef/resource_collection/stepable_iterator.rb:109
+     5.1:   branch
+     4.2:   call
+     3.6:   collection
+     3.2:   []
+     1.3:   raise
+
+     7.3: Chef::ResourceCollection::StepableIterator#iterate lib/chef/resource_collection/stepable_iterator.rb:102
+     2.5:   branch
+     1.6:   size
+     1.4:   <
+     1.4:   paused?
+     1.3:   step
+     1.2:   collection
+
+     5.6: Chef::ResourceCollection::StepableIterator#step lib/chef/resource_collection/stepable_iterator.rb:83
+     1.4:   size
+     1.2:   call_iterator_block
+     1.2:   branch
+     1.2:   ==
+     1.2:   +
+     1.2:   assignment
+     0.4:   lit_fixnum
+
+     4.8: Chef::ResourceCollection::StepableIterator#initialize lib/chef/resource_collection/stepable_iterator.rb:30
+     4.8:   assignment
+
+     3.6: Chef::ResourceCollection::StepableIterator#reset_iteration lib/chef/resource_collection/stepable_iterator.rb:96
+     3.6:   assignment
+
+     3.3: Chef::ResourceCollection::StepableIterator#none
+     1.1:   attr_reader
+     1.1:   private
+     1.1:   attr_accessor
+
+     2.8: Chef::ResourceCollection::StepableIterator#skip_back lib/chef/resource_collection/stepable_iterator.rb:75
+     2.4:   assignment
+     1.2:   -
+     0.3:   lit_fixnum
+
+     2.8: Chef::ResourceCollection::StepableIterator#skip_forward lib/chef/resource_collection/stepable_iterator.rb:79
+     2.4:   assignment
+     1.2:   +
+     0.3:   lit_fixnum
+
+     2.7: Chef::ResourceCollection::StepableIterator#each lib/chef/resource_collection/stepable_iterator.rb:40
+     1.2:   assignment
+     1.2:   reset_iteration
+     1.2:   iterate
+
+     2.7: Chef::ResourceCollection::StepableIterator#each_with_index lib/chef/resource_collection/stepable_iterator.rb:52
+     1.2:   assignment
+     1.2:   reset_iteration
+     1.2:   iterate
+
+     2.7: Chef::ResourceCollection::StepableIterator#each_index lib/chef/resource_collection/stepable_iterator.rb:46
+     1.2:   assignment
+     1.2:   reset_iteration
+     1.2:   iterate
+
+     2.6: Chef::ResourceCollection::StepableIterator#size lib/chef/resource_collection/stepable_iterator.rb:36
+     1.4:   collection
+     1.2:   size
+
+     2.4: Chef::ResourceCollection::StepableIterator#iterate_on lib/chef/resource_collection/stepable_iterator.rb:89
+     2.4:   assignment
+
+     1.7: Chef::ResourceCollection::StepableIterator#resume lib/chef/resource_collection/stepable_iterator.rb:66
+     1.2:   assignment
+     1.2:   iterate
+
+     1.7: Chef::ResourceCollection::StepableIterator::for_collection lib/chef/resource_collection/stepable_iterator.rb:22
+     1.2:   assignment
+     1.2:   new
+
+     1.2: Chef::ResourceCollection::StepableIterator#rewind lib/chef/resource_collection/stepable_iterator.rb:71
+     1.2:   assignment
+
+     1.2: Chef::ResourceCollection::StepableIterator#pause lib/chef/resource_collection/stepable_iterator.rb:62
+     1.2:   assignment
+

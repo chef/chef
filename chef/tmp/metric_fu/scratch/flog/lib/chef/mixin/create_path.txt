@@ -1,0 +1,22 @@
+    30.3: flog total
+    30.3: flog/method average
+
+    30.3: Chef::Mixin::CreatePath#create_path lib/chef/mixin/create_path.rb:31
+     8.3:   branch
+     5.9:   []
+     5.2:   assignment
+     3.5:   kind_of?
+     2.6:   expand_path
+     2.6:   join
+     1.7:   +
+     1.5:   debug
+     1.5:   mkdir
+     1.4:   shift
+     1.3:   directory?
+     1.3:   split
+     1.3:   ==
+     1.3:   match
+     1.2:   raise
+     1.1:   each_index
+     0.5:   lit_fixnum
+

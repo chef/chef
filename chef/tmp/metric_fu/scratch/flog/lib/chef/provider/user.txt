@@ -1,0 +1,117 @@
+   152.8: flog total
+     9.0: flog/method average
+
+    50.0: Chef::Provider::User#load_current_resource lib/chef/provider/user.rb:46
+     8.9:   assignment
+     8.7:   branch
+     6.7:   password
+     6.4:   username
+     4.7:   gid
+     3.2:   uid
+     3.2:   shell
+     2.0:   sp_pwdp
+     1.8:   getspnam
+     1.7:   require
+     1.7:   raise
+     1.7:   gecos
+     1.7:   passwd
+     1.7:   dir
+     1.6:   convert_group_name
+     1.6:   ==
+     1.5:   comment
+     1.5:   debug
+     1.5:   home
+     1.5:   name
+     1.4:   getpwnam
+     1.3:   new
+
+    19.8: Chef::Provider::User#compare_user lib/chef/provider/user.rb:90
+    15.3:   send
+     2.7:   branch
+     1.5:   nil?
+     1.5:   ==
+     1.4:   assignment
+     1.3:   any?
+
+    13.5: Chef::Provider::User#convert_group_name lib/chef/provider/user.rb:38
+     8.5:   gid
+     2.7:   branch
+     1.9:   getgrnam
+     1.4:   raise
+     1.4:   assignment
+     1.4:   is_a?
+
+    11.0: Chef::Provider::User#action_lock lib/chef/provider/user.rb:144
+     2.7:   branch
+     1.6:   info
+     1.6:   lock_user
+     1.6:   updated_by_last_action
+     1.6:   check_lock
+     1.5:   debug
+     1.4:   ==
+     1.4:   raise
+
+    11.0: Chef::Provider::User#action_unlock lib/chef/provider/user.rb:166
+     2.7:   branch
+     1.6:   updated_by_last_action
+     1.6:   info
+     1.6:   unlock_user
+     1.6:   check_lock
+     1.5:   debug
+     1.4:   raise
+     1.4:   ==
+
+    11.0: Chef::Provider::User#action_create lib/chef/provider/user.rb:96
+     3.1:   info
+     3.1:   updated_by_last_action
+     2.7:   branch
+     1.6:   manage_user
+     1.5:   create_user
+     1.4:   compare_user
+
+     8.1: Chef::Provider::User#action_modify lib/chef/provider/user.rb:132
+     2.7:   branch
+     1.6:   info
+     1.6:   manage_user
+     1.6:   updated_by_last_action
+     1.4:   raise
+     1.4:   compare_user
+
+     6.4: Chef::Provider::User#action_manage lib/chef/provider/user.rb:120
+     2.6:   branch
+     1.5:   manage_user
+     1.5:   info
+     1.5:   updated_by_last_action
+     1.4:   compare_user
+
+     4.7: Chef::Provider::User#action_remove lib/chef/provider/user.rb:108
+     1.5:   updated_by_last_action
+     1.5:   info
+     1.5:   remove_user
+     1.3:   branch
+
+     4.4: main#none
+     4.4:   require
+
+     3.6: Chef::Provider::User#none
+     2.4:   include
+     1.2:   attr_accessor
+
+     2.6: Chef::Provider::User#initialize  lib/chef/provider/user.rb:32
+     2.6:   assignment
+
+     1.3: Chef::Provider::User#remove_user lib/chef/provider/user.rb:116
+     1.3:   raise
+
+     1.3: Chef::Provider::User#manage_user lib/chef/provider/user.rb:128
+     1.3:   raise
+
+     1.3: Chef::Provider::User#check_lock  lib/chef/provider/user.rb:158
+     1.3:   raise
+
+     1.3: Chef::Provider::User#unlock_user lib/chef/provider/user.rb:180
+     1.3:   raise
+
+     1.3: Chef::Provider::User#lock_user   lib/chef/provider/user.rb:162
+     1.3:   raise
+

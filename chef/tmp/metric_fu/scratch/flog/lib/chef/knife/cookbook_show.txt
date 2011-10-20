@@ -1,0 +1,42 @@
+   134.7: flog total
+    33.7: flog/method average
+
+   119.9: Chef::Knife::CookbookShow#run    lib/chef/knife/cookbook_show.rb:53
+    33.0:   []
+    29.1:   assignment
+    21.1:   branch
+    12.9:   config
+     9.6:   rest
+     8.6:   get_rest
+     8.0:   sclass
+     6.3:   lit_fixnum
+     4.8:   ==
+     4.8:   has_key?
+     4.8:   output
+     2.0:   manifest
+     1.8:   ui
+     1.8:   format_cookbook_list_for_display
+     1.8:   read
+     1.7:   open
+     1.6:   pretty_print
+     1.6:   closed?
+     1.6:   preferred_manifest_record
+     1.6:   fatal
+     1.6:   show_usage
+     1.6:   exit
+     1.6:   new
+     1.3:   length
+
+    11.5: Chef::Knife::CookbookShow#none
+     4.8:   option
+     4.2:   require
+     1.2:   banner
+     1.2:   deps
+     1.2:   branch
+
+     2.2: Chef::Knife::CookbookShow#attribute? lib/chef/knife/cookbook_show.rb:62
+     2.2:   has_key?
+
+     1.1: main#none
+     1.1:   require
+

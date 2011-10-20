@@ -1,0 +1,18 @@
+    12.1: flog total
+     4.0: flog/method average
+
+     6.5: Chef::Knife::EnvironmentList#none
+     2.8:   require
+     1.2:   banner
+     1.2:   deps
+     1.2:   option
+     1.2:   branch
+
+     4.5: Chef::Knife::EnvironmentList#run lib/chef/knife/environment_list.rb:37
+     1.7:   list
+     1.5:   format_list_for_display
+     1.3:   output
+
+     1.1: main#none
+     1.1:   require
+

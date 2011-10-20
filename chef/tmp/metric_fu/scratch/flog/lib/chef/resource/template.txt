@@ -1,0 +1,27 @@
+    17.9: flog total
+     3.0: flog/method average
+
+     9.5: Chef::Resource::Template#initialize lib/chef/resource/template.rb:25
+     9.1:   assignment
+     1.3:   basename
+     1.3:   new
+
+     1.8: Chef::Resource::Template#cookbook lib/chef/resource/template.rb:51
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Template#variables lib/chef/resource/template.rb:43
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Template#local   lib/chef/resource/template.rb:59
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Template#source  lib/chef/resource/template.rb:35
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.1: main#none
+     1.1:   require
+

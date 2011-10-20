@@ -1,0 +1,30 @@
+    20.8: flog total
+     3.0: flog/method average
+
+    10.5: Chef::Resource::ErlCall#initialize lib/chef/resource/erl_call.rb:27
+    10.4:   assignment
+     1.3:   push
+
+     1.8: Chef::Resource::ErlCall#name_type lib/chef/resource/erl_call.rb:65
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::ErlCall#distributed lib/chef/resource/erl_call.rb:57
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::ErlCall#code     lib/chef/resource/erl_call.rb:41
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::ErlCall#node_name lib/chef/resource/erl_call.rb:73
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::ErlCall#cookie   lib/chef/resource/erl_call.rb:49
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.1: main#none
+     1.1:   require
+

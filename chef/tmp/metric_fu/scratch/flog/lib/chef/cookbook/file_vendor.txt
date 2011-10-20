@@ -1,0 +1,14 @@
+     5.2: flog total
+     1.7: flog/method average
+
+     2.8: Chef::Cookbook::FileVendor::create_from_manifest lib/chef/cookbook/file_vendor.rb:33
+     1.3:   raise
+     1.2:   call
+     1.2:   branch
+
+     1.2: Chef::Cookbook::FileVendor::on_create lib/chef/cookbook/file_vendor.rb:27
+     1.2:   assignment
+
+     1.2: Chef::Cookbook::FileVendor#get_filename lib/chef/cookbook/file_vendor.rb:42
+     1.2:   raise
+

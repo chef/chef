@@ -1,0 +1,165 @@
+   224.7: flog total
+     8.3: flog/method average
+
+    32.2: Lucene::FieldRange#transform     lib/chef/solr_query/lucene_nodes.rb:64
+     6.1:   ==
+     5.9:   branch
+     5.4:   elements
+     5.0:   right
+     5.0:   left
+     4.8:   []
+     4.2:   assignment
+     2.8:   transform
+     1.4:   text_value
+     0.9:   lit_fixnum
+
+    21.3: Lucene::FieldRange#to_array      lib/chef/solr_query/lucene_nodes.rb:57
+     5.4:   elements
+     4.8:   []
+     4.2:   assignment
+     2.8:   to_array
+     2.8:   right
+     2.8:   left
+     1.4:   text_value
+     0.9:   lit_fixnum
+
+    20.0: Lucene::Field#transform          lib/chef/solr_query/lucene_nodes.rb:41
+     6.0:   assignment
+     4.6:   []
+     3.4:   elements
+     3.1:   transform
+     2.0:   length
+     1.8:   -
+     1.4:   text_value
+     1.4:   branch
+     1.4:   is_a?
+     1.4:   lit_fixnum
+
+    15.9: Lucene::BinaryOp#to_array        lib/chef/solr_query/lucene_nodes.rb:142
+     5.4:   elements
+     4.8:   []
+     4.2:   to_array
+     4.2:   assignment
+     0.9:   lit_fixnum
+
+    15.9: Lucene::BinaryOp#transform       lib/chef/solr_query/lucene_nodes.rb:149
+     5.4:   elements
+     4.8:   []
+     4.2:   transform
+     4.2:   assignment
+     0.9:   lit_fixnum
+
+    11.3: Lucene::UnaryOp#transform        lib/chef/solr_query/lucene_nodes.rb:230
+     4.2:   assignment
+     3.6:   elements
+     3.2:   []
+     2.9:   branch
+     2.8:   transform
+     0.5:   lit_fixnum
+
+    10.4: Lucene::UnaryOp#to_array         lib/chef/solr_query/lucene_nodes.rb:224
+     3.6:   elements
+     3.2:   []
+     2.8:   to_array
+     2.8:   assignment
+     0.5:   lit_fixnum
+
+    10.4: Lucene::Field#to_array           lib/chef/solr_query/lucene_nodes.rb:35
+     3.6:   elements
+     3.2:   []
+     2.8:   assignment
+     1.4:   to_array
+     1.4:   text_value
+     0.5:   lit_fixnum
+
+    10.2: Lucene::FuzzyOp#to_array         lib/chef/solr_query/lucene_nodes.rb:178
+     3.4:   elements
+     3.0:   []
+     2.9:   to_array
+     2.8:   assignment
+     1.4:   branch
+     0.4:   lit_fixnum
+
+    10.2: Lucene::FuzzyOp#transform        lib/chef/solr_query/lucene_nodes.rb:188
+     3.4:   elements
+     3.0:   []
+     2.9:   transform
+     2.8:   assignment
+     1.4:   branch
+     0.4:   lit_fixnum
+
+    10.0: Lucene::BoostOp#to_array         lib/chef/solr_query/lucene_nodes.rb:200
+     3.4:   elements
+     3.0:   []
+     2.8:   to_array
+     2.8:   assignment
+     0.4:   lit_fixnum
+
+    10.0: Lucene::BoostOp#transform        lib/chef/solr_query/lucene_nodes.rb:206
+     3.4:   elements
+     3.0:   []
+     2.8:   transform
+     2.8:   assignment
+     0.4:   lit_fixnum
+
+     9.0: Lucene::Group#to_array           lib/chef/solr_query/lucene_nodes.rb:132
+     3.0:   +
+     2.2:   elements
+     2.0:   []
+     1.8:   to_array
+
+     9.0: Lucene::Group#transform          lib/chef/solr_query/lucene_nodes.rb:136
+     3.0:   +
+     2.2:   elements
+     2.0:   []
+     1.8:   transform
+
+     6.9: Lucene::Body#to_array            lib/chef/solr_query/lucene_nodes.rb:122
+     1.8:   elements
+     1.7:   to_array
+     1.7:   assignment
+     1.6:   map
+     1.6:   branch
+     1.4:   join
+
+     6.9: Lucene::Body#transform           lib/chef/solr_query/lucene_nodes.rb:126
+     1.8:   elements
+     1.7:   assignment
+     1.7:   transform
+     1.6:   map
+     1.6:   branch
+     1.4:   join
+
+     1.4: Lucene::FuzzyParam#transform     lib/chef/solr_query/lucene_nodes.rb:218
+     1.4:   text_value
+
+     1.4: Lucene::Phrase#transform         lib/chef/solr_query/lucene_nodes.rb:281
+     1.4:   text_value
+
+     1.4: Lucene::FieldName#transform      lib/chef/solr_query/lucene_nodes.rb:115
+     1.4:   to_array
+
+     1.4: Lucene::RangeValue#to_array      lib/chef/solr_query/lucene_nodes.rb:101
+     1.4:   text_value
+
+     1.4: Lucene::Phrase#to_array          lib/chef/solr_query/lucene_nodes.rb:277
+     1.4:   text_value
+
+     1.4: Lucene::FieldName#to_array       lib/chef/solr_query/lucene_nodes.rb:111
+     1.4:   text_value
+
+     1.4: Lucene::FuzzyParam#to_array      lib/chef/solr_query/lucene_nodes.rb:214
+     1.4:   text_value
+
+     1.4: Lucene::RangeValue#transform     lib/chef/solr_query/lucene_nodes.rb:105
+     1.4:   to_array
+
+     1.4: Lucene::Term#transform           lib/chef/solr_query/lucene_nodes.rb:29
+     1.4:   text_value
+
+     1.4: Lucene::Term#to_array            lib/chef/solr_query/lucene_nodes.rb:25
+     1.4:   text_value
+
+     1.1: main#none
+     1.1:   require
+

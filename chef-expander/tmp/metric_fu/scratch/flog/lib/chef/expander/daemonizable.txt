@@ -1,0 +1,114 @@
+   158.5: flog total
+    12.2: flog/method average
+
+    37.2: Chef::Expander::Daemonizable#set_user_and_group lib/chef/expander/daemonizable.rb:70
+    10.8:   config
+    10.1:   branch
+     6.4:   user
+     5.1:   log
+     3.2:   group
+     3.0:   info
+     2.8:   nil?
+     1.5:   error
+     1.5:   set_group
+     1.5:   set_user
+
+    26.7: Chef::Expander::Daemonizable#acquire_locks lib/chef/expander/daemonizable.rb:129
+     6.2:   branch
+     5.2:   assignment
+     4.0:   config
+     3.6:   pidfile
+     3.6:   |
+     3.4:   raise
+     2.0:   read
+     1.8:   strip
+     1.7:   close
+     1.7:   closed?
+     1.6:   flock
+     1.6:   open
+     0.5:   lit_fixnum
+
+    15.8: Chef::Expander::Daemonizable#daemonize lib/chef/expander/daemonizable.rb:51
+     4.2:   reopen
+     3.0:   exit
+     2.8:   branch
+     2.8:   fork
+     1.4:   chdir
+     1.4:   setsid
+     1.4:   acquire_locks
+     1.4:   write_pid
+
+    15.0: Chef::Expander::Daemonizable#target_gid lib/chef/expander/daemonizable.rb:118
+     6.1:   branch
+     3.0:   assignment
+     1.9:   getgrnam
+     1.8:   log
+     1.7:   gid
+     1.7:   config
+     1.6:   raise
+     1.6:   debug
+     1.6:   kind_of?
+     1.5:   group
+
+    14.7: Chef::Expander::Daemonizable#target_uid lib/chef/expander/daemonizable.rb:110
+     4.6:   branch
+     3.1:   assignment
+     1.9:   getpwnam
+     1.8:   log
+     1.8:   config
+     1.7:   uid
+     1.6:   debug
+     1.6:   user
+     1.6:   kind_of?
+     1.6:   raise
+
+     9.7: Chef::Expander::Daemonizable#set_group lib/chef/expander/daemonizable.rb:100
+     4.6:   branch
+     1.8:   log
+     1.7:   e
+     1.7:   setgid
+     1.6:   debug
+     1.6:   assignment
+     1.6:   target_uid
+
+     9.5: Chef::Expander::Daemonizable#release_locks lib/chef/expander/daemonizable.rb:85
+     3.3:   path
+     2.8:   branch
+     1.5:   close
+     1.5:   unlink
+     1.4:   closed?
+     1.4:   exist?
+
+     7.6: Chef::Expander::Daemonizable#set_user lib/chef/expander/daemonizable.rb:92
+     3.0:   branch
+     1.8:   log
+     1.8:   target_uid
+     1.6:   debug
+     1.6:   setuid
+     1.5:   assignment
+
+     7.5: Chef::Expander::Daemonizable#configure_process lib/chef/expander/daemonizable.rb:46
+     1.6:   config
+     1.5:   ensure_exclusive
+     1.5:   daemonize
+     1.4:   branch
+     1.4:   daemonize?
+     1.4:   set_user_and_group
+
+     5.8: Chef::Expander::Daemonizable#write_pid lib/chef/expander/daemonizable.rb:142
+     1.6:   pid
+     1.4:   truncate
+     1.4:   print
+     1.4:   flush
+
+     3.9: Chef::Expander::Daemonizable#none
+     2.6:   include
+     1.3:   private
+
+     2.8: Chef::Expander::Daemonizable#ensure_exclusive lib/chef/expander/daemonizable.rb:65
+     1.4:   acquire_locks
+     1.4:   write_pid
+
+     2.2: main#none
+     2.2:   require
+

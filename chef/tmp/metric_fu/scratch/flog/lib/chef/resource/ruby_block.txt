@@ -1,0 +1,12 @@
+     6.8: flog total
+     3.4: flog/method average
+
+     3.8: Chef::Resource::RubyBlock#initialize lib/chef/resource/ruby_block.rb:24
+     3.6:   assignment
+     1.2:   push
+
+     3.0: Chef::Resource::RubyBlock#block  lib/chef/resource/ruby_block.rb:31
+     2.4:   branch
+     1.3:   block_given?
+     1.3:   assignment
+

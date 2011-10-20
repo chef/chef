@@ -1,0 +1,73 @@
+    85.1: flog total
+     7.1: flog/method average
+
+    22.9: Chef::Provider::Group#load_current_resource lib/chef/provider/group.rb:35
+     8.1:   gid
+     6.9:   assignment
+     4.4:   group_name
+     4.1:   branch
+     1.7:   mem
+     1.5:   members
+     1.5:   debug
+     1.5:   name
+     1.4:   getgrnam
+     1.3:   new
+
+    18.1: Chef::Provider::Group#compare_group lib/chef/provider/group.rb:61
+     7.0:   branch
+     6.6:   members
+     3.0:   gid
+     2.7:   ==
+     1.6:   include?
+     1.5:   assignment
+     1.4:   each
+     1.3:   append
+
+    11.7: Chef::Provider::Group#action_create lib/chef/provider/group.rb:76
+     4.1:   branch
+     3.2:   updated_by_last_action
+     3.2:   info
+     1.6:   create_group
+     1.6:   manage_group
+     1.4:   compare_group
+
+     8.1: Chef::Provider::Group#action_modify lib/chef/provider/group.rb:107
+     2.7:   branch
+     1.6:   manage_group
+     1.6:   info
+     1.6:   updated_by_last_action
+     1.4:   raise
+     1.4:   compare_group
+
+     6.4: Chef::Provider::Group#action_manage lib/chef/provider/group.rb:99
+     2.6:   branch
+     1.5:   info
+     1.5:   manage_group
+     1.5:   updated_by_last_action
+     1.4:   compare_group
+
+     4.7: Chef::Provider::Group#action_remove lib/chef/provider/group.rb:91
+     1.5:   updated_by_last_action
+     1.5:   info
+     1.5:   remove_group
+     1.3:   branch
+
+     4.4: main#none
+     4.4:   require
+
+     3.6: Chef::Provider::Group#none
+     2.4:   include
+     1.2:   attr_accessor
+
+     1.3: Chef::Provider::Group#remove_group lib/chef/provider/group.rb:127
+     1.3:   raise
+
+     1.3: Chef::Provider::Group#create_group lib/chef/provider/group.rb:119
+     1.3:   raise
+
+     1.3: Chef::Provider::Group#manage_group lib/chef/provider/group.rb:123
+     1.3:   raise
+
+     1.3: Chef::Provider::Group#initialize lib/chef/provider/group.rb:30
+     1.3:   assignment
+

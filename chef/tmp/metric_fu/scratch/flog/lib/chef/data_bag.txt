@@ -1,0 +1,139 @@
+   170.5: flog total
+     8.1: flog/method average
+
+    28.3: Chef::DataBag::load              lib/chef/data_bag.rb:153
+    10.4:   []
+     8.2:   assignment
+     4.3:   branch
+     3.0:   inject
+     1.9:   read
+     1.9:   join
+     1.7:   parse
+     1.7:   glob
+     1.6:   new
+     1.6:   raise
+     1.5:   directory?
+     1.4:   get_rest
+
+    16.2: Chef::DataBag::list              lib/chef/data_bag.rb:135
+     7.4:   assignment
+     3.4:   first
+     2.8:   inject
+     2.7:   branch
+     1.8:   []
+     1.6:   new
+     1.6:   load
+     1.6:   list
+     1.4:   get_rest
+
+    16.0: Chef::DataBag#list               lib/chef/data_bag.rb:209
+     8.8:   assignment
+     6.6:   []
+     4.3:   branch
+     3.0:   collect
+     3.0:   get_view
+
+    13.3: Chef::DataBag#save               lib/chef/data_bag.rb:191
+     3.3:   chef_server_rest
+     2.8:   branch
+     1.9:   response
+     1.7:   code
+     1.6:   raise
+     1.5:   post_rest
+     1.5:   ==
+     1.4:   assignment
+     1.4:   put_rest
+
+    12.9: Chef::DataBag#cdb_destroy        lib/chef/data_bag.rb:170
+     5.5:   assignment
+     4.7:   []
+     1.5:   cdb_destroy
+     1.5:   couchdb
+     1.3:   delete
+     1.3:   each
+     1.3:   branch
+     1.3:   get_view
+
+    12.4: Chef::DataBag::json_create       lib/chef/data_bag.rb:118
+     5.4:   assignment
+     4.3:   []
+     2.6:   has_key?
+     2.6:   branch
+     1.3:   name
+     1.3:   couchdb_id
+     1.3:   new
+
+    10.5: Chef::DataBag::cdb_list          lib/chef/data_bag.rb:129
+     6.6:   assignment
+     4.1:   branch
+     2.9:   []
+     1.6:   new
+     1.3:   collect
+     1.3:   list
+
+     8.8: main#none
+     8.8:   require
+
+     8.7: Chef::DataBag#none
+     7.2:   include
+     1.2:   attr_accessor
+     0.3:   lit_fixnum
+
+     6.8: Chef::DataBag#initialize         lib/chef/data_bag.rb:79
+     6.5:   assignment
+     1.4:   new
+     1.3:   branch
+
+     6.0: Chef::DataBag::validate_name!    lib/chef/data_bag.rb:70
+     3.2:   inspect
+     1.4:   raise
+     1.3:   =~
+     1.3:   branch
+
+     4.1: Chef::DataBag#to_hash            lib/chef/data_bag.rb:94
+     2.7:   assignment
+     1.5:   class
+     1.3:   name
+     1.3:   branch
+
+     3.7: Chef::DataBag#cdb_save           lib/chef/data_bag.rb:185
+     2.6:   assignment
+     1.3:   store
+     1.3:   []
+
+     3.5: Chef::DataBag::create_design_document lib/chef/data_bag.rb:221
+     1.6:   new
+     1.5:   branch
+     1.3:   create_design_document
+     1.3:   assignment
+
+     3.5: Chef::DataBag::cdb_load          lib/chef/data_bag.rb:148
+     1.6:   new
+     1.5:   branch
+     1.3:   load
+     1.3:   assignment
+
+     2.8: Chef::DataBag#destroy            lib/chef/data_bag.rb:180
+     1.5:   chef_server_rest
+     1.3:   delete_rest
+
+     2.8: Chef::DataBag#create             lib/chef/data_bag.rb:202
+     1.5:   chef_server_rest
+     1.3:   post_rest
+
+     2.8: Chef::DataBag#to_json            lib/chef/data_bag.rb:105
+     1.5:   to_hash
+     1.3:   to_json
+
+     2.8: Chef::DataBag::chef_server_rest  lib/chef/data_bag.rb:113
+     1.5:   []
+     1.3:   new
+
+     2.8: Chef::DataBag#chef_server_rest   lib/chef/data_bag.rb:109
+     1.5:   []
+     1.3:   new
+
+     1.8: Chef::DataBag#name               lib/chef/data_bag.rb:86
+     1.3:   assignment
+     1.3:   set_or_return
+

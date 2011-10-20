@@ -1,0 +1,93 @@
+   142.6: flog total
+    13.0: flog/method average
+
+    29.3: Chef::Provider::Group::Dscl#set_members lib/chef/provider/group/dscl.rb:75
+     8.5:   members
+     4.9:   join
+     4.8:   group_name
+     4.2:   safe_dscl
+     3.8:   branch
+     2.9:   debug
+     2.6:   empty?
+     1.2:   append
+
+    21.9: Chef::Provider::Group::Dscl#manage_group lib/chef/provider/group/dscl.rb:98
+     7.2:   branch
+     4.3:   group_name
+     4.3:   members
+     4.3:   gid
+     3.9:   ==
+     1.3:   set_gid
+     1.3:   set_members
+     1.3:   dscl_create_group
+
+    21.4: Chef::Provider::Group::Dscl#safe_dscl lib/chef/provider/group/dscl.rb:34
+     5.7:   []
+     4.8:   branch
+     3.0:   inspect
+     2.9:   exitstatus
+     2.6:   raise
+     2.5:   ==
+     1.6:   lit_fixnum
+     1.3:   first
+     1.2:   assignment
+     1.2:   dscl
+
+    18.0: Chef::Provider::Group::Dscl#dscl lib/chef/provider/group/dscl.rb:24
+    15.5:   assignment
+     4.0:   branch
+     3.0:   <<
+     2.8:   each
+     1.2:   popen4
+     1.2:   join
+
+    16.9: Chef::Provider::Group::Dscl#get_free_gid lib/chef/provider/group/dscl.rb:49
+     7.7:   assignment
+     3.7:   branch
+     2.9:   +
+     1.9:   to_s
+     1.7:   escape
+     1.5:   new
+     1.4:   lit_fixnum
+     1.3:   =~
+     1.3:   <
+     1.3:   raise
+     1.2:   safe_dscl
+
+    13.5: Chef::Provider::Group::Dscl#set_gid lib/chef/provider/group/dscl.rb:69
+     5.5:   gid
+     2.4:   branch
+     1.5:   get_free_gid
+     1.4:   group_name
+     1.3:   raise
+     1.2:   safe_dscl
+     1.2:   include?
+     1.2:   gid_used?
+
+     7.4: Chef::Provider::Group::Dscl#gid_used? lib/chef/provider/group/dscl.rb:63
+     1.8:   to_s
+     1.6:   escape
+     1.4:   new
+     1.2:   branch
+     1.2:   =~
+     1.2:   assignment
+     1.2:   safe_dscl
+
+     5.2: Chef::Provider::Group::Dscl#dscl_create_group lib/chef/provider/group/dscl.rb:110
+     2.8:   group_name
+     2.4:   safe_dscl
+
+     3.6: Chef::Provider::Group::Dscl#create_group lib/chef/provider/group/dscl.rb:92
+     1.2:   set_gid
+     1.2:   dscl_create_group
+     1.2:   set_members
+
+     2.8: Chef::Provider::Group::Dscl#load_current_resource lib/chef/provider/group/dscl.rb:87
+     1.3:   raise
+     1.2:   exists?
+     1.2:   branch
+
+     2.6: Chef::Provider::Group::Dscl#remove_group lib/chef/provider/group/dscl.rb:115
+     1.4:   group_name
+     1.2:   safe_dscl
+

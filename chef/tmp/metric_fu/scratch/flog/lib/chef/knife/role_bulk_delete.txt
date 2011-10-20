@@ -1,0 +1,34 @@
+    59.9: flog total
+    20.0: flog/method average
+
+    53.4: Chef::Knife::RoleBulkDelete#run  lib/chef/knife/role_bulk_delete.rb:32
+    14.3:   ui
+    13.8:   assignment
+     6.7:   branch
+     6.7:   msg
+     3.2:   sort
+     3.0:   []
+     3.0:   exit
+     2.8:   list
+     2.6:   each
+     1.9:   keys
+     1.5:   =~
+     1.5:   info
+     1.5:   name
+     1.5:   destroy
+     1.5:   error
+     1.5:   length
+     1.3:   empty?
+     1.3:   <
+     1.3:   confirm
+     0.8:   lit_fixnum
+
+     5.3: Chef::Knife::RoleBulkDelete#none
+     2.8:   require
+     1.2:   deps
+     1.2:   banner
+     1.2:   branch
+
+     1.1: main#none
+     1.1:   require
+

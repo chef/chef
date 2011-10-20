@@ -1,0 +1,398 @@
+   536.2: flog total
+     9.2: flog/method average
+
+    49.1: Chef::Node::json_create          lib/chef/node.rb:510
+    16.8:   []
+    13.9:   assignment
+    11.8:   branch
+    10.4:   has_key?
+     6.9:   new
+     1.7:   recipes
+     1.6:   run_list
+     1.5:   <<
+     1.4:   each
+     1.4:   reset!
+     1.3:   name
+     1.3:   chef_environment
+     1.3:   couchdb_id
+
+    38.3: Chef::Node#to_hash               lib/chef/node.rb:456
+    15.0:   assignment
+    13.6:   run_list
+     5.2:   branch
+     4.5:   length
+     3.9:   >
+     3.1:   role_names
+     3.1:   recipe_names
+     1.5:   attribute
+     1.3:   each
+     1.3:   name
+     1.3:   chef_environment
+     1.3:   new
+
+    25.5: Chef::Node#none
+    12.0:   include
+     4.8:   alias_method
+     3.6:   attr_accessor
+     2.4:   extend
+     1.2:   def_delegators
+     1.2:   attr_reader
+     0.3:   lit_fixnum
+
+    24.5: Chef::Node#apply_expansion_attributes lib/chef/node.rb:445
+     9.1:   assignment
+     5.2:   merge
+     3.9:   branch
+     3.1:   chef_environment
+     3.0:   default_attrs
+     3.0:   override_attrs
+     2.6:   nil?
+     1.4:   override_attributes
+     1.4:   load
+     1.4:   default_attributes
+     1.3:   ==
+
+    21.4: Chef::Node#initialize            lib/chef/node.rb:152
+    16.9:   assignment
+    13.1:   new
+     1.3:   branch
+
+    19.8: main#none
+    19.8:   require
+
+    17.7: Chef::Node#to_json               lib/chef/node.rb:483
+     2.8:   run_list
+     2.7:   assignment
+     2.7:   couchdb_rev
+     2.6:   name
+     1.5:   class
+     1.3:   branch
+     1.3:   default_attrs
+     1.3:   normal_attrs
+     1.3:   override_attrs
+     1.3:   to_json
+     1.3:   automatic_attrs
+     1.3:   chef_environment
+
+    15.6: Chef::Node#consume_run_list      lib/chef/node.rb:400
+     6.9:   branch
+     3.2:   key?
+     2.8:   delete
+     2.6:   assignment
+     1.7:   inspect
+     1.6:   raise
+     1.5:   run_list
+     1.5:   info
+     1.4:   dup
+
+    14.9: Chef::Node::cdb_list_by_environment lib/chef/node.rb:533
+     6.9:   assignment
+     6.2:   []
+     5.6:   branch
+     2.8:   collect
+     1.6:   new
+     1.3:   get_view
+
+    14.8: Chef::Node#display_hash          lib/chef/node.rb:470
+    10.4:   assignment
+     2.8:   run_list
+     1.3:   normal_attrs
+     1.3:   default_attrs
+     1.3:   override_attrs
+     1.3:   name
+     1.3:   automatic_attrs
+     1.3:   chef_environment
+
+    14.8: Chef::Node::list                 lib/chef/node.rb:556
+     6.1:   assignment
+     4.8:   new
+     4.4:   branch
+     1.8:   []
+     1.7:   name
+     1.6:   nil?
+     1.5:   search
+     1.4:   get_rest
+
+    14.8: Chef::Node::list_by_environment  lib/chef/node.rb:538
+     6.1:   assignment
+     4.8:   new
+     4.4:   branch
+     1.8:   []
+     1.7:   name
+     1.6:   nil?
+     1.5:   search
+     1.4:   get_rest
+
+    14.8: Chef::Node#load_attributes       lib/chef/node.rb:646
+     3.6:   name
+     2.9:   assignment
+     2.7:   each
+     2.7:   branch
+     1.7:   cookbook_collection
+     1.6:   from_file
+     1.6:   debug
+     1.6:   segment_filenames
+     1.5:   values
+
+    14.8: Chef::Node#save                  lib/chef/node.rb:617
+     3.3:   chef_server_rest
+     2.8:   branch
+     1.9:   response
+     1.7:   code
+     1.6:   raise
+     1.6:   name
+     1.5:   post_rest
+     1.5:   ==
+     1.4:   assignment
+     1.4:   put_rest
+
+    14.6: Chef::Node#find_file             lib/chef/node.rb:196
+     5.5:   assignment
+     3.0:   []
+     2.8:   branch
+     1.7:   to_s
+     1.6:   from_file
+     1.5:   join
+     1.5:   exists?
+     1.3:   split
+     1.3:   each
+     1.3:   raise
+
+    13.7: Chef::Node::build                lib/chef/node.rb:589
+     5.0:   []
+     2.6:   branch
+     1.6:   chop
+     1.4:   nil?
+     1.4:   empty?
+     1.4:   chef_environment
+     1.3:   name
+     1.3:   assignment
+     1.3:   new
+
+    13.4: Chef::Node#update_from!          lib/chef/node.rb:499
+     5.2:   assignment
+     3.0:   run_list
+     2.8:   chef_environment
+     1.3:   default_attrs
+     1.3:   reset!
+     1.3:   normal_attrs
+     1.3:   override_attrs
+     1.3:   automatic_attrs
+
+    12.1: Chef::Node#expand!               lib/chef/node.rb:431
+     5.2:   assignment
+     1.5:   run_list
+     1.5:   chef_environment
+     1.4:   raise
+     1.3:   branch
+     1.3:   tags
+     1.3:   expand
+     1.3:   roles
+     1.3:   recipes
+     1.3:   errors?
+
+    11.8: Chef::Node::find_or_create       lib/chef/node.rb:581
+     2.9:   assignment
+     2.8:   branch
+     1.9:   response
+     1.7:   code
+     1.6:   raise
+     1.5:   create
+     1.5:   build
+     1.5:   ==
+     1.4:   load
+
+    10.5: Chef::Node::cdb_list             lib/chef/node.rb:550
+     6.6:   assignment
+     4.1:   branch
+     2.9:   []
+     1.6:   new
+     1.3:   collect
+     1.3:   list
+
+    10.4: Chef::Node#load_attribute_by_short_filename lib/chef/node.rb:661
+     2.8:   raise
+     2.6:   branch
+     2.6:   []
+     2.6:   assignment
+     1.5:   cookbook_collection
+     1.5:   attribute_filenames_by_short_filename
+     1.3:   from_file
+
+     9.4: Chef::Node#consume_external_attrs lib/chef/node.rb:373
+     7.8:   assignment
+     2.6:   debug
+     1.3:   consume_attributes
+     1.3:   find_platform_and_version
+
+     7.9: Chef::Node#recipe?               lib/chef/node.rb:352
+     2.8:   include?
+     1.8:   run_state
+     1.6:   []
+     1.6:   run_list
+     1.3:   branch
+
+     7.3: Chef::Node#construct_attributes  lib/chef/node.rb:236
+     1.5:   override_attrs
+     1.5:   default_attrs
+     1.5:   automatic_attrs
+     1.5:   normal_attrs
+     1.3:   new
+
+     6.3: Chef::Node#cdb_save              lib/chef/node.rb:612
+     1.7:   couchdb
+     1.7:   name
+     1.5:   store
+     1.3:   assignment
+     1.3:   []
+
+     5.8: Chef::Node#consume_attributes    lib/chef/node.rb:386
+     2.6:   assignment
+     1.3:   tags
+     1.3:   merge
+     1.3:   debug
+     1.3:   consume_run_list
+
+     5.8: Chef::Node#cdb_destroy           lib/chef/node.rb:602
+     1.5:   couchdb
+     1.5:   name
+     1.5:   couchdb_rev
+     1.3:   delete
+
+     5.4: Chef::Node#method_missing        lib/chef/node.rb:339
+     3.9:   send
+     1.3:   assignment
+     1.3:   construct_attributes
+
+     5.4: Chef::Node#normal_unless         lib/chef/node.rb:271
+     5.2:   assignment
+     1.3:   construct_attributes
+
+     5.4: Chef::Node#default_unless        lib/chef/node.rb:291
+     5.2:   assignment
+     1.3:   construct_attributes
+
+     5.4: Chef::Node#override_unless       lib/chef/node.rb:310
+     5.2:   assignment
+     1.3:   construct_attributes
+
+     5.1: Chef::Node#run_list?             lib/chef/node.rb:368
+     2.6:   branch
+     1.5:   run_list
+     1.4:   assignment
+     1.4:   ==
+     1.3:   detect
+
+     4.5: Chef::Node::load                 lib/chef/node.rb:597
+     1.7:   []
+     1.5:   new
+     1.3:   get_rest
+
+     4.4: Chef::Node#run_list              lib/chef/node.rb:363
+     1.5:   length
+     1.4:   reset!
+     1.3:   >
+     1.3:   branch
+
+     4.3: Chef::Node#destroy               lib/chef/node.rb:607
+     1.5:   chef_server_rest
+     1.5:   name
+     1.3:   delete_rest
+
+     4.3: Chef::Node#each                  lib/chef/node.rb:328
+     1.5:   construct_attributes
+     1.5:   block_pass
+     1.3:   each
+
+     4.3: Chef::Node#each_attribute        lib/chef/node.rb:333
+     1.5:   construct_attributes
+     1.5:   block_pass
+     1.3:   each_attribute
+
+     4.2: Chef::Node#name                  lib/chef/node.rb:209
+     2.8:   assignment
+     1.5:   validate
+     1.3:   branch
+     1.3:   ==
+
+     4.1: Chef::Node#default               lib/chef/node.rb:282
+     3.9:   assignment
+     1.3:   construct_attributes
+
+     4.1: Chef::Node#normal                lib/chef/node.rb:260
+     3.9:   assignment
+     1.3:   construct_attributes
+
+     4.1: Chef::Node#override              lib/chef/node.rb:301
+     3.9:   assignment
+     1.3:   construct_attributes
+
+     3.7: Chef::Node#reset_defaults_and_overrides lib/chef/node.rb:414
+     2.6:   assignment
+     2.6:   new
+
+     3.5: Chef::Node::cdb_load             lib/chef/node.rb:569
+     1.6:   new
+     1.5:   branch
+     1.3:   load
+     1.3:   assignment
+
+     3.5: Chef::Node::create_design_document lib/chef/node.rb:636
+     1.6:   new
+     1.5:   branch
+     1.3:   create_design_document
+     1.3:   assignment
+
+     3.2: Chef::Node#tags                  lib/chef/node.rb:394
+     1.4:   assignment
+     1.3:   []
+     1.3:   branch
+     1.3:   attribute?
+
+     2.8: Chef::Node#create                lib/chef/node.rb:630
+     1.5:   chef_server_rest
+     1.3:   post_rest
+
+     2.8: Chef::Node#role?                 lib/chef/node.rb:357
+     1.5:   run_list
+     1.3:   include?
+
+     2.8: Chef::Node#attribute?            lib/chef/node.rb:323
+     1.5:   construct_attributes
+     1.3:   attribute?
+
+     2.8: Chef::Node#[]                    lib/chef/node.rb:245
+     1.5:   construct_attributes
+     1.3:   []
+
+     2.8: Chef::Node#chef_server_rest      lib/chef/node.rb:186
+     1.5:   []
+     1.3:   new
+
+     2.6: Chef::Node#couchdb_id=           lib/chef/node.rb:176
+     2.6:   assignment
+
+     1.9: Chef::Node::exists?              lib/chef/node.rb:573
+     1.4:   cdb_load
+     1.3:   branch
+
+     1.8: Chef::Node#chef_environment      lib/chef/node.rb:223
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Node#[]=                   lib/chef/node.rb:250
+     1.3:   construct_attributes
+     1.3:   assignment
+
+     1.3: Chef::Node#to_s                  lib/chef/node.rb:640
+     1.3:   name
+
+     1.3: Chef::Node#attribute=            lib/chef/node.rb:240
+     1.3:   assignment
+
+     1.3: Chef::Node#attribute             lib/chef/node.rb:232
+     1.3:   construct_attributes
+
+     1.3: Chef::Node#store                 lib/chef/node.rb:254
+     1.3:   assignment
+

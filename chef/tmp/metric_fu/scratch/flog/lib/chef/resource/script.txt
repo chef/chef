@@ -1,0 +1,21 @@
+    14.4: flog total
+     2.9: flog/method average
+
+     7.8: Chef::Resource::Script#initialize lib/chef/resource/script.rb:25
+     7.8:   assignment
+
+     1.8: Chef::Resource::Script#interpreter lib/chef/resource/script.rb:42
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Script#flags     lib/chef/resource/script.rb:50
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Script#code      lib/chef/resource/script.rb:34
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.1: main#none
+     1.1:   require
+

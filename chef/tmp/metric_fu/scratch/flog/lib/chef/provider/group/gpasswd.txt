@@ -1,0 +1,26 @@
+    36.5: flog total
+     9.1: flog/method average
+
+    29.0: Chef::Provider::Group::Gpasswd#modify_group_members lib/chef/provider/group/gpasswd.rb:35
+     7.2:   members
+     5.6:   group_name
+     4.7:   debug
+     4.2:   branch
+     3.6:   join
+     3.3:   shell_out!
+     1.6:   assignment
+     1.5:   each
+     1.4:   append
+     1.3:   empty?
+
+     3.0: Chef::Provider::Group::Gpasswd#load_current_resource lib/chef/provider/group/gpasswd.rb:29
+     1.4:   raise
+     1.3:   exists?
+     1.3:   branch
+
+     2.4: Chef::Provider::Group::Gpasswd#none
+     2.4:   include
+
+     2.2: main#none
+     2.2:   require
+

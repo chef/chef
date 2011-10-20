@@ -1,0 +1,39 @@
+    40.9: flog total
+     8.2: flog/method average
+
+    19.0: Chef::Mixin::ConvertToClassName#convert_to_class_name lib/chef/mixin/convert_to_class_name.rb:25
+     7.1:   []
+     6.6:   assignment
+     5.7:   branch
+     3.3:   capitalize
+     2.8:   match
+     2.0:   lit_fixnum
+     1.7:   <<
+
+     8.6: Chef::Mixin::ConvertToClassName#convert_to_snake_case lib/chef/mixin/convert_to_class_name.rb:42
+     3.7:   assignment
+     2.5:   sub!
+     2.4:   branch
+     1.3:   +
+     1.2:   downcase!
+     1.2:   gsub!
+     1.2:   dup
+
+     5.5: Chef::Mixin::ConvertToClassName#snake_case_basename lib/chef/mixin/convert_to_class_name.rb:51
+     1.6:   split
+     1.4:   last
+     1.2:   convert_to_snake_case
+     1.2:   assignment
+     1.2:   sub
+
+     5.5: Chef::Mixin::ConvertToClassName#filename_to_qualified_string lib/chef/mixin/convert_to_class_name.rb:56
+     1.4:   to_s
+     1.4:   branch
+     1.4:   ==
+     1.2:   assignment
+     1.2:   basename
+     1.2:   +
+
+     2.2: Chef::Mixin::ConvertToClassName#none
+     2.2:   extend
+

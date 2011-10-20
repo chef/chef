@@ -1,0 +1,97 @@
+   107.7: flog total
+     6.0: flog/method average
+
+    26.3: Chef::RunList::RunListExpansion#expand_run_list_items lib/chef/run_list/run_list_expansion.rb:132
+     8.2:   branch
+     4.0:   name
+     3.6:   expand_run_list_items
+     3.2:   assignment
+     2.4:   run_list_for
+     2.2:   run_list_items
+     2.0:   apply_role_attributes
+     2.0:   recipes
+     2.0:   version
+     1.8:   add_recipe
+     1.8:   inflate_role
+     1.6:   type
+     1.4:   shift
+
+    14.4: Chef::RunList::RunListExpansion#initialize lib/chef/run_list/run_list_expansion.rb:52
+    12.6:   assignment
+     5.6:   new
+     1.4:   dup
+
+    13.0: Chef::RunList::RunListExpansion#none
+     9.1:   attr_reader
+     2.6:   alias
+     1.3:   private
+
+    10.1: Chef::RunList::RunListExpansionFromAPI#fetch_role lib/chef/run_list/run_list_expansion.rb:167
+     2.9:   branch
+     1.7:   rest
+     1.7:   message
+     1.6:   raise
+     1.6:   role_not_found
+     1.5:   assignment
+     1.5:   ==
+     1.5:   get_rest
+
+     6.6: Chef::RunList::RunListExpansion#apply_role_attributes lib/chef/run_list/run_list_expansion.rb:92
+     2.8:   merge
+     2.8:   assignment
+     1.6:   default_attributes
+     1.6:   override_attributes
+
+     5.5: main#none
+     5.5:   require
+
+     5.1: Chef::RunList::RunListExpansionFromAPI#rest lib/chef/run_list/run_list_expansion.rb:163
+     1.7:   []
+     1.5:   source
+     1.5:   new
+     1.4:   branch
+     1.4:   assignment
+
+     4.9: Chef::RunList::RunListExpansionFromCouchDB#fetch_role lib/chef/run_list/run_list_expansion.rb:185
+     1.7:   couchdb
+     1.5:   cdb_load
+     1.5:   role_not_found
+     1.4:   branch
+
+     4.4: Chef::RunList::RunListExpansion#inflate_role lib/chef/run_list/run_list_expansion.rb:86
+     1.4:   applied_role
+     1.4:   fetch_role
+     1.4:   applied_role?
+     1.4:   branch
+
+     3.1: Chef::RunList::RunListExpansionFromDisk#fetch_role lib/chef/run_list/run_list_expansion.rb:152
+     1.4:   from_disk
+     1.4:   role_not_found
+     1.3:   branch
+
+     3.0: Chef::RunList::RunListExpansion#errors? lib/chef/run_list/run_list_expansion.rb:68
+     1.6:   length
+     1.4:   >
+
+     2.8: Chef::RunList::RunListExpansion#role_not_found lib/chef/run_list/run_list_expansion.rb:118
+     1.4:   error
+     1.4:   <<
+
+     1.4: Chef::RunList::RunListExpansion#fetch_role lib/chef/run_list/run_list_expansion.rb:110
+     1.4:   raise
+
+     1.4: Chef::RunList::RunListExpansionFromCouchDB#couchdb lib/chef/run_list/run_list_expansion.rb:181
+     1.4:   source
+
+     1.4: Chef::RunList::RunListExpansion#roles lib/chef/run_list/run_list_expansion.rb:105
+     1.4:   keys
+
+     1.4: Chef::RunList::RunListExpansion#expand lib/chef/run_list/run_list_expansion.rb:76
+     1.4:   expand_run_list_items
+
+     1.4: Chef::RunList::RunListExpansion#applied_role? lib/chef/run_list/run_list_expansion.rb:97
+     1.4:   has_key?
+
+     1.4: Chef::RunList::RunListExpansion#applied_role lib/chef/run_list/run_list_expansion.rb:128
+     1.4:   assignment
+

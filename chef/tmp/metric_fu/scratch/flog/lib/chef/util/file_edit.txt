@@ -1,0 +1,65 @@
+    78.8: flog total
+     7.9: flog/method average
+
+    32.6: Chef::Util::FileEdit#search_match lib/chef/util/file_edit.rb:91
+    13.2:   branch
+     9.2:   ==
+     9.0:   <<
+     6.9:   assignment
+     4.2:   gsub!
+     1.5:   contents
+     1.4:   match
+     1.3:   each
+     1.3:   new
+     1.1:   lit_fixnum
+
+    19.6: Chef::Util::FileEdit#write_file  lib/chef/util/file_edit.rb:70
+     6.2:   assignment
+     5.1:   original_pathname
+     4.5:   branch
+     1.9:   contents
+     1.8:   puts
+     1.7:   flush
+     1.7:   each
+     1.5:   open
+     1.5:   cp
+     1.5:   +
+     1.3:   file_edited
+
+    11.6: Chef::Util::FileEdit#initialize  lib/chef/util/file_edit.rb:31
+     4.3:   assignment
+     2.8:   raise
+     2.6:   branch
+     1.9:   new
+     1.7:   readlines
+     1.5:   length
+     1.3:   >
+     1.3:   exist?
+
+     4.8: Chef::Util::FileEdit#none
+     2.4:   private
+     1.2:   attr_accessor
+     1.2:   public
+
+     2.2: main#none
+     2.2:   require
+
+     1.7: Chef::Util::FileEdit#search_file_replace_line lib/chef/util/file_edit.rb:41
+     1.3:   search_match
+     0.4:   lit_fixnum
+
+     1.7: Chef::Util::FileEdit#search_file_delete_line lib/chef/util/file_edit.rb:53
+     1.3:   search_match
+     0.4:   lit_fixnum
+
+     1.7: Chef::Util::FileEdit#search_file_delete lib/chef/util/file_edit.rb:59
+     1.3:   search_match
+     0.4:   lit_fixnum
+
+     1.7: Chef::Util::FileEdit#search_file_replace lib/chef/util/file_edit.rb:47
+     1.3:   search_match
+     0.4:   lit_fixnum
+
+     1.3: Chef::Util::FileEdit#insert_line_after_match lib/chef/util/file_edit.rb:65
+     1.3:   search_match
+

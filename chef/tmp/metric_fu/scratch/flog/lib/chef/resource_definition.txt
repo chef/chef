@@ -1,0 +1,33 @@
+    34.0: flog total
+     5.7: flog/method average
+
+    11.5: Chef::ResourceDefinition#define  lib/chef/resource_definition.rb:37
+     5.5:   assignment
+     5.4:   branch
+     4.4:   raise
+     2.8:   kind_of?
+     1.3:   block_given?
+
+     6.6: Chef::ResourceDefinition#initialize lib/chef/resource_definition.rb:30
+     6.5:   assignment
+     1.3:   new
+
+     6.0: Chef::ResourceDefinition#none
+     4.8:   include
+     1.2:   attr_accessor
+
+     4.9: Chef::ResourceDefinition#method_missing lib/chef/resource_definition.rb:59
+     1.5:   length
+     1.4:   []
+     1.3:   assignment
+     1.3:   ==
+     1.3:   branch
+     0.4:   lit_fixnum
+
+     2.8: Chef::ResourceDefinition#to_s    lib/chef/resource_definition.rb:63
+     1.5:   name
+     1.3:   to_s
+
+     2.2: main#none
+     2.2:   require
+

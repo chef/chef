@@ -1,0 +1,22 @@
+    15.6: flog total
+     5.2: flog/method average
+
+     8.0: Chef::Knife::NodeList#run        lib/chef/knife/node_list.rb:37
+     1.8:   list
+     1.8:   list_by_environment
+     1.7:   branch
+     1.5:   format_list_for_display
+     1.3:   output
+     1.3:   assignment
+     1.3:   []
+
+     6.5: Chef::Knife::NodeList#none
+     2.8:   require
+     1.2:   banner
+     1.2:   deps
+     1.2:   option
+     1.2:   branch
+
+     1.1: main#none
+     1.1:   require
+

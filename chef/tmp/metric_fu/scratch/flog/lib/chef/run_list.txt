@@ -1,0 +1,122 @@
+   121.5: flog total
+     5.8: flog/method average
+
+    18.4: Chef::RunList#==                 lib/chef/run_list.rb:71
+     5.8:   branch
+     4.5:   ==
+     3.6:   size
+     3.1:   assignment
+     1.6:   coerce_to_run_list_item
+     1.6:   respond_to?
+     1.6:   run_list_items
+     1.5:   dup
+     1.5:   map!
+     1.3:   kind_of?
+
+    18.0: Chef::RunList#none
+    12.0:   alias
+     4.8:   include
+     1.2:   attr_reader
+
+    11.3: Chef::RunList#reset!             lib/chef/run_list.rb:115
+     4.2:   branch
+     3.1:   <<
+     3.0:   assignment
+     2.8:   each
+     1.5:   flatten
+     1.4:   kind_of?
+     1.3:   clear
+
+    10.8: Chef::RunList#expansion_for_data_source lib/chef/run_list.rb:151
+     5.5:   branch
+     4.5:   new
+     3.4:   []
+     1.3:   to_s
+     1.3:   assignment
+
+     9.0: Chef::RunList#recipe_names       lib/chef/run_list.rb:55
+     4.2:   assignment
+     2.8:   branch
+     2.6:   inject
+     1.8:   name
+     1.6:   <<
+     1.5:   recipe?
+
+     9.0: Chef::RunList#role_names         lib/chef/run_list.rb:49
+     4.2:   assignment
+     2.8:   branch
+     2.6:   inject
+     1.8:   name
+     1.6:   <<
+     1.5:   role?
+
+     4.7: Chef::RunList#expand             lib/chef/run_list.rb:136
+     3.9:   assignment
+     1.3:   expand
+     1.3:   expansion_for_data_source
+
+     4.4: Chef::RunList#<<                 lib/chef/run_list.rb:63
+     1.4:   <<
+     1.3:   assignment
+     1.3:   include?
+     1.3:   coerce_to_run_list_item
+     1.3:   branch
+
+     4.4: main#none
+     4.4:   require
+
+     4.0: Chef::RunList#initialize         lib/chef/run_list.rb:45
+     2.7:   assignment
+     1.4:   coerce_to_run_list_item
+     1.3:   map
+     1.3:   branch
+
+     3.3: Chef::RunList#each               lib/chef/run_list.rb:103
+     1.4:   call
+     1.4:   assignment
+     1.3:   each
+     1.3:   branch
+
+     3.3: Chef::RunList#remove             lib/chef/run_list.rb:127
+     1.4:   ==
+     1.4:   assignment
+     1.3:   delete_if
+     1.3:   branch
+
+     3.3: Chef::RunList#each_index         lib/chef/run_list.rb:107
+     1.4:   call
+     1.4:   assignment
+     1.3:   each_index
+     1.3:   branch
+
+     3.1: Chef::RunList#empty?             lib/chef/run_list.rb:91
+     1.5:   length
+     1.3:   ==
+     1.3:   branch
+
+     3.0: Chef::RunList#coerce_to_run_list_item lib/chef/run_list.rb:147
+     1.4:   parse_entry
+     1.3:   kind_of?
+     1.3:   branch
+
+     2.8: Chef::RunList#include?           lib/chef/run_list.rb:111
+     1.5:   parse_entry
+     1.3:   include?
+
+     2.8: Chef::RunList#to_json            lib/chef/run_list.rb:87
+     1.5:   to_a
+     1.3:   to_json
+
+     1.8: Chef::RunList#[]=                lib/chef/run_list.rb:99
+     1.3:   assignment
+     1.3:   parse_entry
+
+     1.3: Chef::RunList#parse_entry        lib/chef/run_list.rb:143
+     1.3:   new
+
+     1.3: Chef::RunList#to_s               lib/chef/run_list.rb:83
+     1.3:   join
+
+     1.3: Chef::RunList#[]                 lib/chef/run_list.rb:95
+     1.3:   []
+

@@ -1,0 +1,225 @@
+   337.2: flog total
+    13.0: flog/method average
+
+    48.8: Chef::Client#run                 lib/chef/client.rb:144
+     8.5:   run_status
+     7.0:   assignment
+     4.3:   info
+     3.0:   stop_clock
+     2.6:   branch
+     1.9:   node
+     1.9:   backtrace
+     1.7:   class
+     1.7:   elapsed_time
+     1.7:   join
+     1.7:   name
+     1.7:   message
+     1.5:   setup_run_context
+     1.5:   debug
+     1.5:   raise
+     1.5:   run_completed_successfully
+     1.5:   save_updated_node
+     1.5:   run_started
+     1.5:   converge
+     1.5:   run_failed
+     1.5:   start_clock
+     1.4:   register
+     1.3:   []
+     1.3:   build_node
+     1.3:   run_ohai
+     1.3:   enforce_path_sanity
+
+    40.9: Chef::Client#assert_cookbook_path_not_empty lib/chef/client.rb:340
+     9.5:   branch
+     9.5:   []
+     8.6:   assignment
+     3.8:   Array
+     2.0:   expand_path
+     1.9:   raise
+     1.9:   map
+     1.8:   fatal
+     1.8:   inspect
+     1.8:   is_last_element?
+     1.8:   node
+     1.7:   node_name
+     1.7:   join
+     1.6:   directory_not_empty?
+     1.6:   run_list
+     1.5:   each_with_index
+     1.5:   warn
+     1.5:   debug
+     1.4:   empty?
+
+    40.1: Chef::Client#build_node          lib/chef/client.rb:228
+     8.2:   assignment
+     7.4:   []
+     5.2:   branch
+     4.7:   node_name
+     2.8:   expand!
+     2.6:   info
+     1.7:   ohai
+     1.6:   chop
+     1.5:   data
+     1.5:   run_list
+     1.5:   recipes
+     1.5:   join
+     1.4:   empty?
+     1.4:   chef_environment
+     1.4:   build
+     1.4:   find_or_create
+     1.3:   consume_external_attrs
+     1.3:   new
+     1.3:   with_version_constraints_strings
+     1.3:   reset_defaults_and_overrides
+     1.3:   debug
+
+    31.9: Chef::Client#setup_run_context   lib/chef/client.rb:185
+    11.5:   new
+     9.0:   assignment
+     5.2:   []
+     4.3:   branch
+     3.4:   node
+     3.0:   on_create
+     1.8:   rest
+     1.5:   sync_cookbooks
+     1.3:   load
+     1.3:   run_status
+     1.3:   assert_cookbook_path_not_empty
+
+    25.5: Chef::Client#register            lib/chef/client.rb:275
+    15.2:   []
+     3.9:   assignment
+     3.0:   new
+     1.5:   info
+     1.5:   register
+     1.4:   debug
+     1.3:   node_name
+     1.3:   branch
+     1.3:   exists?
+
+    22.0: main#none
+    22.0:   require
+
+    21.9: Chef::Client#enforce_path_sanity lib/chef/client.rb:316
+     8.0:   assignment
+     7.5:   branch
+     7.1:   []
+     3.7:   <<
+     1.8:   dup
+     1.8:   empty?
+     1.6:   include?
+     1.5:   split
+     1.5:   each
+
+    10.9: Chef::Client#node_name           lib/chef/client.rb:211
+     4.4:   []
+     4.1:   assignment
+     4.0:   branch
+     3.4:   ohai
+     1.5:   raise
+
+    10.0: Chef::Client#sync_cookbooks      lib/chef/client.rb:293
+     2.6:   assignment
+     1.5:   chef_environment
+     1.5:   rest
+     1.5:   []
+     1.3:   debug
+     1.3:   post_rest
+     1.3:   sync_cookbooks
+     1.3:   join
+
+     8.4: Chef::Client#none
+     4.8:   attr_accessor
+     2.4:   attr_reader
+     1.2:   private
+
+     7.9: Chef::Client#initialize          lib/chef/client.rb:126
+     7.8:   assignment
+     1.3:   new
+
+     7.7: Chef::Client#run_failed          lib/chef/client.rb:108
+     1.7:   class
+     1.6:   run_status
+     1.5:   run_failed_notifications
+     1.4:   assignment
+     1.4:   call
+     1.3:   branch
+     1.3:   each
+
+     7.7: Chef::Client#run_completed_successfully lib/chef/client.rb:101
+     1.7:   class
+     1.6:   run_status
+     1.5:   run_completed_successfully_notifications
+     1.4:   call
+     1.4:   assignment
+     1.3:   each
+     1.3:   branch
+
+     7.7: Chef::Client#run_started         lib/chef/client.rb:94
+     1.7:   class
+     1.6:   run_status
+     1.5:   run_start_notifications
+     1.4:   call
+     1.4:   assignment
+     1.3:   each
+     1.3:   branch
+
+     7.0: Chef::Client#converge            lib/chef/client.rb:309
+     1.5:   node_name
+     1.5:   runner
+     1.3:   converge
+     1.3:   debug
+     1.3:   assignment
+     1.3:   new
+
+     6.7: Chef::Client#directory_not_empty? lib/chef/client.rb:332
+     1.8:   entries
+     1.6:   size
+     1.4:   exists?
+     1.4:   >
+     1.3:   branch
+     0.4:   lit_fixnum
+
+     6.7: Chef::Client#is_last_element?    lib/chef/client.rb:336
+     1.8:   size
+     1.6:   -
+     1.4:   ==
+     1.3:   kind_of?
+     1.3:   branch
+     0.5:   lit_fixnum
+
+     6.1: Chef::Client#save_updated_node   lib/chef/client.rb:200
+     1.7:   node_name
+     1.5:   debug
+     1.5:   save
+     1.3:   []
+     1.3:   branch
+
+     3.9: Chef::Client::clear_notifications lib/chef/client.rb:50
+     3.9:   assignment
+
+     2.8: Chef::Client#run_ohai            lib/chef/client.rb:207
+     1.5:   ohai
+     1.3:   all_plugins
+
+     2.8: Chef::Client::when_run_fails     lib/chef/client.rb:89
+     1.5:   run_failed_notifications
+     1.3:   <<
+
+     2.8: Chef::Client::when_run_completes_successfully lib/chef/client.rb:82
+     1.5:   run_completed_successfully_notifications
+     1.3:   <<
+
+     2.8: Chef::Client::when_run_starts    lib/chef/client.rb:75
+     1.5:   run_start_notifications
+     1.3:   <<
+
+     1.3: Chef::Client::run_completed_successfully_notifications lib/chef/client.rb:63
+     1.3:   assignment
+
+     1.3: Chef::Client::run_failed_notifications lib/chef/client.rb:68
+     1.3:   assignment
+
+     1.3: Chef::Client::run_start_notifications lib/chef/client.rb:57
+     1.3:   assignment
+

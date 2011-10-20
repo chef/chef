@@ -1,0 +1,32 @@
+    25.7: flog total
+     4.3: flog/method average
+
+     7.1: Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem#to_json lib/chef/exceptions.rb:142
+     1.4:   run_list_item
+     1.4:   most_constrained_cookbooks
+     1.4:   message
+     1.4:   assignment
+     1.4:   to_json
+     1.4:   non_existent_cookbooks
+
+     5.8: Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems#to_json lib/chef/exceptions.rb:108
+     1.4:   cookbooks_with_no_matching_versions
+     1.4:   message
+     1.4:   assignment
+     1.4:   to_json
+     1.4:   non_existent_cookbooks
+
+     4.4: Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem#initialize lib/chef/exceptions.rb:134
+     4.2:   assignment
+     1.4:   super
+
+     3.1: Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems#initialize lib/chef/exceptions.rb:101
+     2.8:   assignment
+     1.4:   super
+
+     2.6: Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems#none
+     2.6:   attr_reader
+
+     2.6: Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem#none
+     2.6:   attr_reader
+

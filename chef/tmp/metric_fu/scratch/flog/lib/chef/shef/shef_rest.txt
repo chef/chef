@@ -1,0 +1,6 @@
+     8.8: flog total
+     8.8: flog/method average
+
+     8.8: Shef::ShefREST#none
+     8.8:   alias
+

@@ -1,0 +1,58 @@
+    42.7: flog total
+     3.1: flog/method average
+
+    19.5: Chef::Resource::Ifconfig#initialize lib/chef/resource/ifconfig.rb:25
+    19.5:   assignment
+     1.3:   push
+
+     1.8: Chef::Resource::Ifconfig#onparent lib/chef/resource/ifconfig.rb:132
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Ifconfig#inet_addr lib/chef/resource/ifconfig.rb:68
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Ifconfig#target  lib/chef/resource/ifconfig.rb:44
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Ifconfig#metric  lib/chef/resource/ifconfig.rb:100
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Ifconfig#onboot  lib/chef/resource/ifconfig.rb:108
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Ifconfig#network lib/chef/resource/ifconfig.rb:116
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Ifconfig#mtu     lib/chef/resource/ifconfig.rb:92
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Ifconfig#bootproto lib/chef/resource/ifconfig.rb:124
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Ifconfig#bcast   lib/chef/resource/ifconfig.rb:76
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Ifconfig#device  lib/chef/resource/ifconfig.rb:52
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Ifconfig#hwaddr  lib/chef/resource/ifconfig.rb:60
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Ifconfig#mask    lib/chef/resource/ifconfig.rb:84
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.1: main#none
+     1.1:   require
+
