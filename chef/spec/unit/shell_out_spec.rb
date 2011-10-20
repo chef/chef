@@ -1,5 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require 'tmpdir'
+require 'tempfile'
 
 IS_WINDOWS = RUBY_PLATFORM =~ /mswin|mingw32|windows/
 LINE_ENDING = IS_WINDOWS ? "\r\n" : "\n"
@@ -323,13 +324,7 @@ describe Chef::ShellOut do
 
     it "recovers the error message when exec fails" do
       cmd = Chef::ShellOut.new("fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
-      # TODO This is more OS-specific behavior than one might like.
-      if IS_WINDOWS
-        cmd.run_command
-        cmd.status.exitstatus.should == 1
-      else
-        lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
-      end
+      lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
     end
 
     it "closes stdin on the child process so it knows not to wait for any input" do
@@ -348,44 +343,122 @@ describe Chef::ShellOut do
     cmd.format_for_exception.split("\n")[3].should == %q{---- End output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----}
   end
 
-  it "raises a InvalidCommandResult error if the exitstatus is nonzero" do
-    cmd = Chef::ShellOut.new('ruby -e "exit 2"')
-    cmd.run_command
-    lambda {cmd.error!}.should raise_error(Chef::Exceptions::ShellCommandFailed)
-  end
+  describe "running different types of command" do
+    it "runs commands with spaces in the path" do
+      Dir.mktmpdir do |dir|
+        file = File.open("#{dir}/blah blah.cmd", "w")
+        file.write("@echo blah")
+        file.close
 
-  it "does not raise an error if the command returns a value in the list of valid_exit_codes" do
-    cmd = Chef::ShellOut.new('ruby -e "exit 42"', :returns => 42)
-    cmd.run_command
-    lambda {cmd.error!}.should_not raise_error
-  end
+        cmd = Chef::ShellOut.new("\"#{file.path}\"")
+        cmd.run_command
+        cmd.stdout.chomp.should == "blah"
+      end
+    end
 
-  it "raises an error if the command does not return a value in the list of valid_exit_codes" do
-    cmd = Chef::ShellOut.new('ruby -e "exit 2"', :returns => [ 0, 1, 42 ])
-    cmd.run_command
-    lambda {cmd.error!}.should raise_error(Chef::Exceptions::ShellCommandFailed)
-  end
+    it "runs commands with lots of long arguments" do
+      # This number was chosen because it seems to be an actual maximum
+      # in Windows--somewhere around 6-7K of command line
+      echotext = 10000.upto(11340).map { |x| x.to_s }.join(' ')
+      cmd = Chef::ShellOut.new("echo #{echotext}")
+      cmd.run_command
+      cmd.stdout.chomp.should == echotext
+    end
 
-  it "raises an error if the command returns 0 and the list of valid_exit_codes does not contain 0" do
-    cmd = Chef::ShellOut.new('ruby -e "exit 0"', :returns => 42)
-    cmd.run_command
-    lambda {cmd.error!}.should raise_error(Chef::Exceptions::ShellCommandFailed)
-  end
+    it "runs commands with quotes and special characters in quotes" do
+      cmd = Chef::ShellOut.new(%q{ruby -e 'print "<>&|&&||;"'})
+      cmd.run_command
+      cmd.stdout.should == "<>&|&&||;"
+    end
 
-  it "includes output with exceptions from #error!" do
-    cmd = Chef::ShellOut.new('ruby -e "exit 2"')
-    cmd.run_command
-    begin
-      cmd.error!
-    rescue Chef::Exceptions::ShellCommandFailed => e
-      e.message.should match(Regexp.escape(cmd.format_for_exception))
+    it "runs commands with backslashes in them" do
+      cmd = Chef::ShellOut.new(%q{ruby -e 'print "\\"\\\\"'})
+      cmd.run_command
+      cmd.stdout.should == "\"\\"
+    end
+
+    it "runs commands with stdout pipes" do
+      Dir.mktmpdir do |dir|
+        cmd = Chef::ShellOut.new("ruby -e 'STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false' | ruby -e 'print STDIN.read.length'")
+        cmd.run_command
+        cmd.stdout.should == "4"
+        cmd.stderr.should == "false"
+      end
+    end
+
+    it "runs commands with stdout file pipes" do
+      Dir.mktmpdir do |dir|
+        cmd = Chef::ShellOut.new("ruby -e 'STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false' > #{dir}/blah.txt")
+        cmd.run_command
+        cmd.stdout.should == ""
+        cmd.stderr.should == "false"
+        IO.read("#{dir}/blah.txt").should == "true"
+      end
+    end
+
+    it "runs commands with stdout and stderr file pipes" do
+      Dir.mktmpdir do |dir|
+        cmd = Chef::ShellOut.new("ruby -e 'STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false' > #{dir}/blah.txt 2>&1")
+        cmd.run_command
+        cmd.stdout.should == ""
+        IO.read("#{dir}/blah.txt").should == "truefalse"
+      end
+    end
+
+    it "runs commands with &&" , :hi => true do
+      cmd = Chef::ShellOut.new(%q{ruby -e 'print "foo"' && ruby -e 'print "bar"'})
+      cmd.run_command
+      cmd.stdout.should == "foobar"
+    end
+
+    it "runs commands with ||" do
+      cmd = Chef::ShellOut.new(%q{ruby -e 'print "foo"; exit 1' || ruby -e 'print "bar"'})
+      cmd.run_command
+      cmd.status.exitstatus.should == 0
+      cmd.stdout.should == "foobar"
     end
   end
 
-  it "errors out when told the result is invalid" do
-    cmd = Chef::ShellOut.new('ruby -e "exit 0"')
-    cmd.run_command
-    lambda { cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Chef::Exceptions::ShellCommandFailed)
+  describe "handling process exit codes" do
+    it "raises a InvalidCommandResult error if the exitstatus is nonzero" do
+      cmd = Chef::ShellOut.new('ruby -e "exit 2"')
+      cmd.run_command
+      lambda {cmd.error!}.should raise_error(Chef::Exceptions::ShellCommandFailed)
+    end
+
+    it "does not raise an error if the command returns a value in the list of valid_exit_codes" do
+      cmd = Chef::ShellOut.new('ruby -e "exit 42"', :returns => 42)
+      cmd.run_command
+      lambda {cmd.error!}.should_not raise_error
+    end
+
+    it "raises an error if the command does not return a value in the list of valid_exit_codes" do
+      cmd = Chef::ShellOut.new('ruby -e "exit 2"', :returns => [ 0, 1, 42 ])
+      cmd.run_command
+      lambda {cmd.error!}.should raise_error(Chef::Exceptions::ShellCommandFailed)
+    end
+
+    it "raises an error if the command returns 0 and the list of valid_exit_codes does not contain 0" do
+      cmd = Chef::ShellOut.new('ruby -e "exit 0"', :returns => 42)
+      cmd.run_command
+      lambda {cmd.error!}.should raise_error(Chef::Exceptions::ShellCommandFailed)
+    end
+
+    it "includes output with exceptions from #error!" do
+      cmd = Chef::ShellOut.new('ruby -e "exit 2"')
+      cmd.run_command
+      begin
+        cmd.error!
+      rescue Chef::Exceptions::ShellCommandFailed => e
+        e.message.should match(Regexp.escape(cmd.format_for_exception))
+      end
+    end
+
+    it "errors out when told the result is invalid" do
+      cmd = Chef::ShellOut.new('ruby -e "exit 0"')
+      cmd.run_command
+      lambda { cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Chef::Exceptions::ShellCommandFailed)
+    end
   end
 
 end
