@@ -347,8 +347,9 @@ describe Chef::ShellOut do
     it "runs commands with spaces in the path" do
       Dir.mktmpdir do |dir|
         file = File.open("#{dir}/blah blah.cmd", "w")
-        file.write("@echo blah")
+        file.write(IS_WINDOWS ? "@echo blah" : "echo blah")
         file.close
+        File.chmod(0755, file.path)
 
         cmd = Chef::ShellOut.new("\"#{file.path}\"")
         cmd.run_command
