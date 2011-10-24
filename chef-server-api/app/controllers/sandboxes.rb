@@ -103,9 +103,9 @@ class Sandboxes < Application
   def update
     # look up the sandbox by its guid
     existing_sandbox = Chef::Sandbox.cdb_load(params[:sandbox_id])
-    raise NotFound, "cannot find sandbox with guid #{sandbox_id}" unless existing_sandbox
+    raise NotFound, "cannot find sandbox with guid #{params[:sandbox_id]}" unless existing_sandbox
     
-    raise BadRequest, "cannot update sandbox #{sandbox_id}: already complete" if existing_sandbox.is_completed
+    raise BadRequest, "cannot update sandbox #{params[:sandbox_id]}: already complete" if existing_sandbox.is_completed
 
     if params[:is_completed]
       existing_sandbox.is_completed = (params[:is_completed] == true)
