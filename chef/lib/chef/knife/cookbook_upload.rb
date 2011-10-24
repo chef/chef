@@ -105,6 +105,7 @@ class Chef
             rescue Exceptions::CookbookNotFoundInRepo => e
               ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
               Log.debug(e)
+              exit 1
             end
           end
         end
