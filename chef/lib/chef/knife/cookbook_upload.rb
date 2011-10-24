@@ -174,6 +174,7 @@ WARNING
         when "409"
           ui.error "Version #{cookbook.version} of cookbook #{cookbook.name} is frozen. Use --force to override."
           Log.debug(e)
+          exit 1
         else
           raise
         end
