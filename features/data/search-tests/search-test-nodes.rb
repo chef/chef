@@ -73,7 +73,7 @@ example_data_bags = {
     items = []
     bag = Chef::DataBag.new
     bag.name "toys"
-    bag.save
+    bag.save rescue nil
     item = Chef::DataBagItem.new
     item_data = {
       "id" => "marbles",
@@ -102,7 +102,7 @@ example_data_bags = {
     items = []
     bag = Chef::DataBag.new
     bag.name "fruit"
-    bag.save
+    bag.save rescue nil
     item = Chef::DataBagItem.new
     item_data = {
       "id" => "citrus",

@@ -24,7 +24,17 @@ require 'rake/gempackagetask'
 
 GEM_NAME = "chef-solr"
 
-spec = eval(File.read("chef-solr.gemspec"))
+spec = eval(File.read(File.dirname(__FILE__) + "/chef-solr.gemspec"))
+
+desc "Create solr archives"
+task :tar_solr do
+  %w{solr-home solr-jetty}.each do |tar|
+    Dir.chdir(File.dirname(__FILE__) + "/solr/#{tar}") { sh "tar cvzf ../#{tar}.tar.gz *" }
+    spec.files += [ "solr/#{tar}.tar.gz" ]
+  end
+end
+
+task :gem => :tar_solr
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec

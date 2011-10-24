@@ -109,7 +109,7 @@ class Chef
 
       def validate_template(erb_file)
         Chef::Log.debug("Testing template #{erb_file} for syntax errors...")
-        result = shell_out("sh -c 'erubis -x #{erb_file} | ruby -c'")
+        result = shell_out("erubis -x #{erb_file} | ruby -c")
         result.error!
         true
       rescue Chef::Exceptions::ShellCommandFailed

@@ -65,6 +65,7 @@ describe Chef::Knife::EnvironmentEdit do
 
   it "shoud show usage and exit when no environment name is provided" do
     @knife.name_args = []
+    @knife.should_receive(:show_usage)
     lambda { @knife.run }.should raise_error(SystemExit)
   end
 

@@ -349,13 +349,18 @@ describe Chef::Provider::File do
     end
   end
 
-  describe "when creating a file if it's missing" do
-    before(:each) do
+  describe "when creating a file which may be missing" do
+    it "should not call action create if the file exists" do
       @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt")))
       @provider = Chef::Provider::File.new(@resource, @run_context)
+      @provider.should_not_receive(:action_create).and_return(true)
+      @provider.action_create_if_missing
     end
 
-    it "should call action create, since File can only touch" do
+    it "should call action create if the does not file exist" do
+      @resource.path("/tmp/non_existant_file")
+      @provider = Chef::Provider::File.new(@resource, @run_context)
+      ::File.stub!(:exists?).with(@resource.path).and_return(false)
       @provider.should_receive(:action_create).and_return(true)
       @provider.action_create_if_missing
     end

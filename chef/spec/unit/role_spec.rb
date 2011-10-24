@@ -238,8 +238,34 @@ describe Chef::Role do
         @deserial.send(t.to_sym).should == @role.send(t.to_sym)
       end
     end
-
   end
 
+  describe "when loading from disk" do
+    it "should return a Chef::Role object from JSON" do
+      File.should_receive(:exists?).with(File.join(Chef::Config[:role_path], 'lolcat.json')).exactly(1).times.and_return(true)
+      IO.should_receive(:read).with(File.join(Chef::Config[:role_path], 'lolcat.json')).and_return('{"name": "ceiling_cat", "json_class": "Chef::Role" }')
+      @role.should be_a_kind_of(Chef::Role)
+      @role.class.from_disk("lolcat")
+    end
+
+    it "should return a Chef::Role object from a Ruby DSL" do
+      File.should_receive(:exists?).with(File.join(Chef::Config[:role_path], 'lolcat.json')).exactly(1).times.and_return(false)
+      File.should_receive(:exists?).with(File.join(Chef::Config[:role_path], 'lolcat.rb')).exactly(2).times.and_return(true)
+      File.should_receive(:readable?).with(File.join(Chef::Config[:role_path], 'lolcat.rb')).exactly(1).times.and_return(true)
+      ROLE_DSL=<<-EOR
+name "ceiling_cat"
+description "like Aliens, but furry"
+EOR
+      IO.should_receive(:read).with(File.join(Chef::Config[:role_path], 'lolcat.rb')).and_return(ROLE_DSL)
+      @role.should be_a_kind_of(Chef::Role)
+      @role.class.from_disk("lolcat")
+    end
+
+    it "should raise an exception if the file does not exist" do
+      File.should_receive(:exists?).with(File.join(Chef::Config[:role_path], 'lolcat.json')).exactly(1).times.and_return(false)
+      File.should_receive(:exists?).with(File.join(Chef::Config[:role_path], 'lolcat.rb')).exactly(1).times.and_return(false)
+      lambda {@role.class.from_disk("lolcat")}.should raise_error(Chef::Exceptions::RoleNotFound)
+    end
+  end
 end
 

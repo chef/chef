@@ -20,12 +20,15 @@
 require 'chef/provider/package'
 require 'chef/mixin/shell_out'
 require 'chef/resource/package'
+require 'chef/mixin/get_source_from_package'
 
 class Chef
   class Provider
     class Package
       class Freebsd < Chef::Provider::Package
         include Chef::Mixin::ShellOut
+
+        include Chef::Mixin::GetSourceFromPackage
 
         def initialize(*args)
           super

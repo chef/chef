@@ -71,21 +71,6 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource.should eql(@provider.current_resource)
     end
 
-    it "should raise an error if a candidate version can't be found" do
-      @yum_cache = mock(
-        'Chef::Provider::Yum::YumCache',
-        :reload_installed => true,
-        :reset => true,
-        :installed_version => "1.2.4-11.18.el5",
-        :candidate_version => nil,
-        :package_available? => true, 
-        :version_available? => true
-      )
-      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
-    end
-
     describe "when arch in package_name" do
       it "should set the arch if no existing package_name is found and new_package_name+new_arch is available" do
         @new_resource = Chef::Resource::YumPackage.new('testing.noarch')
@@ -141,14 +126,14 @@ describe Chef::Provider::Package::Yum do
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         # annoying side effect of the fun stub'ing above
-        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
+        @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3"
         @provider.new_resource.arch.should == nil 
         @provider.arch.should == nil 
 
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3.more')
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
+        @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3.more"
         @provider.new_resource.arch.should == nil 
         @provider.arch.should == nil 
@@ -170,14 +155,14 @@ describe Chef::Provider::Package::Yum do
         @yum_cache.stub!(:package_available?).and_return(true)
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
+        @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3"
         @provider.new_resource.arch.should == nil 
         @provider.arch.should == nil 
 
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3.more')
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package, %r{don't have a version of package})
+        @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3.more"
         @provider.new_resource.arch.should == nil 
         @provider.arch.should == nil 
@@ -276,6 +261,28 @@ describe Chef::Provider::Package::Yum do
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
     end
+
+    it "should search provides if no package is available and not load the complete set if action is :remove or :purge" do
+      @yum_cache = mock(
+        'Chef::Provider::Yum::YumCache',
+        :reload_installed => true,
+        :reset => true,
+        :installed_version => "1.2.4-11.18.el5",
+        :candidate_version => "1.2.4-11.18.el5",
+        :package_available? => false, 
+        :version_available? => true
+      )
+      Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @yum_cache.should_receive(:packages_from_require).once.and_return([])
+      @yum_cache.should_not_receive(:reload_provides)
+      @new_resource.action(:remove)
+      @provider.load_current_resource
+      @yum_cache.should_receive(:packages_from_require).once.and_return([])
+      @yum_cache.should_not_receive(:reload_provides)
+      @new_resource.action(:purge)
+      @provider.load_current_resource
+    end
     
     it "should search provides if no package is available - if no match in provides leave the name intact" do
       @yum_cache = mock(
@@ -300,27 +307,39 @@ describe Chef::Provider::Package::Yum do
     it "should run yum install with the package name and version" do
       @provider.load_current_resource
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install emacs-1.0"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install emacs-1.0"
+      )
       @provider.install_package("emacs", "1.0")
     end
 
     it "should run yum localinstall if given a path to an rpm" do
       @new_resource.stub!(:source).and_return("/tmp/emacs-21.4-20.el5.i386.rpm")
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y localinstall /tmp/emacs-21.4-20.el5.i386.rpm"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y localinstall /tmp/emacs-21.4-20.el5.i386.rpm"
+      )
       @provider.install_package("emacs", "21.4-20.el5")
+    end
+
+    it "should run yum localinstall if given a path to an rpm as the package" do
+      @new_resource = Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm")
+      ::File.stub!(:exists?).and_return(true)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider.load_current_resource
+      @new_resource.source.should == "/tmp/emacs-21.4-20.el5.i386.rpm"
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y localinstall /tmp/emacs-21.4-20.el5.i386.rpm"
+      )
+      @provider.install_package("/tmp/emacs-21.4-20.el5.i386.rpm", "21.4-20.el5")
     end
 
     it "should run yum install with the package name, version and arch" do
       @provider.load_current_resource
       @new_resource.stub!(:arch).and_return("i386")
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install emacs-21.4-20.el5.i386"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install emacs-21.4-20.el5.i386"
+      )
       @provider.install_package("emacs", "21.4-20.el5")
     end
 
@@ -329,9 +348,9 @@ describe Chef::Provider::Package::Yum do
       @provider.candidate_version = '11'
       @new_resource.stub!(:options).and_return("--disablerepo epmd")
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y --disablerepo epmd install cups-11"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y --disablerepo epmd install cups-11"
+      )
       @provider.install_package(@new_resource.name, @provider.candidate_version)
     end
 
@@ -382,9 +401,9 @@ describe Chef::Provider::Package::Yum do
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install cups-1.2.4-11.15.el5"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install cups-1.2.4-11.15.el5"
+      )
       @provider.install_package("cups", "1.2.4-11.15.el5")
     end
 
@@ -403,9 +422,9 @@ describe Chef::Provider::Package::Yum do
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
       @provider.load_current_resource
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y downgrade cups-1.2.4-11.15.el5"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y downgrade cups-1.2.4-11.15.el5"
+      )
       @provider.install_package("cups", "1.2.4-11.15.el5")
     end
 
@@ -413,9 +432,9 @@ describe Chef::Provider::Package::Yum do
       @new_resource.stub!(:flush_cache).and_return({:after => true, :before => false})
       @provider.load_current_resource
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install emacs-1.0"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install emacs-1.0"
+      )
       @yum_cache.should_receive(:reload).once
       @provider.install_package("emacs", "1.0")
     end
@@ -424,9 +443,9 @@ describe Chef::Provider::Package::Yum do
       @new_resource.stub!(:flush_cache).and_return({:after => false, :before => false})
       @provider.load_current_resource
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install emacs-1.0"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install emacs-1.0"
+      )
       @yum_cache.should_not_receive(:reload)
       @provider.install_package("emacs", "1.0")
     end
@@ -437,9 +456,9 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
       @provider.candidate_version = '11'
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install cups-11"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install cups-11"
+      )
       @provider.upgrade_package(@new_resource.name, @provider.candidate_version)
     end
 
@@ -448,9 +467,9 @@ describe Chef::Provider::Package::Yum do
       @current_resource = Chef::Resource::Package.new('cups')
       @provider.candidate_version = '11'
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y install cups-11"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y install cups-11"
+      )
       @provider.upgrade_package(@new_resource.name, @provider.candidate_version)
     end
 
@@ -474,30 +493,73 @@ describe Chef::Provider::Package::Yum do
 
   describe "when removing a package" do
     it "should run yum remove with the package name" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y remove emacs-1.0"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y remove emacs-1.0"
+      )
       @provider.remove_package("emacs", "1.0")
     end
 
     it "should run yum remove with the package name and arch" do
       @new_resource.stub!(:arch).and_return("x86_64")
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y remove emacs-1.0.x86_64"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y remove emacs-1.0.x86_64"
+      )
       @provider.remove_package("emacs", "1.0")
     end
   end
 
   describe "when purging a package" do
     it "should run yum remove with the package name" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "yum -d0 -e0 -y remove emacs-1.0"
-      })
+      @provider.should_receive(:yum_command).with(
+        "yum -d0 -e0 -y remove emacs-1.0"
+      )
       @provider.purge_package("emacs", "1.0")
     end
   end
 
+  describe "when running yum" do
+    it "should run yum once if it exits with a return code of 0" do
+      @status = mock("Status", :exitstatus => 0)
+      @provider.stub!(:output_of_command).and_return([@status, "", ""])
+      @provider.should_receive(:output_of_command).once.with(
+        "yum -d0 -e0 -y install emacs-1.0",
+        {}
+      )
+      @provider.yum_command("yum -d0 -e0 -y install emacs-1.0")
+    end
+
+    it "should run yum once if it exits with a return code > 0 and no scriptlet failures" do
+      @status = mock("Status", :exitstatus => 2)
+      @provider.stub!(:output_of_command).and_return([@status, "failure failure", "problem problem"])
+      @provider.should_receive(:output_of_command).once.with(
+        "yum -d0 -e0 -y install emacs-1.0",
+        {}
+      )
+      lambda { @provider.yum_command("yum -d0 -e0 -y install emacs-1.0") }.should raise_error(Chef::Exceptions::Exec)
+    end
+
+    it "should run yum once if it exits with a return code of 1 and %pre scriptlet failures" do
+      @status = mock("Status", :exitstatus => 1)
+      @provider.stub!(:output_of_command).and_return([@status, "error: %pre(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2", ""])
+      @provider.should_receive(:output_of_command).once.with(
+        "yum -d0 -e0 -y install emacs-1.0",
+        {}
+      )
+      # will still raise an exception, can't stub out the subsequent call
+      lambda { @provider.yum_command("yum -d0 -e0 -y install emacs-1.0") }.should raise_error(Chef::Exceptions::Exec)
+    end
+
+    it "should run yum twice if it exits with a return code of 1 and %post scriptlet failures" do
+      @status = mock("Status", :exitstatus => 1)
+      @provider.stub!(:output_of_command).and_return([@status, "error: %post(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2", ""])
+      @provider.should_receive(:output_of_command).twice.with(
+        "yum -d0 -e0 -y install emacs-1.0",
+        {}
+      )
+      # will still raise an exception, can't stub out the subsequent call
+      lambda { @provider.yum_command("yum -d0 -e0 -y install emacs-1.0") }.should raise_error(Chef::Exceptions::Exec)
+    end
+  end
 end
 
 describe Chef::Provider::Package::Yum::RPMUtils do
@@ -1412,6 +1474,8 @@ znc-devel 0 0.098 1.el5 i386 [] a
 znc-devel 0 0.098 1.el5 x86_64 [] a
 znc-extra 0 0.098 1.el5 x86_64 [] a
 znc-modtcl 0 0.098 1.el5 x86_64 [] a
+znc-test.beta1 0 0.098 1.el5 x86_64 [] a
+znc-test.test.beta1 0 0.098 1.el5 x86_64 [] a
 EOF
 
     yum_dump_bad_output_separators = <<EOF
@@ -1625,10 +1689,21 @@ EOF
   end
 
   describe "package_available?" do
-    it "should return true a package is available" do
+    it "should return true a package name is available" do
       @yc.package_available?("zisofs-tools").should be == true 
       @yc.package_available?("moo").should be == false
       @yc.package_available?(nil).should be == false
+    end
+
+    it "should return true a package name + arch is available" do
+      @yc.package_available?("zlib-devel.i386").should be == true
+      @yc.package_available?("zisofs-tools.x86_64").should be == true 
+      @yc.package_available?("znc-test.beta1.x86_64").should be == true
+      @yc.package_available?("znc-test.beta1").should be == true
+      @yc.package_available?("znc-test.test.beta1").should be == true
+      @yc.package_available?("moo.i386").should be == false
+      @yc.package_available?("zisofs-tools.beta").should be == false
+      @yc.package_available?("znc-test.test").should be == false
     end
   end
 

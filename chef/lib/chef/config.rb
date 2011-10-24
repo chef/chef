@@ -147,7 +147,8 @@ class Chef
     json_attribs nil
     log_level :info
     log_location STDOUT
-    verbose_logging nil
+    # toggle info level log items that can create a lot of output
+    verbose_logging true 
     node_name nil
     node_path "/var/chef/node"
 
@@ -227,6 +228,9 @@ class Chef
 
     # Exception Handlers
     exception_handlers []
+
+    # Start handlers
+    start_handlers []
 
     # Checksum Cache
     # Uses Moneta on the back-end

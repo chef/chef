@@ -630,7 +630,24 @@ class Chef
       if found_pref
         @manifest_records_by_path[found_pref]
       else
-        raise Chef::Exceptions::FileNotFound, "cookbook #{name} does not contain file #{segment}/#{filename}"
+        if segment == :files || segment == :templates
+          error_message = "Cookbook '#{name}' (#{version}) does not contain a file at any of these locations:\n"
+          error_locations = [
+            "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
+            "  #{segment}/#{node[:platform]}/#{filename}",
+            "  #{segment}/default/#{filename}",
+          ]
+          error_message << error_locations.join("\n")
+          existing_files = segment_filenames(segment)
+          # Show the files that the cookbook does have. If the user made a typo,
+          # hopefully they'll see it here.
+          unless existing_files.empty?
+            error_message << "\n\nThis cookbook _does_ contain: ['#{existing_files.join("','")}']"
+          end
+          raise Chef::Exceptions::FileNotFound, error_message
+        else
+          raise Chef::Exceptions::FileNotFound, "cookbook #{name} does not contain file #{segment}/#{filename}"
+        end
       end
     end
 
@@ -675,7 +692,7 @@ class Chef
 
       best_pref = preferences.find { |pref| !filenames_by_pref[pref].empty? }
 
-      raise Chef::Exceptions::FileNotFound, "cookbook #{name} has no directory #{segment}/#{dirname}" unless best_pref
+      raise Chef::Exceptions::FileNotFound, "cookbook #{name} has no directory #{segment}/default/#{dirname}" unless best_pref
 
       filenames_by_pref[best_pref]
 
@@ -710,7 +727,7 @@ class Chef
 
       best_pref = preferences.find { |pref| !records_by_pref[pref].empty? }
 
-      raise Chef::Exceptions::FileNotFound, "cookbook #{name} has no directory #{segment}/#{dirname}" unless best_pref
+      raise Chef::Exceptions::FileNotFound, "cookbook #{name} (#{version}) has no directory #{segment}/default/#{dirname}" unless best_pref
 
       records_by_pref[best_pref]
     end

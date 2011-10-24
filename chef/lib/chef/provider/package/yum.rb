@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,8 @@ require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
 require 'singleton'
+require 'chef/mixin/get_source_from_package'
+
 
 class Chef
   class Provider
@@ -66,7 +68,7 @@ class Chef
               [ epoch, version, release ]
             end
 
-            # verify 
+            # verify
             def isalnum(x)
               isalpha(x) or isdigit(x)
             end
@@ -89,7 +91,7 @@ class Chef
               if x.nil?
                 x = ""
               end
-              
+
               if y.nil?
                 y = ""
               end
@@ -97,13 +99,13 @@ class Chef
               # not so easy :(
               #
               # takes 2 strings like
-              # 
+              #
               # x = "1.20.b18.el5"
               # y = "1.20.b17.el5"
               #
               # breaks into purely alpha and numeric segments and compares them using
               # some rules
-              # 
+              #
               # * 10 > 1
               # * 1 > a
               # * z > a
@@ -212,7 +214,7 @@ class Chef
                 return 0
               end
 
-              # the most unprocessed characters left wins 
+              # the most unprocessed characters left wins
               if (x_pos_max - x_pos) > (y_pos_max - y_pos)
                 return 1
               else
@@ -250,17 +252,17 @@ class Chef
           def <=>(y)
             compare_versions(y)
           end
-          
+
           def compare(y)
             compare_versions(y, false)
           end
-          
+
           def partial_compare(y)
             compare_versions(y, true)
           end
 
           # RPM::Version rpm_version_to_s equivalent
-          def to_s 
+          def to_s
             if @r.nil?
               @v
             else
@@ -271,7 +273,7 @@ class Chef
           def evr
             "#{@e}:#{@v}-#{@r}"
           end
-          
+
           private
 
           # Rough RPM::Version rpm_version_cmp equivalent - except much slower :)
@@ -309,7 +311,7 @@ class Chef
               return cmp if cmp != 0
             end
 
-            # compare release 
+            # compare release
             if partial and (x.r.nil? or y.r.nil?)
               return 0
             elsif x.r.nil? == false and y.r.nil?
@@ -362,6 +364,9 @@ class Chef
 
           def compare(y)
             x = self
+
+            # easy! :)
+            return 0 if x.nevra == y.nevra
 
             # compare name
             if x.n.nil? == false and y.n.nil?
@@ -465,7 +470,7 @@ class Chef
             end
 
             # Partial compare
-            # 
+            #
             # eg: x.version 2.3 == y.version 2.3-1
             sense = x.version.partial_compare(y.version)
 
@@ -488,7 +493,7 @@ class Chef
 
         class RPMProvide < RPMDependency; end
         class RPMRequire < RPMDependency; end
-        
+
         class RPMDbPackage < RPMPackage
           # <rpm parts>, installed, available
           def initialize(*args)
@@ -505,6 +510,8 @@ class Chef
           def initialize
             # package name => [ RPMPackage, RPMPackage ] of different versions
             @rpms = Hash.new
+            # package nevra => RPMPackage for lookups
+            @index = Hash.new
             # provide name (aka feature) => [RPMPackage, RPMPackage] each providing this feature
             @provides = Hash.new
             # RPMPackages listed as available
@@ -517,15 +524,21 @@ class Chef
             self.lookup(package_name)
           end
 
+          # Lookup package_name and return a descending array of package objects
           def lookup(package_name)
-            @rpms[package_name]
+            pkgs = @rpms[package_name]
+            if pkgs
+              return pkgs.sort.reverse
+            else
+              return nil
+            end
           end
 
           def lookup_provides(provide_name)
             @provides[provide_name]
           end
 
-          # Using the package name as a key keep a unique, descending list of packages.
+          # Using the package name as a key, and nevra for an index, keep a unique list of packages.
           # The available/installed state can be overwritten for existing packages.
           def push(*args)
             args.flatten.each do |new_rpm|
@@ -535,15 +548,13 @@ class Chef
 
               @rpms[new_rpm.n] ||= Array.new
 
-              # new_rpm may be a different object but it will be compared using RPMPackages <=>
-              idx = @rpms[new_rpm.n].index(new_rpm)
+              # we may already have this one, like when the installed list is refreshed
+              idx = @index[new_rpm.nevra]
               if idx
                 # grab the existing package if it's not
-                curr_rpm = @rpms[new_rpm.n][idx]
+                curr_rpm = idx
               else
                 @rpms[new_rpm.n] << new_rpm
-                @rpms[new_rpm.n].sort!
-                @rpms[new_rpm.n].reverse!
 
                 new_rpm.provides.each do |provide|
                   @provides[provide.name] ||= Array.new
@@ -552,6 +563,10 @@ class Chef
 
                 curr_rpm = new_rpm
               end
+
+              # Track the nevra -> RPMPackage association to avoid having to compare versions
+              # with @rpms[new_rpm.n] on the next round
+              @index[new_rpm.nevra] = curr_rpm
 
               # these are overwritten for existing packages
               if new_rpm.available
@@ -569,6 +584,7 @@ class Chef
 
           def clear
             @rpms.clear
+            @index.clear
             @provides.clear
             clear_available
             clear_installed
@@ -636,7 +652,7 @@ class Chef
             # Next time @rpmdb is accessed:
             #  :all       - Trigger a run of "yum-dump.py --options --installed-provides", updates
             #               yum's cache and parses options from /etc/yum.conf. Pulls in Provides
-            #               dependency data for installed packages only - this data is slow to 
+            #               dependency data for installed packages only - this data is slow to
             #               gather.
             #  :provides  - Same as :all but pulls in Provides data for available packages as well.
             #               Used as a last resort when we can't find a Provides match.
@@ -765,15 +781,28 @@ class Chef
           end
 
           # Querying the cache
-          # 
+          #
 
+          # Check for package by name or name+arch
           def package_available?(package_name)
             refresh
+
             if @rpmdb.lookup(package_name)
-              true
+              return true
             else
-              false
+              if package_name =~ %r{^(.*)\.(.*)$}
+                pkg_name = $1
+                pkg_arch = $2
+
+                if matches = @rpmdb.lookup(pkg_name)
+                  matches.each do |m|
+                    return true if m.arch == pkg_arch
+                  end
+                end
+              end
             end
+
+            return false
           end
 
           # Returns a array of packages satisfying an RPMDependency
@@ -781,7 +810,7 @@ class Chef
             refresh
             @rpmdb.whatprovides(rpmdep)
           end
- 
+
           def version_available?(package_name, desired_version, arch=nil)
              version(package_name, arch, true, false) do |v|
                return true if desired_version == v
@@ -853,6 +882,8 @@ class Chef
 
         end # YumCache
 
+        include Chef::Mixin::GetSourceFromPackage
+
         def initialize(new_resource, run_context)
           super
 
@@ -878,11 +909,11 @@ class Chef
           end
         end
 
-        def allow_downgrade 
+        def allow_downgrade
           if @new_resource.respond_to?("allow_downgrade")
             @new_resource.allow_downgrade
           else
-            false 
+            false
           end
         end
 
@@ -893,6 +924,37 @@ class Chef
           arch ? ".#{arch}" : nil
         end
 
+        def yum_command(command)
+          status, stdout, stderr = output_of_command(command, {})
+
+          # This is fun: rpm can encounter errors in the %post/%postun scripts which aren't
+          # considered fatal - meaning the rpm is still successfully installed. These issue
+          # cause yum to emit a non fatal warning but still exit(1). As there's currently no
+          # way to suppress this behavior and an exit(1) will break a Chef run we make an
+          # effort to trap these and re-run the same install command - it will either fail a
+          # second time or succeed.
+          #
+          # A cleaner solution would have to be done in python and better hook into
+          # yum/rpm to handle exceptions as we see fit.
+          if status.exitstatus == 1
+            stdout.each_line do |l|
+              # rpm-4.4.2.3 lib/psm.c line 2182
+              if l =~ %r{^error: %(post|postun)\(.*\) scriptlet failed, exit status \d+$}
+                Chef::Log.warn("#{@new_resource} caught non-fatal scriptlet issue: \"#{l}\". Can't trust yum exit status " +
+                               "so running install again to verify.")
+                status, stdout, stderr = output_of_command(command, {})
+                break
+              end
+            end
+          end
+
+          if status.exitstatus > 0
+            command_output = "STDOUT: #{stdout}"
+            command_output << "STDERR: #{stderr}"
+            handle_command_failures(status, command_output, {})
+          end
+        end
+
         # Standard Provider methods for Parent
         #
 
@@ -901,7 +963,15 @@ class Chef
             @yum.reload
           end
 
+          # At this point package_name could be:
+          # 
+          # 1) a package name, eg: "foo"
+          # 2) a package name.arch, eg: "foo.i386"
+          # 3) or a dependency, eg: "foo >= 1.1"
+
+          # Check if we have name or name+arch which has a priority over a dependency
           unless @yum.package_available?(@new_resource.package_name)
+            # If they aren't in the installed packages they could be a dependency
             parse_dependency
           end
 
@@ -943,22 +1013,15 @@ class Chef
 
           @candidate_version = @yum.candidate_version(@new_resource.package_name, arch)
 
-          if @candidate_version.nil?
-            raise Chef::Exceptions::Package, "Yum installed and available lists don't have a version of package "+
-                                             "#{@new_resource.package_name}"
-          end
-
           Chef::Log.debug("#{@new_resource} installed version: #{installed_version || "(none)"} candidate version: " +
-                          "#{@candidate_version}")
+                          "#{@candidate_version || "(none)"}")
 
           @current_resource
         end
 
         def install_package(name, version)
-          if @new_resource.source 
-            run_command_with_systems_locale(
-              :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} localinstall #{@new_resource.source}"
-            )
+          if @new_resource.source
+            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} localinstall #{@new_resource.source}")
           else
             # Work around yum not exiting with an error if a package doesn't exist for CHEF-2062
             if @yum.version_available?(name, version, arch)
@@ -983,9 +1046,7 @@ class Chef
                 end
               end
 
-              run_command_with_systems_locale(
-                :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{name}-#{version}#{yum_arch}"
-              )
+              yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{name}-#{version}#{yum_arch}")
             else
               raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version " +
                                                "and release? (version-release, e.g. 1.84-10.fc6)"
@@ -1021,13 +1082,9 @@ class Chef
 
         def remove_package(name, version)
           if version
-            run_command_with_systems_locale(
-             :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}-#{version}#{yum_arch}"
-            )
+            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}-#{version}#{yum_arch}")
           else
-            run_command_with_systems_locale(
-             :command => "yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}#{yum_arch}"
-            )
+            yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}#{yum_arch}")
           end
           if flush_cache[:after]
             @yum.reload
@@ -1041,8 +1098,8 @@ class Chef
         end
 
         private
-        
-        def parse_arch 
+
+        def parse_arch
           # Allow for foo.x86_64 style package_name like yum uses in it's output
           #
           if @new_resource.package_name =~ %r{^(.*)\.(.*)$}
@@ -1065,12 +1122,12 @@ class Chef
         # eg: yum install "perl(Config)"
         #     yum install "mtr = 2:0.71-3.1"
         #     yum install "mtr > 2:0.71"
-        # 
+        #
         # We support resolving these out of the Provides data imported from yum-dump.py and
         # matching them up with an actual package so the standard resource handling can apply.
         #
         # There is currently no support for filename matching.
-        def parse_dependency 
+        def parse_dependency
           # Transform the package_name into a requirement
           yum_require = RPMRequire.parse(@new_resource.package_name)
           # and gather all the packages that have a Provides feature satisfying the requirement.
@@ -1078,10 +1135,14 @@ class Chef
           packages = @yum.packages_from_require(yum_require)
 
           if packages.empty?
-            Chef::Log.debug("#{@new_resource} couldn't match #{@new_resource.package_name} in " +
+            # Don't bother if we are just ensuring a package is removed - we don't need Provides data
+            actions = Array(@new_resource.action)
+            unless actions.size == 1 and (actions[0] == :remove || actions[0] == :purge)
+              Chef::Log.debug("#{@new_resource} couldn't match #{@new_resource.package_name} in " +
                             "installed Provides, loading available Provides - this may take a moment")
-            @yum.reload_provides
-            packages = @yum.packages_from_require(yum_require) 
+              @yum.reload_provides
+              packages = @yum.packages_from_require(yum_require)
+            end
           end
 
           unless packages.empty?

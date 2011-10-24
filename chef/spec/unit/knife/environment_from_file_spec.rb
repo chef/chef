@@ -24,9 +24,8 @@ Chef::Knife::EnvironmentFromFile.load_deps
 describe Chef::Knife::EnvironmentFromFile do
   before(:each) do
     @knife = Chef::Knife::EnvironmentFromFile.new
-    @knife.stub!(:msg).and_return true
-    @knife.stub!(:output).and_return true
-    @knife.stub!(:show_usage).and_return true
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
     @knife.name_args = [ "spec.rb" ]
 
     @environment = Chef::Environment.new
@@ -51,6 +50,7 @@ describe Chef::Knife::EnvironmentFromFile do
 
     it "should show usage and exit if not filename is provided" do
       @knife.name_args = []
+      @knife.ui.should_receive(:fatal)
       @knife.should_receive(:show_usage)
       lambda { @knife.run }.should raise_error(SystemExit)
     end

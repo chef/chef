@@ -36,7 +36,7 @@ class Chef
        :short => "-D",
        :long => "--no-dependencies",
        :boolean => true,
-       :description => "Grab dependencies automatically"
+       :description => "Do not install dependencies automatically"
 
       option :cookbook_path,
         :short => "-o PATH:PATH",
@@ -44,7 +44,7 @@ class Chef
         :description => "A colon-separated path to look for cookbooks in",
         :proc => lambda { |o| o.split(":") }
 
-      option :branch_default,
+      option :default_branch,
         :short => "-B BRANCH",
         :long => "--branch BRANCH",
         :description => "Default branch to work with",

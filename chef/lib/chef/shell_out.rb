@@ -21,7 +21,6 @@ require 'tmpdir'
 require 'chef/log'
 require 'fcntl'
 require 'chef/exceptions'
-require 'chef/shell_out/unix'
 
 class Chef
 

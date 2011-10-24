@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-COOKBOOK" "1" "May 2011" "Chef 0.10.0" "Chef Manual"
+.TH "KNIFE\-COOKBOOK" "1" "August 2011" "Chef 0.10.4" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-cookbook\fR \- upload and manage chef cookbooks
@@ -100,6 +100,22 @@ Overrides the frozen flag on a cookbook, allowing you to overwrite a cookbook ve
 .P
 Uploads one or more cookbooks from your local cookbook repository(ies) to the Chef Server\. Only files that don\'t yet exist on the server will be uploaded\.
 .
+.P
+As the command parses the name args as 1\.\.n cookbook names:
+.
+.IP "" 4
+.
+.nf
+
+`knife cookbook upload COOKBOOK COOKBOOK \.\.\.`
+.
+.fi
+.
+.IP "" 0
+.
+.P
+works for one to many cookbooks\.
+.
 .SH "DOWNLOAD"
 \fBknife cookbook download cookbook [version]\fR \fI(options)\fR
 .
@@ -151,7 +167,7 @@ the directory where the cookbook will be created
 .
 .TP
 \fB\-r\fR, \fB\-\-readme\-format format\fR
-format of the readme file
+format of the readme file md, mkd, txt, or rdoc
 .
 .TP
 \fB\-c\fR, \fB\-\-copyright copyright\fR
@@ -187,7 +203,7 @@ cookbook/metadata\.rb
 cookbook/providers
 .
 .IP "\(bu" 4
-cookbook/readme\.rdoc
+cookbook/readme\.md
 .
 .IP "\(bu" 4
 cookbook/recipes/default\.rb
@@ -201,7 +217,7 @@ cookbook/templates/default
 .IP "" 0
 .
 .P
-supported readme formats are \'rdoc\' (default), \'md\', \'mkd\', \'txt\'\. the readme file will be written with the specified extension and a set of helpful starting headers\.
+supported readme formats are \'md\' (default), \'mkd\', \'txt\', \'rdoc\'\. the readme file will be written with the specified extension and a set of helpful starting headers\.
 .
 .P
 specify \fB\-c\fR or \fB\-\-copyright\fR with the name of the copyright holder as your name or your company/organization name in a quoted string\. if this value is not specified an all\-caps string \fByour_company_name\fR is used which can be easily changed with find/replace\.
@@ -213,7 +229,7 @@ specify \fB\-i\fR or \fB\-\-license\fR with the license that the cookbook is dis
 specify \fB\-e\fR or \fB\-\-email\fR with the email address of the cookbook\'s maintainer\. if this value is not specified, an all\-caps string \fByour_email\fR is used which can easily be changed with find/replace\.
 .
 .P
-the cookbook copyright, license and email settings can be filled in the \fBknife\.rb\fR, for example with default values:
+the cookbook copyright, license, email, and readme format settings can be filled in the \fBknife\.rb\fR, for example with default values:
 .
 .IP "" 4
 .
@@ -222,6 +238,7 @@ the cookbook copyright, license and email settings can be filled in the \fBknife
 cookbook_copyright "your_company_name"
 cookbook_license "none"
 cookbook_email "your_email"
+readme_format "md"
 .
 .fi
 .

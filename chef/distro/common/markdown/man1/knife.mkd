@@ -40,14 +40,14 @@ documentation using `knife help TOPIC`.
     API Client Key, corresponds to `Chef::Config` `client_key`.
   * `-c`, `--config` CONFIG:
     The configuration file to use
+  * `-E`, `--environment ENVIRONMENT`:
+    Set the Chef environment
   * `-e`, `--editor` EDITOR:
     Set the editor to use for interactive commands
   * `-F`, `--format` FORMAT:
-    Which format to use for output
-  * `-l`, `--log_level` LEVEL:
-    Set the log level (debug, info, warn, error, fatal), corresponds to `Chef::Config` `log_level`.
-  * `-L`, `--logfile` LOGLOCATION:
-    Set the log file location, defaults to STDOUT, corresponds to `Chef::Config` `log_location`.
+    Which format to use for output. See FORMATS for details.
+  * `-V`, `--verbose`:
+    More verbose output.  Use twice for max verbosity
   * `-n`, `--no-editor`:
     Do not open EDITOR, just accept the data as is
   * `-u`, `--user` USER:
@@ -58,6 +58,12 @@ documentation using `knife help TOPIC`.
     Show chef version
   * `-y`, `--yes`:
     Say yes to all prompts for confirmation
+  * `--defaults`:
+    Accept default values for all questions
+  * `--color`:
+    Use colored output
+  * `--no-color`:
+    Don't use colors in the output
   * `-h`, `--help`:
     Show the available options for a command.
 
@@ -108,9 +114,9 @@ If the config file exists, knife uses these settings for __GENERAL OPTIONS__ def
     Specifies the private key file to use when bootstrapping new hosts.
     See knife-client(1) for more information about the validation
     client.
-  * `cookbook_copyright`, `cookbook_email`, `cookbook_license`
+  * `cookbook_copyright`, `cookbook_email`, `cookbook_license`, `readme_format`
     Used by `knife cookbook create` sub-command to specify the copyright
-    holder, maintainer email and license (respectively) for new cookbooks.
+    holder, maintainer email, license and readme format (respectively) for new cookbooks.
     The copyright holder is listed as the maintainer in the cookbook's
     metadata and as the Copyright in the comments of the default recipe. The
     maintainer email is used in the cookbook metadata. The license
@@ -118,13 +124,37 @@ If the config file exists, knife uses these settings for __GENERAL OPTIONS__ def
     and is listed as the license in the cookbook metadata. Currently
     supported licenses are "apachev2" and "none". Any other values will
     result in an empty license in the metadata (needs to be filled in by the
-    author), and no comment preamble in the default recipe.
+    author), and no comment preamble in the default recipe. Currently supported 
+    readme formats are "md", "mkd", "txt", and "rdoc".  Any other value will
+    result in an unformatted README.
 
 ## FILES
 
 _~/.chef/knife.rb_
 
 Ruby DSL configuration file for knife. See __CONFIGURATION__.
+
+## FORMATS 
+
+The amount of content displayed and the output format are
+modified by the `--format` option. If no alternate format is selected,
+the default is summary.
+
+Valid formats are:
+
+  * `summary`:
+    displays the node in a custom, summarized format (default)
+  * `text`:
+    displays the node data in its entirety using the colorized tree display 
+  * `json`:
+    displays the node in JSON format
+  * `yaml`:
+    displays the node in YAML format
+  * `pp`:
+    displays the node using Ruby's pretty printer.
+
+For brevity, only the first character of the format is required, for
+example, -Fj will produce JSON format output.
 
 ## CHEF WORKFLOW
 
@@ -143,6 +173,7 @@ A note about git: Opscode and many folks in the Chef community use git,
 but it is not required, except in the case of the `cookbook site vendor`
 sub-command, as it uses git directly. Version control is strongly
 recommended though, and git fits with a lot of the workflow paradigms.
+
 
 ## EXAMPLES
 

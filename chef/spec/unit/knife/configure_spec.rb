@@ -99,7 +99,7 @@ describe Chef::Knife::Configure do
     config_file.string.should match(/^validation_client_name\s+'chef-validator'$/)
     config_file.string.should match(%r{^validation_key\s+'/etc/chef/validation.pem'$})
     config_file.string.should match(%r{^chef_server_url\s+'http://foo.example.org:4000'$})
-    config_file.string.should match(%r{cookbook_path\s+\[ '/home/you/chef-repo/cookbooks', '/home/you/chef-repo/site-cookbooks' \]})
+    config_file.string.should match(%r{cookbook_path\s+\[ '/home/you/chef-repo/cookbooks' \]})
   end
 
   it "creates a new client when given the --initial option" do

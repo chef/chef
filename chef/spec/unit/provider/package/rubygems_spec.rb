@@ -31,7 +31,6 @@ end
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
 require 'ostruct'
 
-
 describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   include GemspecBackcompatCreator
 
@@ -197,10 +196,11 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
   end
 
   it "determines the installed versions of gems from the source index (part2: the unmockening)" do
+    $stdout.stub!(:write)
     path_to_gem = `which gem`.strip
     pending("cant find your gem executable") if path_to_gem.empty?
     gem_env = Chef::Provider::Package::Rubygems::AlternateGemEnvironment.new(path_to_gem)
-    expected = ['rspec-core', Gem::Version.new(Rspec::Core::Version::STRING)]
+    expected = ['rspec-core', Gem::Version.new(RSpec::Core::Version::STRING)]
     actual = gem_env.installed_versions(Gem::Dependency.new('rspec-core', nil)).map { |s| [s.name, s.version] }
     actual.should include(expected)
   end
@@ -402,6 +402,23 @@ describe Chef::Provider::Package::Rubygems do
       it "installs the gem from file via the gems api when no explicit options are used" do
         @new_resource.source(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
         @provider.gem_env.should_receive(:install).with(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
+        @provider.action_install.should be_true
+      end
+
+      it "installs the gem from file via the gems api when the package is a path and the source is nil" do
+        @new_resource = Chef::Resource::GemPackage.new(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
+        @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+        @provider.current_resource = @current_resource
+        @new_resource.source.should == CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem'
+        @provider.gem_env.should_receive(:install).with(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
+        @provider.action_install.should be_true
+      end
+
+      # this catches 'gem_package "foo"' when "./foo" is a file in the cwd, and instead of installing './foo' it fetches the remote gem
+      it "installs the gem via the gems api, when the package has no file separator characters in it, but a matching file exists in cwd" do
+        ::File.stub!(:exists?).and_return(true)
+        @new_resource.package_name('rspec-core')
+        @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => nil)
         @provider.action_install.should be_true
       end
 

@@ -83,6 +83,7 @@ class Chef
         :default => false
 
       def session
+        config[:on_error] ||= :skip
         ssh_error_handler = Proc.new do |server|
           if config[:manual]
             node_name = server.host
@@ -91,8 +92,14 @@ class Chef
               node_name = n if format_for_display(n)[config[:attribute]] == server.host
             end
           end
-          ui.warn "Failed to connect to #{node_name} -- #{$!.class.name}: #{$!.message}"
-          $!.backtrace.each { |l| Chef::Log.debug(l) }
+          case config[:on_error]
+          when :skip
+            ui.warn "Failed to connect to #{node_name} -- #{$!.class.name}: #{$!.message}"
+            $!.backtrace.each { |l| Chef::Log.debug(l) }
+          when :raise
+            #Net::SSH::Multi magic to force exception to be re-raised.
+            throw :go, :raise
+          end
         end
 
         @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency], :on_error => ssh_error_handler)
@@ -265,7 +272,7 @@ class Chef
           end.join(" \\; ")
         end
 
-        tmux_name = "'knife ssh #{@name_args[0]}'"
+        tmux_name = "'knife ssh #{@name_args[0].gsub(/:/,'=')}'"
         begin
           server = session.servers_for.first
           cmd = ["tmux new-session -d -s #{tmux_name}",
@@ -301,11 +308,39 @@ class Chef
         end
       end
 
+      def configure_attribute
+        config[:attribute] = (config[:attribute] ||
+                              Chef::Config[:knife][:ssh_attribute] ||
+                              "fqdn").strip
+      end
+
+      def csshx
+        csshx_cmd = "csshX"
+        session.servers_for.each do |server|
+          csshx_cmd << " #{server.user ? "#{server.user}@#{server.host}" : server.host}"
+        end
+        exec(csshx_cmd)
+      end
+
+      def configure_user
+        config[:ssh_user] = (config[:ssh_user] ||
+                             Chef::Config[:knife][:ssh_user])
+        config[:ssh_user].strip! unless config[:ssh_user].nil?
+      end
+
+      def configure_identity_file
+        config[:identity_file] = (config[:identity_file] || Chef::Config[:knife][:ssh_identity_file])
+        config[:identity_file].strip! unless config[:identity_file].nil?
+      end
+
       def run
         extend Chef::Mixin::Command
 
         @longest = 0
 
+        configure_attribute
+        configure_user
+        configure_identity_file
         configure_session
 
         case @name_args[1]
@@ -317,6 +352,8 @@ class Chef
           tmux
         when "macterm"
           macterm
+        when "csshx"
+          csshx
         else
           ssh_command(@name_args[1..-1].join(" "))
         end

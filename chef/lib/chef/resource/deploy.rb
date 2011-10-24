@@ -66,6 +66,7 @@ class Chef
         @revision = 'HEAD'
         @action = :deploy
         @migrate = false
+        @rollback_on_error = false
         @remote = "origin"
         @enable_submodules = false
         @shallow_clone = false
@@ -73,6 +74,7 @@ class Chef
         @svn_force_export = false
         @provider = Chef::Provider::Deploy::Timestamped
         @allowed_actions.push(:force_deploy, :deploy, :rollback)
+        @additional_remotes = Hash[]
       end
 
       # where the checked out/cloned code goes
@@ -151,6 +153,14 @@ class Chef
           :migration_command,
           arg,
           :kind_of => [ String ]
+        )
+      end
+
+      def rollback_on_error(arg=nil)
+        set_or_return(
+          :rollback_on_error,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
@@ -364,6 +374,14 @@ class Chef
       def after_restart(arg=nil, &block)
         arg ||= block
         set_or_return(:after_restart, arg, :kind_of => [Proc, String])
+      end
+      
+      def additional_remotes(arg=nil)
+        set_or_return(
+          :additional_remotes,
+          arg,
+          :kind_of => Hash
+        )
       end
 
     end

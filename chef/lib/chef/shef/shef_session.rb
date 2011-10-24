@@ -161,10 +161,11 @@ module Shef
     end
 
     def rebuild_context
+      @run_status = Chef::RunStatus.new(@node)
       Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, Chef::Config[:cookbook_path]) }
       @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path])))
       @run_context.load(Chef::RunList::RunListExpansionFromDisk.new("_default", []))
-      run_status.run_context = run_context
+      @run_status.run_context = run_context
     end
 
     private

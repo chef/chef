@@ -17,6 +17,7 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
+require 'ostruct'
 
 describe Chef::Provider::Package::Apt do
   before(:each) do
@@ -29,15 +30,17 @@ describe Chef::Provider::Package::Apt do
     @status = mock("Status", :exitstatus => 0)
     @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
-    @provider.stub!(:popen4).and_return(@status)
-    @stdin = mock("STDIN", :null_object => true)
+    @stdin = StringIO.new
     @stdout =<<-PKG_STATUS
-Package: irssi
-State: not installed
-Version: 0.8.12-7
+irssi:
+  Installed: (none)
+  Candidate: 0.8.14-1ubuntu4
+  Version table:
+     0.8.14-1ubuntu4 0
+        500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
 PKG_STATUS
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
+    @stderr = StringIO.new
+    @pid = 12345
     @shell_out = OpenStruct.new(:stdout => @stdout,:stdin => @stdin,:stderr => @stderr,:status => @status,:exitstatus => 0)
   end
 
@@ -55,8 +58,8 @@ PKG_STATUS
       @provider.load_current_resource
     end
 
-    it "should run aptitude show with the package name" do
-      @provider.should_receive(:shell_out!).with("aptitude show #{@new_resource.package_name}").and_return(@shell_out)
+    it "should run apt-cache policy with the package name" do
+      @provider.should_receive(:shell_out!).with("apt-cache policy #{@new_resource.package_name}").and_return(@shell_out)
       @provider.load_current_resource
     end
 
@@ -68,33 +71,21 @@ PKG_STATUS
 
     it "should set the installed version if package has one" do
       @stdout.replace(<<-INSTALLED)
-Package: sudo
-State: installed
-Automatically installed: no
-Version: 1.7.2p1-1ubuntu5
-Priority: important
-Section: admin
-Maintainer: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Uncompressed Size: 602k
-Depends: libc6 (>= 2.8), libpam0g (>= 0.99.7.1), libpam-modules
-Conflicts: sudo-ldap
-Replaces: sudo-ldap
-Provided by: sudo-ldap
-Description: Provide limited super user privileges to specific users
-Sudo is a program designed to allow a sysadmin to give limited root privileges
-to users and log root activity. The basic philosophy is to give as few
-privileges as possible but still allow people to get their work done.
+sudo:
+  Installed: 1.7.2p1-1ubuntu5.3
+  Candidate: 1.7.2p1-1ubuntu5.3
+  Version table:
+ *** 1.7.2p1-1ubuntu5.3 0
+        500 http://us.archive.ubuntu.com/ubuntu/ lucid-updates/main Packages
+        500 http://security.ubuntu.com/ubuntu/ lucid-security/main Packages
+        100 /var/lib/dpkg/status
+     1.7.2p1-1ubuntu5 0
+        500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
 INSTALLED
       @provider.should_receive(:shell_out!).and_return(@shell_out)
       @provider.load_current_resource
-      @current_resource.version.should == "1.7.2p1-1ubuntu5"
-      @provider.candidate_version.should eql("1.7.2p1-1ubuntu5")
-    end
-
-    it "should raise an exception if aptitude show does not return a candidate version" do
-      @stdout.replace("E: Unable to locate package magic")
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      @current_resource.version.should == "1.7.2p1-1ubuntu5.3"
+      @provider.candidate_version.should eql("1.7.2p1-1ubuntu5.3")
     end
 
     it "should return the current resouce" do
@@ -102,74 +93,95 @@ INSTALLED
       @provider.load_current_resource.should eql(@current_resource)
     end
 
-    it "should set candidate version to new package name if virtual package" do
-      @new_resource.package_name("libmysqlclient-dev")
+    # libmysqlclient-dev is a real package in newer versions of debian + ubuntu
+    # list of virtual packages: http://www.debian.org/doc/packaging-manuals/virtual-package-names-list.txt
+    it "should not install the virtual package there is a single provider package and it is installed" do
+      @new_resource.package_name("libmysqlclient15-dev")
       virtual_package_out=<<-VPKG_STDOUT
-"No current or candidate version found for libmysqlclient-dev").
-Package: libmysqlclient-dev
-State: not a real package
-Provided by: libmysqlclient15-dev
+libmysqlclient15-dev:
+  Installed: (none)
+  Candidate: (none)
+  Version table:
 VPKG_STDOUT
       virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient-dev").and_return(virtual_package)
-      real_package_out=mock("STDOUT", :null_object => true)
-      real_package_out =<<-REALPKG_STDOUT
+      @provider.should_receive(:shell_out!).with("apt-cache policy libmysqlclient15-dev").and_return(virtual_package)
+      showpkg_out =<<-SHOWPKG_STDOUT
 Package: libmysqlclient15-dev
-State: not installed
-Version: 5.0.51a-24+lenny4
-REALPKG_STDOUT
+Versions: 
+
+Reverse Depends: 
+  libmysqlclient-dev,libmysqlclient15-dev
+  libmysqlclient-dev,libmysqlclient15-dev
+  libmysqlclient-dev,libmysqlclient15-dev
+  libmysqlclient-dev,libmysqlclient15-dev
+  libmysqlclient-dev,libmysqlclient15-dev
+  libmysqlclient-dev,libmysqlclient15-dev
+Dependencies: 
+Provides: 
+Reverse Provides: 
+libmysqlclient-dev 5.1.41-3ubuntu12.7
+libmysqlclient-dev 5.1.41-3ubuntu12.10
+libmysqlclient-dev 5.1.41-3ubuntu12
+SHOWPKG_STDOUT
+      showpkg = mock(:stdout => showpkg_out,:exitstatus => 0)
+      @provider.should_receive(:shell_out!).with("apt-cache showpkg libmysqlclient15-dev").and_return(showpkg)
+      real_package_out=<<-RPKG_STDOUT
+libmysqlclient-dev:
+  Installed: 5.1.41-3ubuntu12.10
+  Candidate: 5.1.41-3ubuntu12.10
+  Version table:
+ *** 5.1.41-3ubuntu12.10 0
+        500 http://us.archive.ubuntu.com/ubuntu/ lucid-updates/main Packages
+        100 /var/lib/dpkg/status
+     5.1.41-3ubuntu12.7 0
+        500 http://security.ubuntu.com/ubuntu/ lucid-security/main Packages
+     5.1.41-3ubuntu12 0
+        500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
+RPKG_STDOUT
       real_package = mock(:stdout => real_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show libmysqlclient15-dev").and_return(real_package)
+      @provider.should_receive(:shell_out!).with("apt-cache policy libmysqlclient-dev").and_return(real_package)
+      @provider.should_not_receive(:run_command_with_systems_locale)
       @provider.load_current_resource
-      @provider.candidate_version.should eql("libmysqlclient15-dev")
     end
 
-    it "should set candidate version to the first depends package name if multiple virtual package providers" do
-      @new_resource.package_name("vim")
+    it "should raise an exception if you specify a virtual package with multiple provider packages" do
+      @new_resource.package_name("mp3-decoder")
       virtual_package_out=<<-VPKG_STDOUT
-Package: vim
-State: not installed
-Version: 2:7.2.330-1ubuntu3
-Priority: optional
-Section: editors
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Uncompressed Size: 1,946k
-Depends: vim-common (= 2:7.2.330-1ubuntu3), vim-runtime (= 2:7.2.330-1ubuntu3), libacl1 (>= 2.2.11-1), libc6 (>= 2.11),
-         libgpm2 (>= 1.20.4), libncurses5 (>= 5.6+20071006-3), libpython2.6 (>= 2.6), libselinux1 (>= 1.32)
-Suggests: ctags, vim-doc, vim-scripts
-Conflicts: vim-common (< 1:7.1-175+1)
-Replaces: vim-common (< 1:7.1-175+1)
-Provides: editor
-Provided by: vim-gnome, vim-gtk, vim-nox
-Description: Vi IMproved - enhanced vi editor
- Vim is an almost compatible version of the UNIX editor Vi.
+mp3-decoder:
+  Installed: (none)
+  Candidate: (none)
+  Version table:
 VPKG_STDOUT
       virtual_package = mock(:stdout => virtual_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show vim").and_return(virtual_package)
-      real_package_out=<<-REALPKG_STDOUT
-Package: vim-common
-State: not installed
-Automatically installed: no
-Version: 2:7.2.330-1ubuntu3
-Priority: important
-Section: editors
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Uncompressed Size: 389k
-Depends: libc6 (>= 2.4)
-Recommends: vim | vim-gnome | vim-gtk | vim-lesstif | vim-nox | vim-tiny
-Description: Vi IMproved - Common files
- Vim is an almost compatible version of the UNIX editor Vi.
-REALPKG_STDOUT
-      real_package = mock(:stdout => real_package_out,:exitstatus => 0)
-      @provider.should_receive(:shell_out!).with("aptitude show vim-common").and_return(real_package)
-      @provider.load_current_resource
-      @provider.candidate_version.should eql("vim-common")
-    end
+      @provider.should_receive(:shell_out!).with("apt-cache policy mp3-decoder").and_return(virtual_package)
+      showpkg_out=<<-SHOWPKG_STDOUT
+Package: mp3-decoder
+Versions: 
 
+Reverse Depends: 
+  nautilus,mp3-decoder
+  vux,mp3-decoder
+  plait,mp3-decoder
+  ecasound,mp3-decoder
+  nautilus,mp3-decoder
+Dependencies: 
+Provides: 
+Reverse Provides: 
+vlc-nox 1.0.6-1ubuntu1.8
+vlc 1.0.6-1ubuntu1.8
+vlc-nox 1.0.6-1ubuntu1
+vlc 1.0.6-1ubuntu1
+opencubicplayer 1:0.1.17-2
+mpg321 0.2.10.6
+mpg123 1.12.1-0ubuntu1
+SHOWPKG_STDOUT
+      showpkg = mock(:stdout => showpkg_out,:exitstatus => 0)
+      @provider.should_receive(:shell_out!).with("apt-cache showpkg mp3-decoder").and_return(showpkg)
+      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+    end
   end
 
   describe "install_package" do
-
     it "should run apt-get install with the package name and version" do
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "apt-get -q -y install irssi=0.8.12-7",
@@ -276,6 +288,35 @@ REALPKG_STDOUT
       @provider.stub!(:get_preseed_file).and_return(false)
       @provider.should_not_receive(:run_command_with_systems_locale)
       @provider.preseed_package("irssi", "0.8.12-7")
+    end
+  end
+
+  describe "when reconfiguring a package" do
+    before(:each) do
+      @provider.stub!(:run_command_with_systems_locale).and_return(true)
+    end
+
+    it "should run dpkg-reconfigure package" do
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "dpkg-reconfigure irssi",
+        :environment => {
+          "DEBIAN_FRONTEND" => "noninteractive"
+        }
+      }).and_return(true)
+      @provider.reconfig_package("irssi", "0.8.12-7")
+    end
+  end
+
+  describe "when installing a virtual package" do
+    it "should install the package without specifying a version" do
+        @provider.is_virtual_package = true
+        @provider.should_receive(:run_command_with_systems_locale).with({
+          :command => "apt-get -q -y install libmysqlclient-dev",
+          :environment => {
+            "DEBIAN_FRONTEND" => "noninteractive"
+          }
+        })
+        @provider.install_package("libmysqlclient-dev", "not_a_real_version")
     end
   end
 end

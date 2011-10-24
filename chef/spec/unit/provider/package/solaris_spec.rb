@@ -139,6 +139,16 @@ PKGINFO
       @provider.install_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
     end
 
+    it "should run pkgadd -n -d when the package is a path to install" do
+      @new_resource = Chef::Resource::Package.new("/tmp/bash.pkg")
+      @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
+      @new_resource.source.should == "/tmp/bash.pkg"
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "pkgadd -n -d /tmp/bash.pkg all"
+      })
+      @provider.install_package("/tmp/bash.pkg", "11.10.0,REV=2005.01.08.05.16")
+    end
+
     it "should run pkgadd -n -a /tmp/myadmin -d with the package options -a /tmp/myadmin" do
       @new_resource.stub!(:options).and_return("-a /tmp/myadmin")
       @provider.should_receive(:run_command_with_systems_locale).with({

@@ -55,16 +55,22 @@ class Chef
 
         output = edit_data(client)
 
-        key = output.save
+        # Chef::ApiClient.save will try to create a client and if it exists will update it instead silently
+        client = output.save
 
-        ui.info("Created #{output}")
-
-        if config[:file]
-          File.open(config[:file], "w") do |f|
-            f.print(key['private_key'])
+        # We only get a private_key on client creation, not on client update.
+        if client['private_key']
+          ui.info("Created #{output}")
+  
+          if config[:file]
+            File.open(config[:file], "w") do |f|
+              f.print(client['private_key'])
+            end
+          else
+            puts client['private_key']
           end
         else
-          puts key['private_key']
+          ui.error "Client '#{client['name']}' already exists"
         end
       end
     end

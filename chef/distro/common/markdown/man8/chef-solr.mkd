@@ -15,6 +15,8 @@ __chef-solr__ _(options)_
     Set the log level (debug, info, warn, error, fatal)
   * `-L`, `--logfile LOGLOCATION`:
     Set the log file location, defaults to STDOUT - recommended for daemonizing
+  * `-P`, `--pid PIDFILE`:
+    Set the PID file location, defaults to /tmp/chef-solr.pid
   * `-D`, `--solr-data-dir PATH`:
     Where the Solr data lives
   * `-x`, `--solor-heap-size SIZE`:
@@ -23,6 +25,8 @@ __chef-solr__ _(options)_
     Solr home directory
   * `-j`, `--java-opts OPTS`:
     Raw options passed to Java
+  * `-x`, `--solor-heap-size`:
+    Set the size of the Java Heap
   * `-W`, `--solr-jetty-dir PATH`:
     Where to place the Solr Jetty instance
   * `-u`, `--user USER`:

@@ -23,9 +23,12 @@ require 'net/ssh'
 describe Chef::Knife::Bootstrap do
   before(:each) do
     Chef::Log.logger = Logger.new(StringIO.new)
-
     @knife = Chef::Knife::Bootstrap.new
     @knife.config[:template_file] = File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test.erb"))
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
+    @stderr = StringIO.new
+    @knife.ui.stub!(:stderr).and_return(@stderr)
   end
 
   it "should load the default bootstrap template" do
@@ -40,6 +43,15 @@ describe Chef::Knife::Bootstrap do
 
   it "should load the specified template" do
     @knife.config[:distro] = 'fedora13-gems'
+    lambda { @knife.load_template }.should_not raise_error
+  end
+
+  it "should load the specified template from a Ruby gem" do
+    @knife.config[:template_file] = false
+    Gem.stub(:find_files).and_return(["/Users/schisamo/.rvm/gems/ruby-1.9.2-p180@chef-0.10/gems/knife-windows-0.5.4/lib/chef/knife/bootstrap/fake-bootstrap-template.erb"])
+    File.stub(:exists?).and_return(true)
+    IO.stub(:read).and_return('random content')
+    @knife.config[:distro] = 'fake-bootstrap-template'
     lambda { @knife.load_template }.should_not raise_error
   end
 
@@ -131,6 +143,7 @@ describe Chef::Knife::Bootstrap do
     it "verifies that a server to bootstrap was given as a command line arg" do
       @knife.name_args = nil
       lambda { @knife.run }.should raise_error(SystemExit)
+      @stderr.string.should match /ERROR:.+FQDN or ip/
     end
 
     it "configures the underlying ssh command and then runs it" do
@@ -151,4 +164,3 @@ describe Chef::Knife::Bootstrap do
   end
 
 end
-
