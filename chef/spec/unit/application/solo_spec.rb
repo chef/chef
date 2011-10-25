@@ -17,6 +17,27 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
+# This is really an integration test with the config class
+describe Chef::Application::Solo do
+
+  # before and after to prevent any accidental config dirtying
+  before do
+    @original_config = Chef::Config.configuration
+    @app = Chef::Application::Solo.new
+  end
+
+  after do
+    Chef::Config.configuration.replace(@original_config)
+   end
+
+  describe "configuring the application"
+  it "should set the default path for non-windows config file to /etc/chef/solo.rb" do
+    app = Chef::Application::Solo.new
+    app.reconfigure
+    Chef::Config[:config_file].should == "/etc/chef/solo.rb"
+  end
+end
+
 describe Chef::Application::Solo do
   before do
     @original_config = Chef::Config.configuration

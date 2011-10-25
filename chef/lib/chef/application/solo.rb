@@ -31,6 +31,7 @@ class Chef::Application::Solo < Chef::Application
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
     :default => "/etc/chef/solo.rb",
+    :default => "%s/solo.rb" % determine_base_path,
     :description => "The configuration file to use"
 
   option :log_level,

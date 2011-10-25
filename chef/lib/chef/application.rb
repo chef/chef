@@ -126,6 +126,14 @@ class Chef::Application
 
 
   class << self
+    def determine_base_path
+       #also set this in the config class? seperate method to set the config in the config class?
+       #set an instance variable?
+
+       #make this work for windows
+      "/etc/chef"
+    end
+
     def debug_stacktrace(e)
       message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
       chef_stacktrace_out = "Generated at #{Time.now.to_s}\n"
