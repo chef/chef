@@ -35,7 +35,7 @@ class Chef
 
           #XXX :user, :group, :environment support?
 
-          Open4.popen4(cmd) do |stdin,stdout,stderr,cid|
+          Open3.popen3(cmd) do |stdin,stdout,stderr,cid|
             if b
               if args[:waitlast]
                 b[cid, stdin, stdout, stderr]
