@@ -510,6 +510,10 @@ begin
         t.profile = "provider_git"
       end
 
+      Cucumber::Rake::Task.new(:gitonly) do |t|
+        t.profile = "provider_gitonly"
+      end
+
       namespace :package do
         desc "Run cucumber tests for macports packages"
         Cucumber::Rake::Task.new(:macports) do |t|

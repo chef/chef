@@ -20,4 +20,5 @@
 git "#{node[:tmpdir]}/gitchef" do
   repository "#{node[:tmpdir]}/test_git_repo"
   action :sync
+  update_method :rebase
 end
