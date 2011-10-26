@@ -35,8 +35,14 @@ describe "Chef::CookbookVersion manifest" do
        {
          :name => "afile.rb",
          :path => "files/ubuntu-9.10/afile.rb",
-         :checksum => "csum-platver",
+         :checksum => "csum-platver-full",
          :specificity => "ubuntu-9.10"
+       },
+       {
+         :name => "afile.rb",
+         :path => "files/newubuntu-9/afile.rb",
+         :checksum => "csum-platver-partial",
+         :specificity => "newubuntu-9"
        },
        {
          :name => "afile.rb",
@@ -49,6 +55,32 @@ describe "Chef::CookbookVersion manifest" do
          :path => "files/default/afile.rb",
          :checksum => "csum-default",
          :specificity => "default"
+       },
+
+       # for different/odd platform_versions
+       {
+         :name => "bfile.rb",
+         :path => "files/fakeos-2.0.rc.1/bfile.rb",
+         :checksum => "csum2-platver-full",
+         :specificity => "fakeos-2.0.rc.1"
+       },
+       {
+         :name => "bfile.rb",
+         :path => "files/newfakeos-2.0.rc/bfile.rb",
+         :checksum => "csum2-platver-partial",
+         :specificity => "newfakeos-2.0.rc"
+       },
+       {
+         :name => "bfile.rb",
+         :path => "files/fakeos-maple tree/bfile.rb",
+         :checksum => "csum3-platver-full",
+         :specificity => "maple tree"
+       },
+       {
+         :name => "bfile.rb",
+         :path => "files/fakeos-1/bfile.rb",
+         :checksum => "csum4-platver-full",
+         :specificity => "fakeos-1"
        },
 
        # directory adirectory
@@ -67,15 +99,28 @@ describe "Chef::CookbookVersion manifest" do
        
        {
          :name => "anotherfile1.rb",
-         :path => "files/ubuntu-9.10/adirectory/anotherfile1.rb.platform-version",
-         :checksum => "csum-platver-1",
+         :path => "files/ubuntu-9.10/adirectory/anotherfile1.rb.platform-full-version",
+         :checksum => "csum-platver-full-1",
          :specificity => "ubuntu-9.10"
        },
        {
          :name => "anotherfile2.rb",
-         :path => "files/ubuntu-9.10/adirectory/anotherfile2.rb.platform-version",
-         :checksum => "csum-platver-2",
+         :path => "files/ubuntu-9.10/adirectory/anotherfile2.rb.platform-full-version",
+         :checksum => "csum-platver-full-2",
          :specificity => "ubuntu-9.10"
+       },
+
+       {
+         :name => "anotherfile1.rb",
+         :path => "files/newubuntu-9/adirectory/anotherfile1.rb.platform-partial-version",
+         :checksum => "csum-platver-partial-1",
+         :specificity => "newubuntu-9"
+       },
+       {
+         :name => "anotherfile2.rb",
+         :path => "files/newubuntu-9/adirectory/anotherfile2.rb.platform-partial-version",
+         :checksum => "csum-platver-partial-2",
+         :specificity => "nweubuntu-9"
        },
        
        {
@@ -103,7 +148,55 @@ describe "Chef::CookbookVersion manifest" do
          :checksum => "csum-default-2",
          :specificity => "default"
        },
-       
+       # for different/odd platform_versions
+       {
+         :name => "anotherfile1.rb",
+         :path => "files/fakeos-2.0.rc.1/adirectory/anotherfile1.rb.platform-full-version",
+         :checksum => "csum2-platver-full-1",
+         :specificity => "fakeos-2.0.rc.1"
+       },
+       {
+         :name => "anotherfile2.rb",
+         :path => "files/fakeos-2.0.rc.1/adirectory/anotherfile2.rb.platform-full-version",
+         :checksum => "csum2-platver-full-2",
+         :specificity => "fakeos-2.0.rc.1"
+       },
+       {
+         :name => "anotherfile1.rb",
+         :path => "files/newfakeos-2.0.rc.1/adirectory/anotherfile1.rb.platform-partial-version",
+         :checksum => "csum2-platver-partial-1",
+         :specificity => "newfakeos-2.0.rc"
+       },
+       {
+         :name => "anotherfile2.rb",
+         :path => "files/newfakeos-2.0.rc.1/adirectory/anotherfile2.rb.platform-partial-version",
+         :checksum => "csum2-platver-partial-2",
+         :specificity => "newfakeos-2.0.rc"
+       },
+       {
+         :name => "anotherfile1.rb",
+         :path => "files/fakeos-maple tree/adirectory/anotherfile1.rb.platform-full-version",
+         :checksum => "csum3-platver-full-1",
+         :specificity => "fakeos-maple tree"
+       },
+       {
+         :name => "anotherfile2.rb",
+         :path => "files/fakeos-maple tree/adirectory/anotherfile2.rb.platform-full-version",
+         :checksum => "csum3-platver-full-2",
+         :specificity => "fakeos-maple tree"
+       },
+       {
+         :name => "anotherfile1.rb",
+         :path => "files/fakeos-1/adirectory/anotherfile1.rb.platform-full-version",
+         :checksum => "csum4-platver-full-1",
+         :specificity => "fakeos-1"
+       },
+       {
+         :name => "anotherfile2.rb",
+         :path => "files/fakeos-1/adirectory/anotherfile2.rb.platform-full-version",
+         :checksum => "csum4-platver-full-2",
+         :specificity => "fakeos-1"
+       },
       ]
     }
 
@@ -121,7 +214,7 @@ describe "Chef::CookbookVersion manifest" do
     manifest_record[:checksum].should == "csum-host"
   end
   
-  it "should return a manifest record based on priority preference: platform & version" do
+  it "should return a manifest record based on priority preference: platform & full version" do
     node = Chef::Node.new
     node[:platform] = "ubuntu"
     node[:platform_version] = "9.10"
@@ -129,7 +222,18 @@ describe "Chef::CookbookVersion manifest" do
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
     manifest_record.should_not be_nil
-    manifest_record[:checksum].should == "csum-platver"
+    manifest_record[:checksum].should == "csum-platver-full"
+  end
+
+  it "should return a manifest record based on priority preference: platform & partial version" do
+    node = Chef::Node.new
+    node[:platform] = "newubuntu"
+    node[:platform_version] = "9.10"
+    node[:fqdn] = "differenthost.example.org"
+
+    manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
+    manifest_record.should_not be_nil
+    manifest_record[:checksum].should == "csum-platver-partial"
   end
   
   it "should return a manifest record based on priority preference: platform only" do
@@ -153,6 +257,50 @@ describe "Chef::CookbookVersion manifest" do
     manifest_record.should_not be_nil
     manifest_record[:checksum].should == "csum-default"
   end
+
+  it "should return a manifest record based on priority preference: platform & full version - platform_version variant 1" do
+    node = Chef::Node.new
+    node[:platform] = "fakeos"
+    node[:platform_version] = "2.0.rc.1"
+    node[:fqdn] = "differenthost.example.org"
+
+    manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
+    manifest_record.should_not be_nil
+    manifest_record[:checksum].should == "csum2-platver-full"
+  end
+
+  it "should return a manifest record based on priority preference: platform & partial version - platform_version variant 1" do
+    node = Chef::Node.new
+    node[:platform] = "newfakeos"
+    node[:platform_version] = "2.0.rc.1"
+    node[:fqdn] = "differenthost.example.org"
+
+    manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
+    manifest_record.should_not be_nil
+    manifest_record[:checksum].should == "csum2-platver-partial"
+  end
+
+  it "should return a manifest record based on priority preference: platform & full version - platform_version variant 2" do
+    node = Chef::Node.new
+    node[:platform] = "fakeos"
+    node[:platform_version] = "maple tree"
+    node[:fqdn] = "differenthost.example.org"
+
+    manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
+    manifest_record.should_not be_nil
+    manifest_record[:checksum].should == "csum3-platver-full"
+  end
+
+  it "should return a manifest record based on priority preference: platform & full version - platform_version variant 3" do
+    node = Chef::Node.new
+    node[:platform] = "fakeos"
+    node[:platform_version] = "1"
+    node[:fqdn] = "differenthost.example.org"
+
+    manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
+    manifest_record.should_not be_nil
+    manifest_record[:checksum].should == "csum4-platver-full"
+  end
   
   describe "when fetching the contents of a directory by file specificity" do
 
@@ -170,7 +318,7 @@ describe "Chef::CookbookVersion manifest" do
       checksums.sort.should == ["csum-host-1", "csum-host-2"]
     end
 
-    it "should return a directory of manifest records based on priority preference: platform & version" do
+    it "should return a directory of manifest records based on priority preference: platform & full version" do
       node = Chef::Node.new
       node[:platform] = "ubuntu"
       node[:platform_version] = "9.10"
@@ -181,7 +329,21 @@ describe "Chef::CookbookVersion manifest" do
       manifest_records.size.should == 2
 
       checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
-      checksums.sort.should == ["csum-platver-1", "csum-platver-2"]
+      checksums.sort.should == ["csum-platver-full-1", "csum-platver-full-2"]
+    end
+
+    it "should return a directory of manifest records based on priority preference: platform & partial version" do
+      node = Chef::Node.new
+      node[:platform] = "newubuntu"
+      node[:platform_version] = "9.10"
+      node[:fqdn] = "differenthost.example.org"
+
+      manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
+      manifest_records.should_not be_nil
+      manifest_records.size.should == 2
+
+      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums.sort.should == ["csum-platver-partial-1", "csum-platver-partial-2"]
     end
 
     it "should return a directory of manifest records based on priority preference: platform only" do
@@ -209,8 +371,63 @@ describe "Chef::CookbookVersion manifest" do
       manifest_records.size.should == 2
 
       checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
-
       checksums.sort.should == ["csum-default-1", "csum-default-2"]
+    end
+
+    it "should return a manifest record based on priority preference: platform & full version - platform_version variant 1" do
+      node = Chef::Node.new
+      node[:platform] = "fakeos"
+      node[:platform_version] = "2.0.rc.1"
+      node[:fqdn] = "differenthost.example.org"
+
+      manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
+      manifest_records.should_not be_nil
+      manifest_records.size.should == 2
+
+      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums.sort.should == ["csum2-platver-full-1", "csum2-platver-full-2"]
+    end
+
+    it "should return a manifest record based on priority preference: platform & partial version - platform_version variant 1" do
+      node = Chef::Node.new
+      node[:platform] = "newfakeos"
+      node[:platform_version] = "2.0.rc.1"
+      node[:fqdn] = "differenthost.example.org"
+
+      manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
+      manifest_records.should_not be_nil
+      manifest_records.size.should == 2
+
+      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums.sort.should == ["csum2-platver-partial-1", "csum2-platver-partial-2"]
+    end
+
+    it "should return a manifest record based on priority preference: platform & full version - platform_version variant 2" do
+      node = Chef::Node.new
+      node[:platform] = "fakeos"
+      node[:platform_version] = "maple tree"
+      node[:fqdn] = "differenthost.example.org"
+
+      manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
+      manifest_records.should_not be_nil
+      manifest_records.size.should == 2
+
+      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums.sort.should == ["csum3-platver-full-1", "csum3-platver-full-2"]
+    end
+
+    it "should return a manifest record based on priority preference: platform & full version - platform_version variant 3" do
+      node = Chef::Node.new
+      node[:platform] = "fakeos"
+      node[:platform_version] = "1"
+      node[:fqdn] = "differenthost.example.org"
+
+      manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
+      manifest_records.should_not be_nil
+      manifest_records.size.should == 2
+
+      checksums = manifest_records.map{ |manifest_record| manifest_record[:checksum] }
+      checksums.sort.should == ["csum4-platver-full-1", "csum4-platver-full-2"]
     end
   end
 
@@ -230,7 +447,7 @@ describe "Chef::CookbookVersion manifest" do
       filenames.sort.should == ['anotherfile1.rb.host', 'anotherfile2.rb.host']
     end
 
-    it "should return a list of relative paths based on priority preference: platform & version" do
+    it "should return a list of relative paths based on priority preference: platform & full version" do
       node = Chef::Node.new
       node[:platform] = "ubuntu"
       node[:platform_version] = "9.10"
@@ -240,7 +457,20 @@ describe "Chef::CookbookVersion manifest" do
       filenames.should_not be_nil
       filenames.size.should == 2
 
-      filenames.sort.should == ['anotherfile1.rb.platform-version', 'anotherfile2.rb.platform-version']
+      filenames.sort.should == ['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version']
+    end
+
+    it "should return a list of relative paths based on priority preference: platform & partial version" do
+      node = Chef::Node.new
+      node[:platform] = "newubuntu"
+      node[:platform_version] = "9.10"
+      node[:fqdn] = "differenthost.example.org"
+
+      filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
+      filenames.should_not be_nil
+      filenames.size.should == 2
+
+      filenames.sort.should == ['anotherfile1.rb.platform-partial-version', 'anotherfile2.rb.platform-partial-version']
     end
 
     it "should return a list of relative paths based on priority preference: platform only" do
@@ -267,6 +497,58 @@ describe "Chef::CookbookVersion manifest" do
       filenames.size.should == 2
 
       filenames.sort.should == ['anotherfile1.rb.default', 'anotherfile2.rb.default']
+    end
+
+    it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 1" do
+      node = Chef::Node.new
+      node[:platform] = "fakeos"
+      node[:platform_version] = "2.0.rc.1"
+      node[:fqdn] = "differenthost.example.org"
+
+      filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
+      filenames.should_not be_nil
+      filenames.size.should == 2
+
+      filenames.sort.should == ['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version']
+    end
+
+    it "should return a list of relative paths based on priority preference: platform & partial version - platform_version variant 1" do
+      node = Chef::Node.new
+      node[:platform] = "newfakeos"
+      node[:platform_version] = "2.0.rc.1"
+      node[:fqdn] = "differenthost.example.org"
+
+      filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
+      filenames.should_not be_nil
+      filenames.size.should == 2
+
+      filenames.sort.should == ['anotherfile1.rb.platform-partial-version', 'anotherfile2.rb.platform-partial-version']
+    end
+
+    it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 2" do
+      node = Chef::Node.new
+      node[:platform] = "fakeos"
+      node[:platform_version] = "maple tree"
+      node[:fqdn] = "differenthost.example.org"
+
+      filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
+      filenames.should_not be_nil
+      filenames.size.should == 2
+
+      filenames.sort.should == ['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version']
+    end
+
+    it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 3" do
+      node = Chef::Node.new
+      node[:platform] = "fakeos"
+      node[:platform_version] = "1"
+      node[:fqdn] = "differenthost.example.org"
+
+      filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
+      filenames.should_not be_nil
+      filenames.size.should == 2
+
+      filenames.sort.should == ['anotherfile1.rb.platform-full-version', 'anotherfile2.rb.platform-full-version']
     end
   end
 end

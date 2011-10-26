@@ -753,13 +753,24 @@ class Chef
 
         fqdn = node[:fqdn]
 
+        # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
+        search_versions = []
+        parts = version.to_s.split('.')
+
+        parts.size.times do
+          search_versions << parts.join('.')
+          parts.pop
+        end
+
         # Most specific to least specific places to find the path
-        [
-         File.join(segment.to_s, "host-#{fqdn}", path),
-         File.join(segment.to_s, "#{platform}-#{version}", path),
-         File.join(segment.to_s, platform.to_s, path),
-         File.join(segment.to_s, "default", path)
-        ]
+        search_path = [ File.join(segment.to_s, "host-#{fqdn}", path) ]
+        search_versions.each do |v|
+          search_path << File.join(segment.to_s, "#{platform}-#{v}", path)
+        end
+        search_path << File.join(segment.to_s, platform.to_s, path)
+        search_path << File.join(segment.to_s, "default", path)
+
+        search_path
       else
         [File.join(segment, path)]
       end
