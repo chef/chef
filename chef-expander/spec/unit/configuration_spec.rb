@@ -55,7 +55,7 @@ describe Expander::Configuration do
   end
 
   it "has a setting for solr url defaulting to localhost:8983" do
-    @config.solr_url.should == "http://localhost:8983"
+    @config.solr_url.should == "http://localhost:8983/solr"
   end
 
   it "has a setting for the amqp host to connect to, defaulting to 0.0.0.0" do
