@@ -139,10 +139,13 @@ class Cookbooks < Application
     checksum = params[:checksum]
     raise NotFound, "Cookbook #{cookbook_name} version #{cookbook_version} does not contain a file with checksum #{checksum}" unless cookbook.checksums.keys.include?(checksum)
 
-    filename = Chef::Checksum.new(checksum).file_location
-    raise InternalServerError, "File with checksum #{checksum} not found in the repository (this should not happen)" unless File.exists?(filename)
+    begin
+      filename = Chef::Checksum.new(checksum).storage.file_location
 
-    send_file(filename)
+      send_file(filename)
+    rescue Errno::ENOENT => e
+      raise InternalServerError, "File with checksum #{checksum} not found in the repository (this should not happen)"
+    end
   end
 
   def update
