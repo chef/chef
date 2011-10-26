@@ -27,12 +27,12 @@ class Chef
     class SolrHTTPRequest
       CLASS_FOR_METHOD = {:GET => Net::HTTP::Get, :POST => Net::HTTP::Post}
 
-      UPDATE_URL = '/solr/update'
       TEXT_XML = {"Content-Type" => "text/xml"}
 
       def self.solr_url=(solr_url)
         @solr_url = solr_url
         @http_client = nil
+        @url_prefix = nil
       end
 
       def self.solr_url
@@ -42,12 +42,25 @@ class Chef
       def self.http_client
         @http_client ||= begin
           uri = URI.parse(solr_url)
-          Net::HTTP.new(uri.host, uri.port)
+          http_client = Net::HTTP.new(uri.host, uri.port)
+          http_client.use_ssl = true if uri.port == 443
+          http_client
+        end
+      end
+
+      def self.url_prefix
+        @url_prefix ||= begin
+          uri = URI.parse(solr_url)
+          if uri.path == ""
+            "/solr"
+          else
+            uri.path.gsub(%r{/$}, '')
+          end
         end
       end
 
       def self.select(params={})
-        url = "/solr/select?#{url_join(params)}"
+        url = "#{url_prefix}/select?#{url_join(params)}"
         Chef::Log.debug("Sending #{url} to Solr")
         request = new(:GET, url)
         json_response = request.run("Search Query to Solr '#{solr_url}#{url}'")
@@ -55,9 +68,10 @@ class Chef
       end
 
       def self.update(doc)
+        url = "#{url_prefix}/update"
         Chef::Log.debug("POSTing document to SOLR:\n#{doc}")
-        request = new(:POST, UPDATE_URL, TEXT_XML) { |req| req.body = doc.to_s }
-        request.run("POST to Solr '#{UPDATE_URL}', data: #{doc}")
+        request = new(:POST, url, TEXT_XML) { |req| req.body = doc.to_s }
+        request.run("POST to Solr '#{solr_url}#{url}', data: #{doc}")
       end
 
       def self.url_join(params_hash={})
