@@ -72,12 +72,6 @@ describe Chef::Checksum do
     @checksum.purge
   end
 
-  it "successfully purges even if its file has been deleted from the repo" do
-    @checksum.should_receive(:cdb_destroy)
-    @checksum.storage.should_receive(:purge).and_raise(Errno::ENOENT)
-    lambda {@checksum.purge}.should_not raise_error
-  end
-
   describe "when converted to json" do
     before do
       @checksum_as_json = @checksum.to_json
