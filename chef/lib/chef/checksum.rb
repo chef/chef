@@ -16,6 +16,7 @@
 # limitations under the License.
 
 require 'chef/log'
+require 'chef/checksum/storage'
 require 'uuidtools'
 
 class Chef
@@ -25,6 +26,8 @@ class Chef
   class Checksum
     attr_accessor :checksum, :create_time
     attr_accessor :couchdb_id, :couchdb_rev
+
+    attr_reader :storage
 
     # When a Checksum commits a sandboxed file to its final home in the checksum
     # repo, this attribute will have the original on-disk path where the file
@@ -59,6 +62,7 @@ class Chef
       @create_time = Time.now.iso8601
       @checksum = checksum
       @original_committed_file_location = nil
+      @storage = Storage::Filesystem.new(Chef::Config.checksum_path, checksum)
     end
     
     def to_json(*a)
@@ -89,26 +93,12 @@ class Chef
       checksum
     end
 
-
-    ##
-    # On-Disk Checksum File Repo (Chef Server API)
-    ##
-
-    def file_location
-      File.join(checksum_repo_directory, checksum)
-    end
-
-    def checksum_repo_directory
-      File.join(Chef::Config.checksum_path, checksum[0..1])
-    end
-
     # Moves the given +sandbox_file+ into the checksum repo using the path
     # given by +file_location+ and saves the Checksum to the database
     def commit_sandbox_file(sandbox_file)
       @original_committed_file_location = sandbox_file
-      Chef::Log.info("Commiting sandbox file: move #{sandbox_file} to #{file_location}")
-      FileUtils.mkdir_p(checksum_repo_directory)
-      File.rename(sandbox_file, file_location)
+      Chef::Log.info("Commiting sandbox file: move #{sandbox_file} to #{@storage}")
+      @storage.commit(sandbox_file)
       cdb_save
     end
 
@@ -122,8 +112,8 @@ class Chef
         raise Chef::Exceptions::IllegalChecksumRevert, "Checksum #{self.inspect} cannot be reverted because the original sandbox file location is not known"
       end
 
-      Chef::Log.warn("Reverting sandbox file commit: moving #{file_location} back to #{original_committed_file_location}")
-      File.rename(file_location, original_committed_file_location)
+      Chef::Log.warn("Reverting sandbox file commit: moving #{@storage} back to #{original_committed_file_location}")
+      @storage.revert(original_committed_file_location)
       cdb_destroy
     end
 
@@ -169,13 +159,8 @@ class Chef
 
     private
 
-    # Deletes the file backing this checksum from the on-disk repo.
-    # Purging the checksums is how users can get back to a valid state if
-    # they've deleted files, so we silently swallow Errno::ENOENT here.
     def purge_file
-      FileUtils.rm(file_location)
-    rescue Errno::ENOENT
-      true
+      @storage.purge
     end
 
   end
