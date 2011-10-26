@@ -1,5 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@opscode.com>)
+# Author:: Mark Mzyk (mmzyk@opscode.com)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -30,8 +31,7 @@ class Chef::Application::Solo < Chef::Application
   option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => "/etc/chef/solo.rb",
-    :default => "%s/solo.rb" % determine_base_path,
+    :default => Chef::Config.platform_specfic_path('/etc/chef/solor.rb'),
     :description => "The configuration file to use"
 
   option :log_level,
