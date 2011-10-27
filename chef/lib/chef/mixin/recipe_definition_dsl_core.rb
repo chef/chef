@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,14 +29,14 @@ require 'chef/mixin/language'
 class Chef
   module Mixin
     module RecipeDefinitionDSLCore
-      
+
       include Chef::Mixin::ConvertToClassName
       include Chef::Mixin::Language
-      
+
       def method_missing(method_symbol, *args, &block)
         # If we have a definition that matches, we want to use that instead.  This should
         # let you do some really crazy over-riding of "native" types, if you really want
-        # to. 
+        # to.
         if run_context.definitions.has_key?(method_symbol)
           # This dupes the high level object, but we still need to dup the params
           new_def = run_context.definitions[method_symbol].dup
@@ -72,7 +72,7 @@ class Chef
           resource
         end
       end
-      
+
     end
   end
 end

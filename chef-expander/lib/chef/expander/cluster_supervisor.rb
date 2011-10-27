@@ -37,7 +37,7 @@ module Chef
     # reaped, ClusterSupervisor knows they died and need to be respawned.
     #
     # The child processes are responsible for checking on the master process and
-    # dying if the master has died (VNodeSupervisor does this when started in 
+    # dying if the master has died (VNodeSupervisor does this when started in
     # with start_cluster_worker).
     #
     #===TODO:

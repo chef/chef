@@ -25,25 +25,25 @@ class Chef
     class Service
       class Redhat < Chef::Provider::Service::Init
         include Chef::Mixin::ShellOut
-        
+
         CHKCONFIG_ON = /\d:on/
-        
+
         def initialize(new_resource, run_context)
           super
            @init_command = "/sbin/service #{@new_resource.service_name}"
            @new_resource.supports[:status] = true
          end
-        
+
         def load_current_resource
           unless ::File.exists? "/sbin/chkconfig"
             raise Chef::Exceptions::Service, "/sbin/chkconfig does not exist!"
           end
-          
+
           super
-          
+
           chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}", :returns => [0,1])
           @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
-          @current_resource        
+          @current_resource
         end
 
         def enable_service()
@@ -53,7 +53,7 @@ class Chef
         def disable_service()
           shell_out! "/sbin/chkconfig #{@new_resource.service_name} off"
         end
-        
+
       end
     end
   end

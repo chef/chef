@@ -35,7 +35,7 @@ describe Chef::Mixin::Language do
         "1.2.3" => "#{x}-1.2.3"
       }
     end
-    @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"} 
+    @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"}
     @platform_hash["default"] = "default"
   end
 

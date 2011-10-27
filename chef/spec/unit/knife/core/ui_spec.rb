@@ -89,8 +89,8 @@ describe Chef::Knife::UI do
       it "should return the URIs" do
         response = {
           "cookbook_name"=>{
-            "1.0.0" => "http://url/cookbooks/1.0.0", 
-            "2.0.0" => "http://url/cookbooks/2.0.0", 
+            "1.0.0" => "http://url/cookbooks/1.0.0",
+            "2.0.0" => "http://url/cookbooks/2.0.0",
             "3.0.0" => "http://url/cookbooks/3.0.0"}
         }
         @ui.config[:with_uri] = true

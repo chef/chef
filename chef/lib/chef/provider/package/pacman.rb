@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@ class Chef
   class Provider
     class Package
       class Pacman < Chef::Provider::Package
-      
+
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
@@ -74,27 +74,27 @@ class Chef
           @candidate_version
 
         end
-        
+
         def install_package(name, version)
           run_command_with_systems_locale(
             :command => "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
           )
         end
-      
+
         def upgrade_package(name, version)
           install_package(name, version)
         end
-      
+
         def remove_package(name, version)
           run_command_with_systems_locale(
             :command => "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
           )
         end
-      
+
         def purge_package(name, version)
           remove_package(name, version)
         end
-      
+
       end
     end
   end

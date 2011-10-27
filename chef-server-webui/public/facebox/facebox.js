@@ -11,9 +11,9 @@
  * Copyright 2007, 2008 Chris Wanstrath [ chris@ozmm.org ]
  *
  * Usage:
- *  
+ *
  *  jQuery(document).ready(function() {
- *    jQuery('a[rel*=facebox]').facebox() 
+ *    jQuery('a[rel*=facebox]').facebox()
  *  })
  *
  *  <a href="#terms" rel="facebox">Terms</a>
@@ -27,12 +27,12 @@
  *
  *
  *  You can also use it programmatically:
- * 
+ *
  *    jQuery.facebox('some html')
  *
  *  The above will open a facebox with "some html" as the content.
- *    
- *    jQuery.facebox(function($) { 
+ *
+ *    jQuery.facebox(function($) {
  *      $.get('blah.html', function(data) { $.facebox(data) })
  *    })
  *
@@ -40,7 +40,7 @@
  *  allowing for a better ajaxy experience.
  *
  *  The facebox function can also display an ajax page or image:
- *  
+ *
  *    jQuery.facebox({ ajax: 'remote.html' })
  *    jQuery.facebox({ image: 'dude.jpg' })
  *
@@ -201,7 +201,7 @@
     $('#facebox .close').click($.facebox.close)
     $('#facebox .close_image').attr('src', $.facebox.settings.closeImage)
   }
-  
+
   // getPageScroll() by quirksmode.com
   function getPageScroll() {
     var xScroll, yScroll;
@@ -213,9 +213,9 @@
       xScroll = document.documentElement.scrollLeft;
     } else if (document.body) {// all other Explorers
       yScroll = document.body.scrollTop;
-      xScroll = document.body.scrollLeft;	
+      xScroll = document.body.scrollLeft;
     }
-    return new Array(xScroll,yScroll) 
+    return new Array(xScroll,yScroll)
   }
 
   // Adapted from getPageSize() by quirksmode.com
@@ -227,7 +227,7 @@
       windowHeight = document.documentElement.clientHeight;
     } else if (document.body) { // other Explorers
       windowHeight = document.body.clientHeight;
-    }	
+    }
     return windowHeight
   }
 
@@ -275,13 +275,13 @@
   }
 
   function skipOverlay() {
-    return $.facebox.settings.overlay == false || $.facebox.settings.opacity === null 
+    return $.facebox.settings.overlay == false || $.facebox.settings.opacity === null
   }
 
   function showOverlay() {
     if (skipOverlay()) return
 
-    if ($('facebox_overlay').length == 0) 
+    if ($('facebox_overlay').length == 0)
       $("body").append('<div id="facebox_overlay" class="facebox_hide"></div>')
 
     $('#facebox_overlay').hide().addClass("facebox_overlayBG")
@@ -296,10 +296,10 @@
 
     $('#facebox_overlay').fadeOut(200, function(){
       $("#facebox_overlay").removeClass("facebox_overlayBG")
-      $("#facebox_overlay").addClass("facebox_hide") 
+      $("#facebox_overlay").addClass("facebox_hide")
       $("#facebox_overlay").remove()
     })
-    
+
     return false
   }
 

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,21 +22,21 @@ describe Chef::Resource::Cron do
 
   before(:each) do
     @resource = Chef::Resource::Cron.new("cronify")
-  end  
+  end
 
   it "should create a new Chef::Resource::Cron" do
     @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::Cron)
   end
-  
+
   it "should have a name" do
     @resource.name.should eql("cronify")
   end
-  
+
   it "should have a default action of 'create'" do
     @resource.action.should eql(:create)
   end
-  
+
   it "should accept create or delete for action" do
     lambda { @resource.action :create }.should_not raise_error(ArgumentError)
     lambda { @resource.action :delete }.should_not raise_error(ArgumentError)
@@ -62,7 +62,7 @@ describe Chef::Resource::Cron do
     @resource.hour "6"
     @resource.hour.should eql("6")
   end
-    
+
   it "should allow you to specify the day" do
     @resource.day "10"
     @resource.day.should eql("10")
@@ -103,7 +103,7 @@ describe Chef::Resource::Cron do
       @resource.send(x, "*").should eql("*")
     end
   end
-  
+
   it "should allow ranges for all time and date values" do
     [ "minute", "hour", "day", "month", "weekday" ].each do |x|
       @resource.send(x, "1-2,5").should eql("1-2,5")
@@ -123,23 +123,23 @@ describe Chef::Resource::Cron do
   it "should reject any minute over 59" do
     lambda { @resource.minute "60" }.should raise_error(RangeError)
   end
-  
+
   it "should reject any hour over 23" do
     lambda { @resource.hour "24" }.should raise_error(RangeError)
   end
-  
+
   it "should reject any day over 31" do
     lambda { @resource.day "32" }.should raise_error(RangeError)
   end
-  
+
   it "should reject any month over 12" do
     lambda { @resource.month "13" }.should raise_error(RangeError)
   end
-  
+
   it "should reject any weekday over 7" do
     lambda { @resource.weekday "8" }.should raise_error(RangeError)
   end
-  
+
   it "should convert integer schedule values to a string" do
     [ "minute", "hour", "day", "month", "weekday" ].each do |x|
       @resource.send(x, 5).should eql("5")

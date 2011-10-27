@@ -1,9 +1,9 @@
 @api @data @api_data @api_data_item
-Feature: Delete a Data Bag Item via the REST API 
+Feature: Delete a Data Bag Item via the REST API
   In order to remove a Data Bag Item
-  As a Developer 
+  As a Developer
   I want to delete a Data Bag Item via the REST API
-  
+
   Scenario: Delete a Data Bag Item
     Given I am an administrator
       And a 'data_bag' named 'users' exists
@@ -19,7 +19,7 @@ Feature: Delete a Data Bag Item via the REST API
      When I 'DELETE' the path '/data/users/francis'
      Then I should get a '404 "Not Found"' exception
 
-  Scenario: Delete a Data Bag Item without authenticating 
+  Scenario: Delete a Data Bag Item without authenticating
     Given a 'data_bag' named 'users' exists
       And a 'data_bag_item' named 'francis' exists
      When I 'DELETE' the path '/data/users/francis'

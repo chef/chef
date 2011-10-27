@@ -276,7 +276,7 @@ class Chef::Application::Client < Chef::Application
     end
   end
 
-  private 
+  private
 
   def client_sleep(sec)
     IO.select([ SELF_PIPE[0] ], nil, nil, sec) or return

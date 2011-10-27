@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,7 +58,7 @@ class Chef
               end
             end
           end
-          
+
           # Check to see if it is installed
           package_installed = nil
           Chef::Log.debug("#{@new_resource} checking install state")
@@ -79,10 +79,10 @@ class Chef
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exceptions::Package, "dpkg failed - #{status.inspect}!"
           end
-          
+
           @current_resource
         end
-     
+
         def install_package(name, version)
           run_command_with_systems_locale(
             :command => "dpkg -i#{expand_options(@new_resource.options)} #{@new_resource.source}",
@@ -100,7 +100,7 @@ class Chef
             }
           )
         end
-      
+
         def purge_package(name, version)
           run_command_with_systems_locale(
             :command => "dpkg -P#{expand_options(@new_resource.options)} #{@new_resource.package_name}",

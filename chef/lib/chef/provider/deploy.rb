@@ -62,7 +62,7 @@ class Chef
         save_release_state
 
         if deployed?(release_path)
-          if current_release?(release_path) 
+          if current_release?(release_path)
             Chef::Log.debug("#{@new_resource} is the latest version")
           else
             action_rollback
@@ -266,7 +266,7 @@ class Chef
 
       def link_tempfiles_to_current_release
         dirs_info = @new_resource.create_dirs_before_symlink.join(",")
-        @new_resource.create_dirs_before_symlink.each do |dir| 
+        @new_resource.create_dirs_before_symlink.each do |dir|
           create_dir_unless_exists(release_path + "/#{dir}")
         end
         Chef::Log.info("#{@new_resource} created directories before symlinking #{dirs_info}")
@@ -384,9 +384,9 @@ class Chef
         yield
       rescue ::Exception => e
         if @new_resource.rollback_on_error
-          Chef::Log.warn "Error on deploying #{release_path}: #{e.message}" 
+          Chef::Log.warn "Error on deploying #{release_path}: #{e.message}"
           failed_release = release_path
-        
+
           if previous_release_path
             @release_path = previous_release_path
             rollback
@@ -396,7 +396,7 @@ class Chef
           FileUtils.rm_rf failed_release
           release_deleted(failed_release)
         end
-        
+
         raise
       end
 

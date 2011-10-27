@@ -110,7 +110,7 @@ module Chef
         puts "  total messages:       #{total_messages}"
         puts "  average queue depth:  #{avg}"
         puts "  max queue depth:      #{max}"
-        puts "  min queue depth:      #{min}" 
+        puts "  min queue depth:      #{min}"
       ensure
         amqp_client.stop if defined?(amqp_client) && amqp_client
       end
@@ -182,7 +182,7 @@ module Chef
 
         h = HighLine.new
         response_mutex = Mutex.new
-        
+
         responses = [h.color("Host", :bold), h.color("PID", :bold), h.color("GUID", :bold), h.color("Log Level", :bold)]
         AMQP.start(Expander.config.amqp_config) do
           node = Expander::Node.local_node

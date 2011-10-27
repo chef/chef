@@ -1,10 +1,10 @@
 @provider @provider_directory
-Feature: Delete Directories 
-  In order to save time 
+Feature: Delete Directories
+  In order to save time
   As a Developer
   I want to manage directories declaratively
 
-  Scenario: Delete a directory 
+  Scenario: Delete a directory
     Given a validated node
       And it includes the recipe 'directory_provider::delete'
      When I run the chef-client at log level 'info'

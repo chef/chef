@@ -240,7 +240,7 @@ module Lucene
     end
 
   end
-  
+
   class NotOperator < Treetop::Runtime::SyntaxNode
     def to_array
       "OP:NOT"

@@ -34,7 +34,7 @@ describe Chef::Provider::Ohai do
       :platform => @platform,
       :platform_version => @platform_version,
       :data => {
-        :origdata => "somevalue"      
+        :origdata => "somevalue"
       },
       :data2 => {
         :origdata => "somevalue",

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,15 +58,15 @@ end
 
 class IndexConsumerTestHarness
   include Chef::IndexQueue::Consumer
-  
+
   attr_reader :last_indexed_object, :unexposed_attr
-  
+
   expose :index_this
-  
+
   def index_this(object_to_index)
     @last_indexed_object = object_to_index
   end
-  
+
   def not_exposed(arg)
     @unexposed_attr = arg
   end
@@ -76,7 +76,7 @@ describe Chef::IndexQueue::Indexable do
   def a_uuid
     /[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/
   end
-  
+
   before do
     Chef::IndexableTestHarness.reset_index_metadata!
     @publisher      = Chef::IndexQueue::AmqpClient.instance
@@ -86,16 +86,16 @@ describe Chef::IndexQueue::Indexable do
     @now = Time.now
     Time.stub!(:now).and_return(@now)
   end
-  
+
   it "downcases the class name for the index_object_type when it's not explicitly set" do
     @indexable_obj.index_object_type.should == "indexable_test_harness"
   end
-  
+
   it "uses an explicitly set index_object_type" do
     Chef::IndexableTestHarness.index_object_type :a_weird_name
     @indexable_obj.index_object_type.should == "a_weird_name"
   end
-  
+
   it "adds 'database', 'type', and 'id' (UUID) keys to the published object" do
     with_metadata = @indexable_obj.with_indexer_metadata(:database => "foo", :id=>UUIDTools::UUID.random_create.to_s)
     with_metadata.should have(5).keys
@@ -106,7 +106,7 @@ describe Chef::IndexQueue::Indexable do
     with_metadata["id"].should match(a_uuid)
     with_metadata["enqueued_at"].should == @now.utc.to_i
   end
-  
+
   it "uses the couchdb_id if available" do
     expected_uuid = "0000000-1111-2222-3333-444444444444"
     @indexable_obj.couchdb_id = expected_uuid
@@ -197,7 +197,7 @@ describe Chef::IndexQueue::Indexable do
                                                                         "enqueued_at" => @now.utc.to_i}}
       @queue.publish_options[:persistent].should == false
     end
-  
+
     it "removes items from the index transactionactionally when Chef::Config[:persistent_queue] == true" do
       @amqp_client.should_receive(:tx_select)
       @amqp_client.should_receive(:tx_commit)
@@ -249,28 +249,28 @@ describe Chef::IndexQueue::Consumer do
     @amqp_client  = Chef::IndexQueue::AmqpClient.instance
     @consumer     = IndexConsumerTestHarness.new
   end
-  
+
   it "keeps a whitelist of exposed methods" do
     IndexConsumerTestHarness.exposed_methods.should == [:index_this]
     IndexConsumerTestHarness.whitelisted?(:index_this).should be_true
     IndexConsumerTestHarness.whitelisted?(:not_exposed).should be_false
   end
-  
+
   it "doesn't route non-whitelisted methods" do
     payload_json      = {"payload" => {"a_placeholder" => "object"}, "action" => "not_exposed"}.to_json
     received_message  = {:payload => payload_json}
     lambda {@consumer.call_action_for_message(received_message)}.should raise_error(ArgumentError)
     @consumer.unexposed_attr.should be_nil
   end
-  
+
   it "routes message payloads to the correct method" do
     payload_json      = {"payload" => {"a_placeholder" => "object"}, "action" => "index_this"}.to_json
     received_message  = {:payload => payload_json}
     @consumer.call_action_for_message(received_message)
     @consumer.last_indexed_object.should == {"a_placeholder" => "object"}
-    
+
   end
-  
+
   it "subscribes to the queue for the indexer" do
     payload_json  = {"payload" => {"a_placeholder" => "object"}, "action" => "index_this"}.to_json
     message       = {:payload => payload_json}
@@ -280,7 +280,7 @@ describe Chef::IndexQueue::Consumer do
     @consumer.run
     @consumer.last_indexed_object.should == {"a_placeholder" => "object"}
   end
-  
+
 end
 
 
@@ -292,25 +292,25 @@ describe Chef::IndexQueue::AmqpClient do
     Chef::Config[:amqp_pass]        = 'access_granted2rspec'
     Chef::Config[:amqp_vhost]       = '/chef-specz'
     Chef::Config[:amqp_consumer_id] = nil
-    
+
     @publisher    = Chef::IndexQueue::AmqpClient.instance
     @exchange     = mock("Bunny::Exchange")
-    
+
     @amqp_client  = mock("Bunny::Client", :start => true, :exchange => @exchange)
     def @amqp_client.connected?; false; end # stubbing predicate methods not working?
     Bunny.stub!(:new).and_return(@amqp_client)
-    
+
     @publisher.reset!
   end
-  
+
   after do
     @publisher.disconnected!
   end
-  
+
   it "is a singleton" do
     lambda {Chef::IndexQueue::Indexable::AmqpClient.new}.should raise_error
   end
-  
+
   it "creates an amqp client object on demand, starts a connection, and caches it" do
     @amqp_client.should_receive(:start).once
     @amqp_client.should_receive(:qos).with(:prefetch_count => 1)
@@ -318,7 +318,7 @@ describe Chef::IndexQueue::AmqpClient do
     @publisher.amqp_client.should == @amqp_client
     @publisher.amqp_client
   end
-  
+
   it "configures the amqp client with credentials from the config file" do
     @publisher.reset!
     Bunny.should_receive(:new).with(:spec => '08', :host => '4.3.2.1', :port => '1337', :user => "teh_rspecz",
@@ -326,14 +326,14 @@ describe Chef::IndexQueue::AmqpClient do
     @amqp_client.should_receive(:qos).with(:prefetch_count => 1)
     @publisher.amqp_client.should == @amqp_client
   end
-  
+
   it "creates an amqp exchange on demand and caches it" do
     @amqp_client.stub!(:qos)
     @publisher.exchange.should == @exchange
     @amqp_client.should_not_receive(:exchange)
     @publisher.exchange.should == @exchange
   end
-  
+
   describe "publishing" do
 
     before do
@@ -344,7 +344,7 @@ describe Chef::IndexQueue::AmqpClient do
       #@amqp_client.stub!(:queue).and_return(@queue)
       @data = {"some_data" => "in_a_hash"}
     end
-  
+
     it "resets the client upon a Bunny::ServerDownError when publishing" do
       Bunny.stub!(:new).and_return(@amqp_client)
       @amqp_client.should_receive(:queue).with("vnode-68", {:passive=>false, :durable=>true, :exclusive=>false, :auto_delete=>false}).twice.and_return(@queue_1, @queue_2)
@@ -355,7 +355,7 @@ describe Chef::IndexQueue::AmqpClient do
       @publisher.should_receive(:disconnected!).at_least(3).times
       lambda {@publisher.queue_for_object("00000000-1111-2222-3333-444444444444") {|q| q.publish(@data)}}.should raise_error(Bunny::ServerDownError)
     end
-    
+
     it "resets the client upon a Bunny::ConnectionError when publishing" do
       Bunny.stub!(:new).and_return(@amqp_client)
       @amqp_client.should_receive(:queue).with("vnode-68", {:passive=>false, :durable=>true, :exclusive=>false, :auto_delete=>false}).twice.and_return(@queue_1, @queue_2)
@@ -366,7 +366,7 @@ describe Chef::IndexQueue::AmqpClient do
       @publisher.should_receive(:disconnected!).at_least(3).times
       lambda {@publisher.queue_for_object("00000000-1111-2222-3333-444444444444") {|q| q.publish(@data)}}.should raise_error(Bunny::ConnectionError)
     end
-    
+
     it "resets the client upon a Errno::ECONNRESET when publishing" do
       Bunny.stub!(:new).and_return(@amqp_client)
       @amqp_client.should_receive(:queue).with("vnode-68", {:passive=>false, :durable=>true, :exclusive=>false, :auto_delete=>false}).twice.and_return(@queue_1, @queue_2)
@@ -377,14 +377,14 @@ describe Chef::IndexQueue::AmqpClient do
       @publisher.should_receive(:disconnected!).at_least(3).times
       lambda {@publisher.queue_for_object("00000000-1111-2222-3333-444444444444") {|q| q.publish(@data)}}.should raise_error(Errno::ECONNRESET)
     end
-    
+
   end
-  
+
   it "stops bunny and clears subscriptions" do
     bunny_client  = mock("Bunny::Client")
     @publisher.instance_variable_set(:@amqp_client, bunny_client)
     bunny_client.should_receive(:stop)
     @publisher.stop
   end
-  
+
 end

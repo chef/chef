@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -96,7 +96,7 @@ describe "Chef::CookbookVersion manifest" do
          :checksum => "csum-host-2",
          :specificity => "host-examplehost.example.org"
        },
-       
+
        {
          :name => "anotherfile1.rb",
          :path => "files/ubuntu-9.10/adirectory/anotherfile1.rb.platform-full-version",
@@ -122,7 +122,7 @@ describe "Chef::CookbookVersion manifest" do
          :checksum => "csum-platver-partial-2",
          :specificity => "nweubuntu-9"
        },
-       
+
        {
          :name => "anotherfile1.rb",
          :path => "files/ubuntu/adirectory/anotherfile1.rb.platform",
@@ -135,7 +135,7 @@ describe "Chef::CookbookVersion manifest" do
          :checksum => "csum-plat-2",
          :specificity => "ubuntu"
        },
-       
+
        {
          :name => "anotherfile1.rb",
          :path => "files/default/adirectory/anotherfile1.rb.default",
@@ -201,8 +201,8 @@ describe "Chef::CookbookVersion manifest" do
     }
 
   end
-  
-  
+
+
   it "should return a manifest record based on priority preference: host" do
     node = Chef::Node.new
     node[:platform] = "ubuntu"
@@ -213,7 +213,7 @@ describe "Chef::CookbookVersion manifest" do
     manifest_record.should_not be_nil
     manifest_record[:checksum].should == "csum-host"
   end
-  
+
   it "should return a manifest record based on priority preference: platform & full version" do
     node = Chef::Node.new
     node[:platform] = "ubuntu"
@@ -235,7 +235,7 @@ describe "Chef::CookbookVersion manifest" do
     manifest_record.should_not be_nil
     manifest_record[:checksum].should == "csum-platver-partial"
   end
-  
+
   it "should return a manifest record based on priority preference: platform only" do
     node = Chef::Node.new
     node[:platform] = "ubuntu"
@@ -246,7 +246,7 @@ describe "Chef::CookbookVersion manifest" do
     manifest_record.should_not be_nil
     manifest_record[:checksum].should == "csum-plat"
   end
-  
+
   it "should return a manifest record based on priority preference: default" do
     node = Chef::Node.new
     node[:platform] = "notubuntu"
@@ -301,7 +301,7 @@ describe "Chef::CookbookVersion manifest" do
     manifest_record.should_not be_nil
     manifest_record[:checksum].should == "csum4-platver-full"
   end
-  
+
   describe "when fetching the contents of a directory by file specificity" do
 
     it "should return a directory of manifest records based on priority preference: host" do

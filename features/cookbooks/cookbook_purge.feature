@@ -37,7 +37,7 @@ Feature: Purge Cookbook Files
      Then the inflated responses key 'testcookbook_valid' should not exist
       And the cookbook's files should have been deleted
       And the cookbook's checksums should be removed from couchdb
-  
-  
-  
-  
+
+
+
+

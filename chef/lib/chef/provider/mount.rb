@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -65,7 +65,7 @@ class Chef
           end
         end
       end
-      
+
       def action_enable
         unless @current_resource.enabled
           status = enable_fs
@@ -77,12 +77,12 @@ class Chef
           end
         end
       end
-      
+
       def action_disable
         if @current_resource.enabled
           status = disable_fs
           if status
-            @new_resource.updated_by_last_action(true)            
+            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource} disabled")
           else
             Chef::Log.debug("#{@new_resource} already disabled")
@@ -101,14 +101,14 @@ class Chef
       def remount_fs
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remount"
       end
-      
+
       def enable_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"        
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"
       end
-      
+
       def disable_fs
-        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"        
-      end      
+        raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"
+      end
     end
   end
 end

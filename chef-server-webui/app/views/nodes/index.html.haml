@@ -22,7 +22,7 @@
               %tr{:class => even ? "even": "odd" }
                 %td{:colspan => 2}= link_to node, url(:node, { :id => node } )
                 %td
-                  = link_to('Edit', url(:edit_node, node)) 
+                  = link_to('Edit', url(:edit_node, node))
                   |
                   = link_to('Delete', url(:node, node), :method => "delete", :confirm => "Really delete Node #{node}?  There is no undo.")
                 - even = (not even)

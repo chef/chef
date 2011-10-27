@@ -40,7 +40,7 @@ describe "initialize" do
     # @stderr = mock("STDERR", :null_object => true)
     # @pid = mock("PID", :null_object => true)
   end
-  
+
   describe "when determining the current metadevice status" do
 
     it "should set the current resources mount point to the new resources mount point" do
@@ -49,14 +49,14 @@ describe "initialize" do
       @provider.current_resource.name.should == '/dev/md1'
       @provider.current_resource.raid_device.should == '/dev/md1'
     end
-    
+
     it "determines that the metadevice exists when mdadm output shows the metadevice" do
       @provider.stub!(:shell_out!).with("mdadm --detail --scan").and_return(OpenStruct.new(:stdout => '/dev/md1'))
       @provider.load_current_resource
       @provider.current_resource.exists.should be_true
     end
   end
-  
+
   describe "after the metadevice status is known" do
     before(:each) do
       @current_resource = Chef::Resource::Mdadm.new('/dev/md1')
@@ -67,7 +67,7 @@ describe "initialize" do
 
       @provider.current_resource = @current_resource
     end
-    
+
     describe "when creating the metadevice" do
       it "should create the raid device if it doesnt exist" do
         @current_resource.exists(false)

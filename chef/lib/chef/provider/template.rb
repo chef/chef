@@ -69,7 +69,7 @@ class Chef
           end
         end
       end
-      
+
       def resource_cookbook
         @new_resource.cookbook || @new_resource.cookbook_name
       end

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,12 +31,12 @@ class Chef
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
           @new_resource.version(nil)
-          
+
           if @new_resource.source
             unless ::File.exists?(@new_resource.source)
               raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
             end
-            
+
             Chef::Log.debug("#{@new_resource} checking rpm status")
             status = popen4("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}") do |pid, stdin, stdout, stderr|
               stdout.each do |line|
@@ -52,7 +52,7 @@ class Chef
               raise Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
             end
           end
-          
+
           Chef::Log.debug("#{@new_resource} checking install state")
           status = popen4("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
@@ -63,14 +63,14 @@ class Chef
               end
             end
           end
-          
+
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exceptions::Package, "rpm failed - #{status.inspect}!"
           end
-          
+
           @current_resource
         end
-        
+
         def install_package(name, version)
           unless @current_resource.version
             run_command_with_systems_locale(
@@ -82,9 +82,9 @@ class Chef
             )
           end
         end
-        
+
         alias_method :upgrade_package, :install_package
-        
+
         def remove_package(name, version)
           if version
             run_command_with_systems_locale(

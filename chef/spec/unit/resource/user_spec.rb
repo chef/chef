@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Resource::User, "initialize" do
   before(:each) do
     @resource = Chef::Resource::User.new("adam")
-  end  
+  end
 
   it "should create a new Chef::Resource::User" do
     @resource.should be_a_kind_of(Chef::Resource)
@@ -31,29 +31,29 @@ describe Chef::Resource::User, "initialize" do
   it "should set the resource_name to :user" do
     @resource.resource_name.should eql(:user)
   end
-  
+
   it "should set the username equal to the argument to initialize" do
     @resource.username.should eql("adam")
   end
-  
+
   %w{comment uid gid home shell password}.each do |attrib|
     it "should set #{attrib} to nil" do
       @resource.send(attrib).should eql(nil)
     end
   end
-  
+
   it "should set action to :create" do
     @resource.action.should eql(:create)
   end
-  
+
   it "should set supports[:manage_home] to false" do
     @resource.supports[:manage_home].should eql(false)
   end
-  
+
   it "should set supports[:non_unique] to false" do
     @resource.supports[:non_unique].should eql(false)
   end
-  
+
   %w{create remove modify manage lock unlock}.each do |action|
     it "should allow action #{action}" do
       @resource.allowed_actions.detect { |a| a == action.to_sym }.should eql(action.to_sym)
@@ -65,7 +65,7 @@ end
   describe Chef::Resource::User, attrib do
     before(:each) do
       @resource = Chef::Resource::User.new("adam")
-    end  
+    end
 
     it "should allow a string" do
       @resource.send(attrib, "adam")
@@ -82,13 +82,13 @@ end
   describe Chef::Resource::User, attrib do
     before(:each) do
       @resource = Chef::Resource::User.new("adam")
-    end  
+    end
 
     it "should allow a string" do
       @resource.send(attrib, "100")
       @resource.send(attrib).should eql("100")
     end
-    
+
     it "should allow an integer" do
       @resource.send(attrib, 100)
       @resource.send(attrib).should eql(100)

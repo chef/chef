@@ -29,7 +29,7 @@ module Chef
 
     # Customized Logger class that dispenses with the unnecessary mutexing.
     # As long as you write one line at a time, the OS will take care of keeping
-    # your output in order. Expander commonly runs as a cluster of worker 
+    # your output in order. Expander commonly runs as a cluster of worker
     # processes so the mutexing wasn't actually helping us anyway.
     #
     # We don't use the program name field in the logger, so support for that

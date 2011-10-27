@@ -26,16 +26,16 @@ require 'fileutils'
 class Chef
   class Certificate
     class << self
-  
+
       # Generates a new CA Certificate and Key, and writes them out to
       # Chef::Config[:signing_ca_cert] and Chef::Config[:signing_ca_key].
       def generate_signing_ca
         ca_cert_file = Chef::Config[:signing_ca_cert]
-        ca_keypair_file = Chef::Config[:signing_ca_key] 
+        ca_keypair_file = Chef::Config[:signing_ca_key]
 
         unless File.exists?(ca_cert_file) && File.exists?(ca_keypair_file)
           Chef::Log.info("Creating new signing certificate")
-        
+
           [ ca_cert_file, ca_keypair_file ].each do |f|
             ca_basedir = File.dirname(f)
             FileUtils.mkdir_p ca_basedir
@@ -47,11 +47,11 @@ class Chef
           ca_cert.version = 3
           ca_cert.serial = 1
           info = [
-            ["C", Chef::Config[:signing_ca_country]], 
-            ["ST", Chef::Config[:signing_ca_state]], 
-            ["L", Chef::Config[:signing_ca_location]], 
+            ["C", Chef::Config[:signing_ca_country]],
+            ["ST", Chef::Config[:signing_ca_state]],
+            ["L", Chef::Config[:signing_ca_location]],
             ["O", Chef::Config[:signing_ca_org]],
-            ["OU", "Certificate Service"], 
+            ["OU", "Certificate Service"],
             ["CN", "#{Chef::Config[:signing_ca_domain]}/emailAddress=#{Chef::Config[:signing_ca_email]}"]
           ]
           ca_cert.subject = ca_cert.issuer = OpenSSL::X509::Name.new(info)
@@ -80,7 +80,7 @@ class Chef
       end
 
       # Creates a new key pair, and signs them with the signing certificate
-      # and key generated from generate_signing_ca above.  
+      # and key generated from generate_signing_ca above.
       #
       # @param [String] The common name for the key pair.
       # @param [Optional String] The subject alternative name.
@@ -97,11 +97,11 @@ class Chef
         ca_cert = OpenSSL::X509::Certificate.new(File.read(Chef::Config[:signing_ca_cert]))
 
         info = [
-          ["C", Chef::Config[:signing_ca_country]], 
-          ["ST", Chef::Config[:signing_ca_state]], 
-          ["L", Chef::Config[:signing_ca_location]], 
+          ["C", Chef::Config[:signing_ca_country]],
+          ["ST", Chef::Config[:signing_ca_state]],
+          ["L", Chef::Config[:signing_ca_location]],
           ["O", Chef::Config[:signing_ca_org]],
-          ["OU", "Certificate Service"], 
+          ["OU", "Certificate Service"],
           ["CN", common_name ]
         ]
 
@@ -133,12 +133,12 @@ class Chef
         api_client = Chef::ApiClient.new
         api_client.name(name)
         api_client.admin(admin)
-        
+
         begin
           # If both the couch record and file exist, don't do anything. Otherwise,
           # re-generate the validation key.
           Chef::ApiClient.cdb_load(name)
-          
+
           # The couch document was loaded successfully if we got to here; if we
           # can't also load the file on the filesystem, we'll regenerate it all.
           File.open(key_file, "r") do |file|
@@ -155,14 +155,14 @@ class Chef
               Chef::Log.fatal("Could not de-index (to rabbitmq) previous validation key - rabbitmq is down! Start rabbitmq then restart chef-server to re-generate it")
               raise
             end
-            
+
             create_validation_key(api_client, key_file)
           else
             raise
           end
         end
       end
-      
+
       private
       def create_validation_key(api_client, key_file)
         Chef::Log.info("Creating validation key...")
@@ -178,7 +178,7 @@ class Chef
           # re-raise so the error bubbles out and nukes chef-server
           raise e
         end
-        
+
         key_dir = File.dirname(key_file)
         FileUtils.mkdir_p(key_dir) unless File.directory?(key_dir)
         File.open(key_file, File::WRONLY|File::CREAT, 0600) do |f|

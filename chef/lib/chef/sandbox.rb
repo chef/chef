@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,9 +23,9 @@ class Chef
     attr_accessor :is_completed, :create_time
     alias_method :is_completed?, :is_completed
     attr_reader :guid
-    
+
     alias :name :guid
-    
+
     attr_accessor :couchdb, :couchdb_id, :couchdb_rev
 
     # list of checksum ids
@@ -37,7 +37,7 @@ class Chef
       "views" => {
         "all" => {
           "map" => <<-EOJS
-          function(doc) { 
+          function(doc) {
             if (doc.chef_type == "sandbox") {
               emit(doc.guid, doc);
             }
@@ -73,8 +73,8 @@ class Chef
         },
       }
     }
-    
-    # Creates a new Chef::Sandbox object.  
+
+    # Creates a new Chef::Sandbox object.
     #
     # === Returns
     # object<Chef::Sandbox>:: Duh. :)
@@ -125,15 +125,15 @@ class Chef
     ##
     # Couchdb
     ##
-    
+
     def self.create_design_document(couchdb=nil)
       (couchdb || Chef::CouchDB.new).create_design_document("sandboxes", DESIGN_DOCUMENT)
     end
-    
+
     def self.cdb_list(inflate=false, couchdb=nil)
       rs = (couchdb || Chef::CouchDB.new).list("sandboxes", inflate)
       lookup = (inflate ? "value" : "key")
-      rs["rows"].collect { |r| r[lookup] }            
+      rs["rows"].collect { |r| r[lookup] }
     end
 
     def self.cdb_load(guid, couchdb=nil)

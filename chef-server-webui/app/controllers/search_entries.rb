@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,10 +21,10 @@
 #require 'chef' / 'queue'
 
 class SearchEntries < Application
-  
+
   provides :html
-  before :login_required 
-    
+  before :login_required
+
   def index
     @s = Chef::Search.new
     @entries = @s.search(params[:search_id])
@@ -36,7 +36,7 @@ class SearchEntries < Application
     @entry = @s.search(params[:search_id], "id:'#{params[:search_id]}_#{params[:id]}'").first
     render
   end
-  
+
   def create
     @to_index = params
     @to_index.delete(:controller)
@@ -46,11 +46,11 @@ class SearchEntries < Application
     Chef::Queue.send_msg(:queue, :index, @to_index)
     redirect url(:search)
   end
-  
+
   def update
     create
   end
-  
+
   def destroy
     @s = Chef::Search.new
     @entries = @s.search(params[:id])
@@ -60,5 +60,5 @@ class SearchEntries < Application
     @status = 202
     redirect url(:search)
   end
-  
+
 end

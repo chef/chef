@@ -1,12 +1,12 @@
-default: -f pretty features -r features/steps -r features/support 
-api: --tags @api --format pretty -r features/steps -r features/support features 
+default: -f pretty features -r features/steps -r features/support
+api: --tags @api --format pretty -r features/steps -r features/support features
 api_cookbooks: --tags @api --tags @cookbooks --format pretty -r features/steps -r features/support features
 api_cookbooks_list: --tags @api_cookbooks_list --format pretty -r features/steps -r features/support features
 api_cookbooks_show: --tags @api_cookbooks_show --format pretty -r features/steps -r features/support features
 api_cookbooks_upload: --tags @api_cookbooks_upload --format pretty -r features/steps -r features/support features
 api_cookbooks_download: --tags @api_cookbooks_download --format pretty -r features/steps -r features/support features
 api_cookbooks_delete: --tags @api_cookbooks_delete --format pretty -r features/steps -r features/support features
-api_cookbooks_tarballs: --tags @api --tags @cookbooks --tags @tarballs --format pretty -r features/steps -r features/support features 
+api_cookbooks_tarballs: --tags @api --tags @cookbooks --tags @tarballs --format pretty -r features/steps -r features/support features
 api_clients: --tags @api_clients --format pretty -r features/steps -r features/support features
 api_clients_create: --tags @clients_create --format pretty -r features/steps -r features/support features
 api_clients_delete: --tags @clients_delete --format pretty -r features/steps -r features/support features
@@ -34,37 +34,37 @@ api_nodes_delete: --tags @nodes_delete --format pretty -r features/steps -r feat
 api_nodes_list: --tags @nodes_list --format pretty -r features/steps -r features/support features
 api_nodes_show: --tags @nodes_show --format pretty -r features/steps -r features/support features
 api_nodes_update: --tags @nodes_update --format pretty -r features/steps -r features/support features
-api_data: --tags @api_data --format pretty -r features/steps -r features/support features 
-api_data_delete: --tags @api_data_delete --format pretty -r features/steps -r features/support features 
-api_data_item: --tags @api_data_item --format pretty -r features/steps -r features/support features 
-api_search: --tags @api_search --format pretty -r features/steps -r features/support features 
-api_search_list: --tags @api_search_list --format pretty -r features/steps -r features/support features 
-api_search_show: --tags @api_search_show --format pretty -r features/steps -r features/support features 
-api_search_reindex:  --tags @api_search_reindex --format pretty -r features/steps -r features/support features 
-client: --tags @client --format pretty -r features/steps -r features/support features 
-client_roles: --tags @client_roles --format pretty -r features/steps -r features/support features 
-client_cookbook_sync: --tags @client-cookbook-sync --format pretty -r features/steps -r features/support features 
-search: --tags @search --format pretty -r features/steps -r features/support features 
-provider: --tags @provider --format pretty -r features/steps -r features/support features 
-provider_directory: --tags @provider_directory --format pretty -r features/steps -r features/support features 
-provider_deploy: --tags @provider_deploy --format pretty -r features/steps -r features/support features 
-provider_execute: --tags @provider_execute --format pretty -r features/steps -r features/support features 
-provider_file: --tags @provider_file --format pretty -r features/steps -r features/support features 
+api_data: --tags @api_data --format pretty -r features/steps -r features/support features
+api_data_delete: --tags @api_data_delete --format pretty -r features/steps -r features/support features
+api_data_item: --tags @api_data_item --format pretty -r features/steps -r features/support features
+api_search: --tags @api_search --format pretty -r features/steps -r features/support features
+api_search_list: --tags @api_search_list --format pretty -r features/steps -r features/support features
+api_search_show: --tags @api_search_show --format pretty -r features/steps -r features/support features
+api_search_reindex:  --tags @api_search_reindex --format pretty -r features/steps -r features/support features
+client: --tags @client --format pretty -r features/steps -r features/support features
+client_roles: --tags @client_roles --format pretty -r features/steps -r features/support features
+client_cookbook_sync: --tags @client-cookbook-sync --format pretty -r features/steps -r features/support features
+search: --tags @search --format pretty -r features/steps -r features/support features
+provider: --tags @provider --format pretty -r features/steps -r features/support features
+provider_directory: --tags @provider_directory --format pretty -r features/steps -r features/support features
+provider_deploy: --tags @provider_deploy --format pretty -r features/steps -r features/support features
+provider_execute: --tags @provider_execute --format pretty -r features/steps -r features/support features
+provider_file: --tags @provider_file --format pretty -r features/steps -r features/support features
 provider_template: --tags @template --format pretty -r features/steps -r features/support features
-provider_remote_file: --tags @remote_file --format pretty -r features/steps -r features/support features 
-provider_package_macports: --tags @macports --format pretty -r features/steps -r features/support features 
-language: --tags @language --format pretty -r features/steps -r features/support features 
+provider_remote_file: --tags @remote_file --format pretty -r features/steps -r features/support features
+provider_package_macports: --tags @macports --format pretty -r features/steps -r features/support features
+language: --tags @language --format pretty -r features/steps -r features/support features
 client_run_interval: --tags @client_run_interval --format pretty -r features/steps -r features/support features
-recipe_inclusion: --tags @recipe_inclusion --format pretty -r features/steps -r features/support features 
-attribute_inclusion: --tags @attribute_inclusion --format pretty -r features/steps -r features/support features 
-cookbooks: --tags @cookbooks --format pretty -r features/steps -r features/support features 
-cookbook_metadata: --tags @cookbook_metadata --format pretty -r features/steps -r features/support features 
-provider_remote_directory: --tags @remote_directory --format pretty -r features/steps -r features/support features 
-provider_git: --tags @provider --tags @git --format pretty -r features/steps -r features/support features 
+recipe_inclusion: --tags @recipe_inclusion --format pretty -r features/steps -r features/support features
+attribute_inclusion: --tags @attribute_inclusion --format pretty -r features/steps -r features/support features
+cookbooks: --tags @cookbooks --format pretty -r features/steps -r features/support features
+cookbook_metadata: --tags @cookbook_metadata --format pretty -r features/steps -r features/support features
+provider_remote_directory: --tags @remote_directory --format pretty -r features/steps -r features/support features
+provider_git: --tags @provider --tags @git --format pretty -r features/steps -r features/support features
 provider_template: --tags @template --format pretty -r features/steps -r features/support features
-provider_package_macports: --tags @macports --format pretty -r features/steps -r features/support features 
-provider_package_rubygems: --tags @rubygems --format pretty -r features/steps -r features/support features 
-lwrp: --tags @lwrp --format pretty -r features/steps -r features/support features 
-attribute_settings: --tags @attribute_settings --format pretty -r features/steps -r features/support features 
+provider_package_macports: --tags @macports --format pretty -r features/steps -r features/support features
+provider_package_rubygems: --tags @rubygems --format pretty -r features/steps -r features/support features
+lwrp: --tags @lwrp --format pretty -r features/steps -r features/support features
+attribute_settings: --tags @attribute_settings --format pretty -r features/steps -r features/support features
 knife: --tags @knife --format pretty -r features/steps -r features/support features
 knife_cookbook_upload: --tags @knife_cookbook_upload --format pretty -r features/steps -r features/support features

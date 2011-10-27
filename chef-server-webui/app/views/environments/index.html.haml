@@ -1,6 +1,6 @@
 .block#block-tables
   .content
-    %h2.title Environments 
+    %h2.title Environments
     .inner
       = partial('navigation', :active => 'index')
     .content
@@ -20,7 +20,7 @@
                 - else
                   Select
                 |
-                = link_to('Edit', url(:edit_environment, env[0])) 
+                = link_to('Edit', url(:edit_environment, env[0]))
                 |
                 = link_to('Delete', url(:environment, env[0]), :method => "delete", :confirm => "Really delete Environment #{env[0]}?  there is no undo.")
               - even = (not even)

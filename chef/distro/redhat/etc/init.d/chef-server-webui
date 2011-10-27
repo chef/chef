@@ -11,7 +11,7 @@
 # Required-Stop: $local_fs $network $remote_fs chef-server
 # Should-Start: $named $time
 # Should-Stop: $named $time
-# Short-Description: Startup script for chef-server-webui 
+# Short-Description: Startup script for chef-server-webui
 # Description: Server WebUI component of the Chef systems integration framework.
 ### END INIT INFO
 
@@ -50,7 +50,7 @@ start() {
 
 stop() {
     echo -n $"Stopping $prog: "
-    killproc -p $pidfile $prog 
+    killproc -p $pidfile $prog
     retval=$?
     echo
     [ $retval -eq 0 ] && rm -f $lockfile

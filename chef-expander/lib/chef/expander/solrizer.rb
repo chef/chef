@@ -145,7 +145,7 @@ module Chef
 
       def flattened_object
         flattened_object = Flattener.new(@chef_object).flattened_item
- 
+
         flattened_object[X_CHEF_id_CHEF_X]        = [@obj_id]
         flattened_object[X_CHEF_database_CHEF_X]  = [@database]
         flattened_object[X_CHEF_type_CHEF_X]      = [@obj_type]

@@ -26,7 +26,7 @@ class Chef
     class Service
       class Upstart < Chef::Provider::Service::Simple
         UPSTART_STATE_FORMAT = /\w+ \(?(\w+)\)?[\/ ](\w+)/
-       
+
         # Upstart does more than start or stop a service, creating multiple 'states' [1] that a service can be in.
         # In chef, when we ask a service to start, we expect it to have started before performing the next step
         # since we have top down dependencies. Which is to say we may follow witha resource next that requires
@@ -40,9 +40,9 @@ class Chef
           # TODO: re-evaluate if this is needed after integrating cookbook fix
           raise ArgumentError, "run_context cannot be nil" unless run_context
           super
-          
+
           run_context.node
-          
+
           platform, version = Chef::Platform.find_platform_and_version(run_context.node)
           if platform == "ubuntu" && (8.04..9.04).include?(version.to_f)
             @upstart_job_dir = "/etc/event.d"

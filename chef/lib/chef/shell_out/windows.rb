@@ -210,7 +210,7 @@ module Process
     unless args.kind_of?(Hash)
       raise TypeError, 'Expecting hash-style keyword arguments'
     end
-      
+
     valid_keys = %w/
       app_name command_line inherit creation_flags cwd environment
       startup_info thread_inherit process_inherit close_handles with_logon
@@ -228,8 +228,8 @@ module Process
       'creation_flags' => 0,
       'close_handles'  => true
     }
-      
-    # Validate the keys, and convert symbols and case to lowercase strings.     
+
+    # Validate the keys, and convert symbols and case to lowercase strings.
     args.each{ |key, val|
       key = key.to_s.downcase
       unless valid_keys.include?(key)
@@ -237,9 +237,9 @@ module Process
       end
       hash[key] = val
     }
-      
+
     si_hash = {}
-      
+
     # If the startup_info key is present, validate its subkeys
     if hash['startup_info']
       hash['startup_info'].each{ |key, val|
@@ -261,7 +261,7 @@ module Process
         raise ArgumentError, 'command_line or app_name must be specified'
       end
     end
-      
+
     # The environment string should be passed as an array of A=B paths, or
     # as a string of ';' separated paths.
     if hash['environment']
@@ -309,7 +309,7 @@ module Process
         else
           handle = get_osfhandle(si_hash[io])
         end
-            
+
         if handle == INVALID_HANDLE_VALUE
           raise Error, get_last_error
         end
@@ -323,14 +323,14 @@ module Process
         )
 
         raise Error, get_last_error unless bool
-            
+
         si_hash[io] = handle
         si_hash['startf_flags'] ||= 0
         si_hash['startf_flags'] |= STARTF_USESTDHANDLES
         hash['inherit'] = true
       end
     }
-      
+
     # The bytes not covered here are reserved (null)
     unless si_hash.empty?
       startinfo[0,4]  = [startinfo.size].pack('L')
@@ -347,7 +347,7 @@ module Process
       startinfo[48,2] = [si_hash['sw_flags']].pack('S') if si_hash['sw_flags']
       startinfo[56,4] = [si_hash['stdin']].pack('L') if si_hash['stdin']
       startinfo[60,4] = [si_hash['stdout']].pack('L') if si_hash['stdout']
-      startinfo[64,4] = [si_hash['stderr']].pack('L') if si_hash['stderr']        
+      startinfo[64,4] = [si_hash['stderr']].pack('L') if si_hash['stderr']
     end
 
     if hash['with_logon']
@@ -357,7 +357,7 @@ module Process
       cmd    = hash['command_line'].nil? ? nil : multi_to_wide(hash['command_line'])
       cwd    = multi_to_wide(hash['cwd'])
       passwd = multi_to_wide(hash['password'])
-         
+
       hash['creation_flags'] |= CREATE_UNICODE_ENVIRONMENT
 
       process_ran = CreateProcessWithLogonW(
@@ -373,7 +373,7 @@ module Process
         startinfo,              # Startup Info
         procinfo                # Process Info
       )
-    else     
+    else
       process_ran = CreateProcess(
         hash['app_name'],       # App name
         hash['command_line'],   # Command line
@@ -386,21 +386,21 @@ module Process
         startinfo,              # Startup Info
         procinfo                # Process Info
       )
-    end      
+    end
 
     # TODO: Close stdin, stdout and stderr handles in the si_hash unless
     # they're pointing to one of the standard handles already. [Maybe]
     if !process_ran
       raise_last_error("CreateProcess()")
     end
-      
+
     # Automatically close the process and thread handles in the
     # PROCESS_INFORMATION struct unless explicitly told not to.
     if hash['close_handles']
       CloseHandle(procinfo[0,4].unpack('L').first)
       CloseHandle(procinfo[4,4].unpack('L').first)
-    end      
-      
+    end
+
     ProcessInfo.new(
       procinfo[0,4].unpack('L').first, # hProcess
       procinfo[4,4].unpack('L').first, # hThread

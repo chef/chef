@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,7 +70,7 @@ class Chef
       end
 
       def untested_template_files
-        template_files.reject do |file| 
+        template_files.reject do |file|
           if validated?(file)
             Chef::Log.debug("Template #{file} is unchanged, skipping syntax check")
             true
@@ -118,7 +118,7 @@ class Chef
         result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
         false
       end
-      
+
       def validate_ruby_file(ruby_file)
         Chef::Log.debug("Testing #{ruby_file} for syntax errors...")
         result = shell_out("ruby -c #{ruby_file}")
@@ -130,7 +130,7 @@ class Chef
         result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
         false
       end
-      
+
     end
   end
 end

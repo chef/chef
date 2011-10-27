@@ -5,7 +5,7 @@ class Roles < Application
 
   before :authenticate_every
   before :is_admin, :only => [ :create, :update, :destroy ]
-  
+
   # GET /roles
   def index
     @role_list = Chef::Role.cdb_list(true)
@@ -26,16 +26,16 @@ class Roles < Application
   # POST /roles
   def create
     @role = params["inflated_object"]
-    exists = true 
+    exists = true
     begin
       Chef::Role.cdb_load(@role.name)
     rescue Chef::Exceptions::CouchDBNotFound
-      exists = false 
+      exists = false
     end
     raise Conflict, "Role already exists" if exists
 
     @role.cdb_save
-    
+
     self.status = 201
     display({ :uri => absolute_url(:role, :id => @role.name)  })
   end
@@ -75,7 +75,7 @@ class Roles < Application
     end
     display("run_list" => @role.env_run_lists[params[:env_id]])
   end
-  
+
   # GET /roles/:id/environments
   def environments
     begin
@@ -83,9 +83,9 @@ class Roles < Application
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load role #{params[:role_id]}"
     end
-    
+
     display(@role.env_run_lists.keys.sort)
   end
-  
+
 
 end

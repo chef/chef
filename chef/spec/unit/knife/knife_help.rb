@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,7 +49,7 @@ describe Chef::Knife::Help do
     it "should find the man page in the gem" do
       @knife.find_manpage_path("shef").should =~ /distro\/common\/man\/man1\/shef.1$/
     end
-  
+
     it "should provide the man page name if not in the gem" do
       @knife.find_manpage_path("foo").should == "foo"
     end

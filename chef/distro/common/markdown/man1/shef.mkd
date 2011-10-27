@@ -136,26 +136,26 @@ convergence run via `run_chef`
 
 * A "Hello World" interactive recipe
 
-  chef > recipe  
-  chef:recipe > echo :off  
-  chef:recipe > file "/tmp/hello\_world"  
-  chef:recipe > run\_chef  
-  [Sat, 09 Apr 2011 08:56:56 -0700] INFO: Processing file[/tmp/hello\_world] action create ((irb#1) line 2)  
-  [Sat, 09 Apr 2011 08:56:56 -0700] INFO: file[/tmp/hello\_world] created file /tmp/hello\_world  
-  chef:recipe > pp ls '/tmp'  
-  [".",  
-  "..",  
-  "hello\_world"]  
+  chef > recipe
+  chef:recipe > echo :off
+  chef:recipe > file "/tmp/hello\_world"
+  chef:recipe > run\_chef
+  [Sat, 09 Apr 2011 08:56:56 -0700] INFO: Processing file[/tmp/hello\_world] action create ((irb#1) line 2)
+  [Sat, 09 Apr 2011 08:56:56 -0700] INFO: file[/tmp/hello\_world] created file /tmp/hello\_world
+  chef:recipe > pp ls '/tmp'
+  [".",
+  "..",
+  "hello\_world"]
 
 * Search for _nodes_ by role, and print their IP addresses
 
-  chef > nodes.find(:roles => 'monitoring-server') {|n| n[:ipaddress] }  
-  => ["10.254.199.5"]  
+  chef > nodes.find(:roles => 'monitoring-server') {|n| n[:ipaddress] }
+  => ["10.254.199.5"]
 
 * Remove the role _obsolete_ from every node in the system
 
-  chef > nodes.transform(:all) {|n| n.run\_list.delete('role[obsolete]') }  
-   => [node[chef098b2.opschef.com], node[ree-woot], node[graphite-dev], node[fluke.localdomain], node[ghost.local], node[kallistec]]  
+  chef > nodes.transform(:all) {|n| n.run\_list.delete('role[obsolete]') }
+   => [node[chef098b2.opschef.com], node[ree-woot], node[graphite-dev], node[fluke.localdomain], node[ghost.local], node[kallistec]]
 
 
 ## BUGS

@@ -188,4 +188,4 @@ function make_td_remove(row) {
 function removeTableRow(row){
     row.remove();
 }
-  
+

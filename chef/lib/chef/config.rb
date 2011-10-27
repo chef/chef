@@ -148,7 +148,7 @@ class Chef
     log_level :info
     log_location STDOUT
     # toggle info level log items that can create a lot of output
-    verbose_logging true 
+    verbose_logging true
     node_name nil
     node_path "/var/chef/node"
 

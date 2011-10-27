@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,11 +32,11 @@ class Chef
         @amqp_client = nil
         @exchange = nil
       end
-      
+
       def stop
         @amqp_client && @amqp_client.stop
       end
-      
+
       def amqp_client
         unless @amqp_client
           begin
@@ -58,7 +58,7 @@ class Chef
       def exchange
         @exchange ||= amqp_client.exchange("chef-indexer", :durable => true, :type => :fanout)
       end
-      
+
       def disconnected!
         Chef::Log.error("Disconnected from the AMQP Broker (RabbitMQ)")
         @amqp_client = nil
@@ -92,11 +92,11 @@ class Chef
       rescue ArgumentError
         UUIDTools::UUID.parse_hexdigest(obj_id).to_i
       end
-      
+
       def durable_queue?
         !!Chef::Config[:amqp_consumer_id]
       end
-      
+
       def consumer_id
         Chef::Config[:amqp_consumer_id] || UUIDTools::UUID.random_create.to_s
       end

@@ -1,6 +1,6 @@
 @api @api_environments @show_roles
-Feature: Show a role in an environment via the REST API 
-  In order to know what the run list is for a Role in a specific environment 
+Feature: Show a role in an environment via the REST API
+  In order to know what the run list is for a Role in a specific environment
   As a Developer
   I want to show the run list for a specific Role in a specific environment
 

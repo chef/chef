@@ -25,7 +25,7 @@ class Chef
       # following instance variables:
       # * @config   - a hash of knife's config values
       # * @run_list - the run list for the node to boostrap
-      # 
+      #
       class BootstrapContext
 
         def initialize(config, run_list, chef_config)

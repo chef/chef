@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -113,7 +113,7 @@ When /^I run the chef\-client for '(.+)' seconds$/ do |run_for|
       exec chef_client_command_string()
       exit 2
     end
-  
+
     killer_pid = Process.fork {
       sleep run_for.to_i
 
@@ -130,7 +130,7 @@ When /^I run the chef\-client for '(.+)' seconds$/ do |run_for|
 
     Process.waitpid2(killer_pid)
     @status = Process.waitpid2(client_pid).last
-    
+
     # Read these in so they can be used in later steps.
     @stdout = IO.read(stdout_filename)
     @stderr = IO.read(stderr_filename)
@@ -164,7 +164,7 @@ When /^I run the chef\-client with config file '(.+)'$/ do |config_file|
 end
 
 When /^I run the chef\-client with logging to the file '(.+)'$/ do |log_file|
-  
+
 config_data = <<CONFIG
 supportdir = File.expand_path(File.join(File.dirname(__FILE__), ".."))
 tmpdir = File.expand_path(File.join(File.dirname(__FILE__), "..", "tmp"))
@@ -185,15 +185,15 @@ systmpdir = File.expand_path(File.join(Dir.tmpdir, "chef_integration"))
 validation_key   File.join(systmpdir, "validation.pem")
 client_key       File.join(systmpdir, "client.pem")
 CONFIG
-  
-  @config_file = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client-with-logging.rb'))  
+
+  @config_file = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'config', 'client-with-logging.rb'))
   File.open(@config_file, "w") do |file|
     file.write(config_data)
   end
 
   self.cleanup_files << @config_file
-  
-  
+
+
   @status = Chef::Mixin::Command.popen4("#{File.join(File.dirname(__FILE__), "..", "..", "chef", "bin", "chef-client")} -c #{@config_file} #{@chef_args}") do |p, i, o, e|
     @stdout = o.gets(nil)
     @stderr = e.gets(nil)
@@ -234,7 +234,7 @@ Then /^the run should exit '(.+)'$/ do |exit_code|
   end
   begin
     @status.exitstatus.should eql(exit_code.to_i)
-  rescue 
+  rescue
     print_output
     raise
   end
@@ -245,10 +245,10 @@ Then "I print the debug log" do
   print_output
 end
 
-Then /^the run should exit from being signaled$/ do 
+Then /^the run should exit from being signaled$/ do
   begin
     @status.signaled?.should == true
-  rescue 
+  rescue
     print_output
     raise
   end
@@ -292,7 +292,7 @@ Then /^'(.+)' should have '(.+)'$/ do |which, to_match|
     self.instance_variable_get("@#{which}".to_sym).should noinspect_match(/#{to_match}/m)
   else
     self.instance_variable_get("@#{which}".to_sym).should match(/#{to_match}/m)
-  end    
+  end
 end
 
 Then /^'(.+)' should not have '(.+)'$/ do |which, to_match|

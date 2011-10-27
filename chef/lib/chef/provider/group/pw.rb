@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,12 +20,12 @@ class Chef
   class Provider
     class Group
       class Pw < Chef::Provider::Group
-        
+
         def load_current_resource
           super
           raise Chef::Exceptions::Group, "Could not find binary /usr/sbin/pw for #{@new_resource}" unless ::File.exists?("/usr/sbin/pw")
         end
-        
+
         # Create the group
         def create_group
           command = "pw groupadd"
@@ -33,7 +33,7 @@ class Chef
           command << set_members_option
           run_command(:command => command)
         end
-        
+
         # Manage the group when it already exists
         def manage_group
           command = "pw groupmod"
@@ -41,12 +41,12 @@ class Chef
           command << set_members_option
           run_command(:command => command)
         end
-        
+
         # Remove the group
         def remove_group
           run_command(:command => "pw groupdel #{@new_resource.group_name}")
         end
-        
+
         # Little bit of magic as per Adam's useradd provider to pull and assign the command line flags
         #
         # ==== Returns
@@ -77,7 +77,7 @@ class Chef
           end
           opt
         end
-        
+
       end
     end
   end

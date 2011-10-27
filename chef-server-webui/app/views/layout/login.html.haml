@@ -10,7 +10,7 @@
     = js_include_tag "jquery-ui-1.7.1.custom.min"
     = js_include_tag "jquery.treeTable.min"
     = js_include_tag "chef"
-        
+
   %body
     #container
       #header
@@ -25,7 +25,7 @@
                   .flash
                     - message.each do |type, msg|
                       %div{:class => "message #{type}"}
-                        %p= msg             
+                        %p= msg
           = catch_content :for_layout
           #footer
             .block

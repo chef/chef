@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,10 +16,10 @@
 # limitations under the License.
 
 class Chef
-  
+
   module Mixin
     module ParamsValidate
-      
+
       # Takes a hash of options, along with a map to validate them.  Returns the original
       # options hash, plus any changes that might have been made (through things like setting
       # default values in the validation map)
@@ -27,19 +27,19 @@ class Chef
       # For example:
       #
       #   validate({ :one => "neat" }, { :one => { :kind_of => String }})
-      # 
+      #
       # Would raise an exception if the value of :one above is not a kind_of? string.  Valid
       # map options are:
       #
       # :default:: Sets the default value for this parameter.
-      # :callbacks:: Takes a hash of Procs, which should return true if the argument is valid.  
+      # :callbacks:: Takes a hash of Procs, which should return true if the argument is valid.
       #              The key will be inserted into the error message if the Proc does not return true:
       #                 "Option #{key}'s value #{value} #{message}!"
-      # :kind_of:: Ensure that the value is a kind_of?(Whatever).  If passed an array, it will ensure 
+      # :kind_of:: Ensure that the value is a kind_of?(Whatever).  If passed an array, it will ensure
       #            that the value is one of those types.
       # :respond_to:: Ensure that the value has a given method.  Takes one method name or an array of
       #               method names.
-      # :required:: Raise an exception if this parameter is missing. Valid values are true or false, 
+      # :required:: Raise an exception if this parameter is missing. Valid values are true or false,
       #             by default, options are not required.
       # :regex:: Match the value of the paramater against a regular expression.
       # :equal_to:: Match the value of the paramater with ==.  An array means it can be equal to any
@@ -47,12 +47,12 @@ class Chef
       def validate(opts, map)
         #--
         # validate works by taking the keys in the validation map, assuming it's a hash, and
-        # looking for _pv_:symbol as methods.  Assuming it find them, it calls the right 
-        # one.  
+        # looking for _pv_:symbol as methods.  Assuming it find them, it calls the right
+        # one.
         #++
         raise ArgumentError, "Options must be a hash" unless opts.kind_of?(Hash)
-        raise ArgumentError, "Validation Map must be a hash" unless map.kind_of?(Hash)   
-        
+        raise ArgumentError, "Validation Map must be a hash" unless map.kind_of?(Hash)
+
         map.each do |key, validation|
           unless key.kind_of?(Symbol) || key.kind_of?(String)
             raise ArgumentError, "Validation map keys must be symbols or strings!"
@@ -75,7 +75,7 @@ class Chef
         end
         opts
       end
-          
+
       def set_or_return(symbol, arg, validation)
         iv_symbol = "@#{symbol.to_s}".to_sym
         map = {
@@ -89,9 +89,9 @@ class Chef
           self.instance_variable_set(iv_symbol, opts[symbol])
         end
       end
-            
+
       private
-      
+
         # Return the value of a parameter, or nil if it doesn't exist.
         def _pv_opts_lookup(opts, key)
           if opts.has_key?(key.to_s)
@@ -102,7 +102,7 @@ class Chef
             nil
           end
         end
-        
+
         # Raise an exception if the parameter is not found.
         def _pv_required(opts, key, is_required=true)
           if is_required
@@ -114,7 +114,7 @@ class Chef
             end
           end
         end
-        
+
         def _pv_equal_to(opts, key, to_be)
           value = _pv_opts_lookup(opts, key)
           unless value.nil?
@@ -127,7 +127,7 @@ class Chef
             end
           end
         end
-        
+
         # Raise an exception if the parameter is not a kind_of?(to_be)
         def _pv_kind_of(opts, key, to_be)
           value = _pv_opts_lookup(opts, key)
@@ -141,7 +141,7 @@ class Chef
             end
           end
         end
-        
+
         # Raise an exception if the parameter does not respond to a given set of methods.
         def _pv_respond_to(opts, key, method_name_list)
           value = _pv_opts_lookup(opts, key)
@@ -171,7 +171,7 @@ class Chef
             end
           end
         end
-      
+
         # Assign a default value to a parameter.
         def _pv_default(opts, key, default_value)
           value = _pv_opts_lookup(opts, key)
@@ -179,7 +179,7 @@ class Chef
             opts[key] = default_value
           end
         end
-        
+
         # Check a parameter against a regular expression.
         def _pv_regex(opts, key, regex)
           value = _pv_opts_lookup(opts, key)
@@ -197,7 +197,7 @@ class Chef
             end
           end
         end
-        
+
         # Check a parameter against a hash of proc's.
         def _pv_callbacks(opts, key, callbacks)
           raise ArgumentError, "Callback list must be a hash!" unless callbacks.kind_of?(Hash)

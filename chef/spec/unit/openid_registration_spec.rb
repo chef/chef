@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ describe Chef::OpenIDRegistration, "set_password" do
     oreg.set_password("foolio")
     oreg.salt.should_not eql(nil)
   end
-  
+
   it "should encrypt the password with the salt and the plaintext password" do
     oreg = Chef::OpenIDRegistration.new
     oreg.set_password("foolio")
@@ -64,7 +64,7 @@ describe Chef::OpenIDRegistration, "from_json" do
   end
 end
 
-describe Chef::OpenIDRegistration, "list" do  
+describe Chef::OpenIDRegistration, "list" do
   before(:each) do
     @mock_couch = mock("Chef::CouchDB")
     @mock_couch.stub!(:list).and_return({
@@ -77,15 +77,15 @@ describe Chef::OpenIDRegistration, "list" do
     })
     Chef::CouchDB.stub!(:new).and_return(@mock_couch)
   end
-  
+
   it "should retrieve a list of nodes from CouchDB" do
     Chef::OpenIDRegistration.list.should eql(["avenue"])
   end
-  
+
   it "should return just the ids if inflate is false" do
     Chef::OpenIDRegistration.list(false).should eql(["avenue"])
   end
-  
+
   it "should return the full objects if inflate is true" do
     Chef::OpenIDRegistration.list(true).should eql(["a"])
   end
@@ -120,14 +120,14 @@ describe Chef::OpenIDRegistration, "save" do
     @reg.name = "bob"
     @reg.couchdb_rev = 1
   end
-  
+
   it "should save the registration to couchdb" do
-    @mock_couch.should_receive(:store).with("openid_registration", "bob", @reg).and_return({ "rev" => 33 }) 
+    @mock_couch.should_receive(:store).with("openid_registration", "bob", @reg).and_return({ "rev" => 33 })
     @reg.save
   end
-  
+
   it "should store the new couchdb_rev" do
-    @mock_couch.stub!(:store).with("openid_registration", "bob", @reg).and_return({ "rev" => 33 }) 
+    @mock_couch.stub!(:store).with("openid_registration", "bob", @reg).and_return({ "rev" => 33 })
     @reg.save
     @reg.couchdb_rev.should eql(33)
   end

@@ -32,12 +32,12 @@ module Merb
     #   :versions => [
     #     { :version => version, :url => http://url/version },
     #     { :version => version, :url => http://url/version }
-    #   ]  
+    #   ]
     # }
     def expand_cookbook_urls(cookbook_name, versions, num_versions)
       versions = versions[0...num_versions.to_i] unless num_versions == "all"
       version_list = versions.inject([]) do |res, version|
-        res.push({ 
+        res.push({
           :url => absolute_url(:cookbook_version, :cookbook_name => cookbook_name, :cookbook_version => version),
           :version => version
         })

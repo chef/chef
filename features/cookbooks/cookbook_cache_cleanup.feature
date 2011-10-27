@@ -4,7 +4,7 @@ Feature: Cookbook file downloads cache cleanup
   In order to use the network efficiently and only download files when they've changed
   As a Chef User
   I want to keep cookbook contents in the cache and only remove they're no longer needed
-  
+
   Scenario: Include a cookbook which references a file and a template then run chef-client twice -- only the first run should download a file
    Given a validated node
      And it includes the recipe 'transfer_some_cookbook_files::default'

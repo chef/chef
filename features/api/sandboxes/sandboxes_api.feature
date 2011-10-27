@@ -1,16 +1,16 @@
 @api @sandboxes @sandbox @create_sandbox
-Feature: Create a sandbox via the REST API 
+Feature: Create a sandbox via the REST API
   In order to have files available to be included in a cookbook
   As a Developer
   I want to upload files into a sandbox and commit the sandbox
 
-  @positive  
+  @positive
   Scenario: Create a one-file sandbox
     Given I am an administrator
      When I create a sandbox named 'sandbox1'
      Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
 
-  @negative  
+  @negative
   Scenario: Create a one-file sandbox, but commit without uploading any files
     Given I am an administrator
      When I create a sandbox named 'sandbox1'
@@ -50,7 +50,7 @@ Feature: Create a sandbox via the REST API
     When I commit the sandbox
     # commit works as we did upload the only correct file.
     Then I should not get an exception
- 
+
   @negative @die
   Scenario: Create a one-file sandbox, upload a file to an expected checksum URL whose contents do not match that checksum, then commit
     Given I am an administrator
@@ -73,7 +73,7 @@ Feature: Create a sandbox via the REST API
     Then the response code should be '200'
     When I commit the sandbox
     Then I should not get an exception
-    
+
   @negative
   Scenario: Create a two-file sandbox, upload one of the expected checksums, then commit
     Given I am an administrator

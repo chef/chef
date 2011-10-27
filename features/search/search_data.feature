@@ -1,8 +1,8 @@
 @search
-Feature: Search Data 
-  In order to access information about my infrastructure 
+Feature: Search Data
+  In order to access information about my infrastructure
   As a Developer
-  I want to search the data 
+  I want to search the data
 
   Scenario: Search the user index
     Given a validated node

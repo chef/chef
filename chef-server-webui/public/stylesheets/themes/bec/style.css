@@ -4,11 +4,11 @@ h1, h2, h3 {color:#444}
 body {
   color: #333;
   background: #e5e5e5;
-  font-family: Verdana, Arial, "Bitstream Vera Sans", sans-serif;  
+  font-family: Verdana, Arial, "Bitstream Vera Sans", sans-serif;
 }
 
 hr {
-  background: #f0f0ee; 
+  background: #f0f0ee;
 }
 
 p {
@@ -101,7 +101,7 @@ input.checkbox {
 }
 
 
-#sidebar h3 {  
+#sidebar h3 {
   background: #c7d8d8;
   border-bottom:1px solid #999;
   padding: 5px 10px;
@@ -292,10 +292,10 @@ ul.list li .left  {
 /* box */
 
 #box .block {
-  background: #FFF;  
+  background: #FFF;
 }
 
 #box .block h2 {
-  background: #006666;  
+  background: #006666;
   color: #FFF;
 }

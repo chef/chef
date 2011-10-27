@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ describe Chef::Provider::User::Dscl do
     @new_resource = Chef::Resource::User.new("toor")
     @provider = Chef::Provider::User::Dscl.new(@new_resource, @run_context)
   end
-  
+
   describe "when shelling out to dscl" do
     it "should run dscl with the supplied cmd /Path args" do
       shell_return = ShellCmdResult.new('stdout', 'err', 0)
@@ -59,7 +59,7 @@ describe Chef::Provider::User::Dscl do
     before do
       @provider.stub!(:safe_dscl).and_return("\nwheel      200\nstaff      201\n")
     end
-  
+
     it "should run safe_dscl with list /Users uid" do
       @provider.should_receive(:safe_dscl).with("list /Users uid")
       @provider.get_free_uid
@@ -68,7 +68,7 @@ describe Chef::Provider::User::Dscl do
     it "should return the first unused uid number on or above 200" do
       @provider.get_free_uid.should == 202
     end
-  
+
     it "should raise an exception when the search limit is exhausted" do
       search_limit = 1
       lambda { @provider.get_free_uid(search_limit) }.should raise_error(RuntimeError)
@@ -84,7 +84,7 @@ describe Chef::Provider::User::Dscl do
       @provider.should_receive(:safe_dscl).with("list /Users uid")
       @provider.uid_used?(500)
     end
-  
+
     it "should return true for a used uid number" do
       @provider.uid_used?(500).should be_true
     end
@@ -104,7 +104,7 @@ describe Chef::Provider::User::Dscl do
       @provider.should_receive(:get_free_uid).and_return(501)
       lambda { @provider.set_uid }.should raise_error(Chef::Exceptions::RequestedUIDUnavailable)
     end
-  
+
     it "finds a valid, unused uid when none is specified" do
       @provider.should_receive(:safe_dscl).with("list /Users uid").and_return('')
       @provider.should_receive(:safe_dscl).with("create /Users/toor UniqueID 501")
@@ -112,7 +112,7 @@ describe Chef::Provider::User::Dscl do
       @provider.set_uid
       @new_resource.uid.should == 501
     end
-  
+
     it "sets the uid specified in the resource" do
       @new_resource.uid(1000)
       @provider.should_receive(:safe_dscl).with("create /Users/toor UniqueID 1000").and_return(true)
@@ -125,7 +125,7 @@ describe Chef::Provider::User::Dscl do
     before do
       @new_resource.supports({ :manage_home => true })
       @new_resource.home('/Users/toor')
-      
+
       @current_resource = @new_resource.dup
       @provider.current_resource = @current_resource
     end
@@ -135,7 +135,7 @@ describe Chef::Provider::User::Dscl do
       @provider.should_receive(:safe_dscl).with("delete /Users/toor NFSHomeDirectory").and_return(true)
       @provider.modify_home
     end
-  
+
 
     it "raises InvalidHomeDirectory when the resource's home directory doesn't look right" do
       @new_resource.home('epic-fail')
@@ -144,20 +144,20 @@ describe Chef::Provider::User::Dscl do
 
     it "moves the users home to the new location if it exists and the target location is different" do
       @new_resource.supports(:manage_home => true)
-      
+
       current_home = CHEF_SPEC_DATA + '/old_home_dir'
       current_home_files = [current_home + '/my-dot-emacs', current_home + '/my-dot-vim']
       @current_resource.home(current_home)
       @new_resource.gid(23)
       ::File.stub!(:exists?).with('/old/home/toor').and_return(true)
       ::File.stub!(:exists?).with('/Users/toor').and_return(true)
-    
+
       FileUtils.should_receive(:mkdir_p).with('/Users/toor').and_return(true)
       FileUtils.should_receive(:rmdir).with(current_home)
       ::Dir.should_receive(:glob).with("#{CHEF_SPEC_DATA}/old_home_dir/*",::File::FNM_DOTMATCH).and_return(current_home_files)
       FileUtils.should_receive(:mv).with(current_home_files, "/Users/toor", :force => true)
       FileUtils.should_receive(:chown_R).with('toor','23','/Users/toor')
-      
+
       @provider.should_receive(:safe_dscl).with("create /Users/toor NFSHomeDirectory '/Users/toor'")
       @provider.modify_home
     end
@@ -244,7 +244,7 @@ describe Chef::Provider::User::Dscl do
       before do
         @new_resource.password("F"*48)
       end
-    
+
       it "should write a shadow hash file with the expected salted sha1" do
         uuid = "B398449E-CEE0-45E0-80F8-B0B5B1BFDEAA"
         File.should_receive(:open).with('/var/db/shadow/hash/B398449E-CEE0-45E0-80F8-B0B5B1BFDEAA', "w", 384).and_yield(@output)
@@ -255,7 +255,7 @@ describe Chef::Provider::User::Dscl do
         expected_shadow_hash[168] = expected_salted_sha1
         @provider.modify_password
         @output.string.strip.should == expected_shadow_hash
-      end    
+      end
     end
 
     describe "when given a shadow hash file for the password" do
@@ -285,7 +285,7 @@ describe Chef::Provider::User::Dscl do
         @provider.should_receive(:safe_dscl).with("read /Users/toor").and_return("\nAuthenticationAuthority: ;ShadowHash;\n")
         @provider.modify_password
         @output.string.strip.should match(/^0{168}(FFFFFFFF1C1AA7935D4E1190AFEC92343F31F7671FBF126D)0{1071}$/)
-      end    
+      end
     end
 
     it "should write the output directly to the shadow hash file at /var/db/shadow/hash/GUID" do
@@ -327,7 +327,7 @@ describe Chef::Provider::User::Dscl do
       @new_resource.comment "#mockssuck"
       @new_resource.gid 1001
     end
-    
+
     it "creates the user, comment field, sets uid, gid, configures the home directory, sets the shell, and sets the password" do
       @provider.should_receive :dscl_create_user
       @provider.should_receive :dscl_create_comment
@@ -343,7 +343,7 @@ describe Chef::Provider::User::Dscl do
       @provider.should_receive(:safe_dscl).with("create /Users/toor").and_return(true)
       @provider.dscl_create_user
     end
-    
+
     it "sets the comment field" do
       @provider.should_receive(:safe_dscl).with("create /Users/toor RealName '#mockssuck'").and_return(true)
       @provider.dscl_create_comment
@@ -365,7 +365,7 @@ describe Chef::Provider::User::Dscl do
     before do
       @current_resource = @new_resource.dup
       @provider.current_resource = @current_resource
-      
+
       # These are all different from @current_resource
       @new_resource.username "mud"
       @new_resource.uid 2342
@@ -373,7 +373,7 @@ describe Chef::Provider::User::Dscl do
       @new_resource.home '/Users/death'
       @new_resource.password 'goaway'
     end
-    
+
     it "sets the user, comment field, uid, gid, moves the home directory, sets the shell, and sets the password" do
       @provider.should_receive :dscl_create_user
       @provider.should_receive :dscl_create_comment
@@ -394,7 +394,7 @@ describe Chef::Provider::User::Dscl do
       FileUtils.should_receive(:rm_rf).with("/Users/fuuuuuuuuuuuuu")
       @provider.remove_user
     end
-    
+
     it "removes the user from any group memberships" do
       Etc.stub(:group).and_yield(OpenStruct.new(:name => 'ragefisters', :mem => 'toor'))
       @provider.should_receive(:safe_dscl).with("delete /Users/toor")

@@ -23,7 +23,7 @@ When /^I '(.+)' the path '(.+)' using a wrong private key$/ do |http_method, req
   When "I '#{http_method}' the path '#{request_uri}'"
 end
 
-When /^I (.+) the client$/ do |action| 
+When /^I (.+) the client$/ do |action|
   raise ArgumentError, "You can only create or save clients" unless action =~ /^(create|save)$/
   client = stash['client']
   request_body = {:name => client.name, :admin => client.admin}
@@ -76,7 +76,7 @@ end
 When "I edit the '$not_admin' client" do |client|
   stash['client'] = @rest.get_rest("/clients/not_admin")
 end
- 
+
 When "I set '$property' to true" do |property|
   stash['client'].send(property.to_sym, true)
 end

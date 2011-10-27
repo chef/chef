@@ -26,14 +26,14 @@
                   -@run_list.each_with_index do |run_list_item, i|
                     %tr
                       %td.position= i
-                      %td= run_list_item.name 
-                      %td= run_list_item.version 
-                      %td= run_list_item.type 
+                      %td= run_list_item.name
+                      %td= run_list_item.version
+                      %td= run_list_item.type
           .left.accordion
             %h3.head= link_to("Recipes", "#")
             %div
               %span.description.form.help
-                This is the list of recipes, fully expanded, as they will be applied by the role in question.  
+                This is the list of recipes, fully expanded, as they will be applied by the role in question.
               %table#recipes.table
                 %tr
                   %th.first Position
@@ -46,11 +46,11 @@
                     %tr
                       %td.position= i
                       %td= recipe
-          .left 
+          .left
             %h3 Default Attributes
             = build_tree('defattrs', @role.default_attributes)
 
-          .left 
+          .left
             %h3 Override Attributes
             = build_tree('overattrs', @role.override_attributes)
 

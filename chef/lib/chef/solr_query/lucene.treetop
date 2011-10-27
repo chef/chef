@@ -95,7 +95,7 @@ grammar Lucene
     /
     required_operator (term/string) <UnaryOp>
   end
-  
+
   rule required_operator
     '+' <RequiredOperator>
   end

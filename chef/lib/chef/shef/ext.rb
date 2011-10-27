@@ -369,7 +369,7 @@ E
 
       clients.search("KEY:VALUE") { |c| c.name }
 
-  You can also use a Hash based syntax, multiple search conditions will be 
+  You can also use a Hash based syntax, multiple search conditions will be
   joined with AND.
 
       clients.find :KEY => :VALUE, :KEY2 => :VALUE2, ...
@@ -435,14 +435,14 @@ E
   Similarly to +all+, you can pass a code block to limit or transform the
   information returned:
 
-      nodes.find(:name => "app#") { |node| node.ec2 } 
+      nodes.find(:name => "app#") { |node| node.ec2 }
 
 ## BULK EDIT NODES ##
               **BE CAREFUL, THIS OPERATION IS DESTRUCTIVE**
 
   Bulk edit nodes by passing a code block to the +transform+ or +bulk_edit+
   subcommand. The block will be applied to each matching node, and then the node
-  will be saved. If the block returns +nil+ or +false+, that node will be 
+  will be saved. If the block returns +nil+ or +false+, that node will be
   skipped.
 
       nodes.transform do |node|
@@ -487,7 +487,7 @@ E
       explain(<<-E)
 ## SUMMARY ##
   +databags(DATABAG_NAME)+ allows you to query and edit data bag items on your
-  Chef server. Unlike other commands for working with data on the server, 
+  Chef server. Unlike other commands for working with data on the server,
   +databags+ requires the databag name as an argument, for example:
     databags(:users).all
 

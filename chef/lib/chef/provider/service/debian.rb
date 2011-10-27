@@ -50,7 +50,7 @@ class Chef
             [stdout, stderr].each do |iop|
               iop.each_line do |line|
                 if UPDATE_RC_D_PRIORITIES =~ line
-                  # priority[runlevel] = [ S|K, priority ] 
+                  # priority[runlevel] = [ S|K, priority ]
                   # S = Start, K = Kill
                   # debian runlevels: 0 Halt, 1 Singleuser, 2 Multiuser, 3-5 == 2, 6 Reboot
                   priority[$1] = [($2 == "S" ? :start : :stop), $3]
@@ -73,7 +73,7 @@ class Chef
 
           priority.each { |runlevel, arguments|
             Chef::Log.debug("#{@new_resource} runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
-            
+
             # if we are in a update-rc.d default startup runlevel && we start in this runlevel
             if (2..5).include?(runlevel.to_i) && arguments[0] == :start
               enabled = true
@@ -88,7 +88,7 @@ class Chef
             run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
             run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults #{@new_resource.priority} #{100 - @new_resource.priority}")
           elsif @new_resource.priority.is_a? Hash
-            # we call the same command regardless of we're enabling or disabling  
+            # we call the same command regardless of we're enabling or disabling
             # users passing a Hash are responsible for setting their own start priorities
             set_priority()
           else # No priority, go with update-rc.d defaults
@@ -104,10 +104,10 @@ class Chef
             run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
             run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop #{100 - @new_resource.priority} 2 3 4 5 .")
           elsif @new_resource.priority.is_a? Hash
-            # we call the same command regardless of we're enabling or disabling  
+            # we call the same command regardless of we're enabling or disabling
             # users passing a Hash are responsible for setting their own stop priorities
             set_priority()
-          else 
+          else
             # no priority, using '100 - 20 (update-rc.d default)' to stop in reverse order of start
             run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
             run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop 80 2 3 4 5 .")

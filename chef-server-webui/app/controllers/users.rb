@@ -26,18 +26,18 @@ class Users < Application
   before :login_required, :exclude => [:login, :login_exec, :complete]
   before :require_admin, :exclude => [:login, :login_exec, :complete, :show, :edit, :logout, :destroy]
   log_params_filtered :password, :password2, :new_password, :confirm_new_password
-    
+
   # List users, only if the user is admin.
   def index
     begin
-      @users = Chef::WebUIUser.list 
+      @users = Chef::WebUIUser.list
       render
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       set_user_and_redirect
-    end 
+    end
   end
-  
+
   # Edit user. Admin can edit everyone, non-admin user can only edit itself.
   def edit
     begin
@@ -46,9 +46,9 @@ class Users < Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       set_user_and_redirect
-    end 
-  end 
-  
+    end
+  end
+
   # Show the details of a user. If the user is not admin, only able to show itself; otherwise able to show everyone
   def show
     begin
@@ -57,14 +57,14 @@ class Users < Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       set_user_and_redirect
-    end 
-  end 
-  
+    end
+  end
+
   # PUT to /users/:user_id/update
   def update
     begin
       @user = Chef::WebUIUser.load(params[:user_id])
-      
+
       if session[:level] == :admin and !is_last_admin?
         @user.admin = params[:admin] =~ /1/ ? true : false
       end
@@ -92,7 +92,7 @@ class Users < Application
       render :edit
     end
   end
-  
+
   def new
     begin
       @user = Chef::WebUIUser.new
@@ -100,8 +100,8 @@ class Users < Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       set_user_and_redirect
-    end 
-  end 
+    end
+  end
 
   def create
     begin
@@ -117,13 +117,13 @@ class Users < Application
       @_message = { :error => "Could not create user" }
       session[:level] != :admin ? set_user_and_redirect : (render :new)
     end
-  end 
+  end
 
   def login
     @user = Chef::WebUIUser.new
-    session[:user] ? redirect(url(:nodes), :message => { :warning => "You've already logged in with user #{session[:user]}"  }) : (render :layout => 'login') 
-  end 
-  
+    session[:user] ? redirect(url(:nodes), :message => { :warning => "You've already logged in with user #{session[:user]}"  }) : (render :layout => 'login')
+  end
+
   def login_exec
     begin
       @user = Chef::WebUIUser.load(params[:name])
@@ -134,10 +134,10 @@ class Users < Application
       @user = Chef::WebUIUser.new
       @_message = { :error => "Could not complete logging in." }
       render :login
-    end   
+    end
   end
 
-  def complete    
+  def complete
     session[:user] = params[:name]
     session[:level] = (@user.admin == true ? :admin : :user)
     (@user.name == Chef::Config[:web_ui_admin_user_name] && @user.verify_password(Chef::Config[:web_ui_admin_default_password])) ? redirect(url(:users_edit, :user_id => @user.name), :message => { :warning => "Please change the default password" }) : redirect_back_or_default(absolute_url(:nodes))
@@ -147,7 +147,7 @@ class Users < Application
     cleanup_session
     redirect url(:top)
   end
-  
+
   def destroy
     begin
       raise Forbidden, "A non-admin user can only delete itself" if (params[:user_id] != session[:user] && session[:level] != :admin)
@@ -159,25 +159,25 @@ class Users < Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       session[:level] != :admin ? set_user_and_redirect : redirect_to_list_users({ :error => $! })
-    end 
-  end 
-  
+    end
+  end
+
   private
-  
+
     def set_user_and_redirect
       begin
         @user = Chef::WebUIUser.load(session[:user]) rescue (raise NotFound, "Cannot find User #{session[:user]}, maybe it got deleted by an Administrator.")
       rescue
         logout_and_redirect_to_login
-      else  
+      else
         redirect(url(:users_show, :user_id => session[:user]), {:message => { :error => $! }, :permanent => true})
-      end 
-    end 
-  
+      end
+    end
+
     def redirect_to_list_users(message)
       @_message = message
-      @users = Chef::WebUIUser.list 
+      @users = Chef::WebUIUser.list
       render :index
-    end 
+    end
 
 end

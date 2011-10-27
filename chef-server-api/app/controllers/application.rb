@@ -120,10 +120,10 @@ class Application < Merb::Controller
   end
 
   # Fix CHEF-1292/PL-538; cause Merb to pass the max nesting constant into
-  # obj.to_json, which it calls by default based on the original request's 
+  # obj.to_json, which it calls by default based on the original request's
   # accept headers and the type passed into Merb::Controller.display
   #--
-  # TODO: tim, 2010-11-24: would be nice to instead have Merb call 
+  # TODO: tim, 2010-11-24: would be nice to instead have Merb call
   # Chef::JSONCompat.to_json, instead of obj.to_json, but changing that
   # behavior is convoluted in Merb. This override is assuming that
   # Merb is eventually calling obj.to_json, which takes the :max_nesting

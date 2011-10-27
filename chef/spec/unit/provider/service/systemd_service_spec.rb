@@ -78,7 +78,7 @@ describe Chef::Provider::Service::Systemd do
         @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
       end
-    end 
+    end
 
     it "should check if the service is enabled" do
       @provider.should_receive(:is_enabled?)

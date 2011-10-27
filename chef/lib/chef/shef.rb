@@ -209,7 +209,7 @@ When no CONFIG is specified, shef attempts to load a default configuration file:
 * If a NAMED_CONF is given, shef will load ~/.chef/NAMED_CONF/shef.rb
 * If no NAMED_CONF is given shef will load ~/.chef/shef.rb if it exists
 * Shef falls back to loading /etc/chef/client.rb or /etc/chef/solo.rb if -z or
-  -s options are given and no shef.rb can be found. 
+  -s options are given and no shef.rb can be found.
 FOOTER
 
     option :config_file,

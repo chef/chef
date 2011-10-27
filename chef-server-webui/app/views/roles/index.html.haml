@@ -1,6 +1,6 @@
 .block#block-tables
   .content
-    %h2.title Roles 
+    %h2.title Roles
     .inner
       = partial('navigation', :active => 'index')
     .content
@@ -15,7 +15,7 @@
             %tr{ :class => even ? "even" : "odd" }
               %td{:colspan => 2}= link_to(role[0], url(:role, role[0]))
               %td
-                = link_to('Edit', url(:edit_role, role[0])) 
+                = link_to('Edit', url(:edit_role, role[0]))
                 |
                 = link_to('Delete', url(:role, role[0]), :method => "delete", :confirm => "Really delete Role #{role[0]}?  there is no undo.")
               - even = (not even)

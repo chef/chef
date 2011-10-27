@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,16 +19,16 @@
 require 'chef' / 'data_bag'
 
 class Databags < Application
-  
+
   provides :html, :json
   before :login_required
   before :require_admin
-  
+
   def new
     @databag = Chef::DataBag.new
     render
-  end 
-  
+  end
+
   def create
     begin
       @databag = Chef::DataBag.new
@@ -37,17 +37,17 @@ class Databags < Application
       redirect(url(:databags), :message => { :notice => "Created Databag #{@databag.name}" })
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => "Could not create databag" } 
+      @_message = { :error => "Could not create databag" }
       render :new
-    end 
+    end
   end
-  
+
   def index
     @databags = begin
                   Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
                 rescue => e
                   Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                  @_message = { :error => "Could not list databags" } 
+                  @_message = { :error => "Could not list databags" }
                   {}
                 end
     render
@@ -63,11 +63,11 @@ class Databags < Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @databags = Chef::DataBag.list
-      @_message =  { :error => "Could not load databag"}    
+      @_message =  { :error => "Could not load databag"}
       render :index
-    end 
+    end
   end
-  
+
   def destroy
     begin
       r = Chef::REST.new(Chef::Config[:chef_server_url])
@@ -78,7 +78,7 @@ class Databags < Application
       @databags = Chef::DataBag.list
       @_message =  { :error => "Could not delete databag"}
       render :index
-    end 
+    end
   end
-  
+
 end

@@ -178,7 +178,7 @@ class Chef
       def scm(*args)
         ['svn', *args].compact.join(" ")
       end
-      
+
       # TODO these methods are the same as the git provider...need to REFACTOR
       # ...the subversion and git providers should extend from the same parent
       def assert_target_directory_valid!

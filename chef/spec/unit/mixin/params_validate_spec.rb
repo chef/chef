@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 class TinyClass
   include Chef::Mixin::ParamsValidate
-  
+
   def music(is_good=true)
     is_good
   end
@@ -30,136 +30,136 @@ describe Chef::Mixin::ParamsValidate do
   before(:each) do
      @vo = TinyClass.new()
   end
-  
+
   it "should allow a hash and a hash as arguments to validate" do
     lambda { @vo.validate({:one => "two"}, {}) }.should_not raise_error(ArgumentError)
   end
-  
+
   it "should raise an argument error if validate is called incorrectly" do
     lambda { @vo.validate("one", "two") }.should raise_error(ArgumentError)
   end
-  
+
   it "should require validation map keys to be symbols or strings" do
     lambda { @vo.validate({:one => "two"}, { :one => true }) }.should_not raise_error(ArgumentError)
     lambda { @vo.validate({:one => "two"}, { "one" => true }) }.should_not raise_error(ArgumentError)
     lambda { @vo.validate({:one => "two"}, { Hash.new => true }) }.should raise_error(ArgumentError)
   end
-  
+
   it "should allow options to be required with true" do
     lambda { @vo.validate({:one => "two"}, { :one => true }) }.should_not raise_error(ArgumentError)
   end
-  
+
   it "should allow options to be optional with false" do
     lambda { @vo.validate({}, {:one => false})}.should_not raise_error(ArgumentError)
-  end    
-  
+  end
+
   it "should allow you to check what kind_of? thing an argument is with kind_of" do
-    lambda { 
+    lambda {
       @vo.validate(
-        {:one => "string"}, 
+        {:one => "string"},
         {
           :one => {
             :kind_of => String
           }
         }
-      ) 
+      )
     }.should_not raise_error(ArgumentError)
-    
-    lambda { 
+
+    lambda {
       @vo.validate(
-        {:one => "string"}, 
+        {:one => "string"},
         {
           :one => {
             :kind_of => Array
           }
         }
-      ) 
+      )
     }.should raise_error(ArgumentError)
   end
-  
+
   it "should allow you to specify an argument is required with required" do
-    lambda { 
+    lambda {
       @vo.validate(
-        {:one => "string"}, 
+        {:one => "string"},
         {
           :one => {
             :required => true
           }
         }
-      ) 
+      )
     }.should_not raise_error(ArgumentError)
-    
-    lambda { 
+
+    lambda {
       @vo.validate(
-        {:two => "string"}, 
+        {:two => "string"},
         {
           :one => {
             :required => true
           }
         }
-      ) 
+      )
     }.should raise_error(ArgumentError)
-    
-    lambda { 
+
+    lambda {
       @vo.validate(
-        {:two => "string"}, 
+        {:two => "string"},
         {
           :one => {
             :required => false
           }
         }
-      ) 
+      )
     }.should_not raise_error(ArgumentError)
   end
-  
+
   it "should allow you to specify whether an object has a method with respond_to" do
-    lambda { 
+    lambda {
       @vo.validate(
-        {:one => @vo}, 
+        {:one => @vo},
         {
           :one => {
             :respond_to => "validate"
           }
         }
-      ) 
+      )
     }.should_not raise_error(ArgumentError)
-    
-    lambda { 
+
+    lambda {
       @vo.validate(
-        {:one => @vo}, 
+        {:one => @vo},
         {
           :one => {
             :respond_to => "monkey"
           }
         }
-      ) 
+      )
     }.should raise_error(ArgumentError)
   end
-  
+
   it "should allow you to specify whether an object has all the given methods with respond_to and an array" do
-    lambda { 
+    lambda {
       @vo.validate(
-        {:one => @vo}, 
+        {:one => @vo},
         {
           :one => {
             :respond_to => ["validate", "music"]
           }
         }
-      ) 
+      )
     }.should_not raise_error(ArgumentError)
-    
-    lambda { 
+
+    lambda {
       @vo.validate(
-        {:one => @vo}, 
+        {:one => @vo},
         {
           :one => {
             :respond_to => ["monkey", "validate"]
           }
         }
-      ) 
+      )
     }.should raise_error(ArgumentError)
   end
-  
+
   it "should let you set a default value with default => value" do
     arguments = Hash.new
     @vo.validate(arguments, {
@@ -169,9 +169,9 @@ describe Chef::Mixin::ParamsValidate do
     })
     arguments[:one].should == "is the loneliest number"
   end
-  
+
   it "should let you check regular expressions" do
-    lambda { 
+    lambda {
       @vo.validate(
         { :one => "is good" },
         {
@@ -181,8 +181,8 @@ describe Chef::Mixin::ParamsValidate do
         }
       )
     }.should_not raise_error(ArgumentError)
-    
-    lambda { 
+
+    lambda {
       @vo.validate(
         { :one => "is good" },
         {
@@ -193,9 +193,9 @@ describe Chef::Mixin::ParamsValidate do
       )
     }.should raise_error(ArgumentError)
   end
-  
+
   it "should let you specify your own callbacks" do
-    lambda { 
+    lambda {
       @vo.validate(
         { :one => "is good" },
         {
@@ -208,9 +208,9 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should_not raise_error(ArgumentError) 
-    
-    lambda { 
+    }.should_not raise_error(ArgumentError)
+
+    lambda {
       @vo.validate(
         { :one => "is bad" },
         {
@@ -223,12 +223,12 @@ describe Chef::Mixin::ParamsValidate do
           }
         }
       )
-    }.should raise_error(ArgumentError)   
+    }.should raise_error(ArgumentError)
   end
-  
+
   it "should let you combine checks" do
     args = { :one => "is good", :two => "is bad" }
-    lambda { 
+    lambda {
       @vo.validate(
         args,
         {
@@ -276,7 +276,7 @@ describe Chef::Mixin::ParamsValidate do
       )
     }.should raise_error(ArgumentError)
   end
-  
+
   it "should raise an ArgumentError if the validation map has an unknown check" do
     lambda { @vo.validate(
         { :one => "two" },
@@ -288,43 +288,43 @@ describe Chef::Mixin::ParamsValidate do
       )
     }.should raise_error(ArgumentError)
   end
-  
+
   it "should accept keys that are strings in the options" do
     lambda {
-      @vo.validate({ "one" => "two" }, { :one => { :regex => /^two$/ }}) 
+      @vo.validate({ "one" => "two" }, { :one => { :regex => /^two$/ }})
     }.should_not raise_error(ArgumentError)
   end
-  
+
   it "should allow an array to kind_of" do
-    lambda { 
+    lambda {
       @vo.validate(
-        {:one => "string"}, 
+        {:one => "string"},
         {
           :one => {
             :kind_of => [ String, Array ]
           }
         }
-      ) 
+      )
     }.should_not raise_error(ArgumentError)
-    lambda { 
+    lambda {
       @vo.validate(
-        {:one => ["string"]}, 
+        {:one => ["string"]},
         {
           :one => {
             :kind_of => [ String, Array ]
           }
         }
-      ) 
+      )
     }.should_not raise_error(ArgumentError)
-    lambda { 
+    lambda {
       @vo.validate(
-        {:one => Hash.new}, 
+        {:one => Hash.new},
         {
           :one => {
             :kind_of => [ String, Array ]
           }
         }
-      ) 
+      )
     }.should raise_error(ArgumentError)
   end
 
@@ -366,5 +366,5 @@ describe Chef::Mixin::ParamsValidate do
     @vo.set_or_return(:name, value, { }).object_id.should == value.object_id
     @vo.set_or_return(:foo, nil, { :name_attribute => true }).object_id.should == value.object_id
   end
-  
+
 end

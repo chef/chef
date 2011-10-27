@@ -89,7 +89,7 @@ describe Chef::RunList::RunListItem do
       item2 = Chef::RunList::RunListItem.new('recipe[lobsterragefist]')
       item1.should_not == item2
     end
-    
+
     it "is not equal to another run list item with the same name and type but different version" do
       item1 = Chef::RunList::RunListItem.new('recipe[lrf,0.1.0]')
       item2 = Chef::RunList::RunListItem.new('recipe[lrf,0.2.0]')

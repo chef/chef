@@ -32,7 +32,7 @@
                           %tbody
                             %tr
                               %td= node[1]["uptime"]
-                            
+
                 - unless node[1]["ohai_time"].nil?
                   - current_time = Time.now.to_f
                   - ohai_time = Time.at(node[1]["ohai_time"])
@@ -41,7 +41,7 @@
                   - minutes_text = "#{minutes} minute#{minutes == 1 ? '' : 's'}"
                   %td.flash
                     - status_class = ""
-                    - if hours > 24 
+                    - if hours > 24
                       - status_class = "message error"
                     - elsif hours > 1
                       - status_class = "message warning"
@@ -61,10 +61,10 @@
                             %tbody
                               %tr
                                 %td
-                                  = ohai_time 
+                                  = ohai_time
                                   %br/
                                   - if hours == 0
-                                    = "#{minutes_text} ago" 
+                                    = "#{minutes_text} ago"
                                   - else
                                     = "#{hours_text}, #{minutes_text} ago"
                 - else

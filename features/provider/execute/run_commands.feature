@@ -1,8 +1,8 @@
 @provider @provider_execute
-Feature: Run Commands 
-  In order to utilize the plethora of useful command line utilities 
+Feature: Run Commands
+  In order to utilize the plethora of useful command line utilities
   As a Developer
-  I want to execute commands from within chef 
+  I want to execute commands from within chef
 
   Scenario: Execute a command
     Given a validated node
@@ -10,7 +10,7 @@ Feature: Run Commands
      When I run the chef-client
      Then the run should exit '0'
       And a file named 'mastodon_rocks' should exist
-      
+
   Scenario: Execute a command with umask value 777
     Given a validated node
       And it includes the recipe 'execute_commands::umask'

@@ -21,7 +21,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Mdadm < Chef::Resource
-      
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :mdadm

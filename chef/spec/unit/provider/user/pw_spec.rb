@@ -22,7 +22,7 @@ describe Chef::Provider::User::Pw do
   before(:each) do
     @node = Chef::Node.new
     @run_context = Chef::RunContext.new(@node, {})
-    
+
     @new_resource = Chef::Resource::User.new("adam")
     @new_resource.comment   "Adam Jacob"
     @new_resource.uid       1000
@@ -30,7 +30,7 @@ describe Chef::Provider::User::Pw do
     @new_resource.home      "/home/adam"
     @new_resource.shell     "/usr/bin/zsh"
     @new_resource.password  "abracadabra"
-    
+
     @new_resource.supports :manage_home => true
 
     @current_resource = Chef::Resource::User.new("adam")

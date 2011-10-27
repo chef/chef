@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,7 @@ class Chef
   class Provider
     class Group
       class Windows < Chef::Provider::Group
-        
+
         def initialize(new_resource,run_context)
           super
           @net_group = Chef::Util::Windows::NetGroup.new(@new_resource.name)
@@ -34,7 +34,7 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Group.new(@new_resource.name)
           @current_resource.group_name(@new_resource.group_name)
-        
+
           members = nil
           begin
             members = @net_group.local_get_members
@@ -49,12 +49,12 @@ class Chef
 
           @current_resource
         end
-        
+
         def create_group
           @net_group.local_add
           manage_group
         end
-        
+
         def manage_group
           if @new_resource.append
             begin
@@ -68,11 +68,11 @@ class Chef
             @net_group.local_set_members(@new_resource.members)
           end
         end
-        
+
         def remove_group
           @net_group.local_delete
         end
-        
+
       end
     end
   end

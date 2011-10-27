@@ -23,7 +23,7 @@ __knife__ __ssh QUERY COMMAND__ _(options)_
     The SSH identity file used for authentication
   * `--no-host-key-verify`:
     Disable host key verification
-    
+
 
 ## DESCRIPTION
 

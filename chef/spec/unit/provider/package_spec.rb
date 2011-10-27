@@ -267,7 +267,7 @@ describe Chef::Provider::Package do
       Chef::Log.should_receive(:debug).with("package[emacs] is NOT installed - nothing to do")
       @provider.should_not_receive(:reconfig_package)
       @provider.action_reconfig
-    end 
+    end
 
     it "should debug log and not reconfigure the package if no response_file is given" do
       @current_resource.stub!(:version).and_return('1.0')

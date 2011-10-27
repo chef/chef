@@ -52,7 +52,7 @@ describe "Nodes controller - environments and run_list expansion" do
 
     @cb_for_default = make_cookbook("cb_for_default", "1.0.0")
     @cb_for_env1 = make_cookbook("cb_for_env1", "1.0.0")
-    @all_filtered_cookbook_list = 
+    @all_filtered_cookbook_list =
       make_filtered_cookbook_hash(@cb_for_default, @cb_for_env1)
   end
 

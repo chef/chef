@@ -136,7 +136,7 @@ describe Chef::Provider::Package::Zypper do
         @provider.install_package("emacs", "1.0")
       end
     end
-  
+
     describe "upgrade_package" do
       it "should run zypper update with the package name and version" do
         @provider.should_receive(:run_command).with({
@@ -145,7 +145,7 @@ describe Chef::Provider::Package::Zypper do
         @provider.upgrade_package("emacs", "1.0")
       end
     end
-  
+
     describe "remove_package" do
       it "should run zypper remove with the package name" do
         @provider.should_receive(:run_command).with({

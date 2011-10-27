@@ -124,7 +124,7 @@ If the config file exists, knife uses these settings for __GENERAL OPTIONS__ def
     and is listed as the license in the cookbook metadata. Currently
     supported licenses are "apachev2" and "none". Any other values will
     result in an empty license in the metadata (needs to be filled in by the
-    author), and no comment preamble in the default recipe. Currently supported 
+    author), and no comment preamble in the default recipe. Currently supported
     readme formats are "md", "mkd", "txt", and "rdoc".  Any other value will
     result in an unformatted README.
 
@@ -134,7 +134,7 @@ _~/.chef/knife.rb_
 
 Ruby DSL configuration file for knife. See __CONFIGURATION__.
 
-## FORMATS 
+## FORMATS
 
 The amount of content displayed and the output format are
 modified by the `--format` option. If no alternate format is selected,
@@ -145,7 +145,7 @@ Valid formats are:
   * `summary`:
     displays the node in a custom, summarized format (default)
   * `text`:
-    displays the node data in its entirety using the colorized tree display 
+    displays the node data in its entirety using the colorized tree display
   * `json`:
     displays the node in JSON format
   * `yaml`:

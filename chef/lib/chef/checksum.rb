@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ class Chef
       "views" => {
         "all" => {
           "map" => <<-EOJS
-          function(doc) { 
+          function(doc) {
             if (doc.chef_type == "checksum") {
               emit(doc.checksum, doc);
             }
@@ -50,7 +50,7 @@ class Chef
         },
       }
     }
-    
+
     # Creates a new Chef::Checksum object.
     # === Arguments
     # checksum::: the MD5 content hash of the file
@@ -64,7 +64,7 @@ class Chef
       @original_committed_file_location = nil
       @storage = Storage::Filesystem.new(Chef::Config.checksum_path, checksum)
     end
-    
+
     def to_json(*a)
       result = {
         :checksum => checksum,
@@ -131,13 +131,13 @@ class Chef
     def self.create_design_document(couchdb=nil)
       (couchdb || Chef::CouchDB.new).create_design_document("checksums", DESIGN_DOCUMENT)
     end
-    
+
     def self.cdb_list(inflate=false, couchdb=nil)
       rs = (couchdb || Chef::CouchDB.new).list("checksums", inflate)
       lookup = (inflate ? "value" : "key")
-      rs["rows"].collect { |r| r[lookup] }        
+      rs["rows"].collect { |r| r[lookup] }
     end
-    
+
     def self.cdb_all_checksums(couchdb = nil)
       rs = (couchdb || Chef::CouchDB.new).list("checksums", true)
       rs["rows"].inject({}) { |hash_result, r| hash_result[r['key']] = 1; hash_result }
