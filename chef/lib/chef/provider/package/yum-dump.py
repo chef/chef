@@ -180,14 +180,15 @@ def dump_packages(yb, list, output_provides):
     else:
       provides = "[]"
 
-    print '%s %s %s %s %s %s %s' % (
+    print '%s %s %s %s %s %s %s %s' % (
       pkg.name,
       pkg.epoch,
       pkg.version,
       pkg.release,
       pkg.arch,
       provides,
-      pkg.type )
+      pkg.type,
+      pkg.repoid )
 
   return 0
 

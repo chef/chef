@@ -497,12 +497,13 @@ class Chef
         class RPMDbPackage < RPMPackage
           # <rpm parts>, installed, available
           def initialize(*args)
+            @repoid = args.pop
             # state
             @available = args.pop
             @installed = args.pop
             super(*args)
           end
-          attr_reader :available, :installed
+          attr_reader :repoid, :available, :installed
         end
 
         # Simple storage for RPMPackage objects - keeps them unique and sorted
@@ -712,7 +713,7 @@ class Chef
                   next
                 end
 
-                if line =~ %r{^(\S+) ([0-9]+) (\S+) (\S+) (\S+) \[(.*)\] ([i,a,r])$}
+                if line =~ %r{^(\S+) ([0-9]+) (\S+) (\S+) (\S+) \[(.*)\] ([i,a,r]) (\S+)$}
                   name     = $1
                   epoch    = $2
                   version  = $3
@@ -720,6 +721,7 @@ class Chef
                   arch     = $5
                   provides = parse_provides($6)
                   type     = $7
+                  repoid   = $8
                 else
                   Chef::Log.warn("Problem parsing line '#{line}' from yum-dump.py! " +
                                  "Please check your yum configuration.")
@@ -740,7 +742,7 @@ class Chef
                   installed = true
                 end
 
-                pkg = RPMDbPackage.new(name, epoch, version, release, arch, provides, installed, available)
+                pkg = RPMDbPackage.new(name, epoch, version, release, arch, provides, installed, available, repoid)
                 @rpmdb << pkg
               end
 
@@ -811,23 +813,36 @@ class Chef
             @rpmdb.whatprovides(rpmdep)
           end
 
+          # Check if a package-version.arch is available to install
           def version_available?(package_name, desired_version, arch=nil)
-             version(package_name, arch, true, false) do |v|
-               return true if desired_version == v
-             end
+            version(package_name, arch, true, false) do |v|
+              return true if desired_version == v
+            end
 
             return false
           end
 
+          # Return the source repository for a package-version.arch
+          def package_repository(package_name, desired_version, arch=nil)
+            package(package_name, arch, true, false) do |pkg|
+              return pkg.repoid if desired_version == pkg.version.to_s
+            end
+
+            return nil
+          end
+
+          # Return the latest available version for a package.arch
           def available_version(package_name, arch=nil)
             version(package_name, arch, true, false)
           end
           alias :candidate_version :available_version
 
+          # Return the currently installed version for a package.arch
           def installed_version(package_name, arch=nil)
             version(package_name, arch, false, true)
           end
 
+          # Return an array of packages allowed to be installed multiple times, such as the kernel
           def allow_multi_install
             refresh
             @allow_multi_install
@@ -836,6 +851,23 @@ class Chef
           private
 
           def version(package_name, arch=nil, is_available=false, is_installed=false)
+            package(package_name, arch, is_available, is_installed) do |pkg|
+              if block_given?
+                yield pkg.version.to_s
+              else
+                # first match is latest version
+                return pkg.version.to_s
+              end
+            end
+
+            if block_given?
+              return self
+            else
+              return nil
+            end
+          end
+
+          def package(package_name, arch=nil, is_available=false, is_installed=false)
             refresh
             packages = @rpmdb[package_name]
             if packages
@@ -851,10 +883,10 @@ class Chef
                 end
 
                 if block_given?
-                  yield pkg.version.to_s
+                  yield pkg
                 else
                   # first match is latest version
-                  return pkg.version.to_s
+                  return pkg
                 end
               end
             end
@@ -1026,6 +1058,7 @@ class Chef
             # Work around yum not exiting with an error if a package doesn't exist for CHEF-2062
             if @yum.version_available?(name, version, arch)
               method = "install"
+              log_method = "installing"
 
               # More Yum fun:
               #
@@ -1038,6 +1071,7 @@ class Chef
                   # Unless they want this...
                   if allow_downgrade
                     method = "downgrade"
+                    log_method = "downgrading"
                   else
                     # we bail like yum when the package is older
                     raise Chef::Exceptions::Package, "Installed package #{name}-#{@current_resource.version} is newer " +
@@ -1045,6 +1079,9 @@ class Chef
                   end
                 end
               end
+
+              repo = @yum.package_repository(name, version, arch)
+              Chef::Log.info("#{@new_resource} #{log_method} #{name}-#{version}#{yum_arch} from #{repo} repository")
 
               yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{name}-#{version}#{yum_arch}")
             else

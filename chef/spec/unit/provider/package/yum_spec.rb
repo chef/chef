@@ -32,7 +32,8 @@ describe Chef::Provider::Package::Yum do
       :candidate_version => "1.2.4-11.18.el5_2.3",
       :package_available? => true,
       :version_available? => true,
-      :allow_multi_install => [ "kernel" ]
+      :allow_multi_install => [ "kernel" ],
+      :package_repository => "base" 
     )
     Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -395,7 +396,8 @@ describe Chef::Provider::Package::Yum do
         :candidate_version => "1.2.4-11.15.el5",
         :package_available? => true,
         :version_available? => true,
-        :allow_multi_install => [ "cups" ]
+        :allow_multi_install => [ "cups" ],
+        :package_repository => "base"
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -416,7 +418,8 @@ describe Chef::Provider::Package::Yum do
         :candidate_version => "1.2.4-11.15.el5",
         :package_available? => true,
         :version_available? => true,
-        :allow_multi_install => []
+        :allow_multi_install => [],
+        :package_repository => "base"
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -1088,10 +1091,10 @@ end
 
 describe Chef::Provider::Package::Yum::RPMDbPackage do
   before(:each) do
-    # name, version, arch, installed, available
-    @rpm_x = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "noarch", [], false, true)
-    @rpm_y = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "noarch", [], true, true)
-    @rpm_z = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "noarch", [], true, false)
+    # name, version, arch, installed, available, repoid
+    @rpm_x = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "noarch", [], false, true, "base")
+    @rpm_y = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "noarch", [], true, true, "extras")
+    @rpm_z = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "noarch", [], true, false, "other")
   end
 
   describe "initialize" do
@@ -1116,6 +1119,13 @@ describe Chef::Provider::Package::Yum::RPMDbPackage do
     end
   end
 
+  describe "repoid" do
+    it "should return the source repository repoid" do
+      @rpm_x.repoid.should be == "base" 
+      @rpm_y.repoid.should be == "extras"
+      @rpm_z.repoid.should be == "other"
+    end
+  end
 end
 
 describe Chef::Provider::Package::Yum::RPMDependency do
@@ -1305,12 +1315,12 @@ describe Chef::Provider::Package::Yum::RPMDb do
       Chef::Provider::Package::Yum::RPMDependency.parse("config(test) = 0:1.6.5-9.36.el5"),
       Chef::Provider::Package::Yum::RPMDependency.parse("test-package-c = 0:1.6.5-9.36.el5")
     ]
-    @rpm_v = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-a", "0:1.6.5-9.36.el5", "i386", deps_v, true, false)
-    @rpm_w = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "i386", [], true, true)
-    @rpm_x = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "x86_64", [], false, true)
-    @rpm_y = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "1:1.6.5-9.36.el5", "x86_64", [], true, true)
-    @rpm_z = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-c", "0:1.6.5-9.36.el5", "noarch", deps_z, true, true)
-    @rpm_z_mirror = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-c", "0:1.6.5-9.36.el5", "noarch", deps_z, true, true)
+    @rpm_v = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-a", "0:1.6.5-9.36.el5", "i386", deps_v, true, false, "base")
+    @rpm_w = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "i386", [], true, true, "extras")
+    @rpm_x = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "x86_64", [], false, true, "extras")
+    @rpm_y = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "1:1.6.5-9.36.el5", "x86_64", [], true, true, "extras")
+    @rpm_z = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-c", "0:1.6.5-9.36.el5", "noarch", deps_z, true, true, "base")
+    @rpm_z_mirror = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-c", "0:1.6.5-9.36.el5", "noarch", deps_z, true, true, "base")
   end
 
   describe "initialize" do
@@ -1502,36 +1512,36 @@ describe Chef::Provider::Package::Yum::YumCache do
   before(:each) do
     yum_dump_good_output = <<EOF
 [option installonlypkgs] kernel kernel-bigmem kernel-enterprise
-erlang-mochiweb 0 1.4.1 5.el5 x86_64 ['erlang-mochiweb = 1.4.1-5.el5', 'mochiweb = 1.4.1-5.el5'] i
-zip 0 2.31 2.el5 x86_64 ['zip = 2.31-2.el5'] r
-zisofs-tools 0 1.0.6 3.2.2 x86_64 [] a
-zlib 0 1.2.3 3 x86_64 ['zlib = 1.2.3-3', 'libz.so.1()(64bit)'] r
-zlib 0 1.2.3 3 i386 ['zlib = 1.2.3-3', 'libz.so.1'] r
-zlib-devel 0 1.2.3 3 i386 [] a
-zlib-devel 0 1.2.3 3 x86_64 ['zlib-devel = 1.2.3-3'] r
-znc 0 0.098 1.el5 x86_64 [] a
-znc-devel 0 0.098 1.el5 i386 [] a
-znc-devel 0 0.098 1.el5 x86_64 [] a
-znc-extra 0 0.098 1.el5 x86_64 [] a
-znc-modtcl 0 0.098 1.el5 x86_64 [] a
-znc-test.beta1 0 0.098 1.el5 x86_64 [] a
-znc-test.test.beta1 0 0.098 1.el5 x86_64 [] a
+erlang-mochiweb 0 1.4.1 5.el5 x86_64 ['erlang-mochiweb = 1.4.1-5.el5', 'mochiweb = 1.4.1-5.el5'] i installed
+zip 0 2.31 2.el5 x86_64 ['zip = 2.31-2.el5'] r base
+zisofs-tools 0 1.0.6 3.2.2 x86_64 [] a extras
+zlib 0 1.2.3 3 x86_64 ['zlib = 1.2.3-3', 'libz.so.1()(64bit)'] r base
+zlib 0 1.2.3 3 i386 ['zlib = 1.2.3-3', 'libz.so.1'] r base
+zlib-devel 0 1.2.3 3 i386 [] a extras
+zlib-devel 0 1.2.3 3 x86_64 ['zlib-devel = 1.2.3-3'] r base
+znc 0 0.098 1.el5 x86_64 [] a base
+znc-devel 0 0.098 1.el5 i386 [] a extras
+znc-devel 0 0.098 1.el5 x86_64 [] a base
+znc-extra 0 0.098 1.el5 x86_64 [] a base
+znc-modtcl 0 0.098 1.el5 x86_64 [] a base
+znc-test.beta1 0 0.098 1.el5 x86_64 [] a extras
+znc-test.test.beta1 0 0.098 1.el5 x86_64 [] a base
 EOF
 
     yum_dump_bad_output_separators = <<EOF
-zip 0 2.31 2.el5 x86_64 ['zip = 2.31-2.el5'] r
-zlib 0 1.2.3 3 x86_64 ['zlib = 1.2.3-3', 'libz.so.1()(64bit)'] i bad
-zlib-devel 0 1.2.3 3 i386 [] a
-bad zlib-devel 0 1.2.3 3 x86_64 ['zlib-devel = 1.2.3-3'] i
-znc-modtcl 0 0.098 1.el5 x86_64 [] a bad
+zip 0 2.31 2.el5 x86_64 ['zip = 2.31-2.el5'] r base
+zlib 0 1.2.3 3 x86_64 ['zlib = 1.2.3-3', 'libz.so.1()(64bit)'] i base bad
+zlib-devel 0 1.2.3 3 i386 [] a extras
+bad zlib-devel 0 1.2.3 3 x86_64 ['zlib-devel = 1.2.3-3'] i installed
+znc-modtcl 0 0.098 1.el5 x86_64 [] a base bad
 EOF
 
     yum_dump_bad_output_type = <<EOF
-zip 0 2.31 2.el5 x86_64 ['zip = 2.31-2.el5'] r
-zlib 0 1.2.3 3 x86_64 ['zlib = 1.2.3-3', 'libz.so.1()(64bit)'] c
-zlib-devel 0 1.2.3 3 i386 [] a
-zlib-devel 0 1.2.3 3 x86_64 ['zlib-devel = 1.2.3-3'] bad
-znc-modtcl 0 0.098 1.el5 x86_64 [] a
+zip 0 2.31 2.el5 x86_64 ['zip = 2.31-2.el5'] r base
+zlib 0 1.2.3 3 x86_64 ['zlib = 1.2.3-3', 'libz.so.1()(64bit)'] c base
+zlib-devel 0 1.2.3 3 i386 [] a extras
+zlib-devel 0 1.2.3 3 x86_64 ['zlib-devel = 1.2.3-3'] bad installed
+znc-modtcl 0 0.098 1.el5 x86_64 [] a base
 EOF
 
     yum_dump_error = <<EOF
@@ -1715,6 +1725,36 @@ EOF
       @yc.version_available?("zisofs-tools", "pretend", nil).should be == false
       @yc.version_available?("zisofs-tools", "pretend").should be == false
       @yc.version_available?("pretend", "1.0.6-3.2.2").should be == false
+    end
+  end
+
+  describe "package_repository" do
+    it "should take two or three arguments" do
+      lambda { @yc.package_repository("zisofs-tools") }.should raise_error(ArgumentError)
+      lambda { @yc.package_repository("zisofs-tools", "1.0.6-3.2.2") }.should_not raise_error(ArgumentError)
+      lambda { @yc.package_repository("zisofs-tools", "1.0.6-3.2.2", "x86_64") }.should_not raise_error(ArgumentError)
+    end
+
+    it "should return repoid for package-version-arch" do
+      @yc.package_repository("zlib-devel", "1.2.3-3", "i386").should be == "extras"
+      @yc.package_repository("zlib-devel", "1.2.3-3", "x86_64").should be == "base"
+    end
+
+    it "should return repoid for package-version, no arch" do
+      @yc.package_repository("zisofs-tools", "1.0.6-3.2.2", nil).should be == "extras"
+      @yc.package_repository("zisofs-tools", "1.0.6-3.2.2").should be == "extras"
+    end
+
+    it "should return nil when no match for package-version-arch" do
+      @yc.package_repository("zisofs-tools", "1.0.6-3.2.2", "pretend").should be == nil
+      @yc.package_repository("zisofs-tools", "pretend", "x86_64").should be == nil
+      @yc.package_repository("pretend", "1.0.6-3.2.2", "x86_64").should be == nil
+    end
+
+    it "should return nil when no match for package-version, no arch" do
+      @yc.package_repository("zisofs-tools", "pretend", nil).should be == nil 
+      @yc.package_repository("zisofs-tools", "pretend").should be == nil
+      @yc.package_repository("pretend", "1.0.6-3.2.2").should be == nil
     end
   end
 
