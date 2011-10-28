@@ -44,6 +44,7 @@ query syntax. The following data types are indexed for search:
   * _node_
   * _role_
   * _environment_
+  * _clients_
   * _data bag_
 
 Data bags are indexed by the data bag's name. For example, to search a
@@ -108,7 +109,7 @@ Fuzzy searches allows one to match values based on the Levenshtein
 Distance algorithm.  To perform a fuzzy match, append a tilda (~) to
 the search term:
 
-    knife search nodes 'field:term~'
+    knife search INDEX 'field:term~'
 
 This search would return nodes whose `field` was 'perm' or 'germ'.
 
@@ -146,15 +147,15 @@ The following characters must be escaped:
 Find the nodes with the fully-qualified domain name (FQDN)
 www.example.com:
 
-    knife search nodes 'fqdn:www.example.com'
+    knife search node 'fqdn:www.example.com'
 
 Find the nodes running a version of Ubuntu:
 
-    knife search nodes 'platform:ubuntu*'
+    knife search node 'platform:ubuntu*'
 
 Find all nodes running CentOS in the production environment:
 
-    knife search nodes 'chef_environment:production AND platform:centos'
+    knife search node 'chef_environment:production AND platform:centos'
 
 ## KNOWN BUGS
 
